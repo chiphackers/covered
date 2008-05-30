@@ -12,41 +12,234 @@ if( ($cdd1 eq "") || ($cdd2 eq "") ) {
   die "Usage:  cdd_diff <CDD> <CDD>\n";
 }
 
-$retval   = 0;
+$retval = 0;
 
-open( CDD1, "$cdd1" ) || die "Can't open $cdd1: $!\n";
-open( CDD2, "$cdd2" ) || die "Can't open $cdd2: $!\n";
-open( OCDD1, ">$cdd1.tmpdiff" ) || die "Can't open $cdd1.tmpdiff: $!\n";
-open( OCDD2, ">$cdd2.tmpdiff" ) || die "Can't open $cdd2.tmpdiff: $!\n";
-
-while( ($l1 = <CDD1>) && ($l2 = <CDD2>) ) {
-
-  chomp( $l1 );
-  chomp( $l2 );
-
-  @line1 = split( /\s+/, $l1 );
-  @line2 = split( /\s+/, $l2 );
-
-  # Skip score argument line
-  if( ($line1[0] ne "8") || ($line2[0] ne "8") ) {
-    if( ($line1[0] eq "2") && ($line2[0] eq "2") ) {
-      if( ($line1[4] ne "0") && ($line2[4] ne "0") ) {
-        $line1[4] = "0";
-        $line2[4] = "0";
-      }
-    }
-    print OCDD1 "@line1\n";
-    print OCDD2 "@line2\n";
-  }
-
-}
-
-close( CDD1 );
-close( CDD2 );
-close( OCDD1 );
-close( OCDD2 );
+&parse_cdd( $cdd1, 0 );
+&parse_cdd( $cdd2, 1 );
 
 $retval = system( "diff $cdd1.tmpdiff $cdd2.tmpdiff" ) / 256;
 system( "rm -f $cdd1.tmpdiff $cdd2.tmpdiff" ) && die;
 
 exit $retval;
+
+
+# Parses a single CDD file, filters and outputs a temporary version of it suitable for diff'ing
+sub parse_cdd {
+
+  my( $cdd, $num ) = @_;
+
+  open( ICDD, "$cdd" ) || die "Can't open $cdd: $!\n";
+  open( OCDD, ">$cdd.tmpdiff" ) || die "Can't open $cdd.tmpdiff: $!\n";
+
+  while( $l = <ICDD> ) {
+
+    chomp( $l );
+
+    @line = split( /\s+/, $l );
+
+    # Information line (get vector unsigned long size)
+    if( $line[0] eq "5" ) {
+      $vec_ul_size[$num] = (hex( $line[2] ) >> 7) & 0x3;
+      $line[2] = hex( $line[2] ) & 0x7f;
+
+    # Score arguments (we need to disregard the pathname to covered)
+    } elsif( $line[0] eq "8" ) {
+
+      $line[1] = "dir";
+
+    # Signal
+    } elsif( $line[0] eq "1" ) {
+
+      # Only modify the contents of the CDD file if we are second CDD file and our unsigned long is
+      # a different size than the first CDD file.
+      if( ($num == 1) && ($vec_ul_size[0] != $vec_ul_size[1]) ) { 
+
+        my( $pdim_num  ) = $line[4];
+        my( $udim_num  ) = $line[5];
+        my( $first_vec ) = 6 + (($pdim_num + $udim_num) * 2);
+        my( $next_start, @tmp_line ) = &parse_vector( $first_vec, $num, @line );
+
+        # Remove the old data and replace it with the newly formatted data
+        $#line = $first_vec - 1;
+        @line  = (@line, @tmp_line);
+ 
+      }
+
+    # Expression
+    } elsif( $line[0] eq "2" ) {
+
+      # Only modify the contents of the CDD file if we are second CDD file and our unsigned long is
+      # a different size than the first CDD file.
+      if( ($num == 1) && ($vec_ul_size[0] != $vec_ul_size[1]) ) { 
+
+        my( $owns_vec ) = (hex( $line[6] ) >> 12) & 0x1;
+
+        # If this expression owns its own vector, parse it
+        if( $owns_vec == 1 ) {
+          my( $next_start, @tmp_line ) = &parse_vector( 9, $num, @line );
+          if( $#line == $next_start ) {
+            my( $sig_name ) = $line[$next_start];
+            $#line = 8;
+            @line = (@line, @tmp_line, $sig_name );
+          } else {
+            $#line = 8;
+            @line = (@line, @tmp_line);
+          }
+        }
+
+      }
+
+      # If our exec_num is non-zero, set it to one to make sure that we compare
+      if( $line[4] ne "0" ) {
+        $line[4] = "1";
+      }
+
+    # FSM
+    } elsif( $line[0] eq "6" ) {
+
+      # Only modify the contents of the CDD file if we are second CDD file and our unsigned long is
+      # a different size than the first CDD file.
+      if( ($num == 1) && ($vec_ul_size[0] != $vec_ul_size[1]) ) { 
+
+        my( $table_exists ) = $line[3];
+        my( @tmp_line1    ) = @line[0,1,2,3];
+
+        # If a table is specified, parse its arc information
+        if( $table_exists == 1 ) {
+
+          my( $from_states ) = $line[5];
+          my( $to_states   ) = $line[6];
+          my( $start       ) = 7;
+
+          # Add to the temporary line
+          @tmp_line1 = (@tmp_line1,@line[4,5,6]);
+
+          # Parse the from states
+          for( $i=0; $i<$from_states; $i++ ) {
+            my( $next_start, @tmp_line2 ) = &parse_vector( $start, $num, @line );
+            @tmp_line1 = (@tmp_line1,@tmp_line2);
+            $start = $next_start;
+          }
+
+          # Parse the to states
+          for( $i=0; $i<$to_states; $i++ ) {
+            my( $next_start, @tmp_line2 ) = &parse_vector( $start, $num, @line );
+            @tmp_line1 = (@tmp_line1,@tmp_line2);
+            $start = $next_start;
+          }
+
+          # Add the rest of the line back to the new line
+          for( $i=$start; $i<@line; $i++ ) {
+            @tmp_line1 = (@tmp_line1,$line[$i]);
+          }
+
+          # Finally, copy the temporary line to the original line
+          @line = @tmp_line1;
+
+        }
+
+      }
+
+    }
+
+    # Output the current line to the temporary output CDD file
+    print OCDD "@line\n";
+
+  }
+
+  # Close the CDD files
+  close( ICDD );
+  close( OCDD );
+
+}
+
+# Parses a single vector line
+sub parse_vector {
+
+  my( $start, $num, @line ) = @_;
+
+  if( ($vec_ul_size[$num] != 2) && ($vec_ul_size[$num] != 3) ) {
+    die "Unsupported vector unsigned long size ($vec_ul_size[$num]).  Unable to compare!\n";
+  }
+
+  my( $vec_width ) = $line[$start];
+  my( $vec_type  ) = $line[$start + 1] & 0x3;
+  my( $vec_dtype ) = ($line[$start + 1] >> 2) & 0x3;
+  my( $owns_data ) = ($line[$start + 1] >> 4) & 0x1;
+  my( $vec_elems ) = (($vec_width - 1) >> ($vec_ul_size[$num] + 3)) + 1;
+  my( $i, $j );
+  my( @tmp_line )  = @line[$start,($start+1)];
+  my( $next_start );
+
+  # Mapping of vector type sizes
+  my( @vec_type_sizes ) = (2, 5, 6, 6);
+
+  # If the vector owns its data, parse and transform it 
+  if( $owns_data == 1 ) {
+
+    # If the data type is an unsigned long, transform the data
+    if( $vec_dtype == 0 ) {
+
+      my( @record1 );
+
+      # If the first CDD file was in 32-bit, convert our 64-bit value to 32-bit
+      if( $vec_ul_size[0] == 2 ) {
+        for( $i=0; $i<$vec_elems; $i++ ) {
+          my( @record2 );
+          for( $j=0; $j<$vec_type_sizes[$vec_type]; $j++ ) {
+            my( $val ) = $line[$start + 2 + ($i * $vec_type_sizes[$vec_type]) + $j];
+            $record1[$j] = (length( $val ) > 8) ? substr( $val, (length( $val ) - 8), 8 ) : $val;
+            $record2[$j] = (length( $val ) > 8) ? substr( $val, 0, (length( $val ) - 8) ) : "";
+          }
+          @tmp_line = (@tmp_line, @record1, @record2);
+        }
+
+      # If the first CDD file was in 64-bit, convert our 32-bit value to 64-bit
+      } elsif( $vec_ul_size[0] == 3 ) {
+        for( $i=0; $i<$vec_elems; $i++ ) {
+          for( $j=0; $j<$vec_type_sizes[$vec_type]; $j++ ) {
+            my( $val ) = $line[$start + 2 + ($i * $vec_type_sizes[$vec_type]) + $j];
+            if( ($i % 2) == 0 ) {
+              $record1[$j] = $val;
+            } else {
+              if( length( $record1[$j] ) == 8 ) {
+                $record1[$j] = ($val ne "0") ? "${val}${record1[$j]}" : $record1[$j];
+              } else {
+                $record1[$j] = ($val ne "0") ? "${val}" . "0" x (8 - length( $record1[$j] )) . "${record1[$j]}" : $record1[$j];
+              }
+            }
+          }
+          if( ($i % 2) == 1 ) {
+            @tmp_line = (@tmp_line, @record1);
+            @record1 = ();
+          }
+        }
+        if( ($i % 2) == 1 ) {
+          @tmp_line = (@tmp_line, @record1);
+          @record1 = ();
+        }
+      }
+
+      # Calculate next start
+      $next_start = ($start + ($vec_elems * $vec_type_sizes[$vec_type]) + 2);
+
+    # Otherwise, just copy it
+    } else {
+
+      @tmp_line = $line[$start];
+
+      # Calculate next start
+      $next_start = $start + 3;
+
+    }
+
+  # Otherwise, set the next_start to the current start
+  } else {
+
+    $next_start = $start + 2;
+
+  }
+
+  return ($next_start,@tmp_line);
+
+}

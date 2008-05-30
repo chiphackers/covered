@@ -391,7 +391,7 @@ void codegen_gen_expr(
       } else if( ESUPPL_STATIC_BASE( expr->suppl ) == QSTRING ) {
 
         unsigned int slen;
-        tmpstr = vector_to_string( expr->value, QSTRING );
+        tmpstr = vector_to_string( expr->value, QSTRING, FALSE );
         slen   = strlen( tmpstr ) + 3;
         (*code)[0] = (char*)malloc_safe( slen );
         rv = snprintf( (*code)[0], slen, "\"%s\"", tmpstr );
@@ -400,7 +400,7 @@ void codegen_gen_expr(
 
       } else { 
 
-        (*code)[0] = vector_to_string( expr->value, ESUPPL_STATIC_BASE( expr->suppl ) );
+        (*code)[0] = vector_to_string( expr->value, ESUPPL_STATIC_BASE( expr->suppl ), FALSE );
 
       }
 
@@ -648,7 +648,7 @@ void codegen_gen_expr(
                                right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_MOD      :
-          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " %% ",
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left, " % ",
                                right_code, right_code_depth, expr->right, after );
           break;
         case EXP_OP_MOD_A    :
@@ -982,6 +982,20 @@ void codegen_gen_expr(
 
 /*
  $Log$
+ Revision 1.95.2.2  2008/05/07 21:09:10  phase1geo
+ Added functionality to allow to_string to output full vector bits (even
+ non-significant bits) for purposes of reporting for FSMs (matches original
+ behavior).
+
+ Revision 1.95.2.1  2008/05/05 19:49:59  phase1geo
+ Updating regressions, fixing bugs and added new diagnostics.  Checkpointing.
+
+ Revision 1.95  2008/04/09 18:00:33  phase1geo
+ Fixing op-and-assign operation and updated regression files appropriately.
+ Also modified verilog/Makefile to compile lib or src directory as needed
+ according to the VPI environment variable being set or not.  Full regression
+ passes.
+
  Revision 1.94  2008/04/08 22:45:10  phase1geo
  Optimizations for op-and-assign expressions.  This is an untested checkin
  at this point but it does compile cleanly.  Checkpointing.

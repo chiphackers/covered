@@ -31,6 +31,7 @@
 #include "link.h"
 #include "memory.h"
 #include "ovl.h"
+#include "profiler.h"
 #include "toggle.h"
 #include "vector.h"
 
@@ -70,7 +71,7 @@ static void exclude_expr_assign_and_recalc(
   func_unit*  funit,
   bool        excluded,
   bool        set_line
-) {
+) { PROFILE(EXCLUDE_EXPR_ASSIGN_AND_RECALC);
 
   int comb_total = 0;  /* Total number of combinational logic coverage points within this tree */
   int comb_hit   = 0;  /* Total number of hit combinations within this tree */
@@ -132,6 +133,8 @@ static void exclude_expr_assign_and_recalc(
     expr->parent->stmt->suppl.part.excluded = (excluded && set_line) ? 1 : 0;
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -146,7 +149,7 @@ static void exclude_sig_assign_and_recalc(
   vsignal*   sig,
   func_unit* funit,
   bool       excluded
-) {
+) { PROFILE(EXCLUDE_SIG_ASSIGN_AND_RECALC);
 
   /* First, set the exclude bit in the signal supplemental field */
   sig->suppl.part.excluded = excluded ? 1 : 0;
@@ -197,37 +200,28 @@ static void exclude_sig_assign_and_recalc(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param arcs       Pointer to arc array.
- \param arc_index  Specifies the index of the entry containing the transition
- \param forward    Specifies if the direction of the transition is forward or backward for the given arc entry
- \param funit      Pointer to functional unit containing the FSM
- \param excluded   Specifies if we are excluding or including coverage.
-
  Sets the specified arc entry's exclude bit to the given value and recalculates all
  affected coverage information for this instance.
 */
 static void exclude_arc_assign_and_recalc(
-    char*      arcs,
-    int        arc_index,
-    bool       forward,
-    func_unit* funit,
-    bool       excluded
-) {
+  fsm_table* table,      /*!< Pointer FSM table */
+  int        arc_index,  /*!< Specifies the index of the entry containing the transition */
+  func_unit* funit,      /*!< Pointer to functional unit containing the FSM */
+  bool       exclude     /*!< Specifies if we are excluding or including coverage */
+) { PROFILE(EXCLUDE_ARC_ASSIGN_AND_RECALC);
 
-  /* Set the excluded bit in the specified entry */
-  arc_set_entry_suppl( arcs, arc_index, (forward ? ARC_EXCLUDED_F : ARC_EXCLUDED_R), (excluded ? 1 : 0) );
-
-  /* Adjust arc coverage numbers */
-  if( arc_get_entry_suppl( arcs, arc_index, (forward ? ARC_HIT_F : ARC_HIT_R) ) == 0 ) {
-    if( excluded ) {
-      funit->stat->arc_hit++;
-    } else {
-      funit->stat->arc_hit--;
-    }
+  /* Set the excluded bit in the specified entry and adjust coverage numbers, if necessary */
+  table->arcs[arc_index]->suppl.part.excluded = (exclude ? 1 : 0);
+  if( table->arcs[arc_index]->suppl.part.hit == 0 ) {
+    funit->stat->arc_hit += exclude ? 1 : -1;
   }
+
+  PROFILE_END;
 
 }
 
@@ -379,18 +373,22 @@ bool exclude_set_comb_exclude( const char* funit_name, int funit_type, int expr_
  \return Returns TRUE if we successfully set the appropriate expression(s); otherwise, returns FALSE.
 
 */
-bool exclude_set_fsm_exclude( const char* funit_name, int funit_type, int expr_id, char* from_state, char* to_state, int value ) {
+bool exclude_set_fsm_exclude(
+  const char* funit_name,
+  int         funit_type,
+  int         expr_id,
+  char*       from_state,
+  char*       to_state,
+  int         value
+) {
 
   bool        retval = FALSE;  /* Return value for this function */
   funit_link* funitl;          /* Pointer to found functional unit link */
-  int         find_val;        /* Value from return of arc_find function */
-  int         found_index;     /* Index of found arc entry */
-  vector*     from_vec;        /* Vector form of from_state */
-  vector*     to_vec;          /* Vector form of to_state */
-  fsm_link*   curr_fsm;        /* Pointer to the current FSM to search on */
 
   /* Find the functional unit instance that matches the functional unit description */
   if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
+
+    fsm_link* curr_fsm;
 
     /* Find the corresponding table */
     curr_fsm = funitl->funit->fsm_head;
@@ -400,15 +398,18 @@ bool exclude_set_fsm_exclude( const char* funit_name, int funit_type, int expr_i
 
     if( curr_fsm != NULL ) {
 
-      int from_base, to_base;
+      vector* from_vec;
+      vector* to_vec;
+      int     found_index;
+      int     from_base, to_base;
 
       /* Convert from/to state strings into vector values */
       vector_from_string( &from_state, FALSE, &from_vec, &from_base );
       vector_from_string( &to_state, FALSE, &to_vec, &to_base );
 
       /* Find the arc entry and perform the exclusion assignment and coverage recalculation */
-      if( (find_val = arc_find( curr_fsm->table->table, from_vec, to_vec, &found_index )) != 2 ) {
-        exclude_arc_assign_and_recalc( curr_fsm->table->table, found_index, (find_val == 0), funitl->funit, (value == 1) );
+      if( (found_index = arc_find_arc( curr_fsm->table->table, arc_find_from_state( curr_fsm->table->table, from_vec ), arc_find_to_state( curr_fsm->table->table, to_vec ) )) != -1 ) {
+        exclude_arc_assign_and_recalc( curr_fsm->table->table, found_index, funitl->funit, (value == 1) );
         retval = TRUE;
       }
 
@@ -471,6 +472,21 @@ bool exclude_set_assert_exclude(
 
 /*
  $Log$
+ Revision 1.23.2.3  2008/05/08 23:12:41  phase1geo
+ Fixing several bugs and reworking code in arc to get FSM diagnostics
+ to pass.  Checkpointing.
+
+ Revision 1.23.2.2  2008/05/08 03:56:38  phase1geo
+ Updating regression files and reworking arc_find and arc_add functionality.
+ Checkpointing.
+
+ Revision 1.23.2.1  2008/05/02 22:06:10  phase1geo
+ Updating arc code for new data structure.  This code is completely untested
+ but does compile and has been completely rewritten.  Checkpointing.
+
+ Revision 1.23  2008/04/15 20:37:07  phase1geo
+ Fixing database array support.  Full regression passes.
+
  Revision 1.22  2008/04/14 23:10:14  phase1geo
  More GUI updates and a fix to the line exclusion code.
 

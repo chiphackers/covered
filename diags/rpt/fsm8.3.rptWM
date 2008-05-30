@@ -105,9 +105,9 @@ Module/Task/Function                Filename                          Hit/Miss/T
 Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   $root                   NA                        0/   0/   0      100%            0/   0/   0      100%
-  main                    fsm8.3.v                  2/  ? /  ?        ? %            3/  ? /  ?        ? %
+  main                    fsm8.3.v                  3/  ? /  ?        ? %            4/  ? /  ?        ? %
 ---------------------------------------------------------------------------------------------------------------------
-  Accumulated                                       2/  ? /  ?        ? %            3/  ? /  ?        ? %
+  Accumulated                                       3/  ? /  ?        ? %            4/  ? /  ?        ? %
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: main, File: fsm8.3.v
@@ -118,16 +118,18 @@ Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit 
 
           States
           ======
-          1'h0
-          1'h1
+          2'h2
+          2'h0
+          2'h1
 
         Hit State Transitions
 
           From State    To State  
           ==========    ==========
-          1'h0       -> 1'h0      
-          1'h0       -> 1'h1      
-          1'h1       -> 1'h0      
+          2'h2       -> 1'h0      
+          2'h0       -> 1'h0      
+          2'h0       -> 1'h1      
+          2'h1       -> 1'h0      
 
 
 

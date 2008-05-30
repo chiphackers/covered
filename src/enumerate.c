@@ -126,7 +126,7 @@ void enumerate_resolve( funit_inst* inst ) { PROFILE(ENUMERATE_RESOLVE);
         vector_from_int( ei->sig->value, ei->value->num );
       } else {
         param_expr_eval( ei->value->exp, inst );
-        (void)vector_set_value( ei->sig->value, ei->value->exp->value->value, ei->sig->value->width, 0, 0 );
+        (void)vector_set_value_ulong( ei->sig->value, ei->value->exp->value->value.ul, ei->sig->value->width );
       }
 
     }
@@ -138,7 +138,7 @@ void enumerate_resolve( funit_inst* inst ) { PROFILE(ENUMERATE_RESOLVE);
     first = ei->last;
 
     /* Set last_value to that of this this signal value */
-    if( !ei->sig->value->suppl.part.unknown ) {
+    if( !vector_is_unknown( ei->sig->value ) ) {
       last_value = vector_to_int( ei->sig->value );
     } else {
       last_value = -1;
@@ -194,6 +194,19 @@ void enumerate_dealloc_list( func_unit* funit ) { PROFILE(ENUMERATE_DEALLOC_LIST
 
 /*
  $Log$
+ Revision 1.17.2.3  2008/05/28 05:57:10  phase1geo
+ Updating code to use unsigned long instead of uint32.  Checkpointing.
+
+ Revision 1.17.2.2  2008/04/23 05:20:44  phase1geo
+ Completed initial pass of code updates.  I can now begin testing...  Checkpointing.
+
+ Revision 1.17.2.1  2008/04/21 23:13:04  phase1geo
+ More work to update other files per vector changes.  Currently in the middle
+ of updating expr.c.  Checkpointing.
+
+ Revision 1.17  2008/04/04 21:23:29  phase1geo
+ Last set of fixes to get IV regression to fully pass!
+
  Revision 1.16  2008/03/26 21:29:31  phase1geo
  Initial checkin of new optimizations for unknown and not_zero values in vectors.
  This attempts to speed up expression operations across the board.  Working on

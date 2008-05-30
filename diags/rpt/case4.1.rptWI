@@ -18,15 +18,16 @@
 Instance                                           Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   $root                                              0/    0/    0      100%
-  main                                               6/    8/   14       43%
+  main                                               5/    9/   14       36%
 ---------------------------------------------------------------------------------------------------------------------
-  Accumulated                                        6/    8/   14       43%
+  Accumulated                                        5/    9/   14       36%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: main, File: case4.1.v, Instance: main
     -------------------------------------------------------------------------------------------------------------
     Missed Lines
 
+           31:    next_st = display_tagto_current_state
            41:    ascii_display_tagto_state = "STATE_A"
            44:    if( |pcix_pio_timeout_recorder )
            45:    next_st = STATE_B
@@ -81,9 +82,9 @@ Instance                                           Hit/ Miss/Total    Percent hi
 Instance                                                              Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   $root                                                                 0/   0/   0      100%
-  main                                                                  6/  17/  23       26%
+  main                                                                  3/  20/  23       13%
 ---------------------------------------------------------------------------------------------------------------------
-  Accumulated                                                           6/  17/  23       26%
+  Accumulated                                                           3/  20/  23       13%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: main, File: case4.1.v, Instance: main
@@ -94,9 +95,9 @@ Instance                                                              Hit/Miss/T
        Line #     Expression
       =========================================================================================================
              24:    @(display_tagto_current_state or pcix_pio_timeout_recorder or split_resp_active or split_resp_tag or 
-                      |------------1------------|    |-----------2-----------|                                           
+                      |------------1------------|    |-----------2-----------|    |-------3-------|    |-----4------|    
                     tag_timeout or clr_tag_toed)
-                    |----3----|                 
+                    |----5----|    |----6-----| 
 
         Expression 1   (0/1)
         ^^^^^^^^^^^^^ - anyedge
@@ -107,6 +108,18 @@ Instance                                                              Hit/Miss/T
          * Event did not occur
 
         Expression 3   (0/1)
+        ^^^^^^^^^^^^^ - anyedge
+         * Event did not occur
+
+        Expression 4   (0/1)
+        ^^^^^^^^^^^^^ - anyedge
+         * Event did not occur
+
+        Expression 5   (0/1)
+        ^^^^^^^^^^^^^ - anyedge
+         * Event did not occur
+
+        Expression 6   (0/1)
         ^^^^^^^^^^^^^ - anyedge
          * Event did not occur
 

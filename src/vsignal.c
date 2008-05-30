@@ -110,7 +110,7 @@ vsignal* vsignal_create(
   new_sig = (vsignal*)malloc_safe( sizeof( vsignal ) );
 
   vsignal_init( new_sig, ((name != NULL) ? strdup_safe( name ) : NULL),
-                type, vector_create( width, ((type == SSUPPL_TYPE_MEM) ? VTYPE_MEM : VTYPE_SIG), TRUE ), line, col );
+                type, vector_create( width, ((type == SSUPPL_TYPE_MEM) ? VTYPE_MEM : VTYPE_SIG), VDATA_UL, TRUE ), line, col );
 
   PROFILE_END;
 
@@ -134,16 +134,15 @@ void vsignal_create_vec(
   int       i;          /* Loop iterator */
   vector*   vec;        /* Temporary vector used for getting a vector value */
   exp_link* expl;       /* Pointer to current expression in signal expression list */
-  int       old_width;  /* Original width of signal vector */
 
   assert( sig != NULL );
   assert( sig->value != NULL );
 
   /* If this signal has been previously simulated, don't create a new vector */
-  if( !vector_is_set( sig->value ) ) {
+  if( !sig->value->suppl.part.set ) {
 
-    /* Save the old width */
-    old_width = sig->value->width;
+    /* Deallocate the old memory */
+    vector_dealloc_value( sig->value );
 
     /* Set the initial signal width to 1 */
     sig->value->width = 1;
@@ -163,11 +162,8 @@ void vsignal_create_vec(
     }
 
     /* Create the vector and assign it to the signal */
-    vec = vector_create( sig->value->width, ((sig->suppl.part.type == SSUPPL_TYPE_MEM) ? VTYPE_MEM : VTYPE_SIG), TRUE );
-    if( sig->value->value != NULL ) {
-      free_safe( sig->value->value, old_width );
-    }
-    sig->value->value = vec->value;
+    vec = vector_create( sig->value->width, ((sig->suppl.part.type == SSUPPL_TYPE_MEM) ? VTYPE_MEM : VTYPE_SIG), VDATA_UL, TRUE );
+    sig->value->value.ul = vec->value.ul;
     free_safe( vec, sizeof( vector ) );
 
     /* Iterate through expression list, setting the expression to this signal */
@@ -274,7 +270,7 @@ void vsignal_db_write(
     }
     fprintf( file, " " );
 
-    vector_db_write( sig->value, file, ((sig->suppl.part.type == SSUPPL_TYPE_PARAM) || (sig->suppl.part.type == SSUPPL_TYPE_ENUM)) );
+    vector_db_write( sig->value, file, ((sig->suppl.part.type == SSUPPL_TYPE_PARAM) || (sig->suppl.part.type == SSUPPL_TYPE_ENUM)), SIGNAL_IS_NET( sig ) );
 
     fprintf( file, "\n" );
 
@@ -338,7 +334,7 @@ void vsignal_db_read(
 
     } Catch_anonymous {
       free_safe( dim, sizeof( dim_range ) );
-      printf( "vsignal Throw B\n" );
+      // printf( "vsignal Throw B\n" ); - HIT
       Throw 0;
     }
 
@@ -622,7 +618,7 @@ void vsignal_display(
     printf( ", " );
   }
 
-  vector_display_value( sig->value->value, sig->value->width );
+  vector_display_value_ulong( sig->value->value.ul, sig->value->width );
   printf( "\n" );
 
 }
@@ -691,9 +687,9 @@ vsignal* vsignal_from_string(
   } else if( sscanf( *str, "%[a-zA-Z0-9_]%n", name, &chars_read ) == 1 ) {
     sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, 0, 0 );
     /* Specify that this width is unknown */
-    free_safe( sig->value->value, sizeof( vec_data ) );
+    vector_dealloc_value( sig->value );
     sig->value->width = 0;
-    sig->value->value = NULL;
+    sig->value->value.ul = NULL;
     *str += chars_read;
   } else {
     sig = NULL;
@@ -804,6 +800,31 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.71.2.6  2008/05/28 05:57:12  phase1geo
+ Updating code to use unsigned long instead of uint32.  Checkpointing.
+
+ Revision 1.71.2.5  2008/05/23 23:04:56  phase1geo
+ Adding err5 diagnostic to regression suite.  Fixing memory deallocation bug
+ found with err5.  Full regression passes.
+
+ Revision 1.71.2.4  2008/05/23 14:50:23  phase1geo
+ Optimizing vector_op_add and vector_op_subtract algorithms.  Also fixing issue with
+ vector set bit.  Updating regressions per this change.
+
+ Revision 1.71.2.3  2008/05/15 07:02:06  phase1geo
+ Another attempt to fix static_afunc1 diagnostic failure.  Checkpointing.
+
+ Revision 1.71.2.2  2008/04/23 06:32:32  phase1geo
+ Starting to debug vector changes.  Checkpointing.
+
+ Revision 1.71.2.1  2008/04/23 05:20:45  phase1geo
+ Completed initial pass of code updates.  I can now begin testing...  Checkpointing.
+
+ Revision 1.71  2008/04/15 06:08:47  phase1geo
+ First attempt to get both instance and module coverage calculatable for
+ GUI purposes.  This is not quite complete at the moment though it does
+ compile.
+
  Revision 1.70  2008/03/31 21:40:24  phase1geo
  Fixing several more memory issues and optimizing a bit of code per regression
  failures.  Full regression still does not pass but does complete (yeah!)

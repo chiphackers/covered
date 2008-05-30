@@ -93,6 +93,25 @@ void info_initialize() { PROFILE(INFO_INITIALIZE);
 }
 
 /*!
+ Sets the vector element size in the global info_suppl structure based on the current machine
+ unsigned long byte size.
+*/
+void info_set_vector_elem_size() { PROFILE(INFO_SET_VECTOR_ELEM_SIZE);
+
+  switch( sizeof( ulong ) ) {
+    case 1 :  info_suppl.part.vec_ul_size = 0;  break;
+    case 2 :  info_suppl.part.vec_ul_size = 1;  break;
+    case 4 :  info_suppl.part.vec_ul_size = 2;  break;
+    case 8 :  info_suppl.part.vec_ul_size = 3;  break;
+    default:
+      print_output( "Unsupported unsigned long size", FATAL, __FILE__, __LINE__ );
+      Throw 0;
+      break;
+  }
+
+}
+
+/*!
  \param file  Pointer to file to write information to.
  
  Writes information line to specified file.
@@ -102,6 +121,9 @@ void info_db_write( FILE* file ) { PROFILE(INFO_DB_WRITE);
   int i;  /* Loop iterator */
 
   assert( leading_hier_num > 0 );
+
+  /* Calculate vector element size */
+  info_set_vector_elem_size();
 
   fprintf( file, "%d %x %x %s %d",
            DB_TYPE_INFO,
@@ -289,6 +311,14 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
 /*
  $Log$
+ Revision 1.31.2.1  2008/05/28 22:12:31  phase1geo
+ Adding further support for 32-/64-bit support.  Checkpointing.
+
+ Revision 1.31  2008/03/31 21:40:23  phase1geo
+ Fixing several more memory issues and optimizing a bit of code per regression
+ failures.  Full regression still does not pass but does complete (yeah!)
+ Checkpointing.
+
  Revision 1.30  2008/03/17 22:02:31  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function

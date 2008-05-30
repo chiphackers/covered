@@ -150,7 +150,11 @@ static_expr* static_expr_gen_unary(
         case EXP_OP_PASSIGN :
           tmpexp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, first, last, FALSE );
           curr_expr_id++;
-          vector_init( tmpexp->value, (vec_data*)malloc_safe( sizeof( vec_data ) * 32 ), 0x0, TRUE, 32, VTYPE_EXP );
+          {
+            vector* vec = vector_create( 32, VTYPE_EXP, VDATA_UL, TRUE );
+            vector_dealloc( tmpexp->value );
+            tmpexp->value = vec;
+          }
           vector_from_int( tmpexp->value, stexp->num );
 
           stexp->exp = expression_create( tmpexp, NULL, op, FALSE, curr_expr_id, line, first, last, FALSE );
@@ -257,7 +261,11 @@ static_expr* static_expr_gen(
 
         right->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, first, last, FALSE );
         curr_expr_id++;
-        vector_init( right->exp->value, (vec_data*)malloc_safe( sizeof( vec_data ) * 32 ), 0x0, TRUE, 32, VTYPE_EXP );  
+        {
+          vector* vec = vector_create( 32, VTYPE_EXP, VDATA_UL, TRUE );
+          vector_dealloc( right->exp->value );
+          right->exp->value = vec;
+        }
         vector_from_int( right->exp->value, right->num );
 
         tmpexp = expression_create( right->exp, left->exp, op, FALSE, curr_expr_id, line, first, last, FALSE );
@@ -272,7 +280,11 @@ static_expr* static_expr_gen(
 
         left->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, first, last, FALSE );
         curr_expr_id++;
-        vector_init( left->exp->value, (vec_data*)malloc_safe( sizeof( vec_data ) * 32 ), 0x0, TRUE, 32, VTYPE_EXP );
+        {
+          vector* vec = vector_create( 32, VTYPE_EXP, VDATA_UL, TRUE );
+          vector_dealloc( left->exp->value );
+          left->exp->value = vec;
+        }
         vector_from_int( left->exp->value, left->num );
 
         tmpexp = expression_create( right->exp, left->exp, op, FALSE, curr_expr_id, line, first, last, FALSE );
@@ -444,6 +456,16 @@ void static_expr_dealloc(
 
 /*
  $Log$
+ Revision 1.35.2.2  2008/05/28 05:57:12  phase1geo
+ Updating code to use unsigned long instead of uint32.  Checkpointing.
+
+ Revision 1.35.2.1  2008/04/23 05:20:45  phase1geo
+ Completed initial pass of code updates.  I can now begin testing...  Checkpointing.
+
+ Revision 1.35  2008/04/08 19:50:36  phase1geo
+ Removing LAST operator for PEDGE, NEDGE and AEDGE expression operations and
+ replacing them with the temporary vector solution.
+
  Revision 1.34  2008/04/06 21:31:14  phase1geo
  Fixing more regression failures.  Last of regression updates.
 

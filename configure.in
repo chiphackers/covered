@@ -155,6 +155,8 @@ AC_CHECK_SIZEOF(short,4)
 AC_CHECK_SIZEOF(int,4)
 AC_CHECK_SIZEOF(long,4)
 AC_CHECK_SIZEOF([long long],4)
+AC_CHECK_SIZEOF(float,4)
+AC_CHECK_SIZEOF(double,4)
 
 dnl Checks for library functions.
 AC_TYPE_SIGNAL

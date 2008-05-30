@@ -343,7 +343,7 @@ void db_write(
     } Catch_anonymous {
       rv = fclose( db_handle );
       assert( rv == 0 );
-      printf( "db Throw A\n" );
+      // printf( "db Throw A\n" ); - HIT
       Throw 0;
     }
 
@@ -451,8 +451,10 @@ void db_read(
           
               assert( !merge_mode );
          
-              /* Parse rest of line for argument info */
-              args_db_read( &rest_line );
+              /* Parse rest of line for argument info (if we are not instance merging) */
+              if( read_mode != READ_MODE_MERGE_INST_MERGE ) {
+                args_db_read( &rest_line );
+              }
             
             } else if( type == DB_TYPE_SIGNAL ) {
   
@@ -574,7 +576,10 @@ void db_read(
         } Catch_anonymous {
 
           free_safe( curr_line, curr_line_size );
-          printf( "db Throw F\n" );
+          if( (read_mode != READ_MODE_MERGE_INST_MERGE) && (read_mode != READ_MODE_REPORT_MOD_MERGE) ) {
+            funit_dealloc( curr_funit );
+          }
+          // printf( "db Throw F\n" ); - HIT
           Throw 0;
 
         }
@@ -587,7 +592,7 @@ void db_read(
 
       unsigned int rv = fclose( db_handle );
       assert( rv == 0 );
-      printf( "db Throw G\n" );
+      // printf( "db Throw G\n" ); - HIT
       Throw 0;
 
     }
@@ -1394,7 +1399,9 @@ void db_add_signal( char* name, int type, sig_range* prange, sig_range* urange, 
     sig->suppl.part.not_handled = handled ? 0 : 1;
 
     /* Set the implicit_size attribute */
-    sig->suppl.part.implicit_size = (((type == SSUPPL_TYPE_INPUT) || (type == SSUPPL_TYPE_OUTPUT) || (type == SSUPPL_TYPE_INOUT)) &&
+    sig->suppl.part.implicit_size = (((type == SSUPPL_TYPE_INPUT_NET)  || (type == SSUPPL_TYPE_INPUT_REG) ||
+                                      (type == SSUPPL_TYPE_OUTPUT_NET) || (type == SSUPPL_TYPE_OUTPUT_REG) ||
+                                      (type == SSUPPL_TYPE_INOUT_NET)  || (type == SSUPPL_TYPE_INOUT_REG)) &&
                                      (prange != NULL) && prange->dim[0].implicit &&
                                      (prange->dim[0].left->exp == NULL) && (prange->dim[0].left->num == 0) &&
                                      (prange->dim[0].right->exp == NULL) && (prange->dim[0].right->num == 0)) ? 1 : 0;
@@ -1906,11 +1913,11 @@ expression* db_create_expr_from_static(
       expr = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, line, first_col, last_col, NULL );
 
       /* Create the new vector */
-      vec = vector_create( 32, VTYPE_VAL, TRUE );
+      vec = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
       vector_from_int( vec, se->num );
 
       /* Assign the new vector to the expression's vector (after deallocating the expression's old vector) */
-      assert( expr->value->value == NULL );
+      assert( expr->value->value.ul == NULL );
       free_safe( expr->value, sizeof( vector ) );
       expr->value = vec;
 
@@ -2948,6 +2955,37 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.307.2.7  2008/05/30 03:36:29  phase1geo
+ Fixing bug 1966994.  Updating regression files.  Improved cdd_diff script to
+ strip out the relative path information when performing CDD compares but pay
+ attention to the rest of the score argument information.  Full regression
+ passes.
+
+ Revision 1.307.2.6  2008/05/28 05:57:10  phase1geo
+ Updating code to use unsigned long instead of uint32.  Checkpointing.
+
+ Revision 1.307.2.5  2008/05/26 05:42:09  phase1geo
+ Adding new error merge diagnostics to regression suite to verify missing vector_db_merge
+ error cases.  Full regression passes.
+
+ Revision 1.307.2.4  2008/05/25 04:27:32  phase1geo
+ Adding div1 and mod1 diagnostics to regression suite.
+
+ Revision 1.307.2.3  2008/05/23 23:04:56  phase1geo
+ Adding err5 diagnostic to regression suite.  Fixing memory deallocation bug
+ found with err5.  Full regression passes.
+
+ Revision 1.307.2.2  2008/05/23 14:50:21  phase1geo
+ Optimizing vector_op_add and vector_op_subtract algorithms.  Also fixing issue with
+ vector set bit.  Updating regressions per this change.
+
+ Revision 1.307.2.1  2008/04/21 23:13:04  phase1geo
+ More work to update other files per vector changes.  Currently in the middle
+ of updating expr.c.  Checkpointing.
+
+ Revision 1.307  2008/04/15 20:37:07  phase1geo
+ Fixing database array support.  Full regression passes.
+
  Revision 1.306  2008/04/15 13:59:13  phase1geo
  Starting to add support for multiple databases.  Things compile but are
  quite broken at the moment.  Checkpointing.

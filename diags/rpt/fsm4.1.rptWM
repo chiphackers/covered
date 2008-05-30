@@ -159,19 +159,19 @@ Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit 
 
           States
           ======
+          16'h0001
           16'h0010
           16'h0100
           16'h1000
-          16'h0001
 
         Hit State Transitions
 
           From State    To State  
           ==========    ==========
+          16'h0001   -> 16'h0001  
           16'h0010   -> 16'h0010  
           16'h0100   -> 16'h0100  
           16'h1000   -> 16'h1000  
-          16'h0001   -> 16'h0001  
 
 
 

@@ -132,12 +132,24 @@ bool expression_is_last_select( expression* expr );
 /*! \brief Sets the expression signal supplemental field assigned bit if the given expression is an RHS of an assignment */
 void expression_set_assigned( expression* expr );
 
+/*! \brief Sets the left/right changed expression bits for each expression in the tree */
+void expression_set_changed( expression* expr );
+
 /*! \brief Deallocates memory used for expression. */
 void expression_dealloc( expression* expr, bool exp_only );
 
 
 /*
  $Log$
+ Revision 1.67.2.1  2008/05/07 05:22:51  phase1geo
+ Fixing reporting bug with line coverage for continuous assignments.  Updating
+ regression files and checkpointing.
+
+ Revision 1.67  2008/04/15 06:08:46  phase1geo
+ First attempt to get both instance and module coverage calculatable for
+ GUI purposes.  This is not quite complete at the moment though it does
+ compile.
+
  Revision 1.66  2008/02/09 19:32:44  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.

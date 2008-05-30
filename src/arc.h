@@ -28,120 +28,122 @@
 #include "defines.h"
 
 
-/*! \brief Returns the width of the specified arc. */
-unsigned int arc_get_width(
-  const char* arcs
-);
-
 /*! \brief Allocates and initializes new state transition array. */
-char* arc_create(
-  int width
-);
+fsm_table* arc_create();
 
 /*! \brief Adds new state transition arc entry to specified table. */
 void arc_add(
-  char**        arcs,
+  fsm_table*    table,
   const vector* fr_st,
   const vector* to_st,
   int           hit,
   bool          exclude
 );
 
-/*! \brief Gets supplemental field value from specified arc entry table. */
-unsigned int arc_get_suppl(
-  const char*  arcs,
-  unsigned int type
+/*! \brief Finds the specified FROM state in the given FSM table */
+int arc_find_from_state(
+            const fsm_table* table,
+            const vector*    st
 );
 
-/*! \brief Sets supplemental field value to specified arc entry. */
-void arc_set_entry_suppl(
-  char*        arcs,
-  int          curr,
-  unsigned int type,
-  char         val
+/*! \brief Finds the specified TO state in the given FSM table */
+int arc_find_to_state(
+            const fsm_table* table,
+            const vector*    st
 );
 
-/*! \brief Gets supplemental field value from specified arc entry. */
-int arc_get_entry_suppl(
-  const char*  arcs,
-  int          curr,
-  unsigned int type
-);
-
-/*! \brief Finds the specified state transition in the given arc array */
-int arc_find(
-  const char*   arcs,
-  const vector* from_st,
-  const vector* to_st,
-  int*          ptr
+/*! \brief Finds the specified state transition in the given FSM table */
+int arc_find_arc(
+            const fsm_table* table,
+            int              fr_index,
+            int              to_index
 );
 
 /*! \brief Calculates all state and state transition values for reporting purposes. */
 void arc_get_stats(
-  char* arcs,
-  int*  state_total,
-  int*  state_hits,
-  int*  arc_total,
-  int*  arc_hits
+            const fsm_table* table,
+  /*@out@*/ int*             state_total,
+  /*@out@*/ int*             state_hits,
+  /*@out@*/ int*             arc_total,
+  /*@out@*/ int*             arc_hits
 );
 
 /*! \brief Writes specified arc array to specified CDD file. */
 void arc_db_write(
-  const char* arcs,
-  FILE*       file
+  const fsm_table* table,
+  FILE*            file
 );
 
 /*! \brief Reads in arc array from CDD database string. */
 void arc_db_read(
-  char** arcs,
-  char** line
+  fsm_table** table,
+  char**      line
 );
 
 /*! \brief Merges contents of arc table from line to specified base array. */
 void arc_db_merge(
-  char** arcs,
-  char** line,
-  bool   same
+  fsm_table* table,
+  char**     line,
+  bool       same
 );
 
 /*! \brief Merges two FSM arcs, placing the results in the base arc. */
 void arc_merge(
-  char** base,
-  char*  other
+  fsm_table*       base,
+  const fsm_table* other
 );
 
 /*! \brief Stores arc array state values to specified string array. */
 void arc_get_states(
-  char***     states,
-  int*        state_size,
-  const char* arcs,
-  bool        hit,
-  bool        any
+  char***          fr_states,
+  int*             fr_state_size,
+  char***          to_states,
+  int*             to_state_size,
+  const fsm_table* table,
+  bool             hit,
+  bool             any
 );
 
 /*! \brief Outputs arc array state transition values to specified output stream. */
 void arc_get_transitions(
-  char***     from_states,
-  char***     to_states,
-  int**       excludes,
-  int*        arc_size,
-  const char* arcs,
-  bool        hit,
-  bool        any
+  char***          from_states,
+  char***          to_states,
+  int**            excludes,
+  int*             arc_size,
+  const fsm_table* table,
+  bool             hit,
+  bool             any
 );
 
 /*! \brief Specifies if any state transitions have been excluded from coverage. */
 bool arc_are_any_excluded(
-  const char* arcs
+  const fsm_table* table
 );
 
 /*! \brief Deallocates memory for specified arcs array. */
 void arc_dealloc(
-  /*@only@*/ char* arcs
+  /*@only@*/ fsm_table* table
 );
 
 /*
  $Log$
+ Revision 1.27.2.3  2008/05/08 23:12:41  phase1geo
+ Fixing several bugs and reworking code in arc to get FSM diagnostics
+ to pass.  Checkpointing.
+
+ Revision 1.27.2.2  2008/05/08 03:56:38  phase1geo
+ Updating regression files and reworking arc_find and arc_add functionality.
+ Checkpointing.
+
+ Revision 1.27.2.1  2008/05/02 22:06:10  phase1geo
+ Updating arc code for new data structure.  This code is completely untested
+ but does compile and has been completely rewritten.  Checkpointing.
+
+ Revision 1.27  2008/04/15 06:08:46  phase1geo
+ First attempt to get both instance and module coverage calculatable for
+ GUI purposes.  This is not quite complete at the moment though it does
+ compile.
+
  Revision 1.26  2008/02/09 19:32:44  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.

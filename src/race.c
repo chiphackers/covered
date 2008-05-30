@@ -554,9 +554,6 @@ static void race_check_one_block_assignment(
   bool       dim_be;              /* Big endianness of current dimension */
   int        dim_width;           /* Bit width of current dimension */
   int        intval;              /* Integer value */
-  vector     vec;                 /* Temporary vector used for setting assigned bits in signal */
-  vec_data*  vstart;              /* Starting address for current dimension */
-  int        vwidth;              /* Width of bit range to work within for current dimension */
 
   sigl = mod->sig_head;
   while( sigl != NULL ) {
@@ -579,18 +576,21 @@ static void race_check_one_block_assignment(
           /* If the head statement is being ignored from race condition checking, skip the rest */
           if( (curr_stmt != NULL) && (curr_stmt->suppl.part.ignore_rc == 0) ) {
 
+            vector* src;
+            int     vwidth;
+
             /* Get current dimension of the given expression */
             exp_dim = expression_get_curr_dimension( expl->exp );
   
             /* Calculate starting vector value bit and signal LSB/BE for LHS */
             if( (ESUPPL_IS_ROOT( expl->exp->suppl ) == 0) &&
                 (expl->exp->parent->expr->op == EXP_OP_DIM) && (expl->exp->parent->expr->right == expl->exp) ) {
-              vstart = expl->exp->parent->expr->left->value->value;
-              vwidth = expl->exp->parent->expr->left->value->width;
+              src    = expl->exp->parent->expr->left->value;
+              vwidth = src->width;
             } else {
               /* Get starting vector bit from signal itself */
-              vstart = sigl->sig->value->value;
-              vwidth = sigl->sig->value->width;
+              src    = sigl->sig->value;
+              vwidth = src->width;
             }
             if( sigl->sig->dim[exp_dim].lsb < sigl->sig->dim[exp_dim].msb ) {
               dim_lsb = sigl->sig->dim[exp_dim].lsb;
@@ -615,13 +615,12 @@ static void race_check_one_block_assignment(
                 if( expl->exp->left->op == EXP_OP_STATIC ) {
                   intval = (vector_to_int( expl->exp->left->value ) - dim_lsb) * dim_width;
                   if( (intval >= 0) && (intval < expl->exp->value->width) ) {
-                    vector_init( &vec, NULL, 0x0, FALSE, expl->exp->value->width, VTYPE_SIG );
                     if( dim_be ) {
-                      vec.value = vstart + (vwidth - (intval + expl->exp->value->width));
+                      int lsb = (vwidth - (intval + expl->exp->value->width));
+                      curr_race = vector_set_assigned( sigl->sig->value, ((expl->exp->value->width - 1) + lsb), lsb );
                     } else {
-                      vec.value = vstart + intval;
+                      curr_race = vector_set_assigned( sigl->sig->value, ((expl->exp->value->width - 1) + intval), intval );
                     }
-                    curr_race = vector_set_assigned( &vec, (vec.width - 1), 0 );
                   } else {
                     curr_race = FALSE;
                   }
@@ -632,13 +631,12 @@ static void race_check_one_block_assignment(
               case EXP_OP_MBIT_SEL :
                 if( (expl->exp->left->op == EXP_OP_STATIC) && (expl->exp->right->op == EXP_OP_STATIC) ) {
                   intval = ((dim_be ? vector_to_int( expl->exp->left->value ) : vector_to_int( expl->exp->right->value )) - dim_lsb) * dim_width;
-                  vector_init( &vec, NULL, 0x0, FALSE, expl->exp->value->width, VTYPE_SIG );
                   if( dim_be ) {
-                    vec.value = vstart + (vwidth - (intval + expl->exp->value->width));
+                    int lsb = (vwidth - (intval + expl->exp->value->width));
+                    curr_race = vector_set_assigned( sigl->sig->value, ((expl->exp->value->width - 1) + lsb), lsb );
                   } else {
-                    vec.value = vstart + intval;
+                    curr_race = vector_set_assigned( sigl->sig->value, ((expl->exp->value->width - 1) + intval), intval );
                   }
-                  curr_race = vector_set_assigned( &vec, (vec.width - 1), 0 );
                 } else {
                   curr_race = vector_set_assigned( sigl->sig->value, (sigl->sig->value->width - 1), 0 );
                 }
@@ -681,8 +679,10 @@ static void race_check_one_block_assignment(
                 assert( sig_stmt != -1 );
   
                 /* Check to see if current signal is also an input port */ 
-                if( (sigl->sig->suppl.part.type == SSUPPL_TYPE_INPUT) ||
-                    (sigl->sig->suppl.part.type == SSUPPL_TYPE_INOUT) || curr_race ) {
+                if( (sigl->sig->suppl.part.type == SSUPPL_TYPE_INPUT_NET) ||
+                    (sigl->sig->suppl.part.type == SSUPPL_TYPE_INPUT_REG) ||
+                    (sigl->sig->suppl.part.type == SSUPPL_TYPE_INOUT_NET) ||
+                    (sigl->sig->suppl.part.type == SSUPPL_TYPE_INOUT_REG) || curr_race ) {
                   race_handle_race_condition( expl->exp, mod, curr_stmt, NULL, RACE_TYPE_ASSIGN_IN_ONE_BLOCK2 );
                   sb[sig_stmt].remove = TRUE;
                 }
@@ -696,7 +696,7 @@ static void race_check_one_block_assignment(
               }
   
             }
-  
+
           }
 
         }
@@ -1170,6 +1170,19 @@ void race_blk_delete_list(
 
 /*
  $Log$
+ Revision 1.80.2.3  2008/05/28 22:12:31  phase1geo
+ Adding further support for 32-/64-bit support.  Checkpointing.
+
+ Revision 1.80.2.2  2008/05/23 14:50:23  phase1geo
+ Optimizing vector_op_add and vector_op_subtract algorithms.  Also fixing issue with
+ vector set bit.  Updating regressions per this change.
+
+ Revision 1.80.2.1  2008/04/23 05:20:44  phase1geo
+ Completed initial pass of code updates.  I can now begin testing...  Checkpointing.
+
+ Revision 1.80  2008/04/15 20:37:11  phase1geo
+ Fixing database array support.  Full regression passes.
+
  Revision 1.79  2008/04/08 19:50:36  phase1geo
  Removing LAST operator for PEDGE, NEDGE and AEDGE expression operations and
  replacing them with the temporary vector solution.

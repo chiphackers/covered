@@ -47,6 +47,7 @@
 #include "link.h"
 #include "obfuscate.h"
 #include "ovl.h"
+#include "sim.h"
 #include "util.h"
 #include "vector.h"
 
@@ -162,7 +163,7 @@ void fsm_create_tables(
     (void)expression_operate( curr_arc->to_state, NULL, &time );
 
     /* Set table entry in table, if possible */
-    arc_add( &(table->table), curr_arc->from_state->value, curr_arc->to_state->value, 0, table->exclude );
+    arc_add( table->table, curr_arc->from_state->value, curr_arc->to_state->value, 0, table->exclude );
 
     curr_arc = curr_arc->next;
 
@@ -262,8 +263,9 @@ void fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
           table->from_state = iexpl->exp;
         }
 
-        /* Set output expression tables to point to this FSM */
-        table->to_state->table = table;
+        /* Set input/output expression tables to point to this FSM */
+        table->from_state->table = table;
+        table->to_state->table   = table;
   
         /* Now read in set table */
         if( is_table == 1 ) {
@@ -272,7 +274,7 @@ void fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
             arc_db_read( &(table->table), line );
           } Catch_anonymous {
             fsm_dealloc( table );
-            printf( "fsm Throw C\n" );
+            // printf( "fsm Throw C\n" ); - HIT
             Throw 0;
           }
 
@@ -296,7 +298,7 @@ void fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
   } else {
 
     print_output( "Unable to parse statement line in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
-    printf( "fsm Throw E\n" );
+    // printf( "fsm Throw E\n" ); - HIT
     Throw 0;
 
   }
@@ -339,7 +341,7 @@ void fsm_db_merge(
 
     if( is_table == 1 ) {
 
-      arc_db_merge( &(base->table), line, same );
+      arc_db_merge( base->table, line, same );
           
     }
 
@@ -373,7 +375,7 @@ void fsm_merge(
 
   if( base->table != NULL ) {
     assert( other->table != NULL );
-    arc_merge( &(base->table), other->table );
+    arc_merge( base->table, other->table );
   }
 
   PROFILE_END;
@@ -381,15 +383,34 @@ void fsm_merge(
 }
 
 /*!
- \param table  Pointer to FSM structure to set a state in.
+ \param expr  Pointer to expression that contains FSM table to modify
 
  Taking the from and to state signal values, a new table entry is added
  to the specified FSM structure arc array (if an entry does not already
  exist in the array).
 */
-void fsm_table_set( fsm* table ) { PROFILE(FSM_TABLE_SET);
+void fsm_table_set(
+  expression*     expr,
+  const sim_time* time
+) { PROFILE(FSM_TABLE_SET);
 
-  arc_add( &(table->table), table->from_state->value, table->to_state->value, 1, table->exclude );
+  /* If the expression is the input state expression, make sure that the output state expression is simulated this clock period */
+  if( (expr->table->from_state->id == expr->id) && (expr->table->from_state->id != expr->table->to_state->id) ) {
+
+    sim_expr_changed( expr->table->to_state, time );
+
+  /* Otherwise, add the state/state transition */
+  } else {
+
+    /* Add the states and state transition */
+    arc_add( expr->table->table, expr->table->from_state->value, expr->table->to_state->value, 1, expr->table->exclude );
+
+    /* If from_state was not specified, we need to copy the current contents of to_state to from_state */
+    if( expr->table->from_state->id == expr->id ) {
+      vector_copy( expr->value, expr->table->from_state->value );
+    }
+
+  }
 
 }
 
@@ -611,10 +632,10 @@ bool fsm_get_coverage(
             int         funit_type,
             int         expr_id,
   /*@out@*/ int*        width,
-  /*@out@*/ char***     total_states,
-  /*@out@*/ int*        total_state_num,
-  /*@out@*/ char***     hit_states,
-  /*@out@*/ int*        hit_state_num,
+  /*@out@*/ char***     total_fr_states,
+  /*@out@*/ int*        total_fr_state_num,
+  /*@out@*/ char***     hit_fr_states,
+  /*@out@*/ int*        hit_fr_state_num,
   /*@out@*/ char***     total_from_arcs,
   /*@out@*/ char***     total_to_arcs,
   /*@out@*/ int**       excludes,
@@ -628,10 +649,14 @@ bool fsm_get_coverage(
   /*@out@*/ int*        output_size
 ) { PROFILE(FSM_GET_COVERAGE);
 
-  bool        retval = FALSE;  /* Return value for this function */
-  funit_link* funitl;          /* Pointer to found functional unit link */
-  fsm_link*   curr_fsm;        /* Pointer to current FSM link */
-  int*        tmp;             /* Temporary integer array */
+  bool        retval = FALSE;      /* Return value for this function */
+  funit_link* funitl;              /* Pointer to found functional unit link */
+  fsm_link*   curr_fsm;            /* Pointer to current FSM link */
+  int*        tmp;                 /* Temporary integer array */
+  char**      total_to_states;     /* Temporary array */
+  int         total_to_state_num;  /* Temporary size indicator */
+  char**      hit_to_states;       /* Temporary array */
+  int         hit_to_state_num;    /* Temporary size indicator */
 
   if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
 
@@ -647,8 +672,8 @@ bool fsm_get_coverage(
       *width = curr_fsm->table->to_state->value->width;
 
       /* Get state information */
-      arc_get_states( total_states, total_state_num, curr_fsm->table->table, TRUE, TRUE ); 
-      arc_get_states( hit_states,   hit_state_num,   curr_fsm->table->table, TRUE, FALSE );
+      arc_get_states( total_fr_states, total_fr_state_num, &total_to_states, &total_to_state_num, curr_fsm->table->table, TRUE, TRUE ); 
+      arc_get_states( hit_fr_states,   hit_fr_state_num,   &hit_to_states,   &hit_to_state_num,   curr_fsm->table->table, TRUE, FALSE );
 
       /* Get state transition information */
       arc_get_transitions( total_from_arcs, total_to_arcs, excludes, total_arc_num, curr_fsm->table->table, TRUE, TRUE );
@@ -661,6 +686,22 @@ bool fsm_get_coverage(
       codegen_gen_expr( curr_fsm->table->to_state, curr_fsm->table->to_state->op, output_state, output_size, NULL );
 
       retval = TRUE;
+
+      /* TBD - Deallocate unused state information */
+      if( total_to_state_num > 0 ) {
+        unsigned int i;
+        for( i=0; i<total_to_state_num; i++ ) {
+          free_safe( total_to_states[i], (strlen( total_to_states[i] ) + 1) );
+        }
+        free_safe( total_to_states, (sizeof( char* ) * total_to_state_num) );
+      }
+      if( hit_to_state_num > 0 ) {
+        unsigned int i;
+        for( i=0; i<hit_to_state_num; i++ ) {
+          free_safe( hit_to_states[i], (strlen( hit_to_states[i] ) + 1) );
+        }
+        free_safe( hit_to_states, (sizeof( char* ) * hit_to_state_num) );
+      }
 
     }
 
@@ -911,15 +952,17 @@ static void fsm_display_state_verbose(
     fsm*  table
 ) { PROFILE(FSM_DISPLAY_STATE_VERBOSE);
 
-  bool   trans_known;  /* Set to TRUE if all legal arc transitions are known */
-  char** states;       /* String array of all states */
-  int    state_size;   /* Contains the number of elements in the states array */
-  int    i;            /* Loop iterator */
+  bool   trans_unknown;  /* Set to TRUE if legal arc transitions are unknown */
+  char** fr_states;      /* String array of all from states */
+  int    fr_state_size;  /* Contains the number of elements in the fr_states array */
+  char** to_states;      /* String array of all to states */
+  int    to_state_size;  /* Contains the number of elements in the to_states array */
+  int    i;              /* Loop iterator */
 
-  /* Figure out if transitions were known */
-  trans_known = (arc_get_suppl( table->table, ARC_TRANS_KNOWN ) == 0) ? TRUE : FALSE;
+  /* Figure out if transitions were unknown */
+  trans_unknown = (table->table->suppl.part.known == 0);
 
-  if( report_covered || trans_known ) {
+  if( report_covered || trans_unknown ) {
     fprintf( ofile, "        Hit States\n\n" );
   } else {
     fprintf( ofile, "        Missed States\n\n" );
@@ -930,19 +973,25 @@ static void fsm_display_state_verbose(
   fprintf( ofile, "          ======\n" );
 
   /* Get all of the states in string form */
-  arc_get_states( &states, &state_size, table->table, (report_covered || trans_known), FALSE );
+  arc_get_states( &fr_states, &fr_state_size, &to_states, &to_state_size, table->table, (report_covered || trans_unknown), FALSE );
 
   /* Display all of the found states */
-  for( i=0; i<state_size; i++ ) {
-    fprintf( ofile, "          %u'h%s\n", arc_get_width( table->table ), states[i] );
-    free_safe( states[i], (strlen( states[i] ) + 1) );
+  for( i=0; i<fr_state_size; i++ ) {
+    fprintf( ofile, "          %s\n", fr_states[i] );
+    free_safe( fr_states[i], (strlen( fr_states[i] ) + 1) );
   }
 
   fprintf( ofile, "\n" );
 
   /* Deallocate the states array */
-  if( state_size > 0 ) {
-    free_safe( states, (sizeof( char* ) * state_size) );
+  if( fr_state_size > 0 ) {
+    free_safe( fr_states, (sizeof( char* ) * fr_state_size) );
+  }
+  if( to_state_size > 0 ) {
+    for( i=0; i<to_state_size; i++ ) {
+      free_safe( to_states[i], (strlen( to_states[i] ) + 1) );
+    }
+    free_safe( to_states, (sizeof( char* ) * to_state_size) );
   }
 
 }
@@ -975,7 +1024,7 @@ static void fsm_display_arc_verbose(
   unsigned int rv;            /* Return value from snprintf calls */
 
   /* Figure out if transactions were known */
-  trans_known = (arc_get_suppl( table->table, ARC_TRANS_KNOWN ) == 0) ? TRUE : FALSE;
+  trans_known = (table->table->suppl.part.known == 0);
 
   if( report_covered || trans_known ) {
     fprintf( ofile, "        Hit State Transitions\n\n" );
@@ -1007,9 +1056,9 @@ static void fsm_display_arc_verbose(
   rv = snprintf( fstr, 100, "          %%-%d.%ds -> %%-%d.%ds\n", width, width, width, width );
   assert( rv < 100 );
   for( i=0; i<arc_size; i++ ) {
-    rv = snprintf( tmpfst, 4096, "%u'h%s", arc_get_width( table->table ), from_states[i] );
+    rv = snprintf( tmpfst, 4096, "%s", from_states[i] );
     assert( rv < 4096 );
-    rv = snprintf( tmptst, 4096, "%u'h%s", arc_get_width( table->table ), to_states[i] );
+    rv = snprintf( tmptst, 4096, "%s", to_states[i] );
     assert( rv < 4096 );
     fprintf( ofile, fstr, tmpfst, tmptst );
     free_safe( from_states[i], (strlen( from_states[i] ) + 1) );
@@ -1323,6 +1372,21 @@ void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.95.2.3  2008/05/27 04:29:31  phase1geo
+ Fixing memory leak for an FSM arc parser error.  Adding diagnostics to regression
+ suite for coverage purposes.
+
+ Revision 1.95.2.2  2008/05/08 23:12:42  phase1geo
+ Fixing several bugs and reworking code in arc to get FSM diagnostics
+ to pass.  Checkpointing.
+
+ Revision 1.95.2.1  2008/05/02 22:06:12  phase1geo
+ Updating arc code for new data structure.  This code is completely untested
+ but does compile and has been completely rewritten.  Checkpointing.
+
+ Revision 1.95  2008/04/15 20:37:09  phase1geo
+ Fixing database array support.  Full regression passes.
+
  Revision 1.94  2008/04/15 06:08:46  phase1geo
  First attempt to get both instance and module coverage calculatable for
  GUI purposes.  This is not quite complete at the moment though it does

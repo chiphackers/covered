@@ -219,9 +219,12 @@ int funit_get_port_count( func_unit* funit ) { PROFILE(FUNIT_GET_PORT_COUNT);
 
   sigl = funit->sig_head;
   while( sigl != NULL ) {
-    if( (sigl->sig->suppl.part.type == SSUPPL_TYPE_INPUT)  ||
-        (sigl->sig->suppl.part.type == SSUPPL_TYPE_OUTPUT) ||
-        (sigl->sig->suppl.part.type == SSUPPL_TYPE_INOUT) ) {
+    if( (sigl->sig->suppl.part.type == SSUPPL_TYPE_INPUT_NET)  ||
+        (sigl->sig->suppl.part.type == SSUPPL_TYPE_INPUT_REG)  ||
+        (sigl->sig->suppl.part.type == SSUPPL_TYPE_OUTPUT_NET) ||
+        (sigl->sig->suppl.part.type == SSUPPL_TYPE_OUTPUT_REG) ||
+        (sigl->sig->suppl.part.type == SSUPPL_TYPE_INOUT_NET)  ||
+        (sigl->sig->suppl.part.type == SSUPPL_TYPE_INOUT_REG) ) {
       port_cnt++;
     }
     sigl = sigl->next;
@@ -482,7 +485,7 @@ void funit_size_elements(
         (curr_exp->exp->op != EXP_OP_FUNC_CALL) &&
         (curr_exp->exp->op != EXP_OP_PASSIGN) ) {
       expression_set_value( curr_exp->exp, curr_exp->exp->sig, funit );
-      assert( curr_exp->exp->value->value != NULL );
+      assert( curr_exp->exp->value->value.ul != NULL );
     }
     curr_exp = curr_exp->next;
   }
@@ -779,7 +782,7 @@ void funit_db_merge(
         }
       } Catch_anonymous {
         free_safe( curr_line, curr_line_size );
-        printf( "func_unit Throw D\n" );
+        // printf( "func_unit Throw D\n" ); - HIT
         Throw 0;
       }
       free_safe( curr_line, curr_line_size );
@@ -812,7 +815,7 @@ void funit_db_merge(
         }
       } Catch_anonymous {
         free_safe( curr_line, curr_line_size );
-        printf( "func_unit Throw H\n" );
+        // printf( "func_unit Throw H\n" ); - HIT
         Throw 0;
       }
       free_safe( curr_line, curr_line_size );
@@ -1057,9 +1060,12 @@ bool funit_is_top_module( func_unit* funit ) { PROFILE(FUNIT_IS_TOP_MODULE);
 
     sigl = funit->sig_head;
     while( (sigl != NULL) &&
-           (sigl->sig->suppl.part.type != SSUPPL_TYPE_INPUT) &&
-           (sigl->sig->suppl.part.type != SSUPPL_TYPE_OUTPUT) &&
-           (sigl->sig->suppl.part.type != SSUPPL_TYPE_INOUT) ) {
+           (sigl->sig->suppl.part.type != SSUPPL_TYPE_INPUT_NET)  &&
+           (sigl->sig->suppl.part.type != SSUPPL_TYPE_INPUT_REG)  &&
+           (sigl->sig->suppl.part.type != SSUPPL_TYPE_OUTPUT_NET) &&
+           (sigl->sig->suppl.part.type != SSUPPL_TYPE_OUTPUT_REG) &&
+           (sigl->sig->suppl.part.type != SSUPPL_TYPE_INOUT_NET)  &&
+           (sigl->sig->suppl.part.type != SSUPPL_TYPE_INOUT_REG) ) {
       sigl = sigl->next;
     }
 
@@ -1482,6 +1488,27 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.101.2.5  2008/05/29 06:46:25  phase1geo
+ Finishing last submission.
+
+ Revision 1.101.2.4  2008/05/28 05:57:10  phase1geo
+ Updating code to use unsigned long instead of uint32.  Checkpointing.
+
+ Revision 1.101.2.3  2008/05/26 05:42:09  phase1geo
+ Adding new error merge diagnostics to regression suite to verify missing vector_db_merge
+ error cases.  Full regression passes.
+
+ Revision 1.101.2.2  2008/05/23 14:50:22  phase1geo
+ Optimizing vector_op_add and vector_op_subtract algorithms.  Also fixing issue with
+ vector set bit.  Updating regressions per this change.
+
+ Revision 1.101.2.1  2008/04/22 23:01:43  phase1geo
+ More updates.  Completed initial pass of expr.c and fsm_arg.c.  Working
+ on memory.c.  Checkpointing.
+
+ Revision 1.101  2008/04/15 20:37:10  phase1geo
+ Fixing database array support.  Full regression passes.
+
  Revision 1.100  2008/04/15 06:08:46  phase1geo
  First attempt to get both instance and module coverage calculatable for
  GUI purposes.  This is not quite complete at the moment though it does

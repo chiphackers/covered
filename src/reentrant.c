@@ -84,38 +84,57 @@ static int reentrant_count_afu_bits( func_unit* funit ) { PROFILE(REENTRANT_COUN
 */
 static void reentrant_store_data_bits( func_unit* funit, reentrant* ren, unsigned int curr_bit ) { PROFILE(REENTRANT_STORE_DATA_BITS);
 
-  sig_link* sigl;  /* Pointer to current signal link in current functional unit */
-  exp_link* expl;  /* Pointer to current expression link in current functional unit */
-  int       i;     /* Loop iterator */
-
   if( (funit->type == FUNIT_ATASK) || (funit->type == FUNIT_AFUNCTION) || (funit->type == FUNIT_ANAMED_BLOCK) ) {
 
+    sig_link* sigl = funit->sig_head;
+    exp_link* expl = funit->exp_head;
+
     /* Walk through the signal list in the reentrant functional unit, compressing and saving vector values */
-    sigl = funit->sig_head;
     while( sigl != NULL ) {
-      for( i=0; i<sigl->sig->value->width; i++ ) {
-        ren->data[curr_bit/8] |= (sigl->sig->value->value[i].part.val.value << (curr_bit % 8));
-        curr_bit += 2;
+      switch( sigl->sig->value->suppl.part.data_type ) {
+        case VDATA_UL :
+          {
+            unsigned int i;
+            for( i=0; i<sigl->sig->value->width; i++ ) {
+              ulong* entry = sigl->sig->value->value.ul[UL_DIV(i)];
+              ren->data[curr_bit>>3] |= (((entry[VTYPE_INDEX_VAL_VALL] >> UL_MOD(i)) & 0x1) << (curr_bit & 0x7));
+              curr_bit++;
+              ren->data[curr_bit>>3] |= (((entry[VTYPE_INDEX_VAL_VALH] >> UL_MOD(i)) & 0x1) << (curr_bit & 0x7));
+              curr_bit++;
+            }
+          }
+          break;
+        default :  assert( 0 );
       }
       sigl = sigl->next;
     }
 
     /* Walk through expression list in the reentrant functional unit, compressing and saving vector and supplemental values */
-    expl = funit->exp_head;
     while( expl != NULL ) {
+      unsigned int i;
       if( (ESUPPL_OWNS_VEC( expl->exp->suppl ) == 1) && (EXPR_IS_STATIC( expl->exp ) == 0) ) {
-        for( i=0; i<expl->exp->value->width; i++ ) {
-          ren->data[curr_bit/8] |= (expl->exp->value->value[i].part.val.value << (curr_bit % 8));
-          curr_bit += 2;
+        switch( expl->exp->value->suppl.part.data_type ) {
+          case VDATA_UL :
+            {
+              for( i=0; i<expl->exp->value->width; i++ ) {
+                ulong* entry = expl->exp->value->value.ul[UL_DIV(i)];
+                ren->data[curr_bit>>3] |= (((entry[VTYPE_INDEX_VAL_VALL] >> UL_MOD(i)) & 0x1) << (curr_bit & 0x7));
+                curr_bit++;
+                ren->data[curr_bit>>3] |= (((entry[VTYPE_INDEX_VAL_VALH] >> UL_MOD(i)) & 0x1) << (curr_bit & 0x7));
+                curr_bit++;
+              }
+            }
+            break;
+          default :  assert( 0 );  break;
         }
       }
       for( i=0; i<(((ESUPPL_BITS_TO_STORE % 2) == 0) ? ESUPPL_BITS_TO_STORE : (ESUPPL_BITS_TO_STORE + 1)); i++ ) {
         switch( i ) {
-          case 0 :  ren->data[curr_bit/8] |= (expl->exp->suppl.part.left_changed  << (curr_bit % 8));  break;
-          case 1 :  ren->data[curr_bit/8] |= (expl->exp->suppl.part.right_changed << (curr_bit % 8));  break;
-          case 2 :  ren->data[curr_bit/8] |= (expl->exp->suppl.part.eval_t        << (curr_bit % 8));  break;
-          case 3 :  ren->data[curr_bit/8] |= (expl->exp->suppl.part.eval_f        << (curr_bit % 8));  break;
-          case 4 :  ren->data[curr_bit/8] |= (expl->exp->suppl.part.prev_called   << (curr_bit % 8));  break;
+          case 0 :  ren->data[curr_bit>>3] |= (expl->exp->suppl.part.left_changed  << (curr_bit & 0x7));  break;
+          case 1 :  ren->data[curr_bit>>3] |= (expl->exp->suppl.part.right_changed << (curr_bit & 0x7));  break;
+          case 2 :  ren->data[curr_bit>>3] |= (expl->exp->suppl.part.eval_t        << (curr_bit & 0x7));  break;
+          case 3 :  ren->data[curr_bit>>3] |= (expl->exp->suppl.part.eval_f        << (curr_bit & 0x7));  break;
+          case 4 :  ren->data[curr_bit>>3] |= (expl->exp->suppl.part.prev_called   << (curr_bit & 0x7));  break;
         }
         curr_bit++;
       }
@@ -147,18 +166,34 @@ static void reentrant_store_data_bits( func_unit* funit, reentrant* ren, unsigne
 */
 static void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, unsigned int curr_bit, expression* expr ) { PROFILE(REENTRANT_RESTORE_DATA_BITS);
 
-  sig_link* sigl;  /* Pointer to current signal link */
-  exp_link* expl;  /* Pointer to current expression link */
-  int       i;     /* Loop iterator */
+  int i;  /* Loop iterator */
 
   if( (funit->type == FUNIT_ATASK) || (funit->type == FUNIT_AFUNCTION) || (funit->type == FUNIT_ANAMED_BLOCK) ) {
+
+    sig_link* sigl;
+    exp_link* expl;
 
     /* Walk through each bit in the compressed data array and assign it back to its signal */
     sigl = funit->sig_head;
     while( sigl != NULL ) {
-      for( i=0; i<sigl->sig->value->width; i++ ) {
-        sigl->sig->value->value[i].part.val.value = (ren->data[curr_bit/8] >> (curr_bit % 8));
-        curr_bit += 2;
+      switch( sigl->sig->value->suppl.part.data_type ) {
+        case VDATA_UL :
+          {
+            unsigned int i;
+            for( i=0; i<sigl->sig->value->width; i++ ) {
+              ulong* entry = sigl->sig->value->value.ul[UL_DIV(i)];
+              if( UL_MOD(i) == 0 ) {
+                entry[VTYPE_INDEX_VAL_VALL] = 0;
+                entry[VTYPE_INDEX_VAL_VALH] = 0;
+              }
+              entry[VTYPE_INDEX_VAL_VALL] |= (ulong)((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << UL_MOD(i);
+              curr_bit++;
+              entry[VTYPE_INDEX_VAL_VALH] |= (ulong)((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << UL_MOD(i);
+              curr_bit++;
+            }
+          }
+          break;
+        default :  assert( 0 );  break;
       }
       sigl = sigl->next;
     }
@@ -170,19 +205,34 @@ static void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, unsig
         curr_bit += (expr->value->width * 2);
       } else {
         if( (ESUPPL_OWNS_VEC( expl->exp->suppl ) == 1) && (EXPR_IS_STATIC( expl->exp ) == 0) ) {
-          for( i=0; i<expl->exp->value->width; i++ ) {
-            expl->exp->value->value[i].part.val.value = (ren->data[curr_bit/8] >> (curr_bit % 8));
-            curr_bit += 2;
+          switch( expl->exp->value->suppl.part.data_type ) {
+            case VDATA_UL :
+              {
+                unsigned int i;
+                for( i=0; i<expl->exp->value->width; i++ ) {
+                  ulong* entry = expl->exp->value->value.ul[UL_DIV(i)];
+                  if( UL_MOD(i) == 0 ) {
+                    entry[VTYPE_INDEX_VAL_VALL] = 0;
+                    entry[VTYPE_INDEX_VAL_VALH] = 0;
+                  }
+                  entry[VTYPE_INDEX_VAL_VALL] |= (ulong)((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << UL_MOD(i);
+                  curr_bit++;
+                  entry[VTYPE_INDEX_VAL_VALH] |= (ulong)((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << UL_MOD(i);
+                  curr_bit++;
+                }
+              }
+              break;
+            default :  assert( 0 );
           }
         }
       }
       for( i=0; i<(((ESUPPL_BITS_TO_STORE % 2) == 0) ? ESUPPL_BITS_TO_STORE : (ESUPPL_BITS_TO_STORE + 1)); i++ ) {
         switch( i ) {
-          case 0 :  expl->exp->suppl.part.left_changed  = (ren->data[curr_bit/8] >> (curr_bit % 8));  break;
-          case 1 :  expl->exp->suppl.part.right_changed = (ren->data[curr_bit/8] >> (curr_bit % 8));  break;
-          case 2 :  expl->exp->suppl.part.eval_t        = (ren->data[curr_bit/8] >> (curr_bit % 8));  break;
-          case 3 :  expl->exp->suppl.part.eval_f        = (ren->data[curr_bit/8] >> (curr_bit % 8));  break;
-          case 4 :  expl->exp->suppl.part.prev_called   = (ren->data[curr_bit/8] >> (curr_bit % 8));  break;
+          case 0 :  expl->exp->suppl.part.left_changed  = (ren->data[curr_bit>>3] >> (curr_bit & 0x7));  break;
+          case 1 :  expl->exp->suppl.part.right_changed = (ren->data[curr_bit>>3] >> (curr_bit & 0x7));  break;
+          case 2 :  expl->exp->suppl.part.eval_t        = (ren->data[curr_bit>>3] >> (curr_bit & 0x7));  break;
+          case 3 :  expl->exp->suppl.part.eval_f        = (ren->data[curr_bit>>3] >> (curr_bit & 0x7));  break;
+          case 4 :  expl->exp->suppl.part.prev_called   = (ren->data[curr_bit>>3] >> (curr_bit & 0x7));  break;
         }
         curr_bit++;
       }
@@ -220,7 +270,7 @@ reentrant* reentrant_create( func_unit* funit ) { PROFILE(REENTRANT_CREATE);
   bits = reentrant_count_afu_bits( funit );
 
   /* Calculate data size */
-  data_size = ((bits % 8) == 0) ? (bits / 8) : ((bits / 8) + 1);
+  data_size = ((bits & 0x7) == 0) ? (bits >> 3) : ((bits >> 3) + 1);
 
   /* If there is data to store, allocate the needed memory and populate it */
   if( data_size > 0 ) {
@@ -282,6 +332,26 @@ void reentrant_dealloc( reentrant* ren, func_unit* funit, expression* expr ) { P
 
 /*
  $Log$
+ Revision 1.17.2.5  2008/05/29 23:04:51  phase1geo
+ Last set of submissions to get full regression passing.  Fixed a few more
+ bugs in vector.c and reentrant.c.
+
+ Revision 1.17.2.4  2008/05/28 05:57:12  phase1geo
+ Updating code to use unsigned long instead of uint32.  Checkpointing.
+
+ Revision 1.17.2.3  2008/05/09 22:07:50  phase1geo
+ Updates for VCS regressions.  Fixing some issues found in that regression
+ suite.  Checkpointing.
+
+ Revision 1.17.2.2  2008/04/25 05:22:46  phase1geo
+ Finished restructuring of vector data.  Continuing to test new code.  Checkpointing.
+
+ Revision 1.17.2.1  2008/04/23 05:20:45  phase1geo
+ Completed initial pass of code updates.  I can now begin testing...  Checkpointing.
+
+ Revision 1.17  2008/03/17 05:26:17  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.16  2008/01/16 23:10:33  phase1geo
  More splint updates.  Code is now warning/error free with current version
  of run_splint.  Still have regression issues to debug.

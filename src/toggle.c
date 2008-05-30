@@ -174,8 +174,8 @@ bool toggle_get_coverage( const char* funit_name, int funit_type, char* sig_name
       assert( sigl->sig->dim != NULL );
       *msb      = sigl->sig->dim[0].msb;
       *lsb      = sigl->sig->dim[0].lsb; 
-      *tog01    = vector_get_toggle01( sigl->sig->value->value, sigl->sig->value->width );
-      *tog10    = vector_get_toggle10( sigl->sig->value->value, sigl->sig->value->width );
+      *tog01    = vector_get_toggle01_ulong( sigl->sig->value->value.ul, sigl->sig->value->width );
+      *tog10    = vector_get_toggle10_ulong( sigl->sig->value->value.ul, sigl->sig->value->width );
       *excluded = sigl->sig->suppl.part.excluded;
     } else {
       retval = FALSE;
@@ -508,9 +508,9 @@ static void toggle_display_verbose( FILE* ofile, sig_link* sigl ) { PROFILE(TOGG
         if( (hit01 < curr_sig->sig->value->width) || (hit10 < curr_sig->sig->value->width) ) {
 
           fprintf( ofile, "      %-24s  0->1: ", pname );
-          vector_display_toggle01( curr_sig->sig->value->value, curr_sig->sig->value->width, ofile );      
+          vector_display_toggle01_ulong( curr_sig->sig->value->value.ul, curr_sig->sig->value->width, ofile );      
           fprintf( ofile, "\n      ......................... 1->0: " );
-          vector_display_toggle10( curr_sig->sig->value->value, curr_sig->sig->value->width, ofile );      
+          vector_display_toggle10_ulong( curr_sig->sig->value->value.ul, curr_sig->sig->value->width, ofile );      
           fprintf( ofile, " ...\n" );
 
         }
@@ -706,6 +706,15 @@ void toggle_report( FILE* ofile, bool verbose ) { PROFILE(TOGGLE_REPORT);
 
 /*
  $Log$
+ Revision 1.72.2.2  2008/05/28 05:57:12  phase1geo
+ Updating code to use unsigned long instead of uint32.  Checkpointing.
+
+ Revision 1.72.2.1  2008/04/23 05:20:45  phase1geo
+ Completed initial pass of code updates.  I can now begin testing...  Checkpointing.
+
+ Revision 1.72  2008/04/15 20:37:11  phase1geo
+ Fixing database array support.  Full regression passes.
+
  Revision 1.71  2008/03/17 22:02:32  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function

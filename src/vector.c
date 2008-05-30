@@ -30,7 +30,7 @@
    -# A width value which specifies the number of bits contained in the current vector.
       To get the MSB of the vector, simply add the width to the LSB and subtract one.
    -# A value array which contains the vector's current value and other coverage
-      information gained during simulation.  This array is an array of 32-bit values
+      information gained during simulation.  This array is an array of unsigned long values
       (or nibbles) whose length is determined by the width of the vector divided by four.
       We divide the width by 4 because one nibble contains all of the information for
       up to 4 bits of four-state data.  For a break-down of the bits within a nibble,
@@ -57,16 +57,23 @@
 #include "util.h"
 
 
-/*@-initsize@*/
-nibble xor_optab[OPTAB_SIZE]  = { XOR_OP_TABLE  };  /*!< XOR operation table */
-nibble and_optab[OPTAB_SIZE]  = { AND_OP_TABLE  };  /*!< AND operation table */
-nibble or_optab[OPTAB_SIZE]   = { OR_OP_TABLE   };  /*!< OR operation table */
-nibble nand_optab[OPTAB_SIZE] = { NAND_OP_TABLE };  /*!< NAND operation table */
-nibble nor_optab[OPTAB_SIZE]  = { NOR_OP_TABLE  };  /*!< NOR operation table */
-nibble nxor_optab[OPTAB_SIZE] = { NXOR_OP_TABLE };  /*!< NXOR operation table */
-/*@=initsize@*/
+/*!
+ Returns the number of unsigned long elements are required to store a vector with a bit width of width.
+*/
+#define UL_SIZE(width)      (UL_DIV((width) - 1) + 1)
 
-extern char user_msg[USER_MSG_LENGTH];
+/*! Lower mask */
+#define UL_LMASK(lsb)       (UL_SET << UL_MOD(lsb))
+
+/*! Upper mask */
+#define UL_HMASK(msb)       (UL_SET >> ((UL_BITS - 1) - UL_MOD(msb)))
+
+
+/*! Contains the structure sizes for the various vector types (vector "type" supplemental field is the index to this array */
+static const unsigned int vector_type_sizes[4] = {VTYPE_INDEX_VAL_NUM, VTYPE_INDEX_SIG_NUM, VTYPE_INDEX_EXP_NUM, VTYPE_INDEX_MEM_NUM};
+
+extern char   user_msg[USER_MSG_LENGTH];
+extern isuppl info_suppl;
 
 
 /*!
@@ -81,29 +88,45 @@ extern char user_msg[USER_MSG_LENGTH];
  and value (if value != NULL).  If value != NULL, initializes all contents 
  of value array to 0x2 (X-value).
 */
-void vector_init(
-  vector*   vec,
-  vec_data* value,
-  nibble    data,
-  bool      owns_value,
-  int       width,
-  int       type
+void vector_init_ulong(
+  vector* vec,
+  ulong** value,
+  ulong   data_l,
+  ulong   data_h,
+  bool    owns_value,
+  int     width,
+  int     type,
+  int     data_type
 ) { PROFILE(VECTOR_INIT);
 
   vec->width                = width;
   vec->suppl.all            = 0;
   vec->suppl.part.type      = type;
+  vec->suppl.part.data_type = data_type;
   vec->suppl.part.owns_data = owns_value;
-  vec->value                = value;
+  vec->value.ul             = value;
 
   if( value != NULL ) {
 
-    int i;  /* Loop iterator */
+    int    i, j;
+    int    size  = UL_SIZE(width);
+    int    num   = vector_type_sizes[type];
+    ulong  lmask = UL_HMASK(width - 1);
 
     assert( width > 0 );
 
-    for( i=0; i<width; i++ ) {
-      vec->value[i].all = data;
+    for( i=0; i<(size - 1); i++ ) {
+      vec->value.ul[i][VTYPE_INDEX_VAL_VALL] = data_l;
+      vec->value.ul[i][VTYPE_INDEX_VAL_VALH] = data_h;
+      for( j=2; j<num; j++ ) {
+        vec->value.ul[i][j] = 0x0;
+      }
+    }
+
+    vec->value.ul[i][VTYPE_INDEX_VAL_VALL] = data_l & lmask;
+    vec->value.ul[i][VTYPE_INDEX_VAL_VALH] = data_h & lmask;
+    for( j=2; j<num; j++ ) {
+      vec->value.ul[i][j] = 0x0;
     }
 
   } else {
@@ -119,6 +142,7 @@ void vector_init(
 /*!
  \param width  Bit width of this vector.
  \param type   Type of vector to create (see \ref vector_types for valid values).
+ \param size   Data type used to store vector value information
  \param data   If FALSE only initializes width but does not allocate a nibble array.
 
  \return Pointer to newly created vector.
@@ -128,21 +152,35 @@ void vector_init(
 vector* vector_create(
   int  width,
   int  type,
+  int  data_type,
   bool data
 ) { PROFILE(VECTOR_CREATE);
 
-  vector*   new_vec;       /* Pointer to newly created vector */
-  vec_data* value = NULL;  /* Temporarily stores newly created vector value */
+  vector* new_vec;       /* Pointer to newly created vector */
+  ulong** value = NULL;  /* Temporarily stores newly created vector value */
 
   assert( width > 0 );
 
   new_vec = (vector*)malloc_safe( sizeof( vector ) );
 
-  if( data == TRUE ) {
-    value = (vec_data*)malloc_safe( sizeof( vec_data ) * width );
+  switch( data_type ) {
+    case VDATA_UL :
+      {
+        ulong** value = NULL;
+        if( data == TRUE ) {
+          int          num  = vector_type_sizes[type];
+          int          size = UL_SIZE(width);
+          unsigned int i;
+          value = (ulong**)malloc_safe( sizeof( ulong* ) * size );
+          for( i=0; i<size; i++ ) {
+            value[i] = (ulong*)malloc_safe( sizeof( ulong ) * num );
+          }
+        }
+        vector_init_ulong( new_vec, value, 0x0, 0x0, (value != NULL), width, type, data_type );
+      }
+      break;
+    default :  assert( 0 );
   }
-
-  vector_init( new_vec, value, 0x0, (value != NULL), width, type );
 
   PROFILE_END;
 
@@ -161,19 +199,65 @@ void vector_copy(
   vector*       to_vec
 ) { PROFILE(VECTOR_COPY);
 
-  unsigned int i;  /* Loop iterator */
+  unsigned int i, j;  /* Loop iterators */
 
   assert( from_vec != NULL );
   assert( to_vec != NULL );
   assert( from_vec->width == to_vec->width );
+  assert( from_vec->suppl.part.data_type == to_vec->suppl.part.data_type );
 
-  /* Copy the data indication supplemental bits */
-  to_vec->suppl.part.unknown  = from_vec->suppl.part.unknown;
-  to_vec->suppl.part.not_zero = from_vec->suppl.part.not_zero;
+  switch( to_vec->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        unsigned int size      = UL_SIZE( from_vec->width );
+        unsigned int type_size = (from_vec->suppl.part.type != to_vec->suppl.part.type) ? 2 : vector_type_sizes[to_vec->suppl.part.type];
+        for( i=0; i<size; i++ ) {
+          for( j=0; j<type_size; j++ ) {
+            to_vec->value.ul[i][j] = from_vec->value.ul[i][j];
+          }
+        }
+      }
+      break;
+    default:  assert( 0 );  break;
+  }
 
-  /* Copy contents of value array */
-  for( i=0; i<from_vec->width; i++ ) {
-    to_vec->value[i] = from_vec->value[i];
+  PROFILE_END;
+
+}
+
+/*!
+ Copies the entire contents of a bit range from from_vec to to_vec,
+ aligning the stored value starting at bit 0.
+*/
+void vector_copy_range(
+  vector*       to_vec,    /*!< Vector to copy to */
+  const vector* from_vec,  /*!< Vector to copy from */
+  int           lsb        /*!< LSB of bit range to copy */
+) { PROFILE(VECTOR_COPY_RANGE);
+
+  assert( from_vec != NULL );
+  assert( to_vec != NULL );
+  assert( from_vec->suppl.part.type == to_vec->suppl.part.type );
+  assert( from_vec->suppl.part.data_type == to_vec->suppl.part.data_type );
+
+  switch( to_vec->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        unsigned int i, j;
+        for( i=0; i<to_vec->width; i++ ) {
+          unsigned int my_index     = UL_DIV(i);
+          unsigned int their_index  = UL_DIV(i + lsb);
+          unsigned int their_offset = UL_MOD(i + lsb);
+          for( j=0; j<vector_type_sizes[to_vec->suppl.part.type]; j++ ) {
+            if( UL_MOD(i) == 0 ) {
+              to_vec->value.ul[my_index][j] = 0;
+            }
+            to_vec->value.ul[my_index][j] |= (((from_vec->value.ul[their_index][j] >> their_offset) & 0x1) << i);
+          }
+        }
+      }
+      break;
+    default :  assert( 0 );  break;
   }
 
   PROFILE_END;
@@ -187,8 +271,8 @@ void vector_copy(
  Copies the contents of the from_vec to the to_vec, allocating new memory.
 */
 void vector_clone(
-            const vector*  from_vec,
-  /*@out@*/ vector**       to_vec
+            const vector* from_vec,
+  /*@out@*/ vector**      to_vec
 ) { PROFILE(VECTOR_CLONE);
 
   if( from_vec == NULL ) {
@@ -199,7 +283,7 @@ void vector_clone(
   } else {
 
     /* Create vector */
-    *to_vec = vector_create( from_vec->width, from_vec->suppl.part.type, TRUE );
+    *to_vec = vector_create( from_vec->width, from_vec->suppl.part.type, from_vec->suppl.part.data_type, TRUE );
 
     vector_copy( from_vec, *to_vec );
 
@@ -210,88 +294,21 @@ void vector_clone(
 }
 
 /*!
- \param dat0  Data nibble 0
- \param dat1  Data nibble 1
- \param dat2  Data nibble 2
- \param dat3  Data nibble 3
-
- \return Returns an unsigned integer containing the values of dat0, dat1, dat2 and dat3
-         in an encoded, packed manner.
-*/
-static unsigned int vector_nibbles_to_uint(
-  nibble dat0,
-  nibble dat1,
-  nibble dat2,
-  nibble dat3
-) { PROFILE(VECTOR_NIBBLES_TO_UINT);
-
-  unsigned int d[4];  /* Array of unsigned int format of dat0,1,2,3 */
-  unsigned int i;     /* Loop iterator */
-
-  d[0] = ((unsigned int)dat0) & 0xff;
-  d[1] = ((unsigned int)dat1) & 0xff;
-  d[2] = ((unsigned int)dat2) & 0xff;
-  d[3] = ((unsigned int)dat3) & 0xff;
-
-  for( i=0; i<4; i++ ) {
-    d[i] = ( ((d[i] & 0x03) << (i *  2)) |
-             ((d[i] & 0x04) << (i +  6)) |
-             ((d[i] & 0x08) << (i +  9)) |
-             ((d[i] & 0x10) << (i + 12)) |
-             ((d[i] & 0x20) << (i + 15)) |
-             ((d[i] & 0x40) << (i + 18)) |
-             ((d[i] & 0x80) << (i + 21)) );
-  }
-
-  PROFILE_END;
-
-  return( d[0] | d[1] | d[2] | d[3] );
-
-}
-
-/*!
- \param data  Unsigned integer value containing the data to be nibble-ized
- \param dat   Array of four nibbles to populate
-
- Decodes and unpacks the given unsigned integer value into the specified nibble array.
-*/
-static void vector_uint_to_nibbles(
-  unsigned int data,
-  nibble*      dat
-) { PROFILE(VECTOR_UINT_TO_NIBBLES);
-
-  unsigned int i;  /* Loop iterator */
-
-  for( i=0; i<4; i++ ) {
-    dat[i] = (nibble)( (((data & (0x00000003 << (i * 2))) >> ((i * 2) + 0)) |
-                        ((data & (0x00000100 << i)      ) >> (i +  6)) |
-                        ((data & (0x00001000 << i)      ) >> (i +  9)) |
-                        ((data & (0x00010000 << i)      ) >> (i + 12)) |
-                        ((data & (0x00100000 << i)      ) >> (i + 15)) |
-                        ((data & (0x01000000 << i)      ) >> (i + 18)) |
-                        ((data & (0x10000000 << i)      ) >> (i + 21))) & 0xff );
-  }
-
-  PROFILE_END;
-
-}
-
-/*!
  \param vec         Pointer to vector to display to database file.
  \param file        Pointer to coverage database file to display to.
  \param write_data  If set to TRUE, causes 4-state data bytes to be included.
+ \param net         If set to TRUE, causes default value to be written as Z instead of X.
 
  Writes the specified vector to the specified coverage database file.
 */
 void vector_db_write(
   vector* vec,
   FILE*   file,
-  bool    write_data
+  bool    write_data,
+  bool    net
 ) { PROFILE(VECTOR_DB_WRITE);
 
-  int    i;      /* Loop iterator */
   nibble mask;   /* Mask value for vector value nibbles */
-  nibble dflt;   /* Default value (based on 2 or 4 state) */
 
   assert( vec != NULL );
   assert( vec->width > 0 );
@@ -306,65 +323,48 @@ void vector_db_write(
     default        :  break;
   }
 
-  /* Calculate default value of bit */
-  dflt = (vec->suppl.part.is_2state == 1) ? 0x0 : 0x2;
-
-  /* If we will be writing Xs for our data, make sure that we set not_zero and unknown appropriately */
-  if( !write_data && (dflt == 0x2) ) {
-    vec->suppl.part.unknown  = 1;
-    vec->suppl.part.not_zero = 0;
-  }
-
   /* Output vector information to specified file */
   /*@-formatcode@*/
   fprintf( file, "%d %hhu",
     vec->width,
-    vec->suppl.all
+    (vec->suppl.all & VSUPPL_MASK)
   );
   /*@=formatcode@*/
 
   /* Only write our data if we own it */
   if( vec->suppl.part.owns_data == 1 ) {
 
-    if( vec->value == NULL ) {
-
-      /* If the vector value was NULL, output default value */
-      for( i=0; i<vec->width; i+=4 ) {
-        switch( vec->width - i ) {
-          case 0 :  break;
-          case 1 :  fprintf( file, " %x", vector_nibbles_to_uint( dflt, 0x0,  0x0,  0x0 ) );   break;
-          case 2 :  fprintf( file, " %x", vector_nibbles_to_uint( dflt, dflt, 0x0,  0x0 ) );   break;
-          case 3 :  fprintf( file, " %x", vector_nibbles_to_uint( dflt, dflt, dflt, 0x0 ) );   break;
-          default:  fprintf( file, " %x", vector_nibbles_to_uint( dflt, dflt, dflt, dflt ) );  break;
+    /* Output value based on data type */
+    switch( vec->suppl.part.data_type ) {
+      case VDATA_UL :
+        {
+          ulong        dflt_l = net ? UL_SET : 0x0;
+          ulong        dflt_h = (vec->suppl.part.is_2state == 1) ? 0x0 : UL_SET;
+          unsigned int i, j;
+          ulong        hmask  = UL_HMASK( vec->width - 1 );
+          for( i=0; i<(UL_SIZE(vec->width) - 1); i++ ) {
+            fprintf( file, " %lx", (write_data && (vec->value.ul != NULL)) ? vec->value.ul[i][VTYPE_INDEX_VAL_VALL] : dflt_l );
+            fprintf( file, " %lx", (write_data && (vec->value.ul != NULL)) ? vec->value.ul[i][VTYPE_INDEX_VAL_VALH] : dflt_h );
+            for( j=2; j<vector_type_sizes[vec->suppl.part.type]; j++ ) {
+              if( ((mask >> j) & 0x1) == 1 ) {
+                fprintf( file, " %lx", (vec->value.ul != NULL) ? vec->value.ul[i][j] : 0 );
+              } else {
+                fprintf( file, " 0" );
+              }
+            }
+          }
+          fprintf( file, " %lx", ((write_data && (vec->value.ul != NULL)) ? vec->value.ul[i][VTYPE_INDEX_VAL_VALL] : dflt_l) & hmask );
+          fprintf( file, " %lx", ((write_data && (vec->value.ul != NULL)) ? vec->value.ul[i][VTYPE_INDEX_VAL_VALH] : dflt_h) & hmask );
+          for( j=2; j<vector_type_sizes[vec->suppl.part.type]; j++ ) {
+            if( ((mask >> j) & 0x1) == 1 ) {
+              fprintf( file, " %lx", (vec->value.ul != NULL) ? (vec->value.ul[i][j] & hmask) : 0 );
+            } else {
+              fprintf( file, " 0" );
+            }
+          }
         }
-      }
-
-    } else {
-
-      for( i=0; i<vec->width; i+=4 ) {
-        switch( vec->width - i ) {
-          case 0 :  break;
-          case 1 :
-            fprintf( file, " %x", vector_nibbles_to_uint( ((vec->value[i+0].all & mask) | (write_data ? 0 : dflt)), 0, 0, 0 ) );
-            break;
-          case 2 :
-            fprintf( file, " %x", vector_nibbles_to_uint( ((vec->value[i+0].all & mask) | (write_data ? 0 : dflt)),
-                                                          ((vec->value[i+1].all & mask) | (write_data ? 0 : dflt)), 0, 0 ) );
-            break;
-          case 3 :
-            fprintf( file, " %x", vector_nibbles_to_uint( ((vec->value[i+0].all & mask) | (write_data ? 0 : dflt)), 
-                                                          ((vec->value[i+1].all & mask) | (write_data ? 0 : dflt)),
-                                                          ((vec->value[i+2].all & mask) | (write_data ? 0 : dflt)), 0 ) );
-            break;
-          default:
-            fprintf( file, " %x", vector_nibbles_to_uint( ((vec->value[i+0].all & mask) | (write_data ? 0 : dflt)), 
-                                                          ((vec->value[i+1].all & mask) | (write_data ? 0 : dflt)),
-                                                          ((vec->value[i+2].all & mask) | (write_data ? 0 : dflt)),
-                                                          ((vec->value[i+3].all & mask) | (write_data ? 0 : dflt)) ) );
-            break;
-        }
-      }
-
+        break;
+      default :  assert( 0 );  break;
     }
 
   }
@@ -387,12 +387,9 @@ void vector_db_read(
   char**   line
 ) { PROFILE(VECTOR_DB_READ);
 
-  int          width;          /* Vector bit width */
-  int          suppl;          /* Temporary supplemental value */
-  int          i;              /* Loop iterator */
-  int          chars_read;     /* Number of characters read */
-  unsigned int value;          /* Temporary value */
-  nibble       nibs[4];        /* Temporary nibble value containers */
+  int    width;       /* Vector bit width */
+  vsuppl suppl;       /* Temporary supplemental value */
+  int    chars_read;  /* Number of characters read */
 
   /* Read in vector information */
   if( sscanf( *line, "%d %d%n", &width, &suppl, &chars_read ) == 2 ) {
@@ -400,66 +397,97 @@ void vector_db_read(
     *line = *line + chars_read;
 
     /* Create new vector */
-    *vec              = vector_create( width, VTYPE_VAL, TRUE );
-    (*vec)->suppl.all = (char)suppl & 0xff;
+    *vec              = vector_create( width, suppl.part.type, suppl.part.data_type, TRUE );
+    (*vec)->suppl.all = suppl.all;
 
-    if( (*vec)->suppl.part.owns_data == 1 ) {
+    if( suppl.part.owns_data == 1 ) {
 
       Try {
 
-        i = 0;
-        while( i < width ) {
-          if( sscanf( *line, "%x%n", &value, &chars_read ) == 1 ) {
-            *line += chars_read;
-            vector_uint_to_nibbles( value, nibs );
-            switch( width - i ) {
-              case 0 :  break;
-              case 1 :
-                (*vec)->value[i+0].all = nibs[0];
-                break;
-              case 2 :
-                (*vec)->value[i+0].all = nibs[0];
-                (*vec)->value[i+1].all = nibs[1];
-                break;
-              case 3 :
-                (*vec)->value[i+0].all = nibs[0];
-                (*vec)->value[i+1].all = nibs[1];
-                (*vec)->value[i+2].all = nibs[2];
-                break;
-              default:
-                (*vec)->value[i+0].all = nibs[0];
-                (*vec)->value[i+1].all = nibs[1];
-                (*vec)->value[i+2].all = nibs[2];
-                (*vec)->value[i+3].all = nibs[3];
-                break;
+        switch( suppl.part.data_type ) {
+          case VDATA_UL :
+            {
+              unsigned int i, j;
+              for( i=0; i<=((width-1)>>(info_suppl.part.vec_ul_size+3)); i++ ) {
+                for( j=0; j<vector_type_sizes[suppl.part.type]; j++ ) {
+                  /* If the CDD vector size and our size are the same, just do a direct read */
+#if SIZEOF_LONG == 4
+                  if( info_suppl.part.vec_ul_size == 2 ) {
+#elif SIZEOF_LONG == 8
+                  if( info_suppl.part.vec_ul_size == 3 ) {
+#else
+#error "Unsupported long size"
+#endif
+                    if( sscanf( *line, "%lx%n", &((*vec)->value.ul[i][j]), &chars_read ) == 1 ) {
+                      *line += chars_read;
+                    } else {
+                      print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+                      // printf( "vector Throw A\n" ); - HIT
+                      Throw 0;
+                    }
+
+#if SIZEOF_LONG == 8
+                  /* If the CDD file size is 32-bit and we are 64-bit, store two elements to our one */
+                  } else if( info_suppl.part.vec_ul_size == 2 ) {
+                    uint32 val;
+                    if( sscanf( *line, "%x%n", &val, &chars_read ) == 1 ) {
+                      *line += chars_read;
+                      if( i == 0 ) {
+                        (*vec)->value.ul[i/2][j] = (ulong)val;
+                      } else {
+                        (*vec)->value.ul[i/2][j] |= ((ulong)val << 32);
+                      }
+                    } else {
+                      print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+                      printf( "vector Throw A.1\n" );
+                      Throw 0;
+                    }
+
+#elif SIZEOF_LONG == 4
+                  /* If the CDD file size is 64-bit and we are 32-bit, store one elements to our two */
+                  } else if( info_suppl.part.vec_ul_size == 3 ) {
+                    unsigned long long val;
+                    if( sscanf( *line, "%llx%n", &val, &chars_read ) == 1 ) {
+                      *line += chars_read;
+                      (*vec)->value.ul[(i*2)+0][j] = (ulong)(val & 0xffffffffLL);
+                      (*vec)->value.ul[(i*2)+1][j] = (ulong)((val >> 32) & 0xffffffffLL);
+                    } else {
+                      print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+                      printf( "vector Throw A.2\n" );
+                      Throw 0;
+                    }
+#endif
+                  /* Otherwise, we don't know how to convert the value, so flag an error */
+                  } else {
+                    print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+                    // printf( "vector Throw A.3\n" ); - HIT
+                    Throw 0;
+                  }
+                }
+              }
             }
-          } else {
-            print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
-            printf( "vector Throw A\n" );
-            Throw 0;
-          }
-          i += 4;
+            break;
+          default :  assert( 0 );  break;
         }
 
       } Catch_anonymous {
         vector_dealloc( *vec );
         *vec = NULL;
-        printf( "vector Throw B\n" );
+        // printf( "vector Throw B\n" ); - HIT
         Throw 0;
       }
 
     /* Otherwise, deallocate the vector data */
     } else {
 
-      free_safe( (*vec)->value, (sizeof( vec_data ) * width) );
-      (*vec)->value = NULL;
+      vector_dealloc_value( *vec );
 
     }
 
   } else {
 
     print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
-    printf( "vector Throw C\n" );
+    // printf( "vector Throw C\n" ); - HIT
     Throw 0;
 
   }
@@ -487,12 +515,9 @@ void vector_db_merge(
   bool    same
 ) { PROFILE(VECTOR_DB_MERGE);
 
-  int          width;           /* Width of read vector */
-  int          suppl;           /* Supplemental value of vector */
-  int          chars_read;      /* Number of characters read */
-  int          i;               /* Loop iterator */
-  unsigned int value;           /* Integer form of value */
-  nibble       nibs[4];         /* Temporary nibble containers */
+  int    width;       /* Width of read vector */
+  vsuppl suppl;       /* Supplemental value of vector */
+  int    chars_read;  /* Number of characters read */
 
   assert( base != NULL );
 
@@ -505,52 +530,93 @@ void vector_db_merge(
       if( same ) {
         print_output( "Attempting to merge databases derived from different designs.  Unable to merge",
                       FATAL, __FILE__, __LINE__ );
-        printf( "vector Throw D\n" );
+        // printf( "vector Throw D\n" ); - HIT
         Throw 0;
       }
 
     } else if( base->suppl.part.owns_data == 1 ) {
 
-      i = 0;
-      while( i < width ) {
-        if( sscanf( *line, "%x%n", &value, &chars_read ) == 1 ) {
-          *line += chars_read;
-          vector_uint_to_nibbles( value, nibs );
-          switch( width - i ) {
-            case 0 :  break;
-            case 1 :  
-              base->value[i+0].all = (base->value[i+0].all & (VECTOR_MERGE_MASK | 0x3)) | (nibs[0] & VECTOR_MERGE_MASK);
-              break;
-            case 2 :
-              base->value[i+0].all = (base->value[i+0].all & (VECTOR_MERGE_MASK | 0x3)) | (nibs[0] & VECTOR_MERGE_MASK);
-              base->value[i+1].all = (base->value[i+1].all & (VECTOR_MERGE_MASK | 0x3)) | (nibs[1] & VECTOR_MERGE_MASK);
-              break;
-            case 3 :
-              base->value[i+0].all = (base->value[i+0].all & (VECTOR_MERGE_MASK | 0x3)) | (nibs[0] & VECTOR_MERGE_MASK);
-              base->value[i+1].all = (base->value[i+1].all & (VECTOR_MERGE_MASK | 0x3)) | (nibs[1] & VECTOR_MERGE_MASK);
-              base->value[i+2].all = (base->value[i+2].all & (VECTOR_MERGE_MASK | 0x3)) | (nibs[2] & VECTOR_MERGE_MASK);
-              break;
-            default:
-              base->value[i+0].all = (base->value[i+0].all & (VECTOR_MERGE_MASK | 0x3)) | (nibs[0] & VECTOR_MERGE_MASK);
-              base->value[i+1].all = (base->value[i+1].all & (VECTOR_MERGE_MASK | 0x3)) | (nibs[1] & VECTOR_MERGE_MASK);
-              base->value[i+2].all = (base->value[i+2].all & (VECTOR_MERGE_MASK | 0x3)) | (nibs[2] & VECTOR_MERGE_MASK);
-              base->value[i+3].all = (base->value[i+3].all & (VECTOR_MERGE_MASK | 0x3)) | (nibs[3] & VECTOR_MERGE_MASK);
-              break;
+      switch( base->suppl.part.data_type ) {
+        case VDATA_UL :
+          {
+            unsigned int i, j;
+            for( i=0; i<=((width-1)>>(info_suppl.part.vec_ul_size+3)); i++ ) {
+              for( j=0; j<vector_type_sizes[suppl.part.type]; j++ ) {
+
+                /* If the CDD vector size and our size are the same, just do a direct read */
+#if SIZEOF_LONG == 4
+                if( info_suppl.part.vec_ul_size == 2 ) {
+#elif SIZEOF_LONG == 8
+                if( info_suppl.part.vec_ul_size == 3 ) {
+#else
+#error "Unsupported long size"
+#endif
+                  ulong val;
+                  if( sscanf( *line, "%lx%n", &val, &chars_read ) == 1 ) {
+                    *line += chars_read;
+                    if( j >= 2 ) {
+                      base->value.ul[i][j] |= val;
+                    }
+                  } else {
+                    print_output( "Unable to parse vector information in database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
+                    // printf( "vector Throw E\n" ); - HIT
+                    Throw 0;
+                  }
+
+#if SIZEOF_LONG == 8
+                /* If the CDD file size is 32-bit and we are 64-bit, store two elements to our one */
+                } else if( info_suppl.part.vec_ul_size == 2 ) {
+                  uint32 val;
+                  if( sscanf( *line, "%x%n", &val, &chars_read ) == 1 ) {
+                    *line += chars_read;
+                    if( j >= 2 ) {
+                      if( i == 0 ) {
+                        base->value.ul[i/2][j] = (ulong)val;
+                      } else {
+                        base->value.ul[i/2][j] |= ((ulong)val << 32);
+                      }
+                    }
+                  } else {
+                    print_output( "Unable to parse vector information in database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
+                    printf( "vector Throw E.1\n" );
+                    Throw 0;
+                  }
+
+#elif SIZEOF_LONG == 4
+                /* If the CDD file size is 64-bit and we are 32-bit, store one elements to our two */
+                } else if( info_suppl.part.vec_ul_size == 3 ) {
+                  unsigned long long val;
+                  if( sscanf( *line, "%llx%n", &val, &chars_read ) == 1 ) {
+                    *line += chars_read;
+                    if( j >= 2 ) {
+                      base->value.ul[(i*2)+0][j] = (ulong)(val & 0xffffffffLL);
+                      base->value.ul[(i*2)+1][j] = (ulong)((val >> 32) & 0xffffffffLL);
+                    }
+                  } else {
+                    print_output( "Unable to parse vector information in database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
+                    printf( "vector Throw E.2\n" );
+                    Throw 0;
+                  }
+#endif
+                /* Otherwise, we don't know how to convert the value, so flag an error */
+                } else {
+                  print_output( "Unable to parse vector information in database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
+                  // printf( "vector Throw E.3\n" ); - HIT
+                  Throw 0;
+                }
+              }
+            }
           }
-        } else {
-          print_output( "Unable to parse vector line from database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
-          printf( "vector Throw E\n" );
-          Throw 0;
-        }
-        i += 4;
+          break;
+        default :  assert( 0 );  break;
       }
-                       
+
     }
 
   } else {
 
     print_output( "Unable to parse vector line from database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
-    printf( "vector Throw F\n" );
+    // printf( "vector Throw F\n" ); - HIT
     Throw 0;
 
   }
@@ -568,16 +634,221 @@ void vector_merge(
   vector* other  /*!< Vector which will merge its results into the base vector */
 ) { PROFILE(VECTOR_MERGE);
 
-  int i;  /* Loop iterator */
+  unsigned int i, j;  /* Loop iterator */
 
   assert( base != NULL );
   assert( base->width == other->width );
 
-  for( i=0; i<base->width; i++ ) {
-    base->value[i].all = (base->value[i].all & VECTOR_MERGE_MASK) | (other->value[i].all & VECTOR_MERGE_MASK);
+  switch( base->suppl.part.data_type ) {
+    case VDATA_UL :
+      for( i=0; i<UL_SIZE(base->width); i++ ) {
+        for( j=2; j<vector_type_sizes[base->suppl.part.type]; j++ ) {
+          base->value.ul[i][j] |= other->value.ul[i][j];
+        }
+      }
+      break;
+    default :  assert( 0 );  break;
   }
 
   PROFILE_END;
+
+}
+
+/*!
+ \return Returns eval_a coverage information for specified vector and bit position.
+*/
+int vector_get_eval_a(
+  vector* vec,   /*!< Pointer to vector to get eval_a information from */
+  int     index  /*!< Index to retrieve bit from */
+) { PROFILE(VECTOR_GET_EVAL_A);
+
+  int retval;  /* Return value for this function */
+
+  assert( vec != NULL );
+  assert( vec->suppl.part.type == VTYPE_EXP );
+
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_UL :  retval = (vec->value.ul[UL_DIV(index)][VTYPE_INDEX_EXP_EVAL_A] >> UL_MOD(index)) & 0x1;  break;
+    default       :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns eval_b coverage information for specified vector and bit position.
+*/
+int vector_get_eval_b(
+  vector* vec,   /*!< Pointer to vector to get eval_b information from */
+  int     index  /*!< Index to retrieve bit from */
+) { PROFILE(VECTOR_GET_EVAL_B);
+
+  int retval;  /* Return value for this function */
+
+  assert( vec != NULL );
+  assert( vec->suppl.part.type == VTYPE_EXP );
+
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_UL :  retval = (vec->value.ul[UL_DIV(index)][VTYPE_INDEX_EXP_EVAL_B] >> UL_MOD(index)) & 0x1;  break;
+    default       :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns eval_c coverage information for specified vector and bit position.
+*/
+int vector_get_eval_c(
+  vector* vec,   /*!< Pointer to vector to get eval_c information from */
+  int     index  /*!< Index to retrieve bit from */
+) { PROFILE(VECTOR_GET_EVAL_C);
+
+  int retval;  /* Return value for this function */
+
+  assert( vec != NULL );
+  assert( vec->suppl.part.type == VTYPE_EXP );
+
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_UL :  retval = (vec->value.ul[UL_DIV(index)][VTYPE_INDEX_EXP_EVAL_C] >> UL_MOD(index)) & 0x1;  break;
+    default       :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns eval_a coverage information for specified vector and bit position.
+*/
+int vector_get_eval_d(
+  vector* vec,   /*!< Pointer to vector to get eval_d information from */
+  int     index  /*!< Index to retrieve bit from */
+) { PROFILE(VECTOR_GET_EVAL_D);
+
+  int retval;  /* Return value for this function */
+
+  assert( vec != NULL );
+  assert( vec->suppl.part.type == VTYPE_EXP );
+
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_UL :  retval = (vec->value.ul[UL_DIV(index)][VTYPE_INDEX_EXP_EVAL_D] >> UL_MOD(index)) & 0x1;  break;
+    default       :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \param vec  Pointer to vector to count eval_a/b bits in
+
+ \return Returns the number of eval_a/b bits are set in the given vector.
+*/
+int vector_get_eval_ab_count(
+  vector* vec
+) { PROFILE(VECTOR_GET_EVAL_AB_COUNT);
+
+  int          count = 0;  /* Number of EVAL_A/B bits set */
+  unsigned int i, j;       /* Loop iterators */
+
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_UL :
+      for( i=0; i<UL_SIZE( vec->width ); i++ ) {
+        ulong value_a = vec->value.ul[i][VTYPE_INDEX_EXP_EVAL_A];
+        ulong value_b = vec->value.ul[i][VTYPE_INDEX_EXP_EVAL_B];
+        for( j=0; j<UL_BITS; j++ ) {
+          count += (value_a >> j) & 0x1;
+          count += (value_b >> j) & 0x1;
+        }
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( count );
+
+}
+
+/*!
+ \param vec  Pointer to vector to count eval_a/b/c bits in
+
+ \return Returns the number of eval_a/b/c bits are set in the given vector.
+*/
+int vector_get_eval_abc_count(
+  vector* vec
+) { PROFILE(VECTOR_GET_EVAL_ABC_COUNT);
+
+  int          count = 0;  /* Number of EVAL_A/B/C bits set */
+  unsigned int i, j;       /* Loop iterators */
+
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_UL :
+      for( i=0; i<UL_SIZE( vec->width ); i++ ) {
+        ulong value_a = vec->value.ul[i][VTYPE_INDEX_EXP_EVAL_A]; 
+        ulong value_b = vec->value.ul[i][VTYPE_INDEX_EXP_EVAL_B]; 
+        ulong value_c = vec->value.ul[i][VTYPE_INDEX_EXP_EVAL_C]; 
+        for( j=0; j<UL_BITS; j++ ) {
+          count += (value_a >> j) & 0x1;
+          count += (value_b >> j) & 0x1;
+          count += (value_c >> j) & 0x1;
+        }
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+  
+  PROFILE_END;
+
+  return( count );
+
+}
+
+/*!
+ \param vec  Pointer to vector to count eval_a/b/c/d bits in
+
+ \return Returns the number of eval_a/b/c/d bits are set in the given vector.
+*/
+int vector_get_eval_abcd_count(
+  vector* vec
+) { PROFILE(VECTOR_GET_EVAL_ABCD_COUNT);
+
+  int          count = 0;  /* Number of EVAL_A/B/C/D bits set */
+  unsigned int i, j;       /* Loop iterators */
+
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_UL :
+      for( i=0; i<UL_SIZE( vec->width ); i++ ) {
+        ulong value_a = vec->value.ul[i][VTYPE_INDEX_EXP_EVAL_A]; 
+        ulong value_b = vec->value.ul[i][VTYPE_INDEX_EXP_EVAL_B]; 
+        ulong value_c = vec->value.ul[i][VTYPE_INDEX_EXP_EVAL_C]; 
+        ulong value_d = vec->value.ul[i][VTYPE_INDEX_EXP_EVAL_D]; 
+        for( j=0; j<UL_BITS; j++ ) {
+          count += (value_a >> j) & 0x1;
+          count += (value_b >> j) & 0x1;
+          count += (value_c >> j) & 0x1;
+          count += (value_d >> j) & 0x1;
+        }
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+  
+  PROFILE_END;
+
+  return( count );
 
 }
 
@@ -587,21 +858,25 @@ void vector_merge(
 
  \return Returns a string showing the toggle 0 -> 1 information.
 */
-char* vector_get_toggle01(
-  vec_data* nib,
-  int       width
-) { PROFILE(VECTOR_GET_TOGGLE01);
+char* vector_get_toggle01_ulong(
+  ulong** value,
+  int     width
+) { PROFILE(VECTOR_GET_TOGGLE01_ULONG);
 
-  char* bits = (char*)malloc_safe( width + 1 );
-  int   i;
+  char* bits      = (char*)malloc_safe( width + 1 );
+  int   bits_left = UL_MOD(width - 1);
+  int   i, j;
   char  tmp[2];
 
-  for( i=(width - 1); i>=0; i-- ) {
-    /*@-formatcode@*/
-    unsigned int rv = snprintf( tmp, 2, "%hhx", nib[i].part.sig.tog01 );
-    /*@=formatcode@*/
-    assert( rv < 2 );
-    bits[((width - 1) - i)] = tmp[0];
+  for( i=UL_SIZE(width); i--; ) {
+    for( j=bits_left; j>=0; j-- ) {
+      /*@-formatcode@*/
+      unsigned int rv = snprintf( tmp, 2, "%hhx", (unsigned char)((value[i][VTYPE_INDEX_SIG_TOG01] >> j) & 0x1) );
+      /*@=formatcode@*/
+      assert( rv < 2 );
+      bits[((width - 1) - i)] = tmp[0];
+    }
+    bits_left = UL_BITS - 1;
   }
 
   bits[width] = '\0';
@@ -618,23 +893,27 @@ char* vector_get_toggle01(
 
  \return Returns a string showing the toggle 1 -> 0 information.
 */
-char* vector_get_toggle10(
-  vec_data* nib,
-  int       width
-) { PROFILE(VECTOR_GET_TOGGLE10);
+char* vector_get_toggle10_ulong(
+  ulong** value,
+  int     width
+) { PROFILE(VECTOR_GET_TOGGLE10_ULONG);
 
-  char* bits = (char*)malloc_safe( width + 1 );
-  int   i; 
+  char* bits      = (char*)malloc_safe( width + 1 );
+  int   bits_left = UL_MOD(width - 1);
+  int   i, j;
   char  tmp[2];
-
-  for( i=(width - 1); i>=0; i-- ) {
-    /*@-formatcode@*/
-    unsigned int rv = snprintf( tmp, 2, "%hhx", nib[i].part.sig.tog10 );
-    /*@=formatcode@*/
-    assert( rv < 2 );
-    bits[((width - 1) - i)] = tmp[0];
-  }
-
+  
+  for( i=UL_SIZE(width); i--; ) {
+    for( j=bits_left; j>=0; j-- ) {
+      /*@-formatcode@*/ 
+      unsigned int rv = snprintf( tmp, 2, "%hhx", (unsigned char)((value[i][VTYPE_INDEX_SIG_TOG10] >> j) & 0x1) );
+      /*@=formatcode@*/ 
+      assert( rv < 2 );
+      bits[((width - 1) - i)] = tmp[0];
+    } 
+    bits_left = UL_BITS - 1;
+  } 
+  
   bits[width] = '\0';
 
   PROFILE_END;
@@ -651,26 +930,30 @@ char* vector_get_toggle10(
  Displays the toggle01 information from the specified vector to the output
  stream specified in ofile.
 */
-void vector_display_toggle01(
-  vec_data* nib,
-  int       width,
-  FILE*     ofile
-) { PROFILE(VECTOR_DISPLAY_TOGGLE01);
+void vector_display_toggle01_ulong(
+  ulong** value,
+  int     width,
+  FILE*    ofile
+) { PROFILE(VECTOR_DISPLAY_TOGGLE01_ULONG);
 
-  unsigned int value = 0;  /* Current 4-bit hexidecimal value of toggle */
-  int          i;          /* Loop iterator */
+  unsigned int nib       = 0;
+  int          i, j;
+  int          bits_left = UL_MOD(width - 1);
 
   fprintf( ofile, "%d'h", width );
 
-  for( i=(width - 1); i>=0; i-- ) {
-    value = value | (nib[i].part.sig.tog01 << ((unsigned)i % 4));
-    if( (i % 4) == 0 ) {
-      fprintf( ofile, "%1x", value );
-      value = 0;
+  for( i=UL_SIZE(width); i--; ) {
+    for( j=bits_left; j>=0; j-- ) {
+      nib |= (((value[i][VTYPE_INDEX_SIG_TOG01] >> j) & 0x1) << ((unsigned)j % 4));
+      if( (j % 4) == 0 ) {
+        fprintf( ofile, "%1x", nib );
+        nib = 0;
+      }
+      if( ((j % 16) == 0) && ((j != 0) || (i != 0)) ) {
+        fprintf( ofile, "_" );
+      }
     }
-    if( ((i % 16) == 0) && (i != 0) ) {
-      fprintf( ofile, "_" );
-    }
+    bits_left = (UL_BITS - 1);
   }
 
   PROFILE_END;
@@ -685,26 +968,30 @@ void vector_display_toggle01(
  Displays the toggle10 information from the specified vector to the output
  stream specified in ofile.
 */
-void vector_display_toggle10(
-  vec_data* nib,
-  int       width,
-  FILE*     ofile
-) { PROFILE(VECTOR_DISPLAY_TOGGLE10);
+void vector_display_toggle10_ulong(
+  ulong** value,
+  int     width,
+  FILE*    ofile
+) { PROFILE(VECTOR_DISPLAY_TOGGLE10_ULONG);
 
-  unsigned int value = 0;  /* Current 4-bit hexidecimal value of toggle */
-  int          i;          /* Loop iterator */
-
+  unsigned int nib       = 0;
+  int          i, j;
+  int          bits_left = UL_MOD(width - 1);
+  
   fprintf( ofile, "%d'h", width );
-
-  for( i=(width - 1); i>=0; i-- ) {
-    value = value | (nib[i].part.sig.tog10 << ((unsigned)i % 4));
-    if( (i % 4) == 0 ) {
-      fprintf( ofile, "%1x", value );
-      value = 0;
-    }
-    if( ((i % 16) == 0) && (i != 0) ) {
-      fprintf( ofile, "_" );
-    }
+      
+  for( i=UL_SIZE(width); i--; ) {
+    for( j=bits_left; j>=0; j-- ) {
+      nib |= (((value[i][VTYPE_INDEX_SIG_TOG10] >> j) & 0x1) << ((unsigned)j % 4));
+      if( (j % 4) == 0 ) {
+        fprintf( ofile, "%1x", nib );
+        nib = 0;
+      }
+      if( ((j % 16) == 0) && ((j != 0) || (i != 0)) ) {
+        fprintf( ofile, "_" );
+      }
+    } 
+    bits_left = (UL_BITS - 1);
   }
 
   PROFILE_END;
@@ -717,23 +1004,29 @@ void vector_display_toggle10(
 
  Displays the binary value of the specified vector data array to standard output.
 */
-void vector_display_value(
-  vec_data* nib,
-  int       width
+void vector_display_value_ulong(
+  ulong** value,
+  int     width
 ) {
 
-  int i;  /* Loop iterator */
+  int i, j;  /* Loop iterator */
+  int bits_left = UL_MOD(width - 1);
 
   printf( "value: %d'b", width );
 
-  for( i=(width - 1); i>=0; i-- ) {
-    switch( nib[i].part.val.value ) {
-      case 0 :  printf( "0" );  break;
-      case 1 :  printf( "1" );  break;
-      case 2 :  printf( "x" );  break;
-      case 3 :  printf( "z" );  break;
-      default:  break;
+  for( i=UL_SIZE(width); i--; ) {
+    for( j=bits_left; j>=0; j-- ) {
+      if( ((value[i][VTYPE_INDEX_VAL_VALH] >> j) & 0x1) == 0 ) {
+        printf( "%d", ((value[i][VTYPE_INDEX_VAL_VALL] >> j) & 0x1) );
+      } else {
+        if( ((value[i][VTYPE_INDEX_VAL_VALL] >> j) & 0x1) == 0 ) {
+          printf( "x" );
+        } else {
+          printf( "z" );
+        }
+      }
     }
+    bits_left = (UL_BITS - 1);
   }
 
 }
@@ -746,26 +1039,25 @@ void vector_display_value(
  Outputs the specified nibble array to standard output as described by the
  width parameter.
 */
-void vector_display_nibble(
-  vec_data* nib,
-  int       width,
-  int       type
+void vector_display_nibble_ulong(
+  ulong** value,
+  int     width,
+  int      type
 ) {
 
-  int i;  /* Loop iterator */
+  int i, j;  /* Loop iterator */
 
-  printf( "\n" );
-  printf( "      raw value:" );
-  
-  for( i=(width - 1); i>=0; i-- ) {
-    /*@-formatcode@*/
-    printf( " %hhx", nib[i].all );
-    /*@=formatcode@*/
+  for( i=0; i<vector_type_sizes[type]; i++ ) {
+    for( j=UL_SIZE(width); j--; ) {
+      /*@-formatcode@*/
+      printf( " %lx", value[j][i] );
+      /*@=formatcode@*/
+    }
   }
 
   /* Display nibble value */
   printf( ", " );
-  vector_display_value( nib, width );
+  vector_display_value_ulong( value, width );
 
   switch( type ) {
 
@@ -773,61 +1065,63 @@ void vector_display_nibble(
 
       /* Display nibble toggle01 history */
       printf( ", 0->1: " );
-      vector_display_toggle01( nib, width, stdout );
+      vector_display_toggle01_ulong( value, width, stdout );
 
       /* Display nibble toggle10 history */
       printf( ", 1->0: " );
-      vector_display_toggle10( nib, width, stdout );
-
-      /* Display bit set information */
-      printf( ", set: %d'b", width );
-      for( i=(width - 1); i>=0; i-- ) {
-        /*@-formatcode@*/
-        printf( "%hhu", nib[i].part.sig.set );
-        /*@=formatcode@*/
-      }
+      vector_display_toggle10_ulong( value, width, stdout );
 
       break;
 
     case VTYPE_EXP :
 
       /* Display eval_a information */
-      printf( ", a: %d'b", width );
-      for( i=(width - 1); i>=0; i-- ) {
+      printf( ", a: %d'h", width );
+      for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
-        printf( "%hhu", nib[i].part.exp.eval_a );
+#if SIZEOF_LONG == 4
+        printf( "%08lx", value[i][VTYPE_INDEX_EXP_EVAL_A] );
+#elif SIZEOF_LONG == 8
+        printf( "%016lx", value[i][VTYPE_INDEX_EXP_EVAL_A] );
+#else
+#error "Unsupported long size"
+#endif
         /*@=formatcode@*/
       }
 
       /* Display eval_b information */
-      printf( ", b: %d'b", width );
-      for( i=(width - 1); i>=0; i-- ) {
+      printf( ", b: %d'h", width );
+      for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
-        printf( "%hhu", nib[i].part.exp.eval_b );
+#if SIZEOF_LONG == 4
+        printf( "%08lx", value[i][VTYPE_INDEX_EXP_EVAL_B] );
+#elif SIZEOF_LONG == 8
+        printf( "%016lx", value[i][VTYPE_INDEX_EXP_EVAL_B] );
+#endif
         /*@=formatcode@*/
       }
 
       /* Display eval_c information */
-      printf( ", c: %d'b", width );
-      for( i=(width - 1); i>=0; i-- ) {
+      printf( ", c: %d'h", width );
+      for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
-        printf( "%hhu", nib[i].part.exp.eval_c );
+#if SIZEOF_LONG == 4
+        printf( "%08lx", value[i][VTYPE_INDEX_EXP_EVAL_C] );
+#elif SIZEOF_LONG == 8
+        printf( "%016lx", value[i][VTYPE_INDEX_EXP_EVAL_C] );
+#endif
         /*@=formatcode@*/
       }
 
       /* Display eval_d information */
-      printf( ", d: %d'b", width );
-      for( i=(width - 1); i>=0; i-- ) {
+      printf( ", d: %d'h", width );
+      for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
-        printf( "%hhu", nib[i].part.exp.eval_d );
-        /*@=formatcode@*/
-      }
-
-      /* Display set information */
-      printf( ", set: %d'b", width );
-      for( i=(width - 1); i>=0; i-- ) {
-        /*@-formatcode@*/
-        printf( "%hhu", nib[i].part.exp.set );
+#if SIZEOF_LONG == 4
+        printf( "%08lx", value[i][VTYPE_INDEX_EXP_EVAL_D] );
+#elif SIZEOF_LONG == 8
+        printf( "%016lx", value[i][VTYPE_INDEX_EXP_EVAL_D] );
+#endif
         /*@=formatcode@*/
       }
 
@@ -837,25 +1131,33 @@ void vector_display_nibble(
   
       /* Display nibble toggle01 history */
       printf( ", 0->1: " );
-      vector_display_toggle01( nib, width, stdout );
+      vector_display_toggle01_ulong( value, width, stdout );
 
       /* Display nibble toggle10 history */
       printf( ", 1->0: " );
-      vector_display_toggle10( nib, width, stdout );
+      vector_display_toggle10_ulong( value, width, stdout );
 
       /* Write history */
-      printf( ", wr: %d'b", width );
-      for( i=(width - 1); i>=0; i-- ) {
+      printf( ", wr: %d'h", width );
+      for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
-        printf( "%hhu", nib[i].part.mem.wr );
+#if SIZEOF_LONG == 4
+        printf( "%08lx", value[i][VTYPE_INDEX_MEM_WR] );
+#elif SIZEOF_LONG == 8
+        printf( "%016lx", value[i][VTYPE_INDEX_MEM_WR] );
+#endif
         /*@=formatcode@*/
       }
 
       /* Read history */
-      printf( ", rd: %d'b", width );
-      for( i=(width - 1); i>=0; i-- ) {
+      printf( ", rd: %d'h", width );
+      for( i=UL_SIZE(width); i--; ) {
         /*@-formatcode@*/
-        printf( "%hhu", nib[i].part.mem.rd );
+#if SIZEOF_LONG == 4
+        printf( "%08lx", value[i][VTYPE_INDEX_MEM_RD] );
+#elif SIZEOF_LONG == 8
+        printf( "%016lx", value[i][VTYPE_INDEX_MEM_RD] );
+#endif
         /*@=formatcode@*/
       }
 
@@ -882,8 +1184,11 @@ void vector_display(
   printf( "Vector (%p) => width: %d, suppl: %hhx\n", vec, vec->width, vec->suppl.all );
   /*@=formatcode@*/
 
-  if( (vec->width > 0) && (vec->value != NULL) ) {
-    vector_display_nibble( vec->value, vec->width, vec->suppl.part.type );
+  if( (vec->width > 0) && (vec->value.ul != NULL) ) {
+    switch( vec->suppl.part.data_type ) {
+      case VDATA_UL :  vector_display_nibble_ulong( vec->value.ul, vec->width, vec->suppl.part.type );  break;
+      default       :  assert( 0 );  break;
+    }
   } else {
     printf( "NO DATA" );
   }
@@ -907,13 +1212,20 @@ void vector_toggle_count(
   int*    tog10_cnt
 ) { PROFILE(VECTOR_TOGGLE_COUNT);
 
-  int i;  /* Loop iterator */
-
   if( (vec->suppl.part.type == VTYPE_SIG) || (vec->suppl.part.type == VTYPE_MEM) ) {
 
-    for( i=0; i<vec->width; i++ ) {
-      *tog01_cnt = *tog01_cnt + vec->value[i].part.sig.tog01;
-      *tog10_cnt = *tog10_cnt + vec->value[i].part.sig.tog10;
+    unsigned int i, j;
+
+    switch( vec->suppl.part.data_type ) {
+      case VDATA_UL :
+        for( i=0; i<UL_SIZE(vec->width); i++ ) {
+          for( j=0; j<UL_BITS; j++ ) {
+            *tog01_cnt += ((vec->value.ul[i][VTYPE_INDEX_SIG_TOG01] >> j) & 0x1);
+            *tog10_cnt += ((vec->value.ul[i][VTYPE_INDEX_SIG_TOG10] >> j) & 0x1);
+          }
+        }
+        break;
+      default :  assert( 0 );  break;
     }
 
   }
@@ -932,15 +1244,34 @@ void vector_toggle_count(
 */
 void vector_mem_rw_count(
   vector* vec,
+  int     lsb,
+  int     msb,
   int*    wr_cnt,
   int*    rd_cnt
 ) { PROFILE(VECTOR_MEM_RW_COUNT);
 
-  int i;  /* Loop iterator */
+  unsigned int i, j;  /* Loop iterator */
 
-  for( i=0; i<vec->width; i++ ) {
-    *wr_cnt += vec->value[i].part.mem.wr;
-    *rd_cnt += vec->value[i].part.mem.rd;
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_UL :
+      { 
+        ulong lmask = UL_LMASK(lsb);
+        ulong hmask = UL_HMASK(msb);
+        if( UL_DIV(lsb) == UL_DIV(msb) ) {
+          lmask &= hmask;
+        }
+        for( i=UL_DIV(lsb); i<=UL_DIV(msb); i++ ) {
+          ulong mask = (i == UL_DIV(lsb)) ? lmask : ((i == UL_DIV(msb)) ? hmask : UL_SET);
+          ulong wr   = vec->value.ul[i][VTYPE_INDEX_MEM_WR] & mask;
+          ulong rd   = vec->value.ul[i][VTYPE_INDEX_MEM_RD] & mask;
+          for( j=0; j<UL_BITS; j++ ) {
+            *wr_cnt += (wr >> j) & 0x1;
+            *rd_cnt += (rd >> j) & 0x1;
+          }
+        }
+      }
+      break;
+    default :  assert( 0 );  break;
   }
 
   PROFILE_END;
@@ -960,22 +1291,40 @@ void vector_mem_rw_count(
 */
 bool vector_set_assigned(
   vector* vec,
-  int msb,
-  int lsb
+  int     msb,
+  int     lsb
 ) { PROFILE(VECTOR_SET_ASSIGNED);
 
   bool prev_assigned = FALSE;  /* Specifies if any set bit was previously set */
-  int  i;                      /* Loop iterator */
 
   assert( vec != NULL );
   assert( (msb - lsb) < vec->width );
   assert( vec->suppl.part.type == VTYPE_SIG );
 
-  for( i=lsb; i<=msb; i++ ) {
-    if( vec->value[i].part.sig.misc == 1 ) {
-      prev_assigned = TRUE;
-    }
-    vec->value[i].part.sig.misc = 1;
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        ulong        lmask     = UL_LMASK(lsb);
+        ulong        hmask     = UL_HMASK(msb);
+        unsigned int i         = UL_DIV(lsb);
+        unsigned int msb_index = UL_DIV(msb);
+        if( i == msb_index ) {
+          lmask &= hmask;
+          prev_assigned = ((vec->value.ul[i][VTYPE_INDEX_SIG_MISC] & lmask) != 0);
+          vec->value.ul[i][VTYPE_INDEX_SIG_MISC] |= lmask;
+        } else {
+          prev_assigned |= ((vec->value.ul[i][VTYPE_INDEX_SIG_MISC] & lmask) != 0);
+          vec->value.ul[i][VTYPE_INDEX_SIG_MISC] |= lmask;
+          for( i++; i<msb_index; i++ ) {
+            prev_assigned = (vec->value.ul[i][VTYPE_INDEX_SIG_MISC] != 0);
+            vec->value.ul[i][VTYPE_INDEX_SIG_MISC] |= UL_SET;
+          }
+          prev_assigned |= ((vec->value.ul[i][VTYPE_INDEX_SIG_MISC] & hmask) != 0);
+          vec->value.ul[i][VTYPE_INDEX_SIG_MISC] |= hmask;
+        }
+      }
+      break;
+    default :  assert( 0 );  break;
   }
 
   PROFILE_END;
@@ -985,187 +1334,104 @@ bool vector_set_assigned(
 }
 
 /*!
- \param vec       Pointer to vector to set value to.
- \param value     New value to set vector value to.
- \param width     Width of new value.
- \param from_idx  Starting bit index of value to start copying.
- \param to_idx    Starting bit index of value to copy to.
+ \param vec  Pointer to vector to calculate coverage metrics for and perform scratch -> actual assignment
+ \param scratchl  Pointer to scratch array containing new lower data
+ \param scratchh  Pointer to scratch array containing new upper data
+ \param lsb  Least-significant bit to get coverage for
+ \param msb  Most-significant bit to get coverage for
 
- \return Returns TRUE if assignment was performed; otherwise, returns FALSE.
+ \return Returns TRUE if the assigned value has changed; otherwise, returns FALSE.
 
- Allows the calling function to set any bit vector within the vector
- range.  If the vector value has never been set, sets
- the value to the new value and returns.  If the vector value has previously
- been set, checks to see if new vector bits have toggled, sets appropriate
- toggle values, sets the new value to this value and returns.
+ This function is called after a value has been stored in the SCRATCH arrays.  This
+ function calculates the vector coverage information based on the vector type and performs the assignment
+ from the SCRATCH array to the 
 */
-bool vector_set_value(
-  vector*   vec,
-  vec_data* value,
-  int       width,
-  int       from_idx,
-  int       to_idx
-) { PROFILE(VECTOR_SET_VALUE);
+bool vector_set_coverage_and_assign_ulong(
+  vector*      vec,
+  const ulong* scratchl,
+  const ulong* scratchh,
+  int          lsb,
+  int          msb
+) { PROFILE(VECTOR_SET_COVERAGE_AND_ASSIGN);
 
-  bool      retval = FALSE;  /* Return value for this function */
-  nibble    from_val;        /* Current bit value of value being assigned */
-  nibble    to_val;          /* Current bit value of previous value */
-  int       i;               /* Loop iterator */
-  vec_data  set_val;         /* Value to set current vec value to */
-  vec_data* vval;            /* Pointer to vector value array */
-  nibble    v2st;            /* Value to AND with from value bit if the target is a 2-state value */
-  nibble    ored = 0;        /* Stored valued in vector OR'ed */
+  bool         changed = FALSE;          /* Set to TRUE if the assigned value has changed */
+  unsigned int lindex  = UL_DIV(lsb);    /* Index of lowest array entry */
+  unsigned int hindex  = UL_DIV(msb);    /* Index of highest array entry */
+  ulong        lmask   = UL_LMASK(lsb);  /* Mask to be used in lower element */
+  ulong        hmask   = UL_HMASK(msb);  /* Mask to be used in upper element */
+  unsigned int i;                        /* Loop iterator */
+  nibble       prev_set;                 /* Specifies if this vector value has previously been set */
 
-  assert( vec != NULL );
-
-  vval = vec->value;
-  v2st = vec->suppl.part.is_2state << 1;
-
-  /* Verify that index is within range */
-  assert( to_idx < vec->width );
-  assert( to_idx >= 0 );
-
-  /* Adjust width to smaller of two values */
-  width = (width > (vec->width - to_idx)) ? (vec->width - to_idx) : width;
+  /* If the lindex and hindex are the same, set lmask to the AND of the high and low masks */
+  if( lindex == hindex ) {
+    lmask &= hmask;
+  }
 
   switch( vec->suppl.part.type ) {
     case VTYPE_VAL :
-      for( i=0; i<width; i++ ) {
-        vval[i + to_idx].part.val.value = ((v2st & value[i + from_idx].part.val.value) > 1) ? 0 : value[i + from_idx].part.val.value;
-        ored |= vval[i + to_idx].part.val.value;
+      for( i=lindex; i<=hindex; i++ ) {
+        ulong* tvall = &(vec->value.ul[i][VTYPE_INDEX_SIG_VALL]);
+        ulong* tvalh = &(vec->value.ul[i][VTYPE_INDEX_SIG_VALH]);
+        ulong  mask  = (i==lindex) ? lmask : (i==hindex ? hmask : UL_SET);
+        *tvall = (*tvall & ~mask) | (scratchl[i] & mask);
+        *tvalh = (*tvalh & ~mask) | (scratchh[i] & mask);
       }
-      retval = TRUE;
+      changed = TRUE;
       break;
     case VTYPE_SIG :
-      for( i=width; i--; ) {
-        set_val  = vval[i + to_idx];
-        from_val = ((v2st & value[i + from_idx].part.val.value) > 1) ? 0 : value[i + from_idx].part.val.value;
-        to_val   = set_val.part.sig.value;
-        if( (from_val != to_val) || (set_val.part.sig.set == 0x0) ) {
-          if( set_val.part.sig.set == 0x1 ) {
-            /* Assign toggle values if necessary */
-            if( (to_val == 0) && (from_val == 1) ) {
-              set_val.part.sig.tog01 = 1;
-            } else if( (to_val == 1) && (from_val == 0) ) {
-              set_val.part.sig.tog10 = 1;
-            }
+      prev_set = vec->suppl.part.set;
+      for( i=lindex; i<=hindex; i++ ) {
+        ulong* entry = vec->value.ul[i];
+        ulong  mask  = (i==lindex) ? lmask : (i==hindex ? hmask : UL_SET);
+        ulong  fvall = scratchl[i] & mask;
+        ulong  fvalh = scratchh[i] & mask;
+        ulong  tvall = entry[VTYPE_INDEX_SIG_VALL];
+        ulong  tvalh = entry[VTYPE_INDEX_SIG_VALH];
+        if( (fvall != (tvall & mask)) || (fvalh != (tvalh & mask)) ) {
+          if( prev_set == 1 ) {
+            entry[VTYPE_INDEX_SIG_TOG01] |= (~tvalh & ~tvall) & (~fvalh &  fvall) & mask;
+            entry[VTYPE_INDEX_SIG_TOG10] |= (~tvalh &  tvall) & (~fvalh & ~fvall) & mask;
           }
-          /* Perform value assignment */
-          set_val.part.sig.set   = 1;
-          set_val.part.sig.value = from_val;
-          ored                  |= from_val;
-          vval[i + to_idx]       = set_val;
-          retval = TRUE;
-        } else {
-          ored |= to_val;
+          entry[VTYPE_INDEX_SIG_VALL] = (tvall & ~mask) | fvall;
+          entry[VTYPE_INDEX_SIG_VALH] = (tvalh & ~mask) | fvalh;
+          changed = TRUE;
         }
       }
       break;
     case VTYPE_MEM :
-      for( i=width; i--; ) {
-        set_val  = vval[i + to_idx];
-        from_val = ((v2st & value[i + from_idx].part.val.value) > 1) ? 0 : value[i + from_idx].part.val.value;
-        to_val   = set_val.part.mem.value;
-        if( from_val != to_val ) {
-          /* Assign toggle values if necessary */
-          if( (to_val == 0) && (from_val == 1) ) {
-            set_val.part.mem.tog01 = 1;
-          } else if( (to_val == 1) && (from_val == 0) ) {
-            set_val.part.mem.tog10 = 1;
-          }
-          /* Perform value assignment */
-          set_val.part.mem.wr    = 1;
-          set_val.part.mem.value = from_val;
-          ored                  |= from_val;
-          vval[i + to_idx]       = set_val;
-          retval = TRUE;
-        } else {
-          ored |= to_val;
+      for( i=lindex; i<=hindex; i++ ) {
+        ulong* entry = vec->value.ul[i];
+        ulong  mask  = (i==lindex) ? lmask : (i==hindex ? hmask : UL_SET);
+        ulong  fvall = scratchl[i] & mask;
+        ulong  fvalh = scratchh[i] & mask;
+        ulong  tvall = entry[VTYPE_INDEX_MEM_VALL];
+        ulong  tvalh = entry[VTYPE_INDEX_MEM_VALH];
+        if( (fvall != (tvall & mask)) || (fvalh != (tvalh & mask)) ) {
+          entry[VTYPE_INDEX_MEM_TOG01] |= (~tvalh & ~tvall) & (~fvalh &  fvall) & mask;
+          entry[VTYPE_INDEX_MEM_TOG10] |= (~tvalh &  tvall) & (~fvalh & ~fvall) & mask;
+          entry[VTYPE_INDEX_MEM_WR]    |= mask;
+          entry[VTYPE_INDEX_MEM_VALL]   = (tvall & ~mask) | fvall;
+          entry[VTYPE_INDEX_MEM_VALH]   = (tvalh & ~mask) | fvalh;
+          changed = TRUE;
         }
       }
       break;
     case VTYPE_EXP :
-      for( i=width; i--; ) {
-        set_val  = vval[i + to_idx];
-        from_val = ((v2st & value[i + from_idx].part.val.value) > 1) ? 0 : value[i + from_idx].part.val.value;
-        to_val   = set_val.part.exp.value;
-        if( (from_val != to_val) || (set_val.part.exp.set == 0x0) ) {
-          /* Perform value assignment */
-          set_val.part.exp.set   = 1;
-          set_val.part.exp.value = from_val;
-          ored                  |= from_val;
-          vval[i + to_idx]       = set_val;
-          retval = TRUE;
-        } else {
-          ored |= to_val;
+      for( i=lindex; i<=hindex; i++ ) {
+        ulong* entry = vec->value.ul[i];
+        ulong  mask  = (i==lindex) ? lmask : (i==hindex ? hmask : UL_SET);
+        ulong  fvall = scratchl[i] & mask;
+        ulong  fvalh = scratchh[i] & mask;
+        ulong  tvall = entry[VTYPE_INDEX_EXP_VALL];
+        ulong  tvalh = entry[VTYPE_INDEX_EXP_VALH];
+        if( (fvall != (tvall & mask)) || (fvalh != (tvalh & mask)) ) {
+          entry[VTYPE_INDEX_EXP_VALL] = (tvall & ~mask) | fvall;
+          entry[VTYPE_INDEX_EXP_VALH] = (tvalh & ~mask) | fvalh;
+          changed = TRUE;
         }
       }
       break;
-    default : break;
-  }
-
-  /* Store OR'ed value bits in the vector supplemental field bits not_zero and unknown */
-  vec->suppl.all |= (ored << 2);
-
-  PROFILE_END;
-
-  return( retval );
-
-}
-
-/*!
- \param vec  Pointer to vector to synchronize the data and not_zero/unknown supplemental bits
-
- Synchronizes the not_zero and unknown supplemental bits with the vectors data payload.
-*/
-inline void vector_sync_nz_and_unk( vector* vec ) {
-
-  int i        = 0;  /* Loop iterator */
-  nibble ored  = 0;  /* OR'ed values */
-
-  VSUPPL_CLR_NZ_AND_UNK( vec->suppl );
-  for( i=0; i<vec->width; i++ ) {
-    ored |= vec->value[i].part.val.value;
-  }
-  vec->suppl.all |= (ored << 2);
-
-}
-
-/*!
- \param vec  Pointer to vector to bit-fill
- \param msb  Most-significant bit to end bit-filling on
- \param lsb  Least-significant bit to start bit-filling
-
- \return Returns TRUE if any of the bits in the bit-fill range have changed
-         value.
-
- Performs a bit-fill of the specified vector starting at the specified LSB
- and bit-filling all bits to the MSB.
-*/
-bool vector_bit_fill(
-  vector* vec,
-  int     msb,
-  int     lsb
-) { PROFILE(VECTOR_BIT_FILL);
-
-  vec_data value;            /* Temporary vector data value */
-  bool     changed = FALSE;  /* Return value for this function */
-  int      i;                /* Loop iterator */
-
-  assert( vec != NULL );
-  assert( lsb > 0 ); 
-  msb = (msb > vec->width) ? vec->width : msb;
-
-  switch( vec->value[lsb-1].part.val.value ) {
-    case 0 :  value.all = 0;  break;
-    case 1 :  value.all = 0;  break;
-    case 2 :  value.all = 2;  break;
-    case 3 :  value.all = 3;  break;
-    default:  break;
-  }
-
-  for( i=lsb; i<msb; i++ ) {
-    changed |= vector_set_value( vec, &value, 1, 0, i );
+    default :  assert( 0 );  break;
   }
 
   PROFILE_END;
@@ -1175,25 +1441,662 @@ bool vector_bit_fill(
 }
 
 /*!
- \param vec  Pointer to vector to check for set bits
-
- \return Returns TRUE if the specified vector has been previously set (simulated); otherwise,
-         returns FALSE.
+ Calculates the lower and upper sign extension values for the given vector.
 */
-bool vector_is_set(
-  vector* vec
-) { PROFILE(VECTOR_IS_SET);
+inline static void vector_get_sign_extend_vector_ulong(
+            const vector* vec,    /*!< Pointer to vector to get MSB value from */
+  /*@out@*/ ulong*        signl,  /*!< Pointer to value that will contain the lower value vector */
+  /*@out@*/ ulong*        signh   /*!< Pointer to value that will contain the upper value vector */
+) { PROFILE(VECTOR_GET_SIGN_EXTEND_VECTOR_ULONG);
 
-  int i = 0;  /* Loop iterator */
+  ulong* entry     = vec->value.ul[UL_DIV(vec->width - 1)];
+  ulong  last_mask = (ulong)1 << UL_MOD(vec->width - 1);
 
-  assert( vec != NULL );
-  assert( vec->value != NULL );
+  *signl = ((entry[VTYPE_INDEX_VAL_VALL] & last_mask) != 0) ? UL_SET : 0;
+  *signh = ((entry[VTYPE_INDEX_VAL_VALH] & last_mask) != 0) ? UL_SET : 0;
 
-  while( (i < vec->width) && (vec->value[i].part.sig.set == 0) ) i++;
+}
+
+/*!
+ Performs signedness bit fill for the given value arrays.
+*/
+static void vector_sign_extend_ulong(
+  ulong* vall,   /*!< Pointer to lower value array to bit fill */
+  ulong* valh,   /*!< Pointer to upper value array to bit fill */
+  ulong  signl,  /*!< Sign-extension value for the lower value (call vector_get_sign_extend_vector_ulong) */
+  ulong  signh,  /*!< Sign-extension value for the upper value (call vector_get_sign_extend_vector_ulong) */
+  int     last,   /*!< Index of last bit in vall/h to evalulate for bit fill */
+  int     width   /*!< Width of vall/h to fill */
+) { PROFILE(VECTOR_SIGN_EXTEND_ULONG);
+
+  /* If any special sign-extension is necessary, handle it now */
+  if( (signl != 0) || (signh != 0) ) {
+    unsigned int i     = UL_DIV(last + 1);
+    ulong        fmask = UL_LMASK(last + 1);
+    unsigned int size  = UL_SIZE( width );
+    vall[i] |= signl & fmask;
+    valh[i] |= signh & fmask;
+    for( i++; i<size; i++ ) {
+      vall[i] = signl;
+      valh[i] = signh;
+    }
+  }
 
   PROFILE_END;
 
-  return( i < vec->width );
+}
+
+/*!
+ Performs a fast left-shift of 0-bit-aligned data in vector and stores the result in the vall/h
+ value arrays.
+*/
+static void vector_lshift_ulong(
+  const vector* vec,   /*!< Pointer to vector containing value that we want to left-shift */
+  ulong*        vall,  /*!< Pointer to intermediate value array containing lower bits of shifted value */
+  ulong*        valh,  /*!< Pointer to intermediate value array containing upper bits of shifted value */
+  unsigned int  lsb,   /*!< LSB offset */
+  unsigned int  msb    /*!< MSB offset */
+) { PROFILE(VECTOR_LSHIFT_ULONG);
+
+  unsigned int diff = UL_DIV(msb) - UL_DIV(vec->width - 1);
+
+  if( UL_DIV(lsb) == UL_DIV(msb) ) {
+
+    vall[diff] = (vec->value.ul[0][VTYPE_INDEX_VAL_VALL] << lsb);
+    valh[diff] = (vec->value.ul[0][VTYPE_INDEX_VAL_VALH] << lsb);
+
+  } else if( UL_MOD(lsb) == 0 ) {
+
+    int i;
+
+    for( i=UL_DIV(vec->width - 1); i>=0; i-- ) {
+      vall[i+diff] = vec->value.ul[i][VTYPE_INDEX_VAL_VALL];
+      valh[i+diff] = vec->value.ul[i][VTYPE_INDEX_VAL_VALH];
+    }
+
+    for( i=(UL_DIV(lsb) - 1); i>=0; i-- ) {
+      vall[i] = 0;
+      valh[i] = 0;
+    }
+
+  } else if( UL_MOD(msb) > UL_MOD(vec->width - 1) ) {
+
+    unsigned int mask_bits1  = UL_MOD(vec->width);
+    unsigned int shift_bits1 = UL_MOD(msb) - UL_MOD(vec->width - 1);
+    ulong        mask1       = UL_SET >> (UL_BITS - mask_bits1);
+    ulong        mask2       = UL_SET << (UL_BITS - shift_bits1);
+    ulong        mask3       = ~mask2;
+    int          i;
+
+    vall[UL_DIV(msb)] = (vec->value.ul[UL_DIV(vec->width-1)][VTYPE_INDEX_VAL_VALL] & mask1) << shift_bits1;
+    valh[UL_DIV(msb)] = (vec->value.ul[UL_DIV(vec->width-1)][VTYPE_INDEX_VAL_VALH] & mask1) << shift_bits1;
+
+    for( i=(UL_DIV(vec->width - 1) - 1); i>=0; i-- ) {
+      vall[i+diff+1] |= ((vec->value.ul[i][VTYPE_INDEX_VAL_VALL] & mask2) >> (UL_BITS - shift_bits1));
+      valh[i+diff+1] |= ((vec->value.ul[i][VTYPE_INDEX_VAL_VALH] & mask2) >> (UL_BITS - shift_bits1));
+      vall[i+diff]    = ((vec->value.ul[i][VTYPE_INDEX_VAL_VALL] & mask3) << shift_bits1);
+      valh[i+diff]    = ((vec->value.ul[i][VTYPE_INDEX_VAL_VALH] & mask3) << shift_bits1);
+    }
+
+    for( i=(UL_DIV(lsb) - 1); i>=0; i-- ) {
+      vall[i] = 0;
+      valh[i] = 0;
+    }
+
+  } else {
+
+    unsigned int mask_bits1  = UL_MOD(vec->width - 1);
+    unsigned int shift_bits1 = mask_bits1 - UL_MOD(msb);
+    ulong        mask1       = UL_SET << mask_bits1;
+    ulong        mask2       = UL_SET >> (UL_BITS - shift_bits1);
+    ulong        mask3       = ~mask2;
+    int          i;
+
+    vall[UL_DIV(msb)] = (vec->value.ul[UL_DIV(vec->width-1)][VTYPE_INDEX_VAL_VALL] & mask1) >> shift_bits1;
+    valh[UL_DIV(msb)] = (vec->value.ul[UL_DIV(vec->width-1)][VTYPE_INDEX_VAL_VALH] & mask1) >> shift_bits1;
+
+    for( i=UL_DIV(vec->width - 1); i>=0; i-- ) {
+      vall[(i+diff)-1]  = ((vec->value.ul[i][VTYPE_INDEX_VAL_VALL] & mask2) << (UL_BITS - shift_bits1));
+      valh[(i+diff)-1]  = ((vec->value.ul[i][VTYPE_INDEX_VAL_VALH] & mask2) << (UL_BITS - shift_bits1));
+      if( i > 0 ) {
+        vall[(i+diff)-1] |= ((vec->value.ul[i-1][VTYPE_INDEX_VAL_VALL] & mask3) >> shift_bits1);
+        valh[(i+diff)-1] |= ((vec->value.ul[i-1][VTYPE_INDEX_VAL_VALH] & mask3) >> shift_bits1);
+      }
+    }
+
+    for( i=(UL_DIV(lsb) - 1); i>=0; i-- ) {
+      vall[i] = 0;
+      valh[i] = 0;
+    }
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Performs a fast right-shift to zero-align data in vector and stores the result in the vall/h
+ value arrays.
+*/
+static void vector_rshift_ulong(
+  const vector* vec,   /*!< Pointer to vector containing value that we want to right-shift */
+  ulong*        vall,  /*!< Pointer to intermediate value array containing lower bits of shifted value */
+  ulong*        valh,  /*!< Pointer to intermediate value array containing upper bits of shifted value */
+  unsigned int  lsb,   /*!< LSB of vec range to shift */
+  unsigned int  msb    /*!< MSB of vec range to shift */
+) { PROFILE(VECTOR_RSHIFT_ULONG);
+
+  int          diff   = UL_DIV(lsb);
+  unsigned int rwidth = (msb - lsb) + 1;
+
+  if( lsb > msb ) {
+
+    unsigned int i;
+
+    for( i=0; i<UL_SIZE( vec->width ); i++ ) {
+      vall[i] = 0;
+      valh[i] = 0;
+    }
+
+  } else if( UL_DIV(lsb) == UL_DIV(msb) ) {
+
+    unsigned int i;
+
+    vall[0] = (vec->value.ul[diff][VTYPE_INDEX_VAL_VALL] >> UL_MOD(lsb));
+    valh[0] = (vec->value.ul[diff][VTYPE_INDEX_VAL_VALH] >> UL_MOD(lsb));
+
+    for( i=1; i<=UL_DIV(vec->width); i++ ) {
+      vall[i] = 0;
+      valh[i] = 0;
+    }
+
+  } else if( UL_MOD(lsb) == 0 ) {
+
+    unsigned int i;
+    ulong        lmask = UL_HMASK(msb);
+
+    for( i=diff; i<UL_DIV(msb); i++ ) {
+      vall[i-diff] = vec->value.ul[i][VTYPE_INDEX_VAL_VALL];
+      valh[i-diff] = vec->value.ul[i][VTYPE_INDEX_VAL_VALH];
+    }
+    vall[i-diff] = vec->value.ul[i][VTYPE_INDEX_VAL_VALL] & lmask;
+    valh[i-diff] = vec->value.ul[i][VTYPE_INDEX_VAL_VALH] & lmask;
+
+    for( i=((i-diff)+1); i<=UL_DIV(vec->width); i++ ) {
+      vall[i] = 0;
+      valh[i] = 0;
+    }
+
+  } else {
+
+    unsigned int shift_bits = UL_MOD(lsb);
+    ulong        mask1      = UL_SET << shift_bits;
+    ulong        mask2      = ~mask1;
+    ulong        mask3      = UL_SET >> ((UL_BITS - 1) - UL_MOD(msb - lsb));
+    unsigned int hindex     = UL_DIV(vec->width - 1);
+    unsigned int i;
+
+    for( i=0; i<=UL_DIV(rwidth - 1); i++ ) {
+      vall[i]  = (vec->value.ul[i+diff][VTYPE_INDEX_VAL_VALL] & mask1) >> shift_bits;
+      valh[i]  = (vec->value.ul[i+diff][VTYPE_INDEX_VAL_VALH] & mask1) >> shift_bits;
+      if( (i+diff+1) <= hindex ) {
+        vall[i] |= (vec->value.ul[i+diff+1][VTYPE_INDEX_VAL_VALL] & mask2) << (UL_BITS - shift_bits);
+        valh[i] |= (vec->value.ul[i+diff+1][VTYPE_INDEX_VAL_VALH] & mask2) << (UL_BITS - shift_bits);
+      }
+    }
+
+    vall[i-1] &= mask3;
+    valh[i-1] &= mask3;
+
+    // Bit-fill with zeroes
+    for( ; i<=hindex; i++ ) {
+      vall[i] = 0;
+      valh[i] = 0;
+    }
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ \param vec    Pointer to vector to set value to.
+ \param value  New value to set vector value to.
+ \param width  Width of new value.
+
+ \return Returns TRUE if assignment was performed; otherwise, returns FALSE.
+
+ Allows the calling function to set any bit vector within the vector
+ range.  If the vector value has never been set, sets
+ the value to the new value and returns.  If the vector value has previously
+ been set, checks to see if new vector bits have toggled, sets appropriate
+ toggle values, sets the new value to this value and returns.
+*/
+bool vector_set_value_ulong(
+  vector* vec,
+  ulong** value,
+  int     width
+) { PROFILE(VECTOR_SET_VALUE);
+
+  bool  retval = FALSE;                   /* Return value for this function */
+  int   i;                                /* Loop iterator */
+  int   v2st;                             /* Value to AND with from value bit if the target is a 2-state value */
+  ulong scratchl[UL_DIV(MAX_BIT_WIDTH)];  /* Lower scratch array */
+  ulong scratchh[UL_DIV(MAX_BIT_WIDTH)];  /* Upper scratch array */
+
+  assert( vec != NULL );
+
+  /* Adjust the width if it exceeds our width */
+  if( vec->width < width ) {
+    width = vec->width;
+  }
+
+  /* Get some information from the vector */
+  v2st = vec->suppl.part.is_2state << 1;
+
+  /* Set upper bits to 0 */
+  for( i=UL_DIV(vec->width - 1); i>UL_DIV(width - 1); i-- ) {
+    scratchl[i] = 0;
+    scratchh[i] = 0;
+  }
+
+  /* Calculate the new values and place them in the scratch arrays */
+  for( ; i>=0; i-- ) {
+    scratchl[i] = v2st ? (~value[i][VTYPE_INDEX_VAL_VALH] & value[i][VTYPE_INDEX_VAL_VALL]) : value[i][VTYPE_INDEX_VAL_VALL];
+    scratchh[i] = v2st ? 0 : value[i][VTYPE_INDEX_VAL_VALH];
+  }
+
+  /* Calculate the coverage and perform the actual assignment */
+  retval = vector_set_coverage_and_assign_ulong( vec, scratchl, scratchh, 0, (vec->width - 1) );
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns TRUE if stored data differed from original data; otherwise, returns FALSE.
+
+ Used for single- and multi-bit part selection.  Bits are pulled from the source vector via the
+ LSB and MSB range
+*/
+bool vector_part_select_pull(
+  vector* tgt,        /*!< Pointer to vector that will store the result */
+  vector* src,        /*!< Pointer to vector containing data to store */
+  int     lsb,        /*!< LSB offset */
+  int     msb,        /*!< MSB offset */
+  bool    set_mem_rd  /*!< If TRUE, set the memory read bit in the source */
+) { PROFILE(VECTOR_PART_SELECT_PULL);
+
+  bool retval;  /* Return value for this function */
+
+  switch( src->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        ulong valh[UL_DIV(MAX_BIT_WIDTH)];
+        ulong vall[UL_DIV(MAX_BIT_WIDTH)];
+
+        /* Perform shift operation */
+        vector_rshift_ulong( src, vall, valh, lsb, msb );
+
+        /* If the src vector is of type MEM, set the MEM_RD bit in the source's supplemental field */
+        if( set_mem_rd && (src->suppl.part.type == VTYPE_MEM) ) {
+          src->value.ul[UL_DIV(lsb)][VTYPE_INDEX_MEM_RD] |= ((ulong)1 << UL_MOD(lsb));
+        }
+
+        retval = vector_set_coverage_and_assign_ulong( tgt, vall, valh, 0, (tgt->width - 1) );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns TRUE if stored data differed from original data; otherwise, returns FALSE.
+
+ Used for single- and multi-bit part selection.  Bits are pushed from the source vector via the
+ LSB and MSB range.
+*/
+bool vector_part_select_push(
+  vector*       tgt,         /*!< Pointer to vector that will store the result */
+  int           tgt_lsb,     /*!< LSB offset of target vector */
+  int           tgt_msb,     /*!< MSB offset of target vector */
+  const vector* src,         /*!< Pointer to vector containing data to store */
+  int           src_lsb,     /*!< LSB offset of source vector */
+  int           src_msb,     /*!< MSB offset of source vector */
+  bool          sign_extend  /*!< Set to TRUE if sign extension is needed */
+) { PROFILE(VECTOR_PART_SELECT_PUSH);
+
+  bool retval;  /* Return value for this function */
+
+  switch( src->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        ulong        valh[UL_DIV(MAX_BIT_WIDTH)];
+        ulong        vall[UL_DIV(MAX_BIT_WIDTH)];
+        unsigned int diff;
+        unsigned int i; 
+        ulong        signl, signh;
+
+        /* Get the sign extension vector */
+        vector_get_sign_extend_vector_ulong( src, &signl, &signh );
+
+        /* If the LSB to assign exceeds the size of the actual vector, just create a value based on the signedness */
+        if( src_lsb >= src->width ) {
+
+          if( sign_extend && ((signl != 0) || (signh != 0)) ) {
+            vector_sign_extend_ulong( vall, valh, signl, signh, (tgt_lsb - 1), tgt->width );
+          } else {
+            for( i=UL_DIV(tgt_lsb); i<=UL_DIV(tgt_msb); i++ ) {
+              vall[i] = valh[i] = 0;
+            }
+          }
+
+        /* Otherwise, pull the value from source vector */
+        } else {
+
+          /* First, initialize the vall/h arrays to zero */
+          for( i=UL_DIV(tgt_lsb); i<=UL_DIV(tgt_msb); i++ ) {
+            vall[i] = valh[i] = 0;
+          }
+  
+          /* Left-shift the source vector to match up with target LSB */
+          if( src_lsb < tgt_lsb ) {
+            diff = (tgt_lsb - src_lsb);
+            vector_lshift_ulong( src, vall, valh, diff, ((src_msb - src_lsb) + diff) );
+          /* Otherwise, right-shift the source vector to match up */
+          } else {
+            diff = (src_lsb - tgt_lsb);
+            vector_rshift_ulong( src, vall, valh, diff, ((src_msb - src_lsb) + diff) );
+          }
+
+          /* Now apply the sign extension, if necessary */
+          if( sign_extend && ((signl != 0) || (signh != 0)) ) {
+            vector_sign_extend_ulong( vall, valh, signl, signh, (tgt_lsb + (src_msb - src_lsb)), (tgt_msb + 1) );
+          }
+
+        }
+
+        /* Now assign the calculated value and set coverage information */
+        retval = vector_set_coverage_and_assign_ulong( tgt, vall, valh, tgt_lsb, tgt_msb );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \param vec  Pointer to vector to set eval_a/b bits for unary operation
+
+ Called by expression_op_func__* functions for operations that are unary
+ in nature.
+*/
+void vector_set_unary_evals(
+  vector* vec
+) { PROFILE(VECTOR_SET_UNARY_EVALS);
+
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        unsigned int i;
+        unsigned int size = UL_SIZE(vec->width);
+        for( i=0; i<size; i++ ) {
+          ulong* entry = vec->value.ul[i];
+          ulong  lval  =  entry[VTYPE_INDEX_EXP_VALL];
+          ulong  nhval = ~entry[VTYPE_INDEX_EXP_VALH];
+          entry[VTYPE_INDEX_EXP_EVAL_A] |= nhval & ~lval;
+          entry[VTYPE_INDEX_EXP_EVAL_B] |= nhval &  lval;
+        }
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ \param tgt    Pointer to target vector to set eval_a/b/c supplemental bits
+ \param left   Pointer to target vector on the left
+ \param right  Pointer to target vector on the right
+
+ Sets the eval_a/b/c supplemental bits as necessary.  This function should be called
+ by expression_op_func__* functions that are AND-type combinational operations only and own their
+ own vectors.
+*/    
+void vector_set_and_comb_evals(
+  vector* tgt,
+  vector* left,
+  vector* right
+) { PROFILE(VECTOR_SET_AND_COMB_EVALS);
+
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        unsigned int i;
+        unsigned int size  = UL_SIZE( tgt->width );
+        unsigned int lsize = UL_SIZE( left->width );
+        unsigned int rsize = UL_SIZE( right->width );
+
+        for( i=0; i<size; i++ ) {
+          ulong* val    = tgt->value.ul[i];
+          ulong* lval   = left->value.ul[i];
+          ulong* rval   = right->value.ul[i];
+          ulong  lvall  = (i < lsize) ?  lval[VTYPE_INDEX_EXP_VALL] : 0;
+          ulong  nlvalh = (i < lsize) ? ~lval[VTYPE_INDEX_EXP_VALH] : UL_SET;
+          ulong  rvall  = (i < rsize) ?  rval[VTYPE_INDEX_EXP_VALL] : 0;
+          ulong  nrvalh = (i < rsize) ? ~rval[VTYPE_INDEX_EXP_VALH] : UL_SET;
+          
+          val[VTYPE_INDEX_EXP_EVAL_A] |= nlvalh & ~lvall;
+          val[VTYPE_INDEX_EXP_EVAL_B] |= nrvalh & ~rvall;
+          val[VTYPE_INDEX_EXP_EVAL_C] |= nlvalh & nrvalh & lvall & rvall;
+        }
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+ 
+}
+
+/*!
+ \param tgt    Pointer to target vector to set eval_a/b/c supplemental bits
+ \param left   Pointer to vector on left of expression
+ \param right  Pointer to vector on right of expression
+
+ Sets the eval_a/b/c supplemental bits as necessary.  This function should be called
+ by expression_op_func__* functions that are OR-type combinational operations only and own their
+ own vectors.
+*/
+void vector_set_or_comb_evals(
+  vector* tgt,
+  vector* left,
+  vector* right
+) { PROFILE(VECTOR_SET_OR_COMB_EVALS);
+
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        unsigned int i;
+        unsigned int size  = UL_SIZE( tgt->width );
+        unsigned int lsize = UL_SIZE( left->width );
+        unsigned int rsize = UL_SIZE( right->width );
+
+        for( i=0; i<size; i++ ) {
+          ulong* val    = tgt->value.ul[i];
+          ulong* lval   = left->value.ul[i];
+          ulong* rval   = right->value.ul[i];
+          ulong  lvall  = (i < lsize) ?  lval[VTYPE_INDEX_EXP_VALL] : 0;
+          ulong  nlvalh = (i < lsize) ? ~lval[VTYPE_INDEX_EXP_VALH] : UL_SET;
+          ulong  rvall  = (i < rsize) ?  rval[VTYPE_INDEX_EXP_VALL] : 0;
+          ulong  nrvalh = (i < rsize) ? ~rval[VTYPE_INDEX_EXP_VALH] : UL_SET;
+
+          val[VTYPE_INDEX_EXP_EVAL_A] |= nlvalh & lvall;
+          val[VTYPE_INDEX_EXP_EVAL_B] |= nrvalh & rvall;
+          val[VTYPE_INDEX_EXP_EVAL_C] |= nlvalh & nrvalh & ~lvall & ~rvall;
+        }
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+}
+
+/*! 
+ \param tgt    Pointer to target vector to set eval_a/b/c/d supplemental bits
+ \param left   Pointer to vector on left of expression
+ \param right  Pointer to vector on right of expression
+
+ Sets the eval_a/b/c/d supplemental bits as necessary.  This function should be called
+ by expression_op_func__* functions that are OTHER-type combinational operations only and own their
+ own vectors. 
+*/
+void vector_set_other_comb_evals(
+  vector* tgt,
+  vector* left,
+  vector* right
+) { PROFILE(VECTOR_SET_OTHER_COMB_EVALS);
+
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        unsigned int i;
+        unsigned int size  = UL_SIZE( tgt->width );
+        unsigned int lsize = UL_SIZE( left->width );
+        unsigned int rsize = UL_SIZE( right->width );
+
+        for( i=0; i<size; i++ ) { 
+          ulong* val    = tgt->value.ul[i];
+          ulong* lval   = left->value.ul[i];
+          ulong* rval   = right->value.ul[i];
+          ulong  lvall  = (i < lsize) ?  lval[VTYPE_INDEX_EXP_VALL] : 0;
+          ulong  nlvalh = (i < lsize) ? ~lval[VTYPE_INDEX_EXP_VALH] : UL_SET;
+          ulong  rvall  = (i < rsize) ?  rval[VTYPE_INDEX_EXP_VALL] : 0;
+          ulong  nrvalh = (i < rsize) ? ~rval[VTYPE_INDEX_EXP_VALH] : UL_SET;
+          ulong  nvalh  = nlvalh & nrvalh;
+
+          val[VTYPE_INDEX_EXP_EVAL_A] |= nvalh & ~lvall & ~rvall;
+          val[VTYPE_INDEX_EXP_EVAL_B] |= nvalh & ~lvall &  rvall;
+          val[VTYPE_INDEX_EXP_EVAL_C] |= nvalh &  lvall & ~rvall;
+          val[VTYPE_INDEX_EXP_EVAL_D] |= nvalh &  lvall &  rvall;
+        }
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+  
+} 
+
+/*!
+ \param vec  Pointer to vector check for unknown-ness
+
+ \return Returns TRUE if the given vector contains unknown (X or Z) bits; otherwise, returns FALSE.
+*/
+bool vector_is_unknown(
+  const vector* vec
+) { PROFILE(VECTOR_IS_UKNOWN);
+
+  unsigned int i = 0;  /* Loop iterator */
+  unsigned int size;   /* Size of data array */
+
+  assert( vec != NULL );
+  assert( vec->value.ul != NULL );
+
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_UL :
+      size = UL_SIZE( vec->width );
+      while( (i < size) && (vec->value.ul[i][VTYPE_INDEX_VAL_VALH] == 0) ) i++;
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( i < size );
+
+}
+
+/*!
+ \param vec  Pointer to vector to check for non-zero-ness
+
+ \return Returns TRUE if the given vector contains at least one non-zero bit; otherwise, returns FALSE.
+*/
+bool vector_is_not_zero(
+  const vector* vec
+) { PROFILE(VECTOR_IS_NOT_ZERO);
+
+  unsigned int i = 0;  /* Loop iterator */
+  unsigned int size;   /* Size of data array */
+
+  assert( vec != NULL );
+  assert( vec->value.ul != NULL );
+
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_UL :
+      size = UL_SIZE( vec->width );
+      while( (i < size) && (vec->value.ul[i][VTYPE_INDEX_VAL_VALL] == 0) ) i++;
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( i < size );
+
+}
+
+/*!
+ \param vec  Pointer to vector to set to a value of X
+
+ \return Returns TRUE if the given vector changed value; otherwise, returns FALSE.
+
+ Sets the entire specified vector to a value of X.
+*/
+bool vector_set_to_x(
+  vector* vec
+) { PROFILE(VECTOR_SET_TO_X);
+
+  bool retval;  /* Return value for this function */
+
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_UL:
+      {
+        ulong        scratchl[UL_DIV(MAX_BIT_WIDTH)];
+        ulong        scratchh[UL_DIV(MAX_BIT_WIDTH)];
+        ulong        end_mask = UL_HMASK(vec->width - 1);
+        unsigned int i;
+        for( i=0; i<(UL_SIZE(vec->width) - 1); i++ ) {
+          scratchl[i] = 0;
+          scratchh[i] = UL_SET;
+        }
+        scratchl[i] = 0;
+        scratchh[i] = end_mask;
+        retval = vector_set_coverage_and_assign_ulong( vec, scratchl, scratchh, 0, (vec->width - 1) );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
 
 }
 
@@ -1207,35 +2110,20 @@ bool vector_is_set(
  unused.
 */
 int vector_to_int(
-  vector* vec
+  const vector* vec
 ) { PROFILE(VECTOR_TO_INT);
 
-  int retval = 0;   /* Integer value returned to calling function */
-  int i;            /* Loop iterator */
-  int width;        /* Number of bits to use in creating integer */
+  int retval;  /* Integer value returned to calling function */
 
-  width = (vec->width > (SIZEOF_INT * 8)) ? 32 : vec->width;
-
-  for( i=(width - 1); i>=0; i-- ) {
-    switch( vec->value[i].part.val.value ) {
-      /*@-shiftimplementation@*/
-      case 0 :  retval = (retval << 1) | 0;  break;
-      case 1 :  retval = (retval << 1) | 1;  break;
-      /*@=shiftimplementation@*/
-      default:
-        print_output( "Vector converting to integer contains X or Z values", FATAL, __FILE__, __LINE__ );
-        assert( vec->value[i].part.val.value < 2 );
-        break;
-    }
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_UL :  retval = vec->value.ul[0][VTYPE_INDEX_VAL_VALL];  break;
+    default        :  assert( 0 );  break;
   }
 
   /* If the vector is signed, sign-extend the integer */
   if( vec->suppl.part.is_signed == 1 ) {
-    for( i=width; i<(SIZEOF_INT * 8); i++ ) {
-      /*@-shiftnegative@*/
-      retval |= (vec->value[width-1].part.val.value << i);
-      /*@=shiftnegative@*/
-    }
+    int width = (vec->width > 32) ? 32 : vec->width;
+    retval |= (UL_SET * ((retval >> (width - 1)) & 0x1)) << width;
   }
 
   PROFILE_END;
@@ -1254,33 +2142,26 @@ int vector_to_int(
  unused.
 */
 uint64 vector_to_uint64(
-  vector* vec
+  const vector* vec
 ) { PROFILE(VECTOR_TO_UINT64);
 
   uint64 retval = 0;   /* 64-bit integer value returned to calling function */
-  int    i;            /* Loop iterator */
-  int    width;        /* Number of bits to use in creating integer */
 
-  width = (vec->width > 64) ? 64 : vec->width;
-
-  for( i=(width - 1); i>=0; i-- ) {
-    switch( vec->value[i].part.val.value ) {
-      case 0 :  retval = (retval << 1);  break;
-      case 1 :  retval = (retval << 1) | 1;  break;
-      default:
-        print_output( "Vector converting to 64-bit integer contains X or Z values", FATAL, __FILE__, __LINE__ );
-        assert( vec->value[i].part.val.value < 2 );
-        break;
-    }
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_UL :
+      if( vec->width > 32 ) {
+        retval = ((uint64)vec->value.ul[1][VTYPE_INDEX_VAL_VALL] << 32) | (uint64)vec->value.ul[0][VTYPE_INDEX_VAL_VALL];
+      } else {
+        retval = (uint64)vec->value.ul[0][VTYPE_INDEX_VAL_VALL];
+      }
+      break;
+    default :  assert( 0 );  break;
   }
 
   /* If the vector is signed, sign-extend the integer */
   if( vec->suppl.part.is_signed == 1 ) {
-    for( i=width; i<64; i++ ) {
-      /*@-shiftnegative@*/
-      retval |= (vec->value[width-1].part.val.value << i);
-      /*@=shiftnegative@*/
-    }
+    int width = (vec->width > 64) ? 64 : vec->width;
+    retval |= (UINT64(0xffffffffffffffff) * ((retval >> (width - 1)) & 0x1)) << width;
   }
 
   PROFILE_END;
@@ -1298,32 +2179,18 @@ uint64 vector_to_uint64(
  unused.
 */
 void vector_to_sim_time(
-  vector*   vec,
-  sim_time* time
+  const vector* vec,
+  sim_time*     time
 ) { PROFILE(VECTOR_TO_SIM_TIME);
 
-  int width;  /* Number of bits to use in creating sim_time */
-  int i;      /* Loop iterator */
-
-  width = (vec->width > 64) ? 64 : vec->width;
-
-  for( i=(width - 1); i--; ) {
-    switch( vec->value[i].part.val.value ) {
-      case 0 :
-        time->lo   = (i <  32) ? (time->lo << 1) : time->lo;
-        time->hi   = (i >= 32) ? (time->hi << 1) : time->hi;
-        time->full = (time->full << 1);
-        break;
-      case 1 :
-        time->lo   = (i <  32) ? (time->lo << 1) | 1 : time->lo;
-        time->hi   = (i >= 32) ? (time->hi << 1) | 1 : time->hi;
-        time->full = (time->full << 1) | UINT64(1);
-        break;
-      default :
-        print_output( "Vector converting to sim_time contains X or Z values", FATAL, __FILE__, __LINE__ );
-        assert( vec->value[i].part.val.value < 2 );
-        break;
-    }
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_UL :
+      assert( (vec->value.ul[0][VTYPE_INDEX_VAL_VALH] == 0) && (vec->value.ul[1][VTYPE_INDEX_VAL_VALH] == 0) );
+      time->lo   = vec->value.ul[0][VTYPE_INDEX_VAL_VALL];
+      time->hi   = (vec->width > 32) ? vec->value.ul[1][VTYPE_INDEX_VAL_VALL] : 0;
+      time->full = (((uint64)time->hi) << 32) | time->lo;
+      break;
+    default :  assert( 0 );  break;
   }
 
   PROFILE_END;
@@ -1345,28 +2212,15 @@ void vector_from_int(
   int     value
 ) { PROFILE(VECTOR_FROM_INT);
 
-  int width;        /* Number of bits to convert */
-  int i;            /* Loop iterator */
-  nibble ored = 0;  /* OR'ed contents of stored data */
-
-  width = (vec->width < (SIZEOF_INT * 8)) ? vec->width : (SIZEOF_INT * 8);
-
-  /* Clear the not_zero and unknown bits of the supplemental field */
-  VSUPPL_CLR_NZ_AND_UNK( vec->suppl );
-
-  for( i=0; i<width; i++ ) {
-    vec->value[i].part.val.value = (value & 0x1);
-    ored |= (value & 0x1);
-    /*@-shiftimplementation@*/
-    value >>= 1;
-    /*@=shiftimplementation@*/
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_UL :
+      vec->value.ul[0][VTYPE_INDEX_VAL_VALL] = value & UL_HMASK(vec->width - 1);
+      break;
+    default :  assert( 0 );  break;
   }
 
   /* Because this value came from an integer, specify that the vector is signed */
   vec->suppl.part.is_signed = 1;
-
-  /* Set the not_zero bit */
-  vec->suppl.all |= (ored << 2);
 
   PROFILE_END;
 
@@ -1386,16 +2240,12 @@ void vector_from_uint64(
   uint64  value
 ) { PROFILE(VECTOR_FROM_UINT64);
 
-  int width;  /* Number of bits to convert */
-  int i;      /* Loop iterator */
-
-  width = (vec->width < 64) ? vec->width : 64;
-
-  for( i=0; i<width; i++ ) {
-    vec->value[i].part.val.value = (value & 0x1);
-    /*@-shiftimplementation@*/
-    value >>= 1;
-    /*@=shiftimplementation@*/
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_UL :
+      vec->value.ul[0][VTYPE_INDEX_VAL_VALL] = value & UL_HMASK(vec->width - 1);
+      vec->value.ul[1][VTYPE_INDEX_VAL_VALL] = ((uint64)value >> 32) & UL_HMASK(vec->width - 1);
+      break;
+    default :  assert( 0 );  break;
   }
 
   /* Because this value came from an unsigned integer, specify that the vector is unsigned */
@@ -1419,33 +2269,42 @@ static void vector_set_static(
   int     bits_per_char
 ) { PROFILE(VECTOR_SET_STATIC);
 
-  char*        ptr;       /* Pointer to current character evaluating */
-  unsigned int pos;       /* Current bit position in vector */
-  unsigned int val;       /* Temporary holder for value of current character */
-  unsigned int i;         /* Loop iterator */
-  nibble       ored = 0;  /* OR'ed contents of value */
-
-  pos = 0;
-
-  ptr = str + (strlen( str ) - 1);
+  char*        ptr       = str + (strlen( str ) - 1);  /* Pointer to current character evaluating */
+  unsigned int pos       = 0;                          /* Current bit position in vector */
+  unsigned int i;                                      /* Loop iterator */
+  ulong        ull       = 0;                          /* unsigned long */
+  ulong        ulh       = 0;                          /* unsigned long */
+  int          data_type = vec->suppl.part.data_type;  /* Copy of data type for performance reasons */
 
   while( ptr >= str ) {
     if( *ptr != '_' ) {
       if( (*ptr == 'x') || (*ptr == 'X') ) {
-        for( i=0; i<bits_per_char; i++ ) {
-          if( (i + pos) < vec->width ) { 
-            vec->value[i + pos].part.val.value = 0x2;
-            ored |= 0x2;
-          }
+        switch( data_type ) {
+          case VDATA_UL :
+            for( i=0; i<bits_per_char; i++ ) {
+              if( (i + pos) < vec->width ) {
+                vec->value.ul[UL_DIV(i+pos)][VTYPE_INDEX_VAL_VALH] |= ((ulong)1 << UL_MOD(i+pos));
+              }
+            }
+            break;
+          default :  assert( 0 );  break;
         }
       } else if( (*ptr == 'z') || (*ptr == 'Z') || (*ptr == '?') ) {
-        for( i=0; i<bits_per_char; i++ ) {
-          if( (i + pos) < vec->width ) { 
-            vec->value[i + pos].part.val.value = 0x3;
-            ored |= 0x2;
-          }
+        switch( data_type ) {
+          case VDATA_UL :
+            for( i=0; i<bits_per_char; i++ ) {
+              if( (i + pos) < vec->width ) {
+                unsigned int index = UL_DIV(i + pos);
+                ulong        value = ((ulong)1 << UL_MOD(i + pos));
+                vec->value.ul[index][VTYPE_INDEX_VAL_VALL] |= value;
+                vec->value.ul[index][VTYPE_INDEX_VAL_VALH] |= value;
+              }
+            }
+            break;
+          default :  assert( 0 );  break;
         }
       } else {
+        ulong val;
         if( (*ptr >= 'a') && (*ptr <= 'f') ) {
           val = (*ptr - 'a') + 10;
         } else if( (*ptr >= 'A') && (*ptr <= 'F') ) {
@@ -1454,11 +2313,15 @@ static void vector_set_static(
           assert( (*ptr >= '0') && (*ptr <= '9') );
 	  val = *ptr - '0';
         }
-        for( i=0; i<bits_per_char; i++ ) {
-          if( (i + pos) < vec->width ) {
-            vec->value[i + pos].part.val.value = ((val >> i) & 0x1);
-            ored |= vec->value[i + pos].part.val.value;
-          } 
+        switch( data_type ) {
+          case VDATA_UL :
+            for( i=0; i<bits_per_char; i++ ) {
+              if( (i + pos) < vec->width ) {
+                vec->value.ul[UL_DIV(i+pos)][VTYPE_INDEX_VAL_VALL] |= ((val >> i) & 0x1) << UL_MOD(i + pos);
+              }
+            }
+            break;
+          default :  assert( 0 );  break;
         }
       }
       pos = pos + bits_per_char;
@@ -1466,17 +2329,40 @@ static void vector_set_static(
     ptr--;
   }
 
-  /* Update the not_zero and unknown bits in the given vector */
-  vec->suppl.all |= (ored << 2);
+  /* Bit-fill, if necessary */
+  if( pos < vec->width ) {
+    switch( data_type ) {
+      case VDATA_UL :
+        {
+          ulong hfill = (vec->value.ul[UL_DIV(pos)][VTYPE_INDEX_VAL_VALH] & ((ulong)1 << UL_MOD(pos - 1))) ? UL_SET : 0x0;
+          ulong lfill = (vec->value.ul[UL_DIV(pos)][VTYPE_INDEX_VAL_VALL] & ((ulong)1 << UL_MOD(pos - 1))) ? hfill  : 0x0;
+          ulong lmask = UL_LMASK(pos);
+          ulong hmask = UL_HMASK(vec->width - 1);
+          if( UL_DIV(pos) == UL_DIV(vec->width - 1) ) {
+            ulong mask = lmask & hmask;
+            vec->value.ul[UL_DIV(pos)][VTYPE_INDEX_VAL_VALL] |= lfill & mask;
+            vec->value.ul[UL_DIV(pos)][VTYPE_INDEX_VAL_VALH] |= hfill & mask;
+          } else {
+            vec->value.ul[UL_DIV(pos)][VTYPE_INDEX_VAL_VALL] |= lfill & lmask;
+            vec->value.ul[UL_DIV(pos)][VTYPE_INDEX_VAL_VALH] |= hfill & lmask;
+            for( i=(UL_DIV(pos) + 1); i<(UL_SIZE( vec->width ) - 1); i++ ) {
+              vec->value.ul[i][VTYPE_INDEX_VAL_VALL] = lfill;
+              vec->value.ul[i][VTYPE_INDEX_VAL_VALH] = hfill;
+            }
+            vec->value.ul[i][VTYPE_INDEX_VAL_VALL] = lfill & hmask;
+            vec->value.ul[i][VTYPE_INDEX_VAL_VALH] = hfill & hmask;
+          }
+        }
+        break;
+      default :  assert( 0 );
+    }
+  }
 
   PROFILE_END;
 
-}  
+}
 
 /*!
- \param vec   Pointer to vector to convert.
- \param base  Base type of vector value.
-
  \return Returns pointer to the allocated/coverted string.
 
  Converts a vector value into a string, allocating the memory for the string in this
@@ -1484,48 +2370,44 @@ static void vector_set_static(
  value to change vector into.
 */
 char* vector_to_string(
-  vector* vec,
-  int     base
+  vector* vec,      /*!< Pointer to vector to convert */
+  int     base,     /*!< Base type of vector value */
+  bool    show_all  /*!< Set to TRUE causes all bits in vector to be displayed (otherwise, only significant bits are displayed) */
 ) { PROFILE(VECTOR_TO_STRING);
 
-  char*        str = NULL;     /* Pointer to allocated string */
-  char*        tmp;            /* Pointer to temporary string value */
-  int          i;              /* Loop iterator */
-  int          str_size;       /* Number of characters needed to hold vector string */
-  int          vec_size;       /* Number of characters needed to hold vector value */
-  unsigned int group;          /* Number of vector bits to group together for type */
-  char         type_char;      /* Character type specifier */
-  int          pos;            /* Current bit position in string */
-  nibble       value;          /* Current value of string character */
-  char         width_str[20];  /* Holds value of width string to calculate string size */
+  char* str = NULL;  /* Pointer to allocated string */
 
   if( base == QSTRING ) {
 
-    vec_size  = ((vec->width % 8) == 0) ? ((vec->width / 8) + 1)
-                                        : ((vec->width / 8) + 2);
-    str   = (char*)malloc_safe( vec_size );
-    value = 0;
-    pos   = 0;
+    int i, j;
+    int vec_size = ((vec->width - 1) >> 3) + 2;
+    int pos      = 0;
 
-    for( i=(vec->width - 1); i>=0; i-- ) {
-      switch( vec->value[i].part.val.value ) {
-        case 0 :  value  = value;           break;
-        /*@-shiftnegative@*/
-        case 1 :  value |= (1 << (i % 8));  break;
-        /*@=shiftnegative@*/
-        default:  break;
-      }
-      assert( pos < vec_size );
-      if( (i % 8) == 0 ) {
-        str[pos] = value;
-        pos++; 
-        value    = 0;
-      }
+    /* Allocate memory for string from the heap */
+    str = (char*)malloc_safe( vec_size );
+
+    switch( vec->suppl.part.data_type ) {
+      case VDATA_UL :
+        {
+          int offset = (((vec->width >> 3) & (UL_MOD_VAL >> 3)) == 0) ? SIZEOF_LONG : ((vec->width >> 3) & (UL_MOD_VAL >> 3));
+          for( i=UL_SIZE(vec->width); i--; ) {
+            ulong val = vec->value.ul[i][VTYPE_INDEX_VAL_VALL]; 
+            for( j=(offset - 1); j>=0; j-- ) {
+              str[pos] = (val >> (j * 8)) & 0xff;
+              pos++;
+            }
+            offset = SIZEOF_LONG;
+          }
+        }
+        break;
+      default :  assert( 0 );  break;
     }
 
     str[pos] = '\0';
 
   } else if( base == DECIMAL ) {
+
+    char width_str[20];
 
     snprintf( width_str, 20, "%d", vector_to_int( vec ) );
     str = strdup_safe( width_str );
@@ -1533,6 +2415,13 @@ char* vector_to_string(
   } else {
 
     unsigned int rv;
+    char*        tmp;
+    int          str_size;
+    unsigned int group;
+    char         type_char;
+    char         width_str[20];
+    int          vec_size  = ((vec->width - 1) >> 3) + 2;
+    int          pos       = 0;
 
     switch( base ) {
       case BINARY :  
@@ -1559,48 +2448,54 @@ char* vector_to_string(
         /*@=unreachable@*/
     }
 
-    tmp   = (char*)malloc_safe( vec_size );
-    value = 0;
-    pos   = 0;
+    tmp = (char*)malloc_safe( vec_size );
 
-    for( i=(vec->width - 1); i>=0; i-- ) {
-      switch( vec->value[i].part.val.value ) {
-        case 0 :  value = value;                                              break;
-        case 1 :  value = (value < 16) ? ((1 << ((unsigned)i%group)) | value) : value;  break;
-        case 2 :  value = 16;                                                 break;
-        case 3 :  value = 17;                                                 break;
-        default:  break;
-      }
-      assert( pos < vec_size );
-      if( ((unsigned)i % group) == 0 ) {
-        switch( value ) {
-          case 0x0 :  if( (pos > 0) || (i == 0) ) { tmp[pos] = '0';  pos++; }  break;
-          case 0x1 :  tmp[pos] = '1';  pos++;  break;
-          case 0x2 :  tmp[pos] = '2';  pos++;  break;
-          case 0x3 :  tmp[pos] = '3';  pos++;  break;
-          case 0x4 :  tmp[pos] = '4';  pos++;  break;
-          case 0x5 :  tmp[pos] = '5';  pos++;  break;
-          case 0x6 :  tmp[pos] = '6';  pos++;  break;
-          case 0x7 :  tmp[pos] = '7';  pos++;  break;
-          case 0x8 :  tmp[pos] = '8';  pos++;  break;
-          case 0x9 :  tmp[pos] = '9';  pos++;  break;
-          case 0xa :  tmp[pos] = 'A';  pos++;  break;
-          case 0xb :  tmp[pos] = 'B';  pos++;  break;
-          case 0xc :  tmp[pos] = 'C';  pos++;  break;
-          case 0xd :  tmp[pos] = 'D';  pos++;  break;
-          case 0xe :  tmp[pos] = 'E';  pos++;  break;
-          case 0xf :  tmp[pos] = 'F';  pos++;  break;
-          case 16  :  tmp[pos] = 'X';  pos++;  break;
-          case 17  :  tmp[pos] = 'Z';  pos++;  break;
-          default  :  
-            /* Value in vector_to_string exceeds allowed limit */
-            assert( value <= 17 );
-            /*@-unreachable@*/
-            break;
-            /*@=unreachable@*/
+    switch( vec->suppl.part.data_type ) {
+      case VDATA_UL :
+        {
+          ulong value = 0;
+          int    i;
+          for( i=(vec->width - 1); i>=0; i-- ) {
+            ulong* entry = vec->value.ul[UL_DIV(i)];
+            if( ((entry[VTYPE_INDEX_VAL_VALH] >> UL_MOD(i)) & 0x1) == 1 ) {
+              value = ((entry[VTYPE_INDEX_VAL_VALL] >> UL_MOD(i)) & 0x1) + 16;
+            } else if( ((entry[VTYPE_INDEX_VAL_VALL] >> UL_MOD(i)) & 0x1) == 1 ) {
+              value = (value < 16) ? (((ulong)1 << (UL_MOD(i) % group)) | value) : value;
+            }
+            assert( pos < vec_size );
+            if( (i % group) == 0 ) {
+              switch( value ) {
+                case 0x0 :  if( (pos > 0) || (i == 0) || show_all ) { tmp[pos] = '0';  pos++; }  break;
+                case 0x1 :  tmp[pos] = '1';  pos++;  break;
+                case 0x2 :  tmp[pos] = '2';  pos++;  break;
+                case 0x3 :  tmp[pos] = '3';  pos++;  break;
+                case 0x4 :  tmp[pos] = '4';  pos++;  break;
+                case 0x5 :  tmp[pos] = '5';  pos++;  break;
+                case 0x6 :  tmp[pos] = '6';  pos++;  break;
+                case 0x7 :  tmp[pos] = '7';  pos++;  break;
+                case 0x8 :  tmp[pos] = '8';  pos++;  break;
+                case 0x9 :  tmp[pos] = '9';  pos++;  break;
+                case 0xa :  tmp[pos] = 'A';  pos++;  break;
+                case 0xb :  tmp[pos] = 'B';  pos++;  break;
+                case 0xc :  tmp[pos] = 'C';  pos++;  break;
+                case 0xd :  tmp[pos] = 'D';  pos++;  break;
+                case 0xe :  tmp[pos] = 'E';  pos++;  break;
+                case 0xf :  tmp[pos] = 'F';  pos++;  break;
+                case 16  :  tmp[pos] = 'X';  pos++;  break;
+                case 17  :  tmp[pos] = 'Z';  pos++;  break;
+                default  :  
+                  /* Value in vector_to_string exceeds allowed limit */
+                  assert( value <= 17 );
+                  /*@-unreachable@*/
+                  break;
+                  /*@=unreachable@*/
+              }
+              value = 0;
+            }
+          }
         }
-        value = 0;
-      }
+        break;
+      default :  assert( 0 );  break;
     }
 
     tmp[pos] = '\0';
@@ -1659,22 +2554,15 @@ void vector_from_string(
 
     } else {
 
-      nibble ored = 0;
-
       /* Create vector */
-      *vec  = vector_create( size, VTYPE_VAL, TRUE );
+      *vec  = vector_create( size, VTYPE_VAL, VDATA_UL, TRUE );
       *base = QSTRING;
       pos   = 0;
 
       for( i=(strlen( *str ) - 1); i>=0; i-- ) {
-        for( j=0; j<8; j++ ) {
-          (*vec)->value[pos].part.val.value = ((nibble)((*str)[i]) >> j) & 0x1;
-          ored |= (*vec)->value[pos].part.val.value;
-          pos++;
-        }
+        (*vec)->value.ul[pos>>(UL_DIV_VAL-3)][VTYPE_INDEX_VAL_VALL] |= (ulong)((*str)[i]) << ((pos & (UL_MOD_VAL >> 3)) << 3);
+        pos++;
       }
-
-      (*vec)->suppl.all |= (ored << 2);
 
     }
 
@@ -1737,7 +2625,7 @@ void vector_from_string(
     } else {
 
       /* Create vector */
-      *vec = vector_create( size, VTYPE_VAL, TRUE );
+      *vec = vector_create( size, VTYPE_VAL, VDATA_UL, TRUE );
       if( *base == DECIMAL ) {
         vector_from_int( *vec, ato32( value ) );
       } else {
@@ -1781,10 +2669,9 @@ bool vector_vcd_assign(
   int         lsb
 ) { PROFILE(VECTOR_VCD_ASSIGN);
 
-  bool        retval = FALSE;  /* Return value for this function */
-  const char* ptr;             /* Pointer to current character under evaluation */
-  int         i;               /* Loop iterator */
-  vec_data    vval;            /* Temporary vector value holder */
+  bool          retval = FALSE;  /* Return value for this function */
+  const char*   ptr;             /* Pointer to current character under evaluation */
+  int           i;               /* Loop iterator */
 
   assert( vec != NULL );
   assert( value != NULL );
@@ -1795,42 +2682,193 @@ bool vector_vcd_assign(
   i   = (lsb > 0) ? lsb : 0;
   msb = (lsb > 0) ? msb : msb;
 
-  /* Clear the unknown and not_zero bits */
-  VSUPPL_CLR_NZ_AND_UNK( vec->suppl )
-    
-  while( ptr >= value ) {
-
-    switch( *ptr ) {
-      case '0':  vval.all = 0;  break;
-      case '1':  vval.all = 1;  break;
-      case 'x':  vval.all = 2;  break;
-      case 'z':  vval.all = 3;  break;
-      default :  
-        {
-          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "VCD file contains value change character that is not four-state" );
-          assert( rv < USER_MSG_LENGTH );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          printf( "vector Throw G\n" );
-          Throw 0;
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        ulong scratchl[UL_DIV(MAX_BIT_WIDTH)];
+        ulong scratchh[UL_DIV(MAX_BIT_WIDTH)];
+        scratchl[UL_DIV(i)] = 0;
+        scratchh[UL_DIV(i)] = 0;
+        while( ptr >= value ) {
+          unsigned int index  = UL_DIV(i);
+          unsigned int offset = UL_MOD(i);
+          ulong        bit    = ((ulong)1 << offset);
+          if( offset == 0 ) {
+            scratchl[index] = 0;
+            scratchh[index] = 0;
+          }
+          scratchl[index] |= ((*ptr == '1') || (*ptr == 'z')) ? bit : 0;
+          scratchh[index] |= ((*ptr == 'x') || (*ptr == 'z')) ? bit : 0;
+          ptr--;
+          i++;
         }
-        /*@-unreachable@*/
-        break;
-        /*@=unreachable@*/
-    }
-
-    retval |= vector_set_value( vec, &vval, 1, 0, i );
-
-    ptr--;
-    i++;
-
+        ptr++;
+        /* Bit-fill */
+        for( ; i<=msb; i++ ) {
+          unsigned int index  = UL_DIV(i);
+          unsigned int offset = UL_MOD(i);
+          ulong        bit    = ((ulong)1 << offset);
+          if( offset == 0 ) {
+            scratchl[index] = 0;
+            scratchh[index] = 0;
+          }
+          scratchl[index] |= (*ptr == 'z') ? bit : 0;
+          scratchh[index] |= ((*ptr == 'x') || (*ptr == 'z')) ? bit : 0;
+        }
+        retval = vector_set_coverage_and_assign_ulong( vec, scratchl, scratchh, lsb, msb );
+      }
+      break;
+    default :  assert( 0 );  break;
   }
 
-  ptr++;
+  /* Set the set bit to indicate that this vector has been evaluated */
+  vec->suppl.part.set = 1;
 
-  /* Perform VCD value bit-fill if specified value did not match width of vector value */
-  for( ; i<=msb; i++ ) {
-    if( vval.all == 1 ) { vval.all = 0; }
-    retval |= vector_set_value( vec, &vval, 1, 0, i );
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \param tgt    Target vector for operation results to be stored.
+ \param src1   Source vector 1 to perform operation on.
+ \param src2   Source vector 2 to perform operation on.
+
+ \return Returns TRUE if assigned value differs from original vector value; otherwise,
+         returns FALSE.
+
+ Performs a bitwise AND operation.  Vector sizes will be properly compensated by
+ placing zeroes.
+*/
+bool vector_bitwise_and_op(
+  vector* tgt,
+  vector* src1,
+  vector* src2
+) { PROFILE(VECTOR_BITWISE_AND_OP);
+  
+  bool retval;  /* Return value for this function */
+
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_UL :
+      { 
+        ulong        scratchl[UL_DIV(MAX_BIT_WIDTH)];
+        ulong        scratchh[UL_DIV(MAX_BIT_WIDTH)];
+        int          src1_size = UL_SIZE(src1->width);
+        int          src2_size = UL_SIZE(src2->width);
+        unsigned int i;
+        for( i=0; i<UL_SIZE(tgt->width); i++ ) {
+          ulong* entry1 = src1->value.ul[i];
+          ulong* entry2 = src2->value.ul[i];
+          ulong  val1_l = (i<src1_size) ? entry1[VTYPE_INDEX_VAL_VALL] : 0;
+          ulong  val1_h = (i<src1_size) ? entry1[VTYPE_INDEX_VAL_VALH] : 0;
+          ulong  val2_l = (i<src2_size) ? entry2[VTYPE_INDEX_VAL_VALL] : 0;
+          ulong  val2_h = (i<src2_size) ? entry2[VTYPE_INDEX_VAL_VALH] : 0;
+          scratchl[i]   = ~(val1_h | val2_h) & (val1_l & val2_l);
+          scratchh[i]   = (val1_h & val2_h) | (val1_h & val2_l) | (val2_h & val1_l);
+        }
+        retval = vector_set_coverage_and_assign_ulong( tgt, scratchl, scratchh, 0, (tgt->width - 1) );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( retval );
+ 
+}
+
+/*!
+ \param tgt    Target vector for operation results to be stored.
+ \param src1   Source vector 1 to perform operation on.
+ \param src2   Source vector 2 to perform operation on.
+
+ \return Returns TRUE if assigned value differs from original vector value; otherwise,
+         returns FALSE.
+
+ Performs a bitwise NAND operation.  Vector sizes will be properly compensated by
+ placing zeroes.
+*/
+bool vector_bitwise_nand_op(           
+  vector* tgt,                        
+  vector* src1,                       
+  vector* src2                        
+) { PROFILE(VECTOR_BITWISE_NAND_OP);   
+                                      
+  bool retval;  /* Return value for this function */
+                                      
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_UL :                  
+      {
+        static ulong scratchl[UL_DIV(MAX_BIT_WIDTH)];
+        static ulong scratchh[UL_DIV(MAX_BIT_WIDTH)];
+        int          src1_size = UL_SIZE(src1->width);
+        int          src2_size = UL_SIZE(src2->width);
+        unsigned int  i;
+        for( i=0; i<UL_SIZE(tgt->width); i++ ) {
+          ulong* entry1 = src1->value.ul[i];
+          ulong* entry2 = src2->value.ul[i];
+          ulong  val1_l = (i<src1_size) ? entry1[VTYPE_INDEX_VAL_VALL] : 0;
+          ulong  val1_h = (i<src1_size) ? entry1[VTYPE_INDEX_VAL_VALH] : 0;
+          ulong  val2_l = (i<src2_size) ? entry2[VTYPE_INDEX_VAL_VALL] : 0;
+          ulong  val2_h = (i<src2_size) ? entry2[VTYPE_INDEX_VAL_VALH] : 0;
+          scratchl[i] = ~(val1_h | val2_h) & ~(val1_l & val2_l);
+          scratchh[i] = (val1_h & val2_h) | (val1_h & ~val2_l) | (val2_h & ~val1_l);
+        }
+        retval = vector_set_coverage_and_assign_ulong( tgt, scratchl, scratchh, 0, (tgt->width - 1) );
+      }
+      break;
+    default :  assert( 0 );  break; 
+  }
+
+  PROFILE_END;
+
+  return( retval );
+ 
+}
+
+/*!
+ \param tgt    Target vector for operation results to be stored.
+ \param src1   Source vector 1 to perform operation on.
+ \param src2   Source vector 2 to perform operation on.
+
+ \return Returns TRUE if assigned value differs from original vector value; otherwise,
+         returns FALSE.
+
+ Performs a bitwise OR operation.  Vector sizes will be properly compensated by
+ placing zeroes.
+*/
+bool vector_bitwise_or_op(
+  vector* tgt,
+  vector* src1,
+  vector* src2
+) { PROFILE(VECTOR_BITWISE_OR_OP);
+
+  bool retval;  /* Return value for this function */
+
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        static ulong scratchl[UL_DIV(MAX_BIT_WIDTH)];
+        static ulong scratchh[UL_DIV(MAX_BIT_WIDTH)];
+        int          src1_size = UL_SIZE(src1->width);
+        int          src2_size = UL_SIZE(src2->width);
+        unsigned int  i;
+        for( i=0; i<UL_SIZE(tgt->width); i++ ) {
+          ulong* entry1 = src1->value.ul[i];
+          ulong* entry2 = src2->value.ul[i];
+          ulong  val1_l = (i<src1_size) ? entry1[VTYPE_INDEX_VAL_VALL] : 0;
+          ulong  val1_h = (i<src1_size) ? entry1[VTYPE_INDEX_VAL_VALH] : 0;
+          ulong  val2_l = (i<src2_size) ? entry2[VTYPE_INDEX_VAL_VALL] : 0;
+          ulong  val2_h = (i<src2_size) ? entry2[VTYPE_INDEX_VAL_VALH] : 0;
+          scratchl[i] = (val1_l & ~val1_h) | (val2_l & ~val2_h);
+          scratchh[i] = ~scratchl[i] & (val1_h | val2_h);
+        }
+        retval = vector_set_coverage_and_assign_ulong( tgt, scratchl, scratchh, 0, (tgt->width - 1) );
+      }
+      break;
+    default :  assert( 0 );  break;
   }
 
   PROFILE_END;
@@ -1843,54 +2881,249 @@ bool vector_vcd_assign(
  \param tgt    Target vector for operation results to be stored.
  \param src1   Source vector 1 to perform operation on.
  \param src2   Source vector 2 to perform operation on.
- \param optab  16-entry operation table.
 
  \return Returns TRUE if assigned value differs from original vector value; otherwise,
          returns FALSE.
 
- Generic function that takes in two vectors and performs a bitwise
- operation by using the specified operation table.  The operation
- table consists of an array of 16 integers where the integer values
- range from 0 to 3 (0=0, 1=1, 2=x, 3=z).  src1 will be left shifted
- by 2 and added to the value of src2 to obtain an index to the operation
- table.  The value specified at that location will be assigned to the
- corresponding bit location of the target vector.  Vector sizes will
- be properly compensated by placing zeroes.
+ Performs a bitwise NOR operation.  Vector sizes will be properly compensated by
+ placing zeroes.
 */
-bool vector_bitwise_op(
+bool vector_bitwise_nor_op(
   vector* tgt,
   vector* src1,
-  vector* src2,
-  nibble* optab
-) { PROFILE(VECTOR_BITWISE_OP);
+  vector* src2
+) { PROFILE(VECTOR_BITWISE_NOR_OP);
 
-  bool retval = FALSE;  /* Return value for this function */
-  int  i;               /* Loop iterator */
+  bool retval;  /* Return value for this function */
 
-  /* Clear the unknown and not_zero bits */
-  VSUPPL_CLR_NZ_AND_UNK( tgt->suppl )
-    
-  for( i=0; i<tgt->width; i++ ) {
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        static ulong scratchl[UL_DIV(MAX_BIT_WIDTH)];
+        static ulong scratchh[UL_DIV(MAX_BIT_WIDTH)];
+        int          src1_size = UL_SIZE(src1->width);
+        int          src2_size = UL_SIZE(src2->width);
+        unsigned int  i;
+        for( i=0; i<UL_SIZE(tgt->width); i++ ) {
+          ulong* entry1 = src1->value.ul[i];
+          ulong* entry2 = src2->value.ul[i];
+          ulong  val1_l = (i<src1_size) ? entry1[VTYPE_INDEX_VAL_VALL] : 0;
+          ulong  val1_h = (i<src1_size) ? entry1[VTYPE_INDEX_VAL_VALH] : 0;
+          ulong  val2_l = (i<src2_size) ? entry2[VTYPE_INDEX_VAL_VALL] : 0;
+          ulong  val2_h = (i<src2_size) ? entry2[VTYPE_INDEX_VAL_VALH] : 0;
+          scratchl[i] = ~(val1_h | val2_h) & ~(val1_l | val2_l);
+          scratchh[i] =  (val1_h & val2_h) |  (val1_h & val2_l) | (val2_h & val1_l);
+        }
+        retval = vector_set_coverage_and_assign_ulong( tgt, scratchl, scratchh, 0, (tgt->width - 1) );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
 
-    vec_data vecval;  /* Temporary nibble value for vector */
-    nibble   bit1;    /* Current bit value for src1 */
-    nibble   bit2;    /* Current bit value for src2 */
+  PROFILE_END;
 
-    if( src1->width > i ) {
-      bit1 = src1->value[i].part.val.value;
+  return( retval );
+
+}
+
+/*!
+ \param tgt    Target vector for operation results to be stored.
+ \param src1   Source vector 1 to perform operation on.
+ \param src2   Source vector 2 to perform operation on.
+
+ \return Returns TRUE if assigned value differs from original vector value; otherwise,
+         returns FALSE.
+
+ Performs a bitwise XOR operation.  Vector sizes will be properly compensated by
+ placing zeroes.
+*/
+bool vector_bitwise_xor_op(
+  vector* tgt,
+  vector* src1,
+  vector* src2
+) { PROFILE(VECTOR_BITWISE_XOR_OP);
+
+  bool retval;  /* Return value for this function */
+
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        static ulong scratchl[UL_DIV(MAX_BIT_WIDTH)];
+        static ulong scratchh[UL_DIV(MAX_BIT_WIDTH)];
+        int          src1_size = UL_SIZE(src1->width);
+        int          src2_size = UL_SIZE(src2->width);
+        unsigned int  i;
+        for( i=0; i<UL_SIZE(tgt->width); i++ ) {
+          ulong* entry1 = src1->value.ul[i];
+          ulong* entry2 = src2->value.ul[i];
+          ulong  val1_l = (i<src1_size) ? entry1[VTYPE_INDEX_VAL_VALL] : 0;
+          ulong  val1_h = (i<src1_size) ? entry1[VTYPE_INDEX_VAL_VALH] : 0;
+          ulong  val2_l = (i<src2_size) ? entry2[VTYPE_INDEX_VAL_VALL] : 0;
+          ulong  val2_h = (i<src2_size) ? entry2[VTYPE_INDEX_VAL_VALH] : 0;
+          scratchl[i] = (val1_l ^ val2_l) & ~(val1_h | val2_h);
+          scratchh[i] = (val1_h | val2_h);
+        }
+        retval = vector_set_coverage_and_assign_ulong( tgt, scratchl, scratchh, 0, (tgt->width - 1) );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \param tgt    Target vector for operation results to be stored.
+ \param src1   Source vector 1 to perform operation on.
+ \param src2   Source vector 2 to perform operation on.
+
+ \return Returns TRUE if assigned value differs from original vector value; otherwise,
+         returns FALSE.
+
+ Performs a bitwise NXOR operation.  Vector sizes will be properly compensated by
+ placing zeroes.
+*/
+bool vector_bitwise_nxor_op(
+  vector* tgt,
+  vector* src1,
+  vector* src2
+) { PROFILE(VECTOR_BITWISE_NXOR_OP);
+  
+  bool retval;  /* Return value for this function */
+
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_UL :
+      { 
+        static ulong scratchl[UL_DIV(MAX_BIT_WIDTH)];
+        static ulong scratchh[UL_DIV(MAX_BIT_WIDTH)];
+        int          src1_size = UL_SIZE(src1->width);
+        int          src2_size = UL_SIZE(src2->width);
+        unsigned int  i;
+        for( i=0; i<UL_SIZE(tgt->width); i++ ) {
+          ulong* entry1 = src1->value.ul[i];
+          ulong* entry2 = src2->value.ul[i];
+          ulong  val1_l = (i<src1_size) ? entry1[VTYPE_INDEX_VAL_VALL] : 0;
+          ulong  val1_h = (i<src1_size) ? entry1[VTYPE_INDEX_VAL_VALH] : 0;
+          ulong  val2_l = (i<src2_size) ? entry2[VTYPE_INDEX_VAL_VALL] : 0;
+          ulong  val2_h = (i<src2_size) ? entry2[VTYPE_INDEX_VAL_VALH] : 0;
+          scratchl[i] = ~(val1_l ^ val2_l) & ~(val1_h | val2_h);
+          scratchh[i] =  (val1_h | val2_h);
+        }
+        retval = vector_set_coverage_and_assign_ulong( tgt, scratchl, scratchh, 0, (tgt->width - 1) );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( retval );
+ 
+}
+
+/*!
+ \return Returns TRUE if vectors need to be reversed for comparison purposes; otherwise, returns FALSE.
+*/
+inline static bool vector_reverse_for_cmp_ulong(
+  const vector* left,  /*!< Pointer to left vector that is being compared */
+  const vector* right  /*!< Pointer to right vector that is being compared */
+) {
+
+  return( left->suppl.part.is_signed && right->suppl.part.is_signed &&
+          (((left->value.ul[UL_DIV(left->width-1)][VTYPE_INDEX_VAL_VALL]   >> UL_MOD(left->width  - 1)) & 0x1) !=
+           ((right->value.ul[UL_DIV(right->width-1)][VTYPE_INDEX_VAL_VALL] >> UL_MOD(right->width - 1)) & 0x1)) );
+
+}
+
+/*!
+*/
+inline static void vector_copy_val_and_sign_extend_ulong(
+            const vector* vec,         /*!< Pointer to vector to copy and sign extend */
+            unsigned int  index,       /*!< Current ulong index to copy and sign extend */
+            bool          msb_is_one,  /*!< Set to TRUE if MSB is a value of one */
+  /*@out@*/ ulong*        vall,        /*!< Pointer to the low ulong to copy and sign extend to */
+  /*@out@*/ ulong*        valh         /*!< Pointer to the high ulong to copy and sign extend to */
+) {
+
+  unsigned int last_index = UL_DIV(vec->width - 1);
+
+  /* If we are at or exceeding the size of the current vector, it is a signed vector and the MSB is one, sign extend */
+  if( (index >= last_index) && (vec->suppl.part.is_signed == 1) && msb_is_one ) {
+    if( index == last_index ) {
+      *vall = vec->value.ul[index][VTYPE_INDEX_VAL_VALL] | UL_LMASK(vec->width);
+      *valh = vec->value.ul[index][VTYPE_INDEX_VAL_VALH];
     } else {
-      bit1 = 0;
+      *vall = UL_SET;
+      *valh = 0;
     }
 
-    if( src2->width > i ) {
-      bit2 = src2->value[i].part.val.value;
-    } else {
-      bit2 = 0;
+  /* Otherwise, if we are exceeding the index, set the vall and valh to 0 */
+  } else if( index > last_index ) {
+    *vall = 0;
+    *valh = 0;
+
+  /* Otherwise, just copy the value */
+  } else {
+    *vall = vec->value.ul[index][VTYPE_INDEX_VAL_VALL];
+    *valh = vec->value.ul[index][VTYPE_INDEX_VAL_VALH];
+  }
+  
+}
+
+/*!
+ \param tgt    Target vector for storage of results.
+ \param left   Expression on left of less than sign.
+ \param right  Expression on right of less than sign.
+
+ \return Returns TRUE if the assigned value differs from the original value; otherwise, returns FALSE.
+
+ Performs a less-than comparison of the left and right expressions.
+*/
+bool vector_op_lt(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+) { PROFILE(VECTOR_OP_LT);
+
+  bool retval;  /* Return value for this function */
+
+  if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
+
+    retval = vector_set_to_x( tgt );
+
+  } else {
+
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_UL :
+        {
+          ulong        scratchl;
+          ulong        scratchh    = 0;
+          unsigned int lsize       = UL_SIZE(left->width);
+          unsigned int rsize       = UL_SIZE(right->width);
+          int          i           = ((lsize < rsize) ? rsize : lsize);
+          unsigned int lmsb        = (left->width - 1);
+          unsigned int rmsb        = (right->width - 1);
+          bool         lmsb_is_one = (((left->value.ul[UL_DIV(lmsb)][VTYPE_INDEX_VAL_VALL]  >> UL_MOD(lmsb)) & 1) == 1);
+          bool         rmsb_is_one = (((right->value.ul[UL_DIV(rmsb)][VTYPE_INDEX_VAL_VALL] >> UL_MOD(rmsb)) & 1) == 1);
+          ulong        lvall;
+          ulong        lvalh;
+          ulong        rvall;
+          ulong        rvalh;
+          do {
+            i--;
+            vector_copy_val_and_sign_extend_ulong( left,  i, lmsb_is_one, &lvall, &lvalh );
+            vector_copy_val_and_sign_extend_ulong( right, i, rmsb_is_one, &rvall, &rvalh );
+          } while( (i > 0) && (lvall == rvall) );
+          scratchl = vector_reverse_for_cmp_ulong( left, right ) ? (rvall < lvall) : (lvall < rvall);
+          retval   = vector_set_coverage_and_assign_ulong( tgt, &scratchl, &scratchh, 0, 0 );
+        }
+        break;
+      default :  assert( 0 );  break;
     }
 
-    vecval.part.val.value = optab[ ((bit1 << 2) | bit2) ];
-    retval |= vector_set_value( tgt, &vecval, 1, 0, i );
-    
   }
 
   PROFILE_END;
@@ -1903,130 +3136,579 @@ bool vector_bitwise_op(
  \param tgt    Target vector for storage of results.
  \param left   Expression on left of less than sign.
  \param right  Expression on right of less than sign.
- \param comp_type  Comparison type (0=LT, 1=GT, 2=EQ, 3=CEQ)
 
  \return Returns TRUE if the assigned value differs from the original value; otherwise, returns FALSE.
 
- Performs a bitwise comparison (starting at most significant bit) of the
- left and right expressions.
+ Performs a less-than-or-equal comparison of the left and right expressions.
 */
-bool vector_op_compare(
-  vector* tgt,
-  vector* left,
-  vector* right,
-  int     comp_type
-) { PROFILE(VECTOR_OP_COMPARE);
+bool vector_op_le(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+) { PROFILE(VECTOR_OP_LE);
 
-  bool     retval = FALSE;  /* Return value for this function */
-  int      pos;             /* Loop iterator */
-  nibble   lbit   = 0;      /* Current left expression bit value */
-  nibble   rbit   = 0;      /* Current right expression bit value */
-  nibble   tmp;             /* Temporary nibble holder */
-  bool     done   = FALSE;  /* Specifies continuation of comparison */
-  vec_data value;           /* Result to be stored in tgt */
-  bool     is_signed;       /* Specifies if we are doing a signed compare */
+  bool retval;  /* Return value for this function */
 
-  /* Clear the unknown and not_zero bits */
-  VSUPPL_CLR_NZ_AND_UNK( tgt->suppl )
-    
-  /* Determine at which bit position to begin comparing, start at MSB of largest vector */
-  if( left->width > right->width ) {
-    pos = left->width - 1;
-  } else {
-    pos = right->width - 1;
-  }
+  if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
 
-  /* Calculate if we are doing a signed compare */
-  is_signed = (left->suppl.part.is_signed == 1) && (right->suppl.part.is_signed == 1);
-
-  /* Initialize lbit/rbit values */
-  if( left->value[left->width-1].part.val.value < 2 ) {
-    lbit = is_signed ? left->value[left->width-1].part.val.value : 0;
-  } else {
-    lbit = 2;
-  }
-  if( right->value[right->width-1].part.val.value < 2 ) {
-    rbit = is_signed ? right->value[right->width-1].part.val.value : 0;
-  } else {
-    rbit = 2;
-  }
-
-  /* If we are signed and the MSBs are different values, don't go further and reverse the lbit/rbit values */
-  if( is_signed && (lbit != rbit) ) {
-    done = TRUE;
-    tmp  = lbit;
-    lbit = rbit;
-    rbit = tmp;
-  }
-
-  while( (pos >= 0) && !done ) {
-
-    if( pos < left->width ) {
-      lbit = left->value[pos].part.val.value;
-    }
-
-    if( pos < right->width ) {
-      rbit = right->value[pos].part.val.value;
-    }
-
-    if( comp_type == COMP_CXEQ ) {
-      if( (lbit < 2) && (rbit < 2) && (lbit != rbit) ) {
-        done = TRUE;
-      }
-    } else if( comp_type == COMP_CZEQ ) {
-      if( (lbit < 3) && (rbit < 3) && (lbit != rbit) ) {
-        done = TRUE;
-      }
-    } else {
-      if( (lbit != rbit) || (((lbit >= 2) || (rbit >= 2)) && (comp_type != COMP_CEQ) && (comp_type != COMP_CNE)) ) {
-        done = TRUE;
-      }
-    }
-
-    pos--;
-
-  }
-
-  if( ((lbit >= 2) || (rbit >= 2)) && 
-      (comp_type != COMP_CEQ)      && 
-      (comp_type != COMP_CNE)      &&
-      (comp_type != COMP_CXEQ)     &&
-      (comp_type != COMP_CZEQ) ) {
-
-    value.all = 2;
+    retval = vector_set_to_x( tgt );
 
   } else {
 
-    switch( comp_type ) {
-      case COMP_LT   :  value.all = ((lbit == 0) && (rbit == 1))                   ? 1 : 0;  break;
-      case COMP_GT   :  value.all = ((lbit == 1) && (rbit == 0))                   ? 1 : 0;  break;
-      case COMP_LE   :  value.all = ((lbit == 1) && (rbit == 0))                   ? 0 : 1;  break;
-      case COMP_GE   :  value.all = ((lbit == 0) && (rbit == 1))                   ? 0 : 1;  break;
-      case COMP_EQ   :
-      case COMP_CEQ  :  value.all = (lbit == rbit)                                 ? 1 : 0;  break;
-      case COMP_CXEQ :  value.all = ((lbit == rbit) || (lbit >= 2) || (rbit >= 2)) ? 1 : 0;  break;
-      case COMP_CZEQ :  value.all = ((lbit == rbit) || (lbit >= 3) || (rbit >= 3)) ? 1 : 0;  break;
-      case COMP_NE   :
-      case COMP_CNE  :  value.all = (lbit == rbit)                                 ? 0 : 1;  break;
-      default        :
-        assert( (comp_type == COMP_LT)   ||
-                (comp_type == COMP_GT)   ||
-                (comp_type == COMP_LE)   ||
-                (comp_type == COMP_GE)   ||
-                (comp_type == COMP_EQ)   ||
-                (comp_type == COMP_CEQ)  ||
-                (comp_type == COMP_CXEQ) ||
-                (comp_type == COMP_CZEQ) ||
-                (comp_type == COMP_NE)   ||
-                (comp_type == COMP_CNE) );
-        /*@-unreachable@*/
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_UL :
+        {
+          ulong        scratchl;
+          ulong        scratchh    = 0;
+          unsigned int lsize       = UL_SIZE(left->width);
+          unsigned int rsize       = UL_SIZE(right->width);
+          int          i           = ((lsize < rsize) ? rsize : lsize);
+          unsigned int lmsb        = (left->width - 1);
+          unsigned int rmsb        = (right->width - 1);
+          bool         lmsb_is_one = (((left->value.ul[UL_DIV(lmsb)][VTYPE_INDEX_VAL_VALL]  >> UL_MOD(lmsb)) & 1) == 1);
+          bool         rmsb_is_one = (((right->value.ul[UL_DIV(rmsb)][VTYPE_INDEX_VAL_VALL] >> UL_MOD(rmsb)) & 1) == 1);
+          ulong        lvall;
+          ulong        lvalh;
+          ulong        rvall;
+          ulong        rvalh;
+          do {
+            i--;
+            vector_copy_val_and_sign_extend_ulong( left,  i, lmsb_is_one, &lvall, &lvalh );
+            vector_copy_val_and_sign_extend_ulong( right, i, rmsb_is_one, &rvall, &rvalh );
+          } while( (i > 0) && (lvall == rvall) );
+          scratchl = vector_reverse_for_cmp_ulong( left, right ) ? (rvall <= lvall) : (lvall <= rvall);
+          retval   = vector_set_coverage_and_assign_ulong( tgt, &scratchl, &scratchh, 0, 0 );
+        }
         break;
-        /*@=unreachable@*/
+      default :  assert( 0 );  break;
     }
 
   }
 
-  retval = vector_set_value( tgt, &value, 1, 0, 0 );
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \param tgt    Target vector for storage of results.
+ \param left   Expression on left of greater-than sign.
+ \param right  Expression on right of greater-than sign.
+
+ \return Returns TRUE if the assigned value differs from the original value; otherwise, returns FALSE.
+
+ Performs a greater-than comparison of the left and right expressions.
+*/
+bool vector_op_gt(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+) { PROFILE(VECTOR_OP_GT);
+
+  bool retval;  /* Return value for this function */
+
+  if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
+ 
+    retval = vector_set_to_x( tgt );
+
+  } else {
+
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_UL :
+        {
+          ulong        scratchl;
+          ulong        scratchh    = 0;
+          unsigned int lsize       = UL_SIZE(left->width);
+          unsigned int rsize       = UL_SIZE(right->width);
+          int          i           = ((lsize < rsize) ? rsize : lsize);
+          unsigned int lmsb        = (left->width - 1);
+          unsigned int rmsb        = (right->width - 1);
+          bool         lmsb_is_one = (((left->value.ul[UL_DIV(lmsb)][VTYPE_INDEX_VAL_VALL]  >> UL_MOD(lmsb)) & 1) == 1);
+          bool         rmsb_is_one = (((right->value.ul[UL_DIV(rmsb)][VTYPE_INDEX_VAL_VALL] >> UL_MOD(rmsb)) & 1) == 1);
+          ulong        lvall;
+          ulong        lvalh;
+          ulong        rvall;
+          ulong        rvalh;
+          do {
+            i--;
+            vector_copy_val_and_sign_extend_ulong( left,  i, lmsb_is_one, &lvall, &lvalh );
+            vector_copy_val_and_sign_extend_ulong( right, i, rmsb_is_one, &rvall, &rvalh );
+          } while( (i > 0) && (lvall == rvall) );
+          scratchl = vector_reverse_for_cmp_ulong( left, right ) ? (rvall > lvall) : (lvall > rvall);
+          retval   = vector_set_coverage_and_assign_ulong( tgt, &scratchl, &scratchh, 0, 0 );
+        }
+        break;
+      default :  assert( 0 );  break;
+    }
+
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \param tgt    Target vector for storage of results.
+ \param left   Expression on left of greater-than-or-equal sign.
+ \param right  Expression on right of greater-than-or-equal sign.
+
+ \return Returns TRUE if the assigned value differs from the original value; otherwise, returns FALSE.
+
+ Performs a greater-than-or-equal comparison of the left and right expressions.
+*/
+bool vector_op_ge(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+) { PROFILE(VECTOR_OP_GE);
+
+  bool retval;  /* Return value for this function */
+
+  if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
+
+    retval = vector_set_to_x( tgt );
+
+  } else {
+
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_UL :
+        {
+          ulong        scratchl;
+          ulong        scratchh    = 0;
+          unsigned int lsize       = UL_SIZE(left->width);
+          unsigned int rsize       = UL_SIZE(right->width);
+          int          i           = ((lsize < rsize) ? rsize : lsize);
+          unsigned int lmsb        = (left->width - 1);
+          unsigned int rmsb        = (right->width - 1);
+          bool         lmsb_is_one = (((left->value.ul[UL_DIV(lmsb)][VTYPE_INDEX_VAL_VALL]  >> UL_MOD(lmsb)) & 1) == 1);
+          bool         rmsb_is_one = (((right->value.ul[UL_DIV(rmsb)][VTYPE_INDEX_VAL_VALL] >> UL_MOD(rmsb)) & 1) == 1);
+          ulong        lvall;
+          ulong        lvalh;
+          ulong        rvall;
+          ulong        rvalh;
+          do {
+            i--;
+            vector_copy_val_and_sign_extend_ulong( left,  i, lmsb_is_one, &lvall, &lvalh );
+            vector_copy_val_and_sign_extend_ulong( right, i, rmsb_is_one, &rvall, &rvalh );
+          } while( (i > 0) && (lvall == rvall) );
+          scratchl = vector_reverse_for_cmp_ulong( left, right ) ? (rvall >= lvall) : (lvall >= rvall);
+          retval   = vector_set_coverage_and_assign_ulong( tgt, &scratchl, &scratchh, 0, 0 );
+        }
+        break;
+      default :  assert( 0 );  break;
+    }
+
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \param tgt    Target vector for storage of results.
+ \param left   Expression on left of greater-than-or-equal sign.
+ \param right  Expression on right of greater-than-or-equal sign.
+
+ \return Returns TRUE if the assigned value differs from the original value; otherwise, returns FALSE.
+
+ Performs an equal comparison of the left and right expressions.
+*/
+bool vector_op_eq(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+) { PROFILE(VECTOR_OP_EQ);
+
+  bool retval;  /* Return value for this function */
+
+  if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
+
+    retval = vector_set_to_x( tgt );
+
+  } else {
+
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_UL :
+        {
+          ulong        scratchl;
+          ulong        scratchh    = 0;
+          unsigned int lsize       = UL_SIZE(left->width);
+          unsigned int rsize       = UL_SIZE(right->width);
+          int          i           = ((lsize < rsize) ? rsize : lsize);
+          unsigned int lmsb        = (left->width - 1);
+          unsigned int rmsb        = (right->width - 1);
+          bool         lmsb_is_one = (((left->value.ul[UL_DIV(lmsb)][VTYPE_INDEX_VAL_VALL]  >> UL_MOD(lmsb)) & 1) == 1);
+          bool         rmsb_is_one = (((right->value.ul[UL_DIV(rmsb)][VTYPE_INDEX_VAL_VALL] >> UL_MOD(rmsb)) & 1) == 1);
+          ulong        lvall;
+          ulong        lvalh;
+          ulong        rvall;
+          ulong        rvalh;
+          do {
+            i--;
+            vector_copy_val_and_sign_extend_ulong( left,  i, lmsb_is_one, &lvall, &lvalh );
+            vector_copy_val_and_sign_extend_ulong( right, i, rmsb_is_one, &rvall, &rvalh );
+          } while( (i > 0) && (lvall == rvall) );
+          scratchl = (lvall == rvall);
+          retval   = vector_set_coverage_and_assign_ulong( tgt, &scratchl, &scratchh, 0, 0 );
+        }
+        break;
+      default :  assert( 0 );  break;
+    }
+
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns TRUE if the two input vectors are four-state bitwise-equal to each other; otherwise,
+         returns FALSE.
+*/
+bool vector_ceq_ulong(
+  const vector* left,   /*!< Pointer to left vector to compare */
+  const vector* right   /*!< Pointer to right vector to compare */
+) { PROFILE(VECTOR_CEQ_ULONG);
+
+  unsigned int lsize       = UL_SIZE(left->width);
+  unsigned int rsize       = UL_SIZE(right->width);
+  int          i           = ((lsize < rsize) ? rsize : lsize);
+  unsigned int lmsb        = (left->width - 1);
+  unsigned int rmsb        = (right->width - 1);
+  bool         lmsb_is_one = (((left->value.ul[UL_DIV(lmsb)][VTYPE_INDEX_VAL_VALL]  >> UL_MOD(lmsb)) & 1) == 1);
+  bool         rmsb_is_one = (((right->value.ul[UL_DIV(rmsb)][VTYPE_INDEX_VAL_VALL] >> UL_MOD(rmsb)) & 1) == 1);
+  ulong        lvall;
+  ulong        lvalh;
+  ulong        rvall;
+  ulong        rvalh;
+
+  do {
+    i--;
+    vector_copy_val_and_sign_extend_ulong( left,  i, lmsb_is_one, &lvall, &lvalh );
+    vector_copy_val_and_sign_extend_ulong( right, i, rmsb_is_one, &rvall, &rvalh );
+  } while( (i > 0) && (lvall == rvall) && (lvalh == rvalh) );
+
+  PROFILE_END;
+
+  return( (lvall == rvall) && (lvalh == rvalh) );
+
+}
+
+/*!
+ \param tgt    Target vector for storage of results.
+ \param left   Expression on left of greater-than-or-equal sign.
+ \param right  Expression on right of greater-than-or-equal sign.
+
+ \return Returns TRUE if the assigned value differs from the original value; otherwise, returns FALSE.
+
+ Performs a case equal comparison of the left and right expressions.
+*/
+bool vector_op_ceq(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+) { PROFILE(VECTOR_OP_CEQ);
+
+  bool retval;  /* Return value for this function */
+
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        ulong scratchl = vector_ceq_ulong( left, right );
+        ulong scratchh = 0;
+        retval = vector_set_coverage_and_assign_ulong( tgt, &scratchl, &scratchh, 0, 0 );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \param tgt    Target vector for storage of results.
+ \param left   Expression on left of greater-than-or-equal sign.
+ \param right  Expression on right of greater-than-or-equal sign.
+
+ \return Returns TRUE if the assigned value differs from the original value; otherwise, returns FALSE.
+
+ Performs a casex equal comparison of the left and right expressions.
+*/
+bool vector_op_cxeq(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+) { PROFILE(VECTOR_OP_CXEQ);
+
+  bool retval;  /* Return value for this function */
+
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        ulong        scratchl    = 0;
+        ulong        scratchh    = 0;
+        unsigned int lsize       = UL_SIZE(left->width);
+        unsigned int rsize       = UL_SIZE(right->width);
+        int          i           = ((lsize < rsize) ? rsize : lsize);
+        unsigned int lmsb        = (left->width - 1);
+        unsigned int rmsb        = (right->width - 1);
+        bool         lmsb_is_one = (((left->value.ul[UL_DIV(lmsb)][VTYPE_INDEX_VAL_VALL]  >> UL_MOD(lmsb)) & 1) == 1);
+        bool         rmsb_is_one = (((right->value.ul[UL_DIV(rmsb)][VTYPE_INDEX_VAL_VALL] >> UL_MOD(rmsb)) & 1) == 1);
+        ulong        mask        = (left->width < right->width) ? UL_HMASK(left->width - 1) : UL_HMASK(right->width - 1);
+        ulong        lvall;
+        ulong        lvalh;
+        ulong        rvall;
+        ulong        rvalh;
+        do {
+          i--;
+          vector_copy_val_and_sign_extend_ulong( left,  i, lmsb_is_one, &lvall, &lvalh );
+          vector_copy_val_and_sign_extend_ulong( right, i, rmsb_is_one, &rvall, &rvalh );
+        } while( (i > 0) && (((~(lvall ^ rvall) | lvalh | rvalh) & mask) == mask) );
+        scratchl = (((~(lvall ^ rvall) | lvalh | rvalh) & mask) == mask);
+        retval   = vector_set_coverage_and_assign_ulong( tgt, &scratchl, &scratchh, 0, 0 );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \param tgt    Target vector for storage of results.
+ \param left   Expression on left of greater-than-or-equal sign.
+ \param right  Expression on right of greater-than-or-equal sign.
+
+ \return Returns TRUE if the assigned value differs from the original value; otherwise, returns FALSE.
+
+ Performs a casez equal comparison of the left and right expressions.
+*/
+bool vector_op_czeq(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+) { PROFILE(VECTOR_OP_CZEQ);
+
+  bool retval;  /* Return value for this function */
+
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        ulong        scratchl    = 0;
+        ulong        scratchh    = 0;
+        unsigned int lsize       = UL_SIZE(left->width);
+        unsigned int rsize       = UL_SIZE(right->width);
+        int          i           = ((lsize < rsize) ? rsize : lsize) - 1;
+        unsigned int lmsb        = (left->width - 1);
+        unsigned int rmsb        = (right->width - 1);
+        bool         lmsb_is_one = (((left->value.ul[UL_DIV(lmsb)][VTYPE_INDEX_VAL_VALL]  >> UL_MOD(lmsb)) & 1) == 1);
+        bool         rmsb_is_one = (((right->value.ul[UL_DIV(rmsb)][VTYPE_INDEX_VAL_VALL] >> UL_MOD(rmsb)) & 1) == 1);
+        ulong        mask        = (left->width < right->width) ? UL_HMASK(left->width - 1) : UL_HMASK(right->width - 1);
+        ulong        lvall;
+        ulong        lvalh;
+        ulong        rvall;
+        ulong        rvalh;
+        vector_copy_val_and_sign_extend_ulong( left,  i, lmsb_is_one, &lvall, &lvalh );
+        vector_copy_val_and_sign_extend_ulong( right, i, rmsb_is_one, &rvall, &rvalh );
+        while( (i > 0) && ((((~(lvall ^ rvall) & ~(lvalh ^ rvalh)) | (lvalh & lvall) | (rvalh & rvall)) & mask) == mask) ) {
+          mask  = UL_SET;
+          i--;
+          vector_copy_val_and_sign_extend_ulong( left,  i, lmsb_is_one, &lvall, &lvalh );
+          vector_copy_val_and_sign_extend_ulong( right, i, rmsb_is_one, &rvall, &rvalh );
+        }
+        scratchl = ((((~(lvall ^ rvall) & ~(lvalh ^ rvalh)) | (lvalh & lvall) | (rvalh & rvall)) & mask) == mask);
+        retval   = vector_set_coverage_and_assign_ulong( tgt, &scratchl, &scratchh, 0, 0 );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \param tgt    Target vector for storage of results.
+ \param left   Expression on left of greater-than-or-equal sign.
+ \param right  Expression on right of greater-than-or-equal sign.
+
+ \return Returns TRUE if the assigned value differs from the original value; otherwise, returns FALSE.
+
+ Performs a not-equal comparison of the left and right expressions.
+*/
+bool vector_op_ne(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+) { PROFILE(VECTOR_OP_NE);
+
+  bool retval;  /* Return value for this function */
+
+  if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
+
+    retval = vector_set_to_x( tgt );
+
+  } else {
+
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_UL :
+        {
+          ulong        scratchl;
+          ulong        scratchh    = 0;
+          unsigned int lsize       = UL_SIZE(left->width);
+          unsigned int rsize       = UL_SIZE(right->width);
+          int          i           = ((lsize < rsize) ? rsize : lsize);
+          unsigned int lmsb        = (left->width - 1);
+          unsigned int rmsb        = (right->width - 1);
+          bool         lmsb_is_one = (((left->value.ul[UL_DIV(lmsb)][VTYPE_INDEX_VAL_VALL]  >> UL_MOD(lmsb)) & 1) == 1);
+          bool         rmsb_is_one = (((right->value.ul[UL_DIV(rmsb)][VTYPE_INDEX_VAL_VALL] >> UL_MOD(rmsb)) & 1) == 1);
+          ulong        lvall;
+          ulong        lvalh;
+          ulong        rvall;
+          ulong        rvalh;
+          do {
+            i--;
+            vector_copy_val_and_sign_extend_ulong( left,  i, lmsb_is_one, &lvall, &lvalh );
+            vector_copy_val_and_sign_extend_ulong( right, i, rmsb_is_one, &rvall, &rvalh );
+          } while( (i > 0) && (lvall == rvall) );
+          scratchl = (lvall != rvall);
+          retval   = vector_set_coverage_and_assign_ulong( tgt, &scratchl, &scratchh, 0, 0 );
+        }
+        break;
+      default :  assert( 0 );  break;
+    }
+
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \param tgt    Target vector for storage of results.
+ \param left   Expression on left of greater-than-or-equal sign.
+ \param right  Expression on right of greater-than-or-equal sign.
+ 
+ \return Returns TRUE if the assigned value differs from the original value; otherwise, returns FALSE.
+ 
+ Performs an case not-equal comparison of the left and right expressions.
+*/
+bool vector_op_cne(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+) { PROFILE(VECTOR_OP_CNE);
+
+  bool retval;  /* Return value for this function */
+  
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        ulong        scratchl = 0;
+        ulong        scratchh = 0;
+        unsigned int lsize = UL_SIZE(left->width);
+        unsigned int rsize = UL_SIZE(right->width);
+        int          i     = ((lsize < rsize) ? rsize : lsize);
+        unsigned int lmsb        = (left->width - 1);
+        unsigned int rmsb        = (right->width - 1);
+        bool         lmsb_is_one = (((left->value.ul[UL_DIV(lmsb)][VTYPE_INDEX_VAL_VALL]  >> UL_MOD(lmsb)) & 1) == 1);
+        bool         rmsb_is_one = (((right->value.ul[UL_DIV(rmsb)][VTYPE_INDEX_VAL_VALL] >> UL_MOD(rmsb)) & 1) == 1);
+        ulong        lvall;
+        ulong        lvalh;
+        ulong        rvall;
+        ulong        rvalh;
+        do {
+          i--;
+          vector_copy_val_and_sign_extend_ulong( left,  i, lmsb_is_one, &lvall, &lvalh );
+          vector_copy_val_and_sign_extend_ulong( right, i, rmsb_is_one, &rvall, &rvalh );
+        } while( (i > 0) && ((lvall & ~lvalh) == (rvall & ~rvalh)) );
+        scratchl = (lvall != rvall); 
+        retval   = vector_set_coverage_and_assign_ulong( tgt, &scratchl, &scratchh, 0, 0 );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns TRUE if the value of tgt changed as a result of this operation; otherwise, returns FALSE.
+
+ Performs logical-OR operation and calculates coverage information.
+*/
+bool vector_op_lor(
+  vector*       tgt,   /*!< Pointer to vector to store result into */
+  const vector* left,  /*!< Pointer to left vector of expression */
+  const vector* right  /*!< Pointer to right vector of expression */
+) { PROFILE(VECTOR_OP_LOR);
+
+  bool retval;                                 /* Return value for this function */
+  bool lunknown = vector_is_unknown( left );   /* Check for left value being unknown */
+  bool runknown = vector_is_unknown( right );  /* Check for right value being unknown */
+
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        ulong valh = (lunknown && runknown) ? 1 : 0;
+        ulong vall = ((!lunknown && vector_is_not_zero( left )) || (!runknown && vector_is_not_zero( right ))) ? 1 : 0;
+        retval      = vector_set_coverage_and_assign_ulong( tgt, &vall, &valh, 0, 0 );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns TRUE if the value of tgt changed as a result of this operation; otherwise, returns FALSE.
+
+ Performs logical-AND operation and calculates coverage information.
+*/
+bool vector_op_land(
+  vector*       tgt,   /*!< Pointer to vector to store result into */
+  const vector* left,  /*!< Pointer to left vector of expression */
+  const vector* right  /*!< Pointer to right vector of expression */
+) { PROFILE(VECTOR_OP_LAND);
+
+  bool retval;                                 /* Return value for this function */
+  bool lunknown = vector_is_unknown( left );   /* Check for left value being unknown */
+  bool runknown = vector_is_unknown( right );  /* Check for right value being unknown */
+
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        ulong valh = (lunknown && runknown) ? 1 : 0;
+        ulong vall = ((!lunknown && vector_is_not_zero( left )) && (!runknown && vector_is_not_zero( right ))) ? 1 : 0;
+        retval      = vector_set_coverage_and_assign_ulong( tgt, &vall, &valh, 0, 0 );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
 
   PROFILE_END;
 
@@ -2045,40 +3727,31 @@ bool vector_op_compare(
  expression the specified number of bit locations, zero-filling the LSB.
 */
 bool vector_op_lshift(
-  vector* tgt,
-  vector* left,
-  vector* right
+  vector*       tgt,
+  const vector* left,
+  const vector* right
 ) { PROFILE(VECTOR_OP_LSHIFT);
 
-  bool     retval  = FALSE;  /* Return value for this function */
-  int      shift_val;        /* Number of bits to shift left */
-  vec_data zero;             /* Zero value for zero-fill */
-  vec_data unknown;          /* X-value for unknown fill */
-  int      i;                /* Loop iterator */
+  bool retval;  /* Return value for this function */
 
-  zero.all    = 0;
-  unknown.all = 2;
+  if( vector_is_unknown( right ) ) {
 
-  /* Clear the unknown and not_zero bits */
-  VSUPPL_CLR_NZ_AND_UNK( tgt->suppl )
-    
-  if( right->suppl.part.unknown ) {
+    retval = vector_set_to_x( tgt );
 
-    for( i=0; i<tgt->width; i++ ) {
-      retval |= vector_set_value( tgt, &unknown, 1, 0, i );
-    }
+  } else { 
 
-  } else {
+    int shift_val = vector_to_int( right );
 
-    /* Zero-fill LSBs */
-    for( i=0; i<tgt->width; i++ ) {
-      retval |= vector_set_value( tgt, &zero, 1, 0, i );
-    }
-
-    shift_val = vector_to_int( right );
-
-    if( shift_val < left->width ) {
-      retval |= vector_set_value( tgt, left->value, (left->width - shift_val), 0, shift_val );
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_UL :
+        {
+          ulong vall[UL_DIV(MAX_BIT_WIDTH)];
+          ulong valh[UL_DIV(MAX_BIT_WIDTH)];
+          vector_lshift_ulong( left, vall, valh, shift_val, ((left->width + shift_val) - 1) );
+          retval = vector_set_coverage_and_assign_ulong( tgt, vall, valh, 0, (tgt->width - 1) );
+        }
+        break;
+      default :  assert( 0 );  break;
     }
 
   }
@@ -2100,40 +3773,31 @@ bool vector_op_lshift(
  expression the specified number of bit locations, zero-filling the MSB.
 */
 bool vector_op_rshift(
-  vector* tgt,
-  vector* left,
-  vector* right
+  vector*       tgt,
+  const vector* left,
+  const vector* right
 ) { PROFILE(VECTOR_OP_RSHIFT);
 
-  bool     retval = FALSE;  /* Return value for this function */
-  int      shift_val;       /* Number of bits to shift left */
-  vec_data zero;            /* Zero value for zero-fill */
-  vec_data unknown;         /* X-value for unknown fill */
-  int      i;               /* Loop iterator */
+  bool retval;  /* Return value for this function */
 
-  zero.all    = 0;
-  unknown.all = 2;
+  if( vector_is_unknown( right ) ) {
 
-  /* Clear the unknown and not_zero bits */
-  VSUPPL_CLR_NZ_AND_UNK( tgt->suppl )
-    
-  if( right->suppl.part.unknown ) {
-
-    for( i=0; i<tgt->width; i++ ) {
-      retval |= vector_set_value( tgt, &unknown, 1, 0, i );
-    }
+    retval = vector_set_to_x( tgt );
 
   } else {
 
-    /* Perform zero-fill */
-    for( i=0; i<tgt->width; i++ ) {
-      retval |= vector_set_value( tgt, &zero, 1, 0, i );
-    }
+    int shift_val = vector_to_int( right );
 
-    shift_val = vector_to_int( right );
-
-    if( shift_val < left->width ) {
-      retval |= vector_set_value( tgt, left->value, (left->width - shift_val), shift_val, 0 );
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_UL :
+        {
+          ulong vall[UL_DIV(MAX_BIT_WIDTH)];
+          ulong valh[UL_DIV(MAX_BIT_WIDTH)];
+          vector_rshift_ulong( left, vall, valh, shift_val, (left->width - 1) );
+          retval = vector_set_coverage_and_assign_ulong( tgt, vall, valh, 0, (tgt->width - 1) );
+        }
+        break;
+      default :  assert( 0 );  break;
     }
 
   }
@@ -2155,41 +3819,37 @@ bool vector_op_rshift(
  expression the specified number of bit locations, sign extending the MSB.
 */
 bool vector_op_arshift(
-  vector* tgt,
-  vector* left,
-  vector* right
+  vector*       tgt,
+  const vector* left,
+  const vector* right
 ) { PROFILE(VECTOR_OP_ARSHIFT);
 
-  bool     retval = FALSE;  /* Return value for this function */
-  int      shift_val;       /* Number of bits to shift left */
-  vec_data sign;            /* Sign extended value for zero-fill */
-  vec_data unknown;         /* X-value for unknown fill */
-  int      i;               /* Loop iterator */
+  bool retval;  /* Return value for this function */
 
-  sign.all            = 0;
-  sign.part.val.value = left->value[left->width - 1].part.val.value;
-  unknown.all         = 2;
-
-  /* Clear the unknown and not_zero bits */
-  VSUPPL_CLR_NZ_AND_UNK( tgt->suppl )
+  if( vector_is_unknown( right ) ) {
+  
+    retval = vector_set_to_x( tgt );
     
-  if( right->suppl.part.unknown ) {
-
-    for( i=0; i<tgt->width; i++ ) {
-      retval |= vector_set_value( tgt, &unknown, 1, 0, i );
-    }
-
   } else {
+  
+    int shift_val = vector_to_int( right );
+    
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_UL :
+        {
+          ulong        vall[UL_DIV(MAX_BIT_WIDTH)];
+          ulong        valh[UL_DIV(MAX_BIT_WIDTH)];
+          ulong        signl, signh;
+          unsigned int msb = left->width - 1;
 
-    /* Perform sign extend-fill */
-    for( i=0; i<tgt->width; i++ ) {
-      retval |= vector_set_value( tgt, &sign, 1, 0, i );
-    }
-
-    shift_val = vector_to_int( right );
-
-    if( shift_val < left->width ) {
-      retval |= vector_set_value( tgt, left->value, (left->width - shift_val), shift_val, 0 );
+          vector_rshift_ulong( left, vall, valh, shift_val, msb );
+          vector_get_sign_extend_vector_ulong( left, &signl, &signh );
+          vector_sign_extend_ulong( vall, valh, signl, signh, (msb - shift_val), tgt->width );
+        
+          retval = vector_set_coverage_and_assign_ulong( tgt, vall, valh, 0, (tgt->width - 1) );
+        }
+        break;
+      default :  assert( 0 );  break;
     }
 
   }
@@ -2211,106 +3871,52 @@ bool vector_op_arshift(
  Carry bit is discarded (value is wrapped around).
 */
 bool vector_op_add(
-  vector* tgt,
-  vector* left,
-  vector* right
+  vector*       tgt,
+  const vector* left,
+  const vector* right
 ) { PROFILE(VECTOR_OP_ADD);
 
-  int    i;               /* Loop iterator */
-  int    tgt_width = tgt->width;
-  nibble v2st      = tgt->suppl.part.is_2state;
-  nibble carry     = 0;
-  nibble ored      = 0;
+  bool retval;  /* Return value for this function */
 
-  /* Clear the unknown and not_zero bits */
-  VSUPPL_CLR_NZ_AND_UNK( tgt->suppl )
-    
-  switch( tgt->suppl.part.type ) {
-    case VTYPE_EXP :
-      for( i=0; i<tgt_width; i++ ) {
-        nibble lbit = (i < left->width)  ? left->value[i].part.val.value  : 0;
-        nibble rbit = (i < right->width) ? right->value[i].part.val.value : 0;
-        if( (carry > 1) || (lbit > 1) || (rbit > 1) ) {
-          tgt->value[i].part.exp.value = v2st ? 0 : 2;
-          carry                        = v2st ? 0 : 2;
-        } else {
-          nibble val = carry + lbit + rbit;
-          tgt->value[i].part.exp.value = val & 0x1;
-          carry                        = val >> 1;
-        }
-        tgt->value[i].part.exp.set = 1;
-        ored |= tgt->value[i].part.exp.value;
-      }
-      break;
-    case VTYPE_SIG :
-      for( i=0; i<tgt_width; i++ ) {
-        nibble lbit = (i < left->width)  ? left->value[i].part.val.value  : 0;
-        nibble rbit = (i < right->width) ? right->value[i].part.val.value : 0;
-        if( (carry > 1) || (lbit > 1) || (rbit > 1) ) {
-          tgt->value[i].part.sig.value = v2st ? 0 : 2;
-          carry                        = v2st ? 0 : 2;
-        } else {
-          nibble val = carry + lbit + rbit;
-          if( tgt->value[i].part.sig.set ) {
-            if( (tgt->value[i].part.sig.value == 0) && ((val & 0x1) == 1) ) {
-              tgt->value[i].part.sig.tog01 = 1;
-            } else if ( (tgt->value[i].part.sig.value == 1) && ((val & 0x1) == 0) ) {
-              tgt->value[i].part.sig.tog10 = 1;
-            }
+  /* If either the left or right vector is unknown, set the entire value to X */
+  if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
+
+    retval = vector_set_to_x( tgt );
+
+  /* Otherwise, perform the addition operation */
+  } else {
+
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_UL :
+        {
+          ulong        vall[UL_DIV(MAX_BIT_WIDTH)];
+          ulong        valh[UL_DIV(MAX_BIT_WIDTH)];
+          ulong        carry = 0;
+          bool         lmsb_is_one = (((left->value.ul[UL_DIV(left->width-1)][VTYPE_INDEX_VAL_VALL]   >> UL_MOD(left->width  - 1)) & 1) == 1);
+          bool         rmsb_is_one = (((right->value.ul[UL_DIV(right->width-1)][VTYPE_INDEX_VAL_VALL] >> UL_MOD(right->width - 1)) & 1) == 1);
+          ulong        lvall, lvalh;
+          ulong        rvall, rvalh;
+          unsigned int i;
+          for( i=0; i<UL_SIZE( tgt->width ); i++ ) {
+            vector_copy_val_and_sign_extend_ulong( left,  i, lmsb_is_one, &lvall, &lvalh ); 
+            vector_copy_val_and_sign_extend_ulong( right, i, rmsb_is_one, &rvall, &rvalh ); 
+            vall[i] = lvall + rvall + carry;
+            valh[i] = 0;
+            carry   = (((lvall & rvall & vall[i]) | ((lvall | rvall) & ~vall[i])) >> (UL_BITS - 1)) & 0x1;
           }
-          tgt->value[i].part.sig.value = val & 0x1;
-          carry                        = val >> 1;
+          retval = vector_set_coverage_and_assign_ulong( tgt, vall, valh, 0, (tgt->width - 1) );
         }
-        tgt->value[i].part.sig.set = 1;
-        ored |= tgt->value[i].part.sig.value;
-      }
-      break;
-    case VTYPE_VAL :
-      for( i=0; i<tgt_width; i++ ) { 
-        nibble lbit = (i < left->width)  ? left->value[i].part.val.value  : 0;
-        nibble rbit = (i < right->width) ? right->value[i].part.val.value : 0;
-        if( (carry > 1) || (lbit > 1) || (rbit > 1) ) {
-          tgt->value[i].part.val.value = v2st ? 0 : 2;
-          carry                        = v2st ? 0 : 2;
-        } else {
-          nibble val = carry + lbit + rbit;
-          tgt->value[i].part.val.value = val & 0x1;
-          carry                        = val >> 1;
-        }
-        ored |= tgt->value[i].part.val.value;
-      }
-      break;
-    case VTYPE_MEM :
-      for( i=0; i<tgt_width; i++ ) {
-        nibble lbit = (i < left->width)  ? left->value[i].part.val.value  : 0;
-        nibble rbit = (i < right->width) ? right->value[i].part.val.value : 0;
-        if( (carry > 1) || (lbit > 1) || (rbit > 1) ) {
-          tgt->value[i].part.mem.value = v2st ? 0 : 2;
-          carry                        = v2st ? 0 : 2;
-        } else {
-          nibble val = carry + lbit + rbit;
-          if( (tgt->value[i].part.sig.value == 0) && ((val & 0x1) == 1) ) {
-            tgt->value[i].part.mem.tog01 = 1;
-          } else if ( (tgt->value[i].part.sig.value == 1) && ((val & 0x1) == 0) ) {
-            tgt->value[i].part.mem.tog10 = 1;
-          }
-          tgt->value[i].part.mem.value = val & 0x1;
-          carry                        = val >> 1;
-        }
-        tgt->value[i].part.mem.wr = 1;
-        ored |= tgt->value[i].part.mem.value;
-      }
-      break;
+        break;
+      default :  assert( 0 );  break;
+    }
+
   }
-
-  /* Update the unknown and not_zero bits */
-  tgt->suppl.all |= (ored << 2);
 
   PROFILE_END;
 
-  return( tgt_width > 0 );
+  return( retval );
 
-}
+}    
 
 /*!
  \param tgt  Pointer to vector that will be assigned the new value.
@@ -2321,23 +3927,62 @@ bool vector_op_add(
  Performs a twos complement of the src vector and stores the result in the tgt vector.
 */
 bool vector_op_negate(
-  vector* tgt,
-  vector* src,
-  vecblk* tvb
+  vector*       tgt,
+  const vector* src,
+  vecblk*       tvb
 ) { PROFILE(VECTOR_OP_NEGATE);
 
-  bool    retval = FALSE;                      /* Return value for this function */
-  vector* vec1   = &(tvb->vec[tvb->index++]);  /* Temporary vector holder */
-  vector* vec2   = &(tvb->vec[tvb->index++]);  /* Temporary vector holder */
+  bool retval;  /* Return value for this function */
 
-  /* Create vector with a value of 1 */
-  vec2->value[0].part.val.value = 1;
+  if( vector_is_unknown( src ) ) {
+   
+    retval = vector_set_to_x( tgt );
 
-  /* Perform twos complement inversion on right expression */
-  (void)vector_unary_inv( vec1, src );
+  } else {
 
-  /* Add one to the inverted value */
-  retval = vector_op_add( tgt, vec1, vec2 );
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_UL :
+        {
+          if( src->width <= UL_BITS ) {
+            ulong vall = ~src->value.ul[0][VTYPE_INDEX_EXP_VALL] + 1;
+            ulong valh = 0;
+
+            retval = vector_set_coverage_and_assign_ulong( tgt, &vall, &valh, 0, (tgt->width - 1) );
+          } else {
+            ulong        vall[UL_DIV(MAX_BIT_WIDTH)];
+            ulong        valh[UL_DIV(MAX_BIT_WIDTH)];
+            unsigned int i, j;
+            unsigned int size  = UL_SIZE( src->width );
+            ulong        carry = 1;
+            ulong        val;
+
+            for( i=0; i<(size - 1); i++ ) {
+              val     = ~src->value.ul[i][VTYPE_INDEX_EXP_VALL];
+              vall[i] = 0;
+              valh[i] = 0;
+              for( j=0; j<UL_BITS; j++ ) {
+                ulong bit = ((val >> j) & 0x1) + carry;
+                carry     = bit >> 1;
+                vall[i]  |= (bit & 0x1) << j;
+              }
+            }
+            val     = ~src->value.ul[i][VTYPE_INDEX_EXP_VALL];
+            vall[i] = 0;
+            valh[i] = 0;
+            for( j=0; j<(tgt->width - (i << UL_DIV_VAL)); j++ ) {
+              ulong bit = ((val >> j) & 0x1) + carry;
+              carry     = bit >> 1;
+              vall[i]  |= (bit & 0x1) << j;
+            }
+
+            retval = vector_set_coverage_and_assign_ulong( tgt, vall, valh, 0, (tgt->width - 1) );
+          }
+        }
+        break;
+      default :  assert( 0 );  break;
+    }
+
+  }
 
   PROFILE_END;
 
@@ -2358,20 +4003,49 @@ bool vector_op_negate(
  result to the left expression value.
 */
 bool vector_op_subtract(
-  vector* tgt,
-  vector* left,
-  vector* right,
-  vecblk* tvb
+  vector*       tgt,
+  const vector* left,
+  const vector* right,
+  vecblk*       tvb
 ) { PROFILE(VECTOR_OP_SUBTRACT);
 
-  bool    retval = FALSE;                      /* Return value for this function */
-  vector* vec    = &(tvb->vec[tvb->index++]);  /* Temporary vector holder */
+  bool retval;  /* Return value for this function */
 
-  /* Negate the value on the right */
-  (void)vector_op_negate( vec, right, tvb );
+  /* If either the left or right vector is unknown, set the entire value to X */
+  if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
 
-  /* Add new value to left value */
-  retval = vector_op_add( tgt, left, vec );
+    retval = vector_set_to_x( tgt );
+
+  /* Otherwise, perform the subtraction operation */
+  } else {
+
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_UL :
+        {
+          ulong        vall[UL_DIV(MAX_BIT_WIDTH)];
+          ulong        valh[UL_DIV(MAX_BIT_WIDTH)];
+          ulong        carry = 1;
+          bool         lmsb_is_one = (((left->value.ul[UL_DIV(left->width-1)][VTYPE_INDEX_VAL_VALL]   >> UL_MOD(left->width  - 1)) & 1) == 1);
+          bool         rmsb_is_one = (((right->value.ul[UL_DIV(right->width-1)][VTYPE_INDEX_VAL_VALL] >> UL_MOD(right->width - 1)) & 1) == 1);
+          ulong        lvall, lvalh;
+          ulong        rvall, rvalh;
+          unsigned int i;
+          ulong        signl, signh;
+          for( i=0; i<UL_SIZE( tgt->width ); i++ ) {
+            vector_copy_val_and_sign_extend_ulong( left,  i, lmsb_is_one, &lvall, &lvalh );
+            vector_copy_val_and_sign_extend_ulong( right, i, rmsb_is_one, &rvall, &rvalh ); 
+            rvall   = ~rvall;
+            vall[i] = lvall + rvall + carry;
+            valh[i] = 0;
+            carry   = (((lvall & rvall & vall[i]) | ((lvall | rvall) & ~vall[i])) >> (UL_BITS - 1)) & 0x1;
+          }
+          retval = vector_set_coverage_and_assign_ulong( tgt, vall, valh, 0, (tgt->width - 1) );
+        }
+        break;
+      default :  assert( 0 );  break;
+    }
+
+  }
 
   PROFILE_END;
 
@@ -2393,69 +4067,127 @@ bool vector_op_subtract(
  the value is that of the other vector.
 */
 bool vector_op_multiply(
-  vector* tgt,
-  vector* left,
-  vector* right
+  vector*       tgt,
+  const vector* left,
+  const vector* right
 ) { PROFILE(VECTOR_OP_MULTIPLY);
 
-  bool     retval   = FALSE;                      /* Return value for this function */
-  vector   vec;                                   /* Intermediate vector */
-  vec_data vec_val[32];                           /* Intermediate value */
-  nibble   lunknown = left->suppl.part.unknown;   /* Set to 1 if left vector is unknown */
-  nibble   runknown = right->suppl.part.unknown;  /* Set to 1 if right vector is unknown */
+  bool retval;  /* Return value for this function */
 
-  /* Initialize temporary vectors */
-  vector_init( &vec, vec_val, 0x0, FALSE, 32, VTYPE_VAL );
+  if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
 
-  /* Perform 4-state multiplication */
-  if( !lunknown && !runknown ) {
-
-    vector_from_int( &vec, (vector_to_int( left ) * vector_to_int( right )) );
-
-  } else if( lunknown ) {
-
-    if( runknown ) {
-
-      int i;
-      for( i=0; i<vec.width; i++ ) {
-        vec.value[i].part.val.value = 2;
-      }
-
-    } else {
-
-      if( vector_to_int( right ) == 0 ) {
-        vector_from_int( &vec, 0 );
-      } else if( vector_to_int( right ) == 1 ) {
-        (void)vector_set_value( &vec, left->value, left->width, 0, 0 );
-      } else {
-        int i;
-        for( i=0; i<vec.width; i++ ) {
-          vec.value[i].part.val.value = 2;
-        }
-      }
-
-    }
+    retval = vector_set_to_x( tgt );
 
   } else {
 
-    if( vector_to_int( left ) == 0 ) {
-      vector_from_int( &vec, 0 );
-    } else if( vector_to_int( left ) == 1 ) {
-      (void)vector_set_value( &vec, right->value, right->width, 0, 0 );
-    } else {
-      int i;
-      for( i=0; i<vec.width; i++ ) {
-        vec.value[i].part.val.value = 2;
-      }
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_UL :
+        {
+          ulong vall = left->value.ul[0][VTYPE_INDEX_VAL_VALL] * right->value.ul[0][VTYPE_INDEX_VAL_VALL];
+          ulong valh = 0;
+          retval = vector_set_coverage_and_assign_ulong( tgt, &vall, &valh, 0, (tgt->width - 1) );
+        }
+        break;
+      default :  assert( 0 );  break;
     }
 
   }
 
-  /* Clear the unknown and not_zero bits */
-  VSUPPL_CLR_NZ_AND_UNK( tgt->suppl )
+  PROFILE_END;
 
-  /* Set target value */
-  retval = vector_set_value( tgt, vec.value, vec.width, 0, 0 );
+  return( retval );
+
+}
+
+/*!
+ \param tgt    Pointer to vector that will store divide result
+ \param left   Pointer to left vector
+ \param right  Pointer to right vector
+
+ \return Returns TRUE if value changes; otherwise, returns FALSE.
+
+ Performs vector divide operation.
+*/
+bool vector_op_divide(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+) { PROFILE(VECTOR_OP_DIVIDE);
+
+  bool retval;  /* Return value for this function */
+
+  if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
+
+    retval = vector_set_to_x( tgt );
+
+  } else {
+
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_UL :
+        {
+          ulong vall;
+          ulong valh = 0;
+          ulong rval = right->value.ul[0][VTYPE_INDEX_EXP_VALL];
+          if( rval == 0 ) {
+            retval = vector_set_to_x( tgt );
+          } else {
+            vall = left->value.ul[0][VTYPE_INDEX_EXP_VALL] / rval;
+            retval = vector_set_coverage_and_assign_ulong( tgt, &vall, &valh, 0, (UL_BITS - 1) );
+          }
+        }
+        break;
+      default :  assert( 0 );  break;
+    }
+
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \param tgt    Pointer to vector that will store divide result
+ \param left   Pointer to left vector
+ \param right  Pointer to right vector
+
+ \return Returns TRUE if value changes; otherwise, returns FALSE.
+
+ Performs vector modulus operation.
+*/
+bool vector_op_modulus(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+) { PROFILE(VECTOR_OP_MODULUS);
+
+  bool retval;  /* Return value for this function */
+
+  if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
+
+    retval = vector_set_to_x( tgt );
+
+  } else {
+
+    switch( tgt->suppl.part.data_type ) {
+      case VDATA_UL :
+        {
+          ulong vall;
+          ulong valh = 0;
+          ulong rval = right->value.ul[0][VTYPE_INDEX_EXP_VALL];
+          if( rval == 0 ) {
+            retval = vector_set_to_x( tgt );
+          } else {
+            vall = left->value.ul[0][VTYPE_INDEX_EXP_VALL] % rval;
+            retval = vector_set_coverage_and_assign_ulong( tgt, &vall, &valh, 0, (UL_BITS - 1) );
+          }
+        }
+        break;
+      default :  assert( 0 );  break;
+    }
+
+  }
 
   PROFILE_END;
 
@@ -2483,7 +4215,10 @@ bool vector_op_inc(
   vector_copy( tgt, tmp1 );
 
   /* Create a vector containing the value of 1 */
-  tmp2->value[0].part.val.value = 1;
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_UL :  tmp2->value.ul[0][VTYPE_INDEX_VAL_VALL] = 1;  break;
+    default       :  assert( 0 );  break;
+  }
   
   /* Finally add the values and assign them back to the target */
   (void)vector_op_add( tgt, tmp1, tmp2 );
@@ -2514,7 +4249,10 @@ bool vector_op_dec(
   vector_copy( tgt, tmp1 );
 
   /* Create a vector containing the value of 1 */
-  tmp2->value[0].part.val.value = 1;
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_UL :  tmp2->value.ul[0][VTYPE_INDEX_VAL_VALL] = 1;  break;
+    default       :  assert( 0 );  break;
+  }
 
   /* Finally add the values and assign them back to the target */
   (void)vector_op_subtract( tgt, tmp1, tmp2, tvb );
@@ -2534,25 +4272,35 @@ bool vector_op_dec(
  Performs a bitwise inversion on the specified vector.
 */
 bool vector_unary_inv(
-  vector* tgt,
-  vector* src
+  vector*       tgt,
+  const vector* src
 ) { PROFILE(VECTOR_UNARY_INV);
 
-  bool     retval = FALSE;  /* Return value for this function */
-  nibble   bit;             /* Selected bit from source vector */
-  vec_data vec_val;         /* Temporary value */
-  int      i;               /* Loop iterator */
-  int      swidth;          /* Smallest width between tgt and src */
-  nibble   vals[4] = {1, 0, 2, 2};
+  bool retval;  /* Return value for this function */
 
-  swidth = (tgt->width < src->width) ? tgt->width : src->width;
+  switch( src->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        ulong        vall[UL_DIV(MAX_BIT_WIDTH)];
+        ulong        valh[UL_DIV(MAX_BIT_WIDTH)];
+        ulong        mask = UL_HMASK(src->width - 1);
+        ulong        tvalh;
+        unsigned int i;
+        unsigned int size = UL_SIZE( src->width );
 
-  /* Clear the unknown and not_zero bits */
-  VSUPPL_CLR_NZ_AND_UNK( tgt->suppl )
+        for( i=0; i<(size-1); i++ ) {
+          tvalh   = src->value.ul[i][VTYPE_INDEX_EXP_VALH];
+          vall[i] = ~tvalh & ~src->value.ul[i][VTYPE_INDEX_EXP_VALL];
+          valh[i] = tvalh;
+        }
+        tvalh   = src->value.ul[i][VTYPE_INDEX_EXP_VALH];
+        vall[i] = ~tvalh & ~src->value.ul[i][VTYPE_INDEX_EXP_VALL] & mask;
+        valh[i] = tvalh & mask;
 
-  for( i=0; i<swidth; i++ ) {
-    vec_val.part.val.value = vals[src->value[i].part.val.value];
-    retval                |= vector_set_value( tgt, &vec_val, 1, 0, i );
+        retval = vector_set_coverage_and_assign_ulong( tgt, vall, valh, 0, (tgt->width - 1) );
+      }
+      break;
+    default :  assert( 0 );  break;
   }
 
   PROFILE_END;
@@ -2562,53 +4310,267 @@ bool vector_unary_inv(
 }
 
 /*!
- \param tgt    Target vector for operation result storage.
- \param src    Source vector to be operated on.
- \param optab  Operation table.
+ \param tgt  Target vector for operation result storage.
+ \param src  Source vector to be operated on.
 
  \return Returns TRUE if assigned value differs from original; otherwise, returns FALSE.
 
- Performs unary operation on specified vector value from specifed
- operation table.
+ Performs unary AND operation on specified vector value.
 */
-bool vector_unary_op(
-  vector* tgt,
-  vector* src,
-  nibble* optab
-) { PROFILE(VECTOR_UNARY_OP);
+bool vector_unary_and(
+  vector*       tgt,
+  const vector* src
+) { PROFILE(VECTOR_UNARY_AND);
 
-  bool     retval;   /* Return value for this function */
-  nibble   uval;     /* Unary operation value */
-  nibble   bit;      /* Current bit under evaluation */
-  vector   vec;      /* Temporary vector value */
-  vec_data vec_val;  /* Temporary value */
-  int      i;        /* Loop iterator */
+  bool retval;  /* Return value for this function */
 
-  if( (src->width == 1) && (optab[16] == 1) ) {
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        unsigned int i;
+        unsigned int ssize = UL_SIZE( src->width );
+        ulong        valh  = 0;
+        ulong        vall  = 1;
+        ulong        lmask = UL_HMASK(src->width - 1);
+        for( i=0; i<(ssize-1); i++ ) {
+          valh |= (src->value.ul[i][VTYPE_INDEX_VAL_VALH] != 0) ? 1 : 0;
+          vall &= ~valh & ((src->value.ul[i][VTYPE_INDEX_VAL_VALL] == UL_SET) ? 1 : 0);
+        }
+        valh |= (src->value.ul[i][VTYPE_INDEX_VAL_VALH] != 0) ? 1 : 0;
+        vall &= ~valh & ((src->value.ul[i][VTYPE_INDEX_VAL_VALL] == lmask) ? 1 : 0);
+        retval = vector_set_coverage_and_assign_ulong( tgt, &vall, &valh, 0, 0 );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
 
-    /* Perform inverse operation if our source width is 1 and we are a NOT operation. */
-    retval = vector_unary_inv( tgt, src );
+  PROFILE_END;
 
-  } else {
+  return( retval );
 
-    vector_init( &vec, &vec_val, 0x0, FALSE, 1, VTYPE_VAL );
+}
 
-    assert( src != NULL );
-    assert( src->value != NULL );
+/*!
+ \param tgt  Target vector for operation result storage.
+ \param src  Source vector to be operated on.
 
-    uval = src->value[0].part.val.value;
+ \return Returns TRUE if assigned value differs from original; otherwise, returns FALSE.
 
-    for( i=1; i<src->width; i++ ) {
-      bit  = src->value[i].part.val.value;
-      uval = optab[ ((uval << 2) | bit) ]; 
-    }
+ Performs unary NAND operation on specified vector value.
+*/
+bool vector_unary_nand(
+  vector*       tgt,
+  const vector* src
+) { PROFILE(VECTOR_UNARY_NAND);
 
-    /* Clear the unknown and not_zero bits */
-    VSUPPL_CLR_NZ_AND_UNK( tgt->suppl )
+  bool retval;  /* Return value for this function */
 
-    vec.value[0].part.val.value = uval;
-    retval = vector_set_value( tgt, vec.value, 1, 0, 0 );
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        unsigned int i;
+        unsigned int ssize = UL_SIZE( src->width );
+        ulong        valh  = 0;
+        ulong        vall  = 0;
+        ulong        lmask = UL_HMASK(src->width - 1);
+        for( i=0; i<(ssize-1); i++ ) {
+          valh |= (src->value.ul[i][VTYPE_INDEX_VAL_VALH] != 0) ? 1 : 0;
+          vall |= ~valh & ((src->value.ul[i][VTYPE_INDEX_VAL_VALL] == UL_SET) ? 0 : 1);
+        }
+        valh |= (src->value.ul[i][VTYPE_INDEX_VAL_VALH] != 0) ? 1 : 0;
+        vall |= ~valh & ((src->value.ul[i][VTYPE_INDEX_VAL_VALL] == lmask) ? 0 : 1);
+        retval = vector_set_coverage_and_assign_ulong( tgt, &vall, &valh, 0, 0 );
+      }
+      break;
+    default :  assert( 0 );  break;
+  } 
 
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \param tgt  Target vector for operation result storage.
+ \param src  Source vector to be operated on.
+
+ \return Returns TRUE if assigned value differs from original; otherwise, returns FALSE.
+
+ Performs unary OR operation on specified vector value.
+*/
+bool vector_unary_or(
+  vector*       tgt,
+  const vector* src
+) { PROFILE(VECTOR_UNARY_OR);
+
+  bool retval;  /* Return value for this function */
+
+  switch( src->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        ulong        vall;
+        ulong        valh;
+        unsigned int i    = 0;
+        unsigned int size = UL_SIZE( src->width );
+        ulong        x    = 0;
+        while( (i < size) && ((~src->value.ul[i][VTYPE_INDEX_VAL_VALH] & src->value.ul[i][VTYPE_INDEX_VAL_VALL]) == 0) ) {
+          x |= src->value.ul[i][VTYPE_INDEX_VAL_VALH];
+          i++;
+        }
+        if( i < size ) {
+          vall = 1;
+          valh = 0;
+        } else {
+          vall = 0;
+          valh = (x != 0);
+        }
+        retval = vector_set_coverage_and_assign_ulong( tgt, &vall, &valh, 0, 0 );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \param tgt  Target vector for operation result storage.
+ \param src  Source vector to be operated on.
+
+ \return Returns TRUE if assigned value differs from original; otherwise, returns FALSE.
+
+ Performs unary NOR operation on specified vector value.
+*/
+bool vector_unary_nor(
+  vector*       tgt,
+  const vector* src
+) { PROFILE(VECTOR_UNARY_NOR);
+
+  bool retval;  /* Return value for this function */
+
+  switch( src->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        ulong        vall;
+        ulong        valh;
+        unsigned int i    = 0;
+        unsigned int size = UL_SIZE( src->width );
+        ulong        x    = 0;
+        while( (i < size) && ((~src->value.ul[i][VTYPE_INDEX_VAL_VALH] & src->value.ul[i][VTYPE_INDEX_VAL_VALL]) == 0) ) {
+          x |= src->value.ul[i][VTYPE_INDEX_VAL_VALH];
+          i++;
+        }
+        if( i < size ) {
+          vall = 0;
+          valh = 0;
+        } else {
+          vall = (x == 0);
+          valh = (x != 0);
+        }
+        retval = vector_set_coverage_and_assign_ulong( tgt, &vall, &valh, 0, 0 );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \param tgt  Target vector for operation result storage.
+ \param src  Source vector to be operated on.
+
+ \return Returns TRUE if assigned value differs from original; otherwise, returns FALSE.
+
+ Performs unary XOR operation on specified vector value.
+*/
+bool vector_unary_xor(
+  vector*       tgt,
+  const vector* src
+) { PROFILE(VECTOR_UNARY_XOR);
+
+  bool retval;  /* Return value for this function */
+
+  switch( src->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        ulong        vall = 0;
+        ulong        valh = 0;
+        unsigned int i    = 0;
+        unsigned int size = UL_SIZE( src->width );
+        do {
+          if( src->value.ul[i][VTYPE_INDEX_VAL_VALH] != 0 ) {
+            vall = 0;
+            valh = 1;
+          } else {
+            unsigned int j;
+            ulong        tval = src->value.ul[i][VTYPE_INDEX_VAL_VALL];
+            for( j=1; j<UL_BITS; j<<=1 ) {
+              tval = tval ^ (tval >> j);
+            }
+            vall = (vall ^ tval) & 0x1;
+          }
+          i++;
+        } while( (i < size) && (valh == 0) );
+        retval = vector_set_coverage_and_assign_ulong( tgt, &vall, &valh, 0, 0 );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \param tgt  Target vector for operation result storage.
+ \param src  Source vector to be operated on.
+
+ \return Returns TRUE if assigned value differs from original; otherwise, returns FALSE.
+
+ Performs unary NXOR operation on specified vector value.
+*/
+bool vector_unary_nxor(
+  vector*       tgt,
+  const vector* src
+) { PROFILE(VECTOR_UNARY_NXOR);
+
+  bool retval;  /* Return value for this function */
+
+  switch( src->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        ulong        vall = 1;
+        ulong        valh = 0;
+        unsigned int i    = 0;
+        unsigned int size = UL_SIZE( src->width );
+        do {
+          if( src->value.ul[i][VTYPE_INDEX_VAL_VALH] != 0 ) {
+            vall = 0;
+            valh = 1;
+          } else {
+            unsigned int j;
+            ulong        tval = src->value.ul[i][VTYPE_INDEX_VAL_VALL];
+            for( j=1; j<UL_BITS; j<<=1 ) {
+              tval = tval ^ (tval >> j);
+            }
+            vall = (vall ^ tval) & 0x1;
+          }
+          i++;
+        } while( (i < size) && (valh == 0) );
+        retval = vector_set_coverage_and_assign_ulong( tgt, &vall, &valh, 0, 0 );
+      }
+      break;
+    default :  assert( 0 );  break;
   }
 
   PROFILE_END;
@@ -2626,21 +4588,166 @@ bool vector_unary_op(
  Performs unary logical NOT operation on specified vector value.
 */
 bool vector_unary_not(
-  vector* tgt,
-  vector* src
+  vector*       tgt,
+  const vector* src
 ) { PROFILE(VECTOR_UNARY_NOT);
 
-  bool     retval;   /* Return value of this function */
-  vector   vec;      /* Temporary vector value */
-  vec_data vec_val;  /* Temporary value */
+  bool retval;  /* Return value of this function */
 
-  vector_init( &vec, &vec_val, 0x0, FALSE, 1, VTYPE_VAL );
-  vec_val.part.val.value = src->suppl.part.unknown ? 2 : src->suppl.part.not_zero;
-  retval = vector_unary_inv( tgt, &vec );
+  switch( src->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        ulong        vall;
+        ulong        valh;
+        unsigned int size = UL_SIZE( src->width );
+        unsigned int i    = 0;
+        while( (i < size) && (src->value.ul[i][VTYPE_INDEX_VAL_VALH] == 0) && (src->value.ul[i][VTYPE_INDEX_VAL_VALL] == 0) ) i++;
+        if( i < size ) {
+          vall = 0;
+          valh = (src->value.ul[i][VTYPE_INDEX_VAL_VALH] != 0);
+        } else {
+          vall = 1;
+          valh = 0;
+        }
+        retval = vector_set_coverage_and_assign_ulong( tgt, &vall, &valh, 0, 0 );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
 
   PROFILE_END;
 
   return( retval );
+
+}
+
+/*!
+ \return Returns TRUE if the new value differs from the old value; otherwise, returns FALSE.
+
+ Performs expansion operation.
+*/
+bool vector_op_expand(
+  vector*       tgt,   /*!< Pointer to vector to store results in */
+  const vector* left,  /*!< Pointer to vector containing expansion multiplier value */
+  const vector* right  /*!< Pointer to vector that will be multiplied */
+) { PROFILE(VECTOR_OP_EXPAND);
+
+  bool retval;  /* Return value for this function */
+
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        ulong        vall[UL_DIV(MAX_BIT_WIDTH)];
+        ulong        valh[UL_DIV(MAX_BIT_WIDTH)];
+        unsigned int i, j;
+        unsigned int rwidth     = right->width;
+        unsigned int multiplier = vector_to_int( left );
+        unsigned int pos        = 0;
+        for( i=0; i<multiplier; i++ ) {
+          for( j=0; j<rwidth; j++ ) {
+            ulong*       rval     = right->value.ul[UL_DIV(j)];
+            unsigned int my_index = UL_DIV(pos);
+            unsigned int offset   = UL_MOD(pos);
+            if( offset == 0 ) {
+              vall[my_index] = 0;
+              valh[my_index] = 0;
+            }
+            vall[my_index] |= ((rval[VTYPE_INDEX_VAL_VALL] >> UL_MOD(j)) & 0x1) << offset;
+            valh[my_index] |= ((rval[VTYPE_INDEX_VAL_VALH] >> UL_MOD(j)) & 0x1) << offset;
+            pos++;
+          }
+        }
+        retval = vector_set_coverage_and_assign_ulong( tgt, vall, valh, 0, (tgt->width - 1) );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns TRUE if the new value differs from the old value; otherwise, returns FALSE.
+
+ Performs list operation.
+*/
+bool vector_op_list(
+  vector*       tgt,   /*!< Pointer to vector to store results in */
+  const vector* left,  /*!< Pointer to vector containing expansion multiplier value */
+  const vector* right  /*!< Pointer to vector that will be multiplied */
+) { PROFILE(VECTOR_OP_LIST);
+        
+  bool retval;  /* Return value for this function */
+          
+  switch( tgt->suppl.part.data_type ) {
+    case VDATA_UL :
+      {       
+        ulong        vall[UL_DIV(MAX_BIT_WIDTH)];
+        ulong        valh[UL_DIV(MAX_BIT_WIDTH)];
+        unsigned int i;
+        unsigned int pos    = right->width;
+        unsigned int lwidth = left->width;
+        unsigned int rsize  = UL_SIZE( pos );
+
+        /* Load right vector directly */
+        for( i=0; i<rsize; i++ ) {
+          ulong* rval = right->value.ul[i];
+          vall[i] = rval[VTYPE_INDEX_VAL_VALL];
+          valh[i] = rval[VTYPE_INDEX_VAL_VALH];
+        }
+
+        /* Load left vector a bit at at time */
+        for( i=0; i<lwidth; i++ ) {
+          ulong*       lval     = left->value.ul[UL_DIV(i)];
+          unsigned int my_index = UL_DIV(pos);
+          unsigned int offset   = UL_MOD(pos);
+          if( offset == 0 ) {
+            vall[my_index] = 0;
+            valh[my_index] = 0;
+          }
+          vall[my_index] |= ((lval[VTYPE_INDEX_EXP_VALL] >> UL_MOD(i)) & 0x1) << offset;
+          valh[my_index] |= ((lval[VTYPE_INDEX_EXP_VALH] >> UL_MOD(i)) & 0x1) << offset;
+          pos++;
+        }
+        retval = vector_set_coverage_and_assign_ulong( tgt, vall, valh, 0, ((left->width + right->width) - 1) );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( retval );
+  
+}
+
+/*!
+ Deallocates the value structure for the given vector.
+*/
+void vector_dealloc_value(
+  vector* vec  /*!< Pointer to vector to deallocate value for */
+) { PROFILE(VECTOR_DEALLOC_VALUE);
+
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        unsigned int i;
+        unsigned int size = UL_SIZE( vec->width );
+
+        for( i=0; i<size; i++ ) {
+          free_safe( vec->value.ul[i], (sizeof( ulong ) * vector_type_sizes[vec->suppl.part.type]) );
+        }
+        free_safe( vec->value.ul, (sizeof( ulong* ) * size) );
+        vec->value.ul = NULL;
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
 
 }
 
@@ -2657,9 +4764,8 @@ void vector_dealloc(
   if( vec != NULL ) {
 
     /* Deallocate all vector values */
-    if( (vec->value != NULL) && (vec->suppl.part.owns_data == 1) ) {
-      free_safe( vec->value, (sizeof( vec_data ) * vec->width) );
-      vec->value = NULL;
+    if( (vec->value.ul != NULL) && (vec->suppl.part.owns_data == 1) ) {
+      vector_dealloc_value( vec );
     }
 
     /* Deallocate vector itself */
@@ -2673,6 +4779,351 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.138.2.92  2008/05/29 23:04:51  phase1geo
+ Last set of submissions to get full regression passing.  Fixed a few more
+ bugs in vector.c and reentrant.c.
+
+ Revision 1.138.2.91  2008/05/29 18:47:03  phase1geo
+ Fixing various bugs found in 64-bit mode in vector.c file.  IV and Cver
+ regressions pass on 64-bit architecturs.  Checkpointing.
+
+ Revision 1.138.2.90  2008/05/29 06:54:12  phase1geo
+ Fixing compatibility problems in 64-bit mode.  More work to go.  Checkpointing.
+
+ Revision 1.138.2.89  2008/05/29 06:46:25  phase1geo
+ Finishing last submission.
+
+ Revision 1.138.2.88  2008/05/28 22:12:31  phase1geo
+ Adding further support for 32-/64-bit support.  Checkpointing.
+
+ Revision 1.138.2.87  2008/05/28 05:57:12  phase1geo
+ Updating code to use unsigned long instead of uint32.  Checkpointing.
+
+ Revision 1.138.2.86  2008/05/27 23:05:08  phase1geo
+ Fixing sign-extension issue with signal assignments.  Added diagnostic to
+ verify this functionality.  Full regression passes.
+
+ Revision 1.138.2.85  2008/05/27 05:52:51  phase1geo
+ Starting to add fix for sign extension.  Not finished at this point.
+
+ Revision 1.138.2.84  2008/05/26 05:42:09  phase1geo
+ Adding new error merge diagnostics to regression suite to verify missing vector_db_merge
+ error cases.  Full regression passes.
+
+ Revision 1.138.2.83  2008/05/25 05:15:40  phase1geo
+ Updating regressions.
+
+ Revision 1.138.2.82  2008/05/25 04:27:33  phase1geo
+ Adding div1 and mod1 diagnostics to regression suite.
+
+ Revision 1.138.2.81  2008/05/24 21:20:56  phase1geo
+ Fixing bugs with comparison functions when values contain Xs.  Adding more diagnostics
+ to regression suite to cover coverage holes.
+
+ Revision 1.138.2.80  2008/05/24 05:36:22  phase1geo
+ Fixing bitwise coverage functionality and updating regression files.  Added
+ new bitwise1 and err5.1 diagnostics to regression suite.  Removing output
+ for uncovered exceptions in command-line parsers.
+
+ Revision 1.138.2.79  2008/05/23 23:04:56  phase1geo
+ Adding err5 diagnostic to regression suite.  Fixing memory deallocation bug
+ found with err5.  Full regression passes.
+
+ Revision 1.138.2.78  2008/05/23 14:50:23  phase1geo
+ Optimizing vector_op_add and vector_op_subtract algorithms.  Also fixing issue with
+ vector set bit.  Updating regressions per this change.
+
+ Revision 1.138.2.77  2008/05/16 16:55:15  phase1geo
+ Fixing issue in vector_op_add.
+
+ Revision 1.138.2.76  2008/05/16 14:00:36  phase1geo
+ Fixing width extension with sign-extend for comparison operators.  Updating
+ regression files.  Checkpointing.
+
+ Revision 1.138.2.75  2008/05/15 21:58:12  phase1geo
+ Updating regression files per changes for increment and decrement operators.
+ Checkpointing.
+
+ Revision 1.138.2.74  2008/05/15 07:02:04  phase1geo
+ Another attempt to fix static_afunc1 diagnostic failure.  Checkpointing.
+
+ Revision 1.138.2.73  2008/05/14 02:28:15  phase1geo
+ Another attempt to fix toggle issue.  IV and CVer regressions pass again.  Still need to
+ complete VCS regression.  Checkpointing.
+
+ Revision 1.138.2.72  2008/05/13 21:56:20  phase1geo
+ Checkpointing changes.
+
+ Revision 1.138.2.71  2008/05/13 06:42:25  phase1geo
+ Finishing up initial pass of part-select code modifications.  Still getting an
+ error in regression.  Checkpointing.
+
+ Revision 1.138.2.70  2008/05/12 23:12:04  phase1geo
+ Ripping apart part selection code and reworking it.  Things compile but are
+ functionally quite broken at this point.  Checkpointing.
+
+ Revision 1.138.2.69  2008/05/09 22:07:50  phase1geo
+ Updates for VCS regressions.  Fixing some issues found in that regression
+ suite.  Checkpointing.
+
+ Revision 1.138.2.68  2008/05/09 16:47:51  phase1geo
+ Recoding vector_rshift_uint32 function and updating the LAST of the IV
+ failures!  Moving onto VCS regression diagnostics...  Checkpointing.
+
+ Revision 1.138.2.67  2008/05/09 04:46:10  phase1geo
+ Fixing signedness handling for comparison operations.  Updating regression files.
+ Checkpointing.
+
+ Revision 1.138.2.66  2008/05/07 23:09:11  phase1geo
+ Fixing vector_mem_wr_count function and calling code.  Updating regression
+ files accordingly.  Checkpointing.
+
+ Revision 1.138.2.65  2008/05/07 21:09:10  phase1geo
+ Added functionality to allow to_string to output full vector bits (even
+ non-significant bits) for purposes of reporting for FSMs (matches original
+ behavior).
+
+ Revision 1.138.2.64  2008/05/07 20:50:21  phase1geo
+ Fixing bit-fill bug in vector_part_select_push function.  Updated regression
+ files.  Checkpointing.
+
+ Revision 1.138.2.63  2008/05/07 19:27:15  phase1geo
+ Fixing vector_part_select_push functionality to only set coverage and assign
+ information within the target range (not the entire target vector).  Updating
+ regression files and checkpointing.
+
+ Revision 1.138.2.62  2008/05/07 18:09:50  phase1geo
+ Fixing issue with VCD assign functionality.  Updating regression files
+ per this change.  Checkpointing.
+
+ Revision 1.138.2.61  2008/05/07 05:22:51  phase1geo
+ Fixing reporting bug with line coverage for continuous assignments.  Updating
+ regression files and checkpointing.
+
+ Revision 1.138.2.60  2008/05/07 04:08:51  phase1geo
+ Fixing bug with logical AND functionality.  Updating regression files.
+ Checkpointing.
+
+ Revision 1.138.2.59  2008/05/07 03:48:21  phase1geo
+ Fixing bug with bitwise OR function.  Updating regression files.  Checkpointing.
+
+ Revision 1.138.2.58  2008/05/06 20:51:58  phase1geo
+ Fixing bugs with casex and casez.  Checkpointing.
+
+ Revision 1.138.2.57  2008/05/06 06:33:13  phase1geo
+ Updating regression files per latest submission of vector.c.  Checkpointing.
+
+ Revision 1.138.2.56  2008/05/06 06:17:01  phase1geo
+ Fixing memory errors in vector_set_value_uint32.  Checkpointing.
+
+ Revision 1.138.2.55  2008/05/06 05:45:44  phase1geo
+ Attempting to add bit-fill to vector_set_value_uint32 function but it seems
+ that I have possibly created a memory overflow.  Checkpointing.
+
+ Revision 1.138.2.54  2008/05/06 04:51:38  phase1geo
+ Fixing issue with toggle coverage.  Updating regression files.  Checkpointing.
+
+ Revision 1.138.2.53  2008/05/05 23:49:52  phase1geo
+ Fixing case equality function and updating regressions accordingly.  Checkpointing.
+
+ Revision 1.138.2.52  2008/05/05 19:49:59  phase1geo
+ Updating regressions, fixing bugs and added new diagnostics.  Checkpointing.
+
+ Revision 1.138.2.51  2008/05/05 12:57:04  phase1geo
+ Checkpointing some changes for bit-filling in vector_part_select_push (this is
+ not complete at this time).
+
+ Revision 1.138.2.50  2008/05/04 22:05:29  phase1geo
+ Adding bit-fill in vector_set_static and changing name of old bit-fill functions
+ in vector.c to sign_extend to reflect their true nature.  Added new diagnostics
+ to regression suite to verify single-bit select bit-fill (these tests do not work
+ at this point).  Checkpointing.
+
+ Revision 1.138.2.49  2008/05/04 05:48:40  phase1geo
+ Attempting to fix expression_assign.  Updated regression files.
+
+ Revision 1.138.2.48  2008/05/04 04:22:11  phase1geo
+ Fixing vector_to_string bug for quoted strings and updating regression files.
+ Checkpointing.
+
+ Revision 1.138.2.47  2008/05/03 23:58:22  phase1geo
+ Removing skipped vector functions and updating regression suite files
+ accordingly.  Checkpointing.
+
+ Revision 1.138.2.46  2008/05/03 20:10:38  phase1geo
+ Fixing some bugs, completing initial pass of vector_op_multiply and updating
+ regression files accordingly.  Checkpointing.
+
+ Revision 1.138.2.45  2008/05/03 04:06:54  phase1geo
+ Fixing some arc bugs and updating regressions accordingly.  Checkpointing.
+
+ Revision 1.138.2.44  2008/05/02 22:06:13  phase1geo
+ Updating arc code for new data structure.  This code is completely untested
+ but does compile and has been completely rewritten.  Checkpointing.
+
+ Revision 1.138.2.43  2008/05/02 05:02:20  phase1geo
+ Completed initial pass of bit-fill code in vector_part_select_push function.
+ Updating regression files.  Checkpointing.
+
+ Revision 1.138.2.42  2008/05/01 23:10:20  phase1geo
+ Fix endianness issues and attempting to fix assignment bit-fill functionality.
+ Checkpointing.
+
+ Revision 1.138.2.41  2008/05/01 19:40:18  phase1geo
+ Fixing bug in unary_or operation.
+
+ Revision 1.138.2.40  2008/05/01 18:18:49  phase1geo
+ Implemented initial version of unary (reduction) inclusive OR function.
+ Updated regressions.
+
+ Revision 1.138.2.39  2008/05/01 17:51:17  phase1geo
+ Fixing bit_fill bug and a few other vector/expression bugs and updating regressions.
+
+ Revision 1.138.2.38  2008/05/01 06:09:34  phase1geo
+ Adding arshift operation functionality and reworking the bit_fill code.
+ Updating regression files accordingly.  Checkpointing.
+
+ Revision 1.138.2.37  2008/05/01 04:08:30  phase1geo
+ Fixing bugs with assignment propagation.
+
+ Revision 1.138.2.36  2008/04/30 23:12:31  phase1geo
+ Fixing simulation issues.
+
+ Revision 1.138.2.35  2008/04/30 21:59:56  phase1geo
+ Finishing initial work on right-shift functionality.  Added the rest of the
+ diagnostics to verify this work.
+
+ Revision 1.138.2.34  2008/04/30 06:07:12  phase1geo
+ Adding new diagnostic that will be used to test final portion of right-shift
+ functionality.  Checkpointing.
+
+ Revision 1.138.2.33  2008/04/30 05:56:21  phase1geo
+ More work on right-shift function.  Added and connected part_select_push and part_select_pull
+ functionality.  Also added new right-shift diagnostics.  Checkpointing.
+
+ Revision 1.138.2.32  2008/04/30 04:15:03  phase1geo
+ More work on right-shift operator.  Adding diagnostics to verify functionality.
+ Checkpointing.
+
+ Revision 1.138.2.31  2008/04/29 22:55:10  phase1geo
+ Starting to work on right-shift functionality in vector.c.  Added some new
+ diagnostics to regression suite to verify this new code.  More to do.
+ Checkpointing.
+
+ Revision 1.138.2.30  2008/04/29 05:50:50  phase1geo
+ Created body of right-shift function (although this code is just a copy of the
+ left-shift code at the current time).  Checkpointing.
+
+ Revision 1.138.2.29  2008/04/29 05:45:28  phase1geo
+ Completing debug and testing of left-shift operator.  Added new diagnostics
+ to verify the rest of the functionality.
+
+ Revision 1.138.2.28  2008/04/28 21:08:53  phase1geo
+ Fixing memory deallocation issue when CDD file is not present when report
+ command is issued.  Fixing issues with left-shift function (still have one
+ section to go).  Added new tests to regression suite to verify the new
+ left-shift functionality.
+
+ Revision 1.138.2.27  2008/04/28 05:16:35  phase1geo
+ Working on initial version of vector_lshift_uint32 functionality.  More testing
+ and debugging to do here.  Checkpointing.
+
+ Revision 1.138.2.26  2008/04/26 12:45:07  phase1geo
+ Fixing bug in from_string for string types.  Updated regressions.  Checkpointing.
+
+ Revision 1.138.2.25  2008/04/25 17:39:50  phase1geo
+ Fixing several vector issues.  Coded up vector_unary_inv and vector_op_negate.
+ Starting to update passing regression files.
+
+ Revision 1.138.2.24  2008/04/25 14:12:35  phase1geo
+ Coding left shift vector function.  Checkpointing.
+
+ Revision 1.138.2.23  2008/04/25 05:22:46  phase1geo
+ Finished restructuring of vector data.  Continuing to test new code.  Checkpointing.
+
+ Revision 1.138.2.22  2008/04/24 23:38:42  phase1geo
+ Starting to restructure vector data structure to help with memory access striding issues.
+ This work is not complete at this time.  Checkpointing.
+
+ Revision 1.138.2.21  2008/04/24 23:09:40  phase1geo
+ Fixing bug 1950946.  Fixing other various bugs in vector code.  Checkpointing.
+
+ Revision 1.138.2.20  2008/04/24 13:20:34  phase1geo
+ Completing initial pass of vector_op_subtract function.  Checkpointing.
+
+ Revision 1.138.2.19  2008/04/24 05:51:46  phase1geo
+ Added body of subtraction function, although this function does not work at this point.
+ Checkpointing.
+
+ Revision 1.138.2.18  2008/04/24 05:23:08  phase1geo
+ Fixing various vector-related bugs.  Added vector_op_add functionality.
+
+ Revision 1.138.2.17  2008/04/23 23:06:03  phase1geo
+ More bug fixes to vector functionality.  Bitwise operators appear to be
+ working correctly when 2-state values are used.  Checkpointing.
+
+ Revision 1.138.2.16  2008/04/23 21:27:06  phase1geo
+ Fixing several bugs found in initial testing.  Checkpointing.
+
+ Revision 1.138.2.15  2008/04/23 14:33:50  phase1geo
+ Fixing bug in vector display functions that caused infinite looping.  Checkpointing.
+
+ Revision 1.138.2.14  2008/04/23 06:32:32  phase1geo
+ Starting to debug vector changes.  Checkpointing.
+
+ Revision 1.138.2.13  2008/04/23 05:20:45  phase1geo
+ Completed initial pass of code updates.  I can now begin testing...  Checkpointing.
+
+ Revision 1.138.2.12  2008/04/22 23:01:43  phase1geo
+ More updates.  Completed initial pass of expr.c and fsm_arg.c.  Working
+ on memory.c.  Checkpointing.
+
+ Revision 1.138.2.11  2008/04/22 14:03:57  phase1geo
+ More work on expr.c.  Checkpointing.
+
+ Revision 1.138.2.10  2008/04/22 12:46:29  phase1geo
+ More work on expr.c.  Checkpointing.
+
+ Revision 1.138.2.9  2008/04/22 05:51:36  phase1geo
+ Continuing work on expr.c.  Checkpointing.
+
+ Revision 1.138.2.8  2008/04/21 23:13:04  phase1geo
+ More work to update other files per vector changes.  Currently in the middle
+ of updating expr.c.  Checkpointing.
+
+ Revision 1.138.2.7  2008/04/21 04:37:23  phase1geo
+ Attempting to get other files (besides vector.c) to compile with new vector
+ changes.  Still work to go here.  The initial pass through vector.c is not
+ complete at this time as I am attempting to get what I have completed
+ debugged.  Checkpointing work.
+
+ Revision 1.138.2.6  2008/04/20 05:43:45  phase1geo
+ More work on the vector file.  Completed initial pass of conversion operations,
+ bitwise operations and comparison operations.
+
+ Revision 1.138.2.5  2008/04/18 22:04:15  phase1geo
+ More work on vector functions for new data structure implementation.  Worked
+ on vector_set_value, bit_fill and some checking functions.  Checkpointing.
+
+ Revision 1.138.2.4  2008/04/18 14:14:19  phase1geo
+ More vector updates.
+
+ Revision 1.138.2.3  2008/04/18 05:05:28  phase1geo
+ More updates to vector file.  Updated merge and output functions.  Checkpointing.
+
+ Revision 1.138.2.2  2008/04/17 23:16:08  phase1geo
+ More work on vector.c.  Completed initial pass of vector_db_write/read and
+ vector_copy/clone functionality.  Checkpointing.
+
+ Revision 1.138.2.1  2008/04/16 22:29:58  phase1geo
+ Finished format for new vector value format.  Completed work on vector_init_uint32
+ and vector_create.
+
+ Revision 1.138  2008/04/15 06:08:47  phase1geo
+ First attempt to get both instance and module coverage calculatable for
+ GUI purposes.  This is not quite complete at the moment though it does
+ compile.
+
  Revision 1.137  2008/04/08 19:50:36  phase1geo
  Removing LAST operator for PEDGE, NEDGE and AEDGE expression operations and
  replacing them with the temporary vector solution.

@@ -292,7 +292,7 @@ void report_parse_args(
     if( strncmp( "-h", argv[i], 2 ) == 0 ) {
  
       report_usage();
-      printf( "report Throw A\n" );
+      // printf( "report Throw A\n" ); - HIT
       Throw 0;
 
     } else if( strncmp( "-m", argv[i], 2 ) == 0 ) {
@@ -404,7 +404,7 @@ void report_parse_args(
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Cannot find %s database file for opening", argv[i] );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        printf( "report Throw H\n" );
+        //printf( "report Throw H\n" ); - HIT
         Throw 0;
 
       }
@@ -881,7 +881,6 @@ void command_report(
           /* Open output stream */
           if( output_file != NULL ) {
             ofile = fopen( output_file, "w" );
-            free_safe( output_file, (strlen( output_file ) + 1) );
             if( ofile == NULL ) {
               unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open report output file %s for writing", output_file );
               assert( rv < USER_MSG_LENGTH );
@@ -998,6 +997,7 @@ void command_report(
 
   } Catch_anonymous {}
 
+  free_safe( output_file, (strlen( output_file ) + 1) );
   free_safe( input_db, (strlen( input_db ) + 1) );
 
   /* Close the database */
@@ -1010,6 +1010,20 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.102.2.2  2008/05/24 05:36:21  phase1geo
+ Fixing bitwise coverage functionality and updating regression files.  Added
+ new bitwise1 and err5.1 diagnostics to regression suite.  Removing output
+ for uncovered exceptions in command-line parsers.
+
+ Revision 1.102.2.1  2008/04/28 21:08:53  phase1geo
+ Fixing memory deallocation issue when CDD file is not present when report
+ command is issued.  Fixing issues with left-shift function (still have one
+ section to go).  Added new tests to regression suite to verify the new
+ left-shift functionality.
+
+ Revision 1.102  2008/04/15 20:37:11  phase1geo
+ Fixing database array support.  Full regression passes.
+
  Revision 1.101  2008/04/15 06:08:47  phase1geo
  First attempt to get both instance and module coverage calculatable for
  GUI purposes.  This is not quite complete at the moment though it does

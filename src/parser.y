@@ -179,7 +179,7 @@ bool curr_packed = TRUE;
 /*!
  Specifies the current signal/port type for a variable list.
 */
-int curr_sig_type = SSUPPL_TYPE_DECLARED;
+int curr_sig_type = SSUPPL_TYPE_DECL_NET;
 
 /*!
  Pointer to head of stack structure that stores the contents of generate
@@ -458,7 +458,7 @@ description
       curr_mba      = FALSE;
       curr_signed   = FALSE;
       curr_handled  = TRUE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_REG;
     }
     list_of_variables ';'
   | gatetype gate_instance_list ';'
@@ -582,7 +582,7 @@ description
     {
       str_link* strl = $2;
       while( strl != NULL ) {
-        db_add_signal( strl->str, SSUPPL_TYPE_DECLARED, &curr_prange, NULL, curr_signed, FALSE, strl->suppl, strl->suppl2, TRUE );
+        db_add_signal( strl->str, SSUPPL_TYPE_DECL_REG, &curr_prange, NULL, curr_signed, FALSE, strl->suppl, strl->suppl2, TRUE );
         strl = strl->next;
       }
       str_link_delete_list( $2 );
@@ -710,9 +710,9 @@ port_declaration
         $$ = NULL;
       } else {
         if( ignore_mode == 0 ) {
-          db_add_signal( $6, SSUPPL_TYPE_OUTPUT, &curr_prange, NULL, curr_signed, FALSE, @6.first_line, @6.first_column, TRUE );
+          db_add_signal( $6, SSUPPL_TYPE_OUTPUT_REG, &curr_prange, NULL, curr_signed, FALSE, @6.first_line, @6.first_column, TRUE );
           pi = (port_info*)malloc_safe( sizeof( port_info ) );
-          pi->type      = SSUPPL_TYPE_OUTPUT;
+          pi->type      = SSUPPL_TYPE_OUTPUT_REG;
           pi->is_signed = curr_signed;
           pi->prange    = parser_copy_curr_range( TRUE );
           pi->urange    = parser_copy_curr_range( FALSE );
@@ -733,9 +733,9 @@ port_declaration
         $$ = NULL;
       } else {
         if( ignore_mode == 0 ) {
-          db_add_signal( $6, SSUPPL_TYPE_OUTPUT, &curr_prange, NULL, curr_signed, FALSE, @6.first_line, @6.first_column, TRUE );
+          db_add_signal( $6, SSUPPL_TYPE_OUTPUT_REG, &curr_prange, NULL, curr_signed, FALSE, @6.first_line, @6.first_column, TRUE );
           pi = (port_info*)malloc_safe( sizeof( port_info ) );
-          pi->type       = SSUPPL_TYPE_OUTPUT;
+          pi->type       = SSUPPL_TYPE_OUTPUT_REG;
           pi->is_signed  = curr_signed;
           pi->prange     = parser_copy_curr_range( TRUE );
           pi->urange     = parser_copy_curr_range( FALSE );
@@ -1092,7 +1092,7 @@ static_expr_primary
       static_expr* tmp;
       if( (ignore_mode == 0) && ($1.vec != NULL) ) {
         tmp = (static_expr*)malloc_safe( sizeof( static_expr ) );
-        if( $1.vec->suppl.part.unknown ) {
+        if( vector_is_unknown( $1.vec ) ) {
           Try {
             tmp->exp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
             tmp->exp->suppl.part.base = $1.base;
@@ -3281,7 +3281,7 @@ module_item
       } else {
         curr_mba      = FALSE;
         curr_handled  = TRUE;
-        curr_sig_type = SSUPPL_TYPE_OUTPUT;
+        curr_sig_type = SSUPPL_TYPE_OUTPUT_REG;
         if( generate_top_mode > 0 ) {
           ignore_mode++;
           VLerror( "Port declaration not allowed within a generate block" );
@@ -3307,7 +3307,7 @@ module_item
       curr_mba      = FALSE;
       curr_signed   = FALSE;
       curr_handled  = TRUE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_REG;
       if( generate_top_mode > 0 ) {
         ignore_mode++;
         VLerror( "Port declaration not allowed within a generate block" );
@@ -3724,7 +3724,7 @@ module_item
     {
       str_link* strl = $3;
       while( strl != NULL ) {
-        db_add_signal( strl->str, SSUPPL_TYPE_DECLARED, &curr_prange, NULL, curr_signed, FALSE, strl->suppl, strl->suppl2, TRUE );
+        db_add_signal( strl->str, SSUPPL_TYPE_DECL_REG, &curr_prange, NULL, curr_signed, FALSE, strl->suppl, strl->suppl2, TRUE );
         strl = strl->next;
       }
       str_link_delete_list( $3 );
@@ -3828,19 +3828,19 @@ integer_vector_type
     {
       curr_mba      = FALSE;
       curr_handled  = TRUE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_REG;
     }
   | K_logic
     {
       curr_mba      = FALSE;
       curr_handled  = TRUE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_REG;
     }
   | K_reg
     {
       curr_mba      = FALSE;
       curr_handled  = TRUE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_REG;
     }
   ;
 
@@ -3849,49 +3849,49 @@ integer_atom_type
     {
       curr_mba      = FALSE;
       curr_handled  = TRUE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_REG;
       parser_implicitly_set_curr_range( 7, 0, TRUE );
     }
   | K_char
     {
       curr_mba      = FALSE;
       curr_handled  = TRUE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_REG;
       parser_implicitly_set_curr_range( 7, 0, TRUE );
     }
   | K_shortint
     {
       curr_mba      = FALSE;
       curr_handled  = TRUE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_REG;
       parser_implicitly_set_curr_range( 15, 0, TRUE );
     }
   | K_int
     {
       curr_mba      = FALSE;
       curr_handled  = TRUE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_REG;
       parser_implicitly_set_curr_range( 31, 0, TRUE );
     }
   | K_integer
     {
       curr_mba      = FALSE;
       curr_handled  = TRUE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_REG;
       parser_implicitly_set_curr_range( 31, 0, TRUE );
     }
   | K_longint
     {
       curr_mba      = FALSE;
       curr_handled  = TRUE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_REG;
       parser_implicitly_set_curr_range( 63, 0, TRUE );
     }
   | K_time
     {
       curr_mba      = FALSE;
       curr_handled  = TRUE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_REG;
       parser_implicitly_set_curr_range( 63, 0, TRUE );
     }
   ;
@@ -4476,11 +4476,11 @@ statement
       expression* expr;
       statement*  stmt;
       if( (ignore_mode == 0) && ($3 != NULL) && ($6 != NULL) ) {
-        vec = vector_create( 32, VTYPE_VAL, TRUE );
+        vec = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
         Try {
           expr = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
           vector_from_int( vec, 0x0 );
-          assert( expr->value->value == NULL );
+          assert( expr->value->value.ul == NULL );
           free_safe( expr->value, sizeof( vector ) );
           expr->value = vec;
         } Catch_anonymous {
@@ -5004,11 +5004,11 @@ statement
       expression* tmp;
       statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) && ($5 != NULL) && ($7 != NULL) && ($8 != NULL) ) {
-        vec = vector_create( 32, VTYPE_VAL, TRUE );
+        vec = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
         Try {
           tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
           vector_from_int( vec, 0x0 );
-          assert( tmp->value->value == NULL );
+          assert( tmp->value->value.ul == NULL );
           free_safe( tmp->value, sizeof( vector ) );
           tmp->value = vec;
         } Catch_anonymous {
@@ -5484,28 +5484,28 @@ block_item_decl
     {
       curr_mba      = FALSE;
       curr_handled  = TRUE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_REG;
     }
     register_variable_list ';'
   | attribute_list_opt K_bit signed_opt range_opt
     {
       curr_mba      = FALSE;
       curr_handled  = TRUE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_REG;
     }
     register_variable_list ';'
   | attribute_list_opt K_logic signed_opt range_opt
     {
       curr_mba      = FALSE;
       curr_handled  = TRUE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_REG;
     }
     register_variable_list ';'
   | attribute_list_opt K_char unsigned_opt
     {
       curr_mba      = FALSE;
       curr_handled  = TRUE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_REG;
       parser_implicitly_set_curr_range( 7, 0, TRUE );
     }
     register_variable_list ';'
@@ -5513,7 +5513,7 @@ block_item_decl
     {
       curr_mba      = FALSE;
       curr_handled  = TRUE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_REG;
       parser_implicitly_set_curr_range( 7, 0, TRUE );
     }
     register_variable_list ';'
@@ -5521,7 +5521,7 @@ block_item_decl
     {
       curr_mba      = FALSE;
       curr_handled  = TRUE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_REG;
       parser_implicitly_set_curr_range( 15, 0, TRUE );
     }
     register_variable_list ';'
@@ -5530,7 +5530,7 @@ block_item_decl
       curr_signed   = TRUE;
       curr_mba      = FALSE;
       curr_handled  = TRUE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_REG;
       parser_implicitly_set_curr_range( 31, 0, TRUE );
     }
     register_variable_list ';'
@@ -5538,7 +5538,7 @@ block_item_decl
     {
       curr_mba      = FALSE;
       curr_handled  = TRUE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_REG;
       parser_implicitly_set_curr_range( 31, 0, TRUE );
     }
     register_variable_list ';'
@@ -5546,7 +5546,7 @@ block_item_decl
     {
       curr_mba      = FALSE;
       curr_handled  = TRUE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_REG;
       parser_implicitly_set_curr_range( 63, 0, TRUE );
     }
     register_variable_list ';'
@@ -5555,7 +5555,7 @@ block_item_decl
       curr_signed   = FALSE;
       curr_mba      = TRUE;
       curr_handled  = TRUE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_REG;
       parser_implicitly_set_curr_range( 63, 0, TRUE );
     }
     register_variable_list ';'
@@ -5574,7 +5574,7 @@ block_item_decl
       curr_signed   = TRUE;
       curr_mba      = FALSE;
       curr_handled  = FALSE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_REG;
       parser_implicitly_set_curr_range( (real_size - 1), 0, TRUE );
     }
     list_of_variables ';'
@@ -5584,7 +5584,7 @@ block_item_decl
       curr_signed   = TRUE;
       curr_mba      = FALSE;
       curr_handled  = FALSE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_REG;
       parser_implicitly_set_curr_range( (real_size - 1), 0, TRUE );
     }
     list_of_variables ';'
@@ -5857,7 +5857,8 @@ delay_value
           } Catch_anonymous {
             error_count++;
           }
-          vector_init( tmp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32) ), 0x0, TRUE, 32, VTYPE_VAL );
+          vector_dealloc( tmp->value );
+          tmp->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
           vector_from_int( tmp->value, se->num );
           static_expr_dealloc( se, TRUE );
         } else {
@@ -5913,7 +5914,8 @@ delay_value
             } Catch_anonymous {
               error_count++;
             }
-            vector_init( tmp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32) ), 0x0, TRUE, 32, VTYPE_VAL );
+            vector_dealloc( tmp->value );
+            tmp->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
             vector_from_int( tmp->value, se->num );
             static_expr_dealloc( se, TRUE );
           } else {
@@ -5941,7 +5943,7 @@ delay_value_simple
         } Catch_anonymous {
           error_count++;
         }
-        assert( tmp->value->value == NULL );
+        assert( tmp->value->value.ul == NULL );
         free_safe( tmp->value, sizeof( vector ) );
         tmp->value = $1.vec;
         $$ = tmp;
@@ -6242,7 +6244,7 @@ net_type
   : K_wire
     {
       curr_mba      = FALSE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_NET;
       curr_signed   = FALSE;
       curr_handled  = TRUE;
       $$ = 1;
@@ -6250,7 +6252,7 @@ net_type
   | K_tri
     {
       curr_mba      = FALSE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_NET;
       curr_signed   = FALSE;
       curr_handled  = TRUE;
       $$ = 1;
@@ -6258,7 +6260,7 @@ net_type
   | K_tri1
     {
       curr_mba      = FALSE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_NET;
       curr_signed   = FALSE;
       curr_handled  = TRUE;
       $$ = 1;
@@ -6266,7 +6268,7 @@ net_type
   | K_supply0
     {
       curr_mba      = FALSE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_NET;
       curr_signed   = FALSE;
       curr_handled  = TRUE;
       $$ = 1;
@@ -6274,7 +6276,7 @@ net_type
   | K_wand
     {
       curr_mba      = FALSE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_NET;
       curr_signed   = FALSE;
       curr_handled  = TRUE;
       $$ = 1;
@@ -6282,7 +6284,7 @@ net_type
   | K_triand
     {
       curr_mba      = FALSE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_NET;
       curr_signed   = FALSE;
       curr_handled  = TRUE;
       $$ = 1;
@@ -6290,7 +6292,7 @@ net_type
   | K_tri0
     {
       curr_mba      = FALSE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_NET;
       curr_signed   = FALSE;
       curr_handled  = TRUE;
       $$ = 1;
@@ -6298,7 +6300,7 @@ net_type
   | K_supply1
     {
       curr_mba      = FALSE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_NET;
       curr_signed   = FALSE;
       curr_handled  = TRUE;
       $$ = 1;
@@ -6306,7 +6308,7 @@ net_type
   | K_wor
     {
       curr_mba      = FALSE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_NET;
       curr_signed   = FALSE;
       curr_handled  = TRUE;
       $$ = 1;
@@ -6314,7 +6316,7 @@ net_type
   | K_trior
     {
       curr_mba      = FALSE;
-      curr_sig_type = SSUPPL_TYPE_DECLARED;
+      curr_sig_type = SSUPPL_TYPE_DECL_NET;
       curr_signed   = FALSE;
       curr_handled  = TRUE;
       $$ = 1;
@@ -6336,7 +6338,7 @@ net_decl_assign
       expression* tmp;
       statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) && (info_suppl.part.excl_assign == 0) ) {
-        db_add_signal( $1, SSUPPL_TYPE_DECLARED, &curr_prange, NULL, curr_signed, FALSE, @1.first_line, @1.first_column, TRUE );
+        db_add_signal( $1, SSUPPL_TYPE_DECL_NET, &curr_prange, NULL, curr_signed, FALSE, @1.first_line, @1.first_column, TRUE );
         if( $3 != NULL ) {
           Try {
             tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
@@ -6368,7 +6370,7 @@ net_decl_assign
       expression* tmp;
       statement*  stmt;
       if( (ignore_mode == 0) && ($2 != NULL) && (info_suppl.part.excl_assign == 0) ) {
-        db_add_signal( $2, SSUPPL_TYPE_DECLARED, &curr_prange, NULL, FALSE, FALSE, @2.first_line, @2.first_column, TRUE );
+        db_add_signal( $2, SSUPPL_TYPE_DECL_NET, &curr_prange, NULL, FALSE, FALSE, @2.first_line, @2.first_column, TRUE );
         if( $4 != NULL ) {
           Try {
             tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @2.first_line, @2.first_column, (@2.last_column - 1), $2 );
@@ -6555,9 +6557,9 @@ charge_strength
   ;
 
 port_type
-  : K_input  { curr_sig_type = SSUPPL_TYPE_INPUT;  }
-  | K_output { curr_sig_type = SSUPPL_TYPE_OUTPUT; }
-  | K_inout  { curr_sig_type = SSUPPL_TYPE_INOUT;  }
+  : K_input  { curr_sig_type = SSUPPL_TYPE_INPUT_NET;  }
+  | K_output { curr_sig_type = SSUPPL_TYPE_OUTPUT_NET; }
+  | K_inout  { curr_sig_type = SSUPPL_TYPE_INOUT_NET;  }
   ;
 
 defparam_assign_list
@@ -6775,7 +6777,7 @@ function_item
     {
       curr_mba      = FALSE;
       curr_handled  = TRUE;
-      curr_sig_type = SSUPPL_TYPE_INPUT;
+      curr_sig_type = SSUPPL_TYPE_INPUT_NET;
     }
     list_of_variables ';'
   | block_item_decl
@@ -7222,7 +7224,7 @@ single_index_expr
               error_count++;
             }
             vector_dealloc( tmp->value );
-            tmp->value = vector_create( 32, VTYPE_VAL, TRUE );
+            tmp->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
             vector_from_int( tmp->value, $4->num );
             Try {
               tmp = db_create_expression( tmp, $2, EXP_OP_MBIT_POS, lhs_mode, @1.first_line, @1.first_column, (@5.last_column - 1), NULL );
@@ -7262,7 +7264,7 @@ single_index_expr
               error_count++;
             }
             vector_dealloc( tmp->value );
-            tmp->value = vector_create( 32, VTYPE_VAL, TRUE );
+            tmp->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
             vector_from_int( tmp->value, $4->num );
             Try {
               tmp = db_create_expression( tmp, $2, EXP_OP_MBIT_NEG, lhs_mode, @1.first_line, @1.first_column, (@5.last_column - 1), NULL );

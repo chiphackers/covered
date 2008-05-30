@@ -91,11 +91,9 @@ void memory_get_stat(
       (*wr_hit)++;
       (*rd_hit)++;
     } else {
-      vector_init( &vec, NULL, 0x0, FALSE, pwidth, VTYPE_MEM );
-      vec.value = &(sig->value->value[i]);
       wr = 0;
       rd = 0;
-      vector_mem_rw_count( &vec, &wr, &rd );
+      vector_mem_rw_count( sig->value, i, ((i + pwidth) - 1), &wr, &rd );
       if( wr > 0 ) {
         (*wr_hit)++;
       }
@@ -269,17 +267,16 @@ static void memory_create_pdim_bit_array( char** str, vsignal* sig, char* prefix
 }
 
 /*!
- \param mem_str           String containing memory information
- \param sig               Pointer to signal to get memory coverage for
- \param value             Pointer to vector value containing the current vector to interrogate (initially this will
-                          be the signal value)
- \param prefix            String containing memory prefix to output (initially this will be just the signal name)
- \param dim               Current dimension index (initially this will be 0)
- \param parent_dim_width  Bit width of parent dimension (initially this will be the width of the signal)
-
  Creates memory array structure for Tcl and stores it into the mem_str parameter.
 */
-static void memory_get_mem_coverage( char** mem_str, vsignal* sig, vec_data* value, char* prefix, int dim, int parent_dim_width ) { PROFILE(MEMORY_GET_MEM_COVERAGE);
+static void memory_get_mem_coverage(
+  char**    mem_str,          /*!< String containing memory information */
+  vsignal*  sig,              /*!< Pointer to signal to get memory coverage for */
+  int       offset,           /*!< Bit offset of signal vector to start retrieving information from */
+  char*     prefix,           /*!< String containing memory prefix to output (initially this will be just the signal name) */
+  int       dim,              /*!< Current dimension index (initially this will be 0) */
+  int       parent_dim_width  /*!< Bit width of parent dimension (initially this will be the width of the signal) */
+) { PROFILE(MEMORY_GET_MEM_COVERAGE);
 
   char name[4096];  /* Contains signal name */
   int  msb;         /* MSB of current dimension */
@@ -309,17 +306,17 @@ static void memory_get_mem_coverage( char** mem_str, vsignal* sig, vec_data* val
   /* Only output memory contents if we have reached the lowest dimension */
   if( (dim + 1) == sig->udim_num ) {
 
-    vector vec;
-    int    tog01;
-    int    tog10;
-    int    wr;
-    int    rd;
-    char*  tog01_str;
-    char*  tog10_str;
-    char   hit_str[2];
-    char   int_str[20];
-    char*  dim_str;
-    char*  entry_str;
+    vector* vec = vector_create( dim_width, VTYPE_MEM, VDATA_UL, TRUE );
+    int     tog01;
+    int     tog10;
+    int     wr;
+    int     rd;
+    char*   tog01_str;
+    char*   tog10_str;
+    char    hit_str[2];
+    char    int_str[20];
+    char*   dim_str;
+    char*   entry_str;
 
     /* Iterate through each addressable element in the current dimension */
     for( i=0; i<((msb - lsb) + 1); i++ ) {
@@ -327,12 +324,11 @@ static void memory_get_mem_coverage( char** mem_str, vsignal* sig, vec_data* val
       unsigned int rv;
       unsigned int slen;
 
-      /* Initialize the vector */
-      vector_init( &vec, NULL, 0x0, FALSE, dim_width, VTYPE_MEM );
+      /* Re-initialize the vector */
       if( be ) {
-        vec.value = value + (dim_width * ((msb - lsb) - i));
+        vector_copy_range( vec, sig->value, ((dim_width * ((msb - lsb) - i)) + offset) );
       } else {
-        vec.value = value + (dim_width * i);
+        vector_copy_range( vec, sig->value, ((dim_width * i) + offset) );
       }
 
       /* Create dimension string */
@@ -346,16 +342,16 @@ static void memory_get_mem_coverage( char** mem_str, vsignal* sig, vec_data* val
       /* Get toggle information */
       tog01 = 0;
       tog10 = 0;
-      vector_toggle_count( &vec, &tog01, &tog10 );
+      vector_toggle_count( vec, &tog01, &tog10 );
 
       /* Get toggle strings */
-      tog01_str = vector_get_toggle01( vec.value, vec.width );
-      tog10_str = vector_get_toggle10( vec.value, vec.width );
+      tog01_str = vector_get_toggle01_ulong( vec->value.ul, vec->width );
+      tog10_str = vector_get_toggle10_ulong( vec->value.ul, vec->width );
 
       /* Get write/read information */
       wr = 0;
       rd = 0;
-      vector_mem_rw_count( &vec, &wr, &rd );
+      vector_mem_rw_count( vec, 0, (vec->width - 1), &wr, &rd );
 
       /* Output the addressable memory element if it is found to be lacking in coverage */
       if( (tog01 < dim_width) || (tog10 < dim_width) || (wr == 0) || (rd == 0) ) {
@@ -381,7 +377,10 @@ static void memory_get_mem_coverage( char** mem_str, vsignal* sig, vec_data* val
       free_safe( tog10_str, (strlen( tog10_str ) + 1) );
       free_safe( entry_str, (strlen( entry_str ) + 1) );
 
-    } 
+    }
+
+    /* Deallocate vector */
+    vector_dealloc( vec );
 
   /* Otherwise, go down one level */
   } else {
@@ -394,9 +393,9 @@ static void memory_get_mem_coverage( char** mem_str, vsignal* sig, vec_data* val
       assert( rv < 4096 );
 
       if( be ) {
-        memory_get_mem_coverage( mem_str, sig, (value + (dim_width * ((msb - lsb) - i))), name, (dim + 1), dim_width );
+        memory_get_mem_coverage( mem_str, sig, (offset + (dim_width * ((msb - lsb) - i))), name, (dim + 1), dim_width );
       } else {
-        memory_get_mem_coverage( mem_str, sig, (value + (dim_width * i)),                 name, (dim + 1), dim_width );
+        memory_get_mem_coverage( mem_str, sig, (offset + (dim_width * i)),                 name, (dim + 1), dim_width );
       }
 
     }
@@ -497,7 +496,7 @@ bool memory_get_coverage(
       /* Populate the memory_info string */
       *memory_info = (char*)malloc_safe( 1 );
       (*memory_info)[0] = '\0';
-      memory_get_mem_coverage( memory_info, sigl->sig, sigl->sig->value->value, "", 0, sigl->sig->value->width );
+      memory_get_mem_coverage( memory_info, sigl->sig, 0, "", 0, sigl->sig->value->width );
 
       /* Populate the excluded value */
       *excluded = sigl->sig->suppl.part.excluded;
@@ -525,7 +524,13 @@ bool memory_get_coverage(
  Collects all signals that are memories and match the given coverage type and stores them
  in the given signal list.
 */
-bool memory_collect( const char* funit_name, int funit_type, int cov, sig_link** head, sig_link** tail ) { PROFILE(MEMORY_COLLECT);
+bool memory_collect(
+  const char* funit_name,
+  int         funit_type,
+  int         cov,
+  sig_link**  head,
+  sig_link**  tail
+) { PROFILE(MEMORY_COLLECT);
 
   bool        retval = FALSE;  /* Return value for this function */
   funit_link* funitl;          /* Pointer to found functional unit link */
@@ -962,17 +967,16 @@ static bool memory_ae_funit_summary(
 }
 
 /*!
- \param ofile             Pointer to output file
- \param sig               Pointer to the current memory element to output
- \param value             Pointer to vector value containing the current vector to interrogate (initially this will
-                          be the signal value)
- \param prefix            String containing memory prefix to output (initially this will be just the signal name)
- \param dim               Current dimension index (initially this will be 0)
- \param parent_dim_width  Bit width of parent dimension (initially this will be the width of the signal)
-
  Outputs the contents of the given memory in verbose output format.
 */
-static void memory_display_memory( FILE* ofile, vsignal* sig, vec_data* value, char* prefix, int dim, int parent_dim_width ) { PROFILE(MEMORY_DISPLAY_MEMORY);
+static void memory_display_memory(
+  FILE*    ofile,       /*!< Pointer to output file */
+  vsignal* sig,         /*!< Pointer to the current memory element to output */
+  int      offset,      /*!< Bit offset of signal vector value to start interrogating */
+  char*    prefix,      /*!< String containing memory prefix to output (initially this will be just the signal name) */
+  int      dim,         /*!< Current dimension index (initially this will be 0) */
+  int parent_dim_width  /*!< Bit width of parent dimension (initially this will be the width of the signal) */
+) { PROFILE(MEMORY_DISPLAY_MEMORY);
 
   char name[4096];  /* Contains signal name */
   int  msb;         /* MSB of current dimension */
@@ -1002,32 +1006,30 @@ static void memory_display_memory( FILE* ofile, vsignal* sig, vec_data* value, c
   /* Only output memory contents if we have reached the lowest dimension */
   if( (dim + 1) == sig->udim_num ) {
 
-    vector vec;
-    int    tog01;
-    int    tog10;
-    int    wr;
-    int    rd;
+    vector* vec = vector_create( dim_width, VTYPE_MEM, VDATA_UL, TRUE );
+    int     tog01;
+    int     tog10;
+    int     wr;
+    int     rd;
 
     /* Iterate through each addressable element in the current dimension */
     for( i=0; i<((msb - lsb) + 1); i++ ) {
 
-      /* Initialize the vector */
-      vector_init( &vec, NULL, 0x0, FALSE, dim_width, VTYPE_MEM );
       if( be ) {
-        vec.value = value + (dim_width * ((msb - lsb) - i));
+        vector_copy_range( vec, sig->value, ((dim_width * ((msb - lsb) - i)) + offset) );
       } else {
-        vec.value = value + (dim_width * i);
+        vector_copy_range( vec, sig->value, ((dim_width * i) + offset) );
       }
 
       /* Get toggle information */
       tog01 = 0;
       tog10 = 0;
-      vector_toggle_count( &vec, &tog01, &tog10 );
+      vector_toggle_count( vec, &tog01, &tog10 );
 
       /* Get write/read information */
       wr = 0;
       rd = 0;
-      vector_mem_rw_count( &vec, &wr, &rd );
+      vector_mem_rw_count( vec, 0, (vec->width - 1), &wr, &rd );
 
       /* Output the addressable memory element if it is found to be lacking in coverage */
       if( (tog01 < dim_width) || (tog10 < dim_width) || (wr == 0) || (rd == 0) ) {
@@ -1037,18 +1039,21 @@ static void memory_display_memory( FILE* ofile, vsignal* sig, vec_data* value, c
         unsigned int rv = snprintf( name, 4096, "%s[%d]", prefix, i );
         assert( rv < 4096 );
         fprintf( ofile, "        %s  Written: %d  0->1: ", name, ((wr == 0) ? 0 : 1) );
-        vector_display_toggle01( vec.value, vec.width, ofile );
+        vector_display_toggle01_ulong( vec->value.ul, vec->width, ofile );
         fprintf( ofile, "\n" );
         fprintf( ofile, "        " );
         for( j=0; j<strlen( name ); j++ ) {
           fprintf( ofile, "." );
         }
         fprintf( ofile, "  Read   : %d  1->0: ", ((rd == 0) ? 0 : 1) );
-        vector_display_toggle10( vec.value, vec.width, ofile );
+        vector_display_toggle10_ulong( vec->value.ul, vec->width, ofile );
         fprintf( ofile, " ...\n" );
       }
 
     } 
+
+    /* Deallocate the vector */
+    vector_dealloc( vec );
 
   /* Otherwise, go down one level */
   } else {
@@ -1061,9 +1066,9 @@ static void memory_display_memory( FILE* ofile, vsignal* sig, vec_data* value, c
       assert( rv < 4096 );
 
       if( be ) {
-        memory_display_memory( ofile, sig, (value + (dim_width * ((msb - lsb) - i))), name, (dim + 1), dim_width );
+        memory_display_memory( ofile, sig, (offset + (dim_width * ((msb - lsb) - i))), name, (dim + 1), dim_width );
       } else {
-        memory_display_memory( ofile, sig, (value + (dim_width * i)),                 name, (dim + 1), dim_width );
+        memory_display_memory( ofile, sig, (offset + (dim_width * i)),                 name, (dim + 1), dim_width );
       }
 
     }
@@ -1125,7 +1130,7 @@ static void memory_display_verbose( FILE* ofile, sig_link* sigl ) { PROFILE(MEMO
 
       } else {
 
-        memory_display_memory( ofile, curr_sig->sig, curr_sig->sig->value->value, curr_sig->sig->name, 0, curr_sig->sig->value->width );
+        memory_display_memory( ofile, curr_sig->sig, 0, curr_sig->sig->name, 0, curr_sig->sig->value->width );
 
       }
 
@@ -1345,6 +1350,23 @@ void memory_report( FILE* ofile, bool verbose ) { PROFILE(MEMORY_REPORT);
 
 /*
  $Log$
+ Revision 1.28.2.4  2008/05/28 05:57:11  phase1geo
+ Updating code to use unsigned long instead of uint32.  Checkpointing.
+
+ Revision 1.28.2.3  2008/05/07 23:09:10  phase1geo
+ Fixing vector_mem_wr_count function and calling code.  Updating regression
+ files accordingly.  Checkpointing.
+
+ Revision 1.28.2.2  2008/04/23 05:20:44  phase1geo
+ Completed initial pass of code updates.  I can now begin testing...  Checkpointing.
+
+ Revision 1.28.2.1  2008/04/22 23:01:43  phase1geo
+ More updates.  Completed initial pass of expr.c and fsm_arg.c.  Working
+ on memory.c.  Checkpointing.
+
+ Revision 1.28  2008/04/15 20:37:11  phase1geo
+ Fixing database array support.  Full regression passes.
+
  Revision 1.27  2008/04/08 19:50:36  phase1geo
  Removing LAST operator for PEDGE, NEDGE and AEDGE expression operations and
  replacing them with the temporary vector solution.

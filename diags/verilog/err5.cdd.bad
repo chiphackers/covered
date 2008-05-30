@@ -1,0 +1,6 @@
+5 e 1 * 0
+8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd err5.vcd -o err5.cdd -v err5.v -D DUMP
+3 0 $root "$root" NA 0 0 1
+3 0 main "main" err5.v 10 23 1
+1 a 12 70004 1 0 0 0 1 17
+3 1 main.$u0 "main.$u0" err5.v 0 21 1

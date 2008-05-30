@@ -138,7 +138,7 @@ static void merge_parse_args(
   }
 
   /* Check to make sure that the user specified at least two files to merge */
-  if( merge_in_num < 2 ) {
+  if( retval && (merge_in_num < 2) ) {
     print_output( "Must specify at least two CDD files to merge", FATAL, __FILE__, __LINE__ );
     printf( "merge Throw C\n" );
     Throw 0;
@@ -209,6 +209,16 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.46.2.1  2008/05/24 05:36:21  phase1geo
+ Fixing bitwise coverage functionality and updating regression files.  Added
+ new bitwise1 and err5.1 diagnostics to regression suite.  Removing output
+ for uncovered exceptions in command-line parsers.
+
+ Revision 1.46  2008/03/31 21:40:23  phase1geo
+ Fixing several more memory issues and optimizing a bit of code per regression
+ failures.  Full regression still does not pass but does complete (yeah!)
+ Checkpointing.
+
  Revision 1.45  2008/03/31 18:39:08  phase1geo
  Fixing more regression issues related to latest code modifications.  Checkpointing.
 

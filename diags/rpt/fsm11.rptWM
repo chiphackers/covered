@@ -92,9 +92,9 @@ Module/Task/Function                Filename                          Hit/Miss/T
 Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   $root                   NA                        0/   0/   0      100%            0/   0/   0      100%
-  main                    fsm11.v                   2/   0/   2      100%            1/   1/   2       50%
+  main                    fsm11.v                   1/   1/   2       50%            1/   1/   2       50%
 ---------------------------------------------------------------------------------------------------------------------
-  Accumulated                                       2/   0/   2      100%            1/   1/   2       50%
+  Accumulated                                       1/   1/   2       50%            1/   1/   2       50%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: main, File: fsm11.v
@@ -105,6 +105,7 @@ Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit 
 
           States
           ======
+          1'h1
 
         Missed State Transitions
 

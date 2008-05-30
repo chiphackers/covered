@@ -61,7 +61,7 @@ while( defined( $line = <STDIN> ) ) {
       if( $addrs->{$old_addr} == () ) {
         die "Address $old_addr being reallocated but never existed!\n";
       } elsif( $addrs->{$old_addr}{BYTES} != $old_bytes ) {
-        die "Number of bytes freed ($old_bytes) in $file:$lnum does not match number of bytes allocated (" . $addrs->{$addr}{BYTES} . ") in " . $addrs->{$addr}{AFILE} . ":" . $addrs->{$addr}{ALNUM} . "\n";
+        die "Number of bytes freed ($old_bytes) in $file:$lnum does not match number of bytes allocated (" . $addrs->{$addr}{BYTES} . ") for address $old_addr in " . $addrs->{$addr}{AFILE} . ":" . $addrs->{$addr}{ALNUM} . "\n";
       } else {
         delete $addrs->{$old_addr}; 
         $num_frees++;
@@ -99,7 +99,7 @@ while( defined( $line = <STDIN> ) ) {
     if( $addrs->{$addr} == () ) {
       die "Address $addr was being freed when it was never allocated!\n";
     } elsif( $addrs->{$addr}{BYTES} != $bytes ) {
-      die "Number of bytes freed ($bytes) in $file:$lnum does not match number of bytes allocated (" . $addrs->{$addr}{BYTES} . ") in " . $addrs->{$addr}{AFILE} . ":" . $addrs->{$addr}{ALNUM} . "\n";
+      die "Number of bytes freed ($bytes) in $file:$lnum does not match number of bytes allocated (" . $addrs->{$addr}{BYTES} . ") for address $addr in " . $addrs->{$addr}{AFILE} . ":" . $addrs->{$addr}{ALNUM} . "\n";
     } else {
       delete $addrs->{$addr};
       $num_frees++;

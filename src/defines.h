@@ -51,7 +51,7 @@
  Contains the CDD version number of all CDD files that this version of Covered can write
  and read.
 */
-#define CDD_VERSION        13
+#define CDD_VERSION        14
 
 /*!
  This contains the header information specified when executing this tool.
@@ -80,9 +80,20 @@
 #define INTEGER_WIDTH	   (SIZEOF_INT * 8)
 
 /*!
+ Specifies the maximum number of bits that a vector can hold.
+*/
+#define MAX_BIT_WIDTH      65536
+
+/*!
+ Specifies the maximum number of bytes that can be allocated via the safe allocation functions
+ in util.c.
+*/
+#define MAX_MALLOC_SIZE    (MAX_BIT_WIDTH * 2)
+
+/*!
  Length of user_msg global string (used for inputs to snprintf calls).
 */
-#define USER_MSG_LENGTH    4096
+#define USER_MSG_LENGTH    (MAX_BIT_WIDTH * 2)
 
 /*!
  If -w option is specified to report command, specifies number of characters of width
@@ -448,43 +459,67 @@
  @{
 */
 
-/*! This is an input port signal */
-#define SSUPPL_TYPE_INPUT         0
+/*! This is an input port net signal */
+#define SSUPPL_TYPE_INPUT_NET     0
 
-/*! This is an output port signal */
-#define SSUPPL_TYPE_OUTPUT        1
+/*! This is an input port registered signal */
+#define SSUPPL_TYPE_INPUT_REG     1
 
-/*! This is an inout port signal */
-#define SSUPPL_TYPE_INOUT         2
+/*! This is an output port net signal */
+#define SSUPPL_TYPE_OUTPUT_NET    2
 
-/*! This is a declared signal (i.e., not a port) */
-#define SSUPPL_TYPE_DECLARED      3
+/*! This is an output port registered signal */
+#define SSUPPL_TYPE_OUTPUT_REG    3
+
+/*! This is an inout port net signal */
+#define SSUPPL_TYPE_INOUT_NET     4
+
+/*! This is an inout port registered signal */
+#define SSUPPL_TYPE_INOUT_REG     5
+
+/*! This is a declared net signal (i.e., not a port) */
+#define SSUPPL_TYPE_DECL_NET      6
+
+/*! This is a declared registered signal (i.e., not a port) */
+#define SSUPPL_TYPE_DECL_REG      7
 
 /*! This is an event */
-#define SSUPPL_TYPE_EVENT         4
+#define SSUPPL_TYPE_EVENT         8
 
 /*! This signal was implicitly created */
-#define SSUPPL_TYPE_IMPLICIT      5
+#define SSUPPL_TYPE_IMPLICIT      9
 
 /*! This signal was implicitly created (this signal was created from a positive variable multi-bit expression) */
-#define SSUPPL_TYPE_IMPLICIT_POS  6
+#define SSUPPL_TYPE_IMPLICIT_POS  10
 
 /*! This signal was implicitly created (this signal was created from a negative variable multi-bit expression) */
-#define SSUPPL_TYPE_IMPLICIT_NEG  7
+#define SSUPPL_TYPE_IMPLICIT_NEG  11
 
 /*! This signal is a parameter */
-#define SSUPPL_TYPE_PARAM         8
+#define SSUPPL_TYPE_PARAM         12
 
 /*! This signal is a genvar */
-#define SSUPPL_TYPE_GENVAR        9
+#define SSUPPL_TYPE_GENVAR        13
 
 /*! This signal is an enumerated value */
-#define SSUPPL_TYPE_ENUM          10
+#define SSUPPL_TYPE_ENUM          14
 
 /*! This signal is a memory */
-#define SSUPPL_TYPE_MEM           11
+#define SSUPPL_TYPE_MEM           15
 
 /*! @} */
+
+/*!
+ Returns TRUE if the given vsignal is a net type.
+*/
+#define SIGNAL_IS_NET(x)          ((x->suppl.part.type == SSUPPL_TYPE_INPUT_NET)    || \
+                                   (x->suppl.part.type == SSUPPL_TYPE_OUTPUT_NET)   || \
+                                   (x->suppl.part.type == SSUPPL_TYPE_INOUT_NET)    || \
+                                   (x->suppl.part.type == SSUPPL_TYPE_EVENT)        || \
+                                   (x->suppl.part.type == SSUPPL_TYPE_DECL_NET)     || \
+                                   (x->suppl.part.type == SSUPPL_TYPE_IMPLICIT)     || \
+                                   (x->suppl.part.type == SSUPPL_TYPE_IMPLICIT_POS) || \
+                                   (x->suppl.part.type == SSUPPL_TYPE_IMPLICIT_NEG))
      
 /*!
  \addtogroup read_modes Modes for reading database file
@@ -880,6 +915,20 @@ typedef enum exp_op_type_e {
 #define EXPR_TMP_VECS(x)             exp_op_info[x].suppl.tmp_vecs
 
 /*!
+ Returns TRUE if this expression should have its dim element populated.
+*/
+#define EXPR_OP_HAS_DIM(x)          ((x == EXP_OP_DIM)            || \
+                                     (x == EXP_OP_SBIT_SEL)       || \
+                                     (x == EXP_OP_PARAM_SBIT)     || \
+                                     (x == EXP_OP_MBIT_SEL)       || \
+                                     (x == EXP_OP_PARAM_MBIT)     || \
+                                     (x == EXP_OP_MBIT_POS)       || \
+                                     (x == EXP_OP_MBIT_NEG)       || \
+                                     (x == EXP_OP_PARAM_MBIT_POS) || \
+                                     (x == EXP_OP_PARAM_MBIT_NEG))
+ 
+
+/*!
  \addtogroup op_tables
 
  The following describe the operation table values for AND, OR, XOR, NAND, NOR and
@@ -933,36 +982,11 @@ typedef enum exp_op_type_e {
  @{
 */
 
-#define MAX_BIT_WIDTH           65536   /*!< Maximum number of bits that a vector can hold */
 #define DECIMAL			0	/*!< String in format [dD][0-9]+ */
 #define BINARY			1	/*!< String in format [bB][01xXzZ_\?]+ */
 #define OCTAL			2	/*!< String in format [oO][0-7xXzZ_\?]+ */
 #define HEXIDECIMAL		3	/*!< String in format [hH][0-9a-fA-FxXzZ_\?]+ */
 #define QSTRING                 4       /*!< Quoted string */
-
-/*! @} */
-
-/*!
- \addtogroup arc_fields
-
- The following defines specify the bit fields in a state transition arc entry.
-
- @{
-*/
-
-#define ARC_HIT_F               0       /*!< From state -> to state hit - forward */
-#define ARC_HIT_R               1       /*!< To state -> from state hit - reverse */
-#define ARC_BIDIR               2       /*!< Entry is bidirectional */
-#define ARC_NOT_UNIQUE_R        3       /*!< Right state is not unique */
-#define ARC_NOT_UNIQUE_L        4       /*!< Left state is not unique */
-#define ARC_EXCLUDED_F          5       /*!< Specifies if the forward transition is excluded or not */
-#define ARC_EXCLUDED_R          6       /*!< Specifies if the backward transition is excluded or not */
-#define ARC_ENTRY_SUPPL_SIZE    7       /*!< Number of bits comprising entry supplemental field */
-#define ARC_ENTRY_SUPPL_MASK    0x7f    /*!< Value to mask off entry supplement field */
-
-#define ARC_STATUS_SIZE         7       /*!< Number of characters comprising arc status */
-
-#define ARC_TRANS_KNOWN         0       /*!< Bit position of transitions known field in suppl */
 
 /*! @} */
 
@@ -1043,24 +1067,88 @@ typedef enum exp_op_type_e {
 /*!
  \addtogroup vector_types Vector Types
 
- The following defines specify the various flavors of vector data that we can store inside a vec_data element. 
+ The following defines specify the various flavors of vector data that we can store.
 
  @{
 */
 
 /*! Used for storing 2 or 4-state value-only values (no coverage information stored) */
-#define VTYPE_VAL       0
+#define VTYPE_VAL   0
 
 /*! Used for storing 2 or 4-state signal values */
-#define VTYPE_SIG       1
+#define VTYPE_SIG   1
 
 /*! Used for storing 2 or 4-state expression values */
-#define VTYPE_EXP       2
+#define VTYPE_EXP   2
 
 /*! Used for storing 2 or 4-state memory information */
-#define VTYPE_MEM       3
+#define VTYPE_MEM   3
 
 /*! @} */
+
+/*!
+ \addtogroup vector_type_sizes Vector Type Data Sizes
+
+ The following defines specify that various types of data types that can be stored in a vector.  This
+ value determines which value pointer is used in the vector structure for holding data.
+
+ @{
+*/
+
+/*! unsigned long */
+#define VDATA_UL      0
+
+/*! @} */
+
+/*!
+ \addtogroup vector_type_indices Vector Type Information Indices
+*/
+
+/*! Provides value indices for VTYPE_VAL vectors */
+typedef enum vtype_val_indices_e {
+  VTYPE_INDEX_VAL_VALL,
+  VTYPE_INDEX_VAL_VALH,
+  VTYPE_INDEX_VAL_NUM
+} vtype_val_indices;
+
+/*! Provides value indices for VTYPE_SIG vectors */
+typedef enum vtype_sig_indices_e {
+  VTYPE_INDEX_SIG_VALL,
+  VTYPE_INDEX_SIG_VALH,
+  VTYPE_INDEX_SIG_TOG01,
+  VTYPE_INDEX_SIG_TOG10,
+  VTYPE_INDEX_SIG_MISC,
+  VTYPE_INDEX_SIG_NUM
+} vtype_sig_indices;
+
+/*! Provides value indices for VTYPE_MEM vectors */
+typedef enum vtype_mem_indices_e {
+  VTYPE_INDEX_MEM_VALL,
+  VTYPE_INDEX_MEM_VALH,
+  VTYPE_INDEX_MEM_TOG01,
+  VTYPE_INDEX_MEM_TOG10,
+  VTYPE_INDEX_MEM_WR,
+  VTYPE_INDEX_MEM_RD,
+  VTYPE_INDEX_MEM_NUM
+} vtype_mem_indices;
+
+/*! Provides value indices for VTYPE_EXP vectors */
+typedef enum vtype_exp_indices_e {
+  VTYPE_INDEX_EXP_VALL,
+  VTYPE_INDEX_EXP_VALH,
+  VTYPE_INDEX_EXP_EVAL_A,
+  VTYPE_INDEX_EXP_EVAL_B,
+  VTYPE_INDEX_EXP_EVAL_C,
+  VTYPE_INDEX_EXP_EVAL_D,
+  VTYPE_INDEX_EXP_NUM
+} vtype_exp_indices;
+
+/*! @} */
+
+/*!
+ Mask for signal supplemental field when writing to CDD file.
+*/
+#define VSUPPL_MASK               0x7f
 
 /*!
  \addtogroup expression_types Expression Types
@@ -1259,6 +1347,17 @@ typedef unsigned long long uint32;
 #endif
 
 /*!
+ Create a 32-bit real value.
+*/
+#if SIZEOF_FLOAT == 4
+typedef float real32;
+#elif SIZEOF_DOUBLE == 4
+typedef double real32;
+#else
+#error "Unable to find a 32-bit real data type"
+#endif
+
+/*!
  Create a 64-bit unsigned value.
 */
 #if SIZEOF_CHAR == 8
@@ -1291,6 +1390,17 @@ typedef unsigned long long uint64;
 #endif
 
 /*!
+ Create a 64-bit real value.
+*/
+#if SIZEOF_FLOAT == 8
+typedef float real64;
+#elif SIZEOF_DOUBLE == 8
+typedef double real64;
+#else
+#error "Unable to find a 64-bit real data type"
+#endif
+
+/*!
  A nibble is a 8-bit value.
 */
 typedef uint8 nibble;
@@ -1300,48 +1410,43 @@ typedef uint8 nibble;
 */
 typedef uint32 control;
 
-/*------------------------------------------------------------------------------*/
-
-union vec_data_u;
+/*!
+ Machine-dependent value.
+*/
+typedef unsigned long ulong;
 
 /*!
- Renaming vec_data_u for naming convenience.
+ Create defines for unsigned long.
 */
-typedef union vec_data_u vec_data;
+#if SIZEOF_LONG == 1
+#define UL_SET     0xff
+#define UL_DIV_VAL 3
+#define UL_MOD_VAL 0x7
+#define UL_BITS    8
+#elif SIZEOF_LONG == 2
+#define UL_SET     0xffff
+#define UL_DIV_VAL 4
+#define UL_MOD_VAL 0xf
+#define UL_BITS    16
+#elif SIZEOF_LONG == 4
+#define UL_SET     0xffffffff
+#define UL_DIV_VAL 5
+#define UL_MOD_VAL 0x1f
+#define UL_BITS    32
+#elif SIZEOF_LONG == 8
+#define UL_SET     0xffffffffffffffff
+#define UL_DIV_VAL 6
+#define UL_MOD_VAL 0x3f
+#define UL_BITS    64
+#else
+#error "Unsigned long is of an unsupported size"
+#endif
 
-/*!
- A vec_data is an 8-bit value that represents one bit of data in a signal or expression/subexpression
-*/
-union vec_data_u {
-  nibble all;            /*!< Reference to all bits in this union */
-  union {
-    struct {
-      nibble value  :2;  /*!< 2 or 4-state value */
-    } val;               /*!< Static or temporary value only (no coverage information) */
-    struct {
-      nibble value  :2;  /*!< 2 or 4-state value */
-      nibble tog01  :1;  /*!< Indicator if bit was toggled from 0->1 */
-      nibble tog10  :1;  /*!< Indicator if bit was toggled from 1->0 */
-      nibble set    :1;  /*!< Indicator if bit has been previously assigned this timestep */
-      nibble misc   :1;  /*!< Miscellaneous indicator bit */
-    } sig;               /*!< Vector data for signal */
-    struct {
-      nibble value  :2;  /*!< 2 or 4-state value */
-      nibble tog01  :1;  /*!< Indicator if bit was toggled from 0->1 */
-      nibble tog10  :1;  /*!< Indicator if bit was toggled from 1->0 */
-      nibble wr     :1;  /*!< Indicator if bit was written to */
-      nibble rd     :1;  /*!< Indicator if bit was read from */
-    } mem;
-    struct {
-      nibble value  :2;  /*!< 2 or 4-state value */
-      nibble eval_a :1;  /*!< Coverage indicator: AND-left=0; OR-left=1; OTHER-left=0, right=0 */
-      nibble eval_b :1;  /*!< Coverage indicator: AND-right=0; OR-right=1; OTHER-left=0, right=1 */
-      nibble eval_c :1;  /*!< Coverage indicator: AND-left=1, right=1; OR-left=0, right=0; OTHER-left=1, right=0 */
-      nibble eval_d :1;  /*!< Coverage indicator: AND-not used; OR-not used; OTHER-left=1, right=1 */
-      nibble set    :1;  /*!< Indicator if bit has been previously assigned this timestamp */
-    } exp;               /*!< Vector data for expression */
-  } part;
-};
+/*! Divides a bit position by an unsigned long */
+#define UL_DIV(x)  ((x) >> UL_DIV_VAL)
+
+/*! Mods a bit position by an unsigned long */
+#define UL_MOD(x)  ((x) &  UL_MOD_VAL)
 
 /*------------------------------------------------------------------------------*/
 
@@ -1356,66 +1461,66 @@ typedef union esuppl_u esuppl;
  A esuppl is a 32-bit value that represents the supplemental field of an expression.
 */
 union esuppl_u {
-  control   all;               /*!< Controls all bits within this union */
+  uint32   all;               /*!< Controls all bits within this union */
   struct {
  
     /* MASKED BITS */
-    control swapped        :1;  /*!< Bit 0.  Mask bit = 1.  Indicates that the children of this expression have been
-                                     swapped.  The swapping of the positions is performed by the score command (for
-                                     multi-bit selects) and this bit indicates to the report code to swap them back
-                                     when displaying them in. */
-    control root           :1;  /*!< Bit 1.  Mask bit = 1.  Indicates that this expression is a root expression.
-                                     Traversing to the parent pointer will take you to a statement type. */
-    control false          :1;  /*!< Bit 2.  Mask bit = 1.  Indicates that this expression has evaluated to a value
-                                     of FALSE during the lifetime of the simulation. */
-    control true           :1;  /*!< Bit 3.  Mask bit = 1.  Indicates that this expression has evaluated to a value
-                                     of TRUE during the lifetime of the simulation. */
-    control left_changed   :1;  /*!< Bit 4.  Mask bit = 1.  Indicates that this expression has its left child
-                                     expression in a changed state during this timestamp. */
-    control right_changed  :1;  /*!< Bit 5.  Mask bit = 1.  Indicates that this expression has its right child
-                                     expression in a changed state during this timestamp. */
-    control eval_00        :1;  /*!< Bit 6.  Mask bit = 1.  Indicates that the value of the left child expression
-                                     evaluated to FALSE and the right child expression evaluated to FALSE. */
-    control eval_01        :1;  /*!< Bit 7.  Mask bit = 1.  Indicates that the value of the left child expression
-                                     evaluated to FALSE and the right child expression evaluated to TRUE. */
-    control eval_10        :1;  /*!< Bit 8.  Mask bit = 1.  Indicates that the value of the left child expression
-                                     evaluated to TRUE and the right child expression evaluated to FALSE. */
-    control eval_11        :1;  /*!< Bit 9.  Mask bit = 1.  Indicates that the value of the left child expression
-                                     evaluated to TRUE and the right child expression evaluated to TRUE. */
-    control lhs            :1;  /*!< Bit 10.  Mask bit = 1.  Indicates that this expression exists on the left-hand
-                                     side of an assignment operation. */
-    control in_func        :1;  /*!< Bit 11.  Mask bit = 1.  Indicates that this expression exists in a function */
-    control owns_vec       :1;  /*!< Bit 12.  Mask bit = 1.  Indicates that this expression either owns its vector
-                                     structure or shares it with someone else. */
-    control excluded       :1;  /*!< Bit 13.  Mask bit = 1.  Indicates that this expression should be excluded from
-                                     coverage results.  If a parent expression has been excluded, all children expressions
-                                     within its tree are also considered excluded (even if their excluded bits are not
-                                     set. */
-    control type           :3;  /*!< Bits 16:14.  Mask bit = 1.  Indicates how the pointer element should be treated as */
-    control base           :3;  /*!< Bits 19:17.  Mask bit = 1.  When the expression op is a STATIC, specifies the base
-                                     type of the value (DECIMAL, HEXIDECIMAL, OCTAL, BINARY, QSTRING). */
+    uint32 swapped        :1;  /*!< Bit 0.  Mask bit = 1.  Indicates that the children of this expression have been
+                                    swapped.  The swapping of the positions is performed by the score command (for
+                                    multi-bit selects) and this bit indicates to the report code to swap them back
+                                    when displaying them in. */
+    uint32 root           :1;  /*!< Bit 1.  Mask bit = 1.  Indicates that this expression is a root expression.
+                                    Traversing to the parent pointer will take you to a statement type. */
+    uint32 false          :1;  /*!< Bit 2.  Mask bit = 1.  Indicates that this expression has evaluated to a value
+                                    of FALSE during the lifetime of the simulation. */
+    uint32 true           :1;  /*!< Bit 3.  Mask bit = 1.  Indicates that this expression has evaluated to a value
+                                    of TRUE during the lifetime of the simulation. */
+    uint32 left_changed   :1;  /*!< Bit 4.  Mask bit = 1.  Indicates that this expression has its left child
+                                    expression in a changed state during this timestamp. */
+    uint32 right_changed  :1;  /*!< Bit 5.  Mask bit = 1.  Indicates that this expression has its right child
+                                    expression in a changed state during this timestamp. */
+    uint32 eval_00        :1;  /*!< Bit 6.  Mask bit = 1.  Indicates that the value of the left child expression
+                                    evaluated to FALSE and the right child expression evaluated to FALSE. */
+    uint32 eval_01        :1;  /*!< Bit 7.  Mask bit = 1.  Indicates that the value of the left child expression
+                                    evaluated to FALSE and the right child expression evaluated to TRUE. */
+    uint32 eval_10        :1;  /*!< Bit 8.  Mask bit = 1.  Indicates that the value of the left child expression
+                                    evaluated to TRUE and the right child expression evaluated to FALSE. */
+    uint32 eval_11        :1;  /*!< Bit 9.  Mask bit = 1.  Indicates that the value of the left child expression
+                                    evaluated to TRUE and the right child expression evaluated to TRUE. */
+    uint32 lhs            :1;  /*!< Bit 10.  Mask bit = 1.  Indicates that this expression exists on the left-hand
+                                    side of an assignment operation. */
+    uint32 in_func        :1;  /*!< Bit 11.  Mask bit = 1.  Indicates that this expression exists in a function */
+    uint32 owns_vec       :1;  /*!< Bit 12.  Mask bit = 1.  Indicates that this expression either owns its vector
+                                    structure or shares it with someone else. */
+    uint32 excluded       :1;  /*!< Bit 13.  Mask bit = 1.  Indicates that this expression should be excluded from
+                                    coverage results.  If a parent expression has been excluded, all children expressions
+                                    within its tree are also considered excluded (even if their excluded bits are not
+                                    set. */
+    uint32 type           :3;  /*!< Bits 16:14.  Mask bit = 1.  Indicates how the pointer element should be treated as */
+    uint32 base           :3;  /*!< Bits 19:17.  Mask bit = 1.  When the expression op is a STATIC, specifies the base
+                                    type of the value (DECIMAL, HEXIDECIMAL, OCTAL, BINARY, QSTRING). */
  
     /* UNMASKED BITS */
-    control eval_t         :1;  /*!< Bit 20.  Mask bit = 0.  Indicates that the value of the current expression is
-                                     currently set to TRUE (temporary value). */
-    control eval_f         :1;  /*!< Bit 21.  Mask bit = 0.  Indicates that the value of the current expression is
-                                     currently set to FALSE (temporary value). */
-    control comb_cntd      :1;  /*!< Bit 22.  Mask bit = 0.  Indicates that the current expression has been previously
-                                     counted for combinational coverage.  Only set by report command (therefore this bit
-                                     will always be a zero when written to CDD file. */
-    control exp_added      :1;  /*!< Bit 23.  Mask bit = 0.  Temporary bit value used by the score command but not
-                                     displayed to the CDD file.  When this bit is set to a one, it indicates to the
-                                     db_add_expression function that this expression and all children expressions have
-                                     already been added to the functional unit expression list and should not be added again. */
-    control owned          :1;  /*!< Bit 24.  Mask bit = 0.  Temporary value used by the score command to indicate
-                                     if this expression is already owned by a mod_parm structure. */
-    control gen_expr       :1;  /*!< Bit 25.  Mask bit = 0.  Temporary value used by the score command to indicate
-                                     that this expression is a part of a generate expression. */
-    control prev_called    :1;  /*!< Bit 26.  Mask bit = 0.  Temporary value used by named block and task expression
-                                     functions to indicate if we are in the middle of executing a named block or task
-                                     expression (since these cause a context switch to occur. */
-    control for_cntrl      :1;  /*!< Bit 27.  Mask bit = 0.  Temporary value used by the score command which sets to true
-                                     if this expression exists within the control portion of a for loop. */
+    uint32 eval_t         :1;  /*!< Bit 20.  Mask bit = 0.  Indicates that the value of the current expression is
+                                    currently set to TRUE (temporary value). */
+    uint32 eval_f         :1;  /*!< Bit 21.  Mask bit = 0.  Indicates that the value of the current expression is
+                                    currently set to FALSE (temporary value). */
+    uint32 comb_cntd      :1;  /*!< Bit 22.  Mask bit = 0.  Indicates that the current expression has been previously
+                                    counted for combinational coverage.  Only set by report command (therefore this bit
+                                    will always be a zero when written to CDD file. */
+    uint32 exp_added      :1;  /*!< Bit 23.  Mask bit = 0.  Temporary bit value used by the score command but not
+                                    displayed to the CDD file.  When this bit is set to a one, it indicates to the
+                                    db_add_expression function that this expression and all children expressions have
+                                    already been added to the functional unit expression list and should not be added again. */
+    uint32 owned          :1;  /*!< Bit 24.  Mask bit = 0.  Temporary value used by the score command to indicate
+                                    if this expression is already owned by a mod_parm structure. */
+    uint32 gen_expr       :1;  /*!< Bit 25.  Mask bit = 0.  Temporary value used by the score command to indicate
+                                    that this expression is a part of a generate expression. */
+    uint32 prev_called    :1;  /*!< Bit 26.  Mask bit = 0.  Temporary value used by named block and task expression
+                                    functions to indicate if we are in the middle of executing a named block or task
+                                    expression (since these cause a context switch to occur. */
+    uint32 for_cntrl      :1;  /*!< Bit 27.  Mask bit = 0.  Temporary value used by the score command which sets to true
+                                    if this expression exists within the control portion of a for loop. */
   } part;
 };
 
@@ -1432,17 +1537,17 @@ typedef union ssuppl_u ssuppl;
  Supplemental signal information.
 */
 union ssuppl_u {
-  control all;
+  uint32 all;
   struct {
-    control col            :16; /*!< Specifies the starting column this signal is declared on */
-    control type           :4;  /*!< Specifies signal type (see \ref ssuppl_type for legal values) */
-    control big_endian     :1;  /*!< Specifies if this signal is in big or little endianness */
-    control excluded       :1;  /*!< Specifies if this signal should be excluded for toggle coverage */
-    control not_handled    :1;  /*!< Specifies if this signal is handled by Covered or not */
-    control assigned       :1;  /*!< Specifies that this signal will be assigned from simulated results (instead of dumpfile) */
-    control mba            :1;  /*!< Specifies that this signal MUST be assigned from simulated results because this information
+    uint32 col            :16; /*!< Specifies the starting column this signal is declared on */
+    uint32 type           :4;  /*!< Specifies signal type (see \ref ssuppl_type for legal values) */
+    uint32 big_endian     :1;  /*!< Specifies if this signal is in big or little endianness */
+    uint32 excluded       :1;  /*!< Specifies if this signal should be excluded for toggle coverage */
+    uint32 not_handled    :1;  /*!< Specifies if this signal is handled by Covered or not */
+    uint32 assigned       :1;  /*!< Specifies that this signal will be assigned from simulated results (instead of dumpfile) */
+    uint32 mba            :1;  /*!< Specifies that this signal MUST be assigned from simulated results because this information
                                      is NOT provided in the dumpfile */
-    control implicit_size  :1;  /*!< Specifies that this signal has not been given a specified size by the user at the current time */
+    uint32 implicit_size  :1;  /*!< Specifies that this signal has not been given a specified size by the user at the current time */
   } part;
 };
 
@@ -1459,12 +1564,12 @@ typedef union psuppl_u psuppl;
  Supplemental module parameter information.
 */
 union psuppl_u {
-  control all;
+  uint32 all;
   struct {
-    control order    : 16;      /*!< Specifies the parameter order number in its module */
-    control type     : 3;       /*!< Specifies the parameter type (see \ref param_suppl_types for legal value) */
-    control owns_expr: 1;       /*!< Specifies the parameter is the owner of the associated expression */
-    control dimension: 10;      /*!< Specifies the signal dimension that this module parameter resolves */
+    uint32 order    : 16;      /*!< Specifies the parameter order number in its module */
+    uint32 type     : 3;       /*!< Specifies the parameter type (see \ref param_suppl_types for legal value) */
+    uint32 owns_expr: 1;       /*!< Specifies the parameter is the owner of the associated expression */
+    uint32 dimension: 10;      /*!< Specifies the signal dimension that this module parameter resolves */
   } part;
 };
 
@@ -1481,15 +1586,80 @@ typedef union isuppl_u isuppl;
  Supplemental field for information line in CDD file.
 */
 union isuppl_u {
-  control all;
+  uint32 all;
   struct {
-    control scored      : 1;    /*!< Specifies if the design has been scored yet */
-    control excl_assign : 1;    /*!< Specifies if assign statements are being excluded from coverage */
-    control excl_always : 1;    /*!< Specifies if always statements are being excluded from coverage */
-    control excl_init   : 1;    /*!< Specifies if initial statements are being excluded from coverage */
-    control excl_final  : 1;    /*!< Specifies if final statements are being excluded from coverage */
-    control excl_pragma : 1;    /*!< Specifies if code encapsulated in coverage pragmas should be excluded from coverage */
-    control assert_ovl  : 1;    /*!< Specifies that OVL assertions should be included for coverage */
+    uint32 scored      : 1;    /*!< Specifies if the design has been scored yet */
+    uint32 excl_assign : 1;    /*!< Specifies if assign statements are being excluded from coverage */
+    uint32 excl_always : 1;    /*!< Specifies if always statements are being excluded from coverage */
+    uint32 excl_init   : 1;    /*!< Specifies if initial statements are being excluded from coverage */
+    uint32 excl_final  : 1;    /*!< Specifies if final statements are being excluded from coverage */
+    uint32 excl_pragma : 1;    /*!< Specifies if code encapsulated in coverage pragmas should be excluded from coverage */
+    uint32 assert_ovl  : 1;    /*!< Specifies that OVL assertions should be included for coverage */
+    uint32 vec_ul_size : 2;    /*!< Specifies the bit size of a vector element (0=8 bits, 1=16-bits, 2=32-bits, 3=64-bits) */
+  } part;
+};
+
+/*------------------------------------------------------------------------------*/
+
+union vsuppl_u;
+
+/*!
+ Renaming vsuppl_u field for convenience.
+*/
+typedef union vsuppl_u vsuppl;
+
+/*!
+ Supplemental field for vector structure.
+*/
+union vsuppl_u {
+  nibble   all;                    /*!< Allows us to set all bits in the suppl field */
+  struct {
+    nibble type      :2;           /*!< Specifies what type of information is stored in this vector
+                                        (see \ref vector_types for legal values) */
+    nibble data_type :2;           /*!< Specifies what the size/type of a single value entry is */
+    nibble owns_data :1;           /*!< Specifies if this vector owns its data array or not */
+    nibble is_signed :1;           /*!< Specifies that this vector should be treated as a signed value */
+    nibble is_2state :1;           /*!< Specifies that this vector should be treated as a 2-state value */
+    nibble set       :1;           /*!< Specifies if this vector's data has been set previously */
+  } part;
+};
+
+/*------------------------------------------------------------------------------*/
+
+union fsuppl_u;
+
+/*!
+ Renaming fsuppl_u field for convenience.
+*/
+typedef union fsuppl_u fsuppl;
+
+/*!
+ Supplemental field for FSM table structure.
+*/
+union fsuppl_u {
+  nibble all;                      /*!< Allows us to set all bits in the suppl field */
+  struct {
+    nibble known : 1;              /*!< Specifies if the possible state transitions are known */
+  } part;
+};
+
+/*------------------------------------------------------------------------------*/
+
+union asuppl_u;
+
+/*!
+ Renaming asuppl_u field for convenience.
+*/
+typedef union asuppl_u asuppl;
+
+/*!
+ Supplemental field for FSM table structure.
+*/
+union asuppl_u {
+  nibble all;                      /*!< Allows us to set all bits in the suppl field */
+  struct {
+    nibble hit      : 1;           /*!< Specifies if from->to arc was hit */
+    nibble excluded : 1;           /*!< Specifies if from->to transition should be excluded from coverage consideration */
   } part;
 };
 
@@ -1502,9 +1672,12 @@ struct str_link_s;
 struct vector_s;
 struct const_value_s;
 struct vecblk_s;
+struct exp_dim_s;
 struct expression_s;
 struct vsignal_s;
 struct fsm_s;
+struct fsm_table_arc_s;
+struct fsm_table_s;
 struct statement_s;
 struct sig_link_s;
 struct stmt_iter_s;
@@ -1587,6 +1760,11 @@ typedef struct const_value_s const_value;
 typedef struct vecblk_s vecblk;
 
 /*!
+ Renaming expression dimension structure for convenience.
+*/
+typedef struct exp_dim_s exp_dim;
+
+/*!
  Renaming expression statement union for convenience.
 */
 typedef union expr_stmt_u expr_stmt;
@@ -1605,6 +1783,16 @@ typedef struct vsignal_s     vsignal;
  Renaming FSM structure for convenience.
 */
 typedef struct fsm_s fsm;
+
+/*!
+ Renaming FSM table arc structure for convenience.
+*/
+typedef struct fsm_table_arc_s fsm_table_arc;
+
+/*!
+ Renaming FSM table structure for convenience.
+*/
+typedef struct fsm_table_s fsm_table;
 
 /*!
  Renaming statement structure for convenience.
@@ -1869,14 +2057,14 @@ struct exp_info_s {
   char* op_str;                           /*!< Operation string name for report output purposes */
   bool  (*func)( expression*, thread*, const sim_time* );  /*!< Operation function to call */
   struct {
-    control is_event:1;                   /*!< Specifies if operation is an event */
-    control is_static:1;                  /*!< Specifies if operation is a static value (does not change during simulation) */
-    control is_comb:2;                    /*!< Specifies if operation is combinational (both left/right expressions valid) */
-    control is_unary:1;                   /*!< Specifies if operation is unary (left expression valid only) */
-    control measurable:1;                 /*!< Specifies if this operation type can be measured */
-    control is_context_switch:1;          /*!< Specifies if this operation will cause a context switch */
-    control assignable:1;                 /*!< Specifies if this operation can be immediately assigned (i.e., +=) */
-    control tmp_vecs:3;                   /*!< Number of temporary vectors used by this expression */
+    uint32 is_event:1;                   /*!< Specifies if operation is an event */
+    uint32 is_static:1;                  /*!< Specifies if operation is a static value (does not change during simulation) */
+    uint32 is_comb:2;                    /*!< Specifies if operation is combinational (both left/right expressions valid) */
+    uint32 is_unary:1;                   /*!< Specifies if operation is unary (left expression valid only) */
+    uint32 measurable:1;                 /*!< Specifies if this operation type can be measured */
+    uint32 is_context_switch:1;          /*!< Specifies if this operation will cause a context switch */
+    uint32 assignable:1;                 /*!< Specifies if this operation can be immediately assigned (i.e., +=) */
+    uint32 tmp_vecs:3;                   /*!< Number of temporary vectors used by this expression */
   } suppl;                                /*!< Supplemental information about this expression */
 };
 
@@ -1887,8 +2075,8 @@ struct exp_info_s {
 */
 struct str_link_s {
   char*         str;                 /*!< String to store */
-  control       suppl;               /*!< 32-bit additional information */
-  control       suppl2;              /*!< 32-bit additional information */
+  uint32        suppl;               /*!< 32-bit additional information */
+  uint32        suppl2;              /*!< 32-bit additional information */
   nibble        suppl3;              /*!< 8-bit additional information */
   vector_width* range;               /*!< Pointer to optional range information */
   str_link*     next;                /*!< Pointer to next str_link element */
@@ -1901,26 +2089,13 @@ struct str_link_s {
 */
 struct vector_s {
   int        width;                  /*!< Bit width of this vector */
+  vsuppl     suppl;                  /*!< Supplemental field */
   union {
-    nibble   all;                    /*!< Allows us to set all bits in the suppl field */
-    struct {
-      nibble type      :2;           /*!< Specifies what type of information is stored in this vector
-                                          (see \ref vector_types for legal values) */
-      nibble not_zero  :1;           /*!< Specifies that at least one bit in the vector value is not zero */
-      nibble unknown   :1;           /*!< Specifies that at least one bit in the vector value is unknown (X or Z) */
-      nibble owns_data :1;           /*!< Specifies if this vector owns its data array or not */
-      nibble is_signed :1;           /*!< Specifies that this vector should be treated as a signed value */
-      nibble is_2state :1;           /*!< Specifies that this vector should be treated as a 2-state value */
-    } part;
-  } suppl;                           /*!< Supplemental field */
-  vec_data*  value;                  /*!< 4-state current value and toggle history */
+    ulong** ul;                      /*!< Machine sized unsigned integer array for value, signal, expression and memory types */
+//    real32** r32;                    /*!< 32-bit real value (float) */
+//    real64** r64;                    /*!< 64-bit real value (double) */
+  } value;
 };
-
-/*!
- Clears the not_zero and unknown bits from the given vector supplemental field.  This needs to be called
- prior to calling the vector_set_value function.
-*/
-#define VSUPPL_CLR_NZ_AND_UNK(x)     x.all &= 0xf3;
 
 /*!
  Contains information about a parsed constant value including its data and base type.
@@ -1937,6 +2112,19 @@ struct vecblk_s {
   vector vec[5];                     /*!< Vector array */
   int    index;                      /*!< Specifies to the called function which vector may be accessed */
 }; 
+
+/*!
+ Specifies the current dimensional LSB of the associated expression.  This is used by the DIM, SBIT, MBIT,
+ MBIT_POS and MBIT_NEG expressions types for proper bit selection of given signal.
+*/
+struct exp_dim_s {
+  int  curr_lsb;                     /*!< Calculated LSB of this expression dimension (if -1, LSB was an X) */
+  int  dim_lsb;                      /*!< Dimensional LSB (static value) */
+  bool dim_be;                       /*!< Dimensional big endianness (static value) */
+  int  dim_width;                    /*!< Dimensional width of current expression (static value) */
+  bool last;                         /*!< Specifies if this is the dimension that should handle the signal interaction */
+  bool set_mem_rd;                   /*!< Set to TRUE if the MEM_RD bit should be set for this entry */
+};
 
 /*!
  Allows the parent pointer of an expression to point to either another expression
@@ -1961,8 +2149,8 @@ struct expression_s {
   int          id;                 /*!< Specifies unique ID for this expression in the parent */
   int          ulid;               /*!< Specifies underline ID for reporting purposes */
   int          line;               /*!< Specified line in file that this expression is found on */
-  control      exec_num;           /*!< Specifies the number of times this expression was executed during simulation */
-  control      col;                /*!< Specifies column location of beginning/ending of expression */
+  uint32       exec_num;           /*!< Specifies the number of times this expression was executed during simulation */
+  uint32       col;                /*!< Specifies column location of beginning/ending of expression */
   vsignal*     sig;                /*!< Pointer to signal.  If NULL then no signal is attached */
   char*        name;               /*!< Name of signal/function/task for output purposes (only valid if we are binding
                                         to a signal, task or function */
@@ -1975,6 +2163,7 @@ struct expression_s {
     thread*    thr;                /*!< Pointer to next thread to be called */
     uint64*    scale;              /*!< Pointer to parent functional unit's timescale value */
     vecblk*    tvecs;              /*!< Temporary vectors that are sized to match value */   
+    exp_dim*   dim;                /*!< Current dimensional LSB of this expression (valid for DIM, SBIT_SEL, MBIT_SEL, MBIT_NEG and MBIT_POS) */
   } elem;
 };
 
@@ -2003,8 +2192,30 @@ struct fsm_s {
   expression* to_state;              /*!< Pointer to to_state expression */
   fsm_arc*    arc_head;              /*!< Pointer to head of list of expression pairs that describe the valid FSM arcs */
   fsm_arc*    arc_tail;              /*!< Pointer to tail of list of expression pairs that describe the valid FSM arcs */
-  char*       table;                 /*!< FSM arc traversal table */
+  fsm_table*  table;                 /*!< FSM arc traversal table */
   bool        exclude;               /*!< Set to TRUE if the states/transitions of this table should be excluded as determined by pragmas */
+};
+
+/*!
+ Stores information for a uni-/bi-directional state transition.
+*/
+struct fsm_table_arc_s {
+  asuppl       suppl;                /*!< Supplemental field for this state transition entry */
+  unsigned int from;                 /*!< Index to from_state vector value in fsm_table vector array */
+  unsigned int to;                   /*!< Index to to_state vector value in fsm_table vector array */
+};
+
+/*!
+ Stores information for an FSM table (including states and state transitions).
+*/
+struct fsm_table_s {
+  fsuppl          suppl;             /*!< Supplemental field for FSM table */
+  vector**        fr_states;         /*!< List of FSM from state vectors that are valid for this FSM (VTYPE_VAL) */
+  unsigned int    num_fr_states;     /*!< Contains the number of from states stored in this table */
+  vector**        to_states;         /*!< List of FSM to state vectors that are valid for this FSM (VTYPE_VAL) */
+  unsigned int    num_to_states;     /*!< Contains the number of to states stored in this table */
+  fsm_table_arc** arcs;              /*!< List of FSM state transitions */
+  unsigned int    num_arcs;          /*!< Contains the number of arcs stored in this table */
 };
 
 /*!
@@ -2027,29 +2238,29 @@ struct statement_s {
                                           in connecting statements together) */
   func_unit*  funit;                 /*!< Pointer to statement's functional unit that it belongs to */
   union {
-    control all;
+    uint32  all;
     struct {
       /* Masked bits */
-      control head      :1;          /*!< Bit 0.  Mask bit = 1.  Indicates the statement is a head statement */
-      control stop_true :1;          /*!< Bit 1.  Mask bit = 1.  Indicates the statement which this expression belongs
+      uint32  head      :1;          /*!< Bit 0.  Mask bit = 1.  Indicates the statement is a head statement */
+      uint32  stop_true :1;          /*!< Bit 1.  Mask bit = 1.  Indicates the statement which this expression belongs
                                           should write itself to the CDD and not continue to traverse its next_true pointer. */
-      control stop_false:1;          /*!< Bit 2.  Mask bit = 1.  Indicates the statement which this expression belongs
+      uint32  stop_false:1;          /*!< Bit 2.  Mask bit = 1.  Indicates the statement which this expression belongs
                                           should write itself to the CDD and not continue to traverse its next_false pointer. */
-      control cont      :1;          /*!< Bit 3.  Mask bit = 1.  Indicates the statement which this expression belongs is
+      uint32  cont      :1;          /*!< Bit 3.  Mask bit = 1.  Indicates the statement which this expression belongs is
                                           part of a continuous assignment.  As such, stop simulating this statement tree
                                           after this expression tree is evaluated. */
-      control is_called :1;          /*!< Bit 4.  Mask bit = 1.  Indicates that this statement is called by a FUNC_CALL,
+      uint32  is_called :1;          /*!< Bit 4.  Mask bit = 1.  Indicates that this statement is called by a FUNC_CALL,
                                           TASK_CALL, NB_CALL or FORK statement.  If a statement has this bit set, it will NOT
                                           be automatically placed in the thread queue at time 0. */
-      control excluded  :1;          /*!< Bit 5.  Mask bit = 1.  Indicates that this statement (and its associated expression
+      uint32  excluded  :1;          /*!< Bit 5.  Mask bit = 1.  Indicates that this statement (and its associated expression
                                           tree) should be excluded from coverage results. */
-      control final     :1;          /*!< Bit 6.  Mask bit = 1.  Indicates that this statement block should only be executed
+      uint32  final     :1;          /*!< Bit 6.  Mask bit = 1.  Indicates that this statement block should only be executed
                                           during the final simulation step. */
-      control ignore_rc :1;          /*!< Bit 7.  Mask bit = 1.  Specifies that we should ignore race condition checking for
+      uint32  ignore_rc :1;          /*!< Bit 7.  Mask bit = 1.  Specifies that we should ignore race condition checking for
                                           this statement. */
 
       /* Unmasked bits */
-      control added     :1;          /*!< Bit 8.  Mask bit = 0.  Temporary bit value used by the score command but not
+      uint32  added     :1;          /*!< Bit 8.  Mask bit = 0.  Temporary bit value used by the score command but not
                                           displayed to the CDD file.  When this bit is set to a one, it indicates to the
                                           db_add_statement function that this statement and all children statements have
                                           already been added to the functional unit statement list and should not be added again. */
@@ -2470,7 +2681,7 @@ struct thr_list_s {
  Performance statistic container used for simulation-time performance characteristics.
 */
 struct perf_stat_s {
-  control op_exec_cnt[EXP_OP_NUM];   /*!< Specifies the number of times that the associated operation was executed */
+  uint32  op_exec_cnt[EXP_OP_NUM];   /*!< Specifies the number of times that the associated operation was executed */
   float   op_cnt[EXP_OP_NUM];        /*!< Specifies the number of expressions containing the associated operation */
 };
 
@@ -2504,14 +2715,14 @@ struct gen_item_s {
     funit_inst* inst;                /*!< Pointer to instance */
   } elem;                            /*!< Union of various pointers this generate item is pointing at */
   union {
-    control     all;                 /*!< Specifies the entire supplemental field */
+    uint32      all;                 /*!< Specifies the entire supplemental field */
     struct {
-      control   type       : 3;      /*!< Specifies which element pointer is valid */
-      control   conn_id    : 16;     /*!< Connection ID (used for connecting) */
-      control   stop_true  : 1;      /*!< Specifies that we should stop traversing the true path */
-      control   stop_false : 1;      /*!< Specifies that we should stop traversing the false path */
-      control   resolved   : 1;      /*!< Specifies if this generate item has been resolved */
-      control   removed    : 1;      /*!< Specifies if this generate item has been "removed" from the design */
+      uint32    type       : 3;      /*!< Specifies which element pointer is valid */
+      uint32    conn_id    : 16;     /*!< Connection ID (used for connecting) */
+      uint32    stop_true  : 1;      /*!< Specifies that we should stop traversing the true path */
+      uint32    stop_false : 1;      /*!< Specifies that we should stop traversing the false path */
+      uint32    resolved   : 1;      /*!< Specifies if this generate item has been resolved */
+      uint32    removed    : 1;      /*!< Specifies if this generate item has been "removed" from the design */
     } part;
   } suppl;
   char*         varname;             /*!< Specifies genvar name (for TFN) or signal/TFN name to bind to (BIND) */
@@ -2642,6 +2853,78 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.294.2.18  2008/05/28 22:12:31  phase1geo
+ Adding further support for 32-/64-bit support.  Checkpointing.
+
+ Revision 1.294.2.17  2008/05/28 05:57:10  phase1geo
+ Updating code to use unsigned long instead of uint32.  Checkpointing.
+
+ Revision 1.294.2.16  2008/05/23 14:50:21  phase1geo
+ Optimizing vector_op_add and vector_op_subtract algorithms.  Also fixing issue with
+ vector set bit.  Updating regressions per this change.
+
+ Revision 1.294.2.15  2008/05/15 21:58:11  phase1geo
+ Updating regression files per changes for increment and decrement operators.
+ Checkpointing.
+
+ Revision 1.294.2.14  2008/05/15 07:02:04  phase1geo
+ Another attempt to fix static_afunc1 diagnostic failure.  Checkpointing.
+
+ Revision 1.294.2.13  2008/05/13 07:23:26  phase1geo
+ Fixing problem with parameterized multi-bit positive/negative select types.
+ Full regression passes for IV and Cver.  Checkpointing.
+
+ Revision 1.294.2.12  2008/05/13 06:42:23  phase1geo
+ Finishing up initial pass of part-select code modifications.  Still getting an
+ error in regression.  Checkpointing.
+
+ Revision 1.294.2.11  2008/05/12 23:12:03  phase1geo
+ Ripping apart part selection code and reworking it.  Things compile but are
+ functionally quite broken at this point.  Checkpointing.
+
+ Revision 1.294.2.10  2008/05/08 23:12:41  phase1geo
+ Fixing several bugs and reworking code in arc to get FSM diagnostics
+ to pass.  Checkpointing.
+
+ Revision 1.294.2.9  2008/05/03 20:10:37  phase1geo
+ Fixing some bugs, completing initial pass of vector_op_multiply and updating
+ regression files accordingly.  Checkpointing.
+
+ Revision 1.294.2.8  2008/05/02 22:06:10  phase1geo
+ Updating arc code for new data structure.  This code is completely untested
+ but does compile and has been completely rewritten.  Checkpointing.
+
+ Revision 1.294.2.7  2008/04/30 23:12:31  phase1geo
+ Fixing simulation issues.
+
+ Revision 1.294.2.6  2008/04/23 23:06:03  phase1geo
+ More bug fixes to vector functionality.  Bitwise operators appear to be
+ working correctly when 2-state values are used.  Checkpointing.
+
+ Revision 1.294.2.5  2008/04/20 05:43:45  phase1geo
+ More work on the vector file.  Completed initial pass of conversion operations,
+ bitwise operations and comparison operations.
+
+ Revision 1.294.2.4  2008/04/18 22:04:15  phase1geo
+ More work on vector functions for new data structure implementation.  Worked
+ on vector_set_value, bit_fill and some checking functions.  Checkpointing.
+
+ Revision 1.294.2.3  2008/04/17 23:16:08  phase1geo
+ More work on vector.c.  Completed initial pass of vector_db_write/read and
+ vector_copy/clone functionality.  Checkpointing.
+
+ Revision 1.294.2.2  2008/04/16 22:29:58  phase1geo
+ Finished format for new vector value format.  Completed work on vector_init_uint32
+ and vector_create.
+
+ Revision 1.294.2.1  2008/04/16 04:05:26  phase1geo
+ Starting to modify defines.h for new vector data storage scheme.  Just changed
+ some structures and added some newly needed structures at this point.
+
+ Revision 1.294  2008/04/15 13:59:13  phase1geo
+ Starting to add support for multiple databases.  Things compile but are
+ quite broken at the moment.  Checkpointing.
+
  Revision 1.293  2008/04/08 22:45:10  phase1geo
  Optimizations for op-and-assign expressions.  This is an untested checkin
  at this point but it does compile cleanly.  Checkpointing.

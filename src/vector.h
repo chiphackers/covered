@@ -29,17 +29,24 @@
 
 
 /*! \brief Initializes specified vector. */
-void vector_init(
-  /*@out@*/ vector*   vec,
-            vec_data* value,
-            nibble    data,
-            bool      owns_value,
-            int       width,
-            int       type
+void vector_init_ulong(
+  /*@out@*/ vector*  vec,
+            ulong**  value,
+            ulong    data_l,
+            ulong    data_h,
+            bool     owns_value,
+            int      width,
+            int      type,
+            int      data_type
 );
 
 /*! \brief Creates and initializes new vector */
-vector* vector_create( int width, int type, bool data );
+vector* vector_create(
+  int  width,
+  int  type,
+  int  data_type,
+  bool data
+);
 
 /*! \brief Copies contents of from_vec to to_vec */
 void vector_copy(
@@ -47,16 +54,35 @@ void vector_copy(
   vector*       to_vec
 );
 
+/*!
+ Copies the entire contents of a bit range from from_vec to to_vec,
+ aligning the stored value starting at bit 0.
+*/
+void vector_copy_range(
+  vector*       to_vec,
+  const vector* from_vec,
+  int           lsb
+);
+
 /*! \brief Copies contents of from_vec to to_vec, allocating memory */
 void vector_clone(
             const vector* from_vec,
-  /*@out@*/ vector**      to_vec );
+  /*@out@*/ vector**      to_vec
+);
 
 /*! \brief Displays vector information to specified database file. */
-void vector_db_write( vector* vec, FILE* file, bool write_data );
+void vector_db_write(
+  vector* vec,
+  FILE*   file,
+  bool    write_data,
+  bool    net
+);
 
 /*! \brief Creates and parses current file line for vector information */
-void vector_db_read( vector** vec, char** line );
+void vector_db_read(
+  /*@out@*/ vector** vec,
+            char**   line
+);
 
 /*! \brief Reads and merges two vectors, placing the result into base vector. */
 void vector_db_merge(
@@ -71,72 +97,192 @@ void vector_merge(
   vector* other
 );
 
+/*! \brief Returns the value of the eval_a for the given bit index. */
+int vector_get_eval_a(
+  vector* vec,
+  int     index
+);
+
+/*! \brief Returns the value of the eval_b for the given bit index. */
+int vector_get_eval_b(
+  vector* vec,
+  int     index
+);
+
+/*! \brief Returns the value of the eval_c for the given bit index. */
+int vector_get_eval_c(
+  vector* vec,
+  int     index
+);
+
+/*! \brief Returns the value of the eval_d for the given bit index. */
+int vector_get_eval_d(
+  vector* vec,
+  int     index
+);
+
+/*! \brief Counts the number of eval_a/b bits set in the given vector */
+int vector_get_eval_ab_count( vector* vec );
+
+/*! \brief Counts the number of eval_a/b/c bits set in the given vector */
+int vector_get_eval_abc_count( vector* vec );
+
+/*! \brief Counts the number of eval_a/b/c/d bits set in the given vector */
+int vector_get_eval_abcd_count( vector* vec );
+
 /*! \brief Returns string containing toggle 0 -> 1 information in binary format */
-char* vector_get_toggle01( vec_data* nib, int width );
+char* vector_get_toggle01_ulong(
+  ulong** value,
+  int     width
+);
 
 /*! \brief Returns string containing toggle 1 -> 0 information in binary format */
-char* vector_get_toggle10( vec_data* nib, int width );
+char* vector_get_toggle10_ulong(
+  ulong** value,
+  int     width
+);
 
 /*! \brief Outputs the toggle01 information from the specified nibble to the specified output stream. */
-void vector_display_toggle01( vec_data* nib, int width, FILE* ofile );
+void vector_display_toggle01_ulong(
+  ulong** value,
+  int     width,
+  FILE*   ofile
+);
 
 /*! \brief Outputs the toggle10 information from the specified nibble to the specified output stream. */
-void vector_display_toggle10( vec_data* nib, int width, FILE* ofile );
+void vector_display_toggle10_ulong(
+  ulong** value,
+  int     width,
+  FILE*   ofile
+);
 
 /*! \brief Outputs the binary value of the specified nibble array to standard output */
-void vector_display_value( vec_data* nib, int width );
+void vector_display_value_ulong(
+  ulong** value,
+  int     width
+);
 
 /*@-exportlocal@*/
 /*! \brief Outputs nibble to standard output. */
-void vector_display_nibble( vec_data* nib, int width, int type );
+void vector_display_nibble_ulong(
+  ulong** value,
+  int     width,
+  int     type
+);
 /*@=exportlocal@*/
 
 /*! \brief Outputs vector contents to standard output. */
-void vector_display( const vector* vec );
-
-/*! \brief Selects bit from value array from bit position pos. */
-nibble vector_bit_val( nibble* value, int pos );
+void vector_display(
+  const vector* vec
+);
 
 /*! \brief Sets specified vector value to new value and maintains coverage history. */
-bool vector_set_value( vector* vec, vec_data* value, int width, int from_idx, int to_idx );
+bool vector_set_value_ulong(
+  vector* vec,
+  ulong** value,
+  int     width
+);
 
-/*! \brief Sets the not_zero and unknown supplement bits to match given value. */
-void vector_sync_nz_and_unk( vector* vec );
+/*! \brief Sets specified target vector to bit range of source vector. */
+bool vector_part_select_pull(
+  vector* tgt,
+  vector* src,
+  int     lsb,
+  int     msb,
+  bool    set_mem_rd
+);
 
-/*! \brief Bit fills the given vector with the appropriate value given the specified msb and lsb */
-bool vector_bit_fill( vector* vec, int msb, int lsb );
+/*! \brief Sets specified target vector to bit range of source vector. */
+bool vector_part_select_push(
+  vector*       tgt,
+  int           tgt_lsb,
+  int           tgt_msb,
+  const vector* src,
+  int           src_lsb,
+  int           src_msb,
+  bool          sign_extend
+);
 
-/*! \brief Performs a zero-fill of all bits starting at lsb and continuing to the vector's msb */
-bool vector_zero_fill( vector* vec, int msb, int lsb );
+/*!
+ \brief Sets eval_a/b bits according to unary coverage
+ \note  We may want to create a separate VTYPE_EXP_UNARY to handle this in vector_set_coverage_and_assign.
+*/
+void vector_set_unary_evals( vector* vec );
 
-/*! \brief Sets vector output type (DECIMAL, BINARY, OCTAL or HEXIDECIMAL) in first nibble */
-void vector_set_type( vector* vec, int type );
+/*!
+ \brief Sets eval_a/b/c bits according to AND combinational logic coverage
+ \note  We may want to create a separate VTYPE_EXP_AND to handle this in vector_set_coverage_and_assign.
+*/
+void vector_set_and_comb_evals( 
+  vector* tgt, 
+  vector* left, 
+  vector* right 
+);
 
-/*! \brief Returns value of vector output type. */
-int vector_get_type( vector* vec );
+/*!
+ \brief Sets eval_a/b/c bits according to OR combinational logic coverage
+ \note  We may want to create a separate VTYPE_EXP_OR to handle this in vector_set_coverage_and_assign.
+*/
+void vector_set_or_comb_evals( 
+  vector* tgt, 
+  vector* left, 
+  vector* right 
+);
 
-/*! \brief Returns TRUE if specified vector has been set (simulated) */
-bool vector_is_set( vector* vec );
+/*!
+ \brief Sets eval_a/b/c/d bits according to other combinational logic coverage
+ \note  We may want to create a separate VTYPE_EXP_OTHER to handle this in vector_set_coverage_and_assign.
+*/
+void vector_set_other_comb_evals(
+  vector* tgt,
+  vector* left,
+  vector* right
+);
+
+/*! \brief Bit fills the given vector with the appropriate value starting at the last bit */
+bool vector_sign_extend(
+  vector* vec,
+  int     last
+);
+
+/*! \brief Returns TRUE if specified vector has unknown bits set */
+bool vector_is_unknown( const vector* vec );
+
+/*! \brief Returns TRUE if specified vector is a non-zero value (does not check unknown bit) */
+bool vector_is_not_zero( const vector* vec );
+
+/*! \brief Sets entire vector value to a value of X */
+bool vector_set_to_x( vector* vec );
 
 /*! \brief Converts vector into integer value. */
-int vector_to_int( vector* vec );
+int vector_to_int( const vector* vec );
 
 /*! \brief Converts vector into a 64-bit value. */
-uint64 vector_to_uint64( vector* vec );
+uint64 vector_to_uint64( const vector* vec );
 
 /*! \brief Converts vector into a sim_time structure. */
-void vector_to_sim_time( vector* vec, sim_time* time );
+void vector_to_sim_time(
+  const vector* vec,
+  sim_time*     time
+);
 
 /*! \brief Converts integer into vector value. */
-void vector_from_int( vector* vec, int value );
+void vector_from_int(
+  vector* vec,
+  int     value
+);
 
 /*! \brief Converts a 64-bit integer into a vector value. */
-void vector_from_uint64( vector* vec, uint64 value );
+void vector_from_uint64(
+  vector* vec,
+  uint64 value
+);
 
 /*! \brief Converts vector into a string value in specified format. */
 char* vector_to_string(
   vector* vec, 
-  int     base
+  int     base,
+  bool    show_all
 );
 
 /*! \brief Converts character string value into vector. */
@@ -159,46 +305,197 @@ bool vector_vcd_assign(
 void vector_toggle_count( vector* vec, int* tog01_cnt, int* tog10_cnt );
 
 /*! \brief Counts memory write and read information from specified vector. */
-void vector_mem_rw_count( vector* vec, int* wr_cnt, int* rd_cnt );
+void vector_mem_rw_count(
+            vector* vec,
+            int     lsb,
+            int     msb,
+  /*@out@*/ int*    wr_cnt,
+  /*@out@*/ int*    rd_cnt
+);
 
 /*! \brief Sets all assigned bits in vector bit value array within specified range. */
 bool vector_set_assigned( vector* vec, int msb, int lsb );
 
-/*! \brief Performs bitwise operation on two source vectors from specified operation table. */
-bool vector_bitwise_op( vector* tgt, vector* src1, vector* src2, nibble* optab );
+/*! \brief Set coverage information for given vector and assigns values from scratch arrays to vector. */
+bool vector_set_coverage_and_assign_ulong(
+  vector*      vec,
+  const ulong* scratchl,
+  const ulong* scratchh,
+  int          lsb,
+  int          msb
+);
 
-/*! \brief Performs bitwise comparison of two vectors. */
-bool vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type );
+/*! \brief Performs bitwise AND operation on two source vectors. */
+bool vector_bitwise_and_op( vector* tgt, vector* src1, vector* src2 );
+
+/*! \brief Performs bitwise NAND operation on two source vectors. */
+bool vector_bitwise_nand_op( vector* tgt, vector* src1, vector* src2 );
+
+/*! \brief Performs bitwise OR operation on two source vectors. */
+bool vector_bitwise_or_op( vector* tgt, vector* src1, vector* src2 );
+
+/*! \brief Performs bitwise NOR operation on two source vectors. */
+bool vector_bitwise_nor_op( vector* tgt, vector* src1, vector* src2 );
+
+/*! \brief Performs bitwise XOR operation on two source vectors. */
+bool vector_bitwise_xor_op( vector* tgt, vector* src1, vector* src2 );
+
+/*! \brief Performs bitwise NXOR operation on two source vectors. */
+bool vector_bitwise_nxor_op( vector* tgt, vector* src1, vector* src2 );
+
+/*! \brief Performs less-than comparison of two vectors. */
+bool vector_op_lt(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
+
+/*! \brief Performs less-than-or-equal comparison of two vectors. */
+bool vector_op_le(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
+
+/*! \brief Performs greater-than comparison of two vectors. */
+bool vector_op_gt(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
+
+/*! \brief Performs greater-than-or-equal comparison of two vectors. */
+bool vector_op_ge(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
+
+/*! \brief Performs equal comparison of two vectors. */
+bool vector_op_eq(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
+
+/*! \brief Performs case equal comparison of two vectors and returns result. */
+bool vector_ceq_ulong(
+  const vector* left,
+  const vector* right
+);
+
+/*! \brief Performs case equal comparison of two vectors. */
+bool vector_op_ceq(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
+
+/*! \brief Performs casex equal comparison of two vectors. */
+bool vector_op_cxeq(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
+
+/*! \brief Performs casez equal comparison of two vectors. */
+bool vector_op_czeq(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
+
+/*! \brief Performs not-equal comparison of two vectors. */
+bool vector_op_ne(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
+
+/*! \brief Performs case not-equal comparison of two vectors. */
+bool vector_op_cne(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
+
+/*! \brief Performs logical-OR operation of two vectors. */
+bool vector_op_lor(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
+
+/*! \brief Performs logical-AND operation of two vectors. */
+bool vector_op_land(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
 
 /*! \brief Performs left shift operation on left expression by right expression bits. */
-bool vector_op_lshift( vector* tgt, vector* left, vector* right );
+bool vector_op_lshift(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
  
 /*! \brief Performs right shift operation on left expression by right expression bits. */
-bool vector_op_rshift( vector* tgt, vector* left, vector* right );
+bool vector_op_rshift(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
 
 /*! \brief Performs arithmetic right shift operation on left expression by right expression bits. */
-bool vector_op_arshift( vector* tgt, vector* left, vector* right );
+bool vector_op_arshift(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
 
 /*! \brief Performs addition operation on left and right expression values. */
-bool vector_op_add( vector* tgt, vector* left, vector* right );
+bool vector_op_add(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
 
 /*! \brief Performs a twos complement of the src vector and stores the new vector in tgt. */
 bool vector_op_negate(
-  vector* tgt,
-  vector* src,
-  vecblk* tvb
+  vector*       tgt,
+  const vector* src,
+  vecblk*       tvb
 );
 
 /*! \brief Performs subtraction operation on left and right expression values. */
 bool vector_op_subtract(
-  vector* tgt,
-  vector* left,
-  vector* right,
-  vecblk* tvb
+  vector*       tgt,
+  const vector* left,
+  const vector* right,
+  vecblk*       tvb
 );
 
 /*! \brief Performs multiplication operation on left and right expression values. */
-bool vector_op_multiply( vector* tgt, vector* left, vector* right );
+bool vector_op_multiply(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
+
+/*! \brief Performs division operation on left and right vector values. */
+bool vector_op_divide(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
+
+/*! \brief Performs modulus operation on left and right vector values. */
+bool vector_op_modulus(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
 
 /*! \brief Performs increment operation on specified vector. */
 bool vector_op_inc(
@@ -213,13 +510,69 @@ bool vector_op_dec(
 );
 
 /*! \brief Performs unary bitwise inversion operation on specified vector value. */
-bool vector_unary_inv( vector* tgt, vector* src );
+bool vector_unary_inv(
+  vector*       tgt,
+  const vector* src
+);
 
-/*! \brief Performs unary operation on specified vector value. */
-bool vector_unary_op( vector* tgt, vector* src, nibble* optab );
+/*! \brief Performs unary AND operation on specified vector value. */
+bool vector_unary_and(
+  vector*       tgt,
+  const vector* src
+);
+
+/*! \brief Performs unary NAND operation on specified vector value. */
+bool vector_unary_nand(
+  vector*       tgt,
+  const vector* src
+);
+
+/*! \brief Performs unary OR operation on specified vector value. */
+bool vector_unary_or(
+  vector*       tgt,
+  const vector* src
+);
+
+/*! \brief Performs unary NOR operation on specified vector value. */
+bool vector_unary_nor(
+  vector*       tgt,
+  const vector* src
+);
+
+/*! \brief Performs unary XOR operation on specified vector value. */
+bool vector_unary_xor(
+  vector*       tgt,
+  const vector* src
+);
+
+/*! \brief Performs unary NXOR operation on specified vector value. */
+bool vector_unary_nxor(
+  vector*       tgt,
+  const vector* src
+);
 
 /*! \brief Performs unary logical NOT operation on specified vector value. */
-bool vector_unary_not( vector* tgt, vector* src );
+bool vector_unary_not(
+  vector*       tgt,
+  const vector* src
+);
+
+/*! \brief Performs expansion operation. */
+bool vector_op_expand(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
+
+/*! \brief Performs list operation. */
+bool vector_op_list(
+  vector*       tgt,
+  const vector* left,
+  const vector* right
+);
+
+/*! \brief Deallocates the value structure for the given vector. */
+void vector_dealloc_value( vector* vec );
 
 /*! \brief Deallocates all memory allocated for vector */
 void vector_dealloc( vector* vec );
@@ -227,6 +580,99 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.58.2.23  2008/05/28 05:57:12  phase1geo
+ Updating code to use unsigned long instead of uint32.  Checkpointing.
+
+ Revision 1.58.2.22  2008/05/27 05:52:52  phase1geo
+ Starting to add fix for sign extension.  Not finished at this point.
+
+ Revision 1.58.2.21  2008/05/24 21:20:57  phase1geo
+ Fixing bugs with comparison functions when values contain Xs.  Adding more diagnostics
+ to regression suite to cover coverage holes.
+
+ Revision 1.58.2.20  2008/05/23 14:50:23  phase1geo
+ Optimizing vector_op_add and vector_op_subtract algorithms.  Also fixing issue with
+ vector set bit.  Updating regressions per this change.
+
+ Revision 1.58.2.19  2008/05/15 07:02:05  phase1geo
+ Another attempt to fix static_afunc1 diagnostic failure.  Checkpointing.
+
+ Revision 1.58.2.18  2008/05/12 23:12:05  phase1geo
+ Ripping apart part selection code and reworking it.  Things compile but are
+ functionally quite broken at this point.  Checkpointing.
+
+ Revision 1.58.2.17  2008/05/07 23:09:11  phase1geo
+ Fixing vector_mem_wr_count function and calling code.  Updating regression
+ files accordingly.  Checkpointing.
+
+ Revision 1.58.2.16  2008/05/07 21:09:10  phase1geo
+ Added functionality to allow to_string to output full vector bits (even
+ non-significant bits) for purposes of reporting for FSMs (matches original
+ behavior).
+
+ Revision 1.58.2.15  2008/05/04 22:05:29  phase1geo
+ Adding bit-fill in vector_set_static and changing name of old bit-fill functions
+ in vector.c to sign_extend to reflect their true nature.  Added new diagnostics
+ to regression suite to verify single-bit select bit-fill (these tests do not work
+ at this point).  Checkpointing.
+
+ Revision 1.58.2.14  2008/05/02 22:06:13  phase1geo
+ Updating arc code for new data structure.  This code is completely untested
+ but does compile and has been completely rewritten.  Checkpointing.
+
+ Revision 1.58.2.13  2008/05/02 05:02:20  phase1geo
+ Completed initial pass of bit-fill code in vector_part_select_push function.
+ Updating regression files.  Checkpointing.
+
+ Revision 1.58.2.12  2008/04/30 05:56:21  phase1geo
+ More work on right-shift function.  Added and connected part_select_push and part_select_pull
+ functionality.  Also added new right-shift diagnostics.  Checkpointing.
+
+ Revision 1.58.2.11  2008/04/23 21:27:06  phase1geo
+ Fixing several bugs found in initial testing.  Checkpointing.
+
+ Revision 1.58.2.10  2008/04/23 06:32:32  phase1geo
+ Starting to debug vector changes.  Checkpointing.
+
+ Revision 1.58.2.9  2008/04/23 05:20:45  phase1geo
+ Completed initial pass of code updates.  I can now begin testing...  Checkpointing.
+
+ Revision 1.58.2.8  2008/04/22 23:01:43  phase1geo
+ More updates.  Completed initial pass of expr.c and fsm_arg.c.  Working
+ on memory.c.  Checkpointing.
+
+ Revision 1.58.2.7  2008/04/22 14:03:57  phase1geo
+ More work on expr.c.  Checkpointing.
+
+ Revision 1.58.2.6  2008/04/22 05:51:36  phase1geo
+ Continuing work on expr.c.  Checkpointing.
+
+ Revision 1.58.2.5  2008/04/21 23:13:05  phase1geo
+ More work to update other files per vector changes.  Currently in the middle
+ of updating expr.c.  Checkpointing.
+
+ Revision 1.58.2.4  2008/04/21 04:37:23  phase1geo
+ Attempting to get other files (besides vector.c) to compile with new vector
+ changes.  Still work to go here.  The initial pass through vector.c is not
+ complete at this time as I am attempting to get what I have completed
+ debugged.  Checkpointing work.
+
+ Revision 1.58.2.3  2008/04/20 05:43:46  phase1geo
+ More work on the vector file.  Completed initial pass of conversion operations,
+ bitwise operations and comparison operations.
+
+ Revision 1.58.2.2  2008/04/18 05:05:28  phase1geo
+ More updates to vector file.  Updated merge and output functions.  Checkpointing.
+
+ Revision 1.58.2.1  2008/04/17 23:16:08  phase1geo
+ More work on vector.c.  Completed initial pass of vector_db_write/read and
+ vector_copy/clone functionality.  Checkpointing.
+
+ Revision 1.58  2008/04/15 06:08:47  phase1geo
+ First attempt to get both instance and module coverage calculatable for
+ GUI purposes.  This is not quite complete at the moment though it does
+ compile.
+
  Revision 1.57  2008/04/08 19:50:37  phase1geo
  Removing LAST operator for PEDGE, NEDGE and AEDGE expression operations and
  replacing them with the temporary vector solution.

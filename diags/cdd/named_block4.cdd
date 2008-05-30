@@ -1,17 +1,17 @@
-5 d 1 * 0
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd named_block4.vcd -o named_block4.cdd -v named_block4.v -D DUMP
+5 e 101 * 0
+8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd named_block4.vcd -o named_block4.cdd -v named_block4.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" named_block4.v 8 32 1
-2 1 13 20006 6 3d 5002 0 0 1 26 2 foo
-1 a 10 830004 1 0 0 0 1 25 1102
-1 b 10 30007 1 0 0 0 1 25 1102
+2 1 13 20006 6 3d 5002 0 0 1 18 0 1 0 0 0 0 foo
+1 a 10 870004 1 0 0 0 1 17 0 1 1 1 0
+1 b 10 70007 1 0 0 0 1 17 0 1 1 1 0
 4 1 7 1 0
 3 1 main.foo "main.foo" named_block4.v 13 16 1
-2 2 14 50005 1 0 1008 0 0 32 52 11 0 0 0 0 0 0 0
-2 3 14 40005 b 2c 900a 2 0 32 26 aa aa aa aa aa aa aa aa
-2 4 15 80008 3 1 100c 0 0 1 9 b
-2 5 15 40004 0 1 1410 0 0 1 9 a
-2 6 15 40008 5 37 1e 4 5
+2 2 14 50005 1 0 1008 0 0 32 48 5 0
+2 3 14 40005 b 2c 900a 2 0 32 18 0 ffffffff 0 0 0 0
+2 4 15 80008 3 1 100c 0 0 1 1 b
+2 5 15 40004 0 1 1410 0 0 1 1 a
+2 6 15 40008 5 37 e 4 5
 4 6 0 0 0
 4 3 11 6 0
 3 1 main.$u0 "main.$u0" named_block4.v 0 30 1

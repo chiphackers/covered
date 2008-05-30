@@ -362,12 +362,7 @@ void combination_get_tree_stats(
                   if( report_bitwise ) {
                     int i;
                     tot_num = 3 * exp->value->width;
-                    num_hit = 0;
-                    for( i=0; i<exp->value->width; i++ ) {
-                      num_hit += exp->value->value[i].part.exp.eval_a +
-                                 exp->value->value[i].part.exp.eval_b +
-                                 exp->value->value[i].part.exp.eval_c;
-                    }
+                    num_hit = vector_get_eval_abc_count( exp->value );
                   } else {
                     tot_num = 3;
                     num_hit = ESUPPL_WAS_FALSE( exp->left->suppl )  + 
@@ -378,12 +373,7 @@ void combination_get_tree_stats(
                   if( report_bitwise ) {
                     int i;
                     tot_num = 3 * exp->value->width;
-                    num_hit = 0;
-                    for( i=0; i<exp->value->width; i++ ) {
-                      num_hit += exp->value->value[i].part.exp.eval_a +
-                                 exp->value->value[i].part.exp.eval_b +
-                                 exp->value->value[i].part.exp.eval_c;
-                    }
+                    num_hit = vector_get_eval_abc_count( exp->value );
                   } else {
                     tot_num = 3;
                     num_hit = ESUPPL_WAS_TRUE( exp->left->suppl )  +
@@ -394,13 +384,7 @@ void combination_get_tree_stats(
                   if( report_bitwise ) {
                     int i;
                     tot_num = 4 * exp->value->width;
-                    num_hit = 0;
-                    for( i=0; i<exp->value->width; i++ ) {
-                      num_hit += exp->value->value[i].part.exp.eval_a +
-                                 exp->value->value[i].part.exp.eval_b +
-                                 exp->value->value[i].part.exp.eval_c +
-                                 exp->value->value[i].part.exp.eval_d;
-                    }
+                    num_hit = vector_get_eval_abcd_count( exp->value );
                   } else {
                     tot_num = 4;
                     num_hit = exp->suppl.part.eval_00 +
@@ -435,10 +419,7 @@ void combination_get_tree_stats(
                 if( report_bitwise ) {
                   int i;
                   *total  = *total + (2 * exp->value->width);
-                  num_hit = 0;
-                  for( i=0; i<exp->value->width; i++ ) {
-                    num_hit += exp->value->value[i].part.exp.eval_a + exp->value->value[i].part.exp.eval_b;
-                  } 
+                  num_hit = vector_get_eval_ab_count( exp->value );
                 } else {
                   *total  = *total + 2;
                   num_hit = ESUPPL_WAS_TRUE( exp->suppl ) + ESUPPL_WAS_FALSE( exp->suppl );
@@ -940,7 +921,7 @@ static void combination_underline_tree(
       
       } else {
 
-        tmpstr = vector_to_string( exp->value, ESUPPL_STATIC_BASE( exp->suppl ) );
+        tmpstr = vector_to_string( exp->value, ESUPPL_STATIC_BASE( exp->suppl ), FALSE );
         *size  = strlen( tmpstr );
         free_safe( tmpstr, (strlen( tmpstr ) + 1) );
 
@@ -1588,12 +1569,9 @@ static void combination_unary(
   /* Get hit information */
   if( report_bitwise && (exp->value->width > 1) ) {
     int i;
-    hit   = 0;
+    hit   = vector_get_eval_ab_count( exp->value );
     lines = exp->value->width + 2;
     tot   = (2 * exp->value->width);
-    for( i=0; i<exp->value->width; i++ ) {
-      hit += exp->value->value[i].part.exp.eval_a + exp->value->value[i].part.exp.eval_b;
-    }
   } else {
     lines = 1;
     tot   = 2;
@@ -1638,8 +1616,8 @@ static void combination_unary(
       for( i=0; i<exp->value->width; i++ ) {
         (*info)[i+6] = (char*)malloc_safe( length );
         rv = snprintf( (*info)[i+6], length, "         %4d | %c   %c", i,
-                       ((exp->value->value[i].part.exp.eval_a == 1) ? ' ' : '*'),
-                       ((exp->value->value[i].part.exp.eval_b == 1) ? ' ' : '*') );
+                       ((vector_get_eval_a( exp->value, i ) == 1) ? ' ' : '*'),
+                       ((vector_get_eval_b( exp->value, i ) == 1) ? ' ' : '*') );
         assert( rv < length );
       }
 
@@ -1739,15 +1717,9 @@ static void combination_two_vars(
   /* Get hit information */
   if( exp_op_info[exp->op].suppl.is_comb == AND_COMB ) {
     if( report_bitwise && (exp->value->width > 1) ) {
-      int i;
       lines = exp->value->width + 2;
       total = (3 * exp->value->width);
-      hit   = 0;
-      for( i=0; i<exp->value->width; i++ ) {
-        hit += (exp->value->value[i].part.exp.eval_a +
-                exp->value->value[i].part.exp.eval_b +
-                exp->value->value[i].part.exp.eval_c);
-      }
+      hit   = vector_get_eval_abc_count( exp->value );
     } else {
       lines = 1;
       total = 3;
@@ -1755,15 +1727,9 @@ static void combination_two_vars(
     }
   } else if( exp_op_info[exp->op].suppl.is_comb == OR_COMB ) {
     if( report_bitwise && (exp->value->width > 1) ) {
-      int i;
       lines = exp->value->width + 2;
       total = (3 * exp->value->width);
-      hit   = 0;
-      for( i=0; i<exp->value->width; i++ ) {
-        hit += (exp->value->value[i].part.exp.eval_a +
-                exp->value->value[i].part.exp.eval_b +
-                exp->value->value[i].part.exp.eval_c);
-      }
+      hit   = vector_get_eval_abc_count( exp->value );
     } else {
       lines = 1;
       total = 3;
@@ -1771,16 +1737,9 @@ static void combination_two_vars(
     }
   } else {
     if( report_bitwise && (exp->value->width > 1) ) {
-      int i;
       lines = exp->value->width + 2;
       total = (4 * exp->value->width);
-      hit   = 0;
-      for( i=0; i<exp->value->width; i++ ) {
-        hit += (exp->value->value[i].part.exp.eval_a +
-                exp->value->value[i].part.exp.eval_b +
-                exp->value->value[i].part.exp.eval_c +
-                exp->value->value[i].part.exp.eval_d);
-      }
+      hit   = vector_get_eval_abcd_count( exp->value );
     } else {
       lines = 1;
       total = 4;
@@ -1833,9 +1792,9 @@ static void combination_two_vars(
         for( i=0; i<exp->value->width; i++ ) {
           (*info)[i+6] = (char*)malloc_safe( length );
           rv = snprintf( (*info)[i+6], length, "         %4d | %c    %c    %c", i,
-                         ((exp->value->value[i].part.exp.eval_a == 1) ? ' ' : '*'),
-                         ((exp->value->value[i].part.exp.eval_b == 1) ? ' ' : '*'),
-                         ((exp->value->value[i].part.exp.eval_c == 1) ? ' ' : '*') );
+                         ((vector_get_eval_a( exp->value, i ) == 1) ? ' ' : '*'),
+                         ((vector_get_eval_b( exp->value, i ) == 1) ? ' ' : '*'),
+                         ((vector_get_eval_c( exp->value, i ) == 1) ? ' ' : '*') );
           assert( rv < length );
         }
 
@@ -1874,9 +1833,9 @@ static void combination_two_vars(
         for( i=0; i<exp->value->width; i++ ) {
           (*info)[i+6] = (char*)malloc_safe( length );
           rv = snprintf( (*info)[i+6], length, "         %4d | %c    %c    %c", i,
-                         ((exp->value->value[i].part.exp.eval_a == 1) ? ' ' : '*'),
-                         ((exp->value->value[i].part.exp.eval_b == 1) ? ' ' : '*'),
-                         ((exp->value->value[i].part.exp.eval_c == 1) ? ' ' : '*') );
+                         ((vector_get_eval_a( exp->value, i ) == 1) ? ' ' : '*'),
+                         ((vector_get_eval_b( exp->value, i ) == 1) ? ' ' : '*'),
+                         ((vector_get_eval_c( exp->value, i ) == 1) ? ' ' : '*') );
           assert( rv < length );
         }
 
@@ -1916,10 +1875,10 @@ static void combination_two_vars(
         for( i=0; i<exp->value->width; i++ ) {
           (*info)[i+6] = (char*)malloc_safe( length );
           rv = snprintf( (*info)[i+6], length, "         %4d | %c    %c    %c    %c", i,
-                         ((exp->value->value[i].part.exp.eval_a == 1) ? ' ' : '*'),
-                         ((exp->value->value[i].part.exp.eval_b == 1) ? ' ' : '*'),
-                         ((exp->value->value[i].part.exp.eval_c == 1) ? ' ' : '*'),
-                         ((exp->value->value[i].part.exp.eval_d == 1) ? ' ' : '*') );
+                         ((vector_get_eval_a( exp->value, i ) == 1) ? ' ' : '*'),
+                         ((vector_get_eval_b( exp->value, i ) == 1) ? ' ' : '*'),
+                         ((vector_get_eval_c( exp->value, i ) == 1) ? ' ' : '*'),
+                         ((vector_get_eval_d( exp->value, i ) == 1) ? ' ' : '*') );
           assert( rv < length );
         }
 
@@ -3042,6 +3001,24 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.193.2.3  2008/05/07 21:09:10  phase1geo
+ Added functionality to allow to_string to output full vector bits (even
+ non-significant bits) for purposes of reporting for FSMs (matches original
+ behavior).
+
+ Revision 1.193.2.2  2008/04/21 23:13:04  phase1geo
+ More work to update other files per vector changes.  Currently in the middle
+ of updating expr.c.  Checkpointing.
+
+ Revision 1.193.2.1  2008/04/21 04:37:23  phase1geo
+ Attempting to get other files (besides vector.c) to compile with new vector
+ changes.  Still work to go here.  The initial pass through vector.c is not
+ complete at this time as I am attempting to get what I have completed
+ debugged.  Checkpointing work.
+
+ Revision 1.193  2008/04/15 20:37:07  phase1geo
+ Fixing database array support.  Full regression passes.
+
  Revision 1.192  2008/04/08 22:45:10  phase1geo
  Optimizations for op-and-assign expressions.  This is an untested checkin
  at this point but it does compile cleanly.  Checkpointing.

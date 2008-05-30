@@ -55,7 +55,7 @@ IVERILOG_EXEC  = a.out
 IVERILOG_INTER = vvp
 
 VCS       = vcs
-VCS_FLAGS = +libext+.v+.vlib+ -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 +v2k -sverilog -PP
+VCS_FLAGS = +libext+.v+.vlib+ -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 +v2k -sverilog -PP +vcs+lic+wait
 ifdef VPI
 VCS_FLAGS += +vpi -load ../../lib/covered.vcs.so:covered_register
 else
@@ -100,7 +100,7 @@ LOGFILE = regress.log
 
 .PHONY:	view_vg_errs check-ovl covered
 
-regress:	covered $(DIAGLIST) $(RACELIST) $(MERGELIST) $(MERGE3LIST) $(ERRSCORELIST) $(ERRMERGELIST) $(NOSIMLIST) $(NOSIMERRLIST)
+regress:	covered $(DIAGLIST) $(DIAG2LIST) $(RACELIST) $(MERGELIST) $(MERGE3LIST) $(ERRSCORELIST) $(ERRMERGELIST) $(NOSIMLIST) $(NOSIMERRLIST)
 
 check-ovl:
 	@if test ! -h ovl; then \
@@ -148,6 +148,51 @@ endif
 $(DIAGLIST): check-ovl
 	@if test ! -f $@.done; then \
 		$(MAKE) DIAG=$@ diagrun; \
+	else \
+		echo Skipping $@; \
+		./check_test $@ 1 2; \
+	fi
+
+diag2run:
+	@echo Running $(DIAG)
+	@./convert_cfg $(CFG_CMD) $(DIAG).cfg
+ifdef VPI
+	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP | ./check_mem
+ifdef USE_CVER
+	@if test "$(COVERED_GFLAG)" = "-D"; then \
+		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd +covered_debug; \
+	else \
+		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd+$(DIAG).cdd; \
+	fi
+else
+	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v
+	@if test "$(COVERED_GFLAG)" = "-D"; then \
+		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd +covered_debug; \
+	else \
+		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd; \
+	fi
+endif
+	$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -b -o $(DIAG).rptM $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -i -b -o $(DIAG).rptI $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -w -d v -b -o $(DIAG).rptWM $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -w -d v -b -i -o $(DIAG).rptWI $(DIAG).cdd | ./check_mem
+else
+	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
+ifndef USE_CVER
+	@$(VERILOG_CMD)
+endif   
+	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -b -d v -m ltcfam -o $(DIAG).rptM $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -b -d v -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -b -w -d v -o $(DIAG).rptWM $(DIAG).cdd | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) report -b -w -d v -i -o $(DIAG).rptWI $(DIAG).cdd | ./check_mem
+endif
+	@rm -f $(DIAG).cfg
+	@./check_test $(DIAG) 1 $(CHK_CODE)
+
+$(DIAG2LIST): check-ovl
+	@if test ! -f $@.done; then \
+		$(MAKE) DIAG=$@ diag2run; \
 	else \
 		echo Skipping $@; \
 		./check_test $@ 1 2; \
@@ -309,8 +354,7 @@ errmergerun:
 ifndef VPI
 	@echo Running $(DIAG) -- should see an error message
 	@$(MAKE) DIAG=$(DIAG)a oneerrmergerun
-	@$(MAKE) DIAG=$(DIAG)b oneerrmergerun
-	$(COVERED) $(COVERED_GFLAG) merge -o $(DIAG).cdd $(DIAG)a.cdd $(DIAG)b.cdd 2> $(DIAG).err | ./check_mem
+	$(COVERED) $(COVERED_GFLAG) merge -o $(DIAG).cdd $(DIAG)a.cdd $(DIAG)b.cdd.bad 2> $(DIAG).err | ./check_mem
 	@cat $(DIAG).err
 	@./check_test $(DIAG) 1 1
 endif

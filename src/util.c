@@ -1025,7 +1025,7 @@ void* malloc_safe1( size_t size, /*@unused@*/ const char* file, /*@unused@*/ int
 
   void* obj;  /* Object getting malloc address */
 
-  assert( size <= 100000 );
+  assert( size <= MAX_MALLOC_SIZE );
   curr_malloc_size += size;
 
   if( curr_malloc_size > largest_malloc_size ) {
@@ -1148,7 +1148,7 @@ char* strdup_safe1(
   char* new_str;
   int   str_len = strlen( str ) + 1;
 
-  assert( str_len <= 10000 );
+  assert( str_len <= MAX_MALLOC_SIZE );
   curr_malloc_size += str_len;
   if( curr_malloc_size > largest_malloc_size ) {
     largest_malloc_size = curr_malloc_size;
@@ -1189,7 +1189,7 @@ void* realloc_safe1(
 
   void* newptr;
 
-  assert( size <= 10000 );
+  assert( size <= MAX_MALLOC_SIZE );
 
   curr_malloc_size -= old_size;
   curr_malloc_size += size;
@@ -1345,6 +1345,16 @@ void calc_miss_percent(
 
 /*
  $Log$
+ Revision 1.90.2.1  2008/05/23 14:50:23  phase1geo
+ Optimizing vector_op_add and vector_op_subtract algorithms.  Also fixing issue with
+ vector set bit.  Updating regressions per this change.
+
+ Revision 1.90  2008/04/10 23:16:42  phase1geo
+ Fixing issues with memory and file handling in preprocessor when an error
+ occurs (so that we can recover properly in the GUI).  Also fixing various
+ GUI issues from the previous checkin.  Working on debugging problem with
+ preprocessing code in verilog.tcl.  Checkpointing.
+
  Revision 1.89  2008/04/08 23:58:17  phase1geo
  Fixing test mode code so that it works properly in regression and stand-alone
  runs.

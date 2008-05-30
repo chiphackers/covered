@@ -64,7 +64,10 @@ void fsm_merge(
 );
 
 /*! \brief Sets the bit in set table based on the values of last and curr. */
-void fsm_table_set( fsm* table );
+void fsm_table_set(
+  expression*     expr,
+  const sim_time* time
+);
 
 /*! \brief Gathers statistics about the current FSM */
 void fsm_get_stats(
@@ -122,6 +125,15 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.28.2.1  2008/05/08 23:12:42  phase1geo
+ Fixing several bugs and reworking code in arc to get FSM diagnostics
+ to pass.  Checkpointing.
+
+ Revision 1.28  2008/04/15 06:08:46  phase1geo
+ First attempt to get both instance and module coverage calculatable for
+ GUI purposes.  This is not quite complete at the moment though it does
+ compile.
+
  Revision 1.27  2008/02/09 19:32:44  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.
