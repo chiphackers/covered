@@ -408,7 +408,7 @@ static void expression_create_tmp_vecs(
     exp->elem.tvecs = (vecblk*)malloc_safe( sizeof( vecblk ) );
     for( i=0; i<EXPR_TMP_VECS( exp->op ); i++ ) {
       vector* vec = vector_create( width, VTYPE_VAL, VDATA_UL, TRUE );
-      vector_init_ulong( &(exp->elem.tvecs->vec[i]), vec->value.ul, 0, hdata, TRUE, width, VTYPE_VAL, VDATA_UL );
+      vector_init_ulong( &(exp->elem.tvecs->vec[i]), vec->value.ul, 0, hdata, TRUE, width, VTYPE_VAL );
       free_safe( vec, sizeof( vector ) );
     }
 
@@ -451,7 +451,7 @@ static void expression_create_value(
 
     vec = vector_create( width, VTYPE_EXP, VDATA_UL, TRUE );
     assert( exp->value->value.ul == NULL );
-    vector_init_ulong( exp->value, vec->value.ul, 0x0, 0x0, TRUE, width, vec->suppl.part.type, vec->suppl.part.data_type );
+    vector_init_ulong( exp->value, vec->value.ul, 0x0, 0x0, TRUE, width, vec->suppl.part.type );
     free_safe( vec, sizeof( vector ) );
 
     /* Create the temporary vectors now, if needed */
@@ -459,7 +459,7 @@ static void expression_create_value(
 
   } else {
 
-    vector_init_ulong( exp->value, NULL, 0x0, 0x0, FALSE, width, VTYPE_EXP, VDATA_UL );
+    vector_init_ulong( exp->value, NULL, 0x0, 0x0, FALSE, width, VTYPE_EXP );
 
   }
 
@@ -5187,15 +5187,13 @@ bool expression_is_in_rassign(
 }
 
 /*!
- \param expr  Pointer to current expression to evaluate
-
  Checks to see if the expression is in the LHS of a BASSIGN expression tree.  If it is, it sets the
  assigned supplemental field of the expression's signal vector to indicate the the value of this
  signal will come from Covered instead of the dumpfile.  This is called in the bind_signal function
  after the expression and signal have been bound (only in parsing stage).
 */
 void expression_set_assigned(
-  expression* expr
+  expression* expr  /*!< Pointer to current expression to evaluate */
 ) { PROFILE(EXPRESSION_SET_ASSIGNED);
 
   expression* curr;  /* Pointer to current expression */
@@ -5229,7 +5227,7 @@ void expression_set_assigned(
  have not changed).
 */
 void expression_set_changed(
-  expression* expr
+  expression* expr  /*!<  Pointer to expression to set changed bits for */
 ) { PROFILE(EXPRESSION_SET_CHANGED);
 
   if( expr != NULL ) {
@@ -5249,24 +5247,18 @@ void expression_set_changed(
 }
 
 /*!
- \param lhs       Pointer to current expression on left-hand-side of assignment to calculate for.
- \param rhs       Pointer to the right-hand-expression that will be assigned from.
- \param lsb       Current least-significant bit in rhs value to start assigning.
- \param time      Specifies current simulation time when expression assignment occurs.
- \param eval_lhs  If TRUE, allows the left-hand expression to be evaluated, if necessary (should be
-                  set to TRUE unless for specific cases where it is not necessary and would be
-                  redundant to do so -- i.e., op-and-assign cases)
-
  Recursively iterates through specified LHS expression, assigning the value from the RHS expression.
  This is called whenever a blocking assignment expression is found during simulation.
 */
 void expression_assign(
-  expression*     lhs,
-  expression*     rhs,
-  int*            lsb,
-  thread*         thr,
-  const sim_time* time,
-  bool            eval_lhs
+  expression*     lhs,      /*!< Pointer to current expression on left-hand-side of assignment to calculate for */
+  expression*     rhs,      /*!< Pointer to the right-hand-expression that will be assigned from */
+  int*            lsb,      /*!< Current least-significant bit in rhs value to start assigning */
+  thread*         thr,      /*!< Pointer to thread for the given expressions */
+  const sim_time* time,     /*!< Specifies current simulation time when expression assignment occurs */
+  bool            eval_lhs  /*!< If TRUE, allows the left-hand expression to be evaluated, if necessary (should be
+                                 set to TRUE unless for specific cases where it is not necessary and would be
+                                 redundant to do so -- i.e., op-and-assign cases) */
 ) { PROFILE(EXPRESSION_ASSIGN);
 
   if( lhs != NULL ) {
@@ -5623,6 +5615,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.330  2008/05/30 05:38:30  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
  Revision 1.329.2.43  2008/05/29 06:46:24  phase1geo
  Finishing last submission.
 

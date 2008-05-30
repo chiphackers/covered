@@ -65,18 +65,14 @@ extern isuppl       info_suppl;
 
 
 /*!
- \param from_state  Pointer to expression that is input state variable for this FSM.
- \param to_state    Pointer to expression that is output state variable for this FSM.
- \param exclude     Value to set the exclude bit to
-
  \return Returns a pointer to the newly allocated FSM structure.
 
  Allocates and initializes an FSM structure.
 */
 fsm* fsm_create(
-  expression* from_state,
-  expression* to_state,
-  bool        exclude
+  expression* from_state,  /*!< Pointer to expression that is input state variable for this FSM */
+  expression* to_state,    /*!< Pointer to expression that is output state variable for this FSM */
+  bool        exclude      /*!< Value to set the exclude bit to */
 ) { PROFILE(FSM_CREATE);
 
   fsm* table;  /* Pointer to newly created FSM */
@@ -95,17 +91,12 @@ fsm* fsm_create(
 }
 
 /*!
- \param table       Pointer to FSM structure to add new arc to.
- \param from_state  Pointer to from_state expression to add.
- \param to_state    Pointer to to_state expression to add.
- \param exclude     If TRUE, excludes the new arc from coverage consideration.
-
  Adds new FSM arc structure to specified FSMs arc list.
 */
 void fsm_add_arc(
-  fsm*        table,
-  expression* from_state,
-  expression* to_state
+  fsm*        table,       /*!< Pointer to FSM structure to add new arc to */
+  expression* from_state,  /*!< Pointer to from_state expression to add */
+  expression* to_state     /*!< Pointer to to_state expression to add */
 ) { PROFILE(FSM_ADD_ARC);
 
   fsm_arc* arc;  /* Pointer to newly created FSM arc structure */
@@ -383,15 +374,13 @@ void fsm_merge(
 }
 
 /*!
- \param expr  Pointer to expression that contains FSM table to modify
-
  Taking the from and to state signal values, a new table entry is added
  to the specified FSM structure arc array (if an entry does not already
  exist in the array).
 */
 void fsm_table_set(
-  expression*     expr,
-  const sim_time* time
+  expression*     expr,  /*!< Pointer to expression that contains FSM table to modify */
+  const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(FSM_TABLE_SET);
 
   /* If the expression is the input state expression, make sure that the output state expression is simulated this clock period */
@@ -415,20 +404,15 @@ void fsm_table_set(
 }
 
 /*!
- \param table        Pointer to FSM to get statistics from.
- \param state_total  Total number of states within this FSM.
- \param state_hit    Number of states reached in this FSM.
- \param arc_total    Total number of arcs within this FSM.
- \param arc_hit      Number of arcs reached in this FSM.
-
- Recursive
+ Gathers the FSM state and state transition statistics for the given table and assigns this
+ information to the specified pointers.
 */
 void fsm_get_stats(
-            fsm_link* table,
-  /*@out@*/ int*      state_total,
-  /*@out@*/ int*      state_hit,
-  /*@out@*/ int*      arc_total,
-  /*@out@*/ int*      arc_hit
+            fsm_link* table,        /*!< Pointer to FSM to get statistics from */
+  /*@out@*/ int*      state_total,  /*!< Total number of states within this FSM */
+  /*@out@*/ int*      state_hit,    /*!< Number of states reached in this FSM */
+  /*@out@*/ int*      arc_total,    /*!< Total number of arcs within this FSM */
+  /*@out@*/ int*      arc_hit       /*!< Number of arcs reached in this FSM */
 ) { PROFILE(FSM_GET_STATS);
 
   fsm_link* curr;   /* Pointer to current FSM in table list */
@@ -442,20 +426,15 @@ void fsm_get_stats(
 }
 
 /*!
- \param funit_name  Name of functional unit to retrieve summary information for
- \param funit_type  Type of functional unit to retrieve summary information for
- \param total       Pointer to location to store the total number of state transitions for the specified functional unit
- \param hit         Pointer to location to store the number of hit state transitions for the specified functional unit
-
  \return Returns TRUE if the specified module was found; otherwise, returns FALSE.
 
  Retrieves the FSM summary information for the specified functional unit.
 */
 bool fsm_get_funit_summary(
-  const char* funit_name,
-  int         funit_type,
-  int*        total,
-  int*        hit
+  const char* funit_name,  /*!< Name of functional unit to retrieve summary information for */
+  int         funit_type,  /*!< Type of functional unit to retrieve summary information for */
+  int*        total,       /*!< Pointer to location to store the total number of state transitions for the specified functional unit */
+  int*        hit          /*!< Pointer to location to store the number of hit state transitions for the specified functional unit */
 ) { PROFILE(FSM_GET_FUNIT_SUMMARY);
 
   bool        retval = TRUE;  /* Return value of this function */
@@ -602,51 +581,31 @@ bool fsm_collect( const char* funit_name, int funit_type, sig_link** cov_head, s
 }
 
 /*!
- \param funit_name       Name of functional unit containing FSM
- \param funit_type       Type of functional unit containing FSM
- \param expr_id          Expression ID of output state expression to find
- \param width            Pointer to width of FSM output state variable
- \param total_states     Pointer to a string array containing all possible states in this FSM
- \param total_state_num  Pointer to the number of elements in the total_states array
- \param hit_states       Pointer to a string array containing the hit states in this FSM
- \param hit_state_num    Pointer to the number of elements in the hit_states array
- \param total_from_arcs  Pointer to a string array containing all possible state transition from states
- \param total_to_arcs    Pointer to a string array containing all possible state transition to states
- \param excludes         Pointer to an integer array containing the exclude values for each state transition
- \param total_arc_num    Pointer to the number of elements in both the total_from_arcs, total_to_arcs and excludes arrays
- \param hit_from_arcs    Pointer to a string array containing the hit state transition from states
- \param hit_to_arcs      Pointer to a string array containing the hit state transition to states
- \param hit_arc_num      Pointer to the number of elements in both the hit_from_arcs and hit_to_arcs arrays
- \param input_state      Pointer to a string array containing the code for the input state expression
- \param input_size       Pointer to the number of elements stored in the input state array
- \param output_state     Pointer to a string array containing the code for the output state expression
- \param output_size      Pointer to the number of elements stored in the output state array
-
  \return Returns TRUE if the specified functional unit was found; otherwise, returns FALSE.
 
  Gets the FSM coverage information for the specified FSM in the specified functional unit.  Used by the GUI
  for creating the contents of the verbose FSM viewer.
 */
 bool fsm_get_coverage(
-            const char* funit_name,
-            int         funit_type,
-            int         expr_id,
-  /*@out@*/ int*        width,
-  /*@out@*/ char***     total_fr_states,
-  /*@out@*/ int*        total_fr_state_num,
-  /*@out@*/ char***     hit_fr_states,
-  /*@out@*/ int*        hit_fr_state_num,
-  /*@out@*/ char***     total_from_arcs,
-  /*@out@*/ char***     total_to_arcs,
-  /*@out@*/ int**       excludes,
-  /*@out@*/ int*        total_arc_num,
-  /*@out@*/ char***     hit_from_arcs,
-  /*@out@*/ char***     hit_to_arcs,
-  /*@out@*/ int*        hit_arc_num,
-  /*@out@*/ char***     input_state,
-  /*@out@*/ int*        input_size,
-  /*@out@*/ char***     output_state,
-  /*@out@*/ int*        output_size
+            const char* funit_name,          /*!< Name of functional unit containing FSM */
+            int         funit_type,          /*!< Type of functional unit containing FSM */
+            int         expr_id,             /*!< Expression ID of output state expression to find */
+  /*@out@*/ int*        width,               /*!< Pointer to width of FSM output state variable */
+  /*@out@*/ char***     total_fr_states,     /*!< Pointer to a string array containing all possible states in this FSM */
+  /*@out@*/ int*        total_fr_state_num,  /*!< Pointer to the number of elements in the total_states array */
+  /*@out@*/ char***     hit_fr_states,       /*!< Pointer to a string array containing the hit states in this FSM */
+  /*@out@*/ int*        hit_fr_state_num,    /*!< Pointer to the number of elements in the hit_states array */
+  /*@out@*/ char***     total_from_arcs,     /*!< Pointer to a string array containing all possible state transition from states */
+  /*@out@*/ char***     total_to_arcs,       /*!< Pointer to a string array containing all possible state transition to states */
+  /*@out@*/ int**       excludes,            /*!< Pointer to an integer array containing the exclude values for each state transition */
+  /*@out@*/ int*        total_arc_num,       /*!< Pointer to the number of elements in both the total_from_arcs, total_to_arcs and excludes arrays */
+  /*@out@*/ char***     hit_from_arcs,       /*!< Pointer to a string array containing the hit state transition from states */
+  /*@out@*/ char***     hit_to_arcs,         /*!< Pointer to a string array containing the hit state transition to states */
+  /*@out@*/ int*        hit_arc_num,         /*!< Pointer to the number of elements in both the hit_from_arcs and hit_to_arcs arrays */
+  /*@out@*/ char***     input_state,         /*!< Pointer to a string array containing the code for the input state expression */
+  /*@out@*/ int*        input_size,          /*!< Pointer to the number of elements stored in the input state array */
+  /*@out@*/ char***     output_state,        /*!< Pointer to a string array containing the code for the output state expression */
+  /*@out@*/ int*        output_size          /*!< Pointer to the number of elements stored in the output state array */
 ) { PROFILE(FSM_GET_COVERAGE);
 
   bool        retval = FALSE;      /* Return value for this function */
@@ -1372,6 +1331,10 @@ void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.96  2008/05/30 05:38:30  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
  Revision 1.95.2.3  2008/05/27 04:29:31  phase1geo
  Fixing memory leak for an FSM arc parser error.  Adding diagnostics to regression
  suite for coverage purposes.

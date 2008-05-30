@@ -1102,6 +1102,14 @@ typedef enum exp_op_type_e {
 
 /*!
  \addtogroup vector_type_indices Vector Type Information Indices
+
+ The following enumerations describe the indices of the valid vector elements for
+ each type of vector.
+
+ \note
+ Each vector type has a VALL and VALH.  It is important that the indices of all
+ VALL and VALH for each type be the same!
+ @{
 */
 
 /*! Provides value indices for VTYPE_VAL vectors */
@@ -2853,6 +2861,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.295  2008/05/30 05:38:30  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
  Revision 1.294.2.18  2008/05/28 22:12:31  phase1geo
  Adding further support for 32-/64-bit support.  Checkpointing.
 

@@ -77,32 +77,24 @@ extern isuppl info_suppl;
 
 
 /*!
- \param vec         Pointer to vector to initialize.
- \param value       Pointer to vec_data array for vector.
- \param data        Initial value to set each bit to.
- \param owns_value  Set to TRUE if this vector is responsible for deallocating the given value array
- \param width       Bit width of specified vector.
- \param type        Type of vector to initialize this to.
- 
  Initializes the specified vector with the contents of width
  and value (if value != NULL).  If value != NULL, initializes all contents 
  of value array to 0x2 (X-value).
 */
 void vector_init_ulong(
-  vector* vec,
-  ulong** value,
-  ulong   data_l,
-  ulong   data_h,
-  bool    owns_value,
-  int     width,
-  int     type,
-  int     data_type
+  vector* vec,         /*!< Pointer to vector to initialize */
+  ulong** value,       /*!< Pointer to vec_data array for vector */
+  ulong   data_l,      /*!< Initial value to set each lower data value to */
+  ulong   data_h,      /*!< Initial value to set each upper data value to */
+  bool    owns_value,  /*!< Set to TRUE if this vector is responsible for deallocating the given value array */
+  int     width,       /*!< Bit width of specified vector */
+  int     type         /*!< Type of vector to initialize this to */
 ) { PROFILE(VECTOR_INIT);
 
   vec->width                = width;
   vec->suppl.all            = 0;
   vec->suppl.part.type      = type;
-  vec->suppl.part.data_type = data_type;
+  vec->suppl.part.data_type = VDATA_UL;
   vec->suppl.part.owns_data = owns_value;
   vec->value.ul             = value;
 
@@ -140,20 +132,15 @@ void vector_init_ulong(
 }
 
 /*!
- \param width  Bit width of this vector.
- \param type   Type of vector to create (see \ref vector_types for valid values).
- \param size   Data type used to store vector value information
- \param data   If FALSE only initializes width but does not allocate a nibble array.
-
  \return Pointer to newly created vector.
 
  Creates new vector from heap memory and initializes all vector contents.
 */
 vector* vector_create(
-  int  width,
-  int  type,
-  int  data_type,
-  bool data
+  int  width,      /*!< Bit width of this vector */
+  int  type,       /*!< Type of vector to create (see \ref vector_types for valid values) */
+  int  data_type,  /*!< Data type used to store vector value information */
+  bool data        /*!< If FALSE only initializes width but does not allocate a value array */
 ) { PROFILE(VECTOR_CREATE);
 
   vector* new_vec;       /* Pointer to newly created vector */
@@ -176,7 +163,7 @@ vector* vector_create(
             value[i] = (ulong*)malloc_safe( sizeof( ulong ) * num );
           }
         }
-        vector_init_ulong( new_vec, value, 0x0, 0x0, (value != NULL), width, type, data_type );
+        vector_init_ulong( new_vec, value, 0x0, 0x0, (value != NULL), width, type );
       }
       break;
     default :  assert( 0 );
@@ -853,14 +840,11 @@ int vector_get_eval_abcd_count(
 }
 
 /*!
- \param nib    Pointer to vector data array to get string from
- \param width  Width of given vector data array
-
  \return Returns a string showing the toggle 0 -> 1 information.
 */
 char* vector_get_toggle01_ulong(
-  ulong** value,
-  int     width
+  ulong** value,  /*!< Pointer to vector data array to get string from */
+  int     width   /*!< Width of given vector data array */
 ) { PROFILE(VECTOR_GET_TOGGLE01_ULONG);
 
   char* bits      = (char*)malloc_safe( width + 1 );
@@ -888,14 +872,11 @@ char* vector_get_toggle01_ulong(
 }
 
 /*!
- \param nib    Pointer to vector data array to get string from
- \param width  Width of given vector data array
-
  \return Returns a string showing the toggle 1 -> 0 information.
 */
 char* vector_get_toggle10_ulong(
-  ulong** value,
-  int     width
+  ulong** value,  /*!< Pointer to vector data array to get string from */
+  int     width   /*!< Width of given vector data array */
 ) { PROFILE(VECTOR_GET_TOGGLE10_ULONG);
 
   char* bits      = (char*)malloc_safe( width + 1 );
@@ -923,17 +904,13 @@ char* vector_get_toggle10_ulong(
 }
 
 /*!
- \param nib    Nibble to display toggle information
- \param width  Number of bits of nibble to display
- \param ofile  Stream to output information to.
- 
- Displays the toggle01 information from the specified vector to the output
+ Displays the ulong toggle01 information from the specified vector to the output
  stream specified in ofile.
 */
 void vector_display_toggle01_ulong(
-  ulong** value,
-  int     width,
-  FILE*    ofile
+  ulong** value,  /*!< Value array to display toggle information */
+  int     width,  /*!< Number of bits in value array to display */
+  FILE*   ofile   /*!< Stream to output information to */
 ) { PROFILE(VECTOR_DISPLAY_TOGGLE01_ULONG);
 
   unsigned int nib       = 0;
@@ -961,17 +938,13 @@ void vector_display_toggle01_ulong(
 }
 
 /*!
- \param nib    Nibble to display toggle information
- \param width  Number of bits of nibble to display
- \param ofile  Stream to output information to.
- 
- Displays the toggle10 information from the specified vector to the output
+ Displays the ulong toggle10 information from the specified vector to the output
  stream specified in ofile.
 */
 void vector_display_toggle10_ulong(
-  ulong** value,
-  int     width,
-  FILE*    ofile
+  ulong** value,  /*!< Value array to display toggle information */
+  int     width,  /*!< Number of bits of value array to display */
+  FILE*   ofile   /*!< Stream to output information to */
 ) { PROFILE(VECTOR_DISPLAY_TOGGLE10_ULONG);
 
   unsigned int nib       = 0;
@@ -999,14 +972,11 @@ void vector_display_toggle10_ulong(
 }
 
 /*!
- \param nib    Pointer to vector nibble array
- \param width  Number of elements in nib array
-
- Displays the binary value of the specified vector data array to standard output.
+ Displays the binary value of the specified ulong vector data array to standard output.
 */
 void vector_display_value_ulong(
-  ulong** value,
-  int     width
+  ulong** value,  /*!< Pointer to vector value array */
+  int     width   /*!< Number of elements in value array */
 ) {
 
   int i, j;  /* Loop iterator */
@@ -1032,17 +1002,13 @@ void vector_display_value_ulong(
 }
 
 /*!
- \param nib    Nibble to display
- \param width  Number of bits in nibble to display
- \param type   Type of vector to display
-
- Outputs the specified nibble array to standard output as described by the
+ Outputs the specified ulong value array to standard output as described by the
  width parameter.
 */
 void vector_display_nibble_ulong(
-  ulong** value,
-  int     width,
-  int      type
+  ulong** value,  /*!< Value array to display */
+  int     width,  /*!< Number of bits in array to display */
+  int      type   /*!< Type of vector to display */
 ) {
 
   int i, j;  /* Loop iterator */
@@ -1235,19 +1201,15 @@ void vector_toggle_count(
 }
 
 /*!
- \param vec     Pointer to vector to parse
- \param wr_cnt  Pointer to number of bits in vector that were written
- \param rd_cnt  Pointer to number of bits in vector that were read
-
  Counts the number of bits that were written and read for the given memory
  vector.
 */
 void vector_mem_rw_count(
-  vector* vec,
-  int     lsb,
-  int     msb,
-  int*    wr_cnt,
-  int*    rd_cnt
+  vector* vec,     /*!< Pointer to vector to parse */
+  int     lsb,     /*!< Least-significant bit of memory element to get information for */
+  int     msb,     /*!< Most-significant bit of memory element to get information for */
+  int*    wr_cnt,  /*!< Pointer to number of bits in vector that were written */
+  int*    rd_cnt   /*!< Pointer to number of bits in vector that were read */
 ) { PROFILE(VECTOR_MEM_RW_COUNT);
 
   unsigned int i, j;  /* Loop iterator */
@@ -1279,10 +1241,6 @@ void vector_mem_rw_count(
 }
 
 /*!
- \param vec  Pointer to vector value to set
- \param msb  Most-significant bit to set in vector value
- \param lsb  Least-significant bit to set in vector value
-
  \return Returns TRUE if assigned bit that is being set to 1 in this function was
          found to be previously set; otherwise, returns FALSE.
 
@@ -1290,9 +1248,9 @@ void vector_mem_rw_count(
  race condition checker code.
 */
 bool vector_set_assigned(
-  vector* vec,
-  int     msb,
-  int     lsb
+  vector* vec,  /*!< Pointer to vector value to set */
+  int     msb,  /*!< Most-significant bit to set in vector value */
+  int     lsb   /*!< Least-significant bit to set in vector value */
 ) { PROFILE(VECTOR_SET_ASSIGNED);
 
   bool prev_assigned = FALSE;  /* Specifies if any set bit was previously set */
@@ -3919,17 +3877,14 @@ bool vector_op_add(
 }    
 
 /*!
- \param tgt  Pointer to vector that will be assigned the new value.
- \param src  Pointer to vector that will be negated.
-
  \return Returns TRUE if assigned value differs from original value; otherwise, returns FALSE.
 
  Performs a twos complement of the src vector and stores the result in the tgt vector.
 */
 bool vector_op_negate(
-  vector*       tgt,
-  const vector* src,
-  vecblk*       tvb
+  vector*       tgt,  /*!< Pointer to vector that will be assigned the new value */
+  const vector* src,  /*!< Pointer to vector that will be negated */
+  vecblk*       tvb   /*!< Pointer to extra memory that can be used for temporary data storage */
 ) { PROFILE(VECTOR_OP_NEGATE);
 
   bool retval;  /* Return value for this function */
@@ -4779,6 +4734,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.140  2008/05/30 13:56:22  phase1geo
+ Tweaking the add/subtract functions to remove some unnecessary logic in
+ the calculation of the carry bit.  Full regressions still pass.
+
  Revision 1.139  2008/05/30 05:38:33  phase1geo
  Updating development tree with development branch.  Also attempting to fix
  bug 1965927.

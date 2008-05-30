@@ -136,12 +136,10 @@
 
 
 /*!
- \param arcs  Pointer to state transition arc array to display
-
  Displays the given state transition arcs in a human-readable format.
 */
 /*@unused@*/ static void arc_display(
-  const fsm_table* table
+  const fsm_table* table  /*!< Pointer to state transition arc array to display */
 ) {
 
   unsigned int i;  /* Loop iterator */
@@ -277,12 +275,6 @@ fsm_table* arc_create() { PROFILE(ARC_CREATE);
 }
 
 /*!
- \param table    Pointer to FSM table to add state transition arc array to
- \param fr_st    Pointer to vector containing the from state.
- \param to_st    Pointer to vector containing the to state.
- \param hit      Specifies if arc entry should be marked as hit.
- \param exclude  If new arc is created, sets the exclude bit to this value
-
  If specified arcs array has not been created yet (value is set to NULL),
  allocate enough memory in the arc array to hold width number of state transitions.
  If the specified arcs array has been created but is currently full (arc array
@@ -292,11 +284,11 @@ fsm_table* arc_create() { PROFILE(ARC_CREATE);
  hit bits in the entry to 0.
 */
 void arc_add(
-  fsm_table*    table,
-  const vector* fr_st,
-  const vector* to_st,
-  int           hit,
-  bool          exclude
+  fsm_table*    table,   /*!< Pointer to FSM table to add state transition arc array to */
+  const vector* fr_st,   /*!< Pointer to vector containing the from state */
+  const vector* to_st,   /*!< Pointer to vector containing the to state */
+  int           hit,     /*!< Specifies if arc entry should be marked as hit */
+  bool          exclude  /*!< If new arc is created, sets the exclude bit to this value */
 ) { PROFILE(ARC_ADD);
 
   int from_index;  /* Index of found from_state in states array */
@@ -307,12 +299,6 @@ void arc_add(
   assert( table != NULL );
 
   if( (hit == 0) || (!vector_is_unknown( fr_st ) && !vector_is_unknown( to_st )) ) {
-
-/*
-    printf( "**** In arc_add...\n" );
-    printf( "FR_ST: " );  vector_display( fr_st );
-    printf( "TO_ST: " );  vector_display( to_st );
-*/
 
     /* Search for the from_state vector in the states array */
     if( (from_index = arc_find_from_state( table, fr_st )) == -1 ) {
@@ -363,8 +349,6 @@ void arc_add(
 }
 
 /*!
- \param arcs  Pointer to state transition arc array.
-
  \return Returns number of unique states hit during simulation.
 
  Traverses through specified state transition table, figuring out what
@@ -375,7 +359,7 @@ void arc_add(
  is not unique to the table.
 */
 static int arc_state_hits(
-  const fsm_table* table
+  const fsm_table* table  /*!< Pointer to state transition arc array */
 ) { PROFILE(ARC_STATE_HITS);
 
   int          hit = 0;     /* Number of states hit */
@@ -405,8 +389,6 @@ static int arc_state_hits(
 }
 
 /*!
- \param arcs  Pointer to state transition arc array.
-
  \return Returns the number of hit state transitions in the specified
          arc array.
 
@@ -414,7 +396,7 @@ static int arc_state_hits(
  transitions that were hit in simulation.
 */
 static int arc_transition_hits(
-  const fsm_table* table
+  const fsm_table* table  /*!< Pointer to state transition arc array */
 ) { PROFILE(ARC_TRANSITION_HITS);
 
   int hit = 0;  /* Number of arcs hit */
@@ -462,16 +444,13 @@ void arc_get_stats(
 }
 
 /*!
- \param arcs  Pointer to state transition arc array to write.
- \param file  Pointer to CDD file to write.
-
  Writes the specified arcs array to the specified CDD output file.  An arc array
  is output in a special format that is described in the above documentation for
  this file.
 */
 void arc_db_write(
-  const fsm_table* table,
-  FILE*            file
+  const fsm_table* table,  /*!< Pointer to state transition arc array to write */
+  FILE*            file    /*!< Pointer to CDD file to write */
 ) { PROFILE(ARC_DB_WRITE);
 
   unsigned int  i;   /* Loop iterator */
@@ -499,9 +478,6 @@ void arc_db_write(
 }
 
 /*!
- \param arcs  Pointer to state transition arc array.
- \param line  String containing current CDD line of arc information.
-
  \throws anonymous Throw
 
  Reads in specified state transition arc table, allocating the appropriate
@@ -509,8 +485,8 @@ void arc_db_write(
  appropriately written arc transition table; otherwise, returns FALSE.
 */
 void arc_db_read(
-  /*@out@*/ fsm_table** table,
-            char**      line
+  /*@out@*/ fsm_table** table,  /*!< Pointer to state transition arc array */
+            char**      line    /*!< String containing current CDD line of arc information */
 ) { PROFILE(ARC_DB_READ);
 
   int  i;              /* Loop iterator */
@@ -780,13 +756,11 @@ void arc_get_transitions(
 }
 
 /*!
- \param arcs  Pointer to state transition arc array.
-
  \return Returns TRUE if any state transitions were excluded from coverage; otherwise,
          returns FALSE.
 */
 bool arc_are_any_excluded(
-  const fsm_table* table
+  const fsm_table* table  /*!< Pointer to state transition arc array */
 ) { PROFILE(ARC_ARE_ANY_EXCLUDED);
 
   int i = 0;  /* Loop iterator */
@@ -800,13 +774,11 @@ bool arc_are_any_excluded(
 }
 
 /*!
- \param arcs  Pointer to state transition arc array.
-
  Deallocates all allocated memory for the specified state transition
  arc array.
 */
 void arc_dealloc(
-  fsm_table* table
+  fsm_table* table  /*!< Pointer to state transition arc array */
 ) { PROFILE(ARC_DEALLOC);
 
   if( table != NULL ) {
@@ -840,6 +812,10 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.61  2008/05/30 05:38:30  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
  Revision 1.60.2.15  2008/05/28 05:57:09  phase1geo
  Updating code to use unsigned long instead of uint32.  Checkpointing.
 

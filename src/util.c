@@ -1085,14 +1085,14 @@ void* malloc_safe_nolimit1( size_t size, /*@unused@*/ const char* file, /*@unuse
 }
 
 /*!
- \param ptr            Pointer to object to deallocate.
- \param profile_index  Profile index of function that called this function
-
  Safely performs a free function of heap memory.  Also keeps track
  of current memory usage for output information at end of program
  life.
 */
-void free_safe1( void* ptr, unsigned int profile_index ) {
+void free_safe1(
+  void*        ptr,           /*!< Pointer to object to deallocate */
+  unsigned int profile_index  /*!< Profile index of function that called this function */
+) {
 
   if( ptr != NULL ) {
     free( ptr );
@@ -1104,15 +1104,17 @@ void free_safe1( void* ptr, unsigned int profile_index ) {
 }
 
 /*!
- \param ptr            Pointer to object to deallocate.
- \param size           Number of bytes that will be deallocated
- \param profile_index  Profile index of function that called this function
-
  Safely performs a free function of heap memory.  Also keeps track
  of current memory usage for output information at end of program
  life.
 */
-void free_safe2( void* ptr, size_t size, const char* file, int line, unsigned int profile_index ) {
+void free_safe2(
+  void*        ptr,           /*!< Pointer to object to deallocate */
+  size_t       size,          /*!< Number of bytes that will be deallocated */
+  const char*  file,          /*!< File that is calling this function */
+  int          line,          /*!< Line number in file that is calling this function */
+  unsigned int profile_index  /*!< Profile index of function that called this function */
+) {
 
   if( ptr != NULL ) {
     curr_malloc_size -= size;
@@ -1130,19 +1132,14 @@ void free_safe2( void* ptr, size_t size, const char* file, int line, unsigned in
 }
 
 /*!
- \param str            String to duplicate.
- \param file           Name of file that called this function.
- \param line           Line number of file that called this function.
- \param profile_index  Profile index of function that called this function
-
  Calls the strdup() function for the specified string, making sure that the string to
  allocate is a healthy string (contains NULL character).
 */
 char* strdup_safe1(
-               const char*  str,
-  /*@unused@*/ const char*  file,
-  /*@unused@*/ int          line,
-               unsigned int profile_index
+               const char*  str,           /*!< String to duplicate */
+  /*@unused@*/ const char*  file,          /*!< Name of file that called this function */
+  /*@unused@*/ int          line,          /*!< Line number of file that called this function */
+               unsigned int profile_index  /*!< Profile index of function that called this function */
 ) {
 
   char* new_str;
@@ -1169,22 +1166,16 @@ char* strdup_safe1(
 }
 
 /*!
- \param ptr            Pointer to old memory to copy
- \param size           Size of new allocated memory (in bytes)
- \param file           Name of file that called this function
- \param line           Line number of file that called this function
- \param profile_index  Profile index of function that called this function
-
  Calls the realloc() function for the specified memory and size, making sure that the memory
  size doesn't exceed a threshold value and that the requested memory was allocated.
 */
 void* realloc_safe1(
-  /*@null@*/ void*        ptr,
-             size_t       old_size,
-             size_t       size,
-             const char*  file,
-             int          line,
-             unsigned int profile_index
+  /*@null@*/ void*        ptr,           /*!< Pointer to old memory to copy */
+             size_t       old_size,      /*!< Size of originally allocated memory (in bytes) */
+             size_t       size,          /*!< Size of new allocated memory (in bytes) */
+             const char*  file,          /*!< Name of file that called this function */
+             int          line,          /*!< Line number of file that called this function */
+             unsigned int profile_index  /*!< Profile index of function that called this function */
 ) {
 
   void* newptr;
@@ -1219,14 +1210,14 @@ void* realloc_safe1(
 }
 
 /*!
- \param spaces  Pointer to string to places spaces into.
- \param num_spaces  Number of spaces to place in string.
- 
  Creates a string that contains num_spaces number of space characters,
  adding a NULL character at the end of the string to allow for correct
  usage by the strlen and other string functions.
 */
-void gen_space( char* spaces, int num_spaces ) { PROFILE(GEN_SPACE);
+void gen_space(
+  /*@out@*/ char* spaces,     /*!< Pointer to string to places spaces into */
+            int   num_spaces  /*!< Number of spaces to place in string */
+) { PROFILE(GEN_SPACE);
 
   int i;     /* Loop iterator */
 
@@ -1345,6 +1336,10 @@ void calc_miss_percent(
 
 /*
  $Log$
+ Revision 1.91  2008/05/30 05:38:33  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
  Revision 1.90.2.1  2008/05/23 14:50:23  phase1geo
  Optimizing vector_op_add and vector_op_subtract algorithms.  Also fixing issue with
  vector set bit.  Updating regressions per this change.

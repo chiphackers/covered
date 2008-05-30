@@ -127,16 +127,14 @@ static stmt_loop_link* stmt_loop_tail = NULL;
 
 
 /*!
- \param exp   Pointer to root expression of expression tree for this statement.
-  
  \return Returns pointer to the newly created statement.
 
  Creates a new statement structure from heap memory and initializes it with the
  specified parameter information.
 */
 statement* statement_create(
-  expression* exp,
-  func_unit*  funit
+  expression* exp,   /*!< Pointer to root expression of expression tree for this statement */
+  func_unit*  funit  /*!< Pointer to functional unit that this statement exists in */
 ) { PROFILE(STATEMENT_CREATE);
 
   statement* stmt;  /* Pointer to newly created statement */
@@ -1009,6 +1007,10 @@ void statement_dealloc(
 
 /*
  $Log$
+ Revision 1.133  2008/04/06 05:24:17  phase1geo
+ Fixing another regression memory problem.  Updated regression files
+ accordingly.  Checkpointing.
+
  Revision 1.132  2008/03/31 21:40:24  phase1geo
  Fixing several more memory issues and optimizing a bit of code per regression
  failures.  Full regression still does not pass but does complete (yeah!)
