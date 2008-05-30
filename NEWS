@@ -1,6 +1,14 @@
 Covered-Related NEWS
 ====================
 
+    * 5/30/2008
+
+Development release covered-20080530 made.  This development release is primarily a scoring optimization
+release.  The structures used for vectors was completely reconstructed to achieve 2-3x performance improvement
+over the last development release.  I am now seeing scoring runtimes that almost match those of Cver.  A few
+bugs were also fixed in this release.  See the ChangeLog for more details.  This is a substantial improvement
+in speed, so please give it a try and please report any bugs that you may find.
+
     * 4/15/2008
 
 Development release covered-20080415 made.  This development release contains several code optimizations,

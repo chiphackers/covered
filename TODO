@@ -40,6 +40,9 @@ IP      - enum
 
    9.  Enhance the -rI option to allow the user to ignore certain types of race conditions.
 
+   10. Add a configure option to allow the user to set the size of the vector ulong typedef
+       to their own preference.
+
 
 Merge command
 -------------
