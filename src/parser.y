@@ -3407,7 +3407,7 @@ module_item
     {
       statement* stmt = $3;
       if( stmt != NULL ) {
-        if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) ) {
+        if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
           stmt->suppl.part.head = 1;
           db_add_statement( stmt, stmt );
         } else {
@@ -3444,7 +3444,7 @@ module_item
               db_remove_statement( stmt );
               db_remove_statement( $4 );
             } else {
-              if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) ) {
+              if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
                 stmt->suppl.part.head = 1;
                 db_add_statement( stmt, stmt );
               } else {
@@ -3484,7 +3484,7 @@ module_item
               db_remove_statement( stmt );
               db_remove_statement( $4 );
             } else {
-              if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) ) {
+              if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
                 stmt->suppl.part.head = 1;
                 db_add_statement( stmt, stmt );
               } else {
@@ -3510,7 +3510,7 @@ module_item
         ignore_mode--;
       } else {
         if( stmt != NULL ) {
-          if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) ) {
+          if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
             stmt->suppl.part.head = 1;
             db_add_statement( stmt, stmt );
           } else {
@@ -3524,7 +3524,7 @@ module_item
     {
       statement* stmt = $3;
       if( stmt != NULL ) {
-        if( info_suppl.part.excl_init == 0 ) {
+        if( (info_suppl.part.excl_init == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
           stmt->suppl.part.head = 1;
           db_add_statement( stmt, stmt );
         } else {
@@ -3537,7 +3537,7 @@ module_item
     {
       statement* stmt = $3;
       if( stmt != NULL ) {
-        if( info_suppl.part.excl_final == 0 ) {
+        if( (info_suppl.part.excl_final == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
           stmt->suppl.part.head  = 1;
           stmt->suppl.part.final = 1;
           db_add_statement( stmt, stmt );
@@ -4354,13 +4354,6 @@ statement
     {
       $$ = NULL;
     }
-/*
-  | K_begin inc_block_depth statement_list dec_block_depth K_end
-    {
-      statement* stmt = db_parallelize_statement( $3 );
-      $$ = stmt;
-    }
-*/
   | K_begin inc_block_depth begin_end_block dec_block_depth K_end
     { PROFILE(PARSER_STATEMENT_BEGIN_A);
       expression* exp;
@@ -4378,29 +4371,20 @@ statement
           stmt = db_create_statement( exp );
           $$   = stmt;
         } else {
-          if( ignore_mode > 0 ) {
-            ignore_mode--;
-          }
           $$ = NULL;
         }
       } else {
         if( ignore_mode > 0 ) {
           ignore_mode--;
         }
-        $$ = NULL;
+        if( ignore_mode == 0 ) {
+          /* If there is no body to the begin..end block, replace the block with a NOOP */
+          exp  = db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+          stmt = db_create_statement( exp );
+          $$   = stmt;
+        }
       }
     }
-/*
-  | K_begin inc_block_depth dec_block_depth K_end
-    {
-      $$ = NULL;
-    }
-  | K_begin inc_block_depth error dec_block_depth K_end
-    {
-      VLerror( "Illegal syntax in begin/end block" );
-      $$ = NULL;
-    }
-*/
   | K_fork inc_fork_depth fork_statement K_join
     { PROFILE(PARSER_STATEMENT_FORK_A);
       expression* exp;

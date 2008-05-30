@@ -6,8 +6,26 @@ Covered-Related NEWS
 Development release covered-20080530 made.  This development release is primarily a scoring optimization
 release.  The structures used for vectors was completely reconstructed to achieve 2-3x performance improvement
 over the last development release.  I am now seeing scoring runtimes that almost match those of Cver.  A few
-bugs were also fixed in this release.  See the ChangeLog for more details.  This is a substantial improvement
-in speed, so please give it a try and please report any bugs that you may find.
+bugs were also fixed in this release.  The following is a list of these changes.
+
+  - Fixed bug 1950946.  If a value was supplied to the global -P option, the command-line parser got
+    confused and skipped the next option/command on the line.
+  - Fixing various memory deallocation issues when user errors are reported.
+  - Rewrote vector and expression operation functions to make use of more efficient coverage calculations.
+  - Coded vector structure to use unsigned longs to make best use of performance optimizations on current machines.
+    Added capability to vector read functions to be able to translate CDD files written by a 32-bit machine to 64-bit
+    format and vice-versa.
+  - Rewrote FSM arc structure and functionality to improve performance of FSM coverage calculations.  The new
+    structure also allows the input and output states to be of different bit widths.
+  - Added several new diagnostics to regression suite to improve Covered's internal code coverage and to verify new
+    code cases.
+  - Fixed bug 1966994.  Merged coverage files were appending score command-line arguments to the new CDD file which
+    created memory allocation problems and unnecessarily increased the size of the CDD file.
+  - Fixed bug 1965927.  Multi-line defines were causing problems with line numbers in reports.
+  - Fixed bug 1979698.  Embedded, empty begin..end block causes top-level block to be diregarded from coverage
+    consideration.
+
+This is a substantial improvement in speed, so please give it a try and please report any bugs that you may find.
 
     * 4/15/2008
 

@@ -454,7 +454,7 @@ static void do_define() { PROFILE(DO_DEFINE);
       cp -= 1;
       *cp = 0;
     }
-    // *cp++ = '\n';
+    *cp++ = ' ';
     *cp = 0;
     define_continue_flag = 1;
   }
