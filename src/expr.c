@@ -718,7 +718,6 @@ void expression_set_value(
     switch( exp->op ) {
       case EXP_OP_SBIT_SEL   :
       case EXP_OP_PARAM_SBIT :
-        exp->value->width = exp_width;
         break;
       case EXP_OP_MBIT_SEL   :
       case EXP_OP_PARAM_MBIT :
@@ -729,9 +728,9 @@ void expression_set_value(
           lbit = vector_to_int( exp->left->value  );
           rbit = vector_to_int( exp->right->value );
           if( lbit <= rbit ) {
-            exp->value->width = ((rbit - lbit) + 1) * exp_width;
+            exp_width = ((rbit - lbit) + 1) * exp_width;
           } else {
-            exp->value->width = ((lbit - rbit) + 1) * exp_width;
+            exp_width = ((lbit - rbit) + 1) * exp_width;
           }
         }
         break;
@@ -740,7 +739,7 @@ void expression_set_value(
       case EXP_OP_PARAM_MBIT_POS :
       case EXP_OP_PARAM_MBIT_NEG :
         expression_operate_recursively( exp->right, funit, TRUE );
-        exp->value->width = vector_to_int( exp->right->value ) * exp_width;
+        exp_width = vector_to_int( exp->right->value ) * exp_width;
         break;
       default :  break;
     }
@@ -749,7 +748,7 @@ void expression_set_value(
     if( exp->value->value.ul != NULL ) {
       vector_dealloc_value( exp->value );
     }
-    expression_create_value( exp, exp->value->width, TRUE );
+    expression_create_value( exp, exp_width, TRUE );
 
   }
 
@@ -5615,6 +5614,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.331  2008/05/30 23:00:48  phase1geo
+ Fixing Doxygen comments to eliminate Doxygen warning messages.
+
  Revision 1.330  2008/05/30 05:38:30  phase1geo
  Updating development tree with development branch.  Also attempting to fix
  bug 1965927.
