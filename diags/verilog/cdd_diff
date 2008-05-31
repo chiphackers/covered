@@ -18,7 +18,7 @@ $retval = 0;
 &parse_cdd( $cdd2, 1 );
 
 $retval = system( "diff $cdd1.tmpdiff $cdd2.tmpdiff" ) / 256;
-system( "rm -f $cdd1.tmpdiff $cdd2.tmpdiff" ) && die;
+# system( "rm -f $cdd1.tmpdiff $cdd2.tmpdiff" ) && die;
 
 exit $retval;
 
@@ -191,7 +191,11 @@ sub parse_vector {
             $record1[$j] = (length( $val ) > 8) ? substr( $val, (length( $val ) - 8), 8 ) : $val;
             $record2[$j] = (length( $val ) > 8) ? substr( $val, 0, (length( $val ) - 8) ) : "";
           }
-          @tmp_line = (@tmp_line, @record1, @record2);
+          if( ($i + 1) < $vec_elems ) {
+            @tmp_line = (@tmp_line, @record1, @record2);
+          } else {
+            @tmp_line = (@tmp_line, @record1);
+          }
         }
 
       # If the first CDD file was in 64-bit, convert our 32-bit value to 64-bit
