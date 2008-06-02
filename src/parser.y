@@ -5334,6 +5334,26 @@ statement_list
     {
       $$ = $1;
     }
+  /* This rule is not in the LRM but seems to be supported by several simulators */
+  | statement_list ';'
+    {
+      if( ignore_mode == 0 ) {
+        if( $1 == NULL ) {
+          $$ = NULL;
+        } else {
+          statement* stmt = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, @2.first_line, @2.first_column, (@2.last_column - 1), NULL ) );
+          if( !db_statement_connect( $1, stmt ) ) {
+            db_remove_statement( stmt );
+          }
+          $$ = $1;
+        }
+      }
+    }
+  /* This rule is not in the LRM but seems to be supported by several simulators */
+  | ';'
+    {
+      $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL ) );
+    }
   ;
 
 statement_or_null
