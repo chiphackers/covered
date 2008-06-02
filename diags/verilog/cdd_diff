@@ -18,7 +18,7 @@ $retval = 0;
 &parse_cdd( $cdd2, 1 );
 
 $retval = system( "diff $cdd1.tmpdiff $cdd2.tmpdiff" ) / 256;
-# system( "rm -f $cdd1.tmpdiff $cdd2.tmpdiff" ) && die;
+system( "rm -f $cdd1.tmpdiff $cdd2.tmpdiff" ) && die;
 
 exit $retval;
 
