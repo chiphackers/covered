@@ -6660,7 +6660,8 @@ gate_instance
     }
   | IDENTIFIER range '(' ignore_more expression_list ignore_less ')'
     { PROFILE(PARSER_GATE_INSTANCE_B);
-      curr_prange.clear = TRUE;
+      curr_prange.clear       = TRUE;
+      curr_prange.exp_dealloc = FALSE;
       if( ignore_mode == 0 ) {
         str_link* tmp;
         if( !parser_check_generation( GENERATION_2001 ) ) {
@@ -6695,7 +6696,8 @@ gate_instance
     }
   | IDENTIFIER range '(' port_name_list ')'
     { PROFILE(PARSER_GATE_INSTANCE_D);
-      curr_prange.clear = TRUE;
+      curr_prange.clear       = TRUE;
+      curr_prange.exp_dealloc = FALSE;
       if( ignore_mode == 0 ) {
         str_link* tmp;
         if( !parser_check_generation( GENERATION_2001 ) ) {
@@ -6786,6 +6788,7 @@ parameter_assign
           db_add_declared_param( curr_signed, NULL, NULL, $1, $3, FALSE );
         } else {
           db_add_declared_param( curr_signed, curr_prange.dim[0].left, curr_prange.dim[0].right, $1, $3, FALSE );
+          curr_prange.exp_dealloc = FALSE;
         }
       }
       free_safe( $1, (strlen( $1 ) + 1) );
@@ -6811,6 +6814,7 @@ localparam_assign
           db_add_declared_param( curr_signed, NULL, NULL, $1, $3, TRUE );
         } else {
           db_add_declared_param( curr_signed, curr_prange.dim[0].left, curr_prange.dim[0].right, $1, $3, TRUE );
+          curr_prange.exp_dealloc = FALSE;
         }
       }
       free_safe( $1, (strlen( $1 ) + 1) );

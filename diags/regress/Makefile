@@ -82,7 +82,8 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 param5          param6          param6.1        param7          param8 \
                 param8.1        param9          param9.1        param9.2        param10 \
                 param10.2       param10.3       param10.4       param11         param13 \
-                param13.1       param14         param15         param16         param17       port1 \
+                param13.1       param14         param15         param16         param17 \
+                param17.1       port1 \
                 port3           pulldown1       pullup1         rassign1        real1 \
                 repeat1         repeat2         report1         rshift1         rshift1.1 \
                 rshift1.2       rshift1.3       rshift2         rshift2.1       rshift2.2 \

@@ -1272,23 +1272,23 @@ void db_add_defparam( /*@unused@*/ char* name, expression* expr ) { PROFILE(DB_A
 }
 
 /*!
- \param name       Name of signal being added.
- \param type       Type of signal being added.
- \param prange     Specifies packed signal range information.
- \param urange     Specifies unpacked signal range information.
- \param is_signed  Specifies that this signal is signed (TRUE) or not (FALSE)
- \param mba        Set to TRUE if specified signal must be assigned by simulated results.
- \param line       Line number where signal was declared.
- \param col        Starting column where signal was declared.
- \param handled    Specifies if this signal is handled by Covered or not.
-
  Creates a new signal with the specified parameter information and adds this
  to the signal list if it does not already exist.  If width == 0, the sig_msb
  and sig_lsb values are interrogated.  If sig_msb and/or is non-NULL, its value is
  add to the current module's parameter list and all associated instances are
  updated to contain new value.
 */
-void db_add_signal( char* name, int type, sig_range* prange, sig_range* urange, bool is_signed, bool mba, int line, int col, bool handled ) { PROFILE(DB_ADD_SIGNAL);
+void db_add_signal(
+  char*      name,       /*!< Name of signal being added */
+  int        type,       /*!< Type of signal being added */
+  sig_range* prange,     /*!< Specifies packed signal range information */
+  sig_range* urange,     /*!< Specifies unpacked signal range information */
+  bool       is_signed,  /*!< Specifies that this signal is signed (TRUE) or not (FALSE) */
+  bool       mba,        /*!< Set to TRUE if specified signal must be assigned by simulated results */
+  int        line,       /*!< Line number where signal was declared */
+  int        col,        /*!< Starting column where signal was declared */
+  bool       handled     /*!< Specifies if this signal is handled by Covered or not */
+) { PROFILE(DB_ADD_SIGNAL);
 
   vsignal*  sig = NULL;  /* Container for newly created signal */
   sig_link* sigl;        /* Pointer to found signal link */
@@ -1325,7 +1325,6 @@ void db_add_signal( char* name, int type, sig_range* prange, sig_range* urange, 
 
   /* Check all of the dimensions within range and create vector parameters, if necessary */
   if( sig != NULL ) {
-
     if( sig->dim != NULL ) {
       free_safe( sig->dim, (sizeof( dim_range ) * (sig->pdim_num + sig->udim_num)) );
     }
@@ -1368,6 +1367,13 @@ void db_add_signal( char* name, int type, sig_range* prange, sig_range* urange, 
     /* If exclude_mode is not zero, set the exclude bit in the signal */
     sig->suppl.part.excluded = (exclude_mode > 0) ? 1 : 0;
 
+    /* Specify that we should not deallocate the expressions */
+    if( prange != NULL ) {
+      prange->exp_dealloc = FALSE;
+    }
+    if( urange != NULL ) {
+      urange->exp_dealloc = FALSE;
+    }
   }
 
   /* Only do the following if the signal was not previously found */
@@ -1497,6 +1503,14 @@ void db_add_typedef(
   } else {
     curr_funit->tdi_tail->next = tdi;
     curr_funit->tdi_tail       = tdi;
+  }
+
+  /* Specify that the prange and urange expressions should not be deallocated */
+  if( prange != NULL ) {
+    prange->exp_dealloc = FALSE;
+  }
+  if( urange != NULL ) {
+    urange->exp_dealloc = FALSE;
   }
 
   PROFILE_END;
@@ -2955,6 +2969,10 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.308  2008/05/30 05:38:30  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
  Revision 1.307.2.7  2008/05/30 03:36:29  phase1geo
  Fixing bug 1966994.  Updating regression files.  Improved cdd_diff script to
  strip out the relative path information when performing CDD compares but pay
