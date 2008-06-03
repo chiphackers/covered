@@ -13,8 +13,10 @@ reg [(10*8)-1:0] a;
 reg [7:0]        b;
 
 initial begin
-	a = "foo";
+	a = 80'h0;
+        b = 8'h0;
 	#5;
+	a = "foo";
 	b = a[7:0];
 end
 

@@ -2504,6 +2504,11 @@ void vector_from_string(
 
     size = strlen( *str ) * 8;
 
+    /* If this is the empty (null) string, allocate 8-bits */
+    if( size == 0 ) {
+      size = 8;
+    }
+
     /* If we have exceeded the maximum number of bits, return a value of NULL */
     if( size > MAX_BIT_WIDTH ) {
 
@@ -4734,6 +4739,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.141  2008/05/30 23:00:48  phase1geo
+ Fixing Doxygen comments to eliminate Doxygen warning messages.
+
  Revision 1.140  2008/05/30 13:56:22  phase1geo
  Tweaking the add/subtract functions to remove some unnecessary logic in
  the calculation of the carry bit.  Full regressions still pass.

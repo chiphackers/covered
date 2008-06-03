@@ -221,7 +221,8 @@ IVVCSDIAGS2   =
 IVVCSDIAGS3   =
 IVVCSDIAGS4   =
 
-CVERVCSDIAGS1 = port4           timescale1.20   timescale2.6    timescale2.7
+CVERVCSDIAGS1 = port4           timescale1.20   timescale2.6    timescale2.7    null_stmt2 \
+                null_stmt2.1
 CVERVCSDIAGS2 =
 CVERVCSDIAGS3 =
 CVERVCSDIAGS4 =

@@ -15,7 +15,7 @@ initial begin
 	;a = 1'b0;;
 	#5;
 	;
-	a = 1'b1;;;;
+	a = ~a;;;;
 end
 
 initial begin
