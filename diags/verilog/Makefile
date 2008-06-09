@@ -100,7 +100,7 @@ LOGFILE = regress.log
 
 .PHONY:	view_vg_errs check-ovl covered
 
-regress:	covered $(DIAGLIST) $(DIAG2LIST) $(RACELIST) $(MERGELIST) $(MERGE3LIST) $(ERRSCORELIST) $(ERRMERGELIST) $(NOSIMLIST) $(NOSIMERRLIST)
+regress:	covered $(DIAGLIST) $(DIAG2LIST) $(RACELIST) $(MERGELIST) $(MERGE3LIST) $(ERRSCORELIST) $(ERRMERGELIST) $(NOSIMLIST) $(NOSIMERRLIST) $(ERRREPORTLIST)
 
 check-ovl:
 	@if test ! -h ovl; then \

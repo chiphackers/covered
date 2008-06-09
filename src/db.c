@@ -443,7 +443,7 @@ void db_read(
                   ((read_mode == READ_MODE_REPORT_NO_MERGE) ||
                    (read_mode == READ_MODE_REPORT_MOD_MERGE)) ) {
                 print_output( "Attempting to generate report on non-scored design.  Not supported.", FATAL, __FILE__, __LINE__ );
-                printf( "db Throw C\n" );
+                // printf( "db Throw C\n" ); - HIT
                 Throw 0;
               }
           
@@ -649,7 +649,7 @@ void db_read(
   /* Check to make sure that the CDD file contained valid information */
   if( leading_hier_num == 0 ) {
     print_output( "CDD file was found to be empty", FATAL, __FILE__, __LINE__ );
-    printf( "db Throw I\n" );
+    // printf( "db Throw I\n" ); - HIT
     Throw 0;
   }
 
@@ -2969,6 +2969,9 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.309  2008/06/02 21:34:29  phase1geo
+ Fixing bug 1981073.  Adding new tests to verify this fix.
+
  Revision 1.308  2008/05/30 05:38:30  phase1geo
  Updating development tree with development branch.  Also attempting to fix
  bug 1965927.

@@ -123,7 +123,7 @@ ERRSCORE      = err1.0          err2.0          err3            err3.1          
                 func4.1         func4.2         func4.3         func4.4         func4.5 \
                 func4.6         task5
 ERRMERGE      = err5.2          err5.3          err5.4
-ERRREPORT     = err2.1
+ERRREPORT     = err7            err7.1
 
 NOSIMLIST     = gen1            gen1.1          gen1.3          gen1.4          gen1.5 \
                 gen2.1          gen3.1          gen4.1          gen5.1          gen6.1 \
@@ -178,13 +178,10 @@ VCSONLYDIAGS1 = afunc1          always_comb1    always_ff1      always_latch1   
                 final1          for3            for5            for5.1          for5.2 \
                 for5.3          for5.4          for5.5          for5.6          for5.8 \
                 for5.9          for5.10         for6            gate1.1         generate1.1 \
-                generate2       generate2.1     generate3       generate3.1     generate4 \
-                generate4.1     generate5       generate5.1     generate5.2     generate5.3 \
-                generate6       generate7       generate7.1     generate7.2     generate8 \
-                generate8.1     generate8.2     generate8.3     generate8.4     generate8.5 \
-                generate8.6     generate8.7     generate8.8     generate9       generate9.1 \
-                generate9.2     generate9.3     generate10      generate10.1    generate10.2 \
-                generate11      generate11.1    generate11.2    generate11.3    generate11.4 \
+                generate2       generate3       generate3.1     generate6       generate7 \
+                generate7.1     generate7.2     generate8.1     generate8.2     generate8.3 \
+                generate8.4     generate8.5     generate8.6     generate8.7     generate8.8 \
+                generate9       generate9.1     generate11.4 \
                 generate13      generate14      hier1.1         inc1            inc1.1 \
                 inc2            inc3            inc3.1          int1            line1 \
                 logic1          longint1        long_sig        marray1         marray1.1 \
@@ -209,7 +206,10 @@ IVCVERDIAGS2  =
 IVCVERDIAGS3  =
 IVCVERDIAGS4  =
 
-IVVCSDIAGS1   = define3         exclude7.3      hier3           localparam1 \
+IVVCSDIAGS1   = define3         exclude7.3      generate2.1     generate4       generate4.1 \
+                generate5       generate5.1     generate5.2     generate5.3     generate8 \
+                generate9.2     generate9.3     generate10      generate10.1    generate10.2 \
+                generate11      generate11.1    generate11.2    generate11.3    hier3           localparam1 \
                 localparam1.1   localparam1.2   localparam1.3   localparam2     localparam3 \
                 mbit_sel5       mbit_sel5.1     mbit_sel5.2     mbit_sel5.3     mbit_sel6 \
                 mbit_sel6.1     mbit_sel6.2     mbit_sel6.3     ovl1            ovl1.1 \
