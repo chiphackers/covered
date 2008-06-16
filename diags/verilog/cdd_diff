@@ -81,6 +81,10 @@ sub parse_cdd {
             my( $sig_name ) = $line[$next_start];
             $#line = 8;
             @line = (@line, @tmp_line, $sig_name );
+          } elsif( $#line >= $next_start ) {
+            my( $sig_name ) = "@line[$next_start,$#line]";
+            $#line = 8;
+            @line = (@line, @tmp_line, $sig_name );
           } else {
             $#line = 8;
             @line = (@line, @tmp_line);
@@ -186,12 +190,20 @@ sub parse_vector {
       if( $vec_ul_size[0] == 2 ) {
         for( $i=0; $i<$vec_elems; $i++ ) {
           my( @record2 );
+          my( $bits ) = $vec_width - ($i * (0x1 << ($vec_ul_size[$num] + 3)));
           for( $j=0; $j<$vec_type_sizes[$vec_type]; $j++ ) {
             my( $val ) = $line[$start + 2 + ($i * $vec_type_sizes[$vec_type]) + $j];
-            $record1[$j] = (length( $val ) > 8) ? substr( $val, (length( $val ) - 8), 8 ) : $val;
-            $record2[$j] = (length( $val ) > 8) ? substr( $val, 0, (length( $val ) - 8) ) : "";
+            if( length( $val ) > 8 ) {
+              my( $tmp1 )  = substr( $val, (length( $val ) - 8), 8 );
+              my( $tmp2 )  = substr( $val, 0, (length( $val ) - 8) );
+              $record1[$j] = ($tmp1 =~ /[1-9a-fA-F]+/) ? $tmp1 : "0";
+              $record2[$j] = ($tmp2 =~ /[1-9a-fA-F]+/) ? $tmp2 : "0";
+            } else {
+              $record1[$j] = $val;
+              $record2[$j] = ($bits > 32) ? "0" : "";
+            }
           }
-          if( ($i + 1) < $vec_elems ) {
+          if( $bits > 32 ) {
             @tmp_line = (@tmp_line, @record1, @record2);
           } else {
             @tmp_line = (@tmp_line, @record1);

@@ -379,7 +379,7 @@ void vector_db_read(
   int    chars_read;  /* Number of characters read */
 
   /* Read in vector information */
-  if( sscanf( *line, "%d %d%n", &width, &suppl, &chars_read ) == 2 ) {
+  if( sscanf( *line, "%d %hhu%n", &width, &suppl, &chars_read ) == 2 ) {
 
     *line = *line + chars_read;
 
@@ -508,7 +508,7 @@ void vector_db_merge(
 
   assert( base != NULL );
 
-  if( sscanf( *line, "%d %d%n", &width, &suppl, &chars_read ) == 2 ) {
+  if( sscanf( *line, "%d %hhu%n", &width, &suppl, &chars_read ) == 2 ) {
 
     *line = *line + chars_read;
 
@@ -847,24 +847,20 @@ char* vector_get_toggle01_ulong(
   int     width   /*!< Width of given vector data array */
 ) { PROFILE(VECTOR_GET_TOGGLE01_ULONG);
 
-  char* bits      = (char*)malloc_safe( width + 1 );
-  int   bits_left = UL_MOD(width - 1);
-  int   i, j;
+  char* bits = (char*)malloc_safe( width + 1 );
+  int   i;
   char  tmp[2];
 
-  for( i=UL_SIZE(width); i--; ) {
-    for( j=bits_left; j>=0; j-- ) {
-      /*@-formatcode@*/
-      unsigned int rv = snprintf( tmp, 2, "%hhx", (unsigned char)((value[i][VTYPE_INDEX_SIG_TOG01] >> j) & 0x1) );
-      /*@=formatcode@*/
-      assert( rv < 2 );
-      bits[((width - 1) - i)] = tmp[0];
-    }
-    bits_left = UL_BITS - 1;
+  for( i=width; i--; ) {
+    /*@-formatcode@*/
+    unsigned int rv = snprintf( tmp, 2, "%hhx", (unsigned char)((value[UL_DIV(i)][VTYPE_INDEX_SIG_TOG01] >> UL_MOD(i)) & 0x1) );
+    /*@=formatcode@*/
+    assert( rv < 2 );
+    bits[i] = tmp[0];
   }
 
   bits[width] = '\0';
-
+    
   PROFILE_END;
 
   return( bits );
@@ -879,20 +875,16 @@ char* vector_get_toggle10_ulong(
   int     width   /*!< Width of given vector data array */
 ) { PROFILE(VECTOR_GET_TOGGLE10_ULONG);
 
-  char* bits      = (char*)malloc_safe( width + 1 );
-  int   bits_left = UL_MOD(width - 1);
-  int   i, j;
+  char* bits = (char*)malloc_safe( width + 1 );
+  int   i;
   char  tmp[2];
   
-  for( i=UL_SIZE(width); i--; ) {
-    for( j=bits_left; j>=0; j-- ) {
-      /*@-formatcode@*/ 
-      unsigned int rv = snprintf( tmp, 2, "%hhx", (unsigned char)((value[i][VTYPE_INDEX_SIG_TOG10] >> j) & 0x1) );
-      /*@=formatcode@*/ 
-      assert( rv < 2 );
-      bits[((width - 1) - i)] = tmp[0];
-    } 
-    bits_left = UL_BITS - 1;
+  for( i=width; i--; ) {
+    /*@-formatcode@*/ 
+    unsigned int rv = snprintf( tmp, 2, "%hhx", (unsigned char)((value[UL_DIV(i)][VTYPE_INDEX_SIG_TOG10] >> UL_MOD(i)) & 0x1) );
+    /*@=formatcode@*/ 
+    assert( rv < 2 );
+    bits[i] = tmp[0];
   } 
   
   bits[width] = '\0';
@@ -4739,6 +4731,16 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.142.2.2  2008/06/16 04:35:21  phase1geo
+ Fixing reading issue with vectors that seems to pop up when running on a 64-bit
+ machine with the -m32 option.
+
+ Revision 1.142.2.1  2008/06/10 05:06:30  phase1geo
+ Fixed bug 1989398.
+
+ Revision 1.142  2008/06/03 04:43:24  phase1geo
+ Fixing bug 1982530.  Updating regression tests.
+
  Revision 1.141  2008/05/30 23:00:48  phase1geo
  Fixing Doxygen comments to eliminate Doxygen warning messages.
 

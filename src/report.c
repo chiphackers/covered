@@ -835,15 +835,15 @@ void command_report(
   const char** argv
 ) { PROFILE(COMMAND_REPORT);
 
-  FILE*        ofile;                  /* Pointer to output stream */
+  FILE*        ofile;                   /* Pointer to output stream */
 #ifdef HAVE_TCLTK
-  char*        covered_home;           /* Pathname to Covered's home installation directory */
-  char*        covered_browser;        /* Name of browser to use for GUI help pages */
-  char*        covered_version;        /* String version of current Covered version */
-  char*        main_file;              /* Name of main TCL file to interpret */ 
-  char*        user_home;              /* HOME environment variable */
+  char*        covered_home    = NULL;  /* Pathname to Covered's home installation directory */
+  char*        covered_browser;         /* Name of browser to use for GUI help pages */
+  char*        covered_version;         /* String version of current Covered version */
+  char*        main_file       = NULL;  /* Name of main TCL file to interpret */ 
+  char*        user_home;               /* HOME environment variable */
 #endif
-  unsigned int rv;                     /* Return value from snprintf calls */
+  unsigned int rv;                      /* Return value from snprintf calls */
 
   /* Output header information */
   rv = snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
@@ -937,7 +937,7 @@ void command_report(
 
         if( Tk_SafeInit( interp ) == TCL_ERROR ) {
           printf( "ERROR: %s\n", interp->result );
-          printf( "report Throw O\n" );
+          // printf( "report Throw O\n" ); - HIT
           Throw 0;
         }
 
@@ -975,7 +975,7 @@ void command_report(
         if( rv != TCL_OK ) {
           rv = snprintf( user_msg, USER_MSG_LENGTH, "TCL/TK: %s\n", Tcl_ErrnoMsg( Tcl_GetErrno() ) );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          printf( "report Throw Q\n" );
+          // printf( "report Throw Q\n" ); - HIT
           Throw 0;
         }
 
@@ -985,7 +985,7 @@ void command_report(
       } Catch_anonymous {
         free_safe( covered_home, (strlen( covered_home ) + 1) );
         free_safe( main_file, (strlen( main_file ) + 1) );
-        printf( "report Throw R\n" );
+        // printf( "report Throw R\n" ); - HIT
         Throw 0;
       }
 
@@ -1011,6 +1011,15 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.104.2.2  2008/06/06 05:00:35  phase1geo
+ Updates for GUI.  Checkpointing.
+
+ Revision 1.104.2.1  2008/06/05 03:50:04  phase1geo
+ Fixing memory errors when Tk initialization fails.
+
+ Revision 1.104  2008/05/30 06:02:59  phase1geo
+ Fixing segmentation fault with GUI opening an initial CDD file.
+
  Revision 1.103  2008/05/30 05:38:32  phase1geo
  Updating development tree with development branch.  Also attempting to fix
  bug 1965927.
