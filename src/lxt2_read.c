@@ -77,11 +77,7 @@ _LXT2_RD_INLINE static unsigned int lxt2_rd_get_32(void *mm, int offset)		/* not
 {
   unsigned int x = *((unsigned int *)((unsigned char *)mm+offset));
 
-#if defined(__i386__)
   __asm("bswap   %0": "=r" (x) : "0" (x));
-#else
-  __asm("bswap1  %0": "=r" (x) : "0" (x));
-#endif
 
   return x;
 }
