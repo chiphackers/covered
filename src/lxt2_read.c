@@ -62,22 +62,26 @@ extern char user_msg[USER_MSG_LENGTH];
 
 _LXT2_RD_INLINE static unsigned int lxt2_rd_get_16(void *mm, int offset)
 {
-unsigned short x = *((unsigned short *)((unsigned char *)mm+offset));
+  unsigned short x = *((unsigned short *)((unsigned char *)mm+offset));
 
-  __asm("xchgb %b0,%h0" :
-        "=q" (x)        :
-        "0" (x));
+#if defined(__i386__)
+  __asm("xchgb %b0,%h0" : "=q" (x) : "0" (x));
+#else
+  __asm("xchgb %b0,%h0" : "=Q" (x) : "0" (x));
+#endif
 
     return (unsigned int) x;
 }
 
 _LXT2_RD_INLINE static unsigned int lxt2_rd_get_32(void *mm, int offset)		/* note that bswap is really 486+ */
 {
-unsigned int x = *((unsigned int *)((unsigned char *)mm+offset));
+  unsigned int x = *((unsigned int *)((unsigned char *)mm+offset));
 
- __asm("bswap   %0":
-      "=r" (x) :
-      "0" (x));
+#if defined(__i386__)
+  __asm("bswap   %0": "=r" (x) : "0" (x));
+#else
+  __asm("bswap1  %0": "=r" (x) : "0" (x));
+#endif
 
   return x;
 }

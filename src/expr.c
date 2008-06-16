@@ -1445,7 +1445,9 @@ void expression_db_read(
 
   if( sscanf( *line, "%d %d %x %x %x %x %d %d%n", &id, &linenum, &column, &exec_num, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 8 ) {
 
+    printf( "old line: %s\n", *line );
     *line = *line + chars_read;
+    printf( "new line: %s\n", *line );
 
     /* Find functional unit instance name */
     if( curr_funit == NULL ) {
@@ -5614,6 +5616,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.332  2008/05/31 22:31:55  phase1geo
+ Fixing bug 1980954.
+
  Revision 1.331  2008/05/30 23:00:48  phase1geo
  Fixing Doxygen comments to eliminate Doxygen warning messages.
 
