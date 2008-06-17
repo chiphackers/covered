@@ -11,6 +11,27 @@
 # Global variable that can be used to specify Covered's executable pathname
 $COVERED = "../../src/covered";
 
+# Global command flags to use for all Covered commands
+$COVERED_GFLAGS = "-D";
+
+# Global score command flags to use when running the runScoreCommand subroutine
+$COVERED_SCORE_GFLAGS = "-P";
+
+# Global merge command flags to use when running the runMergeCommand subroutine
+$COVERED_MERGE_GFLAGS = "";
+
+# Global report command flags to use when running the runReportCommand subroutine
+$COVERED_REPORT_GFLAGS = "";
+
+# Specifies which simulator should be used for simulating the design (IV, CVER, VCS)
+$SIMULATOR = "IV";
+
+# Specifies the type of dumpfile that should be used by the score command (VCD, LXT)
+$DUMPTYPE = "VCD";
+
+# Specifies if the VPI mode of operation should be used for this simulation (0, 1)
+$USE_VPI = 0;
+
 # Specifies the relative pathname to the directory containing CDD files to
 # compare against.
 $CDD_DIR = "../cdd";
@@ -35,6 +56,114 @@ $FAIL_OUTPUT = "regress.failed";
 ######################
 # GLOBAL SUBROUTINES #
 ######################
+
+# Initializes the diagnostic "environment".  This should be called in each diagnostic script
+# before the script does anything.
+sub initialize {
+
+  my( $diagname, $error, @args ) = @_;
+  my( $arg );
+
+  print "Running ${diagname}";
+
+  # If the diagnostic is supposed to result in an error, output a message to the user so that they
+  # are not surprised by the output
+  if( $error == 1 ) {
+    print " -- should see an error message\n";
+  } else {
+    print "\n";
+  }
+
+  # Parse arguments
+  foreach $arg (@args) {
+
+    if( $arg =~ /^(\w+)=(.*)$/ ) {
+
+      my( $varname  ) = $1;
+      my( $varvalue ) = $2;
+
+      if( $varname eq "COVERED_GFLAG" ) {
+        $COVERED_GFLAGS = $varvalue;
+      } elsif( $varname eq "COVERED_SCORE_GFLAG" ) {
+        $COVERED_SCORE_GFLAGS = $varvalue;
+      } elsif( $varname eq "COVERED_MERGE_GFLAG" ) {
+        $COVERED_MERGE_GFLAGS = $varvalue;
+      } elsif( $varname eq "COVERED_REPORT_GFLAG" ) {
+        $COVERED_REPORT_GFLAGS = $varvalue;
+      } elsif( $varname eq "USE_CVER" ) {
+        $SIMULATOR = "CVER";
+      } elsif( $varname eq "USE_VCS" ) {
+        $SIMULATOR = "VCS";
+      } elsif( $varname eq "LXT" ) {
+        $DUMPTYPE = "LXT";
+      } elsif( $varname eq "VPI" ) {
+        $USE_VPI = 1;
+      }
+
+    }
+
+  }
+
+  # If the TESTMODE was found in the src Makefile, go ahead and allow the usage of the check_mem script in
+  # Covered command runs.
+  $CHECK_MEM_CMD = "";
+  open( MFILE, "../../src/Makefile" ) || die "Can't open ../../src/Makefile for reading: $!\n";
+  while( <MFILE> ) {
+    if( /-DTESTMODE/ ) {
+      $CHECK_MEM_CMD = "| ./check_mem";
+      break;
+    }
+  }
+  close( MFILE );
+
+}
+
+# Runs the score command with the given arguments.
+sub runScoreCommand {
+
+  my( $score_args ) = $_[0];
+
+  # If the -vcd option was used but the user specified the LXT dumpfile format should be used,
+  # perform the substitution.
+  if( ($score_args =~ /^(.*)\s+-vcd\s+(\w+)\s+(.*)$/) && ($dumptype eq "LXT") ) {
+    $score_args = "$1 -lxt $2 $3";
+
+  # Otherwise, if the -lxt option was used by the user specified the VCD dumpfile format should be used,
+  # perform the substitution
+  } elsif( ($score_args =~ /^(.*)\s+-lxt\s+(\w+)\s+(.*)$/) && ($dumptype eq "VCD") ) {
+    $score_args = "$1 -vcd $2 $3";
+  }
+
+  # Create score command
+  my( $cmd ) = "$COVERED $COVERED_GFLAGS $COVERED_SCORE_GFLAGS score $score_args $CHECK_MEM_CMD";
+
+  &runCommand( $cmd );
+
+}
+
+# Runs the merge command with the given arguments.
+sub runMergeCommand {
+
+  my( $merge_args ) = $_[0];
+
+  # Create merge command
+  my( $cmd ) = "$COVERED $COVERED_GFLAGS $COVERED_MERGE_GFLAGS merge $merge_args $CHECK_MEM_CMD";
+
+  &runCommand( $cmd );
+
+}
+
+# Runs the report command with the given arguments.
+sub runReportCommand {
+
+  my( $report_args ) = $_[0];
+
+  # Create report command
+  my( $cmd ) = "$COVERED $COVERED_GFLAGS $COVERED_REPORT_GFLAGS report $report_args $CHECK_MEM_CMD";
+
+  &runCommand( $cmd );
+
+}
 
 # This subroutine should be used whenever a system command needs to be
 # executed from a regression script.  Echoes the given command and then

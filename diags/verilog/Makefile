@@ -150,7 +150,7 @@ $(DIAGLIST): check-ovl
 		if test ! -f ../regress/$@.pl; then \
 			$(MAKE) DIAG=$@ diagrun; \
 		else \
-			perl ../regress/$@.pl; \
+			perl ../regress/$@.pl $(MAKEFLAGS); \
 		fi; \
 	else \
 		echo Skipping $@; \
@@ -196,7 +196,11 @@ endif
 
 $(DIAG2LIST): check-ovl
 	@if test ! -f $@.done; then \
-		$(MAKE) DIAG=$@ diag2run; \
+		if test ! -f ../regress/$@.pl; then \
+			$(MAKE) DIAG=$@ diag2run; \
+		else \
+			perl ../regress/$@.pl $(MAKEFLAGS); \
+		fi; \
 	else \
 		echo Skipping $@; \
 		./check_test $@ 1 2; \
@@ -241,7 +245,11 @@ endif
 
 $(RACELIST):
 	@if test ! -f $@.done; then \
-		$(MAKE) DIAG=$@ racerun; \
+		if test ! -f ../regress/$@.pl; then \
+			$(MAKE) DIAG=$@ racerun; \
+		else \
+			perl ../regress/$@.pl $(MAKEFLAGS); \
+		fi; \
 	else \
 		echo Skipping $@; \
 		./check_test $@ 1 2; \
@@ -296,7 +304,11 @@ mergerun:
 
 $(MERGELIST):
 	@if test ! -f $@.done; then \
-		$(MAKE) DIAG=$@ mergerun; \
+		if test ! -f ../regress/$@.pl; then \
+			$(MAKE) DIAG=$@ mergerun; \
+		else \
+			perl ../regress/$@.pl $(MAKEFLAGS); \
+		fi; \
 	else \
 		echo Skipping $@; \
 		./check_test $@ 2 2; \
@@ -315,7 +327,11 @@ merge3run:
 
 $(MERGE3LIST):
 	@if test ! -f $@.done; then \
-		$(MAKE) DIAG=$@ merge3run; \
+		if test ! -f ../regress/$@.pl; then \
+			$(MAKE) DIAG=$@ merge3run; \
+		else \
+			perl ../regress/$@.pl $(MAKEFLAGS); \
+		fi; \
 	else \
 		echo Skipping $@; \
 		./check_test $@ 3 2; \
@@ -337,7 +353,11 @@ endif
 
 $(ERRSCORELIST):
 	@if test ! -f $@.done; then \
-		$(MAKE) DIAG=$@ errscorerun; \
+		if test ! -f ../regress/$@.pl; then \
+			$(MAKE) DIAG=$@ errscorerun; \
+		else \
+			perl ../regress/$@.pl $(MAKEFLAGS); \
+		fi; \
 	else \
 		echo Skipping $@; \
 		./check_test $@ 1 2; \
@@ -368,8 +388,8 @@ $(ERRMERGELIST):
 		if test ! -f ../regress/$@.pl; then \
 			$(MAKE) DIAG=$@ errmergerun; \
 		else \
-			perl ../regress/$@.pl; \
-		fi \
+			perl ../regress/$@.pl $(MAKEFLAGS); \
+		fi; \
 	else \
 		echo Skipping $@; \
 		./check_test $@ 1 2; \
@@ -392,7 +412,11 @@ endif
 
 $(ERRREPORTLIST):
 	@if test ! -f $@.done; then \
-		$(MAKE) DIAG=$@ errreportrun; \
+		if test ! -f ../regress/$@.pl; then \
+			$(MAKE) DIAG=$@ errreportrun; \
+		else \
+			perl ../regress/$@.pl $(MAKEFLAGS); \
+		fi; \
 	else \
 		echo Skipping $@; \
 		./check_test $@ 1 2; \

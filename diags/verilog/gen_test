@@ -70,11 +70,20 @@ if( $type eq "script" ) {
   
   open( SCRIPT, ">../regress/${diag}.pl" ) || die "Can't open ../regress/${diag}.pl: $!\n";
   
+  print SCRIPT "# Name:     ${diag}.pl\n";
+  print SCRIPT "# Author:   ${author}\n";
+  print SCRIPT "# Date:     ${date}\n";
+  print SCRIPT "# Purpose:  \n";
+  print SCRIPT "\n";  
   print SCRIPT "require \"../verilog/regress_subs.pl\";\n";
   print SCRIPT "\n";
-  print SCRIPT "# Perform diagnostic running code here\n";
-  print SCRIPT "&runCommand( \"\$COVERED score -t main -vcd ${diag}.vcd -v ${diag}.v -o ${diag}.cdd\" );\n";
+  print SCRIPT "# Initialize the diagnostic environment\n";
+  print SCRIPT "&initialize( \"${diag}\", \@ARGV );\n";
   print SCRIPT "\n";
+  print SCRIPT "# Perform diagnostic running code here\n";
+  print SCRIPT "&runScoreCommand( \"-t main -vcd ${diag}.vcd -v ${diag}.v -o ${diag}.cdd\" );\n";
+  print SCRIPT "\n";
+  print SCRIPT "# Perform the file comparison checks\n";
   print SCRIPT "&checkTest( \"${diag}\", 1, 1 );\n";
   print SCRIPT "\n";
   print SCRIPT "exit 0;\n\n";
