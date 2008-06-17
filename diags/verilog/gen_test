@@ -9,6 +9,9 @@
 #	Purpose:	Generates templated diagnostic and configuration file for new diagnostic.
 #
 #	Usage:		gen_test <diagnostic_name> (<type>)
+#           <type> = NULL (generate typical Verilog and configuration file)
+#                    gen  (generate Verilog that does not dump and a suitable configuration file)
+#                    script (generates Verilog and regression script)
 
 $diag = $ARGV[0];
 $type = $ARGV[1];
@@ -62,13 +65,34 @@ if( $type ne "gen" ) {
 print DIAG "endmodule\n";
 close( DIAG );
 
-# Generate configuration file
-open( CONF, ">../regress/${diag}.cfg" ) || die "Can't open ${diag}.cfg: $!\n";
-
-if( $type eq "gen" ) {
-  print CONF "-t main -o ${diag}.cdd -v ${diag}.v -g 1\n";
+# If the type is a script, create the script in the regress directory
+if( $type eq "script" ) {
+  
+  open( SCRIPT, ">../regress/${diag}.pl" ) || die "Can't open ../regress/${diag}.pl: $!\n";
+  
+  print SCRIPT "require \"../verilog/regress_subs.pl\";\n";
+  print SCRIPT "\n";
+  print SCRIPT "# Perform diagnostic running code here\n";
+  print SCRIPT "&runCommand( \"\$COVERED score -t main -vcd ${diag}.vcd -v ${diag}.v -o ${diag}.cdd\" );\n";
+  print SCRIPT "\n";
+  print SCRIPT "&checkTest( \"${diag}\", 1, 1 );\n";
+  print SCRIPT "\n";
+  print SCRIPT "exit 0;\n\n";
+  
+  close( SCRIPT );
+  
+# Otherwise, generate a configuration file in the regress directory
 } else {
-  print CONF "-t main -vcd ${diag}.vcd -o ${diag}.cdd -v ${diag}.v\n";
-}
+  
+  # Generate configuration file
+  open( CONF, ">../regress/${diag}.cfg" ) || die "Can't open ../regress/${diag}.cfg: $!\n";
 
-close( CONF );
+  if( $type eq "gen" ) {
+    print CONF "-t main -o ${diag}.cdd -v ${diag}.v -g 1\n";
+  } else {
+    print CONF "-t main -vcd ${diag}.vcd -o ${diag}.cdd -v ${diag}.v\n";
+  }
+
+  close( CONF );
+
+}

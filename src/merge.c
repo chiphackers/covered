@@ -101,7 +101,7 @@ static void merge_parse_args(
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Output file \"%s\" is not writable", argv[i] );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          printf( "merge Throw A\n" );
+          // printf( "merge Throw A\n" ); - HIT
           Throw 0;
         }
       }
@@ -209,6 +209,10 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.47  2008/05/30 05:38:31  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
  Revision 1.46.2.1  2008/05/24 05:36:21  phase1geo
  Fixing bitwise coverage functionality and updating regression files.  Added
  new bitwise1 and err5.1 diagnostics to regression suite.  Removing output

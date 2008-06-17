@@ -147,7 +147,11 @@ endif
 
 $(DIAGLIST): check-ovl
 	@if test ! -f $@.done; then \
-		$(MAKE) DIAG=$@ diagrun; \
+		if test ! -f ../regress/$@.pl; then \
+			$(MAKE) DIAG=$@ diagrun; \
+		else \
+			perl ../regress/$@.pl; \
+		fi; \
 	else \
 		echo Skipping $@; \
 		./check_test $@ 1 2; \
@@ -361,7 +365,11 @@ endif
 
 $(ERRMERGELIST):
 	@if test ! -f $@.done; then \
-		$(MAKE) DIAG=$@ errmergerun; \
+		if test ! -f ../regress/$@.pl; then \
+			$(MAKE) DIAG=$@ errmergerun; \
+		else \
+			perl ../regress/$@.pl; \
+		fi \
 	else \
 		echo Skipping $@; \
 		./check_test $@ 1 2; \
