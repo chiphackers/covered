@@ -258,27 +258,35 @@ sub checkTest {
       }
 
       # Check module report
-      $check2 = system( "diff ${test}.rptM ${RPT_DIR}/${test}.rptM" );
-      if( $check2 == 0 ) {
-        system( "rm ${test}.rptM" ) && die;
+      if( -f "${test}.rptM" ) {
+        $check2 = system( "diff ${test}.rptM ${RPT_DIR}/${test}.rptM" );
+        if( $check2 == 0 ) {
+          system( "rm ${test}.rptM" ) && die;
+        }
       }
 
       # Check instance report
-      $check3 = system( "diff ${test}.rptI ${RPT_DIR}/${test}.rptI" );
-      if( $check3 == 0 ) {
-        system( "rm ${test}.rptI" ) && die;
+      if( -f "${test}.rptI" ) {
+        $check3 = system( "diff ${test}.rptI ${RPT_DIR}/${test}.rptI" );
+        if( $check3 == 0 ) {
+          system( "rm ${test}.rptI" ) && die;
+        }
       }
 
       # Check module with line-width report
-      $check4 = system( "diff ${test}.rptWM ${RPT_DIR}/${test}.rptWM" );
-      if( $check4 == 0 ) {
-        system( "rm ${test}.rptWM" ) && die;
+      if( -f "${test}.rptWM" ) {
+        $check4 = system( "diff ${test}.rptWM ${RPT_DIR}/${test}.rptWM" );
+        if( $check4 == 0 ) {
+          system( "rm ${test}.rptWM" ) && die;
+        }
       }
 
       # Check instance with line-width report
-      $check5 = system( "diff ${test}.rptWI ${RPT_DIR}/${test}.rptWI" );
-      if( $check5 == 0 ) {
-        system( "rm ${test}.rptWI" ) && die;
+      if( -f "${test}.rptWI" ) {
+        $check5 = system( "diff ${test}.rptWI ${RPT_DIR}/${test}.rptWI" );
+        if( $check5 == 0 ) {
+          system( "rm ${test}.rptWI" ) && die;
+        }
       }
 
     # If this is an error test, check the error file

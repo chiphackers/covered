@@ -227,8 +227,8 @@ else
 		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd; \
 	fi
 endif
-	$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
-	$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+	$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfamr -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
+	$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfamr -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -o $(DIAG).rptWM $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -i -o $(DIAG).rptWI $(DIAG).cdd $(CHECKMEM)
 else
@@ -237,8 +237,8 @@ ifndef USE_CVER
 	@$(VERILOG_CMD)
 endif
 	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
-	$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
-	$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+	$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfamr -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
+	$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfamr -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -o $(DIAG).rptWM $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -i -o $(DIAG).rptWI $(DIAG).cdd $(CHECKMEM)
 endif
@@ -275,8 +275,8 @@ else
 		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd; \
 	fi
 endif
-	$(COVERED) $(COVERED_GFLAG) report -d v -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
-	$(COVERED) $(COVERED_GFLAG) report -d v -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+	$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
+	$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $(DIAG).rptWI $(DIAG).cdd $(CHECKMEM)
 else
@@ -285,8 +285,8 @@ ifndef USE_CVER
 	@$(VERILOG_CMD)
 endif
 	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
-	$(COVERED) $(COVERED_GFLAG) report -d v -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
-	$(COVERED) $(COVERED_GFLAG) report -d v -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+	$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
+	$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $(DIAG).rptWI $(DIAG).cdd $(CHECKMEM)
 endif
@@ -298,8 +298,8 @@ mergerun:
 	@$(MAKE) DIAG=$(DIAG)a onemergerun
 	@$(MAKE) DIAG=$(DIAG)b onemergerun
 	$(COVERED) $(COVERED_GFLAG) merge -o $(DIAG).cdd $(DIAG)a.cdd $(DIAG)b.cdd $(CHECKMEM)
-	$(COVERED) $(COVERED_GFLAG) report -d v -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
-	$(COVERED) $(COVERED_GFLAG) report -d v -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+	$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
+	$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $(DIAG).rptWI $(DIAG).cdd $(CHECKMEM)
 	@./check_test $(DIAG) 2 $(CHK_CODE)
@@ -321,8 +321,8 @@ merge3run:
 	@$(MAKE) DIAG=$(DIAG)b onemergerun
 	@$(MAKE) DIAG=$(DIAG)c onemergerun
 	$(COVERED) $(COVERED_GFLAG) merge -o $(DIAG).cdd $(DIAG)a.cdd $(DIAG)b.cdd $(DIAG)c.cdd $(CHECKMEM)
-	$(COVERED) $(COVERED_GFLAG) report -d v -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
-	$(COVERED) $(COVERED_GFLAG) report -d v -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+	$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
+	$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $(DIAG).rptWI $(DIAG).cdd $(CHECKMEM)
 	@./check_test $(DIAG) 3 $(CHK_CODE)
