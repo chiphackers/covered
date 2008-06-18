@@ -1,5 +1,5 @@
 /*
- Name:        merge_err1.1.v
+ Name:        merge_err1.2.v
  Author:      Trevor Williams  (phase1geo@gmail.com)
  Date:        06/18/2008
  Purpose:     
@@ -11,7 +11,7 @@ module main;
 
 initial begin
 `ifdef DUMP
-        $dumpfile( "merge_err1.1.vcd" );
+        $dumpfile( "merge_err1.2.vcd" );
         $dumpvars( 0, main );
 `endif
         #10;

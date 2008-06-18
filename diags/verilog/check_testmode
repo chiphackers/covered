@@ -1,0 +1,10 @@
+#!/usr/bin/perl
+
+# Name:      check_testmode
+# Author:    Trevor Williams  <phase1geo(gmail.com)>
+# Date:      6/18/2008
+# Purpose:   Outputs the string to use for testing memory.
+
+require "regress_subs.pl";
+
+print &checkForTestMode . "\n";

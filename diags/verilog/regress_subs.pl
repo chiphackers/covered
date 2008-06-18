@@ -106,17 +106,28 @@ sub initialize {
 
   # If the TESTMODE was found in the src Makefile, go ahead and allow the usage of the check_mem script in
   # Covered command runs.
-  $CHECK_MEM_CMD = "";
+  $CHECK_MEM_CMD = &checkForTestMode;
+
+}
+
+# Returns the string "| ./check_mem" if we are in TESTMODE mode; otherwise, returns the empty string
+sub checkForTestMode {
+
+  my( $check_mem_cmd ) = "";
+
   open( MFILE, "../../src/Makefile" ) || die "Can't open ../../src/Makefile for reading: $!\n";
   while( <MFILE> ) {
     if( /-DTESTMODE/ ) {
-      $CHECK_MEM_CMD = "| ./check_mem";
+      $check_mem_cmd = "| ./check_mem";
       break;
     }
   }
   close( MFILE );
 
+  return( $check_mem_cmd );
+
 }
+  
 
 # Runs the score command with the given arguments.
 sub runScoreCommand {

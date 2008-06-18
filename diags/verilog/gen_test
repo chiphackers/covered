@@ -78,7 +78,7 @@ if( $type eq "script" ) {
   print SCRIPT "require \"../verilog/regress_subs.pl\";\n";
   print SCRIPT "\n";
   print SCRIPT "# Initialize the diagnostic environment\n";
-  print SCRIPT "&initialize( \"${diag}\", \@ARGV );\n";
+  print SCRIPT "&initialize( \"${diag}\", 1, \@ARGV );\n";
   print SCRIPT "\n";
   print SCRIPT "# Perform diagnostic running code here\n";
   print SCRIPT "&runScoreCommand( \"-t main -vcd ${diag}.vcd -v ${diag}.v -o ${diag}.cdd\" );\n";

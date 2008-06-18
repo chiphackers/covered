@@ -79,8 +79,7 @@ static void merge_parse_args(
   const char** argv
 ) {
 
-  bool retval = TRUE;  /* Return value for this function */
-  int  i;              /* Loop iterator */
+  int i;  /* Loop iterator */
 
   i = last_arg + 1;
 
@@ -89,11 +88,12 @@ static void merge_parse_args(
     if( strncmp( "-h", argv[i], 2 ) == 0 ) {
 
       merge_usage();
-      retval = FALSE;
+      // printf( "merge Throw -A\n" ); - HIT
+      Throw 0;
 
     } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
     
-      if( (retval = check_option_value( argc, argv, i )) ) {
+      if( check_option_value( argc, argv, i ) ) {
         i++;
         if( is_legal_filename( argv[i] ) ) {
           merged_file = strdup_safe( argv[i] );
@@ -104,6 +104,9 @@ static void merge_parse_args(
           // printf( "merge Throw A\n" ); - HIT
           Throw 0;
         }
+      } else {
+        printf( "merge Throw A.1\n" );
+        Throw 0;
       }
 
     } else {
@@ -126,7 +129,7 @@ static void merge_parse_args(
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "CDD file (%s) does not exist", argv[i] );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        printf( "merge Throw B\n" );
+        // printf( "merge Throw B\n" ); - HIT
         Throw 0;
 
       }
@@ -138,9 +141,9 @@ static void merge_parse_args(
   }
 
   /* Check to make sure that the user specified at least two files to merge */
-  if( retval && (merge_in_num < 2) ) {
+  if( merge_in_num < 2 ) {
     print_output( "Must specify at least two CDD files to merge", FATAL, __FILE__, __LINE__ );
-    printf( "merge Throw C\n" );
+    // printf( "merge Throw C\n" ); - HIT
     Throw 0;
   }
 
@@ -209,6 +212,11 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.48  2008/06/17 14:40:54  phase1geo
+ Adding merge_err1 diagnostic to regression suite (which is a new script style
+ of diagnostic running) and adding support for script-based regression runs
+ to diagnostic Makefile structures.
+
  Revision 1.47  2008/05/30 05:38:31  phase1geo
  Updating development tree with development branch.  Also attempting to fix
  bug 1965927.

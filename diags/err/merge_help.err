@@ -1,0 +1,9 @@
+
+Usage:  covered merge [<options>] <existing_database> <database_to_merge>+
+
+   Options:
+      -o <filename>           File to output new database to.  If this argument is not
+                              specified, the <existing_database> is used as the output
+                              database name.
+      -h                      Displays this help information.
+
