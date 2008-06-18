@@ -122,7 +122,7 @@ ERRSCORE      = err1.0          err2.0          err3            err3.1          
                 err6.4          func4 \
                 func4.1         func4.2         func4.3         func4.4         func4.5 \
                 func4.6         task5
-ERRMERGE      = err5.2          err5.3          err5.4
+ERRMERGE      = err5.2          err5.3          err5.4          merge_err1
 ERRREPORT     = err7            err7.1
 
 NOSIMLIST     = gen1            gen1.1          gen1.3          gen1.4          gen1.5 \
