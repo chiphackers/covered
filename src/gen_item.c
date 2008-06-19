@@ -784,7 +784,7 @@ void gen_item_assign_expr_ids(
 */
 void gen_item_db_write(
   gen_item* gi,
-  control   type,
+  uint32    type,
   FILE*     ofile
 ) { PROFILE(GEN_ITEM_DB_WRITE);
 
@@ -1209,6 +1209,10 @@ void gen_item_dealloc(
 
 /*
  $Log$
+ Revision 1.68  2008/05/30 05:38:31  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
  Revision 1.67.2.1  2008/04/30 23:12:31  phase1geo
  Fixing simulation issues.
 

@@ -167,7 +167,7 @@ void info_db_write( FILE* file ) { PROFILE(INFO_DB_WRITE);
 void info_db_read( char** line ) { PROFILE(INFO_DB_READ);
 
   int          chars_read;     /* Number of characters scanned in from this line */
-  control      scored;         /* Indicates if this file contains scored data */
+  uint32       scored;         /* Indicates if this file contains scored data */
   unsigned int version;        /* Contains CDD version from file */
   int          mnum;           /* Temporary merge num */
   char         tmp1[4096];     /* Temporary string */
@@ -311,6 +311,10 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
 /*
  $Log$
+ Revision 1.32  2008/05/30 05:38:31  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
  Revision 1.31.2.1  2008/05/28 22:12:31  phase1geo
  Adding further support for 32-/64-bit support.  Checkpointing.
 

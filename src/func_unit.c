@@ -393,8 +393,6 @@ void funit_size_elements(
   gitem_link* curr_gi;          /* Pointer to current generate item link to evaluate */
 #endif
   sig_link*   curr_sig;         /* Pointer to current signal link to evaluate */
-  funit_inst* tmp_inst;         /* Pointer to temporary instance */
-  func_unit*  tmp_funit;        /* Pointer to temporary functional unit */
   bool        resolve = FALSE;  /* If set to TRUE, perform one more parameter resolution */
 
   assert( funit != NULL );
@@ -1485,6 +1483,9 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.104  2008/06/02 21:34:29  phase1geo
+ Fixing bug 1981073.  Adding new tests to verify this fix.
+
  Revision 1.103  2008/05/30 23:00:48  phase1geo
  Fixing Doxygen comments to eliminate Doxygen warning messages.
 

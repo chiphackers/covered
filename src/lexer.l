@@ -830,15 +830,14 @@ void process_timescale_token( char* token, char* type, int* value, bool report )
 }
 
 /*!
- \param txt     String containing timescale information
- \param report  If set to TRUE, reports any error information to the VLerror function
-
  Processes a text string into timescale information.
 */
-void process_timescale( const char* txt, bool report ) { PROFILE(PROCESS_TIMESCALE);
+void process_timescale(
+  const char* txt,    /*!< String containing timescale information */
+  bool        report  /*!< If set to TRUE, reports any error information to the VLerror function */
+) { PROFILE(PROCESS_TIMESCALE);
 
   char* str;             /* String version of text minus spaces */
-  char* ptr;             /* Pointer to current token */
   int   i;               /* Loop iterator */
   int   num_spaces = 0;  /* Number of spaces found in given string */
   int   unit = 0;        /* Time unit offset */

@@ -3901,7 +3901,6 @@ expression_assignment_list
     {
       expression* tmp = NULL;
       statement*  stmt;
-      char*       unnamed;
       if( (ignore_mode == 0) && ($4 != NULL) ) {
         Try {
           if( ($1 == 1) && !parser_check_generation( GENERATION_SV ) ) {
@@ -5032,8 +5031,6 @@ statement
     /* We don't handle the non-blocking assignments ourselves, so we can just ignore the delay here */
   | lpvalue K_LE K_repeat '(' expression ')' event_control expression ';'
     {
-      expression* tmp;
-      statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) && ($8 != NULL) ) {
         Try {
           expression* tmp = db_create_expression( $8, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@8.last_column - 1), NULL );
@@ -5122,8 +5119,6 @@ statement
     }
   | identifier '(' expression_port_list ')' ';'
     {
-      expression* exp;
-      statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         Try {
           expression* exp = db_create_expression( NULL, $3, EXP_OP_TASK_CALL, FALSE, @1.first_line, @1.first_column, (@5.last_column - 1), $1 );

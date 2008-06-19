@@ -40,21 +40,20 @@ extern isuppl       info_suppl;
 
 
 /*!
- \param funit_names  Pointer to array containing functional unit names
- \param funit_types  Pointer to array containing functional unit types
- \param funit_size   Pointer to integer containing size of functional unit array.
-
  \return Returns TRUE if function is successful; otherwise, returns FALSE.
 
  Creates an array of the functional unit names/types that exist in the design.
 */
-bool funit_get_list( char*** funit_names, char*** funit_types, int* funit_size ) { PROFILE(FUNIT_GET_LIST);
+bool funit_get_list(
+  /*@out@*/ char*** funit_names,  /*!< Pointer to array containing functional unit names */
+  /*@out@*/ char*** funit_types,  /*!< Pointer to array containing functional unit types */
+  /*@out@*/ int*    funit_size    /*!< Pointer to integer containing size of functional unit array */
+) { PROFILE(FUNIT_GET_LIST);
 
   bool        retval = TRUE;  /* Return value for this function */
   funit_link* curr;           /* Pointer to current functional unit link in list */
   int         i;              /* Index to module list */
   char        tmpstr[10];     /* Temporary string */
-  char        fname[4096];    /* Temporary storage for functional unit name */
 
   /* Initialize functional unit array size */
   *funit_size = 0;
@@ -99,9 +98,6 @@ bool funit_get_list( char*** funit_names, char*** funit_types, int* funit_size )
 }
 
 /*!
- \param funit_name  Name of functional unit to get filename for.
- \param funit_type  Type of functional unit to get filename for.
-
  \return Returns name of filename containing specified funit_name if functional unit name was found in
          design; otherwise, returns a value of NULL.
 
@@ -109,7 +105,10 @@ bool funit_get_list( char*** funit_names, char*** funit_types, int* funit_size )
  functional unit is returned to the calling function.  If the functional unit was not found, a value of NULL
  is returned to the calling function indicating an error occurred.
 */
-char* funit_get_filename( const char* funit_name, int funit_type ) { PROFILE(FUNIT_GET_FILENAME);
+char* funit_get_filename(
+  const char* funit_name,  /*!< Name of functional unit to get filename for */
+  int         funit_type   /*!< Type of functional unit to get filename for */
+) { PROFILE(FUNIT_GET_FILENAME);
 
   funit_link* funitl;        /* Pointer to functional unit link containing matched functional unit */
   char*       fname = NULL;  /* Name of filename containing specified functional unit */
@@ -123,18 +122,18 @@ char* funit_get_filename( const char* funit_name, int funit_type ) { PROFILE(FUN
 }
 
 /*!
- \param funit_name  Name of functional unit to get start and end line numbers for.
- \param funit_type  Type of functional unit to get start and end line numbers for.
- \param start_line  Pointer to value that will contain starting line number of this functional unit.
- \param end_line    Pointer to value that will contain ending line number of this functional unit.
-
  \return Returns a value of TRUE if functional unit was found; otherwise, returns a value of FALSE.
 
  Finds specified functional unit name in design and returns the starting and ending line numbers of
  the found functional unit, returning a value of TRUE to the calling function.  If the functional unit was
  not found in the design, a value of FALSE is returned.
 */
-bool funit_get_start_and_end_lines( const char* funit_name, int funit_type, int* start_line, int* end_line ) { PROFILE(FUNIT_GET_START_AND_END_LINES);
+bool funit_get_start_and_end_lines(
+            const char* funit_name,  /*!< Name of functional unit to get start and end line numbers for */
+            int         funit_type,  /*!< Type of functional unit to get start and end line numbers for */
+  /*@out@*/ int*        start_line,  /*!< Pointer to value that will contain starting line number of this functional unit */
+  /*@out@*/ int*        end_line     /*!< Pointer to value that will contain ending line number of this functional unit */
+) { PROFILE(FUNIT_GET_START_AND_END_LINES);
 
   bool        retval = TRUE;  /* Return value of this function */
   funit_link* funitl;         /* Pointer to functional unit line containing matched functional unit */
@@ -156,6 +155,9 @@ bool funit_get_start_and_end_lines( const char* funit_name, int funit_type, int*
 
 /*
  $Log$
+ Revision 1.14  2008/04/15 20:37:11  phase1geo
+ Fixing database array support.  Full regression passes.
+
  Revision 1.13  2008/01/16 06:40:37  phase1geo
  More splint updates.
 

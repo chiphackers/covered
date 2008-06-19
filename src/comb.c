@@ -360,7 +360,6 @@ void combination_get_tree_stats(
               if( EXPR_IS_COMB( exp ) == 1 ) {
                 if( exp_op_info[exp->op].suppl.is_comb == AND_COMB ) {
                   if( report_bitwise ) {
-                    int i;
                     tot_num = 3 * exp->value->width;
                     num_hit = vector_get_eval_abc_count( exp->value );
                   } else {
@@ -371,7 +370,6 @@ void combination_get_tree_stats(
                   }
                 } else if( exp_op_info[exp->op].suppl.is_comb == OR_COMB ) {
                   if( report_bitwise ) {
-                    int i;
                     tot_num = 3 * exp->value->width;
                     num_hit = vector_get_eval_abc_count( exp->value );
                   } else {
@@ -382,7 +380,6 @@ void combination_get_tree_stats(
                   }
                 } else {
                   if( report_bitwise ) {
-                    int i;
                     tot_num = 4 * exp->value->width;
                     num_hit = vector_get_eval_abcd_count( exp->value );
                   } else {
@@ -417,7 +414,6 @@ void combination_get_tree_stats(
                 }
               } else {
                 if( report_bitwise ) {
-                  int i;
                   *total  = *total + (2 * exp->value->width);
                   num_hit = vector_get_eval_ab_count( exp->value );
                 } else {
@@ -970,8 +966,6 @@ static void combination_underline_tree(
           combination_underline_tree( exp->right, combination_calc_depth( exp, curr_depth, FALSE ), &r_lines, &r_depth, &r_size, exp->op, center, funit );
 
           if( parent_op == exp->op ) {
-
-            unsigned int rv;
 
             switch( exp->op ) {
               case EXP_OP_XOR        :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s"        );  break;
@@ -1568,7 +1562,6 @@ static void combination_unary(
 
   /* Get hit information */
   if( report_bitwise && (exp->value->width > 1) ) {
-    int i;
     hit   = vector_get_eval_ab_count( exp->value );
     lines = exp->value->width + 2;
     tot   = (2 * exp->value->width);
@@ -3001,6 +2994,10 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.194  2008/05/30 05:38:30  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
  Revision 1.193.2.3  2008/05/07 21:09:10  phase1geo
  Added functionality to allow to_string to output full vector bits (even
  non-significant bits) for purposes of reporting for FSMs (matches original

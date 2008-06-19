@@ -31,8 +31,8 @@
       To get the MSB of the vector, simply add the width to the LSB and subtract one.
    -# A value array which contains the vector's current value and other coverage
       information gained during simulation.  This array is an array of unsigned long values
-      (or nibbles) whose length is determined by the width of the vector divided by four.
-      We divide the width by 4 because one nibble contains all of the information for
+      (or uint8s) whose length is determined by the width of the vector divided by four.
+      We divide the width by 4 because one uint8 contains all of the information for
       up to 4 bits of four-state data.  For a break-down of the bits within a nibble,
       please consult the \ref nibble table.
 */
@@ -143,8 +143,7 @@ vector* vector_create(
   bool data        /*!< If FALSE only initializes width but does not allocate a value array */
 ) { PROFILE(VECTOR_CREATE);
 
-  vector* new_vec;       /* Pointer to newly created vector */
-  ulong** value = NULL;  /* Temporarily stores newly created vector value */
+  vector* new_vec;  /* Pointer to newly created vector */
 
   assert( width > 0 );
 
@@ -295,7 +294,7 @@ void vector_db_write(
   bool    net
 ) { PROFILE(VECTOR_DB_WRITE);
 
-  nibble mask;   /* Mask value for vector value nibbles */
+  uint8 mask;   /* Mask value for vector values */
 
   assert( vec != NULL );
   assert( vec->width > 0 );
@@ -379,7 +378,7 @@ void vector_db_read(
   int    chars_read;  /* Number of characters read */
 
   /* Read in vector information */
-  if( sscanf( *line, "%d %hhu%n", &width, &suppl, &chars_read ) == 2 ) {
+  if( sscanf( *line, "%d %hhu%n", &width, &(suppl.all), &chars_read ) == 2 ) {
 
     *line = *line + chars_read;
 
@@ -494,7 +493,7 @@ void vector_db_read(
  base vector and read vector information.  If the vectors are found to be different
  (width is not equal), an error message is sent to the user and the
  program is halted.  If the vectors are found to be equivalents, the merge is
- performed on the vector nibbles.
+ performed on the vector elements.
 */
 void vector_db_merge(
   vector* base,
@@ -508,7 +507,7 @@ void vector_db_merge(
 
   assert( base != NULL );
 
-  if( sscanf( *line, "%d %hhu%n", &width, &suppl, &chars_read ) == 2 ) {
+  if( sscanf( *line, "%d %hhu%n", &width, &(suppl.all), &chars_read ) == 2 ) {
 
     *line = *line + chars_read;
 
@@ -979,7 +978,7 @@ void vector_display_value_ulong(
   for( i=UL_SIZE(width); i--; ) {
     for( j=bits_left; j>=0; j-- ) {
       if( ((value[i][VTYPE_INDEX_VAL_VALH] >> j) & 0x1) == 0 ) {
-        printf( "%d", ((value[i][VTYPE_INDEX_VAL_VALL] >> j) & 0x1) );
+        printf( "%ld", ((value[i][VTYPE_INDEX_VAL_VALL] >> j) & 0x1) );
       } else {
         if( ((value[i][VTYPE_INDEX_VAL_VALL] >> j) & 0x1) == 0 ) {
           printf( "x" );
@@ -997,7 +996,7 @@ void vector_display_value_ulong(
  Outputs the specified ulong value array to standard output as described by the
  width parameter.
 */
-void vector_display_nibble_ulong(
+void vector_display_ulong(
   ulong** value,  /*!< Value array to display */
   int     width,  /*!< Number of bits in array to display */
   int      type   /*!< Type of vector to display */
@@ -1013,7 +1012,7 @@ void vector_display_nibble_ulong(
     }
   }
 
-  /* Display nibble value */
+  /* Display value */
   printf( ", " );
   vector_display_value_ulong( value, width );
 
@@ -1021,11 +1020,11 @@ void vector_display_nibble_ulong(
 
     case VTYPE_SIG :
 
-      /* Display nibble toggle01 history */
+      /* Display toggle01 history */
       printf( ", 0->1: " );
       vector_display_toggle01_ulong( value, width, stdout );
 
-      /* Display nibble toggle10 history */
+      /* Display toggle10 history */
       printf( ", 1->0: " );
       vector_display_toggle10_ulong( value, width, stdout );
 
@@ -1087,11 +1086,11 @@ void vector_display_nibble_ulong(
 
     case VTYPE_MEM :
   
-      /* Display nibble toggle01 history */
+      /* Display toggle01 history */
       printf( ", 0->1: " );
       vector_display_toggle01_ulong( value, width, stdout );
 
-      /* Display nibble toggle10 history */
+      /* Display toggle10 history */
       printf( ", 1->0: " );
       vector_display_toggle10_ulong( value, width, stdout );
 
@@ -1144,7 +1143,7 @@ void vector_display(
 
   if( (vec->width > 0) && (vec->value.ul != NULL) ) {
     switch( vec->suppl.part.data_type ) {
-      case VDATA_UL :  vector_display_nibble_ulong( vec->value.ul, vec->width, vec->suppl.part.type );  break;
+      case VDATA_UL :  vector_display_ulong( vec->value.ul, vec->width, vec->suppl.part.type );  break;
       default       :  assert( 0 );  break;
     }
   } else {
@@ -1310,7 +1309,7 @@ bool vector_set_coverage_and_assign_ulong(
   ulong        lmask   = UL_LMASK(lsb);  /* Mask to be used in lower element */
   ulong        hmask   = UL_HMASK(msb);  /* Mask to be used in upper element */
   unsigned int i;                        /* Loop iterator */
-  nibble       prev_set;                 /* Specifies if this vector value has previously been set */
+  uint8        prev_set;                 /* Specifies if this vector value has previously been set */
 
   /* If the lindex and hindex are the same, set lmask to the AND of the high and low masks */
   if( lindex == hindex ) {
@@ -2048,6 +2047,8 @@ bool vector_set_to_x(
 
   PROFILE_END;
 
+  return( retval );
+
 }
 
 /*!
@@ -2222,8 +2223,6 @@ static void vector_set_static(
   char*        ptr       = str + (strlen( str ) - 1);  /* Pointer to current character evaluating */
   unsigned int pos       = 0;                          /* Current bit position in vector */
   unsigned int i;                                      /* Loop iterator */
-  ulong        ull       = 0;                          /* unsigned long */
-  ulong        ulh       = 0;                          /* unsigned long */
   int          data_type = vec->suppl.part.data_type;  /* Copy of data type for performance reasons */
 
   while( ptr >= str ) {
@@ -2483,14 +2482,13 @@ void vector_from_string(
   int*     base    /*!< Base type of string value parsed */
 ) { PROFILE(VECTOR_FROM_STRING);
 
-  int          bits_per_char;         /* Number of bits represented by a single character in the value string str */
-  int          size;                  /* Specifies bit width of vector to create */
-  char         value[MAX_BIT_WIDTH];  /* String to store string value in */
-  char         stype[2];              /* Temporary holder for type of string being parsed */
-  int          chars_read;            /* Number of characters read by a sscanf() function call */
-  int          i;                     /* Loop iterator */
-  unsigned int j;                     /* Loop iterator */
-  int          pos;                   /* Bit position */
+  int  bits_per_char;         /* Number of bits represented by a single character in the value string str */
+  int  size;                  /* Specifies bit width of vector to create */
+  char value[MAX_BIT_WIDTH];  /* String to store string value in */
+  char stype[2];              /* Temporary holder for type of string being parsed */
+  int  chars_read;            /* Number of characters read by a sscanf() function call */
+  int  i;                     /* Loop iterator */
+  int  pos;                   /* Bit position */
 
   if( quoted ) {
 
@@ -3982,7 +3980,6 @@ bool vector_op_subtract(
           ulong        lvall, lvalh;
           ulong        rvall, rvalh;
           unsigned int i;
-          ulong        signl, signh;
           for( i=0; i<UL_SIZE( tgt->width ); i++ ) {
             vector_copy_val_and_sign_extend_ulong( left,  i, lmsb_is_one, &lvall, &lvalh );
             vector_copy_val_and_sign_extend_ulong( right, i, rmsb_is_one, &rvall, &rvalh ); 
@@ -4731,6 +4728,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.143  2008/06/16 23:10:43  phase1geo
+ Fixing cdd_diff script for error found while running regressions.  Also integrating
+ source code fixes from the covered-20080603-branch2 branch.  Full regression passes.
+
  Revision 1.142.2.2  2008/06/16 04:35:21  phase1geo
  Fixing reading issue with vectors that seems to pop up when running on a 64-bit
  machine with the -m32 option.

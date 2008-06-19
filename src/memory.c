@@ -69,11 +69,10 @@ void memory_get_stat(
   bool     ignore_excl
 ) { PROFILE(MEMORY_GET_STAT);
 
-  int    i;       /* Loop iterator */
-  int    wr;      /* Number of bits written within an addressable element */
-  int    rd;      /* Number of bits read within an addressable element */
-  vector vec;     /* Temporary vector used for storing one addressable element */
-  int    pwidth;  /* Width of packed portion of memory */
+  int i;       /* Loop iterator */
+  int wr;      /* Number of bits written within an addressable element */
+  int rd;      /* Number of bits read within an addressable element */
+  int pwidth;  /* Width of packed portion of memory */
 
   /* Calculate width of smallest addressable element */
   pwidth = 1;
@@ -432,7 +431,6 @@ bool memory_get_coverage(
 
   bool        retval = FALSE;  /* Return value for this function */
   funit_link* funitl;          /* Pointer to found functional unit link */
-  vsignal     sig;             /* Signal container used for searching */
   sig_link*   sigl;            /* Pointer to found signal link */
   int         i;               /* Loop iterator */
   char        tmp1[20];        /* Temporary string holder */
@@ -1350,6 +1348,10 @@ void memory_report( FILE* ofile, bool verbose ) { PROFILE(MEMORY_REPORT);
 
 /*
  $Log$
+ Revision 1.29  2008/05/30 05:38:31  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
  Revision 1.28.2.4  2008/05/28 05:57:11  phase1geo
  Updating code to use unsigned long instead of uint32.  Checkpointing.
 

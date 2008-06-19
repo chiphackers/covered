@@ -21,6 +21,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "binding.h"
 #include "db.h"
@@ -303,6 +304,10 @@ void parse_and_score_dumpfile(
 
 /*
  $Log$
+ Revision 1.66  2008/04/07 04:49:13  phase1geo
+ Fixing regression failure and removing exception throw output that was
+ hit.
+
  Revision 1.65  2008/04/04 20:06:39  phase1geo
  More fixes per regression runs.  Checkpointing.
 

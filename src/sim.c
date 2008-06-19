@@ -98,7 +98,6 @@
 #include "vsignal.h"
 
 
-extern nibble                or_optab[OPTAB_SIZE];
 extern char                  user_msg[USER_MSG_LENGTH];
 extern bool                  debug_mode;
 extern exp_info              exp_op_info[EXP_OP_NUM];
@@ -509,9 +508,10 @@ void sim_thread_push(
  bit set, we know that the statement has already been added, so stop here and
  do not add the statement again.
 */
-void sim_expr_changed( expression* expr, const sim_time* time ) { PROFILE(SIM_EXPR_CHANGED);
-
-  expression* parent;  /* Pointer to parent expression of the given expression */
+void sim_expr_changed(
+  expression*     expr,
+  const sim_time* time
+) { PROFILE(SIM_EXPR_CHANGED);
 
   assert( expr != NULL );
 
@@ -1230,6 +1230,10 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.127  2008/05/30 05:38:32  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
  Revision 1.126.2.3  2008/05/27 04:29:31  phase1geo
  Fixing memory leak for an FSM arc parser error.  Adding diagnostics to regression
  suite for coverage purposes.

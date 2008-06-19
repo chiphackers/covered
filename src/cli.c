@@ -30,6 +30,7 @@
 #include "codegen.h"
 #include "expr.h"
 #include "func_unit.h"
+#include "instance.h"
 #include "link.h"
 #include "scope.h"
 #include "sim.h"
@@ -711,21 +712,15 @@ static bool cli_parse_input( char* line, bool perform, bool replaying, const sim
 }
 
 /*!
- \param time   Pointer to current simulation time.
-
  Takes care of either replaying the history buffer or prompting the user for the next command
  to be issued.
 */
 static void cli_prompt_user(
-  const sim_time* time
+  const sim_time* time  /*!< Pointer to current simulation time */
 ) {
 
-  char* line;        /* Read line from user */
-  int   line_size;   /* Allocated byte size of read line from user */
-  char  arg[4096];   /* Holder for user argument */
-  bool  valid_cmd;   /* Specifies if the given command was valid */
-  int   chars_read;  /* Specifies the number of characters that was read from the string */
-  int   i;           /* Iterator */
+  char* line;       /* Read line from user */
+  int   line_size;  /* Allocated byte size of read line from user */
 
   do {
 
@@ -899,6 +894,9 @@ void cli_read_hist_file( const char* fname ) {
 
 /*
  $Log$
+ Revision 1.24  2008/04/15 20:37:07  phase1geo
+ Fixing database array support.  Full regression passes.
+
  Revision 1.23  2008/03/17 22:02:30  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function

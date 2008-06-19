@@ -162,8 +162,8 @@ void vector_display_value_ulong(
 );
 
 /*@-exportlocal@*/
-/*! \brief Outputs nibble to standard output. */
-void vector_display_nibble_ulong(
+/*! \brief Outputs ulong vector to standard output. */
+void vector_display_ulong(
   ulong** value,
   int     width,
   int     type
@@ -579,6 +579,9 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.60  2008/05/30 23:00:48  phase1geo
+ Fixing Doxygen comments to eliminate Doxygen warning messages.
+
  Revision 1.59  2008/05/30 05:38:33  phase1geo
  Updating development tree with development branch.  Also attempting to fix
  bug 1965927.

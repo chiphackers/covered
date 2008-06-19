@@ -121,10 +121,16 @@ void line_get_stats( func_unit* funit, int* total, int* hit ) { PROFILE(LINE_GET
  not hit during simulation and a value of TRUE is returned.  If the functional unit name was
  not found, a value of FALSE is returned.
 */
-bool line_collect( const char* funit_name, int funit_type, int cov, int** lines, int** excludes, int* line_cnt ) { PROFILE(LINE_COLLECT);
+bool line_collect(
+            const char* funit_name,
+            int         funit_type,
+            int         cov,
+  /*@out@*/ int**       lines,
+  /*@out@*/ int**       excludes,
+  /*@out@*/ int*        line_cnt
+) { PROFILE(LINE_COLLECT);
 
   bool        retval = TRUE;  /* Return value for this function */
-  stmt_iter   stmti;          /* Statement list iterator */
   funit_link* funitl;         /* Pointer to found functional unit link */
   int         i;              /* Loop iterator */
   int         last_line;      /* Specifies the last line of the current expression  */
@@ -380,7 +386,6 @@ static bool line_funit_summary(
   /*@out@*/ int*        total
 ) { PROFILE(LINE_FUNIT_SUMMARY);
 
-  float percent;             /* Percentage of lines hit */
   bool  miss_found = FALSE;  /* Set to TRUE if line was found to be missed */
   char* pname;               /* Printable version of functional unit name */
 
@@ -677,6 +682,9 @@ void line_report( FILE* ofile, bool verbose ) { PROFILE(LINE_REPORT);
 
 /*
  $Log$
+ Revision 1.89  2008/04/15 20:37:11  phase1geo
+ Fixing database array support.  Full regression passes.
+
  Revision 1.88  2008/03/17 22:02:31  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function

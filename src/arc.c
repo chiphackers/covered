@@ -294,7 +294,6 @@ void arc_add(
   int from_index;  /* Index of found from_state in states array */
   int to_index;    /* Index of found to_state in states array */
   int arcs_index;  /* Index of found state transition in arcs array */
-  int side;        /* Specifies the direction of matched entry */
 
   assert( table != NULL );
 
@@ -457,7 +456,7 @@ void arc_db_write(
 
   assert( table != NULL );
 
-  fprintf( file, " %x %d %d ", table->suppl.all, table->num_fr_states, table->num_to_states );
+  fprintf( file, " %hhx %d %d ", table->suppl.all, table->num_fr_states, table->num_to_states );
 
   /* Output state information */
   for( i=0; i<table->num_fr_states; i++ ) {
@@ -472,7 +471,7 @@ void arc_db_write(
   /* Output arc information */
   fprintf( file, " %d", table->num_arcs );
   for( i=0; i<table->num_arcs; i++ ) {
-    fprintf( file, "  %d %d %x", table->arcs[i]->from, table->arcs[i]->to, table->arcs[i]->suppl.all );
+    fprintf( file, "  %d %d %hhx", table->arcs[i]->from, table->arcs[i]->to, table->arcs[i]->suppl.all );
   }
 
 }
@@ -489,12 +488,6 @@ void arc_db_read(
             char**      line    /*!< String containing current CDD line of arc information */
 ) { PROFILE(ARC_DB_READ);
 
-  int  i;              /* Loop iterator */
-  int  val;            /* Current character value */
-  int  width;          /* Arc signal width */
-  int  curr_size;      /* Current size of arc array */
-  int  suppl;          /* Supplemental field */
-
   /* Allocate table */
   *table = arc_create();
 
@@ -504,7 +497,7 @@ void arc_db_read(
     int num_to_states;
     int chars_read;
 
-    if( sscanf( *line, "%x %d %d%n", &((*table)->suppl.all), &num_fr_states, &num_to_states, &chars_read ) == 3 ) {
+    if( sscanf( *line, "%hhx %d %d%n", &((*table)->suppl.all), &num_fr_states, &num_to_states, &chars_read ) == 3 ) {
 
       unsigned int i;
       int          num_arcs;
@@ -551,7 +544,7 @@ void arc_db_read(
           /* Allocate fsm_table_arc */
           (*table)->arcs[i] = (fsm_table_arc*)malloc_safe( sizeof( fsm_table_arc ) );
 
-          if( sscanf( *line, "%d %d %x%n", &((*table)->arcs[i]->from), &((*table)->arcs[i]->to), &((*table)->arcs[i]->suppl.all), &chars_read ) != 3 ) {
+          if( sscanf( *line, "%d %d %hhx%n", &((*table)->arcs[i]->from), &((*table)->arcs[i]->to), &((*table)->arcs[i]->suppl.all), &chars_read ) != 3 ) {
             print_output( "Unable to parse FSM table information from database.  Unable to read.", FATAL, __FILE__, __LINE__ );
             // printf( "arc Throw A\n" ); - HIT
             Throw 0;
@@ -630,15 +623,7 @@ void arc_merge(
   const fsm_table*  other
 ) { PROFILE(ARC_MERGE);
 
-  char*   strl;           /* Left state value string */
-  char*   strr;           /* Right state value string */
-  char*   tmpl;           /* Temporary left state value string */
-  char*   tmpr;           /* Temporary right state value string */
-  vector* vecl;           /* Left state vector value */
-  vector* vecr;           /* Right state vector value */
-  int     i;              /* Loop iterator */
-  char    str_width[20];  /* Temporary string holder */
-  int     str_len;        /* Length of string to allocate */
+  int i;  /* Loop iterator */
 
   /* Merge state transitions */
   for( i=0; i<other->num_arcs; i++ ) {
@@ -812,6 +797,9 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.62  2008/05/30 23:00:47  phase1geo
+ Fixing Doxygen comments to eliminate Doxygen warning messages.
+
  Revision 1.61  2008/05/30 05:38:30  phase1geo
  Updating development tree with development branch.  Also attempting to fix
  bug 1965927.

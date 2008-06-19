@@ -421,7 +421,7 @@ static void expression_create_tmp_vecs(
 /*!
  \param exp    Pointer to expression to add value to.
  \param width  Width of value to create.
- \param data   Specifies if nibble array should be allocated for vector.
+ \param data   Specifies if uint8 array should be allocated for vector.
 
  \throws anonymous Throw
 
@@ -476,7 +476,7 @@ static void expression_create_value(
  \param line     Line number this expression is on.
  \param first    First column index of expression.
  \param last     Last column index of expression.
- \param data     Specifies if we should create a nibble array for the vector value.
+ \param data     Specifies if we should create a uint8 array for the vector value.
 
  \return Returns pointer to newly created expression.
 
@@ -504,7 +504,7 @@ expression* expression_create(
   new_expr = (expression*)malloc_safe( sizeof( expression ) );
 
   new_expr->suppl.all           = 0;
-  new_expr->suppl.part.lhs      = (nibble)lhs & 0x1;
+  new_expr->suppl.part.lhs      = (uint8)lhs & 0x1;
   new_expr->suppl.part.gen_expr = (generate_expr_mode > 0) ? 1 : 0;
   new_expr->suppl.part.root     = 1;
   new_expr->op                  = op;
@@ -677,8 +677,6 @@ void expression_set_value(
   func_unit*  funit
 ) { PROFILE(EXPRESSION_SET_VALUE);
   
-  int exp_width;  /* Dimensional width of the expression */
-  
   assert( exp != NULL );
   assert( exp->value != NULL );
   assert( sig != NULL );
@@ -831,13 +829,13 @@ void expression_resize(
 ) { PROFILE(EXPRESSION_RESIZE);
 
   int         largest_width;  /* Holds larger width of left and right children */
-  nibble      old_vec_suppl;  /* Holds original vector supplemental field as this will be erased */
+  uint8       old_vec_suppl;  /* Holds original vector supplemental field as this will be erased */
   funit_inst* tmp_inst;       /* Pointer to temporary instance */
   int         ignore = 0;     /* Specifies the number of instances to ignore */
 
   if( expr != NULL ) {
 
-    nibble new_owns_data;
+    uint8 new_owns_data;
 
     if( recursive ) {
       expression_resize( expr->left, funit, recursive, alloc );
@@ -1427,21 +1425,20 @@ void expression_db_read(
   bool       eval
 ) { PROFILE(EXPRESSION_DB_READ);
 
-  int          id;             /* Holder of expression ID */
-  expression*  expr;           /* Pointer to newly created expression */
-  int          linenum;        /* Holder of current line for this expression */
-  unsigned int column;         /* Holder of column alignment information */
-  control      exec_num;       /* Holder of expression's execution number */
-  control      op;             /* Holder of expression operation */
-  esuppl       suppl;          /* Holder of supplemental value of this expression */
-  int          right_id;       /* Holder of expression ID to the right */
-  int          left_id;        /* Holder of expression ID to the left */
-  expression*  right;          /* Pointer to current expression's right expression */
-  expression*  left;           /* Pointer to current expression's left expression */
-  int          chars_read;     /* Number of characters scanned in from line */
-  vector*      vec;            /* Holders vector value of this expression */
-  exp_link*    expl;           /* Pointer to found expression in functional unit */
-  int          tmpid;          /* ID of statement that the current expression is bound to */
+  int          id;          /* Holder of expression ID */
+  expression*  expr;        /* Pointer to newly created expression */
+  int          linenum;     /* Holder of current line for this expression */
+  unsigned int column;      /* Holder of column alignment information */
+  uint32       exec_num;    /* Holder of expression's execution number */
+  uint32       op;          /* Holder of expression operation */
+  esuppl       suppl;       /* Holder of supplemental value of this expression */
+  int          right_id;    /* Holder of expression ID to the right */
+  int          left_id;     /* Holder of expression ID to the left */
+  expression*  right;       /* Pointer to current expression's right expression */
+  expression*  left;        /* Pointer to current expression's left expression */
+  int          chars_read;  /* Number of characters scanned in from line */
+  vector*      vec;         /* Holders vector value of this expression */
+  exp_link*    expl;        /* Pointer to found expression in functional unit */
 
   if( sscanf( *line, "%d %d %x %x %x %x %d %d%n", &id, &linenum, &column, &exec_num, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 8 ) {
 
@@ -1594,8 +1591,8 @@ void expression_db_merge(
   int          id;             /* Expression ID field */
   int          linenum;        /* Expression line number */
   unsigned int column;         /* Column information */
-  control      exec_num;       /* Execution number */
-  control      op;             /* Expression operation */
+  uint32       exec_num;       /* Execution number */
+  uint32       op;             /* Expression operation */
   esuppl       suppl;          /* Supplemental field */
   int          right_id;       /* ID of right child */
   int          left_id;        /* ID of left child */
@@ -1841,10 +1838,10 @@ inline static void expression_set_tf(
 */
 inline static void expression_set_eval_NN( expression* expr ) {
 
-  control lf = ESUPPL_IS_FALSE( expr->left->suppl  );
-  control lt = ESUPPL_IS_TRUE(  expr->left->suppl  );
-  control rf = ESUPPL_IS_FALSE( expr->right->suppl );
-  control rt = ESUPPL_IS_TRUE(  expr->right->suppl );
+  uint32 lf = ESUPPL_IS_FALSE( expr->left->suppl  );
+  uint32 lt = ESUPPL_IS_TRUE(  expr->left->suppl  );
+  uint32 rf = ESUPPL_IS_FALSE( expr->right->suppl );
+  uint32 rt = ESUPPL_IS_TRUE(  expr->right->suppl );
 
   expr->suppl.part.eval_00 |= lf & rf;
   expr->suppl.part.eval_01 |= lf & rt;
@@ -4930,7 +4927,7 @@ bool expression_op_func__stop(
  Performs expression operation.  This function must only be run after its
  left and right expressions have been calculated during this clock period.
  Sets the value of the operation in its own vector value and updates the
- suppl nibble as necessary.
+ suppl uint8 as necessary.
 */
 bool expression_operate(
   expression*     expr,
@@ -5614,6 +5611,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.334  2008/06/16 04:34:45  phase1geo
+ Removing unnecessary output.
+
  Revision 1.333  2008/06/16 04:32:43  phase1geo
  Fixing issue pertaining to bad sscanf handling when compiled on a 64-bit machine
  with the -m32 option to the compiler.  Also checking in the fixed lxt2_read.c for

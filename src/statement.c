@@ -438,7 +438,7 @@ void statement_db_read(
   exp_link*  expl;           /* Pointer to found expression link */
   stmt_link* stmtl;          /* Pointer to found statement link */
   int        chars_read;     /* Number of characters read from line */
-  control    suppl;          /* Supplemental field value */
+  uint32     suppl;          /* Supplemental field value */
 
   if( sscanf( *line, "%d %x %d %d%n", &id, &suppl, &true_id, &false_id, &chars_read ) == 4 ) {
 
@@ -1007,6 +1007,9 @@ void statement_dealloc(
 
 /*
  $Log$
+ Revision 1.134  2008/05/30 23:00:48  phase1geo
+ Fixing Doxygen comments to eliminate Doxygen warning messages.
+
  Revision 1.133  2008/04/06 05:24:17  phase1geo
  Fixing another regression memory problem.  Updated regression files
  accordingly.  Checkpointing.

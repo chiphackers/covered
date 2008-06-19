@@ -452,7 +452,6 @@ bool bind_signal(
   bool         retval = TRUE;  /* Return value for this function */
   vsignal*     found_sig;      /* Pointer to found signal in design for the given name */
   func_unit*   found_funit;    /* Pointer to found functional unit containing given signal */
-  funit_inst*  found_inst;     /* Pointer to found instance containing given signal */
   statement*   stmt;           /* Pointer to root statement for the given expression */
   exp_link*    expl;           /* Pointer to current expression link */
   unsigned int rv;             /* Return value from snprintf calls */
@@ -659,6 +658,7 @@ static void bind_task_function_ports(
 
         /* Create signal name to bind */
         unsigned int rv = snprintf( sig_name, 4096, "%s.%s", name, sigl->sig->name );
+        assert( rv < 4096 );
 
         /* Add the signal to the binding list */
         bind_add( 0, sig_name, expr, funit_exp );
@@ -973,6 +973,10 @@ void bind_dealloc() { PROFILE(BIND_DEALLOC);
 
 /* 
  $Log$
+ Revision 1.131  2008/05/30 05:38:30  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
  Revision 1.130.2.3  2008/05/28 05:57:10  phase1geo
  Updating code to use unsigned long instead of uint32.  Checkpointing.
 

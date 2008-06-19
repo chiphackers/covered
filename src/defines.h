@@ -926,52 +926,6 @@ typedef enum exp_op_type_e {
                                      (x == EXP_OP_MBIT_NEG)       || \
                                      (x == EXP_OP_PARAM_MBIT_POS) || \
                                      (x == EXP_OP_PARAM_MBIT_NEG))
- 
-
-/*!
- \addtogroup op_tables
-
- The following describe the operation table values for AND, OR, XOR, NAND, NOR and
- NXOR operations.
-
- @{
-*/
-
-/*!
- Specifies the number of entries in an optab array.
-*/
-#define OPTAB_SIZE        17
- 
-/*                        00  01  02  03  10  11  12  13  20  21  22  23  30  31  32  33  NOT*/
-#define AND_OP_TABLE      0,  0,  0,  0,  0,  1,  2,  2,  0,  2,  2,  2,  0,  2,  2,  2,  0
-#define OR_OP_TABLE       0,  1,  2,  2,  1,  1,  1,  1,  2,  1,  2,  2,  2,  1,  2,  2,  0
-#define XOR_OP_TABLE      0,  1,  2,  2,  1,  0,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2,  0
-#define NAND_OP_TABLE     1,  1,  1,  1,  1,  0,  2,  2,  1,  2,  2,  2,  1,  2,  2,  2,  1
-#define NOR_OP_TABLE      1,  0,  2,  2,  0,  0,  0,  0,  2,  0,  2,  2,  2,  0,  2,  2,  1
-#define NXOR_OP_TABLE     1,  0,  2,  2,  0,  1,  1,  1,  2,  2,  2,  2,  2,  2,  2,  2,  1
-
-/*! @} */
-
-/*!
- \addtogroup comparison_types
-
- The following are comparison types used in the vector_op_compare function in vector.c:
-
- @{
-*/
-
-#define COMP_LT         0       /*!< Less than */
-#define COMP_GT         1       /*!< Greater than */
-#define COMP_LE         2       /*!< Less than or equal to */
-#define COMP_GE         3       /*!< Greater than or equal to */
-#define COMP_EQ         4       /*!< Equal to */
-#define COMP_NE         5       /*!< Not equal to */
-#define COMP_CEQ        6       /*!< Case equality */
-#define COMP_CNE        7       /*!< Case inequality */
-#define COMP_CXEQ       8       /*!< Casex equality */
-#define COMP_CZEQ       9       /*!< Casez equality */
-
-/*! @} */
 
 /*!
  \addtogroup lexer_val_types
@@ -1409,16 +1363,6 @@ typedef double real64;
 #endif
 
 /*!
- A nibble is a 8-bit value.
-*/
-typedef uint8 nibble;
-
-/*!
- A control is a 32-bit value.
-*/
-typedef uint32 control;
-
-/*!
  Machine-dependent value.
 */
 typedef unsigned long ulong;
@@ -1620,15 +1564,15 @@ typedef union vsuppl_u vsuppl;
  Supplemental field for vector structure.
 */
 union vsuppl_u {
-  nibble   all;                    /*!< Allows us to set all bits in the suppl field */
+  uint8   all;                    /*!< Allows us to set all bits in the suppl field */
   struct {
-    nibble type      :2;           /*!< Specifies what type of information is stored in this vector
+    uint8 type      :2;           /*!< Specifies what type of information is stored in this vector
                                         (see \ref vector_types for legal values) */
-    nibble data_type :2;           /*!< Specifies what the size/type of a single value entry is */
-    nibble owns_data :1;           /*!< Specifies if this vector owns its data array or not */
-    nibble is_signed :1;           /*!< Specifies that this vector should be treated as a signed value */
-    nibble is_2state :1;           /*!< Specifies that this vector should be treated as a 2-state value */
-    nibble set       :1;           /*!< Specifies if this vector's data has been set previously */
+    uint8 data_type :2;           /*!< Specifies what the size/type of a single value entry is */
+    uint8 owns_data :1;           /*!< Specifies if this vector owns its data array or not */
+    uint8 is_signed :1;           /*!< Specifies that this vector should be treated as a signed value */
+    uint8 is_2state :1;           /*!< Specifies that this vector should be treated as a 2-state value */
+    uint8 set       :1;           /*!< Specifies if this vector's data has been set previously */
   } part;
 };
 
@@ -1645,9 +1589,9 @@ typedef union fsuppl_u fsuppl;
  Supplemental field for FSM table structure.
 */
 union fsuppl_u {
-  nibble all;                      /*!< Allows us to set all bits in the suppl field */
+  uint8 all;                      /*!< Allows us to set all bits in the suppl field */
   struct {
-    nibble known : 1;              /*!< Specifies if the possible state transitions are known */
+    uint8 known : 1;              /*!< Specifies if the possible state transitions are known */
   } part;
 };
 
@@ -1664,10 +1608,10 @@ typedef union asuppl_u asuppl;
  Supplemental field for FSM table structure.
 */
 union asuppl_u {
-  nibble all;                      /*!< Allows us to set all bits in the suppl field */
+  uint8 all;                      /*!< Allows us to set all bits in the suppl field */
   struct {
-    nibble hit      : 1;           /*!< Specifies if from->to arc was hit */
-    nibble excluded : 1;           /*!< Specifies if from->to transition should be excluded from coverage consideration */
+    uint8 hit      : 1;           /*!< Specifies if from->to arc was hit */
+    uint8 excluded : 1;           /*!< Specifies if from->to transition should be excluded from coverage consideration */
   } part;
 };
 
@@ -2085,7 +2029,7 @@ struct str_link_s {
   char*         str;                 /*!< String to store */
   uint32        suppl;               /*!< 32-bit additional information */
   uint32        suppl2;              /*!< 32-bit additional information */
-  nibble        suppl3;              /*!< 8-bit additional information */
+  uint8         suppl3;              /*!< 8-bit additional information */
   vector_width* range;               /*!< Pointer to optional range information */
   str_link*     next;                /*!< Pointer to next str_link element */
 };
@@ -2147,7 +2091,7 @@ union expr_stmt_u {
  An expression is defined to be a logical combination of signals/values.  Expressions may
  contain subexpressions (which are expressions in and of themselves).  An measurable expression
  may only evaluate to TRUE (1) or FALSE (0).  If the parent expression of this expression is
- NULL, then this expression is considered a root expression.  The nibble suppl contains the
+ NULL, then this expression is considered a root expression.  The suppl contains the
  run-time information for its expression.
 */
 struct expression_s {
@@ -2793,8 +2737,8 @@ struct dim_range_s {
  Represents a reentrant stack and control information.
 */
 struct reentrant_s {
-  nibble*       data;                /*!< Packed bit data stored from signals */
-  int           data_size;           /*!< Number of nibbles stored in a single rstack_entry data */
+  uint8*        data;                /*!< Packed bit data stored from signals */
+  int           data_size;           /*!< Number of data elements stored in a single rstack_entry data */
 };
 
 /*!
@@ -2863,6 +2807,9 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.298  2008/06/19 05:52:35  phase1geo
+ Fixing bug 1997423.  Added report coverage diagnostics.
+
  Revision 1.297  2008/06/02 21:34:29  phase1geo
  Fixing bug 1981073.  Adding new tests to verify this fix.
 

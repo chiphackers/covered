@@ -27,11 +27,13 @@
 #include "util.h"
 
 
-#define PROFILE(index) int foobar
+//#define PROFILE(index) int foobar
+#define PROFILE(index)
 #define PROFILE_START(index)
-#define PROFILE_END    foobar = 0
-#define MALLOC_CALL
-#define FREE_CALL
+//#define PROFILE_END    foobar = 0
+#define PROFILE_END
+#define MALLOC_CALL(index)
+#define FREE_CALL(index)
 
 #ifdef PROFILER
 #ifdef HAVE_SYS_TIME_H
@@ -74,6 +76,9 @@ void profiler_report();
 
 /*
  $Log$
+ Revision 1.7  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.6  2008/01/07 05:01:58  phase1geo
  Cleaning up more splint errors.
 

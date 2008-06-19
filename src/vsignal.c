@@ -41,8 +41,7 @@
 #include "vsignal.h"
 
 
-extern nibble or_optab[OPTAB_SIZE];
-extern char   user_msg[USER_MSG_LENGTH];
+extern char user_msg[USER_MSG_LENGTH];
 
 
 /*!
@@ -800,6 +799,10 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.72  2008/05/30 05:38:33  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
  Revision 1.71.2.6  2008/05/28 05:57:12  phase1geo
  Updating code to use unsigned long instead of uint32.  Checkpointing.
 

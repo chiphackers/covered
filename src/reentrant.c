@@ -262,7 +262,7 @@ static void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, unsig
 reentrant* reentrant_create( func_unit* funit ) { PROFILE(REENTRANT_CREATE);
 
   reentrant* ren  = NULL;  /* Pointer to newly created reentrant structure */
-  int        data_size;    /* Number of nibbles needed to store the given functional unit */
+  int        data_size;    /* Number of uint8s needed to store the given functional unit */
   int        bits = 0;     /* Number of bits needed to store signal values */
   int        i;            /* Loop iterator */
 
@@ -282,7 +282,7 @@ reentrant* reentrant_create( func_unit* funit ) { PROFILE(REENTRANT_CREATE);
     ren->data_size = data_size;
 
     /* Allocate and initialize memory for data */
-    ren->data = (nibble*)malloc_safe( sizeof( nibble ) * ren->data_size );
+    ren->data = (uint8*)malloc_safe( sizeof( uint8 ) * ren->data_size );
     for( i=0; i<data_size; i++ ) {
       ren->data[i] = 0;
     }
@@ -306,10 +306,6 @@ reentrant* reentrant_create( func_unit* funit ) { PROFILE(REENTRANT_CREATE);
 */
 void reentrant_dealloc( reentrant* ren, func_unit* funit, expression* expr ) { PROFILE(REENTRANT_DEALLOC);
 
-  sig_link* sigl;     /* Pointer to current signal link in list */
-  int       i;        /* Loop iterator */
-  int       bit = 0;  /* Current bit in compressed bit array being assigned */
-
   if( ren != NULL ) {
 
     /* If we have data being stored, pop it */
@@ -318,8 +314,8 @@ void reentrant_dealloc( reentrant* ren, func_unit* funit, expression* expr ) { P
       /* Walk through each bit in the compressed data array and assign it back to its signal */
       reentrant_restore_data_bits( funit, ren, 0, expr );
 
-      /* Deallocate the data nibble array */
-      free_safe( ren->data, (sizeof( nibble ) * ren->data_size) );
+      /* Deallocate the data uint8 array */
+      free_safe( ren->data, (sizeof( uint8 ) * ren->data_size) );
 
     }
 
@@ -332,6 +328,10 @@ void reentrant_dealloc( reentrant* ren, func_unit* funit, expression* expr ) { P
 
 /*
  $Log$
+ Revision 1.18  2008/05/30 05:38:32  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
  Revision 1.17.2.5  2008/05/29 23:04:51  phase1geo
  Last set of submissions to get full regression passing.  Fixed a few more
  bugs in vector.c and reentrant.c.

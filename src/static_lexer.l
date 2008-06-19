@@ -54,8 +54,9 @@ extern char       user_msg[USER_MSG_LENGTH];
 /*!
  Contains state before entering comment block.
 */
-static int   comment_enter;
-static int   yywrap();
+static int comment_enter;
+static int yywrap();
+static int seinput( char* buf, int max_size );
 
 /*@-unreachable@*/
 %}

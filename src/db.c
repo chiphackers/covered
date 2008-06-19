@@ -40,6 +40,7 @@
 #include "func_unit.h"
 #include "gen_item.h"
 #include "info.h"
+#include "iter.h"
 #include "instance.h"
 #include "link.h"
 #include "obfuscate.h"
@@ -60,7 +61,6 @@
 
 extern char*       top_module;
 extern str_link*   no_score_head;
-extern nibble      or_optab[16];
 extern char        user_msg[USER_MSG_LENGTH];
 extern bool        one_instance_found;
 extern char**      leading_hierarchies;
@@ -420,8 +420,6 @@ void db_read(
     unsigned int rv;
 
     Try {
-
-      unsigned int rv;
 
       while( util_readline( db_handle, &curr_line, &curr_line_size ) ) {
 
@@ -2088,7 +2086,6 @@ statement* db_parallelize_statement(
 
   expression* exp;         /* Expression containing FORK statement */
   char*       scope;       /* Name of current parallelized statement scope */
-  char        back[4096];  /* Last portion of scope */
 
   /* If we are a parallel statement, create a FORK statement for this statement block */
   if( (stmt != NULL) && (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
@@ -2756,9 +2753,6 @@ void db_set_vcd_scope( char* scope ) { PROFILE(DB_SET_VCD_SCOPE);
 */
 void db_vcd_upscope() { PROFILE(DB_VCD_UPSCOPE);
 
-  char back[4096];   /* Lowest level of hierarchy */
-  char rest[4096];   /* Hierarchy up one level */
-
 #ifdef DEBUG_MODE
   {
     char*        scope = db_gen_curr_inst_scope();
@@ -2969,6 +2963,10 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.311  2008/06/17 23:03:28  phase1geo
+ Fixing segmentation fault in db.c when a CDD file is found to be empty but the
+ -D global option is specified.  Also enhancing the regression script environment.
+
  Revision 1.310  2008/06/09 02:56:55  phase1geo
  Adding a few new diagnostics to verify holes in coverage for db.c.  Still a
  lot more work to go here.

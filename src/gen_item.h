@@ -75,7 +75,7 @@ void gen_item_resize_stmts_and_sigs( gen_item* gi, func_unit* funit );
 void gen_item_assign_expr_ids( gen_item* gi, func_unit* funit );
 
 /*! \brief Outputs the current generate item to the given output file if it matches the type specified */
-void gen_item_db_write( gen_item* gi, control type, FILE* file );
+void gen_item_db_write( gen_item* gi, uint32 type, FILE* file );
 
 /*! \brief Outputs the entire expression tree from the given generate statement */
 void gen_item_db_write_expr_tree( gen_item* gi, FILE* file );
@@ -97,6 +97,9 @@ void gen_item_dealloc( gen_item* gi, bool rm_elem );
 
 /*
  $Log$
+ Revision 1.23  2008/01/30 05:51:50  phase1geo
+ Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
+
  Revision 1.22  2008/01/16 06:40:37  phase1geo
  More splint updates.
 
