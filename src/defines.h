@@ -2335,6 +2335,7 @@ struct statistic_s {
   int   tog_total;                   /*!< Total number of bits to toggle */
   int   tog01_hit;                   /*!< Number of bits toggling from 0 to 1 */
   int   tog10_hit;                   /*!< Number of bits toggling from 1 to 0 */
+  bool  tog_cov_found;               /*!< Specifies if a fully covered signal was found */
   int   comb_total;                  /*!< Total number of expression combinations */
   int   comb_hit;                    /*!< Number of logic combinations hit */
   int   state_total;                 /*!< Total number of FSM states */
@@ -2862,6 +2863,9 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.297  2008/06/02 21:34:29  phase1geo
+ Fixing bug 1981073.  Adding new tests to verify this fix.
+
  Revision 1.296  2008/05/30 23:00:47  phase1geo
  Fixing Doxygen comments to eliminate Doxygen warning messages.
 

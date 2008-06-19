@@ -42,13 +42,12 @@
 
 extern db**         db_list;
 extern unsigned int curr_db;
-
-extern bool   report_covered;
-extern bool   report_instance;
-extern char** leading_hierarchies;
-extern int    leading_hier_num;
-extern bool   leading_hiers_differ;
-extern isuppl info_suppl;
+extern bool         report_covered;
+extern bool         report_instance;
+extern char**       leading_hierarchies;
+extern int          leading_hier_num;
+extern bool         leading_hiers_differ;
+extern isuppl       info_suppl;
 
 
 /*!
@@ -63,7 +62,13 @@ extern isuppl info_suppl;
  the value of hit01 is incremented by one.  For each bit that toggled from
  a 1 to a 0, the value of hit10 is incremented by one.
 */
-void toggle_get_stats( sig_link* sigl, int* total, int* hit01, int* hit10 ) { PROFILE(TOGGLE_GET_STATS);
+void toggle_get_stats(
+            sig_link* sigl,
+  /*@out@*/ int*      total,
+  /*@out@*/ int*      hit01,
+  /*@out@*/ int*      hit10,
+  /*@out@*/ bool*     cov_found
+) { PROFILE(TOGGLE_GET_STATS);
 
   sig_link* curr_sig = sigl;  /* Current signal being evaluated */
   
@@ -78,7 +83,12 @@ void toggle_get_stats( sig_link* sigl, int* total, int* hit01, int* hit10 ) { PR
         *hit01 += curr_sig->sig->value->width;
         *hit10 += curr_sig->sig->value->width;
       } else {
-        vector_toggle_count( curr_sig->sig->value, hit01, hit10 );
+        int tmp_hit01 = 0;
+        int tmp_hit10 = 0;
+        vector_toggle_count( curr_sig->sig->value, &tmp_hit01, &tmp_hit10 );
+        *hit01     += tmp_hit01;
+        *hit10     += tmp_hit10;
+        *cov_found |= ((curr_sig->sig->value->width == tmp_hit01) && (curr_sig->sig->value->width == tmp_hit10));
       }
     }
     curr_sig = curr_sig->next;
@@ -99,7 +109,13 @@ void toggle_get_stats( sig_link* sigl, int* total, int* hit01, int* hit10 ) { PR
  Searches the list of signals for the specified functional unit for signals that are either covered
  or uncovered.  When a signal is found that meets the requirements, signal is added to the signal list.
 */
-bool toggle_collect( const char* funit_name, int funit_type, int cov, sig_link** sig_head, sig_link** sig_tail ) { PROFILE(TOGGLE_COLLECT);
+bool toggle_collect(
+  const char* funit_name,
+  int         funit_type,
+  int         cov,
+  sig_link**  sig_head,
+  sig_link**  sig_tail
+) { PROFILE(TOGGLE_COLLECT);
 
   bool        retval = TRUE;  /* Return value for this function */
   funit_link* funitl;         /* Pointer to found functional unit link */
@@ -162,7 +178,16 @@ bool toggle_collect( const char* funit_name, int funit_type, int cov, sig_link**
  Returns toggle coverage information for a specified signal in a specified functional unit.  This
  is needed by the GUI for verbose toggle coverage display.
 */
-bool toggle_get_coverage( const char* funit_name, int funit_type, char* sig_name, int* msb, int* lsb, char** tog01, char** tog10, int* excluded ) { PROFILE(TOGGLE_GET_COVERAGE);
+bool toggle_get_coverage(
+            const char* funit_name,
+            int         funit_type,
+            char*       sig_name,
+  /*@out@*/ int*        msb,
+  /*@out@*/ int*        lsb,
+  /*@out@*/ char**      tog01,
+  /*@out@*/ char**      tog10,
+  /*@out@*/ int*        excluded
+) { PROFILE(TOGGLE_GET_COVERAGE);
 
   bool        retval = TRUE;  /* Return value for this function */
   funit_link* funitl;         /* Pointer to found functional unit link */
@@ -206,7 +231,12 @@ bool toggle_get_coverage( const char* funit_name, int funit_type, char* sig_name
  function, indicating that the functional unit was not found in the design and the values
  of total and hit should not be used.
 */
-bool toggle_get_funit_summary( const char* funit_name, int funit_type, int* total, int* hit ) { PROFILE(TOGGLE_GET_FUNIT_SUMMARY);
+bool toggle_get_funit_summary(
+            const char* funit_name,
+            int         funit_type,
+  /*@out@*/ int*        total,
+  /*@out@*/ int*        hit
+) { PROFILE(TOGGLE_GET_FUNIT_SUMMARY);
 
   bool        retval = TRUE;  /* Return value for this function */
   funit_link* funitl;         /* Pointer to found functional unit link */
@@ -461,7 +491,10 @@ static bool toggle_funit_summary(
  Displays the signals that did not achieve 100% toggle coverage to standard 
  output from the specified signal list.
 */
-static void toggle_display_verbose( FILE* ofile, sig_link* sigl ) { PROFILE(TOGGLE_DISPLAY_VERBOSE);
+static void toggle_display_verbose(
+  FILE*     ofile,
+  sig_link* sigl
+) { PROFILE(TOGGLE_DISPLAY_VERBOSE);
 
   sig_link* curr_sig;   /* Pointer to current signal link being evaluated */
   int       hit01;      /* Number of bits that toggled from 0 to 1 */
@@ -536,7 +569,11 @@ static void toggle_display_verbose( FILE* ofile, sig_link* sigl ) { PROFILE(TOGG
  an instance basis.  The verbose toggle coverage includes the signal names
  and their bits that did not receive 100% toggle coverage during simulation. 
 */
-static void toggle_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) { PROFILE(TOGGLE_INSTANCE_VERBOSE);
+static void toggle_instance_verbose(
+  FILE*       ofile,
+  funit_inst* root,
+  char*       parent_inst
+) { PROFILE(TOGGLE_INSTANCE_VERBOSE);
 
   funit_inst* curr_inst;      /* Pointer to current instance being evaluated */
   char        tmpname[4096];  /* Temporary name holder of instance */
@@ -559,8 +596,8 @@ static void toggle_instance_verbose( FILE* ofile, funit_inst* root, char* parent
   free_safe( pname, (strlen( pname ) + 1) );
 
   if( !funit_is_unnamed( root->funit ) &&
-      ((root->stat->tog01_hit < root->stat->tog_total) ||
-       (root->stat->tog10_hit < root->stat->tog_total)) ) {
+      ((!report_covered && ((root->stat->tog01_hit < root->stat->tog_total) || (root->stat->tog10_hit < root->stat->tog_total))) ||
+       ( report_covered && root->stat->tog_cov_found)) ) {
 
     fprintf( ofile, "\n" );
     switch( root->funit->type ) {
@@ -599,13 +636,16 @@ static void toggle_instance_verbose( FILE* ofile, funit_inst* root, char* parent
  The verbose toggle coverage includes the signal names and their bits that
  did not receive 100% toggle coverage during simulation.
 */
-static void toggle_funit_verbose( FILE* ofile, funit_link* head ) { PROFILE(TOGGLE_FUNIT_VERBOSE);
+static void toggle_funit_verbose(
+  FILE*       ofile,
+  funit_link* head
+) { PROFILE(TOGGLE_FUNIT_VERBOSE);
 
   while( head != NULL ) {
 
     if( !funit_is_unnamed( head->funit ) &&
-        ((head->funit->stat->tog01_hit < head->funit->stat->tog_total) ||
-         (head->funit->stat->tog10_hit < head->funit->stat->tog_total)) ) {
+        ((!report_covered && ((head->funit->stat->tog01_hit < head->funit->stat->tog_total) || (head->funit->stat->tog10_hit < head->funit->stat->tog_total))) ||
+         ( report_covered && head->funit->stat->tog_cov_found)) ) {
 
       fprintf( ofile, "\n" );
       switch( head->funit->type ) {
@@ -640,7 +680,10 @@ static void toggle_funit_verbose( FILE* ofile, funit_link* head ) { PROFILE(TOGG
  specify its own toggle coverage along with a total toggle coverage including its 
  children.
 */
-void toggle_report( FILE* ofile, bool verbose ) { PROFILE(TOGGLE_REPORT);
+void toggle_report(
+  FILE* ofile,
+  bool  verbose
+) { PROFILE(TOGGLE_REPORT);
 
   bool       missed_found = FALSE;  /* If set to TRUE, indicates that untoggled bits were found */
   char       tmp[4096];             /* Temporary string value */
@@ -674,7 +717,7 @@ void toggle_report( FILE* ofile, bool verbose ) { PROFILE(TOGGLE_REPORT);
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
     (void)toggle_display_instance_summary( ofile, "Accumulated", acc_hits01, acc_hits10, acc_total );
     
-    if( verbose && missed_found ) {
+    if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       instl = db_list[curr_db]->inst_head;
       while( instl != NULL ) {
@@ -693,7 +736,7 @@ void toggle_report( FILE* ofile, bool verbose ) { PROFILE(TOGGLE_REPORT);
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
     (void)toggle_display_funit_summary( ofile, "Accumulated", "", acc_hits01, acc_hits10, acc_total );
 
-    if( verbose && missed_found ) {
+    if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       toggle_funit_verbose( ofile, db_list[curr_db]->funit_head );
     }
@@ -706,6 +749,10 @@ void toggle_report( FILE* ofile, bool verbose ) { PROFILE(TOGGLE_REPORT);
 
 /*
  $Log$
+ Revision 1.74  2008/06/16 23:10:43  phase1geo
+ Fixing cdd_diff script for error found while running regressions.  Also integrating
+ source code fixes from the covered-20080603-branch2 branch.  Full regression passes.
+
  Revision 1.73.2.2  2008/06/10 05:07:09  phase1geo
  Removing unnecessary output.
 

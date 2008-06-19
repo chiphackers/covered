@@ -29,24 +29,55 @@
 
 
 /*! \brief Calculates the toggle coverage for the specifed expression and signal lists. */
-void toggle_get_stats( sig_link* sigl, int* total, int* hit01, int* hit10 );
+void toggle_get_stats(
+            sig_link* sigl,
+  /*@out@*/ int*      total,
+  /*@out@*/ int*      hit01,
+  /*@out@*/ int*      hit10,
+  /*@out@*/ bool*     cov_found
+);
 
 /*! \brief Collects all toggle expressions that match the specified coverage indication. */
-bool toggle_collect( const char* funit_name, int funit_type, int cov, sig_link** sig_head, sig_link** sig_tail );
+bool toggle_collect(
+  const char* funit_name,
+  int         funit_type,
+  int         cov,
+  sig_link**  sig_head,
+  sig_link**  sig_tail
+);
 
 /*! \brief Gets toggle coverage information for a single signal in the specified functional unit */
-bool toggle_get_coverage( const char* funit_name, int funit_type, char* sig_name, int* msb, int* lsb,
-                          char** tog01, char** tog10, int* excluded );
+bool toggle_get_coverage(
+            const char* funit_name,
+            int         funit_type,
+            char*       sig_name,
+  /*@out@*/ int*        msb,
+  /*@out@*/ int*        lsb,
+  /*@out@*/ char**      tog01,
+  /*@out@*/ char**      tog10,
+  /*@out@*/ int*        excluded
+);
 
 /*! \brief Gets total and hit toggle signal status for the specified functional unit */
-bool toggle_get_funit_summary( const char* funit_name, int funit_type, /*@out@*/ int* total, /*@out@*/ int* hit );
+bool toggle_get_funit_summary(
+            const char* funit_name,
+            int         funit_type,
+  /*@out@*/ int*        total,
+  /*@out@*/ int*        hit
+);
 
 /*! \brief Generates report output for toggle coverage. */
-void toggle_report( FILE* ofile, bool verbose );
+void toggle_report(
+  FILE* ofile,
+  bool  verbose
+);
 
 
 /*
  $Log$
+ Revision 1.17  2008/01/16 05:01:23  phase1geo
+ Switched totals over from float types to int types for splint purposes.
+
  Revision 1.16  2008/01/07 23:59:55  phase1geo
  More splint updates.
 

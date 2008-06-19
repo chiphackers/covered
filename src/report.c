@@ -462,7 +462,8 @@ static void report_gather_instance_stats( funit_inst* root ) { PROFILE(REPORT_GA
       toggle_get_stats( root->funit->sig_head, 
                         &(root->stat->tog_total), 
                         &(root->stat->tog01_hit), 
-                        &(root->stat->tog10_hit) );
+                        &(root->stat->tog10_hit),
+                        &(root->stat->tog_cov_found) );
     }
 
     if( report_combination ) {
@@ -536,7 +537,8 @@ static void report_gather_funit_stats( funit_link* head ) { PROFILE(REPORT_GATHE
         toggle_get_stats( head->funit->sig_head, 
                           &(head->funit->stat->tog_total), 
                           &(head->funit->stat->tog01_hit), 
-                          &(head->funit->stat->tog10_hit) );
+                          &(head->funit->stat->tog10_hit),
+                          &(head->funit->stat->tog_cov_found) );
       }
 
       if( report_combination ) {
@@ -1011,6 +1013,10 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.105  2008/06/16 23:10:43  phase1geo
+ Fixing cdd_diff script for error found while running regressions.  Also integrating
+ source code fixes from the covered-20080603-branch2 branch.  Full regression passes.
+
  Revision 1.104.2.2  2008/06/06 05:00:35  phase1geo
  Updates for GUI.  Checkpointing.
 

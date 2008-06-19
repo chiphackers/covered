@@ -41,6 +41,7 @@ statistic* statistic_create() { PROFILE(STATISTIC_CREATE);
   stat->tog_total     = 0;
   stat->tog01_hit     = 0;
   stat->tog10_hit     = 0;
+  stat->tog_cov_found = FALSE;
   stat->comb_total    = 0;
   stat->comb_hit      = 0;
   stat->state_total   = 0;
@@ -71,13 +72,14 @@ statistic* statistic_create() { PROFILE(STATISTIC_CREATE);
 */
 void statistic_merge( statistic* stat_to, statistic* stat_from ) { PROFILE(STATISTIC_MERGE);
 
-  stat_to->line_total  += stat_from->line_total;
-  stat_to->line_hit    += stat_from->line_hit;
-  stat_to->tog_total   += stat_from->tog_total;
-  stat_to->tog01_hit   += stat_from->tog01_hit;
-  stat_to->tog10_hit   += stat_from->tog10_hit;
-  stat_to->comb_total  += stat_from->comb_total;
-  stat_to->comb_hit    += stat_from->comb_hit;
+  stat_to->line_total   += stat_from->line_total;
+  stat_to->line_hit     += stat_from->line_hit;
+  stat_to->tog_total    += stat_from->tog_total;
+  stat_to->tog01_hit    += stat_from->tog01_hit;
+  stat_to->tog10_hit    += stat_from->tog10_hit;
+  stat_to->tog_cov_found = stat_from->tog_cov_found;
+  stat_to->comb_total   += stat_from->comb_total;
+  stat_to->comb_hit     += stat_from->comb_hit;
   if( (stat_to->state_total != -1) && (stat_from->state_total != -1) ) {
     stat_to->state_total += stat_from->state_total;
   } else {
@@ -141,6 +143,9 @@ void statistic_dealloc( statistic* stat ) { PROFILE(STATISTIC_DEALLOC);
 
 /*
  $Log$
+ Revision 1.13  2008/03/17 05:26:17  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.12  2007/12/11 05:48:26  phase1geo
  Fixing more compile errors with new code changes and adding more profiling.
  Still have a ways to go before we can compile cleanly again (next submission
