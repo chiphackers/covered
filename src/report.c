@@ -301,7 +301,7 @@ void report_parse_args(
         i++;
         report_parse_metrics( argv[i] );
       } else {
-        printf( "report Throw B\n" );
+        // printf( "report Throw B\n" ); - HIT
         Throw 0;
       }
 
@@ -1013,6 +1013,9 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.106  2008/06/19 05:52:35  phase1geo
+ Fixing bug 1997423.  Added report coverage diagnostics.
+
  Revision 1.105  2008/06/16 23:10:43  phase1geo
  Fixing cdd_diff script for error found while running regressions.  Also integrating
  source code fixes from the covered-20080603-branch2 branch.  Full regression passes.
