@@ -85,7 +85,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 param13.1       param14         param15         param16         param17 \
                 param17.1       port1           port3           pulldown1       pullup1 \
                 rassign1        real1           repeat1         repeat2         report1 \
-                report2         report3         report3.1       report4         rshift1         rshift1.1 \
+                report2         report3         report3.1       rshift1         rshift1.1 \
                 rshift1.2       rshift1.3       rshift2         rshift2.1       rshift2.2 \
                 rshift2.3       rshift3         rshift3.1       rshift4         rshift4.1 \
                 rshift4.2       rshift5         sbit_sel1       sbit_sel1.1     sbit_sel2 \
@@ -161,9 +161,9 @@ IVONLYDIAGS1  = always5.1       assign1         assign2.8       example         
                 fsm7            fsm7.1          fsm7.2          fsm7.3          fsm7.4 \
                 fsm7.5          fsm8            fsm8.1          fsm8.2          fsm8.3 \
                 fsm9            fsm9.1          fsm9.2          fsm10           fsm10.1 \
-                fsm10.2         generate1       hier2           ifdef1.1 \
-                implicit2       real1.1         static2         static2.1       static2.2 \
-                unary1
+                fsm10.2         generate1       hier2           ifdef1.1        implicit2 \
+                real1.1         report4         report4.1       static2         static2.1 \
+                static2.2       unary1
 IVONLYDIAGS2  = 
 IVONLYDIAGS3  = 
 IVONLYDIAGS4  = 
