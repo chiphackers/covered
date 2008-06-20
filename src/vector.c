@@ -408,7 +408,6 @@ void vector_db_read(
                       *line += chars_read;
                     } else {
                       print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
-                      // printf( "vector Throw A\n" ); - HIT
                       Throw 0;
                     }
 
@@ -446,7 +445,6 @@ void vector_db_read(
                   /* Otherwise, we don't know how to convert the value, so flag an error */
                   } else {
                     print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
-                    // printf( "vector Throw A.3\n" ); - HIT
                     Throw 0;
                   }
                 }
@@ -459,7 +457,6 @@ void vector_db_read(
       } Catch_anonymous {
         vector_dealloc( *vec );
         *vec = NULL;
-        // printf( "vector Throw B\n" ); - HIT
         Throw 0;
       }
 
@@ -473,7 +470,6 @@ void vector_db_read(
   } else {
 
     print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
-    // printf( "vector Throw C\n" ); - HIT
     Throw 0;
 
   }
@@ -516,7 +512,6 @@ void vector_db_merge(
       if( same ) {
         print_output( "Attempting to merge databases derived from different designs.  Unable to merge",
                       FATAL, __FILE__, __LINE__ );
-        // printf( "vector Throw D\n" ); - HIT
         Throw 0;
       }
 
@@ -545,7 +540,6 @@ void vector_db_merge(
                     }
                   } else {
                     print_output( "Unable to parse vector information in database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
-                    // printf( "vector Throw E\n" ); - HIT
                     Throw 0;
                   }
 
@@ -587,7 +581,6 @@ void vector_db_merge(
                 /* Otherwise, we don't know how to convert the value, so flag an error */
                 } else {
                   print_output( "Unable to parse vector information in database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
-                  // printf( "vector Throw E.3\n" ); - HIT
                   Throw 0;
                 }
               }
@@ -602,7 +595,6 @@ void vector_db_merge(
   } else {
 
     print_output( "Unable to parse vector line from database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
-    // printf( "vector Throw F\n" ); - HIT
     Throw 0;
 
   }
@@ -1572,7 +1564,7 @@ static void vector_rshift_ulong(
     vall[i-diff] = vec->value.ul[i][VTYPE_INDEX_VAL_VALL] & lmask;
     valh[i-diff] = vec->value.ul[i][VTYPE_INDEX_VAL_VALH] & lmask;
 
-    for( i=((i-diff)+1); i<=UL_DIV(vec->width); i++ ) {
+    for( i=((i-diff)+1); i<UL_DIV(vec->width); i++ ) {
       vall[i] = 0;
       valh[i] = 0;
     }
@@ -4728,6 +4720,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.144  2008/06/19 16:14:55  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
  Revision 1.143  2008/06/16 23:10:43  phase1geo
  Fixing cdd_diff script for error found while running regressions.  Also integrating
  source code fixes from the covered-20080603-branch2 branch.  Full regression passes.
