@@ -181,9 +181,12 @@ PLI_INT32 covered_value_change( p_cb_data cb ) { PROFILE(COVERED_VALUE_CHANGE);
   vpi_get_value( cb->obj, &value );
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change, name: %s, time: %lld, value: %s",
-            obf_sig( vpi_get_str( vpiFullName, cb->obj ) ), (((uint64)cb->time->high << 32) | (uint64)cb->time->low), value.value.str );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  if( debug_mode ) {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change, name: %s, time: %lld, value: %s",
+                                obf_sig( vpi_get_str( vpiFullName, cb->obj ) ), (((uint64)cb->time->high << 32) | (uint64)cb->time->low), value.value.str );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   if( ((cb->time->low  != (PLI_INT32)(last_time & 0xffffffff)) ||
@@ -200,9 +203,12 @@ PLI_INT32 covered_value_change( p_cb_data cb ) { PROFILE(COVERED_VALUE_CHANGE);
   db_set_symbol_string( cb->user_data, value.value.str );
 #else
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change, name: %s, time: %d%0d, value: %s",
-            obf_sig( vpi_get_str( vpiFullName, cb->obj ) ), (((uint64)cb->time->high << 32) | (uint64)cb->time->low), cb->value->value.str );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  if( debug_mode ) {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change, name: %s, time: %d%0d, value: %s",
+                                obf_sig( vpi_get_str( vpiFullName, cb->obj ) ), (((uint64)cb->time->high << 32) | (uint64)cb->time->low), cb->value->value.str );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   if( ((cb->time->low  != (PLI_INT32)(last_time & 0xffffffff)) ||
@@ -356,8 +362,11 @@ void covered_create_value_change_cb( vpiHandle sig ) { PROFILE(COVERED_CREATE_VA
       (vsigl->sig->suppl.part.assigned == 0) ) {
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "Adding callback for signal: %s", obf_sig( vsigl->sig->name ) );
-    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    if( debug_mode ) {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Adding callback for signal: %s", obf_sig( vsigl->sig->name ) );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    }
 #endif
 
     /* Generate new symbol */
@@ -416,8 +425,11 @@ void covered_parse_task_func( vpiHandle mod ) { PROFILE(COVERED_PARSE_TASK_FUNC)
       if( (type == vpiTask) || (type == vpiFunction) || (type == vpiNamedBegin) ) {
 
 #ifdef DEBUG_MODE
-        snprintf( user_msg, USER_MSG_LENGTH, "Parsing task/function %s", obf_funit( vpi_get_str( vpiFullName, scope ) ) );
-        print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+        if( debug_mode ) {
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Parsing task/function %s", obf_funit( vpi_get_str( vpiFullName, scope ) ) );
+          assert( rv < USER_MSG_LENGTH );
+          print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+        }
 #endif
 
         /* Set current scope in database */
@@ -436,8 +448,11 @@ void covered_parse_task_func( vpiHandle mod ) { PROFILE(COVERED_PARSE_TASK_FUNC)
           if( (liter = vpi_iterate( vpiReg, scope )) != NULL ) {
             while( (handle = vpi_scan( liter )) != NULL ) {
 #ifdef DEBUG_MODE
-              snprintf( user_msg, USER_MSG_LENGTH, "Found reg %s", obf_sig( vpi_get_str( vpiFullName, handle ) ) );
-              print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+              if( debug_mode ) {
+                unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Found reg %s", obf_sig( vpi_get_str( vpiFullName, handle ) ) );
+                assert( rv < USER_MSG_LENGTH );
+                print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+              }
 #endif
               covered_create_value_change_cb( handle );
             }
@@ -447,14 +462,18 @@ void covered_parse_task_func( vpiHandle mod ) { PROFILE(COVERED_PARSE_TASK_FUNC)
             while( (handle = vpi_scan( liter )) != NULL ) {
               type = vpi_get( vpiType, handle );
 #ifdef DEBUG_MODE
-              if( type == vpiReg ) {
-                snprintf( user_msg, USER_MSG_LENGTH, "Found reg %s", obf_sig( vpi_get_str( vpiFullName, handle ) ) );
-              } else if( type == vpiIntegerVar ) {
-                snprintf( user_msg, USER_MSG_LENGTH, "Found integer %s", obf_sig( vpi_get_str( vpiFullName, handle ) ) );
-              } else if( type == vpiTimeVar ) {
-                snprintf( user_msg, USER_MSG_LENGTH, "Found time %s", obf_sig( vpi_get_str( vpiFullName, handle ) ) );
+              if( debug_mode ) {
+                unsigned int rv;
+                if( type == vpiReg ) {
+                  rv = snprintf( user_msg, USER_MSG_LENGTH, "Found reg %s", obf_sig( vpi_get_str( vpiFullName, handle ) ) );
+                } else if( type == vpiIntegerVar ) {
+                  rv = snprintf( user_msg, USER_MSG_LENGTH, "Found integer %s", obf_sig( vpi_get_str( vpiFullName, handle ) ) );
+                } else if( type == vpiTimeVar ) {
+                  rv = snprintf( user_msg, USER_MSG_LENGTH, "Found time %s", obf_sig( vpi_get_str( vpiFullName, handle ) ) );
+                }
+                assert( rv < USER_MSG_LENGTH );
+                print_output( user_msg, DEBUG, __FILE__, __LINE__ );
               }
-              print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
               covered_create_value_change_cb( handle );
             }
@@ -488,8 +507,11 @@ void covered_parse_signals( vpiHandle mod ) { PROFILE(COVERED_PARSE_SIGNALS);
   if( (iter = vpi_iterate( vpiNet, mod )) != NULL ) {
     while( (handle = vpi_scan( iter )) != NULL ) {
 #ifdef DEBUG_MODE
-      snprintf( user_msg, USER_MSG_LENGTH, "Found net: %s", obf_sig( vpi_get_str( vpiName, handle ) ) );
-      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+      if( debug_mode ) {
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Found net: %s", obf_sig( vpi_get_str( vpiName, handle ) ) );
+        assert( rv < USER_MSG_LENGTH );
+        print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+      }
 #endif
       covered_create_value_change_cb( handle );
     }
@@ -499,8 +521,11 @@ void covered_parse_signals( vpiHandle mod ) { PROFILE(COVERED_PARSE_SIGNALS);
   if( (iter = vpi_iterate( vpiReg, mod )) != NULL ) {
     while( (handle = vpi_scan( iter )) != NULL ) {
 #ifdef DEBUG_MODE
-      snprintf( user_msg, USER_MSG_LENGTH, "Found reg: %s", obf_sig( vpi_get_str( vpiName, handle ) ) );
-      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+      if( debug_mode ) {
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Found reg: %s", obf_sig( vpi_get_str( vpiName, handle ) ) );
+        assert( rv < USER_MSG_LENGTH );
+        print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+      }
 #endif
       covered_create_value_change_cb( handle );
     }
@@ -512,14 +537,18 @@ void covered_parse_signals( vpiHandle mod ) { PROFILE(COVERED_PARSE_SIGNALS);
       type = vpi_get( vpiType, handle );
       if( (type == vpiIntegerVar) || (type == vpiTimeVar) || (type == vpiReg) ) {
 #ifdef DEBUG_MODE
-        if( type == vpiIntegerVar ) {
-          snprintf( user_msg, USER_MSG_LENGTH, "Found integer: %s", obf_sig( vpi_get_str( vpiName, handle ) ) );
-        } else if( type == vpiTimeVar ) {
-          snprintf( user_msg, USER_MSG_LENGTH, "Found time: %s", obf_sig( vpi_get_str( vpiName, handle ) ) );
-        } else {
-          snprintf( user_msg, USER_MSG_LENGTH, "Found reg: %s", obf_sig( vpi_get_str( vpiName, handle ) ) );
+        if( debug_mode ) {
+          unsigned int rv;
+          if( type == vpiIntegerVar ) {
+            rv = snprintf( user_msg, USER_MSG_LENGTH, "Found integer: %s", obf_sig( vpi_get_str( vpiName, handle ) ) );
+          } else if( type == vpiTimeVar ) {
+            rv = snprintf( user_msg, USER_MSG_LENGTH, "Found time: %s", obf_sig( vpi_get_str( vpiName, handle ) ) );
+          } else {
+            rv = snprintf( user_msg, USER_MSG_LENGTH, "Found reg: %s", obf_sig( vpi_get_str( vpiName, handle ) ) );
+          }
+          assert( rv < USER_MSG_LENGTH );
+          print_output( user_msg, DEBUG, __FILE__, __LINE__ );
         }
-        print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
         covered_create_value_change_cb( handle );
       }
@@ -548,9 +577,12 @@ void covered_parse_instance( vpiHandle inst ) { PROFILE(COVERED_PARSE_INSTANCE);
   if( curr_instance != NULL ) {
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "Found module to be covered: %s, hierarchy: %s",
-              obf_funit( vpi_get_str( vpiName, inst ) ), obf_inst( curr_inst_scope[0] ) );
-    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    if( debug_mode ) {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Found module to be covered: %s, hierarchy: %s",
+                                  obf_funit( vpi_get_str( vpiName, inst ) ), obf_inst( curr_inst_scope[0] ) );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    }
 #endif
 
     /*

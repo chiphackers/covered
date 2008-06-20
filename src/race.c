@@ -88,6 +88,7 @@ extern unsigned int curr_db;
 extern func_unit*   curr_funit;
 extern isuppl       info_suppl;
 extern int          stmt_conn_id;
+extern bool         debug_mode;
 
 /*!
  \param reason      Numerical reason for why race condition was detected.
@@ -823,7 +824,9 @@ void race_check_modules() { PROFILE(RACE_CHECK_MODULES);
         for( i=0; i<sb_size; i++ ) {
           if( sb[i].remove ) {
 #ifdef DEBUG_MODE
-            print_output( "Removing statement block because it was found to have a race condition", DEBUG, __FILE__, __LINE__ );
+            if( debug_mode ) {
+              print_output( "Removing statement block because it was found to have a race condition", DEBUG, __FILE__, __LINE__ );
+            }
 #endif 
             stmt_blk_add_to_remove_list( sb[i].stmt );
           }
@@ -1170,6 +1173,10 @@ void race_blk_delete_list(
 
 /*
  $Log$
+ Revision 1.81  2008/05/30 05:38:32  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
  Revision 1.80.2.3  2008/05/28 22:12:31  phase1geo
  Adding further support for 32-/64-bit support.  Checkpointing.
 

@@ -42,6 +42,7 @@
 
 
 extern char user_msg[USER_MSG_LENGTH];
+extern bool debug_mode;
 
 
 /*!
@@ -544,9 +545,12 @@ void vsignal_vcd_assign(
   }
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "Assigning vsignal %s[%d:%d] (lsb=%d) to value %s",
-            obf_sig( sig->name ), msb, lsb, sig->dim[0].lsb, value );
-  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  if( debug_mode ) {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Assigning vsignal %s[%d:%d] (lsb=%d) to value %s",
+                                obf_sig( sig->name ), msb, lsb, sig->dim[0].lsb, value );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   /* Set vsignal value to specified value */
@@ -799,6 +803,10 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.73  2008/06/19 16:14:56  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
  Revision 1.72  2008/05/30 05:38:33  phase1geo
  Updating development tree with development branch.  Also attempting to fix
  bug 1965927.

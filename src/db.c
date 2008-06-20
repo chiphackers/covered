@@ -401,7 +401,7 @@ void db_read(
   func_unit*   parent_mod;           /* Pointer to parent module of this functional unit */
 
 #ifdef DEBUG_MODE
-  {
+  if( debug_mode ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_read, file: %s, mode: %d", obf_file( file ), read_mode );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -819,7 +819,7 @@ func_unit* db_add_instance(
   score = str_link_find( name, no_score_head ) == NULL;
 
 #ifdef DEBUG_MODE
-  {
+  if( debug_mode ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_instance, instance: %s, %s: %s (curr_funit: %s)",
                                 obf_inst( scope ), get_funit_type( type ), obf_funit( name ), obf_funit( curr_funit->name ) );
     assert( rv < USER_MSG_LENGTH );
@@ -931,7 +931,7 @@ void db_add_module(
   funit_link* modl;  /* Pointer to found tree node */
 
 #ifdef DEBUG_MODE
-  {
+  if( debug_mode ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_module, module: %s, file: %s, start_line: %d",
                                 obf_funit( name ), obf_file( file ), start_line );
     assert( rv < USER_MSG_LENGTH );
@@ -962,7 +962,7 @@ void db_end_module(
 ) { PROFILE(DB_END_MODULE);
 
 #ifdef DEBUG_MODE
-  {
+  if( debug_mode ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_end_module, end_line: %d", end_line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -1009,7 +1009,7 @@ bool db_add_function_task_namedblock(
           (type == FUNIT_AFUNCTION) || (type == FUNIT_ATASK) );
 
 #ifdef DEBUG_MODE
-  {
+  if( debug_mode ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_function_task_namedblock, %s: %s, file: %s, start_line: %d",
                                 get_funit_type( type ), obf_funit( name ), obf_file( file ), start_line );
     assert( rv < USER_MSG_LENGTH );
@@ -1078,7 +1078,7 @@ void db_end_function_task_namedblock(
   stmt_iter si;  /* Statement iterator for finding the first statement of the functional unit */
 
 #ifdef DEBUG_MODE
-  {
+  if( debug_mode ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_end_function_task_namedblock, end_line: %d", end_line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -1139,7 +1139,7 @@ void db_add_declared_param(
   if( expr != NULL ) {
 
 #ifdef DEBUG_MODE
-    {
+    if( debug_mode ) {
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_declared_param, param: %s, expr: %d, local: %d", obf_sig( name ), expr->id, local );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -1172,7 +1172,7 @@ void db_add_override_param( char* inst_name, expression* expr, char* param_name 
   mod_parm* mparm;  /* Pointer to module parameter added to current module */
 
 #ifdef DEBUG_MODE
-  {
+  if( debug_mode ) {
     unsigned int rv;
     if( param_name != NULL ) {
       rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_override_param, instance: %s, param_name: %s",
@@ -1214,7 +1214,7 @@ static void db_add_vector_param(
   assert( (type == PARAM_TYPE_SIG_LSB) || (type == PARAM_TYPE_SIG_MSB) );
 
 #ifdef DEBUG_MODE
-  {
+  if( debug_mode ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_vector_param, signal: %s, type: %d", obf_sig( sig->name ), type );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -1243,7 +1243,7 @@ static void db_add_vector_param(
 void db_add_defparam( /*@unused@*/ char* name, expression* expr ) { PROFILE(DB_ADD_DEFPARAM);
 
 #ifdef DEBUG_MODE
-  {
+  if( debug_mode ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_defparam, defparam: %s", obf_sig( name ) );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -1287,7 +1287,7 @@ void db_add_signal(
   int       j = 0;       /* Loop iterator */
 
 #ifdef DEBUG_MODE
-  {
+  if( debug_mode ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_signal, signal: %s, type: %d, line: %d, col: %d", obf_sig( name ), type, line, col );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -1420,7 +1420,7 @@ void db_add_enum( vsignal* enum_sig, static_expr* value ) { PROFILE(DB_ADD_ENUM)
   assert( enum_sig != NULL );
 
 #ifdef DEBUG_MODE
-  {
+  if( debug_mode ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_enum, sig_name: %s", enum_sig->name );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -1439,7 +1439,9 @@ void db_add_enum( vsignal* enum_sig, static_expr* value ) { PROFILE(DB_ADD_ENUM)
 void db_end_enum_list() { PROFILE(DB_END_ENUM_LIST);
 
 #ifdef DEBUG_MODE
-  print_output( "In db_end_enum_list", DEBUG, __FILE__, __LINE__ );
+  if( debug_mode ) {
+    print_output( "In db_end_enum_list", DEBUG, __FILE__, __LINE__ );
+  }
 #endif 
 
   enumerate_end_list( curr_funit );
@@ -1470,7 +1472,7 @@ void db_add_typedef(
   typedef_item* tdi;   /* Typedef item to create */
 
 #ifdef DEBUG_MODE
-  {
+  if( debug_mode ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_typedef, name: %s, is_signed: %d, is_handled: %d, is_sizeable: %d",
                                 name, is_signed, is_handled, is_sizeable );
     assert( rv < USER_MSG_LENGTH );
@@ -1526,7 +1528,7 @@ vsignal* db_find_signal( char* name, bool okay_if_not_found ) { PROFILE(DB_FIND_
   func_unit* found_funit;  /* Pointer to found functional unit (not used) */
 
 #ifdef DEBUG_MODE
-  {
+  if( debug_mode ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_find_signal, searching for signal %s", obf_sig( name ) );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -1585,7 +1587,7 @@ gen_item* db_find_gen_item( gen_item* root, gen_item* gi ) { PROFILE(DB_FIND_GEN
   gen_item* found;  /* Return value for this function */
 
 #ifdef DEBUG_MODE
-  {
+  if( debug_mode ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_find_gen_item, type %d", gi->suppl.part.type );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -1619,7 +1621,7 @@ typedef_item* db_find_typedef( const char* name ) { PROFILE(DB_FIND_TYPEDEF);
   assert( name != NULL );
 
 #ifdef DEBUG_MODE
-  {
+  if( debug_mode ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_find_typedef, searching for name: %s", name );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -1659,7 +1661,9 @@ gen_item* db_get_curr_gen_block() { PROFILE(DB_GET_CURR_GEN_BLOCK);
   gen_item* block = curr_gi_block;  /* Temporary pointer to current generate item block */
 
 #ifdef DEBUG_MODE
-  print_output( "In db_get_curr_gen_block", DEBUG, __FILE__, __LINE__ );
+  if( debug_mode ) {
+    print_output( "In db_get_curr_gen_block", DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   /* Clear the curr_gi_block and last_gi pointers */
@@ -1724,7 +1728,7 @@ expression* db_create_expression(
   func_unit*   func_funit;  /* Pointer to function, if we are nested in one */
 
 #ifdef DEBUG_MODE
-  {
+  if( debug_mode ) {
     int          right_id;    /* ID of right expression */
     int          left_id;     /* ID of left expression */
     unsigned int rv;          /* Return value from snprintf call */
@@ -1853,7 +1857,7 @@ void db_bind_expr_tree( expression* root, char* sig_name ) { PROFILE(DB_BIND_EXP
   if( root != NULL ) {
 
 #ifdef DEBUG_MODE
-    {
+    if( debug_mode ) {
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_bind_expr_tree, root id: %d, sig_name: %s", root->id, sig_name );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -1901,7 +1905,7 @@ expression* db_create_expr_from_static(
   vector*     vec;   /* Temporary vector */
 
 #ifdef DEBUG_MODE
-  {
+  if( debug_mode ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_create_expr_from_static, se: %p, line: %d, first_col: %d, last_col: %d",
                                 se, line, first_col, last_col );
     assert( rv < USER_MSG_LENGTH );
@@ -1957,7 +1961,7 @@ void db_add_expression( expression* root ) { PROFILE(DB_ADD_EXPRESSION);
   if( (root != NULL) && (root->suppl.part.exp_added == 0) ) {
 
 #ifdef DEBUG_MODE
-    {
+    if( debug_mode ) {
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_expression, id: %d, op: %s, line: %d", 
                                   root->id, expression_string_op( root->op ), root->line );
       assert( rv < USER_MSG_LENGTH );
@@ -2083,7 +2087,7 @@ statement* db_parallelize_statement(
   if( (stmt != NULL) && (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
 
 #ifdef DEBUG_MODE
-    {
+    if( debug_mode ) {
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_parallelize_statement, id: %d, %s, line: %d, fork_depth: %d, block_depth: %d, fork_block_depth: %d",
                                   stmt->exp->id, expression_string_op( stmt->exp->op ), stmt->exp->line, fork_depth, block_depth, fork_block_depth[fork_depth] );
       assert( rv < USER_MSG_LENGTH );
@@ -2158,7 +2162,7 @@ statement* db_create_statement(
   statement* stmt;  /* Pointer to newly created statement */
 
 #ifdef DEBUG_MODE
-  {
+  if( debug_mode ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_create_statement, id: %d, line: %d", exp->id, exp->line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -2208,7 +2212,7 @@ void db_add_statement( statement* stmt, statement* start ) { PROFILE(DB_ADD_STAT
   if( (stmt != NULL) && (stmt->suppl.part.added == 0) ) {
 
 #ifdef DEBUG_MODE
-    {
+    if( debug_mode ) {
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_statement, id: %d, start id: %d", stmt->exp->id, start->exp->id );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -2268,7 +2272,7 @@ void db_remove_statement_from_current_funit( statement* stmt ) { PROFILE(DB_REMO
   if( (stmt != NULL) && (stmt->exp != NULL) ) {
 
 #ifdef DEBUG_MODE
-    {
+    if( debug_mode ) {
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_remove_statement_from_current_funit %s, stmt id: %d, %s, line: %d",
                                   obf_funit( curr_funit->name ), stmt->exp->id, expression_string_op( stmt->exp->op ), stmt->exp->line );
       assert( rv < USER_MSG_LENGTH );
@@ -2311,7 +2315,7 @@ void db_remove_statement( statement* stmt ) { PROFILE(DB_REMOVE_STATEMENT);
   if( stmt != NULL ) {
 
 #ifdef DEBUG_MODE
-    {
+    if( debug_mode ) {
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_remove_statement, stmt id: %d, line: %d", 
                                   stmt->exp->id, stmt->exp->line );
       assert( rv < USER_MSG_LENGTH );
@@ -2343,7 +2347,7 @@ void db_connect_statement_true( statement* stmt, statement* next_true ) { PROFIL
   if( stmt != NULL ) {
 
 #ifdef DEBUG_MODE
-    {
+    if( debug_mode ) {
       unsigned int rv;
       if( next_true == NULL ) {
         next_id = 0;
@@ -2380,7 +2384,7 @@ void db_connect_statement_false( statement* stmt, statement* next_false ) { PROF
   if( stmt != NULL ) {
 
 #ifdef DEBUG_MODE
-    {
+    if( debug_mode ) {
       unsigned int rv;
       if( next_false == NULL ) {
         next_id = 0;
@@ -2413,7 +2417,7 @@ void db_gen_item_connect_true( gen_item* gi1, gen_item* gi2 ) { PROFILE(DB_GEN_I
   assert( gi1 != NULL );
 
 #ifdef DEBUG_MODE
-  {
+  if( debug_mode ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_gen_item_connect_true, gi1: %p, gi2: %p", gi1, gi2 );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -2437,7 +2441,7 @@ void db_gen_item_connect_false( gen_item* gi1, gen_item* gi2 ) { PROFILE(DB_GEN_
   assert( gi1 != NULL );
 
 #ifdef DEBUG_MODE
-  {
+  if( debug_mode ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_gen_item_connect_false, gi1: %p, gi2: %p", gi1, gi2 );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -2461,7 +2465,7 @@ void db_gen_item_connect( gen_item* gi1, gen_item* gi2 ) { PROFILE(DB_GEN_ITEM_C
   bool rv;
 
 #ifdef DEBUG_MODE
-  {
+  if( debug_mode ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_gen_item_connect, gi1: %p, gi2: %p, conn_id: %d", gi1, gi2, gi_conn_id );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -2495,7 +2499,7 @@ bool db_statement_connect( statement* curr_stmt, statement* next_stmt ) { PROFIL
   bool retval;  /* Return value for this function */
 
 #ifdef DEBUG_MODE
-  {
+  if( debug_mode ) {
     int          curr_id;  /* Current statement ID */
     int          next_id;  /* Next statement ID */
     unsigned int rv;
@@ -2553,7 +2557,7 @@ attr_param* db_create_attr_param( char* name, expression* expr ) { PROFILE(DB_CR
   attr_param* attr;  /* Pointer to newly allocated/initialized attribute parameter */
 
 #ifdef DEBUG_MODE
-  {
+  if( debug_mode ) {
     unsigned int rv;
     if( expr != NULL ) {
       rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_create_attr_param, name: %s, expr: %d", name, expr->id );
@@ -2585,7 +2589,9 @@ void db_parse_attribute(
 ) { PROFILE(DB_PARSE_ATTRIBUTE);
 
 #ifdef DEBUG_MODE
-  print_output( "In db_parse_attribute", DEBUG, __FILE__, __LINE__ );
+  if( debug_mode ) {
+    print_output( "In db_parse_attribute", DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   Try {
@@ -2717,7 +2723,7 @@ void db_sync_curr_instance() { PROFILE(DB_SYNC_CURR_INSTANCE);
 void db_set_vcd_scope( char* scope ) { PROFILE(DB_SET_VCD_SCOPE);
 
 #ifdef DEBUG_MODE
-  {
+  if( debug_mode ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_set_vcd_scope, scope: %s", obf_inst( scope ) );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -2745,7 +2751,7 @@ void db_set_vcd_scope( char* scope ) { PROFILE(DB_SET_VCD_SCOPE);
 void db_vcd_upscope() { PROFILE(DB_VCD_UPSCOPE);
 
 #ifdef DEBUG_MODE
-  {
+  if( debug_mode ) {
     char*        scope = db_gen_curr_inst_scope();
     unsigned int rv    = snprintf( user_msg, USER_MSG_LENGTH, "In db_vcd_upscope, curr_inst_scope: %s", obf_inst( scope ) );
     assert( rv < USER_MSG_LENGTH );
@@ -2782,7 +2788,7 @@ void db_assign_symbol( char* name, char* symbol, int msb, int lsb ) { PROFILE(DB
   sig_link* slink;  /* Pointer to signal containing this symbol */
 
 #ifdef DEBUG_MODE
-  {
+  if( debug_mode ) {
     char*        scope = db_gen_curr_inst_scope();
     unsigned int rv    = snprintf( user_msg, USER_MSG_LENGTH, "In db_assign_symbol, name: %s, symbol: %s, curr_inst_scope: %s, msb: %d, lsb: %d",
                                    obf_sig( name ), symbol, obf_inst( scope ), msb, lsb );
@@ -2834,7 +2840,7 @@ void db_set_symbol_char( char* sym, char value ) { PROFILE(DB_SET_SYMBOL_CHAR);
   char val[2];  /* Value to store */
 
 #ifdef DEBUG_MODE
-  {
+  if( debug_mode ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_set_symbol_char, sym: %s, value: %c", sym, value );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -2864,7 +2870,7 @@ void db_set_symbol_char( char* sym, char value ) { PROFILE(DB_SET_SYMBOL_CHAR);
 void db_set_symbol_string( char* sym, char* value ) { PROFILE(DB_SET_SYMBOL_STRING);
 
 #ifdef DEBUG_MODE
-  {
+  if( debug_mode ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_set_symbol_string, sym: %s, value: %s", sym, value );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -2899,12 +2905,14 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
   static uint64   last_sim_update = 0;
 
 #ifdef DEBUG_MODE
-  if( final ) {
-    print_output( "Performing final timestep", DEBUG, __FILE__, __LINE__ );
-  } else {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Performing timestep #%lld", time );
-    assert( rv < USER_MSG_LENGTH );
-    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  if( debug_mode ) {
+    if( final ) {
+      print_output( "Performing final timestep", DEBUG, __FILE__, __LINE__ );
+    } else {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Performing timestep #%lld", time );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    }
   }
 #endif
 
@@ -2935,7 +2943,9 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
   }
 
 #ifdef DEBUG_MODE
-  print_output( "Assigning postsimulation signals...", DEBUG, __FILE__, __LINE__ );
+  if( debug_mode ) {
+    print_output( "Assigning postsimulation signals...", DEBUG, __FILE__, __LINE__ );
+  }
 #endif
 
   if( retval ) {
@@ -2954,6 +2964,12 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.313  2008/06/20 18:12:54  phase1geo
+ Adding a few more diagnostics to regressions.  Cleaning up check_test script
+ to properly cleanup diagnostics that left CDD files around after regressions.
+ Cleaning up output in source code that is no longer necessary.  Full regressions
+ pass.
+
  Revision 1.312  2008/06/19 16:14:54  phase1geo
  leaned up all warnings in source code from -Wall.  This also seems to have cleared
  up a few runtime issues.  Full regression passes.

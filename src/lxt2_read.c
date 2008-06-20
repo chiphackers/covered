@@ -28,6 +28,7 @@
 
 
 extern char user_msg[USER_MSG_LENGTH];
+extern bool debug_mode;
 
 
 /****************************************************************************/
@@ -889,7 +890,7 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) { PROFILE(LXT2_RD_INIT);
       (void)fread( &lt->timescale, 1, 1, lt->handle );  /* No swap necessary */
 
 #ifdef DEBUG_MODE
-      {
+      if( debug_mode ) {
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "LXT:  %d facilities", lt->numfacs );
         assert( rv < USER_MSG_LENGTH ); 
         print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -939,9 +940,11 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) { PROFILE(LXT2_RD_INIT);
       if( rc != t ) {
         unsigned int rv;
 #ifdef DEBUG_MODE
-        rv = snprintf( user_msg, USER_MSG_LENGTH, "LXT:  Geometry section mangled %d (actual) vs %d (expected)", rc, t );
-        assert( rv < USER_MSG_LENGTH );
-        print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+        if( debug_mode ) {
+          rv = snprintf( user_msg, USER_MSG_LENGTH, "LXT:  Geometry section mangled %d (actual) vs %d (expected)", rc, t );
+          assert( rv < USER_MSG_LENGTH );
+          print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+        }
 #endif
         rv = snprintf( user_msg, USER_MSG_LENGTH, "LXT:  No LXT dumpfile information available in file %s", name );
         assert( rv < USER_MSG_LENGTH );
@@ -1052,17 +1055,19 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) { PROFILE(LXT2_RD_INIT);
       if( lt->numblocks ) {
 
 #ifdef DEBUG_MODE
-        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "LXT:  Read %d block header%s OK", lt->numblocks, ((lt->numblocks != 1) ? "s" : "") );
-        assert( rv < USER_MSG_LENGTH );
-        print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+        if( debug_mode ) {
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "LXT:  Read %d block header%s OK", lt->numblocks, ((lt->numblocks != 1) ? "s" : "") );
+          assert( rv < USER_MSG_LENGTH );
+          print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
-        rv = snprintf( user_msg, USER_MSG_LENGTH, "LXT:  Start time = "LXT2_RD_LLD"", lt->start );
-        assert( rv < USER_MSG_LENGTH );
-        print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+          rv = snprintf( user_msg, USER_MSG_LENGTH, "LXT:  Start time = "LXT2_RD_LLD"", lt->start );
+          assert( rv < USER_MSG_LENGTH );
+          print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
-        rv = snprintf( user_msg, USER_MSG_LENGTH, "LXT:  End time   = "LXT2_RD_LLD"", lt->end );
-        assert( rv < USER_MSG_LENGTH );
-        print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+          rv = snprintf( user_msg, USER_MSG_LENGTH, "LXT:  End time   = "LXT2_RD_LLD"", lt->end );
+          assert( rv < USER_MSG_LENGTH );
+          print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+        }
 #endif
 
         lt->value_change_callback = lxt2_rd_null_callback;
@@ -1593,10 +1598,12 @@ int lxt2_rd_iter_blocks(
 	if( processed < 5 ) {
           int gate = (processed == 4) && b->next;
 #ifdef DEBUG_MODE
-          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "LXT block [%d] processing "LXT2_RD_LLD" / "LXT2_RD_LLD"%s",
-                                      blk, b->start, b->end, (gate ? " ..." : "") ); 
-          assert( rv < USER_MSG_LENGTH );
-          print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+          if( debug_mode ) {
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "LXT block [%d] processing "LXT2_RD_LLD" / "LXT2_RD_LLD"%s",
+                                        blk, b->start, b->end, (gate ? " ..." : "") ); 
+            assert( rv < USER_MSG_LENGTH );
+            print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+          }
 #endif
           if( gate ) {
             bcutoff = b;
@@ -1752,10 +1759,12 @@ int lxt2_rd_iter_blocks(
   }
 
 #ifdef DEBUG_MODE
-  if( bcutoff && (bfinal != bcutoff) ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "LXT:  Block [%d] processed "LXT2_RD_LLD" / "LXT2_RD_LLD"", blkfinal, bfinal->start, bfinal->end );
-    assert( rv < USER_MSG_LENGTH );
-    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  if( debug_mode ) {
+    if( bcutoff && (bfinal != bcutoff) ) {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "LXT:  Block [%d] processed "LXT2_RD_LLD" / "LXT2_RD_LLD"", blkfinal, bfinal->start, bfinal->end );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    }
   }
 #endif
 

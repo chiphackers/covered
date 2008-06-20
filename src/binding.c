@@ -563,10 +563,12 @@ bool bind_signal(
           while( expl != NULL ) {
             if( (stmt = expression_get_root_statement( expl->exp )) != NULL ) {
 #ifdef DEBUG_MODE
-              unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block %d, line %d because it needed to be assigned but would not be",
-                                          stmt->exp->id, stmt->exp->line );
-              assert( rv < USER_MSG_LENGTH );
-              print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+              if( debug_mode ) {
+                unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block %d, line %d because it needed to be assigned but would not be",
+                                            stmt->exp->id, stmt->exp->line );
+                assert( rv < USER_MSG_LENGTH );
+                print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+              }
 #endif
               stmt_blk_add_to_remove_list( stmt );
             }
@@ -867,10 +869,12 @@ void bind_perform(
         if( !bound && (curr_eb->clear_assigned == 0) && (pass == 1) ) {
           if( (tmp_stmt = expression_get_root_statement( curr_eb->exp )) != NULL ) {
 #ifdef DEBUG_MODE
-            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block containing line %d in file \"%s\", because it was unbindable",
-                                        curr_eb->exp->line, obf_file( curr_eb->funit->filename ) );
-            assert( rv < USER_MSG_LENGTH );
-            print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+            if( debug_mode ) {
+              unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block containing line %d in file \"%s\", because it was unbindable",
+                                          curr_eb->exp->line, obf_file( curr_eb->funit->filename ) );
+              assert( rv < USER_MSG_LENGTH );
+              print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+            }
 #endif        
             stmt_blk_add_to_remove_list( tmp_stmt );
           }
@@ -973,6 +977,10 @@ void bind_dealloc() { PROFILE(BIND_DEALLOC);
 
 /* 
  $Log$
+ Revision 1.132  2008/06/19 16:14:53  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
  Revision 1.131  2008/05/30 05:38:30  phase1geo
  Updating development tree with development branch.  Also attempting to fix
  bug 1965927.

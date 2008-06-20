@@ -523,12 +523,15 @@ void sim_expr_changed(
     expression* parent = expr->parent->expr;
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "In sim_expr_changed, expr %d, op %s, line %d, left_changed: %d, right_changed: %d, time: %llu",
-              expr->id, expression_string_op( expr->op ), expr->line,
-              ESUPPL_IS_LEFT_CHANGED( expr->suppl ),
-              ESUPPL_IS_RIGHT_CHANGED( expr->suppl ),
-              time->full );
-    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    if( debug_mode ) {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In sim_expr_changed, expr %d, op %s, line %d, left_changed: %d, right_changed: %d, time: %llu",
+                                  expr->id, expression_string_op( expr->op ), expr->line,
+                                  ESUPPL_IS_LEFT_CHANGED( expr->suppl ),
+                                  ESUPPL_IS_RIGHT_CHANGED( expr->suppl ),
+                                  time->full );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    }
 #endif
 
     /* If our expression is on the left of the parent, set the left_changed as needed */
@@ -564,12 +567,15 @@ void sim_expr_changed(
   if( (ESUPPL_IS_ROOT( expr->suppl ) == 1) && (expr->parent->stmt != NULL) ) {
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "In sim_expr_changed, expr %d, op %s, line %d, left_changed: %d, right_changed: %d, time: %llu",
-              expr->id, expression_string_op( expr->op ), expr->line,
-              ESUPPL_IS_LEFT_CHANGED( expr->suppl ),
-              ESUPPL_IS_RIGHT_CHANGED( expr->suppl ),
-              time->full );
-    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    if( debug_mode ) {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In sim_expr_changed, expr %d, op %s, line %d, left_changed: %d, right_changed: %d, time: %llu",
+                                  expr->id, expression_string_op( expr->op ), expr->line,
+                                  ESUPPL_IS_LEFT_CHANGED( expr->suppl ),
+                                  ESUPPL_IS_RIGHT_CHANGED( expr->suppl ),
+                                  time->full );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    }
 #endif
 
     funit_push_threads( expr->parent->stmt->funit, expr->parent->stmt, time );
@@ -936,9 +942,12 @@ bool sim_expression(
   if( ESUPPL_IS_LHS( expr->suppl ) == lhs ) {
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "    In sim_expression %d, left_changed %d, right_changed %d, thread %p",
-              expr->id, ESUPPL_IS_LEFT_CHANGED( expr->suppl ), ESUPPL_IS_RIGHT_CHANGED( expr->suppl ), thr );
-    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    if( debug_mode ) {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "    In sim_expression %d, left_changed %d, right_changed %d, thread %p",
+                                  expr->id, ESUPPL_IS_LEFT_CHANGED( expr->suppl ), ESUPPL_IS_RIGHT_CHANGED( expr->suppl ), thr );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    }
 #endif
 
     /* Traverse left child expression if it has changed */
@@ -1032,8 +1041,11 @@ void sim_thread(
     expr_changed = sim_expression( stmt->exp, thr, time, FALSE );
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "  Executed statement %d, expr changed %d, thread %p", stmt->exp->id, expr_changed, thr );
-    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    if( debug_mode ) {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "  Executed statement %d, expr changed %d, thread %p", stmt->exp->id, expr_changed, thr );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    }
 #endif
       
     thr->curr = stmt;
@@ -1068,8 +1080,11 @@ void sim_thread(
       !simulate ) {
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "Completed thread %p, killing...\n", thr );
-    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    if( debug_mode ) {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Completed thread %p, killing...\n", thr );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    }
 #endif
  
     /* Destroy the thread */
@@ -1079,8 +1094,11 @@ void sim_thread(
   } else {
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "Switching context of thread %p...\n", thr );
-    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    if( debug_mode ) {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Switching context of thread %p...\n", thr );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    }
 #endif
 
     /* Pop this packet out of the active queue */
@@ -1230,6 +1248,10 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.128  2008/06/19 16:14:55  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
  Revision 1.127  2008/05/30 05:38:32  phase1geo
  Updating development tree with development branch.  Also attempting to fix
  bug 1965927.

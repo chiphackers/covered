@@ -4940,7 +4940,7 @@ bool expression_operate(
   if( expr != NULL ) {
 
 #ifdef DEBUG_MODE
-    {
+    if( debug_mode ) {
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "      In expression_operate, id: %d, op: %s, line: %d, addr: %p",
                                   expr->id, expression_string_op( expr->op ), expr->line, expr );
       assert( rv < USER_MSG_LENGTH );
@@ -5275,11 +5275,13 @@ void expression_assign(
     }
 
 #ifdef DEBUG_MODE
-    if( ((dim != NULL) && dim->last) || (lhs->op == EXP_OP_SIG) ) {
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "        In expression_assign, lhs_op: %s, rhs_op: %s, lsb: %d, time: %llu",
-                                  expression_string_op( lhs->op ), expression_string_op( rhs->op ), *lsb, time->full );
-      assert( rv < USER_MSG_LENGTH );
-      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    if( debug_mode ) {
+      if( ((dim != NULL) && dim->last) || (lhs->op == EXP_OP_SIG) ) {
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "        In expression_assign, lhs_op: %s, rhs_op: %s, lsb: %d, time: %llu",
+                                    expression_string_op( lhs->op ), expression_string_op( rhs->op ), *lsb, time->full );
+        assert( rv < USER_MSG_LENGTH );
+        print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+      }
     }
 #endif
 
@@ -5493,10 +5495,12 @@ void expression_dealloc(
 
         if( !exp_only && (expr->elem.funit != NULL) ) {
 #ifdef DEBUG_MODE
-          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block starting at line %d because it is a NB_CALL and its calling expression is being removed",
-                                      expr->elem.funit->first_stmt->exp->line );
-          assert( rv < USER_MSG_LENGTH );
-          print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+          if( debug_mode ) {
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block starting at line %d because it is a NB_CALL and its calling expression is being removed",
+                                        expr->elem.funit->first_stmt->exp->line );
+            assert( rv < USER_MSG_LENGTH );
+            print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+          }
 #endif
           stmt_blk_add_to_remove_list( expr->elem.funit->first_stmt );
         } else {
@@ -5541,7 +5545,9 @@ void expression_dealloc(
               while( tmp_expl != NULL ) {
                 if( (tmp_stmt = expression_get_root_statement( tmp_expl->exp )) != NULL ) {
 #ifdef DEBUG_MODE
-                  print_output( "Removing statement block because a statement block is being removed that assigns an MBA", DEBUG, __FILE__, __LINE__ );
+                  if( debug_mode ) {
+                    print_output( "Removing statement block because a statement block is being removed that assigns an MBA", DEBUG, __FILE__, __LINE__ );
+                  }
 #endif
                   stmt_blk_add_to_remove_list( tmp_stmt );
                 }
@@ -5611,6 +5617,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.335  2008/06/19 16:14:54  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
  Revision 1.334  2008/06/16 04:34:45  phase1geo
  Removing unnecessary output.
 

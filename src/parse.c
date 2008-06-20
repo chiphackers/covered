@@ -52,8 +52,8 @@ extern sig_range curr_prange;
 extern sig_range curr_urange;
 extern bool      instance_specified;
 extern char*     top_module;
-//extern FILE*     VLin;
 extern char*     ppfilename;
+extern bool      debug_mode;
 
 /*!
  \param file  Pointer to file to read
@@ -137,7 +137,9 @@ void parse_design(
       parser_dealloc_sig_range( &curr_prange, FALSE );
 
 #ifdef DEBUG_MODE
-      print_output( "========  Completed design parsing  ========\n", DEBUG, __FILE__, __LINE__ );
+      if( debug_mode ) {
+        print_output( "========  Completed design parsing  ========\n", DEBUG, __FILE__, __LINE__ );
+      }
 #endif
 
       /* Check to make sure that the -t and -i options were specified correctly */
@@ -180,7 +182,9 @@ void parse_design(
       stmt_blk_remove();
 
 #ifdef DEBUG_MODE
-      print_output( "========  Completed race condition checking  ========\n", DEBUG, __FILE__, __LINE__ );
+      if( debug_mode ) {
+        print_output( "========  Completed race condition checking  ========\n", DEBUG, __FILE__, __LINE__ );
+      }
 #endif
 
     } else {
@@ -209,7 +213,7 @@ void parse_design(
   db_close();
 
 #ifdef DEBUG_MODE
-  {
+  if( debug_mode ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "========  Design written to database %s successfully  ========\n\n", output_db );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -240,7 +244,7 @@ void parse_and_score_dumpfile(
   Try {
 
 #ifdef DEBUG_MODE
-    {
+    if( debug_mode ) {
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "========  Reading in database %s  ========\n", db );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -260,7 +264,7 @@ void parse_and_score_dumpfile(
     sim_initialize();
 
 #ifdef DEBUG_MODE
-    {
+    if( debug_mode ) {
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "========  Reading in VCD dumpfile %s  ========\n", dump_file );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -278,7 +282,7 @@ void parse_and_score_dumpfile(
     db_do_timestep( 0, TRUE );
 
 #ifdef DEBUG_MODE
-    {
+    if( debug_mode ) {
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "========  Writing database %s  ========\n", db );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -304,6 +308,10 @@ void parse_and_score_dumpfile(
 
 /*
  $Log$
+ Revision 1.67  2008/06/19 16:14:55  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
  Revision 1.66  2008/04/07 04:49:13  phase1geo
  Fixing regression failure and removing exception throw output that was
  hit.
