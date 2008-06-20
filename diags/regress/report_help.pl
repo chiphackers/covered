@@ -8,6 +8,19 @@ require "../verilog/regress_subs.pl";
 # Initialize the diagnostic environment
 &initialize( "report_help", 0, @ARGV );
 
+# Check to see if Tcl/Tk is enabled
+$have_tcltk = 0;
+open( CFGH, "../../config.h" ) || die "Can't open ../../config.h for reading: $!\n";
+while( <CFGH> ) {
+  chomp;
+  # Don't continue with the test of Tcl/Tk was issued
+  if( /undef HAVE_TCLTK/ ) {
+    print "Skipping report_help because Tcl/Tk support is not compiled in\n";
+    exit 0;
+  }
+}
+close( CFGH );
+
 # Perform diagnostic running code here
 &runCommand( "$COVERED -Q report -h > report_help.err" );
 

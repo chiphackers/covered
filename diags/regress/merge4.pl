@@ -28,9 +28,9 @@ system( "mv merge4a.cdd merge4.cdd; mv merge4a.tmp.cdd merge4a.cdd" ) && die;
 
 # Perform the file comparison checks
 if( $DUMPTYPE eq "VCD" ) {
-  &checkTest( "merge4", 1, 0 );
+  &checkTest( "merge4", 3, 0 );
 } else {
-  &checkTest( "merge4", 1, 5 );
+  &checkTest( "merge4", 3, 5 );
 }
 
 exit 0;

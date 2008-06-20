@@ -343,7 +343,6 @@ void db_write(
     } Catch_anonymous {
       rv = fclose( db_handle );
       assert( rv == 0 );
-      // printf( "db Throw A\n" ); - HIT
       Throw 0;
     }
 
@@ -441,7 +440,6 @@ void db_read(
                   ((read_mode == READ_MODE_REPORT_NO_MERGE) ||
                    (read_mode == READ_MODE_REPORT_MOD_MERGE)) ) {
                 print_output( "Attempting to generate report on non-scored design.  Not supported.", FATAL, __FILE__, __LINE__ );
-                // printf( "db Throw C\n" ); - HIT
                 Throw 0;
               }
           
@@ -577,7 +575,6 @@ void db_read(
           if( (read_mode != READ_MODE_MERGE_INST_MERGE) && (read_mode != READ_MODE_REPORT_MOD_MERGE) ) {
             funit_dealloc( curr_funit );
           }
-          // printf( "db Throw F\n" ); - HIT
           Throw 0;
 
         }
@@ -590,7 +587,6 @@ void db_read(
 
       unsigned int rv = fclose( db_handle );
       assert( rv == 0 );
-      // printf( "db Throw G\n" ); - HIT
       Throw 0;
 
     }
@@ -647,7 +643,6 @@ void db_read(
   /* Check to make sure that the CDD file contained valid information */
   if( leading_hier_num == 0 ) {
     print_output( "CDD file was found to be empty", FATAL, __FILE__, __LINE__ );
-    // printf( "db Throw I\n" ); - HIT
     Throw 0;
   }
 
@@ -850,12 +845,11 @@ func_unit* db_add_instance(
   if( ((found_funit_link = funit_link_find( funit->name, funit->type, db_list[curr_db]->funit_head )) != NULL) && (generate_top_mode == 0) ) {
 
     if( type != FUNIT_MODULE ) {
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Multiple identical task/function/named-begin-end names (%s) found in module %s, file %s\n",
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Multiple identical task/function/named-begin-end names (%s) found in module %s, file %s",
                                   scope, obf_funit( curr_funit->name ), obf_file( curr_funit->filename ) );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       funit_dealloc( funit );
-      // printf( "db Throw J\n" ); - HIT
       Throw 0;
     }
 
@@ -1063,7 +1057,6 @@ bool db_add_function_task_namedblock(
 
   } Catch_anonymous {
     free_safe( full_name, (strlen( full_name ) + 1) );
-    // printf( "db Throw K\n" ); - HIT
     Throw 0;
   }
 
@@ -1776,7 +1769,6 @@ expression* db_create_expression(
                                 obf_funit( func_funit->name ), obf_file( curr_funit->filename ), line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    // printf( "db Throw M\n" ); - HIT
     Throw 0;
   }
 
@@ -2603,7 +2595,6 @@ void db_parse_attribute(
 
   } Catch_anonymous {
     attribute_dealloc( ap );
-    // printf( "db Throw R\n" ); - HIT
     Throw 0;
   }
 
@@ -2963,6 +2954,10 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.312  2008/06/19 16:14:54  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
  Revision 1.311  2008/06/17 23:03:28  phase1geo
  Fixing segmentation fault in db.c when a CDD file is found to be empty but the
  -D global option is specified.  Also enhancing the regression script environment.

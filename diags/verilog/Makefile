@@ -302,7 +302,7 @@ mergerun:
 	$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $(DIAG).rptWI $(DIAG).cdd $(CHECKMEM)
-	@./check_test $(DIAG) 2 $(CHK_CODE)
+	@./check_test $(DIAG) 3 $(CHK_CODE)
 
 $(MERGELIST):
 	@if test ! -f $@.done; then \
@@ -313,7 +313,7 @@ $(MERGELIST):
 		fi; \
 	else \
 		echo Skipping $@; \
-		./check_test $@ 2 2; \
+		./check_test $@ 3 2; \
 	fi
 
 merge3run:
@@ -325,7 +325,7 @@ merge3run:
 	$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -w -d v -o $(DIAG).rptWM $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $(DIAG).rptWI $(DIAG).cdd $(CHECKMEM)
-	@./check_test $(DIAG) 3 $(CHK_CODE)
+	@./check_test $(DIAG) 4 $(CHK_CODE)
 
 $(MERGE3LIST):
 	@if test ! -f $@.done; then \
@@ -336,7 +336,7 @@ $(MERGE3LIST):
 		fi; \
 	else \
 		echo Skipping $@; \
-		./check_test $@ 3 2; \
+		./check_test $@ 4 2; \
 	fi
 
 errscorerun:
@@ -382,7 +382,7 @@ ifndef VPI
 	@$(MAKE) DIAG=$(DIAG)a oneerrmergerun
 	$(COVERED) $(COVERED_GFLAG) merge -o $(DIAG).cdd $(DIAG)a.cdd $(DIAG)b.cdd.bad 2> $(DIAG).err $(CHECKMEM)
 	@cat $(DIAG).err
-	@./check_test $(DIAG) 1 1
+	@./check_test $(DIAG) 2 1
 endif
 
 $(ERRMERGELIST):
@@ -394,7 +394,7 @@ $(ERRMERGELIST):
 		fi; \
 	else \
 		echo Skipping $@; \
-		./check_test $@ 1 2; \
+		./check_test $@ 2 2; \
 	fi
 
 errreportrun:
@@ -428,7 +428,7 @@ $(NOSIMLIST):
 	@if test ! -f $@.done; then \
 		echo Running $@; \
 		./convert_cfg $(CFG_CMD) $@.cfg; \
-		$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $@.cfg 2> $@.err $(CHECKMEM) \
+		$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $@.cfg 2> $@.err $(CHECKMEM); \
 		rm -f $@.cfg $@.cdd; \
 		cat $@.err; \
 		./check_test $@ 1 1; \
@@ -441,7 +441,7 @@ $(NOSIMERRLIST):
 	@if test ! -f $@.done; then \
 		echo Running $@ -- should see an error message; \
 		./convert_cfg $(CFG_CMD) $@.cfg; \
-		$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $@.cfg 2> $@.err $(CHECKMEM) \
+		$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $@.cfg 2> $@.err $(CHECKMEM); \
 		rm -f $@.cfg $@.cdd; \
 		cat $@.err; \
 		./check_test $@ 1 1; \

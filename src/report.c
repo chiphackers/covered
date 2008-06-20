@@ -312,7 +312,6 @@ void report_parse_args(
       report_memory       = TRUE;
 #else
       print_output( "The -view option is not available with this build", FATAL, __FILE__, __LINE__ );
-      printf( "report Throw C\n" );
       Throw 0;
 #endif
 
@@ -369,12 +368,8 @@ void report_parse_args(
       flag_use_line_width = TRUE;
 
       /* Check to see if user specified a line width value */
-      if( ((i+1) < argc) && (sscanf( argv[i+1], "%d%n", &line_width, &chars_read ) == 1) ) {
-        if( strlen( argv[i+1] ) != chars_read ) {
-          line_width = DEFAULT_LINE_WIDTH;
-        } else {
-          i++;
-        }
+      if( ((i+1) < argc) && (sscanf( argv[i+1], "%d", &line_width ) == 1) ) {
+        i++;
       } else {
         line_width = DEFAULT_LINE_WIDTH;
       }
@@ -995,6 +990,9 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.109  2008/06/20 14:19:20  phase1geo
+ Updating merge.c and report.c to remove unnecessary code and output.
+
  Revision 1.108  2008/06/20 05:32:55  phase1geo
  Adding several new diagnostics to regression suite to verify report command
  error handling and detailed verbosity.  Fixing error formatting for one

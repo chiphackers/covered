@@ -233,29 +233,36 @@ sub checkTest {
     my( $check1, $check2, $check3, $check4, $check5 );
     
     # If this is not an error test, check the CDD and report files */
-    if( ($mode == 0) || ($mode == 5) ) {
+    if( ($mode == 0) || ($mode == 1) ) {
 
-      if( $mode == 0 ) {
-
-        # Check CDD file
-        if( -e "${test}.cdd" ) {
+      # Check CDD file
+      if( -e "${test}.cdd" ) {
+        if( ($mode == 0) || (-e "${CDD_DIR}/${test}.cdd") ) {
           $check1 = system( "./cdd_diff ${test}.cdd ${CDD_DIR}/${test}.cdd" );
-          if( $check1 == 0 ) {
-            if( $rm_cdd > 0 ) {
-              system( "rm ${test}.cdd" ) && die;
-            }
-            if( $rm_cdd > 1 ) {
-              system( "rm ${test}a.cdd ${test}b.cdd" ) && die;
-            }
-            if( $rm_cdd > 2 ) {
-              system( "rm ${test}c.cdd" ) && die;
-            }
-          }
         } else {
-          $check1 = 1;
+          $check1 = 0;
         }
-
+        if( $check1 == 0 ) {
+          if( $rm_cdd > 0 ) {
+            system( "rm ${test}.cdd" ) && die;
+          }
+          if( $rm_cdd > 1 ) {
+            system( "rm ${test}a.cdd" ) && die;
+          }
+          if( $rm_cdd > 2 ) {
+            system( "rm ${test}b.cdd" ) && die;
+          }
+          if( $rm_cdd > 3 ) {
+            system( "rm ${test}c.cdd" ) && die;
+          }
+        }
+      } elsif( $mode == 0 ) {
+        $check1 = 1;
       }
+
+    }
+
+    if( ($mode == 0) || ($mode == 5) ) {
 
       # Check module report
       if( -f "${test}.rptM" ) {
