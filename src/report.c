@@ -292,7 +292,6 @@ void report_parse_args(
     if( strncmp( "-h", argv[i], 2 ) == 0 ) {
  
       report_usage();
-      // printf( "report Throw A\n" ); - HIT
       Throw 0;
 
     } else if( strncmp( "-m", argv[i], 2 ) == 0 ) {
@@ -301,7 +300,6 @@ void report_parse_args(
         i++;
         report_parse_metrics( argv[i] );
       } else {
-        // printf( "report Throw B\n" ); - HIT
         Throw 0;
       }
 
@@ -340,11 +338,9 @@ void report_parse_args(
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unrecognized detail type: -d %s", argv[i] );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          // printf( "report Throw D\n" ); - HIT
           Throw 0;
         }
       } else {
-        // printf( "report Throw E\n" ); - HIT
         Throw 0;
       }
 
@@ -361,12 +357,10 @@ void report_parse_args(
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Output file \"%s\" is unwritable", argv[i] );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            // printf( "report Throw F\n" ); - HIT
             Throw 0;
           }
         }
       } else {
-        // printf( "report Throw G\n" ); - HIT
         Throw 0;
       }
 
@@ -404,7 +398,6 @@ void report_parse_args(
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Cannot find %s database file for opening", argv[i] );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        //printf( "report Throw H\n" ); - HIT
         Throw 0;
 
       }
@@ -414,7 +407,6 @@ void report_parse_args(
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown report command option \"%s\".  See \"covered -h\" for more information.", argv[i] );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      printf( "report Throw I\n" );
       Throw 0;
 
     }
@@ -868,7 +860,6 @@ void command_report(
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Database file not specified in command line" );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        // printf( "report Throw K\n" ); - HIT
         Throw 0;
 
       } else {
@@ -884,13 +875,7 @@ void command_report(
           /* Open output stream */
           if( output_file != NULL ) {
             ofile = fopen( output_file, "w" );
-            if( ofile == NULL ) {
-              unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open report output file %s for writing", output_file );
-              assert( rv < USER_MSG_LENGTH );
-              print_output( user_msg, FATAL, __FILE__, __LINE__ );
-              printf( "report Throw L\n" );
-              Throw 0;
-            }
+            assert( ofile != NULL );  /* We should have already verified that the file is writable */
           } else {
             ofile = stdout;
           }
@@ -939,7 +924,6 @@ void command_report(
 
         if( Tk_SafeInit( interp ) == TCL_ERROR ) {
           printf( "ERROR: %s\n", interp->result );
-          // printf( "report Throw O\n" ); - HIT
           Throw 0;
         }
 
@@ -977,7 +961,6 @@ void command_report(
         if( rv != TCL_OK ) {
           rv = snprintf( user_msg, USER_MSG_LENGTH, "TCL/TK: %s\n", Tcl_ErrnoMsg( Tcl_GetErrno() ) );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          // printf( "report Throw Q\n" ); - HIT
           Throw 0;
         }
 
@@ -987,7 +970,6 @@ void command_report(
       } Catch_anonymous {
         free_safe( covered_home, (strlen( covered_home ) + 1) );
         free_safe( main_file, (strlen( main_file ) + 1) );
-        // printf( "report Throw R\n" ); - HIT
         Throw 0;
       }
 
@@ -1013,6 +995,11 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.108  2008/06/20 05:32:55  phase1geo
+ Adding several new diagnostics to regression suite to verify report command
+ error handling and detailed verbosity.  Fixing error formatting for one
+ error in report.c and removing unnecessary output.  Checkpointing.
+
  Revision 1.107  2008/06/19 12:34:16  phase1geo
  Adding missed report3 diagnostic from regression suite and removing unnecessary
  output from report.c source file.
