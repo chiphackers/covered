@@ -289,13 +289,14 @@ int tcl_func_collect_uncovered_lines( ClientData d, Tcl_Interp* tcl, int argc, c
   int*  lines;            /* Array of line numbers that were found to be uncovered during simulation */
   int*  excludes;         /* Array of exclude values */
   int   line_cnt;         /* Number of elements in the lines and excludes arrays */
+  int   line_size;        /* Number of elements allocated in lines and excludes arrays */
   int   i;                /* Loop iterator */
   char  str[20];          /* Temporary string container */
 
   funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
 
-  if( line_collect( funit_name, funit_type, 0, &lines, &excludes, &line_cnt ) ) {
+  if( line_collect( funit_name, funit_type, 0, &lines, &excludes, &line_cnt, &line_size ) ) {
 
     for( i=0; i<line_cnt; i++ ) {
       snprintf( str, 20, "%d", lines[i] );
@@ -304,8 +305,8 @@ int tcl_func_collect_uncovered_lines( ClientData d, Tcl_Interp* tcl, int argc, c
       Tcl_SetVar( tcl, "line_excludes", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
     }
 
-    free_safe( lines, (sizeof( int ) * line_cnt) );
-    free_safe( excludes, (sizeof( int ) * line_cnt) );
+    free_safe( lines, (sizeof( int ) * line_size) );
+    free_safe( excludes, (sizeof( int ) * line_size) );
 
   } else {
 
@@ -342,21 +343,22 @@ int tcl_func_collect_covered_lines( ClientData d, Tcl_Interp* tcl, int argc, con
   int*  lines;             /* Array of line numbers that were covered during simulation */
   int*  excludes;          /* Array of exclusion values */
   int   line_cnt;          /* Number of elements in the lines and excludes arrays */
+  int   line_size;         /* Number of elements allocated in the lines and excludes arrays */
   int   i;                 /* Loop iterator */
   char  str[20];           /* Temporary string container */
 
   funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
 
-  if( line_collect( funit_name, funit_type, 1, &lines, &excludes, &line_cnt ) ) {
+  if( line_collect( funit_name, funit_type, 1, &lines, &excludes, &line_cnt, &line_size ) ) {
 
     for( i=0; i<line_cnt; i++ ) {
       snprintf( str, 20, "%d", lines[i] );
       Tcl_SetVar( tcl, "covered_lines", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
     }
 
-    free_safe( lines, (sizeof( int ) * line_cnt) );
-    free_safe( excludes, (sizeof( int ) * line_cnt) );
+    free_safe( lines, (sizeof( int ) * line_size) );
+    free_safe( excludes, (sizeof( int ) * line_size) );
 
   } else {
 
@@ -2269,6 +2271,9 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.77  2008/04/15 20:37:11  phase1geo
+ Fixing database array support.  Full regression passes.
+
  Revision 1.76  2008/04/15 06:08:47  phase1geo
  First attempt to get both instance and module coverage calculatable for
  GUI purposes.  This is not quite complete at the moment though it does

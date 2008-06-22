@@ -58,16 +58,16 @@ extern bool         flag_suppress_empty_funits;
 
 
 /*!
- \param funit  Pointer to current functional unit to explore.
- \param total  Holds total number of lines parsed.
- \param hit    Holds total number of lines hit.
-
  Iterates through given statement list, gathering information about which
  lines exist in the list, which lines were hit during simulation and which
  lines were missed during simulation.  This information is used to report
  summary information about line coverage.
 */
-void line_get_stats( func_unit* funit, int* total, int* hit ) { PROFILE(LINE_GET_STATS);
+void line_get_stats(
+            func_unit* funit,  /*!< Pointer to current functional unit to explore */
+  /*@out@*/ int*       total,  /*!< Holds total number of lines parsed */
+  /*@out@*/ int*       hit     /*!< Holds total number of lines hit */
+) { PROFILE(LINE_GET_STATS);
 
   statement* stmt;  /* Pointer to current statement */
   func_iter  fi;    /* Functional unit iterator */
@@ -107,13 +107,6 @@ void line_get_stats( func_unit* funit, int* total, int* hit ) { PROFILE(LINE_GET
 }
 
 /*!
- \param funit_name  Name of functional unit to get missed line number array from.
- \param funit_type  Type of functional unit to get missed line number array from.
- \param cov         If set to 1, gets covered lines, if 0 retrieves uncovered lines; otherwise, gets all lines
- \param lines       Pointer to array of integers that will contain the line numbers.
- \param excludes    Pointer to array of integers that will contain the exclude values.
- \param line_cnt    Pointer to size of lines and excludes arrays.
-
  \return Returns TRUE if the functional unit specified was found; otherwise, returns FALSE.
 
  Searches design for specified functional unit name.  If the functional unit name is found, the lines
@@ -122,29 +115,29 @@ void line_get_stats( func_unit* funit, int* total, int* hit ) { PROFILE(LINE_GET
  not found, a value of FALSE is returned.
 */
 bool line_collect(
-            const char* funit_name,
-            int         funit_type,
-            int         cov,
-  /*@out@*/ int**       lines,
-  /*@out@*/ int**       excludes,
-  /*@out@*/ int*        line_cnt
+            const char* funit_name,  /*!< Name of functional unit to get missed line number array from */
+            int         funit_type,  /*!< Type of functional unit to get missed line number array from */
+            int         cov,         /*!< If set to 1, gets covered lines, if 0 retrieves uncovered lines; otherwise, gets all lines */
+  /*@out@*/ int**       lines,       /*!< Pointer to array of integers that will contain the line numbers */
+  /*@out@*/ int**       excludes,    /*!< Pointer to array of integers that will contain the exclude values */
+  /*@out@*/ int*        line_cnt,    /*!< Pointer to size of lines and excludes arrays */
+  /*@out@*/ int*        line_size    /*!< Pointer to the total number of lines/excludes integers allocated */
 ) { PROFILE(LINE_COLLECT);
 
   bool        retval = TRUE;  /* Return value for this function */
   funit_link* funitl;         /* Pointer to found functional unit link */
   int         i;              /* Loop iterator */
   int         last_line;      /* Specifies the last line of the current expression  */
-  int         line_size;      /* Indicates the number of entries in the lines array */
   statement*  stmt;           /* Pointer to current statement */
   func_iter   fi;             /* Functional unit iterator */
 
   if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
 
     /* Create an array that will hold the number of uncovered lines */
-    line_size = 20;
-    *line_cnt = 0;
-    *lines    = (int*)malloc_safe( sizeof( int ) * line_size );
-    *excludes = (int*)malloc_safe( sizeof( int ) * line_size );
+    *line_size = 20;
+    *line_cnt  = 0;
+    *lines     = (int*)malloc_safe( sizeof( int ) * (*line_size) );
+    *excludes  = (int*)malloc_safe( sizeof( int ) * (*line_size) );
 
     /* Initialize the functional unit iterator */
     func_iter_init( &fi, funitl->funit );
@@ -167,10 +160,10 @@ bool line_collect(
 
           last_line = expression_get_last_line_expr( stmt->exp )->line;
           for( i=stmt->exp->line; i<=last_line; i++ ) {
-            if( *line_cnt == line_size ) {
-              line_size += 20;
-              *lines    = (int*)realloc_safe( *lines,    (sizeof( int ) * (line_size - 20)), (sizeof( int ) * line_size) );
-              *excludes = (int*)realloc_safe( *excludes, (sizeof( int ) * (line_size - 20)), (sizeof( int ) * line_size) );
+            if( *line_cnt == *line_size ) {
+              *line_size += 20;
+              *lines      = (int*)realloc_safe( *lines,    (sizeof( int ) * (*line_size - 20)), (sizeof( int ) * (*line_size)) );
+              *excludes   = (int*)realloc_safe( *excludes, (sizeof( int ) * (*line_size - 20)), (sizeof( int ) * (*line_size)) );
             }
             (*lines)[(*line_cnt)]    = i;
             (*excludes)[(*line_cnt)] = ESUPPL_EXCLUDED( stmt->exp->suppl );
@@ -682,6 +675,10 @@ void line_report( FILE* ofile, bool verbose ) { PROFILE(LINE_REPORT);
 
 /*
  $Log$
+ Revision 1.90  2008/06/19 16:14:55  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
  Revision 1.89  2008/04/15 20:37:11  phase1geo
  Fixing database array support.  Full regression passes.
 

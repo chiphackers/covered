@@ -86,7 +86,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 param17.1       port1           port3           pulldown1       pullup1 \
                 rassign1        real1           repeat1         repeat2         report1 \
                 report2         report3         report3.1       report4.2       report5 \
-                report6         report7         report7.1       rshift1         rshift1.1 \
+                report6         report7         report7.1       report8         rshift1         rshift1.1 \
                 rshift1.2       rshift1.3       rshift2         rshift2.1       rshift2.2 \
                 rshift2.3       rshift3         rshift3.1       rshift4         rshift4.1 \
                 rshift4.2       rshift5         sbit_sel1       sbit_sel1.1     sbit_sel2 \
@@ -125,7 +125,8 @@ ERRSCORE      = err1.0          err2.0          err3            err3.1          
                 func4.6         task5
 ERRMERGE      = err5.2          err5.3          err5.4          merge_err1      merge_err1.1 \
                 merge_err1.2    merge_err1.3    merge_help
-ERRREPORT     = err7            err7.1          report_err1     report_err1.1   report_err1.2 \
+ERRREPORT     = err7            err7.1          err8            err8.1          err8.2 \
+                report_err1     report_err1.1   report_err1.2 \
                 report_err1.3   report_err1.4   report_err1.5   report_err1.6   report_err1.7 \
                 report_err1.8   report_help
 

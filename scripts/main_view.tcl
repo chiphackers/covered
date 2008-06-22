@@ -539,8 +539,6 @@ proc listbox_xview {args} {
 
 }
 
-puts [info patchlevel]
-
 # Read configuration file
 read_coveredrc
 
