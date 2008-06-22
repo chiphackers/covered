@@ -103,7 +103,6 @@ static void merge_parse_args(
           Throw 0;
         }
       } else {
-        printf( "merge Throw A.1\n" );
         Throw 0;
       }
 
@@ -208,6 +207,9 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.50  2008/06/20 14:19:20  phase1geo
+ Updating merge.c and report.c to remove unnecessary code and output.
+
  Revision 1.49  2008/06/18 13:22:33  phase1geo
  Adding merge diagnostics and updating more regression scripting files.
  Full regression passes.

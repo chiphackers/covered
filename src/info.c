@@ -183,7 +183,6 @@ void info_db_read( char** line ) { PROFILE(INFO_DB_READ);
 
     if( version != CDD_VERSION ) {
       print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
-      printf( "info Throw A\n" );
       Throw 0;
     }
 
@@ -234,7 +233,6 @@ void info_db_read( char** line ) { PROFILE(INFO_DB_READ);
   } else {
 
     print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
-    printf( "info Throw C\n" );
     Throw 0;
 
   }
@@ -268,7 +266,6 @@ void args_db_read( char** line ) { PROFILE(ARGS_DB_READ);
   } else {
 
     print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
-    printf( "info Throw D\n" );
     Throw 0;
 
   }
@@ -311,6 +308,10 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
 /*
  $Log$
+ Revision 1.33  2008/06/19 16:14:55  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
  Revision 1.32  2008/05/30 05:38:31  phase1geo
  Updating development tree with development branch.  Also attempting to fix
  bug 1965927.

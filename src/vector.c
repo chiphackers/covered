@@ -1406,17 +1406,22 @@ static void vector_sign_extend_ulong(
   ulong* valh,   /*!< Pointer to upper value array to bit fill */
   ulong  signl,  /*!< Sign-extension value for the lower value (call vector_get_sign_extend_vector_ulong) */
   ulong  signh,  /*!< Sign-extension value for the upper value (call vector_get_sign_extend_vector_ulong) */
-  int     last,   /*!< Index of last bit in vall/h to evalulate for bit fill */
-  int     width   /*!< Width of vall/h to fill */
+  int    last,   /*!< Index of last bit in vall/h to evalulate for bit fill */
+  int    width   /*!< Width of vall/h to fill */
 ) { PROFILE(VECTOR_SIGN_EXTEND_ULONG);
 
   /* If any special sign-extension is necessary, handle it now */
   if( (signl != 0) || (signh != 0) ) {
-    unsigned int i     = UL_DIV(last + 1);
-    ulong        fmask = UL_LMASK(last + 1);
-    unsigned int size  = UL_SIZE( width );
-    vall[i] |= signl & fmask;
-    valh[i] |= signh & fmask;
+    unsigned int i    = UL_DIV(last + 1);
+    unsigned int size = UL_SIZE( width );
+    if( UL_MOD(last + 1) == 0 ) {
+      vall[i] = signl;
+      valh[i] = signh;
+    } else {
+      ulong fmask = UL_LMASK(last + 1);
+      vall[i] |= signl & fmask;
+      valh[i] |= signh & fmask;
+    }
     for( i++; i<size; i++ ) {
       vall[i] = signl;
       valh[i] = signh;
@@ -4720,6 +4725,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.145  2008/06/20 15:48:23  phase1geo
+ Fixing bug 1994896.  Also removing some commented out printf lines that are
+ no longer necessary.
+
  Revision 1.144  2008/06/19 16:14:55  phase1geo
  leaned up all warnings in source code from -Wall.  This also seems to have cleared
  up a few runtime issues.  Full regression passes.

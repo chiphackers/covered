@@ -35,7 +35,7 @@ Instance                                           Hit/ Miss/Total    Percent hi
   Accumulated                                        1/    0/    1      100%             0/    1/    1        0%
 ---------------------------------------------------------------------------------------------------------------------
 
-main, File: report8.v, Instance: main
+    Module: main, File: report8.v, Instance: main
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
