@@ -676,10 +676,10 @@ char* substitute_env_vars(
             parsing_var = FALSE;
             ptr--;
           } else {
+            unsigned int i;
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown environment variable $%s in string \"%s\"", env_var, value );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            printf( "util Throw B\n" );
             Throw 0;
           }
         }
@@ -697,7 +697,6 @@ char* substitute_env_vars(
 
   } Catch_anonymous {
     free_safe( newvalue, (strlen( newvalue ) + 1) );
-    printf( "util Throw C\n" );
     Throw 0;
   }
 
@@ -1336,6 +1335,9 @@ void calc_miss_percent(
 
 /*
  $Log$
+ Revision 1.92  2008/05/30 23:00:48  phase1geo
+ Fixing Doxygen comments to eliminate Doxygen warning messages.
+
  Revision 1.91  2008/05/30 05:38:33  phase1geo
  Updating development tree with development branch.  Also attempting to fix
  bug 1965927.

@@ -369,9 +369,9 @@ static void score_generate_pli_tab_file(
  any command-line arguments.
 */
 static void read_command_file(
-  const char* cmd_file,
-  char***     arg_list,
-  int*        arg_num
+            const char* cmd_file,
+  /*@out@*/ char***     arg_list,
+  /*@out@*/ int*        arg_num
 ) { PROFILE(READ_COMMAND_FILE);
 
   str_link* head    = NULL;  /* Pointer to head element of arg list */
@@ -380,6 +380,10 @@ static void read_command_file(
   char      tmp_str[4096];   /* Temporary holder for read argument */
   str_link* curr;            /* Pointer to current str_link element */
   int       tmp_num = 0;     /* Temporary argument number holder */
+
+  /* Initialize the output values first, in case an exception is thrown early */
+  *arg_list = NULL;
+  *arg_num  = 0;
 
   if( file_exists( cmd_file ) ) {
 
@@ -397,7 +401,7 @@ static void read_command_file(
       } Catch_anonymous {
         rv = fclose( cmd_handle );
         assert( rv == 0 );
-        printf( "score Throw G\n" );
+        str_link_delete_list( head );
         Throw 0;
       }
 
@@ -512,19 +516,18 @@ static void score_parse_args(
   const char** argv
 ) { PROFILE(SCORE_PARSE_ARGS);
 
-  int    i = last_arg + 1;  /* Loop iterator */
-  char** arg_list;          /* List of command_line arguments */
-  int    arg_num;           /* Number of arguments in arg_list */
-  int    j;                 /* Loop iterator */
-  char*  ptr;               /* Pointer to current character in defined value */
-  char*  rv;                /* Return value from snprintf calls */
+  int    i        = last_arg + 1;  /* Loop iterator */
+  char** arg_list = NULL;          /* List of command_line arguments */
+  int    arg_num  = 0;             /* Number of arguments in arg_list */
+  int    j;                        /* Loop iterator */
+  char*  ptr;                      /* Pointer to current character in defined value */
+  char*  rv;                       /* Return value from snprintf calls */
 
   while( i < argc ) {
 
     if( strncmp( "-h", argv[i], 2 ) == 0 ) {
 
       score_usage();
-      // printf( "score Throw J\n" ); - HIT
       Throw 0;
 
     } else if( strncmp( "-i", argv[i], 2 ) == 0 ) {
@@ -559,7 +562,6 @@ static void score_parse_args(
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Output file \"%s\" is not writable", argv[i] );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            //printf( "score Throw L\n" ); - HIT
             Throw 0;
           }
         }
@@ -657,7 +659,6 @@ static void score_parse_args(
               free_safe( arg_list[j], (strlen( arg_list[j] ) + 1) );
             }
             free_safe( arg_list, (sizeof( char* ) * arg_num) );
-            //printf( "score Throw T\n" ); - HIT
             Throw 0;
           }
           for( j=0; j<arg_num; j++ ) {
@@ -735,7 +736,6 @@ static void score_parse_args(
               unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "VCD dumpfile not found \"%s\"", argv[i] );
               assert( rv < USER_MSG_LENGTH );
               print_output( user_msg, FATAL, __FILE__, __LINE__ );
-              //printf( "score Throw X\n" ); - HIT
               Throw 0;
             }
             break;
@@ -1226,6 +1226,10 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.128  2008/05/30 05:38:32  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
  Revision 1.127.2.2  2008/05/24 05:36:22  phase1geo
  Fixing bitwise coverage functionality and updating regression files.  Added
  new bitwise1 and err5.1 diagnostics to regression suite.  Removing output

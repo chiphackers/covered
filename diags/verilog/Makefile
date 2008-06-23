@@ -95,6 +95,7 @@ CDD_DIR       = ../cdd
 RPT_DIR       = ../rpt
 
 export COVERED_TESTMODE=1
+export LIBRARY_PATH=lib
 
 CHECKMEM := $(shell ./check_testmode)
 
