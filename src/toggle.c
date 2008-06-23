@@ -599,6 +599,8 @@ static void toggle_instance_verbose(
       ((!report_covered && ((root->stat->tog01_hit < root->stat->tog_total) || (root->stat->tog10_hit < root->stat->tog_total))) ||
        ( report_covered && root->stat->tog_cov_found)) ) {
 
+    pname = scope_gen_printable( funit_flatten_name( root->funit ) );
+
     fprintf( ofile, "\n" );
     switch( root->funit->type ) {
       case FUNIT_MODULE       :  fprintf( ofile, "    Module: " );       break;
@@ -610,7 +612,6 @@ static void toggle_instance_verbose(
       case FUNIT_TASK         :  fprintf( ofile, "    Task: " );         break;
       default                 :  fprintf( ofile, "    UNKNOWN: " );      break;
     }
-    pname = scope_gen_printable( funit_flatten_name( root->funit ) );
     fprintf( ofile, "%s, File: %s, Instance: %s\n", pname, obf_file( root->funit->filename ), tmpname );
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
     free_safe( pname, (strlen( pname ) + 1) );
@@ -749,6 +750,9 @@ void toggle_report(
 
 /*
  $Log$
+ Revision 1.75  2008/06/19 05:52:36  phase1geo
+ Fixing bug 1997423.  Added report coverage diagnostics.
+
  Revision 1.74  2008/06/16 23:10:43  phase1geo
  Fixing cdd_diff script for error found while running regressions.  Also integrating
  source code fixes from the covered-20080603-branch2 branch.  Full regression passes.

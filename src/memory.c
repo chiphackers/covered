@@ -1180,6 +1180,8 @@ static void memory_instance_verbose( FILE* ofile, funit_inst* root, char* parent
        (root->stat->mem_wr_hit    < root->stat->mem_ae_total)  ||
        (root->stat->mem_rd_hit    < root->stat->mem_ae_total)) ) {
 
+    pname = scope_gen_printable( funit_flatten_name( root->funit ) );
+
     fprintf( ofile, "\n" );
     switch( root->funit->type ) {
       case FUNIT_MODULE       :  fprintf( ofile, "    Module: " );       break;
@@ -1191,7 +1193,6 @@ static void memory_instance_verbose( FILE* ofile, funit_inst* root, char* parent
       case FUNIT_TASK         :  fprintf( ofile, "    Task: " );         break;
       default                 :  fprintf( ofile, "    UNKNOWN: " );      break;
     }
-    pname = scope_gen_printable( funit_flatten_name( root->funit ) );
     fprintf( ofile, "%s, File: %s, Instance: %s\n", pname, obf_file( root->funit->filename ), tmpname );
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
     free_safe( pname, (strlen( pname ) + 1) );
@@ -1348,6 +1349,10 @@ void memory_report( FILE* ofile, bool verbose ) { PROFILE(MEMORY_REPORT);
 
 /*
  $Log$
+ Revision 1.30  2008/06/19 16:14:55  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
  Revision 1.29  2008/05/30 05:38:31  phase1geo
  Updating development tree with development branch.  Also attempting to fix
  bug 1965927.
