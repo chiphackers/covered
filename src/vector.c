@@ -1840,8 +1840,8 @@ void vector_set_and_comb_evals(
 
         for( i=0; i<size; i++ ) {
           ulong* val    = tgt->value.ul[i];
-          ulong* lval   = left->value.ul[i];
-          ulong* rval   = right->value.ul[i];
+          ulong* lval   = (i < lsize) ? left->value.ul[i]  : 0;
+          ulong* rval   = (i < rsize) ? right->value.ul[i] : 0;
           ulong  lvall  = (i < lsize) ?  lval[VTYPE_INDEX_EXP_VALL] : 0;
           ulong  nlvalh = (i < lsize) ? ~lval[VTYPE_INDEX_EXP_VALH] : UL_SET;
           ulong  rvall  = (i < rsize) ?  rval[VTYPE_INDEX_EXP_VALL] : 0;
@@ -1885,8 +1885,8 @@ void vector_set_or_comb_evals(
 
         for( i=0; i<size; i++ ) {
           ulong* val    = tgt->value.ul[i];
-          ulong* lval   = left->value.ul[i];
-          ulong* rval   = right->value.ul[i];
+          ulong* lval   = (i < lsize) ? left->value.ul[i]  : 0;
+          ulong* rval   = (i < rsize) ? right->value.ul[i] : 0;
           ulong  lvall  = (i < lsize) ?  lval[VTYPE_INDEX_EXP_VALL] : 0;
           ulong  nlvalh = (i < lsize) ? ~lval[VTYPE_INDEX_EXP_VALH] : UL_SET;
           ulong  rvall  = (i < rsize) ?  rval[VTYPE_INDEX_EXP_VALL] : 0;
@@ -4725,6 +4725,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.147  2008/06/23 15:48:33  phase1geo
+ Fixing bug 2000732.
+
  Revision 1.146  2008/06/22 22:02:02  phase1geo
  Fixing regression issues.
 
