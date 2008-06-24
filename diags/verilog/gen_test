@@ -21,8 +21,8 @@ if( $diag eq "" ) {
   exit( 1 );
 }
 
-if( -e "${diag}.v" ) {
-  print "Diagnostic ${diag}.v already exists in this directory.  Not generating...\n";
+if( -e "${diag}.v" || -e "../regress/${diag}.cfg" || -e "../regress/${diag}.pl" ) {
+  print "Diagnostic already exists.  Not generating...\n";
   exit( 1 );
 }
 

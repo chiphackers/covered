@@ -563,7 +563,6 @@ static void score_parse_args(
           }
         }
       } else {
-        printf( "score Throw M\n" );
         Throw 0;
       }
 
@@ -579,7 +578,6 @@ static void score_parse_args(
           score_add_arg( argv[i] );
         }
       } else {
-        printf( "score Throw N\n" );
         Throw 0;
       }
 
@@ -598,12 +596,10 @@ static void score_parse_args(
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal top-level module name specified \"%s\"", argv[i] );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            printf( "score Throw O\n" );
             Throw 0;
           }
         }
       } else {
-        printf( "score Throw P\n" );
         Throw 0;
       }
 
@@ -615,7 +611,6 @@ static void score_parse_args(
         score_add_arg( argv[i-1] );
         score_add_arg( argv[i] );
       } else {
-        printf( "score Throw Q\n" );
         Throw 0;
       }
 
@@ -627,7 +622,6 @@ static void score_parse_args(
         score_add_arg( argv[i-1] );
         score_add_arg( argv[i] );
       } else {
-        printf( "score Throw R\n" );
         Throw 0;
       }
 
@@ -639,7 +633,6 @@ static void score_parse_args(
         score_add_arg( argv[i-1] );
         score_add_arg( argv[i] );
       } else {
-        printf( "score Throw S\n" );
         Throw 0;
       }
       
@@ -662,7 +655,6 @@ static void score_parse_args(
         }
         free_safe( arg_list, (sizeof( char* ) * arg_num) );
       } else {
-        printf( "score Throw V\n" );
         Throw 0;
       }
 
@@ -1215,6 +1207,9 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.130  2008/06/24 04:45:57  phase1geo
+ Adding new score command error diagnostics to regression suite.
+
  Revision 1.129  2008/06/23 23:34:50  phase1geo
  Adding more score diagnostics to regression suite for coverage.
 

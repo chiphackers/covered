@@ -656,6 +656,8 @@ char* substitute_env_vars(
   bool        parsing_var = FALSE;  /* Set to TRUE when we are parsing an environment variable */
   char*       env_value;            /* Environment variable value */
 
+  newvalue       = (char*)malloc_safe( 1 );
+  newvalue[0]    = '\0';
   ptr            = value;
   newvalue_index = 0;
 
@@ -1334,6 +1336,9 @@ void calc_miss_percent(
 
 /*
  $Log$
+ Revision 1.94  2008/06/24 04:45:57  phase1geo
+ Adding new score command error diagnostics to regression suite.
+
  Revision 1.93  2008/06/23 23:34:51  phase1geo
  Adding more score diagnostics to regression suite for coverage.
 

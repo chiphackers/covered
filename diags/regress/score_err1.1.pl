@@ -17,7 +17,7 @@ system( "mkdir lib2; chmod 000 lib2" ) && die;
 system( "cat score_err1.1.err" ) && die;
 
 # Remove the directory
-system( "chmod 600 lib2; rm -rf lib2" ) && die;
+system( "chmod 700 lib2; rm -rf lib2" ) && die;
 
 # Perform the file comparison checks
 &checkTest( "score_err1.1", 1, 1 );

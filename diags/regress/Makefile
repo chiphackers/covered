@@ -86,17 +86,17 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 param17.1       port1           port3           pulldown1       pullup1 \
                 rassign1        real1           repeat1         repeat2         report1 \
                 report2         report3         report3.1       report4.2       report5 \
-                report6         report7         report7.1       report8         rshift1         rshift1.1 \
-                rshift1.2       rshift1.3       rshift2         rshift2.1       rshift2.2 \
-                rshift2.3       rshift3         rshift3.1       rshift4         rshift4.1 \
-                rshift4.2       rshift5         sbit_sel1       sbit_sel1.1     sbit_sel2 \
-                sbit_sel2.1     sbit_sel3       sbit_sel3.1     sbit_sel4       sbit_sel4.1 \
-                sbit_sel4.2     sbit_sel4.3     score_env1      signed1         signed3         signed3.1 \
-                signed3.2       signed3.3       signed3.4       signed3.5       signed3.6 \
-                signed4         signed4.2       slist1          slist1.1        slist1.2 \
-                slist1.3        slist2          slist3          slist3.2        slist4 \
-                static1         string1         string2         string2.1       supply0 \
-                supply1         task1 \
+                report6         report7         report7.1       report8         rshift1 \
+                rshift1.1       rshift1.2       rshift1.3       rshift2         rshift2.1 \
+                rshift2.2       rshift2.3       rshift3         rshift3.1       rshift4 \
+                rshift4.1       rshift4.2       rshift5         sbit_sel1       sbit_sel1.1 \
+                sbit_sel2       sbit_sel2.1     sbit_sel3       sbit_sel3.1     sbit_sel4 \
+                sbit_sel4.1     sbit_sel4.2     sbit_sel4.3     score_env1      score_ts1 \
+                signed1         signed3         signed3.1       signed3.2       signed3.3 \
+                signed3.4       signed3.5       signed3.6       signed4         signed4.2 \
+                slist1          slist1.1        slist1.2        slist1.3        slist2 \
+                slist3          slist3.2        slist4          static1         string1 \
+                string2         string2.1       supply0         supply1         task1 \
                 task1.1         task2           task2.1         task2.2         task2.3 \
                 task3           task3.1         task4           task4.1         timescale1 \
                 timescale1.6    timescale1.9    timescale1.12   timescale1.15   timescale1.16 \
@@ -156,7 +156,8 @@ NOSIMERRLIST  = comment1        enum2           err4            err4.1 \
                 gen34.1         gen35           gen35.1         gen36           gen36.1 \
                 gen37           gen37.1         gen38           gen38.1         gen39 \
                 gen39.1         gen40           gen40.1         include_err     score_env2 \
-                score_err1.4    timescale3 \
+                score_err1.4    score_err1.5    score_err1.6    score_err1.7    score_err1.8 \
+                score_err1.9    score_err1.10   score_err1.11   score_err1.12   timescale3 \
                 timescale3.1    timescale3.2    timescale3.3    timescale3.4    timescale3.5 \
                 timescale3.6    timescale3.7    timescale3.8    timescale3.9    timescale3.10 \
                 timescale3.11   timescale3.12   timescale3.13   timescale3.14
