@@ -438,7 +438,6 @@ static void read_command_file(
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open command file %s for reading", cmd_file );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      printf( "score Throw H\n" );
       Throw 0;
 
     }
@@ -448,7 +447,6 @@ static void read_command_file(
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Command file %s does not exist", cmd_file );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    printf( "score Throw I\n" );
     Throw 0;
 
   }
@@ -543,7 +541,6 @@ static void score_parse_args(
           instance_specified = TRUE;
         }
       } else {
-        printf( "score Throw K\n" );
         Throw 0;
       }
 
@@ -650,28 +647,20 @@ static void score_parse_args(
 
       if( check_option_value( argc, argv, i ) ) {
         i++;
-        if( file_exists( argv[i] ) ) {
-          Try {
-            read_command_file( argv[i], &arg_list, &arg_num );
-            score_parse_args( arg_num, -1, (const char**)arg_list );
-          } Catch_anonymous {
-            for( j=0; j<arg_num; j++ ) {
-              free_safe( arg_list[j], (strlen( arg_list[j] ) + 1) );
-            }
-            free_safe( arg_list, (sizeof( char* ) * arg_num) );
-            Throw 0;
-          }
+        Try {
+          read_command_file( argv[i], &arg_list, &arg_num );
+          score_parse_args( arg_num, -1, (const char**)arg_list );
+        } Catch_anonymous {
           for( j=0; j<arg_num; j++ ) {
             free_safe( arg_list[j], (strlen( arg_list[j] ) + 1) );
           }
           free_safe( arg_list, (sizeof( char* ) * arg_num) );
-        } else {
-          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Cannot find argument file %s specified with -f option", argv[i] );
-          assert( rv < USER_MSG_LENGTH );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          printf( "score Throw U\n" );
           Throw 0;
         }
+        for( j=0; j<arg_num; j++ ) {
+          free_safe( arg_list[j], (strlen( arg_list[j] ) + 1) );
+        }
+        free_safe( arg_list, (sizeof( char* ) * arg_num) );
       } else {
         printf( "score Throw V\n" );
         Throw 0;
@@ -1226,6 +1215,9 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.129  2008/06/23 23:34:50  phase1geo
+ Adding more score diagnostics to regression suite for coverage.
+
  Revision 1.128  2008/05/30 05:38:32  phase1geo
  Updating development tree with development branch.  Also attempting to fix
  bug 1965927.

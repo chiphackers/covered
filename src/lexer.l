@@ -973,7 +973,7 @@ static int yywrap() { PROFILE(LEXER_YYWRAP);
     }
     rv = unlink( ppfilename );
     assert( rv == 0 );
-    printf( "lexer Throw G\n" );
+    tree_dealloc( found_modules );
     Throw 0;
   }
   

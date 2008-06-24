@@ -517,7 +517,6 @@ void directory_load(
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to read directory %s", dir );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    printf( "util Throw A\n" );
     Throw 0;
 
   } else {
@@ -1335,6 +1334,9 @@ void calc_miss_percent(
 
 /*
  $Log$
+ Revision 1.93  2008/06/23 23:34:51  phase1geo
+ Adding more score diagnostics to regression suite for coverage.
+
  Revision 1.92  2008/05/30 23:00:48  phase1geo
  Fixing Doxygen comments to eliminate Doxygen warning messages.
 

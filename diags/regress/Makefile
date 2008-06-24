@@ -121,7 +121,8 @@ RACELIST      = race1           race1.1         race1.2         race2.1         
 ERRSCORE      = err1.0          err2.0          err3            err3.1          err5 \
                 err5.1          err6            err6.1          err6.2          err6.3 \
                 err6.4          func4           func4.1         func4.2         func4.3 \
-                func4.4         func4.5         func4.6         score_help      task5
+                func4.4         func4.5         func4.6         score_err1      score_err1.1 \
+                score_err1.2    score_err1.3    score_help      task5
 ERRMERGE      = err5.2          err5.3          err5.4          merge_err1      merge_err1.1 \
                 merge_err1.2    merge_err1.3    merge_help
 ERRREPORT     = err7            err7.1          err8            err8.1          err8.2 \
@@ -155,7 +156,7 @@ NOSIMERRLIST  = comment1        enum2           err4            err4.1 \
                 gen34.1         gen35           gen35.1         gen36           gen36.1 \
                 gen37           gen37.1         gen38           gen38.1         gen39 \
                 gen39.1         gen40           gen40.1         include_err     score_env2 \
-                timescale3 \
+                score_err1.4    timescale3 \
                 timescale3.1    timescale3.2    timescale3.3    timescale3.4    timescale3.5 \
                 timescale3.6    timescale3.7    timescale3.8    timescale3.9    timescale3.10 \
                 timescale3.11   timescale3.12   timescale3.13   timescale3.14
