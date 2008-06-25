@@ -2482,7 +2482,7 @@ void vector_from_string(
   int  bits_per_char;         /* Number of bits represented by a single character in the value string str */
   int  size;                  /* Specifies bit width of vector to create */
   char value[MAX_BIT_WIDTH];  /* String to store string value in */
-  char stype[2];              /* Temporary holder for type of string being parsed */
+  char stype[3];              /* Temporary holder for type of string being parsed */
   int  chars_read;            /* Number of characters read by a sscanf() function call */
   int  i;                     /* Loop iterator */
   int  pos;                   /* Bit position */
@@ -4725,6 +4725,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.148  2008/06/23 15:55:25  phase1geo
+ Fixing other vector issues related to bug 2000732.
+
  Revision 1.147  2008/06/23 15:48:33  phase1geo
  Fixing bug 2000732.
 
