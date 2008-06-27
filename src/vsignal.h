@@ -29,7 +29,13 @@
 
 
 /*! \brief Creates a new vsignal based on the information passed to this function. */
-vsignal* vsignal_create( const char* name, int type, int width, int line, int col );
+vsignal* vsignal_create(
+  const char*  name,
+  unsigned int type,
+  unsigned int width,
+  unsigned int line,
+  unsigned int col
+);
 
 /*! \brief Creates the vector for a given signal based on the values of its dimension information */
 void vsignal_create_vec( vsignal* sig );
@@ -53,14 +59,17 @@ void vsignal_merge(
 );
 
 /*! \brief Propagates specified signal information to rest of design. */
-void vsignal_propagate( vsignal* sig, const sim_time* time );
+void vsignal_propagate(
+  vsignal*        sig,
+  const sim_time* time
+);
 
 /*! \brief Assigns specified VCD value to specified vsignal. */
 void vsignal_vcd_assign(
   vsignal*        sig,
   const char*     value,
-  int             msb,
-  int             lsb,
+  unsigned int    msb,
+  unsigned int    lsb,
   const sim_time* time
 );
 
@@ -85,6 +94,11 @@ void vsignal_dealloc( vsignal* sig );
 
 /*
  $Log$
+ Revision 1.28  2008/04/15 06:08:47  phase1geo
+ First attempt to get both instance and module coverage calculatable for
+ GUI purposes.  This is not quite complete at the moment though it does
+ compile.
+
  Revision 1.27  2008/03/13 10:28:55  phase1geo
  The last of the exception handling modifications.
 

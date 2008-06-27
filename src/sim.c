@@ -345,14 +345,11 @@ static void sim_thread_pop_head() { PROFILE(SIM_THREAD_POP_HEAD);
 }
 
 /*!
- \param thr   Pointer to the thread to add to the delay queue.
- \param time  Pointer to time to insert the given thread.
-
  This function is called by the expression_op_func__delay() function.
 */
 void sim_thread_insert_into_delay_queue(
-  thread*         thr,
-  const sim_time* time
+  thread*         thr,  /*!< Pointer to the thread to add to the delay queue */
+  const sim_time* time  /*!< Pointer to time to insert the given thread */
 ) { PROFILE(SIM_THREAD_INSERT_INTO_DELAY_QUEUE);
 
   thread* curr;  /* Pointer to current thread in delayed queue to compare against */
@@ -435,16 +432,13 @@ void sim_thread_insert_into_delay_queue(
 }
 
 /*!
- \param thr   Pointer to thread to add to the tail of the simulation queue.
- \param time  Current simulation time of thread to push
-
  Adds the specified thread to the end of the current simulation queue.  This function gets
  called whenever a head statement has a signal change or the head statement is a delay operation
  and
 */
 void sim_thread_push(
-  thread*         thr,
-  const sim_time* time
+  thread*         thr,  /*!< Pointer to thread to add to the tail of the simulation queue */
+  const sim_time* time  /*!< Current simulation time of thread to push */
 ) { PROFILE(SIM_THREAD_PUSH);
 
   exp_op_type op;  /* Operation type of current expression in given thread */
@@ -497,9 +491,6 @@ void sim_thread_push(
 }
 
 /*!
- \param expr  Pointer to expression that contains a changed signal value.
- \param time  Specifies current simulation time for the thread to push.
-
  Traverses up expression tree pointed to by leaf node expr, setting the
  CHANGED bits as it reaches the root expression.  When the root expression is
  found, the statement pointed to by the root's parent pointer is added to the
@@ -509,8 +500,8 @@ void sim_thread_push(
  do not add the statement again.
 */
 void sim_expr_changed(
-  expression*     expr,
-  const sim_time* time
+  expression*     expr,  /*!< Pointer to expression that contains a changed signal value */
+  const sim_time* time   /*!< Specifies current simulation time for the thread to push */
 ) { PROFILE(SIM_EXPR_CHANGED);
 
   assert( expr != NULL );
@@ -587,17 +578,17 @@ void sim_expr_changed(
 }
 
 /*!
- \param parent  Pointer to parent thread (if one exists) of the newly created thread
- \param stmt    Pointer to the statement that is the head statement of the thread's block
- \param funit   Pointer to functional unit containing the new thread
-
  \return Returns a pointer to the newly allocated and initialized thread
 
  Allocates a new thread for simulation purposes and initializes the thread structure with
  everything that can be done at time 0.  This function does not place the thread into any
  queues (this is left to the sim_add_thread function).
 */
-static thread* sim_create_thread( thread* parent, statement* stmt, func_unit* funit ) { PROFILE(SIM_CREATE_THREAD);
+static thread* sim_create_thread(
+  thread*    parent,  /*!< Pointer to parent thread (if one exists) of the newly created thread */
+  statement* stmt,    /*!< Pointer to the statement that is the head statement of the thread's block */
+  func_unit* funit    /*!< Pointer to functional unit containing the new thread */
+) { PROFILE(SIM_CREATE_THREAD);
 
   thread* thr;  /* Pointer to newly allocated thread */
 
@@ -1248,6 +1239,12 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.129  2008/06/20 18:43:41  phase1geo
+ Updating source files to optimize code when the --enable-debug option is specified.
+ The performance was almost 8x worse with this option enabled, now it should be
+ almost as good as without the mode (although, not completely).  Full regression
+ passes.
+
  Revision 1.128  2008/06/19 16:14:55  phase1geo
  leaned up all warnings in source code from -Wall.  This also seems to have cleared
  up a few runtime issues.  Full regression passes.

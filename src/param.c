@@ -91,9 +91,6 @@ extern int    leading_hier_num;
 
 
 /*!
- \param name  Name of parameter value to find.
- \param parm  Pointer to head of module parameter list to search.
-
  \return Returns pointer to found module parameter or NULL if module parameter is not
          found.
 
@@ -103,8 +100,8 @@ extern int    leading_hier_num;
  is returned if no match was found.
 */
 mod_parm* mod_parm_find(
-  const char* name,
-  mod_parm*   parm
+  const char* name,  /*!< Name of parameter value to find */
+  mod_parm*   parm   /*!< Pointer to head of module parameter list to search */
 ) { PROFILE(MOD_PARM_FIND);
 
   assert( name != NULL );
@@ -113,20 +110,19 @@ mod_parm* mod_parm_find(
     parm = parm->next;
   }
 
+  PROFILE_END;
+
   return( parm );
  
 }
 
 /*!
- \param exp   Pointer to expression to find and remove from lists.
- \param parm  Pointer to module parameter list to search.
-
  Searches list of module parameter expression lists for specified expression.  If
  the expression is found in one of the lists, remove the expression link.
 */
 static void mod_parm_find_expr_and_remove(
-  expression* exp,
-  mod_parm*   parm
+  expression* exp,  /*!< Pointer to expression to find and remove from lists */
+  mod_parm*   parm  /*!< Pointer to module parameter list to search */
 ) { PROFILE(MOD_PARM_FIND_EXPR_AND_REMOVE);
 
   if( exp != NULL ) {
@@ -142,32 +138,25 @@ static void mod_parm_find_expr_and_remove(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param scope      Full hierarchical name of parameter value.
- \param msb        Static expression containing the MSB of this module parameter.
- \param lsb        Static expression containing the LSB of this module parameter.
- \param is_signed  Specifies if this parameter needs to be handled as a signed value.
- \param expr       Expression tree for current module parameter.
- \param type       Specifies type of module parameter (declared/override).
- \param funit      Functional unit to add this module parameter to.
- \param inst_name  Name of instance (used for parameter overridding)
-
  \return Returns pointer to newly created module parameter.
 
  Creates a new module parameter with the specified information and adds 
  it to the module parameter list.
 */
 mod_parm* mod_parm_add(
-  char*        scope,
-  static_expr* msb,
-  static_expr* lsb,
-  bool         is_signed,
-  expression*  expr,
-  int          type,
-  func_unit*   funit,
-  char*        inst_name
+  char*        scope,      /*!< Full hierarchical name of parameter value */
+  static_expr* msb,        /*!< Static expression containing the MSB of this module parameter */
+  static_expr* lsb,        /*!< Static expression containing the LSB of this module parameter */
+  bool         is_signed,  /*!< Specifies if this parameter needs to be handled as a signed value */
+  expression*  expr,       /*!< Expression tree for current module parameter */
+  int          type,       /*!< Specifies type of module parameter (declared/override) */
+  func_unit*   funit,      /*!< Functional unit to add this module parameter to */
+  char*        inst_name   /*!< Name of instance (used for parameter overridding) */
 ) { PROFILE(MOD_PARM_ADD);
 
   mod_parm*  parm;       /* Temporary pointer to instance parameter */
@@ -259,18 +248,18 @@ mod_parm* mod_parm_add(
     funit->param_tail       = parm;
   }
 
+  PROFILE_END;
+
   return( parm );
 
 }
 
 /*!
- \param mparm  Pointer to module parameter list to display.
-
  Outputs contents of specified module parameter to standard output.
  For debugging purposes only.
 */
 void mod_parm_display(
-  mod_parm* mparm
+  mod_parm* mparm  /*!< Pointer to module parameter list to display */
 ) {
 
   char type_str[30];  /* String version of module parameter type */
@@ -310,9 +299,6 @@ void mod_parm_display(
 /*******************************************************************************/
 
 /*!
- \param name   Name of parameter value to find.
- \param iparm  Pointer to head of instance parameter list to search.
-
  \return Returns pointer to found instance parameter or NULL if instance parameter is not
          found.
 
@@ -322,8 +308,8 @@ void mod_parm_display(
  is returned if no match was found.
 */
 static inst_parm* inst_parm_find(
-  const char* name,
-  inst_parm*  iparm
+  const char* name,  /*!< Name of parameter value to find */
+  inst_parm*  iparm  /*!< Pointer to head of instance parameter list to search */
 ) { PROFILE(INST_PARM_FIND);
 
   assert( name != NULL );
@@ -332,20 +318,13 @@ static inst_parm* inst_parm_find(
     iparm = iparm->next;
   }
 
+  PROFILE_END;
+
   return( iparm );
  
 }
 
 /*!
- \param name       Name of parameter
- \param inst_name  Name of instance containing this parameter name
- \param msb        Static expression containing the MSB of this instance parameter
- \param lsb        Static expression containing the LSB of this instance parameter
- \param is_signed  Specifies if this instance parameter should be treated as signed or unsigned
- \param value      Vector value of specified instance parameter.
- \param mparm      Pointer to module instance that this instance parameter is derived from.
- \param inst       Pointer to current functional unit instance.
-
  \return Returns pointer to newly created instance parameter.
 
  \throws anonymous Throw param_expr_eval param_expr_eval expression_set_value
@@ -354,14 +333,14 @@ static inst_parm* inst_parm_find(
  it to the instance parameter list.
 */
 static inst_parm* inst_parm_add(
-  const char*  name,
-  char*        inst_name,
-  static_expr* msb,
-  static_expr* lsb,
-  bool         is_signed,
-  vector*      value,
-  mod_parm*    mparm,
-  funit_inst*  inst
+  const char*  name,       /*!< Name of parameter */
+  char*        inst_name,  /*!< Name of instance containing this parameter name */
+  static_expr* msb,        /*!< Static expression containing the MSB of this instance parameter */
+  static_expr* lsb,        /*!< Static expression containing the LSB of this instance parameter */
+  bool         is_signed,  /*!< Specifies if this instance parameter should be treated as signed or unsigned */
+  vector*      value,      /*!< Vector value of specified instance parameter */
+  mod_parm*    mparm,      /*!< Pointer to module instance that this instance parameter is derived from */
+  funit_inst*  inst        /*!< Pointer to current functional unit instance */
 ) { PROFILE(INST_PARM_ADD);
 
   inst_parm* iparm;           /* Temporary pointer to instance parameter */
@@ -474,20 +453,19 @@ static inst_parm* inst_parm_add(
     Throw 0;
   }
 
+  PROFILE_END;
+
   return( iparm );
 
 }
 
 /*!
- \param sig   Pointer to generate signal to copy
- \param inst  Pointer to instance to add this instance parameter to 
-
  Creates an instance parameter for a generate variable and adds it to the
  given instance parameter list.
 */
 void inst_parm_add_genvar(
-  vsignal*    sig,
-  funit_inst* inst
+  vsignal*    sig,  /*!< Pointer to generate signal to copy */
+  funit_inst* inst  /*!< Pointer to instance to add this instance parameter to */
 ) { PROFILE(INST_PARM_ADD_GENVAR);
 
   inst_parm* iparm;  /* Pointer to the newly allocated instance parameter */
@@ -512,16 +490,16 @@ void inst_parm_add_genvar(
     inst->param_tail       = iparm;
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param iparm  Pointer to instance parameter to bind.
-
  Binds the instance parameter signal to its list of expressions.  This is called
  by funit_size_elements.
 */
 void inst_parm_bind(
-  inst_parm* iparm
+  inst_parm* iparm  /*!< Pointer to instance parameter to bind */
 ) { PROFILE(INST_PARM_BIND);
 
   exp_link* expl;  /* Pointer to current expression link in list */
@@ -535,15 +513,14 @@ void inst_parm_bind(
     }
   }
 
+  PROFILE_END;
+
 }
 
 
 /************************************************************************************/
 
 /*!
- \param scope  Full hierarchical reference to specified scope to change value to.
- \param value  User-specified parameter override value.
-
  \throws anonymous inst_parm_add Throw
 
  Scans list of all parameters to make sure that specified parameter isn't already
@@ -551,8 +528,8 @@ void inst_parm_bind(
  defparam list.  This function is called for each -P option to the score command.
 */
 void defparam_add(
-  const char* scope,
-  vector*     value
+  const char* scope,  /*!< Full hierarchical reference to specified scope to change value to */
+  vector*     value   /*!< User-specified parameter override value */
 ) { PROFILE(DEFPARAM_ADD);
 
   static_expr msb;  /* MSB of this defparam (forced to be 31) */
@@ -595,6 +572,8 @@ void defparam_add(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -612,14 +591,13 @@ void defparam_dealloc() { PROFILE(DEFPARAM_DEALLOC);
 
   }
 
+  PROFILE_END;
+
 }
 
 /*************************************************************************************/
 
 /*!
- \param expr  Pointer to current expression to evaluate.
- \param inst  Pointer to current instance to search.
-
  \return Returns a pointer to the specified value found.
 
  \throws anonymous Throw expression_set_value param_find_and_set_expr_value
@@ -631,8 +609,8 @@ void defparam_dealloc() { PROFILE(DEFPARAM_DEALLOC);
  a parameter value is used without being defined).
 */
 static void param_find_and_set_expr_value(
-  expression* expr,
-  funit_inst* inst
+  expression* expr,  /*!< Pointer to current expression to evaluate */
+  funit_inst* inst   /*!< Pointer to current instance to search */
 ) { PROFILE(PARAM_FIND_AND_SET_EXPR_VALUE);
 
   inst_parm* icurr;  /* Pointer to current instance parameter being evaluated */
@@ -673,19 +651,18 @@ static void param_find_and_set_expr_value(
     }
 
   }
+
+  PROFILE_END;
   
 }
 
 /*!
- \param sig    Pointer to signal to search for in instance parameter list.
- \param icurr  Pointer to head of instance parameter list to search.
- 
  Sizes the specified signal according to the value of the specified
  instance parameter value.
 */
 void param_set_sig_size(
-  vsignal*   sig,
-  inst_parm* icurr
+  vsignal*   sig,   /*!< Pointer to signal to search for in instance parameter list */
+  inst_parm* icurr  /*!< Pointer to head of instance parameter list to search */
 ) { PROFILE(PARAM_SET_SIG_SIZE);
 
   assert( sig != NULL );
@@ -700,22 +677,21 @@ void param_set_sig_size(
     sig->dim[icurr->mparm->suppl.part.dimension].msb = vector_to_int( icurr->sig->value );
   }
 
+  PROFILE_END;
+
 }
 
 /*************************************************************************************/
 
 /*!
- \param inst   Pointer to instance pointing to given functional unit
- \param funit  Pointer to functional unit to size
-
  \throws anonymous funit_size_elements param_size_function param_resolve
 
  Recursively iterates through all functional units of given function, sizing them as
  appropriate for the purposes of static function allocation and execution.
 */
 static void param_size_function(
-  funit_inst* inst,
-  func_unit*  funit
+  funit_inst* inst,  /*!< Pointer to instance pointing to given functional unit */
+  func_unit*  funit  /*!< Pointer to functional unit to size */
 ) { PROFILE(PARAM_SIZE_FUNCTION);
 
   funit_inst* child;  /* Pointer to current child instance */
@@ -733,12 +709,11 @@ static void param_size_function(
     child = child->next;
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param expr  Current expression to evaluate.
- \param inst  Pointer to current instance to evaluate for.
-
  \throws anonymous expression_resize param_expr_eval param_expr_eval param_size_function param_find_and_set_expr_value
 
  Recursively evaluates the specified expression tree, calculating the value of leaf nodes
@@ -748,8 +723,8 @@ static void param_size_function(
  user indicating such.
 */
 void param_expr_eval(
-  expression* expr,
-  funit_inst* inst
+  expression* expr,  /*!< Current expression to evaluate */
+  funit_inst* inst   /*!< Pointer to current instance to evaluate for */
 ) { PROFILE(PARAM_EXPR_EVAL);
 
   funit_inst* funiti;      /* Pointer to static function instance */
@@ -807,15 +782,14 @@ void param_expr_eval(
     (void)expression_operate( expr, NULL, &time );
 
   }
+
+  PROFILE_END;
   
 }
 
 /*************************************************************************************/
 
 /*!
- \param mparm  Pointer to parameter in current module to check.
- \param inst   Pointer to current instance.
-
  \return Returns a pointer to the newly created instance parameter or NULL if one is not created
 
  \throws anonymous inst_parm_add
@@ -825,8 +799,8 @@ void param_expr_eval(
  override.  If no override is found, returns NULL and does nothing.
 */
 static inst_parm* param_has_override(
-  mod_parm*   mparm,
-  funit_inst* inst
+  mod_parm*   mparm,  /*!< Pointer to parameter in current module to check */
+  funit_inst* inst    /*!< Pointer to current instance */
 ) { PROFILE(PARAM_HAS_OVERRIDE);
 
   inst_parm*  icurr = NULL;  /* Pointer to current instance parameter in parent */
@@ -865,14 +839,13 @@ static inst_parm* param_has_override(
 
   }
 
+  PROFILE_END;
+
   return( parm );
 
 }
 
 /*!
- \param mparm  Pointer to module parameter to attach new instance parameter to.
- \param inst   Pointer to current instance.
-
  \return Returns pointer to created instance parameter or NULL if one is not created.
 
  \throws anonymous inst_parm_add
@@ -882,8 +855,8 @@ static inst_parm* param_has_override(
  is not found, return NULL and do nothing else.
 */
 static inst_parm* param_has_defparam(
-  mod_parm*   mparm,
-  funit_inst* inst
+  mod_parm*   mparm,  /*!< Pointer to module parameter to attach new instance parameter to */
+  funit_inst* inst    /*!< Pointer to current instance */
 ) { PROFILE(PARAM_HAS_DEFPARAM);
 
   inst_parm* parm = NULL;       /* Pointer newly created instance parameter (if one is created) */
@@ -928,14 +901,13 @@ static inst_parm* param_has_defparam(
 
   }
 
+  PROFILE_END;
+
   return( parm );
 
 }
 
 /*!
- \param mparm  Pointer to parameter in current module to check.
- \param inst   Pointer to current instance.
-
  \throws anonymous inst_parm_add param_expr_eval
 
  Performs declared module parameter resolution and stores the appropriate
@@ -949,8 +921,8 @@ static inst_parm* param_has_defparam(
     parameter's expression tree.
 */
 static void param_resolve_declared(
-  mod_parm*   mparm,
-  funit_inst* inst
+  mod_parm*   mparm,  /*!< Pointer to parameter in current module to check */
+  funit_inst* inst    /*!< Pointer to current instance */
 ) { PROFILE(PARAM_RESOLVE_DECLARED);
 
   assert( mparm != NULL );
@@ -975,14 +947,13 @@ static void param_resolve_declared(
 
   }
 
+  PROFILE_END;
+
 }
 
 /************************************************************************************/
 
 /*!
- \param oparm  Pointer to override module parameter.
- \param inst   Pointer to instance to add new instance parameter to.
-
  \throws anonymous inst_parm_add param_expr_eval
 
  Evaluates the current module parameter expression tree and adds a new instance
@@ -990,8 +961,8 @@ static void param_resolve_declared(
  type of the override parameter.
 */
 static void param_resolve_override(
-  mod_parm*   oparm,
-  funit_inst* inst
+  mod_parm*   oparm,  /*!< Pointer to override module parameter */
+  funit_inst* inst    /*!< Pointer to instance to add new instance parameter to */
 ) { PROFILE(PARAM_RESOLVE_OVERRIDE);
 
   assert( oparm != NULL );
@@ -1007,18 +978,18 @@ static void param_resolve_override(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param inst  Pointer to functional unit instance to resolve parameter values for
-
  \throws anonymous param_resolve_override param_resolve param_resolve_declared
 
  Called after binding has occurred.  Recursively resolves all parameters for the given
  instance tree.
 */
 void param_resolve(
-  funit_inst* inst
+  funit_inst* inst  /*!< Pointer to functional unit instance to resolve parameter values for */
 ) { PROFILE(PARAM_RESOLVE);
 
   mod_parm*   mparm;  /* Pointer to current module parameter in functional unit */
@@ -1045,12 +1016,11 @@ void param_resolve(
     child = child->next;
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param iparm  Pointer to instance parameter to output to file.
- \param file   Pointer to file handle to write parameter contents to.
-
  Prints contents of specified instance parameter to the specified output stream.
  Parameters get output in the same format as signals (they type specified for parameters
  is DB_TYPE_SIGNAL).  A leading # sign is attached to the parameter name to indicate
@@ -1058,8 +1028,8 @@ void param_resolve(
  be scored as a signal.
 */
 void param_db_write(
-  inst_parm* iparm,
-  FILE*      file
+  inst_parm* iparm,  /*!< Pointer to instance parameter to output to file */
+  FILE*      file    /*!< Pointer to file handle to write parameter contents to */
 ) { PROFILE(PARAM_DB_WRITE);
 
   /*
@@ -1072,21 +1042,20 @@ void param_db_write(
 
   }
 
+  PROFILE_END;
+
 }
 
 /**********************************************************************************/
 
 /*!
- \param parm  Pointer to module parameter to remove
- \param recursive  If TRUE, removes entire module parameter list; otherwise, just remove me.
-
  Deallocates allocated memory from heap for the specified module parameter.  If
  the value of recursive is set to TRUE, perform this deallocation for the entire
  list of module parameters.
 */
 void mod_parm_dealloc(
-  mod_parm* parm,
-  bool      recursive
+  mod_parm* parm,      /*!< Pointer to module parameter to remove */
+  bool      recursive  /*!< If TRUE, removes entire module parameter list; otherwise, just remove me */
 ) { PROFILE(MOD_PARM_DEALLOC);
 
   if( parm != NULL ) {
@@ -1119,19 +1088,18 @@ void mod_parm_dealloc(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param iparm      Pointer to instance parameter to remove
- \param recursive  If TRUE, removes entire instance parameter list; otherwise, just remove me.
-
  Deallocates allocated memory from heap for the specified instance parameter.  If
  the value of recursive is set to TRUE, perform this deallocation for the entire
  list of instance parameters.
 */
 void inst_parm_dealloc(
-  inst_parm* iparm,
-  bool       recursive
+  inst_parm* iparm,     /*!< Pointer to instance parameter to remove */
+  bool       recursive  /*!< If TRUE, removes entire instance parameter list; otherwise, just remove me */
 ) { PROFILE(INST_PARM_DEALLOC);
 
   if( iparm != NULL ) {
@@ -1154,11 +1122,17 @@ void inst_parm_dealloc(
 
   }
 
+  PROFILE_END;
+
 }
 
 
 /*
  $Log$
+ Revision 1.109  2008/05/30 05:38:31  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
  Revision 1.108.2.2  2008/05/28 05:57:11  phase1geo
  Updating code to use unsigned long instead of uint32.  Checkpointing.
 

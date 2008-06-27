@@ -47,7 +47,10 @@ showcancelled,       K_showcancelled
 use,                 K_use
 %%
 
-int lexer_keyword_2001_code( const char* str, int length ) { PROFILE(LEXER_KEYWORD_2001_CODE);
+int lexer_keyword_2001_code(
+  const char* str,
+  int         length
+) { PROFILE(LEXER_KEYWORD_2001_CODE);
 
   const struct keyword_2001* rc   = check_identifier_2001(str, length);
   int                        type = IDENTIFIER;
@@ -55,6 +58,8 @@ int lexer_keyword_2001_code( const char* str, int length ) { PROFILE(LEXER_KEYWO
   if( rc != 0 ) {
     type = rc->type;
   }
+
+  PROFILE_END;
 
   return( type );
 

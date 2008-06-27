@@ -56,16 +56,17 @@ extern char*     ppfilename;
 extern bool      debug_mode;
 
 /*!
- \param file  Pointer to file to read
- \param line  Read line from specified file.
- \param size  Maximum number of characters that can be stored in line.
  \return Returns the number of characters read from this line.
 
  Reads from specified file, one character at a time, until either a newline
  or EOF is encountered.  Returns the read line and the number of characters
  stored in the line.  No newline character is added to the line.
 */
-int parse_readline( FILE* file, char* line, int size ) { PROFILE(PARSE_READLINE);
+int parse_readline(
+  FILE* file,  /*!< Pointer to file to read */
+  char* line,  /*!< Read line from specified file */
+  int   size   /*!< Maximum number of characters that can be stored in line */
+) { PROFILE(PARSE_READLINE);
 
   int i = 0;  /* Loop iterator */
 
@@ -83,14 +84,13 @@ int parse_readline( FILE* file, char* line, int size ) { PROFILE(PARSE_READLINE)
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
   }
 
+  PROFILE_END;
+
   return( !feof( file ) );
 
 }
 
 /*!
- \param top        Name of top-level module to score
- \param output_db  Name of output directory for generated scored files.
-
  \throws anonymous fsm_var_bind race_check_modules Throw bind_perform db_write
 
  Resets the lexer and parses all Verilog files specified in use_files list.
@@ -98,8 +98,8 @@ int parse_readline( FILE* file, char* line, int size ) { PROFILE(PARSE_READLINE)
  stored in the associated lists.
 */
 void parse_design(
-  const char* top,
-  const char* output_db
+  const char* top,       /*!< Name of top-level module to score */
+  const char* output_db  /*!< Name of output directory for generated scored files */
 ) { PROFILE(PARSE_DESIGN);
 
   Try {
@@ -120,15 +120,13 @@ void parse_design(
 
         if( (parser_ret != 0) || (error_count > 0) ) {
           print_output( "Error in parsing design", FATAL, __FILE__, __LINE__ );
-          // printf( "parse Throw B\n" ); - HIT
           Throw 0;
         }
 
       } Catch_anonymous {
-        unlink( ppfilename );
+        (void)unlink( ppfilename );
         parser_dealloc_sig_range( &curr_urange, FALSE );
         parser_dealloc_sig_range( &curr_prange, FALSE );
-        // printf( "parse Throw C\n" ); - HIT
         Throw 0;
       }
      
@@ -149,7 +147,6 @@ void parse_design(
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           print_output( "The -i option should not have been specified", FATAL_WRAP, __FILE__, __LINE__ );
-          // printf( "parse Throw D\n" ); - HIT
           Throw 0;
         }
       } else {
@@ -159,7 +156,6 @@ void parse_design(
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           print_output( "The -i option must be specified to provide the hierarchy to the module specified with", FATAL_WRAP, __FILE__, __LINE__ );
           print_output( "the -t option.", FATAL_WRAP, __FILE__, __LINE__ );
-          // printf( "parse Throw E\n" ); - HIT
           Throw 0;
         }
       }
@@ -202,7 +198,6 @@ void parse_design(
     fsm_var_cleanup();
     sim_dealloc();
     db_close();
-    // printf( "parse Throw G\n" ); - HIT
     Throw 0;
   }
 
@@ -220,13 +215,11 @@ void parse_design(
   }
 #endif
 
+  PROFILE_END;
+
 }
 
 /*!
- \param db         Name of output database file to generate.
- \param dump_file  Name of dumpfile to parse for scoring.
- \param dump_mode  Type of dumpfile being used (see \ref dumpfile_fmt for legal values)
-
  \throws anonymous db_do_timestep Throw vcd_parse bind_perform db_read lxt_parse db_write
 
  Reads in specified CDD database file, reads in specified dumpfile in the specified format,
@@ -234,9 +227,9 @@ void parse_design(
  for merging or reporting.
 */
 void parse_and_score_dumpfile(
-  const char* db,
-  const char* dump_file,
-  int         dump_mode
+  const char* db,         /*!< Name of output database file to generate */
+  const char* dump_file,  /*!< Name of dumpfile to parse for scoring */
+  int         dump_mode   /*!< Type of dumpfile being used (see \ref dumpfile_fmt for legal values) */
 ) { PROFILE(PARSE_AND_SCORE_DUMPFILE);
 
   assert( dump_file != NULL );
@@ -279,7 +272,7 @@ void parse_and_score_dumpfile(
     }
     
     /* Flush any pending statement trees that are waiting for delay */
-    db_do_timestep( 0, TRUE );
+    (void)db_do_timestep( 0, TRUE );
 
 #ifdef DEBUG_MODE
     if( debug_mode ) {
@@ -297,17 +290,24 @@ void parse_and_score_dumpfile(
 
   } Catch_anonymous {
     sim_dealloc();
-    //printf( "parse Throw H\n" ); - HIT
     Throw 0;
   }
 
   /* Deallocate simulator stuff */
   sim_dealloc();
 
+  PROFILE_END;
+
 }
 
 /*
  $Log$
+ Revision 1.68  2008/06/20 18:43:41  phase1geo
+ Updating source files to optimize code when the --enable-debug option is specified.
+ The performance was almost 8x worse with this option enabled, now it should be
+ almost as good as without the mode (although, not completely).  Full regression
+ passes.
+
  Revision 1.67  2008/06/19 16:14:55  phase1geo
  leaned up all warnings in source code from -Wall.  This also seems to have cleared
  up a few runtime issues.  Full regression passes.

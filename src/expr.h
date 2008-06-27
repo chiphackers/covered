@@ -60,7 +60,7 @@ expression* expression_get_first_line_expr( expression* expr );
 expression* expression_get_last_line_expr( expression* expr );
 
 /*! \brief Returns the current dimension of the given expression. */
-int expression_get_curr_dimension( expression* expr );
+unsigned int expression_get_curr_dimension( expression* expr );
 
 /*! \brief Finds all RHS signals in given expression tree */
 void expression_find_rhs_sigs( expression* expr, str_link** head, str_link** tail );
@@ -141,6 +141,10 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.68  2008/05/30 05:38:30  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
  Revision 1.67.2.1  2008/05/07 05:22:51  phase1geo
  Fixing reporting bug with line coverage for continuous assignments.  Updating
  regression files and checkpointing.

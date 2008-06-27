@@ -115,17 +115,17 @@ void fsm_add_arc(
     table->arc_tail       = arc;
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param table  Pointer to FSM structure to set table sizes to.
-
  After the FSM signals are sized, this function is called to size
  an FSM structure (allocate memory for its tables) and the associated
  FSM arc list is parsed, setting the appropriate bit in the valid table.
 */
 void fsm_create_tables(
-  fsm* table
+  fsm* table  /*!< Pointer to FSM structure to set table sizes to */
 ) { PROFILE(FSM_CREATE_TABLES);
 
   fsm_arc* curr_arc;    /* Pointer to current FSM arc structure */
@@ -160,19 +160,17 @@ void fsm_create_tables(
 
   } 
 
+  PROFILE_END;
+
 }
 
 /*!
- \param table       Pointer to FSM structure to output.
- \param file        Pointer to file output stream to write to.
- \param parse_mode  Set to TRUE when we are writing immediately after parsing
-
  Outputs the contents of the specified FSM to the specified CDD file.
 */
 void fsm_db_write(
-  fsm*  table,
-  FILE* file,
-  bool  parse_mode
+  fsm*  table,      /*!< Pointer to FSM structure to output */
+  FILE* file,       /*!< Pointer to file output stream to write to */
+  bool  parse_mode  /*!< Set to TRUE when we are writing immediately after parsing */
 ) { PROFILE(FSM_DB_WRITE);
 
   fprintf( file, "%d %d %d ",
@@ -196,6 +194,8 @@ void fsm_db_write(
   }
 
   fprintf( file, "\n" );
+
+  PROFILE_END;
 
 } 
 
@@ -301,7 +301,6 @@ void fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
 /*!
  \param base  Pointer to FSM structure to merge data into.
  \param line  Pointer to read in line from CDD file to merge.
- \param same  Specifies if FSM to merge needs to be exactly the same as the existing FSM.
 
  \throws anonymous arc_db_merge Throw
 
@@ -313,8 +312,7 @@ void fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
 */
 void fsm_db_merge(
   fsm*   base,
-  char** line,
-  bool   same
+  char** line
 ) { PROFILE(FSM_DB_MERGE);
 
   int iid;         /* Input state variable expression ID */
@@ -332,7 +330,7 @@ void fsm_db_merge(
 
     if( is_table == 1 ) {
 
-      arc_db_merge( base->table, line, same );
+      arc_db_merge( base->table, line );
           
     }
 
@@ -401,6 +399,8 @@ void fsm_table_set(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -422,6 +422,8 @@ void fsm_get_stats(
     arc_get_stats( curr->table->table, state_total, state_hit, arc_total, arc_hit );
     curr = curr->next;
   }
+
+  PROFILE_END;
 
 }
 
@@ -455,29 +457,24 @@ bool fsm_get_funit_summary(
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
 
 /*!
- \param expr          Pointer to expression to get signals from
- \param head          Pointer to head of signal list to populate
- \param tail          Pointer to tail of signal list to populate
- \param expr_id       Expression ID of the statement containing this expression
- \param expr_ids      Pointer to expression ID array
- \param expr_id_size  Number of elements currently stored in expr_ids array
-
  Recursively iterates through specified expression, adding the signal of each expression that
  points to one to the specified signal list.  Also captures the expression ID of the statement
  containing this signal for each signal found (if expr_id is a non-negative value).
 */
 static void fsm_gather_signals(
-    expression* expr,
-    sig_link**  head,
-    sig_link**  tail,
-    int         expr_id,
-    int**       expr_ids,
-    int*        expr_id_size
+            expression* expr,         /*!< Pointer to expression to get signals from */
+  /*@out@*/ sig_link**  head,         /*!< Pointer to head of signal list to populate */
+  /*@out@*/ sig_link**  tail,         /*!< Pointer to tail of signal list to populate */
+            int         expr_id,      /*!< Expression ID of the statement containing this expression */
+  /*@out@*/ int**       expr_ids,     /*!< Pointer to expression ID array */
+  /*@out@*/ int*        expr_id_size  /*!< Number of elements currently stored in expr_ids array */
 ) { PROFILE(FSM_GATHER_SIGNALS);
 
   if( expr != NULL ) {
@@ -503,26 +500,27 @@ static void fsm_gather_signals(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param funit_name  Name of functional unit to collect combinational logic coverage information for
- \param funit_type  Type of functional unit to collect combinational logic coverage information for
- \param cov_head    Pointer to the head of the signal list of covered FSM output states
- \param cov_tail    Pointer to the tail of the signal list of covered FSM output states
- \param uncov_head  Pointer to the head of the signal list of uncovered FSM output states
- \param uncov_tail  Pointer to the tail of the signal list of uncovered FSM output states
- \param expr_ids    Pointer to array of expression IDs for each uncovered signal
- \param excludes    Pointer to array of exclude values for each uncovered signal
-
  \return Returns TRUE if FSM coverage information was found for the given functional unit; otherwise,
          returns FALSE to indicate that an error occurred.
 
  Gathers the covered and uncovered FSM information, storing their expressions in the cov and uncov signal lists.
  Used by the GUI for verbose FSM output.
 */
-bool fsm_collect( const char* funit_name, int funit_type, sig_link** cov_head, sig_link** cov_tail,
-                  sig_link** uncov_head, sig_link** uncov_tail, int** expr_ids, int** excludes ) { PROFILE(FSM_COLLECT);
+bool fsm_collect(
+            const char* funit_name,  /*!< Name of functional unit to collect combinational logic coverage information for */
+            int         funit_type,  /*!< Type of functional unit to collect combinational logic coverage information for */
+  /*@out@*/ sig_link**  cov_head,    /*!< Pointer to the head of the signal list of covered FSM output states */
+  /*@out@*/ sig_link**  cov_tail,    /*!< Pointer to the tail of the signal list of covered FSM output states */
+  /*@out@*/ sig_link**  uncov_head,  /*!< Pointer to the head of the signal list of uncovered FSM output states */
+  /*@out@*/ sig_link**  uncov_tail,  /*!< Pointer to the tail of the signal list of uncovered FSM output states */
+  /*@out@*/ int**       expr_ids,    /*!< Pointer to array of expression IDs for each uncovered signal */
+  /*@out@*/ int**       excludes     /*!< Pointer to array of exclude values for each uncovered signal */
+) { PROFILE(FSM_COLLECT);
 
   bool        retval = TRUE;   /* Return value for this function */
   funit_link* funitl;          /* Pointer to found functional unit link */
@@ -576,6 +574,8 @@ bool fsm_collect( const char* funit_name, int funit_type, sig_link** cov_head, s
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -587,35 +587,35 @@ bool fsm_collect( const char* funit_name, int funit_type, sig_link** cov_head, s
  for creating the contents of the verbose FSM viewer.
 */
 bool fsm_get_coverage(
-            const char* funit_name,          /*!< Name of functional unit containing FSM */
-            int         funit_type,          /*!< Type of functional unit containing FSM */
-            int         expr_id,             /*!< Expression ID of output state expression to find */
-  /*@out@*/ int*        width,               /*!< Pointer to width of FSM output state variable */
-  /*@out@*/ char***     total_fr_states,     /*!< Pointer to a string array containing all possible states in this FSM */
-  /*@out@*/ int*        total_fr_state_num,  /*!< Pointer to the number of elements in the total_states array */
-  /*@out@*/ char***     hit_fr_states,       /*!< Pointer to a string array containing the hit states in this FSM */
-  /*@out@*/ int*        hit_fr_state_num,    /*!< Pointer to the number of elements in the hit_states array */
-  /*@out@*/ char***     total_from_arcs,     /*!< Pointer to a string array containing all possible state transition from states */
-  /*@out@*/ char***     total_to_arcs,       /*!< Pointer to a string array containing all possible state transition to states */
-  /*@out@*/ int**       excludes,            /*!< Pointer to an integer array containing the exclude values for each state transition */
-  /*@out@*/ int*        total_arc_num,       /*!< Pointer to the number of elements in both the total_from_arcs, total_to_arcs and excludes arrays */
-  /*@out@*/ char***     hit_from_arcs,       /*!< Pointer to a string array containing the hit state transition from states */
-  /*@out@*/ char***     hit_to_arcs,         /*!< Pointer to a string array containing the hit state transition to states */
-  /*@out@*/ int*        hit_arc_num,         /*!< Pointer to the number of elements in both the hit_from_arcs and hit_to_arcs arrays */
-  /*@out@*/ char***     input_state,         /*!< Pointer to a string array containing the code for the input state expression */
-  /*@out@*/ int*        input_size,          /*!< Pointer to the number of elements stored in the input state array */
-  /*@out@*/ char***     output_state,        /*!< Pointer to a string array containing the code for the output state expression */
-  /*@out@*/ int*        output_size          /*!< Pointer to the number of elements stored in the output state array */
+            const char*   funit_name,          /*!< Name of functional unit containing FSM */
+            int           funit_type,          /*!< Type of functional unit containing FSM */
+            int           expr_id,             /*!< Expression ID of output state expression to find */
+  /*@out@*/ int*          width,               /*!< Pointer to width of FSM output state variable */
+  /*@out@*/ char***       total_fr_states,     /*!< Pointer to a string array containing all possible states in this FSM */
+  /*@out@*/ unsigned int* total_fr_state_num,  /*!< Pointer to the number of elements in the total_states array */
+  /*@out@*/ char***       hit_fr_states,       /*!< Pointer to a string array containing the hit states in this FSM */
+  /*@out@*/ unsigned int* hit_fr_state_num,    /*!< Pointer to the number of elements in the hit_states array */
+  /*@out@*/ char***       total_from_arcs,     /*!< Pointer to a string array containing all possible state transition from states */
+  /*@out@*/ char***       total_to_arcs,       /*!< Pointer to a string array containing all possible state transition to states */
+  /*@out@*/ int**         excludes,            /*!< Pointer to an integer array containing the exclude values for each state transition */
+  /*@out@*/ int*          total_arc_num,       /*!< Pointer to the number of elements in both the total_from_arcs, total_to_arcs and excludes arrays */
+  /*@out@*/ char***       hit_from_arcs,       /*!< Pointer to a string array containing the hit state transition from states */
+  /*@out@*/ char***       hit_to_arcs,         /*!< Pointer to a string array containing the hit state transition to states */
+  /*@out@*/ int*          hit_arc_num,         /*!< Pointer to the number of elements in both the hit_from_arcs and hit_to_arcs arrays */
+  /*@out@*/ char***       input_state,         /*!< Pointer to a string array containing the code for the input state expression */
+  /*@out@*/ unsigned int* input_size,          /*!< Pointer to the number of elements stored in the input state array */
+  /*@out@*/ char***       output_state,        /*!< Pointer to a string array containing the code for the output state expression */
+  /*@out@*/ unsigned int* output_size          /*!< Pointer to the number of elements stored in the output state array */
 ) { PROFILE(FSM_GET_COVERAGE);
 
-  bool        retval = FALSE;      /* Return value for this function */
-  funit_link* funitl;              /* Pointer to found functional unit link */
-  fsm_link*   curr_fsm;            /* Pointer to current FSM link */
-  int*        tmp;                 /* Temporary integer array */
-  char**      total_to_states;     /* Temporary array */
-  int         total_to_state_num;  /* Temporary size indicator */
-  char**      hit_to_states;       /* Temporary array */
-  int         hit_to_state_num;    /* Temporary size indicator */
+  bool         retval = FALSE;      /* Return value for this function */
+  funit_link*  funitl;              /* Pointer to found functional unit link */
+  fsm_link*    curr_fsm;            /* Pointer to current FSM link */
+  int*         tmp;                 /* Temporary integer array */
+  char**       total_to_states;     /* Temporary array */
+  unsigned int total_to_state_num;  /* Temporary size indicator */
+  char**       hit_to_states;       /* Temporary array */
+  unsigned int hit_to_state_num;    /* Temporary size indicator */
 
   if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
 
@@ -666,30 +666,25 @@ bool fsm_get_coverage(
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
 
 /*!
- \param ofile  Pointer to output file to write data to
- \param name   Name of instance to display
- \param state_hit    Number of FSM states hit in the given instance
- \param state_total  Total number of FSM states in the given instance
- \param arc_hit      Number of FSM state transitions in the given instance
- \param arc_total    Total number of FSM state transitions in the given instance
-
  \return Returns TRUE if at least one FSM state or FSM state transition was found to be missed
 
  Calculates and displays the FSM state and state transition instance summary information for the
  given instance.
 */
 static bool fsm_display_instance_summary(
-  FILE*       ofile,
-  const char* name,
-  int         state_hit,
-  int         state_total,
-  int         arc_hit,
-  int         arc_total
+  FILE*       ofile,        /*!< Pointer to output file to write data to */
+  const char* name,         /*!< Name of instance to display */
+  int         state_hit,    /*!< Number of FSM states hit in the given instance */
+  int         state_total,  /*!< Total number of FSM states in the given instance */
+  int         arc_hit,      /*!< Number of FSM state transitions in the given instance */
+  int         arc_total     /*!< Total number of FSM state transitions in the given instance */
 ) { PROFILE(FSM_DISPLAY_INSTANCE_SUMMARY);
 
   float state_percent;  /* Percentage of states hit */
@@ -708,31 +703,25 @@ static bool fsm_display_instance_summary(
              name, state_hit, state_miss, state_total, state_percent, arc_hit, arc_miss, arc_total, arc_percent );
   }
 
+  PROFILE_END;
+
   return( (state_miss > 0) || (arc_miss > 0) );
 
 }
 
 /*!
- \param ofile        Pointer to output file to display report contents to.
- \param root         Pointer to current root of instance tree to report.
- \param parent_inst  String containing Verilog hierarchy of this instance's parent.
- \param state_hits   Pointer to total number of states hit in design.
- \param state_total  Pointer to total number of states in design.
- \param arc_hits     Pointer to total number of arcs traversed.
- \param arc_total    Pointer to total number of arcs in design.
-
  \return Returns TRUE if any FSM states/arcs were found missing; otherwise, returns FALSE.
 
  Generates an instance summary report of the current FSM states and arcs hit during simulation.
 */
 static bool fsm_instance_summary(
-            FILE*       ofile,
-            funit_inst* root,
-            char*       parent_inst,
-  /*@out@*/ int*        state_hits,
-  /*@out@*/ int*        state_total,
-  /*@out@*/ int*        arc_hits,
-  /*@out@*/ int*        arc_total
+            FILE*       ofile,        /*!< Pointer to output file to display report contents to */
+            funit_inst* root,         /*!< Pointer to current root of instance tree to report */
+            char*       parent_inst,  /*!< String containing Verilog hierarchy of this instance's parent */
+  /*@out@*/ int*        state_hits,   /*!< Pointer to total number of states hit in design */
+  /*@out@*/ int*        state_total,  /*!< Pointer to total number of states in design */
+  /*@out@*/ int*        arc_hits,     /*!< Pointer to total number of arcs traversed */
+  /*@out@*/ int*        arc_total     /*!< Pointer to total number of arcs in design */
 ) { PROFILE(FSM_INSTANCE_SUMMARY);
 
   funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
@@ -789,31 +778,25 @@ static bool fsm_instance_summary(
 
   }
 
+  PROFILE_END;
+
   return( miss_found );
 
 }
 
 /*!
- \param ofile  Pointer to file stream to output summary information to
- \param name   Name of functional unit being reported
- \param fname  Filename containing the functional unit being reported
- \param state_hits  Number of FSM states that were hit in this functional unit during simulation
- \param state_total  Number of total FSM states that exist in the given functional unit
- \param arc_hits     Number of FSM arcs that were hit in this functional unit during simulation
- \param arc_total    Number of total FSM arcs that exist in the given functional unit
-
  \return Returns TRUE if at least one FSM state or FSM arc was missed during simulation for this functional unit; otherwise, returns FALSE.
 
  Outputs the summary FSM state/arc information for a given functional unit to the given output stream.
 */
 static bool fsm_display_funit_summary(
-  FILE*       ofile,
-  const char* name,
-  const char* fname,
-  int         state_hits,
-  int         state_total,
-  int         arc_hits,
-  int         arc_total
+  FILE*       ofile,        /*!< Pointer to file stream to output summary information to */
+  const char* name,         /*!< Name of functional unit being reported */
+  const char* fname,        /*!< Filename containing the functional unit being reported */
+  int         state_hits,   /*!< Number of FSM states that were hit in this functional unit during simulation */
+  int         state_total,  /*!< Number of total FSM states that exist in the given functional unit */
+  int         arc_hits,     /*!< Number of FSM arcs that were hit in this functional unit during simulation */
+  int         arc_total     /*!< Number of total FSM arcs that exist in the given functional unit */
 ) { PROFILE(FSM_DISPLAY_FUNIT_SUMMARY);
 
   float state_percent;  /* Percentage of states hit */
@@ -832,29 +815,24 @@ static bool fsm_display_funit_summary(
              name, fname, state_hits, state_miss, state_total, state_percent, arc_hits, arc_miss, arc_total, arc_percent );
   }
 
+  PROFILE_END;
+
   return( (state_miss > 0) || (arc_miss > 0) );
 
 }
 
 /*!
- \param ofile        Pointer to output file to display report contents to.
- \param head         Pointer to functional unit list to traverse.
- \param state_hits   Pointer to number of states that were hit in all functional units
- \param state_total  Pointer to total number of states found in all functional units
- \param arc_hits     Pointer to number of state transitions found in all functional units
- \param arc_total    Pointer to total number of state transitions found in all functional units
-
  \return Returns TRUE if any FSM states/arcs were found missing; otherwise, returns FALSE.
 
  Generates a functional unit summary report of the current FSM states and arcs hit during simulation.
 */
 static bool fsm_funit_summary(
-            FILE*       ofile,
-            funit_link* head,
-  /*@out@*/ int*        state_hits,
-  /*@out@*/ int*        state_total,
-  /*@out@*/ int*        arc_hits,
-  /*@out@*/ int*        arc_total
+            FILE*       ofile,        /*!< Pointer to output file to display report contents to */
+            funit_link* head,         /*!< Pointer to functional unit list to traverse */
+  /*@out@*/ int*        state_hits,   /*!< Pointer to number of states that were hit in all functional units */
+  /*@out@*/ int*        state_total,  /*!< Pointer to total number of states found in all functional units */
+  /*@out@*/ int*        arc_hits,     /*!< Pointer to number of state transitions found in all functional units */
+  /*@out@*/ int*        arc_total     /*!< Pointer to total number of state transitions found in all functional units */
 ) { PROFILE(FSM_FUNIT_SUMMARY);
 
   bool  miss_found = FALSE;  /* Set to TRUE if state/arc was found to be missed */
@@ -895,28 +873,27 @@ static bool fsm_funit_summary(
 
   }
 
+  PROFILE_END;
+
   return( miss_found );
 
 }
 
 /*!
- \param ofile  File handle of output file to send report output to.
- \param table  Pointer to FSM structure to output.
-
  Displays verbose information for hit/missed states to the specified
  output file.
 */
 static void fsm_display_state_verbose(
-    FILE* ofile,
-    fsm*  table
+  FILE* ofile,  /*!< File handle of output file to send report output to */
+  fsm*  table   /*!< Pointer to FSM structure to output */
 ) { PROFILE(FSM_DISPLAY_STATE_VERBOSE);
 
-  bool   trans_unknown;  /* Set to TRUE if legal arc transitions are unknown */
-  char** fr_states;      /* String array of all from states */
-  int    fr_state_size;  /* Contains the number of elements in the fr_states array */
-  char** to_states;      /* String array of all to states */
-  int    to_state_size;  /* Contains the number of elements in the to_states array */
-  int    i;              /* Loop iterator */
+  bool         trans_unknown;  /* Set to TRUE if legal arc transitions are unknown */
+  char**       fr_states;      /* String array of all from states */
+  unsigned int fr_state_size;  /* Contains the number of elements in the fr_states array */
+  char**       to_states;      /* String array of all to states */
+  unsigned int to_state_size;  /* Contains the number of elements in the to_states array */
+  unsigned int i;              /* Loop iterator */
 
   /* Figure out if transitions were unknown */
   trans_unknown = (table->table->suppl.part.known == 0);
@@ -953,18 +930,17 @@ static void fsm_display_state_verbose(
     free_safe( to_states, (sizeof( char* ) * to_state_size) );
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param ofile  File handle of output file to send report output to.
- \param table  Pointer to FSM structure to output.
-
  Displays verbose information for hit/missed state transitions to
  the specified output file.
 */
 static void fsm_display_arc_verbose(
-    FILE* ofile,
-    fsm* table
+  FILE* ofile,  /*!< File handle of output file to send report output to */
+  fsm*  table   /*!< Pointer to FSM structure to output */
 ) { PROFILE(FSM_DISPLAY_ARC_VERBOSE);
 
   bool         trans_known;   /* Set to TRUE if the number of state transitions is known */
@@ -1032,25 +1008,24 @@ static void fsm_display_arc_verbose(
     free_safe( to_states, (sizeof( char* ) * arc_size) );
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param ofile  File handle of output file to send report output to.
- \param head   Pointer to head of FSM link for a functional unit.
-
  Displays the verbose FSM state and state transition information to the specified
  output file.
 */
 static void fsm_display_verbose(
-    FILE*     ofile,
-    fsm_link* head
+  FILE*     ofile,  /*!< File handle of output file to send report output to */
+  fsm_link* head    /*!< Pointer to head of FSM link for a functional unit */
 ) { PROFILE(FSM_DISPLAY_VERBOSE);
 
-  char** icode;        /* Verilog output of input state variable expression */
-  int    icode_depth;  /* Number of valid entries in the icode array */
-  char** ocode;        /* Verilog output of output state variable expression */
-  int    ocode_depth;  /* Number of valid entries in the ocode array */
-  int    i;            /* Loop iterator */
+  char**       icode;        /* Verilog output of input state variable expression */
+  unsigned int icode_depth;  /* Number of valid entries in the icode array */
+  char**       ocode;        /* Verilog output of output state variable expression */
+  unsigned int ocode_depth;  /* Number of valid entries in the ocode array */
+  unsigned int i;            /* Loop iterator */
 
   while( head != NULL ) {
 
@@ -1086,19 +1061,17 @@ static void fsm_display_verbose(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param ofile  Pointer to output file to display report contents to.
- \param root   Pointer to root of instance tree to traverse.
- \param parent_inst  String containing name of this instance's parent instance.
-
  Generates an instance verbose report of the current FSM states and arcs hit during simulation.
 */
 static void fsm_instance_verbose(
-    FILE*       ofile,
-    funit_inst* root,
-    char*       parent_inst
+  FILE*       ofile,       /*!< Pointer to output file to display report contents to */
+  funit_inst* root,        /*!< Pointer to root of instance tree to traverse */
+  char*       parent_inst  /*!< String containing name of this instance's parent instance */
 ) { PROFILE(FSM_INSTANCE_VERBOSE);
 
   funit_inst* curr_inst;      /* Pointer to current instance being evaluated */
@@ -1156,17 +1129,16 @@ static void fsm_instance_verbose(
     curr_inst = curr_inst->next;
   }
 
+  PROFILE_END;
+
 }
 
 /*! 
- \param ofile  Pointer to output file to display report contents to.
- \param head   Pointer to head of functional unit list to traverse.
-
  Generates a functional unit verbose report of the current FSM states and arcs hit during simulation.
 */
 static void fsm_funit_verbose(
-  FILE*       ofile,
-  funit_link* head
+  FILE*       ofile,  /*!< Pointer to output file to display report contents to */
+  funit_link* head    /*!< Pointer to head of functional unit list to traverse */
 ) { PROFILE(FSM_FUNIT_VERBOSE);
 
   char* pname;  /* Printable version of functional unit name */
@@ -1207,18 +1179,20 @@ static void fsm_funit_verbose(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param ofile     Pointer to file to output results to.
- \param verbose   Specifies whether or not to provide verbose information
- 
  After the design is read into the functional unit hierarchy, parses the hierarchy by functional unit,
  reporting the FSM coverage for each functional unit encountered.  The parent functional unit will
  specify its own FSM coverage along with a total FSM coverage including its 
  children.
 */
-void fsm_report( FILE* ofile, bool verbose ) { PROFILE(FSM_REPORT);
+void fsm_report(
+  FILE* ofile,   /*!< Pointer to file to output results to */
+  bool  verbose  /*!< Specifies whether or not to provide verbose information */
+) { PROFILE(FSM_REPORT);
 
   bool       missed_found  = FALSE;  /* If set to TRUE, FSM cases were found to be missed */
   char       tmp[4096];              /* Temporary string value */
@@ -1281,14 +1255,16 @@ void fsm_report( FILE* ofile, bool verbose ) { PROFILE(FSM_REPORT);
 
   fprintf( ofile, "\n\n" );
 
+  PROFILE_END;
+
 }
 
 /*!
- \param table  Pointer to FSM structure to deallocate.
-
  Deallocates all allocated memory for the specified FSM structure.
 */
-void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
+void fsm_dealloc(
+  fsm* table  /*!< Pointer to FSM structure to deallocate */
+) { PROFILE(FSM_DEALLOC);
 
   fsm_arc* tmp;  /* Temporary pointer to current FSM arc structure to deallocate */
 
@@ -1327,10 +1303,15 @@ void fsm_dealloc( fsm* table ) { PROFILE(FSM_DEALLOC);
       
   }
 
+  PROFILE_END;
+
 }
 
 /*
  $Log$
+ Revision 1.97  2008/05/30 23:00:48  phase1geo
+ Fixing Doxygen comments to eliminate Doxygen warning messages.
+
  Revision 1.96  2008/05/30 05:38:30  phase1geo
  Updating development tree with development branch.  Also attempting to fix
  bug 1965927.

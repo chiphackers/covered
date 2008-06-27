@@ -90,6 +90,8 @@ void info_initialize() { PROFILE(INFO_INITIALIZE);
   leading_hier_num     = 0;
   leading_hiers_differ = FALSE;
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -106,17 +108,21 @@ void info_set_vector_elem_size() { PROFILE(INFO_SET_VECTOR_ELEM_SIZE);
     default:
       print_output( "Unsupported unsigned long size", FATAL, __FILE__, __LINE__ );
       Throw 0;
+      /*@-unreachable@*/
       break;
+      /*@=unreachable@*/
   }
+
+  PROFILE_END;
 
 }
 
 /*!
- \param file  Pointer to file to write information to.
- 
  Writes information line to specified file.
 */
-void info_db_write( FILE* file ) { PROFILE(INFO_DB_WRITE);
+void info_db_write(
+  FILE* file  /*!< Pointer to file to write information to */
+) { PROFILE(INFO_DB_WRITE);
 
   int i;  /* Loop iterator */
 
@@ -155,16 +161,18 @@ void info_db_write( FILE* file ) { PROFILE(INFO_DB_WRITE);
 
   fprintf( file, "\n" );
 
+  PROFILE_END;
+
 }
 
 /*!
- \param line  Pointer to string containing information line to parse.
-
  \throws anonymous Throw Throw Throw
 
  Reads information line from specified string and stores its information.
 */
-void info_db_read( char** line ) { PROFILE(INFO_DB_READ);
+void info_db_read(
+  /*@out@*/ char** line  /*!< Pointer to string containing information line to parse */
+) { PROFILE(INFO_DB_READ);
 
   int          chars_read;     /* Number of characters scanned in from this line */
   uint32       scored;         /* Indicates if this file contains scored data */
@@ -236,16 +244,18 @@ void info_db_read( char** line ) { PROFILE(INFO_DB_READ);
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param line  Pointer to string containing information line to parse.
- 
  \throws anonymous Throw
 
  Reads score command-line args line from specified string and stores its information.
 */
-void args_db_read( char** line ) { PROFILE(ARGS_DB_READ);
+void args_db_read(
+  char** line  /*!< Pointer to string containing information line to parse */
+) { PROFILE(ARGS_DB_READ);
 
   int  chars_read;     /* Number of characters scanned in from this line */
   char tmp1[4096];     /* Temporary string */
@@ -268,6 +278,8 @@ void args_db_read( char** line ) { PROFILE(ARGS_DB_READ);
     Throw 0;
 
   }
+
+  PROFILE_END;
 
 }
 
@@ -303,10 +315,15 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
   }
   free_safe( merge_in, (sizeof( char* ) * merge_in_num) );
 
+  PROFILE_END;
+
 }
 
 /*
  $Log$
+ Revision 1.35  2008/06/23 02:33:39  phase1geo
+ Adding err9 diagnostic to regression suite.
+
  Revision 1.34  2008/06/22 22:02:01  phase1geo
  Fixing regression issues.
 

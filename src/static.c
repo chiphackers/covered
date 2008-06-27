@@ -87,11 +87,11 @@ extern int        curr_expr_id;
  this expression in the original expression pointer field.
 */
 static_expr* static_expr_gen_unary(
-  static_expr* stexp,
-  int          op,
-  int          line,
-  int          first,
-  int          last
+  static_expr* stexp,  /*!< Pointer to static expression */
+  exp_op_type  op,     /*!< Unary static expression operation */
+  int          line,   /*!< Line number that this expression was found on in file */
+  int          first,  /*!< Column index of first character in this expression */
+  int          last    /*!< Column index of last character in this expression */
 ) { PROFILE(STATIC_EXPR_GEN_UNARY);
 
   expression*  tmpexp;  /* Container for newly created expression */
@@ -173,19 +173,13 @@ static_expr* static_expr_gen_unary(
 
   }
 
+  PROFILE_END;
+
   return( stexp );
 
 }
 
 /*!
- \param right      Pointer to right static expression.
- \param left       Pointer to left static expression.
- \param op         Static expression operation.
- \param line       Line number that static expression operation found on.
- \param first      Column index of first character in expression.
- \param last       Column index of last character in expression.
- \param func_name  Name of function to call (only valid when op == EXP_OP_FUNC_CALL)
-
  \return Returns pointer to new static_expr structure.
 
  \throws anonymous expression_create expression_create expression_create expression_create expression_create expression_create
@@ -201,13 +195,13 @@ static_expr* static_expr_gen_unary(
  expression in the original right static_expr and deallocate the left static_expr.
 */
 static_expr* static_expr_gen(
-  static_expr* right,
-  static_expr* left,
-  int          op,
-  int          line,
-  int          first,
-  int          last,
-  char*        func_name
+  static_expr* right,     /*!< Pointer to right static expression */
+  static_expr* left,      /*!< Pointer to left static expression */
+  int          op,        /*!< Static expression operation */
+  int          line,      /*!< Line number that static expression operation found on */
+  int          first,     /*!< Column index of first character in expression */
+  int          last,      /*!< Column index of last character in expression */
+  char*        func_name  /*!< Name of function to call (only valid when op == EXP_OP_FUNC_CALL) */
 ) { PROFILE(STATIC_EXPR_GEN);
 
   expression* tmpexp;     /* Temporary expression for holding newly created parent expression */
@@ -335,19 +329,19 @@ static_expr* static_expr_gen(
 
  Calculates the LSB, width and endianness of a vector defined by the specified left and right
  static expressions.  If the width cannot be obtained immediately (parameter in static
- expression), set width to -1.  If the LSB cannot be obtained immediately (parameter in
+ expression), set width to 0.  If the LSB cannot be obtained immediately (parameter in
  static expression), set LSB to -1.  The endianness can only be used if the width is known.
  The returned width and lsb parameters can be used to size a vector instantiation.
 */
 void static_expr_calc_lsb_and_width_pre(
-            static_expr* left,
-            static_expr* right,
-  /*@out@*/ int*         width,
-  /*@out@*/ int*         lsb,
-  /*@out@*/ int*         big_endian
+            static_expr*  left,
+            static_expr*  right,
+  /*@out@*/ unsigned int* width,
+  /*@out@*/ int*          lsb,
+  /*@out@*/ int*          big_endian
 ) { PROFILE(STATIC_EXPR_CALC_LSB_AND_WIDTH_PRE);
 
-  *width      = -1;
+  *width      = 0;
   *lsb        = -1;
   *big_endian = 0;
 
@@ -374,6 +368,8 @@ void static_expr_calc_lsb_and_width_pre(
     }
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -388,11 +384,11 @@ void static_expr_calc_lsb_and_width_pre(
  a legal value.
 */
 void static_expr_calc_lsb_and_width_post(
-            static_expr* left,
-            static_expr* right,
-  /*@out@*/ int*         width,
-  /*@out@*/ int*         lsb,
-  /*@out@*/ int*         big_endian
+            static_expr*  left,
+            static_expr*  right,
+  /*@out@*/ unsigned int* width,
+  /*@out@*/ int*          lsb,
+  /*@out@*/ int*          big_endian
 ) { PROFILE(STATIC_EXPR_CALC_LSB_AND_WIDTH_POST);
   
   assert( left  != NULL );
@@ -428,6 +424,8 @@ void static_expr_calc_lsb_and_width_post(
     assert( *lsb >= 0 );
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -456,6 +454,10 @@ void static_expr_dealloc(
 
 /*
  $Log$
+ Revision 1.36  2008/05/30 05:38:32  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
  Revision 1.35.2.2  2008/05/28 05:57:12  phase1geo
  Updating code to use unsigned long instead of uint32.  Checkpointing.
 

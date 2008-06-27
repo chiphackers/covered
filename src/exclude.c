@@ -73,9 +73,9 @@ static void exclude_expr_assign_and_recalc(
   bool        set_line
 ) { PROFILE(EXCLUDE_EXPR_ASSIGN_AND_RECALC);
 
-  int comb_total = 0;  /* Total number of combinational logic coverage points within this tree */
-  int comb_hit   = 0;  /* Total number of hit combinations within this tree */
-  int ulid       = 0;  /* Temporary value */
+  unsigned int comb_total = 0;  /* Total number of combinational logic coverage points within this tree */
+  unsigned int comb_hit   = 0;  /* Total number of hit combinations within this tree */
+  int          ulid       = 0;  /* Temporary value */
 
   /* Now recalculate the coverage information for all metrics if this module is not an OVL module */
   if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( funit ) ) {
@@ -157,12 +157,12 @@ static void exclude_sig_assign_and_recalc(
   /* If the signal is a memory, we need to update the memory coverage numbers */
   if( sig->suppl.part.type == SSUPPL_TYPE_MEM ) {
 
-    int ae_total  = 0;  /* Number of addressable elements in this memory */
-    int wr_hit    = 0;  /* Number of addressable elements written */
-    int rd_hit    = 0;  /* Number of addressable elements read */
-    int tog_total = 0;  /* Total number of toggle bits */
-    int tog01_hit = 0;  /* Number of bits toggling from 0->1 */
-    int tog10_hit = 0;  /* Number of bits toggling from 1->0 */
+    unsigned int ae_total  = 0;  /* Number of addressable elements in this memory */
+    unsigned int wr_hit    = 0;  /* Number of addressable elements written */
+    unsigned int rd_hit    = 0;  /* Number of addressable elements read */
+    unsigned int tog_total = 0;  /* Total number of toggle bits */
+    unsigned int tog01_hit = 0;  /* Number of bits toggling from 0->1 */
+    unsigned int tog10_hit = 0;  /* Number of bits toggling from 1->0 */
 
     /* Get the stats for the current memory */
     memory_get_stat( sig, &ae_total, &wr_hit, &rd_hit, &tog_total, &tog01_hit, &tog10_hit, TRUE );
@@ -183,8 +183,8 @@ static void exclude_sig_assign_and_recalc(
   /* Otherwise, the toggle coverage numbers should be adjusted */
   } else {
 
-    int hit01;  /* Number of bits transitioning from 0 -> 1 */
-    int hit10;  /* Number of bits transitioning from 1 -> 0 */
+    unsigned int hit01;  /* Number of bits transitioning from 0 -> 1 */
+    unsigned int hit10;  /* Number of bits transitioning from 1 -> 0 */
 
     /* Get the total hit01 and hit10 information */
     vector_toggle_count( sig->value, &hit01, &hit10 );
@@ -472,6 +472,10 @@ bool exclude_set_assert_exclude(
 
 /*
  $Log$
+ Revision 1.24  2008/05/30 05:38:30  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
  Revision 1.23.2.3  2008/05/08 23:12:41  phase1geo
  Fixing several bugs and reworking code in arc to get FSM diagnostics
  to pass.  Checkpointing.

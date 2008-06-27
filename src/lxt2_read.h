@@ -158,17 +158,17 @@ enum LXT2_RD_Encodings {
 
 struct lxt2_rd_block
 {
-char *mem;
+unsigned char *mem;
 struct lxt2_rd_block *next;
 
 lxtint32_t uncompressed_siz, compressed_siz;
 lxtint64_t start, end;
 
 lxtint32_t num_map_entries, num_dict_entries;
-char *map_start;
-char *dict_start;
+unsigned char *map_start;
+unsigned char *dict_start;
 
-char **string_pointers; /* based inside dict_start */
+unsigned char **string_pointers; /* based inside dict_start */
 unsigned int *string_lens;
 
 off_t filepos; /* where block starts in file if we have to reload */
@@ -199,7 +199,7 @@ lxtint32_t *rows, *msb, *lsb, *flags, *len;
 char **value;
 
 granmsk_t *fac_map;
-char **fac_curpos;
+unsigned char **fac_curpos;
 char *process_mask;
 char *process_mask_compressed;
 

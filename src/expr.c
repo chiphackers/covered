@@ -693,8 +693,8 @@ void expression_set_value(
   /* Otherwise, create our own vector to store the part select */
   } else {
 
-    int edim      = expression_get_curr_dimension( exp );
-    int exp_width = vsignal_calc_width_for_expr( exp, sig );
+    unsigned int edim = expression_get_curr_dimension( exp );
+    int exp_width     = vsignal_calc_width_for_expr( exp, sig );
 
     /* Allocate dimensional structure (if needed) and populate it with static information */
     if( exp->elem.dim == NULL ) {
@@ -828,10 +828,10 @@ void expression_resize(
   bool        alloc
 ) { PROFILE(EXPRESSION_RESIZE);
 
-  int         largest_width;  /* Holds larger width of left and right children */
-  uint8       old_vec_suppl;  /* Holds original vector supplemental field as this will be erased */
-  funit_inst* tmp_inst;       /* Pointer to temporary instance */
-  int         ignore = 0;     /* Specifies the number of instances to ignore */
+  unsigned int largest_width;  /* Holds larger width of left and right children */
+  uint8        old_vec_suppl;  /* Holds original vector supplemental field as this will be erased */
+  funit_inst*  tmp_inst;       /* Pointer to temporary instance */
+  int          ignore = 0;     /* Specifies the number of instances to ignore */
 
   if( expr != NULL ) {
 
@@ -924,9 +924,9 @@ void expression_resize(
       case EXP_OP_EXPAND :
         expression_operate_recursively( expr->left, funit, TRUE );
         if( vector_is_unknown( expr->left->value ) ) {
-          snprintf( user_msg, USER_MSG_LENGTH, "Unknown value used for concatenation multiplier, file: %s, line: %d", funit->filename, expr->line );
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown value used for concatenation multiplier, file: %s, line: %d", funit->filename, expr->line );
+          assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          // printf( "expr Throw B.1\n" ); - HIT
           Throw 0;
         }
         if( (expr->value->width != (vector_to_int( expr->left->value ) * expr->right->value->width)) ||
@@ -1022,31 +1022,37 @@ void expression_resize(
 }
 
 /*!
- \param expr        Pointer to expression to get ID from.
- \param parse_mode  Specifies if ulid (TRUE) or id (FALSE) should be used
-
  \return Returns expression ID for this expression.
 
  If specified expression is non-NULL, return expression ID of this
  expression; otherwise, return a value of 0 to indicate that this
  is a leaf node.
 */
-int expression_get_id( expression* expr, bool parse_mode ) { PROFILE(EXPRESSION_GET_ID);
+int expression_get_id(
+  expression* expr,       /*!< Pointer to expression to get ID from */
+  bool        parse_mode  /*!< Specifies if ulid (TRUE) or id (FALSE) should be used */
+) { PROFILE(EXPRESSION_GET_ID);
+
+  int id;
 
   if( expr == NULL ) {
-    return( 0 );
+    id = 0;
   } else {
-    return( parse_mode ? expr->ulid : expr->id );
+    id = parse_mode ? expr->ulid : expr->id;
   }
+
+  PROFILE_END;
+
+  return( id );
 
 }
 
 /*!
- \param expr  Pointer to root expression to extract first line from
-
  \return Returns the line number of the first line in this expression.
 */
-expression* expression_get_first_line_expr( expression* expr ) { PROFILE(EXPRESSION_GET_FIRST_LINE_EXPR);
+expression* expression_get_first_line_expr(
+  expression* expr  /*!< Pointer to root expression to extract first line from */
+) { PROFILE(EXPRESSION_GET_FIRST_LINE_EXPR);
 
   expression* first = NULL;
 
@@ -1090,16 +1096,16 @@ expression* expression_get_last_line_expr( expression* expr ) { PROFILE(EXPRESSI
 }
 
 /*!
- \param expr  Pointer to expression to get dimension for
-
  \return Returns the dimension index for the given expression
 
  Recursively iterates up expression tree, counting the number of dimensions deep that
  the given expression is.
 */
-int expression_get_curr_dimension( expression* expr ) { PROFILE(EXPRESSION_GET_CURR_DIMENSION);
+unsigned int expression_get_curr_dimension(
+  expression* expr  /*!< Pointer to expression to get dimension for */
+) { PROFILE(EXPRESSION_GET_CURR_DIMENSION);
   
-  int dim;  /* Return value for this function */
+  unsigned int dim;  /* Return value for this function */
 
   assert( expr != NULL );
 
@@ -1248,36 +1254,42 @@ expression* expression_find_uline_id( expression* expr, int ulid ) { PROFILE(EXP
 }
 
 /*!
- \param root  Pointer to root of expression tree to search
- \param expr  Pointer to expression to search for
-
  \return Returns TRUE if the given expression exists within the given expression tree; otherwise,
          returns FALSE
 */
-bool expression_find_expr( expression* root, expression* expr ) { PROFILE(EXPRESSION_FIND_EXPR);
+bool expression_find_expr(
+  expression* root,  /*!< Pointer to root of expression tree to search */
+  expression* expr   /*!< Pointer to expression to search for */
+) { PROFILE(EXPRESSION_FIND_EXPR);
 
-  return( (root != NULL) && ((root == expr) || expression_find_expr( root->left, expr ) || expression_find_expr( root->right, expr )) );
+  bool retval = (root != NULL) && ((root == expr) || expression_find_expr( root->left, expr ) || expression_find_expr( root->right, expr ));
+
+  PROFILE_END;
+
+  return( retval );
 
 }
 
 /*!
- \param expr  Pointer to root of expression tree to search
- \param stmt  Pointer to statement to search for
-
  \return Returns TRUE if the given expression tree contains an expression that calls the given statement.
 */
-bool expression_contains_expr_calling_stmt( expression* expr, statement* stmt ) { PROFILE(EXPRESSION_CONTAINS_EXPR_CALLING_STMT);
+bool expression_contains_expr_calling_stmt(
+  expression* expr,  /*!< Pointer to root of expression tree to search */
+  statement*  stmt   /*!< Pointer to statement to search for */
+) { PROFILE(EXPRESSION_CONTAINS_EXPR_CALLING_STMT);
 
-  return( (expr != NULL) &&
-          (((ESUPPL_TYPE( expr->suppl ) == ETYPE_FUNIT) && (expr->elem.funit->first_stmt == stmt)) ||
-           expression_contains_expr_calling_stmt( expr->left, stmt ) ||
-           expression_contains_expr_calling_stmt( expr->right, stmt )) );
+  bool retval = (expr != NULL) &&
+                (((ESUPPL_TYPE( expr->suppl ) == ETYPE_FUNIT) && (expr->elem.funit->first_stmt == stmt)) ||
+                 expression_contains_expr_calling_stmt( expr->left, stmt ) ||
+                 expression_contains_expr_calling_stmt( expr->right, stmt ));
+
+  PROFILE_END;
+
+  return( retval );
 
 }
 
 /*!
- \param exp  Pointer to expression to get root statement for.
-
  \return Returns a pointer to the root statement of the specified expression if one exists;
          otherwise, returns NULL.
 
@@ -1286,30 +1298,33 @@ bool expression_contains_expr_calling_stmt( expression* expr, statement* stmt ) 
  root expression.  If the root expression was not found, return NULL.
 */
 statement* expression_get_root_statement(
-  expression* exp
+  expression* exp  /*!< Pointer to expression to get root statement for */
 ) { PROFILE(EXPRESSION_GET_ROOT_STATEMENT);
 
+  statement* stmt;  /* Pointer to root statement */
+
   if( exp == NULL ) {
-    return( NULL );
+    stmt = NULL;
   } else if( ESUPPL_IS_ROOT( exp->suppl ) == 1 ) {
-    return( exp->parent->stmt );
+    stmt = exp->parent->stmt;
   } else {
-    return( expression_get_root_statement( exp->parent->expr ) );
+    stmt = expression_get_root_statement( exp->parent->expr );
   }
+
+  PROFILE_END;
+
+  return( stmt );
 
 }
 
 /*!
- \param root   Pointer to root of the expression tree to assign unique IDs for
- \param funit  Pointer to functional unit containing this expression tree
-
  \throws anonymous expression_resize expression_assign_expr_ids expression_assign_expr_ids
 
  Recursively iterates down the specified expression tree assigning unique IDs to each expression.
 */
 void expression_assign_expr_ids(
-  expression* root,
-  func_unit*  funit
+  expression* root,  /*!< Pointer to root of the expression tree to assign unique IDs for */
+  func_unit*  funit  /*!< Pointer to functional unit containing this expression tree */
 ) { PROFILE(EXPRESSION_ASSIGN_EXPR_IDS);
 
   if( root != NULL ) {
@@ -1332,18 +1347,14 @@ void expression_assign_expr_ids(
 }
 
 /*!
- \param expr        Pointer to expression to write to database file.
- \param file        Pointer to database file to write to.
- \param parse_mode  Set to TRUE when we are writing after just parsing the design (causes ulid value to be
-                    output instead of id)
-
  This function recursively displays the expression information for the specified
  expression tree to the coverage database specified by file.
 */
 void expression_db_write(
-  expression* expr,
-  FILE*       file,
-  bool        parse_mode
+  expression* expr,       /*!< Pointer to expression to write to database file */
+  FILE*       file,       /*!< Pointer to database file to write to */
+  bool        parse_mode  /*!< Set to TRUE when we are writing after just parsing the design (causes ulid value to be
+                               output instead of id) */
 ) { PROFILE(EXPRESSION_DB_WRITE);
 
   assert( expr != NULL );
@@ -1353,7 +1364,7 @@ void expression_db_write(
     expression_get_id( expr, parse_mode ),
     expr->line,
     expr->col,
-    ((((expr->op == EXP_OP_DASSIGN) || (expr->op == EXP_OP_ASSIGN)) && (expr->exec_num == 0)) ? 1 : expr->exec_num),
+    ((((expr->op == EXP_OP_DASSIGN) || (expr->op == EXP_OP_ASSIGN)) && (expr->exec_num == 0)) ? (uint32)1 : expr->exec_num),
     expr->op,
     (expr->suppl.all & ESUPPL_MERGE_MASK),
     ((expr->op == EXP_OP_STATIC) ? 0 : expression_get_id( expr->right, parse_mode )),
@@ -1381,15 +1392,12 @@ void expression_db_write(
 }
 
 /*!
- \param root   Pointer to the root expression to display
- \param ofile  Output file to write expression tree to
-
  Recursively iterates through the specified expression tree, outputting the expressions
  to the specified file.
 */
 void expression_db_write_tree(
-  expression* root,
-  FILE*       ofile
+  expression* root,  /*!< Pointer to the root expression to display */
+  FILE*       ofile  /*!< Output file to write expression tree to */
 ) { PROFILE(EXPRESSION_DB_WRITE_TREE);
 
   if( root != NULL ) {
@@ -1408,10 +1416,6 @@ void expression_db_write_tree(
 }
 
 /*!
- \param line        String containing database line to read information from.
- \param curr_funit  Pointer to current functional unit that instantiates this expression.
- \param eval        If TRUE, evaluate expression if children are static.
-
  \throws anonymous expression_create Throw Throw Throw Throw Throw vector_db_read
 
  Reads in the specified expression information, creates new expression from
@@ -1420,9 +1424,9 @@ void expression_db_write_tree(
  successful, returns TRUE; otherwise, returns FALSE.
 */
 void expression_db_read(
-  char**     line,
-  func_unit* curr_funit,
-  bool       eval
+  char**     line,        /*!< String containing database line to read information from */
+  func_unit* curr_funit,  /*!< Pointer to current functional unit that instantiates this expression */
+  bool       eval         /*!< If TRUE, evaluate expression if children are static */
 ) { PROFILE(EXPRESSION_DB_READ);
 
   int          id;          /* Holder of expression ID */
@@ -1899,7 +1903,7 @@ bool expression_op_func__xor_a(
   int     intval = 0;                            /* Integer value */
 
   /* First, evaluate the left-hand expression */
-  sim_expression( expr->left, thr, time, TRUE );
+  (void)sim_expression( expr->left, thr, time, TRUE );
 
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
@@ -1969,7 +1973,7 @@ bool expression_op_func__multiply_a(
   int     intval = 0;                            /* Integer value */
 
   /* First, evaluate the left-hand expression */
-  sim_expression( expr->left, thr, time, TRUE );
+  (void)sim_expression( expr->left, thr, time, TRUE );
 
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
@@ -2042,7 +2046,7 @@ bool expression_op_func__divide_a(
   int     intval = 0;                            /* Integer value */
   
   /* First, evaluate the left-hand expression */
-  sim_expression( expr->left, thr, time, TRUE );;
+  (void)sim_expression( expr->left, thr, time, TRUE );;
 
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
@@ -2115,7 +2119,7 @@ bool expression_op_func__mod_a(
   int     intval = 0;                            /* Integer value */
 
   /* First, evaluate the left-hand expression */
-  sim_expression( expr->left, thr, time, TRUE );;
+  (void)sim_expression( expr->left, thr, time, TRUE );;
 
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
@@ -2186,7 +2190,7 @@ bool expression_op_func__add_a(
   int     intval = 0;                            /* Integer value */
 
   /* Evaluate the left expression */
-  sim_expression( expr->left, thr, time, TRUE );
+  (void)sim_expression( expr->left, thr, time, TRUE );
   
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
@@ -2227,7 +2231,7 @@ bool expression_op_func__subtract(
 
   /* Perform SUBTRACT operation */
   expr->elem.tvecs->index = 0;
-  retval = vector_op_subtract( expr->value, expr->left->value, expr->right->value, expr->elem.tvecs );
+  retval = vector_op_subtract( expr->value, expr->left->value, expr->right->value );
 
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
@@ -2260,14 +2264,14 @@ bool expression_op_func__sub_a(
   int     intval = 0;                            /* Integer value */
 
   /* First, evaluate the left-hand expression */
-  sim_expression( expr->left, thr, time, TRUE );
+  (void)sim_expression( expr->left, thr, time, TRUE );
   
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
 
   /* Third, perform subtraction */
   expr->elem.tvecs->index = 1;
-  retval = vector_op_subtract( expr->value, tmp, expr->right->value, expr->elem.tvecs );
+  retval = vector_op_subtract( expr->value, tmp, expr->right->value );
 
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
@@ -2332,7 +2336,7 @@ bool expression_op_func__and_a(
   int     intval = 0;                            /* Integer value */
 
   /* First, evaluate the left-hand expression */
-  sim_expression( expr->left, thr, time, TRUE );
+  (void)sim_expression( expr->left, thr, time, TRUE );
 
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
@@ -2403,7 +2407,7 @@ bool expression_op_func__or_a(
   int     intval = 0;                            /* Integer value */
 
   /* First, evaluate the left-hand expression */
-  sim_expression( expr->left, thr, time, TRUE );
+  (void)sim_expression( expr->left, thr, time, TRUE );
 
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
@@ -2619,7 +2623,7 @@ bool expression_op_func__lshift_a(
   int     intval = 0;                            /* Integer value */
   
   /* First, evaluate the left-hand expression */
-  sim_expression( expr->left, thr, time, TRUE );
+  (void)sim_expression( expr->left, thr, time, TRUE );
 
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
@@ -2690,7 +2694,7 @@ bool expression_op_func__rshift_a(
   int     intval = 0;                            /* Integer value */
 
   /* First, evaluate the left-hand expression */
-  sim_expression( expr->left, thr, time, TRUE );
+  (void)sim_expression( expr->left, thr, time, TRUE );
 
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
@@ -2761,7 +2765,7 @@ bool expression_op_func__arshift_a(
   int     intval = 0;                            /* Integer value */
 
   /* First, evaluate the left-hand expression */
-  sim_expression( expr->left, thr, time, TRUE );
+  (void)sim_expression( expr->left, thr, time, TRUE );
 
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
@@ -3403,7 +3407,7 @@ bool expression_op_func__sbit(
       curr_lsb = -1;
     } else {
       if( dim->dim_be ) {
-        curr_lsb = ((intval >  vwidth) || (prev_lsb == -1)) ? -1 : (prev_lsb + (vwidth - (intval + expr->value->width)));
+        curr_lsb = ((intval >  vwidth) || (prev_lsb == -1)) ? -1 : (prev_lsb + (vwidth - (intval + (int)expr->value->width)));
       } else {
         curr_lsb = ((intval >= vwidth) || (prev_lsb == -1)) ? -1 : (prev_lsb + intval);
       }
@@ -3474,7 +3478,7 @@ bool expression_op_func__mbit(
   assert( intval >= 0 );
   if( dim->dim_be ) {
     assert( intval <= vwidth );
-    curr_lsb = (prev_lsb == -1) ? -1 : (prev_lsb + (vwidth - (intval + expr->value->width)));
+    curr_lsb = (prev_lsb == -1) ? -1 : (prev_lsb + (vwidth - (intval + (int)expr->value->width)));
   } else {
     assert( intval < vwidth );
     curr_lsb = (prev_lsb == -1) ? -1 : (prev_lsb + intval);
@@ -4262,11 +4266,11 @@ bool expression_op_func__exponent(
   /* If the left and right expression values are not unknown, calculate exponent */
   if( !vector_is_unknown( expr->left->value ) && !vector_is_unknown( expr->right->value ) ) {
 
-    int          intval1;
-    int          intval2;
-    ulong        vall = 1;
-    ulong        valh = 0;
-    unsigned int i;
+    int   intval1;
+    int   intval2;
+    ulong vall = 1;
+    ulong valh = 0;
+    int   i;
 
     intval1 = vector_to_int( expr->left->value );
     intval2 = vector_to_int( expr->right->value );
@@ -4358,23 +4362,19 @@ bool expression_op_func__passign(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a positive variable multi-bit select operation.
 */
 bool expression_op_func__mbit_pos(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__MBIT_POS);
 
-  bool     retval = FALSE;  /* Return value for this function */
-  exp_dim* dim    = expr->elem.dim;
-  int      curr_lsb;
+  bool     retval   = FALSE;  /* Return value for this function */
+  exp_dim* dim      = expr->elem.dim;
+  int      curr_lsb = 0;
 
   /* If the left expression is known, perform the part selection */
   if( !vector_is_unknown( expr->left->value ) ) {
@@ -4391,7 +4391,7 @@ bool expression_op_func__mbit_pos(
     }
 
     assert( intval >= 0 );
-    assert( intval < expr->sig->value->width );
+    assert( (intval < 0) || ((unsigned int)intval < expr->sig->value->width) );
 
     curr_lsb = (prev_lsb == -1) ? -1 : (prev_lsb + intval);
 
@@ -4462,7 +4462,7 @@ bool expression_op_func__mbit_neg(
     intval1 = vector_to_int( expr->left->value ) - dim->dim_lsb;
     intval2 = vector_to_int( expr->right->value );
 
-    assert( intval1 < expr->sig->value->width );
+    assert( (intval1 < 0) || ((unsigned int)intval1 < expr->sig->value->width) );
     assert( ((intval1 - intval2) + 1) >= 0 );
 
     curr_lsb = (prev_lsb == -1) ? -1 : (prev_lsb + ((intval1 - intval2) + 1));
@@ -4516,7 +4516,7 @@ bool expression_op_func__negate(
 
   /* Perform negate operation and gather coverage information */
   expr->elem.tvecs->index = 0;
-  retval = vector_op_negate( expr->value, expr->right->value, expr->elem.tvecs );
+  retval = vector_op_negate( expr->value, expr->right->value );
 
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
@@ -4821,9 +4821,9 @@ bool expression_op_func__repeat_dly(
  Performs a multi-array dimension operation.
 */
 bool expression_op_func__dim(
-  expression*     expr,
-  thread*         thr,
-  const sim_time* time
+               expression*     expr,
+  /*@unused@*/ thread*         thr,
+  /*@unused@*/ const sim_time* time
 ) { PROFILE(EXPRESSION_OP_FUNC__DIM);
 
   bool retval;                                  /* Return value for this function */
@@ -4873,42 +4873,38 @@ bool expression_op_func__wait(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a $finish statement operation.
 */
 bool expression_op_func__finish(
-  /*@unused@*/ expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+  /*@unused@*/ expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__FINISH);
 
   sim_finish();
+
+  PROFILE_END;
 
   return( FALSE );
 
 }
 
 /*!                                        
- \param expr  Pointer to expression to perform operation on   
- \param thr   Pointer to thread containing this expression    
- \param time  Pointer to current simulation time
-                                           
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.  
                                            
  Performs a $stop statement operation.
 */                                         
 bool expression_op_func__stop(
-  /*@unused@*/ expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+  /*@unused@*/ expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__STOP);
 
   sim_stop();
+
+  PROFILE_END;
 
   return( FALSE );
 
@@ -5030,16 +5026,16 @@ void expression_operate_recursively(
 }
 
 /*!
- \param expr  Pointer to expression to evaluate.
- 
  \return Returns TRUE if expression contains only static expressions; otherwise, returns FALSE.
  
  Recursively iterates through specified expression tree and returns TRUE if all of
  the leaf expressions are static expressions (STATIC or parameters).
 */
 bool expression_is_static_only(
-  expression* expr
+  expression* expr  /*!< Pointer to expression to evaluate */
 ) { PROFILE(EXPRESSION_IS_STATIC_ONLY);
+
+  bool retval;  /* Return value for this function */
 
   if( expr != NULL ) {
 
@@ -5047,32 +5043,34 @@ bool expression_is_static_only(
         (ESUPPL_IS_LHS( expr->suppl ) == 1) ||
         ((expr->op == EXP_OP_SIG) && (expr->sig != NULL) &&
          ((expr->sig->suppl.part.type == SSUPPL_TYPE_PARAM) || (expr->sig->suppl.part.type == SSUPPL_TYPE_ENUM))) ) {
-      return( TRUE );
+      retval = TRUE;
     } else {
-      return( (expr->op != EXP_OP_MBIT_SEL)           &&
-              (expr->op != EXP_OP_SBIT_SEL)           &&
-              (expr->op != EXP_OP_SIG)                &&
-              (expr->op != EXP_OP_FUNC_CALL)          &&
-              (EXPR_IS_OP_AND_ASSIGN( expr ) == 0)    &&
-              expression_is_static_only( expr->left ) &&
-              expression_is_static_only( expr->right ) );
+      retval = ( (expr->op != EXP_OP_MBIT_SEL)           &&
+                 (expr->op != EXP_OP_SBIT_SEL)           &&
+                 (expr->op != EXP_OP_SIG)                &&
+                 (expr->op != EXP_OP_FUNC_CALL)          &&
+                 (EXPR_IS_OP_AND_ASSIGN( expr ) == 0)    &&
+                 expression_is_static_only( expr->left ) &&
+                 expression_is_static_only( expr->right ) );
     }
 
   } else {
 
-    return( TRUE );
+    retval = TRUE;
 
   }
+
+  PROFILE_END;
+
+  return( retval );
 
 }
 
 /*!
- \param expr  Pointer to expression to check
-
  \return Returns TRUE if specified expression is on the LHS of a blocking assignment operator.
 */
 static bool expression_is_assigned(
-  expression* expr
+  expression* expr  /*!< Pointer to expression to check */
 ) { PROFILE(EXPRESSION_IS_ASSIGNED);
 
   bool retval = FALSE;  /* Return value for this function */
@@ -5106,12 +5104,10 @@ static bool expression_is_assigned(
 }
 
 /*!
- \param expr  Pointer to expression to check
-
  \return Returns TRUE if the specifies expression belongs in a single or mult-bit select expression
 */
 bool expression_is_bit_select(
-  expression* expr
+  expression* expr  /*!< Pointer to expression to check */
 ) { PROFILE(EXPRESSION_IS_BIT_SELECT);
 
   bool retval = FALSE;  /* Return value for this function */
@@ -5136,32 +5132,32 @@ bool expression_is_bit_select(
 }
 
 /*!
- \param expr  Pointer to expression to check for last select
-
  \return Returns TRUE if the specified expression is the last (most right-hand) part/bit select of a signal;
          otherwise, returns FALSE.
 */
 bool expression_is_last_select(
-  expression* expr
+  expression* expr  /*!< Pointer to expression to check for last select */
 ) { PROFILE(EXPRESSION_IS_LAST_SELECT);
 
-  return( (ESUPPL_IS_ROOT( expr->suppl ) == 1) ||
-          ( ((expr->parent->expr->op == EXP_OP_DIM) &&
-             (expr->parent->expr->right == expr) &&
-             (ESUPPL_IS_ROOT( expr->parent->expr->suppl ) == 0) &&
-             (expr->parent->expr->parent->expr->op != EXP_OP_DIM)) ||
-            (expr->parent->expr->op != EXP_OP_DIM) ) );
+  bool retval = (ESUPPL_IS_ROOT( expr->suppl ) == 1) ||
+                ( ((expr->parent->expr->op == EXP_OP_DIM) &&
+                   (expr->parent->expr->right == expr) &&
+                   (ESUPPL_IS_ROOT( expr->parent->expr->suppl ) == 0) &&
+                   (expr->parent->expr->parent->expr->op != EXP_OP_DIM)) ||
+                  (expr->parent->expr->op != EXP_OP_DIM) );
+
+  PROFILE_END;
+
+  return( retval );
 
 }
 
 /*!
- \param expr  Pointer to expression to examine
-
  \return Returns TRUE if the specified expression is in an RASSIGN expression tree; otherwise,
          returns FALSE.
 */
 bool expression_is_in_rassign(
-  expression* expr
+  expression* expr  /*!< Pointer to expression to examine */
 ) { PROFILE(EXPRESSION_IS_IN_RASSIGN);
 
   bool retval = FALSE;  /* Return value for this function */
@@ -5259,9 +5255,9 @@ void expression_assign(
 
   if( lhs != NULL ) {
 
-    exp_dim* dim = lhs->elem.dim;
-    int      vwidth;
-    int      prev_lsb;
+    exp_dim* dim      = lhs->elem.dim;
+    int      vwidth   = 0;
+    int      prev_lsb = 0;
 
     /* Calculate starting vector value bit and signal LSB/BE for LHS */
     if( lhs->sig != NULL ) {
@@ -5305,13 +5301,13 @@ void expression_assign(
         if( lhs->sig->suppl.part.assigned == 1 ) {
           bool changed = FALSE;
           if( eval_lhs && (ESUPPL_IS_LEFT_CHANGED( lhs->suppl ) == 1) ) {
-            sim_expression( lhs->left, thr, time, TRUE );
+            (void)sim_expression( lhs->left, thr, time, TRUE );
           }
           if( !vector_is_unknown( lhs->left->value ) ) {
             int intval = (vector_to_int( lhs->left->value ) - dim->dim_lsb) * dim->dim_width;
             if( intval >= 0 ) {           // Only perform assignment if selected bit is within range
               if( dim->dim_be ) {
-                dim->curr_lsb = ((intval > vwidth) || (prev_lsb == -1)) ? -1 : (prev_lsb + (vwidth - (intval + lhs->value->width)));
+                dim->curr_lsb = ((intval > vwidth) || (prev_lsb == -1)) ? -1 : (prev_lsb + (vwidth - (intval + (int)lhs->value->width)));
               } else {
                 dim->curr_lsb = ((intval >= vwidth) || (prev_lsb == -1)) ? -1 : (prev_lsb + intval);
               }
@@ -5343,7 +5339,7 @@ void expression_assign(
           assert( intval >= 0 );
           if( dim->dim_be ) {
             assert( intval <= vwidth );
-            dim->curr_lsb = (prev_lsb == -1) ? -1 : (prev_lsb + (vwidth - (intval + lhs->value->width)));
+            dim->curr_lsb = (prev_lsb == -1) ? -1 : (prev_lsb + (vwidth - (intval + (int)lhs->value->width)));
           } else {
             assert( intval < vwidth );
             dim->curr_lsb = (prev_lsb == -1) ? -1 : (prev_lsb + intval);
@@ -5369,7 +5365,7 @@ void expression_assign(
       case EXP_OP_MBIT_POS :
         if( lhs->sig->suppl.part.assigned == 1 ) {
           if( eval_lhs && (ESUPPL_IS_LEFT_CHANGED( lhs->suppl ) == 1) ) {
-            sim_expression( lhs->left, thr, time, TRUE );
+            (void)sim_expression( lhs->left, thr, time, TRUE );
           }
           if( !lhs->left->value->suppl.part.unknown ) {
             intval1 = (vector_to_int( lhs->left->value ) - dim_lsb) * lhs->value->width;
@@ -5398,7 +5394,7 @@ void expression_assign(
       case EXP_OP_MBIT_NEG :
         if( lhs->sig->suppl.part.assigned == 1 ) {
           if( eval_lhs && (ESUPPL_IS_LEFT_CHANGED( lhs->suppl ) == 1) ) {
-            sim_expression( lhs->left, thr, time, TRUE );
+            (void)sim_expression( lhs->left, thr, time, TRUE );
           }
           if( !lhs->left->value->part.unknown ) {
             intval1 = (vector_to_int( lhs->left->value ) - dim_lsb) * lhs->value->width;
@@ -5617,6 +5613,12 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.336  2008/06/20 18:43:41  phase1geo
+ Updating source files to optimize code when the --enable-debug option is specified.
+ The performance was almost 8x worse with this option enabled, now it should be
+ almost as good as without the mode (although, not completely).  Full regression
+ passes.
+
  Revision 1.335  2008/06/19 16:14:54  phase1geo
  leaned up all warnings in source code from -Wall.  This also seems to have cleared
  up a few runtime issues.  Full regression passes.

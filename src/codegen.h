@@ -27,11 +27,20 @@
 
 
 /*! \brief Creates Verilog code string from specified expression tree. */
-void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_depth, func_unit* funit );
+void codegen_gen_expr(
+            expression*   expr,
+            exp_op_type   parent_op,
+  /*@out@*/ char***       code,
+  /*@out@*/ unsigned int* code_depth,
+            func_unit*    funit
+);
 
 
 /*
  $Log$
+ Revision 1.10  2007/11/20 05:28:57  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.9  2006/03/28 22:28:27  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the

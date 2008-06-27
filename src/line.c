@@ -64,9 +64,9 @@ extern bool         flag_suppress_empty_funits;
  summary information about line coverage.
 */
 void line_get_stats(
-            func_unit* funit,  /*!< Pointer to current functional unit to explore */
-  /*@out@*/ int*       total,  /*!< Holds total number of lines parsed */
-  /*@out@*/ int*       hit     /*!< Holds total number of lines hit */
+            func_unit*    funit,  /*!< Pointer to current functional unit to explore */
+  /*@out@*/ unsigned int* total,  /*!< Holds total number of lines parsed */
+  /*@out@*/ unsigned int* hit     /*!< Holds total number of lines hit */
 ) { PROFILE(LINE_GET_STATS);
 
   statement* stmt;  /* Pointer to current statement */
@@ -103,6 +103,8 @@ void line_get_stats(
     func_iter_dealloc( &fi );
 
   }
+
+  PROFILE_END;
 
 }
 
@@ -186,16 +188,13 @@ bool line_collect(
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
 
 /*!
- \param funit_name  Name of functional unit to retrieve summary information from.
- \param funit_type  Type of functional unit to retrieve summary information from.
- \param total       Pointer to total number of lines in this functional unit.
- \param hit         Pointer to number of lines hit in this functional unit.
-
  \return Returns TRUE if specified functional unit was found in design; otherwise,
          returns FALSE.
 
@@ -205,7 +204,12 @@ bool line_collect(
  function, indicating that the functional unit was not found in the design and the values
  of total and hit should not be used.
 */
-bool line_get_funit_summary( const char* funit_name, int funit_type, int* total, int* hit ) { PROFILE(LINE_GET_FUNIT_SUMMARY);
+bool line_get_funit_summary(
+            const char*   funit_name,  /*!< Name of functional unit to retrieve summary information from */
+            int           funit_type,  /*!< Type of functional unit to retrieve summary information from */
+  /*@out@*/ unsigned int* total,       /*!< Pointer to total number of lines in this functional unit */
+  /*@out@*/ unsigned int* hit          /*!< Pointer to number of lines hit in this functional unit */
+) { PROFILE(LINE_GET_FUNIT_SUMMARY);
 
   bool        retval = TRUE;  /* Return value for this function */
   funit_link* funitl;         /* Pointer to found functional unit link */
@@ -213,9 +217,9 @@ bool line_get_funit_summary( const char* funit_name, int funit_type, int* total,
 
   if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
 
-    unsigned int rv = snprintf( tmp, 21, "%20d", funitl->funit->stat->line_total );
+    unsigned int rv = snprintf( tmp, 21, "%20u", funitl->funit->stat->line_total );
     assert( rv < 21 );
-    rv = sscanf( tmp, "%d", total );
+    rv = sscanf( tmp, "%u", total );
     assert( rv == 1 );
     *hit = funitl->funit->stat->line_hit;
 
@@ -225,25 +229,22 @@ bool line_get_funit_summary( const char* funit_name, int funit_type, int* total,
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
 
 /*!
- \param ofile  Pointer to output file to display information to
- \param name   Name of instance to display
- \param hits   Number of lines hit in the given instance
- \param total  Total number of lines in the given instance
-
  \return Returns TRUE if any missed lines were found.
 
  Outputs the instance summary information to the given output file.
 */
 static bool line_display_instance_summary(
-  FILE*       ofile,
-  const char* name,
-  int         hits,
-  int         total
+  FILE*       ofile,  /*!< Pointer to output file to display information to */
+  const char* name,   /*!< Name of instance to display */
+  int         hits,   /*!< Number of lines hit in the given instance */
+  int         total   /*!< Total number of lines in the given instance */
 ) { PROFILE(LINE_DISPLAY_INSTANCE_SUMMARY);
 
   float percent;  /* Percentage of lines hits */
@@ -254,17 +255,13 @@ static bool line_display_instance_summary(
   fprintf( ofile, "  %-43.43s    %5d/%5d/%5d      %3.0f%%\n",
            name, hits, miss, total, percent );
 
+  PROFILE_END;
+
   return( miss > 0 );
 
 }
 
 /*!
- \param ofile        Pointer to file to output results to.
- \param root         Current node in instance tree.
- \param parent_inst  Name of parent instance.
- \param hits         Pointer to accumulated hit information
- \param total        Pointer to accumulated total information
-
  \return Returns TRUE if lines were found to be missed; otherwise, returns FALSE.
  
  Recursively iterates through the instance tree gathering the
@@ -273,11 +270,11 @@ static bool line_display_instance_summary(
  display its information before calling its children.
 */
 static bool line_instance_summary(
-            FILE*       ofile,
-            funit_inst* root,
-            char*       parent_inst,
-  /*@out@*/ int*        hits,
-  /*@out@*/ int*        total
+            FILE*       ofile,        /*!< Pointer to file to output results to */
+            funit_inst* root,         /*!< Current node in instance tree */
+            char*       parent_inst,  /*!< Name of parent instance */
+  /*@out@*/ int*        hits,         /*!< Pointer to accumulated hit information */
+  /*@out@*/ int*        total         /*!< Pointer to accumulated total information */
 ) { PROFILE(LINE_INSTANCE_SUMMARY);
 
   funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
@@ -324,28 +321,24 @@ static bool line_instance_summary(
 
   }
 
+  PROFILE_END;
+
   return( miss_found );
            
 }
 
 /*!
- \param ofile  Pointer to file to output functional unit line summary information to
- \param name   Name of functional unit being displayed
- \param fname  Filename containing function unit being displayed
- \param hits   Number of hits in this functional unit
- \param total  Number of total lines in this functional unit
-
  \return Returns TRUE if at least one line was found to be missed; otherwise, returns FALSE.
 
  Calculates the percentage and miss information for the given hit and total coverage info and
  outputs this information in human-readable format to the given output file.
 */
 static bool line_display_funit_summary(
-  FILE*       ofile,
-  const char* name,
-  const char* fname,
-  int         hits,
-  int         total
+  FILE*       ofile,  /*!< Pointer to file to output functional unit line summary information to */
+  const char* name,   /*!< Name of functional unit being displayed */
+  const char* fname,  /*!< Filename containing function unit being displayed */
+  int         hits,   /*!< Number of hits in this functional unit */
+  int         total   /*!< Number of total lines in this functional unit */
 ) { PROFILE(LINE_DISPLAY_FUNIT_SUMMARY);
 
   float percent;  /* Percentage of lines hits */
@@ -356,16 +349,13 @@ static bool line_display_funit_summary(
   fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5d/%5d      %3.0f%%\n", 
            name, fname, hits, miss, total, percent );
 
+  PROFILE_END;
+
   return (miss > 0);
 
 }
 
 /*!
- \param ofile  Pointer to file to output results to.
- \param head   Pointer to head of functional unit list to explore.
- \param hits   Pointer to accumulated hit information.
- \param total  Pointer to accumulated total information.
-
  \return Returns TRUE if there where lines that were found to be missed; otherwise,
          returns FALSE.
 
@@ -373,10 +363,10 @@ static bool line_display_funit_summary(
  format) for each functional unit.
 */
 static bool line_funit_summary(
-            FILE*       ofile,
-            funit_link* head,
-  /*@out@*/ int*        hits,
-  /*@out@*/ int*        total
+            FILE*       ofile,  /*!< Pointer to file to output results to */
+            funit_link* head,   /*!< Pointer to head of functional unit list to explore */
+  /*@out@*/ int*        hits,   /*!< Pointer to accumulated hit information */
+  /*@out@*/ int*        total   /*!< Pointer to accumulated total information */
 ) { PROFILE(LINE_FUNIT_SUMMARY);
 
   bool  miss_found = FALSE;  /* Set to TRUE if line was found to be missed */
@@ -405,28 +395,27 @@ static bool line_funit_summary(
 
   }
 
+  PROFILE_END;
+
   return( miss_found );
 
 }
 
 /*!
- \param ofile  Pointer to file to output results to.
- \param funit  Pointer to functional unit containing lines to display in verbose format.
-
  Displays the lines missed during simulation to standard output from the
  specified expression list.
 */
 static void line_display_verbose(
-  FILE*      ofile,
-  func_unit* funit
+  FILE*      ofile,  /*!< Pointer to file to output results to */
+  func_unit* funit   /*!< Pointer to functional unit containing lines to display in verbose format */
 ) { PROFILE(LINE_DISPLAY_VERBOSE);
 
-  statement*  stmt;        /* Pointer to current statement */
-  expression* unexec_exp;  /* Pointer to current unexecuted expression */
-  char**      code;        /* Pointer to code string from code generator */
-  int         code_depth;  /* Depth of code array */
-  int         i;           /* Loop iterator */
-  func_iter   fi;          /* Functional unit iterator */
+  statement*   stmt;        /* Pointer to current statement */
+  expression*  unexec_exp;  /* Pointer to current unexecuted expression */
+  char**       code;        /* Pointer to code string from code generator */
+  unsigned int code_depth;  /* Depth of code array */
+  unsigned int i;           /* Loop iterator */
+  func_iter    fi;          /* Functional unit iterator */
 
   if( report_covered ) {
     fprintf( ofile, "    Hit Lines\n\n" );
@@ -479,22 +468,20 @@ static void line_display_verbose(
 
   fprintf( ofile, "\n" );
 
+  PROFILE_END;
+
 }
 
 /*!
- \param ofile        Pointer to file to output results to.
- \param root         Pointer to root node of instance tree to search through.
- \param parent_inst  Hierarchical path of parent instance.
-
  Displays the verbose line coverage results to the specified output stream on
  an instance basis.  The verbose line coverage includes the line numbers 
  (and associated verilog code) and file/functional unit name of the lines that were 
  not hit during simulation.
 */
 static void line_instance_verbose(
-  FILE*       ofile,
-  funit_inst* root,
-  char*       parent_inst
+  FILE*       ofile,       /*!< Pointer to file to output results to */
+  funit_inst* root,        /*!< Pointer to root node of instance tree to search through */
+  char*       parent_inst  /*!< Hierarchical path of parent instance */
 ) { PROFILE(LINE_INSTANCE_VERBOSE);
 
   funit_inst* curr_inst;      /* Pointer to current instance being evaluated */
@@ -549,21 +536,20 @@ static void line_instance_verbose(
     line_instance_verbose( ofile, curr_inst, tmpname );
     curr_inst = curr_inst->next;
   }
+
+  PROFILE_END;
  
 }
 
 /*!
- \param ofile  Pointer to file to output results to.
- \param head   Pointer to head of functional unit list to search through.
-
  Displays the verbose line coverage results to the specified output stream on
  a functional unit basis (combining functional units that are instantiated multiple times).
  The verbose line coverage includes the line numbers (and associated verilog
  code) and file/functional unit name of the lines that were not hit during simulation.
 */
 static void line_funit_verbose(
-  FILE*       ofile,
-  funit_link* head
+  FILE*       ofile,  /*!< Pointer to file to output results to */
+  funit_link* head    /*!< Pointer to head of functional unit list to search through */
 ) { PROFILE(LINE_FUNIT_VERBOSE);
 
   char* pname;  /* Printable version of functional unit name */
@@ -601,18 +587,20 @@ static void line_funit_verbose(
  
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param ofile    Pointer to file to output results to.
- \param verbose  Specifies whether to generate summary or verbose output.
-
  After the design is read into the functional unit hierarchy, parses the hierarchy by functional unit,
  reporting the line coverage for each functional unit encountered.  The parent functional unit will
  specify its own line coverage along with a total line coverage including its 
  children.
 */
-void line_report( FILE* ofile, bool verbose ) { PROFILE(LINE_REPORT);
+void line_report(
+  FILE* ofile,   /*!< Pointer to file to output results to */
+  bool  verbose  /*!< Specifies whether to generate summary or verbose output */
+) { PROFILE(LINE_REPORT);
 
   bool       missed_found = FALSE;  /* If set to TRUE, lines were found to be missed */
   char       tmp[4096];             /* Temporary string value */
@@ -671,10 +659,17 @@ void line_report( FILE* ofile, bool verbose ) { PROFILE(LINE_REPORT);
 
   fprintf( ofile, "\n\n" );
 
+  PROFILE_END;
+
 }
 
 /*
  $Log$
+ Revision 1.91  2008/06/22 05:08:40  phase1geo
+ Fixing memory testing error in tcl_funcs.c.  Removed unnecessary output in main_view.tcl.
+ Added a few more report diagnostics and started to remove width report files (these will
+ no longer be needed and will improve regression runtime and diagnostic memory footprint.
+
  Revision 1.90  2008/06/19 16:14:55  phase1geo
  leaned up all warnings in source code from -Wall.  This also seems to have cleared
  up a few runtime issues.  Full regression passes.

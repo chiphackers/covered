@@ -42,8 +42,8 @@ void assertion_parse_attr(
 /*! \brief Gather statistics for assertion coverage */
 void assertion_get_stats(
             const func_unit* funit,
-  /*@out@*/ int*             total,
-  /*@out@*/ int*             hit
+  /*@out@*/ unsigned int*    total,
+  /*@out@*/ unsigned int*    hit
 );
 
 /*! \brief Generates report output for assertion coverage */
@@ -51,21 +51,21 @@ void assertion_report( FILE* ofile, bool verbose );
 
 /*! \brief Retrieves the total and hit counts of assertions for the specified functional unit */
 bool assertion_get_funit_summary(
-            const char* funit_name,
-            int         funit_type,
-  /*@out@*/ int*        total,
-  /*@out@*/ int*        hit
+            const char*   funit_name,
+            int           funit_type,
+  /*@out@*/ unsigned int* total,
+  /*@out@*/ unsigned int* hit
 );
 
 /*! \brief Collects uncovered and covered assertion instance names for the given module */
 bool assertion_collect(
-  const char* funit_name,
-  int         funit_type,
-  char***     uncov_inst_names,
-  int**       excludes,
-  int*        uncov_inst_size,
-  char***     cov_inst_names,
-  int*        cov_inst_size
+            const char*   funit_name,
+            int           funit_type,
+  /*@out@*/ char***       uncov_inst_names,
+  /*@out@*/ int**         excludes,
+  /*@out@*/ unsigned int* uncov_inst_size,
+  /*@out@*/ char***       cov_inst_names,
+  /*@out@*/ unsigned int* cov_inst_size
 );
 
 /*! \brief Gets missed coverage point descriptions for the given assertion module */
@@ -81,6 +81,10 @@ bool assertion_get_coverage(
 
 /*
  $Log$
+ Revision 1.13  2008/02/01 06:37:07  phase1geo
+ Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
+ using pragma excludes (this code is not fully working yet).  More to be done.
+
  Revision 1.12  2008/01/16 05:01:22  phase1geo
  Switched totals over from float types to int types for splint purposes.
 

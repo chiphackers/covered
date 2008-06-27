@@ -61,37 +61,25 @@ extern const exp_info exp_op_info[EXP_OP_NUM];
 
 
 /*!
- \param code             Array of strings containing generated code lines.
- \param code_index       Index to current string in code array to set.
- \param first            String value coming before left expression string.
- \param left             Array of strings for left expression code.
- \param left_depth       Number of strings contained in left array.
- \param first_same_line  Set to TRUE if left expression is on the same line as the current expression.
- \param middle           String value coming after left expression string.
- \param right            Array of strings for right expression code.
- \param right_depth      Number of strings contained in right array.
- \param last_same_line   Set to TRUE if right expression is on the same line as the left expression.
- \param last             String value coming after right expression string.
-
  Generates multi-line expression code strings from current, left, and right expressions.
 */
 static void codegen_create_expr_helper(
-             char** code,
-             int    code_index,
-             char*  first,
-  /*@null@*/ char** left,
-             int    left_depth,
-             bool   first_same_line,
-             char*  middle,
-  /*@null@*/ char** right,
-             int    right_depth,
-             bool   last_same_line,
-  /*@null@*/ char*  last
+  /*@out@*/  char**       code,             /*!< Array of strings containing generated code lines */
+             int          code_index,       /*!< Index to current string in code array to set */
+             char*        first,            /*!< String value coming before left expression string */
+  /*@null@*/ char**       left,             /*!< Array of strings for left expression code */
+             unsigned int left_depth,       /*!< Number of strings contained in left array */
+             bool         first_same_line,  /*!< Set to TRUE if left expression is on the same line as the current expression */
+             char*        middle,           /*!< String value coming after left expression string */
+  /*@null@*/ char**       right,            /*!< Array of strings for right expression code */
+             unsigned int right_depth,      /*!< Number of strings contained in right array */
+             bool         last_same_line,   /*!< Set to TRUE if right expression is on the same line as the left expression */
+  /*@null@*/ char*        last              /*!< String value coming after right expression string */
 ) { PROFILE(CODEGEN_CREATE_EXPR_HELPER);
 
   char*        tmpstr;         /* Temporary string holder */
-  int          code_size = 0;  /* Length of current string to generate */
-  int          i;              /* Loop iterator */
+  unsigned int code_size = 0;  /* Length of current string to generate */
+  unsigned int i;              /* Loop iterator */
   unsigned int rv;             /* Return value from snprintf calls */
 
   assert( left_depth > 0 );
@@ -202,44 +190,31 @@ static void codegen_create_expr_helper(
 }
 
 /*!
- \param code         Pointer to an array of strings which will contain generated code lines.
- \param code_depth   Pointer to number of strings contained in code array.
- \param curr_line    Line number of current expression.
- \param first        String value coming before left expression string.
- \param left         Array of strings for left expression code.
- \param left_depth   Number of strings contained in left array.
- \param left_exp     Pointer to left expression
- \param middle       String value coming after left expression string.
- \param right        Array of strings for right expression code.
- \param right_depth  Number of strings contained in right array.
- \param right_exp    Pointer to right expression
- \param last         String value coming after right expression string.
-
  Allocates enough memory in code array to store all code lines for the current expression.
  Calls the helper function to actually generate code lines (to populate the code array).
 */
 static void codegen_create_expr(
-             char***     code,
-             int*        code_depth,
-             int         curr_line,
-  /*@null@*/ char*       first,
-             char**      left,
-             int         left_depth,
-             expression* left_exp,
-  /*@null@*/ char*       middle,
-  /*@null@*/ char**      right,
-             int         right_depth,
-  /*@null@*/ expression* right_exp,
-  /*@null@*/ char*       last
+  /*@out@*/  char***       code,        /*!< Pointer to an array of strings which will contain generated code lines */
+             unsigned int* code_depth,  /*!< Pointer to number of strings contained in code array */
+             int           curr_line,   /*!< Line number of current expression */
+  /*@null@*/ char*         first,       /*!< String value coming before left expression string */
+             char**        left,        /*!< Array of strings for left expression code */
+             unsigned int  left_depth,  /*!< Number of strings contained in left array */
+             expression*   left_exp,    /*!< Pointer to left expression */
+  /*@null@*/ char*         middle,      /*!< String value coming after left expression string */
+  /*@null@*/ char**        right,       /*!< Array of strings for right expression code */
+             unsigned int  right_depth, /*!< Number of strings contained in right array */
+  /*@null@*/ expression*   right_exp,   /*!< Pointer to right expression */
+  /*@null@*/ char*         last         /*!< String value coming after right expression string */
 ) { PROFILE(CODEGEN_CREATE_EXPR);
 
-  int         total_len = 0;    /* Total length of first, left, middle, right, and last strings */
-  int         i;                /* Loop iterator */ 
-  expression* last_exp;         /* Last expression of left expression tree */
-  expression* first_exp;        /* First expression of right expression tree */
-  int         left_line_start;  /* Line number of first expression of left expression tree */
-  int         left_line_end;    /* Line number of last expression of left expression tree */
-  int         right_line;       /* Line number of first expression of right expression tree */
+  int          total_len = 0;    /* Total length of first, left, middle, right, and last strings */
+  unsigned int i;                /* Loop iterator */ 
+  expression*  last_exp;         /* Last expression of left expression tree */
+  expression*  first_exp;        /* First expression of right expression tree */
+  int          left_line_start;  /* Line number of first expression of left expression tree */
+  int          left_line_end;    /* Line number of last expression of left expression tree */
+  int          right_line;       /* Line number of first expression of right expression tree */
 
 /*
   printf( "-----------------------------------------------------------------\n" );
@@ -339,17 +314,17 @@ static void codegen_create_expr(
  Verilog output by storing its information into the code and code_depth parameters.
 */
 void codegen_gen_expr(
-  expression* expr,
-  int         parent_op,
-  char***     code,
-  int*        code_depth,
-  func_unit*  funit
+            expression*   expr,        /*!< Pointer to root of expression tree to generate */
+            exp_op_type   parent_op,   /*!< Operation of parent.  If our op is the same, no surrounding parenthesis is needed */
+  /*@out@*/ char***       code,        /*!< Pointer to array of strings that will contain code lines for the supplied expression */
+  /*@out@*/ unsigned int* code_depth,  /*!< Pointer to number of strings contained in code array */
+            func_unit*    funit        /*!< Pointer to functional unit containing the specified expression */
 ) { PROFILE(CODEGEN_GEN_EXPR);
 
   char**       right_code;               /* Pointer to the code that is generated by the right side of the expression */
   char**       left_code;                /* Pointer to the code that is generated by the left side of the expression */
-  int          left_code_depth  = 0;     /* Depth of left code string array */
-  int          right_code_depth = 0;     /* Depth of right code string array */
+  unsigned int left_code_depth  = 0;     /* Depth of left code string array */
+  unsigned int right_code_depth = 0;     /* Depth of right code string array */
   char         code_format[20];          /* Format for creating my_code string */
   char*        tmpstr;                   /* Temporary string holder */
   char*        before;                   /* String before operation */
@@ -982,6 +957,10 @@ void codegen_gen_expr(
 
 /*
  $Log$
+ Revision 1.96  2008/05/30 05:38:30  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
  Revision 1.95.2.2  2008/05/07 21:09:10  phase1geo
  Added functionality to allow to_string to output full vector bits (even
  non-significant bits) for purposes of reporting for FSMs (matches original

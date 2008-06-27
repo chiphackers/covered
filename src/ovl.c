@@ -68,12 +68,12 @@ static char* ovl_assertions[OVL_ASSERT_NUM] = { "assert_change",      "assert_cy
                                                 "assert_window",      "assert_win_unchange",   "assert_zero_one_hot" };
 
 /*!
- \param name  Name of assertion module to check
-
  \return Returns TRUE if the specified name refers to a supported OVL coverage module; otherwise,
          returns FALSE.
 */
-static bool ovl_is_assertion_name( const char* name ) { PROFILE(OVL_IS_ASSERTION_NAME);
+static bool ovl_is_assertion_name(
+  const char* name  /*!< Name of assertion module to check */
+) { PROFILE(OVL_IS_ASSERTION_NAME);
 
   int i = OVL_ASSERT_NUM;  /* Loop iterator */
 
@@ -87,17 +87,19 @@ static bool ovl_is_assertion_name( const char* name ) { PROFILE(OVL_IS_ASSERTION
 
   }
 
+  PROFILE_END;
+
   return( i < OVL_ASSERT_NUM );
 
 }
 
 /*!
- \param funit  Pointer to the functional unit to check
-
  \return Returns TRUE if the specified module name is a supported OVL assertion; otherwise,
          returns FALSE.
 */
-bool ovl_is_assertion_module( const func_unit* funit ) { PROFILE(OVL_IS_ASSERTION_MODULE);
+bool ovl_is_assertion_module(
+  const func_unit* funit  /*!< Pointer to the functional unit to check */
+) { PROFILE(OVL_IS_ASSERTION_MODULE);
 
   bool        retval = FALSE;  /* Return value for this function */
   funit_link* funitl;          /* Pointer to current functional unit link */
@@ -118,32 +120,34 @@ bool ovl_is_assertion_module( const func_unit* funit ) { PROFILE(OVL_IS_ASSERTIO
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
 
 /*!
- \param exp  Pointer to expression to check
-
  \return Returns TRUE if the specifies expression corresponds to a coverage point; otherwise, returns FALSE.
 */
 bool ovl_is_coverage_point(
-  const expression* exp
+  const expression* exp  /*!< Pointer to expression to check */
 ) { PROFILE(OVL_IS_COVERAGE_POINT);
 
-  return( (exp->op == EXP_OP_TASK_CALL) && (strcmp( exp->name, "ovl_cover_t" ) == 0) );
+  bool retval = (exp->op == EXP_OP_TASK_CALL) && (strcmp( exp->name, "ovl_cover_t" ) == 0);
+
+  PROFILE_END;
+
+  return( retval );
 
 }
 
 /*!
- \param rm_tasks  Removes extraneous tasks only that are not used for coverage
-
  \throws anonymous search_add_no_score_funit search_add_no_score_funit search_add_no_score_funit search_add_no_score_funit
 
  Adds all OVL assertions to the no_score list.
 */
 void ovl_add_assertions_to_no_score_list(
-  bool rm_tasks
+  bool rm_tasks  /*!< Removes extraneous tasks only that are not used for coverage */
 ) { PROFILE(OVL_ADD_ASSERTIONS_TO_NO_SCORE_LIST);
 
   int  i;          /* Loop iterator */
@@ -166,20 +170,18 @@ void ovl_add_assertions_to_no_score_list(
     }
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param funit  Pointer to functional unit to gather OVL assertion coverage information for
- \param total  Pointer to the total number of assertions in the given module
- \param hit    Pointer to the number of assertions hit in the given module during simulation
-
  Gathers the total and hit assertion coverage information for the specified functional unit and
  stores this information in the total and hit pointers.
 */
 void ovl_get_funit_stats(
-  const func_unit* funit,
-  int*             total,
-  int*             hit
+            const func_unit* funit,  /*!< Pointer to functional unit to gather OVL assertion coverage information for */
+  /*@out@*/ unsigned int*    total,  /*!< Pointer to the total number of assertions in the given module */
+  /*@out@*/ unsigned int*    hit     /*!< Pointer to the number of assertions hit in the given module during simulation */
 ) { PROFILE(OVL_GET_FNIT_STATS);
 
   funit_inst* funiti;      /* Pointer to found functional unit instance containing this functional unit */
@@ -229,17 +231,21 @@ void ovl_get_funit_stats(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param stmt  Pointer to statement of task call to coverage task
-
  \return Returns the string passed to the task call
 
  Finds the task call parameter that specifies the name of the coverage point and returns this
  string value to the calling function.
 */
-static char* ovl_get_coverage_point( statement* stmt ) { PROFILE(OVL_GET_COVERAGE_POINT);
+static char* ovl_get_coverage_point(
+  statement* stmt  /*!< Pointer to statement of task call to coverage task */
+) { PROFILE(OVL_GET_COVERAGE_POINT);
+
+  char* cpoint;  /* Return value for this function */
 
   /*
    We are going to make a lot of assumptions about the structure of the statement, so just
@@ -253,18 +259,22 @@ static char* ovl_get_coverage_point( statement* stmt ) { PROFILE(OVL_GET_COVERAG
   assert( stmt->exp->left->right->op == EXP_OP_STATIC );
   assert( ESUPPL_STATIC_BASE( stmt->exp->left->right->suppl ) == QSTRING );
 
-  return( vector_to_string( stmt->exp->left->right->value, ESUPPL_STATIC_BASE( stmt->exp->left->right->suppl ), FALSE ) );  
+  cpoint = vector_to_string( stmt->exp->left->right->value, ESUPPL_STATIC_BASE( stmt->exp->left->right->suppl ), FALSE );
+
+  PROFILE_END;
+
+  return( cpoint );
 
 }
 
 /*!
- \param ofile  Pointer to output file to display verbose information to
- \param funit  Pointer to module containing assertions that were not covered
-
  Displays the verbose hit/miss information to the given output file for the given functional
  unit.
 */
-void ovl_display_verbose( FILE* ofile, const func_unit* funit ) { PROFILE(OVL_DISPLAY_VERBOSE);
+void ovl_display_verbose(
+  FILE*            ofile,  /*!< Pointer to output file to display verbose information to */
+  const func_unit* funit   /*!< Pointer to module containing assertions that were not covered */
+) { PROFILE(OVL_DISPLAY_VERBOSE);
 
   funit_inst* funiti;      /* Pointer to functional unit instance found for this functional unit */
   int         ignore = 0;  /* Specifies that we do not want to ignore any modules */
@@ -328,29 +338,30 @@ void ovl_display_verbose( FILE* ofile, const func_unit* funit ) { PROFILE(OVL_DI
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param funit             Pointer to functional unit to gather uncovered/covered assertion instances from
- \param uncov_inst_names  Pointer to array of uncovered instance names in the specified functional unit
- \param excludes          Pointer to array of integers indicating exclusion of associated uncovered instance name
- \param uncov_inst_size   Number of valid elements in the uncov_inst_names array
- \param cov_inst_names    Pointer to array of covered instance names in the specified functional unit
- \param cov_inst_size     Number of valid elements in the cov_inst_names array
- 
  Populates the uncovered and covered string arrays with the instance names of child modules that match the
  respective coverage level.
 */
-void ovl_collect( func_unit* funit, char*** uncov_inst_names, int** excludes, int* uncov_inst_size,
-                  char*** cov_inst_names, int* cov_inst_size ) { PROFILE(OVL_COLLECT);
+void ovl_collect(
+            func_unit*    funit,             /*!< Pointer to functional unit to gather uncovered/covered assertion instances from */
+  /*@out@*/ char***       uncov_inst_names,  /*!< Pointer to array of uncovered instance names in the specified functional unit */
+  /*@out@*/ int**         excludes,          /*!< Pointer to array of integers indicating exclusion of associated uncovered instance name */
+  /*@out@*/ unsigned int* uncov_inst_size,   /*!< Number of valid elements in the uncov_inst_names array */
+  /*@out@*/ char***       cov_inst_names,    /*!< Pointer to array of covered instance names in the specified functional unit */
+  /*@out@*/ unsigned int* cov_inst_size      /*!< Number of valid elements in the cov_inst_names array */
+) { PROFILE(OVL_COLLECT);
   
-  funit_inst* funiti;             /* Pointer to found functional unit instance containing this functional unit */
-  funit_inst* curr_child;         /* Current child of this functional unit's instance */
-  int         ignore        = 0;  /* Number of functional units to ignore */
-  stmt_iter   si;                 /* Statement iterator */
-  int         total;              /* Total number of coverage points for a given assertion module */
-  int         hit;                /* Number of hit coverage points for a given assertion module */
-  int         exclude_found = 0;  /* Set to a value of 1 if at least one excluded coverage point was found */
+  funit_inst*  funiti;             /* Pointer to found functional unit instance containing this functional unit */
+  funit_inst*  curr_child;         /* Current child of this functional unit's instance */
+  int          ignore        = 0;  /* Number of functional units to ignore */
+  stmt_iter    si;                 /* Statement iterator */
+  unsigned int total         = 0;  /* Total number of coverage points for a given assertion module */
+  unsigned int hit           = 0;  /* Number of hit coverage points for a given assertion module */
+  int          exclude_found = 0;  /* Set to a value of 1 if at least one excluded coverage point was found */
 
   /* Get one instance of this module from the design */
   funiti = inst_link_find_by_funit( funit, db_list[curr_db]->inst_head, &ignore );
@@ -413,18 +424,20 @@ void ovl_collect( func_unit* funit, char*** uncov_inst_names, int** excludes, in
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param funit       Pointer to functional unit to get assertion information from.
- \param inst_name   Name of assertion instance to get coverage points from.
- \param assert_mod  Pointer to the assertion module name of instance being retrieved
- \param cp_head     Pointer to head of coverage point list.
- \param cp_tail     Pointer to tail of coverage point list.
-
  Retrieves the coverage point strings and execution counts from the specified assertion module.
 */
-void ovl_get_coverage( const func_unit* funit, const char* inst_name, char** assert_mod, str_link** cp_head, str_link** cp_tail ) { PROFILE(OVL_GET_COVERAGE);
+void ovl_get_coverage(
+            const func_unit* funit,       /*!< Pointer to functional unit to get assertion information from */
+            const char*      inst_name,   /*!< Name of assertion instance to get coverage points from */
+  /*@out@*/ char**           assert_mod,  /*!< Pointer to the assertion module name of instance being retrieved */
+  /*@out@*/ str_link**       cp_head,     /*!< Pointer to head of coverage point list */
+  /*@out@*/ str_link**       cp_tail      /*!< Pointer to tail of coverage point list */
+) { PROFILE(OVL_GET_COVERAGE);
 
   funit_inst* funiti;      /* Pointer to found functional unit instance */
   funit_inst* curr_child;  /* Pointer to current child functional instance */
@@ -464,11 +477,17 @@ void ovl_get_coverage( const func_unit* funit, const char* inst_name, char** ass
 
   }
 
+  PROFILE_END;
+
 }
 
 
 /*
  $Log$
+ Revision 1.27  2008/05/30 05:38:31  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
  Revision 1.26.2.1  2008/05/07 21:09:10  phase1geo
  Added functionality to allow to_string to output full vector bits (even
  non-significant bits) for purposes of reporting for FSMs (matches original

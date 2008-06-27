@@ -331,31 +331,39 @@ static size_t define_cnt = 0;
 
 
 /*!
- \param name  Name of define to lookup in table
- 
  \return Pointer to defined value.
 
  Looks up the specified define identifier in the binary tree lookup table.
  Returns NULL (0), if the define was not found in the lookup tree; otherwise,
  returns a pointer to the defined value.
 */
-static tnode* def_lookup( const char* name ) { PROFILE(DEF_LOOKUP);
+static tnode* def_lookup(
+  const char* name  /*!< Name of define to lookup in table */
+) { PROFILE(DEF_LOOKUP);
 
-  return( tree_find( name, def_table ) );
+  tnode* tn = tree_find( name, def_table );
+
+  PROFILE_END;
+
+  return( tn );
 
 }
 
 /*!
- \param name  Name of defined value.
- 
  \return Returns 1 if define is found in lookup table; otherwise, returns 0.
 
  Checks lookup table to see if specified define identifier has been
  previously defined.
 */
-static int is_defined( const char* name ) { PROFILE(IS_DEFINED);
+static int is_defined(
+  const char* name  /*!< Name of defined value */
+) { PROFILE(IS_DEFINED);
 
-  return( def_lookup( name ) != NULL );
+  int retval = (def_lookup( name ) != NULL);
+
+  PROFILE_END;
+
+  return( retval );
 
 }
 
@@ -365,7 +373,6 @@ static int is_defined( const char* name ) { PROFILE(IS_DEFINED);
  place. If the name is not found, then the `name string is written
  out instead.
 */
-
 static void def_match() { PROFILE(DEF_MATCH);
 
   tnode* cur = def_lookup( yytext + 1 );  /* Pointer to define identifier node */
@@ -386,6 +393,8 @@ static void def_match() { PROFILE(DEF_MATCH);
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -401,18 +410,22 @@ static void def_start() { PROFILE(DEF_START);
   unsigned int rv = sscanf(yytext, "`define %s", def_name);
   assert( rv == 1 );
 
+  PROFILE_END;
+
 }
 
 /*!
- \param name     String value of define identifier
- \param value    String value associated with define identifier
-
  Stores define identifer with its value in a define node and placed in
  the binary search tree for quick lookup later on.
 */
-void define_macro( const char* name, const char* value ) { PROFILE(DEFINE_MACRO);
+void define_macro(
+  const char* name,  /*!< String value of define identifier */
+  const char* value  /*!< String value associated with define identifier */
+) { PROFILE(DEFINE_MACRO);
 
   (void)tree_add( name, value, TRUE, &def_table );
+
+  PROFILE_END;
 
 }
 
@@ -464,6 +477,8 @@ static void do_define() { PROFILE(DO_DEFINE);
   strcpy( (define_text + define_cnt), yytext );
   define_cnt += cp - yytext;
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -471,7 +486,11 @@ static void do_define() { PROFILE(DO_DEFINE);
 */
 static int def_is_done() { PROFILE(DEF_IS_DONE);
 
-  return( define_continue_flag ? 0 : 1 );
+  int retval = define_continue_flag ? 0 : 1;
+
+  PROFILE_END;
+
+  return( retval );
 
 }
 
@@ -497,6 +516,8 @@ static void def_finish() { PROFILE(DEF_FINISH);
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -510,6 +531,8 @@ static void def_undefine() { PROFILE(DEF_UNDEFINE);
   assert( rv == 1 );
 
   tree_remove( def_name, &def_table );
+
+  PROFILE_END;
 
 }
 
@@ -540,6 +563,8 @@ static void include_filename() { PROFILE(INCLUDE_FILENAME);
   yytext[strlen(yytext)-1] = '\0';
   standby->path   = strdup_safe( yytext + 1 );
   standby->lineno = 0;
+
+  PROFILE_END;
 
 }
 
@@ -618,6 +643,8 @@ static void do_include() { PROFILE(DO_INCLUDE);
   yy_switch_to_buffer( yy_create_buffer( istack->file, YY_BUF_SIZE ) );
 
   fprintf( yyout, "\n`line %u \"%s\" 1\n", (istack->lineno + 1), istack->path );
+
+  PROFILE_END;
   
 }
 
@@ -672,6 +699,8 @@ static int yywrap() { PROFILE(YYWRAP);
 
   }
 
+  PROFILE_END;
+
   return 1;
 
 }
@@ -681,7 +710,10 @@ static int yywrap() { PROFILE(YYWRAP);
  * opened, and the lexor is initialized. The include stack is cleared
  * and ready to go.
  */
-void reset_pplexer( char* filename, FILE* out ) { PROFILE(RESET_PPLEXER);
+void reset_pplexer(
+  char* filename,  /*!< Name of initial file to start parsing */
+  FILE* out        /*!< Name of file to output preprocessed contents to */
+) { PROFILE(RESET_PPLEXER);
 
   struct include_stack_t* isp = malloc_safe( sizeof( struct include_stack_t ) );
 
@@ -707,6 +739,8 @@ void reset_pplexer( char* filename, FILE* out ) { PROFILE(RESET_PPLEXER);
   yyrestart( yyin );
 
   istack = isp;
+
+  PROFILE_END;
 
 }
 

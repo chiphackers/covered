@@ -164,9 +164,9 @@ void vector_display_value_ulong(
 /*@-exportlocal@*/
 /*! \brief Outputs ulong vector to standard output. */
 void vector_display_ulong(
-  ulong** value,
-  int     width,
-  int     type
+  ulong**      value,
+  unsigned int width,
+  unsigned int type
 );
 /*@=exportlocal@*/
 
@@ -177,9 +177,9 @@ void vector_display(
 
 /*! \brief Sets specified vector value to new value and maintains coverage history. */
 bool vector_set_value_ulong(
-  vector* vec,
-  ulong** value,
-  int     width
+  vector*      vec,
+  ulong**      value,
+  unsigned int width
 );
 
 /*! \brief Sets specified target vector to bit range of source vector. */
@@ -301,15 +301,19 @@ bool vector_vcd_assign(
 );
 
 /*! \brief Counts toggle01 and toggle10 information from specifed vector. */
-void vector_toggle_count( vector* vec, int* tog01_cnt, int* tog10_cnt );
+void vector_toggle_count(
+            vector*       vec,
+  /*@out@*/ unsigned int* tog01_cnt,
+  /*@out@*/ unsigned int* tog10_cnt
+);
 
 /*! \brief Counts memory write and read information from specified vector. */
 void vector_mem_rw_count(
-            vector* vec,
-            int     lsb,
-            int     msb,
-  /*@out@*/ int*    wr_cnt,
-  /*@out@*/ int*    rd_cnt
+            vector*       vec,
+            int           lsb,
+            int           msb,
+  /*@out@*/ unsigned int* wr_cnt,
+  /*@out@*/ unsigned int* rd_cnt
 );
 
 /*! \brief Sets all assigned bits in vector bit value array within specified range. */
@@ -463,16 +467,14 @@ bool vector_op_add(
 /*! \brief Performs a twos complement of the src vector and stores the new vector in tgt. */
 bool vector_op_negate(
   vector*       tgt,
-  const vector* src,
-  vecblk*       tvb
+  const vector* src
 );
 
 /*! \brief Performs subtraction operation on left and right expression values. */
 bool vector_op_subtract(
   vector*       tgt,
   const vector* left,
-  const vector* right,
-  vecblk*       tvb
+  const vector* right
 );
 
 /*! \brief Performs multiplication operation on left and right expression values. */
@@ -579,6 +581,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.61  2008/06/19 16:14:56  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
  Revision 1.60  2008/05/30 23:00:48  phase1geo
  Fixing Doxygen comments to eliminate Doxygen warning messages.
 

@@ -61,7 +61,7 @@ extern int          leading_hier_num;
 extern bool         leading_hiers_differ;
 extern func_unit*   global_funit;
 extern func_unit*   curr_funit;
-extern int          flag_global_generation;
+extern unsigned int flag_global_generation;
 
 /*!
  \throws anonymous Throw
@@ -293,10 +293,15 @@ void search_free_lists() { PROFILE(SEARCH_FREE_LISTS);
   str_link_delete_list( extensions_head );
   str_link_delete_list( no_score_head );
 
+  PROFILE_END;
+
 }
 
 /*
  $Log$
+ Revision 1.44  2008/04/15 20:37:11  phase1geo
+ Fixing database array support.  Full regression passes.
+
  Revision 1.43  2008/03/17 22:02:32  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function

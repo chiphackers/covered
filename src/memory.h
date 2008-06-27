@@ -30,41 +30,68 @@
 
 /*! \brief Calculates the memory coverage numbers for a given memory signal */
 void memory_get_stat(
-  vsignal* sig,
-  /*@out@*/ int* ae_total,
-  /*@out@*/ int* wr_hit,
-  /*@out@*/ int* rd_hit,
-  /*@out@*/ int* tog_total,
-  /*@out@*/ int* tog01_hit,
-  /*@out@*/ int* tog10_hit,
-  bool ignore_excl );
+            vsignal*      sig,
+  /*@out@*/ unsigned int* ae_total,
+  /*@out@*/ unsigned int* wr_hit,
+  /*@out@*/ unsigned int* rd_hit,
+  /*@out@*/ unsigned int* tog_total,
+  /*@out@*/ unsigned int* tog01_hit,
+  /*@out@*/ unsigned int* tog10_hit,
+            bool          ignore_excl
+);
 
 /*! \brief Calculates memory coverage numbers for the specified signal list. */
 void memory_get_stats(
-  sig_link* sigl,
-  /*@out@*/ int* ae_total,
-  /*@out@*/ int* wr_hit,
-  /*@out@*/ int* rd_hit,
-  /*@out@*/ int* tog_total,
-  /*@out@*/ int* tog01_hit,
-  /*@out@*/ int* tog10_hit );
+            sig_link*     sigl,
+  /*@out@*/ unsigned int* ae_total,
+  /*@out@*/ unsigned int* wr_hit,
+  /*@out@*/ unsigned int* rd_hit,
+  /*@out@*/ unsigned int* tog_total,
+  /*@out@*/ unsigned int* tog01_hit,
+  /*@out@*/ unsigned int* tog10_hit
+);
 
 /*! \brief Gets memory summary information for a GUI request */
-bool memory_get_funit_summary( const char* funit_name, int funit_type, int* total, int* hit );
+bool memory_get_funit_summary(
+            const char* funit_name,
+            int         funit_type,
+  /*@out@*/ int*        total,
+  /*@out@*/ int*        hit
+);
 
 /*! \brief Gets coverage information for the specified memory */
-bool memory_get_coverage( const char* funit_name, int funit_type, const char* signame,
-                          char** pdim_str, char** pdim_array, char** udim_str, char** memory_info, int* excluded );
+bool memory_get_coverage(
+            const char* funit_name,
+            int         funit_type,
+            const char* signame,
+  /*@out@*/ char**      pdim_str,
+  /*@out@*/ char**      pdim_array,
+  /*@out@*/ char**      udim_str,
+  /*@out@*/ char**      memory_info,
+  /*@out@*/ int*        excluded
+);
 
 /*! \brief Collects all signals that are memories and match the given coverage metric for the given functional unit */
-bool memory_collect( const char* funit_name, int funit_type, int cov, sig_link** head, sig_link** tail );
+bool memory_collect(
+            const char* funit_name,
+            int         funit_type,
+            int         cov,
+  /*@out@*/ sig_link**  head,
+  /*@out@*/ sig_link**  tail
+);
 
 /*! \brief Generates report output for line coverage. */
-void memory_report( FILE* ofile, bool verbose );
+void memory_report(
+  FILE* ofile,
+  bool  verbose
+);
 
 
 /*
  $Log$
+ Revision 1.10  2008/01/30 05:51:50  phase1geo
+ Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
+
  Revision 1.9  2008/01/16 05:01:23  phase1geo
  Switched totals over from float types to int types for splint purposes.
 

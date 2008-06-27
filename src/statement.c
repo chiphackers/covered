@@ -741,28 +741,28 @@ static int statement_get_last_line_helper(
 }
 
 /*!
- \param stmt  Pointer to statement to get last line number for.
+ \return Returns the last line number in the given statement.
 */
 int statement_get_last_line(
-  statement* stmt
+  statement* stmt  /*!< Pointer to statement to get last line number for */
 ) { PROFILE(STATEMENT_GET_LAST_LINE);
 
-  return( statement_get_last_line_helper( stmt, stmt ) );
+  int retval = statement_get_last_line_helper( stmt, stmt );
+
+  PROFILE_END;
+
+  return( retval );
 
 }
 
 /*!
- \param stmt  Pointer to current statement block to traverse
- \param head  Pointer to head of signal name list that will contain a list of all RHS signals
- \param tail  Pointer to tail of signal name list that will contain a list of all RHS signals
-
  Searches the specified statement block and returns a list of all signals on the right-hand-side
  of expressions.
 */
 void statement_find_rhs_sigs(
-  statement* stmt,
-  str_link** head,
-  str_link** tail
+            statement* stmt,  /*!< Pointer to current statement block to traverse */
+  /*@out@*/ str_link** head,  /*!< Pointer to head of signal name list that will contain a list of all RHS signals */
+  /*@out@*/ str_link** tail   /*!< Pointer to tail of signal name list that will contain a list of all RHS signals */
 ) { PROFILE(STATEMENT_FIND_RHS_SIGS);
 
   if( stmt != NULL ) {
@@ -805,14 +805,11 @@ void statement_find_rhs_sigs(
 }
 
 /*!
- \param stmt  Pointer to child statement of statement block to find head statement for
- \param head  Pointer to head of statement link list.
-
  \return Returns a pointer to the head statement of the block that contains stmt.
 */
 statement* statement_find_head_statement(
-  statement* stmt,
-  stmt_link* head
+  statement* stmt,  /*!< Pointer to child statement of statement block to find head statement for */
+  stmt_link* head   /*!< Pointer to head of statement link list */
 ) { PROFILE(STATEMENT_FIND_HEAD_STATEMENT);
 
   stmt_iter  si;     /* Statement iterator used to find head statement */
@@ -851,9 +848,6 @@ statement* statement_find_head_statement(
 }
 
 /*!
- \param curr  Pointer to current statement in statement block being evaluated
- \param id    Statement ID to find
-
  \return Returns a pointer to the found statement found within the given statement block.
          If the statement ID could not be found, returns NULL.
 
@@ -861,8 +855,8 @@ statement* statement_find_head_statement(
  ID.
 */
 statement* statement_find_statement(
-  statement* curr,
-  int        id
+  statement* curr,  /*!< Pointer to current statement in statement block being evaluated */
+  int        id     /*!< Statement ID to find */
 ) { PROFILE(STATEMENT_FIND_STATEMENT);
 
   statement* found = NULL;  /* Pointer to found statement */
@@ -903,14 +897,11 @@ statement* statement_find_statement(
 }
 
 /*!
- \param curr  Pointer to current statement to traverse
- \param stmt  Pointer to statement to find in the associated expression tree
-
  \return Returns TRUE if the given statement contains the given expression; otherwise, returns FALSE.
 */
 bool statement_contains_expr_calling_stmt(
-  statement* curr,
-  statement* stmt
+  statement* curr,  /*!< Pointer to current statement to traverse */
+  statement* stmt   /*!< Pointer to statement to find in the associated expression tree */
 ) { PROFILE(STATEMENT_CONTAINS_EXPR_CALLING_STMT);
 
   bool contains = (curr != NULL) &&
@@ -928,14 +919,11 @@ bool statement_contains_expr_calling_stmt(
 }
 
 /*!
- \param stmt         Pointer to head of statement tree to deallocate.
- \param rm_stmt_blk  If set to TRUE, removes the statement block this statement points to (if any)
- 
  Recursively deallocates specified statement tree.
 */
 void statement_dealloc_recursive(
-  statement* stmt,
-  bool       rm_stmt_blk
+  statement* stmt,        /*!< Pointer to head of statement tree to deallocate */
+  bool       rm_stmt_blk  /*!< If set to TRUE, removes the statement block this statement points to (if any) */
 ) { PROFILE(STATEMENT_DEALLOC_RECURSIVE);
     
   if( stmt != NULL ) {
@@ -983,14 +971,12 @@ void statement_dealloc_recursive(
 }
 
 /*!
- \param stmt  Pointer to statement to deallocate.
-
  Deallocates specified statement from heap memory.  Does not
  remove attached expression (this is assumed to be cleaned up by the
  expression list removal function).
 */
 void statement_dealloc(
-  statement* stmt
+  statement* stmt  /*!< Pointer to statement to deallocate */
 ) { PROFILE(STATEMENT_DEALLOC);
 
   if( stmt != NULL ) {
@@ -1007,6 +993,10 @@ void statement_dealloc(
 
 /*
  $Log$
+ Revision 1.135  2008/06/19 16:14:55  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
  Revision 1.134  2008/05/30 23:00:48  phase1geo
  Fixing Doxygen comments to eliminate Doxygen warning messages.
 

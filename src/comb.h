@@ -33,39 +33,74 @@ void combination_reset_counted_expr_tree( expression* exp );
 
 /*! \brief Calculates combination logic statistics for a single expression tree */
 void combination_get_tree_stats(
-            expression*  exp,
-            int*         ulid,
-            unsigned int curr_depth,
-            bool         excluded,
-  /*@out@*/ int*         total,
-  /*@out@*/ int*         hit );
+            expression*   exp,
+            int*          ulid,
+            unsigned int  curr_depth,
+            bool          excluded,
+  /*@out@*/ unsigned int* total,
+  /*@out@*/ unsigned int* hit );
 
 /*! \brief Calculates combination logic statistics for summary output */
 void combination_get_stats(
-            func_unit* funit,
-  /*@out@*/ int*       total,
-  /*@out@*/ int*       hit );
+            func_unit*    funit,
+  /*@out@*/ unsigned int* total,
+  /*@out@*/ unsigned int* hit );
 
 /*! \brief Collects all toggle expressions that match the specified coverage indication. */
-bool combination_collect( const char* funit_name, int funit_type, expression*** covs, int* cov_cnt,
-                          expression*** uncovs, int** excludes, int* uncov_cnt );
+bool combination_collect(
+            const char*   funit_name,
+            int           funit_type,
+  /*@out@*/ expression*** covs,
+  /*@out@*/ unsigned int* cov_cnt,
+  /*@out@*/ expression*** uncovs,
+  /*@out@*/ int**         excludes,
+  /*@out@*/ unsigned int* uncov_cnt
+);
 
 /*! \brief Gets combinational logic summary statistics for specified module. */
-bool combination_get_module_summary( const char* funit_name, int funit_type, int* total, int* hit );
+bool combination_get_module_summary(
+            const char* funit_name,
+            int         funit_type,
+  /*@out@*/ int*        total,
+  /*@out@*/ int*        hit
+);
 
 /*! \brief Gets output for specified expression including underlines and code */
-bool combination_get_expression( const char* funit_name, int funit_type, int expr_id, char*** code, int** uline_groups,
-                                 int* code_size, char*** ulines, int* uline_size, int** excludes, int* exclude_size );
+bool combination_get_expression(
+            const char*   funit_name,
+            int           funit_type,
+            int           expr_id,
+  /*@out@*/ char***       code,
+  /*@out@*/ int**         uline_groups,
+  /*@out@*/ unsigned int* code_size,
+  /*@out@*/ char***       ulines,
+  /*@out@*/ unsigned int* uline_size,
+  /*@out@*/ int**         excludes,
+  /*@out@*/ unsigned int* exclude_size
+);
 
 /*! \brief Gets output for specified expression including coverage information */
-bool combination_get_coverage( const char* funit_name, int funit_type, int exp_id, int uline_id, char*** info, int* info_size );
+bool combination_get_coverage(
+            const char* funit_name,
+            int         funit_type,
+            int         exp_id,
+            int         uline_id,
+  /*@out@*/ char***     info,
+  /*@out@*/ int*        info_size
+);
 
 /*! \brief Generates report output for combinational logic coverage. */
-void combination_report( FILE* ofile, bool verbose );
+void combination_report(
+  FILE* ofile,
+  bool  verbose
+);
 
 
 /*
  $Log$
+ Revision 1.25  2008/01/16 05:01:22  phase1geo
+ Switched totals over from float types to int types for splint purposes.
+
  Revision 1.24  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

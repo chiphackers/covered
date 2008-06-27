@@ -39,7 +39,11 @@ void race_db_write( race_blk* head, FILE* file );
 void race_db_read( char** line, /*@null@*/func_unit* curr_mod );
 
 /*! \brief Get statistic information for the specified race condition block list */
-void race_get_stats( race_blk* curr, int* race_total, int type_total[][RACE_TYPE_NUM] );
+void race_get_stats(
+            race_blk*     curr,
+  /*@out@*/ unsigned int* race_total,
+  /*@out@*/ unsigned int  type_total[][RACE_TYPE_NUM]
+);
 
 /*! \brief Displays report information for race condition blocks in design */
 void race_report( FILE* ofile, bool verbose );
@@ -53,6 +57,10 @@ void race_blk_delete_list( race_blk* rb );
 
 /*
  $Log$
+ Revision 1.23  2008/02/09 19:32:45  phase1geo
+ Completed first round of modifications for using exception handler.  Regression
+ passes with these changes.  Updated regressions per these changes.
+
  Revision 1.22  2008/01/16 06:40:37  phase1geo
  More splint updates.
 

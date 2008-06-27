@@ -50,16 +50,13 @@
 
 
 /*!
- \param name  String identifier of this attribute parameter.
- \param expr  Pointer to the expression assigned to the parameter identifier.
-
  \return Returns a pointer to the newly allocated/initialized attribute parameter.
 
  Allocates and initializes an attribute parameter entry.
 */
 attr_param* attribute_create(
-  const char* name,
-  expression* expr
+  const char* name,  /*!< String identifier of this attribute parameter */
+  expression* expr   /*!< Pointer to the expression assigned to the parameter identifier */
 ) { PROFILE(ATTRIBUTE_CREATE);
 
   attr_param* ap;  /* Pointer to newly allocated attribute parameter */
@@ -71,15 +68,13 @@ attr_param* attribute_create(
   ap->next  = NULL;
   ap->prev  = NULL;
 
+  PROFILE_END;
+
   return( ap );
 
 }
 
 /*!
- \param ap       Pointer to current element of attribute parameter list to parse.
- \param funit    Pointer to current functional unit containing this attribute.
- \param exclude  If set to 1, sets the exclude bits (if they exist) in the structure created by the attribute.
-
  \throws anonymous fsm_arg_parse_attr attribute_parse
 
  Parses the attribute parameter list in a recursive fashion.  First,
@@ -88,9 +83,9 @@ attr_param* attribute_create(
  calls the appropriate function to handle the entire attribute parameter list.
 */
 void attribute_parse(
-  attr_param*      ap,
-  const func_unit* funit,
-  bool             exclude
+  attr_param*      ap,      /*!< Pointer to current element of attribute parameter list to parse */
+  const func_unit* funit,   /*!< Pointer to current functional unit containing this attribute */
+  bool             exclude  /*!< If set to 1, sets the exclude bits (if they exist) in the structure created by the attribute */
 ) { PROFILE(ATTRIBUTE_PARSE);
 
   if( ap != NULL ) {
@@ -107,15 +102,15 @@ void attribute_parse(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param ap  Pointer to the attribute parameter list to remove.
-
  Deallocates all memory for the entire attribute parameter list.
 */
 void attribute_dealloc(
-  attr_param* ap
+  attr_param* ap  /*!< Pointer to the attribute parameter list to remove */
 ) { PROFILE(ATTRIBUTE_DEALLOC);
 
   if( ap != NULL ) {
@@ -134,10 +129,15 @@ void attribute_dealloc(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*
  $Log$
+ Revision 1.14  2008/03/17 05:26:15  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.13  2008/03/14 22:00:17  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.

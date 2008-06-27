@@ -158,8 +158,6 @@ fsm_var* fsm_var_add(
 }
 
 /*!
- \param expr  Pointer to expression to evaluate.
-
  \return Returns pointer to found FSM variable that contains this expression as an
          output expression.
 
@@ -168,7 +166,7 @@ fsm_var* fsm_var_add(
  a value of NULL to the calling function.
 */
 static fsm_var* fsm_var_is_output_state(
-  expression* expr
+  expression* expr  /*!< Pointer to expression to evaluate */
 ) { PROFILE(FSM_VAR_IS_OUTPUT_STATE);
 
   fsm_var* curr;  /* Pointer to current FSM variable structure */
@@ -178,15 +176,13 @@ static fsm_var* fsm_var_is_output_state(
     curr = curr->next;
   }
 
+  PROFILE_END;
+
   return( curr );
 
 }
 
 /*!
- \param sig_name    String name of signal to bind to specified expression.
- \param expr        Pointer to expression to bind to signal called sig_name.
- \param funit_name  String name of functional unit that contains the expression pointed to by expr.
-
  \throws anonymous Throw Throw
 
  Searches the functional unit list for the functional unit called funit_name.  If the functional unit
@@ -197,9 +193,9 @@ static fsm_var* fsm_var_is_output_state(
  value of FALSE to the calling function.
 */
 static void fsm_var_bind_expr(
-  char*       sig_name,
-  expression* expr,
-  char*       funit_name
+  char*       sig_name,   /*!< String name of signal to bind to specified expression */
+  expression* expr,       /*!< Pointer to expression to bind to signal called sig_name */
+  char*       funit_name  /*!< String name of functional unit that contains the expression pointed to by expr */
 ) { PROFILE(FSM_VAR_BIND_EXPR);
 
   funit_link* funitl;  /* Pointer to found functional unit link element */
@@ -210,7 +206,6 @@ static void fsm_var_bind_expr(
                                   obf_sig( sig_name ), expr->id, obf_funit( funit_name ) );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      // printf( "fsm_var Throw A\n" ); - HIT
       Throw 0;
     }
   } else {
@@ -221,18 +216,17 @@ static void fsm_var_bind_expr(
     Throw 0;
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param expr   Pointer to expression to add to the specified functional unit.
- \param funit  Pointer to functional unit structure to add expression to.
-
  Iterates through specified expression tree, adding each expression to the
  specified functional unit if the expression does not already exist in the functional unit.
 */
 static void fsm_var_add_expr(
-  expression* expr,
-  func_unit* funit
+  expression* expr,  /*!< Pointer to expression to add to the specified functional unit */
+  func_unit* funit   /*!< Pointer to functional unit structure to add expression to */
 ) { PROFILE(FSM_VAR_ADD_EXPR);
 
   if( expr != NULL ) {
@@ -256,12 +250,11 @@ static void fsm_var_add_expr(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param stmt        Pointer to statement to bind.
- \param funit_name  String name of functional unit which will contain stmt.
-
  \return Returns a value of TRUE if the statement was successfully bound to
          the specified functional unit name; otherwise, returns a value of FALSE.
 
@@ -274,8 +267,8 @@ static void fsm_var_add_expr(
  function, returns a value of FALSE to the calling function.
 */
 static bool fsm_var_bind_stmt(
-  statement*  stmt,
-  const char* funit_name
+  statement*  stmt,       /*!< Pointer to statement to bind */
+  const char* funit_name  /*!< String name of functional unit which will contain stmt */
 ) { PROFILE(FSM_VAR_BIND_STMT);
 
   bool        retval = FALSE;  /* Return value for this function */
@@ -311,15 +304,13 @@ static bool fsm_var_bind_stmt(
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
 
 /*!
- \param sig_name    Name of signal to bind.
- \param expr        Pointer to expression to bind.
- \param funit_name  Name of functional unit that will contain the expression and signal being bound.
-
  \throws anonymous fsm_var_bind_expr
 
  Creates a new FSM binding structure and initializes it with the specified information.
@@ -327,9 +318,9 @@ static bool fsm_var_bind_stmt(
  be bound after parsing is complete.
 */
 void fsm_var_bind_add(
-  char*       sig_name,
-  expression* expr,
-  char*       funit_name
+  char*       sig_name,   /*!< Name of signal to bind */
+  expression* expr,       /*!< Pointer to expression to bind */
+  char*       funit_name  /*!< Name of functional unit that will contain the expression and signal being bound */
 ) { PROFILE(FSM_VAR_BIND_ADD);
 
   fv_bind* fvb;  /* Pointer to new FSM variable binding structure */
@@ -358,18 +349,17 @@ void fsm_var_bind_add(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param stmt        Pointer to statement containing FSM state expression
- \param funit_name  Name of functional unit that will contain stmt.
-
  Allocates and initializes an FSM variable binding entry and adds it to the
  fsm_var_stmt list for later processing.
 */
 void fsm_var_stmt_add(
-  statement* stmt,
-  char*      funit_name
+  statement* stmt,       /*!< Pointer to statement containing FSM state expression */
+  char*      funit_name  /*!< Name of functional unit that will contain stmt */
 ) { PROFILE(FSM_VAR_STMT_ADD);
 
   fv_bind* fvb;  /* Pointer to new FSM variable binding structure */
@@ -386,6 +376,8 @@ void fsm_var_stmt_add(
     fvb->next         = fsm_var_stmt_head;
     fsm_var_stmt_head = fvb;
   }
+
+  PROFILE_END;
 
 }
 
@@ -406,8 +398,8 @@ void fsm_var_stmt_add(
 */
 void fsm_var_bind() { PROFILE(FSM_VAR_BIND);
 
-  fv_bind*  curr;  /* Pointer to current FSM variable */
-  fv_bind*  tmp;   /* Temporary pointer to FSM bind structure */
+  fv_bind* curr = NULL;  /* Pointer to current FSM variable */
+  fv_bind* tmp;          /* Temporary pointer to FSM bind structure */
 
   Try {
 
@@ -463,15 +455,15 @@ void fsm_var_bind() { PROFILE(FSM_VAR_BIND);
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param fv  Pointer to FSM variable to deallocate.
-
  Deallocates an FSM variable entry from memory.
 */
 static void fsm_var_dealloc(
-  fsm_var* fv
+  fsm_var* fv  /*!< Pointer to FSM variable to deallocate */
 ) { PROFILE(FSM_VAR_DEALLOC);
 
   if( fv != NULL ) {
@@ -484,17 +476,17 @@ static void fsm_var_dealloc(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param fv  Pointer to FSM variable structure to remove from global list.
-
  Searches global FSM variable list for matching FSM variable structure.
  When match is found, remove the structure and deallocate it from memory
  being sure to keep the global list intact.
 */
 void fsm_var_remove(
-  fsm_var* fv
+  fsm_var* fv  /*!< Pointer to FSM variable structure to remove from global list */
 ) { PROFILE(FSM_VAR_REMOVE);
 
   fsm_var* curr;  /* Pointer to current FSM variable structure in list */
@@ -524,6 +516,8 @@ void fsm_var_remove(
     fsm_var_dealloc( curr );
 
   }
+
+  PROFILE_END;
 
 }
 
@@ -576,11 +570,17 @@ void fsm_var_cleanup() { PROFILE(FSM_VAR_CLEANUP);
     free_safe( tmp_fvb, sizeof( fv_bind ) );
   }
 
+  PROFILE_END;
+
 }
 
 
 /*
  $Log$
+ Revision 1.48  2008/06/19 16:14:54  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
  Revision 1.47  2008/04/15 20:37:10  phase1geo
  Fixing database array support.  Full regression passes.
 

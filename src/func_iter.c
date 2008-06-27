@@ -29,8 +29,11 @@
 #include "util.h"
 
 
+/*!
+ Displays the given function iterator to standard output.
+*/
 void func_iter_display(
-  func_iter* fi
+  func_iter* fi  /*!< Pointer to functional unit iterator to display */
 ) { PROFILE(FUNC_ITER_DISPLAY);
 
   int i;  /* Loop iterator */
@@ -41,15 +44,15 @@ void func_iter_display(
     printf( "  Line: %d\n", fi->sis[i]->curr->stmt->exp->line );
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param fi  Pointer to functional unit iterator to sort
-
  Performs a bubble sort of the first element such that the first line is in location 0 of the sis array.
 */
 static void func_iter_sort(
-  func_iter* fi
+  func_iter* fi  /*!< Pointer to functional unit iterator to sort */
 ) { PROFILE(FUNC_ITER_SORT);
 
   stmt_iter* tmp;  /* Temporary statement iterator */
@@ -84,18 +87,16 @@ static void func_iter_sort(
 
   }
 
-  // func_iter_display( fi );
+  PROFILE_END;
 
 }
 
 /*!
- \param funit  Pointer to current functional unit being examined
-
  \return Returns the number of statement iterators found in all of the unnamed functional units
          within a named functional unit.
 */
 static int func_iter_count_stmt_iters(
-  func_unit* funit
+  func_unit* funit  /*!< Pointer to current functional unit being examined */
 ) { PROFILE(FUNC_ITER_COUNT_STMT_ITERS);
 
   int         count = 1;  /* Number of statement iterators within this functional unit */
@@ -116,10 +117,15 @@ static int func_iter_count_stmt_iters(
     child = child->next;
   }
 
+  PROFILE_END;
+
   return( count );
 
 }
 
+/*!
+ TBD
+*/
 static void func_iter_add_stmt_iters(
   func_iter* fi,
   func_unit* funit
@@ -157,15 +163,16 @@ static void func_iter_add_stmt_iters(
     child = child->next;
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param fi     Pointer to functional unit iterator structure to populate
- \param funit  Pointer to main functional unit to create iterator for (must be named)
+ Initializes the given functional unit iterator with information from the given functional unit.
 */
 void func_iter_init(
-  func_iter* fi,
-  func_unit* funit
+  func_iter* fi,    /*!< Pointer to functional unit iterator structure to populate */
+  func_unit* funit  /*!< Pointer to main functional unit to create iterator for (must be named) */
 ) { PROFILE(FUNC_ITER_INIT);
   
   assert( fi != NULL );
@@ -178,17 +185,17 @@ void func_iter_init(
 
   /* Create statement iterators */
   func_iter_add_stmt_iters( fi, funit );
+
+  PROFILE_END;
   
 }
 
 /*!
- \param fi  Pointer to functional unit iterator to use
-
  \return Returns pointer to next statement in line order (or NULL if there are no more
          statements in the given functional unit)
 */
 statement* func_iter_get_next_statement(
-  func_iter* fi
+  func_iter* fi  /*!< Pointer to functional unit iterator to use */
 ) { PROFILE(FUNC_ITER_GET_NEXT_STATEMENT);
 
   statement* stmt;  /* Pointer to next statement in line order */
@@ -214,17 +221,17 @@ statement* func_iter_get_next_statement(
 
   }
 
+  PROFILE_END;
+
   return( stmt );
 
 }
 
 /*!
- \param fi  Pointer to functional unit iterator to deallocate
- 
  Deallocates all allocated memory for the given functional unit iterator.
 */
 void func_iter_dealloc(
-  func_iter* fi
+  func_iter* fi  /*!< Pointer to functional unit iterator to deallocate */
 ) { PROFILE(FUNC_ITER_DEALLOC);
 
   int i;  /* Loop iterator */
@@ -240,11 +247,17 @@ void func_iter_dealloc(
     free_safe( fi->sis, (sizeof( stmt_iter* ) * fi->sis_num) );
 
   }
+
+  PROFILE_END;
   
 }
 
 /*
  $Log$
+ Revision 1.8  2008/06/19 16:14:55  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
  Revision 1.7  2008/03/17 22:02:31  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function

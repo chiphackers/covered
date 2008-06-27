@@ -30,12 +30,12 @@
 
 
 #ifndef VPI_ONLY
-extern char       user_msg[USER_MSG_LENGTH];
-extern sig_range  curr_prange;
-extern sig_range  curr_urange;
-extern func_unit* curr_funit;
-extern str_link*  gen_mod_head;
-extern int        flag_global_generation;
+extern char         user_msg[USER_MSG_LENGTH];
+extern sig_range    curr_prange;
+extern sig_range    curr_urange;
+extern func_unit*   curr_funit;
+extern str_link*    gen_mod_head;
+extern unsigned int flag_global_generation;
 
 
 /*!
@@ -49,13 +49,11 @@ unsigned error_count = 0;
 static unsigned warn_count = 0;
 
 /*!
- \param msg  String containing error message to display to user.
-
  Outputs specified error message string to standard output and increments
  error count.
 */
 void VLerror(
-  char* msg
+  char* msg  /*!< String containing error message to display to user */
 ) { PROFILE(VLERROR);
 
   unsigned int rv;
@@ -70,16 +68,16 @@ void VLerror(
   assert( rv < USER_MSG_LENGTH );
   print_output( user_msg, FATAL_WRAP, __FILE__, __LINE__ );
 
+  PROFILE_END;
+
 }
 
 /*!
- \param msg  String containing warning message to display to user.
-
  Outputs specified warning message string to standard output and increments
  warning count.
 */
 void VLwarn(
-  char* msg
+  char* msg  /*!< String containing warning message to display to user */
 ) { PROFILE(VLWARN);
 
   unsigned int rv;
@@ -94,6 +92,8 @@ void VLwarn(
   assert( rv < USER_MSG_LENGTH );
   print_output( user_msg, WARNING_WRAP, __FILE__, __LINE__ );
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -107,15 +107,12 @@ int VLwrap() {
 #endif /* VPI_ONLY */
 
 /*!
- \param range   Pointer to signal range to deallocate
- \param rm_ptr  If TRUE, deallocates the pointer to the given range
-
  Deallocates all allocated memory within associated signal range variable, but does
  not deallocate the pointer itself (unless rm_ptr is set to TRUE).
 */
 void parser_dealloc_sig_range(
-  sig_range* range,
-  bool       rm_ptr
+  sig_range* range,  /*!< Pointer to signal range to deallocate */
+  bool       rm_ptr  /*!< If TRUE, deallocates the pointer to the given range */
 ) { PROFILE(PARSER_DEALLOC_SIG_RANGE);
 
   int i;  /* Loop iterator */
@@ -141,6 +138,8 @@ void parser_dealloc_sig_range(
   if( rm_ptr ) {
     free_safe( range, sizeof( sig_range ) );
   }
+
+  PROFILE_END;
 
 }
 
@@ -291,13 +290,11 @@ void parser_implicitly_set_curr_range(
 }
 
 /*!
- \param gen  Generation value to check
-
  \return Returns TRUE if the given gen value (see \ref generations for legal values) is less than
          or equal to the generation value specified for the current functional unit (or globally).
 */
 bool parser_check_generation(
-  int gen
+  unsigned int gen  /*!< Generation value to check */
 ) { PROFILE(PARSER_CHECK_GENERATION);
 
   bool      retval;    /* Return value for this function */
@@ -315,6 +312,8 @@ bool parser_check_generation(
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -323,6 +322,9 @@ bool parser_check_generation(
 
 /*
  $Log$
+ Revision 1.25  2008/06/02 21:34:29  phase1geo
+ Fixing bug 1981073.  Adding new tests to verify this fix.
+
  Revision 1.24  2008/04/05 05:54:32  phase1geo
  Fixing memory deallocation.
 

@@ -34,13 +34,13 @@ extern char user_msg[USER_MSG_LENGTH];
 
 
 /*!
- \param enum_sig  Pointer to signal in database that represents an enumeration value
- \param value     Pointer to static expression that contains the value to be assigned to the signal during elaboration
- \param funit     Pointer to functional unit that this enumeration value will be added to
-
  Allocates, initializes and adds a new enumerated item to the given functional unit.
 */
-void enumerate_add_item( vsignal* enum_sig, static_expr* value, func_unit* funit ) { PROFILE(ENUMERATE_ADD_ITEM);
+void enumerate_add_item(
+  vsignal*     enum_sig,  /*!< Pointer to signal in database that represents an enumeration value */
+  static_expr* value,     /*!< Pointer to static expression that contains the value to be assigned to the signal during elaboration */
+  func_unit*   funit      /*!< Pointer to functional unit that this enumeration value will be added to */
+) { PROFILE(ENUMERATE_ADD_ITEM);
 
   enum_item* ei;  /* Pointer to newly allocated enumeration item */
 
@@ -59,14 +59,16 @@ void enumerate_add_item( vsignal* enum_sig, static_expr* value, func_unit* funit
     funit->ei_tail       = ei;
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param funit  Pointer to functional unit to close out enumerated list.
-
  Called after all enumerations have been parsed for this list.
 */
-void enumerate_end_list( func_unit* funit ) { PROFILE(ENUMERATE_END_LIST);
+void enumerate_end_list(
+  func_unit* funit  /*!< Pointer to functional unit to close out enumerated list */
+) { PROFILE(ENUMERATE_END_LIST);
 
   /* Make sure that we aren't calling this function when there is no existing enumerated list */
   assert( funit->ei_tail != NULL );
@@ -74,23 +76,25 @@ void enumerate_end_list( func_unit* funit ) { PROFILE(ENUMERATE_END_LIST);
   /* Set the last bit of the tail enumerated item */
   funit->ei_tail->last = TRUE;
 
+  PROFILE_END;
+
 }
 
 /*!
- \param inst  Pointer to functional unit instance to resolve all enumerated values
-
  \throws anonymous Throw param_expr_eval
 
  Resolves all enumerated values for their value for the given instance.  This needs
  to be called during elaboration after all signals have been sized and parameters have
  been resolved.
 */
-void enumerate_resolve( funit_inst* inst ) { PROFILE(ENUMERATE_RESOLVE);
+void enumerate_resolve(
+  funit_inst* inst  /*!< Pointer to functional unit instance to resolve all enumerated values */
+) { PROFILE(ENUMERATE_RESOLVE);
 
-  enum_item* ei;            /* Pointer to current enumeration item in the given functional unit */
-  int        last_value;    /* Value of last value for this enumeration */
-  bool       first = TRUE;  /* Specifies if the current enumeration is the first */
-  bool       is_signed;     /* Contains original value of signedness of signal */
+  enum_item* ei;                 /* Pointer to current enumeration item in the given functional unit */
+  int        last_value = 0;     /* Value of last value for this enumeration */
+  bool       first      = TRUE;  /* Specifies if the current enumeration is the first */
+  bool       is_signed;          /* Contains original value of signedness of signal */
 
   assert( inst != NULL );
 
@@ -148,14 +152,16 @@ void enumerate_resolve( funit_inst* inst ) { PROFILE(ENUMERATE_RESOLVE);
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param ei  Pointer to enumeration to deallocate
-
  Deallocates all memory associated with the given enumeration.
 */
-void enumerate_dealloc( enum_item* ei ) { PROFILE(ENUMERATE_DEALLOC);
+void enumerate_dealloc(
+  enum_item* ei  /*!< Pointer to enumeration to deallocate */
+) { PROFILE(ENUMERATE_DEALLOC);
 
   if( ei != NULL ) {
 
@@ -169,14 +175,16 @@ void enumerate_dealloc( enum_item* ei ) { PROFILE(ENUMERATE_DEALLOC);
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param funit  Pointer to functional unit to remove enumeration list for
-
  Deallocates all memory associated with the enumeration list in the given functional unit
 */
-void enumerate_dealloc_list( func_unit* funit ) { PROFILE(ENUMERATE_DEALLOC_LIST);
+void enumerate_dealloc_list(
+  func_unit* funit  /*!< Pointer to functional unit to remove enumeration list for */
+) { PROFILE(ENUMERATE_DEALLOC_LIST);
 
   enum_item* tmp;  /* Temporary pointer to current link in list */
 
@@ -189,11 +197,17 @@ void enumerate_dealloc_list( func_unit* funit ) { PROFILE(ENUMERATE_DEALLOC_LIST
   /* Set the tail pointer to NULL as well */
   funit->ei_tail = NULL;
 
+  PROFILE_END;
+
 }
 
 
 /*
  $Log$
+ Revision 1.18  2008/05/30 05:38:30  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
  Revision 1.17.2.3  2008/05/28 05:57:10  phase1geo
  Updating code to use unsigned long instead of uint32.  Checkpointing.
 

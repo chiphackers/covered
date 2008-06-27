@@ -51,34 +51,29 @@ extern isuppl       info_suppl;
 */
 void assertion_parse( /*@unused@*/const char* arg ) { PROFILE(ASSERTION_PARSE);
 
+  PROFILE_END;
+
 }
 
 /*!
- \param ap       Pointer to attribute to parse
- \param funit    Pointer to current functional unit containing this attribute
- \param exclude  If TRUE, excludes this assertion from coverage consideration
-
  Parses the specified assertion attribute for assertion coverage details.
 */
 void assertion_parse_attr(
-  /*@unused@*/ attr_param*      ap,
-  /*@unused@*/ const func_unit* funit,
-  /*@unused@*/ bool             exclude
+  /*@unused@*/ attr_param*      ap,      /*!< Pointer to attribute to parse */
+  /*@unused@*/ const func_unit* funit,   /*!< Pointer to current functional unit containing this attribute */
+  /*@unused@*/ bool             exclude  /*!< If TRUE, excludes this assertion from coverage consideration */
 ) { PROFILE(ASSERTION_PARSE_ATTR);
 
+  PROFILE_END;
 }
 
 /*!
- \param funit  Pointer to current functional unit
- \param total  Pointer to the total number of assertions found in this functional unit
- \param hit    Pointer to the total number of hit assertions in this functional unit
-
  Gets total and hit assertion coverage statistics for the given functional unit.
 */
 void assertion_get_stats(
-            const func_unit* funit,
-  /*@out@*/ int*             total,
-  /*@out@*/ int*             hit
+            const func_unit* funit,  /*!< Pointer to current functional unit */
+  /*@out@*/ unsigned int*    total,  /*!< Pointer to the total number of assertions found in this functional unit */
+  /*@out@*/ unsigned int*    hit     /*!< Pointer to the total number of hit assertions in this functional unit */
 ) { PROFILE(ASSERTION_GET_STATS);
 
   assert( funit != NULL );
@@ -92,23 +87,20 @@ void assertion_get_stats(
     ovl_get_funit_stats( funit, total, hit );
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param ofile  Pointer to file handle to output instance summary results to
- \param name   Name of instance being reported
- \param hits   Total number of assertions hit in the given instance
- \param total  Total number of assertions in the given instance
-
  \return Returns TRUE if at least one assertion was found to be not hit; otherwise, returns FALSE.
 
  Displays the assertion summary information for a given instance to the specified output stream.
 */
 static bool assertion_display_instance_summary(
-  FILE*       ofile,
-  const char* name,
-  int         hits,
-  int         total
+  FILE*       ofile,  /*!< Pointer to file handle to output instance summary results to */
+  const char* name,   /*!< Name of instance being reported */
+  int         hits,   /*!< Total number of assertions hit in the given instance */
+  int         total   /*!< Total number of assertions in the given instance */
 ) { PROFILE(ASSERTION_DISPLAY_INSTANCE_SUMMARY);
 
   float percent;  /* Percentage of assertions hit */
@@ -119,17 +111,13 @@ static bool assertion_display_instance_summary(
   fprintf( ofile, "  %-43.43s    %5d/%5d/%5d      %3.0f%%\n",
            name, hits, miss, total, percent );
 
+  PROFILE_END;
+
   return( miss > 0 );
 
 }
 
 /*!
- \param ofile        Pointer to the file to output the instance summary information to
- \param root         Pointer to the current functional unit instance to look at
- \param parent_inst  Scope of parent instance of this instance
- \param hits         Pointer to number of assertions hit in given instance tree
- \param total        Pointer to total number of assertions found in given instance tree
-
  \return Returns TRUE if at least one assertion was found to not be covered in this
          function unit instance; otherwise, returns FALSE.
 
@@ -137,11 +125,11 @@ static bool assertion_display_instance_summary(
  unit instance to the given output file.
 */
 static bool assertion_instance_summary(
-            FILE*             ofile,
-            const funit_inst* root,
-            const char*       parent_inst,
-  /*@out@*/ int*              hits,
-  /*@out@*/ int*              total
+            FILE*             ofile,        /*!< Pointer to the file to output the instance summary information to */
+            const funit_inst* root,         /*!< Pointer to the current functional unit instance to look at */
+            const char*       parent_inst,  /*!< Scope of parent instance of this instance */
+  /*@out@*/ int*              hits,         /*!< Pointer to number of assertions hit in given instance tree */
+  /*@out@*/ int*              total         /*!< Pointer to total number of assertions found in given instance tree */
 ) { PROFILE(ASSERTION_INSTANCE_SUMMARY);
 
   funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
@@ -188,27 +176,23 @@ static bool assertion_instance_summary(
 
   }
 
+  PROFILE_END;
+
   return( miss_found );
 
 }
 
 /*!
- \param ofile  Pointer to file handle to output instance summary results to
- \param name   Name of functional unit being reported
- \param fname  Name of file containing the given functional unit
- \param hits   Total number of assertions hit in the given functional unit
- \param total  Total number of assertions in the given functional unit
-
  \return Returns TRUE if at least one assertion was found to be not hit; otherwise, returns FALSE.
 
  Displays the assertion summary information for a given instance to the specified output stream.
 */
 static bool assertion_display_funit_summary(
-  FILE*       ofile,
-  const char* name,
-  const char* fname,
-  int         hits,
-  int         total
+  FILE*       ofile,  /*!< Pointer to file handle to output instance summary results to */
+  const char* name,   /*!< Name of functional unit being reported */
+  const char* fname,  /*!< Name of file containing the given functional unit */
+  int         hits,   /*!< Total number of assertions hit in the given functional unit */
+  int         total   /*!< Total number of assertions in the given functional unit */
 ) { PROFILE(ASSERTION_DISPLAY_FUNIT_SUMMARY);
 
   float percent;  /* Percentage of assertions hit */
@@ -219,16 +203,13 @@ static bool assertion_display_funit_summary(
   fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5d/%5d      %3.0f%%\n",
            name, fname, hits, miss, total, percent );
 
+  PROFILE_END;
+
   return( miss > 0 );
 
 }
 
 /*!
- \param ofile  Pointer to output file to display summary information to
- \param head   Pointer to the current functional unit link to evaluate
- \param hits   Pointer to the number of assertions hit in all functional units
- \param total  Pointer to the total number of assertions found in all functional units
-
  \return Returns TRUE if at least one assertion was found to not be covered in this
          functional unit; otherwise, returns FALSE.
 
@@ -236,10 +217,10 @@ static bool assertion_display_funit_summary(
  functional unit to the given output file.
 */
 static bool assertion_funit_summary(
-            FILE*             ofile,
-            const funit_link* head,
-  /*@out@*/ int*              hits,
-  /*@out@*/ int*              total
+            FILE*             ofile,  /*!< Pointer to output file to display summary information to */
+            const funit_link* head,   /*!< Pointer to the current functional unit link to evaluate */
+  /*@out@*/ int*              hits,   /*!< Pointer to the number of assertions hit in all functional units */
+  /*@out@*/ int*              total   /*!< Pointer to the total number of assertions found in all functional units */
 ) { PROFILE(ASSERTION_FUNIT_SUMMARY);
 
   bool miss_found = FALSE;  /* Set to TRUE if assertion was found to be missed */
@@ -268,17 +249,19 @@ static bool assertion_funit_summary(
 
   }
 
+  PROFILE_END;
+
   return( miss_found );
 
 }
 
 /*!
- \param ofile  Pointer to the file to output the verbose information to
- \param funit  Pointer to the functional unit to display
-
  Displays the verbose hit/miss assertion information for the given functional unit.
 */
-static void assertion_display_verbose( FILE* ofile, const func_unit* funit ) { PROFILE(ASSERTION_DISPLAY_VERBOSE);
+static void assertion_display_verbose(
+  FILE*            ofile,  /*!< Pointer to the file to output the verbose information to */
+  const func_unit* funit   /*!< Pointer to the functional unit to display */
+) { PROFILE(ASSERTION_DISPLAY_VERBOSE);
 
   if( report_covered ) {
     fprintf( ofile, "    Hit Assertions\n\n" );
@@ -293,17 +276,19 @@ static void assertion_display_verbose( FILE* ofile, const func_unit* funit ) { P
 
   fprintf( ofile, "\n" );
 
+  PROFILE_END;
+
 }
 
 /*!
- \param ofile        Pointer to the file to output the instance verbose information to
- \param root         Pointer to the current functional unit instance to look at
- \param parent_inst  Scope of parent of this functional unit instance
-
  Outputs the instance verbose assertion coverage information for the given functional
  unit instance to the given output file.
 */
-static void assertion_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) { PROFILE(ASSERTION_INSTANCE_VERBOSE);
+static void assertion_instance_verbose(
+  FILE*       ofile,       /*!< Pointer to the file to output the instance verbose information to */
+  funit_inst* root,        /*!< Pointer to the current functional unit instance to look at */
+  char*       parent_inst  /*!< Scope of parent of this functional unit instance */
+) { PROFILE(ASSERTION_INSTANCE_VERBOSE);
 
   funit_inst* curr_inst;      /* Pointer to current instance being evaluated */
   char        tmpname[4096];  /* Temporary name holder for instance */
@@ -357,16 +342,18 @@ static void assertion_instance_verbose( FILE* ofile, funit_inst* root, char* par
     curr_inst = curr_inst->next;
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param ofile  Pointer to the file to output the functional unit verbose information to
- \param head   Pointer to the current functional unit link to look at
-
  Outputs the functional unit verbose assertion coverage information for the given
  functional unit to the given output file.
 */
-static void assertion_funit_verbose( FILE* ofile, const funit_link* head ) { PROFILE(ASSERTION_FUNIT_VERBOSE);
+static void assertion_funit_verbose(
+  FILE*             ofile,  /*!< Pointer to the file to output the functional unit verbose information to */
+  const funit_link* head    /*!< Pointer to the current functional unit link to look at */
+) { PROFILE(ASSERTION_FUNIT_VERBOSE);
 
   char* pname;  /* Printable version of functional unit name */
 
@@ -403,15 +390,17 @@ static void assertion_funit_verbose( FILE* ofile, const funit_link* head ) { PRO
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param ofile    File to output report contents to
- \param verbose  Specifies if verbose report output needs to be generated
-
  Outputs assertion coverage report information to the given file handle. 
 */
-void assertion_report( FILE* ofile, bool verbose ) { PROFILE(ASSERTION_REPORT);
+void assertion_report(
+  FILE* ofile,   /*!< File to output report contents to */
+  bool  verbose  /*!< Specifies if verbose report output needs to be generated */
+) { PROFILE(ASSERTION_REPORT);
 
   bool       missed_found = FALSE;  /* If set to TRUE, lines were found to be missed */
   char       tmp[4096];             /* Temporary string value */
@@ -471,23 +460,20 @@ void assertion_report( FILE* ofile, bool verbose ) { PROFILE(ASSERTION_REPORT);
 
   fprintf( ofile, "\n\n" );
 
+  PROFILE_END;
+
 }
 
 /*!
- \param funit_name  Name of functional unit to search for
- \param funit_type  Type of functional unit to search for
- \param total       Pointer to the total number of assertions in the specified functional unit
- \param hit         Pointer to the number of hit assertions in the specified functional unit
- 
  \return Returns TRUE if the specified functional unit was found in the design; otherwise, returns FALSE.
  
  Counts the total number and number of hit assertions for the specified functional unit.
 */
 bool assertion_get_funit_summary(
-            const char* funit_name,
-            int         funit_type,
-  /*@out@*/ int*        total,
-  /*@out@*/ int*        hit
+            const char*   funit_name,  /*!< Name of functional unit to search for */
+            int           funit_type,  /*!< Type of functional unit to search for */
+  /*@out@*/ unsigned int* total,       /*!< Pointer to the total number of assertions in the specified functional unit */
+  /*@out@*/ unsigned int* hit          /*!< Pointer to the number of hit assertions in the specified functional unit */
 ) { PROFILE(ASSERTION_GET_FUNIT_SUMMARY);
 	
   bool        retval = TRUE;  /* Return value for this function */
@@ -508,32 +494,26 @@ bool assertion_get_funit_summary(
     retval = FALSE;
     
   }
+
+  PROFILE_END;
   
   return( retval );
   
 }
 
 /*!
- \param funit_name        Name of functional unit to collect assertion information for
- \param funit_type        Type of functional unit to collect assertion information for
- \param uncov_inst_names  Pointer to array of uncovered instance names found within the specified functional unit
- \param excludes          Pointer to array of integers that contain the exclude information for the given instance names
- \param uncov_inst_size   Number of valid elements in the uncov_inst_names array
- \param cov_inst_names    Pointer to array of covered instance names found within the specified functional unit
- \param cov_inst_size     Number of valid elements in the cov_inst_names array
- 
  \return Returns TRUE if the specified functional unit exists in the design; otherwise, returns FALSE.
  
  Searches the specified functional unit, collecting all uncovered and covered assertion module instance names.
 */
 bool assertion_collect(
-  const char* funit_name,
-  int         funit_type,
-  char***     uncov_inst_names,
-  int**       excludes,
-  int*        uncov_inst_size,
-  char***     cov_inst_names,
-  int*        cov_inst_size
+            const char*   funit_name,        /*!< Name of functional unit to collect assertion information for */
+            int           funit_type,        /*!< Type of functional unit to collect assertion information for */
+  /*@out@*/ char***       uncov_inst_names,  /*!< Pointer to array of uncovered instance names found within the specified functional unit */
+  /*@out@*/ int**         excludes,          /*!< Pointer to array of integers that contain the exclude information for the given instance names */
+  /*@out@*/ unsigned int* uncov_inst_size,   /*!< Number of valid elements in the uncov_inst_names array */
+  /*@out@*/ char***       cov_inst_names,    /*!< Pointer to array of covered instance names found within the specified functional unit */
+  /*@out@*/ unsigned int* cov_inst_size      /*!< Number of valid elements in the cov_inst_names array */
 ) { PROFILE(ASSERTION_COLLECT);
   
   bool        retval = TRUE;  /* Return value for this function */
@@ -560,30 +540,25 @@ bool assertion_collect(
     
   }
 
+  PROFILE_END;
+
   return( retval );
   
 }
 
 /*!
- \param funit_name  Name of functional unit to retrieve missed coverage points for
- \param funit_type  Type of functional unit to retrieve missed coverage points for
- \param inst_name   Name of assertion module instance to retrieve
- \param assert_mod  Pointer to name of assertion module being retrieved
- \param cp_head     Pointer to head of list of strings/integers containing coverage point information
- \param cp_tail     Pointer to tail of list of strings/integers containing coverage point information
-
  \return Returns TRUE if the specified functional unit was found; otherwise, returns FALSE.
 
  Finds all of the coverage points for the given assertion instance and stores their
  string descriptions and execution counts in the cp list.
 */
 bool assertion_get_coverage(
-  const char* funit_name,
-  int         funit_type,
-  const char* inst_name,
-  char**      assert_mod,
-  str_link**  cp_head,
-  str_link**  cp_tail
+            const char* funit_name,  /*!< Name of functional unit to retrieve missed coverage points for */
+            int         funit_type,  /*!< Type of functional unit to retrieve missed coverage points for */
+            const char* inst_name,   /*!< Name of assertion module instance to retrieve */
+  /*@out@*/ char**      assert_mod,  /*!< Pointer to name of assertion module being retrieved */
+  /*@out@*/ str_link**  cp_head,     /*!< Pointer to head of list of strings/integers containing coverage point information */
+  /*@out@*/ str_link**  cp_tail      /*!< Pointer to tail of list of strings/integers containing coverage point information */
 ) { PROFILE(ASSERTION_GET_COVERAGE);
 
   bool        retval = TRUE;  /* Return value for this function */
@@ -604,6 +579,8 @@ bool assertion_get_coverage(
     retval = FALSE;
 
   }
+
+  PROFILE_END;
  
   return( retval );
 
@@ -611,6 +588,9 @@ bool assertion_get_coverage(
 
 /*
  $Log$
+ Revision 1.32  2008/04/15 20:37:07  phase1geo
+ Fixing database array support.  Full regression passes.
+
  Revision 1.31  2008/03/17 05:26:15  phase1geo
  Checkpointing.  Things don't compile at the moment.
 

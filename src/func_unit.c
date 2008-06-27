@@ -59,11 +59,11 @@ extern func_unit*   curr_funit;
 
 
 /*!
- \param funit  Pointer to functional unit to initialize.
-
  Initializes all contents to NULL.
 */  
-static void funit_init( func_unit* funit ) { PROFILE(FUNIT_INIT);
+static void funit_init(
+  func_unit* funit  /*!< Pointer to functional unit to initialize */
+) { PROFILE(FUNIT_INIT);
     
   funit->type       = FUNIT_MODULE;
   funit->name       = NULL;
@@ -123,13 +123,13 @@ func_unit* funit_create() { PROFILE(FUNIT_CREATE);
 }
 
 /*!
- \param funit  Pointer to functional unit to get its module from
-
  \return Returns a pointer to the module that contains the specified functional unit.
 
  Traverses up parent list until the FUNIT_MODULE is found (parent should be NULL).
 */
-func_unit* funit_get_curr_module( func_unit* funit ) { PROFILE(FUNIT_GET_CURR_MODULE);
+func_unit* funit_get_curr_module(
+  func_unit* funit  /*!< Pointer to functional unit to get its module from */
+) { PROFILE(FUNIT_GET_CURR_MODULE);
 
   assert( funit != NULL );
 
@@ -144,14 +144,14 @@ func_unit* funit_get_curr_module( func_unit* funit ) { PROFILE(FUNIT_GET_CURR_MO
 }
 
 /*!
- \param funit  Pointer to functional unit to get its module from
-
  \return Returns a const pointer to the module that contains the specified functional unit.
 
  Traverses up parent list until the FUNIT_MODULE is found (parent should be NULL).  Does this
  in a way that guarantees that the found functional unit will not be modified.
 */
-const func_unit* funit_get_curr_module_safe( const func_unit* funit ) { PROFILE(FUNIT_GET_CURR_MODULE_SAFE);
+const func_unit* funit_get_curr_module_safe(
+  const func_unit* funit  /*!< Pointer to functional unit to get its module from */
+) { PROFILE(FUNIT_GET_CURR_MODULE_SAFE);
 
   assert( funit != NULL );
 
@@ -166,12 +166,12 @@ const func_unit* funit_get_curr_module_safe( const func_unit* funit ) { PROFILE(
 }
 
 /*!
- \param funit  Functional unit that may be nested in a function
-
  \return Returns a pointer to the function that contains the specified functional unit if
          one exists; otherwise, returns NULL.
 */
-func_unit* funit_get_curr_function( func_unit* funit ) { PROFILE(FUNIT_GET_CURR_FUNCTION);
+func_unit* funit_get_curr_function(
+  func_unit* funit  /*!< Functional unit that may be nested in a function */
+) { PROFILE(FUNIT_GET_CURR_FUNCTION);
 
   assert( funit != NULL );
 
@@ -186,12 +186,12 @@ func_unit* funit_get_curr_function( func_unit* funit ) { PROFILE(FUNIT_GET_CURR_
 }
 
 /*!
- \param funit  Functional unit that may be nested in a function
-
  \return Returns a pointer to the function that contains the specified functional unit if
          one exists; otherwise, returns NULL.
 */
-func_unit* funit_get_curr_task( func_unit* funit ) { PROFILE(FUNIT_GET_CURR_TASK);
+func_unit* funit_get_curr_task(
+  func_unit* funit  /*!< Functional unit that may be nested in a function */
+) { PROFILE(FUNIT_GET_CURR_TASK);
 
   assert( funit != NULL );
 
@@ -206,11 +206,11 @@ func_unit* funit_get_curr_task( func_unit* funit ) { PROFILE(FUNIT_GET_CURR_TASK
 }
 
 /*!
- \param funit  Pointer to functional unit to process
-
  \return Returns the number of input, output and inout ports specified in this functional unit
 */
-int funit_get_port_count( func_unit* funit ) { PROFILE(FUNIT_GET_PORT_COUNT);
+int funit_get_port_count(
+  func_unit* funit  /*!< Pointer to functional unit to process */
+) { PROFILE(FUNIT_GET_PORT_COUNT);
 
   sig_link* sigl;          /* Pointer to current signal link to examine */
   int       port_cnt = 0;  /* Return value for this function */
@@ -237,16 +237,16 @@ int funit_get_port_count( func_unit* funit ) { PROFILE(FUNIT_GET_PORT_COUNT);
 }
 
 /*!
- \param name   Name of parameter to search for
- \param funit  Functional unit to check for existence of named parameter
-
  \return Returns a pointer to the module parameter structure that contains the specified
          parameter name if it exists; otherwise, returns NULL.
 
  Recursively searches from the current functional unit up through its scope until either
  the parameter is found or until we have exhausted the scope.
 */
-mod_parm* funit_find_param( char* name, func_unit* funit ) { PROFILE(FUNIT_FIND_PARAM);
+mod_parm* funit_find_param(
+  char*      name,  /*!< Name of parameter to search for */
+  func_unit* funit  /*!< Functional unit to check for existence of named parameter */
+) { PROFILE(FUNIT_FIND_PARAM);
 
   mod_parm* mparm = NULL;  /* Pointer to found module parameter */
 
@@ -265,9 +265,6 @@ mod_parm* funit_find_param( char* name, func_unit* funit ) { PROFILE(FUNIT_FIND_
 }
 
 /*!
- \param name   Name of the signal that we are searching for
- \param funit  Pointer to functional unit to search in
-
  \return Returns a pointer to the found signal in the given functional unit; otherwise,
          returns NULL if the signal could not be found.
 
@@ -275,8 +272,8 @@ mod_parm* funit_find_param( char* name, func_unit* funit ) { PROFILE(FUNIT_FIND_
  it isn't found there, we look in the generate item list for the same signal.
 */
 vsignal* funit_find_signal(
-  char*      name,
-  func_unit* funit
+  char*      name,  /*!< Name of the signal that we are searching for */
+  func_unit* funit  /*!< Pointer to functional unit to search in */
 ) { PROFILE(FUNIT_FIND_SIGNAL);
 
   vsignal*    found_sig = NULL;  /* Pointer to the found signal */
@@ -318,13 +315,13 @@ vsignal* funit_find_signal(
 }
 
 /*!
- \param funit  Pointer to functional unit to search in
- \param stmt   Pointer to statement to search for
-
  Searches all statement blocks in the given functional unit that have expressions that call
  the functional unit containing the given statement as its first statement.
 */
-void funit_remove_stmt_blks_calling_stmt( func_unit* funit, statement* stmt ) { PROFILE(FUNIT_REMOVE_STMT_BLKS_CALLING_STMT);
+void funit_remove_stmt_blks_calling_stmt(
+  func_unit* funit,  /*!< Pointer to functional unit to search in */
+  statement* stmt    /*!< Pointer to statement to search for */
+) { PROFILE(FUNIT_REMOVE_STMT_BLKS_CALLING_STMT);
 
   stmt_iter si;  /* Statement list iterator */
 
@@ -342,12 +339,12 @@ void funit_remove_stmt_blks_calling_stmt( func_unit* funit, statement* stmt ) { 
 }
 
 /*!
- \param orig_name  Verilog name of task, function or named-block.
- \param parent     Pointer to parent functional unit of this functional unit.
-
  \return Returns dynamically allocated string containing internally used task, function or named-block name.
 */
-char* funit_gen_task_function_namedblock_name( char* orig_name, func_unit* parent ) { PROFILE(FUNIT_GEN_TASK_FUNCTION_NAMEDBLOCK_NAME);
+char* funit_gen_task_function_namedblock_name(
+  char*      orig_name,  /*!< Verilog name of task, function or named-block */
+  func_unit* parent      /*!< Pointer to parent functional unit of this functional unit */
+) { PROFILE(FUNIT_GEN_TASK_FUNCTION_NAMEDBLOCK_NAME);
 
   char         full_name[4096];  /* Container for new name */
   unsigned int rv;               /* Return value for snprintf calls */
@@ -366,12 +363,6 @@ char* funit_gen_task_function_namedblock_name( char* orig_name, func_unit* paren
 }
 
 /*!
- \param funit        Pointer to functional unit containing elements to resize.
- \param inst         Pointer to instance containing this functional unit.
- \param gen_all      Set to TRUE to generate all components (this should only be set
-                     by the funit_db_write function).
- \param alloc_exprs  Allocates vector data for all expressions if set to TRUE.
-
  \throws anonymous expression_resize enumerate_resolve param_resolve expression_set_value expression_set_value expression_set_value vsignal_create_vec gen_item_resize_stmts_and_sigs
  
  Resizes signals if they are contigent upon parameter values.  After
@@ -380,10 +371,11 @@ char* funit_gen_task_function_namedblock_name( char* orig_name, func_unit* paren
  this funtional unit's contents to the CDD file (after parsing phase only)
 */
 void funit_size_elements(
-  func_unit*  funit,
-  funit_inst* inst,
-  bool        gen_all,
-  bool        alloc_exprs
+  func_unit*  funit,       /*!< Pointer to functional unit containing elements to resize */
+  funit_inst* inst,        /*!< Pointer to instance containing this functional unit */
+  bool        gen_all,     /*!< Set to TRUE to generate all components (this should only be set
+                                by the funit_db_write function) */
+  bool        alloc_exprs  /*!< Allocates vector data for all expressions if set to TRUE */
 ) { PROFILE(FUNIT_SIZE_ELEMENTS);
   
   inst_parm*  curr_iparm;       /* Pointer to current instance parameter to evaluate */
@@ -518,20 +510,20 @@ void funit_size_elements(
 }
 
 /*!
- \param funit        Pointer to functional unit to write to output.
- \param scope        String version of functional unit scope in hierarchy.
- \param file         Pointer to specified output file to write contents.
- \param inst         Pointer to the current functional unit instance.
- \param report_save  Specifies that we are attempting to save a CDD after modifying the database in
-                     the report command.
-
  \throws anonymous funit_size_elements
 
  Prints the database line for the specified functional unit to the specified database
  file.  If there are any problems with the write, returns FALSE; otherwise,
  returns TRUE.
 */
-void funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst, bool report_save ) { PROFILE(FUNIT_DB_WRITE);
+void funit_db_write(
+  func_unit*  funit,       /*!< Pointer to functional unit to write to output */
+  char*       scope,       /*!< String version of functional unit scope in hierarchy */
+  FILE*       file,        /*!< Pointer to specified output file to write contents */
+  funit_inst* inst,        /*!< Pointer to the current functional unit instance */
+  bool        report_save  /*!< Specifies that we are attempting to save a CDD after modifying the database in
+                                the report command */
+) { PROFILE(FUNIT_DB_WRITE);
 
   sig_link*   curr_sig;       /* Pointer to current functional unit sig_link element */
   exp_link*   curr_exp;       /* Pointer to current functional unit exp_link element */
@@ -687,19 +679,15 @@ void funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
 }
 
 /*!
- \param funit  Pointer to functional unit to read contents into.
- \param scope  Pointer to name of read functional unit scope.
- \param line   Pointer to current line to parse.
-
  \throws anonymous Throw
 
  Reads the current line of the specified file and parses it for a functional unit.
  If all is successful, returns TRUE; otherwise, returns FALSE.
 */
 void funit_db_read(
-  func_unit* funit,
-  char*      scope,
-  char**     line
+  func_unit* funit,  /*!< Pointer to functional unit to read contents into */
+  char*      scope,  /*!< Pointer to name of read functional unit scope */
+  char**     line    /*!< Pointer to current line to parse */
 ) { PROFILE(FUNIT_DB_READ);
 
   int  chars_read;   /* Number of characters currently read */
@@ -728,10 +716,6 @@ void funit_db_read(
 }
 
 /*!
- \param base  Module that will merge in that data from the in functional unit
- \param file  Pointer to CDD file handle to read.
- \param same  Specifies if functional unit to be merged should match existing functional unit exactly or not.
-
  \throws anonymous fsm_db_merge Throw Throw expression_db_merge vsignal_db_merge
 
  Parses specified line for functional unit information and performs a merge of the two 
@@ -740,21 +724,21 @@ void funit_db_read(
  displayed to the user.
 */
 void funit_db_merge(
-  func_unit* base,
-  FILE*      file,
-  bool       same
+  func_unit* base,  /*!< Module that will merge in that data from the in functional unit */
+  FILE*      file,  /*!< Pointer to CDD file handle to read */
+  bool       same   /*!< Specifies if functional unit to be merged should match existing functional unit exactly or not */
 ) { PROFILE(FUNIT_DB_MERGE);
 
-  exp_link* curr_base_exp;   /* Pointer to current expression in base functional unit expression list */
-  sig_link* curr_base_sig;   /* Pointer to current signal in base functional unit signal list */
-  stmt_iter curr_base_stmt;  /* Statement list iterator */
-  fsm_link* curr_base_fsm;   /* Pointer to current FSM in base functional unit FSM list */
-  race_blk* curr_base_race;  /* Pointer to current race condition block in base module list  */
-  char*     curr_line;       /* Pointer to current line being read from CDD */
-  int       curr_line_size;  /* Number of bytes allocated for curr_line */
-  char*     rest_line;       /* Pointer to rest of read line */
-  int       type;            /* Specifies currently read CDD type */
-  int       chars_read;      /* Number of characters read from current CDD line */
+  exp_link*    curr_base_exp;   /* Pointer to current expression in base functional unit expression list */
+  sig_link*    curr_base_sig;   /* Pointer to current signal in base functional unit signal list */
+  stmt_iter    curr_base_stmt;  /* Statement list iterator */
+  fsm_link*    curr_base_fsm;   /* Pointer to current FSM in base functional unit FSM list */
+  race_blk*    curr_base_race;  /* Pointer to current race condition block in base module list  */
+  char*        curr_line;       /* Pointer to current line being read from CDD */
+  unsigned int curr_line_size;  /* Number of bytes allocated for curr_line */
+  char*        rest_line;       /* Pointer to rest of read line */
+  int          type;            /* Specifies currently read CDD type */
+  int          chars_read;      /* Number of characters read from current CDD line */
 
   assert( base != NULL );
   assert( base->name != NULL );
@@ -864,7 +848,7 @@ void funit_db_merge(
         if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
           rest_line = curr_line + chars_read;
           if( type == DB_TYPE_FSM ) {
-            fsm_db_merge( curr_base_fsm->table, &rest_line, same );
+            fsm_db_merge( curr_base_fsm->table, &rest_line );
           } else {
             print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
             printf( "func_unit Throw N\n" );
@@ -980,11 +964,11 @@ void funit_merge(
 }
 
 /*!
- \param funit Pointer to functional unit to flatten name
-
  \return Returns the flattened name of the given functional unit
 */
-char* funit_flatten_name( func_unit* funit ) { PROFILE(FUNIT_FLATTEN_NAME);
+char* funit_flatten_name(
+  func_unit* funit  /*!< Pointer to functional unit to flatten name */
+) { PROFILE(FUNIT_FLATTEN_NAME);
 
   static char fscope[4096];  /* Flattened scope name */
   char        tmp[4096];     /* Temporary string storage */
@@ -1013,8 +997,6 @@ char* funit_flatten_name( func_unit* funit ) { PROFILE(FUNIT_FLATTEN_NAME);
 }
 
 /*!
- \param id  Expression/statement ID to search for
- 
  \return Returns a pointer to the functional unit that contains the specified expression/statement
          ID if one exists; otherwise, returns NULL.
 
@@ -1022,7 +1004,9 @@ char* funit_flatten_name( func_unit* funit ) { PROFILE(FUNIT_FLATTEN_NAME);
  by the specified ID and returns a pointer to this functional unit.  If no such ID exists in the
  design, a value of NULL is returned to the calling statement.
 */
-func_unit* funit_find_by_id( int id ) { PROFILE(FUNIT_FIND_BY_ID);
+func_unit* funit_find_by_id(
+  int id  /*!< Expression/statement ID to search for */
+) { PROFILE(FUNIT_FIND_BY_ID);
 
   funit_link* funitl;       /* Temporary pointer to functional unit link */
   exp_link*   expl = NULL;  /* Temporary pointer to expression link */
@@ -1041,12 +1025,12 @@ func_unit* funit_find_by_id( int id ) { PROFILE(FUNIT_FIND_BY_ID);
 }
 
 /*!
- \param funit  Pointer to functional unit to check.
- 
  \return Returns TRUE if the specified functional unit does not contain any inputs, outputs or
          inouts and is of type MODULE.
 */
-bool funit_is_top_module( func_unit* funit ) { PROFILE(FUNIT_IS_TOP_MODULE);
+bool funit_is_top_module(
+  func_unit* funit  /*!< Pointer to functional unit to check */
+) { PROFILE(FUNIT_IS_TOP_MODULE);
 
   bool      retval = FALSE;  /* Return value for this function */
   sig_link* sigl;            /* Pointer to current signal link */
@@ -1288,20 +1272,19 @@ void funit_push_threads(
     }
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param funit  Pointer to functional unit to delete thread from thread pointer/thread list.
- \param thr    Pointer to thread to remove from the given statement
-
  Searches the given functional unit thread element for the given thread.  When the thread is found,
  its corresponding thread link is moved to the end of the thread list, the next pointer is updated
  accordingly and the thread pointer is set to NULL.  This function will be called whenever a thread
  is killed in the simulator.
 */
 void funit_delete_thread(
-  func_unit* funit,
-  thread*    thr
+  func_unit* funit,  /*!< Pointer to functional unit to delete thread from thread pointer/thread list */
+  thread*    thr     /*!< Pointer to thread to remove from the given statement */
 ) { PROFILE(STATEMENT_DELETE_THREAD);
 
   assert( funit != NULL );
@@ -1347,15 +1330,17 @@ void funit_delete_thread(
     }
   
   } 
+
+  PROFILE_END;
     
 }   
 
 /*!
- \param funit  Pointer to functional unit element to clean.
-
  Deallocates functional unit contents: name and filename strings.
 */
-static void funit_clean( func_unit* funit ) { PROFILE(FUNIT_CLEAN);
+static void funit_clean(
+  func_unit* funit  /*!< Pointer to functional unit element to clean */
+) { PROFILE(FUNIT_CLEAN);
 
   func_unit*    old_funit = curr_funit;  /* Holds the original functional unit in curr_funit */
   typedef_item* tdi;                     /* Pointer to current typedef item */
@@ -1459,12 +1444,12 @@ static void funit_clean( func_unit* funit ) { PROFILE(FUNIT_CLEAN);
 }
 
 /*!
- \param funit  Pointer to functional unit element to deallocate.
-
  Deallocates functional unit; name and filename strings; and finally
  the structure itself from the heap.
 */
-void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
+void funit_dealloc(
+  func_unit* funit  /*!< Pointer to functional unit element to deallocate */
+) { PROFILE(FUNIT_DEALLOC);
 
   if( funit != NULL ) {
 
@@ -1483,6 +1468,10 @@ void funit_dealloc( func_unit* funit ) { PROFILE(FUNIT_DEALLOC);
 
 /*
  $Log$
+ Revision 1.105  2008/06/19 16:14:55  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
  Revision 1.104  2008/06/02 21:34:29  phase1geo
  Fixing bug 1981073.  Adding new tests to verify this fix.
 

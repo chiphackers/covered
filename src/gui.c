@@ -93,6 +93,8 @@ bool funit_get_list(
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -116,6 +118,8 @@ char* funit_get_filename(
   if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
     fname = strdup_safe( funitl->funit->filename );
   }
+
+  PROFILE_END;
 
   return( fname );
 
@@ -149,12 +153,18 @@ bool funit_get_start_and_end_lines(
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
 
 /*
  $Log$
+ Revision 1.15  2008/06/19 16:14:55  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
  Revision 1.14  2008/04/15 20:37:11  phase1geo
  Fixing database array support.  Full regression passes.
 

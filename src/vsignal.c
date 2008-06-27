@@ -59,12 +59,12 @@ extern bool debug_mode;
  for performance enhancing purposes.
 */
 static void vsignal_init(
-  vsignal* sig,
-  char*    name,
-  int      type,
-  vector*  value,
-  int      line,
-  int      col
+  vsignal*     sig,    /*!< Pointer to vsignal to initialize */
+  char*        name,   /*!< Pointer to vsignal name string */
+  unsigned int type,   /*!< Type of signal to create */
+  vector*      value,  /*!< Pointer to vsignal value */
+  unsigned int line,   /*!< Line number that this signal is declared on */
+  unsigned int col     /*!< Starting column that this signal is declared on */
 ) { PROFILE(VSIGNAL_INIT);
 
   sig->name            = name;
@@ -84,12 +84,6 @@ static void vsignal_init(
 }
 
 /*!
- \param name   Full hierarchical name of this vsignal.
- \param type   Type of signal to create
- \param width  Bit width of this vsignal.
- \param line   Line number that this signal is declared on.
- \param col    Starting column that this signal is declared on.
-
  \returns Pointer to newly created vsignal.
 
  This function should be called by the Verilog parser or the
@@ -98,11 +92,11 @@ static void vsignal_init(
  vsignal.
 */
 vsignal* vsignal_create(
-  const char* name,
-  int         type,
-  int         width,
-  int         line,
-  int         col
+  const char*  name,   /*!< Full hierarchical name of this vsignal */
+  unsigned int type,   /*!< Type of signal to create */
+  unsigned int width,  /*!< Bit width of this vsignal */
+  unsigned int line,   /*!< Line number that this signal is declared on */
+  unsigned int col     /*!< Starting column that this signal is declared on */
 ) { PROFILE(VSIGNAL_CREATE);
 
   vsignal* new_sig;  /* Pointer to newly created vsignal */
@@ -119,8 +113,6 @@ vsignal* vsignal_create(
 }
 
 /*!
- \param sig  Pointer to signal to create vector for
-
  \throws anonymous expression_set_value
 
  Calculates the signal width and creates a vector value that is
@@ -128,12 +120,12 @@ vsignal* vsignal_create(
  functional unit element sizing function and needs to be called before expression resizing is performed.
 */
 void vsignal_create_vec(
-  vsignal* sig
+  vsignal* sig  /*!< Pointer to signal to create vector for */
 ) { PROFILE(VSIGNAL_CREATE_VEC);
 
-  int       i;          /* Loop iterator */
-  vector*   vec;        /* Temporary vector used for getting a vector value */
-  exp_link* expl;       /* Pointer to current expression in signal expression list */
+  unsigned int i;     /* Loop iterator */
+  vector*      vec;   /* Temporary vector used for getting a vector value */
+  exp_link*    expl;  /* Pointer to current expression in signal expression list */
 
   assert( sig != NULL );
   assert( sig->value != NULL );
@@ -182,19 +174,17 @@ void vsignal_create_vec(
 }
 
 /*!
- \param sig  Pointer to signal to duplicate
-
  \return Returns a newly allocated and initialized copy of the given signal
 
  Duplicates the contents of the given signal with the exception of the expression list.
 */
 vsignal* vsignal_duplicate(
-  vsignal* sig
+  vsignal* sig  /*!< Pointer to signal to duplicate */
 ) { PROFILE(VSIGNAL_DUPLICATE);
 
-  vsignal*  new_sig;  /* Pointer to newly created vsignal */
-  exp_link* expl;     /* Pointer to current expression link */
-  int       i;        /* Loop iterator */
+  vsignal*     new_sig;  /* Pointer to newly created vsignal */
+  exp_link*    expl;     /* Pointer to current expression link */
+  unsigned int i;        /* Loop iterator */
 
   assert( sig != NULL );
 
@@ -234,28 +224,25 @@ vsignal* vsignal_duplicate(
 }
 
 /*!
- \param sig      Signal to write to file.
- \param file     Name of file to display vsignal contents to.
-
  Prints the vsignal information for the specified vsignal to the
  specified file.  This file will be the database coverage file
  for this design.
 */
 void vsignal_db_write(
-  vsignal* sig,
-  FILE*    file
+  vsignal* sig,  /*!< Signal to write to file */
+  FILE*    file  /*!< Name of file to display vsignal contents to */
 ) { PROFILE(VSIGNAL_DB_WRITE);
 
-  int i;  /* Loop iterator */
+  unsigned int i;  /* Loop iterator */
 
   /* Don't write this vsignal if it isn't usable by Covered */
   if( (sig->suppl.part.not_handled == 0) &&
-      (sig->value->width != -1) &&
+      (sig->value->width != 0) &&
       (sig->value->width <= MAX_BIT_WIDTH) &&
       (sig->suppl.part.type != SSUPPL_TYPE_GENVAR) ) {
 
     /* Display identification and value information first */
-    fprintf( file, "%d %s %d %x %d %d",
+    fprintf( file, "%d %s %d %x %u %u",
       DB_TYPE_SIGNAL,
       sig->name,
       sig->line,
@@ -295,19 +282,19 @@ void vsignal_db_read(
   func_unit* curr_funit
 ) { PROFILE(VSIGNAL_DB_READ);
 
-  char       name[256];      /* Name of current vsignal */
-  vsignal*   sig;            /* Pointer to the newly created vsignal */
-  vector*    vec;            /* Vector value for this vsignal */
-  int        sline;          /* Declared line number */
-  int        pdim_num;       /* Packed dimension number */
-  int        udim_num;       /* Unpacked dimension number */
-  dim_range* dim    = NULL;  /* Dimensional information */
-  ssuppl     suppl;          /* Supplemental field */
-  int        chars_read;     /* Number of characters read from line */
-  int        i;              /* Loop iterator */
+  char         name[256];      /* Name of current vsignal */
+  vsignal*     sig;            /* Pointer to the newly created vsignal */
+  vector*      vec;            /* Vector value for this vsignal */
+  int          sline;          /* Declared line number */
+  unsigned int pdim_num;       /* Packed dimension number */
+  unsigned int udim_num;       /* Unpacked dimension number */
+  dim_range*   dim    = NULL;  /* Dimensional information */
+  ssuppl       suppl;          /* Supplemental field */
+  int          chars_read;     /* Number of characters read from line */
+  unsigned int i;              /* Loop iterator */
 
   /* Get name values. */
-  if( sscanf( *line, "%s %d %x %d %d%n", name, &sline, &(suppl.all), &pdim_num, &udim_num, &chars_read ) == 5 ) {
+  if( sscanf( *line, "%s %d %x %u %u%n", name, &sline, &(suppl.all), &pdim_num, &udim_num, &chars_read ) == 5 ) {
 
     *line = *line + chars_read;
 
@@ -393,20 +380,20 @@ void vsignal_db_merge(
   bool     same
 ) { PROFILE(VSIGNAL_DB_MERGE);
  
-  char    name[256];   /* Name of current vsignal */
-  int     sline;       /* Declared line number */
-  int     pdim_num;    /* Number of packed dimensions */
-  int     udim_num;    /* Number of unpacked dimensions */
-  int     msb;         /* MSB of current dimension being read */
-  int     lsb;         /* LSB of current dimension being read */
-  ssuppl  suppl;       /* Supplemental signal information */
-  int     chars_read;  /* Number of characters read from line */
-  int     i;           /* Loop iterator */
+  char         name[256];   /* Name of current vsignal */
+  int          sline;       /* Declared line number */
+  unsigned int pdim_num;    /* Number of packed dimensions */
+  unsigned int udim_num;    /* Number of unpacked dimensions */
+  int          msb;         /* MSB of current dimension being read */
+  int          lsb;         /* LSB of current dimension being read */
+  ssuppl       suppl;       /* Supplemental signal information */
+  int          chars_read;  /* Number of characters read from line */
+  unsigned int i;           /* Loop iterator */
 
   assert( base != NULL );
   assert( base->name != NULL );
 
-  if( sscanf( *line, "%s %d %x %d %d%n", name, &sline, &(suppl.all), &pdim_num, &udim_num, &chars_read ) == 5 ) {
+  if( sscanf( *line, "%s %d %x %u %u%n", name, &sline, &(suppl.all), &pdim_num, &udim_num, &chars_read ) == 5 ) {
 
     *line = *line + chars_read;
 
@@ -505,12 +492,6 @@ void vsignal_propagate(
 }
 
 /*!
- \param sig    Pointer to vsignal to assign VCD value to.
- \param value  String version of VCD value.
- \param msb    Most significant bit to assign to.
- \param lsb    Least significant bit to assign to.
- \param time   Current simulation time signal is being assigned.
-
  \throws anonymous vector_vcd_assign vector_vcd_assign
 
  Assigns the associated value to the specified vsignal's vector.  After this, it
@@ -518,11 +499,11 @@ void vsignal_propagate(
  Finally, calls the simulator expr_changed function for each expression.
 */
 void vsignal_vcd_assign(
-  vsignal*        sig,
-  const char*     value,
-  int             msb,
-  int             lsb,
-  const sim_time* time
+  vsignal*        sig,    /*!< Pointer to vsignal to assign VCD value to */
+  const char*     value,  /*!< String version of VCD value */
+  unsigned int    msb,    /*!< Most significant bit to assign to */
+  unsigned int    lsb,    /*!< Least significant bit to assign to */
+  const sim_time* time    /*!< Current simulation time signal is being assigned */
 ) { PROFILE(VSIGNAL_VCD_ASSIGN);
 
   bool vec_changed;  /* Specifies if assigned value differed from original value */
@@ -591,15 +572,13 @@ void vsignal_add_expression(
 }
 
 /*!
- \param sig  Pointer to vsignal to display to standard output.
-
  Displays vsignal's name, dimensional info, width and value vector to the standard output.
 */
 void vsignal_display(
-  vsignal* sig
+  vsignal* sig  /*!< Pointer to vsignal to display to standard output */
 ) {
 
-  int i;  /* Loop iterator */
+  unsigned int i;  /* Loop iterator */
 
   assert( sig != NULL );
 
@@ -715,9 +694,9 @@ int vsignal_calc_width_for_expr(
   vsignal*    sig
 ) { PROFILE(VSIGNAL_CALC_WIDTH_FOR_EXPR);
 
-  int exp_dim;    /* Expression dimension number */
-  int width = 1;  /* Return value for this function */
-  int i;          /* Loop iterator */
+  int          exp_dim;    /* Expression dimension number */
+  int          width = 1;  /* Return value for this function */
+  unsigned int i;          /* Loop iterator */
 
   assert( expr != NULL );
   assert( sig != NULL );
@@ -741,19 +720,19 @@ int vsignal_calc_width_for_expr(
 }
 
 /*!
- \param expr     Pointer to expression to get LSB for
- \param sig      Pointer to signal to get LSB for
- \param lsb_val  Calculated LSB value from this expression
-
  \return Returns the LSB of the given signal for the given expression.
 */
 int vsignal_calc_lsb_for_expr(
-  expression* expr,
-  vsignal*    sig,
-  int         lsb_val
+  expression* expr,    /*!< Pointer to expression to get LSB for */
+  vsignal*    sig,     /*!< Pointer to signal to get LSB for */
+  int         lsb_val  /*!< Calculated LSB value from this expression */
 ) { PROFILE(VSIGNAL_CALC_LSB_FOR_EXPR);
 
-  return( vsignal_calc_width_for_expr( expr, sig ) * lsb_val );
+  int width = vsignal_calc_width_for_expr( expr, sig ) * lsb_val;
+
+  PROFILE_END;
+
+  return( width );
 
 }
 
@@ -803,6 +782,12 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.74  2008/06/20 18:43:41  phase1geo
+ Updating source files to optimize code when the --enable-debug option is specified.
+ The performance was almost 8x worse with this option enabled, now it should be
+ almost as good as without the mode (although, not completely).  Full regression
+ passes.
+
  Revision 1.73  2008/06/19 16:14:56  phase1geo
  leaned up all warnings in source code from -Wall.  This also seems to have cleared
  up a few runtime issues.  Full regression passes.

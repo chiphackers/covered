@@ -48,17 +48,13 @@ extern func_unit*   curr_funit;
 
 
 /*!
- \param gi       Pointer to generate item to stringify
- \param str      Pointer to string to store data into
- \param str_len  Number of available characters in the str string
-
  Creates a user-readable version of the specified generate item and stores it in
  the specified string.
 */
 static void gen_item_stringify(
-  gen_item* gi,
-  char*     str,
-  int       str_len
+  gen_item*    gi,      /*!< Pointer to generate item to stringify */
+  char*        str,     /*!< Pointer to string to store data into */
+  unsigned int str_len  /*!< Number of available characters in the str string */
 ) { PROFILE(GEN_ITEM_STRINGIFY);
 
   char* tmp;  /* Temporary string */
@@ -125,14 +121,16 @@ static void gen_item_stringify(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param gi  Pointer to generate item to display.
-
  Displays the contents of the specified generate item to standard output (used for debugging purposes).
 */
-void gen_item_display( gen_item* gi ) { PROFILE(GEN_ITEM_DISPLAY);
+void gen_item_display(
+  gen_item* gi  /*!< Pointer to generate item to display */
+) { PROFILE(GEN_ITEM_DISPLAY);
 
   char str[4096];  /* String to store data into */
 
@@ -140,14 +138,16 @@ void gen_item_display( gen_item* gi ) { PROFILE(GEN_ITEM_DISPLAY);
 
   printf( "  %s\n", str );
 
+  PROFILE_END;
+
 }
 
 /*!
- \param root  Pointer to starting generate item to display
-
  Displays an entire generate block to standard output (used for debugging purposes).
 */
-static void gen_item_display_block_helper( gen_item* root ) { PROFILE(GEN_ITEM_DISPLAY_BLOCK_HELPER);
+static void gen_item_display_block_helper(
+  gen_item* root  /*!< Pointer to starting generate item to display */
+) { PROFILE(GEN_ITEM_DISPLAY_BLOCK_HELPER);
 
   if( root != NULL ) {
 
@@ -174,31 +174,32 @@ static void gen_item_display_block_helper( gen_item* root ) { PROFILE(GEN_ITEM_D
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param root  Pointer to starting generate item to display
-
  Displays an entire generate block to standard output (used for debugging purposes).
 */
-void gen_item_display_block( gen_item* root ) { PROFILE(GEN_ITEM_DISPLAY_BLOCK);
+void gen_item_display_block(
+  gen_item* root  /*!< Pointer to starting generate item to display */
+) { PROFILE(GEN_ITEM_DISPLAY_BLOCK);
 
   printf( "Generate block:\n" );
 
   gen_item_display_block_helper( root );
 
+  PROFILE_END;
+
 }
 
 /*!
- \param gi1  Pointer to first generate item to compare
- \param gi2  Pointer to second generate item to compare
-
  \return Returns TRUE if the two specified generate items are equivalent; otherwise,
          returns FALSE.
 */
 static bool gen_item_compare(
-  gen_item* gi1,
-  gen_item* gi2
+  gen_item* gi1,  /*!< Pointer to first generate item to compare */
+  gen_item* gi2   /*!< Pointer to second generate item to compare */
 ) { PROFILE(GEN_ITEM_COMPARE);
 
   bool retval = FALSE;  /* Return value for this function */
@@ -218,14 +219,13 @@ static bool gen_item_compare(
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
 
 /*!
- \param root  Pointer to root of generate item block to search in
- \param gi    Pointer to generate item to search for
-
  \return Returns a pointer to the generate item that matches the given generate item
          in the given generate item block.  Returns NULL if it was not able to find
          a matching item.
@@ -233,7 +233,10 @@ static bool gen_item_compare(
  Recursively traverses the specified generate item block searching for a generate item
  that matches the specified generate item.
 */
-gen_item* gen_item_find( gen_item* root, gen_item* gi ) { PROFILE(GEN_ITEM_FIND);
+gen_item* gen_item_find(
+  gen_item* root,  /*!< Pointer to root of generate item block to search in */
+  gen_item* gi     /*!< Pointer to generate item to search for */
+) { PROFILE(GEN_ITEM_FIND);
 
   gen_item* found = NULL;  /* Return value for this function */
 
@@ -267,16 +270,19 @@ gen_item* gen_item_find( gen_item* root, gen_item* gi ) { PROFILE(GEN_ITEM_FIND)
 
   }
 
+  PROFILE_END;
+
   return( found );
 
 }
 
 /*!
- \param gi    Pointer to generate item list to search
- \param stmt  Pointer to statement to search for
-
+ Removes the given generate item if it contains an expressions that calls a statement.
 */
-void gen_item_remove_if_contains_expr_calling_stmt( gen_item* gi, statement* stmt ) { PROFILE(GEN_ITEM_REMOVE_IF_CONTAINS_EXPR_CALLING_STMT);
+void gen_item_remove_if_contains_expr_calling_stmt(
+  gen_item*  gi,   /*!< Pointer to generate item list to search */
+  statement* stmt  /*!< Pointer to statement to search for */
+) { PROFILE(GEN_ITEM_REMOVE_IF_CONTAINS_EXPR_CALLING_STMT);
 
   if( gi != NULL ) {
 
@@ -312,24 +318,21 @@ void gen_item_remove_if_contains_expr_calling_stmt( gen_item* gi, statement* stm
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param varname  Variable name to search 
- \param pre      Reference pointer to string preceding the generate variable
- \param genvar   Reference pointer to found generate variable name
- \param post     Reference pointer to string succeeding the generate variable
-
  Searches the given variable name for a generate variable.  If one is found, pre is
  set to point to the string preceding the generate variable, genvar is set to point
  to the beginning of the generate variable, and post is set to point to the string
  succeeding the ']'.
 */
 static void gen_item_get_genvar(
-  char*  varname,
-  char** pre,
-  char** genvar,
-  char** post
+            char*  varname,  /*!< Variable name to search */
+  /*@out@*/ char** pre,      /*!< Reference pointer to string preceding the generate variable */
+  /*@out@*/ char** genvar,   /*!< Reference pointer to found generate variable name */
+  /*@out@*/ char** post      /*!< Reference pointer to string succeeding the generate variable */
 ) { PROFILE(GEN_ITEM_GET_GENVAR);
 
   int i = 0;  /* Loop iterator */
@@ -380,6 +383,8 @@ static void gen_item_get_genvar(
     }
 
   }
+
+  PROFILE_END;
 
 }
 
@@ -712,17 +717,14 @@ gen_item* gen_item_create_bind(
 }
 
 /*!
- \param gi     Pointer to generate item block to check
- \param funit  Pointer to functional unit that contains this generate item
-
  \throws anonymous vsignal_create_vec statement_size_elements gen_item_resize_stmts_and_sigs gen_item_resize_stmts_and_sigs gen_item_resize_stmts_and_sigs
 
  Recursively iterates the the specified generate item block, resizing all statements
  within that block.
 */
 void gen_item_resize_stmts_and_sigs(
-  gen_item*  gi,
-  func_unit* funit
+  gen_item*  gi,    /*!< Pointer to generate item block to check */
+  func_unit* funit  /*!< Pointer to functional unit that contains this generate item */
 ) { PROFILE(GEN_ITEM_RESIZE_STMTS_AND_SIGS);
 
   if( gi != NULL ) {
@@ -750,19 +752,18 @@ void gen_item_resize_stmts_and_sigs(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param gi     Pointer to generate item to check and assign expression IDs for
- \param funit  Pointer to functional unit containing this generate item
-
  \throws anonymous statement_assign_expr_ids
 
  Assigns unique expression IDs to each expression in the tree given for a generated statement.
 */
 void gen_item_assign_expr_ids(
-  gen_item*  gi,
-  func_unit* funit
+  gen_item*  gi,    /*!< Pointer to generate item to check and assign expression IDs for */
+  func_unit* funit  /*!< Pointer to functional unit containing this generate item */
 ) { PROFILE(GEN_ITEM_ASSIGN_EXPR_IDS);
 
   if( (gi->suppl.part.type == GI_TYPE_STMT) && (gi->suppl.part.removed == 0) ) {
@@ -771,21 +772,19 @@ void gen_item_assign_expr_ids(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param gi     Pointer to current generate item to test and output
- \param type   Specifies the type of the generate item to output
- \param ofile  Output file to display generate item to
-
  Checks the given generate item against the supplied type.  If they match,
  outputs the given generate item to the specified output file.  If they do
  not match, nothing is done.
 */
 void gen_item_db_write(
-  gen_item* gi,
-  uint32    type,
-  FILE*     ofile
+  gen_item* gi,    /*!< Pointer to current generate item to test and output */
+  uint32    type,  /*!< Specifies the type of the generate item to output */
+  FILE*     ofile  /*!< Output file to display generate item to */
 ) { PROFILE(GEN_ITEM_DB_WRITE);
 
   /* If the types match, output based on type */
@@ -805,17 +804,16 @@ void gen_item_db_write(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param gi     Pointer to current generate item to test and output
- \param ofile  Output file to display generate item to
-
  Outputs all expressions for the statement contained in the specified generate item.
 */
 void gen_item_db_write_expr_tree(
-  gen_item* gi,
-  FILE* ofile
+  gen_item* gi,    /*!< Pointer to current generate item to test and output */
+  FILE*     ofile  /*!< Output file to display generate item to */
 ) { PROFILE(GEN_ITEM_DB_WRITE_EXPR_TREE);
 
   /* Only do this for statements */
@@ -825,22 +823,20 @@ void gen_item_db_write_expr_tree(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param gi1      Pointer to generate item block to connect to gi2
- \param gi2      Pointer to generate item to connect to gi1
- \param conn_id  Connection ID
-
  \return Returns TRUE if the connection was successful; otherwise, returns FALSE.
 */
 bool gen_item_connect(
-  gen_item* gi1,
-  gen_item* gi2,
-  int conn_id
+  gen_item* gi1,     /*!< Pointer to generate item block to connect to gi2 */
+  gen_item* gi2,     /*!< Pointer to generate item to connect to gi1 */
+  int       conn_id  /*!< Connection ID */
 ) { PROFILE(GEN_ITEM_CONNECT);
 
-  bool retval;  /* Return value for this function */
+  bool retval = FALSE;  /* Return value for this function */
 
   /* Set the connection ID */
   gi1->suppl.part.conn_id = conn_id;
@@ -898,14 +894,13 @@ bool gen_item_connect(
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
 
 /*!
- \param gi    Pointer to current generate item to resolve
- \param inst  Pointer to instance to store results to
-
  \throws anonymous gen_item_calc_signal_name Throw expression_resize expression_operate_recursively gen_item_resolve
                    gen_item_resolve gen_item_resolve gen_item_resolve gen_item_resolve gen_item_resolve gen_item_resolve gen_item_resolve
 
@@ -914,8 +909,8 @@ bool gen_item_connect(
  by the funit_size_elements function (just prior to outputting this instance to the CDD file).
 */
 static void gen_item_resolve(
-  gen_item*   gi,
-  funit_inst* inst
+  gen_item*   gi,   /*!< Pointer to current generate item to resolve */
+  funit_inst* inst  /*!< Pointer to instance to store results to */
 ) { PROFILE(GEN_ITEM_RESOLVE);
 
   funit_inst* child;    /* Pointer to child instance of this instance to resolve */
@@ -1025,16 +1020,16 @@ static void gen_item_resolve(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param gi  Pointer to generate item to examine
-
  Updates the specified expression name to be that of the generate item name
  if the current generate item is a BIND type.
 */
 void gen_item_bind(
-  gen_item* gi
+  gen_item* gi  /*!< Pointer to generate item to examine */
 ) { PROFILE(GEN_ITEM_BIND);
 
   if( gi->suppl.part.type == GI_TYPE_BIND ) {
@@ -1047,18 +1042,18 @@ void gen_item_bind(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param root  Pointer to current instance in instance tree to resolve for
-
  \throws anonymous generate_resolve gen_item_resolve
 
  Recursively resolves all generate items in the design.  This is called at a specific point
  in the binding process.
 */
 void generate_resolve(
-  funit_inst* root
+  funit_inst* root  /*!< Pointer to current instance in instance tree to resolve for */
 ) { PROFILE(GENERATE_RESOLVE);
 
   gitem_link* curr_gi;     /* Pointer to current gitem_link element to resolve for */
@@ -1082,17 +1077,16 @@ void generate_resolve(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param root  Pointer to root instance to traverse
- \param stmt  Pointer to statement to find and remove
-
  \return Returns TRUE if we found at least one match; otherwise, returns FALSE.
 */
 static bool generate_remove_stmt_helper(
-  funit_inst* root,
-  statement*  stmt
+  funit_inst* root,  /*!< Pointer to root instance to traverse */
+  statement*  stmt   /*!< Pointer to statement to find and remove */
 ) { PROFILE(GENERATE_REMOVE_STMT_HELPER);
 
   bool        retval   = FALSE;  /* Return value for this function */
@@ -1116,13 +1110,13 @@ static bool generate_remove_stmt_helper(
     curr_child = curr_child->next;
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
 
 /*!
- \param stmt  Statement to set "remove" bit on
-
  \return Returns TRUE if we found at least one match; otherwise, returns FALSE.
 
  Iterates through the entire instance tree finding and "removing" all statement generate items
@@ -1130,7 +1124,7 @@ static bool generate_remove_stmt_helper(
  when a statement has been found that does not exist in a functional unit.
 */
 bool generate_remove_stmt(
-  statement* stmt
+  statement* stmt  /*!< Statement to set "remove" bit on */
 ) { PROFILE(GENERATE_REMOVE_STMT);
 
   bool       retval = FALSE;  /* Return value for this function */
@@ -1143,19 +1137,18 @@ bool generate_remove_stmt(
     instl = instl->next;
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
 
 /*!
- \param gi       Pointer to gen_item structure to deallocate
- \param rm_elem  If set to TRUE, removes the associated element
-
  Recursively deallocates the gen_item structure tree.
 */
 void gen_item_dealloc(
-  gen_item* gi,
-  bool rm_elem
+  gen_item* gi,      /*!< Pointer to gen_item structure to deallocate */
+  bool      rm_elem  /*!< If set to TRUE, removes the associated element */
 ) { PROFILE(GEN_ITEM_DEALLOC);
 
   if( gi != NULL ) {
@@ -1204,11 +1197,17 @@ void gen_item_dealloc(
 
   }
 
+  PROFILE_END;
+
 } 
 
 
 /*
  $Log$
+ Revision 1.69  2008/06/19 16:14:55  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
  Revision 1.68  2008/05/30 05:38:31  phase1geo
  Updating development tree with development branch.  Also attempting to fix
  bug 1965927.

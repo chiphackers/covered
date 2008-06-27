@@ -214,14 +214,14 @@ static void report_usage() {
 }
 
 /*!
- \param metrics  Specified metrics to calculate coverage for.
-
  Parses the specified string containing the metrics to test.  If
  a legal metric character is found, its corresponding flag is set
  to TRUE.  If a character is found that does not correspond to a
  metric, an error message is flagged to the user (a warning).
 */
-static void report_parse_metrics( const char* metrics ) { PROFILE(REPORT_PARSE_METRICS);
+static void report_parse_metrics(
+  const char* metrics  /*!< Specified metrics to calculate coverage for */
+) { PROFILE(REPORT_PARSE_METRICS);
 
   const char* ptr;  /* Pointer to current character being evaluated */
 
@@ -262,13 +262,11 @@ static void report_parse_metrics( const char* metrics ) { PROFILE(REPORT_PARSE_M
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param argc      Number of arguments in argument list argv.
- \param last_arg  Index of last parsed argument from list.
- \param argv      Argument list passed to this program.
-
  \throws anonymous Throw Throw Throw Throw Throw Throw Throw Throw
 
  Parses the argument list for options.  If a legal option is
@@ -277,13 +275,12 @@ static void report_parse_metrics( const char* metrics ) { PROFILE(REPORT_PARSE_M
  message is reported to the user and the program terminates immediately.
 */
 void report_parse_args(
-  int          argc,
-  int          last_arg,
-  const char** argv
+  int          argc,      /*!< Number of arguments in argument list argv */
+  int          last_arg,  /*!< Index of last parsed argument from list */
+  const char** argv       /*!< Argument list passed to this program */
 ) { PROFILE(REPORT_PARSE_ARGS);
 
-  int  i;           /* Loop iterator */
-  int  chars_read;  /* Number of characters read in from sscanf */
+  int i;  /* Loop iterator */
 
   i = last_arg + 1;
 
@@ -410,18 +407,20 @@ void report_parse_args(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param root   Pointer to root of instance tree to search.
- 
  Recursively parses instance tree, creating statistic structures for each
  of the instances in the tree.  Calculates summary coverage information for
  children nodes first and parent nodes after.  In this way, the parent nodes
  will have the accumulated information from themselves and all of their
  children.
 */
-static void report_gather_instance_stats( funit_inst* root ) { PROFILE(REPORT_GATHER_INSTANCE_STATS);
+static void report_gather_instance_stats(
+  funit_inst* root  /*!< Pointer to root of instance tree to search */
+) { PROFILE(REPORT_GATHER_INSTANCE_STATS);
 
   funit_inst* curr;        /* Pointer to current instance being evaluated */
 
@@ -498,15 +497,17 @@ static void report_gather_instance_stats( funit_inst* root ) { PROFILE(REPORT_GA
     root->stat->show = !statistic_is_empty( root->stat );
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param head  Pointer to head of functional unit list to search.
- 
  Traverses functional unit list, creating statistic structures for each
  of the functional units in the tree, and calculates summary coverage information.
 */
-static void report_gather_funit_stats( funit_link* head ) { PROFILE(REPORT_GATHER_FUNIT_STATS);
+static void report_gather_funit_stats(
+  funit_link* head  /*!< Pointer to head of functional unit list to search */
+) { PROFILE(REPORT_GATHER_FUNIT_STATS);
 
   while( head != NULL ) {
 
@@ -575,14 +576,16 @@ static void report_gather_funit_stats( funit_link* head ) { PROFILE(REPORT_GATHE
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param ofile    Pointer to output stream to display report information to.
-
  Generates generic report header for all reports.
 */
-void report_print_header( FILE* ofile ) { PROFILE(REPORT_PRINT_HEADER);
+void report_print_header(
+  FILE* ofile  /*!< Pointer to output stream to display report information to */
+) { PROFILE(REPORT_PRINT_HEADER);
 
   int i;  /* Loop iterator */
 
@@ -681,18 +684,18 @@ void report_print_header( FILE* ofile ) { PROFILE(REPORT_PRINT_HEADER);
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param ofile  Pointer to output stream to display report information to.
-
  \throws anonymous combination_report
 
  Generates a coverage report based on the options specified on the command line
  to the specified output stream.
 */
 static void report_generate(
-  FILE* ofile
+  FILE* ofile  /*!< Pointer to output stream to display report information to */
 ) { PROFILE(REPORT_GENERATE);
 
   report_print_header( ofile );
@@ -737,12 +740,11 @@ static void report_generate(
     race_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param ifile      Name of CDD file to read from.
- \param read_mode  Specifies mode to read from CDD file (merge or replace).
- 
  \return Returns TRUE if CDD file was read properly; otherwise, returns FALSE.
 
  \throws anonymous db_read Throw bind_perform
@@ -751,8 +753,8 @@ static void report_generate(
  interaction with this CDD file. 
 */
 void report_read_cdd_and_ready(
-  const char* ifile,
-  int         read_mode
+  const char* ifile,     /*!< Name of CDD file to read from */
+  int         read_mode  /*!< Specifies mode to read from CDD file (merge or replace) */
 ) { PROFILE(REPORT_READ_CDD_AND_READY);
 
   /* Open database file for reading */
@@ -783,6 +785,8 @@ void report_read_cdd_and_ready(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -794,37 +798,35 @@ void report_close_cdd() { PROFILE(REPORT_CLOSE_CDD);
 
   db_close();
 
+  PROFILE_END;
+
 }
 
 /*!
- \param filename  Name to use for saving the currently loaded filename
-
  \throws anonymous db_write
 
  Saves the currently loaded CDD database to the given filename.
 */
 void report_save_cdd(
-  const char* filename
+  const char* filename  /*!< Name to use for saving the currently loaded filename */
 ) { PROFILE(REPORT_SAVE_CDD);
 
   db_write( filename, FALSE, TRUE );
 
+  PROFILE_END;
+
 }
 
 /*!
- \param argc      Number of arguments in report command-line.
- \param last_arg  Index of last parsed argument from list.
- \param argv      Arguments passed to report command to parse.
-
  Performs report command functionality.
 */
 void command_report(
-  int          argc,
-  int          last_arg,
-  const char** argv
+  int          argc,      /*!< Number of arguments in report command-line */
+  int          last_arg,  /*!< Index of last parsed argument from list */
+  const char** argv       /*!< Arguments passed to report command to parse */
 ) { PROFILE(COMMAND_REPORT);
 
-  FILE*        ofile;                   /* Pointer to output stream */
+  FILE*        ofile           = NULL;  /* Pointer to output stream */
 #ifdef HAVE_TCLTK
   char*        covered_home    = NULL;  /* Pathname to Covered's home installation directory */
   char*        covered_browser;         /* Name of browser to use for GUI help pages */
@@ -990,6 +992,12 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.110  2008/06/20 18:12:55  phase1geo
+ Adding a few more diagnostics to regressions.  Cleaning up check_test script
+ to properly cleanup diagnostics that left CDD files around after regressions.
+ Cleaning up output in source code that is no longer necessary.  Full regressions
+ pass.
+
  Revision 1.109  2008/06/20 14:19:20  phase1geo
  Updating merge.c and report.c to remove unnecessary code and output.
 

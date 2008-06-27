@@ -53,8 +53,7 @@ void fsm_db_read( char** line, /*@null@*/func_unit* funit );
 /*! \brief Reads and merges two FSMs, placing result into base FSM. */
 void fsm_db_merge(
   fsm*   base,
-  char** line,
-  bool   same
+  char** line
 );
 
 /*! \brief Merges two FSMs, placing the result into the base FSM. */
@@ -97,25 +96,25 @@ bool fsm_collect(
 
 /*! \brief Collects all coverage information for the specified FSM */
 bool fsm_get_coverage(
-  const char* funit_name,
-  int         funit_type,
-  int         expr_id,
-  int*        width,
-  char***     total_states,
-  int*        total_state_num,
-  char***     hit_states,
-  int*        hit_state_num,
-  char***     total_from_arcs,
-  char***     total_to_arcs,
-  int**       excludes,
-  int*        total_arc_num,
-  char***     hit_from_arcs,
-  char***     hit_to_arcs,
-  int*        hit_arc_num,
-  char***     input_state,
-  int*        input_size,
-  char***     output_state,
-  int*        output_size );
+            const char*   funit_name,
+            int           funit_type,
+            int           expr_id,
+  /*@out@*/ int*          width,
+  /*@out@*/ char***       total_states,
+  /*@out@*/ unsigned int* total_state_num,
+  /*@out@*/ char***       hit_states,
+  /*@out@*/ unsigned int* hit_state_num,
+  /*@out@*/ char***       total_from_arcs,
+  /*@out@*/ char***       total_to_arcs,
+  /*@out@*/ int**         excludes,
+  /*@out@*/ int*          total_arc_num,
+  /*@out@*/ char***       hit_from_arcs,
+  /*@out@*/ char***       hit_to_arcs,
+  /*@out@*/ int*          hit_arc_num,
+  /*@out@*/ char***       input_state,
+  /*@out@*/ unsigned int* input_size,
+  /*@out@*/ char***       output_state,
+  /*@out@*/ unsigned int* output_size );
 
 /*! \brief Generates report output for FSM coverage. */
 void fsm_report( FILE* ofile, bool verbose );
@@ -125,6 +124,10 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.29  2008/05/30 05:38:30  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
  Revision 1.28.2.1  2008/05/08 23:12:42  phase1geo
  Fixing several bugs and reworking code in arc to get FSM diagnostics
  to pass.  Checkpointing.

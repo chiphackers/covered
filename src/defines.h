@@ -1371,22 +1371,22 @@ typedef unsigned long ulong;
  Create defines for unsigned long.
 */
 #if SIZEOF_LONG == 1
-#define UL_SET     0xff
+#define UL_SET     (unsigned long)0xff
 #define UL_DIV_VAL 3
 #define UL_MOD_VAL 0x7
 #define UL_BITS    8
 #elif SIZEOF_LONG == 2
-#define UL_SET     0xffff
+#define UL_SET     (unsigned long)0xffff
 #define UL_DIV_VAL 4
 #define UL_MOD_VAL 0xf
 #define UL_BITS    16
 #elif SIZEOF_LONG == 4
-#define UL_SET     0xffffffff
+#define UL_SET     (unsigned long)0xffffffff
 #define UL_DIV_VAL 5
 #define UL_MOD_VAL 0x1f
 #define UL_BITS    32
 #elif SIZEOF_LONG == 8
-#define UL_SET     0xffffffffffffffff
+#define UL_SET     (unsigned long)0xffffffffffffffffLL
 #define UL_DIV_VAL 6
 #define UL_MOD_VAL 0x3f
 #define UL_BITS    64
@@ -1395,10 +1395,10 @@ typedef unsigned long ulong;
 #endif
 
 /*! Divides a bit position by an unsigned long */
-#define UL_DIV(x)  ((x) >> UL_DIV_VAL)
+#define UL_DIV(x)  (((unsigned int)x) >> UL_DIV_VAL)
 
 /*! Mods a bit position by an unsigned long */
-#define UL_MOD(x)  ((x) &  UL_MOD_VAL)
+#define UL_MOD(x)  (((unsigned int)x) &  UL_MOD_VAL)
 
 /*------------------------------------------------------------------------------*/
 
@@ -2040,12 +2040,10 @@ struct str_link_s {
  manipulate this information.
 */
 struct vector_s {
-  int        width;                  /*!< Bit width of this vector */
-  vsuppl     suppl;                  /*!< Supplemental field */
+  unsigned int width;                /*!< Bit width of this vector */
+  vsuppl       suppl;                /*!< Supplemental field */
   union {
     ulong** ul;                      /*!< Machine sized unsigned integer array for value, signal, expression and memory types */
-//    real32** r32;                    /*!< 32-bit real value (float) */
-//    real64** r64;                    /*!< 64-bit real value (double) */
   } value;
 };
 
@@ -2124,15 +2122,15 @@ struct expression_s {
  end of the run, this signal has been simulated.
 */
 struct vsignal_s {
-  char*      name;                   /*!< Full hierarchical name of signal in design */
-  int        line;                   /*!< Specifies line number that this signal was declared on */
-  ssuppl     suppl;                  /*!< Supplemental information for this signal */
-  vector*    value;                  /*!< Pointer to vector value of this signal */
-  int        pdim_num;               /*!< Number of packed dimensions in pdim array */
-  int        udim_num;               /*!< Number of unpacked dimensions in pdim array */
-  dim_range* dim;                    /*!< Unpacked/packed dimension array */
-  exp_link*  exp_head;               /*!< Head pointer to list of expressions */
-  exp_link*  exp_tail;               /*!< Tail pointer to list of expressions */
+  char*        name;                 /*!< Full hierarchical name of signal in design */
+  int          line;                 /*!< Specifies line number that this signal was declared on */
+  ssuppl       suppl;                /*!< Supplemental information for this signal */
+  vector*      value;                /*!< Pointer to vector value of this signal */
+  unsigned int pdim_num;             /*!< Number of packed dimensions in pdim array */
+  unsigned int udim_num;             /*!< Number of unpacked dimensions in pdim array */
+  dim_range*   dim;                  /*!< Unpacked/packed dimension array */
+  exp_link*    exp_head;             /*!< Head pointer to list of expressions */
+  exp_link*    exp_tail;             /*!< Tail pointer to list of expressions */
 };
 
 /*!
@@ -2274,29 +2272,29 @@ struct stmt_loop_link_s {
  Contains statistics for coverage results which is stored in a functional unit instance.
 */
 struct statistic_s {
-  int   line_total;                  /*!< Total number of lines parsed */
-  int   line_hit;                    /*!< Number of lines executed during simulation */
-  int   tog_total;                   /*!< Total number of bits to toggle */
-  int   tog01_hit;                   /*!< Number of bits toggling from 0 to 1 */
-  int   tog10_hit;                   /*!< Number of bits toggling from 1 to 0 */
-  bool  tog_cov_found;               /*!< Specifies if a fully covered signal was found */
-  int   comb_total;                  /*!< Total number of expression combinations */
-  int   comb_hit;                    /*!< Number of logic combinations hit */
-  int   state_total;                 /*!< Total number of FSM states */
-  int   state_hit;                   /*!< Number of FSM states reached */
-  int   arc_total;                   /*!< Total number of FSM arcs */
-  int   arc_hit;                     /*!< Number of FSM arcs traversed */
-  int   race_total;                  /*!< Total number of race conditions found */
-  int   rtype_total[RACE_TYPE_NUM];  /*!< Total number of each race condition type found */
-  int   assert_total;                /*!< Total number of assertions */
-  int   assert_hit;                  /*!< Number of assertions covered during simulation */
-  int   mem_ae_total;                /*!< Total number of addressable memory elements */
-  int   mem_wr_hit;                  /*!< Total number of addressable memory elements written */
-  int   mem_rd_hit;                  /*!< Total number of addressable memory elements read */
-  int   mem_tog_total;               /*!< Total number of bits in memories */
-  int   mem_tog01_hit;               /*!< Total number of bits toggling from 0 to 1 in memories */
-  int   mem_tog10_hit;               /*!< Total number of bits toggling from 1 to 0 in memories */
-  bool  show;                        /*!< Set to TRUE if this module should be output to the report */
+  unsigned int line_total;                  /*!< Total number of lines parsed */
+  unsigned int line_hit;                    /*!< Number of lines executed during simulation */
+  unsigned int tog_total;                   /*!< Total number of bits to toggle */
+  unsigned int tog01_hit;                   /*!< Number of bits toggling from 0 to 1 */
+  unsigned int tog10_hit;                   /*!< Number of bits toggling from 1 to 0 */
+  bool         tog_cov_found;               /*!< Specifies if a fully covered signal was found */
+  unsigned int comb_total;                  /*!< Total number of expression combinations */
+  unsigned int comb_hit;                    /*!< Number of logic combinations hit */
+  int          state_total;                 /*!< Total number of FSM states */
+  int          state_hit;                   /*!< Number of FSM states reached */
+  int          arc_total;                   /*!< Total number of FSM arcs */
+  int          arc_hit;                     /*!< Number of FSM arcs traversed */
+  unsigned int race_total;                  /*!< Total number of race conditions found */
+  unsigned int rtype_total[RACE_TYPE_NUM];  /*!< Total number of each race condition type found */
+  unsigned int assert_total;                /*!< Total number of assertions */
+  unsigned int assert_hit;                  /*!< Number of assertions covered during simulation */
+  unsigned int mem_ae_total;                /*!< Total number of addressable memory elements */
+  unsigned int mem_wr_hit;                  /*!< Total number of addressable memory elements written */
+  unsigned int mem_rd_hit;                  /*!< Total number of addressable memory elements read */
+  unsigned int mem_tog_total;               /*!< Total number of bits in memories */
+  unsigned int mem_tog01_hit;               /*!< Total number of bits toggling from 0 to 1 in memories */
+  unsigned int mem_tog10_hit;               /*!< Total number of bits toggling from 1 to 0 in memories */
+  bool         show;                        /*!< Set to TRUE if this module should be output to the report */
 };
 
 /*!
@@ -2431,11 +2429,11 @@ struct sym_sig_s {
  Stores symbol name of signal along with pointer to signal itself into a lookup table
 */
 struct symtable_s {
-  sym_sig*  sig_head;                /*!< Pointer to head of sym_sig list */
-  sym_sig*  sig_tail;                /*!< Pointer to tail of sym_sig list */
-  char*     value;                   /*!< String representation of last current value */
-  int       size;                    /*!< Number of bytes allowed storage for value */
-  symtable* table[256];              /*!< Array of symbol tables for next level */
+  sym_sig*     sig_head;             /*!< Pointer to head of sym_sig list */
+  sym_sig*     sig_tail;             /*!< Pointer to tail of sym_sig list */
+  char*        value;                /*!< String representation of last current value */
+  unsigned int size;                 /*!< Number of bytes allowed storage for value */
+  symtable*    table[256];           /*!< Array of symbol tables for next level */
 };
 
 /*!
@@ -2461,7 +2459,7 @@ struct vector_width_s {
 struct exp_bind_s {
   int              type;             /*!< Specifies if name refers to a signal (0), function (FUNIT_FUNCTION) or task (FUNIT_TASK) */
   char*            name;             /*!< Name of Verilog scoped signal/functional unit to bind */
-  bool             clear_assigned;   /*!< If TRUE, clears the signal assigned supplemental field without binding */
+  int              clear_assigned;   /*!< Expression ID of the cleared signal's expression */
   int              line;             /*!< Specifies line of expression -- used when expression is deallocated and we are clearing */
   expression*      exp;              /*!< Expression to bind. */
   expression*      fsm;              /*!< FSM expression to create value for when this expression is bound */
@@ -2807,6 +2805,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.299  2008/06/19 16:14:54  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
  Revision 1.298  2008/06/19 05:52:35  phase1geo
  Fixing bug 1997423.  Added report coverage diagnostics.
 

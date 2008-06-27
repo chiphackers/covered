@@ -45,27 +45,27 @@ bool obf_mode;
 
 
 /*!
- \param value  Boolean value to set obfuscation mode to.
-
  Sets the global 'obf_mode' variable to the specified value.
 */
-void obfuscate_set_mode( bool value ) { PROFILE(OBFUSCATE_SET_MODE);
+void obfuscate_set_mode(
+  bool value  /*!< Boolean value to set obfuscation mode to */
+) { PROFILE(OBFUSCATE_SET_MODE);
 
   obf_mode = value;
 
 }
 
 /*!
- \param real_name  Name of actual object in design
- \param prefix     Character representing the prefix of the obfuscated name
-
  \return Returns the obfuscated name for this object.
 
  Looks up the given real name in the obfuscation tree.  If it exists, simply
  return the given name; otherwise, create a new element in the tree to represent
  this new name.
 */
-char* obfuscate_name( const char* real_name, char prefix ) { PROFILE(OBFUSCATE_NAME);
+char* obfuscate_name(
+  const char* real_name,  /*!< Name of actual object in design */
+  char        prefix      /*!< Character representing the prefix of the obfuscated name */
+) { PROFILE(OBFUSCATE_NAME);
 
   tnode*       obfnode;    /* Pointer to obfuscated tree node */
   char*        obfname;    /* Obfuscated name */
@@ -107,6 +107,8 @@ char* obfuscate_name( const char* real_name, char prefix ) { PROFILE(OBFUSCATE_N
   /* Deallocate key string */
   free_safe( key, (strlen( key ) + 1) );
 
+  PROFILE_END;
+
   return( obfname );
 
 }
@@ -118,11 +120,16 @@ void obfuscate_dealloc() { PROFILE(OBFUSCATE_DEALLOC);
 
   tree_dealloc( obf_tree );
 
+  PROFILE_END;
+
 }
 
 
 /*
  $Log$
+ Revision 1.12  2008/03/17 05:26:16  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.11  2008/01/16 23:10:31  phase1geo
  More splint updates.  Code is now warning/error free with current version
  of run_splint.  Still have regression issues to debug.

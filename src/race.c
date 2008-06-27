@@ -547,7 +547,7 @@ static void race_check_one_block_assignment(
   statement* curr_stmt;           /* Pointer to current statement */
   int        sig_stmt;            /* Index of base signal statement in statement block array */
   bool       race_found = FALSE;  /* Specifies if at least one race condition was found for this signal */
-  bool       curr_race;           /* Set to TRUE if race condition was found in current iteration */
+  bool       curr_race  = FALSE;  /* Set to TRUE if race condition was found in current iteration */
   int        lval;                /* Left expression value */
   int        rval;                /* Right expression value */
   int        exp_dim;             /* Current expression dimension */
@@ -615,7 +615,7 @@ static void race_check_one_block_assignment(
               case EXP_OP_SBIT_SEL :
                 if( expl->exp->left->op == EXP_OP_STATIC ) {
                   intval = (vector_to_int( expl->exp->left->value ) - dim_lsb) * dim_width;
-                  if( (intval >= 0) && (intval < expl->exp->value->width) ) {
+                  if( (intval >= 0) && ((unsigned int)intval < expl->exp->value->width) ) {
                     if( dim_be ) {
                       int lsb = (vwidth - (intval + expl->exp->value->width));
                       curr_race = vector_set_assigned( sigl->sig->value, ((expl->exp->value->width - 1) + lsb), lsb );
@@ -930,17 +930,13 @@ void race_db_read(
 }
 
 /*!
- \param curr        Pointer to head of race condition block list.
- \param race_total  Pointer to value that will hold the total number of race conditions in this module.
- \param type_total  Pointer to array containing number of race conditions found for each violation type.
-
  Iterates through specified race condition block list, totaling the number of race conditions found as
  well as tallying each type of race condition.
 */
 void race_get_stats(
-  race_blk* curr,
-  int*      race_total,
-  int       type_total[][RACE_TYPE_NUM]
+            race_blk*     curr,                        /*!< Pointer to head of race condition block list */
+  /*@out@*/ unsigned int* race_total,                  /*!< Pointer to value that will hold the total number of race conditions in this module */
+  /*@out@*/ unsigned int  type_total[][RACE_TYPE_NUM]  /*!< Pointer to array containing number of race conditions found for each violation type */
 ) { PROFILE(RACE_GET_STATS);
 
   int i;  /* Loop iterator */
@@ -963,16 +959,13 @@ void race_get_stats(
 }
 
 /*!
- \param ofile  Pointer to output file to use
- \param head   Pointer to head of functional unit list to report
-
  \return Returns TRUE if any race conditions were found in the functional unit list
 
  Displays the summary report for race conditions for all functional units in design.
 */
 static bool race_report_summary(
-  FILE* ofile,
-  funit_link* head
+  FILE*       ofile,  /*!< Pointer to output file to use */
+  funit_link* head    /*!< Pointer to head of functional unit list to report */
 ) { PROFILE(RACE_REPORT_SUMMARY);
 
   bool found = FALSE;  /* Return value for this function */
@@ -983,7 +976,7 @@ static bool race_report_summary(
 
       found = (head->funit->stat->race_total > 0) ? TRUE : found;
 
-      fprintf( ofile, "  %-20.20s    %-20.20s        %d\n", 
+      fprintf( ofile, "  %-20.20s    %-20.20s        %u\n", 
                funit_flatten_name( head->funit ),
   	       get_basename( obf_file( head->funit->filename ) ),
   	       head->funit->stat->race_total );
@@ -1173,6 +1166,12 @@ void race_blk_delete_list(
 
 /*
  $Log$
+ Revision 1.82  2008/06/20 18:43:41  phase1geo
+ Updating source files to optimize code when the --enable-debug option is specified.
+ The performance was almost 8x worse with this option enabled, now it should be
+ almost as good as without the mode (although, not completely).  Full regression
+ passes.
+
  Revision 1.81  2008/05/30 05:38:32  phase1geo
  Updating development tree with development branch.  Also attempting to fix
  bug 1965927.

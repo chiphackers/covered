@@ -58,19 +58,21 @@ statistic* statistic_create() { PROFILE(STATISTIC_CREATE);
   stat->mem_tog10_hit = 0;
   stat->show          = TRUE;
 
+  PROFILE_END;
+
   return( stat );
 
 }
 
 /*!
- \param stat_to    Statistic structure to merge information into.
- \param stat_from  Statistic structure to be merged.
-
  Adds the values of the stat_to structure to the contents of the
  stat_from structure.  The stat_from structure will then contain
  accumulated results.
 */
-void statistic_merge( statistic* stat_to, statistic* stat_from ) { PROFILE(STATISTIC_MERGE);
+void statistic_merge(
+  statistic* stat_to,   /*!< Statistic structure to merge information into */
+  statistic* stat_from  /*!< Statistic structure to be merged */
+) { PROFILE(STATISTIC_MERGE);
 
   stat_to->line_total   += stat_from->line_total;
   stat_to->line_hit     += stat_from->line_hit;
@@ -102,35 +104,43 @@ void statistic_merge( statistic* stat_to, statistic* stat_from ) { PROFILE(STATI
   stat_to->mem_tog10_hit += stat_from->mem_tog10_hit;
   stat_to->show          |= stat_from->show;
 
+  PROFILE_END;
+
 }
 
 /*!
- \param stat  Pointer to statistic structure to check
-
  \return Returns TRUE if the given statistic structure contains values of 0 for all of its
          metrics.
 */
-bool statistic_is_empty( statistic* stat ) { PROFILE(STATISTIC_IS_EMPTY);
+bool statistic_is_empty(
+  statistic* stat  /*!< Pointer to statistic structure to check */
+) { PROFILE(STATISTIC_IS_EMPTY);
+
+  bool retval;  /* Return value for this function */
 
   assert( stat != NULL );
 
-  return( (stat->line_total    == 0) &&
-          (stat->tog_total     == 0) &&
-          (stat->comb_total    == 0) &&
-          (stat->state_total   == 0) &&
-          (stat->arc_total     == 0) &&
-          (stat->assert_total  == 0) &&
-          (stat->mem_ae_total  == 0) &&
-          (stat->mem_tog_total == 0) );
+  retval = (stat->line_total    == 0) &&
+           (stat->tog_total     == 0) &&
+           (stat->comb_total    == 0) &&
+           (stat->state_total   == 0) &&
+           (stat->arc_total     == 0) &&
+           (stat->assert_total  == 0) &&
+           (stat->mem_ae_total  == 0) &&
+           (stat->mem_tog_total == 0);
+
+  PROFILE_END;
+
+  return( retval );
 
 }
 
 /*!
- \param stat  Pointer to statistic structure to deallocate from heap.
-
  Destroys the specified statistic structure from heap memory.
 */
-void statistic_dealloc( statistic* stat ) { PROFILE(STATISTIC_DEALLOC);
+void statistic_dealloc(
+  statistic* stat  /*!< Pointer to statistic structure to deallocate from heap */
+) { PROFILE(STATISTIC_DEALLOC);
 
   if( stat != NULL ) {
    
@@ -139,10 +149,15 @@ void statistic_dealloc( statistic* stat ) { PROFILE(STATISTIC_DEALLOC);
 
   }
 
+  PROFILE_END;
+
 }
 
 /*
  $Log$
+ Revision 1.14  2008/06/19 05:52:36  phase1geo
+ Fixing bug 1997423.  Added report coverage diagnostics.
+
  Revision 1.13  2008/03/17 05:26:17  phase1geo
  Checkpointing.  Things don't compile at the moment.
 

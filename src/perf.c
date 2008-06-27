@@ -33,8 +33,6 @@ extern unsigned int curr_db;
 
 
 /*!
- \param funit  Pointer to functional unit to generate performance statistics for
-
  \return Returns a pointer to the perf_stat structure containing the performance statistics
          for the given functional unit
 
@@ -42,7 +40,9 @@ extern unsigned int curr_db;
  of expressions in the given functional unit and the number of times these expressions that
  were executed during simulation.
 */
-static perf_stat* perf_gen_stats( func_unit* funit ) { PROFILE(PERF_GEN_STATS);
+static perf_stat* perf_gen_stats(
+  func_unit* funit  /*!< Pointer to functional unit to generate performance statistics for */
+) { PROFILE(PERF_GEN_STATS);
 
   exp_link*  expl;   /* Pointer to current expression link */
   perf_stat* pstat;  /* Pointer to newly created performance stat structure */
@@ -63,17 +63,19 @@ static perf_stat* perf_gen_stats( func_unit* funit ) { PROFILE(PERF_GEN_STATS);
     expl = expl->next;
   }
 
+  PROFILE_END;
+
   return( pstat );
 
 }
 
 /*!
- \param ofile  Pointer to file to output performance results to
- \param funit  Pointer to functional unit to output performance metrics for
-
  Outputs the expression performance statistics to the given output stream.
 */
-static void perf_output_mod_stats( FILE* ofile, func_unit* funit ) { PROFILE(PERF_OUTPUT_MOD_STATS);
+static void perf_output_mod_stats(
+  FILE*      ofile,  /*!< Pointer to file to output performance results to */
+  func_unit* funit   /*!< Pointer to functional unit to output performance metrics for */
+) { PROFILE(PERF_OUTPUT_MOD_STATS);
 
   perf_stat* pstat;     /* Pointer to performance statistic structure for this funit */
   int        i;         /* Loop iterator */
@@ -96,16 +98,18 @@ static void perf_output_mod_stats( FILE* ofile, func_unit* funit ) { PROFILE(PER
 
   fprintf( ofile, "\n" );
 
+  PROFILE_END;
+
 }
 
 /*!
- \param ofile  File to output report information to.
- \param root   Pointer to current functional unit instance to output performance stats for
-
  Called by the perf_output_inst_report function to output a performance report on an
  instance basis.
 */
-static void perf_output_inst_report_helper( FILE* ofile, funit_inst* root ) { PROFILE(PERF_OUTPUT_INST_REPORT_HELPER);
+static void perf_output_inst_report_helper(
+  FILE*       ofile,  /*!< File to output report information to */
+  funit_inst* root    /*!< Pointer to current functional unit instance to output performance stats for */
+) { PROFILE(PERF_OUTPUT_INST_REPORT_HELPER);
 
   funit_inst* curr;  /* Pointer to current child instance to output */
 
@@ -121,14 +125,16 @@ static void perf_output_inst_report_helper( FILE* ofile, funit_inst* root ) { PR
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param ofile  File to output report information to.
-
  Generates a performance report on an instance basis to the specified output file.
 */
-void perf_output_inst_report( FILE* ofile ) { PROFILE(PERF_OUTPUT_INST_REPORT);
+void perf_output_inst_report(
+  FILE* ofile  /*!< File to output report information to */
+) { PROFILE(PERF_OUTPUT_INST_REPORT);
 
   inst_link* instl;  /* Pointer to current instance link */
 
@@ -140,10 +146,15 @@ void perf_output_inst_report( FILE* ofile ) { PROFILE(PERF_OUTPUT_INST_REPORT);
     instl = instl->next;
   }
 
+  PROFILE_END;
+
 }
 
 /*
  $Log$
+ Revision 1.10  2008/04/15 20:37:11  phase1geo
+ Fixing database array support.  Full regression passes.
+
  Revision 1.9  2008/01/09 05:22:22  phase1geo
  More splint updates using the -standard option.
 

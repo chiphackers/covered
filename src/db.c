@@ -387,7 +387,7 @@ void db_read(
   int          type;                 /* Specifies object type */
   func_unit    tmpfunit;             /* Temporary functional unit pointer */
   char*        curr_line;            /* Pointer to current line being read from db */
-  int          curr_line_size;       /* Allocated number of bytes for curr_line */
+  unsigned int curr_line_size;       /* Allocated number of bytes for curr_line */
   char*        rest_line;            /* Pointer to rest of the current line */
   int          chars_read;           /* Number of characters currently read on line */
   char         parent_scope[4096];   /* Scope of parent functional unit to the current instance */
@@ -669,7 +669,8 @@ void db_merge_funits() { PROFILE(DB_MERGE_FUNITS);
         funit_inst* inst;
         int         ignore = 0;
         funit_merge( funitl->funit, tfunit );
-        assert( (inst = inst_link_find_by_funit( tfunit, db_list[curr_db]->inst_head, &ignore )) != NULL );
+        inst = inst_link_find_by_funit( tfunit, db_list[curr_db]->inst_head, &ignore );
+        assert( inst != NULL );
         inst->funit = funitl->funit;
         funit_link_remove( tfunit, &(db_list[curr_db]->funit_head), &(db_list[curr_db]->funit_tail), TRUE );
       }
@@ -981,11 +982,6 @@ void db_end_module(
 }
 
 /*!
- \param type        Specifies type of functional unit being added (function, task or named_block)
- \param name        Name of functional unit
- \param file        File containing the specified functional unit
- \param start_line  Starting line number of functional unit
-
  \return Returns TRUE if the new functional unit was added to the design; otherwise, returns FALSE
          to indicate that this block should be ignored.
 
@@ -995,13 +991,13 @@ void db_end_module(
  pointer to point to this new functional unit.
 */
 bool db_add_function_task_namedblock(
-  int   type,
-  char* name,
-  char* file,
-  int   start_line
+  int   type,       /*!< Specifies type of functional unit being added (function, task or named_block) */
+  char* name,       /*!< Name of functional unit */
+  char* file,       /*!< File containing the specified functional unit */
+  int   start_line  /*!< Starting line number of functional unit */
 ) { PROFILE(DB_ADD_FUNCTION_TASK_NAMEDBLOCK);
 
-  func_unit* tf;         /* Pointer to created functional unit */
+  func_unit* tf = NULL;  /* Pointer to created functional unit */
   func_unit* parent;     /* Pointer to parent module for the newly created functional unit */
   char*      full_name;  /* Full name of function/task/namedblock which includes the parent module name */
 
@@ -1235,12 +1231,12 @@ static void db_add_vector_param(
 }
 
 /*!
- \param name  Name of parameter value to override.
- \param expr  Expression value of parameter override.
-
  Adds specified parameter to the defparam list.
 */
-void db_add_defparam( /*@unused@*/ char* name, expression* expr ) { PROFILE(DB_ADD_DEFPARAM);
+void db_add_defparam(
+  /*@unused@*/ char*       name,  /*!< Name of parameter value to override */
+               expression* expr   /*!< Expression value of parameter override */
+) { PROFILE(DB_ADD_DEFPARAM);
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
@@ -1281,10 +1277,10 @@ void db_add_signal(
   bool       handled     /*!< Specifies if this signal is handled by Covered or not */
 ) { PROFILE(DB_ADD_SIGNAL);
 
-  vsignal*  sig = NULL;  /* Container for newly created signal */
-  sig_link* sigl;        /* Pointer to found signal link */
-  int       i;           /* Loop iterator */
-  int       j = 0;       /* Loop iterator */
+  vsignal*     sig = NULL;  /* Container for newly created signal */
+  sig_link*    sigl;        /* Pointer to found signal link */
+  unsigned int i;           /* Loop iterator */
+  int          j   = 0;     /* Loop iterator */
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
@@ -1883,11 +1879,6 @@ void db_bind_expr_tree( expression* root, char* sig_name ) { PROFILE(DB_BIND_EXP
 }
 
 /*!
- \param se         Pointer to static expression structure
- \param line       Line number that static expression was found on
- \param first_col  Column that the static expression starts on
- \param last_col   Column that the static expression ends on
- 
  \return Returns a pointer to an expression that represents the static expression specified
 
  \throws anonymous db_create_expression Throw
@@ -1895,14 +1886,14 @@ void db_bind_expr_tree( expression* root, char* sig_name ) { PROFILE(DB_BIND_EXP
  Creates an expression structure from a static expression structure.
 */
 expression* db_create_expr_from_static(
-  static_expr* se,
-  int          line,
-  int          first_col,
-  int          last_col
+  static_expr* se,         /*!< Pointer to static expression structure */
+  int          line,       /*!< Line number that static expression was found on */
+  int          first_col,  /*!< Column that the static expression starts on */
+  int          last_col    /*!< Column that the static expression ends on */
 ) { PROFILE(DB_CREATE_EXPR_FROM_STATIC);
 
-  expression* expr;  /* Return value for this function */
-  vector*     vec;   /* Temporary vector */
+  expression* expr = NULL;  /* Return value for this function */
+  vector*     vec;          /* Temporary vector */
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
@@ -2885,9 +2876,6 @@ void db_set_symbol_string( char* sym, char* value ) { PROFILE(DB_SET_SYMBOL_STRI
 }
 
 /*!
- \param time   Current time step value being performed.
- \param final  Specifies that this is the final timestep.
-
  \return Returns TRUE if simulation should continue to advance; otherwise, returns FALSE
          to indicate that simulation should stop immediately.
 
@@ -2898,7 +2886,10 @@ void db_set_symbol_string( char* sym, char* value ) { PROFILE(DB_SET_SYMBOL_STRI
  expression queue after that expression has completed its evaluation.  When the
  expression queue is empty, we are finished for this clock period.
 */
-bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
+bool db_do_timestep(
+  uint64 time,  /*!< Current time step value being performed */
+  bool   final  /*!< Specifies that this is the final timestep */
+) { PROFILE(DB_DO_TIMESTEP);
 
   bool            retval;               /* Return value for this function */
   static sim_time curr_time;
@@ -2964,6 +2955,12 @@ bool db_do_timestep( uint64 time, bool final ) { PROFILE(DB_DO_TIMESTEP);
 
 /*
  $Log$
+ Revision 1.314  2008/06/20 18:43:41  phase1geo
+ Updating source files to optimize code when the --enable-debug option is specified.
+ The performance was almost 8x worse with this option enabled, now it should be
+ almost as good as without the mode (although, not completely).  Full regression
+ passes.
+
  Revision 1.313  2008/06/20 18:12:54  phase1geo
  Adding a few more diagnostics to regressions.  Cleaning up check_test script
  to properly cleanup diagnostics that left CDD files around after regressions.

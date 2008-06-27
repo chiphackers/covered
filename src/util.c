@@ -109,22 +109,22 @@ static const char* funit_types[FUNIT_TYPES+1] = { "module", "named block", "func
 
 
 /*!
- \param value Boolean value of suppression.
-
  Sets the global variable output_suppressed to the specified value.
 */
-void set_output_suppression( bool value ) { PROFILE(SET_OUTPUT_SUPPRESSION);
+void set_output_suppression(
+  bool value  /*!< Boolean value of suppression */
+) {
 
   output_suppressed = value;
 
 }
 
 /*!
- \param value  Boolean value of debug mode.
-
  Sets the global debug mode to the specified value.
 */
-void set_debug( bool value ) {
+void set_debug(
+  bool value  /*!< Boolean value of debug mode */
+) {
 
   debug_mode = value;
 
@@ -141,15 +141,15 @@ void set_testmode() {
 }
 
 /*!
- \param msg   Message to display.
- \param type  Type of message to output
- \param file  Name of file that called this function
- \param line  Line number that this function was called in
-
  Displays the specified message to standard output based on the type of message
  being output.
 */
-void print_output( const char* msg, int type, const char* file, int line ) {
+void print_output(
+  const char* msg,   /*!< Message to display */
+  int         type,  /*!< Type of message to output (see \ref output_type for legal values) */
+  const char* file,  /*!< Name of file that called this function */
+  int         line   /*!< Line number that this function was called in */
+) {
 
   FILE* outf = debug_mode ? stdout : stderr;
   char  tmpmsg[USER_MSG_LENGTH];
@@ -509,7 +509,7 @@ void directory_load(
   struct dirent*  dirp;        /* Pointer to current directory entry */
   const str_link* curr_ext;    /* Pointer to current extension string */
   char*           ptr;         /* Pointer to current character in filename */
-  int             tmpchars;    /* Number of characters needed to store full pathname for file */
+  unsigned int    tmpchars;    /* Number of characters needed to store full pathname for file */
   char*           tmpfile;     /* Temporary string holder for full pathname of file */
 
   if( (dir_handle = opendir( dir )) == NULL ) {
@@ -590,23 +590,19 @@ bool file_exists( const char* file ) { PROFILE(FILE_EXISTS);
 }
 
 /*!
- \param file  File to read next line from.
- \param line  Pointer to string which will contain read line minus newline character.
- \param line_size  Pointer to number of 
- 
  \return Returns FALSE if feof is encountered; otherwise, returns TRUE.
 
  Reads in a single line of information from the specified file and returns a string
  containing the read line to the calling function.
 */
 bool util_readline(
-  FILE*  file,
-  char** line,
-  int*   line_size
+            FILE*         file,      /*!< File to read next line from */
+  /*@out@*/ char**        line,      /*!< Pointer to string which will contain read line minus newline character */
+  /*@out@*/ unsigned int* line_size  /*!< Pointer to number of characters allocated for line */
 ) { PROFILE(UTIL_READLINE);
 
-  char  c;      /* Character recently read from file */
-  int   i = 0;  /* Current index of line */
+  char         c;      /* Character recently read from file */
+  unsigned int i = 0;  /* Current index of line */
 
   *line_size = 128;
   *line      = (char*)malloc_safe( *line_size );
@@ -648,13 +644,13 @@ char* substitute_env_vars(
   const char* value
 ) { PROFILE(SUBSTITUTE_ENV_VARS);
 
-  char*       newvalue    = NULL;   /* New value */
-  int         newvalue_index;       /* Current index into newvalue */
-  const char* ptr;                  /* Pointer to current character in value */
-  char        env_var[4096];        /* Name of found environment variable */
-  int         env_var_index;        /* Current index to write into env_var string */
-  bool        parsing_var = FALSE;  /* Set to TRUE when we are parsing an environment variable */
-  char*       env_value;            /* Environment variable value */
+  char*       newvalue      = NULL;   /* New value */
+  int         newvalue_index;         /* Current index into newvalue */
+  const char* ptr;                    /* Pointer to current character in value */
+  char        env_var[4096];          /* Name of found environment variable */
+  int         env_var_index = 0;      /* Current index to write into env_var string */
+  bool        parsing_var   = FALSE;  /* Set to TRUE when we are parsing an environment variable */
+  char*       env_value;              /* Environment variable value */
 
   newvalue       = (char*)malloc_safe( 1 );
   newvalue[0]    = '\0';
@@ -677,7 +673,6 @@ char* substitute_env_vars(
             parsing_var = FALSE;
             ptr--;
           } else {
-            unsigned int i;
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown environment variable $%s in string \"%s\"", env_var, value );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -1021,11 +1016,16 @@ str_link* get_next_vfile( str_link* curr, const char* mod ) { PROFILE(GET_NEXT_V
  Allocated memory like a malloc() call but performs some pre-allocation and
  post-allocation checks to be sure that the malloc call works properly.
 */
-void* malloc_safe1( size_t size, /*@unused@*/ const char* file, /*@unused@*/ int line, unsigned int profile_index ) {
+void* malloc_safe1(
+               size_t       size,
+  /*@unused@*/ const char*  file,
+  /*@unused@*/ int          line,
+  /*@unused@*/ unsigned int profile_index ) {
 
   void* obj;  /* Object getting malloc address */
 
   assert( size <= MAX_MALLOC_SIZE );
+
   curr_malloc_size += size;
 
   if( curr_malloc_size > largest_malloc_size ) {
@@ -1048,18 +1048,18 @@ void* malloc_safe1( size_t size, /*@unused@*/ const char* file, /*@unused@*/ int
 }
 
 /*!
- \param size           Number of bytes to allocate.
- \param file           Name of file that called this function.
- \param line           Line number of file that called this function.
- \param profile_index  Profile index of function that called this function
-
  \return Pointer to allocated memory.
 
  Allocated memory like a malloc() call but performs some pre-allocation and
  post-allocation checks to be sure that the malloc call works properly.  Unlike
  malloc_safe, there is no upper bound on the amount of memory to allocate.
 */
-void* malloc_safe_nolimit1( size_t size, /*@unused@*/ const char* file, /*@unused@*/ int line, unsigned int profile_index ) {
+void* malloc_safe_nolimit1(
+               size_t       size,          /*!< Number of bytes to allocate */
+  /*@unused@*/ const char*  file,          /*!< Name of file that called this function */
+  /*@unused@*/ int          line,          /*!< Line number of file that called this function */
+  /*@unused@*/ unsigned int profile_index  /*!< Profile index of function that called this function */
+) {
 
   void* obj;  /* Object getting malloc address */
 
@@ -1090,8 +1090,8 @@ void* malloc_safe_nolimit1( size_t size, /*@unused@*/ const char* file, /*@unuse
  life.
 */
 void free_safe1(
-  void*        ptr,           /*!< Pointer to object to deallocate */
-  unsigned int profile_index  /*!< Profile index of function that called this function */
+               void*        ptr,           /*!< Pointer to object to deallocate */
+  /*@unused@*/ unsigned int profile_index  /*!< Profile index of function that called this function */
 ) {
 
   if( ptr != NULL ) {
@@ -1109,11 +1109,11 @@ void free_safe1(
  life.
 */
 void free_safe2(
-  void*        ptr,           /*!< Pointer to object to deallocate */
-  size_t       size,          /*!< Number of bytes that will be deallocated */
-  const char*  file,          /*!< File that is calling this function */
-  int          line,          /*!< Line number in file that is calling this function */
-  unsigned int profile_index  /*!< Profile index of function that called this function */
+               void*        ptr,           /*!< Pointer to object to deallocate */
+               size_t       size,          /*!< Number of bytes that will be deallocated */
+  /*@unused@*/ const char*  file,          /*!< File that is calling this function */
+  /*@unused@*/ int          line,          /*!< Line number in file that is calling this function */
+  /*@unused@*/ unsigned int profile_index  /*!< Profile index of function that called this function */
 ) {
 
   if( ptr != NULL ) {
@@ -1139,7 +1139,7 @@ char* strdup_safe1(
                const char*  str,           /*!< String to duplicate */
   /*@unused@*/ const char*  file,          /*!< Name of file that called this function */
   /*@unused@*/ int          line,          /*!< Line number of file that called this function */
-               unsigned int profile_index  /*!< Profile index of function that called this function */
+  /*@unused@*/ unsigned int profile_index  /*!< Profile index of function that called this function */
 ) {
 
   char* new_str;
@@ -1170,12 +1170,12 @@ char* strdup_safe1(
  size doesn't exceed a threshold value and that the requested memory was allocated.
 */
 void* realloc_safe1(
-  /*@null@*/ void*        ptr,           /*!< Pointer to old memory to copy */
-             size_t       old_size,      /*!< Size of originally allocated memory (in bytes) */
-             size_t       size,          /*!< Size of new allocated memory (in bytes) */
-             const char*  file,          /*!< Name of file that called this function */
-             int          line,          /*!< Line number of file that called this function */
-             unsigned int profile_index  /*!< Profile index of function that called this function */
+  /*@null@*/   void*        ptr,           /*!< Pointer to old memory to copy */
+               size_t       old_size,      /*!< Size of originally allocated memory (in bytes) */
+               size_t       size,          /*!< Size of new allocated memory (in bytes) */
+  /*@unused@*/ const char*  file,          /*!< Name of file that called this function */
+  /*@unused@*/ int          line,          /*!< Line number of file that called this function */
+  /*@unused@*/ unsigned int profile_index  /*!< Profile index of function that called this function */
 ) {
 
   void* newptr;
@@ -1282,11 +1282,11 @@ void timer_stop( timer** tm ) {
 #endif
 
 /*!
- \param type  Type of functional unit (see \ref func_unit_types for legal values)
-
  \return Returns a string giving the user-readable name of the given functional unit type
 */
-const char* get_funit_type( int type ) { PROFILE(GET_FUNIT_TYPE);
+const char* get_funit_type(
+  int type  /*!< Type of functional unit (see \ref func_unit_types for legal values) */
+) { PROFILE(GET_FUNIT_TYPE);
 
   const char* type_str;
 
@@ -1303,11 +1303,6 @@ const char* get_funit_type( int type ) { PROFILE(GET_FUNIT_TYPE);
 }
 
 /*!
- \param hits     Number of items hit during simulation
- \param total    Number of total items
- \param misses   Pointer to a storage element which will contain the calculated number of items missed during simulation
- \param percent  Pointer to a storage element which will contain the calculated hit percent information
-
  Calculates the number of misses and hit percentage information from the given hit and total information, storing
  the results in the misses and percent storage elements.
 
@@ -1315,10 +1310,10 @@ const char* get_funit_type( int type ) { PROFILE(GET_FUNIT_TYPE);
  If the total number of items is 0, the hit percentage will be calculated as 100% covered.
 */
 void calc_miss_percent(
-  int    hits,
-  int    total,
-  int*   misses,
-  float* percent
+  int    hits,    /*!< Number of items hit during simulation */
+  int    total,   /*!< Number of total items */
+  int*   misses,  /*!< Pointer to a storage element which will contain the calculated number of items missed during simulation */
+  float* percent  /*!< Pointer to a storage element which will contain the calculated hit percent information */
 ) { PROFILE(CALC_MISS_PERCENT);
 
   if( total == 0 ) {
@@ -1336,6 +1331,14 @@ void calc_miss_percent(
 
 /*
  $Log$
+ Revision 1.95  2008/06/24 23:15:32  phase1geo
+ Adding several new diagnostics to regression.  Removing unnecessary output in
+ source files for user errors hit in regressions.  Fixed memory leak in substitute_env_vars
+ when an error is detected in the environment variable.  Fixing issue with gen_test script
+ to make sure that it does not allow an existing diagnostic to be overwritten if the .v file
+ is absent (but the .pl or .cfg file is).  Fixing score_err1.1.pl script to properly remove
+ its "lib2" directory.  Checkpointing.
+
  Revision 1.94  2008/06/24 04:45:57  phase1geo
  Adding new score command error diagnostics to regression suite.
 

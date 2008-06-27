@@ -54,11 +54,11 @@ static bool vcd_blackout;
 
 
 /*!
- \param value  Unique ID for a specific signal
-
  \return Returns a unique string ID for the given value
 */
-static char* vcdid( int value ) { PROFILE(VCDID);
+static char* vcdid(
+  int value  /*!< Unique ID for a specific signal */
+) { PROFILE(VCDID);
 
   static char buf[16];
   int         i;
@@ -72,6 +72,8 @@ static char* vcdid( int value ) { PROFILE(VCDID);
     }
   }
 
+  PROFILE_END;
+
   return( buf );
 
 }
@@ -80,10 +82,10 @@ static char* vcdid( int value ) { PROFILE(VCDID);
  \throws anonymous db_do_timestep
 */
 static void vcd_callback(
-  struct lxt2_rd_trace **lt,
-  lxtint64_t           *pnt_time,
-  lxtint32_t           *pnt_facidx,
-  char                 **pnt_value
+  struct lxt2_rd_trace** lt,
+  lxtint64_t*            pnt_time,
+  lxtint32_t*            pnt_facidx,
+  char**                 pnt_value
 ) { PROFILE(VCD_CALLBACK);
 
   struct lxt2_rd_geometry *g = lxt2_rd_get_fac_geometry( *lt, *pnt_facidx );
@@ -127,18 +129,18 @@ static void vcd_callback(
 
   }                               
 
+  PROFILE_END;
+
 }
 
 /*!
- \param lxt_file  Name of LXT file to read and score
-
  \throws anonymous db_do_timestep Throw Throw Throw lxt2_rd_iter_blocks
 
  Main LXT parsing function.  Reads in an LXT-style dumpfile, tells Covered about signal information
  and simulation results.
 */
 void lxt_parse(
-  const char* lxt_file
+  const char* lxt_file  /*!< Name of LXT file to read and score */
 ) { PROFILE(LXT_PARSE);
 
   struct lxt2_rd_trace*    lt;             /* LXT read structure */
@@ -187,7 +189,7 @@ void lxt_parse(
         } else {
 
           if( g->len == 1 ) {
-            if( (g->msb != -1) && (g->msb != 0) ) {
+            if( g->msb != 0 ) {
               db_assign_symbol( netname, vcdid( newindx ), g->msb, g->msb );
             } else {
               db_assign_symbol( netname, vcdid( newindx ), 0, 0 );
@@ -256,10 +258,15 @@ void lxt_parse(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*
  $Log$
+ Revision 1.25  2008/03/17 05:26:16  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.24  2008/03/14 22:00:19  phase1geo
  Beginning to instrument code for exception handling verification.  Still have
  a ways to go before we have anything that is self-checking at this point, though.

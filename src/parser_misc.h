@@ -74,10 +74,13 @@ void parser_explicitly_set_curr_range( static_expr* left, static_expr* right, bo
 void parser_implicitly_set_curr_range( int left_num, int right_num, bool packed );
 
 /*! \brief Checks the specified generation value to see if it holds in the specified module */
-bool parser_check_generation( int gen );
+bool parser_check_generation( unsigned int gen );
 
 /*
  $Log$
+ Revision 1.13  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.12  2007/11/20 05:28:59  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

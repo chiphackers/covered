@@ -2290,9 +2290,9 @@ identifier
   | identifier '.' IDENTIFIER
     { PROFILE(PARSER_IDENTIFIER_A);
       if( ignore_mode == 0 ) {
-        int   len = strlen( $1 ) + strlen( $3 ) + 2;
-        char* str = (char*)malloc_safe( len );
-        unsigned int rv = snprintf( str, len, "%s.%s", $1, $3 );
+        unsigned int len = strlen( $1 ) + strlen( $3 ) + 2;
+        char*        str = (char*)malloc_safe( len );
+        unsigned int rv  = snprintf( str, len, "%s.%s", $1, $3 );
         assert( rv < len );
         $$ = str;
       } else {
@@ -5868,6 +5868,7 @@ delay_value
       } else {
         $$ = NULL;
       }
+      PROFILE_END;
     }
   | static_expr ':' static_expr ':' static_expr
     { PROFILE(PARSER_DELAY_VALUE_B);
@@ -5928,6 +5929,7 @@ delay_value
       } else {
         $$ = NULL;
       }
+      PROFILE_END;
     }
   ;
 

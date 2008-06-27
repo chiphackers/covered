@@ -183,7 +183,10 @@ static _LXT2_RD_INLINE granmsk_t lxt2_rd_tzc( granmsk_t x ) {
 /*
  * i2c and c2i utility functions
  */
-static char* lxt2_rd_expand_integer_to_bits( int len, unsigned int value ) { PROFILE(LXT2_RD_EXPAND_INTEGER_TO_BITS);
+static char* lxt2_rd_expand_integer_to_bits(
+  int          len,
+  unsigned int value
+) { PROFILE(LXT2_RD_EXPAND_INTEGER_TO_BITS);
 
   static char s[33];
   char*       p    = s;
@@ -198,11 +201,16 @@ static char* lxt2_rd_expand_integer_to_bits( int len, unsigned int value ) { PRO
 
   *p = 0;  
 
+  PROFILE_END;
+
   return( s );
 
 }
 
-static unsigned int lxt2_rd_expand_bits_to_integer( int len, char* s ) { PROFILE(LXT2_RD_EXPAND_BITS_TO_INTEGER);
+static unsigned int lxt2_rd_expand_bits_to_integer(
+  int   len,
+  char* s
+) { PROFILE(LXT2_RD_EXPAND_BITS_TO_INTEGER);
 
   unsigned int v = 0;
   int          i;
@@ -212,6 +220,8 @@ static unsigned int lxt2_rd_expand_bits_to_integer( int len, char* s ) { PROFILE
     v |= ((*s) & 1);
     s++;
   }
+
+  PROFILE_END;
 
   return( v );
 
@@ -225,7 +235,10 @@ static unsigned int lxt2_rd_expand_bits_to_integer( int len, char* s ) { PROFILE
 /*!
  \throws anonymous Throw Throw
 */
-static void lxt2_rd_iter_radix( struct lxt2_rd_trace *lt, struct lxt2_rd_block *b ) { PROFILE(LXT2_RD_ITER_RADIX);
+static void lxt2_rd_iter_radix(
+  struct lxt2_rd_trace* lt,
+  struct lxt2_rd_block* b
+) { PROFILE(LXT2_RD_ITER_RADIX);
 
   unsigned int which_time;
   int          offset;
@@ -239,7 +252,7 @@ static void lxt2_rd_iter_radix( struct lxt2_rd_trace *lt, struct lxt2_rd_block *
 
       lxtint32_t   idx = top_elem - lt->next_radix;
       unsigned int vch;
-      int          i;
+      unsigned int i;
 
       switch( lt->fac_curpos_width ) {
 	case 1  :  vch = lxt2_rd_get_byte( lt->fac_curpos[idx], 0 ); break;
@@ -319,7 +332,7 @@ static void lxt2_rd_iter_radix( struct lxt2_rd_trace *lt, struct lxt2_rd_block *
           }
           if( lt->flags[idx] & (LXT2_RD_SYM_F_DOUBLE | LXT2_RD_SYM_F_STRING) ) {
             free_safe( lt->value[idx], 0 );  /* TBD */
-            lt->value[idx] = strdup_safe( b->string_pointers[vch] );
+            lt->value[idx] = strdup_safe( (char*)b->string_pointers[vch] );
             break;
           }
           if( lt->len[idx] == b->string_lens[vch] ) {
@@ -327,10 +340,10 @@ static void lxt2_rd_iter_radix( struct lxt2_rd_trace *lt, struct lxt2_rd_block *
           } else if( lt->len[idx] > b->string_lens[vch] ) {
             int lendelta = lt->len[idx] - b->string_lens[vch];
             memset( lt->value[idx], ((b->string_pointers[vch][0] != '1') ?  b->string_pointers[vch][0] : '0'), lendelta );
-            strcpy( (lt->value[idx] + lendelta), b->string_pointers[vch] );
+            strcpy( (lt->value[idx] + lendelta), (char*)b->string_pointers[vch] );
           } else {
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error: %u ('%s') vs %u ('%s')",
-                                        (unsigned int)lt->len[idx], lt->value[idx], (unsigned int)b->string_lens[vch], b->string_pointers[vch] );
+                                        (unsigned int)lt->len[idx], lt->value[idx], (unsigned int)b->string_lens[vch], (char*)b->string_pointers[vch] );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
             printf( "lxt2_read Throw B\n" );
@@ -349,6 +362,8 @@ static void lxt2_rd_iter_radix( struct lxt2_rd_trace *lt, struct lxt2_rd_block *
 
   }
 
+  PROFILE_END;
+
 }
 
 /*
@@ -366,7 +381,7 @@ static void lxt2_rd_iter_radix0(
 
   unsigned int vch;
   unsigned int which_time;
-  int          i;
+  unsigned int i;
   int          uniq = 0;
 
   switch( lt->fac_curpos_width ) {
@@ -452,9 +467,9 @@ static void lxt2_rd_iter_radix0(
         Throw 0;
       }
       if( lt->flags[idx] & (LXT2_RD_SYM_F_DOUBLE | LXT2_RD_SYM_F_STRING) ) {
-        if( strcmp( lt->value[idx], b->string_pointers[vch] ) ) {
+        if( strcmp( lt->value[idx], (char*)b->string_pointers[vch] ) ) {
           free_safe( lt->value[idx], 0 );  /* TBD */
-          lt->value[idx] = strdup_safe( b->string_pointers[vch] );
+          lt->value[idx] = strdup_safe( (char*)b->string_pointers[vch] );
           uniq = 1;
         }
         break;
@@ -467,12 +482,12 @@ static void lxt2_rd_iter_radix0(
           }
         }
       } else if( lt->len[idx] > b->string_lens[vch] ) {
-        int lendelta = lt->len[idx] - b->string_lens[vch];
+        unsigned int lendelta = lt->len[idx] - b->string_lens[vch];
         int fill = (b->string_pointers[vch][0] != '1') ?  b->string_pointers[vch][0] : '0';
         for( i=0; i<lendelta; i++ ) {
           if( lt->value[idx][i] != fill ) {
             memset( (lt->value[idx] + i), fill, (lendelta - i) );
-            strcpy( (lt->value[idx] + lendelta), b->string_pointers[vch] );
+            strcpy( (lt->value[idx] + lendelta), (char*)b->string_pointers[vch] );
             uniq = 1;
             goto fini;
           }
@@ -485,7 +500,7 @@ static void lxt2_rd_iter_radix0(
         }
       } else {
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  %u ('%s') vs %u ('%s')",
-                                    (unsigned int)lt->len[idx], lt->value[idx], (unsigned int)b->string_lens[vch], b->string_pointers[vch] );
+                                    (unsigned int)lt->len[idx], lt->value[idx], (unsigned int)b->string_lens[vch], (char*)b->string_pointers[vch] );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         printf( "lxt2_read Throw E\n" );
@@ -501,6 +516,8 @@ fini:
     }
     lt->value_change_callback( &lt, &lt->time_table[which_time], &idx, &lt->value[idx] );
   }
+
+  PROFILE_END;
 
 }
 
@@ -520,7 +537,7 @@ static void lxt2_rd_build_radix(
   lxtint32_t endfac
 ) { PROFILE(LXT2_RD_BUILD_RADIX);
 
-  int i;
+  unsigned int i;
   int offset;
 
   for( i=0; i<(LXT2_RD_GRANULE_SIZE+1); i++ ) {    /* +1 because tzc returns 33/65 when its arg == 0 */
@@ -555,6 +572,8 @@ static void lxt2_rd_build_radix(
 
   }
 
+  PROFILE_END;
+
 }
 
 /****************************************************************************/
@@ -562,9 +581,11 @@ static void lxt2_rd_build_radix(
 /*
  * build compressed process mask if necessary
  */
-static void lxt2_rd_regenerate_process_mask( struct lxt2_rd_trace* lt ) { PROFILE(LXT2_RD_REGENERATE_PROCESS_MASK);
+static void lxt2_rd_regenerate_process_mask(
+  struct lxt2_rd_trace* lt
+) { PROFILE(LXT2_RD_REGENERATE_PROCESS_MASK);
 
-  int i, j, lim, idx;
+  unsigned int i, j, lim, idx;
 
   if( lt && lt->process_mask_dirty ) {
 
@@ -597,6 +618,8 @@ static void lxt2_rd_regenerate_process_mask( struct lxt2_rd_trace* lt ) { PROFIL
 
   }
 
+  PROFILE_END;
+
 }
 
 /****************************************************************************/
@@ -613,13 +636,13 @@ static int lxt2_rd_process_block(
   struct lxt2_rd_block* b
 ) { PROFILE(LXT2_RD_PROCESS_BLOCK);
 
-  char       vld;
-  char*      pnt;
-  int        i;
-  int        granule      = 0;
-  char       sect_typ;
-  lxtint32_t strtfac_gran = 0;
-  char       granvld      = 0;
+  char           vld;
+  unsigned char* pnt;
+  unsigned int   i;
+  int            granule      = 0;
+  char           sect_typ;
+  lxtint32_t     strtfac_gran = 0;
+  char           granvld      = 0;
 
   b->num_map_entries  = lxt2_rd_get_32( b->mem, (b->uncompressed_siz -  4) );
   b->num_dict_entries = lxt2_rd_get_32( b->mem, (b->uncompressed_siz - 12) );
@@ -650,7 +673,7 @@ static int lxt2_rd_process_block(
     pnt                = b->dict_start;
     for( i=0; i<b->num_dict_entries; i++ ) {
       b->string_pointers[i] = pnt;
-      b->string_lens[i]     = strlen( pnt );
+      b->string_lens[i]     = strlen( (char*)pnt );
       pnt                  += (b->string_lens[i] + 1);
     }
     if( pnt != b->map_start ) {
@@ -778,6 +801,8 @@ static int lxt2_rd_process_block(
 
   }
 
+  PROFILE_END;
+
   return( 1 );
 
 }
@@ -813,7 +838,7 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) {
 struct lxt2_rd_trace* lxt2_rd_init( const char* name ) { PROFILE(LXT2_RD_INIT);
 
   struct lxt2_rd_trace* lt = (struct lxt2_rd_trace*)calloc( 1, sizeof( struct lxt2_rd_trace ) );
-  int                   i;
+  unsigned int          i;
 
   if( !(lt->handle = fopen( name, "rb" )) ) {
 
@@ -862,10 +887,10 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) { PROFILE(LXT2_RD_INIT);
 
     } else {
 
-      int                   rc;
+      unsigned int          rc;
       char*                 m;
       off_t                 pos, fend;
-      int                   t;
+      unsigned int          t;
       struct lxt2_rd_block* b;
       unsigned int          rv;
 
@@ -911,7 +936,7 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) { PROFILE(LXT2_RD_INIT);
       lt->zhandle = NULL;
 
       if( rc != lt->zfacname_predec_size ) {
-        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "LXT:  Name section mangled %d (actual) vs %u (expected)", rc, (unsigned int)lt->zfacname_predec_size );
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "LXT:  Name section mangled %u (actual) vs %u (expected)", rc, (unsigned int)lt->zfacname_predec_size );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         free( m );
@@ -1086,6 +1111,8 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) { PROFILE(LXT2_RD_INIT);
 
   }
 
+  PROFILE_END;
+
   return( lt );
 
 }
@@ -1097,13 +1124,15 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) { PROFILE(LXT2_RD_INIT);
  * calloc() is used to allocate all structs) as performance
  * isn't an issue for this set of cleanup code
  */
-void lxt2_rd_close( struct lxt2_rd_trace* lt ) { PROFILE(LXT2_RD_CLOSE);
+void lxt2_rd_close(
+  struct lxt2_rd_trace* lt
+) { PROFILE(LXT2_RD_CLOSE);
 
   if( lt ) {
 
     struct lxt2_rd_block* b;
     struct lxt2_rd_block* bt;
-    int                   i;
+    unsigned int          i;
 
     free_safe( lt->process_mask, 0 );  /* TBD */
     free_safe( lt->process_mask_compressed, 0 );  /* TBD */
@@ -1192,6 +1221,8 @@ void lxt2_rd_close( struct lxt2_rd_trace* lt ) { PROFILE(LXT2_RD_CLOSE);
 
   }
 
+  PROFILE_END;
+
 }
 
 /****************************************************************************/
@@ -1209,7 +1240,10 @@ _LXT2_RD_INLINE lxtint32_t lxt2_rd_get_num_facs( struct lxt2_rd_trace* lt ) {
 /*
  * return fac geometry for a given index
  */
-struct lxt2_rd_geometry *lxt2_rd_get_fac_geometry( struct lxt2_rd_trace* lt, lxtint32_t facidx ) {
+struct lxt2_rd_geometry* lxt2_rd_get_fac_geometry(
+  struct lxt2_rd_trace* lt,
+  lxtint32_t            facidx
+) {
 
   if( lt && (facidx < lt->numfacs) ) {
     lt->geometry.rows  = lt->rows[facidx];	
@@ -1325,10 +1359,13 @@ _LXT2_RD_INLINE char lxt2_rd_get_timescale( struct lxt2_rd_trace* lt ) {
  * performs best when extracting facs with monotonically
  * increasing indices...
  */
-char* lxt2_rd_get_facname( struct lxt2_rd_trace* lt, lxtint32_t facidx ) { PROFILE(LXT2_RD_GET_FACNAME);
+char* lxt2_rd_get_facname(
+  struct lxt2_rd_trace* lt,
+  lxtint32_t            facidx
+) { PROFILE(LXT2_RD_GET_FACNAME);
 
   char* pnt;
-  int   clone, j;
+  unsigned int clone, j;
 
   if( lt ) {
 
@@ -1393,6 +1430,8 @@ char* lxt2_rd_get_facname( struct lxt2_rd_trace* lt, lxtint32_t facidx ) { PROFI
     }
 
   }
+
+  PROFILE_END;
 
   return( NULL );
 
@@ -1620,15 +1659,15 @@ int lxt2_rd_iter_blocks(
         if( (striped_kill = (gzid[0] != 0x1f) || (gzid[1] != 0x8b)) ) {
 
           lxtint32_t        clen, unclen, iter = 0;
-          char*             pnt;
+          unsigned char*    pnt;
           off_t             fspos = b->filepos;
-          int               rc;
-          char*             zbuff = NULL;
-          int               zlen  = 0;
+          unsigned int      rc;
+          unsigned char*    zbuff = NULL;
+          unsigned int      zlen  = 0;
           struct z_stream_s strm;
 
           real_uncompressed_siz = b->uncompressed_siz;
-          pnt = b->mem = malloc_safe_nolimit( b->uncompressed_siz );
+          pnt = b->mem = (unsigned char*)malloc_safe_nolimit( b->uncompressed_siz );
           b->uncompressed_siz = 0;
 
           lxt2_rd_regenerate_process_mask( lt );
@@ -1652,7 +1691,7 @@ int lxt2_rd_iter_blocks(
 
               if( clen > zlen ) {
                 free_safe( zbuff, 0 );  /* TBD */
-                zbuff = (char*)malloc_safe_nolimit( zlen = (clen * 2) );
+                zbuff = (unsigned char*)malloc_safe_nolimit( zlen = (clen * 2) );
               }
 
               (void)fread( zbuff, clen, 1, lt->handle );
@@ -1788,15 +1827,15 @@ _LXT2_RD_INLINE void* lxt2_rd_get_user_callback_data_pointer( struct lxt2_rd_tra
 }
 
 /*!
- \param lt         Pointer to LXT read tracer
- \param strt_time  Starting time to limit access to
- \param end_time   Ending time to limit access to
-
  \return Returns the number of active blocks within the time range
 
  Limits access to a given timerange in the LXT file
 */
-unsigned int lxt2_rd_limit_time_range( struct lxt2_rd_trace* lt, lxtint64_t strt_time, lxtint64_t end_time ) { PROFILE(LXT2_RD_LIMIT_TIME_RANGE);
+unsigned int lxt2_rd_limit_time_range(
+  struct lxt2_rd_trace* lt,         /*!< Pointer to LXT read tracer */
+  lxtint64_t            strt_time,  /*!< Starting time to limit access to */
+  lxtint64_t            end_time    /*!< Ending time to limit access to */
+) { PROFILE(LXT2_RD_LIMIT_TIME_RANGE);
 
   lxtint64_t tmp_time;
   int        blk = 0;
@@ -1847,18 +1886,20 @@ unsigned int lxt2_rd_limit_time_range( struct lxt2_rd_trace* lt, lxtint64_t strt
 
   }
 
+  PROFILE_END;
+
   return( blk );
 
 }
 
 /*!
- \param lt  Pointer to LXT read tracer.
-
  \return Returns the number of active blocks
 
  Unrestricts access to the whole LXT file
 */
-unsigned int lxt2_rd_unlimit_time_range( struct lxt2_rd_trace* lt ) { PROFILE(LXT2_RD_UNLIMIT_TIME_RANGE);
+unsigned int lxt2_rd_unlimit_time_range(
+  struct lxt2_rd_trace* lt  /*!< Pointer to LXT read tracer */
+) { PROFILE(LXT2_RD_UNLIMIT_TIME_RANGE);
 
   int blk = 0;
 
@@ -1875,6 +1916,8 @@ unsigned int lxt2_rd_unlimit_time_range( struct lxt2_rd_trace* lt ) { PROFILE(LX
     }
 
   }
+
+  PROFILE_END;
 
   return( blk );
 

@@ -30,15 +30,15 @@ extern const exp_info exp_op_info[EXP_OP_NUM];
 
 
 /*!
- \param funit  Pointer to current function to count the bits of
-
  \return Returns the total number of bits in all signals in this functional unit and all parents
          within the same reentrant task/function.
 
  Recursively iterates up the functional unit tree keeping track of the total number of bits needed
  to store all information in the current reentrant task/function.
 */
-static int reentrant_count_afu_bits( func_unit* funit ) { PROFILE(REENTRANT_COUNT_AFU_BITS);
+static int reentrant_count_afu_bits(
+  func_unit* funit  /*!< Pointer to current function to count the bits of */
+) { PROFILE(REENTRANT_COUNT_AFU_BITS);
 
   sig_link* sigl;      /* Pointer to current signal link */
   exp_link* expl;      /* Pointer to current expression link */
@@ -70,19 +70,21 @@ static int reentrant_count_afu_bits( func_unit* funit ) { PROFILE(REENTRANT_COUN
 
   }
 
+  PROFILE_END;
+
   return( bits );
 
 }
 
 /*!
- \param funit     Pointer to current functional unit to traverse
- \param ren       Pointer to reentrant structure to populate
- \param curr_bit  Current bit to store (should be started at a value of 0)
-
  Recursively gathers all signal data bits to store and stores them in the given reentrant
  structure.
 */
-static void reentrant_store_data_bits( func_unit* funit, reentrant* ren, unsigned int curr_bit ) { PROFILE(REENTRANT_STORE_DATA_BITS);
+static void reentrant_store_data_bits(
+  func_unit*   funit,    /*!< Pointer to current functional unit to traverse */
+  reentrant*   ren,      /*!< Pointer to reentrant structure to populate */
+  unsigned int curr_bit  /*!< Current bit to store (should be started at a value of 0) */
+) { PROFILE(REENTRANT_STORE_DATA_BITS);
 
   if( (funit->type == FUNIT_ATASK) || (funit->type == FUNIT_AFUNCTION) || (funit->type == FUNIT_ANAMED_BLOCK) ) {
 
@@ -154,17 +156,19 @@ static void reentrant_store_data_bits( func_unit* funit, reentrant* ren, unsigne
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param funit     Pointer to current functional unit to restore
- \param ren       Pointer to reentrant structure containing bits to restore
- \param curr_bit  Current bit in reentrant structure to restore
- \param expr      Pointer to expression to exclude from updating
-
  Recursively restores the signal and expression values of the functional units in a reentrant task/function.
 */
-static void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, unsigned int curr_bit, expression* expr ) { PROFILE(REENTRANT_RESTORE_DATA_BITS);
+static void reentrant_restore_data_bits(
+  func_unit*   funit,     /*!< Pointer to current functional unit to restore */
+  reentrant*   ren,       /*!< Pointer to reentrant structure containing bits to restore */
+  unsigned int curr_bit,  /*!< Current bit in reentrant structure to restore */
+  expression*  expr       /*!< Pointer to expression to exclude from updating */
+) { PROFILE(REENTRANT_RESTORE_DATA_BITS);
 
   int i;  /* Loop iterator */
 
@@ -248,23 +252,25 @@ static void reentrant_restore_data_bits( func_unit* funit, reentrant* ren, unsig
     }
 
   }
+ 
+  PROFILE_END;
 
 }
 
 /*!
- \param funit  Pointer to functional unit to create a new reentrant structure for.
-
  \return Returns a pointer to the newly created reentrant structure.
 
  Allocates and initializes the reentrant structure for the given functional unit,
  compressing and packing the bits into the given data structure.
 */
-reentrant* reentrant_create( func_unit* funit ) { PROFILE(REENTRANT_CREATE);
+reentrant* reentrant_create(
+  func_unit* funit  /*!< Pointer to functional unit to create a new reentrant structure for */
+) { PROFILE(REENTRANT_CREATE);
 
-  reentrant* ren  = NULL;  /* Pointer to newly created reentrant structure */
-  int        data_size;    /* Number of uint8s needed to store the given functional unit */
-  int        bits = 0;     /* Number of bits needed to store signal values */
-  int        i;            /* Loop iterator */
+  reentrant*   ren  = NULL;  /* Pointer to newly created reentrant structure */
+  int          data_size;    /* Number of uint8s needed to store the given functional unit */
+  unsigned int bits = 0;     /* Number of bits needed to store signal values */
+  int          i;            /* Loop iterator */
 
   /* Get size needed to store data */
   bits = reentrant_count_afu_bits( funit );
@@ -292,19 +298,21 @@ reentrant* reentrant_create( func_unit* funit ) { PROFILE(REENTRANT_CREATE);
 
   }
 
+  PROFILE_END;
+
   return( ren );
 
 }
 
 /*!
- \param ren    Pointer to the reentrant structure to deallocate from memory.
- \param funit  Pointer to functional unit associated with this reentrant structure.
- \param expr   Pointer of expression to exclude from updating (optional)
-
  Pops data back into the given functional unit and deallocates all memory associated
  with the given reentrant structure.
 */
-void reentrant_dealloc( reentrant* ren, func_unit* funit, expression* expr ) { PROFILE(REENTRANT_DEALLOC);
+void reentrant_dealloc(
+  reentrant*  ren,    /*!< Pointer to the reentrant structure to deallocate from memory */
+  func_unit*  funit,  /*!< Pointer to functional unit associated with this reentrant structure */
+  expression* expr    /*!< Pointer of expression to exclude from updating (optional) */
+) { PROFILE(REENTRANT_DEALLOC);
 
   if( ren != NULL ) {
 
@@ -324,10 +332,16 @@ void reentrant_dealloc( reentrant* ren, func_unit* funit, expression* expr ) { P
 
   }
 
+  PROFILE_END;
+
 }
 
 /*
  $Log$
+ Revision 1.19  2008/06/19 16:14:55  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
  Revision 1.18  2008/05/30 05:38:32  phase1geo
  Updating development tree with development branch.  Also attempting to fix
  bug 1965927.

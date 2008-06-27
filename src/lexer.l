@@ -488,11 +488,13 @@ WSPACE [ \t\b\f]+
 <PARSE>\\[^ \t\b\f\r\n]+  { PROFILE(LEXER_ESCAPED_NAME);
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
-     unsigned int rv;
-     unsigned int slen = strlen( yytext ) + 2;
-     yylval.text = (char*)malloc_safe( slen );
-     rv = snprintf( yylval.text, slen, "%s ", yytext );
-     assert( rv < slen );
+     {
+       unsigned int rv;
+       unsigned int slen = strlen( yytext ) + 2;
+       yylval.text = (char*)malloc_safe( slen );
+       rv = snprintf( yylval.text, slen, "%s ", yytext );
+       assert( rv < slen );
+     }
      return IDENTIFIER; 
  }
 
@@ -741,6 +743,8 @@ static void line_directive() { PROFILE(LINE_DIRECTIVE);
   
   qt2 += 1;
   yylloc.first_line = strtoul( qt2, 0, 0 );
+
+  PROFILE_END;
   
 }
 
@@ -774,18 +778,20 @@ static void line_directive2() { PROFILE(LINE_DIRECTIVE2);
   directive_filename[qt2-qt1] = '\0';
   
   yylloc.text = directive_filename;
+
+  PROFILE_END;
   
 }
 
 /*!
- \param token   User-specified timescale token (either unit or precision information)
- \param type    String specifying timescale token type ("unit" or "precision")
- \param value   Integer value to store shift information in
- \param report  If set to TRUE, calls VLerror with appropriate error information
-
  Parses either the time unit or time precision token.
 */
-void process_timescale_token( char* token, char* type, int* value, bool report ) { PROFILE(PROCESS_TIMESCALE_TOKEN);
+void process_timescale_token(
+  char* token,  /*!< User-specified timescale token (either unit or precision information) */
+  char* type,   /*!< String specifying timescale token type ("unit" or "precision") */
+  int*  value,  /*!< Integer value to store shift information in */
+  bool  report  /*!< If set to TRUE, calls VLerror with appropriate error information */
+) { PROFILE(PROCESS_TIMESCALE_TOKEN);
 
   int  i      = 3;            /* Loop iterator */
   char msg[USER_MSG_LENGTH];  /* Error message container */
@@ -798,7 +804,6 @@ void process_timescale_token( char* token, char* type, int* value, bool report )
       assert( rv < USER_MSG_LENGTH );
       VLerror( msg );
     }
-    // printf( "lexer Throw A\n" ); - HIT
     Throw 0;
   } else {
     *value = i - 1;
@@ -815,7 +820,6 @@ void process_timescale_token( char* token, char* type, int* value, bool report )
         assert( rv < USER_MSG_LENGTH );
         VLerror( msg );
       }
-      // printf( "lexer Throw B\n" ); - HIT
       Throw 0;
     }
     if( *token != '\0' ) {
@@ -827,6 +831,8 @@ void process_timescale_token( char* token, char* type, int* value, bool report )
     }
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -837,11 +843,11 @@ void process_timescale(
   bool        report  /*!< If set to TRUE, reports any error information to the VLerror function */
 ) { PROFILE(PROCESS_TIMESCALE);
 
-  char* str;             /* String version of text minus spaces */
-  int   i;               /* Loop iterator */
-  int   num_spaces = 0;  /* Number of spaces found in given string */
-  int   unit = 0;        /* Time unit offset */
-  int   prec = 0;        /* Time precision offset */
+  char*        str;             /* String version of text minus spaces */
+  unsigned int i;               /* Loop iterator */
+  int          num_spaces = 0;  /* Number of spaces found in given string */
+  int          unit = 0;        /* Time unit offset */
+  int          prec = 0;        /* Time precision offset */
 
   /* Copy the given string */
   str = strdup_safe( txt );
@@ -864,7 +870,6 @@ void process_timescale(
       if( report ) {
         VLerror( "Timescale missing '/' character" );
       }
-      // printf( "lexer Throw D\n" ); - HIT
       Throw 0;
 
     } else {
@@ -881,7 +886,6 @@ void process_timescale(
       if( report ) {
         VLerror( "Invalid timescale settings (unit must be greater than the precision)" );
       }
-      // printf( "lexer Throw E\n" ); - HIT
       Throw 0;
     }
 
@@ -890,12 +894,13 @@ void process_timescale(
   
   } Catch_anonymous {
     free_safe( str, (strlen( txt ) + 1) );
-    // printf( "lexer Throw F\n" ); - HIT
     Throw 0;
   }
 
   /* Finally, deallocate memory */
   free_safe( str, (strlen( txt ) + 1) );
+
+  PROFILE_END;
 
 }
 
@@ -1012,19 +1017,21 @@ static int yywrap() { PROFILE(LEXER_YYWRAP);
   } else {
     BEGIN( PARSE );
   }
+
+  PROFILE_END;
   
   return( 0 );
 
 }
 
 /*!
- \param file_list_head  Pointer to list of files to process.
-
  This function initializes the whole process. The first file is
  opened, and the lexer is initialized.  The include stack is cleared
  and ready to go.
 */
-void reset_lexer( str_link* file_list_head ) { PROFILE(RESET_LEXER);
+void reset_lexer(
+  str_link* file_list_head  /*!< Pointer to list of files to process */
+) { PROFILE(RESET_LEXER);
 
   FILE*        out;
   str_link*    curr = file_list_head;
@@ -1088,16 +1095,16 @@ void reset_lexer( str_link* file_list_head ) { PROFILE(RESET_LEXER);
   /* Set start state to allow parsing */
   BEGIN( PARSE );
 
+  PROFILE_END;
+
 }
 
 /*!
- \param comment  User-provided comment taken from a comment block.
-
  Checks the comment for pragma information in the given comment block and takes
  the appropriate action.
 */
 void check_for_pragma(
-  char* comment
+  char* comment  /*!< User-provided comment taken from a comment block */
 ) { PROFILE(CHECK_FOR_PRAGMA);
 
   if( comment != NULL ) {

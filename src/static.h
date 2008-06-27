@@ -27,23 +27,55 @@
 
 
 /*! \brief Calculates new values for unary static expressions and returns the new static expression. */
-static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line, int first, int last );
+static_expr* static_expr_gen_unary(
+  static_expr* stexp,
+  exp_op_type  op,
+  int          line,
+  int          first,
+  int          last
+);
 
 /*! \brief Calculates new values for static expression and returns the new static expression. */
-static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int line, int first, int last, char* func_name );
+static_expr* static_expr_gen(
+  static_expr* right,
+  static_expr* left,
+  int          op,
+  int          line,
+  int          first,
+  int          last,
+  char*        func_name
+);
 
 /*! \brief Calculates LSB, width and endianness for specified left/right pair for vector (used before parameter resolve). */
-void static_expr_calc_lsb_and_width_pre( static_expr* left, static_expr* right, int* width, int* lsb, int* big_endian );
+void static_expr_calc_lsb_and_width_pre(
+            static_expr*  left,
+            static_expr*  right,
+  /*@out@*/ unsigned int* width, 
+  /*@out@*/ int*          lsb,
+  /*@out@*/ int*          big_endian
+);
 
 /*! \brief Calculates LSB, width and endianness for specified left/right pair for vector (used after parameter resolve). */
-void static_expr_calc_lsb_and_width_post( static_expr* left, static_expr* right, int* width, int* lsb, int* big_endian );
+void static_expr_calc_lsb_and_width_post(
+            static_expr*  left,
+            static_expr*  right,
+  /*@out@*/ unsigned int* width,
+  /*@out@*/ int*          lsb,
+  /*@out@*/ int*          big_endian
+);
 
 /*! \brief Deallocates static_expr memory from heap. */
-void static_expr_dealloc( static_expr* stexp, bool rm_exp );
+void static_expr_dealloc(
+  static_expr* stexp,
+  bool         rm_exp
+);
 
 
 /*
  $Log$
+ Revision 1.13  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.12  2006/05/28 02:43:49  phase1geo
  Integrating stable release 0.4.4 changes into main branch.  Updated regressions
  appropriately.

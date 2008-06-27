@@ -47,32 +47,23 @@ extern isuppl info_suppl;
 
 
 /*!
- \param sig          Pointer to signal list to traverse for memories
- \param ae_total     Pointer to total number of addressable elements
- \param wr_hit       Pointer to total number of addressable elements written
- \param rd_hit       Pointer to total number of addressable elements read
- \param tog_total    Pointer to total number of bits in memories that can be toggled
- \param tog01_hit    Pointer to total number of bits toggling from 0->1
- \param tog10_hit    Pointer to total number of bits toggling from 1->0
- \param ignore_excl  If set to TRUE, ignores the current value of the excluded bit
-
  Calculates the total and hit memory coverage information for the given memory signal.
 */
 void memory_get_stat(
-  vsignal* sig,
-  int*     ae_total,
-  int*     wr_hit,
-  int*     rd_hit,
-  int*     tog_total,
-  int*     tog01_hit,
-  int*     tog10_hit,
-  bool     ignore_excl
+  vsignal*      sig,         /*!< Pointer to signal list to traverse for memories */
+  unsigned int* ae_total,    /*!< Pointer to total number of addressable elements */
+  unsigned int* wr_hit,      /*!< Pointer to total number of addressable elements written */
+  unsigned int* rd_hit,      /*!< Pointer to total number of addressable elements read */
+  unsigned int* tog_total,   /*!< Pointer to total number of bits in memories that can be toggled */
+  unsigned int* tog01_hit,   /*!< Pointer to total number of bits toggling from 0->1 */
+  unsigned int* tog10_hit,   /*!< Pointer to total number of bits toggling from 1->0 */
+  bool          ignore_excl  /*!< If set to TRUE, ignores the current value of the excluded bit */
 ) { PROFILE(MEMORY_GET_STAT);
 
-  int i;       /* Loop iterator */
-  int wr;      /* Number of bits written within an addressable element */
-  int rd;      /* Number of bits read within an addressable element */
-  int pwidth;  /* Width of packed portion of memory */
+  unsigned int i;       /* Loop iterator */
+  unsigned int wr;      /* Number of bits written within an addressable element */
+  unsigned int rd;      /* Number of bits read within an addressable element */
+  unsigned int pwidth;  /* Width of packed portion of memory */
 
   /* Calculate width of smallest addressable element */
   pwidth = 1;
@@ -92,7 +83,7 @@ void memory_get_stat(
     } else {
       wr = 0;
       rd = 0;
-      vector_mem_rw_count( sig->value, i, ((i + pwidth) - 1), &wr, &rd );
+      vector_mem_rw_count( sig->value, (int)i, (int)((i + pwidth) - 1), &wr, &rd );
       if( wr > 0 ) {
         (*wr_hit)++;
       }
@@ -112,25 +103,21 @@ void memory_get_stat(
     vector_toggle_count( sig->value, tog01_hit, tog10_hit );
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param sigl       Pointer to signal list to traverse for memories
- \param ae_total   Pointer to total number of addressable elements
- \param wr_hit     Pointer to total number of addressable elements written
- \param rd_hit     Pointer to total number of addressable elements read
- \param tog_total  Pointer to total number of bits in memories that can be toggled
- \param tog01_hit  Pointer to total number of bits toggling from 0->1
- \param tog10_hit  Pointer to total number of bits toggling from 1->0
+ Gathers memory statistics for the memories in the given signal list.
 */
 void memory_get_stats(
-            sig_link* sigl,
-  /*@out@*/ int*      ae_total,
-  /*@out@*/ int*      wr_hit,
-  /*@out@*/ int*      rd_hit,
-  /*@out@*/ int*      tog_total,
-  /*@out@*/ int*      tog01_hit,
-  /*@out@*/ int*      tog10_hit
+            sig_link*     sigl,       /*!< Pointer to signal list to traverse for memories */
+  /*@out@*/ unsigned int* ae_total,   /*!< Pointer to total number of addressable elements */
+  /*@out@*/ unsigned int* wr_hit,     /*!< Pointer to total number of addressable elements written */
+  /*@out@*/ unsigned int* rd_hit,     /*!< Pointer to total number of addressable elements read */
+  /*@out@*/ unsigned int* tog_total,  /*!< Pointer to total number of bits in memories that can be toggled */
+  /*@out@*/ unsigned int* tog01_hit,  /*!< Pointer to total number of bits toggling from 0->1 */
+  /*@out@*/ unsigned int* tog10_hit   /*!< Pointer to total number of bits toggling from 1->0 */
 ) { PROFILE(MEMORY_GET_STATS);
 
   while( sigl != NULL ) {
@@ -146,30 +133,32 @@ void memory_get_stats(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param funit_name  Name of functional unit to find memories in
- \param funit_type  Type of functional unit to find memories in
- \param total       Pointer to total number of memories in the given functional unit
- \param hit         Pointer to number of memories that received 100% coverage of all memory metrics
-
  \return Returns TRUE if we were able to determine the summary information properly; otherwise,
          returns FALSE to indicate that an error occurred.
 
  Retrieves memory summary information for a given functional unit made by a GUI request.
 */
-bool memory_get_funit_summary( const char* funit_name, int funit_type, int* total, int* hit ) { PROFILE(MEMORY_GET_FUNIT_SUMMARY);
+bool memory_get_funit_summary(
+            const char* funit_name,  /*!< Name of functional unit to find memories in */
+            int         funit_type,  /*!< Type of functional unit to find memories in */
+  /*@out@*/ int*        total,       /*!< Pointer to total number of memories in the given functional unit */
+  /*@out@*/ int*        hit          /*!< Pointer to number of memories that received 100% coverage of all memory metrics */
+) { PROFILE(MEMORY_GET_FUNIT_SUMMARY);
 
-  bool        retval    = FALSE;  /* Return value for this function */
-  funit_link* funitl;             /* Pointer to functional unit link containing the requested functional unit */
-  sig_link*   sigl;               /* Pointer to current signal link in list */
-  int         ae_total  = 0;      /* Total number of addressable elements */
-  int         wr_hit    = 0;      /* Number of addressable elements written */
-  int         rd_hit    = 0;      /* Number of addressable elements read */
-  int         tog_total = 0;      /* Total number of toggle bits */
-  int         tog01_hit = 0;      /* Number of bits toggling from 0->1 */
-  int         tog10_hit = 0;      /* Number of bits toggling from 1->0 */
+  bool         retval    = FALSE;  /* Return value for this function */
+  funit_link*  funitl;             /* Pointer to functional unit link containing the requested functional unit */
+  sig_link*    sigl;               /* Pointer to current signal link in list */
+  unsigned int ae_total  = 0;      /* Total number of addressable elements */
+  unsigned int wr_hit    = 0;      /* Number of addressable elements written */
+  unsigned int rd_hit    = 0;      /* Number of addressable elements read */
+  unsigned int tog_total = 0;      /* Total number of toggle bits */
+  unsigned int tog01_hit = 0;      /* Number of bits toggling from 0->1 */
+  unsigned int tog10_hit = 0;      /* Number of bits toggling from 1->0 */
 
   if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
   
@@ -203,20 +192,22 @@ bool memory_get_funit_summary( const char* funit_name, int funit_type, int* tota
     
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
 
 /*!
- \param str     Pointer to string array to populate with packed dimension information
- \param sig     Pointer to signal that we are solving for
- \param prefix  Prefix string to append to the beginning of the newly created string
- \param dim     Current dimension to solve for
-
  Creates a string array for each bit in the given signal corresponding to its position
  in the packed array portion.
 */
-static void memory_create_pdim_bit_array( char** str, vsignal* sig, char* prefix, int dim ) { PROFILE(MEMORY_CREATE_PDIM_BIT_ARRAY);
+static void memory_create_pdim_bit_array(
+  /*@out@*/ char**       str,     /*!< Pointer to string array to populate with packed dimension information */
+            vsignal*     sig,     /*!< Pointer to signal that we are solving for */
+            char*        prefix,  /*!< Prefix string to append to the beginning of the newly created string */
+            unsigned int dim      /*!< Current dimension to solve for */
+) { PROFILE(MEMORY_CREATE_PDIM_BIT_ARRAY);
 
   char name[4096];  /* Temporary string */
   int  i;           /* Loop iterator */
@@ -263,26 +254,28 @@ static void memory_create_pdim_bit_array( char** str, vsignal* sig, char* prefix
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
  Creates memory array structure for Tcl and stores it into the mem_str parameter.
 */
 static void memory_get_mem_coverage(
-  char**    mem_str,          /*!< String containing memory information */
-  vsignal*  sig,              /*!< Pointer to signal to get memory coverage for */
-  int       offset,           /*!< Bit offset of signal vector to start retrieving information from */
-  char*     prefix,           /*!< String containing memory prefix to output (initially this will be just the signal name) */
-  int       dim,              /*!< Current dimension index (initially this will be 0) */
-  int       parent_dim_width  /*!< Bit width of parent dimension (initially this will be the width of the signal) */
+  char**       mem_str,          /*!< String containing memory information */
+  vsignal*     sig,              /*!< Pointer to signal to get memory coverage for */
+  int          offset,           /*!< Bit offset of signal vector to start retrieving information from */
+  char*        prefix,           /*!< String containing memory prefix to output (initially this will be just the signal name) */
+  unsigned int dim,              /*!< Current dimension index (initially this will be 0) */
+  unsigned int parent_dim_width  /*!< Bit width of parent dimension (initially this will be the width of the signal) */
 ) { PROFILE(MEMORY_GET_MEM_COVERAGE);
 
-  char name[4096];  /* Contains signal name */
-  int  msb;         /* MSB of current dimension */
-  int  lsb;         /* LSB of current dimension */
-  int  be;          /* Big endianness of current dimension */
-  int  i;           /* Loop iterator */
-  int  dim_width;   /* Bit width of current dimension */
+  char         name[4096];  /* Contains signal name */
+  int          msb;         /* MSB of current dimension */
+  int          lsb;         /* LSB of current dimension */
+  int          be;          /* Big endianness of current dimension */
+  int          i;           /* Loop iterator */
+  unsigned int dim_width;   /* Bit width of current dimension */
 
   assert( sig != NULL );
   assert( prefix != NULL );
@@ -305,17 +298,17 @@ static void memory_get_mem_coverage(
   /* Only output memory contents if we have reached the lowest dimension */
   if( (dim + 1) == sig->udim_num ) {
 
-    vector* vec = vector_create( dim_width, VTYPE_MEM, VDATA_UL, TRUE );
-    int     tog01;
-    int     tog10;
-    int     wr;
-    int     rd;
-    char*   tog01_str;
-    char*   tog10_str;
-    char    hit_str[2];
-    char    int_str[20];
-    char*   dim_str;
-    char*   entry_str;
+    vector*      vec = vector_create( dim_width, VTYPE_MEM, VDATA_UL, TRUE );
+    unsigned int tog01;
+    unsigned int tog10;
+    unsigned int wr;
+    unsigned int rd;
+    char*        tog01_str;
+    char*        tog10_str;
+    char         hit_str[2];
+    char         int_str[20];
+    char*        dim_str;
+    char*        entry_str;
 
     /* Iterate through each addressable element in the current dimension */
     for( i=0; i<((msb - lsb) + 1); i++ ) {
@@ -350,7 +343,7 @@ static void memory_get_mem_coverage(
       /* Get write/read information */
       wr = 0;
       rd = 0;
-      vector_mem_rw_count( vec, 0, (vec->width - 1), &wr, &rd );
+      vector_mem_rw_count( vec, 0, (int)(vec->width - 1), &wr, &rd );
 
       /* Output the addressable memory element if it is found to be lacking in coverage */
       if( (tog01 < dim_width) || (tog10 < dim_width) || (wr == 0) || (rd == 0) ) {
@@ -400,41 +393,34 @@ static void memory_get_mem_coverage(
     }
 
   }
+ 
+  PROFILE_END;
 
 }
 
 /*!
- \param funit_name   Name of functional unit containing the given signal
- \param funit_type   Type of functional unit containing the given signal
- \param signame      Name of signal to find memory coverage information for
- \param pdim_str     Pointer to string to store packed dimensional information
- \param pdim_array   Pointer to string to store packed dimensional array
- \param udim_str     Pointer to string to store unpacked dimensional information
- \param memory_info  Pointer to string to store memory information into
- \param excluded     Pointer to excluded indicator to store
-
  \return Returns TRUE if the given signal was found and its memory coverage information properly
          stored in the given pointers; otherwise, returns FALSE to indicate that an error occurred.
 
  Retrieves memory coverage information for the given signal in the specified functional unit.
 */
 bool memory_get_coverage(
-            const char* funit_name,
-            int         funit_type,
-            const char* signame,
-  /*@out@*/ char**      pdim_str,
-  /*@out@*/ char**      pdim_array,
-  /*@out@*/ char**      udim_str,
-  /*@out@*/ char**      memory_info,
-  /*@out@*/ int*        excluded
+            const char* funit_name,   /*!< Name of functional unit containing the given signal */
+            int         funit_type,   /*!< Type of functional unit containing the given signal */
+            const char* signame,      /*!< Name of signal to find memory coverage information for */
+  /*@out@*/ char**      pdim_str,     /*!< Pointer to string to store packed dimensional information */
+  /*@out@*/ char**      pdim_array,   /*!< Pointer to string to store packed dimensional array */
+  /*@out@*/ char**      udim_str,     /*!< Pointer to string to store unpacked dimensional information */
+  /*@out@*/ char**      memory_info,  /*!< Pointer to string to store memory information into */
+  /*@out@*/ int*        excluded      /*!< Pointer to excluded indicator to store */
 ) { PROFILE(MEMORY_GET_COVERAGE);
 
-  bool        retval = FALSE;  /* Return value for this function */
-  funit_link* funitl;          /* Pointer to found functional unit link */
-  sig_link*   sigl;            /* Pointer to found signal link */
-  int         i;               /* Loop iterator */
-  char        tmp1[20];        /* Temporary string holder */
-  char        tmp2[20];        /* Temporary string holder */
+  bool         retval = FALSE;  /* Return value for this function */
+  funit_link*  funitl;          /* Pointer to found functional unit link */
+  sig_link*    sigl;            /* Pointer to found signal link */
+  unsigned int i;               /* Loop iterator */
+  char         tmp1[20];        /* Temporary string holder */
+  char         tmp2[20];        /* Temporary string holder */
 
   if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
 
@@ -505,6 +491,8 @@ bool memory_get_coverage(
 
   }
 
+  PROFILE_END;
+
   return( retval );
 
 }
@@ -523,22 +511,22 @@ bool memory_get_coverage(
  in the given signal list.
 */
 bool memory_collect(
-  const char* funit_name,
-  int         funit_type,
-  int         cov,
-  sig_link**  head,
-  sig_link**  tail
+            const char* funit_name,  /*!< Name of functional unit to collect memories for */
+            int         funit_type,  /*!< Type of functional unit to collect memories for */
+            int         cov,         /*!< Set to 0 to get uncovered memories or 1 to get covered memories */
+  /*@out@*/ sig_link**  head,        /*!< Pointer to head of signal list containing retrieved signals */
+  /*@out@*/ sig_link**  tail         /*!< Pointer to tail of signal list containing retrieved signals */
 ) { PROFILE(MEMORY_COLLECT);
 
-  bool        retval = FALSE;  /* Return value for this function */
-  funit_link* funitl;          /* Pointer to found functional unit link */
-  sig_link*   sigl;            /* Pointer to current signal link being evaluated */
-  int         ae_total  = 0;   /* Total number of addressable elements */
-  int         wr_hit    = 0;   /* Total number of addressable elements written */
-  int         rd_hit    = 0;   /* Total number of addressable elements read */
-  int         tog_total = 0;   /* Total number of toggle bits */
-  int         hit01     = 0;   /* Number of bits that toggled from 0 to 1 */
-  int         hit10     = 0;   /* Number of bits that toggled from 1 to 0 */
+  bool         retval    = FALSE;  /* Return value for this function */
+  funit_link*  funitl;             /* Pointer to found functional unit link */
+  sig_link*    sigl;               /* Pointer to current signal link being evaluated */
+  unsigned int ae_total  = 0;      /* Total number of addressable elements */
+  unsigned int wr_hit    = 0;      /* Total number of addressable elements written */
+  unsigned int rd_hit    = 0;      /* Total number of addressable elements read */
+  unsigned int tog_total = 0;      /* Total number of toggle bits */
+  unsigned int hit01     = 0;      /* Number of bits that toggled from 0 to 1 */
+  unsigned int hit10     = 0;      /* Number of bits that toggled from 1 to 0 */
 
   if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
 
@@ -569,28 +557,23 @@ bool memory_collect(
 
   }
 
+  PROFILE_END;
 
   return( retval );
 
 }
 
 /*!
- \param ofile   Pointer to file to display coverage results to.
- \param name    Name of instance being reported
- \param hits01  Pointer to number of bits in memory toggled from 0 -> 1.
- \param hits10  Pointer to number of bits in memory toggled from 1 -> 0.
- \param total   Pointer to total number of bits in memories.
-
  \return Returns TRUE if any bits were found to be untoggled; otherwise, returns FALSE.
 
  Calculates and outputs the memory toggle summary coverage results for a given instance.
 */
 static bool memory_display_toggle_instance_summary(
-  FILE*       ofile,
-  const char* name,
-  int         hits01,
-  int         hits10,
-  int         total
+  FILE*       ofile,   /*!< Pointer to file to display coverage results to */
+  const char* name,    /*!< Name of instance being reported */
+  int         hits01,  /*!< Pointer to number of bits in memory toggled from 0 -> 1 */
+  int         hits10,  /*!< Pointer to number of bits in memory toggled from 1 -> 0 */
+  int         total    /*!< Pointer to total number of bits in memories */
 ) { PROFILE(MEMORY_DISPLAY_TOGGLE_INSTANCE_SUMMARY);
 
   float percent01;    /* Percentage of bits toggling from 0 -> 1 */
@@ -605,18 +588,13 @@ static bool memory_display_toggle_instance_summary(
   fprintf( ofile, "  %-43.43s    %5d/%5d/%5d      %3.0f%%         %5d/%5d/%5d      %3.0f%%\n",
            name, hits01, miss01, total, percent01, hits10, miss10, total, percent10 );
 
+  PROFILE_END;
+
   return( (miss01 > 0) || (miss10 > 0) );
 
 }
 
 /*!
- \param ofile        File to output coverage information to.
- \param root         Instance node in the functional unit instance tree being evaluated.
- \param parent_inst  Name of parent instance.
- \param hits01       Pointer to accumulated toggle 0 -> 1 hit count
- \param hits10       Pointer to accumulated toggle 1 -> 0 hit count
- \param total        Pointer to total number of memory bits
-
  \return Returns TRUE if any bits were found to be not toggled; otherwise, returns FALSE.
 
  Displays the memory instance summarization to the specified file.  Recursively
@@ -624,12 +602,12 @@ static bool memory_display_toggle_instance_summary(
  is found at that instance.
 */
 static bool memory_toggle_instance_summary(
-            FILE*       ofile,
-            funit_inst* root,
-            char*       parent_inst,
-  /*@out@*/ int*        hits01,
-  /*@out@*/ int*        hits10,
-  /*@out@*/ int*        total
+            FILE*       ofile,        /*!< File to output coverage information to */
+            funit_inst* root,         /*!< Instance node in the functional unit instance tree being evaluated */
+            char*       parent_inst,  /*!< Name of parent instance */
+  /*@out@*/ int*        hits01,       /*!< Pointer to accumulated toggle 0 -> 1 hit count */
+  /*@out@*/ int*        hits10,       /*!< Pointer to accumulated toggle 1 -> 0 hit count */
+  /*@out@*/ int*        total         /*!< Pointer to total number of memory bits */
 ) { PROFILE(MEMORY_TOGGLE_INSTANCE_SUMMARY);
 
   funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
@@ -676,28 +654,24 @@ static bool memory_toggle_instance_summary(
 
   }
 
+  PROFILE_END;
+
   return( miss_found );
 
 }
 
 /*!
- \param ofile   Pointer to file to output coverage summary information to
- \param name    Name of instance being displayed
- \param wr_hit  Number of addressable elements that were written
- \param rd_hit  Number of addressable elements that were read
- \param total   Number of all addressable elements
-
  \return Returns TRUE if at least one miss was found; otherwise, returns FALSE.
 
  Calculates the miss and hit percentage statistics for the given instance and outputs this information
  to the given output file.
 */
 static bool memory_display_ae_instance_summary(
-  FILE* ofile,
-  char* name,
-  int   wr_hit,
-  int   rd_hit,
-  int   total
+  FILE* ofile,   /*!< Pointer to file to output coverage summary information to */
+  char* name,    /*!< Name of instance being displayed */
+  int   wr_hit,  /*!< Number of addressable elements that were written */
+  int   rd_hit,  /*!< Number of addressable elements that were read */
+  int   total    /*!< Number of all addressable elements */
 ) { PROFILE(MEMORY_DISPLAY_AE_INSTANCE_SUMMARY);
 
   float wr_percent;  /* Percentage of addressable elements written */
@@ -712,18 +686,13 @@ static bool memory_display_ae_instance_summary(
   fprintf( ofile, "  %-43.43s    %5d/%5d/%5d      %3.0f%%         %5d/%5d/%5d      %3.0f%%\n",
            name, wr_hit, wr_miss, total, wr_percent, rd_hit, rd_miss, total, rd_percent );
 
+  PROFILE_END;
+
   return( (wr_miss > 0) || (rd_miss > 0) );
 
 }
 
 /*!
- \param ofile        File to output coverage information to.
- \param root         Instance node in the functional unit instance tree being evaluated.
- \param parent_inst  Name of parent instance.
- \param wr_hits      Pointer to accumulated number of addressable elements written
- \param rd_hits      Pointer to accumulated number of addressable elements read
- \param total        Pointer to the total number of addressable elements
-
  \return Returns TRUE if any bits were found to be not toggled; otherwise, returns FALSE.
 
  Displays the memory instance summarization to the specified file.  Recursively
@@ -731,12 +700,12 @@ static bool memory_display_ae_instance_summary(
  is found at that instance.
 */
 static bool memory_ae_instance_summary(
-            FILE*       ofile,
-            funit_inst* root,
-            char*       parent_inst,
-  /*@out@*/ int*        wr_hits,
-  /*@out@*/ int*        rd_hits,
-  /*@out@*/ int*        total
+            FILE*       ofile,        /*!< File to output coverage information to */
+            funit_inst* root,         /*!< Instance node in the functional unit instance tree being evaluated */
+            char*       parent_inst,  /*!< Name of parent instance */
+  /*@out@*/ int*        wr_hits,      /*!< Pointer to accumulated number of addressable elements written */
+  /*@out@*/ int*        rd_hits,      /*!< Pointer to accumulated number of addressable elements read */
+  /*@out@*/ int*        total         /*!< Pointer to the total number of addressable elements */
 ) { PROFILE(MEMORY_AE_INSTANCE_SUMMARY);
 
   funit_inst* curr;                /* Pointer to current child functional unit instance of this node */
@@ -783,29 +752,24 @@ static bool memory_ae_instance_summary(
 
   }
 
+  PROFILE_END;
+
   return( miss_found );
 
 }
 
 /*!
- \param ofile  Pointer to file to output functional unit summary results
- \param name   Name of functional unit being reported
- \param fname  Filename containing the functional unit being reported
- \param hit01  Number of memory bits that transitioned from a value of 0 to a value of 1 during simulation for this functional unit
- \param hit10  Number of memory bits that transitioned from a value of 1 to a value of 0 during simulation for this functional unit
- \param total  Number of total memory bits in the given functional unit
-
  \return Returns TRUE if at least one bit was found to not have transitioned during simulation.
 
  Calculates and outputs the toggle coverage for all memories in the given functional unit.
 */
 static bool memory_display_toggle_funit_summary(
-  FILE*       ofile,
-  const char* name,
-  const char* fname,
-  int         hit01,
-  int         hit10,
-  int         total
+  FILE*       ofile,  /*!< Pointer to file to output functional unit summary results */
+  const char* name,   /*!< Name of functional unit being reported */
+  const char* fname,  /*!< Filename containing the functional unit being reported */
+  int         hit01,  /*!< Number of memory bits that transitioned from a value of 0 to a value of 1 during simulation for this functional unit */
+  int         hit10,  /*!< Number of memory bits that transitioned from a value of 1 to a value of 0 during simulation for this functional unit */
+  int         total   /*!< Number of total memory bits in the given functional unit */
 ) { PROFILE(MEMORY_DISPLAY_TOGGLE_FUNIT_SUMMARY);
 
   float percent01;  /* Percentage of bits that toggled from 0 to 1 */
@@ -819,28 +783,24 @@ static bool memory_display_toggle_funit_summary(
   fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5d/%5d      %3.0f%%         %5d/%5d/%5d      %3.0f%%\n",
            name, fname, hit01, miss01, total, percent01, hit10, miss10, total, percent10 );
 
+  PROFILE_END;
+
   return( (miss01 > 0) || (miss10 > 0) );
 
 }
 
 /*!
- \param ofile   Pointer to file to display coverage results to.
- \param head    Pointer to head of functional unit list to parse.
- \param hits01  Pointer to number of bits in memory toggled from 0 -> 1.
- \param hits10  Pointer to number of bits in memory toggled from 1 -> 0.
- \param total   Pointer to total number of bits in memories.
-
  \return Returns TRUE if any bits were found to be untoggled; otherwise, returns FALSE.
 
  Iterates through the functional unit list displaying the memory toggle coverage summary for
  each functional unit.
 */
 static bool memory_toggle_funit_summary(
-            FILE*       ofile,
-            funit_link* head,
-  /*@out@*/ int*        hits01,
-  /*@out@*/ int*        hits10,
-  /*@out@*/ int*        total
+            FILE*       ofile,   /*!< Pointer to file to display coverage results to */
+            funit_link* head,    /*!< Pointer to head of functional unit list to parse */
+  /*@out@*/ int*        hits01,  /*!< Pointer to number of bits in memory toggled from 0 -> 1 */
+  /*@out@*/ int*        hits10,  /*!< Pointer to number of bits in memory toggled from 1 -> 0 */
+  /*@out@*/ int*        total    /*!< Pointer to total number of bits in memories */
 ) { PROFILE(MEMORY_TOGGLE_FUNIT_SUMMARY);
 
   bool  miss_found = FALSE;  /* Set to TRUE if missing toggles were found */
@@ -871,30 +831,25 @@ static bool memory_toggle_funit_summary(
 
   }
 
+  PROFILE_END;
+
   return( miss_found );
 
 }
 
 /*!
- \param ofile    Pointer to output file that will be written
- \param name     Name of functional unit being reported
- \param fname    Filename containing the given functional unit being reported
- \param wr_hits  Number of addressable memory elements that were written in this functional unit during simulation
- \param rd_hits  Number of addressable memory elements that were read in this functional unit during simulation
- \param total    Number of addressable memory elements in the given functional unit
-
  \return Returns TRUE if at least one addressable memory element was not written or read during simulation; otherwise,
          returns FALSE.
 
  Calculates and outputs the summary addressable memory element coverage information for a given functional unit.
 */
 static bool memory_display_ae_funit_summary(
-  FILE*       ofile,
-  const char* name,
-  const char* fname,
-  int         wr_hits,
-  int         rd_hits,
-  int         total
+  FILE*       ofile,    /*!< Pointer to output file that will be written */
+  const char* name,     /*!< Name of functional unit being reported */
+  const char* fname,    /*!< Filename containing the given functional unit being reported */
+  int         wr_hits,  /*!< Number of addressable memory elements that were written in this functional unit during simulation */
+  int         rd_hits,  /*!< Number of addressable memory elements that were read in this functional unit during simulation */
+  int         total     /*!< Number of addressable memory elements in the given functional unit */
 ) { PROFILE(MEMORY_DISPLAY_AE_FUNIT_SUMMARY);
 
   float wr_percent;  /* Percentage of addressable elements that were written */
@@ -908,28 +863,24 @@ static bool memory_display_ae_funit_summary(
   fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5d/%5d      %3.0f%%         %5d/%5d/%5d      %3.0f%%\n",
            name, fname, wr_hits, wr_miss, total, wr_percent, rd_hits, rd_miss, total, rd_percent );
 
+  PROFILE_END;
+
   return( (wr_miss > 0) || (rd_miss > 0) );
 
 }
 
 /*!
- \param ofile    Pointer to file to display coverage results to.
- \param head     Pointer to head of functional unit list to parse.
- \param wr_hits  Pointer to number of bits in memory toggled from 0 -> 1.
- \param rd_hits  Pointer to number of bits in memory toggled from 1 -> 0.
- \param total    Pointer to total number of bits in memories.
-
  \return Returns TRUE if any bits were found to be untoggled; otherwise, returns FALSE.
 
  Iterates through the functional unit list displaying the memory toggle coverage summary for
  each functional unit.
 */
 static bool memory_ae_funit_summary(
-            FILE*       ofile,
-            funit_link* head,
-  /*@out@*/ int*        wr_hits,
-  /*@out@*/ int*        rd_hits,
-  /*@out@*/ int*        total
+            FILE*       ofile,    /*!< Pointer to file to display coverage results to */
+            funit_link* head,     /*!< Pointer to head of functional unit list to parse */
+  /*@out@*/ int*        wr_hits,  /*!< Pointer to number of bits in memory toggled from 0 -> 1 */
+  /*@out@*/ int*        rd_hits,  /*!< Pointer to number of bits in memory toggled from 1 -> 0 */
+  /*@out@*/ int*        total     /*!< Pointer to total number of bits in memories */
 ) { PROFILE(MEMORY_AE_FUNIT_SUMMARY);
 
   bool  miss_found = FALSE;  /* Set to TRUE if missing toggles were found */
@@ -960,6 +911,8 @@ static bool memory_ae_funit_summary(
 
   }
 
+  PROFILE_END;
+
   return( miss_found );
 
 }
@@ -968,20 +921,20 @@ static bool memory_ae_funit_summary(
  Outputs the contents of the given memory in verbose output format.
 */
 static void memory_display_memory(
-  FILE*    ofile,       /*!< Pointer to output file */
-  vsignal* sig,         /*!< Pointer to the current memory element to output */
-  int      offset,      /*!< Bit offset of signal vector value to start interrogating */
-  char*    prefix,      /*!< String containing memory prefix to output (initially this will be just the signal name) */
-  int      dim,         /*!< Current dimension index (initially this will be 0) */
-  int parent_dim_width  /*!< Bit width of parent dimension (initially this will be the width of the signal) */
+  FILE*        ofile,            /*!< Pointer to output file */
+  vsignal*     sig,              /*!< Pointer to the current memory element to output */
+  int          offset,           /*!< Bit offset of signal vector value to start interrogating */
+  char*        prefix,           /*!< String containing memory prefix to output (initially this will be just the signal name) */
+  unsigned int dim,              /*!< Current dimension index (initially this will be 0) */
+  unsigned int parent_dim_width  /*!< Bit width of parent dimension (initially this will be the width of the signal) */
 ) { PROFILE(MEMORY_DISPLAY_MEMORY);
 
-  char name[4096];  /* Contains signal name */
-  int  msb;         /* MSB of current dimension */
-  int  lsb;         /* LSB of current dimension */
-  int  be;          /* Big endianness of current dimension */
-  int  i;           /* Loop iterator */
-  int  dim_width;   /* Bit width of current dimension */
+  char         name[4096];  /* Contains signal name */
+  int          msb;         /* MSB of current dimension */
+  int          lsb;         /* LSB of current dimension */
+  int          be;          /* Big endianness of current dimension */
+  int          i;           /* Loop iterator */
+  unsigned int dim_width;   /* Bit width of current dimension */
 
   assert( sig != NULL );
   assert( prefix != NULL );
@@ -1004,11 +957,11 @@ static void memory_display_memory(
   /* Only output memory contents if we have reached the lowest dimension */
   if( (dim + 1) == sig->udim_num ) {
 
-    vector* vec = vector_create( dim_width, VTYPE_MEM, VDATA_UL, TRUE );
-    int     tog01;
-    int     tog10;
-    int     wr;
-    int     rd;
+    vector*      vec = vector_create( dim_width, VTYPE_MEM, VDATA_UL, TRUE );
+    unsigned int tog01;
+    unsigned int tog10;
+    unsigned int wr;
+    unsigned int rd;
 
     /* Iterate through each addressable element in the current dimension */
     for( i=0; i<((msb - lsb) + 1); i++ ) {
@@ -1027,15 +980,15 @@ static void memory_display_memory(
       /* Get write/read information */
       wr = 0;
       rd = 0;
-      vector_mem_rw_count( vec, 0, (vec->width - 1), &wr, &rd );
+      vector_mem_rw_count( vec, 0, (int)(vec->width - 1), &wr, &rd );
 
       /* Output the addressable memory element if it is found to be lacking in coverage */
       if( (tog01 < dim_width) || (tog10 < dim_width) || (wr == 0) || (rd == 0) ) {
 
-        int j;
-
+        unsigned int j;
         unsigned int rv = snprintf( name, 4096, "%s[%d]", prefix, i );
         assert( rv < 4096 );
+
         fprintf( ofile, "        %s  Written: %d  0->1: ", name, ((wr == 0) ? 0 : 1) );
         vector_display_toggle01_ulong( vec->value.ul, vec->width, ofile );
         fprintf( ofile, "\n" );
@@ -1073,22 +1026,24 @@ static void memory_display_memory(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param ofile  Pointer to file to output results to.
- \param sigl   Pointer to signal list head.
-
  Displays the memories that did not achieve 100% toggle coverage and/or 100%
  write/read coverage to standard output from the specified signal list.
 */
-static void memory_display_verbose( FILE* ofile, sig_link* sigl ) { PROFILE(MEMORY_DISPLAY_VERBOSE);
+static void memory_display_verbose(
+  FILE*     ofile,  /*!< Pointer to file to output results to */
+  sig_link* sigl    /*!< Pointer to signal list head */
+) { PROFILE(MEMORY_DISPLAY_VERBOSE);
 
-  sig_link* curr_sig;   /* Pointer to current signal link being evaluated */
-  int       hit01;      /* Number of bits that toggled from 0 to 1 */
-  int       hit10;      /* Number of bits that toggled from 1 to 0 */
-  char*     pname;      /* Printable version of signal name */
-  int       i;          /* Loop iterator */
+  sig_link*    curr_sig;  /* Pointer to current signal link being evaluated */
+  unsigned int hit01;     /* Number of bits that toggled from 0 to 1 */
+  unsigned int hit10;     /* Number of bits that toggled from 1 to 0 */
+  char*        pname;     /* Printable version of signal name */
+  unsigned int i;         /* Loop iterator */
 
   if( report_covered ) {
     fprintf( ofile, "    Memories getting 100%% coverage\n\n" );
@@ -1140,19 +1095,21 @@ static void memory_display_verbose( FILE* ofile, sig_link* sigl ) { PROFILE(MEMO
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param ofile        Pointer to file to display coverage results to.
- \param root         Pointer to root of instance functional unit tree to parse.
- \param parent_inst  Name of parent instance.
-
  Displays the verbose memory coverage results to the specified output stream on
  an instance basis.  The verbose memory coverage includes the signal names,
  the bits that did not receive 100% toggle and addressable elements that did not
  receive 100% write/read coverage during simulation.
 */
-static void memory_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) { PROFILE(MEMORY_INSTANCE_VERBOSE);
+static void memory_instance_verbose(
+  FILE*       ofile,       /*!< Pointer to file to display coverage results to */
+  funit_inst* root,        /*!< Pointer to root of instance functional unit tree to parse */
+  char*       parent_inst  /*!< Name of parent instance */
+) { PROFILE(MEMORY_INSTANCE_VERBOSE);
 
   funit_inst* curr_inst;      /* Pointer to current instance being evaluated */
   char        tmpname[4096];  /* Temporary name holder of instance */
@@ -1207,19 +1164,21 @@ static void memory_instance_verbose( FILE* ofile, funit_inst* root, char* parent
     curr_inst = curr_inst->next;
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param ofile  Pointer to file to display coverage results to.
- \param head   Pointer to head of functional unit list to parse.
-
  Displays the verbose memory coverage results to the specified output stream on
  a functional unit basis (combining functional units that are instantiated multiple times).
  The verbose memory coverage includes the signal names, the bits that
  did not receive 100% toggle, and the addressable elements that did not receive 100%
  write/read coverage during simulation.
 */
-static void memory_funit_verbose( FILE* ofile, funit_link* head ) { PROFILE(MEMORY_FUNIT_VERBOSE);
+static void memory_funit_verbose(
+  FILE*       ofile,  /*!< Pointer to file to display coverage results to */
+  funit_link* head    /*!< Pointer to head of functional unit list to parse */
+) { PROFILE(MEMORY_FUNIT_VERBOSE);
 
   while( head != NULL ) {
 
@@ -1251,13 +1210,17 @@ static void memory_funit_verbose( FILE* ofile, funit_link* head ) { PROFILE(MEMO
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param ofile    Pointer to output file to write
- \param verbose  Specifies if verbose coverage information should be output
+ Outputs the memory portion of the report to the given output stream.
 */
-void memory_report( FILE* ofile, bool verbose ) { PROFILE(MEMORY_REPORT);
+void memory_report(
+  FILE* ofile,   /*!< Pointer to output file to write */
+  bool  verbose  /*!< Specifies if verbose coverage information should be output */
+) { PROFILE(MEMORY_REPORT);
 
   bool       missed_found  = FALSE;  /* If set to TRUE, indicates that untoggled bits were found */
   char       tmp[4096];              /* Temporary string value */
@@ -1344,11 +1307,17 @@ void memory_report( FILE* ofile, bool verbose ) { PROFILE(MEMORY_REPORT);
 
   fprintf( ofile, "\n\n" );
 
+  PROFILE_END;
+
 }
 
 
 /*
  $Log$
+ Revision 1.31  2008/06/23 16:12:12  phase1geo
+ Moving memory allocation in instance verbose output so that its test mode output
+ does not interfere with other output.  Adding missing err8.err file from regressions.
+
  Revision 1.30  2008/06/19 16:14:55  phase1geo
  leaned up all warnings in source code from -Wall.  This also seems to have cleared
  up a few runtime issues.  Full regression passes.

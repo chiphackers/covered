@@ -183,8 +183,8 @@ int arc_find_from_state(
   const vector*    st      /*!< State to search for */
 ) { PROFILE(ARC_FIND_FROM_STATE);
 
-  int index = -1;  /* Return value for this function */
-  int i     = 0;  /* Loop iterator */
+  int          index = -1;  /* Return value for this function */
+  unsigned int i     = 0;   /* Loop iterator */
 
   assert( table != NULL );
 
@@ -192,6 +192,8 @@ int arc_find_from_state(
   if( i < table->num_fr_states ) {
     index = i;
   }
+
+  PROFILE_END;
 
   return( index );
 
@@ -209,8 +211,8 @@ int arc_find_to_state(
   const vector*    st      /*!< State to search for */
 ) { PROFILE(ARC_FIND_TO_STATE);
 
-  int index = -1;  /* Return value for this function */
-  int i     = 0;  /* Loop iterator */
+  int          index = -1;  /* Return value for this function */
+  unsigned int i     = 0;   /* Loop iterator */
 
   assert( table != NULL );
 
@@ -218,6 +220,8 @@ int arc_find_to_state(
   if( i < table->num_to_states ) {
     index = i;
   }
+
+  PROFILE_END;
 
   return( index );
 
@@ -230,12 +234,12 @@ int arc_find_to_state(
 */
 int arc_find_arc(
   const fsm_table* table,     /*!< Pointer to FSM table to search in */
-  int              fr_index,  /*!< Index of from state to find */
-  int              to_index   /*!< Index of to state to find */
+  unsigned int     fr_index,  /*!< Index of from state to find */
+  unsigned int     to_index   /*!< Index of to state to find */
 ) { PROFILE(ARC_FIND_ARC);
 
-  int index = -1;
-  int i     = 0;
+  int          index = -1;
+  unsigned int i     = 0;
 
   while( (i < table->num_arcs) && (index == -1) ) {
     if( (table->arcs[i]->from == fr_index) && (table->arcs[i]->to == to_index) ) {
@@ -243,6 +247,8 @@ int arc_find_arc(
     }
     i++;
   }
+
+  PROFILE_END;
 
   return( index );
 
@@ -269,6 +275,8 @@ fsm_table* arc_create() { PROFILE(ARC_CREATE);
   table->num_to_states = 0;
   table->arcs          = NULL;
   table->num_arcs      = 0;
+
+  PROFILE_END;
 
   return( table );
 
@@ -345,6 +353,8 @@ void arc_add(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -383,6 +393,8 @@ static int arc_state_hits(
   /* Deallocate state_hits */
   free_safe( state_hits, (sizeof( int ) * table->num_fr_states) );
 
+  PROFILE_END;
+
   return( hit );
 
 }
@@ -398,14 +410,16 @@ static int arc_transition_hits(
   const fsm_table* table  /*!< Pointer to state transition arc array */
 ) { PROFILE(ARC_TRANSITION_HITS);
 
-  int hit = 0;  /* Number of arcs hit */
-  int i;        /* Loop iterator */
+  int          hit = 0;  /* Number of arcs hit */
+  unsigned int i;        /* Loop iterator */
 
   assert( table != NULL );
 
   for( i=0; i<table->num_arcs; i++ ) {
     hit += table->arcs[i]->suppl.part.hit | table->arcs[i]->suppl.part.excluded;
   }
+
+  PROFILE_END;
 
   return( hit );
 
@@ -440,6 +454,8 @@ void arc_get_stats(
     *arc_total   += table->num_arcs;
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -456,7 +472,9 @@ void arc_db_write(
 
   assert( table != NULL );
 
-  fprintf( file, " %hhx %d %d ", table->suppl.all, table->num_fr_states, table->num_to_states );
+  /*@-formatcode@*/
+  fprintf( file, " %hhx %u %u ", table->suppl.all, table->num_fr_states, table->num_to_states );
+  /*@=formatcode@*/
 
   /* Output state information */
   for( i=0; i<table->num_fr_states; i++ ) {
@@ -469,10 +487,14 @@ void arc_db_write(
   }
 
   /* Output arc information */
-  fprintf( file, " %d", table->num_arcs );
+  fprintf( file, " %u", table->num_arcs );
   for( i=0; i<table->num_arcs; i++ ) {
-    fprintf( file, "  %d %d %hhx", table->arcs[i]->from, table->arcs[i]->to, table->arcs[i]->suppl.all );
+    /*@-formatcode@*/
+    fprintf( file, "  %u %u %hhx", table->arcs[i]->from, table->arcs[i]->to, table->arcs[i]->suppl.all );
+    /*@=formatcode@*/
   }
+
+  PROFILE_END;
 
 }
 
@@ -493,14 +515,16 @@ void arc_db_read(
 
   Try {
 
-    int num_fr_states;
-    int num_to_states;
-    int chars_read;
+    unsigned int num_fr_states;
+    unsigned int num_to_states;
+    int          chars_read;
 
-    if( sscanf( *line, "%hhx %d %d%n", &((*table)->suppl.all), &num_fr_states, &num_to_states, &chars_read ) == 3 ) {
+    /*@-formatcode@*/
+    if( sscanf( *line, "%hhx %u %u%n", &((*table)->suppl.all), &num_fr_states, &num_to_states, &chars_read ) == 3 ) {
+    /*@=formatcode@*/
 
       unsigned int i;
-      int          num_arcs;
+      unsigned int num_arcs;
 
       *line += chars_read;
 
@@ -528,7 +552,7 @@ void arc_db_read(
         vector_db_read( &((*table)->to_states[i]), line );
       }
 
-      if( sscanf( *line, "%d%n", &num_arcs, &chars_read ) == 1 ) {
+      if( sscanf( *line, "%u%n", &num_arcs, &chars_read ) == 1 ) {
 
         *line += chars_read;
 
@@ -544,9 +568,10 @@ void arc_db_read(
           /* Allocate fsm_table_arc */
           (*table)->arcs[i] = (fsm_table_arc*)malloc_safe( sizeof( fsm_table_arc ) );
 
-          if( sscanf( *line, "%d %d %hhx%n", &((*table)->arcs[i]->from), &((*table)->arcs[i]->to), &((*table)->arcs[i]->suppl.all), &chars_read ) != 3 ) {
+          /*@-formatcode@*/
+          if( sscanf( *line, "%u %u %hhx%n", &((*table)->arcs[i]->from), &((*table)->arcs[i]->to), &((*table)->arcs[i]->suppl.all), &chars_read ) != 3 ) {
+          /*@=formatcode@*/
             print_output( "Unable to parse FSM table information from database.  Unable to read.", FATAL, __FILE__, __LINE__ );
-            // printf( "arc Throw A\n" ); - HIT
             Throw 0;
           } else {
             *line += chars_read;
@@ -556,20 +581,17 @@ void arc_db_read(
 
       } else {
         print_output( "Unable to parse FSM table information from database.  Unable to read.", FATAL, __FILE__, __LINE__ );
-        // printf( "arc Throw B\n" ); - HIT
         Throw 0;
       }
 
     } else {
       print_output( "Unable to parse FSM table information from database.  Unable to read.", FATAL, __FILE__, __LINE__ );
-      // printf( "arc Throw C\n" ); - HIT
       Throw 0;
     }
 
   } Catch_anonymous {
     arc_dealloc( *table );
     *table = NULL;
-    // printf( "arc Throw D\n" ); - HIT
     Throw 0;
   }
 
@@ -578,24 +600,19 @@ void arc_db_read(
 }
 
 /*!
- \param base  Pointer to arc table to merge data into.
- \param line  Pointer to read in line from CDD file to merge.
- \param same  Specifies if arc table to merge needs to be exactly the same as the existing arc table.
-
  \throws anonymous Throw arc_db_read
 
  Merges the specified FSM arc information from the current line into the base FSM arc information.
 */
 void arc_db_merge(
-  fsm_table* base,
-  char**     line,
-  bool       same
+  fsm_table* base,  /*!< Pointer to arc table to merge data into */
+  char**     line   /*!< Pointer to read in line from CDD file to merge */
 ) { PROFILE(ARC_DB_MERGE);
 
   /*@-mustfreeonly -mustfreefresh@*/
 
-  fsm_table* table;  /* Currently read FSM table */
-  int        i;      /* Loop iterator */
+  fsm_table*   table;  /* Currently read FSM table */
+  unsigned int i;      /* Loop iterator */
 
   /* Read in the table */
   arc_db_read( &table, line );
@@ -623,7 +640,7 @@ void arc_merge(
   const fsm_table*  other
 ) { PROFILE(ARC_MERGE);
 
-  int i;  /* Loop iterator */
+  unsigned int i;  /* Loop iterator */
 
   /* Merge state transitions */
   for( i=0; i<other->num_arcs; i++ ) {
@@ -641,15 +658,15 @@ void arc_merge(
 */
 void arc_get_states(
   /*@out@*/ char***          fr_states,      /*!< Pointer to string array containing stringified state information */
-  /*@out@*/ int*             fr_state_size,  /*!< Pointer to number of elements stored in states array */
+  /*@out@*/ unsigned int*    fr_state_size,  /*!< Pointer to number of elements stored in states array */
   /*@out@*/ char***          to_states,      /*!< Pointer to string array containing stringified state information */
-  /*@out@*/ int*             to_state_size,  /*!< Pointer to number of elements stored in states array */
+  /*@out@*/ unsigned int*    to_state_size,  /*!< Pointer to number of elements stored in states array */
             const fsm_table* table,          /*!< Pointer to FSM table */
             bool             hit,            /*!< Specifies if hit or missed transitions should be gathered */
             bool             any             /*!< Specifies if we should gather any transition or only the type specified by hit */
 ) { PROFILE(ARC_GET_STATES);
 
-  int  i, j;  /* Loop iterator */
+  unsigned int i, j;  /* Loop iterator */
 
   /*@-nullstate@*/
 
@@ -694,6 +711,8 @@ void arc_get_states(
     }
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -711,7 +730,7 @@ void arc_get_transitions(
             bool             any           /*!< Specifies if all arc transitions or just the ones that meet the hit criteria should be gathered */
 ) { PROFILE(ARC_GET_TRANSITIONS);
 
-  int i;  /* Loop iterator */
+  unsigned int i;  /* Loop iterator */
 
   assert( table != NULL );
 
@@ -738,6 +757,8 @@ void arc_get_transitions(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -748,11 +769,13 @@ bool arc_are_any_excluded(
   const fsm_table* table  /*!< Pointer to state transition arc array */
 ) { PROFILE(ARC_ARE_ANY_EXCLUDED);
 
-  int i = 0;  /* Loop iterator */
+  unsigned int i = 0;  /* Loop iterator */
 
   assert( table != NULL );
 
   while( (i < table->num_arcs) && (table->arcs[i]->suppl.part.excluded == 0) ) i++;
+
+  PROFILE_END;
 
   return( i < table->num_arcs );
 
@@ -793,10 +816,16 @@ void arc_dealloc(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*
  $Log$
+ Revision 1.63  2008/06/19 16:14:53  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
  Revision 1.62  2008/05/30 23:00:47  phase1geo
  Fixing Doxygen comments to eliminate Doxygen warning messages.
 

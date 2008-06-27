@@ -42,9 +42,6 @@ extern char user_msg[USER_MSG_LENGTH];
 
 
 /*!
- \param arg         Pointer to argument to parse.
- \param funit_name  Name of functional unit that this expression belongs to.
-
  \return Returns pointer to expression tree containing parsed state variable expression.
 
  \throws anonymous fsm_var_bind_add fsm_var_bind_add fsm_var_bind_add fsm_var_bind_add fsm_var_bind_add Throw Throw expression_create expression_create
@@ -55,8 +52,8 @@ extern char user_msg[USER_MSG_LENGTH];
  expression.
 */
 static expression* fsm_arg_parse_state(
-  char** arg,
-  char*  funit_name
+  char** arg,        /*!< Pointer to argument to parse */
+  char*  funit_name  /*!< Name of functional unit that this expression belongs to */
 ) { PROFILE(FSM_ARG_PARSE_STATE);
 
   bool        error = FALSE;  /* Specifies if a parsing error has been found */
@@ -238,20 +235,20 @@ static expression* fsm_arg_parse_state(
     expl = NULL;
   }
 
+  PROFILE_END;
+
   return( expl );
 
 }
 
 /*!
- \param arg  Command-line argument following -F specifier.
-
  \throws anonymous Throw
 
  Parses specified argument string for FSM information.  If the FSM information
  is considered legal, returns TRUE; otherwise, returns FALSE.
 */
 void fsm_arg_parse(
-  const char* arg
+  const char* arg  /*!< Command-line argument following -F specifier */
 ) { PROFILE(FSM_ARG_PARSE);
 
   char*       tmp = strdup_safe( arg );  /* Temporary copy of given argument */
@@ -317,12 +314,11 @@ void fsm_arg_parse(
   /* Deallocate temporary memory */
   free_safe( tmp, (strlen( arg ) + 1) );
 
+  PROFILE_END;
+
 }
 
 /*!
- \param str    Pointer to string containing parameter or constant value.
- \param funit  Pointer to functional unit containing this FSM.
-
  \return Returns a pointer to the expression created from the found value; otherwise,
          returns a value of NULL to indicate the this parser was unable to parse the
          specified transition value.
@@ -336,13 +332,13 @@ void fsm_arg_parse(
  parsed correctly, a value of NULL is returned to the calling function.
 */
 static expression* fsm_arg_parse_value(
-  char**           str,
-  const func_unit* funit
+  char**           str,   /*!< Pointer to string containing parameter or constant value */
+  const func_unit* funit  /*!< Pointer to functional unit containing this FSM */
 ) { PROFILE(FSM_ARG_PARSE_VALUE);
 
   expression* expr = NULL;   /* Pointer to expression containing state value */
   expression* left;          /* Left child expression */
-  expression* right;         /* Right child expression */
+  expression* right = NULL;  /* Right child expression */
   vector*     vec;           /* Pointer to newly allocated vector value */
   int         base;          /* Base of parsed string value */
   char        str_val[256];  /* String version of value parsed */
@@ -521,15 +517,13 @@ static expression* fsm_arg_parse_value(
 
   }
 
+  PROFILE_END;
+
   return( expr );
 
 }
 
 /*!
- \param expr   Pointer to expression containing string value in vector value array.
- \param table  Pointer to FSM table to add the transition arcs to.
- \param funit  Pointer to the functional unit that contains the specified FSM.
-
  \throws anonymous Throw
 
  \par
@@ -544,9 +538,9 @@ static expression* fsm_arg_parse_value(
  FSM arc transition table when the fsm_create_tables() function is called.
 */
 static void fsm_arg_parse_trans(
-  expression*      expr,
-  fsm*             table,
-  const func_unit* funit
+  expression*      expr,   /*!< Pointer to expression containing string value in vector value array */
+  fsm*             table,  /*!< Pointer to FSM table to add the transition arcs to */
+  const func_unit* funit   /*!< Pointer to the functional unit that contains the specified FSM */
 ) { PROFILE(FSM_ARG_PARSE_TRANS);
 
   expression* from_state;  /* Pointer to from_state value of transition */
@@ -606,22 +600,20 @@ static void fsm_arg_parse_trans(
   /* Deallocate string */
   free_safe( tmp, (strlen( tmp ) + 1) );
 
+  PROFILE_END;
+
 }
 
 /*!
- \param ap       Pointer to attribute parameter list.
- \param funit    Pointer to functional unit containing this attribute.
- \param exclude  If TRUE, sets the exclude bits in the FSM.
-
  \throws anonymous Throw Throw Throw Throw Throw Throw Throw Throw fsm_arg_parse_trans
 
  Parses the specified attribute parameter for validity and updates FSM structure
  accordingly.
 */
 void fsm_arg_parse_attr(
-  attr_param*      ap,
-  const func_unit* funit,
-  bool             exclude
+  attr_param*      ap,      /*!< Pointer to attribute parameter list */
+  const func_unit* funit,   /*!< Pointer to functional unit containing this attribute */
+  bool             exclude  /*!< If TRUE, sets the exclude bits in the FSM */
 ) { PROFILE(FSM_ARG_PARSE_ATTR);
 
   attr_param* curr;               /* Pointer to current attribute parameter in list */
@@ -760,11 +752,17 @@ void fsm_arg_parse_attr(
     
   }
 
+  PROFILE_END;
+
 }
 
 
 /*
  $Log$
+ Revision 1.52  2008/05/30 05:38:30  phase1geo
+ Updating development tree with development branch.  Also attempting to fix
+ bug 1965927.
+
  Revision 1.51.2.3  2008/05/28 05:57:10  phase1geo
  Updating code to use unsigned long instead of uint32.  Checkpointing.
 

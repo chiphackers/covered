@@ -92,7 +92,7 @@ bool file_exists( const char* file );
 bool util_readline(
             FILE*  file,
   /*@out@*/ char** line,
-  /*@out@*/ int*   line_size
+  /*@out@*/ unsigned int*   line_size
 );
 
 /*! \brief Searches the specified string for environment variables and substitutes their value if found */
@@ -172,6 +172,10 @@ void set_timestep( sim_time* st, char* value );
 
 /*
  $Log$
+ Revision 1.41  2008/04/08 23:58:17  phase1geo
+ Fixing test mode code so that it works properly in regression and stand-alone
+ runs.
+
  Revision 1.40  2008/03/17 22:02:32  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function

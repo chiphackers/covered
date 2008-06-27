@@ -39,26 +39,39 @@ void ovl_add_assertions_to_no_score_list( bool rm_tasks );
 /*! \brief Gathers the OVL assertion coverage summary statistics for the given functional unit. */
 void ovl_get_funit_stats(
             const func_unit* funit,
-  /*@out@*/ int*             total,
-  /*@out@*/ int*             hit );
+  /*@out@*/ unsigned int*    total,
+  /*@out@*/ unsigned int*    hit );
 
 /*! \brief Displays the verbose hit/miss information to the given output file for the given functional unit. */
-void ovl_display_verbose( FILE* ofile, const func_unit* funit );
+void ovl_display_verbose(
+  FILE*            ofile,
+  const func_unit* funit
+);
 
 /*! \brief Finds the instance names of all uncovered and covered assertions in the specified functional unit. */
 void ovl_collect(
-             func_unit* funit,
-  /*@null@*/ char***    uncov_inst_names,
-             int**      excludes,
-             int*       uncov_inst_size,
-             char***    cov_inst_names,
-             int*       cov_inst_size );
+                 func_unit*    funit,
+  /*@null out@*/ char***       uncov_inst_names,
+  /*@out@*/      int**         excludes,
+  /*@out@*/      unsigned int* uncov_inst_size,
+  /*@out@*/      char***       cov_inst_names,
+  /*@out@*/      unsigned int* cov_inst_size
+);
 
 /*! \brief Gets missed coverage points for the given assertion */
-void ovl_get_coverage( const func_unit* funit, const char* inst_name, char** assert_mod, str_link** cp_head, str_link** cp_tail );
+void ovl_get_coverage(
+            const func_unit* funit,
+            const char*      inst_name,
+  /*@out@*/ char**           assert_mod,
+  /*@out@*/ str_link**       cp_head,
+  /*@out@*/ str_link**       cp_tail
+);
 
 /*
  $Log$
+ Revision 1.14  2008/01/16 05:01:23  phase1geo
+ Switched totals over from float types to int types for splint purposes.
+
  Revision 1.13  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

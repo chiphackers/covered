@@ -753,19 +753,19 @@ gitem_link* gitem_link_find( gen_item* gi, gitem_link* head ) { PROFILE(GITEM_LI
 #endif /* VPI_ONLY */
 
 /*!
- \param scope  Hierarchical scope to search for.
- \param head   Pointer to head of inst_link list to search.
-
  \return Returns the pointer to the found funit_inst or NULL if the search was unsuccessful.
 
  Iteratively searches the inst_link list specified by the head inst_link element.  If
  a matching instance is found, the pointer to this element is returned.  If the specified
  generate item could not be matched, the value of NULL is returned.
 */
-funit_inst* inst_link_find_by_scope( char* scope, inst_link* head ) { PROFILE(INST_LINK_FIND_BY_SCOPE);
+funit_inst* inst_link_find_by_scope(
+  char*      scope,  /*!< Hierarchical scope to search for */
+  inst_link* head    /*!< Pointer to head of inst_link list to search */
+) { PROFILE(INST_LINK_FIND_BY_SCOPE);
 
-  inst_link*  curr;  /* Pointer to current inst_link */
-  funit_inst* inst;  /* Pointer to found instance */
+  inst_link*  curr;         /* Pointer to current inst_link */
+  funit_inst* inst = NULL;  /* Pointer to found instance */
 
   curr = head;
   while( (curr != NULL) && ((inst = instance_find_scope( curr->inst, scope, TRUE )) == NULL) ) {
@@ -779,10 +779,6 @@ funit_inst* inst_link_find_by_scope( char* scope, inst_link* head ) { PROFILE(IN
 }
 
 /*!
- \param funit   Functional unit to search for.
- \param head    Pointer to head of inst_link list to search.
- \param ignore  Pointer to integer specifying the number of instances to ignore that match the given functional unit
-
  \return Returns the pointer to the found funit_inst or NULL if the search was unsuccessful.
 
  Iteratively searches the inst_link list specified by the head inst_link element.  If
@@ -790,13 +786,13 @@ funit_inst* inst_link_find_by_scope( char* scope, inst_link* head ) { PROFILE(IN
  generate item could not be matched, the value of NULL is returned.
 */
 funit_inst* inst_link_find_by_funit(
-  const func_unit* funit,
-  inst_link*       head,
-  int*             ignore
+  const func_unit* funit,  /*!< Functional unit to search for */
+  inst_link*       head,   /*!< Pointer to head of inst_link list to search */
+  int*             ignore  /*!< Pointer to integer specifying the number of instances to ignore that match the given functional unit */
 ) { PROFILE(INST_LINK_FIND_BY_FUNIT);
 
-  inst_link*  curr;  /* Pointer to current inst_link */
-  funit_inst* inst;  /* Pointer to found instance */
+  inst_link*  curr;         /* Pointer to current inst_link */
+  funit_inst* inst = NULL;  /* Pointer to found instance */
 
   curr = head;
   while( (curr != NULL) && ((inst = instance_find_by_funit( curr->inst, funit, ignore )) == NULL) ) {
@@ -812,14 +808,14 @@ funit_inst* inst_link_find_by_funit(
 /**************************************************************************************/
 
 /*!
- \param str   Pointer to string to find and remove.
- \param head  Pointer to head of string list.
- \param tail  Pointer to tail of string list.
-
  Searches specified list for string that matches the specified string.  If
  a match is found, remove it from the list and deallocate the link memory.
 */
-void str_link_remove( char* str, str_link** head, str_link** tail ) { PROFILE(STR_LINK_REMOVE);
+void str_link_remove(
+            char*      str,   /*!< Pointer to string to find and remove */
+  /*@out@*/ str_link** head,  /*!< Pointer to head of string list */
+  /*@out@*/ str_link** tail   /*!< Pointer to tail of string list */
+) { PROFILE(STR_LINK_REMOVE);
 
   str_link* curr;  /* Pointer to current string link */
   str_link* last;  /* Pointer to last string link */
@@ -1331,6 +1327,11 @@ void inst_link_delete_list( inst_link* head ) { PROFILE(INST_LINK_DELETE_LIST);
 
 /*
  $Log$
+ Revision 1.79  2008/04/15 06:08:47  phase1geo
+ First attempt to get both instance and module coverage calculatable for
+ GUI purposes.  This is not quite complete at the moment though it does
+ compile.
+
  Revision 1.78  2008/04/06 05:46:54  phase1geo
  Another regression memory deallocation fix.  Updates to regression files.
 

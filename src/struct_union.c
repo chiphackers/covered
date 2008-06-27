@@ -27,14 +27,12 @@
 
 
 /*!
- \param su  Pointer to struct/union to count members of
-
  \return Returns the number of members stored in the given struct/union.
 
  Counts the number of stored struct/union members in the given struct/union.
 */
 static int struct_union_length(
-  struct_union* su
+  struct_union* su  /*!< Pointer to struct/union to count members of */
 ) { PROFILE(STRUCT_UNION_LENGTH);
 
   su_member* curr;       /* Pointer to current struct/union member */
@@ -46,19 +44,18 @@ static int struct_union_length(
     curr = curr->next;
   }
 
+  PROFILE_END;
+
   return( count );
 
 }
 
 /*!
- \param su   Pointer to struct/union to add member to
- \param mem  Pointer to struct/union member to add
-
  Adds the given struct/union member to the given struct/union member list.
 */
 void struct_union_add_member(
-  struct_union* su,
-  su_member* mem
+  struct_union* su,  /*!< Pointer to struct/union to add member to */
+  su_member* mem     /*!< Pointer to struct/union member to add */
 ) { PROFILE(STRUCT_UNION_ADD_MEMBER);
 
   if( su->mem_head == NULL ) {
@@ -68,17 +65,17 @@ void struct_union_add_member(
     su->mem_tail       = mem;
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param su  Pointer to struct/union to add member to
-
  \return Returns a pointer to the newly allocated struct/union member.
 
  Allocates, initializes and adds a 'void' type struct/union member to the given struct/union.
 */
 su_member* struct_union_add_member_void(
-  struct_union* su
+  struct_union* su  /*!< Pointer to struct/union to add member to */
 ) { PROFILE(STRUCT_UNION_ADD_MEMBER_VOID);
 
   su_member* mem;  /* Pointer to newly created struct/union member */
@@ -91,21 +88,20 @@ su_member* struct_union_add_member_void(
   mem->pos      = struct_union_length( su );
   mem->elem.sig = NULL;
 
+  PROFILE_END;
+
   return( mem );
 
 }
 
 /*!
- \param su   Pointer to struct/union to add member to
- \param sig  Pointer to signal item to add
-
  \return Returns a pointer to the newly allocated struct/union member.
 
  Allocates, initializes and adds a 'signal' type struct/union member to the given struct/union.
 */
 su_member* struct_union_add_member_sig(
-  struct_union* su,
-  vsignal*      sig
+  struct_union* su,  /*!< Pointer to struct/union to add member to */
+  vsignal*      sig  /*!< Pointer to signal item to add */
 ) { PROFILE(STRUCT_UNION_ADD_MEMBER_SIG);
 
   su_member* mem;  /* Pointer to newly created struct/union member */
@@ -118,21 +114,20 @@ su_member* struct_union_add_member_sig(
   mem->pos      = struct_union_length( su );
   mem->elem.sig = sig;
 
+  PROFILE_END;
+
   return( mem );
 
 }
 
 /*!
- \param su   Pointer to struct/union to add member to
- \param tdi  Pointer to typdef item to add
-
  \return Returns a pointer to the newly allocated struct/union member.
 
  Allocates, initializes and adds a 'typedef' type struct/union member to the given struct/union.
 */
 su_member* struct_union_add_member_typedef(
-  struct_union* su,
-  typedef_item* tdi
+  struct_union* su,  /*!< Pointer to struct/union to add member to */
+  typedef_item* tdi  /*!< Pointer to typdef item to add */
 ) { PROFILE(STRUCT_UNION_ADD_MEMBER_TYPEDEF);
 
   su_member* mem;  /* Pointer to newly created struct/union member */
@@ -145,21 +140,20 @@ su_member* struct_union_add_member_typedef(
   mem->pos      = struct_union_length( su );
   mem->elem.tdi = tdi;
 
+  PROFILE_END;
+
   return( mem );
 
 }
 
 /*!
- \param su  Pointer to struct/union to add member to
- \param ei  Pointer to enumerated item to add
-
  \return Returns a pointer to the newly allocated struct/union member.
 
  Allocates, initializes and adds an 'enum' type struct/union member to the given struct/union.
 */
 su_member* struct_union_add_member_enum(
-  struct_union* su,
-  enum_item*    ei
+  struct_union* su,  /*!< Pointer to struct/union to add member to */
+  enum_item*    ei   /*!< Pointer to enumerated item to add */
 ) { PROFILE(STRUCT_UNION_ADD_MEMBER_ENUM);
 
   su_member* mem;  /* Pointer to newly created struct/union member */
@@ -172,21 +166,20 @@ su_member* struct_union_add_member_enum(
   mem->pos     = struct_union_length( su );
   mem->elem.ei = ei;
 
+  PROFILE_END;
+
   return( mem );
 
 }
 
 /*!
- \param su   Pointer to struct/union to add member to
- \param sui  Pointer to struct/union item to add
-
  \return Returns a pointer to the newly allocated struct/union member.
 
  Allocates, initializes and adds a 'struct/union' type struct/union member to the given struct/union.
 */
 su_member* struct_union_add_member_struct_union(
-  struct_union* su,
-  struct_union* sui
+  struct_union* su,  /*!< Pointer to struct/union to add member to */
+  struct_union* sui  /*!< Pointer to struct/union item to add */
 ) { PROFILE(STRUCT_UNION_ADD_MEMBER_STRUCT_UNION);
 
   su_member* mem;  /* Pointer to newly created struct/union member */
@@ -198,31 +191,26 @@ su_member* struct_union_add_member_struct_union(
   mem->type    = SU_MEMTYPE_SU;
   mem->pos     = struct_union_length( su );
   mem->elem.su = sui;
+
+  PROFILE_END;
   
   return( mem ); 
 
 }
 
 /*!
- \param name       Name of struct/union being added
- \param range      Pointer to multi-dimensional range associated with this struct/union
- \param type       Specifies struct, union or tagged union type of this structure
- \param packed     Specifies if this struct/union should be handled as a packed structure or not
- \param is_signed  Specifies if this struct/union should be handled as signed or not
- \param funit      Pointer to functional unit that contains this struct/union
-
  \return Returns a pointer to the newly allocated struct/union.
 
  Allocates, intializes and adds a new struct/union structure to the given functional unit's list of 
  struct/union members.
 */
 struct_union* struct_union_create(
-               const char* name,
-  /*@unused@*/ sig_range*  range,
-               int         type,
-               bool        packed,
-               bool        is_signed,
-               func_unit*  funit
+               const char* name,       /*!< Name of struct/union being added */
+  /*@unused@*/ sig_range*  range,      /*!< Pointer to multi-dimensional range associated with this struct/union */
+               int         type,       /*!< Specifies struct, union or tagged union type of this structure */
+               bool        packed,     /*!< Specifies if this struct/union should be handled as a packed structure or not */
+               bool        is_signed,  /*!< Specifies if this struct/union should be handled as signed or not */
+               func_unit*  funit       /*!< Pointer to functional unit that contains this struct/union */
 ) { PROFILE(STRUCT_UNION_CREATE);
 
   struct_union* su;  /* Pointer to newly allocated struct/union structure */
@@ -247,17 +235,17 @@ struct_union* struct_union_create(
     funit->su_tail       = su;
   }
 
+  PROFILE_END;
+
   return( su );
 
 }
 
 /*!
- \param mem  Pointer to struct/union member to deallocate
-
  Deallocates all memory associated with the given struct/union member.
 */
 static void struct_union_member_dealloc(
-  su_member* mem
+  su_member* mem  /*!< Pointer to struct/union member to deallocate */
 ) { PROFILE(STRUCT_UNION_MEMBER_DEALLOC);
 
   if( mem != NULL ) {
@@ -276,15 +264,15 @@ static void struct_union_member_dealloc(
   
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param su  Pointer to struct/union to deallocate
-
  Deallocates all memory associated with the given struct/union member.
 */
 void struct_union_dealloc(
-  struct_union* su
+  struct_union* su  /*!< Pointer to struct/union to deallocate */
 ) { PROFILE(STRUCT_UNION_DEALLOC);
 
   su_member* curr_mem;  /* Pointer to current member entry to deallocate */
@@ -308,15 +296,15 @@ void struct_union_dealloc(
 
   }
 
+  PROFILE_END;
+
 }
 
 /*!
- \param funit  Pointer to functional unit to remove struct/union list from.
-
  Deallocates the entire list of struct/union structures in the given functional unit.
 */
 void struct_union_dealloc_list(
-  func_unit* funit
+  func_unit* funit  /*!< Pointer to functional unit to remove struct/union list from */
 ) { PROFILE(STRUCT_UNION_DEALLOC_LIST);
 
   struct_union* curr_su;  /* Pointer to current struct/union to deallocate */
@@ -333,11 +321,16 @@ void struct_union_dealloc_list(
   /* Clear the list for future use if necessary */
   funit->su_head = funit->su_tail = NULL;
 
+  PROFILE_END;
+
 }
 
 
 /*
  $Log$
+ Revision 1.8  2008/03/17 05:26:17  phase1geo
+ Checkpointing.  Things don't compile at the moment.
+
  Revision 1.7  2008/01/30 05:51:51  phase1geo
  Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
 

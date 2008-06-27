@@ -84,7 +84,7 @@ static bool dont_stop = FALSE;
 /*!
  Specifies if the history buffer needs to be replayed prior to CLI prompting.
 */
-static int cli_replay_index = 0;
+static unsigned int cli_replay_index = 0;
 
 /*!
  Specifies if simulator debug information should be output during CLI operation.
@@ -99,12 +99,12 @@ static char** history = NULL;
 /*!
  Index of current command string in history array to store.
 */
-static int history_index = 0;
+static unsigned int history_index = 0;
 
 /*!
  The currently allocated size of the history array.
 */
-static int history_size = 0;
+static unsigned int history_size = 0;
 
 
 /*!
@@ -239,10 +239,10 @@ static void cli_draw_status_bar(
 */
 static void cli_display_current_stmt() {
 
-  thread* curr;        /* Pointer to current thread in queue */
-  char**  code;        /* Pointer to code string from code generator */
-  int     code_depth;  /* Depth of code array */
-  int     i;           /* Loop iterator */
+  thread*      curr;        /* Pointer to current thread in queue */
+  char**       code;        /* Pointer to code string from code generator */
+  unsigned int code_depth;  /* Depth of code array */
+  unsigned int i;           /* Loop iterator */
 
   /* Get current thread from simulator */
   curr = sim_current_thread();
@@ -334,13 +334,13 @@ static bool cli_display_signal( char* name ) {
 }
 
 /*!
- \param id  Expression ID of expression to display
-
  \param Returns TRUE if expression was found; otherwise, returns FALSE.
 
  Outputs the given expression and its value to standard output.
 */
-static bool cli_display_expression( int id ) {
+static bool cli_display_expression(
+  int id  /*!< Expression ID of expression to display */
+) {
 
   bool       retval = TRUE;  /* Return value for this function */
   func_unit* funit;          /* Pointer to functional unit that contains the given expression */
@@ -349,7 +349,7 @@ static bool cli_display_expression( int id ) {
   if( (funit = funit_find_by_id( id )) != NULL ) {
 
     char**       code       = NULL;  /* Code to output */
-    int          code_depth = 0;     /* Number of elements in code array */
+    unsigned int code_depth = 0;     /* Number of elements in code array */
     unsigned int i;                  /* Loop iterator */
     exp_link*    expl;               /* Pointer to found expression */
 
@@ -383,18 +383,18 @@ static bool cli_display_expression( int id ) {
 }
 
 /*!
- \param num  Maximum number of lines to display
-
  Starting at the current statement line, outputs the next num lines to standard output.
 */
-static void cli_display_lines( unsigned num ) {
+static void cli_display_lines(
+  unsigned num  /*!< Maximum number of lines to display */
+) {
 
-  thread* curr;        /* Pointer to current thread in simulation */
-  FILE*   vfile;       /* File pointer to Verilog file */
-  char*   line;        /* Pointer to current line */
-  int     line_size;   /* Allocated size of the current line */
-  int     lnum = 1;    /* Current line number */
-  int     start_line;  /* Starting line */
+  thread*      curr;        /* Pointer to current thread in simulation */
+  FILE*        vfile;       /* File pointer to Verilog file */
+  char*        line;        /* Pointer to current line */
+  unsigned int line_size;   /* Allocated size of the current line */
+  unsigned int lnum = 1;    /* Current line number */
+  unsigned int start_line;  /* Starting line */
 
   /* Get the current thread from the simulator */
   curr = sim_current_thread();
@@ -430,21 +430,20 @@ static void cli_display_lines( unsigned num ) {
 }
 
 /*!
- \param line       User-specified command line to parse
- \param perform    Set to TRUE if we should perform the specified command
- \param replaying  Set to TRUE if we are calling this due to replaying the history
- \param time       Pointer to current simulation time
-
  \return Returns TRUE if the user specified a valid command; otherwise, returns FALSE
 
  Parses the given command from the user.
 */
-static bool cli_parse_input( char* line, bool perform, bool replaying, const sim_time* time ) {
+static bool cli_parse_input(
+  char*           line,       /*!< User-specified command line to parse */
+  bool            perform,    /*!< Set to TRUE if we should perform the specified command */
+  bool            replaying,  /*!< Set to TRUE if we are calling this due to replaying the history */
+  const sim_time* time        /*!< Pointer to current simulation time */
+) {
 
   char     arg[4096];         /* Holder for user argument */
   bool     valid_cmd = TRUE;  /* Specifies if the given command was valid */
   int      chars_read;        /* Specifies the number of characters that was read from the string */
-  int      i;                 /* Iterator */
   unsigned num;               /* Unsigned integer value from user */
   FILE*    hfile;             /* History file to read or to write */
 
@@ -633,7 +632,7 @@ static bool cli_parse_input( char* line, bool perform, bool replaying, const sim
 
     } else if( strncmp( "history", arg, 7 ) == 0 ) {
 
-      i = (history_index - 9);
+      int i = (history_index - 9);
       if( sscanf( line, "%d", &num ) == 1 ) {
         i = (history_index - (num - 1));
       } else if( sscanf( line, "%s", arg ) == 1 ) {
@@ -643,7 +642,7 @@ static bool cli_parse_input( char* line, bool perform, bool replaying, const sim
       }
       if( perform ) {
         printf( "\n" );
-        for( i=((i<0)?0:i); i<=history_index; i++ ) {
+        for( i=((i<0)?0:i); i<=(int)history_index; i++ ) {
           printf( "%7d  %s\n", (i + 1), history[i] );
         }
       }
@@ -653,6 +652,7 @@ static bool cli_parse_input( char* line, bool perform, bool replaying, const sim
       if( sscanf( line, "%s", arg ) == 1 ) {
         if( perform ) {
           if( (hfile = fopen( arg, "w" )) != NULL ) {
+            unsigned int i;
             for( i=0; i<history_index; i++ ) {
               fprintf( hfile, "%s\n", history[i] );
             }
@@ -719,9 +719,6 @@ static void cli_prompt_user(
   const sim_time* time  /*!< Pointer to current simulation time */
 ) {
 
-  char* line;       /* Read line from user */
-  int   line_size;  /* Allocated byte size of read line from user */
-
   do {
 
     /* If the history buffer still needs to be replayed, do so instead of prompting the user */
@@ -732,6 +729,9 @@ static void cli_prompt_user(
       (void)cli_parse_input( history[cli_replay_index], TRUE, TRUE, time );
 
     } else {
+
+      char*        line;       /* Read line from user */
+      unsigned int line_size;  /* Allocated byte size of read line from user */
 
       /* Prompt the user for input */
       printf( "\ncli %d> ", (history_index + 1) ); 
@@ -846,8 +846,6 @@ void cli_execute(
 */
 void cli_read_hist_file( const char* fname ) {
 
-  char* line;       /* Holds current line read from history file */
-  int   line_size;  /* Allocated bytes for read line */
   FILE* hfile;      /* File containing history file */
 
   /* Make sure that this function was not called twice */
@@ -858,7 +856,9 @@ void cli_read_hist_file( const char* fname ) {
 
     Try {
 
-      sim_time time;
+      sim_time     time;       /* Temporary simulation time holder */
+      char*        line;       /* Holds current line read from history file */
+      unsigned int line_size;  /* Allocated bytes for read line */
 
       while( util_readline( hfile, &line, &line_size ) ) {
         if( !cli_parse_input( line, FALSE, FALSE, &time ) ) {
@@ -894,6 +894,10 @@ void cli_read_hist_file( const char* fname ) {
 
 /*
  $Log$
+ Revision 1.25  2008/06/19 16:14:54  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
  Revision 1.24  2008/04/15 20:37:07  phase1geo
  Fixing database array support.  Full regression passes.
 

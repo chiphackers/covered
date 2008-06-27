@@ -143,6 +143,8 @@ int lexer_keyword_sv_code( const char* str, int length ) { PROFILE(LEXER_KEYWORD
     type = rc->type;
   }
 
+  PROFILE_END;
+
   return( type );
 
 }

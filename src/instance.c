@@ -204,12 +204,12 @@ static bool instance_compare(
   funit_inst* inst
 ) { PROFILE(INSTANCE_COMPARE);
 
-  bool retval = FALSE;  /* Return value of this function */
-  char bname[4096];     /* Base name of inst_name */
-  int  index;           /* Index of inst_name */
-  int  width;           /* Width of instance range */
-  int  lsb;             /* LSB of instance range */
-  int  big_endian;      /* Specifies endianness */
+  bool         retval = FALSE;  /* Return value of this function */
+  char         bname[4096];     /* Base name of inst_name */
+  int          index;           /* Index of inst_name */
+  unsigned int width;           /* Width of instance range */
+  int          lsb;             /* LSB of instance range */
+  int          big_endian;      /* Specifies endianness */
 
   /* If this instance has a range, handle it */
   if( inst->range != NULL ) {
@@ -222,10 +222,10 @@ static bool instance_compare(
 
         /* Get range information from instance */
         static_expr_calc_lsb_and_width_post( inst->range->left, inst->range->right, &width, &lsb, &big_endian );
-        assert( width != -1 );
+        assert( width != 0 );
         assert( lsb   != -1 );
 
-        retval = (index >= lsb) && (index < (lsb + width));
+        retval = (index >= lsb) && (index < (lsb + (int)width));
 
       }
       
@@ -567,9 +567,6 @@ bool instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child,
 }
 
 /*!
- \param root  Pointer to root functional unit to traverse
- \param curr  Pointer to current instance to resolve
-
  \return Returns TRUE if instance was resolved; otherwise, returns FALSE.
 
  Checks the given instance to see if a range was specified in its instantiation.  If
@@ -577,16 +574,16 @@ bool instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child,
  tree.
 */
 bool instance_resolve_inst(
-  funit_inst* root,
-  funit_inst* curr
+  funit_inst* root,  /*!< Pointer to root functional unit to traverse */
+  funit_inst* curr   /*!< Pointer to current instance to resolve */
 ) { PROFILE(INSTANCE_RESOLVE_INST);
 
-  int   width = -1;  /* Width of the instance range */
-  int   lsb;         /* LSB of the instance range */
-  int   big_endian;  /* Unused */
-  char* name_copy;   /* Copy of the instance name being resolved */
-  char* new_name;    /* New hierarchical name of the instance(s) being resolved */
-  int   i;           /* Loop iterator */
+  unsigned int width = 0;   /* Width of the instance range */
+  int          lsb;         /* LSB of the instance range */
+  int          big_endian;  /* Unused */
+  char*        name_copy;   /* Copy of the instance name being resolved */
+  char*        new_name;    /* New hierarchical name of the instance(s) being resolved */
+  unsigned int i;           /* Loop iterator */
 
   assert( curr != NULL );
 
@@ -597,8 +594,8 @@ bool instance_resolve_inst(
 
     /* Get LSB and width information */
     static_expr_calc_lsb_and_width_post( curr->range->left, curr->range->right, &width, &lsb, &big_endian );
-    assert( width != -1 );
-    assert( lsb   != -1 );
+    assert( width != 0 );
+    assert( lsb != -1 );
 
     /* Remove the range information from this instance */
     static_expr_dealloc( curr->range->left,  FALSE );
@@ -637,7 +634,7 @@ bool instance_resolve_inst(
 
   PROFILE_END;
   
-  return( width != -1 );
+  return( width != 0 );
 
 }
 
@@ -1175,6 +1172,9 @@ void instance_dealloc( funit_inst* root, char* scope ) { PROFILE(INSTANCE_DEALLO
 
 /*
  $Log$
+ Revision 1.95  2008/04/15 20:37:11  phase1geo
+ Fixing database array support.  Full regression passes.
+
  Revision 1.94  2008/04/15 06:08:47  phase1geo
  First attempt to get both instance and module coverage calculatable for
  GUI purposes.  This is not quite complete at the moment though it does
