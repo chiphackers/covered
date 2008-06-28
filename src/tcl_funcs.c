@@ -764,9 +764,9 @@ int tcl_func_collect_combs( ClientData d, Tcl_Interp* tcl, int argc, const char*
   expression** covs;             /* Array of expression pointers to fully covered expressions */
   expression** uncovs;           /* Array of expression pointers to uncovered expressions */
   int*         excludes;         /* Array of integers indicating exclude status */
-  int          cov_cnt;          /* Number of elements in the covs array */
-  int          uncov_cnt;        /* Number of elements in the uncovs/excludes array */
-  int          i;                /* Loop iterator */
+  unsigned int cov_cnt;          /* Number of elements in the covs array */
+  unsigned int uncov_cnt;        /* Number of elements in the uncovs/excludes array */
+  unsigned int i;                /* Loop iterator */
   char         str[85];          /* Temporary string container */
   int          startline;        /* Starting line number of this module */
   expression*  last;             /* Pointer to expression in an expression tree that is on the last line */
@@ -828,19 +828,19 @@ int tcl_func_collect_combs( ClientData d, Tcl_Interp* tcl, int argc, const char*
 */
 int tcl_func_get_comb_expression( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_GET_COMB_EXPRESSION);
 
-  int    retval = TCL_OK;  /* Return value for this function */
-  char*  funit_name;       /* Name of functional unit containing expression to find */
-  int    funit_type;       /* Type of functional unit containing expression to find */
-  int    expr_id;          /* Expression ID of expression to find within the given functional unit */
-  char** code;             /* Array of strings containing the combinational logic code returned from the code generator */
-  int*   uline_groups;     /* Array of integers representing the number of underline lines found under each line of code */
-  int    code_size;        /* Number of elements stored in the code array */
-  char** ulines;           /* Array of strings containing the underline lines returned from the underliner */
-  int    uline_size;       /* Number of elements stored in the ulines array */
-  int*   excludes;         /* Array of integers containing the exclude value for a given underlined expression */
-  int    exclude_size;     /* Number of elements stored in the excludes array */
-  int    i;                /* Loop iterator */
-  char   tmp[20];          /* Temporary string container */
+  int          retval = TCL_OK;  /* Return value for this function */
+  char*        funit_name;       /* Name of functional unit containing expression to find */
+  int          funit_type;       /* Type of functional unit containing expression to find */
+  int          expr_id;          /* Expression ID of expression to find within the given functional unit */
+  char**       code;             /* Array of strings containing the combinational logic code returned from the code generator */
+  int*         uline_groups;     /* Array of integers representing the number of underline lines found under each line of code */
+  unsigned int code_size;        /* Number of elements stored in the code array */
+  char**       ulines;           /* Array of strings containing the underline lines returned from the underliner */
+  unsigned int uline_size;       /* Number of elements stored in the ulines array */
+  int*         excludes;         /* Array of integers containing the exclude value for a given underlined expression */
+  unsigned int exclude_size;     /* Number of elements stored in the excludes array */
+  unsigned int i;                /* Loop iterator */
+  char         tmp[20];          /* Temporary string container */
 
   funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
@@ -1048,9 +1048,9 @@ int tcl_func_get_fsm_coverage( ClientData d, Tcl_Interp* tcl, int argc, const ch
   int          expr_id;          /* Expression ID of output state expression */
   int          width;            /* Width of output state expression */
   char**       total_states;     /* String array containing all possible states for this FSM */
-  int          total_state_num;  /* Number of elements in the total_states array */
+  unsigned int total_state_num;  /* Number of elements in the total_states array */
   char**       hit_states;       /* String array containing hit states for this FSM */
-  int          hit_state_num;    /* Number of elements in the hit_states array */
+  unsigned int hit_state_num;    /* Number of elements in the hit_states array */
   char**       total_from_arcs;  /* String array containing all possible state transition input states */
   char**       total_to_arcs;    /* String array containing all possible state transition output states */
   int*         excludes;         /* Integer array containing exclude values for each state transition */
@@ -1059,9 +1059,9 @@ int tcl_func_get_fsm_coverage( ClientData d, Tcl_Interp* tcl, int argc, const ch
   char**       hit_to_arcs;      /* String array containing hit state transition output states */
   int          hit_arc_num;      /* Number of elements in both the hit_from_arcs and hit_to_arcs arrays */
   char**       input_state;      /* String containing the input state code */
-  int          input_size;       /* Number of elements in the input_state array */
+  unsigned int input_size;       /* Number of elements in the input_state array */
   char**       output_state;     /* String containing the output state code */
-  int          output_size;      /* Number of elements in the output_state array */
+  unsigned int output_size;      /* Number of elements in the output_state array */
   char         str[4096];        /* Temporary string container */
   int          i;                /* Loop iterator */
 
@@ -1156,29 +1156,29 @@ int tcl_func_get_fsm_coverage( ClientData d, Tcl_Interp* tcl, int argc, const ch
 }
 
 /*!
- \param d     TBD
- \param tcl   Pointer to the Tcl interpreter
- \param argc  Number of arguments in the argv list
- \param argv  Array of arguments passed to this function
-
  \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
          TCL_ERROR.
 
  Populates the global variables "uncovered_asserts" and "covered_asserts" with the uncovered and covered assertion
  module instance names.
 */
-int tcl_func_collect_assertions( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_COLLECT_ASSERTIONS);
+int tcl_func_collect_assertions(
+  ClientData  d,      /*!< Tcl structure */
+  Tcl_Interp* tcl,    /*!< Pointer to the Tcl interpreter */
+  int         argc,   /*!< Number of arguments in the argv list */
+  const char* argv[]  /*!< Array of arguments passed to this function */
+) { PROFILE(TCL_FUNC_COLLECT_ASSERTIONS);
 
-  int    retval = TCL_OK;   /* Return value for this function */
-  char*  funit_name;        /* Name of functional unit to get combinational logic coverage info for */
-  int    funit_type;        /* Type of functional unit to get combinational logic coverage info for */
-  char** uncov_inst_names;  /* Array of instance names for all uncovered assertions in the specified functional unit */
-  int*   excludes;          /* Array of integers specifying the exclude information for an assertion instance */
-  int    uncov_inst_size;   /* Number of valid elements in the uncov_inst_names/excludes arrays */
-  char** cov_inst_names;    /* Array of instance names for all covered assertions in the specified functional unit */
-  int    cov_inst_size;     /* Number of valid elements in the cov_inst_names array */
-  int    i;                 /* Loop iterator */
-  char   str[20];           /* Temporary string holder */
+  int          retval = TCL_OK;   /* Return value for this function */
+  char*        funit_name;        /* Name of functional unit to get combinational logic coverage info for */
+  int          funit_type;        /* Type of functional unit to get combinational logic coverage info for */
+  char**       uncov_inst_names;  /* Array of instance names for all uncovered assertions in the specified functional unit */
+  int*         excludes;          /* Array of integers specifying the exclude information for an assertion instance */
+  unsigned int uncov_inst_size;   /* Number of valid elements in the uncov_inst_names/excludes arrays */
+  char**       cov_inst_names;    /* Array of instance names for all covered assertions in the specified functional unit */
+  unsigned int cov_inst_size;     /* Number of valid elements in the cov_inst_names array */
+  unsigned int i;                 /* Loop iterator */
+  char         str[20];           /* Temporary string holder */
 
   funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
@@ -1622,25 +1622,25 @@ int tcl_func_get_fsm_summary( ClientData d, Tcl_Interp* tcl, int argc, const cha
 }
 
 /*!
- \param d     TBD
- \param tcl   Pointer to the Tcl interpreter
- \param argc  Number of arguments in the argv list
- \param argv  Array of arguments passed to this function
-
  \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
          TCL_ERROR.
 
  Populates the global variables "assert_summary_total" and "assert_summary_hit" to the total number
  of assertions evaluated for coverage and the total number of hit assertions for the specified functional unit.
 */
-int tcl_func_get_assert_summary( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) { PROFILE(TCL_FUNC_GET_ASSERT_SUMMARY);
+int tcl_func_get_assert_summary(
+  ClientData  d,      /*!< Tcl data container */
+  Tcl_Interp* tcl,    /*!< Pointer to the Tcl interpreter */
+  int         argc,   /*!< Number of arguments in the argv list */
+  const char* argv[]  /*!< Array of arguments passed to this function */
+) { PROFILE(TCL_FUNC_GET_ASSERT_SUMMARY);
 
-  int   retval = TCL_OK;  /* Return value for this function */
-  char* funit_name;       /* Name of functional unit to lookup */
-  int   funit_type;       /* Type of functional unit to lookup */
-  int   total;            /* Contains total number of expressions evaluated */
-  int   hit;              /* Contains total number of expressions hit */
-  char  value[20];        /* String version of a value */
+  int          retval = TCL_OK;  /* Return value for this function */
+  char*        funit_name;       /* Name of functional unit to lookup */
+  int          funit_type;       /* Type of functional unit to lookup */
+  unsigned int total;            /* Contains total number of expressions evaluated */
+  unsigned int hit;              /* Contains total number of expressions hit */
+  char         value[20];        /* String version of a value */
 
   funit_name = strdup_safe( argv[1] );
   funit_type = atoi( argv[2] );
@@ -2271,6 +2271,11 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.78  2008/06/22 05:08:40  phase1geo
+ Fixing memory testing error in tcl_funcs.c.  Removed unnecessary output in main_view.tcl.
+ Added a few more report diagnostics and started to remove width report files (these will
+ no longer be needed and will improve regression runtime and diagnostic memory footprint.
+
  Revision 1.77  2008/04/15 20:37:11  phase1geo
  Fixing database array support.  Full regression passes.
 

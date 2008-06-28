@@ -939,7 +939,7 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) { PROFILE(LXT2_RD_INIT);
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "LXT:  Name section mangled %u (actual) vs %u (expected)", rc, (unsigned int)lt->zfacname_predec_size );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        free( m );
+        free_safe( m, lt->zfacname_predec_size );
         lxt2_rd_close( lt );
         lt = NULL;
         return( lt );
@@ -974,7 +974,7 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) { PROFILE(LXT2_RD_INIT);
         rv = snprintf( user_msg, USER_MSG_LENGTH, "LXT:  No LXT dumpfile information available in file %s", name );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        free( m );
+        free_safe( m, t );
         lxt2_rd_close( lt );
         lt = NULL;
         return( lt );
@@ -1015,7 +1015,7 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) { PROFILE(LXT2_RD_INIT);
       }
 
       lt->prev_time = ~(LXT2_RD_GRAN_0VAL);
-      free( m );
+      free_safe( m, t );
 
       lt->fac_map    = malloc_safe_nolimit( lt->numfacs * sizeof( granmsk_t ) );
       lt->fac_curpos = malloc_safe_nolimit( lt->numfacs * sizeof( char* ) );
@@ -1134,14 +1134,14 @@ void lxt2_rd_close(
     struct lxt2_rd_block* bt;
     unsigned int          i;
 
-    free_safe( lt->process_mask, 0 );  /* TBD */
-    free_safe( lt->process_mask_compressed, 0 );  /* TBD */
-    free_safe( lt->rows, 0 );  /* TBD */
-    free_safe( lt->msb, 0 );  /* TBD */
-    free_safe( lt->lsb, 0 );  /* TBD */
-    free_safe( lt->flags, 0 );  /* TBD */
-    free_safe( lt->len, 0 );  /* TBD */
-    free_safe( lt->next_radix, 0 );  /* TBD */
+    free_safe( lt->process_mask, ((lt->numfacs / 8) + 1) );
+    free_safe( lt->process_mask_compressed, ((lt->numfacs / LXT2_RD_PARTIAL_SIZE) + 1) );
+    free_safe( lt->rows,  (lt->numfacs * sizeof( lxtint32_t )) );
+    free_safe( lt->msb,   (lt->numfacs * sizeof( lxtint32_t )) );
+    free_safe( lt->lsb,   (lt->numfacs * sizeof( lxtint32_t )) );
+    free_safe( lt->flags, (lt->numfacs * sizeof( lxtint32_t )) );
+    free_safe( lt->len,   (lt->numfacs * sizeof( lxtint32_t )) );
+    free_safe( lt->next_radix, (lt->numfacs * sizeof( void* )) );
 
     lt->process_mask            = NULL;
     lt->process_mask_compressed = NULL;
@@ -1154,7 +1154,7 @@ void lxt2_rd_close(
 
     if( lt->value != NULL ) {
       for( i=0; i<lt->numfacs; i++ ) {
-        free_safe( lt->value[i], 0 );  /* TBD */
+        free_safe( lt->value[i], ((lt->len[i] + 1) * sizeof( char )) );
         lt->value[i] = NULL; 
       }
       free_safe( lt->value, 0 );  /* TBD */
@@ -1167,7 +1167,7 @@ void lxt2_rd_close(
     if( lt->faccache ) {
 
       free_safe( lt->faccache->bufprev, 0 );  /* TBD */
-      free( lt->faccache->bufcurr );
+      free_safe( lt->faccache->bufcurr, 0 );
 
       lt->faccache->bufprev = NULL;
       lt->faccache->bufcurr = NULL;

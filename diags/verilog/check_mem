@@ -17,7 +17,7 @@ while( defined( $line = <STDIN> ) ) {
   chomp( $line );
 
   # If the line was a malloc or strdup call, add its memory to our tracker
-  if( $line =~ /(MALLOC|STRDUP)\s+\((\S+)\)\s+(\d+)\s+bytes\s+\(file:\s+(\S+),\s+line:\s+(\d+)\)\s*-\s*(\d+)/) {
+  if( $line =~ /(MALLOC|STRDUP|CALLOC)\s+\((\S+)\)\s+(\d+)\s+bytes\s+\(file:\s+(\S+),\s+line:\s+(\d+)\)\s*-\s*(\d+)/) {
 
     $addr  = $2;
     $bytes = $3;
@@ -26,7 +26,7 @@ while( defined( $line = <STDIN> ) ) {
     $curr  = $6;
 
     if( ($mem_size + $bytes) != $curr ) {
-      die "Memory was modified by something other than a malloc, realloc, strdup, free (line $line_num)\n";
+      die "Memory was modified by something other than a malloc, realloc, calloc, strdup, free (line $line_num)\n";
     }
     $mem_size = $curr;
 

@@ -1238,7 +1238,7 @@ void* calloc_safe1(
   obj = calloc( num, size );
 #ifdef TESTMODE
   if( test_mode ) {
-    printf( "CALLOC (%p) %d bytes (file: %s, line: %d) - %lld\n", obj, size, file, line, curr_malloc_size );
+    printf( "CALLOC (%p) %d bytes (file: %s, line: %d) - %lld\n", obj, total, file, line, curr_malloc_size );
   }
 #endif
   assert( obj != NULL );
@@ -1371,6 +1371,9 @@ void calc_miss_percent(
 
 /*
  $Log$
+ Revision 1.97  2008/06/28 03:46:29  phase1geo
+ More code updates for warning removal.
+
  Revision 1.96  2008/06/27 14:02:04  phase1geo
  Fixing splint and -Wextra warnings.  Also fixing comment formatting.
 
