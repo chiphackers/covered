@@ -1210,6 +1210,46 @@ void* realloc_safe1(
 }
 
 /*!
+ \return Returns a pointer to the newly allocated/initialized data
+
+ Verifies that the specified size is not oversized, callocs the memory, verifies that the memory pointer returned is not NULL,
+ and performs some memory statistic handling.
+*/
+void* calloc_safe1(
+  size_t       num,           /*!< Number of elements to allocate */
+  size_t       size,          /*!< Size of each element that is allocated */
+  const char*  file,          /*!< Name of file that called this function */
+  int          line,          /*!< Line number of file that called this function */
+  unsigned int profile_index  /*!< Profile index of function that called this function */
+) {
+
+  void*  obj;
+  size_t total = (num * size);
+
+  assert( total > 0 );
+  assert( total <= MAX_MALLOC_SIZE );
+
+  curr_malloc_size += total;
+
+  if( curr_malloc_size > largest_malloc_size ) {
+    largest_malloc_size = curr_malloc_size;
+  }
+
+  obj = calloc( num, size );
+#ifdef TESTMODE
+  if( test_mode ) {
+    printf( "CALLOC (%p) %d bytes (file: %s, line: %d) - %lld\n", obj, size, file, line, curr_malloc_size );
+  }
+#endif
+  assert( obj != NULL );
+
+  MALLOC_CALL(profile_index);
+
+  return( obj );
+
+}
+
+/*!
  Creates a string that contains num_spaces number of space characters,
  adding a NULL character at the end of the string to allow for correct
  usage by the strlen and other string functions.
@@ -1331,6 +1371,9 @@ void calc_miss_percent(
 
 /*
  $Log$
+ Revision 1.96  2008/06/27 14:02:04  phase1geo
+ Fixing splint and -Wextra warnings.  Also fixing comment formatting.
+
  Revision 1.95  2008/06/24 23:15:32  phase1geo
  Adding several new diagnostics to regression.  Removing unnecessary output in
  source files for user errors hit in regressions.  Fixed memory leak in substitute_env_vars

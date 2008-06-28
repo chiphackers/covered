@@ -837,7 +837,7 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) {
 #else
 struct lxt2_rd_trace* lxt2_rd_init( const char* name ) { PROFILE(LXT2_RD_INIT);
 
-  struct lxt2_rd_trace* lt = (struct lxt2_rd_trace*)calloc( 1, sizeof( struct lxt2_rd_trace ) );
+  struct lxt2_rd_trace* lt = (struct lxt2_rd_trace*)calloc_safe( 1, sizeof( struct lxt2_rd_trace ) );
   unsigned int          i;
 
   if( !(lt->handle = fopen( name, "rb" )) ) {
@@ -924,8 +924,8 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) { PROFILE(LXT2_RD_INIT);
       
       pos = ftello( lt->handle );
 
-      lt->process_mask            = calloc( 1, ((lt->numfacs / 8) + 1) );
-      lt->process_mask_compressed = calloc( 1, ((lt->numfacs / LXT2_RD_PARTIAL_SIZE) + 1) );
+      lt->process_mask            = calloc_safe( 1, ((lt->numfacs / 8) + 1) );
+      lt->process_mask_compressed = calloc_safe( 1, ((lt->numfacs / LXT2_RD_PARTIAL_SIZE) + 1) );
 
       /* Open and read the name section of the file that is compressed */
       lt->zhandle = gzdopen( dup( fileno( lt->handle ) ), "rb" );
@@ -947,7 +947,7 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) { PROFILE(LXT2_RD_INIT);
 
       lt->zfacnames = m;
 
-      lt->faccache = calloc( 1, sizeof( struct lxt2_rd_facname_cache ) );
+      lt->faccache = calloc_safe( 1, sizeof( struct lxt2_rd_facname_cache ) );
       lt->faccache->old_facidx = lt->numfacs;   /* Causes lxt2_rd_get_facname to initialize its unroll ptr as this is always invalid */
       lt->faccache->bufcurr = malloc_safe_nolimit( lt->longestname + 1 );
       lt->faccache->bufprev = malloc_safe_nolimit( lt->longestname + 1 );
@@ -1001,7 +1001,7 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) { PROFILE(LXT2_RD_INIT);
         } else {
           lt->len[i] = 32;
         }
-        lt->value[i] = calloc( (lt->len[i] + 1), sizeof( char ) );
+        lt->value[i] = calloc_safe( (lt->len[i] + 1), sizeof( char ) );
       }
 
       for( lt->numrealfacs=0; lt->numrealfacs<lt->numfacs; lt->numrealfacs++ ) {
@@ -1031,7 +1031,7 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) { PROFILE(LXT2_RD_INIT);
 
         fseeko( lt->handle, pos, SEEK_SET );
 
-        b = calloc( 1, sizeof( struct lxt2_rd_block ) );
+        b = calloc_safe( 1, sizeof( struct lxt2_rd_block ) );
 		
         (void)fread( &b->uncompressed_siz, 4, 1, lt->handle );
         b->uncompressed_siz = lxt2_rd_get_32( &b->uncompressed_siz, 0 );
@@ -1121,7 +1121,7 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) { PROFILE(LXT2_RD_INIT);
 /*
  * free up/deallocate any resources still left out there:
  * blindly do it based on NULL pointer comparisons (ok, since
- * calloc() is used to allocate all structs) as performance
+ * calloc_safe() is used to allocate all structs) as performance
  * isn't an issue for this set of cleanup code
  */
 void lxt2_rd_close(

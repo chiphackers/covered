@@ -39,7 +39,10 @@
 #define strdup_safe(x)         strdup_safe1(x,__FILE__,__LINE__,profile_index)
 
 /*! Overload for the realloc_safe1 function which includes profiling information */
-#define realloc_safe(x,y,z)      realloc_safe1(x,(((x)!=NULL)?y:0),z,__FILE__,__LINE__,profile_index)
+#define realloc_safe(x,y,z)    realloc_safe1(x,(((x)!=NULL)?y:0),z,__FILE__,__LINE__,profile_index)
+
+/*! Overload for the calloc_safe1 function which includes profiling information */
+#define calloc_safe(x,y)       calloc_safe1(x,y,__FILE__,__LINE__,profile_index)
 
 /*! Overload for the free-safe function which includes profiling information */
 #ifdef TESTMODE
@@ -144,6 +147,15 @@ void free_safe2( /*@only@*/ /*@out@*/ /*@null@*/ void* ptr, size_t size, const c
              unsigned int profile_index
 );
 
+/*! \brief Safely callocs heap memory by performing a call to calloc */
+/*@only@*/ void* calloc_safe1(
+  size_t       num,
+  size_t       size,
+  const char*  file,
+  int          line,
+  unsigned int profile_index
+);
+
 /*! \brief Creates a string containing space characters. */
 void gen_space( char* spaces, int num_spaces );
 
@@ -172,6 +184,9 @@ void set_timestep( sim_time* st, char* value );
 
 /*
  $Log$
+ Revision 1.42  2008/06/27 14:02:04  phase1geo
+ Fixing splint and -Wextra warnings.  Also fixing comment formatting.
+
  Revision 1.41  2008/04/08 23:58:17  phase1geo
  Fixing test mode code so that it works properly in regression and stand-alone
  runs.

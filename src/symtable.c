@@ -157,10 +157,10 @@ static int postsim_size = 0;
  list for the specified symtab.
 */
 static void symtable_add_sym_sig(
-  symtable* symtab,
-  vsignal*  sig,
-  int       msb,
-  int       lsb
+  symtable* symtab,  /*!< Pointer to symbol table entry to initialize */
+  vsignal*  sig,     /*!< Pointer to signal that will be stored in the symtable list */
+  int       msb,     /*!< Most-significant bit of symbol entry */
+  int       lsb      /*!< Least-significant bit of symbol entry */
 ) { PROFILE(SYMTABLE_ADD_SYM_SIG);
 
   sym_sig* new_ss;  /* Pointer to newly created sym_sig structure */
@@ -185,16 +185,12 @@ static void symtable_add_sym_sig(
 }
 
 /*!
- \param symtab  Pointer to symbol table entry to initialize.
- \param msb     Most-significant bit of symbol entry.
- \param lsb     Least-significant bit of symbol entry.
-
  Initializes the contents of a symbol table entry.
 */
 static void symtable_init(
-  symtable* symtab,
-  int       msb,
-  int       lsb
+  symtable* symtab,  /*!< Pointer to symbol table entry to initialize */
+  int       msb,     /*!< Most-significant bit of symbol entry */
+  int       lsb      /*!< Least-significant bit of symbol entry */
 ) { PROFILE(SYMTABLE_INIT);
 
   /* Allocate and initialize the entry */
@@ -232,23 +228,18 @@ symtable* symtable_create() { PROFILE(SYMTABLE_CREATE);
 }
 
 /*!
- \param sym     VCD symbol for the specified signal.
- \param sig     Pointer to signal corresponding to the specified symbol.
- \param msb     Most significant bit of variable to set.
- \param lsb     Least significant bit of variable to set.
-
  Using the symbol as a unique ID, creates a new symtable element for specified information
  and places it into the binary tree.
 */
 void symtable_add(
-  char*    sym,
-  vsignal* sig,
-  int      msb,
-  int      lsb
+  const char* sym,  /*!< VCD symbol for the specified signal */
+  vsignal*    sig,  /*!< Pointer to signal corresponding to the specified symbol */
+  int         msb,  /*!< Most significant bit of variable to set */
+  int         lsb   /*!< Least significant bit of variable to set */
 ) { PROFILE(SYMTABLE_ADD);
 
-  symtable* curr;  /* Pointer to current symtable entry */
-  char*     ptr;   /* Pointer to current character in sym */
+  symtable*   curr;  /* Pointer to current symtable entry */
+  const char* ptr;   /* Pointer to current character in sym */
 
   assert( vcd_symtab != NULL );
   assert( sym[0]     != '\0' );
@@ -281,20 +272,17 @@ void symtable_add(
 }
 
 /*!
- \param sym     Name of symbol to find in the table.
- \param value   Value to set symtable entry to when match found.
-
  Performs a binary search of the specified tree to find all matching symtable entries.
  When the signal is found, the specified value is assigned to the symtable entry.
 */
 void symtable_set_value(
-  char* sym,
-  char* value
+  const char* sym,   /*!< Name of symbol to find in the table */
+  const char* value  /*!< Value to set symtable entry to when match found */
 ) { PROFILE(SYMTABLE_SET_VALUE);
 
-  symtable* curr;         /* Pointer to current symtable */
-  char*     ptr;          /* Pointer to current character in symbol */
-  bool      set = FALSE;  /* Specifies if this symtable entry has been set this timestep yet */
+  symtable*   curr;         /* Pointer to current symtable */
+  const char* ptr;          /* Pointer to current character in symbol */
+  bool        set = FALSE;  /* Specifies if this symtable entry has been set this timestep yet */
 
   assert( vcd_symtab != NULL );
   assert( sym[0] != '\0' );
@@ -332,15 +320,13 @@ void symtable_set_value(
 }
 
 /*!
- \param time  Pointer to current simulation time structure.
-
  \throws anonymous vsignal_vcd_assign
 
  Traverses simulation symentry array, assigning stored string value to the
  stored signal.
 */
 void symtable_assign(
-  const sim_time* time
+  const sim_time* time  /*!< Pointer to current simulation time structure */
 ) { PROFILE(SYMTABLE_ASSIGN);
 
   symtable* curr;  /* Pointer to current symtable entry */
@@ -363,12 +349,10 @@ void symtable_assign(
 }
 
 /*!
- \param symtab  Pointer to root of symtable to clear.
-
  Recursively deallocates all elements of specifies symbol table.
 */ 
 void symtable_dealloc(
-  symtable* symtab
+  symtable* symtab  /*!< Pointer to root of symtable to clear */
 ) { PROFILE(SYMTABLE_DEALLOC);
 
   sym_sig* curr;  /* Pointer to current sym_sig in list */
@@ -403,6 +387,11 @@ void symtable_dealloc(
 
 /*
  $Log$
+ Revision 1.36  2008/03/17 22:02:32  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.35  2008/03/17 05:26:17  phase1geo
  Checkpointing.  Things don't compile at the moment.
 

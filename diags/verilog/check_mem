@@ -97,7 +97,7 @@ while( defined( $line = <STDIN> ) ) {
     $mem_size = $curr;
 
     if( $addrs->{$addr} == () ) {
-      die "Address $addr was being freed when it was never allocated!\n";
+      die "Address $addr was being freed when it was never allocated in $file:$lnum!\n";
     } elsif( $addrs->{$addr}{BYTES} != $bytes ) {
       die "Number of bytes freed ($bytes) in $file:$lnum does not match number of bytes allocated (" . $addrs->{$addr}{BYTES} . ") for address $addr in " . $addrs->{$addr}{AFILE} . ":" . $addrs->{$addr}{ALNUM} . "\n";
     } else {

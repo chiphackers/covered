@@ -125,7 +125,7 @@ typedef_item* db_find_typedef( const char* name );
 gen_item* db_get_curr_gen_block();
 
 /*! \brief Creates new expression from specified information.  Called by parser and db_add_expression. */
-expression* db_create_expression( expression* right, expression* left, int op, bool lhs, int line, int first, int last, char* sig_name );
+expression* db_create_expression( expression* right, expression* left, exp_op_type op, bool lhs, int line, int first, int last, char* sig_name );
 
 /*! \brief Binds all necessary sub-expressions in the given tree to the given signal name */
 void db_bind_expr_tree( expression* root, char* sig_name );
@@ -185,19 +185,19 @@ void db_remove_stmt_blks_calling_statement( statement* stmt );
 void db_sync_curr_instance();
 
 /*! \brief Sets current VCD scope to specified scope. */
-void db_set_vcd_scope( char* scope );
+void db_set_vcd_scope( const char* scope );
 
 /*! \brief Moves current VCD hierarchy up one level */
 void db_vcd_upscope();
 
 /*! \brief Adds symbol to signal specified by name. */
-void db_assign_symbol( char* name, char* symbol, int msb, int lsb );
+void db_assign_symbol( const char* name, const char* symbol, int msb, int lsb );
 
 /*! \brief Sets the found symbol value to specified character value.  Called by VCD lexer. */
-void db_set_symbol_char( char* sym, char value );
+void db_set_symbol_char( const char* sym, char value );
 
 /*! \brief Sets the found symbol value to specified string value.  Called by VCD lexer. */
-void db_set_symbol_string( char* sym, char* value );
+void db_set_symbol_string( const char* sym, const char* value );
 
 /*! \brief Performs a timestep for all signal changes during this timestep. */
 bool db_do_timestep( uint64 time, bool final ); 
@@ -205,6 +205,10 @@ bool db_do_timestep( uint64 time, bool final );
 
 /*
  $Log$
+ Revision 1.88  2008/04/15 13:59:13  phase1geo
+ Starting to add support for multiple databases.  Things compile but are
+ quite broken at the moment.  Checkpointing.
+
  Revision 1.87  2008/04/15 06:08:46  phase1geo
  First attempt to get both instance and module coverage calculatable for
  GUI purposes.  This is not quite complete at the moment though it does
