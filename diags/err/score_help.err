@@ -1,5 +1,5 @@
 
-Usage:  covered score -t <top-level_module_name> [-vcd <dumpfile> | -lxt <dumpfile>] [<options>]
+Usage:  covered score (-h | -t <top-level_module_name> [-vcd <dumpfile> | -lxt <dumpfile>] [<options>])
 
    Dumpfile formats:
       Both the VCD and LXT style dumpfiles are supported by Covered.
@@ -9,31 +9,34 @@ Usage:  covered score -t <top-level_module_name> [-vcd <dumpfile> | -lxt <dumpfi
       initial CDD file from the design and will not attempt to score the design.  An error message
       will be displayed if both options are present on the command-line.
 
+   -h                              Displays this help information.
+
    Options:
       -vpi (<name>)                Generates Verilog module called <name> which contains code to
-                                    allow Covered to run as a VPI during simulation.  If <name>
-                                    is not specified, the module file is called covered_vpi.v
-                                    If the -vcd option is specified along with this option, this
-                                    option will not be used.
+                                     allow Covered to run as a VPI during simulation.  If <name>
+                                     is not specified, the module file is called covered_vpi.v
+                                     If the -vcd option is specified along with this option, this
+                                     option will not be used.
       -vpi_ts <timescale>          This option is only valid when the -vpi option has been specified.
-                                    This option allows the user to specify a timescale for the generated
-                                    Verilog module.  If this option is not specified, no timescale will
-                                    be created for the generated module.  The value of <timescale> is
-                                    specified as follows:
-                                      (1|10|100)(s|ms|us|ns|ps|fs)/(1|10|100)(s|ms|us|ns|ps|fs)
-                                    If whitespace is needed between the various values, place the
-                                    entire contents of <timescale> in double quotes.
+                                     This option allows the user to specify a timescale for the generated
+                                     Verilog module.  If this option is not specified, no timescale will
+                                     be created for the generated module.  The value of <timescale> is
+                                     specified as follows:
+                                       (1|10|100)(s|ms|us|ns|ps|fs)/(1|10|100)(s|ms|us|ns|ps|fs)
+                                     If whitespace is needed between the various values, place the
+                                     entire contents of <timescale> in double quotes.
       -i <instance_name>           Verilog hierarchical scope of top-level module to score.
-                                    Necessary if module to verify coverage is not the top-level
-                                    module in the design.  If not specified, -t value is used.
+                                     Necessary if module to verify coverage is not the top-level
+                                     module in the design.  If not specified, -t value is used.
       -o <database_filename>       Name of database to write coverage information to.
+      -cdd <database_filename>     Name of database to read coverage information from (same as -o).
       -I <directory>               Directory to find included Verilog files.
       -f <filename>                Name of file containing additional arguments to parse.
       -F <module>=(<ivar>,)<ovar>  Module, input state variable and output state variable of
-                                    an FSM state variable.  If input variable (ivar) is not specified,
-                                    the output variable (ovar) is also used as the input variable.
+                                     an FSM state variable.  If input variable (ivar) is not specified,
+                                     the output variable (ovar) is also used as the input variable.
       -A ovl                       Specifies that any OVL assertion found in the design should be
-                                    automatically included for assertion coverage.
+                                     automatically included for assertion coverage.
       -y <directory>               Directory to find unspecified Verilog files.
       -v <filename>                Name of specific Verilog file to score.
       -D <define_name>(=<value>)   Defines the specified name to 1 or the specified value.
@@ -41,30 +44,33 @@ Usage:  covered score -t <top-level_module_name> [-vcd <dumpfile> | -lxt <dumpfi
       -P <parameter_scope>=<value> Performs a defparam on the specified parameter with value.
       -T min|typ|max               Specifies value to use in delay expressions of the form min:typ:max.
       -ts <number>                 If design is being scored, specifying this option will output
-                                    the current timestep (by increments of <number>) to standard output.
+                                     the current timestep (by increments of <number>) to standard output.
       -r(S|W|E|I|P[=<name>])       Specifies action to take when race condition checking finds problems in design.
-                                    (-rS = Silent.  Do not report condition was found, just handle it.
-                                     -rW = Warning.  Report race condition information, but just handle it.  Default.
-                                     -rE = Error.  Report race condition information and stop scoring.
-                                     -rI = Ignore.  Skip race condition checking completely.)
-                                     -rP = Use pragmas.  Skip race condition checking for all code surrounded by
-                                           // racecheck off/on embedded pragmas.  The "racecheck" keyword can be
-                                           changed by specifying =<name> where <name> is the new name for the race
-                                           condition pragma keyword.
+                                     (-rS = Silent.  Do not report condition was found, just handle it.
+                                      -rW = Warning.  Report race condition information, but just handle it.  Default.
+                                      -rE = Error.  Report race condition information and stop scoring.
+                                      -rI = Ignore.  Skip race condition checking completely.)
+                                      -rP = Use pragmas.  Skip race condition checking for all code surrounded by
+                                            // racecheck off/on embedded pragmas.  The "racecheck" keyword can be
+                                            changed by specifying =<name> where <name> is the new name for the race
+                                            condition pragma keyword.
       -S                           Outputs simulation performance information after scoring has completed.  This
-                                    information is currently only useful for the developers of Covered.
+                                     information is currently only useful for the developers of Covered.
       -g (<module>=)[1|2|3]        Selects generation of Verilog syntax that the parser will handle.  If
-                                    <module>= is present, only the specified module will use the provided
-                                    generation.  If <module>= is not specified, the entire design will use
-                                    the provided generation.  1=Verilog-1995, 2=Verilog-2001, 3=SystemVerilog
-                                    By default, the latest generation is parsed.
+                                     <module>= is present, only the specified module will use the provided
+                                     generation.  If <module>= is not specified, the entire design will use
+                                     the provided generation.  1=Verilog-1995, 2=Verilog-2001, 3=SystemVerilog
+                                     By default, the latest generation is parsed.
       -cli (<filename>)            Causes the command-line debugger to be used during VCD/LXT dumpfile scoring.
-                                    If <filename> is specified, this file contains information saved in a previous
-                                    call to savehist on the CLI and causes the history contained in this file to be
-                                    replayed prior to the CLI command prompt.  If <filename> is not specified, the
-                                    CLI prompt will be immediately available at the start of simulation.  This option
-                                    is only available when Covered is configured with the --enable-debug option.
-      -h                           Displays this help information.
+                                     If <filename> is specified, this file contains information saved in a previous
+                                     call to savehist on the CLI and causes the history contained in this file to be
+                                     replayed prior to the CLI command prompt.  If <filename> is not specified, the
+                                     CLI prompt will be immediately available at the start of simulation.  This option
+                                     is only available when Covered is configured with the --enable-debug option.
+      -m <message>                 Allows the user to specify information about this CDD file.  This information can
+                                     be anything (messages with whitespace should be surrounded by double-quotation marks),
+                                     but may include something about the simulation arguments to more easily link the
+                                     CDD file to its simulation for purposes of recreating the CDD file.
 
       +libext+.<extension>(+.<extension>)+
                                    Extensions of Verilog files to allow in scoring
@@ -76,8 +82,8 @@ Usage:  covered score -t <top-level_module_name> [-vcd <dumpfile> | -lxt <dumpfi
       -ei                          Exclude initial blocks from coverage.
       -ef                          Exclude final blocks from coverage.
       -ep [<name>]                 Exclude all code enclosed by pragmas.  By default, the pragmas are of
-                                   the format '// coverage (on|off)'; however, if <name> is specified for
-                                   this option, the pragma keyword 'coverage' will be replaced with that value.
+                                     the format '// coverage (on|off)'; however, if <name> is specified for
+                                     this option, the pragma keyword 'coverage' will be replaced with that value.
 
     Note:
       The top-level module specifies the module to begin scoring.  All

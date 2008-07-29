@@ -1,5 +1,5 @@
-5 e 181 * 0
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd generate14.vcd -o generate14.cdd -v generate14.v -D DUMP
+5 10 181 3 *
+8 /home/bryce3/trevorw/covered/diags/verilog -t main -vcd generate14.vcd -o generate14.cdd -v generate14.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" generate14.v 9 37 1
 1 clock 11 70004 1 0 0 0 1 17 0 1 1 0 0

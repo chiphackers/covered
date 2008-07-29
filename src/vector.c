@@ -4699,6 +4699,15 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.142.2.3  2008/07/10 22:43:55  phase1geo
+ Merging in rank-devel-branch into this branch.  Added -f options for all commands
+ to allow files containing command-line arguments to be added.  A few error diagnostics
+ are currently failing due to changes in the rank branch that never got fixed in that
+ branch.  Checkpointing.
+
+ Revision 1.150  2008/06/27 14:02:04  phase1geo
+ Fixing splint and -Wextra warnings.  Also fixing comment formatting.
+
  Revision 1.149  2008/06/25 12:38:32  phase1geo
  Fixing one issue with an array overflow in the stype array (array should have
  been 3 characters long when it was only two).  This is an attempt to fix bug

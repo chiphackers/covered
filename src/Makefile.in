@@ -60,13 +60,14 @@ am_covered_OBJECTS = arc.$(OBJEXT) assertion.$(OBJEXT) attr.$(OBJEXT) \
 	main.$(OBJEXT) memory.$(OBJEXT) merge.$(OBJEXT) \
 	obfuscate.$(OBJEXT) ovl.$(OBJEXT) param.$(OBJEXT) \
 	parse.$(OBJEXT) parser_misc.$(OBJEXT) perf.$(OBJEXT) \
-	profiler.$(OBJEXT) race.$(OBJEXT) reentrant.$(OBJEXT) \
-	report.$(OBJEXT) scope.$(OBJEXT) score.$(OBJEXT) \
-	search.$(OBJEXT) sim.$(OBJEXT) stat.$(OBJEXT) static.$(OBJEXT) \
-	static_lexer.$(OBJEXT) statement.$(OBJEXT) stmt_blk.$(OBJEXT) \
-	struct_union.$(OBJEXT) symtable.$(OBJEXT) tcl_funcs.$(OBJEXT) \
-	toggle.$(OBJEXT) tree.$(OBJEXT) util.$(OBJEXT) vcd.$(OBJEXT) \
-	vector.$(OBJEXT) vsignal.$(OBJEXT)
+	profiler.$(OBJEXT) race.$(OBJEXT) rank.$(OBJEXT) \
+	reentrant.$(OBJEXT) report.$(OBJEXT) scope.$(OBJEXT) \
+	score.$(OBJEXT) search.$(OBJEXT) sim.$(OBJEXT) stat.$(OBJEXT) \
+	static.$(OBJEXT) static_lexer.$(OBJEXT) statement.$(OBJEXT) \
+	stmt_blk.$(OBJEXT) struct_union.$(OBJEXT) symtable.$(OBJEXT) \
+	tcl_funcs.$(OBJEXT) toggle.$(OBJEXT) tree.$(OBJEXT) \
+	util.$(OBJEXT) vcd.$(OBJEXT) vector.$(OBJEXT) \
+	vsignal.$(OBJEXT)
 covered_OBJECTS = $(am_covered_OBJECTS)
 am__DEPENDENCIES_1 =
 covered_DEPENDENCIES = $(am__DEPENDENCIES_1)
@@ -249,6 +250,7 @@ covered_SOURCES = arc.c \
 		  perf.c \
                   profiler.c \
                   race.c \
+                  rank.c \
                   reentrant.c \
 		  report.c \
 		  scope.c \
@@ -383,6 +385,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pplexer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/profiler.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/race.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rank.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/reentrant.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/report.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/scope.Po@am__quote@

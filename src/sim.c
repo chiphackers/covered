@@ -640,17 +640,17 @@ static thread* sim_create_thread(
 }
 
 /*!
- \param parent  Pointer to parent thread of the new thread to create (set to NULL if there is no parent thread)
- \param stmt    Pointer to head statement to have new thread point to.
- \param funit   Pointer to functional unit that is creating this thread.
- \param time    Pointer to current simulation time.
-
  \return Returns the pointer to the thread that was added to the active queue (if one was added).
 
  Creates a new thread with the given information and adds the thread to the active queue to run.  Returns a pointer
  to the newly created thread for joining/running purposes.
 */
-thread* sim_add_thread( thread* parent, statement* stmt, func_unit* funit, const sim_time* time ) { PROFILE(SIM_ADD_THREAD);
+thread* sim_add_thread(
+  thread*         parent,  /*!< Pointer to parent thread of the new thread to create (set to NULL if there is no parent thread) */
+  statement*      stmt,    /*!< Pointer to head statement to have new thread point to */
+  func_unit*      funit,   /*!< Pointer to functional unit that is creating this thread */
+  const sim_time* time     /*!< Pointer to current simulation time */
+) { PROFILE(SIM_ADD_THREAD);
 
   thread* thr = NULL;  /* Pointer to added thread */
 
@@ -1220,7 +1220,9 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
     free_safe( tmp, sizeof( thread ) );
   }
 
-  all_head = all_tail = all_next = NULL;
+  all_head     = all_tail     = all_next = NULL;
+  active_head  = active_tail  = NULL;
+  delayed_head = delayed_tail = NULL;
 
   /* Deallocate all static expressions, if there are any */
   exp_link_delete_list( static_expr_head, FALSE );
@@ -1239,6 +1241,19 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.127.2.1  2008/07/10 22:43:54  phase1geo
+ Merging in rank-devel-branch into this branch.  Added -f options for all commands
+ to allow files containing command-line arguments to be added.  A few error diagnostics
+ are currently failing due to changes in the rank branch that never got fixed in that
+ branch.  Checkpointing.
+
+ Revision 1.130.2.1  2008/07/02 04:40:18  phase1geo
+ Adding merge5* diagnostics to verify rank function (this is not complete yet).  The
+ rank function is a bit broken at this point.  Checkpointing.
+
+ Revision 1.130  2008/06/27 14:02:04  phase1geo
+ Fixing splint and -Wextra warnings.  Also fixing comment formatting.
+
  Revision 1.129  2008/06/20 18:43:41  phase1geo
  Updating source files to optimize code when the --enable-debug option is specified.
  The performance was almost 8x worse with this option enabled, now it should be

@@ -56,8 +56,8 @@
 extern char         user_msg[USER_MSG_LENGTH];
 extern db**         db_list;
 extern unsigned int curr_db;
-extern int          merge_in_num;
-extern char**       merge_in;
+extern str_link*    merge_in_head;
+extern str_link*    merge_in_tail;
 extern char**       leading_hierarchies;
 extern int          leading_hier_num;
 extern bool         leading_hiers_differ;
@@ -194,21 +194,22 @@ static void report_usage() {
   printf( "\n" );
   printf( "   Options:\n" );
   printf( "      -m [l][t][c][f][r][a][m]  Type(s) of metrics to report.  l=line, t=toggle, c=combinational logic,\n" );
-  printf( "                                 f=FSM state/arc, r=race condition, a=assertion, m=memory.  Default is ltcf.\n" );
+  printf( "                                  f=FSM state/arc, r=race condition, a=assertion, m=memory.  Default is ltcf.\n" );
   printf( "      -d (s|d|v)                Level of report detail (s=summary, d=detailed, v=verbose).\n" );
-  printf( "                                 Default is to display summary coverage information.\n" );
+  printf( "                                  Default is to display summary coverage information.\n" );
   printf( "      -i                        Provides coverage information for instances instead of module/task/function.\n" );
   printf( "      -c                        If '-d d' or '-d v' is specified, displays covered line, toggle\n" );
-  printf( "                                 and combinational cases.  Default is to display uncovered results.\n" );
+  printf( "                                  and combinational cases.  Default is to display uncovered results.\n" );
   printf( "      -o <filename>             File to output report information to.  Default is standard output.\n" );
   printf( "      -w [<line_width>]         Causes expressions to be output to best-fit to the specified line\n" );
-  printf( "                                 width.  If the -w option is specified without a value, the default\n" );
-  printf( "                                 line width of 80 is used.  If the -w option is not specified, all\n" );
-  printf( "                                 expressions are output in the format that the user specified in the\n" );
-  printf( "                                 Verilog source.\n" );
+  printf( "                                  width.  If the -w option is specified without a value, the default\n" );
+  printf( "                                  line width of %d is used.  If the -w option is not specified, all\n", DEFAULT_LINE_WIDTH );
+  printf( "                                  expressions are output in the format that the user specified in the\n" );
+  printf( "                                  Verilog source.\n" );
   printf( "      -s                        Suppress outputting modules/instances that do not contain any coverage metrics.\n" );
   printf( "      -b                        If combinational logic verbose output is reported and the expression is a\n" );
-  printf( "                                 vector operation, this option outputs the coverage information on a bitwise basis.\n" );
+  printf( "                                  vector operation, this option outputs the coverage information on a bitwise basis.\n" );
+  printf( "      -f <filename>             Name of file containing additional arguments to parse.\n" );
   printf( "\n" );
 
 }
@@ -379,6 +380,31 @@ void report_parse_args(
 
       report_bitwise = TRUE;
 
+    } else if( strncmp( "-f", argv[i], 2 ) == 0 ) {
+
+      if( check_option_value( argc, argv, i ) ) {
+        char**       arg_list = NULL;
+        int          arg_num  = 0;
+        unsigned int j;
+        i++;
+        Try {
+          read_command_file( argv[i], &arg_list, &arg_num );
+          report_parse_args( arg_num, -1, (const char**)arg_list );
+        } Catch_anonymous {
+          for( j=0; j<arg_num; j++ ) {
+            free_safe( arg_list[j], (strlen( arg_list[j] ) + 1) );
+          }
+          free_safe( arg_list, (sizeof( char* ) * arg_num) );
+          Throw 0;
+        }
+        for( j=0; j<arg_num; j++ ) {
+          free_safe( arg_list[j], (strlen( arg_list[j] ) + 1) );
+        }
+        free_safe( arg_list, (sizeof( char* ) * arg_num) );
+      } else {
+        Throw 0;
+      }
+ 
     } else if( (i + 1) == argc ) {
 
       if( file_exists( argv[i] ) ) {
@@ -418,7 +444,7 @@ void report_parse_args(
  will have the accumulated information from themselves and all of their
  children.
 */
-static void report_gather_instance_stats(
+void report_gather_instance_stats(
   funit_inst* root  /*!< Pointer to root of instance tree to search */
 ) { PROFILE(REPORT_GATHER_INSTANCE_STATS);
 
@@ -650,15 +676,15 @@ void report_print_header(
     fprintf( ofile, "\n" );
   }
 
-  if( merge_in_num > 0 ) {
+  if( merge_in_head != NULL ) {
 
-    if( merge_in_num == 1 ) {
+    if( merge_in_head == merge_in_tail ) {
 
       fprintf( ofile, "* Report generated from CDD file that was merged from the following files with the following leading hierarchies:\n" );
       fprintf( ofile, "    Filename                                           Leading Hierarchy\n" );
       fprintf( ofile, "    -----------------------------------------------------------------------------------------------------------------\n" );
-      fprintf( ofile, "    %-49.49s  %-62.62s\n", input_db,    leading_hierarchies[0] );
-      fprintf( ofile, "    %-49.49s  %-62.62s\n", merge_in[0], leading_hierarchies[1] ); 
+      fprintf( ofile, "    %-49.49s  %-62.62s\n", input_db,           leading_hierarchies[0] );
+      fprintf( ofile, "    %-49.49s  %-62.62s\n", merge_in_head->str, leading_hierarchies[1] ); 
 
       if( report_instance && leading_hiers_differ ) {
         fprintf( ofile, "\n* Merged CDD files contain different leading hierarchies, will use value \"<NA>\" to represent leading hierarchy.\n\n" );
@@ -666,12 +692,16 @@ void report_print_header(
 
     } else {
 
+      str_link* strl = merge_in_head;
+
       fprintf( ofile, "* Report generated from CDD file that was merged from the following files:\n" );
       fprintf( ofile, "    Filename                                           Leading Hierarchy\n" );
       fprintf( ofile, "    -----------------------------------------------------------------------------------------------------------------\n" );
 
-      for( i=0; i<merge_in_num; i++ ) {
-        fprintf( ofile, "    %-49.49s  %-62.62s\n", merge_in[i], leading_hierarchies[i+1] );
+      i = 1;
+      while( strl != NULL ) {
+        fprintf( ofile, "    %-49.49s  %-62.62s\n", strl->str, leading_hierarchies[i++] );
+        strl = strl->next;
       }
 
       if( report_instance && leading_hiers_differ ) {
@@ -915,7 +945,6 @@ void command_report(
 
         if( Tcl_Init( interp ) == TCL_ERROR ) {
           printf( "ERROR: %s\n", interp->result );
-          printf( "report Throw N\n" );
           Throw 0;
         }
 
@@ -947,7 +976,7 @@ void command_report(
         user_home       = getenv( "HOME" );
 
         /* Initialize TCL */
-        tcl_func_initialize( interp, user_home, covered_home, covered_version, covered_browser );
+        tcl_func_initialize( interp, argv[0], user_home, covered_home, covered_version, covered_browser );
 
         /* Call the top-level Tcl file */
         slen      = strlen( covered_home ) + 30;
@@ -992,6 +1021,29 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.104.2.6  2008/07/23 05:10:11  phase1geo
+ Adding -d and -ext options to rank and merge commands.  Updated necessary files
+ per this change and updated regressions.
+
+ Revision 1.104.2.5  2008/07/19 00:25:52  phase1geo
+ Forgot to update some files per the last checkin.
+
+ Revision 1.104.2.4  2008/07/15 23:01:51  phase1geo
+ Added file viewer and started to update the generate report window.
+
+ Revision 1.104.2.3  2008/07/10 22:43:54  phase1geo
+ Merging in rank-devel-branch into this branch.  Added -f options for all commands
+ to allow files containing command-line arguments to be added.  A few error diagnostics
+ are currently failing due to changes in the rank branch that never got fixed in that
+ branch.  Checkpointing.
+
+ Revision 1.111.2.1  2008/07/01 06:17:22  phase1geo
+ More updates to rank command.  Updating IV/Cver regression for these changes (full
+ regression not passing at this point).  Checkpointing.
+
+ Revision 1.111  2008/06/27 14:02:04  phase1geo
+ Fixing splint and -Wextra warnings.  Also fixing comment formatting.
+
  Revision 1.110  2008/06/20 18:12:55  phase1geo
  Adding a few more diagnostics to regressions.  Cleaning up check_test script
  to properly cleanup diagnostics that left CDD files around after regressions.

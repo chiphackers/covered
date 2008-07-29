@@ -1,5 +1,5 @@
-5 e 101 main 0
-8 /Users/trevorw/projects/covered/diags/verilog -t fsm -i main.fsm -vcd fsm2b.vcd -o fsm2b.cdd -y lib -v fsm2b.v -F fsm=state,next_state -D DUMP
+5 10 101 37 main
+8 /Users/trevorw/projects/devel/covered/diags/verilog -t fsm -i main.fsm -vcd fsm2b.vcd -o fsm2b.cdd -y lib -v fsm2b.v -F fsm=state,next_state -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 fsm "fsm" lib/fsm.v 1 37 1
 2 1 23 110015 24 1 100c 0 0 1 1 clock

@@ -1,5 +1,5 @@
-5 e 101 * 0
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd fsm1.2.vcd -o fsm1.2.cdd -y lib -v fsm1.2.v -F fsm=state,next_state -D DUMP
+5 10 101 33 *
+8 /Users/trevorw/projects/devel/covered/diags/verilog -t main -vcd fsm1.2.vcd -o fsm1.2.cdd -y lib -v fsm1.2.v -F fsm=state,next_state -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" fsm1.2.v 1 41 1
 2 1 36 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u1

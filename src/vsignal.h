@@ -94,6 +94,15 @@ void vsignal_dealloc( vsignal* sig );
 
 /*
  $Log$
+ Revision 1.28.4.1  2008/07/10 22:43:56  phase1geo
+ Merging in rank-devel-branch into this branch.  Added -f options for all commands
+ to allow files containing command-line arguments to be added.  A few error diagnostics
+ are currently failing due to changes in the rank branch that never got fixed in that
+ branch.  Checkpointing.
+
+ Revision 1.29  2008/06/27 14:02:05  phase1geo
+ Fixing splint and -Wextra warnings.  Also fixing comment formatting.
+
  Revision 1.28  2008/04/15 06:08:47  phase1geo
  First attempt to get both instance and module coverage calculatable for
  GUI purposes.  This is not quite complete at the moment though it does

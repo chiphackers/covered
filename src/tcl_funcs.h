@@ -35,11 +35,25 @@
 int tcl_func_get_funit_list( ClientData d, Tcl_Interp* tcl, int argc, const char *argv[] );
 
 /*! \brief Initializes TCL interface */
-void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* version, char* browser );
+void tcl_func_initialize(
+  Tcl_Interp* tcl,
+  const char* program,
+  const char* user_home,
+  const char* home,
+  const char* version,
+  const char* browser
+);
+
 #endif
 
 /*
  $Log$
+ Revision 1.13.6.1  2008/07/19 00:25:52  phase1geo
+ Forgot to update some files per the last checkin.
+
+ Revision 1.13  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.12  2006/10/12 22:48:46  phase1geo
  Updates to remove compiler warnings.  Still some work left to go here.
 

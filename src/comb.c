@@ -93,6 +93,12 @@ extern isuppl         info_suppl;
 
 
 /*!
+ Controls whether multi-expressions are used or not.
+*/
+bool allow_multi_expr = TRUE;
+
+
+/*!
  \return Returns new depth value for specified child expression.
 
  Based on the current point in the expression tree, calculates the left or
@@ -353,7 +359,7 @@ void combination_get_tree_stats(
               ((exp->op == EXP_OP_AND)  ||
                (exp->op == EXP_OP_OR)   ||
                (exp->op == EXP_OP_LAND) ||
-               (exp->op == EXP_OP_LOR)) ) {
+               (exp->op == EXP_OP_LOR)) && allow_multi_expr ) {
             combination_multi_expr_calc( exp, ulid, FALSE, excluded, hit, total );
           } else {
             if( !expression_is_static_only( exp ) ) {
@@ -1257,7 +1263,7 @@ static void combination_underline_tree(
             
               /* Create spaces for right side */
               exp_sp = (char*)malloc_safe( r_size + 1 );
-              gen_space( exp_sp, r_size );
+              gen_char_string( exp_sp, ' ', r_size );
 
               /* Merge left side only */
               rv = snprintf( (*lines)[i], (*size + 1), code_fmt, l_lines[i], exp_sp );
@@ -1277,7 +1283,7 @@ static void combination_underline_tree(
 
                 /* Create spaces for left side */
                 exp_sp = (char*)malloc_safe( l_size + 1 );
-                gen_space( exp_sp, l_size );
+                gen_char_string( exp_sp, ' ', l_size );
 
                 /* Merge right side only */
                 rv = snprintf( (*lines)[i], (*size + 1), code_fmt, exp_sp, r_lines[i] );
@@ -2939,6 +2945,22 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.194.2.3  2008/07/23 21:38:42  phase1geo
+ Adding better formatting for ranking reports to allow the inclusion of the full
+ pathname for each CDD file listed.
+
+ Revision 1.194.2.2  2008/07/21 06:36:26  phase1geo
+ Updating code from rank-devel-branch branch.
+
+ Revision 1.194.2.1  2008/07/10 22:43:50  phase1geo
+ Merging in rank-devel-branch into this branch.  Added -f options for all commands
+ to allow files containing command-line arguments to be added.  A few error diagnostics
+ are currently failing due to changes in the rank branch that never got fixed in that
+ branch.  Checkpointing.
+
+ Revision 1.196  2008/06/27 14:02:00  phase1geo
+ Fixing splint and -Wextra warnings.  Also fixing comment formatting.
+
  Revision 1.195  2008/06/19 16:14:54  phase1geo
  leaned up all warnings in source code from -Wall.  This also seems to have cleared
  up a few runtime issues.  Full regression passes.

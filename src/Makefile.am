@@ -43,6 +43,7 @@ covered_SOURCES = arc.c \
 		  perf.c \
                   profiler.c \
                   race.c \
+                  rank.c \
                   reentrant.c \
 		  report.c \
 		  scope.c \

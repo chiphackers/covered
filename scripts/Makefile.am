@@ -6,6 +6,9 @@ tcl_SCRIPTS = assert.tcl \
               cov_create.tcl \
               cov_icon.gif \
               fsm.tcl \
+              gen_new.tcl \
+              gen_rank.tcl \
+              gen_report.tcl \
               help.tcl \
               help_wrapper.tcl \
               help_tbl.tcl \
@@ -18,7 +21,9 @@ tcl_SCRIPTS = assert.tcl \
               right_arrow.gif \
               summary.tcl \
               toggle.tcl \
-              verilog.tcl
+              verilog.tcl \
+              viewer.tcl \
+              wizard.tcl
 
 cfgdir      = $(datadir)/covered
 cfg_DATA    = .coveredrc

@@ -1,5 +1,5 @@
-5 e 181 main 0
-8 /home/bryce3/trevorw/covered/diags/verilog -t adder1 -i main.addA -vcd merge4b.vcd -o merge4b.cdd -v merge4b.v -y lib -D DUMP
+5 10 101 4 main
+8 /Users/trevorw/projects/devel/covered/diags/verilog -t adder1 -i main.addA -vcd merge4b.vcd -o merge4b.cdd -v merge4b.v -y lib -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 adder1 "addA" lib/adder1.v 1 18 1
 2 1 15 f000f 2 1 100c 0 0 1 1 b

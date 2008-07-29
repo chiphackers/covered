@@ -111,6 +111,10 @@ static str_link* gen_mod_tail = NULL;
 /*! Specifies the user-supplied timescale information for VPI */
 static char* vpi_timescale = NULL;
 
+/*! User-supplied message to include in the CDD database */
+char* cdd_message = NULL;
+
+
 extern int64     largest_malloc_size;
 extern int64     curr_malloc_size;
 extern str_link* use_files_head;
@@ -135,7 +139,7 @@ extern void define_macro( const char* name, const char* value );
 static void score_usage() {
 
   printf( "\n" );
-  printf( "Usage:  covered score -t <top-level_module_name> [-vcd <dumpfile> | -lxt <dumpfile>] [<options>]\n" );
+  printf( "Usage:  covered score (-h | -t <top-level_module_name> [-vcd <dumpfile> | -lxt <dumpfile>] [<options>])\n" );
   printf( "\n" );
   printf( "   Dumpfile formats:\n" );
   printf( "      Both the VCD and LXT style dumpfiles are supported by Covered.\n" );
@@ -145,31 +149,34 @@ static void score_usage() {
   printf( "      initial CDD file from the design and will not attempt to score the design.  An error message\n" );
   printf( "      will be displayed if both options are present on the command-line.\n" );
   printf( "\n" );
+  printf( "   -h                              Displays this help information.\n" );
+  printf( "\n" );
   printf( "   Options:\n" );
   printf( "      -vpi (<name>)                Generates Verilog module called <name> which contains code to\n" );
-  printf( "                                    allow Covered to run as a VPI during simulation.  If <name>\n" );
-  printf( "                                    is not specified, the module file is called %s\n", DFLT_VPI_NAME );
-  printf( "                                    If the -vcd option is specified along with this option, this\n" );
-  printf( "                                    option will not be used.\n" );
+  printf( "                                     allow Covered to run as a VPI during simulation.  If <name>\n" );
+  printf( "                                     is not specified, the module file is called %s\n", DFLT_VPI_NAME );
+  printf( "                                     If the -vcd option is specified along with this option, this\n" );
+  printf( "                                     option will not be used.\n" );
   printf( "      -vpi_ts <timescale>          This option is only valid when the -vpi option has been specified.\n" );
-  printf( "                                    This option allows the user to specify a timescale for the generated\n" );
-  printf( "                                    Verilog module.  If this option is not specified, no timescale will\n" );
-  printf( "                                    be created for the generated module.  The value of <timescale> is\n" );
-  printf( "                                    specified as follows:\n" );
-  printf( "                                      (1|10|100)(s|ms|us|ns|ps|fs)/(1|10|100)(s|ms|us|ns|ps|fs)\n" );
-  printf( "                                    If whitespace is needed between the various values, place the\n" );
-  printf( "                                    entire contents of <timescale> in double quotes.\n" );
+  printf( "                                     This option allows the user to specify a timescale for the generated\n" );
+  printf( "                                     Verilog module.  If this option is not specified, no timescale will\n" );
+  printf( "                                     be created for the generated module.  The value of <timescale> is\n" );
+  printf( "                                     specified as follows:\n" );
+  printf( "                                       (1|10|100)(s|ms|us|ns|ps|fs)/(1|10|100)(s|ms|us|ns|ps|fs)\n" );
+  printf( "                                     If whitespace is needed between the various values, place the\n" );
+  printf( "                                     entire contents of <timescale> in double quotes.\n" );
   printf( "      -i <instance_name>           Verilog hierarchical scope of top-level module to score.\n" );
-  printf( "                                    Necessary if module to verify coverage is not the top-level\n" );
-  printf( "                                    module in the design.  If not specified, -t value is used.\n" );
+  printf( "                                     Necessary if module to verify coverage is not the top-level\n" );
+  printf( "                                     module in the design.  If not specified, -t value is used.\n" );
   printf( "      -o <database_filename>       Name of database to write coverage information to.\n" );
+  printf( "      -cdd <database_filename>     Name of database to read coverage information from (same as -o).\n" );
   printf( "      -I <directory>               Directory to find included Verilog files.\n" );
   printf( "      -f <filename>                Name of file containing additional arguments to parse.\n" );
   printf( "      -F <module>=(<ivar>,)<ovar>  Module, input state variable and output state variable of\n" );
-  printf( "                                    an FSM state variable.  If input variable (ivar) is not specified,\n" );
-  printf( "                                    the output variable (ovar) is also used as the input variable.\n" ); 
+  printf( "                                     an FSM state variable.  If input variable (ivar) is not specified,\n" );
+  printf( "                                     the output variable (ovar) is also used as the input variable.\n" ); 
   printf( "      -A ovl                       Specifies that any OVL assertion found in the design should be\n" );
-  printf( "                                    automatically included for assertion coverage.\n" );
+  printf( "                                     automatically included for assertion coverage.\n" );
   printf( "      -y <directory>               Directory to find unspecified Verilog files.\n" );
   printf( "      -v <filename>                Name of specific Verilog file to score.\n" );
   printf( "      -D <define_name>(=<value>)   Defines the specified name to 1 or the specified value.\n" );
@@ -177,30 +184,33 @@ static void score_usage() {
   printf( "      -P <parameter_scope>=<value> Performs a defparam on the specified parameter with value.\n" );
   printf( "      -T min|typ|max               Specifies value to use in delay expressions of the form min:typ:max.\n" );
   printf( "      -ts <number>                 If design is being scored, specifying this option will output\n" );
-  printf( "                                    the current timestep (by increments of <number>) to standard output.\n" );
+  printf( "                                     the current timestep (by increments of <number>) to standard output.\n" );
   printf( "      -r(S|W|E|I|P[=<name>])       Specifies action to take when race condition checking finds problems in design.\n" );
-  printf( "                                    (-rS = Silent.  Do not report condition was found, just handle it.\n" );
-  printf( "                                     -rW = Warning.  Report race condition information, but just handle it.  Default.\n" );
-  printf( "                                     -rE = Error.  Report race condition information and stop scoring.\n" );
-  printf( "                                     -rI = Ignore.  Skip race condition checking completely.)\n" );
-  printf( "                                     -rP = Use pragmas.  Skip race condition checking for all code surrounded by\n" );
-  printf( "                                           // racecheck off/on embedded pragmas.  The \"racecheck\" keyword can be\n" );
-  printf( "                                           changed by specifying =<name> where <name> is the new name for the race\n" );
-  printf( "                                           condition pragma keyword.\n" );
+  printf( "                                     (-rS = Silent.  Do not report condition was found, just handle it.\n" );
+  printf( "                                      -rW = Warning.  Report race condition information, but just handle it.  Default.\n" );
+  printf( "                                      -rE = Error.  Report race condition information and stop scoring.\n" );
+  printf( "                                      -rI = Ignore.  Skip race condition checking completely.)\n" );
+  printf( "                                      -rP = Use pragmas.  Skip race condition checking for all code surrounded by\n" );
+  printf( "                                            // racecheck off/on embedded pragmas.  The \"racecheck\" keyword can be\n" );
+  printf( "                                            changed by specifying =<name> where <name> is the new name for the race\n" );
+  printf( "                                            condition pragma keyword.\n" );
   printf( "      -S                           Outputs simulation performance information after scoring has completed.  This\n" );
-  printf( "                                    information is currently only useful for the developers of Covered.\n" );
+  printf( "                                     information is currently only useful for the developers of Covered.\n" );
   printf( "      -g (<module>=)[1|2|3]        Selects generation of Verilog syntax that the parser will handle.  If\n" );
-  printf( "                                    <module>= is present, only the specified module will use the provided\n" );
-  printf( "                                    generation.  If <module>= is not specified, the entire design will use\n" );
-  printf( "                                    the provided generation.  1=Verilog-1995, 2=Verilog-2001, 3=SystemVerilog\n" );
-  printf( "                                    By default, the latest generation is parsed.\n" );
+  printf( "                                     <module>= is present, only the specified module will use the provided\n" );
+  printf( "                                     generation.  If <module>= is not specified, the entire design will use\n" );
+  printf( "                                     the provided generation.  1=Verilog-1995, 2=Verilog-2001, 3=SystemVerilog\n" );
+  printf( "                                     By default, the latest generation is parsed.\n" );
   printf( "      -cli (<filename>)            Causes the command-line debugger to be used during VCD/LXT dumpfile scoring.\n" );
-  printf( "                                    If <filename> is specified, this file contains information saved in a previous\n" );
-  printf( "                                    call to savehist on the CLI and causes the history contained in this file to be\n" );
-  printf( "                                    replayed prior to the CLI command prompt.  If <filename> is not specified, the\n" );
-  printf( "                                    CLI prompt will be immediately available at the start of simulation.  This option\n" );
-  printf( "                                    is only available when Covered is configured with the --enable-debug option.\n" );
-  printf( "      -h                           Displays this help information.\n" );
+  printf( "                                     If <filename> is specified, this file contains information saved in a previous\n" );
+  printf( "                                     call to savehist on the CLI and causes the history contained in this file to be\n" );
+  printf( "                                     replayed prior to the CLI command prompt.  If <filename> is not specified, the\n" );
+  printf( "                                     CLI prompt will be immediately available at the start of simulation.  This option\n" );
+  printf( "                                     is only available when Covered is configured with the --enable-debug option.\n" );
+  printf( "      -m <message>                 Allows the user to specify information about this CDD file.  This information can\n" );
+  printf( "                                     be anything (messages with whitespace should be surrounded by double-quotation marks),\n" );
+  printf( "                                     but may include something about the simulation arguments to more easily link the\n" );
+  printf( "                                     CDD file to its simulation for purposes of recreating the CDD file.\n" );
   printf( "\n" );
   printf( "      +libext+.<extension>(+.<extension>)+\n" );
   printf( "                                   Extensions of Verilog files to allow in scoring\n" );
@@ -212,8 +222,8 @@ static void score_usage() {
   printf( "      -ei                          Exclude initial blocks from coverage.\n" );
   printf( "      -ef                          Exclude final blocks from coverage.\n" );
   printf( "      -ep [<name>]                 Exclude all code enclosed by pragmas.  By default, the pragmas are of\n" );
-  printf( "                                   the format '// coverage (on|off)'; however, if <name> is specified for\n" );
-  printf( "                                   this option, the pragma keyword 'coverage' will be replaced with that value.\n" );
+  printf( "                                     the format '// coverage (on|off)'; however, if <name> is specified for\n" );
+  printf( "                                     this option, the pragma keyword 'coverage' will be replaced with that value.\n" );
   printf( "\n" );
   printf( "    Note:\n" );
   printf( "      The top-level module specifies the module to begin scoring.  All\n" );
@@ -359,101 +369,6 @@ static void score_generate_pli_tab_file(
 }
 
 /*!
- \param cmd_file Name of file to read commands from.
- \param arg_list List of arguments found in specified command file.
- \param arg_num  Number of arguments in arg_list array.
-
- \throws anonymous Throw Throw Throw substitute_env_vars
-
- Parses the given file specified by the '-f' option to Covered's score command which can contain
- any command-line arguments.
-*/
-static void read_command_file(
-            const char* cmd_file,
-  /*@out@*/ char***     arg_list,
-  /*@out@*/ int*        arg_num
-) { PROFILE(READ_COMMAND_FILE);
-
-  str_link* head    = NULL;  /* Pointer to head element of arg list */
-  str_link* tail    = NULL;  /* Pointer to tail element of arg list */
-  FILE*     cmd_handle;      /* Pointer to command file */
-  char      tmp_str[4096];   /* Temporary holder for read argument */
-  str_link* curr;            /* Pointer to current str_link element */
-  int       tmp_num = 0;     /* Temporary argument number holder */
-
-  /* Initialize the output values first, in case an exception is thrown early */
-  *arg_list = NULL;
-  *arg_num  = 0;
-
-  if( file_exists( cmd_file ) ) {
-
-    if( (cmd_handle = fopen( cmd_file, "r" )) != NULL ) {
-
-      unsigned int rv;
-
-      Try {
-
-        while( fscanf( cmd_handle, "%s", tmp_str ) == 1 ) {
-          (void)str_link_add( substitute_env_vars( tmp_str ), &head, &tail );
-          tmp_num++;
-        }
-
-      } Catch_anonymous {
-        rv = fclose( cmd_handle );
-        assert( rv == 0 );
-        str_link_delete_list( head );
-        Throw 0;
-      }
-
-      rv = fclose( cmd_handle );
-      assert( rv == 0 );
-
-      /* Set the argument list number now */
-      *arg_num = tmp_num;
-
-      /*
-       If there were any arguments found in the file, create an argument list and pass it to the
-       command-line parser.
-      */
-      if( tmp_num > 0 ) {
-
-        /* Create argument list */
-        *arg_list = (char**)malloc_safe( sizeof( char* ) * tmp_num );
-        tmp_num   = 0;
-
-        curr = head;
-        while( curr != NULL ) {
-          (*arg_list)[tmp_num] = strdup_safe( curr->str );
-          tmp_num++;
-          curr = curr->next;
-        }
-
-        /* Delete list */
-        str_link_delete_list( head );
-
-      }
-
-    } else {
-
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open command file %s for reading", cmd_file );
-      assert( rv < USER_MSG_LENGTH );
-      print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      Throw 0;
-
-    }
-
-  } else {
-
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Command file %s does not exist", cmd_file );
-    assert( rv < USER_MSG_LENGTH );
-    print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    Throw 0;
-
-  }
-
-}
-
-/*!
  \param def  Define value to parse
  
  Parses the specified define from the command-line, storing the define value in the
@@ -482,12 +397,10 @@ void score_parse_define( const char* def ) { PROFILE(SCORE_PARSE_DEFINE);
 }
 
 /*!
- \param arg  Argument from score command.
- 
  Adds the specified argument to the list of score arguments that will be written to the CDD file.
 */
 static void score_add_arg(
-  const char* arg
+  const char* arg  /*!< Argument from score command */
 ) { PROFILE(SCORE_ADD_ARG);
 
   score_args = (char**)realloc_safe( score_args, (sizeof( char* ) * score_arg_num), (sizeof( char* ) * (score_arg_num + 1)) );
@@ -497,10 +410,6 @@ static void score_add_arg(
 }
 
 /*!
- \param argc      Number of arguments specified in argv parameter list.
- \param last_arg  Index of last parsed argument in list.
- \param argv      List of arguments to parse.
-
  \throws anonymous search_add_directory_path Throw Throw Throw Throw Throw Throw Throw Throw Throw Throw Throw Throw
                    Throw Throw Throw Throw Throw Throw Throw Throw Throw Throw score_parse_args ovl_add_assertions_to_no_score_list
                    fsm_arg_parse read_command_file search_add_file defparam_add search_add_extensions search_add_no_score_funit
@@ -509,17 +418,15 @@ static void score_add_arg(
  on these arguments.
 */
 static void score_parse_args(
-  int          argc,
-  int          last_arg,
-  const char** argv
+  int          argc,      /*!< Number of arguments specified in argv parameter list */
+  int          last_arg,  /*!< Index of last parsed argument in list */
+  const char** argv       /*!< List of arguments to parse */
 ) { PROFILE(SCORE_PARSE_ARGS);
 
-  int    i        = last_arg + 1;  /* Loop iterator */
-  char** arg_list = NULL;          /* List of command_line arguments */
-  int    arg_num  = 0;             /* Number of arguments in arg_list */
-  int    j;                        /* Loop iterator */
-  char*  ptr;                      /* Pointer to current character in defined value */
-  char*  rv;                       /* Return value from snprintf calls */
+  int   i = last_arg + 1;  /* Loop iterator */
+  int   j;                 /* Loop iterator */
+  char* ptr;               /* Pointer to current character in defined value */
+  char* rv;                /* Return value from snprintf calls */
 
   while( i < argc ) {
 
@@ -544,12 +451,12 @@ static void score_parse_args(
         Throw 0;
       }
 
-    } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
+    } else if( (strncmp( "-o", argv[i], 2 ) == 0) || (strncmp( "-cdd", argv[i], 4 ) == 0) ) {
 
       if( check_option_value( argc, argv, i ) ) {
         i++;
         if( output_db != NULL ) {
-          print_output( "Only one -o option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
+          print_output( "Only one -o/-cdd option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
         } else {
           if( file_exists( argv[i] ) || is_legal_filename( argv[i] ) ) {
             output_db = strdup_safe( argv[i] );
@@ -639,6 +546,8 @@ static void score_parse_args(
     } else if( strncmp( "-f", argv[i], 2 ) == 0 ) {
 
       if( check_option_value( argc, argv, i ) ) {
+        char** arg_list = NULL;
+        int    arg_num  = 0;
         i++;
         Try {
           read_command_file( argv[i], &arg_list, &arg_num );
@@ -1060,6 +969,19 @@ static void score_parse_args(
       Throw 0;
 #endif
 
+    } else if( strncmp( "-m", argv[i], 2 ) == 0 ) {
+
+      if( check_option_value( argc, argv, i ) ) {
+        i++;
+        if( cdd_message != NULL ) {
+          print_output( "Only one -m option is allowed on the score command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
+        } else {
+          cdd_message = strdup_safe( argv[i] );
+        }
+      } else {
+        Throw 0;
+      }
+
     } else {
 
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown score command option \"%s\".  See \"covered score -h\" for more information.", argv[i] );
@@ -1113,7 +1035,7 @@ void command_score(
     if( output_db == NULL ) {
       output_db = strdup_safe( DFLT_OUTPUT_CDD );
     }
-
+ 
     /* Parse design */
     if( use_files_head != NULL ) {
       print_output( "Reading design...", NORMAL, __FILE__, __LINE__ );
@@ -1194,6 +1116,23 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.128.2.2  2008/07/21 06:36:29  phase1geo
+ Updating code from rank-devel-branch branch.
+
+ Revision 1.128.2.1  2008/07/10 22:43:54  phase1geo
+ Merging in rank-devel-branch into this branch.  Added -f options for all commands
+ to allow files containing command-line arguments to be added.  A few error diagnostics
+ are currently failing due to changes in the rank branch that never got fixed in that
+ branch.  Checkpointing.
+
+ Revision 1.133.2.1  2008/07/02 23:10:38  phase1geo
+ Checking in work on rank function and addition of -m option to score
+ function.  Added new diagnostics to verify beginning functionality.
+ Checkpointing.
+
+ Revision 1.133  2008/06/27 14:02:04  phase1geo
+ Fixing splint and -Wextra warnings.  Also fixing comment formatting.
+
  Revision 1.132  2008/06/25 04:47:19  phase1geo
  Adding several error diagnostics for the score command to the regression suite.
  Removing unnecessary output in score.c.

@@ -1,5 +1,5 @@
-5 e 101 * 0
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd exclude3.vcd -o exclude3.cdd -v exclude3.v -y ./lib -e foo_module.foo_task -D DUMP
+5 10 101 4 *
+8 /Users/trevorw/projects/devel/covered/diags/verilog -t main -vcd exclude3.vcd -o exclude3.cdd -v exclude3.v -y ./lib -e foo_module.foo_task -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" exclude3.v 1 14 1
 3 0 foo_module "main.bar" ./lib/foo_module.v 1 34 1

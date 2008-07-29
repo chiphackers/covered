@@ -93,9 +93,15 @@ bool file_exists( const char* file );
 
 /*! \brief Reads line from file and returns it in string form. */
 bool util_readline(
-            FILE*  file,
-  /*@out@*/ char** line,
-  /*@out@*/ unsigned int*   line_size
+            FILE*         file,
+  /*@out@*/ char**        line,
+  /*@out@*/ unsigned int* line_size
+);
+
+/*! \brief Reads in line from file and returns the contents of the quoted string following optional whitespace */
+bool get_quoted_string(
+            FILE* file,
+  /*@out@*/ char* line
 );
 
 /*! \brief Searches the specified string for environment variables and substitutes their value if found */
@@ -157,7 +163,11 @@ void free_safe2( /*@only@*/ /*@out@*/ /*@null@*/ void* ptr, size_t size, const c
 );
 
 /*! \brief Creates a string containing space characters. */
-void gen_space( char* spaces, int num_spaces );
+void gen_char_string(
+  /*@out@*/ char* spaces,
+            char  c,
+            int   num_spaces
+);
 
 #ifdef HAVE_SYS_TIME_H
 /*! \brief Starts timing the specified timer structure. */
@@ -180,10 +190,34 @@ void calc_miss_percent(
 /*! \brief Sets the given timestep to the correct value from VCD simulation file */
 void set_timestep( sim_time* st, char* value );
 
+/*! \brief Reads in contents of command file, substitutes environment variables and stores them to the arg_list array. */
+void read_command_file(
+            const char* cmd_file,
+  /*@out@*/ char***     arg_list,
+  /*@out@*/ int*        arg_num
+);
 
 
 /*
  $Log$
+ Revision 1.41.4.2  2008/07/23 21:38:42  phase1geo
+ Adding better formatting for ranking reports to allow the inclusion of the full
+ pathname for each CDD file listed.
+
+ Revision 1.41.4.1  2008/07/10 22:43:55  phase1geo
+ Merging in rank-devel-branch into this branch.  Added -f options for all commands
+ to allow files containing command-line arguments to be added.  A few error diagnostics
+ are currently failing due to changes in the rank branch that never got fixed in that
+ branch.  Checkpointing.
+
+ Revision 1.43.2.1  2008/07/02 23:10:38  phase1geo
+ Checking in work on rank function and addition of -m option to score
+ function.  Added new diagnostics to verify beginning functionality.
+ Checkpointing.
+
+ Revision 1.43  2008/06/28 03:46:29  phase1geo
+ More code updates for warning removal.
+
  Revision 1.42  2008/06/27 14:02:04  phase1geo
  Fixing splint and -Wextra warnings.  Also fixing comment formatting.
 

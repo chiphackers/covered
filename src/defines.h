@@ -51,7 +51,7 @@
  Contains the CDD version number of all CDD files that this version of Covered can write
  and read.
 */
-#define CDD_VERSION        14
+#define CDD_VERSION        16
 
 /*!
  This contains the header information specified when executing this tool.
@@ -250,6 +250,16 @@
  Specifies that the current coverage database line ends the currently populated struct/union.
 */
 #define DB_TYPE_SU_END       10
+
+/*!
+ Specifies that the current coverage database line contains user-specified information
+*/
+#define DB_TYPE_MESSAGE      11
+
+/*!
+ Specifies that the current line describes a CDD file that was merged into this CDD
+*/
+#define DB_TYPE_MERGED_CDD   12
 
 /*! @} */
 
@@ -1108,6 +1118,19 @@ typedef enum vtype_exp_indices_e {
 /*! @} */
 
 /*!
+ Enumeration of coverage point types that are stored in the cps array in the comp_cdd_cov structure.
+*/
+typedef enum cp_indices_e {
+  CP_TYPE_LINE,
+  CP_TYPE_TOGGLE,
+  CP_TYPE_MEM,
+  CP_TYPE_LOGIC,
+  CP_TYPE_FSM,
+  CP_TYPE_ASSERT,
+  CP_TYPE_NUM
+} cp_indices;
+
+/*!
  Mask for signal supplemental field when writing to CDD file.
 */
 #define VSUPPL_MASK               0x7f
@@ -1682,6 +1705,7 @@ struct su_member_s;
 struct profiler_s;
 struct db_s;
 struct sim_time_s;
+struct comp_cdd_cov_s;
 
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION TYPEDEFS  */
@@ -1987,6 +2011,11 @@ typedef struct db_s db;
  Renaming sim_time_s structure for convenience.
 */
 typedef struct sim_time_s sim_time;
+
+/*!
+ Renaming comp_cdd_cov_s structure for convenience.
+*/
+typedef struct comp_cdd_cov_s comp_cdd_cov;
 
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION DEFINITIONS  */
@@ -2797,6 +2826,21 @@ struct db_s {
 };
 
 /*!
+ Compressed version of coverage information for a given CDD.  This structure is used by the rank command
+ for comparing coverages for ranking purposes.
+*/
+struct comp_cdd_cov_s {
+  char*          cdd_name;                /*!< Name of CDD that this coverage information is for */
+  uint64         timesteps;               /*!< Number of simulations timesteps stored in the CDD file */
+  uint64         total_cps;               /*!< Number of total coverage points this CDD file represents */
+  uint64         unique_cps;              /*!< Number of unique coverage points this CDD file represents */
+  uint64         score;                   /*!< Storage for current score */
+  bool           required;                /*!< Set to TRUE if this CDD is required to be in the ranked list by the user */
+  unsigned char* cps[CP_TYPE_NUM];        /*!< Compressed coverage points for each coverage metric */
+  unsigned int   cps_index[CP_TYPE_NUM];  /*!< Contains index of current bit to populate */
+};
+
+/*!
  This will define the exception type that gets thrown (Covered does not care about this value)
 */
 define_exception_type(int);
@@ -2805,6 +2849,39 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.297.2.3  2008/07/25 21:08:35  phase1geo
+ Modifying CDD file format to remove the potential for memory allocation assertion
+ errors due to a large number of merged CDD files.  Updating IV and Cver regressions per this
+ change.
+
+ Revision 1.297.2.2  2008/07/24 23:23:49  phase1geo
+ Adding -required option to the rank command.
+
+ Revision 1.297.2.1  2008/07/10 22:43:50  phase1geo
+ Merging in rank-devel-branch into this branch.  Added -f options for all commands
+ to allow files containing command-line arguments to be added.  A few error diagnostics
+ are currently failing due to changes in the rank branch that never got fixed in that
+ branch.  Checkpointing.
+
+ Revision 1.300.2.4  2008/07/02 23:10:37  phase1geo
+ Checking in work on rank function and addition of -m option to score
+ function.  Added new diagnostics to verify beginning functionality.
+ Checkpointing.
+
+ Revision 1.300.2.3  2008/07/01 23:08:58  phase1geo
+ Initial working version of rank command.  Ranking algorithm needs some more
+ testing at this point.  Checkpointing.
+
+ Revision 1.300.2.2  2008/07/01 06:17:22  phase1geo
+ More updates to rank command.  Updating IV/Cver regression for these changes (full
+ regression not passing at this point).  Checkpointing.
+
+ Revision 1.300.2.1  2008/06/30 13:14:21  phase1geo
+ Starting to work on new 'rank' command.  Checkpointing.
+
+ Revision 1.300  2008/06/27 14:02:00  phase1geo
+ Fixing splint and -Wextra warnings.  Also fixing comment formatting.
+
  Revision 1.299  2008/06/19 16:14:54  phase1geo
  leaned up all warnings in source code from -Wall.  This also seems to have cleared
  up a few runtime issues.  Full regression passes.

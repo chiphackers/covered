@@ -1147,12 +1147,12 @@ void stmt_link_delete_list( stmt_link* head ) { PROFILE(STMT_LINK_DELETE_LIST);
 }
 
 /*!
- \param head  Pointer to head exp_link element of list.
- \param del_exp  If set to TRUE, deallocates the expression; otherwise, leaves expression alone.
-
  Deletes each element of the specified list.
 */
-void exp_link_delete_list( exp_link* head, bool del_exp ) { PROFILE(EXP_LINK_DELETE_LIST);
+void exp_link_delete_list(
+  exp_link* head,    /*!< Pointer to head exp_link element of list */
+  bool      del_exp  /*!< If set to TRUE, deallocates the expression; otherwise, leaves expression alone */
+) { PROFILE(EXP_LINK_DELETE_LIST);
 
   exp_link* tmp;  /* Pointer to current expression link to remove */
   
@@ -1177,12 +1177,12 @@ void exp_link_delete_list( exp_link* head, bool del_exp ) { PROFILE(EXP_LINK_DEL
 }
 
 /*!
- \param head     Pointer to head sig_link element of list.
- \param del_sig  If set to TRUE, deallocates the signal; otherwise, leaves signal alone.
-
  Deletes each element of the specified list.
 */
-void sig_link_delete_list( sig_link* head, bool del_sig ) { PROFILE(SIG_LINK_DELETE_LIST);
+void sig_link_delete_list(
+  sig_link* head,    /*!< Pointer to head sig_link element of list */
+  bool      del_sig  /*!< If set to TRUE, deallocates the signal; otherwise, leaves signal alone */
+) { PROFILE(SIG_LINK_DELETE_LIST);
 
   sig_link* tmp;   /* Temporary pointer to current link in list */
 
@@ -1327,6 +1327,18 @@ void inst_link_delete_list( inst_link* head ) { PROFILE(INST_LINK_DELETE_LIST);
 
 /*
  $Log$
+ Revision 1.79.4.1  2008/07/10 22:43:52  phase1geo
+ Merging in rank-devel-branch into this branch.  Added -f options for all commands
+ to allow files containing command-line arguments to be added.  A few error diagnostics
+ are currently failing due to changes in the rank branch that never got fixed in that
+ branch.  Checkpointing.
+
+ Revision 1.80.2.1  2008/06/30 23:02:42  phase1geo
+ More work on the rank command.  Checkpointing.
+
+ Revision 1.80  2008/06/27 14:02:02  phase1geo
+ Fixing splint and -Wextra warnings.  Also fixing comment formatting.
+
  Revision 1.79  2008/04/15 06:08:47  phase1geo
  First attempt to get both instance and module coverage calculatable for
  GUI purposes.  This is not quite complete at the moment though it does

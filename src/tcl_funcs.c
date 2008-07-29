@@ -61,7 +61,8 @@ extern char**       score_args;
 extern int          score_arg_num;
 extern void         reset_pplexer( const char* filename, FILE* out );
 extern int          PPVLlex( void );
-extern char**       merge_in;
+extern str_link*    merge_in_head;
+extern str_link*    merge_in_tail;
 extern int          merge_in_num;
 extern char*        output_file;
 extern int          report_comb_depth; 
@@ -1389,8 +1390,7 @@ int tcl_func_merge_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* arg
     ifile = strdup_safe( argv[1] );
 
     /* Add the specified merge file to the list */
-    merge_in               = (char**)realloc_safe( merge_in, (sizeof( char* ) * merge_in_num), (sizeof( char* ) * (merge_in_num + 1)) );
-    merge_in[merge_in_num] = ifile;
+    str_link_add( ifile, &merge_in_head, &merge_in_tail );
     merge_in_num++;
 
     Try {
@@ -2199,16 +2199,17 @@ int tcl_func_generate_report( ClientData d, Tcl_Interp* tcl, int argc, const cha
 }
 
 /*!
- \param tcl        Pointer to Tcl interpreter structure
- \param user_home  Name of user's home directory (used to store configuration file information to)
- \param home       Name of Tcl script home directory (from running the configure script)
- \param version    Current version of Covered being run
- \param browser    Name of browser executable to use for displaying help information
-
  Initializes the Tcl interpreter with all procs that are created in this file.  Also sets some global
  variables that come from the environment, the configuration execution or the Covered define file.
 */
-void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* version, char* browser ) { PROFILE(TCL_FUNC_INITIALIZE);
+void tcl_func_initialize(
+  Tcl_Interp* tcl,        /*!< Pointer to Tcl interpreter structure */
+  const char* program,    /*!< Name of Covered program provided by command-line */
+  const char* user_home,  /*!< Name of user's home directory (used to store configuration file information to) */
+  const char* home,       /*!< Name of Tcl script home directory (from running the configure script) */
+  const char* version,    /*!< Current version of Covered being run */
+  const char* browser     /*!< Name of browser executable to use for displaying help information */
+) { PROFILE(TCL_FUNC_INITIALIZE);
 
   Tcl_CreateCommand( tcl, "tcl_func_get_race_reason_msgs",      (Tcl_CmdProc*)(tcl_func_get_race_reason_msgs),      0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_funit_list",            (Tcl_CmdProc*)(tcl_func_get_funit_list),            0, 0 );
@@ -2251,6 +2252,9 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
   Tcl_CreateCommand( tcl, "tcl_func_set_fsm_exclude",           (Tcl_CmdProc*)(tcl_func_set_fsm_exclude),           0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_set_assert_exclude",        (Tcl_CmdProc*)(tcl_func_set_assert_exclude),        0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_generate_report",           (Tcl_CmdProc*)(tcl_func_generate_report),           0, 0 );
+
+  /* Provide the pathname to this covered executable */
+  Tcl_SetVar( tcl, "COVERED", program, TCL_GLOBAL_ONLY );
   
   /* Set the USER_HOME variable to location of user's home directory */
   Tcl_SetVar( tcl, "USER_HOME", user_home, TCL_GLOBAL_ONLY );
@@ -2271,6 +2275,22 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* user_home, char* home, char* ve
 
 /*
  $Log$
+ Revision 1.77.4.3  2008/07/23 05:10:11  phase1geo
+ Adding -d and -ext options to rank and merge commands.  Updated necessary files
+ per this change and updated regressions.
+
+ Revision 1.77.4.2  2008/07/19 00:25:52  phase1geo
+ Forgot to update some files per the last checkin.
+
+ Revision 1.77.4.1  2008/07/10 22:43:55  phase1geo
+ Merging in rank-devel-branch into this branch.  Added -f options for all commands
+ to allow files containing command-line arguments to be added.  A few error diagnostics
+ are currently failing due to changes in the rank branch that never got fixed in that
+ branch.  Checkpointing.
+
+ Revision 1.79  2008/06/28 04:44:22  phase1geo
+ More code cleanup.
+
  Revision 1.78  2008/06/22 05:08:40  phase1geo
  Fixing memory testing error in tcl_funcs.c.  Removed unnecessary output in main_view.tcl.
  Added a few more report diagnostics and started to remove width report files (these will

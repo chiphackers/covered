@@ -41,6 +41,7 @@ sub parse_cdd {
     if( $line[0] eq "5" ) {
       $vec_ul_size[$num] = (hex( $line[2] ) >> 7) & 0x3;
       $line[2] = hex( $line[2] ) & 0x7f;
+      $line[3] = 1;
 
     # Score arguments (we need to disregard the pathname to covered)
     } elsif( $line[0] eq "8" ) {

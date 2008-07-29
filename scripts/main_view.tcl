@@ -15,22 +15,29 @@ source [file join $HOME scripts cdd_view.tcl]
 source [file join $HOME scripts assert.tcl]
 source [file join $HOME scripts verilog.tcl]
 source [file join $HOME scripts memory.tcl]
+source [file join $HOME scripts wizard.tcl]
+source [file join $HOME scripts gen_new.tcl]
+source [file join $HOME scripts gen_report.tcl]
+source [file join $HOME scripts gen_rank.tcl]
+source [file join $HOME scripts viewer.tcl]
 
 # The Tablelist package is used for displaying instance/module hit/miss/total/percent hit information
 package require Tablelist
+#package require tile
+#package require tablelist_tile 4.8
 
-set last_lb_index      ""
-set lwidth             -1 
-set lwidth_h1          -1
-set start_search_index 1.0
-set curr_uncov_index   ""
-set prev_uncov_index   ""
-set next_uncov_index   ""
+set last_lb_index           ""
+set lwidth                  -1 
+set lwidth_h1               -1
+set main_start_search_index 1.0
+set curr_uncov_index        ""
+set prev_uncov_index        ""
+set next_uncov_index        ""
 
 proc main_view {} {
 
   global race_msgs prev_uncov_index next_uncov_index
-  global HOME
+  global HOME tableCol main_start_search_index
 
   # Start off 
 
@@ -68,16 +75,16 @@ proc main_view {} {
   }
   frame .bot.right.h.search
   button .bot.right.h.search.find -text "Find:" -state disabled -command {
-    perform_search [.bot.right.h.search.e get]
+    perform_search .bot.right.txt .bot.right.h.search.e .info main_start_search_index
   }
   entry .bot.right.h.search.e -width 15 -relief sunken -state disabled
   bind .bot.right.h.search.e <Return> {
-    perform_search [.bot.right.h.search.e get]
+    perform_search .bot.right.txt .bot.right.h.search.e .info main_start_search_index
   }
   button .bot.right.h.search.clear -text "Clear" -state disabled -command {
     .bot.right.txt tag delete search_found
     .bot.right.h.search.e delete 0 end
-    set start_search_index 1.0
+    set main_start_search_index 1.0
   }
 
   # Pack the previous/next frame
@@ -113,9 +120,8 @@ proc main_view {} {
 
   # Create Tablelist and associated scrollbars
   tablelist::tablelist .bot.left.tl \
-    -columns {0 "Instance Name" 0 "Module Name" 0 "Hit" 0 "Miss" 0 "Total" 0 "Hit %" 0 "Index"} \
-    -labelcommand tablelist::sortByColumn -xscrollcommand {.bot.left.hb set} -yscrollcommand {.bot.left.vb set} -stretch all
-
+    -columns {0 "Instance Name" 0 "Module Name" 0 "Hit" right 0 "Miss" right 0 "Total" right 0 "Hit %" right 0 "Index"} \
+    -labelcommand tablelist::sortByColumn -xscrollcommand {.bot.left.hb set} -yscrollcommand {.bot.left.sbf.vb set} -stretch all
   .bot.left.tl columnconfigure 0 -hide true
   .bot.left.tl columnconfigure 2 -sortmode integer -stretchable false
   .bot.left.tl columnconfigure 3 -sortmode integer -stretchable false
@@ -123,20 +129,47 @@ proc main_view {} {
   .bot.left.tl columnconfigure 5 -sortmode integer -stretchable false
   .bot.left.tl columnconfigure 6 -hide true
 
-  scrollbar .bot.left.vb -command {.bot.left.tl yview}
+  # Create vertical scrollbar frame and pack it
+  frame      .bot.left.sbf
+  ttk::label .bot.left.sbf.ml -relief flat -style TablelistHeader.TLabel -image [image create bitmap -data "#define stuff_width 16\n#define stuff_height 16\nstatic unsigned char stuff_bits[] = {\n0x00, 0x00, 0x00, 0x00, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x00, 0x00, 0x00, 0x00};"]
+
+  scrollbar  .bot.left.sbf.vb -command {.bot.left.tl yview}
+  ttk::label .bot.left.sbf.l
+  pack .bot.left.sbf.ml -side top    -fill x
+  pack .bot.left.sbf.vb -side top    -fill y -expand 1
+  pack .bot.left.sbf.l  -side bottom -fill x
+
   scrollbar .bot.left.hb -orient horizontal -command {.bot.left.tl xview}
 
   grid rowconfigure    .bot.left 0 -weight 1
   grid columnconfigure .bot.left 0 -weight 1
-  grid .bot.left.tl -row 0 -column 0 -sticky news
-  grid .bot.left.vb -row 0 -column 1 -sticky ns
-  grid .bot.left.hb -row 1 -column 0 -sticky ew
+  grid .bot.left.tl  -row 0 -column 0 -sticky news
+  grid .bot.left.sbf -row 0 -column 1 -sticky ns -rowspan 2
+  grid .bot.left.hb  -row 1 -column 0 -sticky ew
 
   # Bind the listbox selection event
   bind .bot.left.tl <<ListboxSelect>> populate_text
 
+  # Create and bind the listbox label to a popup menu
+  menu .lbm -tearoff false
+  set num 0
+  foreach {width name align} [.bot.left.tl cget -columns] {
+    if {[expr ! [.bot.left.tl columncget $num -hide]]} {
+      .lbm add checkbutton -label $name -variable tableCol($num) -command {
+        foreach col [array names tableCol] {
+          .bot.left.tl columnconfigure $col -hide [expr ! $tableCol($col)]
+        }
+      }
+      set tableCol($num) 1
+    }
+    incr num
+  }
+  bind .bot.left.sbf.ml <ButtonPress-1> {.lbm post %X %Y}
+  bind .lbm <Leave> {.lbm unpost}
+
   # Pack the bottom window
-  .bot add .bot.left
+  update
+  .bot add .bot.left -minsize [expr [winfo reqheight .bot.left] + 100]
   .bot add .bot.right
 
   # Create bottom information bar
@@ -308,24 +341,31 @@ proc clear_text {} {
 
 }
 
-proc perform_search {value} {
+proc perform_search {tbox ebox ibox index} {
 
-  global start_search_index
+  upvar $index start_search_index 
 
-  set index [.bot.right.txt search $value $start_search_index]
+  set value [$ebox get]
+  set index [$tbox search $value $start_search_index]
 
   # Delete search_found tag
-  .bot.right.txt tag delete search_found
+  $tbox tag delete search_found
 
   if {$index != ""} {
 
+    if {$start_search_index > $index} {
+      $ibox configure -text "End of file reached.  Searching from the beginning..."
+    } else {
+      $ibox configure -text ""
+    }
+
     # Highlight found text
     set value_len [string length $value]
-    .bot.right.txt tag add search_found $index "$index + $value_len chars"
-    .bot.right.txt tag configure search_found -background orange1
+    $tbox tag add search_found $index "$index + $value_len chars"
+    $tbox tag configure search_found -background orange1
 
     # Make the text visible
-    .bot.right.txt see $index 
+    $tbox see $index 
 
     # Calculate next starting index
     set indices [split $index .]
@@ -334,10 +374,10 @@ proc perform_search {value} {
   } else {
 
     # Output a message specifying that the searched string could not be found
-    tk_messageBox -message "String \"$value\" not found" -type ok -parent .
+    $ibox configure -text "String \"$value\" not found"
 
     # Clear the contents of the search entry box
-    .bot.right.h.search.e delete 0 end
+    $ebox delete 0 end
 
     # Reset search index
     set start_search_index 1.0
@@ -345,7 +385,7 @@ proc perform_search {value} {
   }
 
   # Set focus to text box
-  focus .bot.right.txt
+  focus $tbox
 
   return 1
 
@@ -501,11 +541,13 @@ proc clear_all_windows {} {
 
 proc bgerror {msg} {
 
+  global errorInfo
+
   ;# Remove the status window if it exists
   destroy .status
 
   ;# Display error message
-  set retval [tk_messageBox -message $msg -title "Error" -type ok]
+  set retval [tk_messageBox -message "$msg\n$errorInfo" -title "Error" -type ok]
 
 }
 
@@ -539,8 +581,33 @@ proc listbox_xview {args} {
 
 }
 
+proc goto_next_pane {w} {
+  
+  set parent [winfo parent $w]
+  set panes  [$parent panes]
+  
+  $parent paneconfigure $w -hide true
+  $parent paneconfigure [lindex $panes [expr [lsearch $panes $w] + 1]] -hide false
+  
+}
+
+proc goto_prev_pane {w} {
+  
+  set parent [winfo parent $w]
+  set panes  [$parent panes]
+  
+  $parent paneconfigure $w -hide true
+  $parent paneconfigure [lindex $panes [expr [lsearch $panes $w] - 1]] -hide false
+  
+}
+
 # Read configuration file
 read_coveredrc
 
 # Display main window
 main_view
+
+# Display the wizard, if the configuration option is set
+if {$show_wizard} {
+  create_wizard
+}

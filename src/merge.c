@@ -35,12 +35,13 @@ static char* merged_file = NULL;
  CDD filename (i.e., no -o option is specified), the name of merge_in[0] will be used
  for merged_file.
 */
-char** merge_in = NULL;
+str_link* merge_in_head = NULL;
+str_link* merge_in_tail = NULL;
 
 /*!
- Specifies the number of valid entries in the merge_in array.
+ Specifies the number of merged CDD files.
 */
-int merge_in_num = 0;
+int merge_in_num  = 0;
 
 extern char user_msg[USER_MSG_LENGTH];
 
@@ -50,22 +51,26 @@ extern char user_msg[USER_MSG_LENGTH];
 static void merge_usage() {
 
   printf( "\n" );
-  printf( "Usage:  covered merge [<options>] <existing_database> <database_to_merge>+\n" );
+  printf( "Usage:  covered merge (-h | [<options>] <existing_database> <database_to_merge>+)\n" );
+  printf( "\n" );
+  printf( "   -h                         Displays this help information.\n" );
   printf( "\n" );
   printf( "   Options:\n" );
   printf( "      -o <filename>           File to output new database to.  If this argument is not\n" );
-  printf( "                              specified, the <existing_database> is used as the output\n" );
-  printf( "                              database name.\n" );
-  printf( "      -h                      Displays this help information.\n" );
+  printf( "                                specified, the <existing_database> is used as the output\n" );
+  printf( "                                database name.\n" );
+  printf( "      -f <filename>           Name of file containing additional arguments to parse.\n" );
+  printf( "      -d <directory>          Directory to search for CDD files to include.  This option is used in\n" );
+  printf( "                                conjunction with the -ext option which specifies the file extension\n" );
+  printf( "                                to use for determining which files in the directory are CDD files.\n" );
+  printf( "      -ext <extension>        Used in conjunction with the -d option.  If no -ext options are specified\n" );
+  printf( "                                on the command-line, the default value of '.cdd' is used.  Note that\n" );
+  printf( "                                a period (.) should be specified.\n" );
   printf( "\n" );
 
 }
 
 /*!
- \param argc      Number of arguments in argument list argv.
- \param last_arg  Index of last parsed argument from list.
- \param argv      Argument list passed to this program.
-
  \throws anonymous Throw Throw Throw
 
  Parses the merge argument list, placing all parsed values into
@@ -74,12 +79,17 @@ static void merge_usage() {
  user.
 */
 static void merge_parse_args(
-  int          argc,
-  int          last_arg,
-  const char** argv
+  int          argc,      /*!< Number of arguments in argument list argv */
+  int          last_arg,  /*!< Index of last parsed argument from list */
+  const char** argv       /*!< Argument list passed to this program */
 ) {
 
-  int i;  /* Loop iterator */
+  int       i;
+  str_link* strl;
+  str_link* ext_head     = NULL;
+  str_link* ext_tail     = NULL;
+  str_link* dir_head     = NULL;
+  str_link* dir_tail     = NULL;
 
   i = last_arg + 1;
 
@@ -106,20 +116,67 @@ static void merge_parse_args(
         Throw 0;
       }
 
+    } else if( strncmp( "-f", argv[i], 2 ) == 0 ) {
+
+      if( check_option_value( argc, argv, i ) ) {
+        char**       arg_list = NULL;
+        int          arg_num  = 0;
+        unsigned int j;
+        i++;
+        Try {
+          read_command_file( argv[i], &arg_list, &arg_num );
+          merge_parse_args( arg_num, -1, (const char**)arg_list );
+        } Catch_anonymous {
+          for( j=0; j<arg_num; j++ ) {
+            free_safe( arg_list[j], (strlen( arg_list[j] ) + 1) );
+          }
+          free_safe( arg_list, (sizeof( char* ) * arg_num) );
+          Throw 0;
+        }
+        for( j=0; j<arg_num; j++ ) {
+          free_safe( arg_list[j], (strlen( arg_list[j] ) + 1) );
+        }
+        free_safe( arg_list, (sizeof( char* ) * arg_num) );
+      } else {
+        Throw 0;
+      }
+
+    } else if( strncmp( "-d", argv[i], 2 ) == 0 ) {
+
+      if( check_option_value( argc, argv, i ) ) {
+        i++;
+        if( directory_exists( argv[i] ) ) {
+          str_link_add( strdup_safe( argv[i] ), &dir_head, &dir_tail );
+        } else {
+          snprintf( user_msg, USER_MSG_LENGTH, "Specified -d directory (%s) does not exist", argv[i] );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          Throw 0;
+        }
+      } else {
+        Throw 0;
+      }
+
+    } else if( strncmp( "-ext", argv[i], 4 ) == 0 ) {
+
+      if( check_option_value( argc, argv, i ) ) {
+        i++;
+        str_link_add( strdup_safe( argv[i] ), &ext_head, &ext_tail );
+      } else {
+        Throw 0;
+      } 
+
     } else {
 
       /* The name of a file to merge */
       if( file_exists( argv[i] ) ) {
 
         /* If we have not specified a merge file explicitly, set it implicitly to the first CDD file found */
-        if( (merge_in_num == 0) && (merged_file == NULL) ) {
+        if( (merge_in_head == NULL) && (merged_file == NULL) ) {
           merged_file = strdup_safe( argv[i] );
         }
 
         /* Add the specified merge file to the list */
-        merge_in               = (char**)realloc_safe( merge_in, (sizeof( char* ) * merge_in_num), (sizeof( char* ) * (merge_in_num + 1)) );
-        merge_in[merge_in_num] = strdup_safe( argv[i] );
-        merge_in_num++;
+        str_link_add( strdup_safe( argv[i] ), &merge_in_head, &merge_in_tail );
 
       } else {
 
@@ -136,9 +193,44 @@ static void merge_parse_args(
 
   }
 
+  Try {
+
+    /* Load any ranking files found in specified directories */
+    strl = dir_head;
+    while( strl != NULL ) {
+      directory_load( strl->str, ext_head, &merge_in_head, &merge_in_tail );
+      strl = strl->next;
+    }
+
+    /* Deallocate the temporary lists */
+    str_link_delete_list( ext_head );
+    str_link_delete_list( dir_head );
+
+  } Catch_anonymous {
+    str_link_delete_list( ext_head );
+    str_link_delete_list( dir_head );
+    Throw 0;
+  }
+
+  /* Make sure that we have at least 2 files to merge */
+  strl = merge_in_head;
+  while( strl != NULL ) {
+    merge_in_num++;
+    strl = strl->next;
+  }
+
   /* Check to make sure that the user specified at least two files to merge */
   if( merge_in_num < 2 ) {
     print_output( "Must specify at least two CDD files to merge", FATAL, __FILE__, __LINE__ );
+    Throw 0;
+  }
+
+  /*
+   If no -o option was specified and no merge files were specified, don't presume that the first file found in
+   the directory will be that file.
+  */
+  if( merged_file == NULL ) {
+    print_output( "Must specify the -o option or a specific CDD file for containing the merged results", FATAL, __FILE__, __LINE__ );
     Throw 0;
   }
 
@@ -154,7 +246,6 @@ static void merge_parse_args(
 void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND_MERGE);
 
   int          i;     /* Loop iterator */
-  int          mnum;  /* Number of merge files to read */
   unsigned int rv;    /* Return value from snprintf calls */
 
   /* Output header information */
@@ -164,28 +255,29 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
   Try {
 
+    str_link* strl;
+
     /* Parse score command-line */
     merge_parse_args( argc, last_arg, argv );
 
     /* Initialize all global information */
     info_initialize();
 
-    /* Get a copy of the number of merge files to read */
-    mnum = merge_in_num;
-
     /* Read in base database */
-    rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading CDD file \"%s\"", merge_in[0] );
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading CDD file \"%s\"", merge_in_head->str );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-    db_read( merge_in[0], READ_MODE_MERGE_NO_MERGE );
+    db_read( merge_in_head->str, READ_MODE_MERGE_NO_MERGE );
     bind_perform( TRUE, 0 );
 
     /* Read in databases to merge */
-    for( i=1; i<mnum; i++ ) {
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "Merging CDD file \"%s\"", merge_in[i] );
+    strl = merge_in_head->next;
+    while( strl != NULL ) {
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "Merging CDD file \"%s\"", strl->str );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-      db_read( merge_in[i], READ_MODE_MERGE_INST_MERGE );
+      db_read( strl->str, READ_MODE_MERGE_INST_MERGE );
+      strl = strl->next;
     }
 
     /* Write out new database to output file */
@@ -199,6 +291,7 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
   db_close();
 
   /* Deallocate other memory */
+  str_link_delete_list( merge_in_head );
   free_safe( merged_file, (strlen( merged_file ) + 1) );
 
   PROFILE_END;
@@ -207,6 +300,19 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.47.2.2  2008/07/23 05:10:11  phase1geo
+ Adding -d and -ext options to rank and merge commands.  Updated necessary files
+ per this change and updated regressions.
+
+ Revision 1.47.2.1  2008/07/10 22:43:52  phase1geo
+ Merging in rank-devel-branch into this branch.  Added -f options for all commands
+ to allow files containing command-line arguments to be added.  A few error diagnostics
+ are currently failing due to changes in the rank branch that never got fixed in that
+ branch.  Checkpointing.
+
+ Revision 1.51  2008/06/22 22:02:01  phase1geo
+ Fixing regression issues.
+
  Revision 1.50  2008/06/20 14:19:20  phase1geo
  Updating merge.c and report.c to remove unnecessary code and output.
 

@@ -36,6 +36,7 @@
 #include "merge.h"
 #include "obfuscate.h"
 #include "profiler.h"
+#include "rank.h"
 #include "report.h"
 #include "score.h"
 #include "util.h"
@@ -90,6 +91,7 @@ static void usage() {
   printf( "                                for merging and reporting.\n" );
   printf( "      merge                   Merges two database files into one.\n" );
   printf( "      report                  Generates human-readable coverage reports from database file.\n" );
+  printf( "      rank                    Generates ranked list of CDD files to run for optimal coverage in a regression run.\n" );
   printf( "\n" );
   printf( "   For individual help information for each of the above commands, enter:\n" );
   printf( "      covered <command> -h\n" );
@@ -128,7 +130,7 @@ int main( int argc, const char** argv ) {
 
     if( argc == 1 ) {
 
-      print_output( "Must specify a command (score, merge, report, -v, or -h)", FATAL, __FILE__, __LINE__ );
+      print_output( "Must specify a command (score, merge, report, rank, -v, or -h)", FATAL, __FILE__, __LINE__ );
       retval = -1;
 
     } else {
@@ -195,6 +197,11 @@ int main( int argc, const char** argv ) {
             command_report( argc, curr_arg, argv );
             cmd_found = TRUE;
 
+          } else if( strncmp( "rank", argv[curr_arg], 4 ) == 0 ) {
+
+            command_rank( argc, curr_arg, argv );
+            cmd_found = TRUE;
+
           } else {
 
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown command/global option \"%s\".  Please see \"covered -h\" for usage.", argv[curr_arg] );
@@ -211,7 +218,7 @@ int main( int argc, const char** argv ) {
 
         if( !cmd_found ) {
  
-          print_output( "Must specify a command (score, merge, report, -v, or -h)", FATAL, __FILE__, __LINE__ );
+          print_output( "Must specify a command (score, merge, report, rank, -v, or -h)", FATAL, __FILE__, __LINE__ );
           printf( "main Throw B\n" );
           Throw 0;
 
@@ -245,6 +252,22 @@ int main( int argc, const char** argv ) {
 
 /*
  $Log$
+ Revision 1.35.2.2  2008/07/21 06:36:29  phase1geo
+ Updating code from rank-devel-branch branch.
+
+ Revision 1.35.2.1  2008/07/10 22:43:52  phase1geo
+ Merging in rank-devel-branch into this branch.  Added -f options for all commands
+ to allow files containing command-line arguments to be added.  A few error diagnostics
+ are currently failing due to changes in the rank branch that never got fixed in that
+ branch.  Checkpointing.
+
+ Revision 1.36.2.1  2008/06/30 13:14:22  phase1geo
+ Starting to work on new 'rank' command.  Checkpointing.
+
+ Revision 1.36  2008/06/19 16:14:55  phase1geo
+ leaned up all warnings in source code from -Wall.  This also seems to have cleared
+ up a few runtime issues.  Full regression passes.
+
  Revision 1.35  2008/05/08 18:59:15  phase1geo
  Fixing bug 1950946.
 

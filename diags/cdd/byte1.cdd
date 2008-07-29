@@ -1,5 +1,5 @@
-5 e 181 * 0
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd byte1.vcd -o byte1.cdd -v byte1.v -D DUMP
+5 10 181 2 *
+8 /home/bryce3/trevorw/covered/diags/verilog -t main -vcd byte1.vcd -o byte1.cdd -v byte1.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" byte1.v 1 16 1
 2 1 3 120012 1 0 1004 0 0 32 48 0 0

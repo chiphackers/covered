@@ -27,15 +27,27 @@ proc do_keybind {.menubar} {
   }
 
   bind all <Control-o> {.menubar.file invoke 0}
+  bind all <Control-O> {.menubar.file invoke 0}
   bind all <Control-s> {.menubar.file invoke 3}
+  bind all <Control-S> {.menubar.file invoke 3}
   bind all <Control-w> {.menubar.file invoke 4}
+  bind all <Control-W> {.menubar.file invoke 4}
   bind all <Control-x> {.menubar.file invoke 8}
+  bind all <Control-X> {.menubar.file invoke 8}
 
-  bind all <Control-r> {.menubar.file.gen invoke 0}
+  bind all <Shift-Control-n> {.menubar.file.gen invoke 0}
+  bind all <Shift-Control-N> {.menubar.file.gen invoke 0}
+  bind all <Shift-Control-r> {.menubar.file.gen invoke 1}
+  bind all <Shift-Control-R> {.menubar.file.gen invoke 1}
+  bind all <Shift-Control-c> {.menubar.file.gen invoke 2}
+  bind all <Shift-Control-C> {.menubar.file.gen invoke 2}
 
   bind all <Control-n> {.menubar.view invoke 0}
+  bind all <Control-N> {.menubar.view invoke 0}
   bind all <Control-p> {.menubar.view invoke 1}
+  bind all <Control-P> {.menubar.view invoke 1}
   bind all <Control-c> {.menubar.view invoke 2}
+  bind all <Control-C> {.menubar.view invoke 2}
 
 }
 
@@ -63,10 +75,12 @@ proc menu_create {} {
 
   # FILE - entry 0
   $tfm add command -label "Open/Merge CDDs..." -accelerator "Ctrl-o" -underline 0 -command {
-    if {[open_files] != ""} {
-      .menubar.file entryconfigure 1 -state normal
-      .menubar.file entryconfigure 4 -state normal
-      .menubar.file.gen entryconfigure 0 -state normal
+    # Get a list of files to open
+    if {[catch {tk_getOpenFile -multiple 1 -filetypes $file_types} fnames]} {
+      set fnames [tk_getOpenFile -filetypes $file_types]
+    }
+    if {$fnames ne ""} {
+      open_files $fnames
     }
   }
   # FILE - entry 1
@@ -108,7 +122,7 @@ proc menu_create {} {
     .menubar.file entryconfigure 1 -state disabled
     .menubar.file entryconfigure 3 -state disabled
     .menubar.file entryconfigure 4 -state disabled
-    .menubar.file.gen entryconfigure 0 -state disabled
+    .menubar.file.gen entryconfigure 1 -state disabled
   }
   # FILE - entry 5
   $tfm add separator
@@ -116,8 +130,14 @@ proc menu_create {} {
   $tfm add cascade -label "Generate" -menu $tfm.gen -underline 0
   menu $tfm.gen -tearoff false
   # FILE-GEN - entry 0
-  $tfm.gen add command -label "ASCII Report..." -accelerator "Ctrl-r" -state disabled -command {
-    create_report_selection_window
+  $tfm.gen add command -label "New CDD..." -accelerator "Ctrl-Shift-n" -command {
+    create_new_cdd
+  }
+  $tfm.gen add command -label "ASCII Report..." -accelerator "Ctrl-Shift-r" -state disabled -command {
+    create_report_generation_window
+  }
+  $tfm.gen add command -label "CDD Ranking Report..." -accelerator "Ctrl-Shift-c" -command {
+    create_rank_cdds
   }
 
   # We don't need the exit function if we are running the Aqua version
@@ -242,50 +262,8 @@ proc menu_create {} {
     }
   }
   $m add separator
-  $m add command -label "Hide Summary Module Column" -state disabled -command {
-    if {[.bot.left.tl columncget 1 -hide] == 1} {
-      .menubar.view entryconfigure 4 -label "Hide Summary Module Column"
-      .bot.left.tl columnconfigure 1 -hide false
-    } else {
-      .menubar.view entryconfigure 4 -label "Show Summary Module Column"
-      .bot.left.tl columnconfigure 1 -hide true
-    }
-  }
-  $m add command -label "Hide Summary Hit Column" -command {
-    if {[.bot.left.tl columncget 2 -hide] == 1} {
-      .menubar.view entryconfigure 5 -label "Hide Summary Hit Column"
-      .bot.left.tl columnconfigure 2 -hide false
-    } else {
-      .menubar.view entryconfigure 5 -label "Show Summary Hit Column"
-      .bot.left.tl columnconfigure 2 -hide true
-    }
-  }
-  $m add command -label "Hide Summary Miss Column" -command {
-    if {[.bot.left.tl columncget 3 -hide] == 1} {
-      .menubar.view entryconfigure 6 -label "Hide Summary Miss Column"
-      .bot.left.tl columnconfigure 3 -hide false
-    } else {
-      .menubar.view entryconfigure 6 -label "Show Summary Miss Column"
-      .bot.left.tl columnconfigure 3 -hide true
-    }
-  }
-  $m add command -label "Hide Summary Total Column" -command {
-    if {[.bot.left.tl columncget 4 -hide] == 1} {
-      .menubar.view entryconfigure 7 -label "Hide Summary Total Column"
-      .bot.left.tl columnconfigure 4 -hide false
-    } else {
-      .menubar.view entryconfigure 7 -label "Show Summary Total Column"
-      .bot.left.tl columnconfigure 4 -hide true
-    }
-  }
-  $m add command -label "Hide Summary Hit Percent Column" -command {
-    if {[.bot.left.tl columncget 5 -hide] == 1} {
-      .menubar.view entryconfigure 8 -label "Hide Summary Hit Percent Column"
-      .bot.left.tl columnconfigure 5 -hide false
-    } else {
-      .menubar.view entryconfigure 8 -label "Show Summary Hit Percent Column"
-      .bot.left.tl columnconfigure 5 -hide true
-    }
+  $m add command -label "Wizard..." -underline 0 -command {
+    create_wizard
   }
   # If we are running on Mac OS X, add preferences to applications menu
   if {[tk windowingsystem] eq "aqua"} {
@@ -335,15 +313,10 @@ proc menu_create {} {
 }
 
 # Opens/merges a CDD file and handles the GUI cursors and listbox initialization.
-proc open_files {} {
+proc open_files {fnames} {
 
-  global file_types cdd_name fname global open_type
+  global file_types cdd_name fname open_type
   global win_cursor txt_cursor e_cursor
-
-  # Get a list of files to open
-  if {[catch {tk_getOpenFile -multiple 1 -filetypes $file_types} fnames]} {
-    set fnames [tk_getOpenFile -filetypes $file_types]
-  }
 
   # Get all cursor values from various widgets (so we can properly restore them after the open)
   set win_cursor [. cget -cursor]
@@ -398,181 +371,14 @@ proc open_files {} {
   .bot.right.txt        configure -cursor $txt_cursor
   .bot.right.h.search.e configure -cursor $e_cursor
 
+  # Change some of the GUI elements
+  if {$cdd_name ne ""} {
+    .menubar.file     entryconfigure 1 -state normal
+    .menubar.file     entryconfigure 4 -state normal
+    .menubar.file.gen entryconfigure 1 -state normal
+  }
+
   return $cdd_name
-
-}
-
-proc create_report_selection_window {} {
-
-  global rsel_sdv rsel_mi rsel_cu
-  global rsel_l rsel_t rsel_m rsel_c rsel_f rsel_a rsel_r
-  global rsel_width rsel_wsel rsel_sup
-  global rsel_fname cdd_name
-
-  toplevel .rselwin
-  wm title .rselwin "Create ASCII report"
-  wm resizable .rselwin 0 0
-  wm geometry .rselwin =550x250
-
-  # Create default report filename
-  set rsel_fname "[file rootname $cdd_name].rpt"
-
-  # Create selected options window
-  frame .rselwin.of -relief raised -borderwidth 1
-  label .rselwin.of.lbl -text "Selected ASCII Report Options" -anchor w
-  button .rselwin.of.b -text "Edit Options..." -command {
-    create_preferences 3
-  }
-  label .rselwin.of.sdv_lbl    -anchor w -text "Level of Detail:"
-  label .rselwin.of.sdv_val    -anchor w -text ""
-  label .rselwin.of.mi_lbl     -anchor w -text "Accumulated By:"
-  label .rselwin.of.mi_val     -anchor w -text ""
-  label .rselwin.of.metric_lbl -anchor w -text "Show Metrics:"
-  label .rselwin.of.metric_val -anchor w -text ""
-  label .rselwin.of.cu_lbl     -anchor w -text "Coverage Type:"
-  label .rselwin.of.cu_val     -anchor w -text ""
-  label .rselwin.of.width_lbl  -anchor w -text "Line Width:"
-  label .rselwin.of.width_val  -anchor w -text ""
-  label .rselwin.of.sup_lbl    -anchor w -text "Suppress Empty Modules:"
-  label .rselwin.of.sup_val    -anchor w -text ""
-  grid columnconfigure .rselwin.of 1 -weight 1
-  grid .rselwin.of.lbl         -row 0 -column 0 -columnspan 2 -sticky news -pady 4
-  grid .rselwin.of.b           -row 0 -column 2 -sticky news
-  grid .rselwin.of.sdv_lbl     -row 1 -column 0 -sticky news -padx 12
-  grid .rselwin.of.sdv_val     -row 1 -column 1 -columnspan 2 -sticky news
-  grid .rselwin.of.mi_lbl      -row 2 -column 0 -sticky news -padx 12
-  grid .rselwin.of.mi_val      -row 2 -column 1 -columnspan 2 -sticky news
-  grid .rselwin.of.metric_lbl  -row 3 -column 0 -sticky news -padx 12
-  grid .rselwin.of.metric_val  -row 3 -column 1 -columnspan 2 -sticky news
-  grid .rselwin.of.cu_lbl      -row 4 -column 0 -sticky news -padx 12
-  grid .rselwin.of.cu_val      -row 4 -column 1 -columnspan 2 -sticky news
-  grid .rselwin.of.width_lbl   -row 5 -column 0 -sticky news -padx 12
-  grid .rselwin.of.width_val   -row 5 -column 1 -columnspan 2 -sticky news
-  grid .rselwin.of.sup_lbl     -row 6 -column 0 -sticky news -padx 12
-  grid .rselwin.of.sup_val     -row 6 -column 1 -columnspan 2 -sticky news
-
-  # Create filename frame
-  frame .rselwin.fname -relief raised -borderwidth 1
-  label .rselwin.fname.lbl -text "Save to file:" -anchor e
-  entry .rselwin.fname.e -textvariable rsel_fname
-  button .rselwin.fname.b -text "Browse..." -anchor e -command {
-    set rsel_fname [tk_getSaveFile -filetypes $rpt_file_types -initialfile $rsel_fname -title "Save Generated Report As"]
-  }
-  grid .rselwin.fname.lbl -row 0 -column 0 -sticky news -pady 4
-  grid .rselwin.fname.e   -row 0 -column 1 -sticky news -pady 4
-  grid .rselwin.fname.b   -row 0 -column 2 -sticky news -pady 4
-  grid columnconfigure .rselwin.fname 1 -weight 1
-
-  # Create button frame
-  frame .rselwin.bf -relief raised -borderwidth 1
-  button .rselwin.bf.create -width 10 -text "Create" -command {
-    # Create command-line to report command of Covered
-    if {$rsel_wsel == 0} { set w "" } else { set w "-w $rsel_width" }
-    if {$rsel_mi  == "None"} { set mi  "" } else { set mi  $rsel_mi }
-    if {$rsel_cu  == "None"} { set cu  "" } else { set cu  $rsel_cu }
-    if {$rsel_sup == "None"} { set sup "" } else { set sup $rsel_sup }
-    if {$rsel_l   == "None"} { set l   "" } else { set l   $rsel_l }
-    if {$rsel_t   == "None"} { set t   "" } else { set t   $rsel_t }
-    if {$rsel_m   == "None"} { set m   "" } else { set m   $rsel_m }
-    if {$rsel_c   == "None"} { set c   "" } else { set c   $rsel_c }
-    if {$rsel_f   == "None"} { set f   "" } else { set f   $rsel_f }
-    if {$rsel_a   == "None"} { set a   "" } else { set a   $rsel_a }
-    if {$rsel_r   == "None"} { set r   "" } else { set r   $rsel_r }
-    set cmd "-d $rsel_sdv $mi $cu -m $l$t$m$c$f$a$r $w -o $rsel_fname $sup $cdd_name"
-    puts "cmd: $cmd"
-    eval "tcl_func_generate_report $cmd"
-    destroy .rselwin
-  }
-  button .rselwin.bf.cancel -width 10 -text "Cancel" -command {
-    destroy .rselwin
-  }
-  button .rselwin.bf.help -width 10 -text "Help" -command {
-    help_show_manual report_gen
-  }
-  pack .rselwin.bf.help   -side right -padx 8 -pady 4
-  pack .rselwin.bf.cancel -side right -padx 8 -pady 4
-  pack .rselwin.bf.create -side right -padx 8 -pady 4
-
-  # Now pack all of the frames
-  pack .rselwin.of    -fill both -side top
-  pack .rselwin.fname -fill both -expand 1
-  pack .rselwin.bf    -fill both -side bottom
-
-  # Populate the report select window
-  update_report_select
-
-  # Finally, raise this window
-  raise .rselwin
-
-}
-
-proc update_report_select {} {
-
-  global rsel_sdv rsel_mi rsel_cu
-  global rsel_l rsel_t rsel_m rsel_c rsel_f rsel_a rsel_r
-  global rsel_width rsel_wsel rsel_sup
-  global rsel_fname cdd_name
-
-  if {[winfo exists .rselwin] == 1} {
-
-    # Create human-readable versions of these values
-    switch $rsel_sdv {
-      s { set sdv_name "Summary" }
-      d { set sdv_name "Detailed" }
-      v { set sdv_name "Verbose" }
-    }
-    switch -- $rsel_mi {
-      "None" { set mi_name "Module" }
-      "-i"   { set mi_name "Instance" }
-    }
-    switch -- $rsel_cu {
-      "None" { set cu_name "Uncovered" }
-      "-c"   { set cu_name "Covered" }
-    }
-    if {$rsel_l == "l"} {
-      lappend metric_list "Line"
-    }
-    if {$rsel_t == "t"} {
-      lappend metric_list "Toggle"
-    }
-    if {$rsel_m == "m"} {
-      lappend metric_list "Memory"
-    }
-    if {$rsel_c == "c"} {
-      lappend metric_list "Logic"
-    }
-    if {$rsel_f == "f"} {
-      lappend metric_list "FSM"
-    }
-    if {$rsel_a == "a"} {
-      lappend metric_list "Assertion"
-    }
-    if {$rsel_r == "r"} {
-      lappend metric_list "Race Conditions"
-    }
-    if {[llength metric_list] == 0} {
-      set metric_list [list None]
-    }
-    if {$rsel_wsel == 1} {
-      set width_name "$rsel_width characters"
-    } else {
-      set width_name "Preformatted"
-    }
-    if {$rsel_sup == ""} {
-      set sup_name "No"
-    } else {
-      set sup_name "Yes"
-    }
-
-    # Set the labels with the appropriate values
-    .rselwin.of.sdv_val    configure -text $sdv_name
-    .rselwin.of.mi_val     configure -text $mi_name
-    .rselwin.of.metric_val configure -text [join $metric_list ,]
-    .rselwin.of.cu_val     configure -text $cu_name
-    .rselwin.of.width_val  configure -text $width_name
-    .rselwin.of.sup_val    configure -text $sup_name
-
-  }
 
 }
 

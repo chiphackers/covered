@@ -7,19 +7,20 @@ Usage:  covered report (-h | -view | [<options>] <database_file>)
 
    Options:
       -m [l][t][c][f][r][a][m]  Type(s) of metrics to report.  l=line, t=toggle, c=combinational logic,
-                                 f=FSM state/arc, r=race condition, a=assertion, m=memory.  Default is ltcf.
+                                  f=FSM state/arc, r=race condition, a=assertion, m=memory.  Default is ltcf.
       -d (s|d|v)                Level of report detail (s=summary, d=detailed, v=verbose).
-                                 Default is to display summary coverage information.
+                                  Default is to display summary coverage information.
       -i                        Provides coverage information for instances instead of module/task/function.
       -c                        If '-d d' or '-d v' is specified, displays covered line, toggle
-                                 and combinational cases.  Default is to display uncovered results.
+                                  and combinational cases.  Default is to display uncovered results.
       -o <filename>             File to output report information to.  Default is standard output.
       -w [<line_width>]         Causes expressions to be output to best-fit to the specified line
-                                 width.  If the -w option is specified without a value, the default
-                                 line width of 80 is used.  If the -w option is not specified, all
-                                 expressions are output in the format that the user specified in the
-                                 Verilog source.
+                                  width.  If the -w option is specified without a value, the default
+                                  line width of 105 is used.  If the -w option is not specified, all
+                                  expressions are output in the format that the user specified in the
+                                  Verilog source.
       -s                        Suppress outputting modules/instances that do not contain any coverage metrics.
       -b                        If combinational logic verbose output is reported and the expression is a
-                                 vector operation, this option outputs the coverage information on a bitwise basis.
+                                  vector operation, this option outputs the coverage information on a bitwise basis.
+      -f <filename>             Name of file containing additional arguments to parse.
 

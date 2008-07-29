@@ -1,5 +1,5 @@
-5 e 101 * 0
-8 /ptmp/covered/diags/verilog -t main -vcd report7.vcd -v report7.v -o report7.cdd
+5 10 101 3 *
+8 /Users/trevorw/projects/devel/covered/diags/verilog -t main -vcd report7.vcd -v report7.v -o report7.cdd
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" report7.v 8 27 1
 2 1 15 230024 2 0 1008 0 0 32 48 f 0

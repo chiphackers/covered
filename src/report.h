@@ -31,6 +31,11 @@ void command_report(
   const char** argv
 );
 
+/*! \brief Recursively gathers instance statistics in each instance structure */
+void report_gather_instance_stats(
+  funit_inst* root
+);
+
 /*! \brief Prints header of report. */
 void report_print_header(
   FILE* ofile
@@ -60,6 +65,19 @@ void report_save_cdd(
 
 /*
  $Log$
+ Revision 1.16.4.1  2008/07/10 22:43:54  phase1geo
+ Merging in rank-devel-branch into this branch.  Added -f options for all commands
+ to allow files containing command-line arguments to be added.  A few error diagnostics
+ are currently failing due to changes in the rank branch that never got fixed in that
+ branch.  Checkpointing.
+
+ Revision 1.16.6.1  2008/07/01 06:17:22  phase1geo
+ More updates to rank command.  Updating IV/Cver regression for these changes (full
+ regression not passing at this point).  Checkpointing.
+
+ Revision 1.16  2008/03/11 22:06:48  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.15  2008/02/10 03:33:13  phase1geo
  More exception handling added and fixed remaining splint errors.
 

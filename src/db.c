@@ -181,6 +181,11 @@ unsigned int exclude_mode = 0;
 */
 unsigned int ignore_racecheck_mode = 0;
 
+/*!
+ Specifies the number of timesteps that have transpired during this simulation.
+*/
+uint64 num_timesteps = 0;
+
 
 /*!
  \return Returns pointer to newly allocated and initialized database structure
@@ -441,6 +446,20 @@ void db_read(
                 args_db_read( &rest_line );
               }
             
+            } else if( type == DB_TYPE_MESSAGE ) {
+ 
+              assert( !merge_mode );
+ 
+              /* Parse rest of line for user-supplied message */
+              message_db_read( &rest_line );
+
+            } else if( type == DB_TYPE_MERGED_CDD ) {
+
+              assert( !merge_mode );
+
+              /* Parse rest of line for merged CDD information */
+              merged_cdd_db_read( &rest_line );
+    
             } else if( type == DB_TYPE_SIGNAL ) {
   
               assert( !merge_mode );
@@ -2846,6 +2865,8 @@ bool db_do_timestep(
   }
 #endif
 
+  num_timesteps++;
+
   curr_time.lo    = (time & 0xffffffffLL);
   curr_time.hi    = ((time >> 32) & 0xffffffffLL);
   curr_time.full  = time;
@@ -2894,6 +2915,29 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.309.2.2  2008/07/25 21:08:35  phase1geo
+ Modifying CDD file format to remove the potential for memory allocation assertion
+ errors due to a large number of merged CDD files.  Updating IV and Cver regressions per this
+ change.
+
+ Revision 1.309.2.1  2008/07/10 22:43:50  phase1geo
+ Merging in rank-devel-branch into this branch.  Added -f options for all commands
+ to allow files containing command-line arguments to be added.  A few error diagnostics
+ are currently failing due to changes in the rank branch that never got fixed in that
+ branch.  Checkpointing.
+
+ Revision 1.316.2.2  2008/07/02 23:10:37  phase1geo
+ Checking in work on rank function and addition of -m option to score
+ function.  Added new diagnostics to verify beginning functionality.
+ Checkpointing.
+
+ Revision 1.316.2.1  2008/07/01 06:17:21  phase1geo
+ More updates to rank command.  Updating IV/Cver regression for these changes (full
+ regression not passing at this point).  Checkpointing.
+
+ Revision 1.316  2008/06/28 03:46:28  phase1geo
+ More code updates for warning removal.
+
  Revision 1.315  2008/06/27 14:02:00  phase1geo
  Fixing splint and -Wextra warnings.  Also fixing comment formatting.
 

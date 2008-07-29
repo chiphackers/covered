@@ -23,6 +23,9 @@ $COVERED_MERGE_GFLAGS = "";
 # Global report command flags to use when running the runReportCommand subroutine
 $COVERED_REPORT_GFLAGS = "";
 
+# Global rank command flags to use when running the runRankCommand subroutine
+$COVERED_RANK_GFLAGS = "";
+
 # Specifies which simulator should be used for simulating the design (IV, CVER, VCS)
 $SIMULATOR = "IV";
 
@@ -176,6 +179,18 @@ sub runReportCommand {
 
 }
 
+# Runs the rank command with the given arguments.
+sub runRankCommand {
+
+  my( $rank_args ) = $_[0];
+
+  # Create rank command
+  my( $cmd ) = "$COVERED $COVERED_GFLAGS $COVERED_REPORT_GFLAGS rank $rank_args $CHECK_MEM_CMD";
+
+  &runCommand( $cmd );
+
+}
+
 # This subroutine should be used whenever a system command needs to be
 # executed from a regression script.  Echoes the given command and then
 # executes it.
@@ -201,6 +216,7 @@ sub checkTest {
 
   my( $passed ) = 0;
   my( $failed ) = 0;
+  my( $retval ) = 0;
   
   # Open report results file if it currently exists and accumulate info.
   if( open( RPT_RESULTS, "${RPT_OUTPUT}" ) > 0 ) {
@@ -254,6 +270,18 @@ sub checkTest {
           }
           if( $rm_cdd > 3 ) {
             system( "rm ${test}c.cdd" ) && die;
+          }
+          if( $rm_cdd > 4 ) {
+            system( "rm ${test}d.cdd" ) && die;
+          }
+          if( $rm_cdd > 5 ) {
+            system( "rm ${test}e.cdd" ) && die;
+          }
+          if( $rm_cdd > 6 ) {
+            system( "rm ${test}f.cdd" ) && die;
+          }
+          if( $rm_cdd > 7 ) {
+            system( "rm ${test}g.cdd" ) && die;
           }
         }
       } elsif( $mode == 0 ) {
@@ -315,6 +343,8 @@ sub checkTest {
       print "  Checking output results         -- FAILED\n";
       print RPT_FAILED "${test}\n";
       $failed++;
+      $retval = 1;
+
     } else {
 
       # Check to make sure that a tmp* file does not exist
@@ -343,5 +373,29 @@ sub checkTest {
     close( RPT_FAILED  );
 
   }
+
+  return $retval;
  
 }
+
+# Converts a configuration file for the current dump type.
+sub convertCfg {
+
+  my( $type, $file ) = @_;
+
+  open( OFILE, ">${file}" ) || die "Can't open ${file} for writing!\n";
+  open( IFILE, "../regress/${file}" ) || die "Can't open ../regress/${file} for reading!\n";
+
+  while( $line = <IFILE> ) {
+    $line =~ s/\-vcd/\-$type/g;
+    if( $type eq "vpi" ) {
+      $line =~ s/[0-9a-zA-Z_\.]+\.(vcd|dump)/covered_vpi.v/g;
+    }
+    print OFILE $line;
+  }
+
+  close( IFILE );
+  close( OFILE );
+
+}
+

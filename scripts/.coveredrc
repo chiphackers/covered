@@ -4,6 +4,11 @@
 # where whitespace must be present between the variable, the "=" character
 # and the value.  Comment lines start with the "#" character.
 
+# If set to true, causes the wizard window to be displayed on GUI startup.
+# If set to false, the wizard window is suppressed.
+
+ShowWizardOnStartup = true
+
 # Sets the foreground color for all source code that is found
 # to be uncovered during simulation.  The value can be any legal color
 # value accepted by Tcl.
@@ -119,41 +124,4 @@ HighlightStringColor = red
 # the specified color.  The value may be any color value that is acceptable to Tk.
 
 HighlightSymbolColor = coral
-
-# When an ASCII report is generated, this option specifies the amount of detail contained
-# in the report.  Legal values are 'summary', 'detailed' or 'verbose'.
-
-ReportDetailLevel = verbose
-
-# When an ASCII report is generated, this option specifies whether the report should
-# accumulate coverage statistics on a module or instance basis.  Legal values are 'module'
-# or 'instance'.
-
-ReportAccumulateBy = module
-
-# When an ASCII report is generated, this option specifies which metrics should be
-# output.  Legal values are any of the following combinations of letters (without spaces)
-# 'l' (line), 't' (toggle), 'c' (combinational logic), 'f' (FSM), 'a' (assertion) and/or
-# 'r' (race condition).
-
-ReportShowMetrics = ltmcf
-
-# When an ASCII report is generated, this option specifies whether uncovered or covered
-# information will be displayed to the report file.  Legal values are 'uncovered' or
-# 'covered'.
-
-ReportCoverageType = uncovered
-
-# When an ASCII report is generated, this option specifies whether the width of the file
-# should be set to a certain number of characters or just retain the formatting that is
-# specified in the source file.  Legal values are 'preformatted' or any positive integer
-# value.
-
-ReportLineWidth = preformatted
-
-# When an ASCII report is generated, this option specifies if modules/instances that
-# contain no coverage information (for all possible metrics) are suppressed from the
-# report output.  Legal values are 'yes' or 'no'.
-
-ReportSuppressEmptyModules = no
 

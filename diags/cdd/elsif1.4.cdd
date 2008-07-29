@@ -1,5 +1,5 @@
-5 e 181 * 0
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd elsif1.4.vcd -o elsif1.4.cdd -v elsif1.4.v -D DUMP
+5 10 181 2 *
+8 /home/bryce3/trevorw/covered/diags/verilog -t main -vcd elsif1.4.vcd -o elsif1.4.cdd -v elsif1.4.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" elsif1.4.v 3 28 1
 2 1 7 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0

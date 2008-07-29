@@ -265,7 +265,6 @@ void fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
             arc_db_read( &(table->table), line );
           } Catch_anonymous {
             fsm_dealloc( table );
-            // printf( "fsm Throw C\n" ); - HIT
             Throw 0;
           }
 
@@ -288,8 +287,7 @@ void fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
 
   } else {
 
-    print_output( "Unable to parse statement line in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
-    // printf( "fsm Throw E\n" ); - HIT
+    print_output( "Unable to parse FSM line in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
     Throw 0;
 
   }
@@ -1309,6 +1307,18 @@ void fsm_dealloc(
 
 /*
  $Log$
+ Revision 1.97.2.2  2008/07/29 04:40:25  phase1geo
+ Updating regressions.  Full regressions should now pass.
+
+ Revision 1.97.2.1  2008/07/10 22:43:50  phase1geo
+ Merging in rank-devel-branch into this branch.  Added -f options for all commands
+ to allow files containing command-line arguments to be added.  A few error diagnostics
+ are currently failing due to changes in the rank branch that never got fixed in that
+ branch.  Checkpointing.
+
+ Revision 1.98  2008/06/27 14:02:00  phase1geo
+ Fixing splint and -Wextra warnings.  Also fixing comment formatting.
+
  Revision 1.97  2008/05/30 23:00:48  phase1geo
  Fixing Doxygen comments to eliminate Doxygen warning messages.
 

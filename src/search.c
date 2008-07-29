@@ -273,7 +273,7 @@ void search_add_extensions(
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Parsing error in +libext+%s  ", ext_list );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    gen_space( user_msg, (25 + (strlen( ext_list ) - strlen( tmp ))) );
+    gen_char_string( user_msg, ' ', (25 + (strlen( ext_list ) - strlen( tmp ))) );
     strcat( user_msg, "^" );
     print_output( user_msg, FATAL_WRAP, __FILE__, __LINE__ );
     printf( "search Throw E\n" );
@@ -299,6 +299,19 @@ void search_free_lists() { PROFILE(SEARCH_FREE_LISTS);
 
 /*
  $Log$
+ Revision 1.44.4.2  2008/07/23 21:38:42  phase1geo
+ Adding better formatting for ranking reports to allow the inclusion of the full
+ pathname for each CDD file listed.
+
+ Revision 1.44.4.1  2008/07/10 22:43:54  phase1geo
+ Merging in rank-devel-branch into this branch.  Added -f options for all commands
+ to allow files containing command-line arguments to be added.  A few error diagnostics
+ are currently failing due to changes in the rank branch that never got fixed in that
+ branch.  Checkpointing.
+
+ Revision 1.45  2008/06/27 14:02:04  phase1geo
+ Fixing splint and -Wextra warnings.  Also fixing comment formatting.
+
  Revision 1.44  2008/04/15 20:37:11  phase1geo
  Fixing database array support.  Full regression passes.
 

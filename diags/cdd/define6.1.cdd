@@ -1,5 +1,5 @@
-5 e 181 * 0
-8 /data/cf/uvpd1/sn3/trevorw/trevorw/projects/covered/diags/verilog -t main -vcd define6.1.vcd -o define6.1.cdd -v define6.1.v -D DUMP
+5 10 101 3 *
+8 /Users/trevorw/projects/devel/covered/diags/verilog -t main -vcd define6.1.vcd -o define6.1.cdd -v define6.1.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" define6.1.v 15 35 1
 2 1 19 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0

@@ -35,8 +35,11 @@
 #include "util.h"
 
 
-extern char** merge_in;
-extern int    merge_in_num;
+extern str_link* merge_in_head;
+extern str_link* merge_in_tail;
+extern int       merge_in_num;
+extern uint64    num_timesteps;
+extern char*     cdd_message;
 
 
 /*!
@@ -131,26 +134,12 @@ void info_db_write(
   /* Calculate vector element size */
   info_set_vector_elem_size();
 
-  fprintf( file, "%d %x %x %s %d",
+  fprintf( file, "%d %x %x %llu %s\n",
            DB_TYPE_INFO,
            CDD_VERSION,
            info_suppl.all,
-           leading_hierarchies[0],
-           merge_in_num );
-
-  /* Display any merge filename information */
-  if( leading_hier_num == merge_in_num ) {
-    for( i=0; i<merge_in_num; i++ ) {
-      fprintf( file, " %s %s", merge_in[i], leading_hierarchies[i] );
-    }
-  } else {
-    assert( (leading_hier_num - 1) == merge_in_num );
-    for( i=0; i<merge_in_num; i++ ) {
-      fprintf( file, " %s %s", merge_in[i], leading_hierarchies[i+1] );
-    }
-  }
-
-  fprintf( file, "\n" );
+           num_timesteps,
+           leading_hierarchies[0] );
 
   /* Display score arguments */
   fprintf( file, "%d %s", DB_TYPE_SCORE_ARGS, score_run_path );
@@ -160,6 +149,29 @@ void info_db_write(
   }
 
   fprintf( file, "\n" );
+
+  /* Display the CDD message, if there is one */
+  if( cdd_message != NULL ) {
+    fprintf( file, "%d %s\n", DB_TYPE_MESSAGE, cdd_message );
+  }
+
+  /* Display the merged CDD information, if there are any */
+  if( leading_hier_num == merge_in_num ) {
+    str_link* strl = merge_in_head;
+    i = 0;
+    while( strl != NULL ) {
+      fprintf( file, "%d %s %s\n", DB_TYPE_MERGED_CDD, strl->str, leading_hierarchies[i++] );
+      strl = strl->next; 
+    }
+  } else { 
+    str_link* strl = merge_in_head;
+    assert( (leading_hier_num - 1) == merge_in_num );
+    i = 1; 
+    while( strl != NULL ) {
+      fprintf( file, "%d %s %s\n", DB_TYPE_MERGED_CDD, strl->str, leading_hierarchies[i++] );
+      strl = strl->next;
+    }
+  }
 
   PROFILE_END;
 
@@ -174,18 +186,15 @@ void info_db_read(
   /*@out@*/ char** line  /*!< Pointer to string containing information line to parse */
 ) { PROFILE(INFO_DB_READ);
 
-  int          chars_read;     /* Number of characters scanned in from this line */
-  uint32       scored;         /* Indicates if this file contains scored data */
-  unsigned int version;        /* Contains CDD version from file */
-  int          mnum;           /* Temporary merge num */
-  char         tmp1[4096];     /* Temporary string */
-  char         tmp2[4096];     /* Temporary string */
-  int          i;              /* Loop iterator */
+  int          chars_read;  /* Number of characters scanned in from this line */
+  uint32       scored;      /* Indicates if this file contains scored data */
+  unsigned int version;     /* Contains CDD version from file */
+  char         tmp[4096];   /* Temporary string */
 
   /* Save off original scored value */
   scored = info_suppl.part.scored;
 
-  if( sscanf( *line, "%x %x %s %d%n", &version, &(info_suppl.all), tmp1, &mnum, &chars_read ) == 4 ) {
+  if( sscanf( *line, "%x%n", &version, &chars_read ) == 1 ) {
 
     *line = *line + chars_read;
 
@@ -194,47 +203,30 @@ void info_db_read(
       Throw 0;
     }
 
-    /* Set leading_hiers_differ to TRUE if this is not the first hierarchy and it differs from the first */
-    if( (leading_hier_num > 0) && (strcmp( leading_hierarchies[0], tmp1 ) != 0) ) {
-      leading_hiers_differ = TRUE;
-    }
+    if( sscanf( *line, "%x %llu %s%n", &(info_suppl.all), &num_timesteps, tmp, &chars_read ) == 3 ) {
 
-    /* Assign this hierarchy to the leading hierarchies array */
-    leading_hierarchies = (char**)realloc_safe( leading_hierarchies, (sizeof( char* ) * leading_hier_num), (sizeof( char* ) * (leading_hier_num + 1)) );
-    leading_hierarchies[leading_hier_num] = strdup_safe( tmp1 );
-    leading_hier_num++;
+      *line = *line + chars_read;
 
-    for( i=0; i<mnum; i++ ) {
-
-      if( sscanf( *line, "%s %s%n", tmp1, tmp2, &chars_read ) == 2 ) {
-
-        *line = *line + chars_read;
-
-        /* Add merged file */
-        merge_in = (char**)realloc_safe( merge_in, (sizeof( char* ) * merge_in_num), (sizeof( char* ) * (merge_in_num + 1)) );
-        merge_in[merge_in_num] = strdup_safe( tmp1 );
-        merge_in_num++;
-
-        /* Set leading_hiers_differ to TRUE if this is not the first hierarchy and it differs from the first */
-        if( strcmp( leading_hierarchies[0], tmp2 ) != 0 ) {
-          leading_hiers_differ = TRUE;
-        }
-
-        /* Add its hierarchy */
-        leading_hierarchies = (char**)realloc_safe( leading_hierarchies, (sizeof( char* ) * leading_hier_num), (sizeof( char* ) * (leading_hier_num + 1)) );
-        leading_hierarchies[leading_hier_num] = strdup_safe( tmp2 );
-        leading_hier_num++;
-
-      } else {
-        print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
-        Throw 0;
+      /* Set leading_hiers_differ to TRUE if this is not the first hierarchy and it differs from the first */
+      if( (leading_hier_num > 0) && (strcmp( leading_hierarchies[0], tmp ) != 0) ) {
+        leading_hiers_differ = TRUE;
       }
 
-    }
+      /* Assign this hierarchy to the leading hierarchies array */
+      leading_hierarchies = (char**)realloc_safe( leading_hierarchies, (sizeof( char* ) * leading_hier_num), (sizeof( char* ) * (leading_hier_num + 1)) );
+      leading_hierarchies[leading_hier_num] = strdup_safe( tmp );
+      leading_hier_num++;
 
-    /* Set scored flag to correct value */
-    if( info_suppl.part.scored == 0 ) {
-      info_suppl.part.scored = scored;
+      /* Set scored flag to correct value */
+      if( info_suppl.part.scored == 0 ) {
+        info_suppl.part.scored = scored;
+      }
+
+    } else {
+
+      print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
+      Throw 0;
+
     }
 
   } else {
@@ -257,8 +249,8 @@ void args_db_read(
   char** line  /*!< Pointer to string containing information line to parse */
 ) { PROFILE(ARGS_DB_READ);
 
-  int  chars_read;     /* Number of characters scanned in from this line */
-  char tmp1[4096];     /* Temporary string */
+  int  chars_read;  /* Number of characters scanned in from this line */
+  char tmp1[4096];  /* Temporary string */
 
   if( sscanf( *line, "%s%n", score_run_path, &chars_read ) == 1 ) {
 
@@ -271,6 +263,62 @@ void args_db_read(
       score_args[score_arg_num] = strdup_safe( tmp1 );
       score_arg_num++;
     }
+
+  } else {
+
+    print_output( "CDD file being read is incompatible with this version of Covered", FATAL, __FILE__, __LINE__ );
+    Throw 0;
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Read user-specified message from specified string and stores its information.
+*/
+void message_db_read(
+  char** line  /*!< Pointer to string containing information line to parse */
+) { PROFILE(MESSAGE_DB_READ);
+
+  /* All we need to do is copy the message */
+  if( strlen( *line + 1 ) > 0 ) {
+    cdd_message = strdup_safe( *line + 1 );
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Parses given line for merged CDD information and stores this information in the appropriate global variables.
+*/
+void merged_cdd_db_read(
+  char** line  /*!< Pointer to string containing merged CDD line to parse */
+) { PROFILE(MERGED_CDD_DB_READ);
+
+  char tmp1[4096];  /* Temporary string */
+  char tmp2[4096];  /* Temporary string */
+  int  chars_read;  /* Number of characters read */
+
+  if( sscanf( *line, "%s %s%n", tmp1, tmp2, &chars_read ) == 2 ) {
+
+    *line = *line + chars_read;
+
+    /* Add merged file */
+    str_link_add( strdup_safe( tmp1 ), &merge_in_head, &merge_in_tail );
+    merge_in_num++;
+
+    /* Set leading_hiers_differ to TRUE if this is not the first hierarchy and it differs from the first */
+    if( strcmp( leading_hierarchies[0], tmp2 ) != 0 ) {
+      leading_hiers_differ = TRUE;
+    }
+
+    /* Add its hierarchy */
+    leading_hierarchies = (char**)realloc_safe( leading_hierarchies, (sizeof( char* ) * leading_hier_num), (sizeof( char* ) * (leading_hier_num + 1)) );
+    leading_hierarchies[leading_hier_num] = strdup_safe( tmp2 );
+    leading_hier_num++;
 
   } else {
 
@@ -310,10 +358,16 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
   score_arg_num = 0;
 
   /* Free merged arguments */
-  for( i=0; i<merge_in_num; i++ ) {
-    free_safe( merge_in[i], (strlen( merge_in[i] ) + 1) );
-  }
-  free_safe( merge_in, (sizeof( char* ) * merge_in_num) );
+  str_link_delete_list( merge_in_head );
+  merge_in_head = NULL;
+  merge_in_tail = NULL;
+  merge_in_num  = 0;
+
+  /* Free user message */
+  free_safe( cdd_message, (strlen( cdd_message ) + 1) );
+  cdd_message = NULL;
+
+  PROFILE_END;
 
   PROFILE_END;
 
@@ -321,6 +375,37 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
 /*
  $Log$
+ Revision 1.32.2.4  2008/07/25 21:08:35  phase1geo
+ Modifying CDD file format to remove the potential for memory allocation assertion
+ errors due to a large number of merged CDD files.  Updating IV and Cver regressions per this
+ change.
+
+ Revision 1.32.2.3  2008/07/23 05:10:11  phase1geo
+ Adding -d and -ext options to rank and merge commands.  Updated necessary files
+ per this change and updated regressions.
+
+ Revision 1.32.2.2  2008/07/21 21:35:07  phase1geo
+ Fixing bug with deallocation of merge_in array and a later reallocation.  Needed
+ to reset merge_in to NULL and merge_in_num to 0.
+
+ Revision 1.32.2.1  2008/07/10 22:43:52  phase1geo
+ Merging in rank-devel-branch into this branch.  Added -f options for all commands
+ to allow files containing command-line arguments to be added.  A few error diagnostics
+ are currently failing due to changes in the rank branch that never got fixed in that
+ branch.  Checkpointing.
+
+ Revision 1.36.2.2  2008/07/02 23:10:38  phase1geo
+ Checking in work on rank function and addition of -m option to score
+ function.  Added new diagnostics to verify beginning functionality.
+ Checkpointing.
+
+ Revision 1.36.2.1  2008/07/01 06:17:22  phase1geo
+ More updates to rank command.  Updating IV/Cver regression for these changes (full
+ regression not passing at this point).  Checkpointing.
+
+ Revision 1.36  2008/06/27 14:02:02  phase1geo
+ Fixing splint and -Wextra warnings.  Also fixing comment formatting.
+
  Revision 1.35  2008/06/23 02:33:39  phase1geo
  Adding err9 diagnostic to regression suite.
 

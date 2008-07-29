@@ -26,17 +26,23 @@
 #include <stdio.h>
 
 
-/*! \brief  Initializes all information variables. */
+/*! \brief Initializes all information variables. */
 void info_initialize();
 
-/*! \brief  Writes info line to specified CDD file. */
+/*! \brief Writes info line to specified CDD file. */
 void info_db_write( FILE* file );
 
-/*! \brief  Reads info line from specified line and stores information. */
+/*! \brief Reads info line from specified line and stores information. */
 void info_db_read( char** line );
 
 /*! \brief Reads score args line from specified line and stores information. */
 void args_db_read( char** line );
+
+/*! \brief Reads user-specified message from specified line and stores information. */
+void message_db_read( char** line );
+
+/*! \brief Reads merged CDD information from specified line and stores information. */
+void merged_cdd_db_read( char** line );
 
 /*! \brief Deallocates all memory associated with the information section of a database file. */
 void info_dealloc();
@@ -44,6 +50,26 @@ void info_dealloc();
 
 /*
  $Log$
+ Revision 1.8.4.2  2008/07/25 21:08:35  phase1geo
+ Modifying CDD file format to remove the potential for memory allocation assertion
+ errors due to a large number of merged CDD files.  Updating IV and Cver regressions per this
+ change.
+
+ Revision 1.8.4.1  2008/07/10 22:43:52  phase1geo
+ Merging in rank-devel-branch into this branch.  Added -f options for all commands
+ to allow files containing command-line arguments to be added.  A few error diagnostics
+ are currently failing due to changes in the rank branch that never got fixed in that
+ branch.  Checkpointing.
+
+ Revision 1.8.6.1  2008/07/02 23:10:38  phase1geo
+ Checking in work on rank function and addition of -m option to score
+ function.  Added new diagnostics to verify beginning functionality.
+ Checkpointing.
+
+ Revision 1.8  2008/02/09 19:32:45  phase1geo
+ Completed first round of modifications for using exception handler.  Regression
+ passes with these changes.  Updated regressions per these changes.
+
  Revision 1.7  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

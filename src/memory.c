@@ -1314,6 +1314,15 @@ void memory_report(
 
 /*
  $Log$
+ Revision 1.29.2.1  2008/07/10 22:43:52  phase1geo
+ Merging in rank-devel-branch into this branch.  Added -f options for all commands
+ to allow files containing command-line arguments to be added.  A few error diagnostics
+ are currently failing due to changes in the rank branch that never got fixed in that
+ branch.  Checkpointing.
+
+ Revision 1.32  2008/06/27 14:02:03  phase1geo
+ Fixing splint and -Wextra warnings.  Also fixing comment formatting.
+
  Revision 1.31  2008/06/23 16:12:12  phase1geo
  Moving memory allocation in instance verbose output so that its test mode output
  does not interfere with other output.  Adding missing err8.err file from regressions.
