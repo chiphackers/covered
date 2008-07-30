@@ -68,7 +68,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 lshift5         mbit_sel1       mbit_sel2       mbit_sel3       mbit_sel3.1 \
                 mbit_sel4       mbit_sel4.1     mbit_sel4.2     mbit_sel4.3     mbit_sel7 \
                 mbit_sel9       mbit_sel9.1     mbit_sel9.2     mem1            mem2 \
-                mod1            mult1           mult2           multi_exp1      multi_exp1.1 \
+                mod1            msg1            mult1           mult2           multi_exp1      multi_exp1.1 \
                 multi_exp1.2    multi_exp1.3    multi_exp1.4    multi_exp1.5    multi_exp1.6 \
                 multi_exp1.7    multi_exp1.8    multi_exp1.9    multi_exp1.10   multi_exp1.11 \
                 multi_exp1.12   multi_exp1.13   multi_exp1.14   multi_exp1.15   multi_exp2 \
@@ -111,7 +111,7 @@ DIAGS4        = delay1.3
 
 BDIAGS1       = bitwise1
 
-MERGE1        = merge1          merge3          merge4          fsm2
+MERGE1        = merge1          merge3          merge4          merge5          fsm2
 MERGE3        = merge2
 
 RACELIST      = race1           race1.1         race1.2         race2.1         race2.2 \
