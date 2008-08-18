@@ -31,38 +31,47 @@
 /*! \brief Calculates the memory coverage numbers for a given memory signal */
 void memory_get_stat(
             vsignal*      sig,
-  /*@out@*/ unsigned int* ae_total,
   /*@out@*/ unsigned int* wr_hit,
   /*@out@*/ unsigned int* rd_hit,
-  /*@out@*/ unsigned int* tog_total,
+  /*@out@*/ unsigned int* ae_total,
   /*@out@*/ unsigned int* tog01_hit,
   /*@out@*/ unsigned int* tog10_hit,
+  /*@out@*/ unsigned int* tog_total,
+  /*@out@*/ unsigned int* excluded,
             bool          ignore_excl
 );
 
 /*! \brief Calculates memory coverage numbers for the specified signal list. */
 void memory_get_stats(
             sig_link*     sigl,
-  /*@out@*/ unsigned int* ae_total,
   /*@out@*/ unsigned int* wr_hit,
   /*@out@*/ unsigned int* rd_hit,
-  /*@out@*/ unsigned int* tog_total,
+  /*@out@*/ unsigned int* ae_total,
   /*@out@*/ unsigned int* tog01_hit,
-  /*@out@*/ unsigned int* tog10_hit
+  /*@out@*/ unsigned int* tog10_hit,
+  /*@out@*/ unsigned int* tog_total,
+  /*@out@*/ unsigned int* excluded
 );
 
 /*! \brief Gets memory summary information for a GUI request */
-bool memory_get_funit_summary(
-            const char* funit_name,
-            int         funit_type,
-  /*@out@*/ int*        total,
-  /*@out@*/ int*        hit
+void memory_get_funit_summary(
+            func_unit*    funit,
+  /*@out@*/ unsigned int* hit,
+  /*@out@*/ unsigned int* excluded,
+  /*@out@*/ unsigned int* total
+);
+
+/*! \brief Gets memory summary information for a GUI request */
+void memory_get_inst_summary(
+            funit_inst*   funit,
+  /*@out@*/ unsigned int* hit,
+  /*@out@*/ unsigned int* excluded,
+  /*@out@*/ unsigned int* total
 );
 
 /*! \brief Gets coverage information for the specified memory */
-bool memory_get_coverage(
-            const char* funit_name,
-            int         funit_type,
+void memory_get_coverage(
+            func_unit*  funit,
             const char* signame,
   /*@out@*/ char**      pdim_str,
   /*@out@*/ char**      pdim_array,
@@ -72,12 +81,11 @@ bool memory_get_coverage(
 );
 
 /*! \brief Collects all signals that are memories and match the given coverage metric for the given functional unit */
-bool memory_collect(
-            const char* funit_name,
-            int         funit_type,
-            int         cov,
-  /*@out@*/ sig_link**  head,
-  /*@out@*/ sig_link**  tail
+void memory_collect(
+            func_unit* funit,
+            int        cov,
+  /*@out@*/ sig_link** head,
+  /*@out@*/ sig_link** tail
 );
 
 /*! \brief Generates report output for line coverage. */
@@ -89,6 +97,13 @@ void memory_report(
 
 /*
  $Log$
+ Revision 1.10.6.3  2008/08/07 06:39:11  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
+ Revision 1.10.6.2  2008/08/06 20:11:34  phase1geo
+ Adding support for instance-based coverage reporting in GUI.  Everything seems to be
+ working except for proper exclusion handling.  Checkpointing.
+
  Revision 1.10.6.1  2008/07/10 22:43:52  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

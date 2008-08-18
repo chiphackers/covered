@@ -12,10 +12,10 @@
 
 * Reported by                    : Module
 
-* Report generated from CDD file that was merged from the following files:
+* Report generated from CDD file that was merged from the following files with the following leading hierarchies:
     Filename                                           Leading Hierarchy
     -----------------------------------------------------------------------------------------------------------------
-    merge4a.cdd                                        main                                                          
+    merge4.cdd                                         main                                                          
     merge4b.cdd                                        main                                                          
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

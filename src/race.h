@@ -49,7 +49,13 @@ void race_get_stats(
 void race_report( FILE* ofile, bool verbose );
 
 /*! \brief Collects all of the lines in the specified module that were not verified due to race condition breach */
-bool race_collect_lines( const char* funit_name, int funit_type, int** slines, int** elines, int** reasons, int* line_cnt );
+void race_collect_lines(
+            func_unit* funit,
+  /*@out@*/ int**      slines,
+  /*@out@*/ int**      elines,
+  /*@out@*/ int**      reasons,
+  /*@out@*/ int*       line_cnt
+);
 
 /*! \brief Deallocates the specified race condition block from memory */
 void race_blk_delete_list( race_blk* rb );
@@ -57,6 +63,10 @@ void race_blk_delete_list( race_blk* rb );
 
 /*
  $Log$
+ Revision 1.23.4.2  2008/08/06 20:11:35  phase1geo
+ Adding support for instance-based coverage reporting in GUI.  Everything seems to be
+ working except for proper exclusion handling.  Checkpointing.
+
  Revision 1.23.4.1  2008/07/10 22:43:54  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

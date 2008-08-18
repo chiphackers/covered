@@ -31,39 +31,46 @@
 /*! \brief Calculates the toggle coverage for the specifed expression and signal lists. */
 void toggle_get_stats(
             sig_link*     sigl,
-  /*@out@*/ unsigned int* total,
   /*@out@*/ unsigned int* hit01,
   /*@out@*/ unsigned int* hit10,
+  /*@out@*/ unsigned int* excluded,
+  /*@out@*/ unsigned int* total,
   /*@out@*/ bool*         cov_found
 );
 
 /*! \brief Collects all toggle expressions that match the specified coverage indication. */
-bool toggle_collect(
-  const char* funit_name,
-  int         funit_type,
-  int         cov,
-  sig_link**  sig_head,
-  sig_link**  sig_tail
+void toggle_collect(
+            func_unit*  funit,
+            int         cov,
+  /*@out@*/ sig_link**  sig_head,
+  /*@out@*/ sig_link**  sig_tail
 );
 
 /*! \brief Gets toggle coverage information for a single signal in the specified functional unit */
-bool toggle_get_coverage(
-            const char* funit_name,
-            int         funit_type,
-            char*       sig_name,
-  /*@out@*/ int*        msb,
-  /*@out@*/ int*        lsb,
-  /*@out@*/ char**      tog01,
-  /*@out@*/ char**      tog10,
-  /*@out@*/ int*        excluded
+void toggle_get_coverage(
+            func_unit* funit,
+            char*      sig_name,
+  /*@out@*/ int*       msb,
+  /*@out@*/ int*       lsb,
+  /*@out@*/ char**     tog01,
+  /*@out@*/ char**     tog10,
+  /*@out@*/ int*       excluded
 );
 
 /*! \brief Gets total and hit toggle signal status for the specified functional unit */
-bool toggle_get_funit_summary(
-            const char* funit_name,
-            int         funit_type,
-  /*@out@*/ int*        total,
-  /*@out@*/ int*        hit
+void toggle_get_funit_summary(
+            func_unit*    funit,
+  /*@out@*/ unsigned int* hit,
+  /*@out@*/ unsigned int* excluded,
+  /*@out@*/ unsigned int* total
+);
+
+/*! \brief Gets total and hit toggle signal status for the specified functional unit instance */
+void toggle_get_inst_summary(
+            funit_inst*   inst,
+  /*@out@*/ unsigned int* hit,
+  /*@out@*/ unsigned int* excluded,
+  /*@out@*/ unsigned int* total
 );
 
 /*! \brief Generates report output for toggle coverage. */
@@ -75,6 +82,13 @@ void toggle_report(
 
 /*
  $Log$
+ Revision 1.17.6.3  2008/08/07 06:39:11  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
+ Revision 1.17.6.2  2008/08/06 20:11:35  phase1geo
+ Adding support for instance-based coverage reporting in GUI.  Everything seems to be
+ working except for proper exclusion handling.  Checkpointing.
+
  Revision 1.17.6.1  2008/07/10 22:43:55  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

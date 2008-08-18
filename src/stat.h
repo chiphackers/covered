@@ -27,10 +27,7 @@
 
 
 /*! \brief Creates and initializes a new statistic structure. */
-statistic* statistic_create();
-
-/*! \brief Merges the results of the stat_from to the stat_to */
-void statistic_merge( statistic* stat_to, statistic* stat_from );
+void statistic_create( statistic** stat );
 
 /*! \brief Returns TRUE if the given statistic structure contains no coverage information */
 bool statistic_is_empty( statistic* stat );
@@ -41,6 +38,16 @@ void statistic_dealloc( statistic* stat );
 
 /*
  $Log$
+ Revision 1.8.6.2  2008/08/07 06:39:11  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
+ Revision 1.8.6.1  2008/08/06 20:11:35  phase1geo
+ Adding support for instance-based coverage reporting in GUI.  Everything seems to be
+ working except for proper exclusion handling.  Checkpointing.
+
+ Revision 1.8  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.7  2006/09/01 23:06:02  phase1geo
  Fixing regressions per latest round of changes.  Full regression now passes.
 

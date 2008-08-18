@@ -1,0 +1,581 @@
+<chapter id="chapter.gui.new" xreflabel="Creating a New CDD">
+  <title>Creating a New CDD</title>
+  <para>
+  Creating a new CDD file from the GUI can be accomplished by either clicking on the 
+  <emphasis role="bold">Generate New CDD File</emphasis> button in the Wizard window (see 
+  <xref linkend="chapter.gui.wizard"/> for more details on this window), by selecting the
+  <code>File -> Generate -> New CDD...</code> menu option, or using the shortcut "Shift-Control-N".  This file creation
+  "wizard" allows the user to create a new CDD file that can be opened/merged into the GUI for coverage analysis.  The
+  methods that the CDD creation GUI allows for creating a new CDD file are quite flexible and are completely compatible
+  with the command-line commands.
+  </para>
+  <para>
+  The following subsections describe the various windows used to create a CDD.  Note that the CDD creation wizard
+  uses several "pages" to describe the various options to set for creating a new CDD file, using 
+  <emphasis role="bold">Back</emphasis> and <emphasis role="bold">Next</emphasis> buttons on each page for navigation.
+  Clicking on the <emphasis role="bold">Back</emphasis> button will not cause previously filled in pages to be
+  reverted to their default values but rather will remain populated with the user's data. Similarly, if a page has been
+  filled in with data and the <emphasis role="bold">Back</emphasis> button is clicked and then the 
+  <emphasis role="bold">Next</emphasis> button is clicked, the page contents are
+  retained.  The only way to clear out fields is to click the <emphasis role="bold">Cancel</emphasis> button at the 
+  bottom of each page and startup the CDD creation wizard again.
+  </para>
+  <para>
+  Clicking the <emphasis role="bold">Cancel</emphasis> button at any time will cause the CDD creation wizard to immediately 
+  exit.  Clicking on the <emphasis role="bold">Help</emphasis> button at any time will bring up the user documentation for 
+  the current page (context sensitive help).
+  </para>
+  
+  <sect1 id="section.gui.new.select" xreflabel="Navigating the New CDD Creation Option Selection Page">
+    <title>Navigating the New CDD Creation Option Selection Page</title>
+    <para>
+    Figure <xref linkend="figure.gui.new.select"/> shows the look of this page of the CDD creation wizard.
+    </para>
+    <para>
+      <figure id="figure.gui.new.select" xreflabel="CDD Creation Option Selection Page">
+        <title>CDD Creation Option Selection Page</title>
+        <mediaobject><imageobject><imagedata fileref="img/new_cdd_selection.gif" format="GIF"/></imageobject></mediaobject>
+      </figure>
+    </para>
+    <para>
+    The first page of the CDD creation window allows the user to select whether all options should be interactively
+    selected within the GUI or if a file should be read in which contains command-line options to the score command
+    to use.  If the latter is chosen, the contents of that file are read in and are populated in the GUI, but the
+    CDD creation wizard will continue in the same fashion as the first option, allowing the user to change, remove or
+    add to the options found in that file.
+    </para>
+    <para>
+    If the <emphasis role="bold">Create CDD by interactively selecting options</emphasis> entry is currently selected 
+    and the user wishes to not use a command-line file to populate the rest of the CDD creation pages, simply click on 
+    the <emphasis role="bold">Next</emphasis> button at the bottom of the page to continue.  If the 
+    <emphasis role="bold">Create CDD by using option file</emphasis> entry is currently selected, the user must either 
+    type a valid filename or select one by clicking the <emphasis role="bold">Browse...</emphasis> button to the right 
+    of the file entry area and select a valid file. Once a valid filename is selected, the 
+    <emphasis role="bold">Next</emphasis> button will be enabled and the user may then click it to continue to the next 
+    page. Note that any filename can be selected (whether it's a valid command file or not).  Only valid score command 
+    options found in that file are used to populate the wizard entries. No error message will be displayed if the file 
+    does not contain this information.
+    </para>
+  </sect1>
+  
+  <sect1 id="section.gui.new.name" xreflabel="Navigating the New CDD Creation Output Name Page">
+    <title>Navigating the New CDD Creation CDD Name Page</title>
+    <para>
+    This page is used to specify the name of the output CDD file.  Figure <xref linkend="figure.gui.new.name"/> shows 
+    the display of this page.
+    </para>
+    <para>
+      <figure id="figure.gui.new.name" xreflabel="CDD Creation Output Name Page">
+        <title>CDD Creation Output Name Page</title>
+        <mediaobject><imageobject><imagedata fileref="img/new_cdd_name.gif" format="GIF"/></imageobject></mediaobject>
+      </figure>
+    </para>
+    <para>
+    The output CDD name must be specified and, as such, the <emphasis role="bold">Next</emphasis> button is disabled
+    until a name is specified in the entry field.  Any filename is allowed.  If the user wishes to make use of a
+    "Save As" style window for creating a filename, click the <emphasis role="bold">Browse...</emphasis> button and use
+    the window for creating a filename. When the <emphasis role="bold">Save</emphasis> button is clicked, the specified
+    filename is placed in the entry field and the <emphasis role="bold">Next</emphasis> button is enabled.
+    </para>
+  </sect1>
+  
+  <sect1 id="section.gui.new.type" xreflabel="CDD Creation Type Page">
+    <title>CDD Creation Type Page</title>
+    <para>
+    This page is used to specify what type of CDD file to create. The three types CDD files that can be created are:
+    </para>
+    <para>
+      <orderedlist>
+        <listitem>
+          <para>
+          An unscored CDD file that was created by parsing the design. This CDD file can later be scored via a VCD or
+          LXT dumpfile. 
+          </para>
+          <para>
+          This option can be chosen by selecting the <emphasis role="bold">Parse Design Only</emphasis> radiobutton.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+          A scored CDD file created from the design and from a previously created VCD or LXT dumpfile. 
+          </para>
+          <para>
+          This option can be chosen by selecting the <emphasis role="bold">Dumpfile:</emphasis> option. If this option 
+          is chosen, a VCD or LXT dumpfile is required to be specified before the next option page can be used. Either 
+          specify this dumpfile name by typing in an existing dumpfile name in the entry field or use the 
+          <emphasis role="bold">Browse...</emphasis> button to select a dumpfile.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+          An unscored CDD file, a top-level Verilog file containing a PLI call to run Covered in VPI mode, and a PLI
+          tab file that can be used by some simulators for compilation purposes. See <xref linkend="section.vpi"/> for
+          details on how to use these files for simulation/scoring purposes. 
+          </para>
+          <para>
+          This option can be chosen by selecting the <emphasis role="bold">VPI Module:</emphasis> radiobutton. If this 
+          option is chosen, the name specified will be the name of the module created that is used to allow Covered
+          to run in VPI mode within a simulation.
+          </para>
+          <para>
+          In addition to providing a module name when this option is selected, the simulator type that will be used
+          when scoring can be specified as well as the timescale information that can, optionally, be specified at the
+          top of the generated module.
+          </para>
+        </listitem>
+      </orderedlist>
+    </para>
+    <para>
+    Figure <xref linkend="figure.gui.new.type"/> displays the contents of this page. When all necessary fields have been
+    specified, the <emphasis role="bold">Next</emphasis> button will be enabled and clicking it will lead to the next
+    option page.
+    </para>
+    <para>
+      <figure id="figure.gui.new.type" xreflabel="CDD Creation Type Page">
+        <title>CDD Creation Type Page</title>
+        <mediaobject><imageobject><imagedata fileref="img/new_cdd_type.gif" format="GIF"/></imageobject></mediaobject>
+      </figure>
+    </para>
+  </sect1>
+  
+  <sect1 id="section.gui.new.options1" xreflabel="CDD Creation Options1 Page">
+    <title>CDD Creation Options1 Page</title>
+    <para>
+    This page is used to specify several options to Covered's score command. See figure 
+    <xref linkend="figure.gui.new.options1"/> for the layout of this window.
+    </para>
+    <para>
+      <figure id="figure.gui.new.options1" xreflabel="CDD Creation Options1 Page">
+        <title>CDD Creation Options1 Page</title>
+        <mediaobject><imageobject><imagedata fileref="img/new_cdd_options.gif" format="GIF"/></imageobject></mediaobject>
+      </figure>
+    </para>
+    <para>
+    The following is a description about each of the CDD creation options available on this page.
+    </para>
+    
+    <sect2 id="section.gui.new.options1.general" xreflabel="CDD Creation Option1 Page - General Options">
+      <title>General Options</title>
+      <para>
+        <itemizedlist>
+          <listitem>
+            <para><emphasis role="bold">Toplevel module name</emphasis></para>
+            <para>Required? <emphasis>Yes</emphasis></para>
+            <para>
+            The name of the top-level module must be specified for a given design to be parsed and a CDD generated from
+            that source.  Simply type in the name of the top-most module in the provided entry field.  Once a name
+            is provided, the <emphasis role="bold">Next</emphasis> button will be enabled to allow traversal to the
+            next option page.
+            </para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="bold">Root pathname</emphasis></para>
+            <para>Required? <emphasis>No</emphasis></para>
+            <para>
+            This entry field is an optional one to fill. This value is only necessary if the top-most module to be
+            scored is not the top-most module of the simulator. If this is true, then the value that must be provided
+            in the associated entry field must be the hierarchical reference to the module to be scored.
+            </para>
+            <para>
+            An example of a valid root pathname would be something like:  <code>top.foo.bar.dut</code>
+            </para>
+            <para>
+            See <xref linkend="section.score.t"/> for more information.
+            </para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="bold">Delay Type</emphasis></para>
+            <para>
+            This value specifies which delay should be used when a delay type of #(delay_max:delay_typ:delay_min) is
+            encountered in the scored design. If this type of delay specification is not encountered, there is no need
+            to change this value in the GUI. If the delay specification is encountered in the design and this value has
+            not been specified, the default of <emphasis>typ</emphasis> will be used. Otherwise, the user can specify
+            which delay value should be chosen by changing the displayed type to either <emphasis>max</emphasis>,
+            <emphasis>typ</emphasis>, or <emphasis>min</emphasis>.
+            </para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="bold">Race Condition Action</emphasis></para>
+            <para>
+            After the design has been parsed and elaborated, Covered performs a static race condition check on the
+            design to verify that no potential race conditions exist. If a race condition exists in the design, this
+            would cause the coverage results to potentially be errant.
+            </para>
+            <para>
+            This parameter allows the user to tell Covered what to do if a race condition is found in the design. The
+            valid values are:
+            </para>
+            <para>
+              <itemizedlist>
+                <listitem>
+                  <para><emphasis>Silent</emphasis></para>
+                  <para>
+                  Specifies that no output should be generated. Any blocks with race conditions existing within them
+                  will be automatically removed from coverage consideration.
+                  </para>
+                </listitem>
+                <listitem>
+                  <para><emphasis>Warning</emphasis></para>
+                  <para>
+                  Specifies that race condition should be output and those blocks containing the race condition will
+                  be automatically removed from coverage consideration.
+                  </para>
+                </listitem>
+                <listitem>
+                  <para><emphasis>Error</emphasis></para>
+                  <para>
+                  Causes Covered to display the race condition violations and stop scoring after all race condition
+                  checking has occurred.
+                  </para>
+                </listitem>
+                <listitem>
+                  <para><emphasis>Ignore</emphasis></para>
+                  <para>
+                  Causes Covered to skip race condition checking completely. This option can be used if the user is
+                  confident that no real race conditions exist in the design but Covered's static race condition checker
+                  is displaying potential problems. If no race conditions actually exist, ignoring race condition
+                  checking results allows more of the design to be considered for coverage.
+                  </para>
+                </listitem>
+              </itemizedlist>
+            </para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="bold">Use embedded race condition pragmas</emphasis></para>
+            <para>
+            If this option is selected, a user-specified pragma ("racecheck" by default) is parsed and any potential 
+            race conditions found between the off/on pragma pair are ignored by the race condition checker.
+            </para>
+            <para>
+            See <xref linkend="section.race.avoiding"/> for more details.
+            </para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="bold">Default Verilog Generation</emphasis></para>
+            <para>
+            Covered's parser supports parsing for Verilog-1995, Verilog-2001 and SystemVerilog, defaulting its parser to
+            support SystemVerilog. However, for older designs which may contain names that are keywords in the newer
+            versions, it may be necessary to change the parser of Covered for the entire design. This option specifies
+            the version of the parser which is used for the entire design.
+            </para>
+            <para>
+            For information regarding the ability to specify a certain version of the parser for a specific module,
+            see <xref linkend="section.gui.new.options2.modgen"/>.
+            </para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="bold">Include OVL Assertions</emphasis></para>
+            <para>
+            If this option is selected, any OVL assertion modules found within the scored design will have assertion
+            coverage information extracted from them.
+            </para>
+          </listitem>
+        </itemizedlist>
+      </para>
+    </sect2>
+    
+    <sect2 id="section.gui.new.options1.exclude" xreflabel="CDD Creation Options1 Page - Exclude Options">
+      <title>Exclude Options</title>
+      <para>
+        <itemizedlist>
+          <listitem>
+            <para><emphasis role="bold">Exclude Always Blocks</emphasis></para>
+            <para>
+            If this option is selected, all <code>always</code> code blocks will be excluded from coverage
+            consideration.
+            </para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="bold">Exclude Assign Blocks</emphasis></para>
+            <para>
+            If this option is selected, all <code>assign</code> code blocks will be excluded from coverage
+            consideration.
+            </para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="bold">Exclude Initial Blocks</emphasis></para>
+            <para>
+            If this option is selected, all <code>initial</code> code blocks will be excluded from coverage
+            consideration.
+            </para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="bold">Exclude Final Blocks</emphasis></para>
+            <para>
+            If this option is selected, all <code>final</code> code blocks will be excluded from coverage consideration.
+            </para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="bold">Exclude Within Pragma</emphasis></para>
+            <para>
+            If this option is selected, all code blocks will be excluded between the exclusion off/on pragmas. The name
+            of the exclusion pragma is defaulted to "coverage" but can be changed within the associated entry field.
+            </para>
+            <para>
+            See <xref linkend="section.score.ep"/> for more information.
+            </para>
+          </listitem>
+        </itemizedlist>
+      </para>
+    </sect2>
+  </sect1>
+  
+  <sect1 id="section.gui.new.options2" xreflabel="CDD Creation Options2 Page">
+    <title>CDD Creation Options2 Page</title>
+    <para>
+    The second CDD creation options page contains a listbox which will contain the various user-specified options
+    that have been inserted via the <emphasis role="bold">Insert...</emphasis> menubutton. Any options that exist
+    within this listbox can be edited by selecting the option and clicking on the 
+    <emphasis role="bold">Edit...</emphasis> button or deleted by clicking on the 
+    <emphasis role="bold">Delete</emphasis> button. Additionally, options may be reorganized within the listbox by
+    simply clicking on an option and dragging it into the needed position. See figure 
+    <xref linkend="figure.gui.new.options2"/> for the layout of this option page.
+    </para>
+    <para>
+      <figure id="figure.gui.new.options2" xreflabel="CDD Creation Options2 Page">
+        <title>CDD Creation Options2 Page</title>
+        <mediaobject><imageobject><imagedata fileref="img/new_cdd_options2.gif" format="GIF"/></imageobject></mediaobject>
+      </figure>
+    </para>
+    <para>
+    To add an option to the listbox, simply click on the <emphasis role="bold">Insert...</emphasis> menubutton which
+    will display a list of options. Select one of these options to display a window where the contents of that option
+    can be specified. Clicking the <emphasis role="bold">OK</emphasis> button in one of those windows will cause the
+    option to be added to the option listbox. Clicking <emphasis role="bold">Cancel</emphasis> in one of those windows
+    will cause the option to not be added to the listbox. Clicking <emphasis role="bold">Help</emphasis> will display
+    context-sensitive help information to be displayed about the current window.
+    </para>
+    <para>
+    Figure <xref linkend="figure.gui.new.options2.insmenu"/> shows the contents of the 
+    <emphasis role="bold">Insert...</emphasis> menubutton. The following sections describe each option and its
+    corresponding entry window.
+    </para>
+    <para>
+      <figure id="figure.gui.new.options2.insmenu" xreflabel="CDD Creation Insert Menubutton">
+        <title>CDD Creation Insert Menubutton</title>
+        <mediaobject><imageobject><imagedata fileref="img/new_cdd_insert_menu.gif" format="GIF"/></imageobject></mediaobject>
+      </figure>
+    </para>
+    
+    <sect2 id="section.gui.new.options2.source" xreflabel="CDD Creation Source File Option">
+      <title>Source File...</title>
+      <para>
+      Selecting this insert option will cause an open file selector window to be displayed.  Use it to choose a single file
+      that will be parsed as a library file (i.e., the -v option to most Verilog compilers).
+      </para>
+    </sect2>
+    
+    <sect2 id="section.gui.new.options2.libdir" xreflabel="CDD Creation Library Directory Option">
+      <title>Library Directory...</title>
+      <para>
+      Selecting this insert option will cause an open directory selector window to be displayed.  Use it to choose a single
+      directory that will be used as a library directory (i.e., the -y option to most Verilog compilers).
+      </para>
+    </sect2>
+    
+    <sect2 id="section.gui.new.options2.libext" xreflabel="CDD Creation Library Extension Option">
+      <title>Library Extension(s)...</title>
+      <para>
+      Selecting this insert option will cause a window to be displayed that will allow the user to add library file
+      extensions to the library file parser (i.e., the +libext+ option to most Verilog compilers). 
+      <xref linkend="figure.gui.new.options2.libext"/> is a display of this window.
+      </para>
+      <para>
+        <figure id="figure.gui.new.options2.libext" xreflabel="CDD Creation Library Extension Window">
+          <title>CDD Creation Library Extension Window</title>
+          <mediaobject><imageobject><imagedata fileref="img/new_cdd_lib_ext.gif" format="GIF"/></imageobject></mediaobject>
+        </figure>
+      </para>
+      <para>
+      To add a new extension, select the <emphasis role="bold">Click to Add New Extension</emphasis> item in the extension
+      box (selected by default), type in the name of the extension in the upper entry box and either hit the "Enter" key or
+      click on the <emphasis role="bold">Update</emphasis> button. If an incorrect extension was input, you may edit it by
+      clicking on the incorrect item in the extension listbox. This will cause the item to be listed in the upper entry box
+      where it can be edited or removed. Click the <emphasis role="bold">OK</emphasis> button to accept the specified
+      library extensions and add these to the main window listbox. Click the <emphasis role="bold">Cancel</emphasis> button
+      to ignore the recent updates in this window.
+      </para>
+    </sect2>
+    
+    <sect2 id="section.gui.new.options2.incdir" xreflabel="CDD Creation Include Directory Option">
+      <title>Include Directory...</title>
+      <para>
+      Selecting this insert option will cause an open directory selector window to be displayed. Use it to choose a single
+      directory that will be used as an include directory (i.e., the +incdir+ option to most Verilog compilers).
+      </para>
+    </sect2>
+    
+    <sect2 id="section.gui.new.options2.define" xreflabel="CDD Creation Define Option">
+      <title>Define...</title>
+      <para>
+      Selecting this insert option will cause a window to be displayed that will allow the user to add a command-line
+      variable definition to be added to the score command (i.e., the +define+ option to most Verilog compilers).
+      </para>
+      <para>
+        <figure id="figure.gui.new.options2.define" xreflabel="CDD Creation Define Window">
+          <title>CDD Creation Define Window</title>
+          <mediaobject><imageobject><imagedata fileref="img/new_cdd_define.gif" format="GIF"/></imageobject></mediaobject>
+        </figure>
+      </para>
+      <para>
+      To add a new define, enter the name of the definition variable in the entry box to the right of "Define name:".  If
+      the variable does not require a value, simply click on the <emphasis role="bold">OK</emphasis> button to submit it
+      to the main window option listbox.  If the variable requires a value, click on the <emphasis role="bold">=</emphasis>
+      button, enter the value in the entry box to the left of that button, and click on the
+      <emphasis role="bold">OK</emphasis> button. To abort the addition of the definition, simply click on the
+      <emphasis role="bold">Cancel</emphasis> button.
+      </para>
+      <note>
+      The <emphasis role="bold">OK</emphasis> will only be enabled when the user has entered a value in the "Define name:"
+      entry box.
+      </note>
+    </sect2>
+    
+    <sect2 id="section.gui.new.options2.param" xreflabel="CDD Creation Parameter Override Option">
+      <title>Parameter Override...</title>
+      <para>
+      Selecting this insert option will cause a window to be displayed that will allow the user to add a parameter overload
+      option to the score command. Because Verilog "defparam" is not used by the Covered parser, this option is the only way to
+      override parameter values.
+      </para>
+      <para>
+        <figure id="figure.gui.new.options2.param" xreflabel="CDD Creation Parameter Override Window">
+          <title>CDD Creation Parameter Override Window</title>
+          <mediaobject><imageobject><imagedata fileref="img/new_cdd_parm_oride.gif" format="GIF"/></imageobject></mediaobject>
+        </figure>
+      </para>
+      <para>
+      To add a new parameter override option, enter the full hierarchical path to the parameter to override in the left entry
+      box and add the override value in the right entry box. See <xref linkend="section.score.param"/> for details on how to
+      specify an override value. After both values have been input, click the <emphasis role="bold">OK</emphasis> button to
+      add the parameter override option to the main window listbox. To abort the parameter override addition, click on the
+      <emphasis role="bold">Cancel</emphasis> button.
+      </para>
+      <note>
+      The <emphasis role="bold">OK</emphasis> button will only be enabled if both values are input in the entry boxes.
+      </note>
+    </sect2>
+    
+    <sect2 id="section.gui.new.options2.fsm" xreflabel="CDD Creation FSM Specification Option">
+      <title>FSM...</title>
+      <para>
+      Selecting this insert option will cause a window to be displayed that will allow the user to add an FSM input/output
+      state on the score command line.  This option allows the user to specify the location of FSMs within the design without
+      inlining this information with the use of pragmas for the purposes of gaining FSM coverage information.
+      </para>
+      <para>
+        <figure id="figure.gui.new.options2.fsm" xreflabel="CDD Creation FSM Specification Window">
+          <title>CDD Creation FSM Specification Window</title>
+          <mediaobject><imageobject><imagedata fileref="img/new_cdd_fsm.gif" format="GIF"/></imageobject></mediaobject>
+        </figure>
+      </para>
+      <para>
+      To add a new FSM option, enter the name of the module containing the FSM in the upper-left entry box, the description of
+      the output state in the upper-right entry box (see <xref linkend="section.score.fsm"/> for information on properly
+      specifying the output/input state information). If the input state is the same as the output state, simply click on the
+      <emphasis role="bold">Input == Output</emphasis> button which will fill in the input state with the same value as the
+      output state value.  If the input state differs from the output state, enter the input state in the lower-right entry
+      box.  When all entry fields have been filled in, click on the <emphasis role="bold">OK</emphasis> button to add
+      the FSM description to the main window listbox.  To abort the addition, click on the 
+      <emphasis role="bold">Cancel</emphasis> button.
+      </para>
+      <note>
+      The <emphasis role="bold">OK</emphasis> button will only be enabled if all entry fields have been filled in.
+      </note>
+    </sect2>
+    
+    <sect2 id="section.gui.new.options2.modgen" xreflabel="CDD Creation Module Generation Option">
+      <title>Module Generation...</title>
+      <para>
+      Selecting this insert option will cause a window to be displayed that will allow the user to specify a Verilog generation
+      (Verilog 1995, Verilog 2001 or SystemVerilog) for a particular module. This generation value will override the universal
+      generation value (see the "Default Verilog Generation" item in <xref linkend="section.gui.new.options1.general"/>) for the
+      design.
+      </para>
+      <para>
+        <figure id="figure.gui.new.options2.modgen" xreflabel="CDD Creation Module Generation Window">
+          <title>CDD Creation Module Generation Window</title>
+          <mediaobject><imageobject><imagedata fileref="img/new_cdd_mod_gen.gif" format="GIF"/></imageobject></mediaobject>
+        </figure>
+      </para>
+      <para>
+      To specify a Verilog generation to be used for a specific module, enter the name of the module in the left entry box and
+      select one of the Verilog generations in the drop-down menu on the left. Once this information has been specified, click on
+      the <emphasis role="bold">OK</emphasis> button to add this option to the main window listbox. To abort the module generation
+      addition, click on the <emphasis role="bold">Cancel</emphasis> button.
+      </para>
+      <note>
+      The <emphasis role="bold">OK</emphasis> button will only be enabled if a module name is specified in the left entry box.
+      </note>
+    </sect2>
+    
+    <sect2 id="section.gui.new.options2.modexcl" xreflabel="CDD Creation Module Exclusion Option">
+      <title>Module Exclusion...</title>
+      <para>
+      Selecting this insert option will cause a window to be displayed that will allow the user to specify a module to exclude
+      from parsing and coverage consideration. More information on the purpose for excluding modules is discussed in
+      <xref linkend="section.score.t"></xref>.
+      </para>
+      <para>
+        <figure id="figure.gui.new.options2.modexcl" xreflabel="CDD Creation Module Exclusion Window">
+          <title>CDD Creation Module Exclusion Window</title>
+          <mediaobject><imageobject><imagedata fileref="img/new_cdd_mod_excl.gif" format="GIF"/></imageobject></mediaobject>
+        </figure>
+      </para>
+      <para>
+      To specify a Verilog module to exclude from the score command parser, enter the name of the module in the entry box to
+      exclude. Click on the <emphasis role="bold">OK</emphasis> button to add the module exclusion option to the main window
+      listbox. Click on the <emphasis role="bold">Cancel</emphasis> button to abort the option addition.
+      </para>
+      <note>
+      The <emphasis role="bold">OK</emphasis> button will only be enabled if a value is specified in the entry box.
+      </note>
+    </sect2>
+    
+    <sect2 id="section.gui.new.options2.cmdfile" xreflabel="CDD Creation Command File Option">
+      <title>Command File...</title>
+      <para>
+      Selecting this insert option will cause an open file selector window to be displayed which will allow the user
+      to find a file that contains Covered score command-line options within it. Select a file and click on the
+      <emphasis role="bold">Open</emphasis> button to cause the selected file to be added to the main window listbox.
+      Click on the <emphasis role="bold">Cancel</emphasis> button to abort this action.
+      </para>
+    </sect2>
+    
+    <sect2>
+      <title>Other Notes</title>
+      <para>
+      After all options have been specified, the <emphasis role="bold">Save Options to File...</emphasis> button can
+      be clicked to cause all previously specified options to be saved to a file which can later be loaded by the new
+      CDD creation window. Simply click the button and specify a filename to save the options under and click the
+      <emphasis role="bold">Save</emphasis> button.
+      </para>
+      <para>
+      When all options have been setup, click the <emphasis role="bold">Generate</emphasis> button to create the new CDD
+      file. This button will advance to another page containing the output from Covered's score command.
+      </para>
+    </sect2>
+  </sect1>
+  
+  <sect1 id="section.gui.new.output">
+    <title>CDD Creation Output Pane</title>
+    <para>
+    The final pane in the CDD creation window wizard is the output window. After the <emphasis role="bold">Generate</emphasis>
+    button is pressed, the user-supplied options are gathered and executed within a system shell and the output of that command
+    is sent to this pane's textbox. If the score command run was a success, the 
+    <emphasis role="bold">Open/Merge the newly created CDD</emphasis> checkbutton will be enabled, allowing the user to
+    open or merge the new CDD file into the GUI immediately.  To exit the CDD creation process, click on the
+    <emphasis role="bold">Finish</emphasis> button.  If the score command failed for any reason, the user may click on the 
+    <emphasis role="bold">Back</emphasis> button to change the options specified to the score command or simply click the 
+    <emphasis role="bold">Finish</emphasis> button to exit the new CDD creation wizard.
+    </para>
+    <para>
+      <figure id="figure.gui.new.output" xreflabel="CDD Creation Output Window">
+	      <title>CDD Creation Output Window</title>
+	      <mediaobject><imageobject><imagedata fileref="img/new_cdd_gen.gif" format="GIF"/></imageobject></mediaobject>
+      </figure>
+    </para>
+  </sect1>
+
+
+</chapter>

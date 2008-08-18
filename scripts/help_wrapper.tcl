@@ -30,30 +30,51 @@ proc help_show_about {} {
 
 }
 
-proc help_show_manual {section} {
+proc help_show_manual {chapter {section ""}} {
 
-  global HOME
+  global HOME BROWSER
 
-  # Load the help system
-  help::init [file join $HOME doc gui help.help] {} {} 500 800
+  set fpath "file://[file join $HOME doc docbook html $chapter].html"
 
-  # Find the valid section
-  if {[lsearch -exact $help::index $section] == -1} {
-    set i 1
-    while {[expr $i <= 3] && [expr [lsearch -exact $help::index "$section.help?internal_$i"] == -1]} {incr i}
-    if {$i > 3} {
-      bgerror "Internal error:  Unable to find user manual for section $section"
-      set section ""
-    } else {
-      set section "$section.help?internal_$i"
-    }
+  if {$section != ""} {
+    set fpath $fpath#$section
   }
 
-  # Display the section
-  if {$section != ""} {
-    help::init [file join $HOME doc gui help.help] $section
-  } else {
-    help::destroy
+  if {[catch {exec $BROWSER -remote "openURL( $fpath )"}]} {
+
+    # perhaps browser doesn't understand -remote flag
+    if {[catch "exec $BROWSER \"$fpath\" &" emsg]} {
+      error "Error displaying $fname in browser\n$emsg"
+    }
+
   }
 
 }
+
+#proc help_show_manual {section} {
+#
+#  global HOME
+#
+#  # Load the help system
+#  help::init [file join $HOME doc gui help.help] {} {} 500 800
+#
+#  # Find the valid section
+#  if {[lsearch -exact $help::index $section] == -1} {
+#    set i 1
+#    while {[expr $i <= 3] && [expr [lsearch -exact $help::index "$section.help?internal_$i"] == -1]} {incr i}
+#    if {$i > 3} {
+#      bgerror "Internal error:  Unable to find user manual for section $section"
+#      set section ""
+#    } else {
+#      set section "$section.help?internal_$i"
+#    }
+#  }
+#
+#  # Display the section
+#  if {$section != ""} {
+#    help::init [file join $HOME doc gui help.help] $section
+#  } else {
+#    help::destroy
+#  }
+#
+#}

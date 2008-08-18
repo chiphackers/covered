@@ -32,14 +32,17 @@
 
 #include "defines.h"
 #include "info.h"
+#include "link.h"
 #include "util.h"
 
 
 extern str_link* merge_in_head;
 extern str_link* merge_in_tail;
 extern int       merge_in_num;
+extern char*     merged_file;
 extern uint64    num_timesteps;
 extern char*     cdd_message;
+extern char      user_msg[USER_MSG_LENGTH];
 
 
 /*!
@@ -160,7 +163,11 @@ void info_db_write(
     str_link* strl = merge_in_head;
     i = 0;
     while( strl != NULL ) {
-      fprintf( file, "%d %s %s\n", DB_TYPE_MERGED_CDD, strl->str, leading_hierarchies[i++] );
+      if( strcmp( strl->str, merged_file ) != 0 ) {
+        fprintf( file, "%d %s %s\n", DB_TYPE_MERGED_CDD, strl->str, leading_hierarchies[i++] );
+      } else {
+        i++;
+      }
       strl = strl->next; 
     }
   } else { 
@@ -168,7 +175,11 @@ void info_db_write(
     assert( (leading_hier_num - 1) == merge_in_num );
     i = 1; 
     while( strl != NULL ) {
-      fprintf( file, "%d %s %s\n", DB_TYPE_MERGED_CDD, strl->str, leading_hierarchies[i++] );
+      if( strcmp( strl->str, merged_file ) != 0 ) {
+        fprintf( file, "%d %s %s\n", DB_TYPE_MERGED_CDD, strl->str, leading_hierarchies[i++] );
+      } else {
+        i++;
+      }
       strl = strl->next;
     }
   }
@@ -304,21 +315,33 @@ void merged_cdd_db_read(
 
   if( sscanf( *line, "%s %s%n", tmp1, tmp2, &chars_read ) == 2 ) {
 
+    str_link* strl;
+
     *line = *line + chars_read;
 
     /* Add merged file */
-    str_link_add( strdup_safe( tmp1 ), &merge_in_head, &merge_in_tail );
-    merge_in_num++;
+    if( (strl = str_link_find( tmp1, merge_in_head)) == NULL ) {
 
-    /* Set leading_hiers_differ to TRUE if this is not the first hierarchy and it differs from the first */
-    if( strcmp( leading_hierarchies[0], tmp2 ) != 0 ) {
-      leading_hiers_differ = TRUE;
+      str_link_add( strdup_safe( tmp1 ), &merge_in_head, &merge_in_tail );
+      merge_in_num++;
+
+      /* Set leading_hiers_differ to TRUE if this is not the first hierarchy and it differs from the first */
+      if( strcmp( leading_hierarchies[0], tmp2 ) != 0 ) {
+        leading_hiers_differ = TRUE;
+      }
+
+      /* Add its hierarchy */
+      leading_hierarchies = (char**)realloc_safe( leading_hierarchies, (sizeof( char* ) * leading_hier_num), (sizeof( char* ) * (leading_hier_num + 1)) );
+      leading_hierarchies[leading_hier_num] = strdup_safe( tmp2 );
+      leading_hier_num++;
+
+    } else if( merge_in_num > 0 ) {
+
+      snprintf( user_msg, USER_MSG_LENGTH, "File %s in CDD file has been specified on the command-line", tmp1 );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      Throw 0;
+
     }
-
-    /* Add its hierarchy */
-    leading_hierarchies = (char**)realloc_safe( leading_hierarchies, (sizeof( char* ) * leading_hier_num), (sizeof( char* ) * (leading_hier_num + 1)) );
-    leading_hierarchies[leading_hier_num] = strdup_safe( tmp2 );
-    leading_hier_num++;
 
   } else {
 
@@ -369,12 +392,20 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
   PROFILE_END;
 
-  PROFILE_END;
-
 }
 
 /*
  $Log$
+ Revision 1.32.2.7  2008/08/06 05:32:41  phase1geo
+ Another fix for bug 2037791.  Also add new diagnostic to verify the fix for the bug.
+
+ Revision 1.32.2.6  2008/08/05 03:56:45  phase1geo
+ Completing fix for bug 2037791.  Added diagnostic to regression suite to verify
+ the corrected behavior.
+
+ Revision 1.32.2.5  2008/08/04 17:29:24  phase1geo
+ Attempting to fix bug 2037791.
+
  Revision 1.32.2.4  2008/07/25 21:08:35  phase1geo
  Modifying CDD file format to remove the potential for memory allocation assertion
  errors due to a large number of merged CDD files.  Updating IV and Cver regressions per this

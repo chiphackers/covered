@@ -59,9 +59,10 @@ extern isuppl       info_suppl;
 */
 void toggle_get_stats(
             sig_link*     sigl,      /*!< Pointer to signal list to search */
-  /*@out@*/ unsigned int* total,     /*!< Total number of bits in the design/functional unit */
   /*@out@*/ unsigned int* hit01,     /*!< Number of bits toggling from 0 to 1 during simulation */
   /*@out@*/ unsigned int* hit10,     /*!< Number of bits toggling from 1 to 0 during simulation */
+  /*@out@*/ unsigned int* excluded,  /*!< Pointer to number of excluded bits */
+  /*@out@*/ unsigned int* total,     /*!< Total number of bits in the design/functional unit */
   /*@out@*/ bool*         cov_found  /*!< Set to TRUE if at least one signal was completely covered */
 ) { PROFILE(TOGGLE_GET_STATS);
 
@@ -75,8 +76,9 @@ void toggle_get_stats(
         (curr_sig->sig->suppl.part.mba == 0) ) {
       *total += curr_sig->sig->value->width;
       if( curr_sig->sig->suppl.part.excluded == 1 ) {
-        *hit01 += curr_sig->sig->value->width;
-        *hit10 += curr_sig->sig->value->width;
+        *hit01    += curr_sig->sig->value->width;
+        *hit10    += curr_sig->sig->value->width;
+        *excluded += (curr_sig->sig->value->width * 2);
       } else {
         unsigned int tmp_hit01 = 0;
         unsigned int tmp_hit10 = 0;
@@ -94,186 +96,116 @@ void toggle_get_stats(
 }
 
 /*!
- \param funit_name  Name of functional unit to gather coverage information from
- \param funit_type  Type of functional unit to gather coverage information from
- \param cov         Specifies to get uncovered (0) or covered (1) signals
- \param sig_head    Pointer to head of list of covered/uncovered signals
- \param sig_tail    Pointer to tail of list of covered/uncovered signals
-
- \return Returns TRUE if toggle information was found for the specified functional unit; otherwise,
-         returns FALSE
-
  Searches the list of signals for the specified functional unit for signals that are either covered
  or uncovered.  When a signal is found that meets the requirements, signal is added to the signal list.
 */
-bool toggle_collect(
-            const char* funit_name,  /*!< Name of functional unit to gather coverage information from */
-            int         funit_type,  /*!< Type of functional unit to gather coverage information from */
-            int         cov,         /*!< Specifies to get uncovered (0) or covered (1) signals */
-  /*@out@*/ sig_link**  sig_head,    /*!< Pointer to head of list of covered/uncovered signals */
-  /*@out@*/ sig_link**  sig_tail     /*!< Pointer to tail of list of covered/uncovered signals */
+void toggle_collect(
+            func_unit*  funit,     /*!< Pointer to functional unit */
+            int         cov,       /*!< Specifies to get uncovered (0) or covered (1) signals */
+  /*@out@*/ sig_link**  sig_head,  /*!< Pointer to head of list of covered/uncovered signals */
+  /*@out@*/ sig_link**  sig_tail   /*!< Pointer to tail of list of covered/uncovered signals */
 ) { PROFILE(TOGGLE_COLLECT);
 
-  bool         retval = TRUE;  /* Return value for this function */
-  funit_link*  funitl;         /* Pointer to found functional unit link */
-  sig_link*    curr_sig;       /* Pointer to current signal link being evaluated */
-  unsigned int hit01;          /* Number of bits that toggled from 0 to 1 */
-  unsigned int hit10;          /* Number of bits that toggled from 1 to 0 */
+  sig_link*    curr_sig;  /* Pointer to current signal link being evaluated */
+  unsigned int hit01;     /* Number of bits that toggled from 0 to 1 */
+  unsigned int hit10;     /* Number of bits that toggled from 1 to 0 */
      
-  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
+  curr_sig = funit->sig_head;
 
-    curr_sig = funitl->funit->sig_head;
+  while( curr_sig != NULL ) {
 
-    while( curr_sig != NULL ) {
+    hit01 = 0;
+    hit10 = 0;
 
-      hit01 = 0;
-      hit10 = 0;
+    if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
+        (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_ENUM)  &&
+        (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_MEM)  &&
+        (curr_sig->sig->suppl.part.mba == 0) ) {
 
-      if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
-          (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_ENUM)  &&
-          (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_MEM)  &&
-          (curr_sig->sig->suppl.part.mba == 0) ) {
+      vector_toggle_count( curr_sig->sig->value, &hit01, &hit10 );
 
-        vector_toggle_count( curr_sig->sig->value, &hit01, &hit10 );
+      /* If this signal meets the coverage requirement, add it to the signal list */
+      if( ((cov == 1) && (hit01 == curr_sig->sig->value->width) && (hit10 == curr_sig->sig->value->width)) ||
+          ((cov == 0) && ((hit01 < curr_sig->sig->value->width) || (hit10 < curr_sig->sig->value->width))) ) {
 
-        /* If this signal meets the coverage requirement, add it to the signal list */
-        if( ((cov == 1) && (hit01 == curr_sig->sig->value->width) && (hit10 == curr_sig->sig->value->width)) ||
-	    ((cov == 0) && ((hit01 < curr_sig->sig->value->width) || (hit10 < curr_sig->sig->value->width))) ) {
-
-          sig_link_add( curr_sig->sig, sig_head, sig_tail );
+        sig_link_add( curr_sig->sig, sig_head, sig_tail );
           
-        }
-
       }
-
-      curr_sig = curr_sig->next;
 
     }
 
-  } else {
- 
-    retval = FALSE;
+    curr_sig = curr_sig->next;
 
   }
 
   PROFILE_END;
 
-  return( retval );
-
 }
 
 /*!
- \return Returns TRUE if the specified functional unit and signal exists; otherwise, returns FALSE.
-
  Returns toggle coverage information for a specified signal in a specified functional unit.  This
  is needed by the GUI for verbose toggle coverage display.
 */
-bool toggle_get_coverage(
-            const char* funit_name,  /*!< Name of functional unit containing signal to get toggle coverage information for */
-            int         funit_type,  /*!< Type of functional unit containing signal to get toggle coverage information for */
-            char*       sig_name,    /*!< Name of signal within the specified functional unit to get toggle coverage information for */
-  /*@out@*/ int*        msb,         /*!< Most-significant bit position of the requested signal */
-  /*@out@*/ int*        lsb,         /*!< Least-significant bit position of the requested signal */
-  /*@out@*/ char**      tog01,       /*!< Toggle vector of bits transitioning from a 0 to a 1 */
-  /*@out@*/ char**      tog10,       /*!< Toggle vector of bits transitioning from a 1 to a 0 */
-  /*@out@*/ int*        excluded     /*!< Pointer to integer specifying if this signal should be excluded or not */
+void toggle_get_coverage(
+            func_unit* funit,     /*!< Pointer to functional unit */
+            char*      sig_name,  /*!< Name of signal within the specified functional unit to get toggle coverage information for */
+  /*@out@*/ int*       msb,       /*!< Most-significant bit position of the requested signal */
+  /*@out@*/ int*       lsb,       /*!< Least-significant bit position of the requested signal */
+  /*@out@*/ char**     tog01,     /*!< Toggle vector of bits transitioning from a 0 to a 1 */
+  /*@out@*/ char**     tog10,     /*!< Toggle vector of bits transitioning from a 1 to a 0 */
+  /*@out@*/ int*       excluded   /*!< Pointer to integer specifying if this signal should be excluded or not */
 ) { PROFILE(TOGGLE_GET_COVERAGE);
 
-  bool        retval = TRUE;  /* Return value for this function */
-  funit_link* funitl;         /* Pointer to found functional unit link */
-  sig_link*   sigl;           /* Pointer to found signal link */
+  sig_link* sigl;  /* Pointer to found signal link */
 
-  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
+  sigl = sig_link_find( sig_name, funit->sig_head );
 
-    if( (sigl = sig_link_find( sig_name, funitl->funit->sig_head )) != NULL ) {
-      assert( sigl->sig->dim != NULL );
-      *msb      = sigl->sig->dim[0].msb;
-      *lsb      = sigl->sig->dim[0].lsb; 
-      *tog01    = vector_get_toggle01_ulong( sigl->sig->value->value.ul, sigl->sig->value->width );
-      *tog10    = vector_get_toggle10_ulong( sigl->sig->value->value.ul, sigl->sig->value->width );
-      *excluded = sigl->sig->suppl.part.excluded;
-    } else {
-      retval = FALSE;
-    }
+  assert( sigl != NULL );
+  assert( sigl->sig->dim != NULL );
 
-  } else {
-
-    retval = FALSE;
-
-  }
+  *msb      = sigl->sig->dim[0].msb;
+  *lsb      = sigl->sig->dim[0].lsb; 
+  *tog01    = vector_get_toggle01_ulong( sigl->sig->value->value.ul, sigl->sig->value->width );
+  *tog10    = vector_get_toggle10_ulong( sigl->sig->value->value.ul, sigl->sig->value->width );
+  *excluded = sigl->sig->suppl.part.excluded;
 
   PROFILE_END;
-
-  return( retval );
 
 }
 
 /*!
- \return Returns TRUE if specified functional unit was found in design; otherwise,
-         returns FALSE.
-
- Looks up summary information for specified functional unit.  If the functional unit was found,
- the hit and total values for this functional unit are returned to the calling function.
- If the functional unit was not found, a value of FALSE is returned to the calling
- function, indicating that the functional unit was not found in the design and the values
- of total and hit should not be used.
+ Looks up summary information for specified functional unit.
 */
-bool toggle_get_funit_summary(
-            const char* funit_name,  /*!< Name of functional unit to retrieve summary information from */
-            int         funit_type,  /*!< Type of functional unit to retrieve summary information from */
-  /*@out@*/ int*        total,       /*!< Pointer to total number of toggles in this functional unit */
-  /*@out@*/ int*        hit          /*!< Pointer to total number of toggles hit in this functional unit */
+void toggle_get_funit_summary(
+            func_unit*    funit,     /*!< Pointer to found functional unit */
+  /*@out@*/ unsigned int* hit,       /*!< Pointer to total number of toggles hit in this functional unit */
+  /*@out@*/ unsigned int* excluded,  /*!< Pointer to number of excluded bits */
+  /*@out@*/ unsigned int* total      /*!< Pointer to total number of toggles in this functional unit */
 ) { PROFILE(TOGGLE_GET_FUNIT_SUMMARY);
 
-  bool         retval = TRUE;  /* Return value for this function */
-  funit_link*  funitl;         /* Pointer to found functional unit link */
-  sig_link*    curr_sig;       /* Pointer to current signal */
-  unsigned int hit01;          /* Number of bits toggling from a 0 to 1 */
-  unsigned int hit10;          /* Number of bits toggling from a 1 to 0 */
-
-  /* Initialize total and hit */
-  *total = 0;
-  *hit   = 0;
-
-  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
-
-    curr_sig = funitl->funit->sig_head;
-
-    while( curr_sig != NULL ) {
-
-      hit01 = 0;
-      hit10 = 0;
-
-      if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
-          (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_ENUM)  &&
-          (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_MEM)  &&
-          (curr_sig->sig->suppl.part.mba == 0) ) {
-
-        /* We have found a valid signal to look at; therefore, increment the total */
-        (*total)++;
-
-        vector_toggle_count( curr_sig->sig->value, &hit01, &hit10 );
-
-        if( ((hit01 == curr_sig->sig->value->width) && (hit10 == curr_sig->sig->value->width)) ||
-            (curr_sig->sig->suppl.part.excluded == 1) ) {
-          (*hit)++;
-        }
-
-      }
-
-      curr_sig = curr_sig->next;
-
-    }
-
-  } else {
-
-    retval = FALSE;
-
-  }
-
+  *hit      = (funit->stat->tog01_hit + funit->stat->tog10_hit);
+  *excluded = funit->stat->tog_excluded;
+  *total    = (funit->stat->tog_total * 2);
+        
   PROFILE_END;
 
-  return( retval );
+}
+
+/*!
+ Looks up summary information for specified functional unit instance.
+*/
+void toggle_get_inst_summary(
+            funit_inst*   inst,      /*!< Pointer to found functional unit instance */
+  /*@out@*/ unsigned int* hit,       /*!< Pointer to total number of toggles hit in this functional unit instance */
+  /*@out@*/ unsigned int* excluded,  /*!< Pointer to number of excluded bits */
+  /*@out@*/ unsigned int* total      /*!< Pointer to total number of toggles in this functional unit instance */
+) { PROFILE(TOGGLE_GET_INST_SUMMARY);
+
+  *hit      = (inst->stat->tog01_hit + inst->stat->tog10_hit);
+  *excluded = inst->stat->tog_excluded;
+  *total    = (inst->stat->tog_total * 2);
+        
+  PROFILE_END;
 
 }
 
@@ -719,6 +651,13 @@ void toggle_report(
 
 /*
  $Log$
+ Revision 1.73.2.5  2008/08/07 06:39:11  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
+ Revision 1.73.2.4  2008/08/06 20:11:35  phase1geo
+ Adding support for instance-based coverage reporting in GUI.  Everything seems to be
+ working except for proper exclusion handling.  Checkpointing.
+
  Revision 1.73.2.3  2008/07/10 22:43:55  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

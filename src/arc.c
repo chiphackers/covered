@@ -426,6 +426,28 @@ static int arc_transition_hits(
 }
 
 /*!
+ \return Returns the number of state transitions that are excluded from coverage.
+*/
+static int arc_transition_excluded(
+  const fsm_table* table  /*!< Pointer to state transition arc array */
+) { PROFILE(ARC_TRANSITION_EXCLUDED);
+
+  int          excluded = 0;  /* Number of arcs excluded */
+  unsigned int i;             /* Loop iterator */
+
+  assert( table != NULL );
+
+  for( i=0; i<table->num_arcs; i++ ) {
+    excluded += table->arcs[i]->suppl.part.excluded;
+  }
+
+  PROFILE_END;
+
+  return( excluded );
+
+}
+
+/*!
  Calculates values for all specified totals from given state transition arc array.
  If the state and state transition totals are not known (i.e., user specified state
  variables without specifying legal states and state transitions and/or the user
@@ -435,15 +457,17 @@ static int arc_transition_hits(
 */
 void arc_get_stats(
             const fsm_table* table,        /*!< Pointer to FSM table */
-  /*@out@*/ int*             state_total,  /*!< Pointer to total number of states in table */
   /*@out@*/ int*             state_hits,   /*!< Pointer to total number of states hit during simulation */
+  /*@out@*/ int*             state_total,  /*!< Pointer to total number of states in table */
+  /*@out@*/ int*             arc_hits,     /*!< Pointer to total number of state transitions hit during simulation */
   /*@out@*/ int*             arc_total,    /*!< Pointer to total number of state transitions in table */
-  /*@out@*/ int*             arc_hits      /*!< Pointer to total number of state transitions hit during simulation */
+  /*@out@*/ int*             arc_excluded  /*!< Pointer to total number of excluded arcs */
 ) { PROFILE(ARC_GET_STATS);
 
   /* First get hits */
-  *state_hits += arc_state_hits( table );
-  *arc_hits   += arc_transition_hits( table );
+  *state_hits   += arc_state_hits( table );
+  *arc_hits     += arc_transition_hits( table );
+  *arc_excluded += arc_transition_excluded( table );
   
   /* If the state transitions are known, calculate them; otherwise, return -1 for totals */
   if( table->suppl.part.known == 0 ) {
@@ -822,6 +846,9 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.62.2.2  2008/08/07 06:39:10  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
  Revision 1.62.2.1  2008/07/10 22:43:46  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

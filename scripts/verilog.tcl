@@ -229,7 +229,7 @@ proc verilog_highlight_ppkeywords {tb color} {
 # Finds all preprocessor keywords in the specified textbox and highlights them with the given color
 proc verilog_highlight_keywords {tb color} {
 
-  global curr_funit_name
+  global curr_block
 
   # Create list of all language keywords
   set v1995_keywords [list always and assign begin buf bufif0 bufif1 case casex casez cmos deassign default defparam disable edge else end \
@@ -247,7 +247,7 @@ proc verilog_highlight_keywords {tb color} {
   set ilist    ""
 
   # Create full list based on user-specified generation
-  set generation [tcl_func_get_generation $curr_funit_name]
+  set generation [tcl_func_get_generation [tcl_func_get_funit_name $curr_block]]
   if {$generation == 3} {
     set keywords [concat $v1995_keywords $v2001_keywords $sv_keywords]
   } elseif {$generation == 2} {

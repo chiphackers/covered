@@ -19,7 +19,6 @@ covered_SOURCES = arc.c \
 		  func_unit.c \
                   genprof.c \
                   gen_item.c \
-		  gui.c \
 		  info.c \
 		  instance.c \
  		  iter.c \

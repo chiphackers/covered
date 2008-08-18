@@ -1,0 +1,204 @@
+<chapter id="chapter.using" xreflabel="Using Covered">
+  <title>Using Covered</title>
+  
+  <sect1>
+    <title>Work Flow</title>
+    <para>
+    Covered has four basic commands that it uses for gaining coverage information about a design and displaying that information to the user.
+    </para>
+    <para>
+      <itemizedlist>
+        <listitem><para>score</para></listitem>
+        <listitem><para>merge</para></listitem>
+        <listitem><para>report</para></listitem>
+        <listitem><para>rank</para></listitem>
+      </itemizedlist>
+    </para>
+    
+    <sect2>
+      <title>Scoring the Design</title>
+      <para>
+      To begin using Covered, you will need to create a special database file called a coverage description database (CDD). Covered uses this 
+      file to store coverage-specific information about the DUT. This file is a text-based file that is written in a specific format (the 
+      format of this file is not discussed in this document but can be found in the developer's document) that Covered understands.
+      </para>
+      <para>
+      To create the CDD and populate it with the simulation dumpfile results, you must use the score (see <xref linkend="chapter.score"/> for details) 
+      command. This command parses in the DUT files and generates an initial CDD for the design. This CDD does not contain any coverage 
+      details but only the design elements that Covered needs to gain coverage results.
+      </para>
+      <para>
+      Once the initial CDD has been created, the score command reads in the specified VCD/LXT dumpfile from the given DUT. If Covered recognizes 
+      that the VCD/LXT dumpfile does not correspond to the DUT that it parses (dumpfile was not generated from the DUT specified), an error 
+      message is supplied to the user telling them this. Once the dumpfile has been parsed, Covered generates a new version of the CDD containing 
+      a populated database. This CDD may be merged with another CDD from the same DUT and/or reports may be generated from this CDD.
+      </para>
+    </sect2>
+    
+    <sect2>
+      <title>Merging CDDs</title>
+      <para>When two or more CDDs have been generated from the same DUT. It is often desirable to merge their contents to see what the total 
+      coverage is for both simulation runs. The reasons why merging is desirable is that often several tests are written to exercise the entire 
+      design (not just one). This makes tests easier to write and maintain. Since, typically, only one test is run per simulation run and that 
+      test does not fully test the DUT, it is necessary to combine the results of the multiple simulations to the see the combined effect of 
+      the tests on the design. This is where merging comes into play.
+      </para>
+      <para>
+      Merging multiple CDDs from the same design is easy with Covered, and is accomplished with the merge (see <xref linkend="chapter.merge"/> 
+      for details) command. This command reads in two or more CDDs, merges their results and outputs the merged CDD to a different file or 
+      replaces the first CDD with the results of the merge.
+      </para>
+    </sect2>
+    
+    <sect2>
+      <title>Creating Coverage Reports</title>
+      <para>
+      After a CDD is created or merged, the contents of the CDD can be extracted and transformed into human readable coverage reports with 
+      the report (see <xref linkend="chapter.report"/> for details) command. A summary report containing the percentage of metrics covered is 
+      generated for each module. Additionally, to aid in understanding what and why something was not covered, a verbose reporting mechanism 
+      exists. Verbose reporting will explicitly point to and describe why something was not fully covered for a specific metric.
+      </para>
+      <para>
+      Reports are text-based output that by default are directed toward standard output but may, with the use of an option flag, be output to 
+      a specific file for storage purposes.
+      </para>
+    </sect2>
+    
+    <sect2>
+      <title>Ranking CDDs</title>
+      <para>
+      After a collection of CDDs have been generated from a single design (most likely due to a regression run), it is desirable to know
+      which CDDs have an effect on coverage and which CDDs do not add any new coverage information.  The CDDs that do not provide additional
+      coverage may be unnecessary for regression and removing them may significantly improve a regression runs time (which can help in a
+      projects schedule).
+      </para>
+      <para>
+      Additionally, it also good to know an order that simulations should be run in to produce the maximum amount of coverage the quickest.  
+      This information can be useful for creating a quick (or "sanity check" or "confidence") regression that runs in a relatively short 
+      period of time and, when run successfully, provides the engineer a level of confidence that recent changes have not severely broke
+      the functionality of the design.
+      </para>
+      <para>
+      This is the purpose of the rank (see <xref linkend="chapter.rank"/> for details) command.  It produces a report that shows the diagnostics
+      that add to the overall coverage of the suite, the order that those diagnostics should run, and each diagnostic's overall effect on
+      coverage when it is run.
+      </para>
+    </sect2>
+  </sect1>
+  
+  <sect1>
+    <title>Covered usage</title>
+    <para>
+    Covered is initiated with the following command:
+    </para>
+    <para>
+      <code>
+      covered (-h | -v | [-P [<emphasis>filename</emphasis>]] [-D|-Q] (score|merge|report|rank) <emphasis>command_options</emphasis>)
+      </code>
+    </para>
+    <para>
+    The -v command (described below) is mutually exclusive from the rest of the commands and has the highest priority. If Covered is called 
+    with this option and any other options, the version will only be displayed.
+    </para>
+    <para>
+    The -h command (described below) is mutually exclusive from the rest of the commands and has the second highest priority. If Covered is 
+    called with this option and the -v option is not specified, the usage information will be displayed to the screen.
+    </para>
+    <para>
+    The -Q option suppresses all normal user output from standard output. The only output that will not be suppressed are messages to standard 
+    error. This option may be used with any of the Covered commands to achieve this effect. By default, normal user output is sent to standard 
+    output.
+    </para>
+    <para>
+    The -D option outputs debug information to standard output. Its effect overrides the -Q option. This option may be used in conjunction with 
+    any other Covered command for the purposes of debugging tool failures. By default, debug mode is turned off and must be enabled in the build 
+    of Covered (using the --enable-debug option to configure). This command should only be used for debugging as it generates an immense amount 
+    of output which may hinder performance.
+    </para>
+    <para>
+    The -B option obfuscates all design-sensitive signal, module, task, function, instance, file and parameter names when outputting them to 
+    either stdout, stderr or a file (with the exception of CDD file output). This mode is intended to be used for sharing output information 
+    with others (including the developer's of Covered) which is sensitive information for the purposes of debugging.
+    </para>
+    <para>
+    The -P option causes Covered to enable internal code profiling and generates a profiling report that is output to either the given filename 
+    or the default filename of "covered.prof". This option is only available if the --enable-profiling configuration option is specified and will 
+    cause performance degradation. This option should only be used by Covered developers or those interested in finding performance bottlenecks 
+    in Covered's code. It is not recommended that the --enable-profiling configuration option and the -P global option be specified for normal 
+    users of Covered. See <xref linkend="section.profiling"/> for more information on profiling and understanding the profiling report file.
+    </para>
+  </sect1>
+  
+  <sect1>
+    <title>Covered global options</title>
+    <para>
+    The following table describes options that Covered will accept apart from its normal commands which are described in the next several chapters.
+    </para>
+    <table>
+      <title>Global Options to Covered</title>
+      <tgroup cols='2'>
+        <thead>
+          <row>
+            <entry>
+            Option
+            </entry>
+            <entry>
+            Description
+            </entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>
+            -Q
+            </entry>
+            <entry>
+            Quiet mode. Suppresses user output to screen. Use in conjunction with a command.
+            </entry>
+          </row>
+          <row>
+            <entry>
+            -D
+            </entry>
+            <entry>
+            Debug mode. Outputs code debug information to screen. Use in conjunction with commands.
+            </entry>
+          </row>
+          <row>
+            <entry>
+            -B
+            </entry>
+            <entry>
+            Obfuscate. Obfuscates all design sensitive names before outputting them.
+            </entry>
+          </row>
+          <row>
+            <entry>
+            -P [<emphasis>filename</emphasis>]
+            </entry>
+            <entry>
+            Profiling mode. Outputs profiling report to either the given <emphasis>filename</emphasis> or "covered.prof" if no 
+            <emphasis>filename</emphasis> was specified.
+            </entry>
+          </row>
+          <row>
+            <entry>
+            -h
+            </entry>
+            <entry>
+            Generates usage output to standard output.
+            </entry>
+          </row>
+          <row>
+            <entry>
+            -v
+            </entry>
+            <entry>
+            Outputs current version of Covered.
+            </entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+  </sect1>
+</chapter>

@@ -1,0 +1,94 @@
+<chapter id="chapter.merge" xreflabel="The merge Command">
+  <title>The merge Command</title>
+  
+  <sect1 id="section.merge.using" xreflabel="Merge Usage">
+    <title>Usage</title>
+    <para>
+    The merge command is initiated with the following call:
+    </para>
+    <para>
+      <code>covered merge [<emphasis>options</emphasis>] <emphasis>existing_CDD</emphasis> <emphasis>CDD_to_merge</emphasis>+</code>
+    </para>
+    <para>
+    The <emphasis>existing_CDD</emphasis> specifier relates to any existing CDD. If the -o option is not specified (see 
+    below for details), this file will be replaced with the merged CDD created by the merge. This is important to 
+    remember since merging is an irreversible operation (apart from generating a brand-new CDD from the design and 
+    dumpfile using the score command).
+    </para>
+    <para>
+    The <emphasis>CDD_to_merge</emphasis> specifier relates to any existing CDD that is not the 
+    <emphasis>existing_CDD</emphasis>. Though it is not illegal to merge the same CDD to itself, the result is the same 
+    as the original CDD. Note that all files treated as <emphasis>CDD_to_merge</emphasis> are guaranteed not to be 
+    modified by the merge command. These files are only read by Covered and then merged into the information contained 
+    in the <emphasis>existing_CDD</emphasis>.
+    </para>
+  </sect1>
+  
+  <sect1 id="section.merge.options" xreflabel="Merge Options">
+    <title>Options</title>
+    <para>
+      <table>
+        <title>Options to merge Command</title>
+        <tgroup cols='2'>
+          <thead>
+            <row>
+              <entry>
+              Option
+              </entry>
+              <entry>
+              Description
+              </entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>
+              -d <emphasis>directory</emphasis>
+              </entry>
+              <entry>
+              Directory to search for CDD files to include.  This option is used in conjunction with the -ext option 
+              which specifies the file extension to use for determining which files in the directory are CDD files.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              -ext <emphasis>extension</emphasis>
+              </entry>
+              <entry>
+              Used in conjunction with the -d option.  If no -ext options are specified on the command-line, the 
+              default value of '.cdd' is used.  Note that a period (.) should be specified.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              -f <emphasis>filename</emphasis>
+              </entry>
+              <entry>
+              Name of file containing additional arguments to parse. You may specify this option more than once on a 
+              command-line.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              -h
+              </entry>
+              <entry>
+              Outputs usage information for the merge command.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              -o <emphasis>filename</emphasis>
+              </entry>
+              <entry>
+              Name of CDD to write merged coverage information to (if not specified, the 
+              <emphasis>existing_CDD</emphasis> is overwritten with merged CDD).
+              </entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </para>
+  </sect1>
+  
+</chapter>

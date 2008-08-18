@@ -45,19 +45,19 @@
 
 
 /*!
- \param str   String to add to specified list.
- \param head  Pointer to head str_link element of list.
- \param tail  Pointer to tail str_link element of list.
-
  \return Returns a pointer to newly created string link.
 
  Creates a new str_link element with the value specified for str.  Sets
  next pointer of element to NULL, sets the tail element to point to the
  new element and sets the tail value to the new element.
 */
-str_link* str_link_add( char* str, str_link** head, str_link** tail ) { PROFILE(STR_LINK_ADD);
+str_link* str_link_add(
+            char*      str,   /*!< String to add to specified list */
+  /*@out@*/ str_link** head,  /*!< Pointer to head str_link element of list */
+  /*@out@*/ str_link** tail   /*!< Pointer to tail str_link element of list */
+) { PROFILE(STR_LINK_ADD);
 
-  str_link* tmp;    /* Temporary pointer to newly created str_link element */
+  str_link* tmp;  /* Temporary pointer to newly created str_link element */
 
   tmp = (str_link*)malloc_safe( sizeof( str_link ) );
 
@@ -82,17 +82,17 @@ str_link* str_link_add( char* str, str_link** head, str_link** tail ) { PROFILE(
 }
 
 /*!
- \param stmt  Pointer to statement to add to specified statement list.
- \param head  Pointer to head str_link element of list.
- \param tail  Pointer to tail str_link element of list.
-
  Creates a new stmt_link element with the value specified for stmt.  Sets
  next pointer of element to head, sets the head element to point to the
  new element and (possibly) sets the tail value to the new element.
 */
-void stmt_link_add_head( statement* stmt, stmt_link** head, stmt_link** tail ) { PROFILE(STMT_LINK_ADD_HEAD);
+void stmt_link_add_head(
+            statement*  stmt,  /*!< Pointer to statement to add to specified statement list */
+  /*@out@*/ stmt_link** head,  /*!< Pointer to head str_link element of list */
+  /*@out@*/ stmt_link** tail   /*!< Pointer to tail str_link element of list */
+) { PROFILE(STMT_LINK_ADD_HEAD);
 
-  stmt_link* tmp;    /* Temporary pointer to newly created stmt_link element */
+  stmt_link* tmp;  /* Temporary pointer to newly created stmt_link element */
 
   tmp = (stmt_link*)malloc_safe( sizeof( stmt_link ) );
 
@@ -112,17 +112,13 @@ void stmt_link_add_head( statement* stmt, stmt_link** head, stmt_link** tail ) {
 }
 
 /*!
- \param stmt  Pointer to statement to add to specified statement list.
- \param head  Pointer to head str_link element of list.
- \param tail  Pointer to tail str_link element of list.
-
  Creates a new stmt_link element with the value specified for stmt.  Sets
  next pointer of element to NULL and sets the tail value to the new element.
 */
 void stmt_link_add_tail(
-  statement*  stmt,
-  stmt_link** head,
-  stmt_link** tail
+            statement*  stmt,  /*!< Pointer to statement to add to specified statement list */
+  /*@out@*/ stmt_link** head,  /*!< Pointer to head str_link element of list */
+  /*@out@*/ stmt_link** tail   /*!< Pointer to tail str_link element of list */
 ) { PROFILE(STMT_LINK_ADD_TAIL);
 
   stmt_link* tmp;    /* Temporary pointer to newly created stmt_link element */
@@ -145,19 +141,14 @@ void stmt_link_add_tail(
 }
 
 /*!
- \param base_head   Pointer to head of statement link of first statement link list to merge into.
- \param base_tail   Pointer to tail of statement link of first statement link list to merge into.
- \param other_head  Pointer to head of statement link of second statement link list to merge.
- \param other_tail  Pointer to tail of statement link of second statement link list to merge.
-
  Joins two statement links together such that the statements are stored in line order.
  Assumes that the base list contains at least one statement link.
 */
 void stmt_link_merge(
-  stmt_link** base_head,
-  stmt_link** base_tail,
-  stmt_link*  other_head,
-  stmt_link*  other_tail
+  /*@out@*/ stmt_link** base_head,   /*!< Pointer to head of statement link of first statement link list to merge into */
+  /*@out@*/ stmt_link** base_tail,   /*!< Pointer to tail of statement link of first statement link list to merge into */
+            stmt_link*  other_head,  /*!< Pointer to head of statement link of second statement link list to merge */
+            stmt_link*  other_tail   /*!< Pointer to tail of statement link of second statement link list to merge */
 ) { PROFILE(STMT_LINK_MERGE);
 
   stmt_iter si_base;   /* Statement iterator for the base list */
@@ -234,18 +225,14 @@ void stmt_link_merge(
 }
 
 /*!
- \param expr  Expression to add to specified expression list.
- \param head  Pointer to head exp_link element of list.
- \param tail  Pointer to tail exp_link element of list.
-
  Creates a new exp_link element with the value specified for expr.
  Sets next pointer of element to NULL, sets the tail element to point
  to the new element and sets the tail value to the new element.
 */
 void exp_link_add(
-  expression* expr,
-  exp_link**  head,
-  exp_link**  tail
+            expression* expr,  /*!< Expression to add to specified expression list */
+  /*@out@*/ exp_link**  head,  /*!< Pointer to head exp_link element of list */
+  /*@out@*/ exp_link**  tail   /*!< Pointer to tail exp_link element of list */
 ) { PROFILE(EXP_LINK_ADD);
 
   exp_link* tmp;  /* Temporary pointer to newly created exp_link element */
@@ -267,18 +254,14 @@ void exp_link_add(
 }
 
 /*!
- \param sig   Signal to add to specified signal list.
- \param head  Pointer to head sig_link element of list.
- \param tail  Pointer to tail sig_link element of list.
-
  Creates a new sig_link element with the value specified for sig.
  Sets next pointer of element to NULL, sets the tail element to point
  to the new element and sets the tail value to the new element.
 */
 void sig_link_add(
-  vsignal*   sig,
-  sig_link** head,
-  sig_link** tail
+            vsignal*   sig,   /*!< Signal to add to specified signal list */
+  /*@out@*/ sig_link** head,  /*!< Pointer to head sig_link element of list */
+  /*@out@*/ sig_link** tail   /*!< Pointer to tail sig_link element of list */
 ) { PROFILE(SIG_LINK_ADD);
 
   sig_link* tmp;   /* Temporary pointer to newly created sig_link element */
@@ -300,18 +283,14 @@ void sig_link_add(
 }
 
 /*!
- \param table  Pointer to FSM structure to store.
- \param head   Pointer to head of FSM list.
- \param tail   Pointer to tail of FSM list.
-
  Creates a new fsm_link element with the value specified for table.
  Sets next pointer of element to NULL, sets the tail element to point
  to the new element and sets the tail value to the new element.
 */
 void fsm_link_add(
-  fsm*       table,
-  fsm_link** head,
-  fsm_link** tail
+            fsm*       table,  /*!< Pointer to FSM structure to store */
+  /*@out@*/ fsm_link** head,   /*!< Pointer to head of FSM list */
+  /*@out@*/ fsm_link** tail    /*!< Pointer to tail of FSM list */
 ) { PROFILE(FSM_LINK_ADD);
 
   fsm_link* tmp;  /* Temporary pointer to newly created fsm_link element */
@@ -333,15 +312,15 @@ void fsm_link_add(
 }
 
 /*!
- \param funit  Functional unit to add to specified functional unit list.
- \param head   Pointer to head funit_link element of list.
- \param tail   Pointer to tail funit_link element of list.
-
  Creates a new funit_link element with the value specified for functional unit.
  Sets next pointer of element to NULL, sets the tail element to point
  to the new element and sets the tail value to the new element.
 */
-void funit_link_add( func_unit* funit, funit_link** head, funit_link** tail ) { PROFILE(FUNIT_LINK_ADD);
+void funit_link_add(
+            func_unit*   funit,  /*!< Functional unit to add to specified functional unit list */
+  /*@out@*/ funit_link** head,   /*!< Pointer to head funit_link element of list */
+  /*@out@*/ funit_link** tail    /*!< Pointer to tail funit_link element of list */
+) { PROFILE(FUNIT_LINK_ADD);
 	
   funit_link* tmp;   /* Temporary pointer to newly created funit_link element */
 	
@@ -363,15 +342,15 @@ void funit_link_add( func_unit* funit, funit_link** head, funit_link** tail ) { 
 
 #ifndef VPI_ONLY
 /*!
- \param gi     Generate item to add to specified gitem_link list.
- \param head   Pointer to head gitem_link element of list.
- \param tail   Pointer to tail gitem_link element of list.
-
  Creates a new gitem_link element with the value specified for generate item.
  Sets next pointer of element to NULL, sets the tail element to point
  to the new element and sets the tail value to the new element.
 */
-void gitem_link_add( gen_item* gi, gitem_link** head, gitem_link** tail ) { PROFILE(GITEM_LINK_ADD);
+void gitem_link_add(
+            gen_item*    gi,    /*!< Generate item to add to specified gitem_link list */
+  /*@out@*/ gitem_link** head,  /*!< Pointer to head gitem_link element of list */
+  /*@out@*/ gitem_link** tail   /*!< Pointer to tail gitem_link element of list */
+) { PROFILE(GITEM_LINK_ADD);
 
   gitem_link* tmp;  /* Temporary pointer to newly created gitem_link element */
 
@@ -393,17 +372,17 @@ void gitem_link_add( gen_item* gi, gitem_link** head, gitem_link** tail ) { PROF
 #endif /* VPI_ONLY */
 
 /*!
- \param inst   Functional unit instance root to add
- \param head   Pointer to head inst_link element of list
- \param tail   Pointer to tail inst_link element of list
-
  \return Returns pointer to newly allocated instance link.
 
  Creates a new inst_link element with the value specified for functional unit instance.
  Sets next pointer of element to NULL, sets the tail element to point
  to the new element and sets the tail value to the new element.
 */
-inst_link* inst_link_add( funit_inst* inst, inst_link** head, inst_link** tail ) { PROFILE(INST_LINK_ADD);
+inst_link* inst_link_add(
+            funit_inst* inst,  /*!< Functional unit instance root to add */
+  /*@out@*/ inst_link** head,  /*!< Pointer to head inst_link element of list */
+  /*@out@*/ inst_link** tail   /*!< Pointer to tail inst_link element of list */
+) { PROFILE(INST_LINK_ADD);
 
   inst_link* tmp;  /* Temporary pointer to newly created inst_link element */
 
@@ -428,12 +407,12 @@ inst_link* inst_link_add( funit_inst* inst, inst_link** head, inst_link** tail )
 /**************************************************************************************/
 
 /*!
- \param head  Pointer to head of str_link list.
-
  Displays the string contents of the str_link list pointed to by head
  to standard output.  This function is mainly used for debugging purposes.
 */
-void str_link_display( str_link* head ) {
+void str_link_display(
+  str_link* head  /*!< Pointer to head of str_link list */
+) {
 
   str_link* curr;    /* Pointer to current str_link link to display */
 
@@ -448,12 +427,12 @@ void str_link_display( str_link* head ) {
 }
 
 /*!
- \param head  Pointer to head of stmt_link list.
-
  Displays the string contents of the stmt_link list pointed to by head
  to standard output.  This function is mainly used for debugging purposes.
 */
-void stmt_link_display( stmt_link* head ) {
+void stmt_link_display(
+  stmt_link* head  /*!< Pointer to head of stmt_link list */
+) {
 
   stmt_iter curr;   /* Statement list iterator */
 
@@ -470,12 +449,12 @@ void stmt_link_display( stmt_link* head ) {
 }
 
 /*!
- \param head  Pointer to head of exp_link list.
-
  Displays the string contents of the exp_link list pointed to by head
  to standard output.  This function is mainly used for debugging purposes.
 */
-void exp_link_display( exp_link* head ) {
+void exp_link_display(
+  exp_link* head  /*!< Pointer to head of exp_link list */
+) {
 
   exp_link* curr;    /* Pointer to current expression link */
 
@@ -490,12 +469,12 @@ void exp_link_display( exp_link* head ) {
 }
 
 /*!
- \param head  Pointer to head of sig_link list.
-
  Displays the string contents of the sig_link list pointed to by head
  to standard output.  This function is mainly used for debugging purposes.
 */
-void sig_link_display( sig_link* head ) {
+void sig_link_display(
+  sig_link* head  /*!< Pointer to head of sig_link list */
+) {
 
   sig_link* curr;    /* Pointer to current sig_link link to display */
 
@@ -510,12 +489,12 @@ void sig_link_display( sig_link* head ) {
 }
 
 /*!
- \param head  Pointer to head of funit_link list.
-
  Displays the string contents of the funit_link list pointed to by head
  to standard output.  This function is mainly used for debugging purposes.
 */
-void funit_link_display( funit_link* head ) {
+void funit_link_display(
+  funit_link* head  /*!< Pointer to head of funit_link list */
+) {
 
   funit_link* curr;    /* Pointer to current funit_link link to display */
 
@@ -531,12 +510,12 @@ void funit_link_display( funit_link* head ) {
 
 #ifndef VPI_ONLY
 /*!
- \param head  Pointer to head of gitem_link list.
-
  Displays the contents of the gitem_link list pointed to by head
  to standard output.  This function is mainly used for debugging purposes.
 */
-void gitem_link_display( gitem_link* head ) {
+void gitem_link_display(
+  gitem_link* head  /*!< Pointer to head of gitem_link list */
+) {
 
   gitem_link* curr;  /* Pointer to current gitem_link to display */
 
@@ -552,12 +531,12 @@ void gitem_link_display( gitem_link* head ) {
 #endif /* VPI_ONLY */
 
 /*!
- \param head  Pointer to head of inst_link list.
-
  Displays the contents of the inst_link list pointed to by head
  to standard output.  This function is mainly used for debugging purposes.
 */
-void inst_link_display( inst_link* head ) {
+void inst_link_display( 
+  inst_link* head  /*!< Pointer to head of inst_link list */
+) {
 
   inst_link* curr;  /* Pointer to current inst_link to display */
 
@@ -574,15 +553,16 @@ void inst_link_display( inst_link* head ) {
 /**************************************************************************************/
 
 /*!
- \param value  String to find in str_link list.
- \param head   Pointer to head link in str_link list to search.
  \return Returns the pointer to the found str_link or NULL if the search was unsuccessful.
 
  Iteratively searches the str_link list specifed by the head str_link element.  If
  a matching string is found, the pointer to this element is returned.  If the specified
  string could not be matched, the value of NULL is returned.
 */
-str_link* str_link_find( const char* value, str_link* head ) { PROFILE(STR_LINK_FIND);
+str_link* str_link_find(
+  const char* value,  /*!< String to find in str_link list */
+  str_link*   head    /*!< Pointer to head link in str_link list to search */
+) { PROFILE(STR_LINK_FIND);
 
   str_link* curr;    /* Pointer to current str_link link */
   
@@ -598,16 +578,16 @@ str_link* str_link_find( const char* value, str_link* head ) { PROFILE(STR_LINK_
 }
 
 /*!
- \param id    ID of statement to find.
- \param head  Pointer to head of stmt_link list to search.
-
  \return Returns the pointer to the found stmt_link or NULL if the search was unsuccessful.
 
  Iteratively searches the stmt_link list specified by the head stmt_link element.  If
  a matching statement is found, the pointer to this element is returned.  If the specified
  statement could not be matched, the value of NULL is returned.
 */
-stmt_link* stmt_link_find( int id, stmt_link* head ) { PROFILE(STMT_LINK_FIND);
+stmt_link* stmt_link_find(
+  int        id,   /*!< ID of statement to find */
+  stmt_link* head  /*!< Pointer to head of stmt_link list to search */
+) { PROFILE(STMT_LINK_FIND);
 
   stmt_iter curr;   /* Statement list iterator */
 
@@ -623,16 +603,16 @@ stmt_link* stmt_link_find( int id, stmt_link* head ) { PROFILE(STMT_LINK_FIND);
 }
 
 /*!
- \param id    Expression ID to find.
- \param head  Pointer to head of exp_link list to search.
-
  \return Returns the pointer to the found exp_link or NULL if the search was unsuccessful.
 
  Iteratively searches the exp_link list specified by the head exp_link element.  If
  a matching expression is found, the pointer to this element is returned.  If the specified
  expression could not be matched, the value of NULL is returned.
 */
-exp_link* exp_link_find( int id, exp_link* head ) { PROFILE(EXP_LINK_FIND);
+exp_link* exp_link_find(
+  int       id,   /*!< Expression ID to find */
+  exp_link* head  /*!< Pointer to head of exp_link list to search */
+) { PROFILE(EXP_LINK_FIND);
 
   exp_link* curr;   /* Expression list iterator */
 
@@ -648,8 +628,6 @@ exp_link* exp_link_find( int id, exp_link* head ) { PROFILE(EXP_LINK_FIND);
 }
 
 /*!
- \param name  Name of signal to find
- \param head  Pointer to head of sig_link list to search.
  \return Returns the pointer to the found sig_link or NULL if the search was unsuccessful.
 
  Iteratively searches the sig_link list specified by the head sig_link element.  If
@@ -657,8 +635,8 @@ exp_link* exp_link_find( int id, exp_link* head ) { PROFILE(EXP_LINK_FIND);
  signal could not be matched, the value of NULL is returned.
 */
 sig_link* sig_link_find(
-  const char* name,
-  sig_link*   head
+  const char* name,  /*!< Name of signal to find */
+  sig_link*   head   /*!< Pointer to head of sig_link list to search */
 ) { PROFILE(SIG_LINK_FIND);
 
   sig_link* curr;    /* Pointer to current sig_link link */
@@ -675,16 +653,16 @@ sig_link* sig_link_find(
 }
 
 /*!
- \param name  Name of FSM structure to find.
- \param head  Pointer to head of fsm_link list to search.
-
  \return Returns the pointer to the found fsm_link, or NULL if the search was unsuccessful.
 
  Iteratively searches the fsm_link list specified by the head fsm_link element.  If
  a matching FSM is found, the pointer to this element is returned.  If the specified
  FSM structure could not be matched, the value of NULL is returned.
 */
-fsm_link* fsm_link_find( const char* name, fsm_link* head ) { PROFILE(FSM_LINK_FIND);
+fsm_link* fsm_link_find(
+  const char* name,  /*!< Name of FSM structure to find */
+  fsm_link*   head   /*!< Pointer to head of fsm_link list to search */
+) { PROFILE(FSM_LINK_FIND);
 
   fsm_link* curr;  /* Pointer to current fsm_link element */
 
@@ -700,17 +678,17 @@ fsm_link* fsm_link_find( const char* name, fsm_link* head ) { PROFILE(FSM_LINK_F
 }
 
 /*!
- \param name  Name of functional unit to find.
- \param type  Type of functional unit to find.
- \param head  Pointer to head of funit_link list to search.
- 
  \return Returns the pointer to the found funit_link or NULL if the search was unsuccessful.
 
  Iteratively searches the funit_link list specified by the head funit_link element.  If
  a matching functional unit is found, the pointer to this element is returned.  If the specified
  functional unit could not be matched, the value of NULL is returned.
 */
-funit_link* funit_link_find( const char* name, int type, funit_link* head ) { PROFILE(FUNIT_LINK_FIND);
+funit_link* funit_link_find(
+  const char* name,  /*!< Name of functional unit to find */
+  int         type,  /*!< Type of functional unit to find */
+  funit_link* head   /*!< Pointer to head of funit_link list to search */
+) { PROFILE(FUNIT_LINK_FIND);
 
   funit_link* curr;    /* Pointer to current funit_link link */
 
@@ -727,16 +705,16 @@ funit_link* funit_link_find( const char* name, int type, funit_link* head ) { PR
 
 #ifndef VPI_ONLY
 /*!
- \param gi    Pointer to generate item to find.
- \param head  Pointer to head of gitem_link list to search.
-
  \return Returns the pointer to the found gitem_link or NULL if the search was unsuccessful.
 
  Iteratively searches the gitem_link list specified by the head gitem_link element.  If
  a matching generate item is found, the pointer to this element is returned.  If the specified
  generate item could not be matched, the value of NULL is returned.
 */
-gitem_link* gitem_link_find( gen_item* gi, gitem_link* head ) { PROFILE(GITEM_LINK_FIND);
+gitem_link* gitem_link_find(
+  gen_item*   gi,   /*!< Pointer to generate item to find */
+  gitem_link* head  /*!< Pointer to head of gitem_link list to search */
+) { PROFILE(GITEM_LINK_FIND);
 
   gitem_link* curr;  /* Pointer to current gitem_link */
 
@@ -854,15 +832,15 @@ void str_link_remove(
 }
 
 /*!
- \param exp        Pointer to expression to find and remove.
- \param head       Pointer to head of expression list.
- \param tail       Pointer to tail of expression list.
- \param recursive  If TRUE, recursively removes expression tree and expressions.
-
  Searches specified list for expression that matches the specified expression.  If
  a match is found, remove it from the list and deallocate the link memory.
 */
-void exp_link_remove( expression* exp, exp_link** head, exp_link** tail, bool recursive ) { PROFILE(EXP_LINK_REMOVE);
+void exp_link_remove(
+            expression* exp,       /*!< Pointer to expression to find and remove */
+  /*@out@*/ exp_link**  head,      /*!< Pointer to head of expression list */
+  /*@out@*/ exp_link**  tail,      /*!< Pointer to tail of expression list */
+            bool        recursive  /*!< If TRUE, recursively removes expression tree and expressions */
+) { PROFILE(EXP_LINK_REMOVE);
 
   exp_link* curr;  /* Pointer to current expression link */
   exp_link* last;  /* Pointer to last expression link */
@@ -917,14 +895,14 @@ void exp_link_remove( expression* exp, exp_link** head, exp_link** tail, bool re
 
 #ifndef VPI_ONLY
 /*!
- \param gi    Pointer to specified generate item to remove
- \param head  Pointer to head of generate item list
- \param tail  Pointer to tail of generate item list
-
  Deletes specified generate item from the given list, adjusting the head and
  tail pointers accordingly.
 */
-void gitem_link_remove( gen_item* gi, gitem_link** head, gitem_link** tail ) { PROFILE(GITEM_LINK_REMOVE);
+void gitem_link_remove(
+            gen_item*    gi,    /*!< Pointer to specified generate item to remove */
+  /*@out@*/ gitem_link** head,  /*!< Pointer to head of generate item list */
+  /*@out@*/ gitem_link** tail   /*!< Pointer to tail of generate item list */
+) { PROFILE(GITEM_LINK_REMOVE);
 
   gitem_link* gil;   /* Pointer to current generate item link */
   gitem_link* last;  /* Pointer to last generate item link traversed */
@@ -958,19 +936,14 @@ void gitem_link_remove( gen_item* gi, gitem_link** head, gitem_link** tail ) { P
 #endif /* VPI_ONLY */
 
 /*!
- \param funit     Pointer to functional unit to find and remove
- \param head      Pointer to head of functional unit list to remove functional unit from
- \param tail      Pointer to tail of functional unit list to remove functional unit from
- \param rm_funit  If set to TRUE, deallocates functional unit as well
-
  Searches for and removes the given functional unit from the given list and adjusts list as
  necessary.
 */
 void funit_link_remove(
-  func_unit*   funit,
-  funit_link** head,
-  funit_link** tail,
-  bool         rm_funit
+            func_unit*   funit,    /*!< Pointer to functional unit to find and remove */
+  /*@out@*/ funit_link** head,     /*!< Pointer to head of functional unit list to remove functional unit from */
+  /*@out@*/ funit_link** tail,     /*!< Pointer to tail of functional unit list to remove functional unit from */
+            bool         rm_funit  /*!< If set to TRUE, deallocates functional unit as well */
 ) { PROFILE(FUNIT_LINK_REMOVE);
 
   funit_link* curr = *head;  /* Pointer to current functional unit link */
@@ -1013,13 +986,13 @@ void funit_link_remove(
 }
 
 /*!
- \param head  Pointer to head of instance link list.
-
  Iterates through the given instance link list, flattening the instance trees to remove
  all unnamed scopes within it.  Only called by the report command after the CDD has been
  read into the database.
 */
-void inst_link_flatten( inst_link* head ) { PROFILE(INST_LINK_FLATTEN);
+void inst_link_flatten(
+  inst_link* head  /*!< Pointer to head of instance link list */
+) { PROFILE(INST_LINK_FLATTEN);
 
   while( head != NULL ) {
     instance_flatten( head->inst );
@@ -1033,11 +1006,11 @@ void inst_link_flatten( inst_link* head ) { PROFILE(INST_LINK_FLATTEN);
 /**************************************************************************************/
 
 /*!
- \param head  Pointer to head str_link element of list.
-
  Deletes each element of the specified list.
 */
-void str_link_delete_list( str_link* head ) { PROFILE(STR_LINK_DELETE_LIST);
+void str_link_delete_list(
+  str_link* head  /*!< Pointer to head str_link element of list */
+) { PROFILE(STR_LINK_DELETE_LIST);
 
   str_link* tmp;   /* Temporary pointer to current link in list */
 
@@ -1062,15 +1035,15 @@ void str_link_delete_list( str_link* head ) { PROFILE(STR_LINK_DELETE_LIST);
 }
 
 /*!
- \param stmt  Pointer to the statement to unlink from the given statement list
- \param head  Pointer to the head of a statement list
- \param tail  Pointer to the tail of a statement list
-
  Iterates through given statement list searching for the given statement.  When
  the statement link is found that matches, removes that link from the list and repairs
  the list.
 */
-void stmt_link_unlink( statement* stmt, stmt_link** head, stmt_link** tail ) { PROFILE(STMT_LINK_UNLINK);
+void stmt_link_unlink(
+            statement*  stmt,  /*!< Pointer to the statement to unlink from the given statement list */
+  /*@out@*/ stmt_link** head,  /*!< Pointer to the head of a statement list */
+  /*@out@*/ stmt_link** tail   /*!< Pointer to the tail of a statement list */
+) { PROFILE(STMT_LINK_UNLINK);
 
   stmt_iter  curr;   /* Statement list iterator */
   stmt_link* next;   /* Pointer to next stmt_link in list */
@@ -1114,11 +1087,11 @@ void stmt_link_unlink( statement* stmt, stmt_link** head, stmt_link** tail ) { P
 }
 
 /*!
- \param head  Pointer to head stmt_link element of list.
-
  Deletes each element of the specified list.
 */
-void stmt_link_delete_list( stmt_link* head ) { PROFILE(STMT_LINK_DELETE_LIST);
+void stmt_link_delete_list(
+  stmt_link* head  /*!< Pointer to head stmt_link element of list */
+) { PROFILE(STMT_LINK_DELETE_LIST);
 
   stmt_iter curr;  /* Statement list iterator */
 
@@ -1207,11 +1180,11 @@ void sig_link_delete_list(
 }
 
 /*!
- \param head  Pointer to head fsm_link element of list.
-
  Deletes each element of the specified list.
 */
-void fsm_link_delete_list( fsm_link* head ) { PROFILE(FSM_LINK_DELETE_LIST);
+void fsm_link_delete_list(
+  fsm_link* head  /*!< Pointer to head fsm_link element of list */
+) { PROFILE(FSM_LINK_DELETE_LIST);
 
   fsm_link* tmp;  /* Temporary pointer to current link in list */
 
@@ -1234,13 +1207,13 @@ void fsm_link_delete_list( fsm_link* head ) { PROFILE(FSM_LINK_DELETE_LIST);
 }
 
 /*!
- \param head      Pointer to head funit_link element of list.
- \param tail      Pointer to tail funit_link element of list.
- \param rm_funit  If TRUE, deallocates specified functional unit; otherwise, just deallocates the links
-
  Deletes each element of the specified list.
 */
-void funit_link_delete_list( funit_link** head, funit_link** tail, bool rm_funit ) { PROFILE(FUNIT_LINK_DELETE_LIST);
+void funit_link_delete_list(
+  /*@out@*/ funit_link** head,     /*!< Pointer to head funit_link element of list */
+  /*@out@*/ funit_link** tail,     /*!< Pointer to tail funit_link element of list */
+            bool         rm_funit  /*!< If TRUE, deallocates specified functional unit; otherwise, just deallocates the links */
+) { PROFILE(FUNIT_LINK_DELETE_LIST);
 
   funit_link* tmp;   /* Temporary pointer to current link in list */
 
@@ -1268,14 +1241,11 @@ void funit_link_delete_list( funit_link** head, funit_link** tail, bool rm_funit
 
 #ifndef VPI_ONLY
 /*!
- \param head      Pointer to head gitem_link element of list.
- \param rm_elems  If TRUE, deallocates specified generate item.
-
  Deletes each element of the specified list.
 */
 void gitem_link_delete_list(
-  gitem_link* head,
-  bool        rm_elems
+  gitem_link* head,     /*!< Pointer to head gitem_link element of list */
+  bool        rm_elems  /*!< If TRUE, deallocates specified generate item */
 ) { PROFILE(GITEM_LINK_DELETE_LIST);
 
   gitem_link* tmp;  /* Temporary pointer to current link in list */
@@ -1299,11 +1269,11 @@ void gitem_link_delete_list(
 #endif /* VPI_ONLY */
 
 /*!
- \param head  Pointer to head inst_link element of list.
-
  Deletes each element of the specified list.
 */
-void inst_link_delete_list( inst_link* head ) { PROFILE(INST_LINK_DELETE_LIST);
+void inst_link_delete_list(
+  inst_link* head  /*!< Pointer to head inst_link element of list */
+) { PROFILE(INST_LINK_DELETE_LIST);
 
   inst_link* tmp;  /* Temporary pointer to current link in list */
 
@@ -1327,6 +1297,14 @@ void inst_link_delete_list( inst_link* head ) { PROFILE(INST_LINK_DELETE_LIST);
 
 /*
  $Log$
+ Revision 1.79.4.3  2008/08/07 18:03:51  phase1geo
+ Fixing instance exclusion segfault issue with GUI.  Also cleaned up function
+ documentation in link.c.
+
+ Revision 1.79.4.2  2008/08/06 20:11:34  phase1geo
+ Adding support for instance-based coverage reporting in GUI.  Everything seems to be
+ working except for proper exclusion handling.  Checkpointing.
+
  Revision 1.79.4.1  2008/07/10 22:43:52  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

@@ -25,84 +25,44 @@
 
 
 /*!
- \return  Pointer to newly created/initialized statistic structure.
-
  Allocates new memory for a coverage statistic structure and initializes
  its values.
 */
-statistic* statistic_create() { PROFILE(STATISTIC_CREATE);
+void statistic_create(
+  statistic** stat  /*!< Pointer to newly create/initialized statistic structure */
+) { PROFILE(STATISTIC_CREATE);
 
-  statistic* stat;   /* New statistic structure */
-
-  stat = (statistic*)malloc_safe( sizeof( statistic ) );
-
-  stat->line_total    = 0;
-  stat->line_hit      = 0;
-  stat->tog_total     = 0;
-  stat->tog01_hit     = 0;
-  stat->tog10_hit     = 0;
-  stat->tog_cov_found = FALSE;
-  stat->comb_total    = 0;
-  stat->comb_hit      = 0;
-  stat->state_total   = 0;
-  stat->state_hit     = 0;
-  stat->arc_total     = 0;
-  stat->arc_hit       = 0;
-  stat->assert_total  = 0;
-  stat->assert_hit    = 0;
-  stat->mem_ae_total  = 0;
-  stat->mem_wr_hit    = 0;
-  stat->mem_rd_hit    = 0;
-  stat->mem_tog_total = 0;
-  stat->mem_tog01_hit = 0;
-  stat->mem_tog10_hit = 0;
-  stat->show          = TRUE;
-
-  PROFILE_END;
-
-  return( stat );
-
-}
-
-/*!
- Adds the values of the stat_to structure to the contents of the
- stat_from structure.  The stat_from structure will then contain
- accumulated results.
-*/
-void statistic_merge(
-  statistic* stat_to,   /*!< Statistic structure to merge information into */
-  statistic* stat_from  /*!< Statistic structure to be merged */
-) { PROFILE(STATISTIC_MERGE);
-
-  stat_to->line_total   += stat_from->line_total;
-  stat_to->line_hit     += stat_from->line_hit;
-  stat_to->tog_total    += stat_from->tog_total;
-  stat_to->tog01_hit    += stat_from->tog01_hit;
-  stat_to->tog10_hit    += stat_from->tog10_hit;
-  stat_to->tog_cov_found = stat_from->tog_cov_found;
-  stat_to->comb_total   += stat_from->comb_total;
-  stat_to->comb_hit     += stat_from->comb_hit;
-  if( (stat_to->state_total != -1) && (stat_from->state_total != -1) ) {
-    stat_to->state_total += stat_from->state_total;
-  } else {
-    stat_to->state_total = -1;
+  if( *stat == NULL ) {
+    *stat = (statistic*)malloc_safe( sizeof( statistic ) );
   }
-  stat_to->state_hit   += stat_from->state_hit;
-  if( (stat_to->arc_total != -1) && (stat_from->arc_total != -1) ) {
-    stat_to->arc_total += stat_from->arc_total;
-  } else {
-    stat_to->arc_total = -1;
-  }
-  stat_to->arc_hit       += stat_from->arc_hit;
-  stat_to->assert_total  += stat_from->assert_total;
-  stat_to->assert_hit    += stat_from->assert_hit;
-  stat_to->mem_ae_total  += stat_from->mem_ae_total;
-  stat_to->mem_wr_hit    += stat_from->mem_wr_hit;
-  stat_to->mem_rd_hit    += stat_from->mem_rd_hit;
-  stat_to->mem_tog_total += stat_from->mem_tog_total;
-  stat_to->mem_tog01_hit += stat_from->mem_tog01_hit;
-  stat_to->mem_tog10_hit += stat_from->mem_tog10_hit;
-  stat_to->show          |= stat_from->show;
+
+  (*stat)->line_hit        = 0;
+  (*stat)->line_excluded   = 0;
+  (*stat)->line_total      = 0;
+  (*stat)->tog01_hit       = 0;
+  (*stat)->tog10_hit       = 0;
+  (*stat)->tog_excluded    = 0;
+  (*stat)->tog_total       = 0;
+  (*stat)->tog_cov_found   = FALSE;
+  (*stat)->comb_hit        = 0;
+  (*stat)->comb_excluded   = 0;
+  (*stat)->comb_total      = 0;
+  (*stat)->state_total     = 0;
+  (*stat)->state_hit       = 0;
+  (*stat)->arc_total       = 0;
+  (*stat)->arc_hit         = 0;
+  (*stat)->arc_excluded    = 0;
+  (*stat)->assert_hit      = 0;
+  (*stat)->assert_excluded = 0;
+  (*stat)->assert_total    = 0;
+  (*stat)->mem_wr_hit      = 0;
+  (*stat)->mem_rd_hit      = 0;
+  (*stat)->mem_ae_total    = 0;
+  (*stat)->mem_tog01_hit   = 0;
+  (*stat)->mem_tog10_hit   = 0;
+  (*stat)->mem_tog_total   = 0;
+  (*stat)->mem_excluded    = 0;
+  (*stat)->show            = TRUE;
 
   PROFILE_END;
 
@@ -155,6 +115,13 @@ void statistic_dealloc(
 
 /*
  $Log$
+ Revision 1.13.4.3  2008/08/07 06:39:11  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
+ Revision 1.13.4.2  2008/08/06 20:11:35  phase1geo
+ Adding support for instance-based coverage reporting in GUI.  Everything seems to be
+ working except for proper exclusion handling.  Checkpointing.
+
  Revision 1.13.4.1  2008/07/10 22:43:54  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

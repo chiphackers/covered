@@ -1,6 +1,8 @@
-set mem_name        ""
-set curr_memory_ptr ""
-set mem_curr_entry  ""
+set mem_name         ""
+set curr_memory_ptr  ""
+set mem_curr_entry   ""
+set memory_geometry  ""
+set memory_gui_saved 0
 
 proc display_memory {curr_index} {
 
@@ -29,18 +31,21 @@ proc display_memory {curr_index} {
 
 proc create_memory_window {signal} {
 
-  global memory_udim memory_pdim_str memory_pdim_array memory_array
+  global memory_udim memory_pdim memory_pdim_array memory_array memory_excluded
   global mem_name prev_memory_index next_memory_index
-  global curr_funit_name curr_funit_type
-  global curr_memory_ptr memory_pdim_str
+  global curr_block
+  global curr_memory_ptr
   global uncov_fgColor uncov_bgColor
   global cov_fgColor cov_bgColor
   global HOME
+  global memory_geometry memory_gui_saved
 
   set mem_name $signal
 
   # Now create the window and set the grab to this window
   if {[winfo exists .memwin] == 0} {
+
+    set memory_gui_saved 0
 
     # Create new window
     toplevel .memwin
@@ -56,17 +61,18 @@ proc create_memory_window {signal} {
     scrollbar .memwin.f.fae.hb -orient horizontal -command ".memwin.f.fae.t"
 
     # Create exclude checkbutton
-    checkbutton .memwin.f.fae.excl -text "Exclude" -variable memory_excluded -command {
-      tcl_func_set_memory_exclude $curr_funit_name $curr_funit_type $mem_name $memory_excluded
+    checkbutton .memwin.f.fae.excl -text "Excluded" -variable memory_excluded -command {
+      tcl_func_set_memory_exclude $curr_block $mem_name $memory_excluded
       set text_x [.bot.right.txt xview]
       set text_y [.bot.right.txt yview]
-      process_funit_memory_cov
+      process_memory_cov
       .bot.right.txt xview moveto [lindex $text_x 0]
       .bot.right.txt yview moveto [lindex $text_y 0]
       populate_listbox
       enable_cdd_save
       set_pointer curr_memory_ptr $curr_memory_ptr
     }
+    set_balloon .memwin.f.fae.excl "If set, excludes this entire memory from coverage consideration"
 
     # Pack the addressable memory elements frame
     grid rowconfigure    .memwin.f.fae 1 -weight 1
@@ -112,20 +118,20 @@ proc create_memory_window {signal} {
       rm_pointer curr_memory_ptr
       destroy .memwin
     }
-    button .memwin.bf.help -text "Help" -width 10 -command {
-      help_show_manual memory
-    }
+    help_button .memwin.bf.help chapter.gui.memory ""
     button .memwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -relief flat -command {
       display_memory $prev_memory_index
     }
+    set_balloon .memwin.bf.prev "Click to view the previous uncovered memory in this window"
     button .memwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -relief flat -command {
       display_memory $next_memory_index
     }
+    set_balloon .memwin.bf.next "Click to view the next uncovered memory in this window"
 
     # Pack the buttons into the button frame
     pack .memwin.bf.prev  -side left
     pack .memwin.bf.next  -side left
-    pack .memwin.bf.help  -side right -padx 8 -pady 4
+    pack .memwin.bf.help  -side right -pady 4
     pack .memwin.bf.close -side right -padx 8 -pady 4
 
     # Pack the upper frames
@@ -134,6 +140,20 @@ proc create_memory_window {signal} {
 
     pack .memwin.f  -fill both -expand yes
     pack .memwin.bf -fill x
+
+    # Set the geometry of the window if necessary
+    if {$memory_geometry != ""} {
+      wm geometry .memwin $memory_geometry
+    }
+
+    # Handle the destruction of this window
+    wm protocol .memwin WM_DELETE_WINDOW {
+      save_memory_gui_elements 0
+      destroy .memwin
+    }
+    bind .memwin <Destroy> {
+      save_memory_gui_elements 0
+    }
 
   }
 
@@ -150,16 +170,12 @@ proc create_memory_window {signal} {
   }
 
   # Get verbose memory information
-  set memory_udim       ""
-  set memory_pdim_str   "" 
-  set memory_pdim_array ""
-  set memory_array      ""
-  tcl_func_get_memory_coverage $curr_funit_name $curr_funit_type $signal
-
-  # puts "memory_pdim_str:    $memory_pdim_str"
-  # puts "memory_pdim_array:  $memory_pdim_array"
-  # puts "memory_udim:        $memory_udim"
-  # puts "memory_array:       $memory_array"
+  set memory_info       [tcl_func_get_memory_coverage $curr_block $signal]
+  set memory_udim       [lindex $memory_info 0]
+  set memory_pdim       [lindex $memory_info 1]
+  set memory_pdim_array [lindex $memory_info 2]
+  set memory_array      [lindex $memory_info 3]
+  set memory_excluded   [lindex $memory_info 4]
 
   #################################################
   # POPULATE THE ADDRESSABLE MEMORY ELEMENT TEXTBOX
@@ -246,7 +262,7 @@ proc create_memory_window {signal} {
   .memwin.f.fae.t configure -state disabled
 
   # Set the information bar in the toggle frame
-  .memwin.f.ft.info configure -text "$mem_name$memory_udim$memory_pdim_str"
+  .memwin.f.ft.info configure -text "$mem_name$memory_udim$memory_pdim"
 
   # Raise this window to the foreground
   raise .memwin
@@ -255,8 +271,7 @@ proc create_memory_window {signal} {
 
 proc populate_memory_entry_frame { sel_mem_index } {
 
-  global memory_array memory_pdim memory_udim mem_name
-  global memory_pdim_str
+  global memory_array memory_pdim memory_udim memory_pdim mem_name
   global memory_msb memory_lsb mem_curr_entry
   global uncov_bgColor uncov_fgColor
   global cov_bgColor cov_fgColor
@@ -314,7 +329,7 @@ proc populate_memory_entry_frame { sel_mem_index } {
 
   # Create leave bindings for textboxes
   bind .memwin.f.ft.t <Leave> {
-    .memwin.f.ft.info configure -text "$mem_name$mem_curr_entry$memory_pdim_str"
+    .memwin.f.ft.info configure -text "$mem_name$mem_curr_entry$memory_pdim"
   }
 
   # Add memory tags and bindings
@@ -333,7 +348,7 @@ proc populate_memory_entry_frame { sel_mem_index } {
     .memwin.f.ft.t xview moveto 1.0
   }
 
-  .memwin.f.ft.info configure -text "$mem_name$mem_curr_entry$memory_pdim_str"
+  .memwin.f.ft.info configure -text "$mem_name$mem_curr_entry$memory_pdim"
 
 }
 
@@ -388,3 +403,18 @@ proc clear_memory {} {
   destroy .memwin
 
 }
+
+# Saves the GUI elements from the memory window setup that should be saved
+proc save_memory_gui_elements {main_exit} {
+
+  global memory_geometry memory_gui_saved
+
+  if {$memory_gui_saved == 0} {
+    if {$main_exit == 0 || [winfo exists .memwin] == 1} {
+      set memory_gui_saved 1
+      set memory_geometry  [winfo geometry .memwin]
+    }
+  }
+
+}
+

@@ -62,10 +62,11 @@ int arc_find_arc(
 /*! \brief Calculates all state and state transition values for reporting purposes. */
 void arc_get_stats(
             const fsm_table* table,
-  /*@out@*/ int*             state_total,
   /*@out@*/ int*             state_hits,
+  /*@out@*/ int*             state_total,
+  /*@out@*/ int*             arc_hits,
   /*@out@*/ int*             arc_total,
-  /*@out@*/ int*             arc_hits
+  /*@out@*/ int*             arc_excluded
 );
 
 /*! \brief Writes specified arc array to specified CDD file. */
@@ -126,6 +127,9 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.28.2.2  2008/08/07 06:39:10  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
  Revision 1.28.2.1  2008/07/10 22:43:46  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

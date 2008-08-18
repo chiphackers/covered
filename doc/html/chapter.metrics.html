@@ -1,0 +1,278 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 2. Coverage Metrics</title><meta name="generator" content="DocBook XSL Stylesheets V1.74.0"><link rel="home" href="index.html" title="Covered"><link rel="up" href="part.overview.html" title="Part I. Overview"><link rel="prev" href="chapter.intro.html" title="Chapter 1. Introduction"><link rel="next" href="chapter.boundaries.html" title="Chapter 3. Coverage Boundaries"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 2. Coverage Metrics</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter.intro.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part I. Overview</th><td width="20%" align="right"> <a accesskey="n" href="chapter.boundaries.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.metrics"></a>Chapter 2. Coverage Metrics</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.metrics.html#id2731401">2.1. Line Coverage</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.metrics.html#id2731406">Description</a></span></dt><dt><span class="sect2"><a href="chapter.metrics.html#id2731428">Example</a></span></dt><dt><span class="sect2"><a href="chapter.metrics.html#id2731773">Recommendations</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.metrics.html#id2715233">2.2. Toggle Coverage</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.metrics.html#id2715238">Description</a></span></dt><dt><span class="sect2"><a href="chapter.metrics.html#id2715262">Example</a></span></dt><dt><span class="sect2"><a href="chapter.metrics.html#id2715315">Recommendations</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.metrics.html#id2715331">2.3. Memory Coverage</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.metrics.html#id2715337">Description</a></span></dt><dt><span class="sect2"><a href="chapter.metrics.html#id2715553">Recommendations</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.metrics.html#id2715571">2.4. Combinational Logic Coverage</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.metrics.html#id2715577">Description</a></span></dt><dt><span class="sect2"><a href="chapter.metrics.html#id2715596">Example</a></span></dt><dt><span class="sect2"><a href="chapter.metrics.html#id2715671">Recommendations</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.metrics.html#id2715692">2.5. Finite State Machine (FSM) Coverage</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.metrics.html#id2715697">Description</a></span></dt><dt><span class="sect2"><a href="chapter.metrics.html#id2715743">Example</a></span></dt><dt><span class="sect2"><a href="chapter.metrics.html#id2715908">Recommendations</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.metrics.html#section.metric.assert">2.6. Assertion Coverage</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.metrics.html#id2715937">Description</a></span></dt><dt><span class="sect2"><a href="chapter.metrics.html#id2715983">Recommendations</a></span></dt></dl></dd></dl></div><p>
+		Covered currently generates six types of code coverage metrics.
+		</p><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id2731401"></a>2.1. Line Coverage</h2></div></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2731406"></a>Description</h3></div></div></div><p>
+				  Line coverage simply answers the question, "Was this line of code executed during simulation?"
+				  </p><p>
+				  Covered will display the number of logical lines of code that exist in a particular file with the number of logical 
+				  lines that were executed during the simulation along with a percentage indicating the percentage of lines executed. 
+				  If verbose mode is selected for a report, Covered will display the lines of logic that were not executed during the 
+				  simulation run.
+				  </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2731428"></a>Example</h3></div></div></div><p>
+					 Suppose that the following module was specified in your DUT that is being analyzed:
+					 </p><p>
+						  </p><pre class="programlisting">
+  module test;
+
+    reg a, b, c;
+
+    initial begin
+      a = 0;    // Line 1
+      b = 1;    // Line 2
+      if( a )
+        c = b;  // Line 3
+      else
+        c = ~b; // Line 4
+    end
+
+  endmodule
+						  </pre><p>
+					 </p><p>
+					 If this code were simulated as stated, the simulator would execute lines 1 and 2, and due to the value assigned 
+					 to a, line 4 would be executed. This means that during execution, out of a possibility of 4 lines, only 3 were 
+					 executed. Therefore, Covered would state that for this module the line coverage percentage would be 75% (or 3 
+					 out of 4).
+					 </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2731773"></a>Recommendations</h3></div></div></div><p>
+					 For a design to pass full coverage, it is recommended that the line coverage for all modules in a design receive 
+					 100% coverage. If a line of logic is not executed during simulation, the design has not been fully exercised. Line 
+					 coverage is useful for determining holes in the test suite.
+					 </p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id2715233"></a>2.2. Toggle Coverage</h2></div></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2715238"></a>Description</h3></div></div></div><p>
+				  Toggle coverage answers the question, "Did this bit of this wire/register change from a value of zero (0) to one 
+				  (1) and back from one (1) to zero (0) during simulation?"
+				  </p><p>
+				  A bit is said to be fully covered when it toggles back and forth at least once. This metric does not indicate to 
+				  the user that every value of a multi-bit vector was seen. For example, if we have a two bit vector called "foo", 
+				  toggle coverage will not tell you that the value of foo was set to the values of 0, 1, 2 and 3. However, it will 
+				  tell you that all bits in that vector were toggled back and forth.
+				  </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2715262"></a>Example</h3></div></div></div><p>
+				  Suppose that a DUT was comprised of the following module:
+				  </p><p>
+				    </p><pre class="programlisting">
+  module test;
+
+    reg [2:0] a;
+
+    initial begin
+      a = 3'b0;
+      #10;
+      a = 3'b110;
+      #10;
+      a = 3'b010;
+      #10;
+    end
+
+  endmodule
+				    </pre><p>
+				  </p><p>
+				  The register called "a", after being simulated, would have achieved a total toggle percentage of 50% (or 3 out of 
+				  6). Can you see which toggles are missing?
+				  </p><p>
+				  Bit 0 has never toggled to 1 (and has never been at a value of 1 and toggled to 0); therefore, bit-0 has toggled 
+				  0% (0 out of 2). Bit 1 has toggled from a value of 0 to 1, but has not toggled from a value of 1 to 0; therefore, 
+				  bit-1 has toggled 50% (0 out of 2). Bit 2 is the only bit that has fully toggled, achieving a toggle percentage of 
+				  100% (2 out of 2). If you add all of the possible toggles to the number of achieved toggles, you end up with 3 out 
+				  of 6 (or 50% total toggle coverage).
+				  </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2715315"></a>Recommendations</h3></div></div></div><p>
+				  For a design to pass full coverage, it is recommended that the toggle coverage for all modules in a design received 
+				  100% coverage. If a bit is never changes value, it is usually an indication that a mode is not being exercised in 
+				  the design or a datapath has a stuck-at issue.
+				  </p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id2715331"></a>2.3. Memory Coverage</h2></div></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2715337"></a>Description</h3></div></div></div><p>
+      Memory coverage answers a number of questions about memories/multi-dimensional arrays being used in your design, including 
+      the following:
+      </p><p>
+        </p><div class="orderedlist"><ol type="1"><li><p>Did all bits of each addressable memory element toggle from 0 to 1?</p></li><li><p>Did all bits of each addressable memory element toggle from 1 to 0?</p></li><li><p>Did every addressable memory element get written?</p></li><li><p>Did every addressable memory element get read?</p></li></ol></div><p>
+      </p><p>
+      Memories/multi-dimensional arrays can have two types of dimensions, packed and unpacked. Packed dimensional information is 
+      specified to the left of an array declaration while unpacked dimensional information is specified to the right of an array 
+      declaration. Consider the following example:
+      </p><p>
+        </p><pre class="programlisting">
+  reg [3:0][2:0] foo[0:15];
+        </pre><p>
+      </p><p>
+      The memory "foo" consists of three dimensions. The first dimension is an unpacked dimension which specifies that there are 
+      16 addressable memory elements (AME). The number of AMEs are determined by multiplying the unpacked dimension of an array. 
+      The second two dimensions are packed dimensions, creating a total of 12 bits for each AME.
+      </p><p>
+      Other than getting toggle coverage information for each AME, memory coverage also allows us to easily see which AMEs were 
+      written and read during simulation. If all entries of a memory have not been written during a regression run, it could indicate 
+      several shortcomings of either the testbench or a logical problem with the write control logic, including, but not limited to, 
+      the following:
+      </p><p>
+        </p><div class="orderedlist"><ol type="1"><li><p>
+            If no AMEs for a given memory were written, it could indicate that the testsuite was never able to get out of bypass mode 
+            for that memory.
+            </p></li><li><p>
+            If fewer AMEs for a given memory were written than were read, it could indicate that there is a read controller issue leading 
+            to an underflow issue with the memory.
+            </p></li><li><p>
+            For memories that act like stacks or use lowest/highest address first write selection scheme, indicates that the memory was 
+            never completely filled (may miss out on things like buffer overflow errors).
+            </p></li><li><p>
+            For memories that are written in a round-robin fashion, indicates that either not enough entries were written (could miss a 
+            write pointer wrap bug) or that there is a logical issue by which the write pointer did not properly increment in a 
+            round-robin fashion.
+            </p></li><li><p>
+            If there are "holes" in the write coverage of the AMEs (that is an AME is found to not have been written while those above 
+            and below it have been), this could indicate a corner case logic bug or other testsuite issue that needs to be addressed.
+            </p></li></ol></div><p>
+      </p><p>
+      If all entries of a memory have not been read during a regression run, it could indicate several other shortcomings of either the
+      testbench or a logical problem with the read control logic, including, but not limited to, the following:
+      </p><p>
+        </p><div class="orderedlist"><ol type="1"><li><p>
+            If no AMEs for a given memory were read, it could indicate that the testsuite was never able to get out of bypass mode for 
+            that memory.
+            </p></li><li><p>
+            If fewer AMEs for a given memory were read than written, it could indicate that a resource allocation issue.
+            </p></li><li><p>
+            For memories that are written in a round-robin fashion, indicates that either not enough entries were read (could miss a 
+            read pointer wrap bug) or that there is a logical issue by which the read pointer did not properly increment in a 
+            round-robin fashion.
+            </p></li><li><p>
+            If there are "holes" in the read coverage of the AMEs (that is an AME is found to not have been read while those above and 
+            below it have been), this could indicate a corner case logic bug or other testsuite issue that needs to be addressed.
+            </p></li></ol></div><p>
+      </p><p>
+      Currently, Covered simulates all memories/multi-dimensional arrays and its coverage is automatically accumulated during the score 
+      command. To see its report information, either specify the -m m option to the report command or bring up the GUI for interactive 
+      analysis.
+      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2715553"></a>Recommendations</h3></div></div></div><p>
+      For a design to pass full coverage, it is recommended that the write/read memory coverage for all modules in a design receive 100% 
+      coverage. If every AME was not both written and read during simulation, the design has not been fully exercised. Toggle coverage 
+      per AME need not receive 100% since a memory element that is written once will not cause toggle coverage to change.
+      </p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id2715571"></a>2.4. Combinational Logic Coverage</h2></div></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2715577"></a>Description</h3></div></div></div><p>
+      Combinational logic coverage answers the question, "What values did an expression (or subexpression) evaluate to (or not evaluate 
+      to) during the course of the simulation?"
+      </p><p>
+      This type of coverage is extremely useful in determining logical combinations of signals that were not tried during simulation, 
+      exposing potential holes in verification.
+      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2715596"></a>Example</h3></div></div></div><p>
+      Suppose the DUT comprised of the following module:
+      </p><p>
+        </p><pre class="programlisting">
+  module test;
+
+    reg  a;
+    reg  b;
+    wire c;
+
+    initial begin
+      a = 1'b0;
+      b = 1'b1;
+      #10;
+      a = 1'b1;
+      #10;
+    end
+
+    assign c = a | b;
+
+  endmodule
+        </pre><p>
+      </p><p>
+      This module comprises of only one expression: a | b. If this module were simulated it would result in a combinational coverage 
+      value of 50% (2 out of 4). Can you determine which cases are not being covered?
+      </p><p>
+      The expression "a | b" can result in two values, 0 and 1, but can do so in four combinations:
+      </p><p>
+        </p><div class="orderedlist"><ol type="1"><li><p>a = 0, b = 0, c = 0</p></li><li><p>a = 0, b = 1, c = 1</p></li><li><p>a = 1, b = 0, c = 1</p></li><li><p>a = 1, b = 1, c = 1</p></li></ol></div><p>
+      </p><p>
+      Noticing the values assigned to a and b during simulation, shows that combinations (2) and (4) were hit during execution while 
+      combinations (1) and (3) were not (2 out of 4 - 50%). This also shows us that the value of c was never 0 during simulation.
+      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2715671"></a>Recommendations</h3></div></div></div><p>
+      For a design to pass full coverage, it is recommended that the combinational logic coverage for all modules be 80% or higher. 
+      If the expression coverage for an expression is not 100%, it is recommended that the verification engineer closely examine these 
+      missed cases to determine if more testing is required. Sometimes certain combinations of signals are unachievable due to design 
+      constraints, keeping the expression coverage from ever reaching a value of 100% but still can be considered fully covered.
+      </p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id2715692"></a>2.5. Finite State Machine (FSM) Coverage</h2></div></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2715697"></a>Description</h3></div></div></div><p>
+      Finite state machine (FSM) coverage answers the question, "Did I reach all of the states and traverse all possible paths through 
+      a given state machine?"
+      </p><p>
+      There are two types of coverage detail for FSMs that Covered can handle:
+      </p><p>
+        </p><div class="orderedlist"><ol type="1"><li><p>
+            State coverage - answers the question "Were all states of an FSM hit during simulation?"
+            </p></li><li><p>
+            State transition coverage - answers the question "Did the FSM transition between all states (that are achievable) in 
+            simulation?"
+            </p></li></ol></div><p>
+      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2715743"></a>Example</h3></div></div></div><p>
+      Suppose the DUT comprised of the following finite state machine:
+      </p><p>
+        </p><pre class="programlisting">
+          
+  module test( clock );
+  
+    input clock;
+
+    reg [1:0] state;
+    reg req, gnt;
+
+    parameter IDLE 2'b00;
+    parameter REQ  2'b01;
+    parameter WAIT 2'b10;
+    parameter GNT  2'b11;
+
+    initial begin
+      req = 1'b0;
+      gnt = 1'b0;
+      repeat(4) @(posedge clock);
+      req &lt;= 1'b1;
+      @(posedge clock);
+      req &lt;= 1'b0;
+      gnt &lt;= 1'b1;
+      @(posedge clock);
+      gnt &lt;= 1'b0;
+      repeat(2) @(posedge clock);
+    end
+
+    always @(posedge clock)
+      case( state )
+        IDLE : state &lt;= req ? REQ : IDLE;
+        REQ  : state &lt;= gnt ? GNT : WAIT;
+        WAIT : state &lt;= gnt ? GNT : WAIT;
+        GNT  : state &lt;= IDLE;
+        default : state &lt;= 2'bx;
+    endcase
+
+  endmodule
+          
+        </pre><p>
+      </p><p>
+      To help visualize this state machine, let's also display it as a digraph.
+      </p><p>
+        </p><div class="figure"><a name="figure.metrics.fsm"></a><p class="title"><b>Figure 2.1. Digraph Version of Example FSM</b></p><div class="figure-contents"><div class="mediaobject"><img src="img/fsm_example.png" alt="Digraph Version of Example FSM"></div></div></div><p><br class="figure-break">
+      </p><p>
+      This state machine has four states: IDLE, REQ, WAIT, GNT. During simulation, 75% of the states were hit 
+      (3 out of 4) including IDLE, REQ and GNT. You can see that the WAIT state was never hit during simulation 
+      since the gnt signal was asserted the clock period after the req signal asserted.
+      </p><p>
+      Additionally, this state machine contains 7 state "arcs" which are represented in the digraph as arrowed lines. 
+      They are the following:
+      </p><p>
+        </p><div class="orderedlist"><ol type="1"><li><pre class="programlisting">IDLE -&gt; IDLE  (HIT)</pre></li><li><pre class="programlisting">IDLE -&gt; REQ   (HIT)</pre></li><li><pre class="programlisting">REQ  -&gt; WAIT  (MISSED)</pre></li><li><pre class="programlisting">REQ  -&gt; GNT   (HIT)</pre></li><li><pre class="programlisting">WAIT -&gt; WAIT  (MISSED)</pre></li><li><pre class="programlisting">WAIT -&gt; GNT   (MISSED)</pre></li><li><pre class="programlisting">GNT  -&gt; IDLE  (HIT)</pre></li></ol></div><p>
+      </p><p>
+      Counting the number of traversed arcs during simulation, we can see that we have covered 4 out of 7 (or 57%) of 
+      the possible arcs in this state machine.
+      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2715908"></a>Recommendations</h3></div></div></div><p>
+      For a design to pass full coverage, it is recommended that the FSM coverage for all finite state machines in the 
+      design to receive 100% coverage for the state coverage and 100% for all achievable state transitions. Since Covered 
+      will not determine which state transitions are achievable, it is up to the verification engineer to examine the 
+      executed state transitions to determine if 100% of possible transitions occurred.
+      </p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.metric.assert"></a>2.6. Assertion Coverage</h2></div></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2715937"></a>Description</h3></div></div></div><p>
+      Assertion coverage answers the question, "Did I hit all of the possible coverage points of the assertions that I 
+      included in the design?"
+      </p><p>
+      Currently, Covered is capable of finding all OVL (Open Verification Language) assertion modules instantiated within 
+      the design (when the <span class="bold"><strong>-A ovl</strong></span> option has been specified to the score command). Within 
+      most OVL assertion modules are one or more built-in coverage points. When the user has specified a particular assertion 
+      instance to check for a coverage point, Covered simulates this assertion module, keeping track of which coverage 
+      points within the assertion have been hit during simulation (and how many times each coverage point has been hit) and 
+      which have not. This allows the user to check for more complex coverage scenarios within the design.
+      </p><p>
+      Currently, only <a class="ulink" href="http://www.accellera.org/activities/ovl" target="_top">OVL version 1.6</a> (and newer) are supported. 
+      Older versions of the OVL may not work and are not planned to be supported.
+      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2715983"></a>Recommendations</h3></div></div></div><p>
+      For a design to pass full coverage, it is recommended that the assertion coverage for all modules in a design receive 
+      100% coverage. If an assertion coverage point is not hit during simulation, the design has not been fully exercised. 
+      Assertion coverage is useful for determining more specific corner case holes in the test suite.
+      </p></div></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="chapter.intro.html"><img src="img/prev.gif" alt="Prev"></a> </td><td width="20%" align="center"><a accesskey="u" href="part.overview.html"><img src="img/up.gif" alt="Up"></a></td><td width="40%" align="right"> <a accesskey="n" href="chapter.boundaries.html"><img src="img/next.gif" alt="Next"></a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 1. Introduction </td><td width="20%" align="center"><a accesskey="h" href="index.html"><img src="img/home.gif" alt="Home"></a></td><td width="40%" align="right" valign="top"> Chapter 3. Coverage Boundaries</td></tr></table></div></body></html>

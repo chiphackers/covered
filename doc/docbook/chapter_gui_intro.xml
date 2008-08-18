@@ -1,0 +1,56 @@
+<chapter id="chapter.gui.intro" xreflabel="Introduction to the GUI">
+  <title>Introduction to the GUI</title>
+  <para>
+  The Covered report viewer GUI allows a user to view the coverage results from one or more CDD (Covered Design Database) files that have been previously 
+  generated using the Covered score and/or merge commands.  The advantages of using the GUI versus using an ASCII file to view coverage results are the 
+  following:
+  </para>
+  <para>
+    <orderedlist>
+      <listitem>
+        <para>
+        View code that is covered/uncovered within the actual source file text (more context)
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+        Quickly see which modules/instances were uncovered for each coverage metric.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+        Ability to hide/unhide verbose information for uncovered code.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+        Quickly find expressions that caused combinational logic cases to be uncovered.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+        Allows user to focus on a particular expression/signal/module/instance that is uncovered.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+        Non-useful coverage cases can be interactively excluded/included and summary information automatically recalculated.
+        </para>
+      </listitem>
+    </orderedlist>
+  </para>
+  <para>
+  Because the nature of a GUI interface is much more interactive than a generated text file report, the Covered report viewer is meant to provide the user a 
+  more in-depth look at the logic to identify the reasons for not achieving full coverage.  This is the ultimate goal of the GUI interface -- to be an 
+  interactive tool for identifying and understanding why full code coverage was not achieved and how to write tests that will cover those areas.
+  </para>
+  <para>
+  The GUI report viewer is invoked by specifying the '-view' option to the Covered report command.  The report viewer is part of the report command and is, 
+  therefore, not used to parse/score a design.  However, merging maytake place with the GUI as multiple CDD files may be read, merged (assumingall of the CDD 
+  files came from the same DUT) and saved in CDD file format.
+  </para>
+  <para>
+  The rest of the user manual pages describe the various widgets and windows of the GUI and their functionality.  Additionally, this user manual contains 
+  information on how to get the most out of the Covered GUI report viewer.
+  </para>
+</chapter>

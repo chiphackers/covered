@@ -37,13 +37,12 @@
 
 extern db**         db_list;
 extern unsigned int curr_db;
-
-extern bool   report_covered;
-extern bool   report_instance;
-extern char** leading_hierarchies;
-extern int    leading_hier_num;
-extern bool   leading_hiers_differ;
-extern isuppl info_suppl;
+extern bool         report_covered;
+extern bool         report_instance;
+extern char**       leading_hierarchies;
+extern int          leading_hier_num;
+extern bool         leading_hiers_differ;
+extern isuppl       info_suppl;
 
 
 /*!
@@ -51,12 +50,13 @@ extern isuppl info_suppl;
 */
 void memory_get_stat(
   vsignal*      sig,         /*!< Pointer to signal list to traverse for memories */
-  unsigned int* ae_total,    /*!< Pointer to total number of addressable elements */
   unsigned int* wr_hit,      /*!< Pointer to total number of addressable elements written */
   unsigned int* rd_hit,      /*!< Pointer to total number of addressable elements read */
-  unsigned int* tog_total,   /*!< Pointer to total number of bits in memories that can be toggled */
+  unsigned int* ae_total,    /*!< Pointer to total number of addressable elements */
   unsigned int* tog01_hit,   /*!< Pointer to total number of bits toggling from 0->1 */
   unsigned int* tog10_hit,   /*!< Pointer to total number of bits toggling from 1->0 */
+  unsigned int* tog_total,   /*!< Pointer to total number of bits in memories that can be toggled */
+  unsigned int* excluded,    /*!< Pointer to total number of excluded memory coverage points */
   bool          ignore_excl  /*!< If set to TRUE, ignores the current value of the excluded bit */
 ) { PROFILE(MEMORY_GET_STAT);
 
@@ -80,6 +80,7 @@ void memory_get_stat(
     if( (sig->suppl.part.excluded == 1) && !ignore_excl ) {
       (*wr_hit)++;
       (*rd_hit)++;
+      *excluded += 2;
     } else {
       wr = 0;
       rd = 0;
@@ -99,6 +100,7 @@ void memory_get_stat(
   if( (sig->suppl.part.excluded == 1) && !ignore_excl ) {
     *tog01_hit += sig->value->width;
     *tog10_hit += sig->value->width;
+    *excluded  += (sig->value->width * 2);
   } else {
     vector_toggle_count( sig->value, tog01_hit, tog10_hit );
   }
@@ -112,12 +114,13 @@ void memory_get_stat(
 */
 void memory_get_stats(
             sig_link*     sigl,       /*!< Pointer to signal list to traverse for memories */
-  /*@out@*/ unsigned int* ae_total,   /*!< Pointer to total number of addressable elements */
   /*@out@*/ unsigned int* wr_hit,     /*!< Pointer to total number of addressable elements written */
   /*@out@*/ unsigned int* rd_hit,     /*!< Pointer to total number of addressable elements read */
-  /*@out@*/ unsigned int* tog_total,  /*!< Pointer to total number of bits in memories that can be toggled */
+  /*@out@*/ unsigned int* ae_total,   /*!< Pointer to total number of addressable elements */
   /*@out@*/ unsigned int* tog01_hit,  /*!< Pointer to total number of bits toggling from 0->1 */
-  /*@out@*/ unsigned int* tog10_hit   /*!< Pointer to total number of bits toggling from 1->0 */
+  /*@out@*/ unsigned int* tog10_hit,  /*!< Pointer to total number of bits toggling from 1->0 */
+  /*@out@*/ unsigned int* tog_total,  /*!< Pointer to total number of bits in memories that can be toggled */
+  /*@out@*/ unsigned int* excluded    /*!< Pointer to total number of excluded memory coverage points */
 ) { PROFILE(MEMORY_GET_STATS);
 
   while( sigl != NULL ) {
@@ -125,7 +128,7 @@ void memory_get_stats(
     /* Calculate only for memory elements (must contain one or more unpacked dimensions) */
     if( (sigl->sig->suppl.part.type == SSUPPL_TYPE_MEM) && (sigl->sig->udim_num > 0) ) {
 
-      memory_get_stat( sigl->sig, ae_total, wr_hit, rd_hit, tog_total, tog01_hit, tog10_hit, FALSE );
+      memory_get_stat( sigl->sig, wr_hit, rd_hit, ae_total, tog01_hit, tog10_hit, tog_total, excluded, FALSE );
 
     }
 
@@ -138,64 +141,39 @@ void memory_get_stats(
 }
 
 /*!
- \return Returns TRUE if we were able to determine the summary information properly; otherwise,
-         returns FALSE to indicate that an error occurred.
-
  Retrieves memory summary information for a given functional unit made by a GUI request.
 */
-bool memory_get_funit_summary(
-            const char* funit_name,  /*!< Name of functional unit to find memories in */
-            int         funit_type,  /*!< Type of functional unit to find memories in */
-  /*@out@*/ int*        total,       /*!< Pointer to total number of memories in the given functional unit */
-  /*@out@*/ int*        hit          /*!< Pointer to number of memories that received 100% coverage of all memory metrics */
+void memory_get_funit_summary(
+            func_unit*    funit,     /*!< Pointer to found functional unit */
+  /*@out@*/ unsigned int* hit,       /*!< Pointer to number of memories that received 100% coverage of all memory metrics */
+  /*@out@*/ unsigned int* excluded,  /*!< Pointer to number of excluded memory coverage points */
+  /*@out@*/ unsigned int* total      /*!< Pointer to total number of memories in the given functional unit */
 ) { PROFILE(MEMORY_GET_FUNIT_SUMMARY);
 
-  bool         retval    = FALSE;  /* Return value for this function */
-  funit_link*  funitl;             /* Pointer to functional unit link containing the requested functional unit */
-  sig_link*    sigl;               /* Pointer to current signal link in list */
-  unsigned int ae_total  = 0;      /* Total number of addressable elements */
-  unsigned int wr_hit    = 0;      /* Number of addressable elements written */
-  unsigned int rd_hit    = 0;      /* Number of addressable elements read */
-  unsigned int tog_total = 0;      /* Total number of toggle bits */
-  unsigned int tog01_hit = 0;      /* Number of bits toggling from 0->1 */
-  unsigned int tog10_hit = 0;      /* Number of bits toggling from 1->0 */
-
-  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
-  
-    /* Initialize total and hit information */
-    *total = 0;
-    *hit   = 0;
-
-    retval = TRUE;
-    sigl   = funitl->funit->sig_head;
-
-    while( sigl != NULL ) {
-
-      /* Only evaluate a signal if it is a memory type */
-      if( sigl->sig->suppl.part.type == SSUPPL_TYPE_MEM ) {
-
-        /* Increment the total number */
-        (*total)++;
-
-        /* Figure out if this signal is 100% covered in memory coverage */
-        memory_get_stat( sigl->sig, &ae_total, &wr_hit, &rd_hit, &tog_total, &tog01_hit, &tog10_hit, FALSE );
-
-        if( (wr_hit > 0) && (rd_hit > 0) && (tog01_hit == tog_total) && (tog10_hit == tog_total) ) {
-          (*hit)++;
-        } 
-
-      }
-
-      sigl = sigl->next;
-
-    }
-    
-  }
+  *hit      = funit->stat->mem_wr_hit + funit->stat->mem_rd_hit + funit->stat->mem_tog01_hit + funit->stat->mem_tog10_hit;
+  *excluded = funit->stat->mem_excluded;
+  *total    = (funit->stat->mem_ae_total * 2) + (funit->stat->mem_tog_total * 2);
 
   PROFILE_END;
 
-  return( retval );
+}
 
+/*!
+ Retrieves memory summary information for a given functional unit instance made by a GUI request.
+*/
+void memory_get_inst_summary(
+            funit_inst*   inst,      /*!< Pointer to found functional unit instance */
+  /*@out@*/ unsigned int* hit,       /*!< Pointer to number of memories that received 100% coverage of all memory metrics */
+  /*@out@*/ unsigned int* excluded,  /*!< Pointer to number of excluded memory coverage points */
+  /*@out@*/ unsigned int* total      /*!< Pointer to total number of memories in the given functional unit instance */
+) { PROFILE(MEMORY_GET_INST_SUMMARY);
+
+  *hit      = inst->stat->mem_wr_hit + inst->stat->mem_rd_hit + inst->stat->mem_tog01_hit + inst->stat->mem_tog10_hit;
+  *excluded = inst->stat->mem_excluded;
+  *total    = (inst->stat->mem_ae_total * 2) + (inst->stat->mem_tog_total * 2);
+  
+  PROFILE_END; 
+  
 }
 
 /*!
@@ -399,14 +377,10 @@ static void memory_get_mem_coverage(
 }
 
 /*!
- \return Returns TRUE if the given signal was found and its memory coverage information properly
-         stored in the given pointers; otherwise, returns FALSE to indicate that an error occurred.
-
  Retrieves memory coverage information for the given signal in the specified functional unit.
 */
-bool memory_get_coverage(
-            const char* funit_name,   /*!< Name of functional unit containing the given signal */
-            int         funit_type,   /*!< Type of functional unit containing the given signal */
+void memory_get_coverage(
+            func_unit*  funit,        /*!< Pointer to functional unit */
             const char* signame,      /*!< Name of signal to find memory coverage information for */
   /*@out@*/ char**      pdim_str,     /*!< Pointer to string to store packed dimensional information */
   /*@out@*/ char**      pdim_array,   /*!< Pointer to string to store packed dimensional array */
@@ -415,151 +389,121 @@ bool memory_get_coverage(
   /*@out@*/ int*        excluded      /*!< Pointer to excluded indicator to store */
 ) { PROFILE(MEMORY_GET_COVERAGE);
 
-  bool         retval = FALSE;  /* Return value for this function */
-  funit_link*  funitl;          /* Pointer to found functional unit link */
-  sig_link*    sigl;            /* Pointer to found signal link */
-  unsigned int i;               /* Loop iterator */
-  char         tmp1[20];        /* Temporary string holder */
-  char         tmp2[20];        /* Temporary string holder */
+  sig_link*    sigl;      /* Pointer to found signal link */
+  unsigned int i;         /* Loop iterator */
+  char         tmp1[20];  /* Temporary string holder */
+  char         tmp2[20];  /* Temporary string holder */
+  unsigned int rv;        /* Return value */
 
-  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
+  sigl = sig_link_find( signame, funit->sig_head );
+  assert( sigl != NULL );
 
-    if( (sigl = sig_link_find( signame, funitl->funit->sig_head )) != NULL ) {
+  /* Allocate and populate the pdim_array and pdim_width parameters */
+  *pdim_array = (char*)malloc_safe( 1 );
+  (*pdim_array)[0] = '\0';
+  memory_create_pdim_bit_array( pdim_array, sigl->sig, "", sigl->sig->pdim_num );
 
-      unsigned int rv;
-
-      /* Allocate and populate the pdim_array and pdim_width parameters */
-      *pdim_array = (char*)malloc_safe( 1 );
-      (*pdim_array)[0] = '\0';
-      memory_create_pdim_bit_array( pdim_array, sigl->sig, "", sigl->sig->pdim_num );
-
-      /* Allocate and populate the pdim_str string */
-      *pdim_str = NULL;
-      for( i=sigl->sig->udim_num; i<(sigl->sig->pdim_num + sigl->sig->udim_num); i++ ) {
-        unsigned int slen;
-        rv = snprintf( tmp1, 20, "%d", sigl->sig->dim[i].msb );
-        assert( rv < 20 );
-        rv = snprintf( tmp2, 20, "%d", sigl->sig->dim[i].lsb );
-        assert( rv < 20 );
-        slen = strlen( tmp1 ) + strlen( tmp2 ) + 4;
-        *pdim_str = (char*)realloc_safe( *pdim_str, (strlen( *pdim_str ) + 1), slen );
-        if( i == sigl->sig->udim_num ) {
-          rv = snprintf( *pdim_str, slen, "[%s:%s]", tmp1, tmp2 );
-          assert( rv < slen );
-        } else {
-          strcat( *pdim_str, "[" );
-          strcat( *pdim_str, tmp1 );
-          strcat( *pdim_str, ":" );
-          strcat( *pdim_str, tmp2 );
-          strcat( *pdim_str, "]" );
-        }
-      }
-
-      /* Allocate and populate the udim_info string */
-      *udim_str = NULL;
-      for( i=0; i<sigl->sig->udim_num; i++ ) {
-        unsigned int slen;
-        rv = snprintf( tmp1, 20, "%d", sigl->sig->dim[i].msb );
-        assert( rv < 20 );
-        rv = snprintf( tmp2, 20, "%d", sigl->sig->dim[i].lsb );
-        assert( rv < 20 );
-        slen = strlen( tmp1 ) + strlen( tmp2 ) + 4;
-        *udim_str = (char*)realloc_safe( *udim_str, (strlen( *udim_str ) + 1), slen );
-        if( i == 0 ) {
-          rv = snprintf( *udim_str, slen, "[%s:%s]", tmp1, tmp2 );
-          assert( rv < slen );
-        } else {
-          strcat( *udim_str, "[" );
-          strcat( *udim_str, tmp1 );
-          strcat( *udim_str, ":" );
-          strcat( *udim_str, tmp2 );
-          strcat( *udim_str, "]" );
-        }
-      }
-
-      /* Populate the memory_info string */
-      *memory_info = (char*)malloc_safe( 1 );
-      (*memory_info)[0] = '\0';
-      memory_get_mem_coverage( memory_info, sigl->sig, 0, "", 0, sigl->sig->value->width );
-
-      /* Populate the excluded value */
-      *excluded = sigl->sig->suppl.part.excluded;
-      
-      retval = TRUE;
-
+  /* Allocate and populate the pdim_str string */
+  *pdim_str = NULL;
+  for( i=sigl->sig->udim_num; i<(sigl->sig->pdim_num + sigl->sig->udim_num); i++ ) {
+    unsigned int slen;
+    rv = snprintf( tmp1, 20, "%d", sigl->sig->dim[i].msb );
+    assert( rv < 20 );
+    rv = snprintf( tmp2, 20, "%d", sigl->sig->dim[i].lsb );
+    assert( rv < 20 );
+    slen = strlen( tmp1 ) + strlen( tmp2 ) + 4;
+    *pdim_str = (char*)realloc_safe( *pdim_str, (strlen( *pdim_str ) + 1), slen );
+    if( i == sigl->sig->udim_num ) {
+      rv = snprintf( *pdim_str, slen, "[%s:%s]", tmp1, tmp2 );
+      assert( rv < slen );
+    } else {
+      strcat( *pdim_str, "[" );
+      strcat( *pdim_str, tmp1 );
+      strcat( *pdim_str, ":" );
+      strcat( *pdim_str, tmp2 );
+      strcat( *pdim_str, "]" );
     }
-
   }
 
-  PROFILE_END;
+  /* Allocate and populate the udim_info string */
+  *udim_str = NULL;
+  for( i=0; i<sigl->sig->udim_num; i++ ) {
+    unsigned int slen;
+    rv = snprintf( tmp1, 20, "%d", sigl->sig->dim[i].msb );
+    assert( rv < 20 );
+    rv = snprintf( tmp2, 20, "%d", sigl->sig->dim[i].lsb );
+    assert( rv < 20 );
+    slen = strlen( tmp1 ) + strlen( tmp2 ) + 4;
+    *udim_str = (char*)realloc_safe( *udim_str, (strlen( *udim_str ) + 1), slen );
+    if( i == 0 ) {
+      rv = snprintf( *udim_str, slen, "[%s:%s]", tmp1, tmp2 );
+      assert( rv < slen );
+    } else {
+      strcat( *udim_str, "[" );
+      strcat( *udim_str, tmp1 );
+      strcat( *udim_str, ":" );
+      strcat( *udim_str, tmp2 );
+      strcat( *udim_str, "]" );
+    }
+  }
 
-  return( retval );
+  /* Populate the memory_info string */
+  *memory_info = (char*)malloc_safe( 1 );
+  (*memory_info)[0] = '\0';
+  memory_get_mem_coverage( memory_info, sigl->sig, 0, "", 0, sigl->sig->value->width );
+
+  /* Populate the excluded value */
+  *excluded = sigl->sig->suppl.part.excluded;
+  
+  PROFILE_END;
 
 }
 
 /*!
- \param funit_name  Name of functional unit to collect memories for
- \param funit_type  Type of functional unit to collect memories for
- \param cov         Set to 0 to get uncovered memories or 1 to get covered memories
- \param head        Pointer to head of signal list containing retrieved signals
- \param tail        Pointer to tail of signal list containing retrieved signals
-
- \return Returns TRUE if we were able to find the given functional unit; otherwise, returns
-         FALSE to indicate that an error occurred.
-
  Collects all signals that are memories and match the given coverage type and stores them
  in the given signal list.
 */
-bool memory_collect(
-            const char* funit_name,  /*!< Name of functional unit to collect memories for */
-            int         funit_type,  /*!< Type of functional unit to collect memories for */
-            int         cov,         /*!< Set to 0 to get uncovered memories or 1 to get covered memories */
-  /*@out@*/ sig_link**  head,        /*!< Pointer to head of signal list containing retrieved signals */
-  /*@out@*/ sig_link**  tail         /*!< Pointer to tail of signal list containing retrieved signals */
+void memory_collect(
+            func_unit* funit,  /*!< Pointer to functional unit */
+            int        cov,    /*!< Set to 0 to get uncovered memories or 1 to get covered memories */
+  /*@out@*/ sig_link** head,   /*!< Pointer to head of signal list containing retrieved signals */
+  /*@out@*/ sig_link** tail    /*!< Pointer to tail of signal list containing retrieved signals */
 ) { PROFILE(MEMORY_COLLECT);
 
-  bool         retval    = FALSE;  /* Return value for this function */
-  funit_link*  funitl;             /* Pointer to found functional unit link */
-  sig_link*    sigl;               /* Pointer to current signal link being evaluated */
-  unsigned int ae_total  = 0;      /* Total number of addressable elements */
-  unsigned int wr_hit    = 0;      /* Total number of addressable elements written */
-  unsigned int rd_hit    = 0;      /* Total number of addressable elements read */
-  unsigned int tog_total = 0;      /* Total number of toggle bits */
-  unsigned int hit01     = 0;      /* Number of bits that toggled from 0 to 1 */
-  unsigned int hit10     = 0;      /* Number of bits that toggled from 1 to 0 */
+  sig_link*    sigl;           /* Pointer to current signal link being evaluated */
+  unsigned int wr_hit    = 0;  /* Total number of addressable elements written */
+  unsigned int rd_hit    = 0;  /* Total number of addressable elements read */
+  unsigned int ae_total  = 0;  /* Total number of addressable elements */
+  unsigned int hit01     = 0;  /* Number of bits that toggled from 0 to 1 */
+  unsigned int hit10     = 0;  /* Number of bits that toggled from 1 to 0 */
+  unsigned int tog_total = 0;  /* Total number of toggle bits */
+  unsigned int excluded  = 0;  /* Number of excluded memory coverage points */
 
-  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
+  sigl = funit->sig_head;
 
-    sigl = funitl->funit->sig_head;
-    retval = TRUE;
+  while( sigl != NULL ) {
 
-    while( sigl != NULL ) {
+    if( sigl->sig->suppl.part.type == SSUPPL_TYPE_MEM ) {
 
-      if( sigl->sig->suppl.part.type == SSUPPL_TYPE_MEM ) {
-
-        ae_total = 0;
+      ae_total = 0;
    
-        memory_get_stat( sigl->sig, &ae_total, &wr_hit, &rd_hit, &tog_total, &hit01, &hit10, TRUE );
+      memory_get_stat( sigl->sig, &ae_total, &wr_hit, &rd_hit, &tog_total, &hit01, &hit10, &excluded, TRUE );
 
-        /* If this signal meets the coverage requirement, add it to the signal list */
-        if( ((cov == 1) && (wr_hit > 0) && (rd_hit > 0) && (hit01 == tog_total) && (hit10 == tog_total)) ||
-            ((cov == 0) && ((wr_hit == 0) || (rd_hit == 0) || (hit01 < tog_total) || (hit10 < tog_total))) ) {
+      /* If this signal meets the coverage requirement, add it to the signal list */
+      if( ((cov == 1) && (wr_hit > 0) && (rd_hit > 0) && (hit01 == tog_total) && (hit10 == tog_total)) ||
+          ((cov == 0) && ((wr_hit == 0) || (rd_hit == 0) || (hit01 < tog_total) || (hit10 < tog_total))) ) {
 
-          sig_link_add( sigl->sig, head, tail );
-
-        }
+        sig_link_add( sigl->sig, head, tail );
 
       }
 
-      sigl = sigl->next;
-
     }
+
+    sigl = sigl->next;
 
   }
 
   PROFILE_END;
-
-  return( retval );
 
 }
 
@@ -1314,6 +1258,13 @@ void memory_report(
 
 /*
  $Log$
+ Revision 1.29.2.3  2008/08/07 06:39:11  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
+ Revision 1.29.2.2  2008/08/06 20:11:34  phase1geo
+ Adding support for instance-based coverage reporting in GUI.  Everything seems to be
+ working except for proper exclusion handling.  Checkpointing.
+
  Revision 1.29.2.1  2008/07/10 22:43:52  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

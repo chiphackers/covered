@@ -1,0 +1,277 @@
+.TH "Covered" "1" "covered-20080731" "Trevor Williams" "Code Analysis"
+.SH "NAME"
+.LP 
+Covered \- Verilog Code Coverage Analyzer
+.SH "SYNTAX"
+.LP 
+\fBcovered\fR [<global_options>] score [<options>]
+.br 
+\fBcovered\fR [<global_options>] merge [<options>] <existing_database> <database_to_merge>+
+.br 
+\fBcovered\fR [<global_options>] report [<options>] <database_file>
+.br 
+\fBcovered\fR [<global_options>] rank [<options>] <database_to_rank> <database_to_rank>+
+.SH "DESCRIPTION"
+.LP 
+\fICovered\fR is a Verilog code coverage analysis tool that can be useful for determining how well a diagnostic test suite is covering the design under test. Covered reads in the Verilog design files and a VCD or LXT formatted dumpfile from a diagnostic run and generates a database file called a Coverage Description Database (CDD) file, using the score command. Covered's score command can alternatively be used to generate a CDD file and a Verilog module for using Covered as a VPI module in a testbench which can obtain coverage information in parallel with simulation (see \fIUSING COVERED AS A VPI MODULE\fR). The resulting CDD file can be merged with other CDD files from the same design to create accummulated coverage, using the merge command.  Once a CDD file is created, the user can use Covered to generate various human\-readable coverage reports in an ASCII format or use Covered's GUI to interactively look at coverage results, using the report command.  When multiple CDD files are created from the same design, the user may obtain a coverage ranking of those CDD files to determine an ideal order for regression testing as well as understand which CDD files can be excluded from regressions due to their inability to hit new coverage points.  Additionally, as part of Covered's score command, race condition possibilities are found in the design files and can be either ignored, flagged as warnings or flagged as errors.  By specifying race conditions as errors, Covered can also be used as a race condition checker.
+.SH "GLOBAL OPTIONS"
+.LP 
+These options are placed immediately after the keyword \fIcovered\fR in the command\-line.  They can be used for any command (with the exception of \fI\-v\fR and \fI\-h\fR) and have the same effect in each case.
+.TP 
+\fB\-B\fR
+Obfuscate.  Obfuscates all design\-sensitive names before outputting in user\-readable format.  This option is useful when sharing output with the developers of Covered for debugging purposes.
+.TP 
+\fB\-D\fR
+Debug.  Display information helpful for debugging tool problems.  Note:  This option is now only available when covered is built with the \-\-enable\-debug configuration option.
+.TP 
+\fB\-h\fR
+Help.  Display this usage information.
+.TP 
+\fB\-P\fR [\fIfilename\fR]
+Profiling mode.  Turns on internal source code profiler that will produce a profiling report of the run command to either the specified \fIfilename\fR or, if no \fIfilename\fR is present, to a file called \fIcovered.prof\fR.  This option is only available if the \fI\-\-enable\-profiling\fR configuration option was specified when Covered was built.
+.TP 
+\fB\-Q\fR
+Quiet mode.  Causes all output to be suppressed.
+.TP 
+\fB\-v\fR
+Version.  Display current Covered version.
+.SH "COMMANDS"
+.LP 
+.TP 
+\fBscore\fR
+Parses Verilog files and VCD/LXT dumpfiles to create database file used for merging and reporting.
+.TP 
+\fBmerge\fR
+Merges two or more database files into one.
+.TP 
+\fBreport\fR
+Generates human\-readable coverage reports from database file or starts the coverage report GUI.
+.TP 
+\fBrank\fR
+Generates a report that specifies an ideal order to run regressions and specifies CDD files that do not add new coverage information (and can, therefore, be excluded from regressions, if desired).
+.SH "SCORE COMMAND"
+.LP 
+The following options are valid for the score command:
+.TP 
+\fB\-A ovl\fR
+Causes OVL assertions to be used for assertion coverage.  This flag must be given to the score command if assertion coverage metrics are needed in the report command.
+.TP 
+\fB\-cdd\fR \fIdatabase</R>
+Same as the \-o option.
+.TP 
+\fB\-cli\fR [\fIfilename\fR]
+Causes the command\-line debugger to be used during VCD/LXT dumpfile scoring.  If \fIfilename\fR is specified, this file contains information saved in a previous call to savehist on the CLI and causes the history contained in this file to be replayed prior to the CLI command prompt.  If \fIfilename\fR is not specified, the CLI prompt will be immediately available at the start of simulation.  This option is only available when Covered is configured with the \fI\-\-enable\-debug\fR option.
+.TP 
+\fB\-D\fR \fIdefine_name\fR
+Defines the specified name to 1.
+.TP 
+\fB\-D\fR \fIdefine_name=value\fR
+Defines the specified name to the specified value.
+.TP 
+\fB\-e\fR \fIblock_name\fR
+Name of module, task, function or named begin/end block to not score.  Causes all subblocks in the Verilog tree under this block to also not be scored.
+.TP 
+\fB\-ea\fR
+Excludes all always blocks from being considered for coverage.
+.TP 
+\fB\-ec\fR
+Excludes all continuous assignments from being considered for coverage.
+.TP 
+\fB\-ei\fR
+Excludes all initial blocks from being considered for coverage.
+.TP 
+\fB\-ef\fR
+Excludes all final blocks from being considered for coverage.
+.TP 
+\fB\-ep\fR [\fIname\fR]
+Excludes all code found between '// coverage off' and '// coverage on' pragmas embedded within the design.  If \fIname\fR is specified, the keyword in the pragma will be changed to that name instead of the default "coverage", allowing the user to change the look of the pragma if it conflicts with any other tools.
+.TP 
+\fB\-F\fR \fImodule_name=[in_expr,]out_expr\fR
+Indicates to the parser where to find the FSM located in module \fImodule_name\fR which has an input state expression called \fIin_expr\fR and output state expression called \fIout_expr\fR.  If \fIin_expr\fR is not specified, \fIout_expr\fR is used as both the input and output state expression.
+.TP 
+\fB\-f\fR \fIfilename\fR
+Name of file containing additional arguments to parse.
+.TP 
+\fB\-g\fR \fI[module_name=](1|2|3)\fR
+Allows the user to limit the parser to a specific generation of the Verilog standard for a specific module or the entire design, where 1=Verilog\-1995, 2=Verilog\-2001, 3=SystemVerilog.  If \fImodule_name=\fR is specified, the parser uses the specified Verilog standard for that module only, allowing the rest of the design to use the global standard.  By default, the global standard is set to the most recent version (3).  This option can be specified more than once for a given call to the score command; however, if the \-g option specifies more than global value (i.e., without the \fImodule=\fR prefix), only the last option value will be used.
+.TP 
+\fB\-h\fR
+Displays this help information.
+.TP 
+\fB\-I\fR \fIdirectory\fR
+Directory to find included Verilog files.
+.TP 
+\fB\-i\fR \fIinstance_name\fR
+Verilog hierarchical reference to the module that is at the top of the tree to be scored.  This option is necessary if module to verify coverage is not the top\-level module in the design.  If not specified, \fI\-t\fR value is used.
+.TP 
+\fB\-lxt\fR \fIfilename\fR
+Name of LXT/LXT2 dumpfile to score design with.  If this or the \-vcd option is not used, Covered will only create an initial CDD file from the design and will not attempt to score the design.
+.TP 
+\fB\-m\fR \fImessage\fR
+Allows the user to specify information about this CDD file.  This information can be anything (messages with whitespace should be surrounded by double\-quotation marks), but may include something about the simulation arguments to more easily link the CDD file to its simulation for purposes of recreating the CDD file.
+.TP 
+\fB\-o\fR \fIdatabase\fR
+Name of database to write coverage information to.  If not specified, the output database filename will be "cov.cdd".
+.TP 
+\fB\-p\fR \fIfilename\fR
+Overrides default filename used to store intermediate preprocessor output.
+.TP 
+\fB\-P\fR \fIparameter_scope=value\fR
+Performs a defparam on the specified parameter with value.
+.TP 
+\fB\-r(S|W|E|I|P[=\fIname\fR])\fR
+Specifies action to take when race condition checking finds problems in design (\-rS = Silent, \-rW = Warning, \-rE = Error, \-rI = Ignore race condition checking step, \-rP = Use embedded pragmas for ignoring certain code from race condition checking consideration [if \fIname\fR is specified it is used as the pragma keyword]).  See user documentation for more information about race condition checking usage.
+.TP 
+\fB\-S\fR
+Outputs simulation statistics after simulation has completed.  This information is currently only useful for the developers of Covered.
+.TP 
+\fB\-t\fR \fItop\-level module\fR
+Specifies the module name of the top\-most module that will be measured.  Note that this module does not need to be the top\-most module in the simulator.  This field is required for all calls to the score command.
+.TP 
+\fB\-ts\fR \fInumber\fR
+When scoring occurs, this option allows the user to see how far the simulator has progressed by outputting the current timestep to standard output. The value of \fInumber\fR specifies how many timesteps are allowed to be simulated before outputting the current timestep (results in less calls to output stream).
+.TP 
+\fB\-T (min|typ|max)\fR
+Specifies which value to use when encountering a delay expression in the form:  min:typ:max.  If this option is not specified, 'typ' select is used by default.
+.TP 
+\fB\-v\fR \fIfilename\fR
+Name of specific Verilog file to score.
+.TP 
+\fB\-vcd\fR \fIfilename\fR
+Name of VCD dumpfile to score design with.  If this or the \-lxt option is not used, Covered will only create an initial CDD file from the design and will not attempt to score the design.
+.TP 
+\fB\-vpi\fR [\fIfilename\fR]
+If this option is specified without the \-vcd or \-lxt options, the design is parsed, a CDD file is created and a top\-level Verilog module named \fIfilename\fR (if this value is specified) or "covered_vpi.v" (if \fIfilename\fR is not specified) is created along with a PLI table file called \fIfilename\fR.ta b or "covered_vpi.v.ta b".  Both of these files are used in the compilation of the simulator to use Covered as a VPI module.  If either the \-vcd or \-lxt options are specified, this option has no effect.
+.TP 
+\fB\-vpi_ts\fR \fItimescale\fR
+This option is only valid when the \-vpi option has been specified.  This option allows the user to specify a timescale for the generated Verilog module created with the \-vpi option.  If this option is not specified, no timescale will be created for the generated module.  The value of \fItimescale\fR is specified as follows:
+.IP 
+\fB(1|10|100)(s|ms|us|ns|ps|fs)/(1|10|100)(s|ms|us|ns|ps|fs)\fR
+.IP 
+If whitespace is needed between the various values, place the entire contents of \fItimescale\fR in double quotes.
+.TP 
+\fB\-y\fR \fIdirectory\fR
+Directory to find unspecified Verilog files.
+.TP 
+\fB+libext+\fR\fI.extension\fR[\fB+\fR\fI.extension\fR]*\fB+\fR\fR
+Extensions of Verilog files to allow in scoring.
+.SH "MERGE COMMAND"
+.LP 
+The following options are valid for the merge command:
+.TP 
+\fB\-d\fR \fIfilename\fR
+Directory to search for CDD files to include.  This option is used in conjunction with the \fB\-ext\fR option which specifies the file extension to use for determining which files in the directory are CDD files.
+.TP 
+\fB\-ext\fR \fIextension\fR
+Used in conjunction with the \fB\-d\fR option.  If no \fB\-ext\fR options are specified on the command\-line, the default value of '.cdd' is used.  Note that a period (.) should be specified.
+.TP 
+\fB\-f\fR \fIfilename\fR
+Name of file containing additional arguments to parse.
+.TP 
+\fB\-h\fR
+Displays this help information.
+.TP 
+\fB\-o\fR \fIfilename\fR
+File to output new database to.  If this argument is not specified, the \fIexisting_database\fR is used as the output database name.
+.SH "REPORT COMMAND"
+.LP 
+The following options are valid with the report command:
+.TP 
+\fB\-b\fR
+If combinational logic verbose output is reported and the expression is a vector operation, this option outputs the coverage information on a bitwise basis.
+.TP 
+\fB\-c\fR
+If \fI\-v\fR is specified, displays covered metrics only.  Default is to display uncovered information only.
+.TP 
+\fB\-d\fR \fI(s|d|v)\fR
+Level of detail to provide in coverage report information (s = summary, d = detailed, v = verbose).  Default is summary.
+.TP 
+\fB\-f\fR \fIfilename\fR
+Name of file containing additional arguments to parse.
+.TP 
+\fB\-h\fR
+Displays this help information.
+.TP 
+\fB\-i\fR
+Provides coverage information for instances instead of module.
+.TP 
+\fB\-m\fR \fI[l][t][c][f][r][a][m]\fR
+Type(s) of metrics to report.  l=line, t=toggle, c=combinational logic, f=FSM state and state transition, r=race conditions, a=assertion, m=memory.  Default is \fIltcf\fR.
+.TP 
+\fB\-o\fR \fIfilename\fR
+File to output report information to.  Default is standard output.
+.TP 
+\fB\-s\fR
+Suppresses modules/instances that contain no coverage information from being output to the report.  Used to help eliminate potentially meaningless information from the report.
+.TP 
+\fB\-v\fR
+Deprecated.  Replaced by '\-d d' or '\-d v'.
+.TP 
+\fB\-view\fR
+Starts the GUI interface for interactive coverage reporting.
+.TP 
+\fB\-w (\fR\fInumber\fR\fB)\fR
+Specifies the maximum line width (in characters) that can be used to output Verilog information.  If this option is not specified, all Verilog code in the report will retain the same formatting as was specified in the original Verilog code.  If this option is specified, Verilog code will be formatted to use as much of the current line as possible, wrapping text when the line reaches the maximum line width.  The default maximum line width is 115 characters (this value is used if no number is specified with the \-w option).  If a number is specified with the \-w option, this value is used for the maximum line width.
+.SH "RANK COMMAND"
+.LP 
+The following options are valid with the rank command:
+.TP 
+\fB\-d\fR \fIfilename\fR
+Directory to search for CDD files to include.  This option is used in conjunction with the \fB\-ext\fR option which specifies the file extension to use for determining which files in the directory are CDD files.
+.TP 
+\fB\-depth\fR \fInumber\fR
+Specifies the minimum number of needed CDD files to hit each coverage point.  The value of \fInumber\fR should be greater than zero.  Default is 1.
+.TP 
+\fB\-ext\fR \fIextension\fR
+Used in conjunction with the \fB\-d\fR option.  If no \fB\-ext\fR options are specified on the command\-line, the default value of '.cdd' is used.  Note that a period (.) should be specified.
+.TP 
+\fB\-f\fR \fIfilename\fR
+Name of file containing additional arguments to parse.
+.TP 
+\fB\-h\fR
+Displays help information for the rank command.
+.TP 
+\fB\-names\-only\fR
+If specified, outputs only the needed CDD filenames that need to be run in the order they need to be run.  If this option is not set, a report\-style output is provided with additional information.  This option is meant to be useful in scripts that only want CDD filenames to run as output.
+.TP 
+\fB\-o\fR \fIfilename\fR
+Name of file to output ranking information to.  Default is standard output.
+.TP 
+\fB\-weight\-assert\fR \fInumber\fR
+Specifies a relative weighting for assertion coverage used to rank non\-unique coverage points.  The value of \fInumber\fR is relative to the values used in the \fB\-weight\-toggle\fR, \fB\-weight\-memory\fR, \fB\-weight\-comb\fR, \fB\-weight\-fsm\fR and \fB\-weight\-line\fR rank command options.
+.TP 
+\fB\-weight\-comb\fR \fInumber\fR
+Specifies a relative weighting for combinational logic coverage used to rank non\-unique coverage points.  The value of \fInumber\fR is relative to the values used in the \fB\-weight\-toggle\fR, \fB\-weight\-memory\fR, \fB\-weight\-assert\fR, \fB\-weight\-fsm\fR and \fB\-weight\-line\fR rank command options.
+.TP 
+\fB\-weight\-fsm\fR \fInumber\fR
+Specifies a relative weighting for FSM state and state transition coverage used to rank non\-unique coverage points.  The value of \fInumber\fR is relative to the values used in the \fB\-weight\-toggle\fR, \fB\-weight\-memory\fR, \fB\-weight\-comb\fR, \fB\-weight\-assert\fR and \fB\-weight\-line\fR rank command options.
+.TP 
+\fB\-weight\-line\fR \fInumber\fR
+Specifies a relative weighting for line coverage used to rank non\-unique coverage points.  The value of \fInumber\fR is relative to the values used in the \fB\-weight\-toggle\fR, \fB\-weight\-memory\fR, \fB\-weight\-comb\fR, \fB\-weight\-fsm\fR and \fB\-weight\-assert\fR rank command options.
+.TP 
+\fB\-weight\-memory\fR \fInumber\fR
+Specifies a relative weighting for memory coverage used to rank non\-unique coverage points.  The value of \fInumber\fR is relative to the values used in the \fB\-weight\-toggle\fR, \fB\-weight\-line\fR, \fB\-weight\-comb\fR, \fB\-weight\-fsm\fR and \fB\-weight\-assert\fR rank command options.
+.TP 
+\fB\-weight\-toggle\fR \fInumber\fR
+Specifies a relative weighting for toggle coverage used to rank non\-unique coverage points.  The value of \fInumber\fR is relative to the values used in the \fB\-weight\-memory\fR, \fB\-weight\-line\fR, \fB\-weight\-comb\fR, \fB\-weight\-fsm\fR and \fB\-weight\-assert\fR rank command options.
+.SH "USING COVERED AS A VPI MODULE"
+.TP 
+In addition to using Covered's score command to parse a VCD or LXT file to abstract coverage information, Covered may also be used as a VPI module within a simulator to extract this information.  The advantages to using Covered as a VPI over a dumpfile reader include the following.  First, VCD files can be extrememly large, especially for long simulations, using up valuable disk space.  Second, if you are using a simulator that dumps files in a different format than VCD or LXT and you want to convert these dump file types to one of these versions, the cost of disk space and time can make creating dumpfiles that Covered requires undesirable.  Additionally, though using Covered as a VPI module will slow down your simulation speed, it is most likely that the total time spent simulating your design and scoring the design in one step will be shorter than doing so in two steps.  As a result, Covered's configure utility can generate VPI\-ready libraries for the following free and commercial simulators (Icarus Verilog, CVER and VCS).
+.TP 
+To automatically build the VPI\-ready library files when generating Covered from source, simply specify one or more of the following when running the "configure" utility in the base Covered directory:  \-\-with\-iv=<Icarus Verilog install path>, \-\-with\-vcs=<VCS include path>, \-\-with\-cver=<CVER include path>.  After Covered has been configured, simply type 'make' and 'make install'.  This will install the VPI\-ready library files in the installation libexec directory (by default this path will be /usr/local/libexec).
+.TP 
+Before you are ready to compile the design, you must first create a CDD file, a top\-level Verilog file, and a PLI table file (the last file is only needed for the VCS compiler).  This is done by specifying the \fB\-vpi\fR  (\fIfilename\fR) option to Covered's score command.  If no filename is specified after \-vpi, the files covered_vpi.v and covered_vpi.ta b will be created along with the generated coverage file.  Note that this step only needs to be performed once unless the design files change.  You are now ready to compile the simulator.
+.TP 
+If you are compiling an Icarus Verilog simulation, simply add '\-m /usr/local/libexec/covered.vpi covered_vpi.v' to the 'iverilog' command\-line.  Once compilation is complete, run the generated executable file as you normally would.
+.TP 
+If you are compiling a CVER simulation, simply add '+loadvpi=/usr/local/libexec/covered.cver.so:vpi_compat_bootstrap covered_vpi.v' to the 'cver' command\-line.
+.TP 
+If you are compiling a VCS simulation, simply add '+vpi \-load /usr/local/libexec/covered.vcs.so:covered_register covered_vpi.v' to the 'vcs' command\-line.  Once compilation is complete, run the generated executable file as you normally would.
+.TP 
+There are two plusargs that can be passed to the generated executable when it is run that Covered will parse.  The '+covered_cdd=<filename>' option will cause Covered to output the scored design contents to the CDD file specified by <filename>.  This allows multiple runs of the simulator to generate several different CDD files without needed a recompile to occur.  The '+covered_debug' option will cause Covered to dump a lot of excessive output about its internal run\-time state during simulation.  This output will only be generated if Covered was configured with the \-\-enable\-debug option.  This plusarg option should not be used by regular users as it is primarily intended to aid the developers of Covered in debugging.
+.SH "AUTHORS"
+.LP 
+Trevor Williams <phase1geo@gmail.com>
+.SH "SEE ALSO"
+.LP 
+For more information on how to use the Covered code coverage tool, please consult the User's Guide included with this release at /usr/local/share/covered/doc/user/index.html.

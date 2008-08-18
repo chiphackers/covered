@@ -5,7 +5,11 @@
 ##################################
 
 # Global variables (eventually we will want to get/save these to a configuration file!)
+set main_geometry           ""
 set show_wizard             true
+set save_gui_on_exit        false
+set show_tooltips           true
+set saved_gui               0
 set uncov_fgColor           blue
 set uncov_bgColor           yellow
 set cov_fgColor             black
@@ -25,6 +29,9 @@ set vlog_hl_comment_color   blue
 set vlog_hl_value_color     red
 set vlog_hl_string_color    red
 set vlog_hl_symbol_color    coral
+set mod_inst_tl_width       ""
+set mod_inst_tl_columns     {0 {Instance Name} 0 {Module Name} 0 {Hit} right 0 {Miss} right 0 {Excluded} right 0 {Total} right 0 {Hit %} right 0 {Index}}
+set mod_inst_tl_init_hidden {1 0 0 0 0 0 0}
 set rc_file_to_write        ""
 set hl_mode                 0
 set last_pref_index         -1
@@ -36,7 +43,7 @@ for {set i 100} {$i >= 0} {incr i -1} {
 
 proc read_coveredrc {} {
 
-  global show_wizard
+  global show_wizard save_gui_on_exit show_tooltips
   global uncov_fgColor uncov_bgColor
   global cov_fgColor   cov_bgColor
   global race_fgColor  race_bgColor
@@ -45,6 +52,8 @@ proc read_coveredrc {} {
   global vlog_hl_comment_color vlog_hl_string_color vlog_hl_value_color
   global vlog_hl_symbol_color
   global HOME USER_HOME rc_file_to_write
+  global main_geometry toggle_geometry memory_geometry comb_geometry fsm_geometry assert_geometry
+  global mod_inst_tl_columns mod_inst_type mod_inst_tl_init_hidden mod_inst_tl_width
 
   # Find the correct configuration file to read and eventually write
   if {[file exists ".coveredrc"] == 1} {
@@ -67,16 +76,22 @@ proc read_coveredrc {} {
 
     while {[eof $rc] == 0} {
 
-      # Parse string here
-      set line_elems [split [gets $rc]]
+      set line [gets $rc]
 
-      if {[lindex $line_elems 1] == "="} {
+      # If the line is not a comment and contains an equal sign, parse it for information
+      if {[string index $line 0] != "\#" && [string first "=" $line] != -1} {
 
-        set field [lindex $line_elems 0]
-        set value [lindex $line_elems 2]
+        # Parse string here
+        set line_elems [split $line =]
+        set field      [string trim [lindex $line_elems 0]]
+        set value      [string trim [lindex $line_elems 1]]
 
         if {$field == "ShowWizardOnStartup"} {
           set show_wizard $value
+        } elseif {$field == "SaveGuiOnExit"} {
+          set save_gui_on_exit $value
+        } elseif {$field == "ShowTooltips"} {
+          set show_tooltips $value
         } elseif {$field == "UncoveredForegroundColor"} {
           set uncov_fgColor $value
         } elseif {$field == "UncoveredBackgroundColor"} {
@@ -115,6 +130,30 @@ proc read_coveredrc {} {
           set vlog_hl_string_color $value
         } elseif {$field == "HighlightSymbolColor"} {
           set vlog_hl_symbol_color $value
+
+        # The following are GUI state-saved information -- only use this information if SaveGuiOnExit was set to true
+        } elseif {$save_gui_on_exit == "true"} {
+          if {$field == "MainWindowGeometry"} {
+            set main_geometry $value
+          } elseif {$field == "ToggleWindowGeometry"} {
+            set toggle_geometry $value
+          } elseif {$field == "MemoryWindowGeometry"} {
+            set memory_geometry $value
+          } elseif {$field == "CombWindowGeometry"} {
+            set comb_geometry $value
+          } elseif {$field == "FsmWindowGeometry"} {
+            set fsm_geometry $value
+          } elseif {$field == "AssertWindowGeometry"} {
+            set assert_geometry $value
+          } elseif {$field == "ModuleInstanceType"} {
+            set mod_inst_type $value
+          } elseif {$field == "ModuleInstanceTableListWidth"} {
+            set mod_inst_tl_width $value
+          } elseif {$field == "ModuleInstanceTableListColumns"} {
+            set mod_inst_tl_columns [split $value :]
+          } elseif {$field == "ModuleInstanceTableListInitHidden"} {
+            set mod_inst_tl_init_hidden [split $value :]
+          }
         }
 
       }
@@ -127,9 +166,9 @@ proc read_coveredrc {} {
 
 }
 
-proc write_coveredrc {} {
+proc write_coveredrc {exiting} {
 
-  global show_wizard
+  global show_wizard save_gui_on_exit show_tooltips
   global uncov_fgColor uncov_bgColor
   global cov_fgColor   cov_bgColor
   global race_fgColor  race_bgColor
@@ -138,6 +177,8 @@ proc write_coveredrc {} {
   global vlog_hl_comment_color vlog_hl_string_color vlog_hl_value_color
   global vlog_hl_symbol_color
   global rc_file_to_write
+  global mod_inst_tl_columns mod_inst_type tableColHide
+  global main_geometry toggle_geometry memory_geometry comb_geometry fsm_geometry assert_geometry
 
   if {$rc_file_to_write != ""} {
 
@@ -153,6 +194,17 @@ proc write_coveredrc {} {
     puts $rc "# If set to false, the wizard window is suppressed.\n"
 
     puts $rc "ShowWizardOnStartup = $show_wizard\n"
+
+    puts $rc "# If set to true, causes various GUI elements to be saved when exiting the application"
+    puts $rc "# which will be used when the application is restarted at a later time.  Set to false"
+    puts $rc "# to cause the Covered GUI to use the default values.\n"
+
+    puts $rc "SaveGuiOnExit = $save_gui_on_exit\n"
+
+    puts $rc "# If set to true, causes tooltips to be used for many widgets within the GUI.  If set"
+    puts $rc "# to false, causes all tooltip support to be disabled."
+
+    puts $rc "ShowTooltips = $show_tooltips\n"
 
     puts $rc "# Sets the foreground color for all source code that is found"
     puts $rc "# to be uncovered during simulation.  The value can be any legal color"
@@ -270,6 +322,27 @@ proc write_coveredrc {} {
 
     puts $rc "HighlightSymbolColor = $vlog_hl_symbol_color\n"
 
+    puts $rc "# THE FOLLOWING LINES ARE FOR STORING GUI STATE INFORMATION -- DO NOT MODIFY LINES BELOW THIS COMMENT!\n"
+
+    if {$save_gui_on_exit == true && $exiting == 1} {
+
+      for {set i 0} {$i < 7} {incr i} {
+        lappend tl_init_hidden [.bot.left.tl columncget $i -hide]
+      }
+
+      puts $rc "MainWindowGeometry                = [winfo geometry .]"
+      puts $rc "ToggleWindowGeometry              = $toggle_geometry"
+      puts $rc "MemoryWindowGeometry              = $memory_geometry"
+      puts $rc "CombWindowGeometry                = $comb_geometry"
+      puts $rc "FsmWindowGeometry                 = $fsm_geometry"
+      puts $rc "AssertWindowGeometry              = $assert_geometry"
+      puts $rc "ModuleInstanceType                = $mod_inst_type"
+      puts $rc "ModuleInstanceTableListWidth      = [winfo width .bot.left]"
+      puts $rc "ModuleInstanceTableListColumns    = [join [.bot.left.tl cget -columns] :]"
+      puts $rc "ModuleInstanceTableListInitHidden = [join $tl_init_hidden :]"
+
+    }
+
     flush $rc
     close $rc
 
@@ -279,7 +352,9 @@ proc write_coveredrc {} {
 
 proc create_preferences {start_index} {
 
-  global show_wizard   tmp_show_wizard
+  global show_wizard      tmp_show_wizard
+  global save_gui_on_exit tmp_save_gui_on_exit
+  global show_tooltips    tmp_show_tooltips
   global cov_fgColor   cov_bgColor   tmp_cov_fgColor   tmp_cov_bgColor
   global uncov_fgColor uncov_bgColor tmp_uncov_fgColor tmp_uncov_bgColor
   global race_fgColor  race_bgColor  tmp_race_fgColor  tmp_race_bgColor
@@ -303,6 +378,8 @@ proc create_preferences {start_index} {
 
     # Initialize all temporary preference values
     set tmp_show_wizard             $show_wizard
+    set tmp_save_gui_on_exit        $save_gui_on_exit
+    set tmp_show_tooltips           $show_tooltips
     set tmp_cov_fgColor             $cov_fgColor
     set tmp_cov_bgColor             $cov_bgColor
     set tmp_uncov_fgColor           $uncov_fgColor
@@ -361,23 +438,24 @@ proc create_preferences {start_index} {
     }
     button .prefwin.bf.ok -width 10 -text "OK" -command {
       if {[apply_preferences] == 1} {
-        write_coveredrc
+        write_coveredrc 0
       }
       destroy .prefwin
     }
     button .prefwin.bf.cancel -width 10 -text "Cancel" -command {
       destroy .prefwin
     }
-    button .prefwin.bf.help -width 10 -text "Help" -command {
+    help_button .prefwin.bf.help ""
+    .prefwin.bf.help configure -command {
       switch [.prefwin.lbf.lb curselection] {
-        0 { help_show_manual pref_general }
-        1 { help_show_manual pref_color }
-        2 { help_show_manual pref_goals }
-        3 { help_show_manual pref_syntax }
-        default { help_show_manual pref_main }
+        0 { help_show_manual chapter.gui.preferences "section.gui.pref.general" }
+        1 { help_show_manual chapter.gui.preferences "section.gui.pref.color" }
+        2 { help_show_manual chapter.gui.preferences "section.gui.pref.goals" }
+        3 { help_show_manual chapter.gui.preferences "section.gui.pref.syntax" }
+        default { help_show_manual chapter.gui.preferences "" }
       }
     }
-    pack .prefwin.bf.help   -side right -padx 8 -pady 4
+    pack .prefwin.bf.help   -side right -pady 4
     pack .prefwin.bf.cancel -side right -padx 8 -pady 4
     pack .prefwin.bf.ok     -side right -padx 8 -pady 4
     pack .prefwin.bf.apply  -side right -padx 8 -pady 4
@@ -441,6 +519,8 @@ proc synchronize_syntax_widgets {hl_mode} {
 proc apply_preferences {} {
 
   global show_wizard      tmp_show_wizard
+  global save_gui_on_exit tmp_save_gui_on_exit
+  global show_tooltips    tmp_show_tooltips
   global cov_fgColor      tmp_cov_fgColor
   global cov_bgColor      tmp_cov_bgColor
   global uncov_fgColor    tmp_uncov_fgColor
@@ -469,6 +549,15 @@ proc apply_preferences {} {
 
   # Check for changes and update global preference variables accordingly
   if {$show_wizard != $tmp_show_wizard} {
+    set show_wizard $tmp_show_wizard
+    set changed 1
+  }
+  if {$save_gui_on_exit != $tmp_save_gui_on_exit} {
+    set save_gui_on_exit $tmp_save_gui_on_exit
+    set changed 1
+  }
+  if {$show_tooltips != $tmp_show_tooltips} {
+    set show_tooltips $tmp_show_tooltips
     set changed 1
   }
   if {$cov_fgColor != $tmp_cov_fgColor} {
@@ -588,11 +677,6 @@ proc apply_preferences {} {
     # Update the listbox
     populate_listbox
 
-    # Update the summary window, if it currently exists
-    if {[winfo exists .sumwin] == 1} {
-      create_summary
-    }
-
   }
 
   return $changed
@@ -702,16 +786,24 @@ proc populate_pref {} {
 
 proc create_general_pref {} {
 
-  global show_wizard
+  global tmp_show_wizard tmp_save_gui_on_exit tmp_show_tooltips
 
   # Create main frame
   labelframe .prefwin.pf.f -labelanchor nw -text "General Options" -pady 6 -padx 4
 
   # Create "Show Wizard" checkbutton
-  checkbutton .prefwin.pf.f.wiz -text "Show wizard window on startup" -variable show_wizard -onvalue true -offvalue false
+  checkbutton .prefwin.pf.f.wiz -text "Show wizard window on startup" -variable tmp_show_wizard -onvalue true -offvalue false -anchor w
+
+  # Create checkbutton for saving GUI elements to configuration file upon exit
+  checkbutton .prefwin.pf.f.save_gui_on_exit -text "Save state of GUI when exiting the application" -variable tmp_save_gui_on_exit -onvalue true -offvalue false -anchor w
+
+  # Create checkbutton for displayint tooltips
+  checkbutton .prefwin.pf.f.show_tooltips -text "Show tooltips" -variable tmp_show_tooltips -onvalue true -offvalue false -anchor w
 
   # Pack main frame
-  grid .prefwin.pf.f.wiz -row 0 -column 0 -sticky news -padx 4
+  grid .prefwin.pf.f.wiz              -row 0 -column 0 -sticky news -padx 4
+  grid .prefwin.pf.f.save_gui_on_exit -row 1 -column 0 -sticky news -padx 4
+  grid .prefwin.pf.f.show_tooltips    -row 2 -column 0 -sticky news -padx 4
 
   # Pack the frame
   pack .prefwin.pf.f -fill both
@@ -966,6 +1058,29 @@ proc validInteger {win event X oldX min max} {
     default {
       return 1
     }
+  }
+
+}
+
+proc save_gui_elements {top this} {
+
+  global save_gui_on_exit saved_gui
+
+  if {[winfo toplevel $this] == $top && $save_gui_on_exit == true && $saved_gui == 0} {
+
+    set saved_gui 1
+
+    # Save the contents of any existing windows before writing the configuration information
+    save_toggle_gui_elements 1
+    save_memory_gui_elements 1
+    save_comb_gui_elements 1
+    save_fsm_gui_elements 1
+    save_assert_gui_elements 1
+
+    puts "Saving GUI information to configuration file..."
+
+    # Write the information to the .coveredrc file
+    write_coveredrc 1
   }
 
 }

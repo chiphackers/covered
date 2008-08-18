@@ -1,0 +1,142 @@
+<chapter id="chapter.installation" xreflabel="Installation">
+  <title>Installation</title>
+  
+  <sect1>
+    <title>Prerequisites</title>
+    <para>
+    The goal of Covered was to create a tool that has very few requirements to allow it to be compiled and run on all 
+    platforms. The following is a list of all utilities/resources required to compile Covered. However, Covered is 
+    primarily developed on RedHat/Fedora Core Linux and Mac OS X and as such is primarily tested by the developers on these
+    platforms.
+    </para>
+    <para>
+      <itemizedlist>
+        <listitem><para><ulink url="http://www.gnu.org/software/gcc/">gcc</ulink> (Version 2.96 or higher)</para></listitem>
+        <listitem><para><ulink url="http://www.gnu.org/software/flex/">flex</ulink> (Version 2.5.4 or higher)</para></listitem>
+        <listitem><para><ulink url="http://www.gnu.org/software/bison/">bison</ulink> (Version 1.28 or higher)</para></listitem>
+        <listitem><para><ulink url="http://www.gnu.org/software/make/">GNU make</ulink> (Version 3.27.1 or higher)</para></listitem>
+        <listitem><para><ulink url="http://www.gnu.org/software/gperf/">GNU gperf</ulink> (Version 2.7.2 or higher)</para></listitem>
+        <listitem>
+          <para>
+            <ulink url="http://tcl.sourceforge.net/">Tcl/Tk</ulink> (Versions 8.4 or higher)
+            <itemizedlist>
+              <listitem><para><ulink url="http://www.nemethi.de/">tablelist Tcl/Tk widget</ulink> (Version 4.9 or higher)</para></listitem>
+            </itemizedlist>
+          </para>
+        </listitem>
+      </itemizedlist>
+    </para>
+    <para>
+    Covered is primarily developed on Fedora Core but has been known to compile with both 32-bit and 64-bit compilers 
+    that contain the general GNU library of tools. It has also been compiled and run on Cygwin and Mac OS X.
+    </para>
+  </sect1>
+  
+  <sect1>
+    <title>Downloading source</title>
+    <para>
+    To download the source files in .tar.gz format, go to the following URL:
+    </para>
+    <para>
+      <ulink url="http://covered.sourceforge.net/downloads/">http://covered.sourceforge.net/downloads/</ulink>
+    </para>
+    <para>
+    Double-click on the .tar.gz version that you wish to install. The browser should immediately bring up a window asking 
+    if you would like to save to disk or open immediately. Choose the "Save to Disk" option. Another window will pop up, 
+    allowing you to choose the directory to store the tarball in. After selecting a directory, click the "Save" button. The 
+    download utility will begin downloading the tarball to the selected directory.
+    </para>
+    <para>
+    Once you have downloaded a tarball, enter the following to unzip and untar the package:
+    </para>
+    <para>
+      <code>> gzip -dc <emphasis>tarball_filename</emphasis> | tar xvf -</code>
+    </para>
+    <para>
+    This will create a directory called covered-<emphasis>version</emphasis>, where <emphasis>version</emphasis> will be of the
+    form <emphasis>major version.minor version</emphasis> for stable releases or <emphasis>date</emphasis> for development
+    releases.  Enter that directory to begin configuring, building and compiling Covered from source.
+    </para>
+  </sect1>
+  
+  <sect1 id="section.configuring" xreflabel="Configuring the build">
+    <title>Configuring the build</title>
+    <para>
+    At this point, you are ready to configure the build environment to create the executables, libraries and/or documentation 
+    for Covered. However, before you configure the build environment, you will need to make a few decisions which will lead to 
+    different options given to the configure script. These questions are the following:
+    </para>
+    <para>
+      <orderedlist>
+        <listitem><para>Do you need to debug Covered?  (for most users, the answer to this will be "no")</para></listitem>
+        <listitem><para>Do you want to profile Covered's internal functionality?  (for most users, the answer to this will be "no")</para></listitem>
+        <listitem><para>Will you being using Covered as a VPI module and, if so, what simulator(s) will you need VPI modules built for?</para></listitem>
+        <listitem><para>Do you want to use Covered's Tcl/Tk GUI for interactive coverage analysis or just the command-line created reports?</para></listitem>
+      </orderedlist>
+    </para>
+    <para>
+    If the answer to question (1) is yes, configure the build environment with the --enable-debug option to the configure script. Doing so will 
+    allow you to use the global -D option and/or the -cli (<xref linkend="section.cli"/>) score command option for debugging; however, it will also 
+    have the side effect of causing the score command to run noticably slower. For normal usage of Covered, this option should not be specified 
+    when configuring.
+    </para>
+    <para>
+    If the answer to question (2) is yes, configure the build environment with the --enable-profiling option to the configure script. Doing so 
+    will allow you to use the global -P option to generate an output file containing internal profiling information for the run command. See 
+    <xref linkend="section.profiling"/> for more information on the -P option.
+    </para>
+    <para>
+    If the answer to question (3) is yes and you need to build a VPI module for the Icarus Verilog simulation tool, simply add --with-iv on the 
+    configure command-line. If a VPI shared object module is needed for the Cver simulator, simply add 
+    <emphasis role="bold">--with-cver=<emphasis>cver_include_dir</emphasis></emphasis> on the configure command line, where 
+    <emphasis>cver_include_dir</emphasis> specifies the directory that contains the vpi_user.h file. If a VPI shared object module is needed for the 
+    VCS simulator, simply add <emphasis role="bold">--with-vcs=<emphasis>vcs_include_dir</emphasis></emphasis> on the configure command line, where 
+    <emphasis>vcs_include_dir</emphasis> specifies the directory that contains the vpi_user.h file.
+    </para>
+    <para>
+    If the answer to question (4) is yes and you have a Tcl/Tk distribution that the configure script cannot find (i.e., the tcl-config and tk-config
+    scripts exist in a non-standard directory location), please specify the <emphasis>--with-tcl-config=<emphasis>tcl-config_pathname</emphasis></emphasis> 
+    and <emphasis role="bold">--with-tk-config=<emphasis>tk-config_pathname</emphasis></emphasis> options to the configure script.  If the answer to 
+    question (4) is no, specify the <emphasis role="bold">--with-tcltk=no</emphasis> option to the configure script to cause the GUI to not be built.
+    </para>
+    <para>
+    Once you have determined which configuration options you need, simply enter the following command:
+    </para>
+    <para>
+      <code>
+      > ./configure <emphasis>options</emphasis>
+      </code>
+    </para>
+    <para>
+    This command will create the Makefiles/include files necessary for your machine to compile the source code correctly. If any errors are generated 
+    during this command run, it is usually an indication that some program or library is missing from your computer that is necessary for Covered 
+    to compile/run. Please install any missing programs/libraries and type this command again.
+    </para>
+  </sect1>
+  
+  <sect1>
+    <title>Compiling and Installing</title>
+    <para>
+    If the configure script completes successfully, you may compile the source with the following command:
+    </para>
+    <para>
+      <code>
+      > make
+      </code>
+    </para>
+    <para>
+    This will begin the process of compiling/linking the source code for Covered. This stage may take a while. When the source files have been compiled, 
+    the covered executable file will have been created. To install this executable in your <code>/usr/local/bin</code> directory, enter the following command:
+    </para>
+    <para>
+      <code>
+      > make install
+      </code>
+    </para>
+    <para>
+    This will install the covered executable and manpage help files. Once covered is installed, make sure that <emphasis>/usr/local/bin</emphasis> is 
+    in your environment path. You are now ready to run Covered.
+    </para>
+  </sect1>
+  
+</chapter>

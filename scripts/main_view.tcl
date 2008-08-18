@@ -20,6 +20,7 @@ source [file join $HOME scripts gen_new.tcl]
 source [file join $HOME scripts gen_report.tcl]
 source [file join $HOME scripts gen_rank.tcl]
 source [file join $HOME scripts viewer.tcl]
+source [file join $HOME scripts balloon.tcl]
 
 # The Tablelist package is used for displaying instance/module hit/miss/total/percent hit information
 package require Tablelist
@@ -37,7 +38,9 @@ set next_uncov_index        ""
 proc main_view {} {
 
   global race_msgs prev_uncov_index next_uncov_index
-  global HOME tableCol main_start_search_index
+  global HOME main_start_search_index
+  global main_geometry
+  global mod_inst_tl_columns mod_inst_tl_init_hidden mod_inst_tl_width
 
   # Start off 
 
@@ -49,7 +52,7 @@ proc main_view {} {
   menu_create
 
   # Create the information frame
-  frame .covbox -width 710 -height 25
+  frame .covbox -width 710 -height 25 -relief raised -borderwidth 1
   cov_create .covbox
 
   # Create the bottom frame
@@ -70,22 +73,28 @@ proc main_view {} {
   button .bot.right.h.pn.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -state disabled -relief flat -command {
     goto_uncov $prev_uncov_index
   }
+  set_balloon .bot.right.h.pn.prev "Click to view the previous uncovered item"
   button .bot.right.h.pn.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -state disabled -relief flat -command {
     goto_uncov $next_uncov_index
   }
-  frame .bot.right.h.search
-  button .bot.right.h.search.find -text "Find:" -state disabled -command {
+  set_balloon .bot.right.h.pn.next "Click to view the next uncovered item"
+  frame .bot.right.h.search -borderwidth 1 -relief ridge -bg white
+  label .bot.right.h.search.find -image [image create photo -file [file join $HOME scripts find.gif]] -bg white -state disabled -relief flat -borderwidth 0
+  bind .bot.right.h.search.find <ButtonPress-1> {
     perform_search .bot.right.txt .bot.right.h.search.e .info main_start_search_index
   }
-  entry .bot.right.h.search.e -width 15 -relief sunken -state disabled
+  set_balloon .bot.right.h.search.find "Click to find the next occurrence of the search string"
+  entry .bot.right.h.search.e -width 15 -bg white -state disabled -relief flat -insertborderwidth 0 -highlightthickness 0 -disabledbackground white
   bind .bot.right.h.search.e <Return> {
     perform_search .bot.right.txt .bot.right.h.search.e .info main_start_search_index
   }
-  button .bot.right.h.search.clear -text "Clear" -state disabled -command {
+  label .bot.right.h.search.clear -image [image create photo -file [file join $HOME scripts clear.gif]] -bg white -state disabled -relief flat -borderwidth 0
+  bind .bot.right.h.search.clear <ButtonPress-1> {
     .bot.right.txt tag delete search_found
     .bot.right.h.search.e delete 0 end
     set main_start_search_index 1.0
   }
+  set_balloon .bot.right.h.search.clear "Click to clear the search string"
 
   # Pack the previous/next frame
   pack .bot.right.h.pn.prev -side left
@@ -93,7 +102,7 @@ proc main_view {} {
 
   # Pack the search frame
   pack .bot.right.h.search.find  -side left
-  pack .bot.right.h.search.e     -side left
+  pack .bot.right.h.search.e     -side left -padx 3
   pack .bot.right.h.search.clear -side left
 
   # Pack the textbox header frame
@@ -120,18 +129,21 @@ proc main_view {} {
 
   # Create Tablelist and associated scrollbars
   tablelist::tablelist .bot.left.tl \
-    -columns {0 "Instance Name" 0 "Module Name" 0 "Hit" right 0 "Miss" right 0 "Total" right 0 "Hit %" right 0 "Index"} \
-    -labelcommand tablelist::sortByColumn -xscrollcommand {.bot.left.hb set} -yscrollcommand {.bot.left.sbf.vb set} -stretch all
-  .bot.left.tl columnconfigure 0 -hide true
-  .bot.left.tl columnconfigure 2 -sortmode integer -stretchable false
-  .bot.left.tl columnconfigure 3 -sortmode integer -stretchable false
-  .bot.left.tl columnconfigure 4 -sortmode integer -stretchable false
-  .bot.left.tl columnconfigure 5 -sortmode integer -stretchable false
-  .bot.left.tl columnconfigure 6 -hide true
+    -columns $mod_inst_tl_columns \
+    -labelcommand tablelist::sortByColumn -xscrollcommand {.bot.left.hb set} -yscrollcommand {.bot.left.sbf.vb set} -stretch all -movablecolumns 1
+  .bot.left.tl columnconfigure 0 -hide [lindex $mod_inst_tl_init_hidden 0]
+  .bot.left.tl columnconfigure 1 -hide [lindex $mod_inst_tl_init_hidden 1]
+  .bot.left.tl columnconfigure 2 -hide [lindex $mod_inst_tl_init_hidden 2] -sortmode integer -stretchable false
+  .bot.left.tl columnconfigure 3 -hide [lindex $mod_inst_tl_init_hidden 3] -sortmode integer -stretchable false
+  .bot.left.tl columnconfigure 4 -hide [lindex $mod_inst_tl_init_hidden 4] -sortmode integer -stretchable false
+  .bot.left.tl columnconfigure 5 -hide [lindex $mod_inst_tl_init_hidden 5] -sortmode integer -stretchable false
+  .bot.left.tl columnconfigure 6 -hide [lindex $mod_inst_tl_init_hidden 6] -sortmode integer -stretchable false
+  .bot.left.tl columnconfigure 7 -hide true
 
   # Create vertical scrollbar frame and pack it
   frame      .bot.left.sbf
   ttk::label .bot.left.sbf.ml -relief flat -style TablelistHeader.TLabel -image [image create bitmap -data "#define stuff_width 16\n#define stuff_height 16\nstatic unsigned char stuff_bits[] = {\n0x00, 0x00, 0x00, 0x00, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x00, 0x00, 0x00, 0x00};"]
+  set_balloon .bot.left.sbf.ml "Controls the column hide/show state"
 
   scrollbar  .bot.left.sbf.vb -command {.bot.left.tl yview}
   ttk::label .bot.left.sbf.l
@@ -152,24 +164,17 @@ proc main_view {} {
 
   # Create and bind the listbox label to a popup menu
   menu .lbm -tearoff false
-  set num 0
-  foreach {width name align} [.bot.left.tl cget -columns] {
-    if {[expr ! [.bot.left.tl columncget $num -hide]]} {
-      .lbm add checkbutton -label $name -variable tableCol($num) -command {
-        foreach col [array names tableCol] {
-          .bot.left.tl columnconfigure $col -hide [expr ! $tableCol($col)]
-        }
-      }
-      set tableCol($num) 1
-    }
-    incr num
-  }
+  manage_tl_popup
   bind .bot.left.sbf.ml <ButtonPress-1> {.lbm post %X %Y}
   bind .lbm <Leave> {.lbm unpost}
+  bind .bot.left.tl <<TablelistColumnMoved>> {manage_tl_popup}
 
   # Pack the bottom window
   update
   .bot add .bot.left -minsize [expr [winfo reqheight .bot.left] + 100]
+  if {$mod_inst_tl_width != ""} {
+    .bot.left configure -width $mod_inst_tl_width
+  }
   .bot add .bot.right
 
   # Create bottom information bar
@@ -182,8 +187,12 @@ proc main_view {} {
   # Set the window icon
   wm title . "Covered - Verilog Code Coverage Tool"
 
+  # If window position variables have been set, use them
+  if {$main_geometry != ""} {
+    wm geometry . $main_geometry
+  }
+
   # Set focus on the new window
-  #wm attributes . -topmost true
   wm focusmodel . active
   raise .
 
@@ -191,24 +200,32 @@ proc main_view {} {
   set icon_img [image create photo -file [file join $HOME scripts cov_icon.gif]]
   wm iconphoto . -default $icon_img
 
+  # Catch the closing of the application and potentially save GUI elements
+  wm protocol . WM_DELETE_WINDOW {
+    check_to_save_and_close_cdd exiting
+    save_gui_elements . .
+    destroy .
+  }
+  bind . <Destroy> {
+    check_to_save_and_close_cdd exiting
+    save_gui_elements . %W
+  }
+  
 }
 
 proc populate_listbox {} {
 
-  global mod_inst_type last_mod_inst_type funit_names funit_types inst_list cdd_name
-  global line_summary_total line_summary_hit
-  global toggle_summary_total toggle_summary_hit
+  global mod_inst_type last_mod_inst_type cdd_name block_list
   global uncov_fgColor uncov_bgColor
   global lb_fgColor lb_bgColor
   global summary_list
- 
-  # Clear funit_names and funit_types values
-  set funit_names ""
-  set funit_types ""
+
+  # Make sure that the tablelist columns are setup appropriately
+  manage_tl_popup
 
   # Get the currently loaded indices, if any
   if {$last_mod_inst_type == $mod_inst_type} {
-    set curr_indices  [.bot.left.tl getcolumn 6]
+    set curr_indices  [.bot.left.tl getcolumn 7]
     set curr_selected [.bot.left.tl curselection]
   } else {
     set curr_indices  {}
@@ -221,34 +238,30 @@ proc populate_listbox {} {
   if {$cdd_name != ""} {
 
     # If we are in module mode, list modules (otherwise, list instances)
-    if {$mod_inst_type == "module"} {
+    if {$mod_inst_type == "Module"} {
 
       # Get the list of functional units
-      tcl_func_get_funit_list 
-
-      # Calculate the summary_list array
-      calculate_summary
-
-      for {set i 0} {$i < [llength $summary_list]} {incr i} {
-        if {[llength $curr_indices] > 0} {
-          set index [lindex $curr_indices $i]
-        } else {
-          set index $i
-        }
-        set funit [lindex $summary_list $index]
-        .bot.left.tl insert end [list "" [lindex $funit 0] [lindex $funit 1] [lindex $funit 2] [lindex $funit 3] [lindex $funit 4] $index]
-        .bot.left.tl rowconfigure end -background [lindex $funit 6] -selectbackground [lindex $funit 5]
-      }
+      set block_list [tcl_func_get_funit_list]
 
     } else {
 
-      set inst_list ""
-      tcl_func_get_instance_list
+      # Get the list of functional unit instances
+      set block_list [tcl_func_get_instance_list]
 
-      foreach inst_name $inst_list {
-        $listbox_w insert end $inst_name
+    }
+
+    # Calculate the summary_list array
+    calculate_summary
+
+    for {set i 0} {$i < [llength $summary_list]} {incr i} {
+      if {[llength $curr_indices] > 0} {
+        set index [lindex $curr_indices $i]
+      } else {
+        set index $i
       }
-
+      set funit [sort_tl_columns [lindex $summary_list $index]]
+      .bot.left.tl insert end [list [lindex $funit 0] [lindex $funit 1] [lindex $funit 2] [lindex $funit 3] [lindex $funit 4] [lindex $funit 5] [lindex $funit 6] $index]
+      .bot.left.tl rowconfigure end -background [lindex $funit 8] -selectbackground [lindex $funit 7]
     }
 
     # Re-activate the currently selected item
@@ -261,47 +274,40 @@ proc populate_listbox {} {
 
   }
 
-  # Regardless of CDD file existence, hide/show the needed columns in the window
-  if {$mod_inst_type == "module"} {
-    .bot.left.tl columnconfigure 0 -hide true
-  } else {
-    .bot.left.tl columnconfigure 0 -hide false
-  }
-
 }
 
 proc populate_text {} {
 
-  global cov_rb mod_inst_type funit_names funit_types
-  global curr_funit_name curr_funit_type last_lb_index
+  global cov_rb block_list curr_block
+  global mod_inst_type last_mod_inst_type
+  global last_lb_index
   global start_search_index
   global curr_toggle_ptr
 
   # Get the index of the current selection
-  set index [lindex [.bot.left.tl get [.bot.left.tl curselection]] 6]
+  set index [lindex [.bot.left.tl get [.bot.left.tl curselection]] 7]
 
   # Update the text, if necessary
   if {$index != ""} {
 
-    if {$last_lb_index != $index} {
+    if {$last_lb_index != $index || $last_mod_inst_type != $mod_inst_type} {
 
-      set last_lb_index $index
-      set curr_funit_name [lindex $funit_names $index]
-      set curr_funit_type [lindex $funit_types $index]
+      set last_lb_index   $index
+      set curr_block      [lindex $block_list $index]
       set curr_toggle_ptr ""
 
       if {$cov_rb == "Line"} {
-        process_funit_line_cov
+        process_line_cov
       } elseif {$cov_rb == "Toggle"} {
-        process_funit_toggle_cov
+        process_toggle_cov
       } elseif {$cov_rb == "Memory"} {
-        process_funit_memory_cov
+        process_memory_cov
       } elseif {$cov_rb == "Logic"} {
-        process_funit_comb_cov
+        process_comb_cov
       } elseif {$cov_rb == "FSM"} {
-        process_funit_fsm_cov
+        process_fsm_cov
       } elseif {$cov_rb == "Assert"} {
-        process_funit_assert_cov
+        process_assert_cov
       } else {
         # ERROR
       }
@@ -332,9 +338,6 @@ proc clear_text {} {
   .bot.right.txt configure -state normal
   .bot.right.txt delete 1.0 end
   .bot.right.txt configure -state disabled
-
-  # Clear the summary info
-  cov_clear_summary
 
   # Reset the last_lb_index
   set last_lb_index ""
@@ -599,6 +602,88 @@ proc goto_prev_pane {w} {
   $parent paneconfigure $w -hide true
   $parent paneconfigure [lindex $panes [expr [lsearch $panes $w] - 1]] -hide false
   
+}
+
+proc manage_tl_popup {} {
+
+  global tableColName tableColHide mod_inst_type
+
+  # Calculate starting index
+  if {$mod_inst_type == "Module"} {
+    set no_display_cols {{Instance Name} Index}
+  } else {
+    set no_display_cols {Index}
+  }
+
+  # Delete all menu entries
+  .lbm delete 0 end
+
+  set num 0
+
+  foreach {width name align} [.bot.left.tl cget -columns] {
+
+    if {[lsearch $no_display_cols $name] == -1} {
+      .lbm add checkbutton -label $name -variable tableColHide($num) -command {
+        foreach col [array names tableColHide] {
+          .bot.left.tl columnconfigure $col -hide [expr ! $tableColHide($col)]
+        }
+      }
+    }
+
+    # Handle the instance name column show/hide status
+    if {$name eq "Instance Name"} {
+      if {$mod_inst_type eq "Module"} {
+        .bot.left.tl columnconfigure $num -hide true
+      } else {
+        .bot.left.tl columnconfigure $num -hide false
+      }
+    }
+
+    set tableColName($num) $name
+    set tableColHide($num) [expr ! [.bot.left.tl columncget $num -hide]]
+    incr num
+
+  }
+
+}
+
+proc sort_tl_columns {info} {
+
+  global tableColName
+
+  foreach col [lsort -integer [array names tableColName]] {
+    set name $tableColName($col)
+    if {$name eq "Instance Name"} {
+      lappend new_info [lindex $info 0]
+    } elseif {$name eq "Module Name"} {
+      lappend new_info [lindex $info 1]
+    } elseif {$name eq "Hit"} {
+      lappend new_info [lindex $info 2]
+    } elseif {$name eq "Miss"} {
+      lappend new_info [lindex $info 3]
+    } elseif {$name eq "Excluded"} {
+      lappend new_info [lindex $info 4]
+    } elseif {$name eq "Total"} {
+      lappend new_info [lindex $info 5]
+    } elseif {$name eq "Hit %"} {
+      lappend new_info [lindex $info 6]
+    }
+  }
+  lappend new_info [lindex $info 7] [lindex $info 8]
+
+  return $new_info
+
+}
+
+proc help_button {w file {section ""}} {
+
+  set help_img [image create bitmap -data "#define help2_width 22\n#define help2_height 22\nstatic unsigned char help2_bits[] = {\n0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x3f, 0x00, 0x80, 0x7f, 0x00, 0xc0, 0xe1, 0x00, 0xc0, 0xc0, 0x00, 0xc0, 0xc0, 0x00, 0x00, 0xc0, 0x00, 0x00, 0xc0, 0x00, 0x00, 0xe0, 0x00, 0x00, 0x70, 0x00, 0x00, 0x38, 0x00, 0x00, 0x1c, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};"]
+
+  button $w -image $help_img -relief flat -command "help_show_manual $file $section"
+  set_balloon $w "Click to display context-sensitive documentation for this window"
+
+  return $w
+
 }
 
 # Read configuration file

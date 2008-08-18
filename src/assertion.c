@@ -71,20 +71,22 @@ void assertion_parse_attr(
  Gets total and hit assertion coverage statistics for the given functional unit.
 */
 void assertion_get_stats(
-            const func_unit* funit,  /*!< Pointer to current functional unit */
-  /*@out@*/ unsigned int*    total,  /*!< Pointer to the total number of assertions found in this functional unit */
-  /*@out@*/ unsigned int*    hit     /*!< Pointer to the total number of hit assertions in this functional unit */
+            const func_unit* funit,     /*!< Pointer to current functional unit */
+  /*@out@*/ unsigned int*    hit,       /*!< Pointer to the total number of hit assertions in this functional unit */
+  /*@out@*/ unsigned int*    excluded,  /*!< Pointer to the number of excluded assertions */
+  /*@out@*/ unsigned int*    total      /*!< Pointer to the total number of assertions found in this functional unit */
 ) { PROFILE(ASSERTION_GET_STATS);
 
   assert( funit != NULL );
 
   /* Initialize total and hit values */
-  *total = 0;
-  *hit   = 0;
+  *hit      = 0;
+  *excluded = 0;
+  *total    = 0;
 
   /* If OVL assertion coverage is needed, check this functional unit */
   if( info_suppl.part.assert_ovl == 1 ) {
-    ovl_get_funit_stats( funit, total, hit );
+    ovl_get_funit_stats( funit, hit, excluded, total );
   }
 
   PROFILE_END;
@@ -465,129 +467,86 @@ void assertion_report(
 }
 
 /*!
- \return Returns TRUE if the specified functional unit was found in the design; otherwise, returns FALSE.
- 
  Counts the total number and number of hit assertions for the specified functional unit.
 */
-bool assertion_get_funit_summary(
-            const char*   funit_name,  /*!< Name of functional unit to search for */
-            int           funit_type,  /*!< Type of functional unit to search for */
-  /*@out@*/ unsigned int* total,       /*!< Pointer to the total number of assertions in the specified functional unit */
-  /*@out@*/ unsigned int* hit          /*!< Pointer to the number of hit assertions in the specified functional unit */
+void assertion_get_funit_summary(
+            func_unit*    funit,     /*!< Pointer to functional unit */
+  /*@out@*/ unsigned int* hit,       /*!< Pointer to the number of hit assertions in the specified functional unit */
+  /*@out@*/ unsigned int* excluded,  /*!< Pointer to the number of excluded assertions */
+  /*@out@*/ unsigned int* total      /*!< Pointer to the total number of assertions in the specified functional unit */
 ) { PROFILE(ASSERTION_GET_FUNIT_SUMMARY);
 	
-  bool        retval = TRUE;  /* Return value for this function */
-  funit_link* funitl;         /* Pointer to found functional unit link */
-  
   /* Initialize total and hit counts */
-  *total = 0;
-  *hit   = 0;
+  *hit      = 0;
+  *excluded = 0;
+  *total    = 0;
   
-  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
-    
-    if( info_suppl.part.assert_ovl == 1 ) {
-      ovl_get_funit_stats( funitl->funit, total, hit );
-    }
-    
-  } else {
-    
-    retval = FALSE;
-    
+  if( info_suppl.part.assert_ovl == 1 ) {
+    ovl_get_funit_stats( funit, hit, excluded, total );
   }
-
+    
   PROFILE_END;
-  
-  return( retval );
   
 }
 
 /*!
- \return Returns TRUE if the specified functional unit exists in the design; otherwise, returns FALSE.
- 
- Searches the specified functional unit, collecting all uncovered and covered assertion module instance names.
+ Searches the specified functional unit, collecting all uncovered or covered assertion module instance names.
 */
-bool assertion_collect(
-            const char*   funit_name,        /*!< Name of functional unit to collect assertion information for */
-            int           funit_type,        /*!< Type of functional unit to collect assertion information for */
-  /*@out@*/ char***       uncov_inst_names,  /*!< Pointer to array of uncovered instance names found within the specified functional unit */
-  /*@out@*/ int**         excludes,          /*!< Pointer to array of integers that contain the exclude information for the given instance names */
-  /*@out@*/ unsigned int* uncov_inst_size,   /*!< Number of valid elements in the uncov_inst_names array */
-  /*@out@*/ char***       cov_inst_names,    /*!< Pointer to array of covered instance names found within the specified functional unit */
-  /*@out@*/ unsigned int* cov_inst_size      /*!< Number of valid elements in the cov_inst_names array */
+void assertion_collect(
+            func_unit*    funit,       /*!< Pointer to functional unit */
+            int           cov,         /*!< Specifies if uncovered (0) or covered (1) assertions should be looked for */
+  /*@out@*/ char***       inst_names,  /*!< Pointer to array of uncovered instance names found within the specified functional unit */
+  /*@out@*/ int**         excludes,    /*!< Pointer to array of integers that contain the exclude information for the given instance names */
+  /*@out@*/ unsigned int* inst_size    /*!< Number of valid elements in the uncov_inst_names array */
 ) { PROFILE(ASSERTION_COLLECT);
   
-  bool        retval = TRUE;  /* Return value for this function */
-  funit_link* funitl;         /* Pointer to found functional unit */
-  
-  /* Find functional unit */
-  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
+  /* Initialize outputs */
+  *inst_names = NULL;
+  *excludes   = NULL;
+  *inst_size  = 0;
     
-    /* Initialize outputs */
-    *uncov_inst_names = NULL;
-    *excludes         = NULL;
-    *uncov_inst_size  = 0;
-    *cov_inst_names   = NULL;
-    *cov_inst_size    = 0;
-    
-    /* If OVL assertion coverage is needed, get this information */
-    if( info_suppl.part.assert_ovl == 1 ) {
-      ovl_collect( funitl->funit, uncov_inst_names, excludes, uncov_inst_size, cov_inst_names, cov_inst_size );
-    }
-    
-  } else {
-    
-    retval = FALSE;
-    
+  /* If OVL assertion coverage is needed, get this information */
+  if( info_suppl.part.assert_ovl == 1 ) {
+    ovl_collect( funit, cov, inst_names, excludes, inst_size );
   }
-
+    
   PROFILE_END;
 
-  return( retval );
-  
 }
 
 /*!
- \return Returns TRUE if the specified functional unit was found; otherwise, returns FALSE.
-
  Finds all of the coverage points for the given assertion instance and stores their
  string descriptions and execution counts in the cp list.
 */
-bool assertion_get_coverage(
-            const char* funit_name,  /*!< Name of functional unit to retrieve missed coverage points for */
-            int         funit_type,  /*!< Type of functional unit to retrieve missed coverage points for */
-            const char* inst_name,   /*!< Name of assertion module instance to retrieve */
-  /*@out@*/ char**      assert_mod,  /*!< Pointer to name of assertion module being retrieved */
-  /*@out@*/ str_link**  cp_head,     /*!< Pointer to head of list of strings/integers containing coverage point information */
-  /*@out@*/ str_link**  cp_tail      /*!< Pointer to tail of list of strings/integers containing coverage point information */
+void assertion_get_coverage(
+            const func_unit* funit,       /*!< Pointer to functional unit */
+            const char*      inst_name,   /*!< Name of assertion module instance to retrieve */
+  /*@out@*/ char**           assert_mod,  /*!< Pointer to assertion module name and filename being retrieved */
+  /*@out@*/ str_link**       cp_head,     /*!< Pointer to head of list of strings/integers containing coverage point information */
+  /*@out@*/ str_link**       cp_tail      /*!< Pointer to tail of list of strings/integers containing coverage point information */
 ) { PROFILE(ASSERTION_GET_COVERAGE);
 
-  bool        retval = TRUE;  /* Return value for this function */
-  funit_link* funitl;         /* Pointer to found functional unit link */
-
   /* Find functional unit */
-  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
+  *cp_head = *cp_tail = NULL;
 
-    *cp_head = *cp_tail = NULL;
-
-    /* If OVL assertion coverage is needed, get this information */
-    if( info_suppl.part.assert_ovl == 1 ) {
-      ovl_get_coverage( funitl->funit, inst_name, assert_mod, cp_head, cp_tail );
-    }
-
-  } else {
-
-    retval = FALSE;
-
+  /* If OVL assertion coverage is needed, get this information */
+  if( info_suppl.part.assert_ovl == 1 ) {
+    ovl_get_coverage( funit, inst_name, assert_mod, cp_head, cp_tail );
   }
 
   PROFILE_END;
  
-  return( retval );
-
 }
 
 /*
  $Log$
+ Revision 1.32.4.3  2008/08/07 06:39:10  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
+ Revision 1.32.4.2  2008/08/06 20:11:33  phase1geo
+ Adding support for instance-based coverage reporting in GUI.  Everything seems to be
+ working except for proper exclusion handling.  Checkpointing.
+
  Revision 1.32.4.1  2008/07/10 22:43:47  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics
@@ -597,6 +556,7 @@ bool assertion_get_coverage(
  Revision 1.33  2008/06/27 14:02:00  phase1geo
  Fixing splint and -Wextra warnings.  Also fixing comment formatting.
 
+>>>>>>> 1.32.4.3
  Revision 1.32  2008/04/15 20:37:07  phase1geo
  Fixing database array support.  Full regression passes.
 

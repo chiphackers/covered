@@ -3,6 +3,8 @@ set comb_curr_uline_id 0
 set comb_curr_exp_id   0
 set comb_bheight       -1
 set curr_comb_ptr      "" 
+set comb_geometry      ""
+set comb_gui_saved     0
 
 proc K {x y} {
   set x
@@ -136,7 +138,7 @@ proc display_comb_info {} {
 
 proc display_comb_coverage {ulid} {
 
-  global curr_funit_name curr_funit_type comb_expr_cov comb_curr_exp_id
+  global curr_block comb_expr_cov comb_curr_exp_id
   global comb_curr_excluded comb_exp_excludes
 
   # Allow us to clear out text box and repopulate
@@ -146,8 +148,7 @@ proc display_comb_coverage {ulid} {
   .combwin.pw.bot.t delete 1.0 end
 
   # Get combinational coverage information
-  set comb_expr_cov ""
-  tcl_func_get_comb_coverage $curr_funit_name $curr_funit_type $comb_curr_exp_id $ulid
+  set comb_expr_cov [tcl_func_get_comb_coverage $curr_block $comb_curr_exp_id $ulid]
 
   # Display coverage information
   .combwin.pw.bot.t insert end "\n\n"
@@ -166,7 +167,7 @@ proc display_comb_coverage {ulid} {
 proc get_expr_index_from_range {selected_range get_uline_id} {
 
   global comb_uline_expr comb_curr_uline_id
-  global curr_funit_name curr_funit_type
+  global curr_block
 
   # Get range information
   set line       [lindex [split [lindex $selected_range 0] .] 0]
@@ -471,9 +472,9 @@ proc display_comb {curr_index} {
   # Calculate expression ID and line number
   set all_ranges [.bot.right.txt tag ranges uncov_button]
   set my_range   [.bot.right.txt tag prevrange uncov_button "$curr_index + 1 chars"]
-  set index [expr [lsearch -exact $all_ranges [lindex $my_range 0]] / 2]
-  set expr_id [lindex [lindex $uncovered_combs $index] 2]
-  set sline [expr [lindex [split [lindex $my_range 0] "."] 0] + $start_line - 1]
+  set index      [expr [lsearch -exact $all_ranges [lindex $my_range 0]] / 2]
+  set expr_id    [lindex [lindex $uncovered_combs $index] 2]
+  set sline      [expr [lindex [split [lindex $my_range 0] "."] 0] + $start_line - 1]
 
   # Get range of current signal
   set curr_range [.bot.right.txt tag prevrange uncov_button "$curr_index + 1 chars"]
@@ -502,17 +503,20 @@ proc display_comb {curr_index} {
 proc create_comb_window {expr_id sline} {
 
   global comb_code comb_uline_groups comb_ulines comb_curr_exp_id
-  global curr_funit_name curr_funit_type
-  global file_name comb_curr_info
+  global curr_block
+  global comb_curr_info
   global prev_comb_index next_comb_index
   global curr_comb_ptr comb_curr_excluded
   global comb_exp_excludes HOME
+  global comb_geometry comb_gui_saved
 
   # Clear the comb_curr_excluded global variable
   set comb_curr_excluded 0
 
   # Now create the window and set the grab to this window
   if {[winfo exists .combwin] == 0} {
+
+    set comb_gui_saved 0
 
     # Create new window
     toplevel .combwin
@@ -522,7 +526,6 @@ proc create_comb_window {expr_id sline} {
     panedwindow .combwin.pw -bg grey -width 700 -height 350 -sashrelief raised -sashwidth 4 -orient vertical
     frame .combwin.pw.top -relief raised -borderwidth 1
     frame .combwin.pw.bot -relief raised -borderwidth 1
-    frame .combwin.pw.handle -borderwidth 2 -relief raised -cursor sb_v_double_arrow
 
     # Add expression information
     label .combwin.pw.top.l -anchor w -text "Expression:"
@@ -533,17 +536,18 @@ proc create_comb_window {expr_id sline} {
     # Add expression coverage information
     label .combwin.pw.bot.l -anchor w -text "Coverage Information:  ('*' represents a case that was not hit)"
     checkbutton .combwin.pw.bot.e -anchor e -text "Excluded" -state disabled -variable comb_curr_excluded -command {
-      tcl_func_set_comb_exclude $curr_funit_name $curr_funit_type $comb_curr_exp_id $comb_curr_uline_id $comb_curr_excluded
+      tcl_func_set_comb_exclude $curr_block $comb_curr_exp_id $comb_curr_uline_id $comb_curr_excluded
       set comb_exp_excludes [lreplace $comb_exp_excludes $comb_curr_uline_id $comb_curr_uline_id $comb_curr_excluded]
       set text_x [.bot.right.txt xview]
       set text_y [.bot.right.txt yview]
-      process_funit_comb_cov
+      process_comb_cov
       .bot.right.txt xview moveto [lindex $text_x 0]
       .bot.right.txt yview moveto [lindex $text_y 0]
       populate_listbox
       enable_cdd_save
       set_pointer curr_comb_ptr $curr_comb_ptr
     }
+    set_balloon .combwin.pw.bot.e "If set, excludes the expression/subexpression displayed in the lower panel from coverage consideration"
     text  .combwin.pw.bot.t -height 10 -width 100 -xscrollcommand ".combwin.pw.bot.hb set" -yscrollcommand ".combwin.pw.bot.vb set" -wrap none -state disabled
     scrollbar .combwin.pw.bot.hb -orient horizontal -command ".combwin.pw.bot.t xview"
     scrollbar .combwin.pw.bot.vb -orient vertical   -command ".combwin.pw.bot.t yview"
@@ -557,20 +561,20 @@ proc create_comb_window {expr_id sline} {
       rm_pointer curr_comb_ptr
       destroy .combwin
     }
-    button .combwin.bf.help -text "Help" -width 10 -command {
-      help_show_manual comb
-    }
+    help_button .combwin.bf.help chapter.gui.logic ""
     button .combwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -relief flat -command {
       display_comb $prev_comb_index
     }
+    set_balloon .combwin.bf.prev "Click to view the previous uncovered expression tree in this window"
     button .combwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -relief flat -command {
       display_comb $next_comb_index
     }
+    set_balloon .combwin.bf.next "Click to view the next uncovered expression tree in this window"
     
     # Pack the button widgets into button frame
     pack .combwin.bf.prev  -side left
     pack .combwin.bf.next  -side left
-    pack .combwin.bf.help  -side right -padx 8 -pady 4
+    pack .combwin.bf.help  -side right -pady 4
     pack .combwin.bf.close -side right -padx 8 -pady 4
 
     # Pack the widgets into the top frame
@@ -600,6 +604,20 @@ proc create_comb_window {expr_id sline} {
     pack .combwin.pw   -fill both -expand yes
     pack .combwin.info -fill both
     pack .combwin.bf   -fill both
+
+    # If the geometry was specified for this window, use it
+    if {$comb_geometry != ""} {
+      wm geometry .combwin $comb_geometry
+    }
+
+    # Handle the closing of this window
+    wm protocol .combwin WM_DELETE_WINDOW {
+      save_comb_gui_elements 0
+      destroy .combwin
+    }
+    bind .combwin <Destroy> {
+      save_comb_gui_elements 0
+    }
 
   } else {
 
@@ -631,10 +649,10 @@ proc create_comb_window {expr_id sline} {
   set comb_ulines       ""
   set comb_exp_excludes ""
   set comb_curr_exp_id  $expr_id
-  tcl_func_get_comb_expression $curr_funit_name $curr_funit_type $expr_id
+  tcl_func_get_comb_expression $curr_block $expr_id
 
   # Initialize text in information bar
-  set comb_curr_info "Filename: $file_name, module: $curr_funit_name, line: $sline"
+  set comb_curr_info "Filename: [tcl_func_get_filename $curr_block], module: [tcl_func_get_funit_name $curr_block], line: $sline"
   .combwin.info configure -text $comb_curr_info
 
   organize_underlines
@@ -701,3 +719,19 @@ proc clear_comb {} {
   destroy .combwin
 
 }
+
+# Saves the GUI elements from the combinational logic window setup that should be saved
+proc save_comb_gui_elements {main_exit} {
+
+  global comb_gui_saved
+  global comb_geometry comb_top_height
+
+  if {$comb_gui_saved == 0 } {
+    if {$main_exit == 0 || [winfo exists .combwin] == 1} {
+      set comb_gui_saved  1
+      set comb_geometry   [winfo geometry .combwin]
+    }
+  }
+
+}
+

@@ -28,15 +28,22 @@ extern int merged_code;
 /*!
  Specifies the output filename of the CDD file that contains the merged data.
 */
-static char* merged_file = NULL;
+char* merged_file = NULL;
 
 /*!
- Specifies the names of the input CDD files.  If the user does not specify an output
- CDD filename (i.e., no -o option is specified), the name of merge_in[0] will be used
- for merged_file.
+ Pointer to head of list containing names of the input CDD files.
 */
 str_link* merge_in_head = NULL;
+
+/*!
+ Pointer to tail of list containing names of the input CDD files.
+*/
 str_link* merge_in_tail = NULL;
+
+/*!
+ Pointer to last input name from command-line.
+*/
+str_link* merge_in_cl_last = NULL;
 
 /*!
  Specifies the number of merged CDD files.
@@ -195,7 +202,7 @@ static void merge_parse_args(
 
   Try {
 
-    /* Load any ranking files found in specified directories */
+    /* Load any merge files found in specified directories */
     strl = dir_head;
     while( strl != NULL ) {
       directory_load( strl->str, ext_head, &merge_in_head, &merge_in_tail );
@@ -211,6 +218,9 @@ static void merge_parse_args(
     str_link_delete_list( dir_head );
     Throw 0;
   }
+
+  /* Set the last command-line pointer to the current tail */
+  merge_in_cl_last = merge_in_tail;
 
   /* Make sure that we have at least 2 files to merge */
   strl = merge_in_head;
@@ -256,6 +266,7 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
   Try {
 
     str_link* strl;
+    bool      stop_merging;
 
     /* Parse score command-line */
     merge_parse_args( argc, last_arg, argv );
@@ -271,13 +282,15 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
     bind_perform( TRUE, 0 );
 
     /* Read in databases to merge */
-    strl = merge_in_head->next;
-    while( strl != NULL ) {
+    strl         = merge_in_head->next;
+    stop_merging = (strl == merge_in_head);
+    while( (strl != NULL) && !stop_merging ) {
       rv = snprintf( user_msg, USER_MSG_LENGTH, "Merging CDD file \"%s\"", strl->str );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
       db_read( strl->str, READ_MODE_MERGE_INST_MERGE );
-      strl = strl->next;
+      stop_merging = (strl == merge_in_cl_last);
+      strl         = strl->next;
     }
 
     /* Write out new database to output file */
@@ -300,6 +313,13 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.47.2.4  2008/08/06 05:32:41  phase1geo
+ Another fix for bug 2037791.  Also add new diagnostic to verify the fix for the bug.
+
+ Revision 1.47.2.3  2008/08/05 03:56:45  phase1geo
+ Completing fix for bug 2037791.  Added diagnostic to regression suite to verify
+ the corrected behavior.
+
  Revision 1.47.2.2  2008/07/23 05:10:11  phase1geo
  Adding -d and -ext options to rank and merge commands.  Updated necessary files
  per this change and updated regressions.

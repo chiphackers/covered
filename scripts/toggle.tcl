@@ -1,5 +1,7 @@
-set sig_name        ""
-set curr_toggle_ptr ""
+set sig_name         ""
+set curr_toggle_ptr  ""
+set toggle_geometry  ""
+set toggle_gui_saved 0
 
 proc display_toggle {curr_index} {
 
@@ -28,15 +30,18 @@ proc display_toggle {curr_index} {
 
 proc create_toggle_window {signal} {
 
-  global toggle01_verbose toggle10_verbose toggle_msb toggle_lsb
-  global sig_name prev_toggle_index next_toggle_index
-  global curr_funit_name curr_funit_type
+  global sig_name prev_toggle_index next_toggle_index toggle_excluded
+  global toggle_msb toggle_lsb
+  global curr_block
   global curr_toggle_ptr HOME
+  global toggle_geometry toggle_gui_saved
 
-  set sig_name       $signal
+  set sig_name $signal
 
   # Now create the window and set the grab to this window
   if {[winfo exists .togwin] == 0} {
+
+    set toggle_gui_saved 0
 
     # Create new window
     toplevel .togwin
@@ -55,16 +60,17 @@ proc create_toggle_window {signal} {
 
     # Create exclude checkbutton
     checkbutton .togwin.f.excl -text "Exclude" -variable toggle_excluded -command {
-      tcl_func_set_toggle_exclude $curr_funit_name $curr_funit_type $sig_name $toggle_excluded
+      tcl_func_set_toggle_exclude $curr_block $sig_name $toggle_excluded
       set text_x [.bot.right.txt xview]
       set text_y [.bot.right.txt yview]
-      process_funit_toggle_cov
+      process_toggle_cov
       .bot.right.txt xview moveto [lindex $text_x 0]
       .bot.right.txt yview moveto [lindex $text_y 0]
       populate_listbox
       enable_cdd_save
       set_pointer curr_toggle_ptr $curr_toggle_ptr
     }
+    set_balloon .togwin.f.excl "If set, excludes this signal from toggle coverage consideration"
 
     # Create bottom button bar
     frame .togwin.bf -relief raised -borderwidth 1
@@ -72,20 +78,20 @@ proc create_toggle_window {signal} {
       rm_pointer curr_toggle_ptr
       destroy .togwin
     }
-    button .togwin.bf.help -text "Help" -width 10 -command {
-      help_show_manual toggle
-    }
+    help_button .togwin.bf.help chapter.gui.toggle ""
     button .togwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -relief flat -command {
       display_toggle $prev_toggle_index
     }
+    set_balloon .togwin.bf.prev "Click to view the previous uncovered signal in this window"
     button .togwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -relief flat -command {
       display_toggle $next_toggle_index
     }
+    set_balloon .togwin.bf.next "Click to view the next uncovered signal in this window"
 
     # Pack the buttons into the button frame
     pack .togwin.bf.prev  -side left
     pack .togwin.bf.next  -side left
-    pack .togwin.bf.help  -side right -padx 8 -pady 4
+    pack .togwin.bf.help  -side right -pady 4
     pack .togwin.bf.close -side right -padx 8 -pady 4
 
     # Pack the widgets into the bottom frame
@@ -102,6 +108,20 @@ proc create_toggle_window {signal} {
     pack .togwin.f  -fill both -expand yes
     pack .togwin.bf -fill x
 
+    # Set the geometry of the toggle window if it was saved
+    if {$toggle_geometry != ""} {
+      wm geometry .togwin $toggle_geometry
+    }
+
+    # Bind the destructor
+    wm protocol . WM_DELETE_WINDOW {
+      save_toggle_gui_elements 0
+      destroy .togwin
+    }
+    bind .togwin <Destroy> {
+      save_toggle_gui_elements 0
+    }
+
   }
 
   # Disable next or previous buttons if valid
@@ -117,11 +137,12 @@ proc create_toggle_window {signal} {
   }
 
   # Get verbose toggle information
-  set toggle01_verbose 0
-  set toggle10_verbose 0
-  set toggle_msb       0
-  set toggle_lsb       0
-  tcl_func_get_toggle_coverage $curr_funit_name $curr_funit_type $signal
+  set toggle_info      [tcl_func_get_toggle_coverage $curr_block $signal]
+  set toggle_msb       [lindex $toggle_info 0]
+  set toggle_lsb       [lindex $toggle_info 1]
+  set toggle01_verbose [lindex $toggle_info 2]
+  set toggle10_verbose [lindex $toggle_info 3]
+  set toggle_excluded  [lindex $toggle_info 4]
 
   # Allow us to clear out text box
   .togwin.f.t configure -state normal
@@ -215,5 +236,19 @@ proc clear_toggle {} {
 
   # Destroy the window
   destroy .togwin
+
+}
+
+# Saves the GUI elements from the toggle window setup that should be saved
+proc save_toggle_gui_elements {main_exit} {
+
+  global toggle_geometry toggle_gui_saved
+
+  if {$toggle_gui_saved == 0} {
+    if {$main_exit == 0 || [winfo exists .togwin] == 1} {
+      set toggle_gui_saved 1
+      set toggle_geometry  [winfo geometry .togwin]
+    }
+  }
 
 }

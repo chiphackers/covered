@@ -53,14 +53,11 @@ static void instance_dealloc_single( funit_inst* );
 
 
 /*!
- \param root    Pointer to functional unit instance to display
- \param prefix  Prefix string to be used when outputting (used to indent children)
-
  Helper function for the \ref instance_display_tree function.
 */
 static void instance_display_tree_helper(
-  funit_inst* root,
-  char*       prefix
+  funit_inst* root,   /*!< Pointer to functional unit instance to display */
+  char*       prefix  /*!< Prefix string to be used when outputting (used to indent children) */
 ) { PROFILE(INSTANCE_DISPLAY_TREE_HELPER);
 
   char         sp[4096];  /* Contains prefix for children */
@@ -98,12 +95,12 @@ static void instance_display_tree_helper(
 }
 
 /*!
- \param root  Pointer to root instance to display
-
  Displays the given instance tree to standard output in a hierarchical format.  Shows
  instance names as well as associated module name.
 */
-void instance_display_tree( funit_inst* root ) { PROFILE(INSTANCE_DISPLAY_TREE);
+void instance_display_tree(
+  funit_inst* root  /*!< Pointer to root instance to display */
+) { PROFILE(INSTANCE_DISPLAY_TREE);
 
   instance_display_tree_helper( root, "" );
 
@@ -112,16 +109,16 @@ void instance_display_tree( funit_inst* root ) { PROFILE(INSTANCE_DISPLAY_TREE);
 }
 
 /*!
- \param funit      Pointer to functional unit to store in this instance.
- \param inst_name  Instantiated name of this instance.
- \param range      For arrays of instances, contains range information for this array.
-
  \return Returns pointer to newly created functional unit instance.
 
  Creates a new functional unit instance from heap, initializes its data and
  returns a pointer to it.
 */
-funit_inst* instance_create( func_unit* funit, char* inst_name, vector_width* range ) { PROFILE(INSTANCE_CREATE);
+funit_inst* instance_create(
+  func_unit*    funit,      /*!< Pointer to functional unit to store in this instance */
+  char*         inst_name,  /*!< Instantiated name of this instance */
+  vector_width* range       /*!< For arrays of instances, contains range information for this array */
+) { PROFILE(INSTANCE_CREATE);
 
   funit_inst* new_inst;  /* Pointer to new functional unit instance */
 
@@ -160,15 +157,15 @@ funit_inst* instance_create( func_unit* funit, char* inst_name, vector_width* ra
 }
 
 /*!
- \param scope    String pointer to store generated scope (assumed to be allocated)
- \param leaf     Pointer to leaf instance in scope.
- \param flatten  Causes all unnamed scopes to be removed from generated scope if set to TRUE
-
  Recursively travels up to the root of the instance tree, building the scope
  string as it goes.  When the root instance is reached, the string is returned.
  Assumes that scope is initialized to the NULL character.
 */
-void instance_gen_scope( char* scope, funit_inst* leaf, bool flatten ) { PROFILE(INSTANCE_GEN_SCOPE);
+void instance_gen_scope(
+  char*       scope,   /*!< String pointer to store generated scope (assumed to be allocated) */
+  funit_inst* leaf,    /*!< Pointer to leaf instance in scope */
+  bool        flatten  /*!< Causes all unnamed scopes to be removed from generated scope if set to TRUE */
+) { PROFILE(INSTANCE_GEN_SCOPE);
 
   if( leaf != NULL ) {
 
@@ -191,17 +188,14 @@ void instance_gen_scope( char* scope, funit_inst* leaf, bool flatten ) { PROFILE
 }
 
 /*!
- \param inst_name  Instance name to compare to this instance's name (may contain array information)
- \param inst       Pointer to instance to compare name against.
-
  \return Returns TRUE if the given instance name and instance match.  If the specified instance is
          a part of an array of instances and the base name matches the base name of inst_name, we
          also check to make sure that the index of inst_name falls within the legal range of this
          instance.
 */
 static bool instance_compare(
-  char*       inst_name,
-  funit_inst* inst
+  char*       inst_name,  /*!< Instance name to compare to this instance's name (may contain array information) */
+  funit_inst* inst        /*!< Pointer to instance to compare name against */
 ) { PROFILE(INSTANCE_COMPARE);
 
   bool         retval = FALSE;  /* Return value of this function */
@@ -244,17 +238,17 @@ static bool instance_compare(
 }
 
 /*!
- \param root        Root of funit_inst tree to parse for scope.
- \param scope       Scope to search for.
- \param rm_unnamed  Set to TRUE if we need to remove unnamed scopes
- 
  \return Returns pointer to functional unit instance found by scope.
  
  Searches the specified functional unit instance tree for the specified
  scope.  When the functional unit instance is found, a pointer to that
  functional unit instance is passed back to the calling function.
 */
-funit_inst* instance_find_scope( funit_inst* root, char* scope, bool rm_unnamed ) { PROFILE(INSTANCE_FIND_SCOPE);
+funit_inst* instance_find_scope(
+  funit_inst* root,       /*!< Root of funit_inst tree to parse for scope */
+  char*       scope,      /*!< Scope to search for */
+  bool        rm_unnamed  /*!< Set to TRUE if we need to remove unnamed scopes */
+) { PROFILE(INSTANCE_FIND_SCOPE);
  
   char        front[256];   /* Front of scope value */
   char        rest[4096];   /* Rest of scope value */
@@ -292,10 +286,6 @@ funit_inst* instance_find_scope( funit_inst* root, char* scope, bool rm_unnamed 
 }
 
 /*!
- \param root    Pointer to root functional unit instance of tree.
- \param funit   Pointer to functional unit to find in tree.
- \param ignore  Pointer to number of matches to ignore.
-
  \return Returns pointer to functional unit instance found by scope.
  
  Searches the specified functional unit instance tree for the specified
@@ -305,9 +295,9 @@ funit_inst* instance_find_scope( funit_inst* root, char* scope, bool rm_unnamed 
  decremented and the searching continues.
 */
 funit_inst* instance_find_by_funit(
-            funit_inst*      root,
-            const func_unit* funit,
-  /*@out@*/ int*             ignore
+            funit_inst*      root,   /*!< Pointer to root functional unit instance of tree */
+            const func_unit* funit,  /*!< Pointer to functional unit to find in tree */
+  /*@out@*/ int*             ignore  /*!< Pointer to number of matches to ignore */
 ) { PROFILE(INSTANCE_FIND_BY_FUNIT);
 
   funit_inst* match_inst = NULL;  /* Pointer to functional unit instance that found a match */
@@ -342,12 +332,6 @@ funit_inst* instance_find_by_funit(
 }
 
 /*!
- \param inst     Pointer to instance to add child instance to.
- \param child    Pointer to child functional unit to create instance for.
- \param name     Name of instance to add.
- \param range    For arrays of instances, contains the range of the instance array
- \param resolve  Set to TRUE if newly added instance should be immediately resolved
- 
  \return Returns pointer to newly created functional unit instance if this instance name isn't already in
          use in the current instance; otherwise, returns NULL.
  
@@ -355,11 +339,11 @@ funit_inst* instance_find_by_funit(
  instance, and resolves any parameters.
 */
 static funit_inst* instance_add_child(
-  funit_inst*   inst,
-  func_unit*    child,
-  char*         name,
-  vector_width* range,
-  bool          resolve
+  funit_inst*   inst,    /*!< Pointer to instance to add child instance to */
+  func_unit*    child,   /*!< Pointer to child functional unit to create instance for */
+  char*         name,    /*!< Name of instance to add */
+  vector_width* range,   /*!< For arrays of instances, contains the range of the instance array */
+  bool          resolve  /*!< Set to TRUE if newly added instance should be immediately resolved */
 ) { PROFILE(INSTANCE_ADD_CHILD);
 
   funit_inst* new_inst;  /* Pointer to newly created instance to add */
@@ -409,16 +393,16 @@ static funit_inst* instance_add_child(
 }
 
 /*!
- \param from_inst  Pointer to instance tree to copy.
- \param to_inst    Pointer to instance to copy tree to.
- \param name       Instance name of current instance being copied.
- \param range      For arrays of instances, indicates the array range.
- \param resolve    Set to TRUE if newly added instance should be immediately resolved.
-
  Recursively copies the instance tree of from_inst to the instance
  to_inst, allocating memory for the new instances and resolving parameters.
 */
-void instance_copy( funit_inst* from_inst, funit_inst* to_inst, char* name, vector_width* range, bool resolve ) { PROFILE(INSTANCE_COPY);
+void instance_copy(
+  funit_inst*   from_inst,  /*!< Pointer to instance tree to copy */
+  funit_inst*   to_inst,    /*!< Pointer to instance to copy tree to */
+  char*         name,       /*!< Instance name of current instance being copied */
+  vector_width* range,      /*!< For arrays of instances, indicates the array range */
+  bool          resolve     /*!< Set to TRUE if newly added instance should be immediately resolved */
+) { PROFILE(INSTANCE_COPY);
 
   funit_inst* curr;      /* Pointer to current functional unit instance to copy */
   funit_inst* new_inst;  /* Pointer to newly created functional unit instance */
@@ -447,9 +431,6 @@ void instance_copy( funit_inst* from_inst, funit_inst* to_inst, char* name, vect
 }
 
 /*!
- \param parent  Pointer to parent instance to attach child to
- \param child   Pointer to child instance tree to attach
-
  Searches given parent instance child list for a matching child to the specified
  child instance.  If the given child instance does not already exist in the parent's
  list of children, it is added and its parent pointer is pointed to the parent.
@@ -457,7 +438,10 @@ void instance_copy( funit_inst* from_inst, funit_inst* to_inst, char* name, vect
  \note
  This function creates a copy of the given child instance tree.
 */
-void instance_attach_child( funit_inst* parent, funit_inst* child ) { PROFILE(INSTANCE_ATTACH_CHILD);
+void instance_attach_child(
+  funit_inst* parent,  /*!< Pointer to parent instance to attach child to */
+  funit_inst* child    /*!< Pointer to child instance tree to attach */
+) { PROFILE(INSTANCE_ATTACH_CHILD);
 
   funit_inst* curr_inst;  /* Pointer to current instance */
   
@@ -492,14 +476,6 @@ void instance_attach_child( funit_inst* parent, funit_inst* child ) { PROFILE(IN
 }
 
 /*!
- \param root        Root funit_inst pointer of functional unit instance tree.
- \param parent      Pointer to parent functional unit of specified child.
- \param child       Pointer to child functional unit to add.
- \param inst_name   Name of new functional unit instance.
- \param range       For array of instances, specifies the name range.
- \param resolve     If set to TRUE, resolve any added instance.
- \param child_gend  If set to TRUE, specifies that child is a generated instance and should only be added once
-
  \return Returns TRUE if specified instance was successfully added to the specified instance tree;
          otherwise, returns FALSE.
  
@@ -508,8 +484,15 @@ void instance_attach_child( funit_inst* parent, funit_inst* child ) { PROFILE(IN
  tree pointed to by root.  This function is used by the db_add_instance
  function during the parsing stage.
 */
-bool instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child, char* inst_name, vector_width* range,
-                         bool resolve, bool child_gend ) { PROFILE(INSTANCE_PARSE_ADD);
+bool instance_parse_add(
+  funit_inst**  root,       /*!< Root funit_inst pointer of functional unit instance tree */
+  func_unit*    parent,     /*!< Pointer to parent functional unit of specified child */
+  func_unit*    child,      /*!< Pointer to child functional unit to add */
+  char*         inst_name,  /*!< Name of new functional unit instance */
+  vector_width* range,      /*!< For array of instances, specifies the name range */
+  bool          resolve,    /*!< If set to TRUE, resolve any added instance */
+  bool          child_gend  /*!< If set to TRUE, specifies that child is a generated instance and should only be added once */
+) { PROFILE(INSTANCE_PARSE_ADD);
   
   bool        retval = TRUE;  /* Return value for this function */
   funit_inst* inst;           /* Temporary pointer to functional unit instance to add to */
@@ -639,14 +622,11 @@ bool instance_resolve_inst(
 }
 
 /*!
- \param root  Pointer to root of instance tree
- \param curr  Pointer to current instance
-
  Recursively iterates through the entire instance tree
 */
 static void instance_resolve_helper(
-  funit_inst* root,
-  funit_inst* curr
+  funit_inst* root,  /*!< Pointer to root of instance tree */
+  funit_inst* curr   /*!< Pointer to current instance */
 ) { PROFILE(INSTANCE_RESOLVE_HELPER);
 
   funit_inst* curr_child;  /* Pointer to current child */
@@ -670,28 +650,20 @@ static void instance_resolve_helper(
 }
 
 /*!
- \param root  Pointer to current functional unit instance to resolve.
-
  Recursively iterates through entire instance tree, resolving any instance arrays that are found.
 */
-void instance_resolve( funit_inst* root ) { PROFILE(INSTANCE_RESOLVE);
+void instance_resolve(
+  funit_inst* root  /*!< Pointer to current functional unit instance to resolve */
+) { PROFILE(INSTANCE_RESOLVE);
 
   /* Resolve all instance names */
   instance_resolve_helper( root, root );
-
-  /* Now resolve all of the rest of the parameters */
-  // param_resolve( root );
 
   PROFILE_END;
 
 }
 
 /*!
- \param root       Pointer to root instance of functional unit instance tree.
- \param parent     String scope of parent instance.
- \param child      Pointer to child functional unit to add to specified parent's child list.
- \param inst_name  Instance name of this child functional unit instance.
-
  \return Returns TRUE if instance was added to the specified functional unit instance tree; otherwise,
          returns FALSE (indicates that the instance is from a different hierarchy).
 
@@ -700,7 +672,12 @@ void instance_resolve( funit_inst* root ) { PROFILE(INSTANCE_RESOLVE);
  tree pointed to by root.  This function is used by the db_read
  function during the CDD reading stage.
 */ 
-bool instance_read_add( funit_inst** root, char* parent, func_unit* child, char* inst_name ) { PROFILE(INSTANCE_READ_ADD);
+bool instance_read_add(
+  funit_inst** root,      /*!< Pointer to root instance of functional unit instance tree */
+  char*        parent,    /*!< String scope of parent instance */
+  func_unit*   child,     /*!< Pointer to child functional unit to add to specified parent's child list */
+  char*        inst_name  /*!< Instance name of this child functional unit instance */
+) { PROFILE(INSTANCE_READ_ADD);
 
   bool        retval = TRUE;  /* Return value for this function */
   funit_inst* inst;           /* Temporary pointer to functional unit instance to add to */
@@ -746,12 +723,6 @@ bool instance_read_add( funit_inst** root, char* parent, func_unit* child, char*
 }
 
 /*!
- \param root         Root of functional unit instance tree to write.
- \param file         Output file to display contents to.
- \param scope        Scope of this functional unit.
- \param parse_mode   Specifies if we are parsing or scoring.
- \param report_save  Specifies if we are saving a CDD file after modifying it with the report command
-
  \throws anonymous gen_item_assign_expr_ids instance_db_write funit_db_write
 
  Calls each functional unit display function in instance tree, starting with
@@ -760,11 +731,11 @@ bool instance_read_add( funit_inst** root, char* parent, func_unit* child, char*
  the value of scope to NULL.
 */
 void instance_db_write(
-  funit_inst* root,
-  FILE*       file,
-  char*       scope,
-  bool        parse_mode,
-  bool        report_save
+  funit_inst* root,        /*!< Root of functional unit instance tree to write */
+  FILE*       file,        /*!< Output file to display contents to */
+  char*       scope,       /*!< Scope of this functional unit */
+  bool        parse_mode,  /*!< Specifies if we are parsing or scoring */
+  bool        report_save  /*!< Specifies if we are saving a CDD file after modifying it with the report command */
 ) { PROFILE(INSTANCE_DB_WRITE);
 
   char        tscope[4096];  /* New scope of functional unit to write */
@@ -817,18 +788,14 @@ void instance_db_write(
 }
 
 /*!
- \param root     Pointer to current instance root
- \param rm_head  Pointer to head of functional unit list to remove
- \param rm_tail  Pointer to head of functional unit list to remove
-
  Recursively iterates through instance tree, integrating all unnamed scopes that do
  not contain any signals into their parent modules.  This function only gets called
  during the report command.
 */
 static void instance_flatten_helper(
-  funit_inst*  root,
-  funit_link** rm_head,
-  funit_link** rm_tail
+  funit_inst*  root,     /*!< Pointer to current instance root */
+  funit_link** rm_head,  /*!< Pointer to head of functional unit list to remove */
+  funit_link** rm_tail   /*!< Pointer to head of functional unit list to remove */
 ) { PROFILE(INSTANCE_FLATTEN_HELPER);
 
   funit_inst* child;                 /* Pointer to current child instance */
@@ -856,9 +823,6 @@ static void instance_flatten_helper(
       */
       if( funit_is_unnamed( child->funit ) && (child->funit->sig_head == NULL) ) {
 
-        /* Converge the child functional unit into this functional unit */
-        //funit_converge( root->funit, child->funit );
-
         /* Remove this child from the child list of this instance */
         if( child == root->child_head ) {
           if( child == root->child_tail ) {
@@ -880,7 +844,6 @@ static void instance_flatten_helper(
         if( grandchild != NULL ) {
           while( grandchild != NULL ) {
             grandchild->parent = root;
-            //funit_flatten_name( grandchild->funit, back );
             grandchild = grandchild->next;
           }
           if( root->child_head == NULL ) {
@@ -918,13 +881,13 @@ static void instance_flatten_helper(
 }
 
 /*!
- \param root     Pointer to current instance root
-
  Recursively iterates through instance tree, integrating all unnamed scopes that do
  not contain any signals into their parent modules.  This function only gets called
  during the report command.
 */
-void instance_flatten( funit_inst* root ) { PROFILE(INSTANCE_FLATTEN);
+void instance_flatten(
+  funit_inst* root  /*!< Pointer to current instance root */
+) { PROFILE(INSTANCE_FLATTEN);
 
   funit_link* rm_head = NULL;  /* Pointer to head of functional unit list to remove */
   funit_link* rm_tail = NULL;  /* Pointer to tail of functional unit list to remove */
@@ -951,12 +914,12 @@ void instance_flatten( funit_inst* root ) { PROFILE(INSTANCE_FLATTEN);
 }
 
 /*!
- \param root  Pointer to root instance to remove statements from
- \param stmt  Pointer to statement to match
-
- TBD
+ Removes all statement blocks in the design that call that specified statement.
 */
-void instance_remove_stmt_blks_calling_stmt( funit_inst* root, statement* stmt ) { PROFILE(INSTANCE_REMOVE_STMT_BLKS_CALLING_STMT);
+void instance_remove_stmt_blks_calling_stmt(
+  funit_inst* root,  /*!< Pointer to root instance to remove statements from */
+  statement*  stmt   /*!< Pointer to statement to match */
+) { PROFILE(INSTANCE_REMOVE_STMT_BLKS_CALLING_STMT);
 
   funit_inst* curr_child;  /* Pointer to current child instance to parse */
 #ifndef VPI_ONLY
@@ -991,14 +954,11 @@ void instance_remove_stmt_blks_calling_stmt( funit_inst* root, statement* stmt )
 }
 
 /*!
- \param root   Pointer to functional unit instance to remove expression from
- \param stmt   Pointer to statement to remove from list
-
  Recursively traverses the given instance tree, removing the given statement.
 */
 void instance_remove_parms_with_expr(
-  funit_inst* root,
-  statement*  stmt
+  funit_inst* root,  /*!< Pointer to functional unit instance to remove expression from */
+  statement*  stmt   /*!< Pointer to statement to remove from list */
 ) { PROFILE(INSTANCE_REMOVE_PARMS_WITH_EXPR);
 
   funit_inst* curr_child;  /* Pointer to current child instance to traverse */
@@ -1037,11 +997,11 @@ void instance_remove_parms_with_expr(
 }
 
 /*!
- \param inst  Pointer to instance to deallocate memory for
-
  Deallocates all memory allocated for the given instance.
 */
-void instance_dealloc_single( funit_inst* inst ) { PROFILE(INSTANCE_DEALLOC_SINGLE);
+void instance_dealloc_single(
+  funit_inst* inst  /*!< Pointer to instance to deallocate memory for */
+) { PROFILE(INSTANCE_DEALLOC_SINGLE);
 
   if( inst != NULL ) {
 
@@ -1076,12 +1036,12 @@ void instance_dealloc_single( funit_inst* inst ) { PROFILE(INSTANCE_DEALLOC_SING
 }
 
 /*!
- \param root  Pointer to root instance of functional unit instance tree to remove.
-
  Recursively traverses instance tree, deallocating heap memory used to store the
  the tree.
 */
-void instance_dealloc_tree( funit_inst* root ) { PROFILE(INSTANCE_DEALLOC_TREE);
+void instance_dealloc_tree(
+  funit_inst* root  /*!< Pointer to root instance of functional unit instance tree to remove */
+) { PROFILE(INSTANCE_DEALLOC_TREE);
 
   funit_inst* curr;  /* Pointer to current instance to evaluate */
   funit_inst* tmp;   /* Temporary pointer to instance */
@@ -1106,14 +1066,14 @@ void instance_dealloc_tree( funit_inst* root ) { PROFILE(INSTANCE_DEALLOC_TREE);
 }
 
 /*!
- \param root   Root of functional unit instance tree.
- \param scope  Scope of functional unit to remove from tree.
-    
  Searches tree for specified functional unit.  If the functional unit instance is found,
  the functional unit instance is removed from the tree along with all of its
  child functional unit instances.
 */
-void instance_dealloc( funit_inst* root, char* scope ) { PROFILE(INSTANCE_DEALLOC);
+void instance_dealloc(
+  funit_inst* root,  /*!< Root of functional unit instance tree */
+  char*       scope  /*!< Scope of functional unit to remove from tree */
+) { PROFILE(INSTANCE_DEALLOC);
   
   funit_inst* inst;        /* Pointer to instance to remove */
   funit_inst* curr;        /* Pointer to current child instance to remove */
@@ -1172,6 +1132,10 @@ void instance_dealloc( funit_inst* root, char* scope ) { PROFILE(INSTANCE_DEALLO
 
 /*
  $Log$
+ Revision 1.95.4.2  2008/08/06 20:11:34  phase1geo
+ Adding support for instance-based coverage reporting in GUI.  Everything seems to be
+ working except for proper exclusion handling.  Checkpointing.
+
  Revision 1.95.4.1  2008/07/10 22:43:52  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

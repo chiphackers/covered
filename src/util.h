@@ -93,9 +93,9 @@ bool file_exists( const char* file );
 
 /*! \brief Reads line from file and returns it in string form. */
 bool util_readline(
-            FILE*         file,
-  /*@out@*/ char**        line,
-  /*@out@*/ unsigned int* line_size
+            FILE*  file,
+  /*@out@*/ char** line,
+  /*@out@*/ unsigned int*   line_size
 );
 
 /*! \brief Reads in line from file and returns the contents of the quoted string following optional whitespace */
@@ -170,11 +170,17 @@ void gen_char_string(
 );
 
 #ifdef HAVE_SYS_TIME_H
-/*! \brief Starts timing the specified timer structure. */
-void timer_start( timer** tm );
+/*! \brief Clears the timer, resetting the accumulated time information and allocating timer memory, if needed */
+void timer_clear( /*@out@*/ timer** tm );
+
+/*! \brief Starts timing the specified timer structure and allocates/clears timer memory, if needed. */
+void timer_start( /*@out@*/ timer** tm );
 
 /*! \brief Stops timing the specified timer structure. */
-void timer_stop( timer** tm );
+void timer_stop( /*@out@*/ timer** tm );
+
+/*! \brief Generates a human-readable time-of-day string from the given timer structure */
+char* timer_to_string( timer* tm );
 #endif
 
 /*! \brief Returns string representation of the specified functional unit type */
@@ -200,6 +206,9 @@ void read_command_file(
 
 /*
  $Log$
+ Revision 1.41.4.3  2008/08/12 16:53:10  phase1geo
+ Adding timer information for -v option to the rank command.
+
  Revision 1.41.4.2  2008/07/23 21:38:42  phase1geo
  Adding better formatting for ranking reports to allow the inclusion of the full
  pathname for each CDD file listed.

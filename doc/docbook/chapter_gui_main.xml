@@ -1,0 +1,587 @@
+<chapter id="chapter.gui.main" xreflabel="Navigating the Main Window">
+  <title>Navigating the Main Window</title>
+  <para>
+  <xref linkend="figure.gui.main.window"/> shows the main window prior to a CDD file being loaded.  There are five main 
+  components of the main window.  These components are the following (from top to bottom, left to right):
+  </para>
+  <para>
+    <orderedlist>
+      <listitem><para><xref linkend="section.gui.main.menubar"/></para></listitem>
+      <listitem><para><xref linkend="section.gui.main.covbar"/></para></listitem>
+      <listitem><para><xref linkend="section.gui.main.listbox"/></para></listitem>
+      <listitem><para><xref linkend="section.gui.main.viewer"/></para></listitem>
+      <listitem><para><xref linkend="section.gui.main.infobar"/></para></listitem>
+    </orderedlist>
+  </para>
+  <para>
+    <figure id="figure.gui.main.window" xreflabel="Covered Main Window">
+      <title>Covered Main Window</title>
+      <mediaobject><imageobject><imagedata fileref="img/main_window.gif" format="GIF"/></imageobject></mediaobject>
+    </figure>
+  </para>
+  
+  <sect1 id="section.gui.main.menubar" xreflabel="The Main Menu Bar">
+    <title>The Main Menu Bar</title>
+    <para>
+    The Main Menu Bar consists of four menus at the top of the main window.  <xref linkend="figure.gui.main.menubar"/> below shows the menu bar portion of the GUI 
+    bordered in red.  These menus are the following:
+    </para>
+    <para>
+      <orderedlist>
+        <listitem>
+          <para>
+            <xref linkend="section.gui.main.filemenu"/> - Creates, opens, merges, saves and closes CDD files, generates 
+            reports, and exits the application.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            <xref linkend="section.gui.main.reportmenu"/> - Specifies what type of report to show.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            <xref linkend="section.gui.main.viewmenu"/> - Provides additional viewing options.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            <xref linkend="section.gui.main.helpmenu"/> - Provides access to online help manual and tool information.
+          </para>
+        </listitem>
+      </orderedlist>
+    </para>
+    <para>
+      <figure id="figure.gui.main.menubar" xreflabel="Covered Main Window Highlighting the Menu Bar">
+        <title>Covered Main Window Highlighting the Menu Bar</title>
+        <mediaobject><imageobject><imagedata fileref="img/main_menu.gif" format="GIF"/></imageobject></mediaobject>
+      </figure>
+    </para>
+    <note>
+      <para>
+      On Mac OS X, the main menubar does not exist in the application window.  Like most Mac OS X
+      applications, the main menubar exists at the top of the display.
+      </para>
+    </note>
+    <para>
+      
+    </para>
+    
+    <sect2 id="section.gui.main.filemenu" xreflabel="File">
+      <title>The File Menu</title>
+      <para>
+      The file menu is used to open a new CDD file, merge a related CDD file (derived from the same design as the 
+      currently opened CDD file, save the currently opened CDD file(s), close all opened CDD files, generate different 
+      types of output and view the names of all currently opened CDD files.  Additionally, the user selects this menu 
+      bar to exit the Covered report viewer GUI.  <xref linkend="figure.gui.main.filemenu"/> shows the file menu 
+      contents within the main window.
+      </para>
+      <para>
+        <figure id="figure.gui.main.filemenu" xreflabel="The File Menu">
+          <title>The File Menu</title>
+          <mediaobject><imageobject><imagedata fileref="img/file_menu.gif" format="GIF"/></imageobject></mediaobject>
+        </figure>
+      </para>
+      
+      <sect3>
+        <title>Open/Merge CDDs...</title>
+        <para>
+        This menu option is used to either open a new CDD file or merge a related CDD file into the currently opened 
+        CDD file(s).  This action needs to be performed before any coverage viewing can take place.  When this option 
+        is selected, a standard file window is displayed allowing the user to select one (or possibly more depending on 
+        your version of Tcl/Tk) CDD file to open or merge.  To select more than one CDD file with one call to this 
+        option, simply press and hold the Control key while selecting files with the left mouse button.  If your version
+        of Tcl/Tk supports this feature, you will see multiple files highlighted for selection; otherwise, only the last
+        selected file will be selected.  If no CDD files currently are opened, any CDD file may be opened.  If one or
+        more CDD files have been opened/merged, only CDD files generated from the same design may be merged.
+        </para>
+        <para>
+        Note that this option has an accelerator keystroke &lt;Control-O&gt;.  Hitting this keystroke combination will 
+        also open new CDD file(s).
+        </para>
+      </sect3>
+      
+      <sect3>
+        <title>View Loaded CDD(s)...</title>
+        <para>
+        This menu option is only available after an initial CDD file has been opened using the <emphasis role="bold">Open/Merge 
+        CDDs...</emphasis> file menu option.  When this menu option is selected, a new window displaying all currently opened CDD files 
+        is displayed (see <xref linkend="section.gui.main.file.viewer"/> below).  If another CDD file is merged and this window is 
+        currently displayed, it is automatically updated with the newly added file.  If the 
+        <emphasis role="bold">Close CDDs...</emphasis> file menu option is selected while this window is opened, all filenames will be 
+        automatically removed to indicate this.  The <emphasis role="bold">View Loaded CDD(s)...</emphasis> menu option is useful for 
+        helping the user see exactly which files have been merged or not merged in the current viewer.  Simply click on the 
+        <emphasis role="bold">Close</emphasis> button in the <emphasis role="bold">Loaded CDD file viewer</emphasis> window to close the 
+        window.
+        </para>
+        <para>
+          <figure id="section.gui.main.file.viewer" xreflabel="The CDD Opened File Viewer">
+            <title>The CDD Opened File Viewer</title>
+            <mediaobject><imageobject><imagedata fileref="img/file_viewer.gif" format="GIF"/></imageobject></mediaobject>
+          </figure>
+        </para>
+      </sect3>
+      
+      <sect3>
+        <title>Save CDD...</title>
+        <para>
+        This menu option is only available after one or more CDD files have been opened/merged.  It is used to save the opened or merged 
+        CDD files as a single, merged CDD file than can be viewed as a separate CDD file or can be merged with other CDD files.  It is 
+        also used to save any changes that the user has made to exclude/include coverage cases within the GUI.  If you would like to 
+        retain this information, please save the CDD file.  By default, the name of the first loaded CDD file is placed in the "Save As" 
+        window when this option is selected. The user may choose to replace the old CDD file with the new one, or the user may save it 
+        under a different name.  Once a CDD file has been saved, this option is deselected until either a new CDD file is merged or the 
+        user changes the exclude/include property of any coverage case within the GUI.
+        </para>
+        <para>
+        Note that this option has an accelerator keystroke &lt;Control-s&gt;.  Hitting this keystroke combination will also save the 
+        current CDD.
+        </para>
+      </sect3>
+      
+      <sect3>
+        <title>Close CDDs</title>
+        <para>
+        This menu option is used to close all opened/merged CDD files so that the user may view a different CDD file without needing to 
+        exit and re-enter the GUI. The user may open and close as many times as needed without needing to reinvoke the GUI.  When CDD 
+        files are closed, any opened coverage windows are automatically closed and all necessary GUI components are restored to their 
+        original state as when the GUI is first invoked.  If the currently opened CDD file(s) have not been saved, a window (shown in 
+        <xref linkend="figure.gui.main.close"/> below) is displayed to ask the user if they would like to save prior to closing.  To save 
+        the CDD file, simply click "Yes" and a "Save As" window will prompt you for a location/name to save it as.  To close the CDD file 
+        without saving, simply click "No".  To cancel the close operation, simply click <emphasis role="bold">Cancel</emphasis>.  To view 
+        another CDD file after closing all CDD files, simply select the <emphasis role="bold">Open/Merge CDDs...</emphasis> file menu 
+        option.
+        </para>
+        <para>
+        Note that this option has an accelerator keystroke &lt;Control-w&gt;.  Hitting this keystroke combination will also close all 
+        opened CDD files.
+        </para>
+        <para>
+          <figure id="figure.gui.main.close" xreflabel="The Close Warning Window">
+            <title>The Close Warning Window</title>
+            <mediaobject><imageobject><imagedata fileref="img/close_warn.gif" format="GIF"/></imageobject></mediaobject>
+          </figure>
+        </para>
+      </sect3>
+      
+      <sect3>
+        <title>Generate</title>
+        <para>
+        This option, when selected, displays a submenu of items that can be generated by the GUI.  The following options (with 
+        descriptions) are available (see <xref linkend="figure.gui.main.generate"/>).
+        </para>
+        <para>
+          <figure id="figure.gui.main.generate" xreflabel="The Generate Menu List">
+            <title>The Generate Menu List</title>
+            <mediaobject><imageobject><imagedata fileref="img/gen_menu.gif" format="GIF"/></imageobject></mediaobject>
+          </figure>
+        </para>
+        <para>
+          <itemizedlist>
+            <listitem>
+              <para>
+              <emphasis role="bold">ASCII Report...</emphasis>
+              </para>
+              <para>
+              Selecting this submenu option will cause Covered to generate an ASCII version of the coverage report to a specified file 
+              (note:  this can also be accomplished with the "report" command of Covered's command-line interface).  When this option is 
+              selected, another window is created that lists the current report generation options as specified in the Preferences 
+              window.  Additionally, the user may modify the report generation options and select the name of the coverage report file to 
+              save.  See <xref linkend="chapter.gui.genreport"/> for more information on the navigation of this window.
+              </para>
+              <para>
+              Note that this option has an accelerator keystroke &lt;Control-r&gt;. Hitting this keystroke combination will also cause 
+              the ASCII report generator window to be displayed.
+              </para>
+            </listitem>
+          </itemizedlist>
+        </para>
+      </sect3>
+      
+      <sect3>
+        <title>Exit</title>
+        <para>
+        This menu option will exit the entire GUI application, closing all opened windows created by this application.  Use this option 
+        to exit the application.  If the currently opened CDD file(s) have not been saved, a window (shown in 
+        <xref linkend="figure.gui.main.exit"/> below) is displayed to ask the user if they would like to save prior to exiting.  To save 
+        the CDD file, simply click <emphasis role="bold">Yes</emphasis> and a "Save As" window will prompt you for a location/name to 
+        save it as.  To close the CDD file without saving, simply click <emphasis role="bold">No</emphasis>.  To cancel the close 
+        operation, simply click <emphasis role="bold">Cancel</emphasis>.
+        </para>
+        <para>
+        Note that this option has an accelerator keystroke &lt;Control-x&gt;.  Hitting this keystroke combination will also close the 
+        entire application.
+        </para>
+        <para>
+          <figure id="figure.gui.main.exit" xreflabel="The Exit Warning Window">
+            <title>The Exit Warning Window</title>
+            <mediaobject><imageobject><imagedata fileref="img/exit_warn.gif" format="GIF"/></imageobject></mediaobject>
+          </figure>
+        </para>
+      </sect3>
+      
+    </sect2>
+    
+    <sect2 id="section.gui.main.reportmenu" xreflabel="Report">
+      <title>The Report Menu</title>
+      <para>
+      The report menu allows the user to display the currently opened CDD file contents in a number of different ways for analyzing.  The 
+      options specified in this menu closely imitate the options in the "report" command.  The type of report can be changed at any point 
+      in time while a CDD is loaded.  When a report menu option is selected, Covered will automatically convert all information in the 
+      GUI to represent this report type.  <xref linkend="figure.gui.main.report.menu"/> below shows the contents of the report menu.  Each 
+      menu item is described below the figure.
+      </para>
+      <para>
+        <figure id="figure.gui.main.report.menu" xreflabel="The Report Menu">
+          <title>The Report Menu</title>
+          <mediaobject><imageobject><imagedata fileref="img/report_menu.gif" format="GIF"/></imageobject></mediaobject>
+        </figure>
+      </para>
+      
+      <sect3>
+        <title>Module-Based</title>
+        <para>
+        When the diamond to the left of this option is selected, the generated report information will be in module-based representation.  
+        A module-based report gathers all of the module instances that instantiate the same module and merges their results based on the 
+        module name.  This is useful for understanding what logic in a module has been tested or untested without care to individual 
+        instance contribution.  Selecting this report type (the default) will cause the <emphasis role="bold">Instance-based</emphasis> 
+        menu option to be automatically deselected (the two report types are mutually exclusive).
+        </para>
+      </sect3>
+      
+      <sect3>
+        <title>Instance-Based</title>
+        <para>
+        When the diamond to the left of this option is selected, the generated report information will be in instance-based 
+        representation.  An instance-based report shows the coverage information for each module instance within the design.  This allows 
+        the user to discern what logic is being covered in individual instances. Selecting this report type will cause the 
+        <emphasis role="bold">Module-based</emphasis> menu option to be automatically deselected (the two report types are mutually 
+        exclusive).
+        </para>
+      </sect3>
+      
+      <sect3>
+        <title>Show Uncovered</title>
+        <para>
+        When the square to the left of this option is selected (the default), all uncovered lines, toggles, logic, and FSM states/arcs 
+        within the file viewer window will be highlighted for the user to quickly see what code was monitored by Covered but determined 
+        to not be fully covered.  This option may be selected along with the <emphasis role="bold">Show Covered</emphasis> menu option to 
+        see both covered and uncovered logic within the same file.
+        </para>
+      </sect3>
+      
+      <sect3>
+        <title>Show Covered</title>
+        <para>
+        When the square to the left of this option is selected, all covered lines, toggles, logic, and FSM states/arcs within the file 
+        viewer window will be highlighted for the user to quickly see what code was monitored by Covered and determined to be fully 
+        covered.  This option is useful for the user of Covered to understand what logic was monitored during simulation.  This option 
+        may be selected along with the <emphasis role="bold">Show Uncovered</emphasis> menu option to see both covered and uncovered 
+        logic within the same file.
+        </para>
+      </sect3>
+      
+      <sect3>
+        <title>Show Race Conditions</title>
+        <para>
+        When the square to the left of this option is selected, all logic lines that were found to contain a potential race condition and 
+        was, therefore, eliminated from coverage consideration by Covered will be highlighted by the colors as selected in the preference 
+        menu.  This option is useful for the user of Covered to understand what logic was not considered for coverage information due to 
+        a detected potential race condition situation.  Please see <xref linkend="chapter.race"/> for more information on what Covered looks for in 
+        logic to consider it to be a possible race condition.
+        </para>
+      </sect3>
+    </sect2>
+    
+    <sect2 id="section.gui.main.viewmenu" xreflabel="The View Menu">
+      <title>The View Menu</title>
+      <para>
+      The View menu allows the user to select or change the current way the information in Covered is viewed.  
+      <xref linkend="figure.gui.main.view.menu"/> shows the contents of the View menu.
+      </para>
+      <para>
+        <figure id="figure.gui.main.view.menu" xreflabel="The View Menu">
+          <title>The View Menu</title>
+          <mediaobject><imageobject><imagedata fileref="img/view_menu.gif" format="GIF"/></imageobject></mediaobject>
+        </figure>
+      </para>
+      
+      <sect3>
+        <title>Next Uncovered</title>
+        <para>
+        Causes the line containing the next uncovered metric to be visible in the <xref linkend="section.gui.main.viewer"/>.  If the next uncovered line already visible, 
+        this menu item will have no visible effect.  The search for the next uncovered line starts at (a) the top of the module (when the module is first displayed in 
+        the the Coverage Viewer), (b) from the last uncovered line searched for with the <emphasis role="bold">Next Uncovered</emphasis> or 
+        <emphasis role="bold">Previous Uncovered</emphasis> calls, or (c) from the last currently selected line (only valid for toggle and combinational logic views).
+        </para>
+        <para>
+        This menu item is only enabled when another uncovered line exists after the current uncovered line.  It can also be accessed with the accelerator keystroke 
+        &lt;Control-n&gt; or the right arrow button in the Main Window.
+        </para>
+      </sect3>
+      
+      <sect3>
+        <title>Previous Uncovered</title>
+        <para>
+        Causes the line containing the previous uncovered metric to be visible in the <xref linkend="section.gui.main.viewer"/>.  If the previous uncovered line is 
+        already visible, this menu item will have no visible effect.  The search for the previous uncovered line starts at (a) the top of the module (when the module is 
+        first displayed in the the Coverage Viewer), (b) from the last uncovered line  searched for with the <emphasis role="bold">Next Uncovered</emphasis> or <emphasis 
+        role="bold">Previous Uncovered</emphasis> calls, or (c) from  the last currently selected line (only valid for toggle and combinational logic views).
+        </para>
+        <para>
+        This menu item is only enabled when another uncovered line exists before the current uncovered line.  It can also be accessed with the accelerator keystroke 
+        &lt;Control-p&gt; or the left arrow button in the Main Window.
+        </para>
+      </sect3>
+      
+      <sect3>
+        <title>Show Current Selection</title>
+        <para>
+        This menu item is only available if the current metric mode is not "Line", the  user has clicked on an uncovered segment of code, and the associated 
+        <xref linkend="chapter.gui.toggle"/>, <xref linkend="chapter.gui.memory"/>, <xref linkend="chapter.gui.logic"/>, <xref linkend="chapter.gui.fsm"/> or 
+        <xref linkend="chapter.gui.assert"/> exists.  The currently selected line is visually identified in the <xref linkend="section.gui.main.viewer"/> area on the left-
+        hand-side of the line containing the uncovered code. If this line is not currently visible in the Coverage Viewer, selecting this menu item will cause it to be 
+        visible.
+        </para>
+        <para>
+        An accelerator keystroke &lt;Control-c&gt; will also invoke this menu item.
+        </para>
+      </sect3>
+      
+      <sect3>
+        <title>Wizard...</title>
+        <para>
+        Displays the Covered wizard window which normally opens upon starting the Covered GUI.  The Wizard window allows the user to easily create a new CDD file, open/
+        merge existing CDD files, rank existing CDD files and get user documentation. See <xref linkend="chapter.gui.wizard"/> for more information.
+        </para>
+      </sect3>
+      
+      <sect3>
+        <title>Preferences...</title>
+        <para>
+        Causes the <xref linkend="chapter.gui.preferences"/> to be created if it currently does not exist or forces it into the foreground if it does exist.
+        </para>
+        <note>
+          <para>
+          On Mac OS X, this menu item does not exist in the "Report Menu" but rather in the Covered application menu to remain consistent with the Mac OS X 
+          environment.
+          </para>
+        </note>
+      </sect3>
+    </sect2>
+    
+    <sect2 id="section.gui.main.helpmenu" xreflabel="The Help Menu">
+      <title>The Help Menu</title>
+      <para>
+      The help menu contains all of the user documentation for Covered. Additionally, information regarding the version of Covered used and other contact information for 
+      application problems, suggestions, etc. can be found in this menu.
+      </para>
+      <para>
+        <figure id="figure.gui.main.help.menu" xreflabel="The Help Menu">
+          <title>The Help Menu</title>
+          <mediaobject><imageobject><imagedata fileref="img/help_menu.gif" format="GIF"/></imageobject></mediaobject>
+        </figure>
+      </para>
+      
+      <sect3>
+        <title>Manual</title>
+        <para>
+        Selecting this menu item causes Covered to display the report viewer's user manual via <trademark class='trade'>HelpSystem</trademark>.
+        </para>
+      </sect3>
+      
+      <sect3>
+        <title>About Covered</title>
+        <para>
+        Selecting this menu item causes Covered to bring up a window showing the current release number, developer contact information and credits.
+        </para>
+        <note>
+          <para>
+          On Mac OS X, this menu item does not exist in the Help Menu but rather in the application's menu to remain consistent with the Mac OS X environment.
+          </para>
+        </note>
+      </sect3>      
+    </sect2>    
+  </sect1>
+  
+  <sect1 id="section.gui.main.covbar" xreflabel="The Coverage Type View Bar">
+    <title>The Coverage Type View Bar</title>
+    <para>
+    <xref linkend="figure.gui.main.covbar"/> shows the location of the coverage type view bar.  The bar contains a single selection button with the currently selected
+    coverage metric displayed.  There are six main types of coverage metrics that Covered can provide:  line, toggle, memory, logic (combinational logic), FSM (state 
+    and arc) and assert (assertion coverage).  When the Covered GUI is first invoked, the line coverage metric is the default mode.  To view a different metric, simply 
+    left click, select the desired coverage metric, and left click again.  Doing so will automatically set the selection indicator to the new mode and display the new 
+    metric information in the <xref linkend="section.gui.main.listbox"/> and <xref linkend="section.gui.main.viewer"/>.
+    </para>
+    <para>
+      <figure id="figure.gui.main.covbar" xreflabel="Covered Main Coverage Type View Bar">
+        <title>Covered Main Coverage Type View Bar</title>
+        <mediaobject><imageobject><imagedata fileref="img/main_cov.gif" format="GIF"/></imageobject></mediaobject>
+      </figure>
+    </para>
+  </sect1>
+  
+  <sect1 id="section.gui.main.listbox" xreflabel="Module/Instance Listbox">
+    <title>The Module/Instance Listbox</title>
+    <para>
+    After a CDD file has been opened in the GUI, the module/instance selection box (shown in 
+    <xref linkend="figure.gui.main.listbox"/> below) will contain either a list of all of the modules within the 
+    specified design or a list of all of the instances within the design, based on the type of report selected in the 
+    <xref linkend="section.gui.main.reportmenu"/> menu.  Left-clicking on a module/instance name within this box will 
+    cause that file to be output in the <xref linkend="section.gui.main.viewer"/> to the right of the selection box.
+    </para>
+    <para>
+    In addition to the names of the modules or instances of the design, each line also contains a summary view of the 
+    coverage for the currently selected metric for each module or instance.  The summary coverage information includes 
+    the number of hits, number of misses, total number and hit percentage.  Each column in the table can be resized by 
+    clicking on the separator bar between the column headers and sliding the column to the left or to the right.  
+    Additionally, columns may be hidden or shown in the module/instance selection box by clicking on the button at the 
+    right-hand side of the column header bar (and above the vertical scrollbar).  When this button is left-clicked, a 
+    popup menu will be displayed showing which columns are currently shown (a check to the left of the column name) and 
+    which are hidden (no check).  To change the display for a particular column, simply click on the column name in the 
+    popup window.  This will cause the associated column to be hidden or shown and will close the popup window.  If the 
+    popup window is displayed and the user does not wish to change the display values of any of the shown columns, 
+    simply click anywhere on the screen but on the popup window.  This will cause the popup window to disappear and no 
+    column display values will be changed.
+    </para>
+    <para>
+    Depending on the selected coverage metric (specified in the <xref linkend="section.gui.main.covbar"/>) and the 
+    coverage results for each module/instance, a module/ instance item will be highlighted in the uncovered logic color 
+    if the corresponding module/instance was found to have uncovered logic within that module/instance.  If the 
+    specified module/instance was found to be fully covered for the currently selected metric, it will be highlighted 
+    with the selected covered logic color.  This can help the user quickly identify modules/instances that contain 
+    uncovered logic cases.  Note that when a different coverage metric is selected, the highlights will be recalculated 
+    for that metric.  Additionally, the currently selected module/instance will be displayed in a darker version of the 
+    covered/uncovered color.
+    </para>
+    <para>
+      <figure id="figure.gui.main.listbox" xreflabel="Populated Module/Instance Selection Box">
+        <title>Populated Module/Instance Selection Box</title>
+        <mediaobject><imageobject><imagedata fileref="img/populated_lb.gif" format="GIF"/></imageobject></mediaobject>
+      </figure>
+    </para>
+  </sect1>
+  
+  <sect1 id="section.gui.main.viewer" xreflabel="Coverage File Viewer">
+    <title>The Coverage File Viewer</title>
+    <para>
+    <xref linkend="figure.gui.main.viewer"/> shows the area of the main window where the coverage file viewer window is 
+    located.
+    </para>
+    <para>
+      <figure id="figure.gui.main.viewer" xreflabel="Covered Main Coverage File Viewer">
+        <title>Covered Main Coverage File Viewer</title>
+        <mediaobject><imageobject><imagedata fileref="img/main_viewer.gif" format="GIF"/></imageobject></mediaobject>
+      </figure>
+    </para>
+    <para>
+    The coverage file viewer shows the currently selected module (indicated in the 
+    <xref linkend="section.gui.main.infobar"/>) Verilog source.  The coverage file viewer provides a read-only view of the 
+    original source code so all editing of the file must be done in a separate editor.  Each source code line in the 
+    viewer window is numbered to the left of the line to aid in debugging and finding the lines in an editor.
+    </para>
+    <para>
+    Depending on the coverage metric currently selected in the <xref linkend="section.gui.main.covbar"/> and the 
+    covered/uncovered/race condition selections in the <xref linkend="section.gui.main.reportmenu"/>, the lines that are 
+    found to be uncovered, covered, and/or considered a race condition are highlighted in their respective color 
+    schemes in the coverage file viewer window.  Using the scrollbars to the right and below the coverage file viewer, 
+    the user can find the missed/hit lines quickly for further analysis.
+    </para>
+    <para>
+    The coverage file viewer is the place where the user can invoke the toggle, memory,combinational logic, FSM and/or 
+    assertion detail windows.  To view one of these windows, do the following:
+    </para>
+    <para>
+      <orderedlist>
+        <listitem>
+          <para>
+          Select either the <emphasis role="bold">Toggle</emphasis>, <emphasis role="bold">Memory</emphasis>, 
+          <emphasis role="bold">Logic</emphasis>, <emphasis role="bold">FSM</emphasis> or 
+          <emphasis role="bold">Assert</emphasis> coverage metric radio button in the 
+          <xref linkend="section.gui.main.covbar"/>.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+          Select a module/instance that contains uncovered code in the <xref linkend="section.gui.main.listbox"/>.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+          In the coverage file viewer, find code that is highlighted as being uncovered.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+          Left click on the uncovered piece of logic.  Doing so will automatically bring up either the 
+          <xref linkend="chapter.gui.toggle"/>, the <xref linkend="chapter.gui.memory"/>, the 
+          <xref linkend="chapter.gui.logic"/>, the <xref linkend="chapter.gui.fsm"/> or the 
+          <xref linkend="chapter.gui.assert"/>.
+          </para>
+        </listitem>
+      </orderedlist>
+    </para>
+    <para>
+    Additionally, the logical blocks that have been disregarded by Covered due to a potential race condition existing 
+    are highlighted.  By placing the cursor over one of these logical blocks, the reason for why the logical block was 
+    disregarded is output in the <xref linkend="section.gui.main.infobar"/>.
+    </para>
+    <para>
+    To view a new module/instance, simply left click on one in the Module/Instance Listbox. The source code for the 
+    selected module/instance will be immediately loaded into the coverage file viewer in the currently selected 
+    coverage metric.
+    </para>
+    <para>
+    To view a new coverage metric, simply left click on one of the coverage metrics in the Coverage Type Bar.  The 
+    currently selected module/instance will be immediately updated in the coverage file viewer, highlighting the 
+    uncovered/covered code for the current metric.
+    </para>
+    
+    <sect2 id="section.gui.main.viewer.search.uncov" xreflabel="Searching for an Uncovered Line in the Coverage Viewer">
+      <title>Searching for an Uncovered Line in the Coverage Viewer</title>
+      <para>
+      To find the next or previous line containing uncovered logic for the current metric mode, click the 
+      left arrow (Previous) or right arrow (Next) buttons.  Doing so will cause the next or previous uncovered line to 
+      be visible in the Coverage File Viewer.  Clicking these buttons has the same effect as the "Next Uncovered" or 
+      "Previous Uncovered" menu items in the <xref linkend="section.gui.main.viewmenu"/>.
+      </para>
+    </sect2>
+    
+    <sect2 id="section.gui.main.viewer.search.string" xreflabel="Searching for a String in the Coverage Viewer">
+      <title>Searching for a String in the Coverage Viewer</title>
+      <para>
+      The Coverage Viewer contains a <emphasis role="bold">Find:</emphasis> button, an entry field, and a 
+      <emphasis role="bold">Clear</emphasis> button for performing text searches in the Coverage File Viewer.  The user 
+      may type in any string (wildcards and pattern matching is not supported) in the entry field. Hitting the "return" 
+      key or the <emphasis role="bold">Find:</emphasis> button will cause the string search to commence.
+      </para>
+      <para>
+      If a match to the search value is found, it is made visible in the Coverage File Viewer and highlighted.  The 
+      user may search on the value again by clicking the <emphasis role="bold">Find:</emphasis> button.  To clear the 
+      current value in the entry field, click on the <emphasis role="bold">Clear</emphasis> button.  If a match occurs, 
+      the specified value in the entry field will remain until either a new value is entered or the 
+      <emphasis role="bold">Clear</emphasis> button is clicked.  If a match was not found for the given string, a 
+      message window will pop-up specifying that the given string was not found.  Clicking the 
+      <emphasis role="bold">OK</emphasis> button will cause this message window to close and the entry field will 
+      automatically be cleared.
+      </para>
+    </sect2>
+    
+  </sect1>
+  
+  <sect1 id="section.gui.main.infobar" xreflabel="The Information Bar">
+    <title>The Information Bar</title>
+    <para>
+    The information bar at the bottom of each window in the report viewer provides information about the current mode, 
+    file, or operation the user should take next. All information is state and context sensitive.  If you are in doubt 
+    of what to do next, first see the information bar.
+    </para>
+    <para>
+      <figure id="figure.gui.main.infobar" xreflabel="Covered Main Information Bar">
+        <title>Covered Main Information Bar</title>
+        <mediaobject><imageobject><imagedata fileref="img/main_info.gif" format="GIF"/></imageobject></mediaobject>
+      </figure>
+    </para>
+  </sect1>
+  
+</chapter>

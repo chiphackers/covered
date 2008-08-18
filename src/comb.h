@@ -37,38 +37,45 @@ void combination_get_tree_stats(
             int*          ulid,
             unsigned int  curr_depth,
             bool          excluded,
-  /*@out@*/ unsigned int* total,
-  /*@out@*/ unsigned int* hit );
+  /*@out@*/ unsigned int* hit,
+  /*@out@*/ unsigned int* excludes,
+  /*@out@*/ unsigned int* total );
 
 /*! \brief Calculates combination logic statistics for summary output */
 void combination_get_stats(
             func_unit*    funit,
-  /*@out@*/ unsigned int* total,
-  /*@out@*/ unsigned int* hit );
-
-/*! \brief Collects all toggle expressions that match the specified coverage indication. */
-bool combination_collect(
-            const char*   funit_name,
-            int           funit_type,
-  /*@out@*/ expression*** covs,
-  /*@out@*/ unsigned int* cov_cnt,
-  /*@out@*/ expression*** uncovs,
-  /*@out@*/ int**         excludes,
-  /*@out@*/ unsigned int* uncov_cnt
+  /*@out@*/ unsigned int* hit,
+  /*@out@*/ unsigned int* excluded,
+  /*@out@*/ unsigned int* total
 );
 
-/*! \brief Gets combinational logic summary statistics for specified module. */
-bool combination_get_module_summary(
-            const char* funit_name,
-            int         funit_type,
-  /*@out@*/ int*        total,
-  /*@out@*/ int*        hit
+/*! \brief Collects all toggle expressions that match the specified coverage indication. */
+void combination_collect(
+            func_unit*    funit,
+            int           cov,
+  /*@out@*/ expression*** exprs,
+  /*@out@*/ unsigned int* exp_cnt,
+  /*@out@*/ int**         excludes
+);
+
+/*! \brief Gets combinational logic summary statistics for specified functional unit */
+void combination_get_funit_summary(
+            func_unit*    funit,
+  /*@out@*/ unsigned int* hit,
+  /*@out@*/ unsigned int* excluded,
+  /*@out@*/ unsigned int* total
+);
+
+/*! \brief Gets combinational logic summary statistics for specified functional unit instance */
+void combination_get_inst_summary(
+            funit_inst*   inst,  
+  /*@out@*/ unsigned int* hit,
+  /*@out@*/ unsigned int* excluded,
+  /*@out@*/ unsigned int* total  
 );
 
 /*! \brief Gets output for specified expression including underlines and code */
-bool combination_get_expression(
-            const char*   funit_name,
-            int           funit_type,
+void combination_get_expression(
             int           expr_id,
   /*@out@*/ char***       code,
   /*@out@*/ int**         uline_groups,
@@ -80,13 +87,11 @@ bool combination_get_expression(
 );
 
 /*! \brief Gets output for specified expression including coverage information */
-bool combination_get_coverage(
-            const char* funit_name,
-            int         funit_type,
-            int         exp_id,
-            int         uline_id,
-  /*@out@*/ char***     info,
-  /*@out@*/ int*        info_size
+void combination_get_coverage(
+            int        exp_id,
+            int        uline_id,
+  /*@out@*/ char***    info,
+  /*@out@*/ int*       info_size
 );
 
 /*! \brief Generates report output for combinational logic coverage. */
@@ -98,6 +103,19 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.25.6.4  2008/08/15 05:11:05  phase1geo
+ Converting more old graphics to new style.  Updated documentation.  Cleaned up
+ some issues with the build structure per recent documentation changes.  Also fixing
+ some issues with the GUI and viewing combination logic coverage that is in an unnamed
+ functional unit (more work to do here).  Checkpointing.
+
+ Revision 1.25.6.3  2008/08/07 06:39:10  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
+ Revision 1.25.6.2  2008/08/06 20:11:33  phase1geo
+ Adding support for instance-based coverage reporting in GUI.  Everything seems to be
+ working except for proper exclusion handling.  Checkpointing.
+
  Revision 1.25.6.1  2008/07/10 22:43:50  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

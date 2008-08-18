@@ -1,4 +1,6 @@
-set curr_assert_ptr ""
+set curr_assert_ptr  ""
+set assert_geometry  ""
+set assert_gui_saved 0
 
 proc assert_yset {args} {
 
@@ -42,14 +44,16 @@ proc display_assert {curr_index} {
 proc create_assert_window {inst} {
 
   global prev_assert_index next_assert_index
-  global curr_funit_name curr_funit_type
+  global curr_block
   global curr_assert_ptr assert_cov_points assert_cov_mod
   global uncov_bgColor uncov_fgColor
   global cov_bgColor cov_fgColor
-  global HOME
+  global HOME assert_geometry assert_gui_saved
 
   # Now create the window and set the grab to this window
   if {[winfo exists .assertwin] == 0} {
+
+    set assert_gui_saved 0
 
     # Create new window
     toplevel .assertwin
@@ -66,7 +70,7 @@ proc create_assert_window {inst} {
     scrollbar .assertwin.f.hb -orient horizontal -command ".assertwin.f.td xview"
     scrollbar .assertwin.f.vb -command assert_yview
     button .assertwin.f.b -text "Show Code" -command {
-      display_assertion_module $assert_cov_mod
+      display_assertion_module [lindex $assert_cov_mod 0] [lindex $assert_cov_mod 1]
     }
 
     # Create bottom information bar
@@ -79,21 +83,21 @@ proc create_assert_window {inst} {
       destroy .assertwin
       destroy .amodwin
     }
-    button .assertwin.bf.help -text "Help" -width 10 -command {
-      help_show_manual assert
-    }
+    help_button .assertwin.bf.help chapter.gui.assert
     button .assertwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -relief flat -command {
       display_assert $prev_assert_index
     }
+    set_balloon .assertwin.bf.prev "Click to view the previous uncovered assertion in this window"
     button .assertwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -relief flat -command {
       display_assert $next_assert_index
     }
+    set_balloon .assertwin.bf.next "Click to view the next uncovered assertion in this window"
 
     # Pack the buttons into the button frame
     pack .assertwin.bf.prev  -side left
     pack .assertwin.bf.next  -side left
-    pack .assertwin.bf.help  -side right -padx 8 -pady 4
-    pack .assertwin.bf.close -side right -padx 8 -pady 4
+    pack .assertwin.bf.help  -side right -pady 3
+    pack .assertwin.bf.close -side right -padx 3 -pady 3
 
     # Pack the widgets into the bottom frame
     grid rowconfigure    .assertwin.f 1 -weight 1
@@ -110,6 +114,20 @@ proc create_assert_window {inst} {
 
     pack .assertwin.f  -fill both -expand yes
     pack .assertwin.bf -fill x
+
+    # Set the geometry if it is known
+    if {$assert_geometry != ""} {
+      wm geometry .assertwin $assert_geometry
+    }
+
+    # Handle the destruction of the assertion window
+    wm protocol .assertwin WM_DELETE_WINDOW {
+      save_assert_gui_elements 0
+      destroy .assertwin
+    }
+    bind .assertwin <Destroy> {
+      save_assert_gui_elements 0
+    }
 
   }
 
@@ -128,7 +146,7 @@ proc create_assert_window {inst} {
   # Get verbose toggle information
   set assert_cov_mod    ""
   set assert_cov_points ""
-  tcl_func_get_assert_coverage $curr_funit_name $curr_funit_type $inst
+  tcl_func_get_assert_coverage $curr_block $inst
 
   # Allow us to clear out text boxes
   .assertwin.f.td configure -state normal
@@ -184,10 +202,10 @@ proc create_assert_window {inst} {
     } else {
       set curr_excl 0
     }
-    tcl_func_set_assert_exclude $curr_funit_name $curr_funit_type $curr_assert_inst $curr_exp $curr_excl
+    tcl_func_set_assert_exclude $curr_block $curr_assert_inst $curr_exp $curr_excl
     set text_x [.bot.right.txt xview]
     set text_y [.bot.right.txt yview]
-    process_funit_assert_cov
+    process_assert_cov
     .bot.right.txt xview moveto [lindex $text_x 0]
     .bot.right.txt yview moveto [lindex $text_y 0]
     populate_listbox
@@ -201,7 +219,7 @@ proc create_assert_window {inst} {
   .assertwin.f.tc configure -state disabled
   
   # Update informational bar
-  .assertwin.f.info configure -text "Assertion module: $assert_cov_mod"
+  .assertwin.f.info configure -text "Assertion module: [lindex $assert_cov_mod 0]"
 
   # Raise this window to the foreground
   raise .assertwin
@@ -258,15 +276,9 @@ proc clear_assert {} {
 
 }
 
-proc display_assertion_module {mod} {
+proc display_assertion_module {name filename} {
 
-  global open_files file_name
-
-  # Store original filename and working directory
-  set tmp_name $file_name
-
-  # Get filename
-  tcl_func_get_filename $mod 0
+  global open_files
 
   if {[winfo exists .amodwin] == 0} {
 
@@ -274,7 +286,8 @@ proc display_assertion_module {mod} {
 
     # Create the window viewer
     toplevel .amodwin
-    wm title .amodwin "Assertion Module - $mod"
+    set assert_filename [file normalize [file join [tcl_func_get_score_path] $filename]]
+    wm title .amodwin "Assertion Module - $name ($assert_filename)"
 
     # Create text viewer windows
     frame .amodwin.f -relief raised -borderwidth 1
@@ -301,14 +314,12 @@ proc display_assertion_module {mod} {
     button .amodwin.bf.close -text "Close" -width 10 -command {
       destroy .amodwin
     }
-    button .amodwin.bf.help -text "Help" -width 10 -command {
-      help_show_manual src_view
-    }
+    help_button .amodwin.bf.help chapter.gui.assert.source
 
     # Pack the button bar
-    pack .amodwin.bf.back  -side left  -padx 8 -pady 4
-    pack .amodwin.bf.help  -side right -padx 8 -pady 4
-    pack .amodwin.bf.close -side right -padx 8 -pady 4
+    pack .amodwin.bf.back  -side left  -padx 3 -pady 3
+    pack .amodwin.bf.help  -side right -pady 3
+    pack .amodwin.bf.close -side right -padx 3 -pady 3
 
     # Pack the frames
     pack .amodwin.f -fill both -expand yes
@@ -317,10 +328,7 @@ proc display_assertion_module {mod} {
   }
 
   # Write the module information
-  populate_assertion_text $file_name
-
-  # Restore global file_name
-  set file_name $tmp_name
+  populate_assertion_text $filename
 
   # Raise this window to the foreground
   raise .amodwin
@@ -330,7 +338,7 @@ proc display_assertion_module {mod} {
 proc populate_assertion_text {fname} {
 
   global fileContent open_files
-
+ 
   # Add the specified file name to the open_files array
   set open_files [linsert $open_files 0 $fname]
 
@@ -365,5 +373,19 @@ proc populate_assertion_text {fname} {
 
   # Set state back to disabled for read-only access
   .amodwin.f.t configure -state disabled
+
+}
+
+# Saves the contents of the assertion detailed window for later usage
+proc save_assert_gui_elements {main_exit} {
+
+  global assert_geometry assert_gui_saved
+
+  if {$assert_gui_saved == 0} {
+    if {$main_exit == 0 || [winfo exists .assertwin] == 1} {
+      set assert_gui_saved 1
+      set assert_geometry  [winfo geometry .assertwin]
+    }
+  }
 
 }

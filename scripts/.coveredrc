@@ -9,6 +9,12 @@
 
 ShowWizardOnStartup = true
 
+# If set to true, causes various GUI elements to be saved when exiting the application
+# which will be used when the application is restarted at a later time.  Set to false
+# to cause the Covered GUI to use the default values.
+
+SaveGuiOnExit = false
+
 # Sets the foreground color for all source code that is found
 # to be uncovered during simulation.  The value can be any legal color
 # value accepted by Tcl.
@@ -125,3 +131,8 @@ HighlightStringColor = red
 
 HighlightSymbolColor = coral
 
+<<<<<<< .coveredrc
+=======
+# THE FOLLOWING LINES ARE FOR STORING GUI STATE INFORMATION -- DO NOT MODIFY LINES BELOW THIS COMMENT!
+
+>>>>>>> 1.11.4.3

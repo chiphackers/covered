@@ -1,10 +1,13 @@
 tcldir      = $(datadir)/covered/scripts
 tcl_SCRIPTS = assert.tcl \
+              balloon.tcl \
               banner.gif \
               cdd_view.tcl \
+              clear.gif \
               comb.tcl \
               cov_create.tcl \
               cov_icon.gif \
+              find.gif \
               fsm.tcl \
               gen_new.tcl \
               gen_rank.tcl \

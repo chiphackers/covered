@@ -1,0 +1,317 @@
+<chapter id="chapter.rank" xreflabel="The rank Command">
+  <title>The rank Command</title>
+  <para>
+  TBD
+  </para>
+  
+  <sect1 id="section.rank.options" xreflabel="Rank Options">
+    <title>Options</title>
+    <para>
+      <table>
+        <title>Options to rank Command</title>
+        <tgroup cols='2'>
+          <thead>
+            <row>
+              <entry>
+              Option
+              </entry>
+              <entry>
+              Description
+              </entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>
+              -depth <emphasis>number</emphasis>
+              </entry>
+              <entry>
+              Specifies the minimum number of CDD files to hit each coverage point. The value of 
+              <emphasis>number</emphasis> should be a value of 1 or more.  Default is 1.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              -d <emphasis>directory</emphasis>
+              </entry>
+              <entry>
+              Directory to search for CDD files to include.  This option is used in conjunction with the -ext option 
+              which specifies the file extension to use for determining which files in the directory are CDD files.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              -ext <emphasis>extension</emphasis>
+              </entry>
+              <entry>
+              Used in conjunction with the -d option.  If no -ext options are specified on the command-line, the 
+              default value of '.cdd' is used.  Note that a period (.) should be specified.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              -f <emphasis>filename</emphasis>
+              </entry>
+              <entry>
+              Name of file containing additional arguments to parse.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              -h
+              </entry>
+              <entry>
+              Displays help information for the rank command.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              -names-only
+              </entry>
+              <entry>
+              If specified, outputs only the needed CDD filenames that need to be run in the order they need to be run. 
+              If this option is not set, a report-style output is provided with additional information.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              -o <emphasis>filename</emphasis>
+              </entry>
+              <entry>
+              Name of file to output ranking information to.  Default is stdout.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              -require <emphasis>filename</emphasis>
+              </entry>
+              <entry>
+              Name of file containing list of CDD files which are required to be in the list of ranked CDDs to be run.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              -weight-assert <emphasis>number</emphasis>
+              </entry>
+              <entry>
+              Specifies a relative weighting for assertion coverage used to rank non-unique coverage points.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              -weight-comb <emphasis>number</emphasis>
+              </entry>
+              <entry>
+              Specifies a relative weighting for combinational logic coverage used to rank non-unique coverage points.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              -weight-fsm <emphasis>number</emphasis>
+              </entry>
+              <entry>
+              Specifies a relative weighting for FSM state/state transition coverage used to rank non-unique coverage 
+              points.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              -weight-line <emphasis>number</emphasis>
+              </entry>
+              <entry>
+              Specifies a relative weighting for line coverage used to rank non-unique coverage points.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              -weight-memory <emphasis>number</emphasis>
+              </entry>
+              <entry>
+              Specifies a relative weighting for memory coverage used to rank non-unique coverage points.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              -weight-toggle <emphasis>number</emphasis>
+              </entry>
+              <entry>
+              Specifies a relative weighting for toggle coverage used to rank non-unique coverage points.
+              </entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </para>
+  </sect1>
+  
+  <sect1 id="section.rank.inputting" xreflabel="Methods for specifying CDDs to rank">
+    <title>Methods for specifying CDDs to rank</title>
+    <para>
+    The rank command provides several mechanisms for specifying CDD files to rank.  Feel free to use any combination
+    of methods for providing this information to Covered as it makes sense to do in your environment.  The following is 
+    the list of input methods:
+    </para>
+    <para>
+      <itemizedlist>
+        <listitem>
+          <para>
+          Specify each CDD file after the rank command options have been specified.  This method is best when there are
+          a relatively small number of CDD files to rank as the length of the command-line in a shell is typically
+          limited to a certain number of characters.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+          Create a file containing the list of CDD files to rank and pass this file to the rank command's 
+          <emphasis role="bold">-f</emphasis> option.  Using this method, one can selectively specify a large number 
+          of CDD files.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+          Use shell commands to create a list of CDD files and pass them to Covered's standard input via command-line 
+          piping and the <emphasis role="bold">-f -</emphasis> command-line option (the - means use standard input).
+          The following line is an example of this usage:
+          </para>
+          <para>
+            <programlisting><![CDATA[
+  ls foo*.cdd | covered rank -f -          
+            ]]></programlisting>
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+          Use the <emphasis role="bold">-d <emphasis>directory</emphasis></emphasis> and 
+          <emphasis role="bold">-ext <emphasis>extension</emphasis></emphasis> options to tell
+          Covered to retrieve all files found in the directory specified by <emphasis>directory</emphasis> that contain
+          the file extension of <emphasis>extension</emphasis> (if the <emphasis role="bold">-ext</emphasis> option
+          is not specified, the default extension of ".cdd" is used).  The following is an example of this usage: 
+          </para>
+          <para>
+            <programlisting><![CDATA[
+  covered rank -d /home/bubba/cdd_dir -ext .mycdd          
+            ]]></programlisting>
+          </para>
+        </listitem>
+      </itemizedlist>
+    </para>
+  </sect1>
+  
+  <sect1 id="section.rank.weighting" xreflabel="Specifying metric weights">
+    <title>Specifying metric weights</title>
+    <para>
+    The rank command has several options that allow the user to weight any and all of the coverage metrics that Covered 
+    supplies.  Weights are used to ascribe the importance of its metric in ranking the value of a CDD file.
+    </para>
+    <para>
+    Weight values are non-negative numbers whose values are relative to each other.  A value of 0 effectively disables 
+    the associated weight from consideration in ranking.  All other values are considered relative to each other.  In
+    other words, if the line weight is set to a value of 5 while the toggle weight is set to 1, line coverage is 
+    considered 5 times more important than toggle coverage in ranking.
+    </para>
+    <para>
+    By default, each metric is given an equal weight of 1.  Adjust each of the metrics as necessary to potentially
+    modify which CDD files are chosen and what order those CDD files are given in the ranked list of diagnostics to run.
+    </para>
+  </sect1>
+  
+  <sect1 id="section.rank.algorithm" xreflabel="Description of ranking algorithm">
+    <title>Description of ranking algorithm</title>
+    <para>
+    This section describes the overall algorithm that is used to rank the specified CDD files. The algorithm is being 
+    presented in this document for the purposes of providing an explanation for how diagnostics are selected for
+    ranking and how they are ranked. Knowing this information is not necessary for using the rank command or 
+    understanding its results.
+    </para>
+    <para>
+    The algorithm makes use of three different types of structures.  The first structure is a bit-compressed structure
+    where each bit corresponds to one coverage point in the associated CDD file. The purpose of this structure is to 
+    store a large amount of information as concisely and immediately available as possible. In addition to coverage
+    point information, each structure also contains the following information:
+    </para>
+    <para>
+      <itemizedlist>
+        <listitem>
+          <para>
+          Name of CDD file that the structure is associated with (for reporting purposes only).
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+          The number of timesteps that occurred during the CDD simulation. This is used for calculating the average 
+          number of coverage points hit during a single clock period -- used for ranking selection.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+          The total number of coverage points hit by the CDD. This is used for calculating the average number of 
+          coverage points hit during a single clock period -- used for ranking selection.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+          The total number of coverage points that were hit by this CDD that were not hit by any other CDD listed in
+          the rank command-line. This information is used to figure out which CDDs are absolutely necessary to be
+          included in the ranked list.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+          The current score associated with the CDD file. This value is updated for each selection iteration.
+          </para>
+        </listitem>
+      </itemizedlist>
+    </para>
+    <para>
+    Each of these structures are maintained in an array that is iterated on during the ranking process.
+    </para>
+    <para>
+    The second structure is an array of 16-bit values where each value corresponds to a single coverage point. Its 
+    value is a sum of the number of unranked CDD files that have hit that coverage point. Each value is decremented
+    by one when a CDD file is moved from the unranked list to the ranked list and that CDD file hits the given
+    coverage point. If a coverage point value is a value of 1 and a CDD file has its corresponding coverage bit set,
+    we know that the CDD is the only one that hits the coverage point.
+    </para>
+    <para>
+    The third structure is similar to the second and works similarly, except that it stores the number of CDD files in
+    the ranked list that hit a particular coverage point.
+    </para>
+    <para>
+    The specified CDD files are ranked in a series of steps, some of which are reiterated for each CDD that is
+    selected to be ranked. Here is the basic algorithm (in pseudo-code):
+    </para>
+    <para>
+      <programlisting><![CDATA[
+      
+  calculate the size of the compressed coverage point structure
+  
+  foreach CDD in CDD_list {
+    convert CDD to compressed coverage point structure
+  }
+  
+  foreach CDD in CDD_list {
+    if this CDD contains uniquely hit coverage points {
+      move the CDD file into the ranked list
+    }
+  }
+  
+  foreach CDD in unranked list {
+    foreach CDD in unranked list {
+      calculate score (((total_num_cov_points_hit / num_timesteps) * 100) * metric_weight_value)
+      if any unranked elements are less than the -depth option value and are hit by this CDD {
+        set unique_found to true
+      }
+      if our score > highest score and a "unique" coverage point was found {
+        set highest_score to our score
+      }
+    }
+    move the CDD file indexed by highest_score from the unranked list to the ranked list
+  }
+  
+  resort ranked list from most unique to least unique (if there is a tie, select the CDD that hit the most coverage
+    points in the least amount of time)
+      ]]></programlisting>
+    </para>
+  </sect1>
+  
+</chapter>

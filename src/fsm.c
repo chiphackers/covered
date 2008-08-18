@@ -407,17 +407,18 @@ void fsm_table_set(
 */
 void fsm_get_stats(
             fsm_link* table,        /*!< Pointer to FSM to get statistics from */
-  /*@out@*/ int*      state_total,  /*!< Total number of states within this FSM */
   /*@out@*/ int*      state_hit,    /*!< Number of states reached in this FSM */
+  /*@out@*/ int*      state_total,  /*!< Total number of states within this FSM */
+  /*@out@*/ int*      arc_hit,      /*!< Number of arcs reached in this FSM */
   /*@out@*/ int*      arc_total,    /*!< Total number of arcs within this FSM */
-  /*@out@*/ int*      arc_hit       /*!< Number of arcs reached in this FSM */
+  /*@out@*/ int*      arc_excluded  /*!< Total number of excluded arcs */
 ) { PROFILE(FSM_GET_STATS);
 
   fsm_link* curr;   /* Pointer to current FSM in table list */
 
   curr = table;
   while( curr != NULL ) {
-    arc_get_stats( curr->table->table, state_total, state_hit, arc_total, arc_hit );
+    arc_get_stats( curr->table->table, state_hit, state_total, arc_hit, arc_total, arc_excluded );
     curr = curr->next;
   }
 
@@ -426,38 +427,38 @@ void fsm_get_stats(
 }
 
 /*!
- \return Returns TRUE if the specified module was found; otherwise, returns FALSE.
-
  Retrieves the FSM summary information for the specified functional unit.
 */
-bool fsm_get_funit_summary(
-  const char* funit_name,  /*!< Name of functional unit to retrieve summary information for */
-  int         funit_type,  /*!< Type of functional unit to retrieve summary information for */
-  int*        total,       /*!< Pointer to location to store the total number of state transitions for the specified functional unit */
-  int*        hit          /*!< Pointer to location to store the number of hit state transitions for the specified functional unit */
+void fsm_get_funit_summary(
+            func_unit* funit,     /*!< Pointer to functional unit */
+  /*@out@*/ int*       hit,       /*!< Pointer to location to store the number of hit state transitions for the specified functional unit */
+  /*@out@*/ int*       excluded,  /*!< Pointer to number of excluded arcs */
+  /*@out@*/ int*       total      /*!< Pointer to location to store the total number of state transitions for the specified functional unit */
 ) { PROFILE(FSM_GET_FUNIT_SUMMARY);
 
-  bool        retval = TRUE;  /* Return value of this function */
-  funit_link* funitl;         /* Pointer to found functional unit link */
-  char        tmp[21];        /* Temporary string for total */
-
-  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
-
-    unsigned int rv = snprintf( tmp, 21, "%20d", funitl->funit->stat->arc_total );
-    assert( rv < 21 );
-    rv = sscanf( tmp, "%d", total );
-    assert( rv == 1 );
-    *hit = funitl->funit->stat->arc_hit;
-
-  } else {
-
-    retval = FALSE;
-
-  }
+  *hit      = funit->stat->arc_hit;
+  *excluded = funit->stat->arc_excluded;
+  *total    = funit->stat->arc_total;
 
   PROFILE_END;
 
-  return( retval );
+}
+
+/*!
+ Retrieves the FSM summary information for the specified functional unit instance.
+*/
+void fsm_get_inst_summary(
+            funit_inst* inst,      /*!< Pointer to functional unit instance */
+  /*@out@*/ int*        hit,       /*!< Pointer to location to store the number of hit state transitions for the specified functional unit */
+  /*@out@*/ int*        excluded,  /*!< Pointer to number of excluded arcs */
+  /*@out@*/ int*        total      /*!< Pointer to location to store the total number of state transitions for the specified functional unit */
+) { PROFILE(FSM_GET_INST_SUMMARY);
+
+  *hit      = inst->stat->arc_hit;
+  *excluded = inst->stat->arc_excluded;
+  *total    = inst->stat->arc_total;
+
+  PROFILE_END;
 
 }
 
@@ -503,92 +504,67 @@ static void fsm_gather_signals(
 }
 
 /*!
- \return Returns TRUE if FSM coverage information was found for the given functional unit; otherwise,
-         returns FALSE to indicate that an error occurred.
-
- Gathers the covered and uncovered FSM information, storing their expressions in the cov and uncov signal lists.
+ Gathers the covered or uncovered FSM information, storing their expressions in the sig_head/sig_tail signal list.
  Used by the GUI for verbose FSM output.
 */
-bool fsm_collect(
-            const char* funit_name,  /*!< Name of functional unit to collect combinational logic coverage information for */
-            int         funit_type,  /*!< Type of functional unit to collect combinational logic coverage information for */
-  /*@out@*/ sig_link**  cov_head,    /*!< Pointer to the head of the signal list of covered FSM output states */
-  /*@out@*/ sig_link**  cov_tail,    /*!< Pointer to the tail of the signal list of covered FSM output states */
-  /*@out@*/ sig_link**  uncov_head,  /*!< Pointer to the head of the signal list of uncovered FSM output states */
-  /*@out@*/ sig_link**  uncov_tail,  /*!< Pointer to the tail of the signal list of uncovered FSM output states */
-  /*@out@*/ int**       expr_ids,    /*!< Pointer to array of expression IDs for each uncovered signal */
-  /*@out@*/ int**       excludes     /*!< Pointer to array of exclude values for each uncovered signal */
+void fsm_collect(
+            func_unit* funit,     /*!< Pointer to functional unit */
+            int        cov,       /*!< Specifies if we are attempting to get uncovered (0) or covered (1) FSMs */
+  /*@out@*/ sig_link** sig_head,  /*!< Pointer to the head of the signal list of covered FSM output states */
+  /*@out@*/ sig_link** sig_tail,  /*!< Pointer to the tail of the signal list of covered FSM output states */
+  /*@out@*/ int**      expr_ids,  /*!< Pointer to array of expression IDs for each uncovered signal */
+  /*@out@*/ int**      excludes   /*!< Pointer to array of exclude values for each uncovered signal */
 ) { PROFILE(FSM_COLLECT);
 
-  bool        retval = TRUE;   /* Return value for this function */
-  funit_link* funitl;          /* Pointer to found functional unit link */
-  fsm_link*   curr_fsm;        /* Pointer to current FSM link being evaluated */
-  int         state_total;     /* Total number of states in current FSM */
-  int         state_hit;       /* Number of states in current FSM hit */
-  int         arc_total;       /* Total number of arcs in current FSM */
-  int         arc_hit;         /* Number of arcs in current FSM hit */
-  int         uncov_size = 0;  /* Number of expressions IDs stored in expr_ids array */
+  fsm_link* curr_fsm;  /* Pointer to current FSM link being evaluated */
+  int       size = 0;  /* Number of expressions IDs stored in expr_ids array */
 
-  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
+  /* Initialize list pointers */
+  *sig_tail = *sig_head = NULL;
+  *expr_ids = *excludes = NULL;
 
-    /* Initialize list pointers */
-    *cov_tail   = *cov_head   = NULL;
-    *uncov_tail = *uncov_head = NULL;
-    *expr_ids   = *excludes   = NULL;
+  curr_fsm = funit->fsm_head;
+  while( curr_fsm != NULL ) {
 
-    curr_fsm = funitl->funit->fsm_head;
-    while( curr_fsm != NULL ) {
+    /* Get the state and arc statistics */
+    int state_hit    = 0;
+    int state_total  = 0;
+    int arc_hit      = 0;
+    int arc_total    = 0;
+    int arc_excluded = 0;
+    arc_get_stats( curr_fsm->table->table, &state_hit, &state_total, &arc_hit, &arc_total, &arc_excluded );
 
-      /* Get the state and arc statistics */
-      state_total = 0;
-      state_hit   = 0;
-      arc_total   = 0;
-      arc_hit     = 0;
-      arc_get_stats( curr_fsm->table->table, &state_total, &state_hit, &arc_total, &arc_hit );
+    /* Allocate some more memory for the excluded array */
+    *excludes = (int*)realloc_safe( *excludes, (sizeof( int ) * size), (sizeof( int ) * (size + 1)) );
 
-      /* Allocate some more memory for the excluded array */
-      *excludes = (int*)realloc_safe( *excludes, (sizeof( int ) * uncov_size), (sizeof( int ) * (uncov_size + 1)) );
-
-      /* If the total number of arcs is not known, consider this FSM as uncovered */
-      if( (arc_total == -1) || (arc_total != arc_hit) ) {
-        (*excludes)[uncov_size] = 0;
-        fsm_gather_signals( curr_fsm->table->to_state, uncov_head, uncov_tail, curr_fsm->table->to_state->id, expr_ids, &uncov_size );
-      } else {
-        if( arc_are_any_excluded( curr_fsm->table->table ) ) {
-          fsm_gather_signals( curr_fsm->table->to_state, uncov_head, uncov_tail, curr_fsm->table->to_state->id, expr_ids, &uncov_size );
-          (*excludes)[uncov_size] = 1;
-        } else {
-          fsm_gather_signals( curr_fsm->table->to_state, cov_head, cov_tail, -1, expr_ids, &uncov_size );
-        }
+    /* If the total number of arcs is not known, consider this FSM as uncovered */
+    if( (cov == 0) && ((arc_total == -1) || (arc_total != arc_hit)) ) {
+      (*excludes)[size] = 0;
+      fsm_gather_signals( curr_fsm->table->to_state, sig_head, sig_tail, curr_fsm->table->to_state->id, expr_ids, &size );
+    } else {
+      if( (cov == 0) && arc_are_any_excluded( curr_fsm->table->table ) ) {
+        fsm_gather_signals( curr_fsm->table->to_state, sig_head, sig_tail, curr_fsm->table->to_state->id, expr_ids, &size );
+        (*excludes)[size] = 1;
+      } else if( cov == 1 ) {
+        fsm_gather_signals( curr_fsm->table->to_state, sig_head, sig_tail, -1, expr_ids, &size );
       }
-
-      curr_fsm = curr_fsm->next;
-
     }
 
-  } else {
-
-    retval = FALSE;
+    curr_fsm = curr_fsm->next;
 
   }
 
   PROFILE_END;
 
-  return( retval );
-
 }
 
 /*!
- \return Returns TRUE if the specified functional unit was found; otherwise, returns FALSE.
-
  Gets the FSM coverage information for the specified FSM in the specified functional unit.  Used by the GUI
  for creating the contents of the verbose FSM viewer.
 */
-bool fsm_get_coverage(
-            const char*   funit_name,          /*!< Name of functional unit containing FSM */
-            int           funit_type,          /*!< Type of functional unit containing FSM */
+void fsm_get_coverage(
+            func_unit*    funit,               /*!< Pointer to functional unit */
             int           expr_id,             /*!< Expression ID of output state expression to find */
-  /*@out@*/ int*          width,               /*!< Pointer to width of FSM output state variable */
   /*@out@*/ char***       total_fr_states,     /*!< Pointer to a string array containing all possible states in this FSM */
   /*@out@*/ unsigned int* total_fr_state_num,  /*!< Pointer to the number of elements in the total_states array */
   /*@out@*/ char***       hit_fr_states,       /*!< Pointer to a string array containing the hit states in this FSM */
@@ -606,8 +582,6 @@ bool fsm_get_coverage(
   /*@out@*/ unsigned int* output_size          /*!< Pointer to the number of elements stored in the output state array */
 ) { PROFILE(FSM_GET_COVERAGE);
 
-  bool         retval = FALSE;      /* Return value for this function */
-  funit_link*  funitl;              /* Pointer to found functional unit link */
   fsm_link*    curr_fsm;            /* Pointer to current FSM link */
   int*         tmp;                 /* Temporary integer array */
   char**       total_to_states;     /* Temporary array */
@@ -615,58 +589,44 @@ bool fsm_get_coverage(
   char**       hit_to_states;       /* Temporary array */
   unsigned int hit_to_state_num;    /* Temporary size indicator */
 
-  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
+  curr_fsm = funit->fsm_head;
+  while( (curr_fsm != NULL) && (curr_fsm->table->to_state->id != expr_id) ) {
+    curr_fsm = curr_fsm->next; 
+  }
 
-    curr_fsm = funitl->funit->fsm_head;
-    while( (curr_fsm != NULL) && (curr_fsm->table->to_state->id != expr_id) ) {
-      curr_fsm = curr_fsm->next; 
+  assert( curr_fsm != NULL );
+
+  /* Get state information */
+  arc_get_states( total_fr_states, total_fr_state_num, &total_to_states, &total_to_state_num, curr_fsm->table->table, TRUE, TRUE ); 
+  arc_get_states( hit_fr_states,   hit_fr_state_num,   &hit_to_states,   &hit_to_state_num,   curr_fsm->table->table, TRUE, FALSE );
+
+  /* Get state transition information */
+  arc_get_transitions( total_from_arcs, total_to_arcs, excludes, total_arc_num, curr_fsm->table->table, TRUE, TRUE );
+  arc_get_transitions( hit_from_arcs,   hit_to_arcs,   &tmp,     hit_arc_num,   curr_fsm->table->table, TRUE, FALSE );
+
+  /* Get input state code */
+  codegen_gen_expr( curr_fsm->table->from_state, curr_fsm->table->from_state->op, input_state, input_size, NULL );
+
+  /* Get output state code */
+  codegen_gen_expr( curr_fsm->table->to_state, curr_fsm->table->to_state->op, output_state, output_size, NULL );
+
+  /* Deallocate unused state information */
+  if( total_to_state_num > 0 ) {
+    unsigned int i;
+    for( i=0; i<total_to_state_num; i++ ) {
+      free_safe( total_to_states[i], (strlen( total_to_states[i] ) + 1) );
     }
-
-    /* If we found a matching FSM, store values */
-    if( curr_fsm != NULL ) {
-
-      /* Get width */
-      *width = curr_fsm->table->to_state->value->width;
-
-      /* Get state information */
-      arc_get_states( total_fr_states, total_fr_state_num, &total_to_states, &total_to_state_num, curr_fsm->table->table, TRUE, TRUE ); 
-      arc_get_states( hit_fr_states,   hit_fr_state_num,   &hit_to_states,   &hit_to_state_num,   curr_fsm->table->table, TRUE, FALSE );
-
-      /* Get state transition information */
-      arc_get_transitions( total_from_arcs, total_to_arcs, excludes, total_arc_num, curr_fsm->table->table, TRUE, TRUE );
-      arc_get_transitions( hit_from_arcs,   hit_to_arcs,   &tmp,     hit_arc_num,   curr_fsm->table->table, TRUE, FALSE );
-
-      /* Get input state code */
-      codegen_gen_expr( curr_fsm->table->from_state, curr_fsm->table->from_state->op, input_state, input_size, NULL );
-
-      /* Get output state code */
-      codegen_gen_expr( curr_fsm->table->to_state, curr_fsm->table->to_state->op, output_state, output_size, NULL );
-
-      retval = TRUE;
-
-      /* TBD - Deallocate unused state information */
-      if( total_to_state_num > 0 ) {
-        unsigned int i;
-        for( i=0; i<total_to_state_num; i++ ) {
-          free_safe( total_to_states[i], (strlen( total_to_states[i] ) + 1) );
-        }
-        free_safe( total_to_states, (sizeof( char* ) * total_to_state_num) );
-      }
-      if( hit_to_state_num > 0 ) {
-        unsigned int i;
-        for( i=0; i<hit_to_state_num; i++ ) {
-          free_safe( hit_to_states[i], (strlen( hit_to_states[i] ) + 1) );
-        }
-        free_safe( hit_to_states, (sizeof( char* ) * hit_to_state_num) );
-      }
-
+    free_safe( total_to_states, (sizeof( char* ) * total_to_state_num) );
+  }
+  if( hit_to_state_num > 0 ) {
+    unsigned int i;
+    for( i=0; i<hit_to_state_num; i++ ) {
+      free_safe( hit_to_states[i], (strlen( hit_to_states[i] ) + 1) );
     }
-
+    free_safe( hit_to_states, (sizeof( char* ) * hit_to_state_num) );
   }
 
   PROFILE_END;
-
-  return( retval );
 
 }
 
@@ -1307,6 +1267,17 @@ void fsm_dealloc(
 
 /*
  $Log$
+ Revision 1.97.2.5  2008/08/07 20:51:04  phase1geo
+ Fixing memory allocation/deallocation issues with GUI.  Also fixing some issues with FSM
+ table output and exclusion.  Checkpointing.
+
+ Revision 1.97.2.4  2008/08/07 06:39:10  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
+ Revision 1.97.2.3  2008/08/06 20:11:33  phase1geo
+ Adding support for instance-based coverage reporting in GUI.  Everything seems to be
+ working except for proper exclusion handling.  Checkpointing.
+
  Revision 1.97.2.2  2008/07/29 04:40:25  phase1geo
  Updating regressions.  Full regressions should now pass.
 

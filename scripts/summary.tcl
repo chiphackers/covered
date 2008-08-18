@@ -95,7 +95,7 @@ proc create_summary {} {
     }
 
     button .sumwin.bf.help -width 10 -text "Help" -command {
-      help_show_manual summary
+      help_show_manual "" ""
     }
 
     pack .sumwin.bf.help  -side right -padx 8 -pady 4
@@ -144,47 +144,55 @@ proc clear_summary {} {
 
 proc calculate_summary {} {
 
-  global mod_inst_type funit_names funit_types cov_rb
-  global line_summary_hit line_summary_total line_low_limit
-  global toggle_summary_hit toggle_summary_total toggle_low_limit
-  global memory_summary_hit memory_summary_total memory_low_limit
-  global comb_summary_hit comb_summary_total comb_low_limit
-  global fsm_summary_hit fsm_summary_total fsm_low_limit
-  global assert_summary_hit assert_summary_total assert_low_limit
+  global mod_inst_type block_list cov_rb
+  global line_summary_hit line_summary_excluded line_summary_total line_low_limit
+  global toggle_summary_hit toggle_summary_excluded toggle_summary_total toggle_low_limit
+  global memory_summary_hit memory_summary_excluded memory_summary_total memory_low_limit
+  global comb_summary_hit comb_summary_excluded comb_summary_total comb_low_limit
+  global fsm_summary_hit fsm_summary_excluded fsm_summary_total fsm_low_limit
+  global assert_summary_hit assert_summary_excluded assert_summary_total assert_low_limit
   global summary_list summary_sort
 
   ;# Clear the list
   set summary_list ""
 
-  for {set i 0} {$i < [llength $funit_names]} {incr i} {
+  foreach block $block_list {
 
     ;# Get summary information for the current type
     if {$cov_rb == "Line"} {
-      tcl_func_get_line_summary [lindex $funit_names $i] [lindex $funit_types $i]
+      tcl_func_get_line_summary $block
       set hit       $line_summary_hit
+      set excluded  $line_summary_excluded
       set total     $line_summary_total
       set low_limit $line_low_limit
     } elseif {$cov_rb == "Toggle"} {
-      tcl_func_get_toggle_summary [lindex $funit_names $i] [lindex $funit_types $i]
+      tcl_func_get_toggle_summary $block
       set hit       $toggle_summary_hit
+      set excluded  $toggle_summary_excluded
       set total     $toggle_summary_total
       set low_limit $toggle_low_limit
     } elseif {$cov_rb == "Memory"} {
-      tcl_func_get_memory_summary [lindex $funit_names $i] [lindex $funit_types $i]
+      tcl_func_get_memory_summary $block
       set hit       $memory_summary_hit
+      set excluded  $memory_summary_excluded
       set total     $memory_summary_total
       set low_limit $memory_low_limit
     } elseif {$cov_rb == "Logic"} {
-      tcl_func_get_comb_summary [lindex $funit_names $i] [lindex $funit_types $i]
+      tcl_func_get_comb_summary $block
       set hit       $comb_summary_hit
+      set excluded  $comb_summary_excluded
       set total     $comb_summary_total
       set low_limit $comb_low_limit
     } elseif {$cov_rb == "FSM"} {
+      tcl_func_get_fsm_summary $block
       set hit       $fsm_summary_hit
+      set excluded  $fsm_summary_excluded
       set total     $fsm_summary_total
       set low_limit $fsm_low_limit
     } elseif {$cov_rb == "Assert"} {
+      tcl_func_get_assert_summary $block
       set hit       $assert_summary_hit
+      set excluded  $assert_summary_excluded
       set total     $assert_summary_total
       set low_limit $assert_low_limit
     } else {
@@ -195,10 +203,8 @@ proc calculate_summary {} {
     set miss [expr $total - $hit]
 
     ;# Calculate hit percent
-    if {$total == 0} {
+    if {$total <= 0} {
       set percent 100
-    } elseif {$total < 0} {
-      set percent " ? "
     } else {
       set percent [expr round((($hit * 1.0) / $total) * 100)]
     }
@@ -215,16 +221,27 @@ proc calculate_summary {} {
       set lcolor "#90ee90"
     }
 
+    # If the total was less than 0, make sure that we set miss, total and percent values to ?
+    if {$total < 0} {
+      set miss    " ? "
+      set total   " ? "
+      set percent " ? "
+    }
+
     ;# Add this functional unit to the list to sort
-    lappend summary_list [list [lindex $funit_names $i] $hit $miss $total $percent $bcolor $lcolor]
+    if {$mod_inst_type == "Module"} {
+      lappend summary_list [list "" [tcl_func_get_funit_name $block] $hit $miss $excluded $total $percent $bcolor $lcolor]
+    } else {
+      lappend summary_list [list [tcl_func_get_inst_scope $block] [tcl_func_get_funit_name $block] $hit $miss $excluded $total $percent $bcolor $lcolor]
+    }
 
   }
 
   ;# Sort the summary information based on the percent value
   if {$summary_sort == "dec"} {
-    set summary_list [lsort -integer -index 1 -decreasing $summary_list]
+    set summary_list [lsort -integer -index 2 -decreasing $summary_list]
   } elseif {$summary_sort == "inc"} {
-    set summary_list [lsort -integer -index 1 -increasing $summary_list]
+    set summary_list [lsort -integer -index 2 -increasing $summary_list]
   }
 
 }
@@ -264,7 +281,6 @@ proc add_func_unit { w name percent color num } {
 proc select_main_lb {} {
 
   global funit_names funit_types
-  global curr_funit_name curr_funit_type
 
   ;# Get the selected name
   set sel_name [.sumwin.f.flb get [.sumwin.f.flb curselection]]

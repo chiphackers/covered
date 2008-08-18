@@ -1,0 +1,359 @@
+<chapter id="chapter.debug" XrefLabel="Debugging">
+  <title>Debugging</title>
+  <para>
+  As much as it pains the developers of Covered to admit, there will be times when a user of Covered will encounter a 
+  problem in the resimulation process or will experience a performance issue during certain runs and will want to 
+  investigate the issue a bit themselves before posting a bug report. There may also be people out there who just 
+  might want to learn more about how Covered operates "under the hood". For those people whom I have just mentioned, 
+  this section is for you.
+  </para>
+  
+  <sect1 id="section.debug.output" XrefLabel="Verbose Debug Output">
+    <title>Verbose Debug Output</title>
+    <para>
+    The brute force method of understanding Covered's internals is to generate verbose debug output using the global "-D" 
+    option to any of Covered's commands. The user of this method should take care to note that using this option may 
+    generate an <emphasis>extremely</emphasis> large amount of output and will definitely cause Covered's runtime performance 
+    to degrade considerably. If this option is used, its output should probably be redirected to a file for 
+    post-processing purposes. It should be noted that the verbose debug output is most useful for the developer's of 
+    Covered and is not meant to be of much help to the normal user.
+    </para>
+    
+    <sect2>
+      <title>Building Covered for Verbose Debug Outputting</title>
+      <para>
+      Because generating verbose debug output can have a tremendous degradation in performance when it is even compiled, 
+      Covered requires the user to specify an option to the configuration/build process to enable this feature. To enable 
+      verbose debug outputting, simply specify the <emphasis role="bold">--enable-debug</emphasis> option to the configure 
+      script. This will cause Covered to compile in verbose debug output support and enable the use of the -D global option.
+      </para>
+      <note>
+        <para>
+        If the user has not specified the --enable-debug option to the configuration script but proceeds to specify the -D global option, 
+        Covered will emit a warning message that it is unable to output verbose debug information due to the lack of the --enable-debug 
+        option being specified. It will then proceed to ignore the -D option.
+        </para>
+      </note>
+    </sect2>
+    
+  </sect1>
+  
+  <sect1 id="section.cli" XrefLabel="Command-Line Interface">
+    <title>Command-Line Interface (CLI)</title>
+    <para>
+    As an alternative to simply outputting the verbose debug output from Covered, the score command comes equipped with its own 
+    interactive debugging mechanism called the CLI (Command-Line Interface). This interface is a command-line driven utility that 
+    starts at the beginning of the resimulation. Its purpose is to allow the user to step through simulation execution and view 
+    the contents of signals, time, scopes, code and internal thread queues for the purposes of debugging and/or understanding 
+    Covered. This utility works much in the same way as simulator CLIs and the GDB debugging utility.
+    </para>
+    
+    <sect2>
+      <title>Building Covered for the CLI</title>
+      <para>
+      Because interactive command-line debugging has a small performance penalty when compiled in and is closely associated with 
+      the verbose debug output option, Covered requires the user to specify an option to the configuation/build process to enable 
+      this feature. To enable the CLI, simply specify the <emphasis role="bold">--enable-debug</emphasis> option to the configure 
+      script. This will cause Covered to compile in CLI capabilities and enable the user of the -cli score command option.
+      </para>
+    </sect2>
+    
+    <sect2>
+      <title>Using the CLI</title>
+      <para>
+      To allow the score command to use the CLI for interactive resimulation, simply specify the <emphasis role="bold">-cli 
+      [<emphasis>filename</emphasis>]</emphasis> option to the score command. If filename is specified to this option, the contents 
+      of this file will be parsed and executed once the score command has reached the resimulation process. The contents of this 
+      file are a series of CLI commands (one command per line) in ASCII format and can be automatically produced with the "savehist" 
+      CLI command (see below). This feature allows a user to quickly save off the CLI commands made during one score run and reuse 
+      them in a subsequent score run without having to remember and manually input the same commands.
+      </para>
+      <para>
+      Once the -cli option is invoked, Covered will run the score command until it gets to the beginning of the resimulation process. 
+      At this time, if the optional filename is specified, it will parse the contents of this file and execute the CLI commands found 
+      there until all commands are executed. If filename was not specified, a prompt will be displayed and the resimulation execution 
+      will halt until the user has specified otherwise via command-line options. After entering a command-line option, simply press 
+      return to invoke that command. In the event that the command was a step, next or continue option, resimulation will resume 
+      until it reaches the next stop point.
+      </para>
+    </sect2>
+    
+    <sect2>
+      <title>CLI commands</title>
+      <para>
+      The following is a list of all of the CLI options available to the user:
+      </para>
+      <table frame="all">
+        <title>CLI Command-line Options</title>
+        <tgroup cols='2' align='left' colsep='1' rowsep='1'>
+          <colspec colwidth='1*'/>
+          <colspec colwidth='2*'/>
+          <thead>
+            <row>
+              <entry>Option</entry>
+              <entry>Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>
+              step [<emphasis>num</emphasis>]
+              </entry>
+              <entry>
+              Advances to the next statement if <emphasis>num</emphasis> is not specified; otherwise, advances <emphasis>num</emphasis> 
+              statements before returning to the CLI prompt.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              next [<emphasis>num</emphasis>]
+              </entry>
+              <entry>
+              Advances to the next timestep if <emphasis>num</emphasis> is not specified; otherwise, advances <emphasis>num</emphasis> 
+              timesteps before returning to the CLI prompt.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              goto <emphasis>num</emphasis>
+              </entry>
+              <entry>
+              Advances to the given timestep (or the next timestep after the given value if the timestep is not executed) specified by 
+              <emphasis>num</emphasis>.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              run
+              </entry>
+              <entry>
+              Runs the simulation to completion.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              continue
+              </entry>
+              <entry>
+              Continues running the simulation to completion.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              thread active
+              </entry>
+              <entry>
+              Displays the current state of the internal active simulation queue. This queue consists of process threads that will be executed 
+              in the current timestep.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              thread delayed
+              </entry>
+              <entry>
+              Displays the current state of the internal delayed simulation queue. This queue consists of process threads that will be executed 
+              at a later time as dictated by a delay statement.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              thread waiting
+              </entry>
+              <entry>
+              Displays the current state of the internal waiting simulation queue. This queue consists of process threads that are not active 
+              or delayed but may be activated by a value change in one of the signals in its expression tree.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              thread all
+              </entry>
+              <entry>
+              Displays the current state of all process threads in the simulator.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              current
+              </entry>
+              <entry>
+              Displays the current scope, block, filename and line number of the statement that is about to be executed in the active queue.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              time
+              </entry>
+              <entry>
+              Displays the current simulation time.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              signal <emphasis>name</emphasis>
+              </entry>
+              <entry>
+              Displays the current value of the given net/variable.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              expr <emphasis>num</emphasis>
+              </entry>
+              <entry>
+              Displays the given expression and its current value where <emphasis>num</emphasis> is the ID of the expression to output.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              debug [on | off]
+              </entry>
+              <entry>
+              Turns verbose debug output from the simulator on or off. If 'on' or 'off' is not specified, displays the current debug mode.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              list [<emphasis>num</emphasis>]
+              </entry>
+              <entry>
+              Lists the contents of the file where the current statement is to be executed. If <emphasis>num</emphasis> is specified, 
+              outputs the given number of lines; otherwise, outputs 10 lines.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              savehist <emphasis>filename</emphasis>
+              </entry>
+              <entry>
+              Saves the current history to the specified file.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              history [(<emphasis>num</emphasis> | all)]
+              </entry>
+              <entry>
+              Displays the last 10 lines of command-line history. If 'all' is specified, the entire history contents will be displayed. 
+              If <emphasis>num</emphasis> is specified, the last <emphasis>num</emphasis> commands will be displayed.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              !<emphasis>num</emphasis>
+              </entry>
+              <entry>
+              Executes the command at the <emphasis>num</emphasis> position in history.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              !!
+              </entry>
+              <entry>
+              Executes the last valid command.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              help
+              </entry>
+              <entry>
+              Displays the available command-line options.
+              </entry>
+            </row>
+            <row>
+              <entry>
+              quit
+              </entry>
+              <entry>
+              Ends simulation immediately.
+              </entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </sect2>
+  </sect1>
+  
+  <sect1 id="section.profiling" XrefLabel="Source Code Profiling">
+    <title>Source Code Profiling</title>
+    <para>
+    The built-in source code profiling facility allows the user to run any Covered command and understand performance metrics 
+    about the internal Covered source code, such as how many times a given function was called, how much wall-clock time was 
+    spent executing a given function, how many times a function allocated and deallocated memory from the heap, etc. This 
+    information can be useful in understanding where performance bottlenecks are during a given Covered command run. This 
+    feature does not provide the end-user any useful information about the design that they are testing.
+    </para>
+    
+    <sect2>
+      <title>Building Covered for Profiling</title>
+      <para>
+      Because internal source code profiling is not a function of obtaining Verilog code coverage and adds a performance 
+      penalty for being compiled in and used, Covered requires the user to specify an option to the configuration/build 
+      process to enable this feature. To enable internal source code profiling, simply specify the 
+      <emphasis role="bold">--enable-profiling</emphasis> option to the configure script. This will cause Covered to 
+      compile in profiling capabilities and enable the use of the -P global option.
+      </para>
+      <note>
+        <para>
+        If the user has not specified the --enable-profiling option to the configuration script but proceeds to specify the -P global option, Covered will emit a 
+        warning message that it is unable to do profiling due to the lack of the --enable-profiling option being specified. It will then proceed to ignore the -P 
+        option.
+        </para>
+      </note>
+    </sect2>
+    
+    <sect2>
+      <title>Using Source Code Profiling</title>
+      <para>
+      Once Covered has had profiling functionality configured and built into it, the user may optionally enable profiling for any 
+      command by specifying the -P [<emphasis>filename</emphasis>] global option. If the -P option is specified without a filename 
+      associated with it, the profiling report generated from the command run will be output to a file called "covered.prof" in the 
+      same directory where Covered was run. If a filename is associated with the -P option, the contents of the profiling report 
+      will be output to that file.
+      </para>
+      <note>
+        <para>
+        The specified filename can be anything except "score", "merge" or "report" as this name will be interpreted by Covered's command-line parser to indicate the 
+        type of command being run. If one of these command keywords are specified after the -P option, it is assumed that the user has not specified a filename and the 
+        contents of the profiling report will be sent to the default file of "covered.prof".
+        </para>
+      </note>
+    </sect2>
+    
+    <sect2>
+      <title>Understanding the Profiling Report</title>
+      <para>
+      After a command has been run with the global -P option specified, a report file will contain several profiling statistics, 
+      including the following:
+      </para>
+      <para>
+        <orderedlist>
+          <listitem><para>The amount of time spent running the entire command</para></listitem>
+          <listitem><para>The number of times each executed function was called</para></listitem>
+          <listitem><para>The total amount of wall clock time spent executing each function</para></listitem>
+          <listitem><para>The average amount of time spent executing each function</para></listitem>
+          <listitem><para>The number of times each function allocated heap memory</para></listitem>
+          <listitem><para>The number of times each function deallocated heap memory</para></listitem>
+        </orderedlist>
+      </para>
+      <para>
+      In addition to providing this information on a per function basis, the profiling report also provides the information 
+      in three different sections with each function ordered from most to least by the following statistic columns:
+      </para>
+      <para>
+        <orderedlist>
+          <listitem><para>The number of times each executed function was called</para></listitem>
+          <listitem><para>The total amount of wall clock time spent executing each function</para></listitem>
+          <listitem><para>The average amount of time spent executing each function</para></listitem>
+        </orderedlist>
+      </para>
+      <para>
+      By ordering this information, it will help the users and developers determine where the performance bottlenecks in execution 
+      are for a given command run.
+      </para>
+    </sect2>
+  </sect1>
+</chapter>

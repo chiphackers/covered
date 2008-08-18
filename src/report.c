@@ -55,6 +55,7 @@
 
 extern char         user_msg[USER_MSG_LENGTH];
 extern db**         db_list;
+extern unsigned int db_size;
 extern unsigned int curr_db;
 extern str_link*    merge_in_head;
 extern str_link*    merge_in_tail;
@@ -450,10 +451,8 @@ void report_gather_instance_stats(
 
   funit_inst* curr;        /* Pointer to current instance being evaluated */
 
-  /* Create a statistics structure for this instance */
-  assert( root->stat == NULL );
-
-  root->stat = statistic_create();
+  /* Create and initialize statistic structure */
+  statistic_create( &(root->stat) );
 
   /* Get coverage results for all children first */
   curr = root->child_head;
@@ -467,50 +466,58 @@ void report_gather_instance_stats(
 
     /* Get coverage results for this instance */
     if( report_line ) {
-      line_get_stats( root->funit, &(root->stat->line_total), &(root->stat->line_hit) );
+      line_get_stats( root->funit,
+                      &(root->stat->line_hit),
+                      &(root->stat->line_excluded),
+                      &(root->stat->line_total) );
     }
 
     if( report_toggle ) {
       toggle_get_stats( root->funit->sig_head, 
-                        &(root->stat->tog_total), 
                         &(root->stat->tog01_hit), 
                         &(root->stat->tog10_hit),
+                        &(root->stat->tog_excluded),
+                        &(root->stat->tog_total), 
                         &(root->stat->tog_cov_found) );
     }
 
     if( report_combination ) {
       combination_get_stats( root->funit,
-                             &(root->stat->comb_total),
-                             &(root->stat->comb_hit) );
+                             &(root->stat->comb_hit),
+                             &(root->stat->comb_excluded),
+                             &(root->stat->comb_total) );
     }
 
     if( report_fsm ) {
       fsm_get_stats( root->funit->fsm_head,
-                     &(root->stat->state_total),
                      &(root->stat->state_hit),
+                     &(root->stat->state_total),
+                     &(root->stat->arc_hit),
                      &(root->stat->arc_total),
-                     &(root->stat->arc_hit) );
+                     &(root->stat->arc_excluded) );
     }
 
     if( report_assertion ) {
       assertion_get_stats( root->funit,
-                           &(root->stat->assert_total),
-                           &(root->stat->assert_hit) );
+                           &(root->stat->assert_hit),
+                           &(root->stat->assert_excluded),
+                           &(root->stat->assert_total) );
     }
 
     if( report_memory ) {
       memory_get_stats( root->funit->sig_head,
-                        &(root->stat->mem_ae_total),
                         &(root->stat->mem_wr_hit),
                         &(root->stat->mem_rd_hit),
-                        &(root->stat->mem_tog_total),
+                        &(root->stat->mem_ae_total),
                         &(root->stat->mem_tog01_hit),
-                        &(root->stat->mem_tog10_hit) );
+                        &(root->stat->mem_tog10_hit),
+                        &(root->stat->mem_tog_total),
+                        &(root->stat->mem_excluded) );
     }
 
     /* Only get race condition statistics for this instance module if the module hasn't been gathered yet */
     if( report_race && (root->funit->stat == NULL) ) {
-      root->funit->stat = statistic_create();
+      statistic_create( &(root->funit->stat) );
       race_get_stats( root->funit->race_head,
                       &(root->funit->stat->race_total),
                       &(root->funit->stat->rtype_total) );
@@ -537,52 +544,60 @@ static void report_gather_funit_stats(
 
   while( head != NULL ) {
 
-    head->funit->stat = statistic_create();
+    statistic_create( &(head->funit->stat) );
 
     /* If this module is an OVL assertion module, don't get statistics for it */
     if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit ) ) {
 
       /* Get coverage results for this instance */
       if( report_line ) {
-        line_get_stats( head->funit, &(head->funit->stat->line_total), &(head->funit->stat->line_hit) );
+        line_get_stats( head->funit,
+                        &(head->funit->stat->line_hit),
+                        &(head->funit->stat->line_excluded),
+                        &(head->funit->stat->line_total) );
       }
 
       if( report_toggle ) {
         toggle_get_stats( head->funit->sig_head, 
-                          &(head->funit->stat->tog_total), 
                           &(head->funit->stat->tog01_hit), 
                           &(head->funit->stat->tog10_hit),
+                          &(head->funit->stat->tog_excluded),
+                          &(head->funit->stat->tog_total), 
                           &(head->funit->stat->tog_cov_found) );
       }
 
       if( report_combination ) {
         combination_get_stats( head->funit,
-                               &(head->funit->stat->comb_total),
-                               &(head->funit->stat->comb_hit) );
+                               &(head->funit->stat->comb_hit),
+                               &(head->funit->stat->comb_excluded),
+                               &(head->funit->stat->comb_total) );
       }
 
       if( report_fsm ) {
         fsm_get_stats( head->funit->fsm_head,
-                       &(head->funit->stat->state_total),
                        &(head->funit->stat->state_hit),
+                       &(head->funit->stat->state_total),
+                       &(head->funit->stat->arc_hit) ,
                        &(head->funit->stat->arc_total),
-                       &(head->funit->stat->arc_hit) );
+                       &(head->funit->stat->arc_excluded) );
       }
 
       if( report_assertion ) {
         assertion_get_stats( head->funit,
-                             &(head->funit->stat->assert_total),
-                             &(head->funit->stat->assert_hit) );
+                             &(head->funit->stat->assert_hit),
+                             &(head->funit->stat->assert_excluded),
+                             &(head->funit->stat->assert_total) );
       }
 
       if( report_memory ) {
         memory_get_stats( head->funit->sig_head,
-                          &(head->funit->stat->mem_ae_total),
                           &(head->funit->stat->mem_wr_hit),
                           &(head->funit->stat->mem_rd_hit),
-                          &(head->funit->stat->mem_tog_total),
+                          &(head->funit->stat->mem_ae_total),
                           &(head->funit->stat->mem_tog01_hit),
-                          &(head->funit->stat->mem_tog10_hit) );
+                          &(head->funit->stat->mem_tog10_hit),
+                          &(head->funit->stat->mem_tog_total),
+                          &(head->funit->stat->mem_excluded) );
       }
 
       if( report_race ) {
@@ -797,21 +812,30 @@ void report_read_cdd_and_ready(
   } else {
 
     inst_link* instl;
+    bool       first = (db_size == 0);
 
     /* Read in database, performing instance merging */
-    db_read( ifile, read_mode );
+    curr_db = 0;
+    db_read( ifile, (first ? READ_MODE_REPORT_NO_MERGE : READ_MODE_MERGE_INST_MERGE) );
     bind_perform( TRUE, 0 );
 
     /* Gather instance statistics */
-    instl = db_list[curr_db]->inst_head;
+    instl = db_list[0]->inst_head;
     while( instl != NULL ) {
       report_gather_instance_stats( instl->inst );
       instl = instl->next;
     }
 
+    /* Read in database again, performing module merging */
+    curr_db = 1;
+    db_read( ifile, READ_MODE_REPORT_MOD_MERGE );
+    bind_perform( TRUE, 0 );
+
     /* Now merge functional units and gather module statistics */
-    db_merge_funits();
-    report_gather_funit_stats( db_list[curr_db]->funit_head );
+    report_gather_funit_stats( db_list[1]->funit_head );
+
+    /* Set the current database back to 0 */
+    curr_db = 0;
 
   }
 
@@ -930,9 +954,10 @@ void command_report(
 #ifdef HAVE_TCLTK
     } else {
 
+      unsigned int slen;
+
       Try {
 
-        unsigned int slen;
         unsigned int rv;
 
         if( input_db != NULL ) {
@@ -967,7 +992,7 @@ void command_report(
 
         /* Get the COVERED_BROWSER environment variable */
 #ifndef COVERED_BROWSER
-        covered_browser = getenv( "COVERED_BROWSER" );
+        covered_browser = strdup_safe( getenv( "COVERED_BROWSER" ) );
 #else
         covered_browser = strdup_safe( COVERED_BROWSER );
 #endif
@@ -994,14 +1019,18 @@ void command_report(
         Tk_MainLoop ();
 
       } Catch_anonymous {
-        free_safe( covered_home, (strlen( covered_home ) + 1) );
-        free_safe( main_file, (strlen( main_file ) + 1) );
+        free_safe( covered_home,    (strlen( covered_home ) + 1) );
+        free_safe( main_file,       slen );
+        free_safe( covered_browser, (strlen( covered_browser ) + 1) );
+        free_safe( covered_version, (strlen( covered_version ) + 1) );
         Throw 0;
       }
 
       /* Clean Up */
-      free( covered_home );
-      free( main_file );
+      free_safe( covered_home,    (strlen( covered_home ) + 1) );
+      free_safe( main_file,       slen );
+      free_safe( covered_browser, (strlen( covered_browser ) + 1) );
+      free_safe( covered_version, (strlen( covered_version ) + 1) );
 #endif
 
     }
@@ -1021,6 +1050,20 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.104.2.10  2008/08/08 23:02:38  phase1geo
+ Modifying the look of the text search element.  Enhancing a few other GUI enhancements.
+
+ Revision 1.104.2.9  2008/08/07 20:51:04  phase1geo
+ Fixing memory allocation/deallocation issues with GUI.  Also fixing some issues with FSM
+ table output and exclusion.  Checkpointing.
+
+ Revision 1.104.2.8  2008/08/07 06:39:11  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
+ Revision 1.104.2.7  2008/08/06 20:11:35  phase1geo
+ Adding support for instance-based coverage reporting in GUI.  Everything seems to be
+ working except for proper exclusion handling.  Checkpointing.
+
  Revision 1.104.2.6  2008/07/23 05:10:11  phase1geo
  Adding -d and -ext options to rank and merge commands.  Updated necessary files
  per this change and updated regressions.

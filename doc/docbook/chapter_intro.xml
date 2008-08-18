@@ -1,0 +1,107 @@
+<chapter id="chapter.intro">
+		<title>Introduction</title>
+		
+		<sect1>
+				<title>What is Covered?</title>
+				<para>
+				Covered is a Verilog code coverage analysis tool that can be useful for determining how well a diagnostic 
+				test suite is covering the design under test (DUT). It is command-line based with an optional Tcl/Tk GUI 
+				report viewer, making it portable across almost all platforms.</para>
+		</sect1>
+		
+		<sect1>
+				<title>What can code coverage do?</title>
+				<para>
+				Typically, in the design verification work flow, a design verification engineer will develop a self-checking 
+				test suite to verify design elements/functions specified by a design's specification document. When the test 
+				suite contains all of the tests required by the design specification, the test writer may ask:
+				</para>
+				<para>
+					 <itemizedlist>
+						  <listitem><para>"How much logic in the design is actually being exercised?"</para></listitem>
+						  <listitem><para>"Does my test suite cover all of the DUT?"</para></listitem>
+						  <listitem><para>"Am I done writing tests for the logic?"</para></listitem>
+					 </itemizedlist>
+				</para>
+				<para>
+				When the design verification gets to this point, it is often useful to get some metrics for determining logic 
+				coverage. This is where a code coverage utility, such as Covered, is very useful.
+				</para>
+				<para>
+				The metrics obtained by using a code coverage analysis tool can be very useful for determining the following 
+				about a design and the test suite testing that design:
+				</para>
+				<para>
+					 <orderedlist>
+						  <listitem><para>Completeness of the test suite in terms of logic coverage.</para></listitem>
+						  <listitem><para>Unexercised logic in the design (useful in helping to determine what types of tests need to be added to the test suite).</para></listitem>
+						  <listitem><para>Corner cases in design that are untestable.</para></listitem>
+					 </orderedlist>
+				</para>
+		</sect1>
+		
+		<sect1>
+				<title>What can't code coverage do?</title>
+				<para>
+				It is important to note that any code coverage tool is only useful in indicating how much logic is being 
+				covered by a test suite. It does not indicate that the covered logic works appropriately. This, of course, 
+				can only be verified by the diagnostics themselves.
+				</para>
+				<para>
+				Additionally, it is possible that two or more diagnostics can achieve the same coverage and yet be 
+				functionally testing different characteristics of a design. Since the coverage metrics are not improved in 
+				this case, one may conclude that the second test is unnecessary. This may or may not be true depending on 
+				what is being tested; it is always up to the test writer to determine the necessity of a diagnostic. Using 
+				the code coverage tool results as the sole means of making this determination is not recommended. Use common 
+				sense in these areas.
+				</para>
+		</sect1>
+		
+		<sect1>
+				<title>What does Covered do?</title>
+				<para>
+				Covered is a tool that uses your design files along with standard VCD or LXT dump files to analyze the code 
+				coverage of the DUT. The code coverage information is stored in a special database file that can be retrieved 
+				and "merged" with new coverage information to create a summed coverage total for several tests. After a database 
+				file has been created, the user may generate various ASCII reports that summarize the coverage information or 
+				run Covered's GUI to interactively analyze the coverage information.
+				</para>
+		</sect1>
+		
+		<sect1>
+				<title>What does Covered NOT do?</title>
+				<para>
+				Though Covered does perform some resimulation of the design to derive line, combinational logic, memory, and 
+				assertion coverage, Covered is NOT a full-fledged compiler/simulator and should not be used for such purposes. 
+				Additionally, Covered is NOT a linting tool. Many syntax/semantic issues that are not allowed by the LRM are 
+				allowed by Covered for purposes of making Covered's core more generic and/or simplistic. Please make sure that 
+				your code is properly linted in your design flow using an appropriate tool.
+				</para>
+		</sect1>
+		
+		<sect1>
+				<title>What makes Covered different?</title>
+				<para>
+				Most Verilog code coverage tools perform a pre-compilation procedure known as instrumenting. During this procedure, 
+				the coverage tool will read in the DUT and generate its own version of the DUT with additional code added to aid 
+				in calculating coverage after the simulation is complete. The benefits to this style are higher performance of the 
+				coverage tool when it is run after the simulation. The drawbacks to this approach are that it slows down simulation 
+				speed and a trust issue that the coverage tool did not alter your simulation model when it performed the 
+				instrumentation.
+				</para>
+				<para>
+				Covered, on the other hand, omits the instrumenting procedure all-together and only performs its analysis on a 
+				pre-simulated design. This means that Covered cannot make a mistake to your simulation and the simulation is allowed 
+				to run faster since there is no additional code that must be run to get coverage data. The drawback is that there is 
+				some overhead in post-simulation for extracting coverage data but this is typically less than the simulation overhead 
+				in the other method.
+				</para>
+				<para>
+				Additionally, unlike all other commercial coverage tools, Covered is free! No license managers to invoke and maintain. 
+				No licensing fees and negotiations. The only thing the developers of Covered want in return are bug reports and user 
+				input (and perhaps a donation if you find the software useful and want to see its development continue). Isn't the 
+				open source life grand?!
+				</para>
+		</sect1>
+			
+</chapter>

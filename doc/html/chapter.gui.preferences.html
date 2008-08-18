@@ -1,0 +1,137 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 27. Navigating the Preferences Window</title><meta name="generator" content="DocBook XSL Stylesheets V1.74.0"><link rel="home" href="index.html" title="Covered"><link rel="up" href="part.gui.html" title="Part IV. Graphical User Interface"><link rel="prev" href="chapter.gui.rank.html" title="Chapter 26. Creating a CDD Ranking Report"><link rel="next" href="chapter.gui.wizard.html" title="Chapter 28. Navigating the Wizard Window"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 27. Navigating the Preferences Window</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter.gui.rank.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part IV. Graphical User Interface</th><td width="20%" align="right"> <a accesskey="n" href="chapter.gui.wizard.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.gui.preferences"></a>Chapter 27. Navigating the Preferences Window</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.gui.preferences.html#section.gui.pref.categories">27.1. Option Categories</a></span></dt><dt><span class="sect1"><a href="chapter.gui.preferences.html#section.gui.pref.buttons">27.2. Preference Buttons</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.gui.preferences.html#section.gui.pref.buttons.apply">Apply Button</a></span></dt><dt><span class="sect2"><a href="chapter.gui.preferences.html#section.gui.pref.buttons.ok">OK Button</a></span></dt><dt><span class="sect2"><a href="chapter.gui.preferences.html#section.gui.pref.buttons.cancel">Cancel Button</a></span></dt><dt><span class="sect2"><a href="chapter.gui.preferences.html#section.gui.pref.buttons.help">Help Button</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.gui.preferences.html#section.gui.pref.configfile">27.3. Preferences Configuration File</a></span></dt><dt><span class="sect1"><a href="chapter.gui.preferences.html#section.gui.pref.general">27.4. Preferences General Pane</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.gui.preferences.html#section.gui.pref.general.wizard">Show wizard window on startup</a></span></dt><dt><span class="sect2"><a href="chapter.gui.preferences.html#section.gui.pref.general.state">Save state of GUI when exiting the application</a></span></dt><dt><span class="sect2"><a href="chapter.gui.preferences.html#section.gui.pref.general.tooltips">Show tooltips</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.gui.preferences.html#section.gui.pref.color">27.5. Preferences Color Pane</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.gui.preferences.html#section.gui.pref.color.set">Set Highlight Color</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.gui.preferences.html#section.gui.pref.goals">27.6. Preference Coverage Goals Pane</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.gui.preferences.html#section.gui.pref.goals.acceptable">Set Acceptable Coverage Goals Frame</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.gui.preferences.html#section.gui.pref.syntax">27.7. Preferences Syntax Highlighting Pane</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.gui.preferences.html#section.gui.pref.syntax.highlighting">Set Syntax Highlighting Options</a></span></dt></dl></dd></dl></div><p>
+  The preferences window allows the user to adjust the view of some of the GUI elements for the purpose of more easily 
+  analyzing coverage information for a specific user. <a class="xref" href="chapter.gui.preferences.html#figure.gui.pref.main" title="Figure 27.1. Main Preferences Window">Main Preferences Window</a> shows the preferences 
+  window that is created when the user selects the <span class="bold"><strong>Tools &gt; Preferences...</strong></span> menu option 
+  from the main window.
+  </p><p>
+    </p><div class="figure"><a name="figure.gui.pref.main"></a><p class="title"><b>Figure 27.1. Main Preferences Window</b></p><div class="figure-contents"><div class="mediaobject"><img src="img/pref_main.gif" alt="Main Preferences Window"></div></div></div><p><br class="figure-break">
+  </p><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.gui.pref.categories"></a>27.1. Option Categories</h2></div></div></div><p>
+    On the left side of the preferences window is a list of option categories that can be modified. Selecting any one 
+    of the items in the listbox will display the modifiable options to the frame to the right of the listbox. The 
+    following option categories exist:
+    </p><p>
+      </p><div class="itemizedlist"><ul type="disc"><li><p><a class="xref" href="chapter.gui.preferences.html#section.gui.pref.general" title="27.4. Preferences General Pane">Preferences General Pane</a></p></li><li><p><a class="xref" href="chapter.gui.preferences.html#section.gui.pref.color" title="27.5. Preferences Color Pane">Preferences Color Pane</a></p></li><li><p><a class="xref" href="chapter.gui.preferences.html#section.gui.pref.goals" title="27.6. Preference Coverage Goals Pane">Preference Coverage Goals Pane</a></p></li><li><p><a class="xref" href="chapter.gui.preferences.html#section.gui.pref.syntax" title="27.7. Preferences Syntax Highlighting Pane">Preferences Syntax Highlighting Pane</a></p></li></ul></div><p>
+    </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.gui.pref.buttons"></a>27.2. Preference Buttons</h2></div></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.gui.pref.buttons.apply"></a>Apply Button</h3></div></div></div><p>
+      Clicking on the <span class="bold"><strong>Apply</strong></span> button will cause the currently selected preference 
+      options to be immediately updated in Covered but will not update the preference option values in the .coveredrc 
+      file.  This has the effect of changing the preferences for the current application only. Clicking on this button 
+      will not close the Preferences window.
+      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.gui.pref.buttons.ok"></a>OK Button</h3></div></div></div><p>
+      Clicking on the <span class="bold"><strong>OK</strong></span> button will cause the currently selected preference options 
+      to be immediately updated in Covered and will update the .coveredrc file with the new values. This also causes 
+      the Preferences window to close.
+      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.gui.pref.buttons.cancel"></a>Cancel Button</h3></div></div></div><p>
+      Clicking on the <span class="bold"><strong>Cancel</strong></span> button will cause the the Preferences window to close 
+      without updating Covered with the currently selected values and without updating the .coveredrc file.
+      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.gui.pref.buttons.help"></a>Help Button</h3></div></div></div><p>
+      Clicking on the <span class="bold"><strong>Help</strong></span> button will cause the help page for the currently selected 
+      'Option Category'.
+      </p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.gui.pref.configfile"></a>27.3. Preferences Configuration File</h2></div></div></div><p>
+    User preferences are loaded from the ".coveredrc" file that is searched for in the following order:
+    </p><p>
+      </p><div class="orderedlist"><ol type="1"><li><p>Current directory that the 'covered report -view' command was executed from.</p></li><li><p>The user's home directory.</p></li><li><p>The installation directory (by default this is /usr/local/share/covered).</p></li></ol></div><p>
+    </p><p>
+    If user preferences are changed in this window and the <span class="bold"><strong>OK</strong></span> button is pressed, the 
+    settings are immediately saved back to a configuration file and the GUI is immediately updated to reflect the new 
+    user changes.  If the <span class="bold"><strong>Cancel</strong></span> button is pressed, all changes are thrown away and 
+    the configuration file remains unchanged. The location of the stored configuration file depends on which 
+    configuration file location was initially loaded. The following table describes this correlation.
+    </p><p>
+      </p><div class="table"><a name="id2801720"></a><p class="title"><b>Table 27.1. Location of Written .coveredrc File According to the Location of Read .coveredrc File</b></p><div class="table-contents"><table summary="Location of Written .coveredrc File According to the Location of Read .coveredrc File" border="1"><colgroup><col><col></colgroup><thead><tr><th>Loaded config file location</th><th>Stored config file location</th></tr></thead><tbody><tr><td>Current directory</td><td>Current directory</td></tr><tr><td>Home directory</td><td>Home directory</td></tr><tr><td>Install directory</td><td>Current directory</td></tr><tr><td>None found</td><td>Current directory</td></tr></tbody></table></div></div><p><br class="table-break">
+    </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.gui.pref.general"></a>27.4. Preferences General Pane</h2></div></div></div><p>
+    The general preferences pane allows the user to control Covered's settings that are not specific to an individual
+    task.  The following subsections describe the controls available within this pane.
+    </p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.gui.pref.general.wizard"></a>Show wizard window on startup</h3></div></div></div><p>
+      This checkbutton selects if Covered's <a class="xref" href="chapter.gui.wizard.html" title="Chapter 28. Navigating the Wizard Window">Navigating the Wizard Window</a> popup window will be displayed upon
+      starting Covered.  Simply check this button if you would like to see the wizard at the beginning of each startup
+      or uncheck it to cause the wizard window to not be displayed on startup. On the wizard window itself, there is
+      an option to change this behavior as well.
+      </p><p>
+      Note that you can always display the wizard window by selecting its menu option in the 
+      <a class="xref" href="chapter.gui.main.html#section.gui.main.viewmenu" title="The View Menu">The View Menu</a> menu.
+      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.gui.pref.general.state"></a>Save state of GUI when exiting the application</h3></div></div></div><p>
+     This checkbutton determines if certain GUI element (i.e., window placement/sizing, module/instance listbox 
+     column arrangement/width/state, etc.) information is saved when the GUI exits.  If this checkbutton is selected,
+     the state is saved to the configuration file on application exit and will be used when the application is started.
+     If the checkbutton is deselected, the state will not be saved and the default GUI element behaviors will be used.
+     </p><p>
+     This setting allows the user to setup the various GUI elements to their liking and retains this information whenever
+     the application is restarted, saving the user the hassle of getting the environment setup again.
+     </p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="img/note.gif"></td><th align="left">Note</th></tr><tr><td align="left" valign="top">
+     While the application is being used, any GUI state information will be remembered for the duration of the application
+     run, regardless of the setting of this preference item.
+     </td></tr></table></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.gui.pref.general.tooltips"></a>Show tooltips</h3></div></div></div><p>
+      This checkbutton specifies if GUI widget tooltips should be displayed if the user hovers the cursor over a GUI element
+      that has a tooltip associated with it.  To disable tooltips from being used, uncheck this option and click either the
+      <span class="bold"><strong>Apply</strong></span> or <span class="bold"><strong>OK</strong></span> buttons.
+      </p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.gui.pref.color"></a>27.5. Preferences Color Pane</h2></div></div></div><p>
+    The color preference pane allows the user to adjust the foreground and background colors for all code that is 
+    considered covered, uncovered, or in a race condition state.
+    </p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.gui.pref.color.set"></a>Set Highlight Color</h3></div></div></div><p>
+      This frame contains six buttons that affect the foreground and background colors used to highlight code in the 
+      <a class="xref" href="chapter.gui.main.html#section.gui.main.viewer" title="16.4. The Coverage File Viewer">Coverage File Viewer</a> portion of the main window. The currently selected foreground/background 
+      colors are displayed to the left of the corresponding buttons to allow the user to see the selections prior to 
+      committing to them by clicking the <span class="bold"><strong>Apply</strong></span> or <span class="bold"><strong>OK</strong></span> 
+      buttons at the bottom of the Preferences window.
+      </p><p>
+      The "F" button controls the foreground color while the "B" button controls the background color.  Clicking one
+      of these buttons will bring up a color selection window that you can use to modify the current color to one of
+      your choosing.
+      </p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.gui.pref.goals"></a>27.6. Preference Coverage Goals Pane</h2></div></div></div><p>
+    The coverage goals preference pane allows the user to change the acceptable coverage goals for each coverage metric.
+    </p><p>
+      </p><div class="figure"><a name="figure.gui.pref.goals"></a><p class="title"><b>Figure 27.2. Coverage Goals Window</b></p><div class="figure-contents"><div class="mediaobject"><img src="img/pref_goals.gif" alt="Coverage Goals Window"></div></div></div><p><br class="figure-break">
+    </p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.gui.pref.goals.acceptable"></a>Set Acceptable Coverage Goals Frame</h3></div></div></div><p>
+      This frame contains four spinner boxes that contains values between 0 and 100. These values correspond to a 
+      coverage percentage for each coverage metric that the user deems to be "good enough". These values are used by 
+      the <a class="xref" href="chapter.gui.main.html#section.gui.main.listbox" title="16.3. The Module/Instance Listbox">Module/Instance Listbox</a> to help visually identify modules/instances that are meeting or 
+      exceeding these goals and which modules are not meeting these goals. If a coverage percentage for a 
+      module/instance is less than this value, the module is colored red. If the coverage percentage is greater than or 
+      equal to this value, the module/instance is colored yellow (or green which indicates that the module/instance 
+      reached 100% coverage for a given metric).
+      </p><p>
+      To increase the specified percentage value, simply click on the "Up" button to the right of the percentage until 
+      the desired value is displayed. To decrease the specified percentage value, simply click on the "down" button to 
+      the right of the percentage until the desired value is displayed.
+      </p><p>
+        </p><div class="itemizedlist"><ul type="disc"><li><p><span class="bold"><strong>Line Coverage %</strong></span></p><p>
+            Sets the coverage goal of line coverage to the specified percentage to the right. If line coverage for a 
+            given module/instance meets or exceeds this percentage value, it will be displayed yellow in the 
+            Module/Instance listbox on the Main window.
+            </p></li><li><p><span class="bold"><strong>Toggle Coverage %</strong></span></p><p>
+            Sets the coverage goal of toggle coverage to the specified percentage to the right. If toggle coverage for 
+            a given module/instance meets or exceeds this percentage value, it will be displayed yellow in the 
+            Module/Instance listbox on the Main window.
+            </p></li><li><p><span class="bold"><strong>Memory Coverage %</strong></span></p><p>
+            Sets the coverage goal of memory coverage to the specified percentage to the right. If memory coverage for 
+            a given module/instance meets or exceeds this percentage value, it will be displayed yellow in the 
+            Module/Instance listbox on the Main window.
+            </p></li><li><p><span class="bold"><strong>Combinational Logic Coverage %</strong></span></p><p>
+            Sets the coverage goal of combinational coverage to the specified percentage to the right. If combinational 
+            logic coverage for a given module/instance meets or exceeds this percentage value, it will be displayed 
+            yellow in the Module/Instance listbox on the Main window.
+            </p></li><li><p><span class="bold"><strong>FSM State/Arc Coverage %</strong></span></p><p>
+            Sets the coverage goal of FSM state/arc coverage to the specified percentage to the right. If FSM state/arc 
+            coverage for a given module/instance meets or exceeds this percentage value, it will be displayed yellow in 
+            the Module/Instance listbox on the Main window.
+            </p></li><li><p><span class="bold"><strong>Assertion Coverage %</strong></span></p><p>
+            Sets the coverage goal of assertion coverage to the specified percentage to the right. If assertion 
+            coverage for a given module/instance meets or exceeds this percentage value, it will be displayed yellow in 
+            the Module/Instance listbox on the Main window.
+            </p></li></ul></div><p>
+      </p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.gui.pref.syntax"></a>27.7. Preferences Syntax Highlighting Pane</h2></div></div></div><p>
+    The syntax highlighting preferences pane allows the user to adjust the syntax highlighting mode and colors for any 
+    displayed Verilog source code.
+    </p><p>
+      </p><div class="figure"><a name="figure.gui.pref.syntax"></a><p class="title"><b>Figure 27.3. Syntax Highlighting Preferences Pane</b></p><div class="figure-contents"><div class="mediaobject"><img src="img/pref_syntax.gif" alt="Syntax Highlighting Preferences Pane"></div></div></div><p><br class="figure-break">
+    </p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.gui.pref.syntax.highlighting"></a>Set Syntax Highlighting Options</h3></div></div></div><p>
+      This frame allows the user to specify if syntax highlighting should be performed in all Verilog source viewers or 
+      not. When the square to the left of the <span class="bold"><strong>Turn on syntax highlighting mode</strong></span> is 
+      selected, syntax highlighting will occur; otherwise, it will not perform syntax highlighting. The various colored 
+      buttons below the selection mode allow the user to select the foreground color of the text associated with its 
+      specified syntax type (Comments, Preprocessor Keywords, Verilog Keywords, Strings, Constant Values, and Operation 
+      Symbols). Simply click on one of the buttons to change its color. Doing so will cause a color selection window 
+      (see <a class="xref" href="chapter.gui.preferences.html#figure.gui.pref.syntax" title="Figure 27.3. Syntax Highlighting Preferences Pane">Syntax Highlighting Preferences Pane</a> above) to be displayed.
+      </p><p>
+      If the syntax highlighting mode is disabled by the user, the color selection buttons will be disabled.
+      </p></div></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="chapter.gui.rank.html"><img src="img/prev.gif" alt="Prev"></a> </td><td width="20%" align="center"><a accesskey="u" href="part.gui.html"><img src="img/up.gif" alt="Up"></a></td><td width="40%" align="right"> <a accesskey="n" href="chapter.gui.wizard.html"><img src="img/next.gif" alt="Next"></a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 26. Creating a CDD Ranking Report </td><td width="20%" align="center"><a accesskey="h" href="index.html"><img src="img/home.gif" alt="Home"></a></td><td width="40%" align="right" valign="top"> Chapter 28. Navigating the Wizard Window</td></tr></table></div></body></html>

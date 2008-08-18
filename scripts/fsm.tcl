@@ -7,13 +7,18 @@ set fsm_in_state   next_state
 set fsm_out_state  state
 set fsm_bheight    -1
 set curr_fsm_ptr   ""
+set fsm_geometry   ""
+set fsm_gui_saved  0
 
 proc create_fsm_window {expr_id} {
 
   global prev_fsm_index next_fsm_index HOME
+  global fsm_geometry fsm_gui_saved
 
   # Now create the window and set the grab to this window
   if {[winfo exists .fsmwin] == 0} {
+
+    set fsm_gui_saved 0
 
     # Create new window
     toplevel .fsmwin
@@ -66,15 +71,15 @@ proc create_fsm_window {expr_id} {
     button .fsmwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -relief flat -state disabled -command {
       display_fsm $prev_fsm_index
     }
+    set_balloon .fsmwin.bf.prev "Click to view the previous uncovered FSM in this window"
     button .fsmwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -relief flat -state disabled -command {
       display_fsm $next_fsm_index
     }
+    set_balloon .fsmwin.bf.prev "Click to view the next uncovered FSM in this window"
     button .fsmwin.bf.close -text "Close" -width 10 -command {
       destroy .fsmwin
     }
-    button .fsmwin.bf.help -text "Help" -width 10 -command {
-      help_show_manual fsm
-    }
+    help_button .fsmwin.bf.help chapter.gui.fsm
 
     # Pack the buttons into the button frame
     pack .fsmwin.bf.prev  -side left
@@ -86,6 +91,20 @@ proc create_fsm_window {expr_id} {
     pack .fsmwin.pw   -fill both -expand yes
     pack .fsmwin.info -fill both
     pack .fsmwin.bf   -fill x
+
+    # Set window geometry, if specified
+    if {$fsm_geometry != ""} {
+      wm geometry .fsmwin $fsm_geometry
+    }
+
+    # Handle the destruction of this window
+    wm protocol .fsmwin WM_DELETE_WINDOW {
+      save_fsm_gui_elements 0
+      destroy .fsmwin
+    }
+    bind .fsmwin <Destroy> {
+      save_fsm_gui_elements 0
+    }
 
   }
 
@@ -329,7 +348,8 @@ proc display_fsm_table {} {
       if {$t != ""} {
         set tid [.fsmwin.pw.t.c create text [expr $x + $tpad] [expr $y + $tpad] -text $t -anchor nw -tags $tagname]
         if {$uline == 1} {
-          .fsmwin.pw.t.c itemconfigure $tid -font "[.fsmwin.pw.t.c itemcget $tid -font] underline"
+          set font_str "Courier [font actual [.fsmwin.pw.t.c itemcget $tid -font] -size] underline"
+          .fsmwin.pw.t.c itemconfigure $tid -font $font_str
         }
       }
 
@@ -376,10 +396,10 @@ proc display_fsm_table {} {
           .fsmwin.pw.t.c itemconfigure $rid -fill $cov_bgColor
           .fsmwin.pw.t.c itemconfigure current -text "E"
         }
-        tcl_func_set_fsm_exclude $curr_funit_name $curr_funit_type $curr_fsm_expr_id $from_st $to_st $exclude
+        tcl_func_set_fsm_exclude $curr_block $curr_fsm_expr_id $from_st $to_st $exclude
         set text_x [.bot.right.txt xview]
         set text_y [.bot.right.txt yview]
-        process_funit_fsm_cov
+        process_fsm_cov
         .bot.right.txt xview moveto [lindex $text_x 0]
         .bot.right.txt yview moveto [lindex $text_y 0]
         populate_listbox
@@ -413,7 +433,7 @@ proc display_fsm_table {} {
 
 proc display_fsm_window {expr_id} {
 
-  global file_name curr_funit_name curr_funit_type
+  global curr_block
   global fsm_curr_info
   global fsm_states fsm_hit_states
   global fsm_arcs fsm_hit_arcs
@@ -427,7 +447,7 @@ proc display_fsm_window {expr_id} {
   set fsm_hit_arcs   ""
   set fsm_in_state   ""
   set fsm_out_state  ""
-  tcl_func_get_fsm_coverage $curr_funit_name $curr_funit_type $expr_id
+  tcl_func_get_fsm_coverage $curr_block $expr_id
 
   # Display the state expressions
   display_fsm_state_exprs
@@ -439,7 +459,7 @@ proc display_fsm_window {expr_id} {
   display_fsm_table
 
   # Display the information in the information bar
-  set fsm_curr_info "Filename: $file_name, module: $curr_funit_name"
+  set fsm_curr_info "Filename: [tcl_func_get_filename $curr_block], module: [tcl_func_get_funit_name $curr_block]"
   .fsmwin.info configure -text $fsm_curr_info
 
 }
@@ -525,3 +545,18 @@ proc clear_fsm {} {
   destroy .fsmwin
 
 }
+
+# Saves the GUI elements from the FSM window setup that should be saved
+proc save_fsm_gui_elements {main_exit} {
+
+  global fsm_geometry fsm_gui_saved
+
+  if {$fsm_gui_saved == 0} {
+    if {$main_exit == 0 || [winfo exists .fsmwin] == 1} {
+      set fsm_gui_saved 1
+      set fsm_geometry  [winfo geometry .fsmwin]
+    }
+  }
+
+}
+

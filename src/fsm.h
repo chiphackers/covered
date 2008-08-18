@@ -71,35 +71,43 @@ void fsm_table_set(
 /*! \brief Gathers statistics about the current FSM */
 void fsm_get_stats(
             fsm_link* table,
-  /*@out@*/ int*      state_total,
   /*@out@*/ int*      state_hit,
+  /*@out@*/ int*      state_total,
+  /*@out@*/ int*      arc_hit,
   /*@out@*/ int*      arc_total,
-  /*@out@*/ int*      arc_hit );
+  /*@out@*/ int*      arc_excluded
+);
 
 /*! \brief Retrieves the FSM summary information for the specified functional unit. */
-bool fsm_get_funit_summary(
-            const char* funit_name,
-            int         funit_type,
-  /*@out@*/ int*        total,
-  /*@out@*/ int*        hit );
+void fsm_get_funit_summary(
+            func_unit* funit,
+  /*@out@*/ int*       hit,
+  /*@out@*/ int*       excluded,
+  /*@out@*/ int*       total
+);
 
-/*! \brief Retrieves covered and uncovered FSMs from the specified functional unit. */
-bool fsm_collect(
-  const char* funit_name,
-  int         funit_type,
-  sig_link**  cov_head,
-  sig_link**  cov_tail,
-  sig_link**  uncov_head,
-  sig_link**  uncov_tail,
-  int**       expr_ids,
-  int**       excludes );
+/*! \brief Retrieves the FSM summary information for the specified functional unit. */
+void fsm_get_inst_summary(
+            funit_inst* inst,
+  /*@out@*/ int*        hit,
+  /*@out@*/ int*        excluded,
+  /*@out@*/ int*        total
+);
+
+/*! \brief Retrieves covered or uncovered FSMs from the specified functional unit. */
+void fsm_collect(
+            func_unit* funit,
+            int        cov,
+  /*@out@*/ sig_link** sig_head,
+  /*@out@*/ sig_link** sig_tail,
+  /*@out@*/ int**      expr_ids,
+  /*@out@*/ int**      excludes
+);
 
 /*! \brief Collects all coverage information for the specified FSM */
-bool fsm_get_coverage(
-            const char*   funit_name,
-            int           funit_type,
+void fsm_get_coverage(
+            func_unit*    funit,
             int           expr_id,
-  /*@out@*/ int*          width,
   /*@out@*/ char***       total_states,
   /*@out@*/ unsigned int* total_state_num,
   /*@out@*/ char***       hit_states,
@@ -114,7 +122,8 @@ bool fsm_get_coverage(
   /*@out@*/ char***       input_state,
   /*@out@*/ unsigned int* input_size,
   /*@out@*/ char***       output_state,
-  /*@out@*/ unsigned int* output_size );
+  /*@out@*/ unsigned int* output_size
+);
 
 /*! \brief Generates report output for FSM coverage. */
 void fsm_report( FILE* ofile, bool verbose );
@@ -124,6 +133,17 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.29.2.4  2008/08/07 20:51:04  phase1geo
+ Fixing memory allocation/deallocation issues with GUI.  Also fixing some issues with FSM
+ table output and exclusion.  Checkpointing.
+
+ Revision 1.29.2.3  2008/08/07 06:39:10  phase1geo
+ Adding "Excluded" column to the summary listbox.
+
+ Revision 1.29.2.2  2008/08/06 20:11:33  phase1geo
+ Adding support for instance-based coverage reporting in GUI.  Everything seems to be
+ working except for proper exclusion handling.  Checkpointing.
+
  Revision 1.29.2.1  2008/07/10 22:43:50  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

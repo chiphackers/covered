@@ -1,0 +1,25 @@
+                                           ::::::::::::::::::::::::::::::::::::::::::::::::::::
+                                           ::                                                ::
+                                           ::     Covered -- Simulation Ranked Run Order     ::
+                                           ::                                                ::
+                                           ::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
+
+* Reduced 3 CDD files down to 2 needed to maintain coverage ( 33% reduction,   1.5x improvement)
+* Reduced 9 timesteps down to 6 needed to maintain coverage ( 33% reduction,   1.5x improvement)
+
+-----------+-------------------------------------------+----------------------------------------------------------
+           |                ACCUMULATIVE               |                             CDD
+Simulation |-------------------------------------------+----------------------------------------------------------
+Order      |        Hit /      Total     %   Timesteps |  R  Name               Hit /      Total     %   Timesteps
+-----------+-------------------------------------------+----------------------------------------------------------
+
+         1            9           17   53%           3       rank1c.cdd           9           17   53%           3
+         2           13           17   76%           6       rank1b.cdd           8           17   47%           3
+
+---------------------------------------  The following CDD files add no additional coverage  ----------------------------------------------
+
+         3           13           17   76%           9       rank1a.cdd           8           17   47%           3
+
+

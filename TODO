@@ -49,11 +49,39 @@ Merge command
 
    1.  Add ability to merge two CDDs from different parts of the same design
 
+X  2.  Add -d and -ext options to allow the user to specify a directory and file extension type which Covered will
+       automatically load CDD files from to merge.
+
 
 Report command
 --------------
 
    1.  Provide additional information in toggle coverage regarding port (interface) coverage.
+
+
+Rank command
+------------
+
+X  1.  Add -d and -ext options to allow the user to specify a directory and file extension type which Covered will
+       automatically load CDD files from to rank.
+
+X  2.  Add code to remove duplicate CDD files automatically.
+
+   3.  Fix reports so that the longest CDD name is used for formatting purposes.
+
+
+GUI
+---
+
+X  1.  Allow the user to create a new CDD file from the GUI (won't require a terminal to use).
+
+X  2.  Add graduated test analyzer window.
+
+
+Documentation
+-------------
+
+   1.  Create script to convert DocBook format of documentation into HelpSystem format.
 
 
 Miscellaneous
@@ -65,12 +93,6 @@ IP 2.  Make all code splint clean.
 
    3.  Have parser generate dumpvars file to cause only needed signals by Covered to get dumped (performance enhancement).
 
-   4.  Add ability to create graduated test output in GUI and reports from merged CDD files.
+X  4.  Add ability to create graduated test output in GUI and reports from merged CDD files.
 
 
-GUI
----
-
-   1.  Allow the user to create a new CDD file from the GUI (won't require a terminal to use).
-
-   2.  Add graduated test analyzer window.

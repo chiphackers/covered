@@ -111,7 +111,8 @@ DIAGS4        = delay1.3
 
 BDIAGS1       = bitwise1
 
-MERGE1        = merge1          merge3          merge4          merge5          fsm2
+MERGE1        = merge1          merge3          merge4          merge5          fsm2 \
+                rank1           rank1.1
 MERGE3        = merge2
 
 RACELIST      = race1           race1.1         race1.2         race2.1         race2.2 \
@@ -124,7 +125,7 @@ ERRSCORE      = err1.0          err2.0          err3            err3.1          
                 func4.4         func4.5         func4.6         score_err1      score_err1.1 \
                 score_err1.2    score_err1.3    score_err1.15   score_help      task5
 ERRMERGE      = err5.2          err5.3          err5.4          merge_err1      merge_err1.1 \
-                merge_err1.2    merge_err1.3    merge_help
+                merge_err1.2    merge_err1.3    merge_err2      merge_err2.1    merge_help
 ERRREPORT     = err7            err7.1          err8            err8.1          err8.2 \
                 err9            report_err1     report_err1.1   report_err1.2 \
                 report_err1.3   report_err1.4   report_err1.5   report_err1.6   report_err1.7 \

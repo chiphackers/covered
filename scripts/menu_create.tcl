@@ -4,7 +4,7 @@ set cdd_name           ""
 set uncov_type         1
 set cov_type           0
 set race_type          0
-set mod_inst_type      "module"
+set mod_inst_type      "Module"
 set last_mod_inst_type ""
 
 set file_types {
@@ -76,9 +76,7 @@ proc menu_create {} {
   # FILE - entry 0
   $tfm add command -label "Open/Merge CDDs..." -accelerator "Ctrl-o" -underline 0 -command {
     # Get a list of files to open
-    if {[catch {tk_getOpenFile -multiple 1 -filetypes $file_types} fnames]} {
-      set fnames [tk_getOpenFile -filetypes $file_types]
-    }
+    set fnames [tk_getOpenFile -multiple 1 -filetypes $file_types]
     if {$fnames ne ""} {
       open_files $fnames
     }
@@ -103,17 +101,7 @@ proc menu_create {} {
   }
   # FILE - entry 4
   $tfm add command -label "Close CDD(s)" -accelerator "Ctrl-w" -state disabled -underline 0 -command {
-    if {[.menubar.file entrycget 3 -state] == "normal"} {
-      set exit_status [tk_messageBox -message "Opened database has changed.  Would you like to save before closing?" \
-                       -type yesnocancel -icon warning]
-      if {$exit_status == "yes"} {
-        .menubar.file invoke 3
-      } elseif {$exit_status == "cancel"} {
-        return
-      }
-    }
-    tcl_func_close_cdd
-    puts "Closed all opened/merged CDD files"
+    check_to_save_and_close_cdd closing
     .info configure -text "$cdd_name closed"
     set cdd_name ""
     clear_cdd_filelist
@@ -146,16 +134,9 @@ proc menu_create {} {
     $tfm add separator
     # FILE - entry 8
     $tfm add command -label Exit -accelerator "Ctrl-x" -underline 1 -command {
-      if {[.menubar.file entrycget 3 -state] == "normal"} {
-        set exit_status [tk_messageBox -message "Opened database has changed.  Would you like to save before exiting?" \
-                                       -type yesnocancel -icon warning]
-        if {$exit_status == "yes"} {
-          .menubar.file invoke 3
-        } elseif {$exit_status == "cancel"} {
-          return
-        }
-      }
-      exit
+      check_to_save_and_close_cdd exiting
+      save_gui_elements . .
+      destroy .
     }
   }
 
@@ -165,15 +146,15 @@ proc menu_create {} {
 
   global mod_inst_type cov_uncov_type cov_rb
 
-  $report add radiobutton -label "Module-based"   -variable mod_inst_type -value "module" -underline 0 -command {
-    populate_listbox
-    .bot.left.tl columnconfigure 1 -hide false
-    .menubar.view entryconfigure 4 -label "Hide Summary Module Column" -state disabled
-  }
-  $report add radiobutton -label "Instance-based" -variable mod_inst_type -value "instance" -underline 1 -state disabled -command {
-    populate_listbox
-    .menubar.view entryconfigure 4 -state normal
-  }
+  $report add radiobutton -label "Module-based"   -variable mod_inst_type -value "Module" -underline 0
+  $report add radiobutton -label "Instance-based" -variable mod_inst_type -value "Instance" -underline 0
+  $report add separator
+  $report add radiobutton -label "Line"   -variable cov_rb -value "Line"   -underline 0
+  $report add radiobutton -label "Toggle" -variable cov_rb -value "Toggle" -underline 0
+  $report add radiobutton -label "Memory" -variable cov_rb -value "Memory" -underline 1
+  $report add radiobutton -label "Logic"  -variable cov_rb -value "Logic"  -underline 2
+  $report add radiobutton -label "FSM"    -variable cov_rb -value "FSM"    -underline 0
+  $report add radiobutton -label "Assert" -variable cov_rb -value "Assert" -underline 0
   $report add separator
   $report add checkbutton -label "Show Uncovered" -variable uncov_type -onvalue 1 -offvalue 0 -underline 5 -command {
     set text_x [.bot.right.txt xview]
@@ -238,7 +219,7 @@ proc menu_create {} {
     .bot.right.txt xview moveto [lindex $text_x 0]
     .bot.right.txt yview moveto [lindex $text_y 0]
   }
-  set mod_inst_type  "module"
+  set mod_inst_type  "Module"
 
   # Configure the color options
   set m [menu $mb.view -tearoff false]
@@ -281,7 +262,7 @@ proc menu_create {} {
 
   # Add Manual and About information
   $thm add command -label "Manual" -state disabled -underline 0 -command {
-    help_show_manual "contents"
+    help_show_manual index ""
   }
   # Do not display the About information in the help menu if we are running on Mac OS X
   if {[tk windowingsystem] ne "aqua"} {
@@ -382,3 +363,21 @@ proc open_files {fnames} {
 
 }
 
+# Call this function when the main window will be destroyed or when a CDD is attempting to be closed
+proc check_to_save_and_close_cdd {msg} {
+
+  if {[.menubar.file entrycget 3 -state] == "normal"} {
+    set exit_status [tk_messageBox -message "Opened database has changed.  Would you like to save before $msg?" -type yesnocancel -icon warning]
+    if {$exit_status == "yes"} {
+      .menubar.file invoke 3
+    } elseif {$exit_status == "cancel"} {
+      return
+    }
+  }
+
+  if {[.menubar.file entrycget 4 -state] == "normal"} {
+    tcl_func_close_cdd
+    puts "Closed all opened/merged CDD files"
+  }
+
+}
