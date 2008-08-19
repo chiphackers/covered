@@ -1367,10 +1367,10 @@ char* timer_to_string(
     snprintf( str, 33, "0.000%1u seconds", (tm->total / 100) );
   } else if( tm->total < 60000000 ) {
     snprintf( str, 33, "%2u.%03u seconds", (tm->total / 1000000), ((tm->total % 1000000) / 1000) );
-  } else if( tm->total < 360000000 ) {
+  } else if( tm->total < 3600000000LL ) {
     snprintf( str, 33, "%2u minutes, %2u seconds", (tm->total / 60000000), ((tm->total % 60000000) / 1000000) );
   } else {
-    snprintf( str, 33, "%2u hours, %2u minutes, %2u seconds", (tm->total / 360000000), ((tm->total % 360000000) / 6000000), ((tm->total % 60000000) / 1000000) );
+    snprintf( str, 33, "%2u hours, %2u minutes, %2u seconds", (tm->total / 3600000000LL), ((tm->total % 3600000000LL) / 60000000), ((tm->total % 60000000) / 1000000) );
   }
 
   return( str );
@@ -1520,6 +1520,11 @@ void read_command_file(
 
 /*
  $Log$
+ Revision 1.100  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.92.2.7  2008/08/12 17:52:57  phase1geo
  Adding another attempt to speed up ranking.
 

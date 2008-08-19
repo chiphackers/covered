@@ -2565,7 +2565,7 @@ struct tnode_s {
 */
 struct timer_s {
   struct timeval start;              /*!< Contains start time of a particular timer */
-  time_t         total;              /*!< Contains the total amount of user time accrued for this timer */
+  uint64         total;              /*!< Contains the total amount of user time accrued for this timer */
 };
 #endif
 
@@ -2855,6 +2855,11 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.302  2008/08/18 23:07:26  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.297.2.5  2008/08/11 21:40:50  phase1geo
  Changing compressed coverage structure to store coverage points as unsigned long values
  instead of unsigned char to increase performance.
