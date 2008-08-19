@@ -34,7 +34,7 @@ proc help_show_manual {chapter {section ""}} {
 
   global HOME BROWSER
 
-  set fpath "file://[file join $HOME doc docbook html $chapter].html"
+  set fpath "file://[file join $HOME doc html $chapter].html"
 
   if {$section != ""} {
     set fpath $fpath#$section
