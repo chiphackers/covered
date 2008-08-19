@@ -1,4 +1,5 @@
-set comb_ul_ip         0
+set comb_ul_inc_ip     0
+set comb_ul_exc_ip     0
 set comb_curr_uline_id 0
 set comb_curr_exp_id   0
 set comb_bheight       -1
@@ -10,15 +11,21 @@ proc K {x y} {
   set x
 }
 
-proc comb_calc_indexes {uline line first} {
+proc comb_calc_indices {uline line first} {
 
-  global comb_uline_indexes comb_ul_ip
+  global comb_uline_indices comb_uline_exc_indices comb_ul_inc_ip comb_ul_exc_ip
+  global comb_exp_excludes
 
-  set i 0
+  set i                      0
+  set comb_uline_indices     ""
+  set comb_uline_exc_indices ""
 
-  if {[expr $first == 0] && [expr $comb_ul_ip == 1]} {
-    set i          [string first "-" $uline 0]
-    set comb_ul_ip 0
+  if {$first == 0 && $comb_ul_inc_ip == 1} {
+    set i              [string first "-" $uline 0]
+    set comb_ul_inc_ip 0
+  } elseif {$first == 0 && $comb_ul_exc_ip == 1} {
+    set i              [string first "-" $uline 0]
+    set comb_ul_exc_ip 0
   } else {
     set i [string first "|" $uline 0]
   }
@@ -26,22 +33,43 @@ proc comb_calc_indexes {uline line first} {
   while {$i != -1} {
     if {$first == 1} {
       set first              0
-      set comb_uline_indexes "$line.$i"
-      set comb_ul_ip         1
-    } else {
-      if {$comb_ul_ip == 1} {
-        lappend comb_uline_indexes "$line.[expr $i + 1]"
-        set comb_ul_ip 0
+      set id [regexp -inline -start $i -- {\d+} $uline]
+      if {[lindex $comb_exp_excludes $id] == 1} {
+        set comb_uline_exc_indices $line.$i
+        set comb_ul_exc_ip         1
       } else {
-        lappend comb_uline_indexes "$line.$i"
-        set comb_ul_ip 1
+        set comb_ul_inc_ip         1
+      }
+      set comb_uline_indices "$line.$i"
+    } else {
+      if {$comb_ul_inc_ip == 1} {
+        lappend comb_uline_indices "$line.[expr $i + 1]"
+        set comb_ul_inc_ip 0
+      } elseif {$comb_ul_exc_ip == 1} {
+        lappend comb_uline_indices     "$line.[expr $i + 1]"
+        lappend comb_uline_exc_indices "$line.[expr $i + 1]"
+        set comb_ul_exc_ip 0
+      } else {
+        set id [regexp -inline -start $i -- {\d+} $uline]
+        if {[lindex $comb_exp_excludes $id] == 1} {
+          lappend comb_uline_exc_indices "$line.$i"
+          set comb_ul_exc_ip 1
+        } else {
+          set comb_ul_inc_ip 1
+        }
+        lappend comb_uline_indices "$line.$i"
       }
     }
     set i [string first "|" $uline [expr $i + 1]]
   }
 
-  if {[expr $i == -1] && [expr $comb_ul_ip == 1]} {
-    lappend comb_uline_indexes "$line.end"
+  if {$i == -1} {
+    if {$comb_ul_inc_ip == 1} {
+      lappend comb_uline_indices "$line.end"
+    } elseif {$comb_ul_exc_ip == 1} {
+      lappend comb_uline_exc_indices "$line.end"
+      lappend comb_uline_indices "$line.end"
+    }
   }
     
 }
@@ -49,10 +77,11 @@ proc comb_calc_indexes {uline line first} {
 proc display_comb_info {} {
 
   global comb_code comb_uline_groups comb_ulines
-  global comb_uline_indexes comb_first_uline
+  global comb_uline_indices comb_uline_exc_indices comb_first_uline
   global comb_gen_ulines comb_curr_uline_id
   global comb_curr_cursor comb_curr_info
   global uncov_fgColor uncov_bgColor
+  global cov_fgColor cov_bgColor
 
   set curr_uline 0
 
@@ -61,6 +90,8 @@ proc display_comb_info {} {
   .combwin.pw.top.t tag delete comb_leave
   .combwin.pw.top.t tag delete comb_bp1
   .combwin.pw.top.t tag delete comb_bp3
+  .combwin.pw.top.t tag delete comb_inc_hl
+  .combwin.pw.top.t tag delete comb_exc_hl
 
   # Allow us to clear out textbox and repopulate
   .combwin.pw.top.t configure -state normal
@@ -81,7 +112,7 @@ proc display_comb_info {} {
     .combwin.pw.top.t insert end "[lindex $comb_code $j]\n"
     incr curr_line
     .combwin.pw.top.t insert end "[lindex $comb_gen_ulines $j]\n"
-    comb_calc_indexes [lindex $comb_gen_ulines $j] $curr_line $first
+    comb_calc_indices [lindex $comb_gen_ulines $j] $curr_line $first
     incr curr_line
     set first 0
     .combwin.pw.top.t insert end "\n"
@@ -94,13 +125,14 @@ proc display_comb_info {} {
   # Keep user from writing in text box
   .combwin.pw.top.t configure -state disabled
 
-  # Add expression tags and bindings
-  if {[llength $comb_uline_indexes] > 0} {
-    eval ".combwin.pw.top.t tag add comb_enter $comb_uline_indexes"
-    eval ".combwin.pw.top.t tag add comb_leave $comb_uline_indexes"
-    eval ".combwin.pw.top.t tag add comb_bp1 $comb_uline_indexes"
-    eval ".combwin.pw.top.t tag add comb_bp3 $comb_uline_indexes"
-    .combwin.pw.top.t tag configure comb_bp1 -foreground $uncov_fgColor -background $uncov_bgColor
+  # Add included expression tags and bindings
+  if {[llength $comb_uline_indices] > 0} {
+    eval ".combwin.pw.top.t tag add comb_enter $comb_uline_indices"
+    eval ".combwin.pw.top.t tag add comb_leave $comb_uline_indices"
+    eval ".combwin.pw.top.t tag add comb_bp1 $comb_uline_indices"
+    eval ".combwin.pw.top.t tag add comb_bp3 $comb_uline_indices"
+    eval ".combwin.pw.top.t tag add comb_inc_hl $comb_uline_indices"
+    .combwin.pw.top.t tag configure comb_inc_hl -foreground $uncov_fgColor -background $uncov_bgColor
     .combwin.pw.top.t tag bind comb_enter <Enter> {
       set comb_curr_cursor [.combwin.pw.top.t cget -cursor]
       .combwin.pw.top.t configure -cursor hand2
@@ -132,6 +164,12 @@ proc display_comb_info {} {
         .combwin.pw.top.t yview moveto [lindex $text_y 0]
       } 
     }
+  }
+
+  # Add excluded expression tags and bindings
+  if {[llength $comb_uline_exc_indices] > 0} {
+    eval ".combwin.pw.top.t tag add comb_exc_hl $comb_uline_exc_indices"
+    .combwin.pw.top.t tag configure comb_exc_hl -foreground $cov_fgColor -background $cov_bgColor
   }
 
 }
@@ -541,6 +579,7 @@ proc create_comb_window {expr_id sline} {
       set text_x [.bot.right.txt xview]
       set text_y [.bot.right.txt yview]
       process_comb_cov
+      display_comb_info  ;# Redisplay the expression
       .bot.right.txt xview moveto [lindex $text_x 0]
       .bot.right.txt yview moveto [lindex $text_y 0]
       populate_listbox
