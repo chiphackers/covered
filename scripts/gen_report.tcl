@@ -273,17 +273,15 @@ proc create_report_generation_source {w} {
   
   # Create button frame
   frame $w.bf
-  button $w.bf.help -width 10 -text "Help" -command {
-    puts "Help!"
-  }
+  help_button $w.bf.help chapter.gui.genreport section.gui.genreport.select
   button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
   button $w.bf.next -width 10 -text "Next" -command "
     setup_report_selection_options
     goto_next_pane $w
   "
-  pack $w.bf.help   -side right -padx 4 -pady 4
-  pack $w.bf.cancel -side right -padx 4 -pady 4
-  pack $w.bf.next   -side right -padx 4 -pady 4
+  pack $w.bf.help   -side right -pady 3
+  pack $w.bf.cancel -side right -padx 3 -pady 3
+  pack $w.bf.next   -side right -padx 3 -pady 3
   
   # Pack top-level frames
   pack $w.f  -fill both -expand yes
@@ -420,13 +418,11 @@ proc create_report_generation_options {w} {
   button $w.bf.back   -width 10 -text "Back" -command "goto_prev_pane $w"
   button $w.bf.create -width 10 -text "Create" -command "create_report $w"
   button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
-  button $w.bf.help   -width 10 -text "Help" -command {
-    help_show_manual report_gen
-  }
-  pack $w.bf.help   -side right -padx 4 -pady 4
-  pack $w.bf.cancel -side right -padx 4 -pady 4
-  pack $w.bf.create -side right -padx 4 -pady 4
-  pack $w.bf.back   -side left  -padx 4 -pady 4
+  help_button $w.bf.help chapter.gui.genreport section.gui.genreport.options
+  pack $w.bf.help   -side right -pady 3
+  pack $w.bf.cancel -side right -padx 3 -pady 3
+  pack $w.bf.create -side right -padx 3 -pady 3
+  pack $w.bf.back   -side left  -padx 3 -pady 3
 
   # Now pack all of the frames
   pack $w.f     -fill both -side top

@@ -1,6 +1,6 @@
 proc create_wizard {} {
 
-  global show_wizard
+  global show_wizard HOME
 
   # Now create the window and set the grab to this window
   if {[winfo exists .wizwin] == 0} {
@@ -10,6 +10,9 @@ proc create_wizard {} {
     wm title .wizwin "Covered Wizard"
 
     frame .wizwin.f -relief raised -borderwidth 1 
+
+    # Add banner
+    label .wizwin.f.banner -image [image create photo -file [file join $HOME scripts banner.gif]]
 
     # Create buttons
     button .wizwin.f.new   -text "Generate New CDD File" -relief flat -command {
@@ -24,23 +27,28 @@ proc create_wizard {} {
       create_rank_cdds
       destroy .wizwin
     }
-    button .wizwin.f.help  -text "Get Help" -relief flat -state disabled -command {
+    button .wizwin.f.help  -text "View Help Manual" -relief flat -command {
+      help_show_manual part.gui 
     }
 
     # Checkbutton to disable this window
     checkbutton .wizwin.f.show -text "Display this window at startup of Covered" -variable show_wizard -onvalue true -offvalue false -command {
-      write_coveredrc
+      write_coveredrc 0
     }
 
+    help_button .wizwin.f.hb chapter.gui.wizard 
+
     # Pack the buttons
-    grid .wizwin.f.new   -row 0 -column 0 -sticky news -padx 4 -pady 4
-    grid .wizwin.f.open  -row 1 -column 0 -sticky news -padx 4 -pady 4
-    grid .wizwin.f.grade -row 2 -column 0 -sticky news -padx 4 -pady 4
-    grid .wizwin.f.help  -row 3 -column 0 -sticky news -padx 4 -pady 4
-    grid .wizwin.f.show  -row 4 -column 0 -sticky news -padx 4 -pady 4
+    grid .wizwin.f.banner -row 0 -rowspan 4 -column 0 -sticky news -padx 4 -pady 4
+    grid .wizwin.f.new    -row 0 -column 1 -sticky news -padx 4 -pady 4
+    grid .wizwin.f.open   -row 1 -column 1 -sticky news -padx 4 -pady 4
+    grid .wizwin.f.grade  -row 2 -column 1 -sticky news -padx 4 -pady 4
+    grid .wizwin.f.help   -row 3 -column 1 -sticky news -padx 4 -pady 4
+    grid .wizwin.f.show   -row 4 -column 0 -sticky news -padx 4 -pady 4
+    grid .wizwin.f.hb     -row 4 -column 1 -sticky e -pady 4
 
     # Pack the frame
-    pack .wizwin.f
+    pack .wizwin.f -fill both -expand yes
 
   }
 

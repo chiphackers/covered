@@ -637,17 +637,15 @@ proc create_new_cdd_source {w} {
 
   # Create button frame
   frame $w.bf
-  button $w.bf.help   -width 10 -text "Help" -command {
-    puts "Help!"
-  }
+  help_button $w.bf.help chapter.gui.new section.gui.new.select
   button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
   button $w.bf.next   -width 10 -text "Next" -command "
     setup_cdd_generate_options $w
     goto_next_pane $w
   "
-  pack $w.bf.help   -side right -padx 4 -pady 4
-  pack $w.bf.cancel -side right -padx 4 -pady 4
-  pack $w.bf.next   -side right -padx 4 -pady 4
+  pack $w.bf.help   -side right -pady 3
+  pack $w.bf.cancel -side right -padx 3 -pady 3
+  pack $w.bf.next   -side right -padx 3 -pady 3
 
   # Pack top-level frames
   pack $w.f  -fill both -expand yes
@@ -706,16 +704,14 @@ proc create_new_cdd_name {w} {
 
   # Create button bar
   frame  $w.bf
-  button $w.bf.help   -width 10 -text "Help" -command {
-    puts "TBD"
-  }
+  help_button $w.bf.help chapter.gui.new section.gui.new.name
   button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
   button $w.bf.next   -width 10 -text "Next"   -command "goto_next_pane $w" -state disabled
   button $w.bf.prev   -width 10 -text "Back"   -command "goto_prev_pane $w"
-  pack $w.bf.help   -side right -padx 4 -pady 4
-  pack $w.bf.cancel -side right -padx 4 -pady 4
-  pack $w.bf.next   -side right -padx 4 -pady 4
-  pack $w.bf.prev   -side left  -padx 4 -pady 4
+  pack $w.bf.help   -side right -pady 3
+  pack $w.bf.cancel -side right -padx 3 -pady 3
+  pack $w.bf.next   -side right -padx 3 -pady 3
+  pack $w.bf.prev   -side left  -padx 3 -pady 3
 
   $w.cdd.e configure -vcmd "create_new_cdd_name_update_next $w"
 
@@ -848,16 +844,14 @@ proc create_new_cdd_dump {w} {
 
   # Create button bar
   frame  $w.bf
-  button $w.bf.help   -width 10 -text "Help" -command {
-    puts "TBD"
-  }
+  help_button $w.bf.help chapter.gui.new section.gui.new.type
   button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
   button $w.bf.next   -width 10 -text "Next"   -command "goto_next_pane $w" -state disabled
   button $w.bf.prev   -width 10 -text "Back"   -command "goto_prev_pane $w"
-  pack $w.bf.help   -side right -padx 4 -pady 4
-  pack $w.bf.cancel -side right -padx 4 -pady 4
-  pack $w.bf.next   -side right -padx 4 -pady 4
-  pack $w.bf.prev   -side left  -padx 4 -pady 4
+  pack $w.bf.help   -side right -pady 3
+  pack $w.bf.cancel -side right -padx 3 -pady 3
+  pack $w.bf.next   -side right -padx 3 -pady 3
+  pack $w.bf.prev   -side left  -padx 3 -pady 3
 
   # Pack frames
   pack $w.fu   -fill both -expand 1
@@ -980,16 +974,14 @@ proc create_new_cdd_parse {w} {
 
   # Create button bar
   frame  $w.bf
-  button $w.bf.help   -width 10 -text "Help" -command {
-    puts "TBD"
-  }
+  help_button $w.bf.help chapter.gui.new section.gui.new.options1
   button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
   button $w.bf.next   -width 10 -text "Next"   -command "goto_next_pane $w" -state disabled
   button $w.bf.prev   -width 10 -text "Back"   -command "goto_prev_pane $w"
-  pack $w.bf.help   -side right -padx 4 -pady 4
-  pack $w.bf.cancel -side right -padx 4 -pady 4
-  pack $w.bf.next   -side right -padx 4 -pady 4
-  pack $w.bf.prev   -side left  -padx 4 -pady 4
+  pack $w.bf.help   -side right -pady 3
+  pack $w.bf.cancel -side right -padx 3 -pady 3
+  pack $w.bf.next   -side right -padx 3 -pady 3
+  pack $w.bf.prev   -side left  -padx 3 -pady 3
 
   $w.parse.top_e configure -vcmd "handle_new_cdd_parse_top_name_cmd $w"
 
@@ -1313,16 +1305,14 @@ proc create_new_cdd_parse2 {w} {
 
   # Create button bar
   frame  $w.bf
-  button $w.bf.help   -width 10 -text "Help" -command {
-    puts "TBD"
-  } 
+  help_button $w.bf.help chapter.gui.new section.gui.new.options2
   button $w.bf.cancel -width 10 -text "Cancel"   -command "destroy [winfo toplevel $w]"
   button $w.bf.gen    -width 10 -text "Generate" -command "generate_new_cdd $w"
   button $w.bf.prev   -width 10 -text "Back"     -command "goto_prev_pane $w" 
-  pack $w.bf.help   -side right -padx 4 -pady 4
-  pack $w.bf.cancel -side right -padx 4 -pady 4
-  pack $w.bf.gen    -side right -padx 4 -pady 4
-  pack $w.bf.prev   -side left  -padx 4 -pady 4
+  pack $w.bf.help   -side right -pady 3
+  pack $w.bf.cancel -side right -padx 3 -pady 3
+  pack $w.bf.gen    -side right -padx 3 -pady 3
+  pack $w.bf.prev   -side left  -padx 3 -pady 3
 
   # Pack frames
   pack $w.opts -fill both -expand 1
@@ -1370,9 +1360,7 @@ proc create_new_cdd_output {w} {
 
   # Create button bar
   frame  $w.bf
-  button $w.bf.help   -width 10 -text "Help" -command {
-    puts "TBD"
-  }
+  help_button $w.bf.help chapter.gui.new section.gui.new.output
   button $w.bf.finish -width 10 -text "Finish" -command "create_new_cdd_finish $w"
   button $w.bf.prev   -width 10 -text "Back"   -command "goto_prev_pane $w"
   pack   $w.bf.help   -side right -padx 4 -pady 4
@@ -1440,6 +1428,7 @@ proc get_module_generation {modname gen} {
 
   # Add button frame widgets
   frame  .mgenwin.bf -relief raised
+  help_button .mgenwin.bf.help chapter.gui.new section.gui.new.options2.modgen
   button .mgenwin.bf.ok -text "OK" -width 10 -state disabled -command {
     if {$modgen eq "Verilog 1995"} {
       set mod_gen_retval "$mod_gen_modname=1"
@@ -1456,8 +1445,9 @@ proc get_module_generation {modname gen} {
     destroy .mgenwin
   }
   bind .mgenwin.bf.cancel <Return> {%W invoke}
-  pack .mgenwin.bf.cancel -side right -padx 8 -pady 4
-  pack .mgenwin.bf.ok     -side right -padx 8 -pady 4
+  pack .mgenwin.bf.help   -side right -pady 3
+  pack .mgenwin.bf.cancel -side right -padx 3 -pady 3
+  pack .mgenwin.bf.ok     -side right -padx 3 -pady 3
 
   # Add functionality for entry
   .mgenwin.f.e configure -vcmd {
@@ -1504,6 +1494,7 @@ proc get_module_exclusion {modname} {
 
   # Add button frame widgets
   frame .mexclwin.bf -relief raised
+  help_button .mexclwin.bf.help chapter.gui.new section.gui.new.options2.modexcl
   button .mexclwin.bf.ok -text "OK" -width 10 -state disabled -command {
     set mod_excl_retval "$mod_excl_modname"
     destroy .mexclwin
@@ -1514,8 +1505,9 @@ proc get_module_exclusion {modname} {
     destroy .mexclwin
   }
   bind .mexclwin.bf.cancel <Return> {%W invoke}
-  pack .mexclwin.bf.cancel -side right -padx 8 -pady 4
-  pack .mexclwin.bf.ok     -side right -padx 8 -pady 4
+  pack .mexclwin.bf.help   -side right -pady 3
+  pack .mexclwin.bf.cancel -side right -padx 3 -pady 3
+  pack .mexclwin.bf.ok     -side right -padx 3 -pady 3
 
   # Provide functionality for the entry
   .mexclwin.f.e configure -vcmd {
@@ -1641,6 +1633,7 @@ proc get_library_extensions {extensions} {
 
   # Add button frame and buttons
   frame  .lextwin.bf
+  help_button .lextwin.bf.help chapter.gui.new section.gui.new.options2.libext
   button .lextwin.bf.ok -text "OK" -width 10 -command {
     set lib_ext_retval "+"
     for {set i 1} {$i < [.lextwin.f.lf.lb size]} {incr i} {
@@ -1656,6 +1649,7 @@ proc get_library_extensions {extensions} {
     set lib_ext_retval ""
     destroy .lextwin
   }
+  pack .lextwin.bf.help   -side right -pady 3
   pack .lextwin.bf.cancel -side right -padx 3 -pady 3
   pack .lextwin.bf.ok     -side right -padx 3 -pady 3
 
@@ -1742,6 +1736,7 @@ proc get_define {defname value} {
 
   # Add button frame and widgets
   frame .defwin.bf
+  help_button .defwin.bf.help chapter.gui.new section.gui.new.options2.define
   button .defwin.bf.ok -text "OK" -width 10 -state disabled -command {
     if {[.defwin.f.b cget -relief] eq "raised"} {
       set def_retval "$define_name"
@@ -1756,8 +1751,9 @@ proc get_define {defname value} {
     destroy .defwin
   }
   bind .defwin.bf.cancel <Return> {%W invoke}
-  pack .defwin.bf.cancel -side right -padx 8 -pady 4
-  pack .defwin.bf.ok     -side right -padx 8 -pady 4
+  pack .defwin.bf.help   -side right -pady 3
+  pack .defwin.bf.cancel -side right -padx 3 -pady 3
+  pack .defwin.bf.ok     -side right -padx 3 -pady 3
 
   # Provide functionality for entries
   .defwin.f.e configure -vcmd { return [define_update_state] }
@@ -1823,6 +1819,7 @@ proc get_parameter_override {parmname value} {
 
   # Add button frame and widgets
   frame .parmwin.bf -relief raised
+  help_button .parmwin.bf.help chapter.gui.new section.gui.new.options2.param
   button .parmwin.bf.ok -text "OK" -width 10 -state disabled -command {
     set param_retval "$param_name=$param_value"
     destroy .parmwin
@@ -1833,8 +1830,9 @@ proc get_parameter_override {parmname value} {
     destroy .parmwin
   }
   bind .parmwin.bf.cancel <Return> {%W invoke}
-  pack .parmwin.bf.cancel -side right -padx 8 -pady 4
-  pack .parmwin.bf.ok     -side right -padx 8 -pady 4
+  pack .parmwin.bf.help   -side right -pady 3
+  pack .parmwin.bf.cancel -side right -padx 3 -pady 3
+  pack .parmwin.bf.ok     -side right -padx 3 -pady 3
 
   # Provide entry functionality
   .parmwin.f.e configure -vcmd { return [parameter_update_state] }
@@ -1912,6 +1910,7 @@ proc get_fsm {modname input output} {
 
   # Add button frame and widgets
   frame .fsmdwin.bf -relief raised
+  help_button .fsmdwin.bf.help chapter.gui.new section.gui.new.options2.fsm
   button .fsmdwin.bf.ok -text "OK" -width 10 -state disabled -command {
     set fsmd_retval "$fsmd_modname=$fsmd_input,$fsmd_output"
     destroy .fsmdwin
@@ -1922,8 +1921,9 @@ proc get_fsm {modname input output} {
     destroy .fsmdwin
   }
   bind .fsmdwin.bf.cancel <Return> {%W invoke}
-  pack .fsmdwin.bf.cancel -side right -padx 8 -pady 4
-  pack .fsmdwin.bf.ok     -side right -padx 8 -pady 4
+  pack .fsmdwin.bf.help   -side right -pady 3
+  pack .fsmdwin.bf.cancel -side right -padx 3 -pady 3
+  pack .fsmdwin.bf.ok     -side right -padx 3 -pady 3
 
   # Provide functionality for entries
   .fsmdwin.f.e  configure -vcmd { return [fsmd_update_state] }
