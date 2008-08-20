@@ -4,19 +4,19 @@
   to:
   </p><p>
     <code class="email">&lt;<a class="email" href="mailto:phase1geo@gmail.com">phase1geo@gmail.com</a>&gt;</code>
-  </p><div class="qandaset"><dl><dt>29.1. <a href="chapter.faq.html#id2802591">
+  </p><div class="qandaset"><dl><dt>29.1. <a href="chapter.faq.html#id2627624">
           Is a CDD file generated from a newer version of Covered compatible with a CDD file generated from an older version?
-        </a></dt><dt>29.2. <a href="chapter.faq.html#id2802942">
+        </a></dt><dt>29.2. <a href="chapter.faq.html#id2627972">
           When I run the score command, Covered seems to take a long time to run. Is there anything that I can do to speed up scoring?
-        </a></dt><dt>29.3. <a href="chapter.faq.html#id2803629">
+        </a></dt><dt>29.3. <a href="chapter.faq.html#id2628658">
           I get an assertion error when running Covered, what should I do?
-        </a></dt><dt>29.4. <a href="chapter.faq.html#id2803674">
+        </a></dt><dt>29.4. <a href="chapter.faq.html#id2628703">
           Covered is giving me a parser error for Verilog code that seems to be syntactically correct. What is wrong?
-        </a></dt><dt>29.5. <a href="chapter.faq.html#id2803702">
+        </a></dt><dt>29.5. <a href="chapter.faq.html#id2628730">
           Is Covered's Verilog parser Verilog-2001 compliant?
-        </a></dt><dt>29.6. <a href="chapter.faq.html#id2803729">
+        </a></dt><dt>29.6. <a href="chapter.faq.html#id2628758">
           What is the difference between the stable release and the development release?
-        </a></dt></dl><table border="0" summary="Q and A Set"><col align="left" width="1%"><tbody><tr class="question"><td align="left" valign="top"><a name="id2802591"></a><a name="id2802594"></a><p><b>29.1.</b></p></td><td align="left" valign="top"><p>
+        </a></dt></dl><table border="0" summary="Q and A Set"><col align="left" width="1%"><tbody><tr class="question"><td align="left" valign="top"><a name="id2627624"></a><a name="id2627626"></a><p><b>29.1.</b></p></td><td align="left" valign="top"><p>
           <span class="bold"><strong>Is a CDD file generated from a newer version of Covered compatible with a CDD file generated from an older version?</strong></span>
         </p></td></tr><tr class="answer"><td align="left" valign="top"></td><td align="left" valign="top"><p>
         The answer to this question is, "Well, that depends...". Since the format of the CDD file is only used by Covered, the contents and format of this file may be 
@@ -27,7 +27,7 @@
         </p><p>
         This being said, it is also a possibility that between versions of Covered a "backwards compatibility" may be maintained if a change to this file's format is 
         not required.
-        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="id2802942"></a><a name="id2802944"></a><p><b>29.2.</b></p></td><td align="left" valign="top"><p>
+        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="id2627972"></a><a name="id2627974"></a><p><b>29.2.</b></p></td><td align="left" valign="top"><p>
           <span class="bold"><strong>When I run the score command, Covered seems to take a long time to run. Is there anything that I can do to speed up scoring?</strong></span>
         </p></td></tr><tr class="answer"><td align="left" valign="top"></td><td align="left" valign="top"><p>
         While Covered is continuously being enhanced to provide better performance for all commands (especially the score command), it may still take a while to 
@@ -57,7 +57,7 @@
         </p><p>
         If you believe that you have a situation which is void of these prevailing reasons and Covered is still running slowly, please send an e-mail to me. I will 
         consider these problems to be of lower priority than actual bugs but will look into the situation to see where code can be optimized.
-        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="id2803629"></a><a name="id2803632"></a><p><b>29.3.</b></p></td><td align="left" valign="top"><p>
+        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="id2628658"></a><a name="id2628660"></a><p><b>29.3.</b></p></td><td align="left" valign="top"><p>
           <span class="bold"><strong>I get an assertion error when running Covered, what should I do?</strong></span>
         </p></td></tr><tr class="answer"><td align="left" valign="top"></td><td align="left" valign="top"><p>
         Covered uses C assertions to make sure that internal pointers are not be referenced when NULL and that certain internal situations do not arise. If you receive 
@@ -67,17 +67,17 @@
         </p><p>
         If Covered provides any other type of error message (something other than a core dump), Covered has found a user error that must be fixed by the user. Please do 
         not submit bug reports if these errors are encountered, unless you wish to add a question about it to the FAQ.
-        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="id2803674"></a><a name="id2803676"></a><p><b>29.4.</b></p></td><td align="left" valign="top"><p>
+        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="id2628703"></a><a name="id2628705"></a><p><b>29.4.</b></p></td><td align="left" valign="top"><p>
           <span class="bold"><strong>Covered is giving me a parser error for Verilog code that seems to be syntactically correct. What is wrong?</strong></span>
         </p></td></tr><tr class="answer"><td align="left" valign="top"></td><td align="left" valign="top"><p>
         If Covered displays a syntax (parse) error during the score command and the Verilog code is written correctly, it is because Covered's parser is incomplete. 
         Please submit a bug or send an e-mail containing a code snippet of the unsupported Verilog.
-        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="id2803702"></a><a name="id2803704"></a><p><b>29.5.</b></p></td><td align="left" valign="top"><p>
+        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="id2628730"></a><a name="id2628732"></a><p><b>29.5.</b></p></td><td align="left" valign="top"><p>
           <span class="bold"><strong>Is Covered's Verilog parser Verilog-2001 compliant?</strong></span>
         </p></td></tr><tr class="answer"><td align="left" valign="top"></td><td align="left" valign="top"><p>
         This is currently being worked on. The parser should properly parse all code; however, not all Verilog-2001 constructs are considered for coverage due to lack 
         of support for them in Covered's core. If there is code that will not parse that should, please submit a bug report for this.
-        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="id2803729"></a><a name="id2803732"></a><p><b>29.6.</b></p></td><td align="left" valign="top"><p>
+        </p></td></tr><tr class="question"><td align="left" valign="top"><a name="id2628758"></a><a name="id2628760"></a><p><b>29.6.</b></p></td><td align="left" valign="top"><p>
           <span class="bold"><strong>What is the difference between the stable release and the development release?</strong></span>
         </p></td></tr><tr class="answer"><td align="left" valign="top"></td><td align="left" valign="top"><p>
         Covered's development consists of two active "branches": the stable branch and the development branch. When a new stable branch is created (ex. 0.4 or 0.5), it 
