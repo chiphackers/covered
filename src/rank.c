@@ -1309,7 +1309,7 @@ static void rank_perform(
   unsigned int most_unique;
   unsigned int count;
   unsigned int cdds_ranked  = 0;
-  timer*       atimer;
+  timer*       atimer       = NULL;
 
   if( (!output_suppressed || debug_mode) && !rank_verbose ) {
     printf( "Ranking CDD files " );
@@ -1358,7 +1358,7 @@ static void rank_perform(
     snprintf( user_msg, USER_MSG_LENGTH, "Ignoring %llu coverage points that were not hit by any CDD file", (total - total_hitable) );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
-    print_output( "\nPhase 1:  User-required files", NORMAL, __FILE__, __LINE__ );
+    print_output( "\nPhase 1:  Adding user-required files", NORMAL, __FILE__, __LINE__ );
     fflush( stdout );
     timer_clear( &atimer );
     timer_start( &atimer );
@@ -1375,7 +1375,7 @@ static void rank_perform(
   if( rank_verbose ) {
     uint64 ranked_cps = rank_count_cps( ranked_merged, total );
     timer_stop( &atimer );
-    snprintf( user_msg, USER_MSG_LENGTH, "  Ranked %u CDD files (Total: %u, Remaining: %u)", next_cdd, next_cdd, (comp_cdd_num - next_cdd) );
+    snprintf( user_msg, USER_MSG_LENGTH, "  Ranked %u CDD files (Total ranked: %u, Remaining: %u)", next_cdd, next_cdd, (comp_cdd_num - next_cdd) );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     snprintf( user_msg, USER_MSG_LENGTH, "  %llu points covered, %llu points remaining", ranked_cps, (total_hitable - ranked_cps) );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
@@ -1383,7 +1383,7 @@ static void rank_perform(
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
   
     count = next_cdd;
-    print_output( "\nPhase 2:  Unique coverage point selection", NORMAL, __FILE__, __LINE__ );
+    print_output( "\nPhase 2:  Adding files that hit unique coverage points", NORMAL, __FILE__, __LINE__ );
     fflush( stdout );
     timer_clear( &atimer );
     timer_start( &atimer );
@@ -1406,7 +1406,7 @@ static void rank_perform(
   if( rank_verbose ) {
     uint64 ranked_cps = rank_count_cps( ranked_merged, total );
     timer_stop( &atimer );
-    snprintf( user_msg, USER_MSG_LENGTH, "  Ranked another %u CDD files (Total: %u, Remaining: %u)", (next_cdd - count), next_cdd, (comp_cdd_num - next_cdd) );
+    snprintf( user_msg, USER_MSG_LENGTH, "  Ranked %u CDD files (Total ranked: %u, Remaining: %u)", (next_cdd - count), next_cdd, (comp_cdd_num - next_cdd) );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     snprintf( user_msg, USER_MSG_LENGTH, "  %llu points covered, %llu points remaining", ranked_cps, (total_hitable - ranked_cps) );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
@@ -1414,7 +1414,7 @@ static void rank_perform(
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
    
     count = next_cdd;
-    print_output( "\nPhase 3:  Remaining coverage point selection", NORMAL, __FILE__, __LINE__ );
+    print_output( "\nPhase 3:  Adding files that hit remaining coverage points and eliminating redundant files", NORMAL, __FILE__, __LINE__ );
     fflush( stdout );
     timer_clear( &atimer );
     timer_start( &atimer );
@@ -1428,17 +1428,14 @@ static void rank_perform(
   if( rank_verbose ) {
     uint64 ranked_cps = rank_count_cps( ranked_merged, total );
     timer_stop( &atimer );
-    snprintf( user_msg, USER_MSG_LENGTH, "  Ranked another %u CDD files (Total: %u, Remaining: %u)", cdds_ranked, (count + cdds_ranked), (comp_cdd_num - (count + cdds_ranked)) );
+    snprintf( user_msg, USER_MSG_LENGTH, "  Ranked %u CDD files (Total ranked: %u, Eliminated: %u)", cdds_ranked, (count + cdds_ranked), (comp_cdd_num - (count + cdds_ranked)) );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     snprintf( user_msg, USER_MSG_LENGTH, "  %llu points covered, %llu points remaining", ranked_cps, (total_hitable - ranked_cps) );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     snprintf( user_msg, USER_MSG_LENGTH, "Completed phase 3 in %s", timer_to_string( atimer ) );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
-    snprintf( user_msg, USER_MSG_LENGTH, "\nEliminated %u CDD files that do not add coverage", (comp_cdd_num - (count + cdds_ranked)) );
-    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-
-    print_output( "\nPhase 4:  Ordering CDD file selected for ranking", NORMAL, __FILE__, __LINE__ );
+    print_output( "\nPhase 4:  Sorting CDD files selected for ranking (no reductions)", NORMAL, __FILE__, __LINE__ );
     fflush( stdout );
     timer_clear( &atimer );
     timer_start( &atimer );
@@ -1453,6 +1450,13 @@ static void rank_perform(
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     fflush( stdout );
     free_safe( atimer, sizeof( timer ) );
+
+    if( comp_cdd_num == (count + cdds_ranked) ) {
+      snprintf( user_msg, USER_MSG_LENGTH, "\nSUMMARY:  No reduction occurred.  %u needed/required", (count + cdds_ranked) );
+    } else {
+      snprintf( user_msg, USER_MSG_LENGTH, "\nSUMMARY:  Reduced %u CDD files down to %u needed/required", comp_cdd_num, (count + cdds_ranked) );
+    }
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
   }
 
   /* Deallocate merged CDD coverage structure */
@@ -1646,8 +1650,9 @@ void command_rank(
   Try {
 
     unsigned int rv;
-    bool         first = TRUE;
+    bool         first  = TRUE;
     str_link*    strl;
+    timer*       atimer = NULL;
 
     /* Parse score command-line */
     rank_parse_args( argc, last_arg, argv );
@@ -1661,15 +1666,29 @@ void command_rank(
     report_memory      = TRUE;
     allow_multi_expr   = FALSE;
 
+    /* Start timer */
+    if( rank_verbose ) {
+      timer_clear( &atimer );
+      timer_start( &atimer );
+    }
+
     /* Read in databases to merge */
     strl = rank_in_head;
     while( strl != NULL ) {
       rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading CDD file \"%s\"", strl->str );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+      fflush( stdout );
       rank_read_cdd( strl->str, (strl->suppl == 1), first, &comp_cdds, &comp_cdd_num );
       first = FALSE;
       strl  = strl->next;
+    }
+
+    if( rank_verbose ) {
+      timer_stop( &atimer );
+      snprintf( user_msg, USER_MSG_LENGTH, "Completed reading in CDD files in %s", timer_to_string( atimer ) );
+      print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+      free_safe( atimer, sizeof( timer ) );
     }
 
     /* Peaform the ranking algorithm */
@@ -1705,7 +1724,17 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.4  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  $Log$
+ Revision 1.4  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.1.4.19  2008/08/12 17:52:57  phase1geo
  Adding another attempt to speed up ranking.
 

@@ -1360,17 +1360,17 @@ char* timer_to_string(
 
   /* If the time is less than a minute, output the seconds and milliseconds */
   if( tm->total < 10 ) {
-    snprintf( str, 33, "0.00000%1u seconds", tm->total );
+    snprintf( str, 33, "0.00000%1llu seconds", tm->total );
   } else if( tm->total < 100 ) {
-    snprintf( str, 33, "0.0000%1u seconds", (tm->total / 10) ); 
+    snprintf( str, 33, "0.0000%1llu seconds", (tm->total / 10) ); 
   } else if( tm->total < 1000 ) {
-    snprintf( str, 33, "0.000%1u seconds", (tm->total / 100) );
+    snprintf( str, 33, "0.000%1llu seconds", (tm->total / 100) );
   } else if( tm->total < 60000000 ) {
-    snprintf( str, 33, "%2u.%03u seconds", (tm->total / 1000000), ((tm->total % 1000000) / 1000) );
+    snprintf( str, 33, "%2llu.%03llu seconds", (tm->total / 1000000), ((tm->total % 1000000) / 1000) );
   } else if( tm->total < 3600000000LL ) {
-    snprintf( str, 33, "%2u minutes, %2u seconds", (tm->total / 60000000), ((tm->total % 60000000) / 1000000) );
+    snprintf( str, 33, "%2llu minutes, %2llu seconds", (tm->total / 60000000), ((tm->total % 60000000) / 1000000) );
   } else {
-    snprintf( str, 33, "%2u hours, %2u minutes, %2u seconds", (tm->total / 3600000000LL), ((tm->total % 3600000000LL) / 60000000), ((tm->total % 60000000) / 1000000) );
+    snprintf( str, 33, "%2llu hours, %2llu minutes, %2llu seconds", (tm->total / 3600000000LL), ((tm->total % 3600000000LL) / 60000000), ((tm->total % 60000000) / 1000000) );
   }
 
   return( str );
@@ -1520,6 +1520,9 @@ void read_command_file(
 
 /*
  $Log$
+ Revision 1.101  2008/08/19 05:14:26  phase1geo
+ Attempting to fix bug 2054684.
+
  Revision 1.100  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

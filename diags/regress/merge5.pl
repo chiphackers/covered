@@ -22,7 +22,7 @@ if( $USE_VPI == 0 ) {
   $retval = &run( "merge5g" ) || $retval;
 
   # Run the rank command (Note that this is NOT an error)
-  &runRankCommand( "-o merge5.err merge5a.cdd merge5b.cdd merge5c.cdd merge5d.cdd merge5e.cdd merge5f.cdd merge5g.cdd" );
+  &runRankCommand( "-v -o merge5.err merge5a.cdd merge5b.cdd merge5c.cdd merge5d.cdd merge5e.cdd merge5f.cdd merge5g.cdd" );
 
   # Check the difference and remove the CDD files, if necessary
   system( "touch merge5.cdd" ) && die;
