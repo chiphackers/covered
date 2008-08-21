@@ -1,4 +1,4 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 14. Debugging</title><meta name="generator" content="DocBook XSL Stylesheets V1.74.0"><link rel="home" href="index.html" title="Covered"><link rel="up" href="part.command.line.usage.html" title="Part III. Command-line Usage"><link rel="prev" href="chapter.reading.html" title="Chapter 13. Reading the Report"><link rel="next" href="part.gui.html" title="Part IV. Graphical User Interface"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 14. Debugging</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter.reading.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part III. Command-line Usage</th><td width="20%" align="right"> <a accesskey="n" href="part.gui.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.debug"></a>Chapter 14. Debugging</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.debug.html#section.debug.output">14.1. Verbose Debug Output</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.debug.html#id2608512">Building Covered for Verbose Debug Outputting</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.debug.html#section.cli">14.2. Command-Line Interface (CLI)</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.debug.html#id2609182">Building Covered for the CLI</a></span></dt><dt><span class="sect2"><a href="chapter.debug.html#id2609205">Using the CLI</a></span></dt><dt><span class="sect2"><a href="chapter.debug.html#id2609250">CLI commands</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.debug.html#section.profiling">14.3. Source Code Profiling</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.debug.html#id2609651">Building Covered for Profiling</a></span></dt><dt><span class="sect2"><a href="chapter.debug.html#id2609688">Using Source Code Profiling</a></span></dt><dt><span class="sect2"><a href="chapter.debug.html#id2609723">Understanding the Profiling Report</a></span></dt></dl></dd></dl></div><p>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 14. Debugging</title><meta name="generator" content="DocBook XSL Stylesheets V1.74.0"><link rel="home" href="index.html" title="Covered"><link rel="up" href="part.command.line.usage.html" title="Part III. Command-line Usage"><link rel="prev" href="chapter.reading.html" title="Chapter 13. Reading the Report"><link rel="next" href="part.gui.html" title="Part IV. Graphical User Interface"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 14. Debugging</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter.reading.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part III. Command-line Usage</th><td width="20%" align="right"> <a accesskey="n" href="part.gui.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.debug"></a>Chapter 14. Debugging</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.debug.html#section.debug.output">14.1. Verbose Debug Output</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.debug.html#id2679752">Building Covered for Verbose Debug Outputting</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.debug.html#section.cli">14.2. Command-Line Interface (CLI)</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.debug.html#id2680421">Building Covered for the CLI</a></span></dt><dt><span class="sect2"><a href="chapter.debug.html#id2680445">Using the CLI</a></span></dt><dt><span class="sect2"><a href="chapter.debug.html#id2680490">CLI commands</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.debug.html#section.profiling">14.3. Source Code Profiling</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.debug.html#id2680890">Building Covered for Profiling</a></span></dt><dt><span class="sect2"><a href="chapter.debug.html#id2680927">Using Source Code Profiling</a></span></dt><dt><span class="sect2"><a href="chapter.debug.html#id2680963">Understanding the Profiling Report</a></span></dt></dl></dd></dl></div><p>
   As much as it pains the developers of Covered to admit, there will be times when a user of Covered will encounter a 
   problem in the resimulation process or will experience a performance issue during certain runs and will want to 
   investigate the issue a bit themselves before posting a bug report. There may also be people out there who just 
@@ -11,7 +11,7 @@
     to degrade considerably. If this option is used, its output should probably be redirected to a file for 
     post-processing purposes. It should be noted that the verbose debug output is most useful for the developer's of 
     Covered and is not meant to be of much help to the normal user.
-    </p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2608512"></a>Building Covered for Verbose Debug Outputting</h3></div></div></div><p>
+    </p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2679752"></a>Building Covered for Verbose Debug Outputting</h3></div></div></div><p>
       Because generating verbose debug output can have a tremendous degradation in performance when it is even compiled, 
       Covered requires the user to specify an option to the configuration/build process to enable this feature. To enable 
       verbose debug outputting, simply specify the <span class="bold"><strong>--enable-debug</strong></span> option to the configure 
@@ -26,12 +26,12 @@
     starts at the beginning of the resimulation. Its purpose is to allow the user to step through simulation execution and view 
     the contents of signals, time, scopes, code and internal thread queues for the purposes of debugging and/or understanding 
     Covered. This utility works much in the same way as simulator CLIs and the GDB debugging utility.
-    </p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2609182"></a>Building Covered for the CLI</h3></div></div></div><p>
+    </p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2680421"></a>Building Covered for the CLI</h3></div></div></div><p>
       Because interactive command-line debugging has a small performance penalty when compiled in and is closely associated with 
       the verbose debug output option, Covered requires the user to specify an option to the configuation/build process to enable 
       this feature. To enable the CLI, simply specify the <span class="bold"><strong>--enable-debug</strong></span> option to the configure 
       script. This will cause Covered to compile in CLI capabilities and enable the user of the -cli score command option.
-      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2609205"></a>Using the CLI</h3></div></div></div><p>
+      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2680445"></a>Using the CLI</h3></div></div></div><p>
       To allow the score command to use the CLI for interactive resimulation, simply specify the <span class="bold"><strong>-cli 
       [<span class="emphasis"><em>filename</em></span>]</strong></span> option to the score command. If filename is specified to this option, the contents 
       of this file will be parsed and executed once the score command has reached the resimulation process. The contents of this 
@@ -45,9 +45,9 @@
       will halt until the user has specified otherwise via command-line options. After entering a command-line option, simply press 
       return to invoke that command. In the event that the command was a step, next or continue option, resimulation will resume 
       until it reaches the next stop point.
-      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2609250"></a>CLI commands</h3></div></div></div><p>
+      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2680490"></a>CLI commands</h3></div></div></div><p>
       The following is a list of all of the CLI options available to the user:
-      </p><div class="table"><a name="id2609261"></a><p class="title"><b>Table 14.1. CLI Command-line Options</b></p><div class="table-contents"><table summary="CLI Command-line Options" border="1"><colgroup><col align="left"><col align="left"></colgroup><thead><tr><th align="left">Option</th><th align="left">Description</th></tr></thead><tbody><tr><td align="left">
+      </p><div class="table"><a name="id2680500"></a><p class="title"><b>Table 14.1. CLI Command-line Options</b></p><div class="table-contents"><table summary="CLI Command-line Options" border="1"><colgroup><col align="left"><col align="left"></colgroup><thead><tr><th align="left">Option</th><th align="left">Description</th></tr></thead><tbody><tr><td align="left">
               step [<span class="emphasis"><em>num</em></span>]
               </td><td align="left">
               Advances to the next statement if <span class="emphasis"><em>num</em></span> is not specified; otherwise, advances <span class="emphasis"><em>num</em></span> 
@@ -145,7 +145,7 @@
     spent executing a given function, how many times a function allocated and deallocated memory from the heap, etc. This 
     information can be useful in understanding where performance bottlenecks are during a given Covered command run. This 
     feature does not provide the end-user any useful information about the design that they are testing.
-    </p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2609651"></a>Building Covered for Profiling</h3></div></div></div><p>
+    </p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2680890"></a>Building Covered for Profiling</h3></div></div></div><p>
       Because internal source code profiling is not a function of obtaining Verilog code coverage and adds a performance 
       penalty for being compiled in and used, Covered requires the user to specify an option to the configuration/build 
       process to enable this feature. To enable internal source code profiling, simply specify the 
@@ -155,7 +155,7 @@
         If the user has not specified the --enable-profiling option to the configuration script but proceeds to specify the -P global option, Covered will emit a 
         warning message that it is unable to do profiling due to the lack of the --enable-profiling option being specified. It will then proceed to ignore the -P 
         option.
-        </p></td></tr></table></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2609688"></a>Using Source Code Profiling</h3></div></div></div><p>
+        </p></td></tr></table></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2680927"></a>Using Source Code Profiling</h3></div></div></div><p>
       Once Covered has had profiling functionality configured and built into it, the user may optionally enable profiling for any 
       command by specifying the -P [<span class="emphasis"><em>filename</em></span>] global option. If the -P option is specified without a filename 
       associated with it, the profiling report generated from the command run will be output to a file called "covered.prof" in the 
@@ -165,7 +165,7 @@
         The specified filename can be anything except "score", "merge" or "report" as this name will be interpreted by Covered's command-line parser to indicate the 
         type of command being run. If one of these command keywords are specified after the -P option, it is assumed that the user has not specified a filename and the 
         contents of the profiling report will be sent to the default file of "covered.prof".
-        </p></td></tr></table></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2609723"></a>Understanding the Profiling Report</h3></div></div></div><p>
+        </p></td></tr></table></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2680963"></a>Understanding the Profiling Report</h3></div></div></div><p>
       After a command has been run with the global -P option specified, a report file will contain several profiling statistics, 
       including the following:
       </p><p>

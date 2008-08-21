@@ -4,25 +4,25 @@
   <sect1 id="section.report.usage" xreflabel="Report Usage">
     <title>Usage</title>
     <para>
-    The report command is initiated with the following call:
+      The report command is initiated with the following call:
     </para>
     <para>
       <code>covered report (-view | [<emphasis>options</emphasis>] <emphasis>CDD_filename</emphasis>)</code>
     </para>
     <para>
-    The <emphasis>CDD_filename</emphasis> refers to the name of the CDD to generate the report for. This CDD may be 
-    either the result of a score or the result of merging CDDs.
+      The <emphasis>CDD_filename</emphasis> refers to the name of the CDD to generate the report for. This CDD may be 
+      either the result of a score or the result of merging CDDs.
     </para>
     <para>
-    If the -view option is specified, Covered's GUI is run.  See <xref linkend="chapter.gui.intro"/> for instructions 
-    on using the GUI for interactive coverage analysis.
+      If the -view option is specified, Covered's GUI is run.  See <xref linkend="chapter.gui.intro"/> for instructions 
+      on using the GUI for interactive coverage analysis.
     </para>
   </sect1>
   
   <sect1 id="section.report.options" xreflabel="Report Options">
     <title>Options</title>
     <para>
-    The following table lists the options available for use with the report command.
+      The following table lists the options available for use with the report command.
     </para>
     <para>
       <table>
@@ -31,112 +31,112 @@
           <thead>
             <row>
               <entry>
-              Option
+                Option
               </entry>
               <entry>
-              Description
+                Description
               </entry>
             </row>
           </thead>
           <tbody>
             <row>
               <entry>
-              -b
+                -b
               </entry>
               <entry>
-              If combinational logic verbose output is reported and the expression is a vector operation, this option 
-              outputs the coverage information on a bitwise basis.
-              </entry>
-            </row>
-            <row>
-              <entry>
-              -c
-              </entry>
-              <entry>
-              Used in conjunction with the '-d d' or '-d v' option. If set, causes covered logic to be reported instead 
-              of default behavior of reporting uncovered logic. See <xref linkend="section.report.cu"/>
+                If combinational logic verbose output is reported and the expression is a vector operation, this option 
+                outputs the coverage information on a bitwise basis.
               </entry>
             </row>
             <row>
               <entry>
-              -d (s|d|v)
+                -c
               </entry>
               <entry>
-              Level of report detail (s=summary, d=detailed, v=verbose). Default is to display summary coverage 
-              information. See <xref linkend="section.report.sdv"/>.
-              </entry>
-            </row>
-            <row>
-              <entry>
-              -f <emphasis>filename</emphasis>
-              </entry>
-              <entry>
-              Name of file containing additional arguments to parse. You may specify this option more than once on a 
-              command-line.
+                Used in conjunction with the '-d d' or '-d v' option. If set, causes covered logic to be reported instead 
+                of default behavior of reporting uncovered logic. See <xref linkend="section.report.cu"/>
               </entry>
             </row>
             <row>
               <entry>
-              -h
+                -d (s|d|v)
               </entry>
               <entry>
-              Outputs usage information for the report command.
-              </entry>
-            </row>
-            <row>
-              <entry>
-              -i
-              </entry>
-              <entry>
-              Generates report information for each instance (default is to generate per module). See 
-              <xref linkend="section.report.mi"/>
+                Level of report detail (s=summary, d=detailed, v=verbose). Default is to display summary coverage 
+                information. See <xref linkend="section.report.sdv"/>.
               </entry>
             </row>
             <row>
               <entry>
-              -m [l][t][c][f][r][a][m]
+                -f <emphasis>filename</emphasis>
               </entry>
               <entry>
-              Specifies type of coverage information to report (l=line, t=toggle, c=combinational logic, f=FSM 
-              state/arc, r=race condition, a=assertion, m=memory). Default is ltcf.
-              </entry>
-            </row>
-            <row>
-              <entry>
-              -o <emphasis>filename</emphasis>
-              </entry>
-              <entry>
-              Specifies output file to stream report to (default is standard output).
+                Name of file containing additional arguments to parse. You may specify this option more than once on a 
+                command-line.
               </entry>
             </row>
             <row>
               <entry>
-              -s
+                -h
               </entry>
               <entry>
-              Suppresses modules/instances that do not contain any coverage information from being output to the 
-              coverage report. This may eliminate potentially meaningless information from the report.
-              </entry>
-            </row>
-            <row>
-              <entry>
-              -view
-              </entry>
-              <entry>
-              Starts the interactive Covered report viewer GUI.
+                Outputs usage information for the report command.
               </entry>
             </row>
             <row>
               <entry>
-              -w (<emphasis>number</emphasis>)
+                -i
               </entry>
               <entry>
-              Specifies the maximum line width (in characters) that can be used to output Verilog information. If this 
-              option is not specified, all Verilog code in the report will retain the same formatting as was specified 
-              in the original Verilog code. If this option is specified, Verilog code will be formatted to use as much 
-              of the current line as possible, wrapping text when the line reaches the maximum line width. The default 
-              maximum line width is 115 characters (this value is used if no number is specified with the -w option). 
-              If a number is specified with the -w option, this value is used for the maximum line width.
+                Generates report information for each instance (default is to generate per module). See 
+                <xref linkend="section.report.mi"/>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -m [l][t][c][f][r][a][m]
+              </entry>
+              <entry>
+                Specifies type of coverage information to report (l=line, t=toggle, c=combinational logic, f=FSM 
+                state/arc, r=race condition, a=assertion, m=memory). Default is ltcf.
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -o <emphasis>filename</emphasis>
+              </entry>
+              <entry>
+                Specifies output file to stream report to (default is standard output).
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -s
+              </entry>
+              <entry>
+                Suppresses modules/instances that do not contain any coverage information from being output to the 
+                coverage report. This may eliminate potentially meaningless information from the report.
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -view
+              </entry>
+              <entry>
+                Starts the interactive Covered report viewer GUI.
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -w (<emphasis>number</emphasis>)
+              </entry>
+              <entry>
+                Specifies the maximum line width (in characters) that can be used to output Verilog information. If this 
+                option is not specified, all Verilog code in the report will retain the same formatting as was specified 
+                in the original Verilog code. If this option is specified, Verilog code will be formatted to use as much 
+                of the current line as possible, wrapping text when the line reaches the maximum line width. The default 
+                maximum line width is 115 characters (this value is used if no number is specified with the -w option). 
+                If a number is specified with the -w option, this value is used for the maximum line width.
               </entry>
             </row>
           </tbody>
@@ -148,46 +148,46 @@
   <sect1 id="section.report.sdv" xreflabel="Summary Vs. Detailed Vs. Verbose">
     <title>Summary Vs. Detailed Vs. Verbose</title>
     <para>
-    There are three forms of reports that can be generated by the Covered report function: summary, detailed, and 
-    verbose. The three forms are described below.
+      There are three forms of reports that can be generated by the Covered report function: summary, detailed, and 
+      verbose. The three forms are described below.
     </para>
     
     <sect2 id="section.report.summary" xreflabel="Summary Report">
       <title>Summary Report</title>
       <para>
-      A summary report shows at a very high-level what the coverage for a specific module (or instance) is in terms of 
-      line, toggle, combinational and/or FSM coverage (depending on which types are selected on the command line). Each 
-      coverage metric for the module is given a percentage of items covered for that metric as well as the total number 
-      of items per metric, the number of items "hit" during simulation and the number of items "missed" during 
-      execution. See the chapter on "Reading the Report" for more information on understanding the formats of line, 
-      toggle, combinational logic, and FSM summary information.
+        A summary report shows at a very high-level what the coverage for a specific module (or instance) is in terms of 
+        line, toggle, combinational and/or FSM coverage (depending on which types are selected on the command line). Each 
+        coverage metric for the module is given a percentage of items covered for that metric as well as the total number 
+        of items per metric, the number of items "hit" during simulation and the number of items "missed" during 
+        execution. See the chapter on "Reading the Report" for more information on understanding the formats of line, 
+        toggle, combinational logic, and FSM summary information.
       </para>
       <para>
-      The summary report is useful for understanding exactly which modules are missing coverage (and what type(s) of 
-      coverage are missing) as well as what modules are fully covered. This can help guide you more easily in 
-      understanding where you need to improve your code coverage without getting lost in all of the details that the 
-      verbose reporting provides.
+        The summary report is useful for understanding exactly which modules are missing coverage (and what type(s) of 
+        coverage are missing) as well as what modules are fully covered. This can help guide you more easily in 
+        understanding where you need to improve your code coverage without getting lost in all of the details that the 
+        verbose reporting provides.
       </para>
     </sect2>
     
     <sect2 id="section.report.detailed" xreflabel="Detailed Report">
       <title>Detailed Report</title>
       <para>
-      The detailed report is useful for understanding where logic was found to be uncovered in the design along with 
-      some higher-level information to understand why it was considered to be uncovered. This amount of detail is 
-      between the minimum (summary coverage) and the maximum (verbose coverage) and should be used as the first 
-      detailed report to be looked at since it is easier to read and comprehend the coverage results.
+        The detailed report is useful for understanding where logic was found to be uncovered in the design along with 
+        some higher-level information to understand why it was considered to be uncovered. This amount of detail is 
+        between the minimum (summary coverage) and the maximum (verbose coverage) and should be used as the first 
+        detailed report to be looked at since it is easier to read and comprehend the coverage results.
       </para>
     </sect2>
     
     <sect2 id="section.report.verbose" xreflabel="Verbose Report">
       <title>Verbose Report</title>
       <para>
-      The verbose report contains all of the data that the summary report contains; however, in addition to the summary 
-      information for a module (or instance), a more in-depth look at the exact cases that were "missed" during 
-      simulation are provided. This report outputting option is useful for combinational logic report information when 
-      a more in-depth look at why certain expressions did not reach full coverage is needed. This option allows the 
-      user to look at all subexpressions of an expression that were not fully covered.
+        The verbose report contains all of the data that the summary report contains; however, in addition to the summary 
+        information for a module (or instance), a more in-depth look at the exact cases that were "missed" during 
+        simulation are provided. This report outputting option is useful for combinational logic report information when 
+        a more in-depth look at why certain expressions did not reach full coverage is needed. This option allows the 
+        user to look at all subexpressions of an expression that were not fully covered.
       </para>
     </sect2>
     
@@ -196,46 +196,46 @@
   <sect1 id="section.report.mi" xreflabel="Module Vs. Instance">
     <title>Module Vs. Instance</title>
     <para>
-    Any report can be calculated by module or by instance. Both reports are of interest for verification purposes and 
-    the differences are described as follows.
+      Any report can be calculated by module or by instance. Both reports are of interest for verification purposes and 
+      the differences are described as follows.
     </para>
     <para>
-    Module reporting combines the results of all instances that come from the same module. That is, when a module is 
-    instantiated multiple times in a design, the coverage results from all covered instances are merged together and 
-    output as one combined module. This reporting format allows a test writer to see if any logic within a module has 
-    not been touched during simulation.
+      Module reporting combines the results of all instances that come from the same module. That is, when a module is 
+      instantiated multiple times in a design, the coverage results from all covered instances are merged together and 
+      output as one combined module. This reporting format allows a test writer to see if any logic within a module has 
+      not been touched during simulation.
     </para>
     <para>
-    Instance reporting displays each instance in the covered design separately (no combining occurs). This reporting 
-    format is useful for determining if certain instances within a design are being neglected. For instance, if a 
-    module is instantiated four times (i.e., four instances of the same buffer), it may be that the first buffer is 
-    used more often than the other three buffers. This could indicate controller errors or just an indication that 
-    there was not enough activity during simulation to fill the other buffers (need to bolster diagnostics or possibly 
-    some buffers could be removed?) This type of information would not be viewable if only module reporting were 
-    performed.
+      Instance reporting displays each instance in the covered design separately (no combining occurs). This reporting 
+      format is useful for determining if certain instances within a design are being neglected. For instance, if a 
+      module is instantiated four times (i.e., four instances of the same buffer), it may be that the first buffer is 
+      used more often than the other three buffers. This could indicate controller errors or just an indication that 
+      there was not enough activity during simulation to fill the other buffers (need to bolster diagnostics or possibly 
+      some buffers could be removed?) This type of information would not be viewable if only module reporting were 
+      performed.
     </para>
   </sect1>
   
   <sect1 id="section.report.cu" xreflabel="Covered Vs. Uncovered">
     <title>Covered Vs. Uncovered</title>
     <para>
-    Covered has the ability the generate reports from any given CDD file that displays either uncovered logic (the 
-    default behavior) or covered logic. It is understandable why one would want to generate reports displaying 
-    uncovered logic (this is probably the reason why you are interested in this tool in the first place). However, why 
-    would anyone be interested in reporting covered logic?
+      Covered has the ability the generate reports from any given CDD file that displays either uncovered logic (the 
+      default behavior) or covered logic. It is understandable why one would want to generate reports displaying 
+      uncovered logic (this is probably the reason why you are interested in this tool in the first place). However, why 
+      would anyone be interested in reporting covered logic?
     </para>
     <para>
-    The reason for having this option is two-fold (and maybe there are other reasons). First, this option is useful in 
-    debugging the report command since it let's the user evaluate whether a particular signal or portion of logic was 
-    actually fully covered or not. Second, it may be useful for user's of the tool to understand what logic is being 
-    evaluated for coverage and what logic is not. If only uncovered logic was supplied for evaluation of the tool, one 
-    could not evaluate the effectiveness of the tool. However, by allowing the user to see what logic is covered and 
-    uncovered, a more full picture of the tool's capability can be understood.
+      The reason for having this option is two-fold (and maybe there are other reasons). First, this option is useful in 
+      debugging the report command since it let's the user evaluate whether a particular signal or portion of logic was 
+      actually fully covered or not. Second, it may be useful for user's of the tool to understand what logic is being 
+      evaluated for coverage and what logic is not. If only uncovered logic was supplied for evaluation of the tool, one 
+      could not evaluate the effectiveness of the tool. However, by allowing the user to see what logic is covered and 
+      uncovered, a more full picture of the tool's capability can be understood.
     </para>
     <para>
-    To generate a report that specifies what logic is not covered (output only available in verbose reporting mode), no 
-    further options are needed. To generate a report that specifies what logic is being covered, simply specify the -c 
-    option along with the -v option when calling the report command.
+      To generate a report that specifies what logic is not covered (output only available in verbose reporting mode), no 
+      further options are needed. To generate a report that specifies what logic is being covered, simply specify the -c 
+      option along with the -v option when calling the report command.
     </para>
   </sect1>
   

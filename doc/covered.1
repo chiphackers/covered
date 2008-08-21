@@ -1,4 +1,4 @@
-.TH "Covered" "1" "covered-20080731" "Trevor Williams" "Code Analysis"
+.TH "Covered" "1" "covered-20080831" "Trevor Williams" "Code Analysis"
 .SH "NAME"
 .LP 
 Covered \- Verilog Code Coverage Analyzer
@@ -236,6 +236,15 @@ If specified, outputs only the needed CDD filenames that need to be run in the o
 .TP 
 \fB\-o\fR \fIfilename\fR
 Name of file to output ranking information to.  Default is standard output.
+.TP 
+\fB\-required\-cdd\fR \fIfilename\fR
+Name of CDD that should be considered a required CDD to rank (i.e., it cannot be excluded for any reason).
+.TP 
+\fB\-required\-list\fR \fIfilename\fR
+Name of a file that contains a list of CDDs that should be considered required CDDs to rank.  The filenames should be separated by whitespace or newline characters within the file.
+.TP 
+\fB\-v\fR
+Causes verbose output to be displayed when the rank command is run.  It outputs diagnostic information about each of the different phases of the ranking algorithm including run\-time, number of CDD files included/excluded and number of coverage points hit by ranked CDDs during each phase.  This information is meant to be useful for those interested in the ranking algorithm and its performance.
 .TP 
 \fB\-weight\-assert\fR \fInumber\fR
 Specifies a relative weighting for assertion coverage used to rank non\-unique coverage points.  The value of \fInumber\fR is relative to the values used in the \fB\-weight\-toggle\fR, \fB\-weight\-memory\fR, \fB\-weight\-comb\fR, \fB\-weight\-fsm\fR and \fB\-weight\-line\fR rank command options.
