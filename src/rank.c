@@ -240,8 +240,9 @@ static void rank_usage() {
   printf( "                                  run in the order they need to be run.  If this option is not set, a\n" );
   printf( "                                  report-style output is provided with additional information.\n" );
   printf( "      -f <filename>             Name of file containing additional arguments to parse.\n" );
-  printf( "      -required <filename>      Name of file containing list of CDD files which are required to be in the\n" );
+  printf( "      -required-list <filename> Name of file containing list of CDD files which are required to be in the\n" );
   printf( "                                  list of ranked CDDs to be run.\n" );
+  printf( "      -required-cdd <filename>  Name of CDD file that is required to be in the list of ranked CDDs to be run.\n" );
   printf( "      -d <directory>            Directory to search for CDD files to include.  This option is used in\n" );
   printf( "                                  conjunction with the -ext option which specifies the file extension\n" );
   printf( "                                  to use for determining which files in the directory are CDD files.\n" );
@@ -350,7 +351,7 @@ static void rank_parse_args(
         Throw 0;
       }
 
-    } else if( strncmp( "-required", argv[i], 9 ) == 0 ) {
+    } else if( strncmp( "-required-list", argv[i], 14 ) == 0 ) {
 
       if( check_option_value( argc, argv, i ) ) {
         i++;
@@ -373,16 +374,35 @@ static void rank_parse_args(
             }
             fclose( file );
           } else {
-            snprintf( user_msg, USER_MSG_LENGTH, "Unable to read -required file (%s)", argv[i] );
+            snprintf( user_msg, USER_MSG_LENGTH, "Unable to read -required-list file (%s)", argv[i] );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
             Throw 0;
           }
         } else {
-          snprintf( user_msg, USER_MSG_LENGTH, "Filename specified for -required option (%s) does not exist", argv[i] );
+          snprintf( user_msg, USER_MSG_LENGTH, "Filename specified for -required-list option (%s) does not exist", argv[i] );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           Throw 0;
         }
       
+      } else {
+        Throw 0;
+      }
+
+    } else if( strncmp( "-required-cdd", argv[i], 13 ) == 0 ) {
+
+      if( check_option_value( argc, argv, i ) ) {
+        i++;
+        if( file_exists( argv[i] ) ) {
+          str_link* strl;
+          if( (strl = str_link_find( argv[i], rank_in_head )) == NULL ) {
+            strl = str_link_add( strdup_safe( argv[i] ), &rank_in_head, &rank_in_tail );
+          }
+          strl->suppl = 1;
+        } else {
+          snprintf( user_msg, USER_MSG_LENGTH, "Unable to read -required-cdd file (%s)", argv[i] );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          Throw 0;
+        }
       } else {
         Throw 0;
       }
@@ -1724,12 +1744,20 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.5  2008/08/21 03:45:22  phase1geo
+ Modifying verbage in -v output for rank command.  Adding time to read in CDD
+ files to the output.
+
  Revision 1.4  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify
  that the GUI stuff works properly.
 
  $Log$
+ Revision 1.5  2008/08/21 03:45:22  phase1geo
+ Modifying verbage in -v output for rank command.  Adding time to read in CDD
+ files to the output.
+
  Revision 1.4  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

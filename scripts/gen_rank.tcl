@@ -69,7 +69,7 @@ proc read_rank_option_file {w fname} {
         set i [expr $i - 1]
       }
 
-    } elseif {[lindex $contents $i] eq "-required"} {
+    } elseif {[lindex $contents $i] eq "-required-list"} {
       incr i
       if {[string index [lindex $contents $i] 0] ne "-"} {
         set rank_rname [lindex $contents $i]
@@ -83,6 +83,19 @@ proc read_rank_option_file {w fname} {
             }
           }
           close $fp
+        }
+      } else {
+        set i [expr $i - 1]
+      }
+
+    } elseif {[lindex $contents $i] eq "-required-cdd"} {
+      incr i
+      if {[string index [lindex $contents $i] 0] ne "-"} {
+        if {[file isfile [lindex $contents $i]] == 1} {
+          if {[lsearch -index 1 [$w.f.t.lb get 0 end] [lindex $contents $i]] == -1} {
+            $w.f.t.lb insert end [list 1 [lindex $contents $i]]
+            $w.f.t.lb cellconfigure end,required -image $rank_img_checked
+          }
         }
       } else {
         set i [expr $i - 1]
@@ -294,7 +307,13 @@ proc create_rank_cmd_options {} {
   }
 
   if {$rank_rname ne ""} {
-    lappend args "-required $rank_rname"
+    lappend args "-required-list $rank_rname"
+  } else {
+    foreach row [.rankwin.p.files.f.t.lb get 0 end] {
+      if {[lindex $row 0] == 1} {
+        lappend args "-required-cdd [lindex $row 1]"
+      }
+    }
   }
 
   if {$names_only == 1} {

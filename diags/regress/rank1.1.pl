@@ -18,7 +18,7 @@ if( $USE_VPI == 0 ) {
   $retval = &run( "rank1.1c" ) || $retval;
 
   # Run the rank command (Note that this is NOT an error)
-  &runRankCommand( "-required ../regress/rank1.1.required -o rank1.1.err rank1.1a.cdd rank1.1c.cdd" );
+  &runRankCommand( "-required-list ../regress/rank1.1.required -o rank1.1.err rank1.1a.cdd rank1.1c.cdd" );
 
   # Check the difference and remove the CDD files, if necessary
   system( "touch rank1.1.cdd" ) && die;
