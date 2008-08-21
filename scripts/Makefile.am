@@ -3,6 +3,7 @@ tcl_SCRIPTS = assert.tcl \
               balloon.tcl \
               banner.gif \
               cdd_view.tcl \
+              checked.gif \
               clear.gif \
               comb.tcl \
               cov_create.tcl \
@@ -24,6 +25,7 @@ tcl_SCRIPTS = assert.tcl \
               right_arrow.gif \
               summary.tcl \
               toggle.tcl \
+              unchecked.gif \
               verilog.tcl \
               viewer.tcl \
               wizard.tcl

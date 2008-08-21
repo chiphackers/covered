@@ -1,6 +1,9 @@
+set rank_img_checked   [image create photo -file [file join $HOME scripts checked.gif]]
+set rank_img_unchecked [image create photo -file [file join $HOME scripts unchecked.gif]]
+
 proc create_rank_cdds {} {
 
-  global rankgen_sel rankgen_fname rank_view rank_sname
+  global rankgen_sel rankgen_fname rank_view rank_sname rank_rname rank_req_check_cnt
   global cdd_files
 
   if {[winfo exists .rankwin] == 0} {
@@ -19,10 +22,12 @@ proc create_rank_cdds {} {
     .rankwin.p add [create_rank_cdds_output  .rankwin.p.output] -width 750 -height 500 -hide true
 
     # Initialize global variables
-    set rankgen_sel   "options"
-    set rankgen_fname ""
-    set rank_view     0
-    set rank_sname    ""
+    set rankgen_sel        "options"
+    set rankgen_fname      ""
+    set rank_view          0
+    set rank_sname         ""
+    set rank_rname         ""
+    set rank_req_check_cnt 0
 
     # Allow currently opened CDD files to be ranked, if they exist
     if {[llength $cdd_files] > 0} {
@@ -41,10 +46,11 @@ proc create_rank_cdds {} {
 
 proc read_rank_option_file {w fname} {
 
-  global rank_filename
+  global rank_filename rank_rname
   global weight_line weight_toggle weight_memory weight_comb weight_fsm weight_assert
   global weight_line_num weight_toggle_num weight_memory_num weight_comb_num weight_fsm_num weight_assert_num
   global names_only
+  global rank_img_checked rank_img_unchecked
 
   if {[catch {set fp [open $fname "r"]}]} {
     tk_messageBox -message "File $fname Not Found!" -title "No File" -icon error
@@ -59,6 +65,25 @@ proc read_rank_option_file {w fname} {
       if {[string index [lindex $contents $i] 0] ne "-"} {
         set rank_filename [lindex $contents $i]
         handle_rank_cdds_filename .rankwin.p.opts
+      } else {
+        set i [expr $i - 1]
+      }
+
+    } elseif {[lindex $contents $i] eq "-required"} {
+      incr i
+      if {[string index [lindex $contents $i] 0] ne "-"} {
+        set rank_rname [lindex $contents $i]
+        if {[file isfile $rank_rname] == 1} {
+          set fp     [open $rank_rname "r"]
+          set fnames [join [list [read $fp]]]
+          foreach fname $fnames {
+            if {[lsearch -index 1 [$w.f.t.lb get 0 end] $fname] == -1} {
+              $w.f.t.lb insert end [list 1 $fname]
+              $w.f.t.lb cellconfigure end,required -image $rank_img_checked
+            }
+          }
+          close $fp
+        }
       } else {
         set i [expr $i - 1]
       }
@@ -173,7 +198,8 @@ proc read_rank_option_file {w fname} {
       }
 
     } elseif {[file isfile [lindex $contents $i]] == 1} {
-      .rankwin.p.files.f.t.lb insert end [lindex $contents $i]
+      .rankwin.p.files.f.t.lb insert end [list 0 [lindex $contents $i]]
+      .rankwin.p.files.f.t.lb cellconfigure end,required -image $rank_img_unchecked
 
     }
 
@@ -256,7 +282,7 @@ proc setup_cdd_rank_options {w} {
 
 proc create_rank_cmd_options {} {
 
-  global rank_filename
+  global rank_filename rank_rname
   global weight_line weight_toggle weight_memory weight_comb weight_fsm weight_assert
   global weight_line_num weight_toggle_num weight_memory_num weight_comb_num weight_fsm_num weight_assert_num
   global names_only
@@ -265,6 +291,10 @@ proc create_rank_cmd_options {} {
 
   if {$rank_filename ne ""} {
     lappend args "-o $rank_filename"
+  }
+
+  if {$rank_rname ne ""} {
+    lappend args "-required $rank_rname"
   }
 
   if {$names_only == 1} {
@@ -303,7 +333,9 @@ proc create_rank_cmd_options {} {
   }
 
   foreach row [.rankwin.p.files.f.t.lb get 0 end] {
-    lappend args [lindex $row 0]
+    if {[lindex $row 0] == 0} {
+      lappend args [lindex $row 1]
+    }
   }
 
   return $args
@@ -548,14 +580,41 @@ proc handle_rank_cdds_num_files {w} {
 
 }
   
+proc handle_rank_cdds_add_required {w} {
+
+  global rank_img_checked
+
+  set fname [tk_getOpenFile -parent [winfo toplevel $w] -title "Select File Containing a List of Required CDD Files to Include"]
+
+  if {[catch {set fp [open $fname "r"]}]} {
+    tk_messageBox -message "File $fname Not Found!" -title "No File" -icon error
+  }
+
+  set contents [join [list [read $fp]]]
+
+  foreach fname $contents {
+    if {[lsearch -index 1 [$w.f.t.lb get 0 end] $fname] == -1} {
+      $w.f.t.lb insert end [list 1 $fname]
+      $w.f.t.lb cellconfigure end,required -image $rank_img_checked
+    }
+  }
+
+  close $fp
+
+  handle_rank_cdds_num_files $w
+
+}
 
 proc handle_rank_cdds_add_files {w} {
+
+  global rank_img_unchecked
 
   set fnames [tk_getOpenFile -filetypes {{{Code Coverage Database} {.cdd}}} -parent [winfo toplevel $w] -multiple 1 -title "Select CDD File(s) to Rank"]
 
   foreach fname $fnames {
-    if {[lsearch [$w.f.t.lb get 0 end] $fname] == -1} {
-      $w.f.t.lb insert end $fname
+    if {[lsearch -index 1 [$w.f.t.lb get 0 end] $fname] == -1} {
+      $w.f.t.lb insert end [list 0 $fname]
+      $w.f.t.lb cellconfigure end,required -image $rank_img_unchecked
     }
   }
 
@@ -565,12 +624,15 @@ proc handle_rank_cdds_add_files {w} {
 
 proc handle_rank_cdds_add_dir {w} {
 
+  global rank_img_unchecked
+
   set dname [tk_chooseDirectory -mustexist 1 -parent [winfo toplevel $w] -title "Select Directory Containing CDD File(s) to Rank"]
 
   if {$dname ne ""} {
     foreach fname [glob -directory $dname *.cdd] {
-      if {[lsearch [$w.f.t.lb get 0 end] $fname] == -1} {
-        $w.f.t.lb insert end $fname
+      if {[lsearch -index 1 [$w.f.t.lb get 0 end] $fname] == -1} {
+        $w.f.t.lb insert end [list 0 $fname]
+        $w.f.t.lb cellconfigure end,required -image $rank_img_unchecked
       }
     }
   }
@@ -581,11 +643,12 @@ proc handle_rank_cdds_add_dir {w} {
 
 proc handle_rank_cdds_add_curr {w} {
 
-  global cdd_files
+  global cdd_files rank_img_unchecked
 
   foreach fname $cdd_files {
-    if {[lsearch [$w.f.t.lb get 0 end] $fname] == -1} {
-      $w.f.t.lb insert end $fname
+    if {[lsearch -index 1 [$w.f.t.lb get 0 end] $fname] == -1} {
+      $w.f.t.lb insert end [list 0 $fname]
+      $w.f.t.lb cellconfigure end,required -image $rank_img_unchecked
     }
   }
 
@@ -632,6 +695,53 @@ proc generate_rank_cdd_file {w} {
 
 }
 
+proc empty_string {val} {
+
+  return ""
+
+}
+
+proc rank_files_edit_end_cmd {tbl row col text} {
+
+  global rank_img_checked rank_img_unchecked
+
+  switch [$tbl columncget $col -name] {
+
+    required {
+      if {$text == 0} {
+        $tbl cellconfigure $row,$col -image $rank_img_unchecked
+      } else {
+        $tbl cellconfigure $row,$col -image $rank_img_checked
+      }
+    }
+
+  }
+
+  return $text
+
+}
+
+proc save_required_cdds_to_file {w} {
+
+  global rank_rname
+
+  set rank_rname [tk_getSaveFile -title "Save Required CDD Files..." -initialfile $rank_rname -parent .rankwin]
+
+  if {$rank_rname ne ""} {
+    if {[catch {set fp [open $rank_rname "w"]}]} {
+      tk_messageBox -message "File $rank_rname Not Writable!" -title "No File" -icon error
+    }
+    foreach row [$w.f.t.lb get 0 end] {
+      puts "row: $row"
+      if {[lindex $row 0] == 1} {
+        puts $fp [lindex $row 1]
+      }
+    }
+    close $fp
+  }
+
+}
+
 proc create_rank_cdds_files {w} {
 
   global rank_view
@@ -642,8 +752,10 @@ proc create_rank_cdds_files {w} {
   # Create filename frame
   frame     $w.f
   frame     $w.f.t
-  tablelist::tablelist $w.f.t.lb -columns {0 "CDD Filename"} -selectmode extended \
-    -xscrollcommand "$w.f.t.hb set" -yscrollcommand "$w.f.t.vb set" -stretch all -movablerows 1
+  tablelist::tablelist $w.f.t.lb -columns {0 "Required" center 0 "CDD Filename"} -selectmode extended \
+    -xscrollcommand "$w.f.t.hb set" -yscrollcommand "$w.f.t.vb set" -stretch {1} -movablerows 1 \
+    -editendcommand rank_files_edit_end_cmd
+  $w.f.t.lb columnconfigure 0 -name required -editable 1 -editwindow checkbutton -formatcommand empty_string
   scrollbar $w.f.t.hb -orient horizontal -command "$w.f.t.lb xview" -takefocus 0
   scrollbar $w.f.t.vb -command "$w.f.t.lb yview" -takefocus 0
   grid rowconfigure    $w.f.t 0 -weight 1
@@ -654,13 +766,15 @@ proc create_rank_cdds_files {w} {
 
   # Create top button frame
   frame  $w.f.b
-  button $w.f.b.addfile -text "Add File(s)"             -command "handle_rank_cdds_add_files $w"
+  button $w.f.b.addfile -text "Add CDD File(s)"         -command "handle_rank_cdds_add_files $w"
   button $w.f.b.adddir  -text "Add CDDs from Directory" -command "handle_rank_cdds_add_dir $w"
   button $w.f.b.addcur  -text "Add Currently Opened"    -command "handle_rank_cdds_add_curr $w"     -state disabled
+  button $w.f.b.addreq  -text "Add Required File List"  -command "handle_rank_cdds_add_required $w"
   button $w.f.b.delete  -text "Delete"                  -command "handle_rank_cdds_delete_files $w" -state disabled
   pack   $w.f.b.addfile -fill x -padx 3 -pady 3
   pack   $w.f.b.adddir  -fill x -padx 3 -pady 3
   pack   $w.f.b.addcur  -fill x -padx 3 -pady 3
+  pack   $w.f.b.addreq  -fill x -padx 3 -pady 3
   pack   $w.f.b.delete  -fill x -padx 3 -pady 3
 
   pack $w.f.t -side left  -fill both -expand 1
@@ -673,7 +787,7 @@ proc create_rank_cdds_files {w} {
 
   # Create save frame
   frame  $w.save
-  button $w.save.b -text "Save Options to File..." -command {
+  button $w.save.b1 -text "Save Options to File..." -command {
     set rank_sname [tk_getSaveFile -title "Save Rank Command Options to File..." -initialfile $rank_sname -parent .rankwin]
     if {$rank_sname ne ""} {
       if {[catch {set fp [open $rank_sname "w"]}]} {
@@ -685,7 +799,9 @@ proc create_rank_cdds_files {w} {
       close $fp
     }
   }
-  pack $w.save.b -pady 4
+  button $w.save.b2 -text "Save Required CDDs to File..." -command "save_required_cdds_to_file $w"
+  pack $w.save.b1 -side left  -pady 4
+  pack $w.save.b2 -side right -pady 4
 
   # Create button frame
   frame  $w.bf
