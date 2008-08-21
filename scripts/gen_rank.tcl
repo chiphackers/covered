@@ -49,7 +49,7 @@ proc read_rank_option_file {w fname} {
   global rank_filename rank_rname
   global weight_line weight_toggle weight_memory weight_comb weight_fsm weight_assert
   global weight_line_num weight_toggle_num weight_memory_num weight_comb_num weight_fsm_num weight_assert_num
-  global names_only
+  global names_only rank_verbose
   global rank_img_checked rank_img_unchecked
 
   if {[catch {set fp [open $fname "r"]}]} {
@@ -69,6 +69,9 @@ proc read_rank_option_file {w fname} {
         set i [expr $i - 1]
       }
 
+    } elseif {[lindex $contents $i] eq "-v"} {
+      set rank_verbose 1
+
     } elseif {[lindex $contents $i] eq "-required-list"} {
       incr i
       if {[string index [lindex $contents $i] 0] ne "-"} {
@@ -77,9 +80,9 @@ proc read_rank_option_file {w fname} {
           set fp     [open $rank_rname "r"]
           set fnames [join [list [read $fp]]]
           foreach fname $fnames {
-            if {[lsearch -index 1 [$w.f.t.lb get 0 end] $fname] == -1} {
-              $w.f.t.lb insert end [list 1 $fname]
-              $w.f.t.lb cellconfigure end,required -image $rank_img_checked
+            if {[lsearch -index 1 [.rankwin.p.files.f.t.lb get 0 end] $fname] == -1} {
+              .rankwin.p.files.f.t.lb insert end [list 1 $fname]
+              .rankwin.p.files.f.t.lb cellconfigure end,required -image $rank_img_checked
             }
           }
           close $fp
@@ -92,9 +95,9 @@ proc read_rank_option_file {w fname} {
       incr i
       if {[string index [lindex $contents $i] 0] ne "-"} {
         if {[file isfile [lindex $contents $i]] == 1} {
-          if {[lsearch -index 1 [$w.f.t.lb get 0 end] [lindex $contents $i]] == -1} {
-            $w.f.t.lb insert end [list 1 [lindex $contents $i]]
-            $w.f.t.lb cellconfigure end,required -image $rank_img_checked
+          if {[lsearch -index 1 [.rankwin.p.files.f.t.lb get 0 end] [lindex $contents $i]] == -1} {
+            .rankwin.p.files.f.t.lb insert end [list 1 [lindex $contents $i]]
+            .rankwin.p.files.f.t.lb cellconfigure end,required -image $rank_img_checked
           }
         }
       } else {
@@ -230,7 +233,7 @@ proc setup_cdd_rank_options {w} {
   global rankgen_fname rank_filename
   global weight_line weight_toggle weight_memory weight_comb weight_fsm weight_assert
   global weight_line_num weight_toggle_num weight_memory_num weight_comb_num weight_fsm_num weight_assert_num
-  global names_only
+  global names_only rank_verbose
 
   if {$rankgen_fname ne ""} {
 
@@ -249,6 +252,7 @@ proc setup_cdd_rank_options {w} {
     set weight_fsm_num    1
     set weight_assert_num 1
     set names_only        0
+    set rank_verbose      0
 
     # Update the corresponding entry widget state to normal
     .rankwin.p.opts.wf.e_l configure -state normal
@@ -277,6 +281,7 @@ proc setup_cdd_rank_options {w} {
     set weight_fsm_num    1
     set weight_assert_num 1
     set names_only        0
+    set rank_verbose      0
 
     # Update the corresponding entry widget state to normal
     .rankwin.p.opts.wf.e_l configure -state normal
@@ -298,7 +303,7 @@ proc create_rank_cmd_options {} {
   global rank_filename rank_rname
   global weight_line weight_toggle weight_memory weight_comb weight_fsm weight_assert
   global weight_line_num weight_toggle_num weight_memory_num weight_comb_num weight_fsm_num weight_assert_num
-  global names_only
+  global names_only rank_verbose
 
   set args {}
 
@@ -318,6 +323,10 @@ proc create_rank_cmd_options {} {
 
   if {$names_only == 1} {
     lappend args "-names-only"
+  }
+
+  if {$rank_verbose == 1} {
+    lappend args "-v"
   }
 
   if {$weight_line == 0} {
@@ -513,7 +522,7 @@ proc create_rank_cdds_options {w} {
   global rank_filename
   global weight_line weight_toggle weight_memory weight_comb weight_fsm weight_assert
   global weight_line_num weight_toggle_num weight_memory_num weight_comb_num weight_fsm_num weight_assert_num
-  global names_only
+  global names_only rank_verbose
 
   # Create top-most frame
   frame $w
@@ -560,6 +569,11 @@ proc create_rank_cdds_options {w} {
   checkbutton $w.nof.cb -text "Generate ranking report displaying only the names of the CDD files in the order they should be run" -variable names_only -anchor w
   pack $w.nof.cb -side left -fill x
 
+  # Create verbose frame
+  frame $w.verbose
+  checkbutton $w.verbose.cb -text "Display verbose information when running rank command" -variable rank_verbose -anchor w
+  pack $w.verbose.cb -side left -fill x
+
   # Create button frame
   frame  $w.bf
   help_button $w.bf.help chapter.gui.rank section.gui.rank.options
@@ -574,10 +588,11 @@ proc create_rank_cdds_options {w} {
   $w.ff.e configure -vcmd "handle_rank_cdds_filename $w"
 
   # Pack top-level frames
-  pack $w.ff  -padx 3 -pady 3 -fill x
-  pack $w.wf  -padx 3 -pady 3 -fill x
-  pack $w.nof -padx 3 -pady 3 -fill x
-  pack $w.bf  -side bottom -padx 3 -pady 3 -fill x
+  pack $w.ff      -padx 3 -pady 3 -fill x
+  pack $w.wf      -padx 3 -pady 3 -fill x
+  pack $w.nof     -padx 3 -pady 3 -fill x
+  pack $w.verbose -padx 3 -pady 3 -fill x
+  pack $w.bf      -side bottom -padx 3 -pady 3 -fill x
 
   # Set the input focus on the first window
   focus $w.ff.e
@@ -860,7 +875,7 @@ proc create_rank_cdds_output {w} {
 
   # Create output textbox and associated scrollbars
   frame     $w.f
-  text      $w.f.t -state disabled -xscrollcommand "$w.f.hb set" -yscrollcommand "$w.f.vb set"
+  text      $w.f.t -state disabled -xscrollcommand "$w.f.hb set" -yscrollcommand "$w.f.vb set" -wrap none
   scrollbar $w.f.vb -command "$w.f.t yview" -takefocus 0
   scrollbar $w.f.hb -orient horizontal -command "$w.f.t.xview" -takefocus 0
   grid rowconfigure    $w.f 0 -weight 1

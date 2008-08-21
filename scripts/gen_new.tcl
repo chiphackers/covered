@@ -1344,7 +1344,7 @@ proc create_new_cdd_output {w} {
 
   # Create output textbox and associated scrollbars
   frame     $w.f
-  text      $w.f.t -state disabled -xscrollcommand "$w.f.hb set" -yscrollcommand "$w.f.vb set"
+  text      $w.f.t -state disabled -xscrollcommand "$w.f.hb set" -yscrollcommand "$w.f.vb set" -wrap none
   scrollbar $w.f.vb -command "$w.f.t yview" -takefocus 0
   scrollbar $w.f.hb -orient horizontal -command "$w.f.t.xview" -takefocus 0
   grid rowconfigure    $w.f 0 -weight 1

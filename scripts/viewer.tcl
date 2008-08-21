@@ -36,7 +36,7 @@ proc viewer_show {type title fname} {
 
     # Create text box frame
     frame     $win.text
-    text      $win.text.t -xscrollcommand "$win.text.hb set" -yscrollcommand "$win.text.vb set"
+    text      $win.text.t -xscrollcommand "$win.text.hb set" -yscrollcommand "$win.text.vb set" -wrap none
     scrollbar $win.text.vb -command "$win.text.t yview"
     scrollbar $win.text.hb -orient horizontal -command "$win.text.t xview"
     grid rowconfigure    $win.text 0 -weight 1
