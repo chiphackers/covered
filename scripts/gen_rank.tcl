@@ -15,12 +15,6 @@ proc create_rank_cdds {} {
     # Create labelframe that will hold the contents
     panedwindow .rankwin.p
 
-    # Add panes
-    .rankwin.p add [create_rank_cdds_source  .rankwin.p.source] -width 750 -height 500
-    .rankwin.p add [create_rank_cdds_options .rankwin.p.opts]   -width 750 -height 500 -hide true
-    .rankwin.p add [create_rank_cdds_files   .rankwin.p.files]  -width 750 -height 500 -hide true
-    .rankwin.p add [create_rank_cdds_output  .rankwin.p.output] -width 750 -height 500 -hide true
-
     # Initialize global variables
     set rankgen_sel        "options"
     set rankgen_fname      ""
@@ -28,6 +22,12 @@ proc create_rank_cdds {} {
     set rank_sname         ""
     set rank_rname         ""
     set rank_req_check_cnt 0
+
+    # Add panes
+    .rankwin.p add [create_rank_cdds_source  .rankwin.p.source] -width 750 -height 500
+    .rankwin.p add [create_rank_cdds_options .rankwin.p.opts]   -width 750 -height 500 -hide true
+    .rankwin.p add [create_rank_cdds_files   .rankwin.p.files]  -width 750 -height 500 -hide true
+    .rankwin.p add [create_rank_cdds_output  .rankwin.p.output] -width 750 -height 500 -hide true
 
     # Allow currently opened CDD files to be ranked, if they exist
     if {[llength $cdd_files] > 0} {
@@ -50,7 +50,7 @@ proc read_rank_option_file {w fname} {
   global weight_line weight_toggle weight_memory weight_comb weight_fsm weight_assert
   global weight_line_num weight_toggle_num weight_memory_num weight_comb_num weight_fsm_num weight_assert_num
   global names_only rank_verbose
-  global rank_img_checked rank_img_unchecked
+  global rank_img_checked rank_img_unchecked rank_req_check_cnt
 
   if {[catch {set fp [open $fname "r"]}]} {
     tk_messageBox -message "File $fname Not Found!" -title "No File" -icon error
@@ -80,10 +80,15 @@ proc read_rank_option_file {w fname} {
           set fp     [open $rank_rname "r"]
           set fnames [join [list [read $fp]]]
           foreach fname $fnames {
-            if {[lsearch -index 1 [.rankwin.p.files.f.t.lb get 0 end] $fname] == -1} {
+            set index [lsearch -index 1 [.rankwin.p.files.f.t.lb get 0 end] $fname]
+            if {$index == -1} {
               .rankwin.p.files.f.t.lb insert end [list 1 $fname]
               .rankwin.p.files.f.t.lb cellconfigure end,required -image $rank_img_checked
+            } else {
+              puts "Found matching at index $index"
+              .rankwin.p.files.f.t.lb cellconfigure $index,required -image $rank_img_checked
             }
+            incr rank_req_check_cnt
           }
           close $fp
         }
@@ -95,10 +100,14 @@ proc read_rank_option_file {w fname} {
       incr i
       if {[string index [lindex $contents $i] 0] ne "-"} {
         if {[file isfile [lindex $contents $i]] == 1} {
-          if {[lsearch -index 1 [.rankwin.p.files.f.t.lb get 0 end] [lindex $contents $i]] == -1} {
+          set index [lsearch -index 1 [.rankwin.p.files.f.t.lb get 0 end] [lindex $contents $i]]
+          if {$index == -1} {
             .rankwin.p.files.f.t.lb insert end [list 1 [lindex $contents $i]]
             .rankwin.p.files.f.t.lb cellconfigure end,required -image $rank_img_checked
+          } else {
+            .rankwin.p.files.f.t.lb cellconfigure $index,required -image $rank_img_checked
           }
+          incr rank_req_check_cnt
         }
       } else {
         set i [expr $i - 1]
@@ -233,26 +242,27 @@ proc setup_cdd_rank_options {w} {
   global rankgen_fname rank_filename
   global weight_line weight_toggle weight_memory weight_comb weight_fsm weight_assert
   global weight_line_num weight_toggle_num weight_memory_num weight_comb_num weight_fsm_num weight_assert_num
-  global names_only rank_verbose
+  global names_only rank_verbose rank_req_check_cnt
 
   if {$rankgen_fname ne ""} {
 
     # Perform global variable initialization here
-    set rank_filename     ""
-    set weight_line       1
-    set weight_toggle     1
-    set weight_memory     1
-    set weight_comb       1
-    set weight_fsm        1
-    set weight_assert     1
-    set weight_line_num   1
-    set weight_toggle_num 1
-    set weight_memory_num 1
-    set weight_comb_num   1
-    set weight_fsm_num    1
-    set weight_assert_num 1
-    set names_only        0
-    set rank_verbose      0
+    set rank_filename      ""
+    set weight_line        1
+    set weight_toggle      1
+    set weight_memory      1
+    set weight_comb        1
+    set weight_fsm         1
+    set weight_assert      1
+    set weight_line_num    1
+    set weight_toggle_num  1
+    set weight_memory_num  1
+    set weight_comb_num    1
+    set weight_fsm_num     1
+    set weight_assert_num  1
+    set names_only         0
+    set rank_verbose       0
+    set rank_req_check_cnt 0
 
     # Update the corresponding entry widget state to normal
     .rankwin.p.opts.wf.e_l configure -state normal
@@ -267,21 +277,22 @@ proc setup_cdd_rank_options {w} {
   } else {
 
     # Otherwise, set global variables to desired default values
-    set rank_filename     ""
-    set weight_line       1
-    set weight_toggle     1
-    set weight_memory     1
-    set weight_comb       1
-    set weight_fsm        1
-    set weight_assert     1
-    set weight_line_num   1
-    set weight_toggle_num 1
-    set weight_memory_num 1
-    set weight_comb_num   1
-    set weight_fsm_num    1
-    set weight_assert_num 1
-    set names_only        0
-    set rank_verbose      0
+    set rank_filename      ""
+    set weight_line        1
+    set weight_toggle      1
+    set weight_memory      1
+    set weight_comb        1
+    set weight_fsm         1
+    set weight_assert      1
+    set weight_line_num    1
+    set weight_toggle_num  1
+    set weight_memory_num  1
+    set weight_comb_num    1
+    set weight_fsm_num     1
+    set weight_assert_num  1
+    set names_only         0
+    set rank_verbose       0
+    set rank_req_check_cnt 0
 
     # Update the corresponding entry widget state to normal
     .rankwin.p.opts.wf.e_l configure -state normal
@@ -603,6 +614,8 @@ proc create_rank_cdds_options {w} {
 
 proc handle_rank_cdds_num_files {w} {
 
+  global rank_req_check_cnt
+
   $w.m.l configure -text [format "%10d CDD Files are currently included for ranking" [$w.f.t.lb size]]
 
   # If we have two or more CDD files, we can rank them
@@ -612,11 +625,39 @@ proc handle_rank_cdds_num_files {w} {
     $w.bf.generate configure -state disabled
   }
 
+  # Set the state of the "save required" button
+  if {$rank_req_check_cnt == 0} {
+    $w.save.b2 configure -state disabled
+  } elseif {$rank_req_check_cnt == 1} {
+    $w.save.b2 configure -state normal
+  }
+
+}
+
+proc handle_rank_cdds_add_req_cdd {w} {
+
+  global rank_img_checked rank_req_check_cnt
+
+  set fnames [tk_getOpenFile -parent [winfo toplevel $w] -multiple 1 -title "Select Required CDD"]
+
+  foreach fname $fnames {
+    set index [lsearch -index 1 [$w.f.t.lb get 0 end] $fname]
+    if {$index == -1} {
+      $w.f.t.lb insert end [list 1 $fname]
+      $w.f.t.lb cellconfigure end,required -image $rank_img_checked
+    } else {
+      $w.f.t.lb cellconfigure $index,required -image $rank_img_checked
+    }
+    incr rank_req_check_cnt
+  }
+
+  handle_rank_cdds_num_files $w
+
 }
   
-proc handle_rank_cdds_add_required {w} {
+proc handle_rank_cdds_add_req_list {w} {
 
-  global rank_img_checked
+  global rank_img_checked rank_req_check_cnt
 
   set fname [tk_getOpenFile -parent [winfo toplevel $w] -title "Select File Containing a List of Required CDD Files to Include"]
 
@@ -627,10 +668,14 @@ proc handle_rank_cdds_add_required {w} {
   set contents [join [list [read $fp]]]
 
   foreach fname $contents {
-    if {[lsearch -index 1 [$w.f.t.lb get 0 end] $fname] == -1} {
+    set index [lsearch -index 1 [$w.f.t.lb get 0 end] $fname]
+    if {$index == -1} {
       $w.f.t.lb insert end [list 1 $fname]
       $w.f.t.lb cellconfigure end,required -image $rank_img_checked
+    } else {
+      $w.f.t.lb cellconfigure $index,required -image $rank_img_checked
     }
+    incr rank_req_check_cnt
   }
 
   close $fp
@@ -737,15 +782,21 @@ proc empty_string {val} {
 
 proc rank_files_edit_end_cmd {tbl row col text} {
 
-  global rank_img_checked rank_img_unchecked
+  global rank_img_checked rank_img_unchecked rank_req_check_cnt
 
   switch [$tbl columncget $col -name] {
 
     required {
       if {$text == 0} {
         $tbl cellconfigure $row,$col -image $rank_img_unchecked
+        incr rank_req_check_cnt -1
+        if {$rank_req_check_cnt == 0} {
+          .rankwin.p.files.save.b2 configure -state disabled
+        }
       } else {
         $tbl cellconfigure $row,$col -image $rank_img_checked
+        incr rank_req_check_cnt
+        .rankwin.p.files.save.b2 configure -state normal
       }
     }
 
@@ -766,7 +817,6 @@ proc save_required_cdds_to_file {w} {
       tk_messageBox -message "File $rank_rname Not Writable!" -title "No File" -icon error
     }
     foreach row [$w.f.t.lb get 0 end] {
-      puts "row: $row"
       if {[lindex $row 0] == 1} {
         puts $fp [lindex $row 1]
       }
@@ -800,15 +850,17 @@ proc create_rank_cdds_files {w} {
 
   # Create top button frame
   frame  $w.f.b
-  button $w.f.b.addfile -text "Add CDD File(s)"         -command "handle_rank_cdds_add_files $w"
-  button $w.f.b.adddir  -text "Add CDDs from Directory" -command "handle_rank_cdds_add_dir $w"
-  button $w.f.b.addcur  -text "Add Currently Opened"    -command "handle_rank_cdds_add_curr $w"     -state disabled
-  button $w.f.b.addreq  -text "Add Required File List"  -command "handle_rank_cdds_add_required $w"
-  button $w.f.b.delete  -text "Delete"                  -command "handle_rank_cdds_delete_files $w" -state disabled
+  button $w.f.b.addfile -text "Add CDD File(s)"             -command "handle_rank_cdds_add_files $w"
+  button $w.f.b.adddir  -text "Add CDDs from Directory"     -command "handle_rank_cdds_add_dir $w"
+  button $w.f.b.addcur  -text "Add Currently Opened"        -command "handle_rank_cdds_add_curr $w"     -state disabled
+  button $w.f.b.addreq  -text "Add Required CDD File(s)"    -command "handle_rank_cdds_add_req_cdd $w"
+  button $w.f.b.addreqs -text "Add Required CDDs from List" -command "handle_rank_cdds_add_req_list $w"
+  button $w.f.b.delete  -text "Delete"                      -command "handle_rank_cdds_delete_files $w" -state disabled
   pack   $w.f.b.addfile -fill x -padx 3 -pady 3
   pack   $w.f.b.adddir  -fill x -padx 3 -pady 3
   pack   $w.f.b.addcur  -fill x -padx 3 -pady 3
   pack   $w.f.b.addreq  -fill x -padx 3 -pady 3
+  pack   $w.f.b.addreqs -fill x -padx 3 -pady 3
   pack   $w.f.b.delete  -fill x -padx 3 -pady 3
 
   pack $w.f.t -side left  -fill both -expand 1
@@ -833,7 +885,7 @@ proc create_rank_cdds_files {w} {
       close $fp
     }
   }
-  button $w.save.b2 -text "Save Required CDDs to File..." -command "save_required_cdds_to_file $w"
+  button $w.save.b2 -text "Save Required CDDs to File..." -state disabled -command "save_required_cdds_to_file $w"
   pack $w.save.b1 -side left  -pady 4
   pack $w.save.b2 -side right -pady 4
 
