@@ -1,33 +1,33 @@
 <chapter id="chapter.gui.rank" xreflabel="Creating a CDD Ranking Report">
   <title>Creating a CDD Ranking Report</title>
   <para>
-  Generating a ranking report (see <xref linkend="chapter.rank"/> for more information) can be accomplished in the GUI by 
-  either selecting the <emphasis role="bold">Rank CDD Coverage</emphasis> button in the Wizard window (see 
-  <xref linkend="chapter.gui.wizard"/> for details), selecting the <code>File -> Generate -> CDD Ranking Report...</code>
-  menu option, or using the keyboard shortcut Shift-Cntrl-C.  Any of these actions will cause the CDD ranking report wizard
-  window to be started.
+    Generating a ranking report (see <xref linkend="chapter.rank"/> for more information) can be accomplished in the GUI by 
+    either selecting the <emphasis role="bold">Rank CDD Coverage</emphasis> button in the Wizard window (see 
+    <xref linkend="chapter.gui.wizard"/> for details), selecting the <code>File -> Generate -> CDD Ranking Report...</code>
+    menu option, or using the keyboard shortcut Shift-Cntrl-C.  Any of these actions will cause the CDD ranking report wizard
+    window to be started.
   </para>
   <para>
-  The following subsections describe the various windows used to create a CDD ranking report file.  Note that the CDD ranking
-  wizard uses several "pages" to describe the various options to set for creating a CDD ranking report file, using 
-  <emphasis role="bold">Back</emphasis> and <emphasis role="bold">Next</emphasis> buttons on each page for navigation.
-  Clicking on the <emphasis role="bold">Back</emphasis> button will not cause previously filled in pages to be
-  reverted to their default values but rather will remain populated with the user's data. Similarly, if a page has been
-  filled in with data and the <emphasis role="bold">Back</emphasis> button is clicked and then the 
-  <emphasis role="bold">Next</emphasis> button is clicked, the page contents are retained.  The only way to clear out fields 
-  is to click the <emphasis role="bold">Cancel</emphasis> button at the bottom of each page and startup the CDD ranking 
-  wizard again.
+    The following subsections describe the various windows used to create a CDD ranking report file.  Note that the CDD ranking
+    wizard uses several "pages" to describe the various options to set for creating a CDD ranking report file, using 
+    <emphasis role="bold">Back</emphasis> and <emphasis role="bold">Next</emphasis> buttons on each page for navigation.
+    Clicking on the <emphasis role="bold">Back</emphasis> button will not cause previously filled in pages to be
+    reverted to their default values but rather will remain populated with the user's data. Similarly, if a page has been
+    filled in with data and the <emphasis role="bold">Back</emphasis> button is clicked and then the 
+    <emphasis role="bold">Next</emphasis> button is clicked, the page contents are retained.  The only way to clear out fields 
+    is to click the <emphasis role="bold">Cancel</emphasis> button at the bottom of each page and startup the CDD ranking 
+    wizard again.
   </para>
   <para>
-  Clicking the <emphasis role="bold">Cancel</emphasis> button at any time will cause the CDD ranking wizard to immediately 
-  exit.  Clicking on the <emphasis role="bold">Help</emphasis> button at any time will bring up the user documentation for 
-  the current page (context sensitive help).
+    Clicking the <emphasis role="bold">Cancel</emphasis> button at any time will cause the CDD ranking wizard to immediately 
+    exit.  Clicking on the <emphasis role="bold">Help</emphasis> button at any time will bring up the user documentation for 
+    the current page (context sensitive help).
   </para>
   
   <sect1 id="section.gui.rank.select" xreflabel="CDD Ranking Option Selection Page">
     <title>CDD Ranking Option Selection Page</title>
     <para>
-    Figure <xref linkend="figure.gui.rank.select"/> shows the look of this page of the CDD ranking wizard.
+      Figure <xref linkend="figure.gui.rank.select"/> shows the look of this page of the CDD ranking wizard.
     </para>
     <para>
       <figure id="figure.gui.rank.select" xreflabel="CDD Ranking Option Selection Page">
@@ -36,31 +36,31 @@
       </figure>
     </para>
     <para>
-    The first page of the CDD ranking wizard allows the user to select whether all options should be interactively
-    selected within the GUI or if a file should be read in which contains command-line options to the rank command
-    to use.  If the latter is chosen, the contents of that file are read in and are populated in the GUI, but the
-    CDD ranking wizard will continue in the same fashion as the first option, allowing the user to change, remove or
-    add to the options found in that file.
+      The first page of the CDD ranking wizard allows the user to select whether all options should be interactively
+      selected within the GUI or if a file should be read in which contains command-line options to the rank command
+      to use.  If the latter is chosen, the contents of that file are read in and are populated in the GUI, but the
+      CDD ranking wizard will continue in the same fashion as the first option, allowing the user to change, remove or
+      add to the options found in that file.
     </para>
     <para>
-    If the <emphasis role="bold">Create CDD ranking by interactively selecting options</emphasis> entry is currently selected 
-    and the user wishes to not use a command-line file to populate the rest of the CDD ranking pages, simply click on 
-    the <emphasis role="bold">Next</emphasis> button at the bottom of the page to continue.  If the 
-    <emphasis role="bold">Create CDD ranking by using option file</emphasis> entry is currently selected, the user must either 
-    type a valid filename or select one by clicking the <emphasis role="bold">Browse...</emphasis> button to the right 
-    of the file entry area and select a valid file. Once a valid filename is selected, the 
-    <emphasis role="bold">Next</emphasis> button will be enabled and the user may then click it to continue to the next 
-    page. Note that any filename can be selected (whether it's a valid command file or not).  Only valid rank command 
-    options found in that file are used to populate the wizard entries. No error message will be displayed if the file 
-    does not contain this information.
+      If the <emphasis role="bold">Create CDD ranking by interactively selecting options</emphasis> entry is currently selected 
+      and the user wishes to not use a command-line file to populate the rest of the CDD ranking pages, simply click on 
+      the <emphasis role="bold">Next</emphasis> button at the bottom of the page to continue.  If the 
+      <emphasis role="bold">Create CDD ranking by using option file</emphasis> entry is currently selected, the user must either 
+      type a valid filename or select one by clicking the <emphasis role="bold">Browse...</emphasis> button to the right 
+      of the file entry area and select a valid file. Once a valid filename is selected, the 
+      <emphasis role="bold">Next</emphasis> button will be enabled and the user may then click it to continue to the next 
+      page. Note that any filename can be selected (whether it's a valid command file or not).  Only valid rank command 
+      options found in that file are used to populate the wizard entries. No error message will be displayed if the file 
+      does not contain this information.
     </para>
   </sect1>
   
   <sect1 id="section.gui.rank.options" xreflabel="CDD Ranking Options Page">
     <title>CDD Ranking Option Page</title>
     <para>
-    This page of the CDD ranking wizard allows the user to specify certain options to the ranking command when it is run.
-    The following subsections document each option within this window.
+      This page of the CDD ranking wizard allows the user to specify certain options to the ranking command when it is run.
+      The following subsections document each option within this window.
     </para>
     <para>
       <figure id="figure.gui.rank.options" xreflabel="CDD Ranking Options Page">
@@ -72,39 +72,51 @@
     <sect2 id="section.gui.rank.options.name">
       <title>Output ranking report name</title>
       <para>
-      This option is a required field to fill in before the rank command can be run.  Simply specify a filename in the
-      entry box or use the <emphasis role="bold">Browse...</emphasis> button to help create a filename to save the
-      ranking report file to.
+        This option is a required field to fill in before the rank command can be run.  Simply specify a filename in the
+        entry box or use the <emphasis role="bold">Browse...</emphasis> button to help create a filename to save the
+        ranking report file to.
       </para>
       <note>
-      The <emphasis role="bold">Next</emphasis> button will not be enabled until a filename has been specified in the entry box.
+        The <emphasis role="bold">Next</emphasis> button will not be enabled until a filename has been specified in the entry box.
       </note>
     </sect2>
     
     <sect2 id="section.gui.rank.options.weights">
       <title>Coverage metric weighting</title>
       <para>
-      The checkboxes within this frame allow the user to specify an importance value for each coverage metric.  The allowed values
-      within the entry box for each metric is a value greater than zero, where all values are relative to each other.  In other 
-      words, if the weight for line coverage is set to a value of 10 and the weight of toggle coverage is set to a value of 1, 
-      it indicates that line coverage should be considered 10x more important for coverage selection purposes than toggle coverage.
-      Changing the various weight values can have an impact on which CDD files are chosen to be included in the "need to run" list 
-      and/or the order in which CDD files should be run to maximize the coverage obtained.
+        The checkboxes within this frame allow the user to specify an importance value for each coverage metric.  The allowed values
+        within the entry box for each metric is a value greater than zero, where all values are relative to each other.  In other 
+        words, if the weight for line coverage is set to a value of 10 and the weight of toggle coverage is set to a value of 1, 
+        it indicates that line coverage should be considered 10x more important for coverage selection purposes than toggle coverage.
+        Changing the various weight values can have an impact on which CDD files are chosen to be included in the "need to run" list 
+        and/or the order in which CDD files should be run to maximize the coverage obtained.
       </para>
       <para>
-      By default, all metrics are included (except for assertion coverage) and are given a weight value of 1 (all coverage metrics
-      are considered to be equally important for ranking purposes).  To remove a metric from ranking consideration, simply uncheck
-      the checkbox to the left of the metric line.
+        By default, all metrics are included (except for assertion coverage) and are given a weight value of 1 (all coverage metrics
+        are considered to be equally important for ranking purposes).  To remove a metric from ranking consideration, simply uncheck
+        the checkbox to the left of the metric line.
       </para>
     </sect2>
     
     <sect2 id="section.gui.rank.options.nameonly">
       <title>Generating only names</title>
       <para>
-      When a CDD ranking report is generated, the report contains header information and a columnar list of accumulated and per
-      CDD ranking information.  If the user is only interested in creating a report that includes the names of the CDD files that
-      are needed to run (and the order to run these CDD files in), checking this option will produce just that, allowing for easier
-      usage in Makefiles or other commands needed to run regression runs.
+        When a CDD ranking report is generated, the report contains header information and a columnar list of accumulated and per
+        CDD ranking information.  If the user is only interested in creating a report that includes the names of the CDD files that
+        are needed to run (and the order to run these CDD files in), checking this option will produce just that, allowing for easier
+        usage in Makefiles or other commands needed to run regression runs.
+      </para>
+    </sect2>
+    
+    <sect2 id="section.gui.rank.options.verbose">
+      <title>Displaying verbose information when running rank command</title>
+      <para>
+        When the ranking order is being generated, there is output from the rank command concerning the filenames that are being
+        read and when the command is writing to the output file; however, if you would like to know more information about what's
+        going on "under the hood", enabling this option will cause more verbose information to be reported in the output screen,
+        including the amount of time spent executing each phase of the rank process, the number of files selected for ranking in each
+        phase, the number of coverage points hit by selected CDD files for each phase and the number of files excluded from ranking.
+        Leave this box unchecked if this information is not important/interesting to you.
       </para>
     </sect2>
   </sect1>
@@ -112,15 +124,16 @@
   <sect1 id="section.gui.rank.files" xreflabel="CDD Ranking Input File Selection Page">
     <title>CDD Ranking Input File Selection Page</title>
     <para>
-    This page allows the user to add all of the CDD files to rank.  Since the GUI CDD ranking generation command can be run at any
-    time (even when no CDD files have currently been loaded), the input files to the rank command can be any valid CDD file that can
-    be merged with each other.
+      This page allows the user to add all of the CDD files to rank.  Since the GUI CDD ranking generation command can be run at any
+      time (even when no CDD files have currently been loaded), the input files to the rank command can be any valid CDD file that can
+      be merged with each other.
     </para>
     <para>
-    As can be seen in the following figure, the window is comprised of a filename listbox in the upper left-hand corner of the page,
-    several buttons that allow for various file selection strategies on the right-hand side of the page, a current file count
-    information bar beneath the listbox, a button to allowing saving the currently setup ranking options to be saved to a file, and
-    a <emphasis role="bold">Generate</emphasis> button in the bottom navigation bar.
+      As can be seen in the following figure, the window is comprised of a filename listbox in the upper left-hand corner of the page,
+      several buttons that allow for various file selection strategies on the right-hand side of the page, a current file count
+      information bar beneath the listbox, a button to allowing saving the currently setup ranking options to be saved to a file, a
+      button to save any selected "required" CDD files to a file, and a <emphasis role="bold">Generate</emphasis> button in the bottom 
+      navigation bar.
     </para>
     <para>
       <figure id="figure.gui.rank.files" xreflabel="CDD Ranking Input File Selection Page">
@@ -132,72 +145,102 @@
     <sect2 id="section.gui.rank.files.adding">
       <title>Adding CDD files</title>
       <para>
-      Adding CDD files to be ranked is performed by clicking on one or more of the buttons on the right-hand side of the page.  When
-      files are added to the input file listbox, the current number of CDD files in the listbox are reported in the information bar
-      beneath the listbox.
+        Adding CDD files to be ranked is performed by clicking on one or more of the buttons on the right-hand side of the page.  When
+        files are added to the input file listbox, the current number of CDD files in the listbox are reported in the information bar
+        beneath the listbox.
       </para>
       <para>
-      The following are the various ways that CDD files can be added to or removed from the input file listbox.
+        Next to each filename specified in the input file listbox is a checkbutton that specifies if the associated CDD file should be
+        considered a mandatory CDD file to be ranked (i.e., it cannot be excluded from the list of CDD files that should be run during
+        regression to achieve full coverage).  This checkbutton can be set/cleared at any time for any CDD file in the listbox.
+      </para>
+      <para>
+        The following are the various ways that CDD files can be added to or removed from the input file listbox.
       </para>
       <para>
         <itemizedlist>
           <listitem>
             <para><emphasis role="bold">Add File(s)</emphasis></para>
             <para>
-            Clicking this button will bring up a file selection box that will allow the user to select one or more files that will
-            will be added to the input file listbox.  This option is useful for selecting certain files within one or more directories
-            to rank.
+              Clicking this button will bring up a file selection box that will allow the user to select one or more files that will
+              will be added to the input file listbox with the "Required" field left unchecked.  This option is useful for selecting 
+              certain files within one or more directories to rank.
             </para>
           </listitem>
           <listitem>
             <para><emphasis role="bold">Add CDDs from Directory</emphasis></para>
             <para>
-            Clicking this button will bring up a directory selection box that will allow the user to specify a directory to load CDD
-            files from.  Only files with the ".cdd" extension that exist in this directory will be added to the input file listbox.
+              Clicking this button will bring up a directory selection box that will allow the user to specify a directory to load CDD
+              files from.  Only files with the ".cdd" extension that exist in this directory will be added to the input file listbox.
             </para>
           </listitem>
           <listitem>
             <para><emphasis role="bold">Add Currently Opened</emphasis></para>
             <para>
-            Clicking this button will add any CDD files that are currently opened within the GUI into the input file list.
+              Clicking this button will add any CDD files that are currently opened within the GUI into the input file list.
+            </para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="bold">Add Required CDD File(s)</emphasis></para>
+            <para>
+              Clicking this button will bring up a file selection box that will allow the user to select one or more files that will be
+              added to the input file listbox with the "Required" field checked.
+            </para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="bold">Add Required CDDs from List</emphasis></para>
+            <para>
+              Clicking this button will bring up a file selection box that will allow the user to select a file that contains a list of
+              CDD files to be required for ranking (files will be added into the input file listbox with the "Required" field checked).
             </para>
           </listitem>
           <listitem>
             <para><emphasis role="bold">Delete</emphasis></para>
             <para>
-            When one or more CDD files are selected in the input file listbox, the <emphasis role="bold">Delete</emphasis> button
-            will be enabled.  Clicking this button will remove the selected files from the input file listbox.  The information bar
-            displaying the number of currently selected CDD files will be updated accordingly.
+              When one or more CDD files are selected in the input file listbox, the <emphasis role="bold">Delete</emphasis> button
+              will be enabled.  Clicking this button will remove the selected files from the input file listbox.  The information bar
+              displaying the number of currently selected CDD files will be updated accordingly.
             </para>
           </listitem>
         </itemizedlist>
       </para>
       <para>
-      If desired, any CDD files listed in the input file listbox can be moved to change the order of the input files.  However, it should
-      be noted that the input file order will not necessarily have any impact on the CDD ranking order list.
+        If desired, any CDD files listed in the input file listbox can be moved to change the order of the input files.  However, it should
+        be noted that the input file order will not necessarily have any impact on the CDD ranking order list.
       </para>
     </sect2>
     
     <sect2 id="section.gui.rank.files.save">
       <title>Saving the CDD ranking options</title>
       <para>
-      If the user wishes to save the current option/file list setup, click on the <emphasis role="bold">Save Options to File...</emphasis>
-      button.  This will cause a file save window be displayed where a filename can be chosen and saved to by clicking on the
-      <emphasis role="bold">Save</emphasis> button in this window.  To cancel the option save, click on the <emphasis role="bold">Cancel</emphasis>
-      button in that window.
+        If the user wishes to save the current option/file list setup, click on the <emphasis role="bold">Save Options to File...</emphasis>
+        button.  This will cause a file save window be displayed where a filename can be chosen and saved to by clicking on the
+        <emphasis role="bold">Save</emphasis> button in this window.  To cancel the option save, click on the <emphasis role="bold">Cancel</emphasis>
+        button in that window.
       </para>
       <para>
-      The generated options file can be used in the <xref linkend="section.gui.rank.select"/> window or in the command-line call to the rank command's
-      -f option.
+        The generated options file can be used in the <xref linkend="section.gui.rank.select"/> window or in the command-line call to the rank command's
+        -f option.
+      </para>
+    </sect2>
+    
+    <sect2 id="section.gui.rank.files.save.required">
+      <title>Save Required CDDs to File...</title>
+      <para>
+        If one or more files are labeled as "Required" in the input file listbox, this button will be enabled.  Clicking on this button will
+        bring up a "Save As" file selection box.  Specifying a filename and clicking on the "Save" button will cause a file by that name to be created
+        that contains a list of all of the CDD files listed as "Required".  This file may be used at a later time via the -required-list option to the
+        rank command (if using the rank command on the command-line) or by clicking on the <emphasis role="bold">Add Required CDDs from List</emphasis>
+        button in the rank command wizard input file selection page.
       </para>
     </sect2>
     
     <sect2 id="section.gui.rank.files.gen">
       <title>Generating the CDD ranking report</title>
       <para>
-      After all of the input files have been included (you must include more than one to create a CDD ranking report), the 
-      <emphasis role="bold">Generate</emphasis> button will be enabled, click on this button to advance to the next page in the CDD ranking wizard
-      where the CDD ranking report command will be run and its output displayed.
+        After all of the input files have been included (you must include more than one to create a CDD ranking report), the 
+        <emphasis role="bold">Generate</emphasis> button will be enabled, click on this button to advance to the next page in the CDD ranking wizard
+        where the CDD ranking report command will be run and its output displayed.
       </para>
     </sect2>
   </sect1>
@@ -211,14 +254,14 @@
       </figure>
     </para>
     <para>
-    The above figure shows an example of output displayed to the CDD ranking command output page.  The purpose of this
-    page is to show you the results of the rank command run.  If any errors occurred during this run, the output from those errors will be displayed
-    within this page.  If the command ran successfully, the <emphasis role="bold">Finish</emphasis> button will be enabled at the bottom of the screen.
+      The above figure shows an example of output displayed to the CDD ranking command output page.  The purpose of this
+      page is to show you the results of the rank command run.  If any errors occurred during this run, the output from those errors will be displayed
+      within this page.  If the command ran successfully, the <emphasis role="bold">Finish</emphasis> button will be enabled at the bottom of the screen.
     </para>
     <para>
-    Additionally, the <emphasis role="bold">View the ranking report in the GUI</emphasis> button will be enabled.  When clicked, this button will
-    display the created report file in a file viewer which may be read and searched.  Click on the window manager "X" button to close the file viewer
-    window.  The following figure shows an example of the file viewer window and an example of the report output.
+      Additionally, the <emphasis role="bold">View the ranking report in the GUI</emphasis> button will be enabled.  When clicked, this button will
+      display the created report file in a file viewer which may be read and searched.  Click on the window manager "X" button to close the file viewer
+      window.  The following figure shows an example of the file viewer window and an example of the report output.
     </para>
     <para>
       <figure id="figure.gui.rank.report">
@@ -227,8 +270,8 @@
       </figure>
     </para>
     <para>
-    When the user has successfully generated a CDD ranking report, clicking the <emphasis role="bold">Finish</emphasis> button will close the CDD
-    ranking report window.
+      When the user has successfully generated a CDD ranking report, clicking the <emphasis role="bold">Finish</emphasis> button will close the CDD
+      ranking report window.
     </para>
   </sect1>
   

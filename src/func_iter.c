@@ -44,6 +44,10 @@ void func_iter_display(
     printf( "  Line: %d\n", fi->sis[i]->curr->stmt->exp->line );
   }
 
+  for( i=0; i<fi->scopes; i++ ) {
+    printf( "  Name: %s\n", fi->sigs[i]->sig->name );
+  }
+
   PROFILE_END;
 
 }
@@ -95,7 +99,7 @@ static void func_iter_sort(
  \return Returns the number of statement iterators found in all of the unnamed functional units
          within a named functional unit.
 */
-static int func_iter_count_stmt_iters(
+static int func_iter_count_scopes(
   func_unit* funit  /*!< Pointer to current functional unit being examined */
 ) { PROFILE(FUNC_ITER_COUNT_STMT_ITERS);
 
@@ -112,7 +116,7 @@ static int func_iter_count_stmt_iters(
   child = parent->tf_head;
   while( child != NULL ) {
     if( funit_is_unnamed( child->funit ) && (child->funit->parent == funit) ) {
-      count += func_iter_count_stmt_iters( child->funit );
+      count += func_iter_count_scopes( child->funit );
     }
     child = child->next;
   }
@@ -124,11 +128,11 @@ static int func_iter_count_stmt_iters(
 }
 
 /*!
- TBD
+ Recursively iterates through functional units, adding their statement iterators to the func_iter structure's array.
 */
 static void func_iter_add_stmt_iters(
-  func_iter* fi,
-  func_unit* funit
+  func_iter* fi,    /*!< Pointer to functional unit iterator to populate */
+  func_unit* funit  /*!< Pointer to current functional unit */
 ) { PROFILE(FUNC_ITER_ADD_STMT_ITERS);
 
   funit_link* child;   /* Pointer to child functional unit */
@@ -136,7 +140,7 @@ static void func_iter_add_stmt_iters(
   int         i;       /* Loop iterator */
 
   /* First, shift all current statement iterators down by one */
-  for( i=(fi->sis_num - 2); i>=0; i-- ) {
+  for( i=(fi->scopes - 2); i>=0; i-- ) {
     fi->sis[i+1] = fi->sis[i];
   }
 
@@ -168,26 +172,74 @@ static void func_iter_add_stmt_iters(
 }
 
 /*!
- Initializes the given functional unit iterator with information from the given functional unit.
+ Recursively iterates through the functional units, adding their signal link pointers to the func_iter structure's array.
+*/
+static void func_iter_add_sig_links(
+  func_iter* fi,    /*!< Pointer to functional unit iterator to populate */
+  func_unit* funit  /*!< Pointer to current functional unit */
+) { PROFILE(FUNC_ITER_ADD_SIG_LINKS);
+
+  funit_link* child;   /* Pointer to child functional unit */
+  func_unit*  parent;  /* Pointer to parent module of this functional unit */
+
+  /* Add the pointer */
+  fi->sigs[fi->sig_num] = funit->sig_head;
+  fi->sig_num++;
+
+  /* Get the parent module */
+  parent = funit_get_curr_module( funit );
+
+  /* Now traverse down all of the child functional units doing the same */
+  child = parent->tf_head;
+  while( child != NULL ) {
+    if( funit_is_unnamed( child->funit ) && (child->funit->parent == funit) ) {
+      func_iter_add_stmt_iters( fi, child->funit );
+    }
+    child = child->next;
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Initializes the contents of the functional unit iterator structure.  This should be called before
+ the functional unit iterator structure is populated with either statement iterator or signal
+ information.
 */
 void func_iter_init(
-  func_iter* fi,    /*!< Pointer to functional unit iterator structure to populate */
-  func_unit* funit  /*!< Pointer to main functional unit to create iterator for (must be named) */
+  func_iter* fi,     /*!< Pointer to functional unit iterator to initializes */
+  func_unit* funit,  /*!< Pointer to main functional unit to create iterator for (must be named) */
+  bool       stmts,  /*!< Set to TRUE if we want statements to be included in the iterator */
+  bool       sigs    /*!< Set to TRUE if we want signals to be included in the iterator */
 ) { PROFILE(FUNC_ITER_INIT);
-  
+
   assert( fi != NULL );
   assert( funit != NULL );
 
-  /* Allocate array of statement iterators for the current functional unit */
-  fi->sis_num = func_iter_count_stmt_iters( funit );
-  fi->sis     = (stmt_iter**)malloc_safe( sizeof( stmt_iter* ) * fi->sis_num );
-  fi->si_num  = 0;
+  /* Count the number of scopes that are within the functional unit iterator */
+  fi->scopes  = func_iter_count_scopes( funit );
+  fi->sis     = NULL;
+  fi->sigs    = NULL;
+  fi->sig_num = 0;
 
-  /* Create statement iterators */
-  func_iter_add_stmt_iters( fi, funit );
+  /* Add statement iterators */
+  if( stmts ) {
+    fi->sis    = (stmt_iter**)malloc_safe( sizeof( stmt_iter* ) * fi->scopes );
+    fi->si_num = 0;
+    func_iter_add_stmt_iters( fi, funit );
+  }
+
+  /* Add signal lists */
+  if( sigs ) {
+    fi->sigs      = (sig_link**)malloc_safe( sizeof( sig_link* ) * fi->scopes );
+    fi->sig_num   = 0;
+    func_iter_add_sig_links( fi, funit );
+    fi->curr_sigl = fi->sigs[0];
+  }
 
   PROFILE_END;
-  
+
 }
 
 /*!
@@ -228,6 +280,40 @@ statement* func_iter_get_next_statement(
 }
 
 /*!
+ \return Returns pointer to next signal in order (or NULL if there are no more signals in the
+         given functional unit)
+*/
+vsignal* func_iter_get_next_signal(
+  func_iter* fi  /*!< Pointer to functional unit iterator to use */
+) { PROFILE(FUNC_ITER_GET_NEXT_SIGNAL);
+
+  vsignal* sig;
+
+  assert( fi != NULL );
+
+  if( fi->curr_sigl != NULL ) {
+
+    sig           = fi->curr_sigl->sig;
+    fi->curr_sigl = fi->curr_sigl->next;
+
+  } else {
+
+    while( (fi->curr_sigl == NULL) && (fi->sig_num < fi->scopes) ) {
+      fi->sig_num++;
+      fi->curr_sigl = fi->sigs[fi->sig_num];
+    }
+
+    sig = (fi->curr_sigl != NULL ) ? fi->curr_sigl->sig : NULL;
+
+  }
+
+  PROFILE_END;
+
+  return( sig );
+
+}
+
+/*!
  Deallocates all allocated memory for the given functional unit iterator.
 */
 void func_iter_dealloc(
@@ -238,13 +324,26 @@ void func_iter_dealloc(
   
   if( fi != NULL ) {
 
-    /* Deallocate all statement iterators */
-    for( i=0; i<fi->sis_num; i++ ) {
-      free_safe( fi->sis[i], sizeof( stmt_iter ) );
+    /* Deallocate statement iterators */
+    if( fi->sis != NULL ) {
+
+      /* Deallocate all statement iterators */
+      for( i=0; i<fi->scopes; i++ ) {
+        free_safe( fi->sis[i], sizeof( stmt_iter ) );
+      }
+
+      /* Deallocate array of statement iterators */
+      free_safe( fi->sis, (sizeof( stmt_iter* ) * fi->scopes) );
+
     }
 
-    /* Deallocate array of statement iterators */
-    free_safe( fi->sis, (sizeof( stmt_iter* ) * fi->sis_num) );
+    /* Deallocate signal array */
+    if( fi->sigs != NULL ) {
+
+      /* Deallocate array of signals */
+      free_safe( fi->sigs, (sizeof( sig_link* ) * fi->scopes) );
+
+    }
 
   }
 
@@ -254,6 +353,11 @@ void func_iter_dealloc(
 
 /*
  $Log$
+ Revision 1.11  2008/08/18 23:07:26  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.7.4.1  2008/07/10 22:43:51  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

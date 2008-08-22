@@ -76,7 +76,7 @@ void line_get_stats(
   if( !funit_is_unnamed( funit ) ) {
 
     /* Initialize the functional unit iterator */
-    func_iter_init( &fi, funit );
+    func_iter_init( &fi, funit, TRUE, FALSE );
 
     stmt = func_iter_get_next_statement( &fi );
     while( stmt != NULL ) {
@@ -137,7 +137,7 @@ void line_collect(
   *excludes  = (int*)malloc_safe( sizeof( int ) * (*line_size) );
 
   /* Initialize the functional unit iterator */
-  func_iter_init( &fi, funit );
+  func_iter_init( &fi, funit, TRUE, FALSE );
 
   stmt = func_iter_get_next_statement( &fi );
   while( stmt != NULL ) {
@@ -406,7 +406,7 @@ static void line_display_verbose(
   }
 
   /* Initialize functional unit iterator */
-  func_iter_init( &fi, funit );
+  func_iter_init( &fi, funit, TRUE, FALSE );
 
   /* Display current instance missed lines */
   stmt = func_iter_get_next_statement( &fi );
@@ -647,6 +647,11 @@ void line_report(
 
 /*
  $Log$
+ Revision 1.94  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.89.4.3  2008/08/07 06:39:11  phase1geo
  Adding "Excluded" column to the summary listbox.
 
