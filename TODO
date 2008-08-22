@@ -67,7 +67,7 @@ X  1.  Add -d and -ext options to allow the user to specify a directory and file
 
 X  2.  Add code to remove duplicate CDD files automatically.
 
-   3.  Fix reports so that the longest CDD name is used for formatting purposes.
+X  3.  Fix reports so that the longest CDD name is used for formatting purposes.
 
 
 GUI
@@ -81,7 +81,6 @@ X  2.  Add graduated test analyzer window.
 Documentation
 -------------
 
-   1.  Create script to convert DocBook format of documentation into HelpSystem format.
 
 
 Miscellaneous
