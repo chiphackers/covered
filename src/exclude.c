@@ -268,9 +268,7 @@ bool exclude_is_line_excluded(
   statement* stmt;  /* Pointer to current statement */
 
   func_iter_init( &fi, funit, TRUE, FALSE );
-
   while( ((stmt = func_iter_get_next_statement( &fi )) != NULL) && (stmt->exp->line != line) );
-
   func_iter_dealloc( &fi );
 
   PROFILE_END;
@@ -317,13 +315,16 @@ bool exclude_is_toggle_excluded(
   char*      sig_name  /*!< Name of signal to search for */
 ) { PROFILE(EXCLUDE_IS_TOGGLE_EXCLUDED);
 
-  sig_link* sigl;  /* Pointer to found signal link */
+  func_iter fi;   /* Functional unit iterator */
+  vsignal*  sig;  /* Pointer to current signal */
 
-  sigl = sig_link_find( sig_name, funit->sig_head );
+  func_iter_init( &fi, funit, FALSE, TRUE );
+  while( ((sig = func_iter_get_next_signal( &fi )) != NULL) && (strcmp( sig->name, sig_name ) != 0) );
+  func_iter_dealloc( &fi );
 
   PROFILE_END;
 
-  return( (sigl == NULL) || (sigl->sig->suppl.part.excluded == 1) );
+  return( (sig == NULL) || (sig->suppl.part.excluded == 1) );
 
 }
 
@@ -339,11 +340,17 @@ void exclude_set_toggle_exclude(
   /*@out@*/ statistic*  stat       /*!< Pointer to statistics structure to update */
 ) { PROFILE(EXCLUDE_SET_TOGGLE_EXCLUDE);
 
-  sig_link* sigl;  /* Pointer to current signal link */
+  func_iter fi;   /* Functional unit iterator */
+  vsignal*  sig;  /* Pointer to current signal */
 
-  /* Find the signal that matches the given signal name and sets its excluded bit */
-  if( (sigl = sig_link_find( sig_name, funit->sig_head )) != NULL ) {
-    exclude_sig_assign_and_recalc( sigl->sig, (value == 1), stat );
+  /* Find the signal that matches the given signal name, if it exists */
+  func_iter_init( &fi, funit, FALSE, TRUE );
+  while( ((sig = func_iter_get_next_signal( &fi )) != NULL) && (strcmp( sig->name, sig_name ) != 0) );
+  func_iter_dealloc( &fi );
+
+  /* Set its exclude bit if it exists */
+  if( sig != NULL ) {
+    exclude_sig_assign_and_recalc( sig, (value == 1), stat );
   }
       
   PROFILE_END;
@@ -359,16 +366,22 @@ bool exclude_is_comb_excluded(
   int        uline_id
 ) { PROFILE(EXCLUDE_IS_COMB_EXCLUDED);
 
-  exp_link*   expl;    /* Pointer to current expression link */
+  func_iter   fi;      /* Functional unit iterator */
+  statement*  stmt;    /* Pointer to found statement */
   expression* subexp;  /* Pointer to found expression */
 
-  if( (expl = exp_link_find( expr_id, funit->exp_head )) != NULL ) {
-    subexp = expression_find_uline_id( expl->exp, uline_id );
+  /* Find the matching root expression */
+  func_iter_init( &fi, funit, TRUE, FALSE );
+  while( ((stmt = func_iter_get_next_statement( &fi )) != NULL) && (stmt->exp->id != expr_id) );
+  func_iter_dealloc( &fi );
+
+  if( stmt != NULL ) {
+    subexp = expression_find_uline_id( stmt->exp, uline_id );
   }
 
   PROFILE_END;
 
-  return( (expl == NULL) || (subexp == NULL) || (subexp->suppl.part.excluded == 1) );
+  return( (stmt == NULL) || (subexp == NULL) || (subexp->suppl.part.excluded == 1) );
 
 }
 
@@ -385,12 +398,17 @@ void exclude_set_comb_exclude(
   /*@out@*/ statistic* stat       /*!< Pointer to statistic structure to update */
 ) { PROFILE(EXCLUDE_SET_COMB_EXCLUDE);
 
-  exp_link*   expl;    /* Pointer to current expression link */
-  expression* subexp;  /* Pointer to found subexpression */
+  func_iter  fi;    /* Functional unit iterator */
+  statement* stmt;  /* Pointer to current statement */
 
-  /* Find the signal that matches the given signal name and sets its excluded bit */
-  if( (expl = exp_link_find( expr_id, funit->exp_head )) != NULL ) {
-    if( (subexp = expression_find_uline_id( expl->exp, uline_id )) != NULL ) {
+  /* Find the root expression */
+  func_iter_init( &fi, funit, TRUE, FALSE );
+  while( ((stmt = func_iter_get_next_statement( &fi )) != NULL) && (stmt->exp->id != expr_id) );
+  func_iter_dealloc( &fi );
+
+  if( stmt != NULL ) {
+    expression* subexp;
+    if( (subexp = expression_find_uline_id( stmt->exp, uline_id )) != NULL ) {
       exclude_expr_assign_and_recalc( subexp, funit, (value == 1), FALSE, stat );
     }
   }
@@ -586,6 +604,10 @@ void exclude_set_assert_exclude(
 
 /*
  $Log$
+ Revision 1.28  2008/08/22 20:56:35  phase1geo
+ Starting to make updates for proper unnamed scope report handling (fix for bug 2054686).
+ Not complete yet.  Also making updates to documentation.  Checkpointing.
+
  Revision 1.27  2008/08/18 23:07:26  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

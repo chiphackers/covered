@@ -15,6 +15,10 @@ ShowWizardOnStartup = true
 
 SaveGuiOnExit = false
 
+# If set to true, causes tooltips to be used for many widgets within the GUI.  If set
+# to false, causes all tooltip support to be disabled.
+ShowTooltips = false
+
 # Sets the foreground color for all source code that is found
 # to be uncovered during simulation.  The value can be any legal color
 # value accepted by Tcl.
@@ -131,8 +135,5 @@ HighlightStringColor = red
 
 HighlightSymbolColor = coral
 
-<<<<<<< .coveredrc
-=======
 # THE FOLLOWING LINES ARE FOR STORING GUI STATE INFORMATION -- DO NOT MODIFY LINES BELOW THIS COMMENT!
 
->>>>>>> 1.11.4.3

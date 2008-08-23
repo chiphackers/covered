@@ -38,14 +38,22 @@ void func_iter_display(
 
   int i;  /* Loop iterator */
 
-  printf( "Functional unit iterator:\n" );
+  printf( "Functional unit iterator (scopes: %u):\n", fi->scopes );
 
-  for( i=0; i<fi->si_num; i++ ) {
-    printf( "  Line: %d\n", fi->sis[i]->curr->stmt->exp->line );
+  if( fi->sis != NULL ) {
+    for( i=0; i<fi->si_num; i++ ) {
+      if( fi->sis[i] != NULL ) {
+        printf( "  Line: %d\n", fi->sis[i]->curr->stmt->exp->line );
+      }
+    }
   }
 
-  for( i=0; i<fi->scopes; i++ ) {
-    printf( "  Name: %s\n", fi->sigs[i]->sig->name );
+  if( fi->sigs != NULL ) {
+    for( i=0; i<fi->sig_num; i++ ) {
+      if( fi->sigs[i] != NULL ) {
+        printf( "  Name: %s\n", fi->sigs[i]->sig->name );
+      }
+    }
   }
 
   PROFILE_END;
@@ -193,7 +201,7 @@ static void func_iter_add_sig_links(
   child = parent->tf_head;
   while( child != NULL ) {
     if( funit_is_unnamed( child->funit ) && (child->funit->parent == funit) ) {
-      func_iter_add_stmt_iters( fi, child->funit );
+      func_iter_add_sig_links( fi, child->funit );
     }
     child = child->next;
   }
@@ -235,6 +243,7 @@ void func_iter_init(
     fi->sigs      = (sig_link**)malloc_safe( sizeof( sig_link* ) * fi->scopes );
     fi->sig_num   = 0;
     func_iter_add_sig_links( fi, funit );
+    fi->sig_num   = 0;
     fi->curr_sigl = fi->sigs[0];
   }
 
@@ -298,12 +307,17 @@ vsignal* func_iter_get_next_signal(
 
   } else {
 
-    while( (fi->curr_sigl == NULL) && (fi->sig_num < fi->scopes) ) {
+    do {
       fi->sig_num++;
-      fi->curr_sigl = fi->sigs[fi->sig_num];
-    }
+    } while( (fi->sig_num < fi->scopes) && (fi->sigs[fi->sig_num] == NULL) );
 
-    sig = (fi->curr_sigl != NULL ) ? fi->curr_sigl->sig : NULL;
+    if( fi->sig_num < fi->scopes ) {
+      sig           = fi->sigs[fi->sig_num]->sig;
+      fi->curr_sigl = fi->sigs[fi->sig_num]->next;
+    } else {
+      sig           = NULL;
+      fi->curr_sigl = NULL;
+    }
 
   }
 
@@ -353,6 +367,10 @@ void func_iter_dealloc(
 
 /*
  $Log$
+ Revision 1.12  2008/08/22 20:56:35  phase1geo
+ Starting to make updates for proper unnamed scope report handling (fix for bug 2054686).
+ Not complete yet.  Also making updates to documentation.  Checkpointing.
+
  Revision 1.11  2008/08/18 23:07:26  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

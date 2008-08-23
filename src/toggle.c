@@ -31,6 +31,7 @@
 
 #include "db.h"
 #include "defines.h"
+#include "func_iter.h"
 #include "func_unit.h"
 #include "link.h"
 #include "obfuscate.h"
@@ -58,7 +59,7 @@ extern isuppl       info_suppl;
  a 1 to a 0, the value of hit10 is incremented by one.
 */
 void toggle_get_stats(
-            sig_link*     sigl,      /*!< Pointer to signal list to search */
+            func_unit*    funit,     /*!< Pointer to named functional unit to search */
   /*@out@*/ unsigned int* hit01,     /*!< Number of bits toggling from 0 to 1 during simulation */
   /*@out@*/ unsigned int* hit10,     /*!< Number of bits toggling from 1 to 0 during simulation */
   /*@out@*/ unsigned int* excluded,  /*!< Pointer to number of excluded bits */
@@ -66,29 +67,37 @@ void toggle_get_stats(
   /*@out@*/ bool*         cov_found  /*!< Set to TRUE if at least one signal was completely covered */
 ) { PROFILE(TOGGLE_GET_STATS);
 
-  sig_link* curr_sig = sigl;  /* Current signal being evaluated */
+  if( !funit_is_unnamed( funit ) ) {
+
+    func_iter fi;   /* Functional unit iterator */
+    vsignal*  sig;  /* Pointer to current signal */
+
+    func_iter_init( &fi, funit, FALSE, TRUE );
   
-  /* Search signal list */
-  while( curr_sig != NULL ) {
-    if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
-        (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_ENUM)  &&
-        (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_MEM)  &&
-        (curr_sig->sig->suppl.part.mba == 0) ) {
-      *total += curr_sig->sig->value->width;
-      if( curr_sig->sig->suppl.part.excluded == 1 ) {
-        *hit01    += curr_sig->sig->value->width;
-        *hit10    += curr_sig->sig->value->width;
-        *excluded += (curr_sig->sig->value->width * 2);
-      } else {
-        unsigned int tmp_hit01 = 0;
-        unsigned int tmp_hit10 = 0;
-        vector_toggle_count( curr_sig->sig->value, &tmp_hit01, &tmp_hit10 );
-        *hit01     += tmp_hit01;
-        *hit10     += tmp_hit10;
-        *cov_found |= ((curr_sig->sig->value->width == tmp_hit01) && (curr_sig->sig->value->width == tmp_hit10));
+    /* Search signal list */
+    while( (sig = func_iter_get_next_signal( &fi )) != NULL ) {
+      if( (sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
+          (sig->suppl.part.type != SSUPPL_TYPE_ENUM)  &&
+          (sig->suppl.part.type != SSUPPL_TYPE_MEM)  &&
+          (sig->suppl.part.mba == 0) ) {
+        *total += sig->value->width;
+        if( sig->suppl.part.excluded == 1 ) {
+          *hit01    += sig->value->width;
+          *hit10    += sig->value->width;
+          *excluded += (sig->value->width * 2);
+        } else {
+          unsigned int tmp_hit01 = 0;
+          unsigned int tmp_hit10 = 0;
+          vector_toggle_count( sig->value, &tmp_hit01, &tmp_hit10 );
+          *hit01     += tmp_hit01;
+          *hit10     += tmp_hit10;
+          *cov_found |= ((sig->value->width == tmp_hit01) && (sig->value->width == tmp_hit10));
+        }
       }
     }
-    curr_sig = curr_sig->next;
+
+    func_iter_dealloc( &fi );
+
   }
 
   PROFILE_END;
@@ -106,37 +115,38 @@ void toggle_collect(
   /*@out@*/ sig_link**  sig_tail   /*!< Pointer to tail of list of covered/uncovered signals */
 ) { PROFILE(TOGGLE_COLLECT);
 
-  sig_link*    curr_sig;  /* Pointer to current signal link being evaluated */
-  unsigned int hit01;     /* Number of bits that toggled from 0 to 1 */
-  unsigned int hit10;     /* Number of bits that toggled from 1 to 0 */
+  func_iter    fi;     /* Functional unit iterator */
+  vsignal*     sig;    /* Pointer to current signal */
+  unsigned int hit01;  /* Number of bits that toggled from 0 to 1 */
+  unsigned int hit10;  /* Number of bits that toggled from 1 to 0 */
      
-  curr_sig = funit->sig_head;
+  func_iter_init( &fi, funit, FALSE, TRUE );
 
-  while( curr_sig != NULL ) {
+  while( (sig = func_iter_get_next_signal( &fi )) != NULL ) {
 
     hit01 = 0;
     hit10 = 0;
 
-    if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
-        (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_ENUM)  &&
-        (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_MEM)  &&
-        (curr_sig->sig->suppl.part.mba == 0) ) {
+    if( (sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
+        (sig->suppl.part.type != SSUPPL_TYPE_ENUM)  &&
+        (sig->suppl.part.type != SSUPPL_TYPE_MEM)  &&
+        (sig->suppl.part.mba == 0) ) {
 
-      vector_toggle_count( curr_sig->sig->value, &hit01, &hit10 );
+      vector_toggle_count( sig->value, &hit01, &hit10 );
 
       /* If this signal meets the coverage requirement, add it to the signal list */
-      if( ((cov == 1) && (hit01 == curr_sig->sig->value->width) && (hit10 == curr_sig->sig->value->width)) ||
-          ((cov == 0) && ((hit01 < curr_sig->sig->value->width) || (hit10 < curr_sig->sig->value->width))) ) {
+      if( ((cov == 1) && (hit01 == sig->value->width) && (hit10 == sig->value->width)) ||
+          ((cov == 0) && ((hit01 < sig->value->width) || (hit10 < sig->value->width))) ) {
 
-        sig_link_add( curr_sig->sig, sig_head, sig_tail );
+        sig_link_add( sig, sig_head, sig_tail );
           
       }
 
     }
 
-    curr_sig = curr_sig->next;
-
   }
+
+  func_iter_dealloc( &fi );
 
   PROFILE_END;
 
@@ -156,18 +166,22 @@ void toggle_get_coverage(
   /*@out@*/ int*       excluded   /*!< Pointer to integer specifying if this signal should be excluded or not */
 ) { PROFILE(TOGGLE_GET_COVERAGE);
 
-  sig_link* sigl;  /* Pointer to found signal link */
+  func_iter fi;   /* Functional unit iterator */
+  vsignal*  sig;  /* Pointer to current signal */
 
-  sigl = sig_link_find( sig_name, funit->sig_head );
+  /* Find the matching signal */
+  func_iter_init( &fi, funit, FALSE, TRUE );
+  while( ((sig = func_iter_get_next_signal( &fi )) != NULL) && (strcmp( sig->name, sig_name ) != 0) );
+  func_iter_dealloc( &fi );
 
-  assert( sigl != NULL );
-  assert( sigl->sig->dim != NULL );
+  assert( sig != NULL );
+  assert( sig->dim != NULL );
 
-  *msb      = sigl->sig->dim[0].msb;
-  *lsb      = sigl->sig->dim[0].lsb; 
-  *tog01    = vector_get_toggle01_ulong( sigl->sig->value->value.ul, sigl->sig->value->width );
-  *tog10    = vector_get_toggle10_ulong( sigl->sig->value->value.ul, sigl->sig->value->width );
-  *excluded = sigl->sig->suppl.part.excluded;
+  *msb      = sig->dim[0].msb;
+  *lsb      = sig->dim[0].lsb; 
+  *tog01    = vector_get_toggle01_ulong( sig->value->value.ul, sig->value->width );
+  *tog10    = vector_get_toggle10_ulong( sig->value->value.ul, sig->value->width );
+  *excluded = sig->suppl.part.excluded;
 
   PROFILE_END;
 
@@ -392,14 +406,15 @@ static bool toggle_funit_summary(
  output from the specified signal list.
 */
 static void toggle_display_verbose(
-  FILE*     ofile,  /*!< Pointer to file to output results to */
-  sig_link* sigl    /*!< Pointer to signal list head */
+  FILE*      ofile,  /*!< Pointer to file to output results to */
+  func_unit* funit   /*!< Pointer to current named functional unit */
 ) { PROFILE(TOGGLE_DISPLAY_VERBOSE);
 
-  sig_link*    curr_sig;  /* Pointer to current signal link being evaluated */
-  unsigned int hit01;     /* Number of bits that toggled from 0 to 1 */
-  unsigned int hit10;     /* Number of bits that toggled from 1 to 0 */
-  char*        pname;     /* Printable version of signal name */
+  func_iter    fi;     /* Functional unit iterator */
+  vsignal*     sig;    /* Pointer to current signal being evaluated */
+  unsigned int hit01;  /* Number of bits that toggled from 0 to 1 */
+  unsigned int hit10;  /* Number of bits that toggled from 1 to 0 */
+  char*        pname;  /* Printable version of signal name */
 
   if( report_covered ) {
     fprintf( ofile, "    Signals getting 100%% toggle coverage\n\n" );
@@ -410,27 +425,27 @@ static void toggle_display_verbose(
 
   fprintf( ofile, "      ---------------------------------------------------------------------------------------------------------\n" );
 
-  curr_sig = sigl;
+  func_iter_init( &fi, funit, FALSE, TRUE );
 
-  while( curr_sig != NULL ) {
+  while( (sig = func_iter_get_next_signal( &fi )) != NULL ) {
 
     hit01 = 0;
     hit10 = 0;
 
     /* Get printable version of the signal name */
-    pname = scope_gen_printable( curr_sig->sig->name );
+    pname = scope_gen_printable( sig->name );
 
-    if( (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
-        (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_ENUM)  &&
-        (curr_sig->sig->suppl.part.type != SSUPPL_TYPE_MEM)  &&
-        (curr_sig->sig->suppl.part.mba == 0) &&
-        (curr_sig->sig->suppl.part.excluded == 0) ) {
+    if( (sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
+        (sig->suppl.part.type != SSUPPL_TYPE_ENUM)  &&
+        (sig->suppl.part.type != SSUPPL_TYPE_MEM)  &&
+        (sig->suppl.part.mba == 0) &&
+        (sig->suppl.part.excluded == 0) ) {
 
-      vector_toggle_count( curr_sig->sig->value, &hit01, &hit10 );
+      vector_toggle_count( sig->value, &hit01, &hit10 );
 
       if( report_covered ) {
 
-        if( (hit01 == curr_sig->sig->value->width) && (hit10 == curr_sig->sig->value->width) ) {
+        if( (hit01 == sig->value->width) && (hit10 == sig->value->width) ) {
         
           fprintf( ofile, "      %-24s\n", pname );
 
@@ -438,12 +453,12 @@ static void toggle_display_verbose(
 
       } else {
 
-        if( (hit01 < curr_sig->sig->value->width) || (hit10 < curr_sig->sig->value->width) ) {
+        if( (hit01 < sig->value->width) || (hit10 < sig->value->width) ) {
 
           fprintf( ofile, "      %-24s  0->1: ", pname );
-          vector_display_toggle01_ulong( curr_sig->sig->value->value.ul, curr_sig->sig->value->width, ofile );      
+          vector_display_toggle01_ulong( sig->value->value.ul, sig->value->width, ofile );      
           fprintf( ofile, "\n      ......................... 1->0: " );
-          vector_display_toggle10_ulong( curr_sig->sig->value->value.ul, curr_sig->sig->value->width, ofile );      
+          vector_display_toggle10_ulong( sig->value->value.ul, sig->value->width, ofile );      
           fprintf( ofile, " ...\n" );
 
         }
@@ -454,9 +469,9 @@ static void toggle_display_verbose(
 
     free_safe( pname, (strlen( pname ) + 1) );
 
-    curr_sig = curr_sig->next;
-
   }
+
+  func_iter_dealloc( &fi );
 
   PROFILE_END;
 
@@ -514,7 +529,7 @@ static void toggle_instance_verbose(
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
     free_safe( pname, (strlen( pname ) + 1) );
 
-    toggle_display_verbose( ofile, root->funit->sig_head );
+    toggle_display_verbose( ofile, root->funit );
 
   }
 
@@ -562,7 +577,7 @@ static void toggle_funit_verbose(
       fprintf( ofile, "%s, File: %s\n", obf_funit( funit_flatten_name( head->funit ) ), obf_file( head->funit->filename ) );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
-      toggle_display_verbose( ofile, head->funit->sig_head );
+      toggle_display_verbose( ofile, head->funit );
 
     }
 
@@ -651,6 +666,11 @@ void toggle_report(
 
 /*
  $Log$
+ Revision 1.79  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.73.2.5  2008/08/07 06:39:11  phase1geo
  Adding "Excluded" column to the summary listbox.
 

@@ -473,7 +473,7 @@ void report_gather_instance_stats(
     }
 
     if( report_toggle ) {
-      toggle_get_stats( root->funit->sig_head, 
+      toggle_get_stats( root->funit,
                         &(root->stat->tog01_hit), 
                         &(root->stat->tog10_hit),
                         &(root->stat->tog_excluded),
@@ -505,7 +505,7 @@ void report_gather_instance_stats(
     }
 
     if( report_memory ) {
-      memory_get_stats( root->funit->sig_head,
+      memory_get_stats( root->funit,
                         &(root->stat->mem_wr_hit),
                         &(root->stat->mem_rd_hit),
                         &(root->stat->mem_ae_total),
@@ -558,7 +558,7 @@ static void report_gather_funit_stats(
       }
 
       if( report_toggle ) {
-        toggle_get_stats( head->funit->sig_head, 
+        toggle_get_stats( head->funit,
                           &(head->funit->stat->tog01_hit), 
                           &(head->funit->stat->tog10_hit),
                           &(head->funit->stat->tog_excluded),
@@ -590,7 +590,7 @@ static void report_gather_funit_stats(
       }
 
       if( report_memory ) {
-        memory_get_stats( head->funit->sig_head,
+        memory_get_stats( head->funit,
                           &(head->funit->stat->mem_wr_hit),
                           &(head->funit->stat->mem_rd_hit),
                           &(head->funit->stat->mem_ae_total),
@@ -1050,6 +1050,11 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.113  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.104.2.10  2008/08/08 23:02:38  phase1geo
  Modifying the look of the text search element.  Enhancing a few other GUI enhancements.
 

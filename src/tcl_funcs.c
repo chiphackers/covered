@@ -2575,8 +2575,7 @@ int tcl_func_set_comb_exclude(
   if( tcl_func_is_funit( tcl, argv[1] ) ) {
 
     /* Search for functional unit */
-    curr_db = 1;
-    if( (funit = funit_find_by_id( expr_id )) != NULL ) {
+    if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
     
       unsigned int i;
 
@@ -2597,14 +2596,9 @@ int tcl_func_set_comb_exclude(
   /* Otherwise, deal with the functional unit instance database */
   } else {
 
-    inst_link* instl;
-    int        ignore = 0;
-
-    if( ((funit = funit_find_by_id( expr_id )) != NULL) && ((instl = inst_link_find_by_funit( funit, db_list[0]->inst_head, &ignore )) != NULL) ) {
+    if( (inst = tcl_func_get_inst( tcl, argv[1] )) != NULL ) {
 
       unsigned int i = gui_inst_index;
-
-      inst = instl->inst;
 
       /* Set the combinational logic exclusion value for the instance database */
       exclude_set_comb_exclude( funit, expr_id, uline_id, value, inst->stat );
@@ -3027,6 +3021,11 @@ void tcl_func_initialize(
 
 /*
  $Log$
+ Revision 1.81  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.77.4.10  2008/08/15 05:11:05  phase1geo
  Converting more old graphics to new style.  Updated documentation.  Cleaned up
  some issues with the build structure per recent documentation changes.  Also fixing

@@ -25,6 +25,7 @@
 
 #include "db.h"
 #include "defines.h"
+#include "func_iter.h"
 #include "func_unit.h"
 #include "link.h"
 #include "memory.h"
@@ -113,7 +114,7 @@ void memory_get_stat(
  Gathers memory statistics for the memories in the given signal list.
 */
 void memory_get_stats(
-            sig_link*     sigl,       /*!< Pointer to signal list to traverse for memories */
+            func_unit*    funit,      /*!< Pointer to current functional unit */
   /*@out@*/ unsigned int* wr_hit,     /*!< Pointer to total number of addressable elements written */
   /*@out@*/ unsigned int* rd_hit,     /*!< Pointer to total number of addressable elements read */
   /*@out@*/ unsigned int* ae_total,   /*!< Pointer to total number of addressable elements */
@@ -123,16 +124,25 @@ void memory_get_stats(
   /*@out@*/ unsigned int* excluded    /*!< Pointer to total number of excluded memory coverage points */
 ) { PROFILE(MEMORY_GET_STATS);
 
-  while( sigl != NULL ) {
+  if( !funit_is_unnamed( funit ) ) {
 
-    /* Calculate only for memory elements (must contain one or more unpacked dimensions) */
-    if( (sigl->sig->suppl.part.type == SSUPPL_TYPE_MEM) && (sigl->sig->udim_num > 0) ) {
+    func_iter fi;
+    vsignal*  sig;
 
-      memory_get_stat( sigl->sig, wr_hit, rd_hit, ae_total, tog01_hit, tog10_hit, tog_total, excluded, FALSE );
+    func_iter_init( &fi, funit, FALSE, TRUE );
+   
+    while( (sig = func_iter_get_next_signal( &fi )) != NULL ) {
+
+      /* Calculate only for memory elements (must contain one or more unpacked dimensions) */
+      if( (sig->suppl.part.type == SSUPPL_TYPE_MEM) && (sig->udim_num > 0) ) {
+
+        memory_get_stat( sig, wr_hit, rd_hit, ae_total, tog01_hit, tog10_hit, tog_total, excluded, FALSE );
+
+      }
 
     }
 
-    sigl = sigl->next;
+    func_iter_dealloc( &fi );
 
   }
 
@@ -389,31 +399,35 @@ void memory_get_coverage(
   /*@out@*/ int*        excluded      /*!< Pointer to excluded indicator to store */
 ) { PROFILE(MEMORY_GET_COVERAGE);
 
-  sig_link*    sigl;      /* Pointer to found signal link */
+  func_iter    fi;        /* Functional unit iterator */
+  vsignal*     sig;       /* Pointer to current signal */
   unsigned int i;         /* Loop iterator */
   char         tmp1[20];  /* Temporary string holder */
   char         tmp2[20];  /* Temporary string holder */
   unsigned int rv;        /* Return value */
 
-  sigl = sig_link_find( signame, funit->sig_head );
-  assert( sigl != NULL );
+  /* Find the signal in the functional unit */
+  func_iter_init( &fi, funit, FALSE, TRUE );
+  while( ((sig = func_iter_get_next_signal( &fi )) != NULL) && (strcmp( sig->name, signame ) != 0) );
+  func_iter_dealloc( &fi );
+  assert( sig != NULL );
 
   /* Allocate and populate the pdim_array and pdim_width parameters */
   *pdim_array = (char*)malloc_safe( 1 );
   (*pdim_array)[0] = '\0';
-  memory_create_pdim_bit_array( pdim_array, sigl->sig, "", sigl->sig->pdim_num );
+  memory_create_pdim_bit_array( pdim_array, sig, "", sig->pdim_num );
 
   /* Allocate and populate the pdim_str string */
   *pdim_str = NULL;
-  for( i=sigl->sig->udim_num; i<(sigl->sig->pdim_num + sigl->sig->udim_num); i++ ) {
+  for( i=sig->udim_num; i<(sig->pdim_num + sig->udim_num); i++ ) {
     unsigned int slen;
-    rv = snprintf( tmp1, 20, "%d", sigl->sig->dim[i].msb );
+    rv = snprintf( tmp1, 20, "%d", sig->dim[i].msb );
     assert( rv < 20 );
-    rv = snprintf( tmp2, 20, "%d", sigl->sig->dim[i].lsb );
+    rv = snprintf( tmp2, 20, "%d", sig->dim[i].lsb );
     assert( rv < 20 );
     slen = strlen( tmp1 ) + strlen( tmp2 ) + 4;
     *pdim_str = (char*)realloc_safe( *pdim_str, (strlen( *pdim_str ) + 1), slen );
-    if( i == sigl->sig->udim_num ) {
+    if( i == sig->udim_num ) {
       rv = snprintf( *pdim_str, slen, "[%s:%s]", tmp1, tmp2 );
       assert( rv < slen );
     } else {
@@ -427,11 +441,11 @@ void memory_get_coverage(
 
   /* Allocate and populate the udim_info string */
   *udim_str = NULL;
-  for( i=0; i<sigl->sig->udim_num; i++ ) {
+  for( i=0; i<sig->udim_num; i++ ) {
     unsigned int slen;
-    rv = snprintf( tmp1, 20, "%d", sigl->sig->dim[i].msb );
+    rv = snprintf( tmp1, 20, "%d", sig->dim[i].msb );
     assert( rv < 20 );
-    rv = snprintf( tmp2, 20, "%d", sigl->sig->dim[i].lsb );
+    rv = snprintf( tmp2, 20, "%d", sig->dim[i].lsb );
     assert( rv < 20 );
     slen = strlen( tmp1 ) + strlen( tmp2 ) + 4;
     *udim_str = (char*)realloc_safe( *udim_str, (strlen( *udim_str ) + 1), slen );
@@ -450,10 +464,10 @@ void memory_get_coverage(
   /* Populate the memory_info string */
   *memory_info = (char*)malloc_safe( 1 );
   (*memory_info)[0] = '\0';
-  memory_get_mem_coverage( memory_info, sigl->sig, 0, "", 0, sigl->sig->value->width );
+  memory_get_mem_coverage( memory_info, sig, 0, "", 0, sig->value->width );
 
   /* Populate the excluded value */
-  *excluded = sigl->sig->suppl.part.excluded;
+  *excluded = sig->suppl.part.excluded;
   
   PROFILE_END;
 
@@ -470,7 +484,8 @@ void memory_collect(
   /*@out@*/ sig_link** tail    /*!< Pointer to tail of signal list containing retrieved signals */
 ) { PROFILE(MEMORY_COLLECT);
 
-  sig_link*    sigl;           /* Pointer to current signal link being evaluated */
+  func_iter    fi;             /* Functional unit iterator */
+  vsignal*     sig;            /* Pointer to current signal */
   unsigned int wr_hit    = 0;  /* Total number of addressable elements written */
   unsigned int rd_hit    = 0;  /* Total number of addressable elements read */
   unsigned int ae_total  = 0;  /* Total number of addressable elements */
@@ -479,29 +494,29 @@ void memory_collect(
   unsigned int tog_total = 0;  /* Total number of toggle bits */
   unsigned int excluded  = 0;  /* Number of excluded memory coverage points */
 
-  sigl = funit->sig_head;
+  func_iter_init( &fi, funit, FALSE, TRUE );
 
-  while( sigl != NULL ) {
+  while( (sig = func_iter_get_next_signal( &fi )) != NULL ) {
 
-    if( sigl->sig->suppl.part.type == SSUPPL_TYPE_MEM ) {
+    if( sig->suppl.part.type == SSUPPL_TYPE_MEM ) {
 
       ae_total = 0;
    
-      memory_get_stat( sigl->sig, &ae_total, &wr_hit, &rd_hit, &tog_total, &hit01, &hit10, &excluded, TRUE );
+      memory_get_stat( sig, &ae_total, &wr_hit, &rd_hit, &tog_total, &hit01, &hit10, &excluded, TRUE );
 
       /* If this signal meets the coverage requirement, add it to the signal list */
       if( ((cov == 1) && (wr_hit > 0) && (rd_hit > 0) && (hit01 == tog_total) && (hit10 == tog_total)) ||
           ((cov == 0) && ((wr_hit == 0) || (rd_hit == 0) || (hit01 < tog_total) || (hit10 < tog_total))) ) {
 
-        sig_link_add( sigl->sig, head, tail );
+        sig_link_add( sig, head, tail );
 
       }
 
     }
 
-    sigl = sigl->next;
-
   }
+
+  func_iter_dealloc( &fi );
 
   PROFILE_END;
 
@@ -979,11 +994,12 @@ static void memory_display_memory(
  write/read coverage to standard output from the specified signal list.
 */
 static void memory_display_verbose(
-  FILE*     ofile,  /*!< Pointer to file to output results to */
-  sig_link* sigl    /*!< Pointer to signal list head */
+  FILE*      ofile,  /*!< Pointer to file to output results to */
+  func_unit* funit   /*!< Pointer to the current functional unit */
 ) { PROFILE(MEMORY_DISPLAY_VERBOSE);
 
-  sig_link*    curr_sig;  /* Pointer to current signal link being evaluated */
+  func_iter    fi;        /* Functional unit iterator */
+  vsignal*     sig;       /* Pointer to current signal */
   unsigned int hit01;     /* Number of bits that toggled from 0 to 1 */
   unsigned int hit10;     /* Number of bits that toggled from 1 to 0 */
   char*        pname;     /* Printable version of signal name */
@@ -995,31 +1011,31 @@ static void memory_display_verbose(
     fprintf( ofile, "    Memories not getting 100%% coverage\n\n" );
   }
 
-  curr_sig = sigl;
+  func_iter_init( &fi, funit, FALSE, TRUE );
 
-  while( curr_sig != NULL ) {
+  while( (sig = func_iter_get_next_signal( &fi )) != NULL ) {
 
     hit01 = 0;
     hit10 = 0;
 
     /* Get printable version of the signal name */
-    pname = scope_gen_printable( curr_sig->sig->name );
+    pname = scope_gen_printable( sig->name );
 
-    if( curr_sig->sig->suppl.part.type == SSUPPL_TYPE_MEM ) {
+    if( sig->suppl.part.type == SSUPPL_TYPE_MEM ) {
 
       fprintf( ofile, "      ---------------------------------------------------------------------------------------------------------\n" );
       fprintf( ofile, "      Memory name:  %s", pname );
-      for( i=0; i<curr_sig->sig->udim_num; i++ ) {
-        fprintf( ofile, "[%d:%d]", curr_sig->sig->dim[i].msb, curr_sig->sig->dim[i].lsb );
+      for( i=0; i<sig->udim_num; i++ ) {
+        fprintf( ofile, "[%d:%d]", sig->dim[i].msb, sig->dim[i].lsb );
       }
       fprintf( ofile, "\n" );
       fprintf( ofile, "      ---------------------------------------------------------------------------------------------------------\n" );
 
-      vector_toggle_count( curr_sig->sig->value, &hit01, &hit10 );
+      vector_toggle_count( sig->value, &hit01, &hit10 );
 
       if( report_covered ) {
 
-        if( (hit01 == curr_sig->sig->value->width) && (hit10 == curr_sig->sig->value->width) ) {
+        if( (hit01 == sig->value->width) && (hit10 == sig->value->width) ) {
 
           fprintf( ofile, "      %-24s\n", pname );
 
@@ -1027,7 +1043,7 @@ static void memory_display_verbose(
 
       } else {
 
-        memory_display_memory( ofile, curr_sig->sig, 0, curr_sig->sig->name, 0, curr_sig->sig->value->width );
+        memory_display_memory( ofile, sig, 0, sig->name, 0, sig->value->width );
 
       }
 
@@ -1035,9 +1051,9 @@ static void memory_display_verbose(
 
     free_safe( pname, (strlen( pname ) + 1) );
 
-    curr_sig = curr_sig->next;
-
   }
+
+  func_iter_dealloc( &fi );
 
   PROFILE_END;
 
@@ -1098,7 +1114,7 @@ static void memory_instance_verbose(
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
     free_safe( pname, (strlen( pname ) + 1) );
 
-    memory_display_verbose( ofile, root->funit->sig_head );
+    memory_display_verbose( ofile, root->funit );
 
   }
 
@@ -1146,7 +1162,7 @@ static void memory_funit_verbose(
       fprintf( ofile, "%s, File: %s\n", obf_funit( funit_flatten_name( head->funit ) ), obf_file( head->funit->filename ) );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
-      memory_display_verbose( ofile, head->funit->sig_head );
+      memory_display_verbose( ofile, head->funit );
 
     }
 
@@ -1258,6 +1274,11 @@ void memory_report(
 
 /*
  $Log$
+ Revision 1.34  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.29.2.3  2008/08/07 06:39:11  phase1geo
  Adding "Excluded" column to the summary listbox.
 

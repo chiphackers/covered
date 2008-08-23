@@ -30,7 +30,7 @@
 
 /*! \brief Calculates the toggle coverage for the specifed expression and signal lists. */
 void toggle_get_stats(
-            sig_link*     sigl,
+            func_unit*    funit,
   /*@out@*/ unsigned int* hit01,
   /*@out@*/ unsigned int* hit10,
   /*@out@*/ unsigned int* excluded,
@@ -82,6 +82,11 @@ void toggle_report(
 
 /*
  $Log$
+ Revision 1.21  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.17.6.3  2008/08/07 06:39:11  phase1geo
  Adding "Excluded" column to the summary listbox.
 

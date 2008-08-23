@@ -10,7 +10,7 @@ module main;
 reg  a, b;
 wire c, z;
 
-adder1 a( 
+adder1 adder( 
   .a(a),
   .b(b),
   .c(c),
