@@ -1,4 +1,4 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 9. The score Command</title><meta name="generator" content="DocBook XSL Stylesheets V1.74.0"><link rel="home" href="index.html" title="Covered"><link rel="up" href="part.command.line.usage.html" title="Part III. Command-line Usage"><link rel="prev" href="chapter.using.html" title="Chapter 8. Using Covered"><link rel="next" href="chapter.merge.html" title="Chapter 10. The merge Command"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 9. The score Command</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter.using.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part III. Command-line Usage</th><td width="20%" align="right"> <a accesskey="n" href="chapter.merge.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.score"></a>Chapter 9. The score Command</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.score.html#id2671178">9.1. Usage</a></span></dt><dt><span class="sect1"><a href="chapter.score.html#id2671197">9.2. Options</a></span></dt><dt><span class="sect1"><a href="chapter.score.html#section.score.t">9.3. Specifying What to Cover</a></span></dt><dt><span class="sect1"><a href="chapter.score.html#section.score.e">9.4. Specifying What Not to Cover (Coverage Exclusions)</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.score.html#section.score.ep">Using the -ep Option for Exclusion</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.score.html#section.score.param">9.5. Overriding Parameters (-P option)</a></span></dt><dt><span class="sect1"><a href="chapter.score.html#section.score.fsm">9.6. Scoring FSMs</a></span></dt><dt><span class="sect1"><a href="chapter.score.html#section.score.other">9.7. Other Notes</a></span></dt></dl></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id2671178"></a>9.1. Usage</h2></div></div></div><p>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 9. The score Command</title><meta name="generator" content="DocBook XSL Stylesheets V1.71.1"><link rel="start" href="index.html" title="Covered"><link rel="up" href="part.command.line.usage.html" title="Part III. Command-line Usage"><link rel="prev" href="chapter.using.html" title="Chapter 8. Using Covered"><link rel="next" href="chapter.merge.html" title="Chapter 10. The merge Command"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 9. The score Command</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter.using.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part III. Command-line Usage</th><td width="20%" align="right"> <a accesskey="n" href="chapter.merge.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.score"></a>Chapter 9. The score Command</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.score.html#id433387">9.1. Usage</a></span></dt><dt><span class="sect1"><a href="chapter.score.html#id433429">9.2. Options</a></span></dt><dt><span class="sect1"><a href="chapter.score.html#section.score.t">9.3. Specifying What to Cover</a></span></dt><dt><span class="sect1"><a href="chapter.score.html#section.score.e">9.4. Specifying What Not to Cover (Coverage Exclusions)</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.score.html#section.score.ep">Using the -ep Option for Exclusion</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.score.html#section.score.param">9.5. Overriding Parameters (-P option)</a></span></dt><dt><span class="sect1"><a href="chapter.score.html#section.score.fsm">9.6. Scoring FSMs</a></span></dt><dt><span class="sect1"><a href="chapter.score.html#section.score.other">9.7. Other Notes</a></span></dt></dl></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id433387"></a>9.1. Usage</h2></div></div></div><p>
     The score command is initiated with the following call:
     </p><p>
       <code class="code">
@@ -7,14 +7,14 @@
     </p><p>
     The <span class="emphasis"><em>top_module</em></span> parameter is required for the scoring purposes and represents the top-most module that 
     will be covered. It is important to note that Covered does not need to parse the entire DUT. It only parses that part of 
-    the design which will receive coverage results. More on this will be described <a class="xref" href="chapter.score.html#section.score.t" title="9.3. Specifying What to Cover">Specifying What to Cover</a> below.
-    </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id2671197"></a>9.2. Options</h2></div></div></div><p>
+    the design which will receive coverage results. More on this will be described <a href="chapter.score.html#section.score.t">Specifying What to Cover</a> below.
+    </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id433429"></a>9.2. Options</h2></div></div></div><p>
     The following table describes the additional options that can be passed to the score command. Note that it is optional in 
     how you tell Covered where to find the Verilog design files; however, it is not optional to exclude the Verilog files. If 
     no Verilog can be found that contains at least the top instance, Covered will generate an error message to the user 
     specifying that it was unable to find the required Verilog modules.
     </p><p>
-      </p><div class="table"><a name="id2671216"></a><p class="title"><b>Table 9.1. Options to score Command</b></p><div class="table-contents"><table summary="Options to score Command" border="1"><colgroup><col><col></colgroup><thead><tr><th>
+      </p><div class="table"><a name="id433448"></a><p class="title"><b>Table 9.1. Options to score Command</b></p><div class="table-contents"><table summary="Options to score Command" border="1"><colgroup><col><col></colgroup><thead><tr><th>
               Option
               </th><th>
               Description
@@ -22,7 +22,7 @@
               -A ovl
               </td><td>
               Causes OVL assertions to be used for assertion coverage. This flag must be given to the score command if assertion 
-              coverage metrics are needed in the report command. See <a class="xref" href="chapter.metrics.html#section.metric.assert" title="2.6. Assertion Coverage">Assertion Coverage</a>.
+              coverage metrics are needed in the report command. See <a href="chapter.metrics.html#section.metric.assert">Assertion Coverage</a>.
               </td></tr><tr><td>
               -cli [<span class="emphasis"><em>filename</em></span>]
               </td><td>
@@ -30,7 +30,7 @@
               specified, this file contains information saved in a previous call to savehist on the CLI and causes the history 
               contained in this file to be replayed prior to the CLI command prompt. If <span class="emphasis"><em>filename</em></span> is not 
               specified, the CLI prompt will be immediately available at the start of simulation. This option is only available 
-              when Covered is configured with the --enable-debug option. See <a class="xref" href="chapter.debug.html#section.cli" title="14.2. Command-Line Interface (CLI)">Section 14.2, &#8220;Command-Line Interface (CLI)&#8221;</a>.
+              when Covered is configured with the --enable-debug option. See <a href="chapter.debug.html#section.cli" title="14.2. Command-Line Interface (CLI)">Section 14.2, &#8220;Command-Line Interface (CLI)&#8221;</a>.
               </td></tr><tr><td>
               -D <span class="emphasis"><em>name</em></span>[=<span class="emphasis"><em>value</em></span>]
               </td><td>
@@ -39,31 +39,31 @@
               -e <span class="emphasis"><em>module</em></span>
               </td><td>
               Name of module, task, function or named begin/end block to not score. You may specify this option more than once on a 
-              command-line; one for each block to remove from coverage. See <a class="xref" href="chapter.score.html#section.score.e" title="9.4. Specifying What Not to Cover (Coverage Exclusions)">Specifying What Not to Cover (Coverage Exclusions)</a>.
+              command-line; one for each block to remove from coverage. See <a href="chapter.score.html#section.score.e">Specifying What Not to Cover (Coverage Exclusions)</a>.
               </td></tr><tr><td>
               -ea
               </td><td>
               Specifies that all always blocks in the design should be excluded from coverage consideration. This option may help to increase 
               performance of the score command if all always blocks in the design do not need to be checked for coverage. By default, always blocks are 
-              considered for coverage. See <a class="xref" href="chapter.score.html#section.score.e" title="9.4. Specifying What Not to Cover (Coverage Exclusions)">Specifying What Not to Cover (Coverage Exclusions)</a>.
+              considered for coverage. See <a href="chapter.score.html#section.score.e">Specifying What Not to Cover (Coverage Exclusions)</a>.
               </td></tr><tr><td>
               -ec
               </td><td>
               Specifies that all continuous assignments in the design should be excluded from coverage consideration. This option may help to increase 
               performance of the score command if all assign blocks in the design do not need to be checked for coverage. By default, continuous 
-              assignments are considered for coverage. See <a class="xref" href="chapter.score.html#section.score.e" title="9.4. Specifying What Not to Cover (Coverage Exclusions)">Specifying What Not to Cover (Coverage Exclusions)</a>.
+              assignments are considered for coverage. See <a href="chapter.score.html#section.score.e">Specifying What Not to Cover (Coverage Exclusions)</a>.
               </td></tr><tr><td>
               -ef
               </td><td>
               Specifies that all final blocks in the design should be excluded from coverage consideration. This option may help to increase performance 
               of the score command if all final blocks in the design do not need to be checked for coverage. By default, final blocks are considered for 
-              coverage. See <a class="xref" href="chapter.score.html#section.score.e" title="9.4. Specifying What Not to Cover (Coverage Exclusions)">Specifying What Not to Cover (Coverage Exclusions)</a>.
+              coverage. See <a href="chapter.score.html#section.score.e">Specifying What Not to Cover (Coverage Exclusions)</a>.
               </td></tr><tr><td>
               -ei
               </td><td>
               Specifies that all initial blocks in the design should be excluded from coverage consideration. This option may help to increase 
               performance of the score command if all initial blocks in the design do not need to be checked for coverage. By default, initial blocks 
-              are considered for coverage. See <a class="xref" href="chapter.score.html#section.score.e" title="9.4. Specifying What Not to Cover (Coverage Exclusions)">Specifying What Not to Cover (Coverage Exclusions)</a>.
+              are considered for coverage. See <a href="chapter.score.html#section.score.e">Specifying What Not to Cover (Coverage Exclusions)</a>.
               </td></tr><tr><td>
               -ep [<span class="emphasis"><em>name</em></span>]
               </td><td>
@@ -72,7 +72,7 @@
               reporting purposes. These exclusions may be undone via the GUI, if necessary, without requiring the design to be resimulated by Covered. 
               If <span class="emphasis"><em>name</em></span> is specified, its value will be used by Covered as the pragma keyword to search for in the design (instead of  
               the default value of 'coverage'). This feature can be useful in the event that other tools being used on the design use a similar pragma  
-              name and there are tool conflicts. See <a class="xref" href="chapter.score.html#section.score.e" title="9.4. Specifying What Not to Cover (Coverage Exclusions)">Specifying What Not to Cover (Coverage Exclusions)</a>.
+              name and there are tool conflicts. See <a href="chapter.score.html#section.score.e">Specifying What Not to Cover (Coverage Exclusions)</a>.
               </td></tr><tr><td>
               -F <span class="emphasis"><em>module</em></span>=[<span class="emphasis"><em>in_expr</em></span>,]<span class="emphasis"><em>out_expr</em></span>
               </td><td>
@@ -102,7 +102,7 @@
               -i <span class="emphasis"><em>instance</em></span>
               </td><td>
               Instance name of top-level module. Necessary if module to verify coverage is not the top-level module in the design. If not specified, -t 
-              value is used. See <a class="xref" href="chapter.score.html#section.score.t" title="9.3. Specifying What to Cover">Specifying What to Cover</a>.
+              value is used. See <a href="chapter.score.html#section.score.t">Specifying What to Cover</a>.
               </td></tr><tr><td>
               -lxt <span class="emphasis"><em>dumpfile</em></span>
               </td><td>
@@ -115,18 +115,18 @@
               </td></tr><tr><td>
               -p <span class="emphasis"><em>filename</em></span>
               </td><td>
-              Overrides filename used for outputting intermediate preprocessor output.  See <a class="xref" href="chapter.score.html#section.score.other" title="9.7. Other Notes">Other Notes</a>.
+              Overrides filename used for outputting intermediate preprocessor output.  See <a href="chapter.score.html#section.score.other">Other Notes</a>.
               </td></tr><tr><td>
               -P <span class="emphasis"><em>parameter_scope</em></span>=<span class="emphasis"><em>value</em></span>
               </td><td>
-              Performs a defparam on the specified parameter with value. See <a class="xref" href="chapter.score.html#section.score.param" title="9.5. Overriding Parameters (-P option)">Overriding Parameters</a>.
+              Performs a defparam on the specified parameter with value. See <a href="chapter.score.html#section.score.param">Overriding Parameters</a>.
               </td></tr><tr><td>
               -r(S|W|E|I|P[=<span class="emphasis"><em>name</em></span>])
               </td><td>
               Determines Covered's behavior for handling found race conditions in design (-rS = do not output information but continue scoring design, 
               -rW = output information and continue scoring design, -rE = output information and immediately exit the scoring process, -rI = skip the 
               race condition check for all modules, -rP = skip race condition check for all code surrounded by '// racecheck off' and '// racecheck on' 
-              inline pragmas (the keyword "racecheck" may be substituted for another name by specifying -rP=<span class="emphasis"><em>name</em></span>). See <a class="xref" href="chapter.race.html#section.race.handling" title="4.2. Race Condition Handling">Race Condition Handling</a>.
+              inline pragmas (the keyword "racecheck" may be substituted for another name by specifying -rP=<span class="emphasis"><em>name</em></span>). See <a href="chapter.race.html#section.race.handling">Race Condition Handling</a>.
               </td></tr><tr><td>
               -S
               </td><td>
@@ -156,7 +156,7 @@
               If this option is specified without the -vcd or -lxt options, the design is parsed, a CDD file is created and a top-level Verilog module 
               named <span class="emphasis"><em>filename</em></span> (if this value is specified) or "covered_vpi.v" (if filename is not specified) is created along with a 
               PLI table file called <span class="emphasis"><em>filename</em></span>.tab or "covered_vpi.v.tab". Both of these files are used in the compilation of the 
-              simulator to use Covered as a VPI module. If either the -vcd or -lxt options are specified, this option has no effect. See <a class="xref" href="chapter.start.html#section.lxt.dumpfile" title="Creating an LXT dumpfile">Creating an LXT dumpfile</a>
+              simulator to use Covered as a VPI module. If either the -vcd or -lxt options are specified, this option has no effect. See <a href="chapter.start.html#section.lxt.dumpfile">Creating an LXT dumpfile</a>
               </td></tr><tr><td>
               -vpi_ts (1|10|100)(s|ms|us|ns|ps|fs)/(1|10|100)(s|ms|us|ns|ps|fs)
               </td><td>

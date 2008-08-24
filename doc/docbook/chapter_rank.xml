@@ -1,7 +1,33 @@
 <chapter id="chapter.rank" xreflabel="The rank Command">
   <title>The rank Command</title>
   <para>
-  TBD
+  The rank command allows the user to specify a number of CDD files that have been created from the same DUT (presumably in
+  a regression run -- but not necessarily) and rank them in order of coverage importance.  This information can be useful
+  in accomplishing the following tasks:
+  </para>
+  <para>
+    <itemizedlist>
+      <listitem>
+        <para>
+          Understand which CDD files (simulations) can be eliminated from regression due to their inability to add
+          useful coverage information that selected CDD files already hit.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          Understand the best order to run simulations in full regression.
+        </para>
+      </listitem>
+      <listitem>
+        <para>
+          It can help in creating a quick (confidence) regression which is meant to hit a good deal of the overall coverage
+          points in a short period of time to verify that recent changes don't massively break a previously working DUT.
+          This can be accomplished by selecting the first N simulation CDD files in the ranked list.  The selection can
+          easily be done by either using the simulation order, accumulated hit, hit percent or timestep column values as 
+          a means of selection.
+        </para>
+      </listitem>
+    </itemizedlist>
   </para>
   
   <sect1 id="section.rank.options" xreflabel="Rank Options">
@@ -183,7 +209,7 @@
           <para>
             Create a file containing the list of CDD files to rank and pass this file to the rank command's 
             <emphasis role="bold">-f</emphasis> option.  Using this method, one can selectively specify a large number 
-            of CDD files.
+            of CDD files.  You may specify as many "-f <emphasis>filename</emphasis>" options as is necessary.
           </para>
         </listitem>
         <listitem>
@@ -196,6 +222,9 @@
             <programlisting><![CDATA[
   ls foo*.cdd | covered rank -f -          
             ]]></programlisting>
+          </para>
+          <para>
+            You may specify only one "-f -" option to the rank command.
           </para>
         </listitem>
         <listitem>
@@ -210,6 +239,23 @@
             <programlisting><![CDATA[
   covered rank -d /home/bubba/cdd_dir -ext .mycdd          
             ]]></programlisting>
+          </para>
+          <para>
+            You may specify as many -d options on the command-line as is necessary; however, only one -ext option is allowed.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Specify a single CDD file that MUST be included in the final ranking list via the
+            <emphasis role="bold">-require-cdd</emphasis> option.  You can specify as many -require-cdd options to the rank
+            command as necessary.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Create a file containing a list of CDDs that MUST be included in the final ranking list where each CDD filename
+            is separated by a newline or whitespace.  Pass this file to the <emphasis role="bold">-require-list</emphasis> 
+            option.  You can specify as many -require-list options to the rank command as necessary.
           </para>
         </listitem>
       </itemizedlist>
@@ -245,6 +291,175 @@
       generated with the report command) which describes not only the order that CDD files should be run but also
       various statistical data and the names of CDD files which are considered redundant in terms of coverage information.
       The following example shows an example of this report output.
+    </para>
+    <para>
+      <example id="example.rank.noreq">
+        <title>Rank Output With No Required Files</title>
+        <programlisting><![CDATA[
+                                           ::::::::::::::::::::::::::::::::::::::::::::::::::::
+                                           ::                                                ::
+                                           ::     Covered -- Simulation Ranked Run Order     ::
+                                           ::                                                ::
+                                           ::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
+
+* Reduced 3 CDD files down to 2 needed to maintain coverage ( 33% reduction,   1.5x improvement)
+* Reduced 9 timesteps down to 6 needed to maintain coverage ( 33% reduction,   1.5x improvement)
+
+-----------+-------------------------------------------+----------------------------------------------------------
+           |                ACCUMULATIVE               |                             CDD
+Simulation |-------------------------------------------+----------------------------------------------------------
+Order      |        Hit /      Total     %   Timesteps |  R  Name               Hit /      Total     %   Timesteps
+-----------+-------------------------------------------+----------------------------------------------------------
+         
+         1            9           17   53%           3       rank1c.cdd           9           17   53%           3 
+         2           13           17   76%           6       rank1b.cdd           8           17   47%           3 
+
+---------------------------------------  The following CDD files add no additional coverage  ----------------------------------------------
+
+         3           13           17   76%           9       rank1a.cdd           8           17   47%           3
+
+        ]]></programlisting>
+      </example>
+    </para>
+    <para>
+      After the header information, there is a summary of the ranking reduction (if one occurred) specified in both number
+      of files and number of simulation timesteps.  <xref linkend="example.rank.req"/> shows what this information looks
+      like when no file reduction has occurred.
+    </para>
+    <para>
+      After the summary information, there is the rank output table which displays both the individual CDD information and
+      the accumulative coverage information.  Each row of the table contains one CDD file where the first row contains
+      the first CDD that should be run in regression for maximum coverage impact.  Each successive row contains CDD files
+      that add less and less coverage to the overall coverage gained.  If there were CDD files that were found to not
+      add any coverage information to the above CDD files, a line is drawn and these CDD files displayed below that line.
+      These CDD files can be excluded from regression because they don't add any useful coverage information over-and-above
+      the CDD files that are selected to be run in regression.
+    </para>
+    <para>
+      The first major column is the simulation order.  This value increments by one for each successive row.  If you would
+      like to create a shorter running regression that is limited to a certain number of simulations, this row information
+      can be useful for figuring out which simulations to include in these type of regressions.
+    </para>
+    <para>
+      The second major column is the accumulative coverage statistics which include the following:
+    </para>
+    <para>
+      <itemizedlist>
+        <listitem>
+          <para><emphasis role="bold">Hit</emphasis></para>
+          <para>
+            The first row contains the number of coverage points that the first CDD file hit.  All successive rows add
+            the unique coverage points hit by the CDD file listed on that line to the above hit total.
+          </para>
+          <para>
+            For example, in <xref linkend="example.rank.noreq"/> "rank1c.cdd" contains 9 hit coverage points (accumulative 
+            hit count = 9).  The second highest ranked file, "rank1b.cdd", contains 8 hit coverage points but only 4 of 
+            those coverage points are different than the coverage points hit by "rank1c.cdd"; therefore, the accumulative 
+            coverage hit count is 13.  The third coverage file, "rank1c.cdd", contains 8 coverage points but none of them
+            add to the coverage points hit by the first two coverage files; therefore, it is considered unnecessary for
+            regression.
+          </para>
+        </listitem>
+        <listitem>
+          <para><emphasis role="bold">Total</emphasis></para>
+          <para>
+            The "accumulative" total represents the total number of coverage points in each CDD file.  Since this number
+            must be the same for each CDD file, this value will be the same for each row.
+          </para>
+        </listitem>
+        <listitem>
+          <para><emphasis role="bold">%</emphasis></para>
+          <para>
+            This column represents the hit percentage and is a simple calculation of <code>hit / total</code> for each
+            row.
+          </para>
+        </listitem>
+        <listitem>
+          <para><emphasis role="bold">Timesteps</emphasis></para>
+          <para>
+            This column represents the number of accumulated simulation timesteps.  This value represents the number of
+            timesteps that need to transpire to gain the amount of accumulated coverage.  One of the goals of the
+            ranking algorithm is to gain the most amount of coverage in the least amount of simulation time.
+          </para>
+        </listitem>
+      </itemizedlist>
+    </para>
+    <para>
+      The third major column is the individual coverage information for the CDD file listed in the row which includes
+      the following information:
+    </para>
+    <para>
+      <itemizedlist>
+        <listitem>
+          <para><emphasis role="bold">R</emphasis></para>
+          <para>
+            This column represents whether the current CDD file was a required CDD file by the user (a file listed
+            via the -require-list or -require-cdd options).  If the file is a required CDD file, an asterisk (*)
+            is listed in this column.  If the file was not required, nothing will be listed in this column.
+            <xref linkend="example.rank.req"/> provides an example of what this output looks like.
+          </para>
+        </listitem>
+        <listitem>
+          <para><emphasis role="bold">Name</emphasis></para>
+          <para>
+            Filename of the CDD file that was selected for this row.
+          </para>
+        </listitem>
+        <listitem>
+          <para><emphasis role="bold">Hit</emphasis></para>
+          <para>
+            This column represents the number of coverage points hit by the CDD file.
+          </para>
+        </listitem>
+        <listitem>
+          <para><emphasis role="bold">Total</emphasis></para>
+          <para>
+            This column represents the total number of coverage points within the CDD file that could be hit.
+          </para>
+        </listitem>
+        <listitem>
+          <para><emphasis role="bold">%</emphasis></para>
+          <para>
+            This column represents the hit percentage (a calculation of <code>hit / total</code>.
+          </para>
+        </listitem>
+        <listitem>
+          <para><emphasis role="bold">Timesteps</emphasis></para>
+          <para>
+            This column represents the number of simulation timesteps that the CDD file took to run during simulation.
+            This value does not necessarily represent the ending simulation time.
+          </para>
+        </listitem>
+      </itemizedlist>
+    </para>
+    <para>
+      <example id="example.rank.req">
+        <title>Rank Output With Required Files</title>
+        <programlisting><![CDATA[
+                                           ::::::::::::::::::::::::::::::::::::::::::::::::::::
+                                           ::                                                ::
+                                           ::     Covered -- Simulation Ranked Run Order     ::
+                                           ::                                                ::
+                                           ::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+
+
+No reduction occurred 
+
+-----------+-------------------------------------------+------------------------------------------------------------
+           |                ACCUMULATIVE               |                              CDD
+Simulation |-------------------------------------------+------------------------------------------------------------
+Order      |        Hit /      Total     %   Timesteps |  R  Name                 Hit /      Total     %   Timesteps
+-----------+-------------------------------------------+------------------------------------------------------------
+
+         1            9           17   53%           3       rank1.1c.cdd           9           17   53%           3
+         2           13           17   76%           6    *  rank1.1b.cdd           8           17   47%           3
+         3           13           17   76%           9    *  rank1.1a.cdd           8           17   47%           3
+
+        ]]></programlisting>
+      </example>
     </para>
   </sect1>
   
