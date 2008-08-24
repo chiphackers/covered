@@ -1535,9 +1535,10 @@ static void combination_underline(
  the specified expression from achieving 100% coverage.
 */
 static void combination_unary(
-  /*@out@*/ char***     info,       /*!< Pointer to array of strings that will contain the coverage information for this expression */
-  /*@out@*/ int*        info_size,  /*!< Pointer to integer containing number of elements in info array */
-            expression* exp         /*!< Pointer to expression to evaluate */
+  /*@out@*/ char***     info,          /*!< Pointer to array of strings that will contain the coverage information for this expression */
+  /*@out@*/ int*        info_size,     /*!< Pointer to integer containing number of elements in info array */
+            expression* exp,           /*!< Pointer to expression to evaluate */
+            bool        show_excluded  /*!< Set to TRUE to output expression if it is excluded */
 ) { PROFILE(COMBINATION_UNARY);
 
   int          hit = 0;                           /* Number of combinations hit for this expression */
@@ -1561,7 +1562,7 @@ static void combination_unary(
     hit   = ESUPPL_WAS_FALSE( exp->suppl ) + ESUPPL_WAS_TRUE( exp->suppl );
   }
 
-  if( hit != tot ) {
+  if( (hit != tot) || (exp->suppl.part.excluded && show_excluded) ) {
 
     assert( exp->ulid != -1 );
 
@@ -1630,7 +1631,8 @@ static void combination_unary(
 static void combination_event(
   /*@out@*/ char***     info,       /*!< Pointer to array of strings that will contain the coverage information for this expression */
   /*@out@*/ int*        info_size,  /*!< Pointer to integer containing number of elements in info array */
-            expression* exp         /*!< Pointer to expression to evaluate */
+            expression* exp,        /*!< Pointer to expression to evaluate */
+            bool        show_excluded  /*!< Set to TRUE to output the expression if it is excluded */
 ) { PROFILE(COMBINATION_EVENT);
 
   char         tmp[20];
@@ -1639,7 +1641,7 @@ static void combination_event(
 
   assert( exp != NULL );
 
-  if( !ESUPPL_WAS_TRUE( exp->suppl ) ) {
+  if( !ESUPPL_WAS_TRUE( exp->suppl ) || (exp->suppl.part.excluded && show_excluded) ) {
 
     unsigned int rv;
 
@@ -1672,9 +1674,10 @@ static void combination_event(
  specified output stream in tabular form.
 */
 static void combination_two_vars(
-  /*@out@*/ char***     info,       /*!< Pointer to array of strings that will contain the coverage information for this expression */
-  /*@out@*/ int*        info_size,  /*!< Pointer to integer containing number of elements in info array */
-            expression* exp         /*!< Pointer to expression to evaluate */
+  /*@out@*/ char***     info,          /*!< Pointer to array of strings that will contain the coverage information for this expression */
+  /*@out@*/ int*        info_size,     /*!< Pointer to integer containing number of elements in info array */
+            expression* exp,           /*!< Pointer to expression to evaluate */
+            bool        show_excluded  /*!< If set to TRUE, displays the expression if it has been excluded */
 ) { PROFILE(COMBINATION_TWO_VARS);
 
   int          hit;                               /* Number of combinations hit for this expression */
@@ -1729,7 +1732,7 @@ static void combination_two_vars(
     }
   }
 
-  if( hit != total ) {
+  if( (hit != total) || (exp->suppl.part.excluded && show_excluded) ) {
 
     assert( exp->ulid != -1 );
 
@@ -2168,9 +2171,10 @@ static void combination_multi_expr_output(
  specified output stream in tabular form.
 */
 static void combination_multi_vars(
-  char***     info,       /*!< Pointer to character array containing coverage information to output */
-  int*        info_size,  /*!< Pointer to integer containing number of valid array entries in info */
-  expression* exp         /*!< Pointer to top-level AND/OR expression to evaluate */
+  char***     info,          /*!< Pointer to character array containing coverage information to output */
+  int*        info_size,     /*!< Pointer to integer containing number of valid array entries in info */
+  expression* exp,           /*!< Pointer to top-level AND/OR expression to evaluate */
+  bool        show_excluded  /*!< Set to TRUE to output expression if it is excluded */
 ) { PROFILE(COMBINATION_MULTI_VARS);
 
   int          ulid      = 1;
@@ -2189,7 +2193,7 @@ static void combination_multi_vars(
     /* Calculate hit and total values for this sub-expression */
     combination_multi_expr_calc( exp, &ulid, FALSE, FALSE, &hit, &excluded, &total );
 
-    if( hit != total ) {
+    if( (hit != total) || (exp->suppl.part.excluded && show_excluded) ) {
 
       unsigned int rv;
       unsigned int slen1;
@@ -2252,11 +2256,12 @@ static void combination_multi_vars(
  array can then be sent to an ASCII report file or the GUI.
 */
 static void combination_get_missed_expr(
-  char***      info,       /*!< Pointer to an array of strings containing expression coverage detail */
-  int*         info_size,  /*!< Pointer to a value that will be set to indicate the number of valid elements in the info array */
-  expression*  exp,        /*!< Pointer to the expression to get the coverage detail for */
-  unsigned int curr_depth  /*!< Current expression depth (used to figure out when to stop getting coverage information -- if
-                                the user has specified a maximum depth) */
+  char***      info,          /*!< Pointer to an array of strings containing expression coverage detail */
+  int*         info_size,     /*!< Pointer to a value that will be set to indicate the number of valid elements in the info array */
+  expression*  exp,           /*!< Pointer to the expression to get the coverage detail for */
+  unsigned int curr_depth,    /*!< Current expression depth (used to figure out when to stop getting coverage information -- if
+                                   the user has specified a maximum depth) */
+  bool         show_excluded  /*!< Set to TRUE if excluded expressions should be output */
 ) { PROFILE(COMBINATION_GET_MISSED_EXPR);
 
   assert( exp != NULL );
@@ -2282,17 +2287,17 @@ static void combination_get_missed_expr(
            (exp->op == EXP_OP_LAND) ||
            (exp->op == EXP_OP_LOR)) ) {
 
-        combination_multi_vars( info, info_size, exp );
+        combination_multi_vars( info, info_size, exp, show_excluded );
 
       } else {
 
         /* Create combination table */
         if( EXPR_IS_COMB( exp ) ) {
-          combination_two_vars( info, info_size, exp );
+          combination_two_vars( info, info_size, exp, show_excluded );
         } else if( EXPR_IS_EVENT( exp ) ) {
-          combination_event( info, info_size, exp );
+          combination_event( info, info_size, exp, show_excluded );
         } else {
-          combination_unary( info, info_size, exp );
+          combination_unary( info, info_size, exp, show_excluded );
         }
 
       }
@@ -2327,7 +2332,7 @@ static void combination_list_missed(
     combination_list_missed( ofile, exp->right, combination_calc_depth( exp, curr_depth, FALSE ) );
 
     /* Get coverage information for this expression */
-    combination_get_missed_expr( &info, &info_size, exp, curr_depth );
+    combination_get_missed_expr( &info, &info_size, exp, curr_depth, FALSE );
 
     /* If there was any coverage information for this expression, output it to the specified output stream */
     if( info_size > 0 ) {
@@ -2814,7 +2819,7 @@ void combination_get_coverage(
   exp = expression_find_uline_id( expl->exp, uline_id );
   assert( exp != NULL );
 
-  combination_get_missed_expr( info, info_size, exp, 0 );
+  combination_get_missed_expr( info, info_size, exp, 0, TRUE );
 
   PROFILE_END;
 
@@ -2899,6 +2904,10 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.199  2008/08/22 20:56:35  phase1geo
+ Starting to make updates for proper unnamed scope report handling (fix for bug 2054686).
+ Not complete yet.  Also making updates to documentation.  Checkpointing.
+
  Revision 1.198  2008/08/18 23:07:25  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify
