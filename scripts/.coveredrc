@@ -17,7 +17,7 @@ SaveGuiOnExit = false
 
 # If set to true, causes tooltips to be used for many widgets within the GUI.  If set
 # to false, causes all tooltip support to be disabled.
-ShowTooltips = false
+ShowTooltips = true
 
 # Sets the foreground color for all source code that is found
 # to be uncovered during simulation.  The value can be any legal color

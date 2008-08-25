@@ -1,96 +1,75 @@
-##############################################################################
-# balloon.tcl - procedures used by balloon help
-#
-# Copyright (C) 1996-1997 Stewart Allen
-# 
-# This is part of vtcl source code
-# Adapted for general purpose by 
-# Daniel Roche <daniel.roche@bigfoot.com>
-# thanks to D. Richard Hipp for the multi-headed display fix
-# version 1.2 ( Sep 21 2000 ) 
-#
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-
-##############################################################################
-#
-
-bind Bulle <Enter> {
-  if {$show_tooltips == true} {
-    set Bulle(set) 0
-    set Bulle(first) 1
-    set Bulle(id) [after 500 {balloon %W $Bulle(%W) %X %Y}]
-  }
+namespace eval balloon {
+  variable long_delay 750
+  variable short_delay 50
+  variable off_delay 5000
+  variable delay $long_delay
+  variable family {}
 }
 
-bind Bulle <Button> {
+bind . <Enter> {
   if {$show_tooltips == true} {
-    set Bulle(first) 0
-    kill_balloon
-  }
-}
-
-bind Bulle <Leave> {
-  if {$show_tooltips == true} {
-    set Bulle(first) 0
-    kill_balloon
-  }
-}
-
-bind Bulle <Motion> {
-  if {$show_tooltips == true} {
-    if {$Bulle(set) == 0} {
-        after cancel $Bulle(id)
-        set Bulle(id) [after 500 {balloon %W $Bulle(%W) %X %Y}]
+    if {$balloon::family != ""} {
+      if {[lsearch -exact $balloon::family %W] == -1} {
+        set balloon::family {}
+        set balloon::delay $balloon::long_delay
+      }
     }
   }
 }
 
-proc set_balloon {target message} {
-    global Bulle
-    set Bulle($target) $message
-    bindtags $target "[bindtags $target] Bulle"
+proc balloon_show {w help} {
+
+  global show_tooltips
+
+  if {$show_tooltips == true} {
+    after $balloon::delay [list balloon::show $w $help]
+    set balloon::delay $balloon::short_delay
+    set balloon::family [balloon::getwfamily $w]
+    after $balloon::off_delay destroy $w.balloon
+  }
+
 }
 
-proc kill_balloon {} {
-    global Bulle
-    after cancel $Bulle(id)
-    if {[winfo exists .balloon] == 1} {
-        destroy .balloon
-    }
-    set Bulle(set) 0
+proc balloon_destroy {w} {
+
+  global show_tooltips
+
+  if {$show_tooltips == true} {
+    destroy $w.balloon
+  }
+
 }
 
-proc balloon {target message {cx 0} {cy 0} } {
-    global Bulle
-    if {$Bulle(first) == 1 } {
-        set Bulle(first) 2
-	if { $cx == 0 && $cy == 0 } {
-	    set x [expr [winfo rootx $target] + ([winfo width $target]/2)]
-	    set y [expr [winfo rooty $target] + [winfo height $target] + 4]
-	} else {
-	    set x [expr $cx + 4]
-	    set y [expr $cy + 4]
-	}
-        toplevel .balloon -bg black -screen [winfo screen $target]
-        wm overrideredirect .balloon 1
-        label .balloon.l \
-            -text $message -relief flat \
-            -bg #ffffaa -fg black -padx 2 -pady 0 -anchor w
-        pack .balloon.l -side left -padx 1 -pady 1
-        wm geometry .balloon +${x}+${y}
-        set Bulle(set) 1
-    }
+proc set_balloon {w help} {
+
+  bind $w <Enter> "+balloon_show %W [list $help]"
+  bind $w <Leave> "+balloon_destroy %W"
+  bind $w <Button> "+balloon_destroy %W"
+
 }
 
+# Add these to the namespace
+proc balloon::getwfamily {w} {
+  return [winfo children [winfo parent $w]]
+}
+
+proc balloon::show {w arg} {
+
+  if {[eval winfo containing  [winfo pointerxy .]]!=$w} {return}
+
+  set top $w.balloon
+  catch {destroy $top}
+  toplevel $top -bd 1 -bg black
+  wm overrideredirect $top 1
+  if {[string equal [tk windowingsystem] aqua]}  {
+    ::tk::unsupported::MacWindowStyle style $top help none
+  }
+  pack [message $top.txt -aspect 10000 -bg lightyellow -padx 1 -pady 0 \
+          -text $arg]
+  set wmx [expr [winfo rootx $w]+5]
+  set wmy [expr [winfo rooty $w]+[winfo height $w]+7]
+  wm geometry $top \
+    [winfo reqwidth $top.txt]x[winfo reqheight $top.txt]+$wmx+$wmy
+  raise $top
+
+}
