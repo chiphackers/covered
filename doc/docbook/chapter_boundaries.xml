@@ -1,57 +1,59 @@
 <chapter id="chapter.boundaries">
-	<title>Coverage Boundaries</title>
-	
-	<para>
-	To properly evaluate the effectiveness of any coverage tool, it is necessary to understand what kinds of logic are 
-	able to be analyzed and which kinds of logic are unable to be analyzed (along with a reason for why the logic cannot 
-	be adequately covered). Understanding the limitations of tools up front can often guide the user of those tools to 
-	make better decisions in their usage. In the case of Covered and the open source community, it may also help drive 
-	ideas to how to correct or get around these limitations.
+  <title>Coverage Boundaries</title>
+
+  <para>
+    To properly evaluate the effectiveness of any coverage tool, it is necessary to understand what kinds of logic are 
+    able to be analyzed and which kinds of logic are unable to be analyzed (along with a reason for why the logic cannot 
+    be adequately covered). Understanding the limitations of tools up front can often guide the user of those tools to 
+    make better decisions in their usage. In the case of Covered and the open source community, it may also help drive 
+    ideas to how to correct or get around these limitations.
   </para>
   <para>
-  For these reasons, a list of what type of logic can be analyzed and what type of logic cannot be currently analyzed 
-  is listed below. Note that both of these lists may not be exhaustive and are subject to change between releases of 
-  the tool. Also note that it is the goal of Covered to be able to parse all of the Verilog-1995, Verilog-2001, and a 
-  subset of SystemVerilog constructs though some portions of these may be ignored for coverage purposes.
+    For these reasons, a list of what type of logic can be analyzed and what type of logic cannot be currently analyzed 
+    is listed below. Note that both of these lists may not be exhaustive and are subject to change between releases of 
+    the tool. Also note that it is the goal of Covered to be able to parse all of the Verilog-1995, Verilog-2001, and a 
+    subset of SystemVerilog constructs though some portions of these may be ignored for coverage purposes.
   </para>
   
-  <sect1>
+  <sect1 id="section.boundaries.analyzed">
     <title>What logic can be analyzed?</title>
     
-    <sect2>
+    <sect2 id="section.boundaries.analyzed.1995">
       <title>Verilog-1995 constructs</title>
       <para>
         <orderedlist>
           <listitem>
             <para>
-            All expressional logic which is comprised of the following data types and operators which exist in an assign 
-            block, always block, initial block, task, function or named begin/end block:
-            <itemizedlist>
-              <listitem><para>Nets: wire, tri, tri0, tri1, wor, wand, trior, triand, supply0, suppl1</para></listitem>
-              <listitem><para>Triregs: trireg</para></listitem>
-              <listitem><para>Registers: reg</para></listitem>
-              <listitem><para>Parameter values</para></listitem>
-              <listitem><para>String values</para></listitem>
-              <listitem><para>Integer values</para></listitem>
-              <listitem><para>Unary operators: <![CDATA[+, -, ~, &, |, ^, ~&, ~|, ~^]]></para></listitem>
-              <listitem><para>Arithmetic operators: <![CDATA[+, -, *, /, %]]></para></listitem>
-              <listitem><para>Logical operators: <![CDATA[&&, ||, !]]></para></listitem>
-              <listitem><para>Relational operators: <![CDATA[> < >= <=]]></para></listitem>
-              <listitem><para>Equality operators: ==, ===, !=, !==</para></listitem>
-              <listitem><para>Bitwise operators: <![CDATA[&, |, ^, ~&, ~|, ~^]]></para></listitem>
-              <listitem><para>Shift operators: <![CDATA[<< >>]]></para></listitem>
-              <listitem><para>Concatentation/replication operators: {}, {{}}</para></listitem>
-              <listitem><para>Bit select operators: [], [:]</para></listitem>
-              <listitem><para>Conditional operator: ?:</para></listitem>
-            </itemizedlist>
+              All expressional logic which is comprised of the following data types and operators which exist in an assign 
+              block, always block, initial block, task, function or named begin/end block:
+            </para>
+            <para>
+              <itemizedlist>
+                <listitem><para>Nets: <code>wire, tri, tri0, tri1, wor, wand, trior, triand, supply0, suppl1</code></para></listitem>
+                <listitem><para>Triregs: <code>trireg</code></para></listitem>
+                <listitem><para>Registers: <code>reg</code></para></listitem>
+                <listitem><para>Parameter values</para></listitem>
+                <listitem><para>String values</para></listitem>
+                <listitem><para>Integer values</para></listitem>
+                <listitem><para>Unary operators: <code><![CDATA[+, -, ~, &, |, ^, ~&, ~|, ~^]]></code></para></listitem>
+                <listitem><para>Arithmetic operators: <code><![CDATA[+, -, *, /, %]]></code></para></listitem>
+                <listitem><para>Logical operators: <code><![CDATA[&&, ||, !]]></code></para></listitem>
+                <listitem><para>Relational operators: <code><![CDATA[>, <, >=, <=]]></code></para></listitem>
+                <listitem><para>Equality operators: <code>==, ===, !=, !==</code></para></listitem>
+                <listitem><para>Bitwise operators: <code><![CDATA[&, |, ^, ~&, ~|, ~^]]></code></para></listitem>
+                <listitem><para>Shift operators: <code><![CDATA[<<, >>]]></code></para></listitem>
+                <listitem><para>Concatentation/replication operators: <code>{}, {{...}}</code></para></listitem>
+                <listitem><para>Bit select operators: <code>[], [:]</code></para></listitem>
+                <listitem><para>Conditional operator: <code>?:</code></para></listitem>
+              </itemizedlist>
             </para>
           </listitem>
           <listitem><para>case, casex, casez statements</para></listitem>
           <listitem><para>if, if/else statements</para></listitem>
           <listitem><para>Delays when delay value is integer</para></listitem>
-          <listitem><para>Delayed procedural assignments (i.e., "a = #5 b;" or "a = @(c) b;")</para></listitem>
-          <listitem><para>Event waits and triggers: wait, @(posedge), @(negedge), @(), -></para></listitem>
-          <listitem><para>Repetition statements (for, while and repeat)</para></listitem>
+          <listitem><para>Delayed procedural assignments (i.e., "<code>a = #5 b;</code>" or "<code>a = @(c) b;</code>")</para></listitem>
+          <listitem><para>Event waits and triggers: <code>wait, @(posedge), @(negedge), @(), -></code></para></listitem>
+          <listitem><para>Repetition statements: <code>for, while, repeat</code></para></listitem>
           <listitem><para>Fork/join statements</para></listitem>
           <listitem><para>Memories</para></listitem>
           <listitem><para>$finish and $stop system calls</para></listitem>
@@ -59,7 +61,7 @@
       </para>
     </sect2>
     
-    <sect2>
+    <sect2 id="section.boundaries.analyzed.2001">
       <title>Verilog-2001 constructs</title>
       <para>
         <orderedlist>
@@ -68,13 +70,13 @@
           <listitem><para>Constant functions calls</para></listitem>
           <listitem><para>Inline parameter passing by name</para></listitem>
           <listitem><para>Localparam support</para></listitem>
-          <listitem><para>Implicit event sensitivity lists (@*)</para></listitem>
-          <listitem><para>Comma-separated event lists (alternative to the "or" keyword)</para></listitem>
+          <listitem><para>Implicit event sensitivity lists: <code>@*</code></para></listitem>
+          <listitem><para>Comma-separated event lists (alternative to the "<code>or</code>" keyword)</para></listitem>
           <listitem><para>Signed value support</para></listitem>
           <listitem><para>Immediate register assignment (i.e., <code>reg a = 1'b0</code>)</para></listitem>
           <listitem><para>Variable multi-bit selects (i.e., <code>a[b+:3]</code>, <code>a[b-:3]</code>)</para></listitem>
-          <listitem><para>Exponential power operator (<code>a**b</code>)</para></listitem>
-          <listitem><para>Arithmetic shift operators: <![CDATA[<<< >>>]]></para></listitem>
+          <listitem><para>Exponential power operator: <code>a**b</code></para></listitem>
+          <listitem><para>Arithmetic shift operators: <code><![CDATA[<<<, >>>]]></code></para></listitem>
           <listitem><para>Pre-port parameter listing (i.e., <code>module foo #(parameter a=0) (...);</code>)</para></listitem>
           <listitem><para>Inline port listing (i.e., <code>module foo (input wire a, output reg b);</code>)</para></listitem>
           <listitem><para>Attributes (note: Covered only performs attributes that it recognizes)</para></listitem>
@@ -85,19 +87,19 @@
       </para>
     </sect2>
     
-    <sect2>
+    <sect2 id="section.boundaries.analyzed.sv">
       <title>SystemVerilog constructs</title>
       <orderedlist>
-        <listitem><para>New integer types: char, byte, bit, logic, int, shortint, longint</para></listitem>
-        <listitem><para>Op-and-assign statements: <![CDATA[+=, -=, *=, /=, %=, &=, |=, ^=, <<=, >>=, <<<=, >>>=, ++, --]]></para></listitem>
-        <listitem><para>Proper support for always_comb, always_latch, always_ff and final blocks</para></listitem>
-        <listitem><para>do..while loops</para></listitem>
+        <listitem><para>New integer types: <code>char, byte, bit, logic, int, shortint, longint</code></para></listitem>
+        <listitem><para>Op-and-assign statements: <code><![CDATA[+=, -=, *=, /=, %=, &=, |=, ^=, <<=, >>=, <<<=, >>>=, ++, --]]></code></para></listitem>
+        <listitem><para>Proper support for <code>always_comb, always_latch, always_ff, final</code> blocks</para></listitem>
+        <listitem><para><code>do..while</code> loops</para></listitem>
         <listitem><para>Enumerations</para></listitem>
         <listitem><para>Typedefs</para></listitem>
         <listitem><para>$root scope support</para></listitem>
         <listitem><para>Unnamed scope support</para></listitem>
         <listitem><para>Multi-dimensional arrays including packed/unpacked dimensions and bit-select, part-select and slicing</para></listitem>
-        <listitem><para>Parsing support for unique and priority if/case labels</para></listitem>
+        <listitem><para>Parsing support for <code>unique</code> and <code>priority</code> if/case labels</para></listitem>
         <listitem><para>Parsing support for implicit .name ports (i.e., <code>foo f( .a, .b, .c );</code>)</para></listitem>
         <listitem><para>Parsing support for implicit .* ports (i.e., <code>foo f( .* );</code>)</para></listitem>
         <listitem><para>Parsing support for assertions, properties and sequences</para></listitem>
@@ -106,22 +108,22 @@
     
   </sect1>
   
-  <sect1>
+  <sect1 id="section.boundaries.unanalyzed">
     <title>What logic cannot be currently analyzed?</title>
     
-    <sect2>
+    <sect2 id="section.boundaries.unanalyzed.1995">
       <title>Verilog-1995 constructs</title>
       <para>
         <orderedlist>
-          <listitem><para>All gate types (i.e., buf, not, or, and, etc.)</para></listitem>
+          <listitem><para>All gate types (i.e., <code>buf, not, or, and,</code> etc.)</para></listitem>
           <listitem><para>All user defined primitives (UDPs)</para></listitem>
-          <listitem><para>All expressions containing types: time, real, realtime</para></listitem>
+          <listitem><para>All expressions containing types: <code>time, real, realtime</code></para></listitem>
           <listitem><para>System task calls (or any $... call) that are not mentioned in the supported list above</para></listitem>
         </orderedlist>
       </para>
     </sect2>
     
-    <sect2>
+    <sect2 id="section.boundaries.unanalyzed.2001">
       <title>Verilog-2001 constructs</title>
       <para>
         <orderedlist>
@@ -132,10 +134,13 @@
     
   </sect1>
   
-  <para>
-  When logic is encountered that cannot be analyzed within an always, initial, task, function or named block, Covered will 
-  disregard the entire always block. If the entire block cannot be analyzed, it does not try to get coverage statistics as 
-  these will most likely be incorrect (i.e., disregarded logic could affect the state of the logic that is being covered).
-  </para>
+  <sect1 id="section.boundaries.handling">
+    <title>What is done with code blocks that contain code that cannot be analyzed?</title>
+    <para>
+      When logic is encountered that cannot be analyzed within an always, initial, task, function or named block, Covered will 
+      disregard the entire always block. If the entire block cannot be analyzed, it does not try to get coverage statistics as 
+      these will most likely be incorrect (i.e., disregarded logic could affect the state of the logic that is being covered).
+    </para>
+  </sect1>
   
 </chapter>

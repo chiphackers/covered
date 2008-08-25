@@ -1,30 +1,30 @@
-<chapter id="chapter.score" xreflabel="The score Command">
+<chapter id="chapter.score">
   <title>The score Command</title>
   
-  <sect1>
+  <sect1 id="section.score.usage">
     <title>Usage</title>
     <para>
-    The score command is initiated with the following call:
+      The score command is initiated with the following call:
     </para>
     <para>
       <code>
-      covered [<emphasis>global_options</emphasis>] score -t <emphasis>top_module</emphasis> [<emphasis>options</emphasis>]
+        covered [<emphasis>global_options</emphasis>] score -t <emphasis>top_module</emphasis> [<emphasis>options</emphasis>]
       </code>
     </para>
     <para>
-    The <emphasis>top_module</emphasis> parameter is required for the scoring purposes and represents the top-most module that 
-    will be covered. It is important to note that Covered does not need to parse the entire DUT. It only parses that part of 
-    the design which will receive coverage results. More on this will be described <xref linkend="section.score.t"/> below.
+      The <emphasis>top_module</emphasis> parameter is required for the scoring purposes and represents the top-most module that 
+      will be covered. It is important to note that Covered does not need to parse the entire DUT. It only parses that part of 
+      the design which will receive coverage results. More on this will be described <xref linkend="section.score.t"/> below.
     </para>
   </sect1>
   
-  <sect1>
+  <sect1 id="section.score.options">
     <title>Options</title>
     <para>
-    The following table describes the additional options that can be passed to the score command. Note that it is optional in 
-    how you tell Covered where to find the Verilog design files; however, it is not optional to exclude the Verilog files. If 
-    no Verilog can be found that contains at least the top instance, Covered will generate an error message to the user 
-    specifying that it was unable to find the required Verilog modules.
+      The following table describes the additional options that can be passed to the score command. Note that it is optional in 
+      how you tell Covered where to find the Verilog design files; however, it is not optional to exclude the Verilog files. If 
+      no Verilog can be found that contains at least the top instance, Covered will generate an error message to the user 
+      specifying that it was unable to find the required Verilog modules.
     </para>
     <para>
       <table>
@@ -33,60 +33,60 @@
           <thead>
             <row>
               <entry>
-              Option
+                Option
               </entry>
               <entry>
-              Description
+                Description
               </entry>
             </row>
           </thead>
           <tbody>
             <row>
               <entry>
-              -A ovl
+                -A ovl
               </entry>
               <entry>
-              Causes OVL assertions to be used for assertion coverage. This flag must be given to the score command if assertion 
-              coverage metrics are needed in the report command. See <xref linkend="section.metric.assert"/>.
-              </entry>
-            </row>
-            <row>
-              <entry>
-              -cli [<emphasis>filename</emphasis>]
-              </entry>
-              <entry>
-              Causes the command-line debugger to be used during VCD/LXT dumpfile scoring. If <emphasis>filename</emphasis> is 
-              specified, this file contains information saved in a previous call to savehist on the CLI and causes the history 
-              contained in this file to be replayed prior to the CLI command prompt. If <emphasis>filename</emphasis> is not 
-              specified, the CLI prompt will be immediately available at the start of simulation. This option is only available 
-              when Covered is configured with the --enable-debug option. See <xref linkend="section.cli"/>.
+                Causes OVL assertions to be used for assertion coverage. This flag must be given to the score command if assertion 
+                coverage metrics are needed in the report command. See <xref linkend="section.metrics.assert"/>.
               </entry>
             </row>
             <row>
               <entry>
-              -D <emphasis>name</emphasis>[=<emphasis>value</emphasis>]
+                -cli [<emphasis>filename</emphasis>]
               </entry>
               <entry>
-              Defines the specified name to 1 or the specified value.
-              </entry>
-            </row>
-            <row>
-              <entry>
-              -e <emphasis>module</emphasis>
-              </entry>
-              <entry>
-              Name of module, task, function or named begin/end block to not score. You may specify this option more than once on a 
-              command-line; one for each block to remove from coverage. See <xref linkend="section.score.e"/>.
+                Causes the command-line debugger to be used during VCD/LXT dumpfile scoring. If <emphasis>filename</emphasis> is 
+                specified, this file contains information saved in a previous call to savehist on the CLI and causes the history 
+                contained in this file to be replayed prior to the CLI command prompt. If <emphasis>filename</emphasis> is not 
+                specified, the CLI prompt will be immediately available at the start of simulation. This option is only available 
+                when Covered is configured with the --enable-debug option. See <xref linkend="section.cli"/>.
               </entry>
             </row>
             <row>
               <entry>
-              -ea
+                -D <emphasis>name</emphasis>[=<emphasis>value</emphasis>]
               </entry>
               <entry>
-              Specifies that all always blocks in the design should be excluded from coverage consideration. This option may help to increase 
-              performance of the score command if all always blocks in the design do not need to be checked for coverage. By default, always blocks are 
-              considered for coverage. See <xref linkend="section.score.e"/>.
+                Defines the specified name to 1 or the specified value.
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -e <emphasis>module</emphasis>
+              </entry>
+              <entry>
+                Name of module, task, function or named begin/end block to not score. You may specify this option more than once on a 
+                command-line; one for each block to remove from coverage. See <xref linkend="section.score.e"/>.
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -ea
+              </entry>
+              <entry>
+                Specifies that all always blocks in the design should be excluded from coverage consideration. This option may help to increase 
+                performance of the score command if all always blocks in the design do not need to be checked for coverage. By default, always blocks are 
+                considered for coverage. See <xref linkend="section.score.e"/>.
               </entry>
             </row>
             <row>
@@ -94,223 +94,223 @@
               -ec
               </entry>
               <entry>
-              Specifies that all continuous assignments in the design should be excluded from coverage consideration. This option may help to increase 
-              performance of the score command if all assign blocks in the design do not need to be checked for coverage. By default, continuous 
-              assignments are considered for coverage. See <xref linkend="section.score.e"/>.
+                Specifies that all continuous assignments in the design should be excluded from coverage consideration. This option may help to increase 
+                performance of the score command if all assign blocks in the design do not need to be checked for coverage. By default, continuous 
+                assignments are considered for coverage. See <xref linkend="section.score.e"/>.
               </entry>
             </row>
             <row>
               <entry>
-              -ef
+                -ef
               </entry>
               <entry>
-              Specifies that all final blocks in the design should be excluded from coverage consideration. This option may help to increase performance 
-              of the score command if all final blocks in the design do not need to be checked for coverage. By default, final blocks are considered for 
-              coverage. See <xref linkend="section.score.e"/>.
-              </entry>
-            </row>
-            <row>
-              <entry>
-              -ei
-              </entry>
-              <entry>
-              Specifies that all initial blocks in the design should be excluded from coverage consideration. This option may help to increase 
-              performance of the score command if all initial blocks in the design do not need to be checked for coverage. By default, initial blocks 
-              are considered for coverage. See <xref linkend="section.score.e"/>.
+                Specifies that all final blocks in the design should be excluded from coverage consideration. This option may help to increase performance 
+                of the score command if all final blocks in the design do not need to be checked for coverage. By default, final blocks are considered for 
+                coverage. See <xref linkend="section.score.e"/>.
               </entry>
             </row>
             <row>
               <entry>
-              -ep [<emphasis>name</emphasis>]
+                -ei
               </entry>
               <entry>
-              Causes any code that is inbetween inline coverage pragmas (eg. '// coverage off' ... '//coverage on') to be excluded from coverage 
-              consideration. The code specified between these pragmas is not removed from resimulation but is marked as being excluded from coverage for 
-              reporting purposes. These exclusions may be undone via the GUI, if necessary, without requiring the design to be resimulated by Covered. 
-              If <emphasis>name</emphasis> is specified, its value will be used by Covered as the pragma keyword to search for in the design (instead of  
-              the default value of 'coverage'). This feature can be useful in the event that other tools being used on the design use a similar pragma  
-              name and there are tool conflicts. See <xref linkend="section.score.e"/>.
+                Specifies that all initial blocks in the design should be excluded from coverage consideration. This option may help to increase 
+                performance of the score command if all initial blocks in the design do not need to be checked for coverage. By default, initial blocks 
+                are considered for coverage. See <xref linkend="section.score.e"/>.
               </entry>
             </row>
             <row>
               <entry>
-              -F <emphasis>module</emphasis>=[<emphasis>in_expr</emphasis>,]<emphasis>out_expr</emphasis>
+                -ep [<emphasis>name</emphasis>]
               </entry>
               <entry>
-              Specifies the location to find an FSM to score where <emphasis>module</emphasis> is the Verilog module containing the FSM,  
-              <emphasis>in_expr</emphasis> is the input state expression and <emphasis>out_expr</emphasis> is the output state expression. If 
-              <emphasis>in_expr</emphasis> is not specified, out_expr is used as both the input and output state expression.
-              </entry>
-            </row>
-            <row>
-              <entry>
-              -f <emphasis>filename</emphasis>
-              </entry>
-              <entry>
-              Name of file containing additional arguments to parse. You may specify this option more than once on a command-line.
+                Causes any code that is inbetween inline coverage pragmas (eg. '// coverage off' ... '//coverage on') to be excluded from coverage 
+                consideration. The code specified between these pragmas is not removed from resimulation but is marked as being excluded from coverage for 
+                reporting purposes. These exclusions may be undone via the GUI, if necessary, without requiring the design to be resimulated by Covered. 
+                If <emphasis>name</emphasis> is specified, its value will be used by Covered as the pragma keyword to search for in the design (instead of  
+                the default value of 'coverage'). This feature can be useful in the event that other tools being used on the design use a similar pragma  
+                name and there are tool conflicts. See <xref linkend="section.score.e"/>.
               </entry>
             </row>
             <row>
               <entry>
-              -g [<emphasis>module</emphasis>=](1|2|3)
+                -F <emphasis>module</emphasis>=[<emphasis>in_expr</emphasis>,]<emphasis>out_expr</emphasis>
               </entry>
               <entry>
-              Specifies what generation of Verilog to use for parsing the design. If <emphasis>module</emphasis> is specified, uses the given generation 
-              value for that module only. If <emphasis>module</emphasis> is not specified, applies that generation to the entire design. This option may 
-              be specified multiple times on the command-line, where options to the left take precedence over the values to the right. 1=Verilog-1995, 
-              2=Verilog-2001, 3=SystemVerilog.
-              </entry>
-            </row>
-            <row>
-              <entry>
-              -h
-              </entry>
-              <entry>
-              Outputs usage information for the score command.
+                Specifies the location to find an FSM to score where <emphasis>module</emphasis> is the Verilog module containing the FSM,  
+                <emphasis>in_expr</emphasis> is the input state expression and <emphasis>out_expr</emphasis> is the output state expression. If 
+                <emphasis>in_expr</emphasis> is not specified, out_expr is used as both the input and output state expression.
               </entry>
             </row>
             <row>
               <entry>
-              -I <emphasis>directory</emphasis>
+                -f <emphasis>filename</emphasis>
               </entry>
               <entry>
-              Directory to find included Verilog files. You may use this option as many times as necessary on the command-line, one for each directory.
-              </entry>
-            </row>
-            <row>
-              <entry>
-              -i <emphasis>instance</emphasis>
-              </entry>
-              <entry>
-              Instance name of top-level module. Necessary if module to verify coverage is not the top-level module in the design. If not specified, -t 
-              value is used. See <xref linkend="section.score.t"/>.
+                Name of file containing additional arguments to parse. You may specify this option more than once on a command-line.
               </entry>
             </row>
             <row>
               <entry>
-              -lxt <emphasis>dumpfile</emphasis>
+                -g [<emphasis>module</emphasis>=](1|2|3)
               </entry>
               <entry>
-              Name of LXT/LXT2 dumpfile to score design with. If this option or the -vcd option is not used, Covered will only create an initial CDD 
-              file from the design and will not attempt to score the design.
-              </entry>
-            </row>
-            <row>
-              <entry>
-              -o <emphasis>filename</emphasis>
-              </entry>
-              <entry>
-              Name of CDD to write coverage information to.
+                Specifies what generation of Verilog to use for parsing the design. If <emphasis>module</emphasis> is specified, uses the given generation 
+                value for that module only. If <emphasis>module</emphasis> is not specified, applies that generation to the entire design. This option may 
+                be specified multiple times on the command-line, where options to the left take precedence over the values to the right. 1=Verilog-1995, 
+                2=Verilog-2001, 3=SystemVerilog.
               </entry>
             </row>
             <row>
               <entry>
-              -p <emphasis>filename</emphasis>
+                -h
               </entry>
               <entry>
-              Overrides filename used for outputting intermediate preprocessor output.  See <xref linkend="section.score.other"/>.
-              </entry>
-            </row>
-            <row>
-              <entry>
-              -P <emphasis>parameter_scope</emphasis>=<emphasis>value</emphasis>
-              </entry>
-              <entry>
-              Performs a defparam on the specified parameter with value. See <xref linkend="section.score.param"/>.
+                Outputs usage information for the score command.
               </entry>
             </row>
             <row>
               <entry>
-              -r(S|W|E|I|P[=<emphasis>name</emphasis>])
+                -I <emphasis>directory</emphasis>
               </entry>
               <entry>
-              Determines Covered's behavior for handling found race conditions in design (-rS = do not output information but continue scoring design, 
-              -rW = output information and continue scoring design, -rE = output information and immediately exit the scoring process, -rI = skip the 
-              race condition check for all modules, -rP = skip race condition check for all code surrounded by '// racecheck off' and '// racecheck on' 
-              inline pragmas (the keyword "racecheck" may be substituted for another name by specifying -rP=<emphasis>name</emphasis>). See <xref 
-              linkend="section.race.handling"/>.
+                Directory to find included Verilog files. You may use this option as many times as necessary on the command-line, one for each directory.
               </entry>
             </row>
             <row>
               <entry>
-              -S
+                -i <emphasis>instance</emphasis>
               </entry>
               <entry>
-              Outputs simulation statistics after simulation has completed. This information is currently only useful for the developers of Covered.
-              </entry>
-            </row>
-            <row>
-              <entry>
-              -ts <emphasis>number</emphasis>
-              </entry>
-              <entry>
-              When scoring occurs, this option allows the user to see how far the simulator has progressed by outputting the current timestep to 
-              standard output. The value of <emphasis>number</emphasis> specifies how many timesteps are allowed to be simulated before outputting the 
-              current timestep (results in less calls to output stream).
+                Instance name of top-level module. Necessary if module to verify coverage is not the top-level module in the design. If not specified, -t 
+                value is used. See <xref linkend="section.score.t"/>.
               </entry>
             </row>
             <row>
               <entry>
-              -T (min|typ|max)
+                -lxt <emphasis>dumpfile</emphasis>
               </entry>
               <entry>
-              Specifies which value to use in min:typ:max delay expressions. Default is typ.
-              </entry>
-            </row>
-            <row>
-              <entry>
-              -v <emphasis>filename</emphasis>
-              </entry>
-              <entry>
-              Name of specific Verilog file to score. You may specify this option more than once on a command-line; one for each filename to parse.
+                Name of LXT/LXT2 dumpfile to score design with. If this option or the -vcd option is not used, Covered will only create an initial CDD 
+                file from the design and will not attempt to score the design.
               </entry>
             </row>
             <row>
               <entry>
-              -vcd <emphasis>dumpfile</emphasis>
+                -o <emphasis>filename</emphasis>
               </entry>
               <entry>
-              Name of VCD dumpfile to score design with. If this option or the -lxt option is not used, Covered will only create an initial CDD file 
-              from the design and will not attempt to score the design.
-              </entry>
-            </row>
-            <row>
-              <entry>
-              -vpi [<emphasis>filename</emphasis>]
-              </entry>
-              <entry>
-              If this option is specified without the -vcd or -lxt options, the design is parsed, a CDD file is created and a top-level Verilog module 
-              named <emphasis>filename</emphasis> (if this value is specified) or "covered_vpi.v" (if filename is not specified) is created along with a 
-              PLI table file called <emphasis>filename</emphasis>.tab or "covered_vpi.v.tab". Both of these files are used in the compilation of the 
-              simulator to use Covered as a VPI module. If either the -vcd or -lxt options are specified, this option has no effect. See <xref 
-              linkend="section.lxt.dumpfile"/>
+                Name of CDD to write coverage information to.
               </entry>
             </row>
             <row>
               <entry>
-              -vpi_ts (1|10|100)(s|ms|us|ns|ps|fs)/(1|10|100)(s|ms|us|ns|ps|fs)
+                -p <emphasis>filename</emphasis>
               </entry>
               <entry>
-              This option is only valid when the -vpi option has been specified. This option allows the user to specify a timescale for the generated 
-              Verilog module created with the -vpi option. If this option is not specified, no timescale will be created for the generated module. If 
-              whitespace is needed between the various values, place the entire contents of timescale in double quotes.
+                Overrides filename used for outputting intermediate preprocessor output.  See <xref linkend="section.score.other"/>.
               </entry>
             </row>
             <row>
               <entry>
-              -y <emphasis>directory</emphasis>
+                -P <emphasis>parameter_scope</emphasis>=<emphasis>value</emphasis>
               </entry>
               <entry>
-              Directory to find unspecified Verilog files. You may specify this option more than once on a command-line; one for each directory 
-              required.
+                Performs a defparam on the specified parameter with value. See <xref linkend="section.score.param"/>.
               </entry>
             </row>
             <row>
               <entry>
-              +libext+.extension[+.extension]*+
+                -r(S|W|E|I|P[=<emphasis>name</emphasis>])
               </entry>
               <entry>
-              Extensions of Verilog files to allow in scoring.
+                Determines Covered's behavior for handling found race conditions in design (-rS = do not output information but continue scoring design, 
+                -rW = output information and continue scoring design, -rE = output information and immediately exit the scoring process, -rI = skip the 
+                race condition check for all modules, -rP = skip race condition check for all code surrounded by '// racecheck off' and '// racecheck on' 
+                inline pragmas (the keyword "racecheck" may be substituted for another name by specifying -rP=<emphasis>name</emphasis>). See <xref 
+                linkend="section.race.handling"/>.
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -S
+              </entry>
+              <entry>
+                Outputs simulation statistics after simulation has completed. This information is currently only useful for the developers of Covered.
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -ts <emphasis>number</emphasis>
+              </entry>
+              <entry>
+                When scoring occurs, this option allows the user to see how far the simulator has progressed by outputting the current timestep to 
+                standard output. The value of <emphasis>number</emphasis> specifies how many timesteps are allowed to be simulated before outputting the 
+                current timestep (results in less calls to output stream).
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -T (min|typ|max)
+              </entry>
+              <entry>
+                Specifies which value to use in min:typ:max delay expressions. Default is typ.
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -v <emphasis>filename</emphasis>
+              </entry>
+              <entry>
+                Name of specific Verilog file to score. You may specify this option more than once on a command-line; one for each filename to parse.
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -vcd <emphasis>dumpfile</emphasis>
+              </entry>
+              <entry>
+                Name of VCD dumpfile to score design with. If this option or the -lxt option is not used, Covered will only create an initial CDD file 
+                from the design and will not attempt to score the design.
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -vpi [<emphasis>filename</emphasis>]
+              </entry>
+              <entry>
+                If this option is specified without the -vcd or -lxt options, the design is parsed, a CDD file is created and a top-level Verilog module 
+                named <emphasis>filename</emphasis> (if this value is specified) or "covered_vpi.v" (if filename is not specified) is created along with a 
+                PLI table file called <emphasis>filename</emphasis>.tab or "covered_vpi.v.tab". Both of these files are used in the compilation of the 
+                simulator to use Covered as a VPI module. If either the -vcd or -lxt options are specified, this option has no effect. See <xref 
+                linkend="section.start.dump.lxt"/>
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -vpi_ts (1|10|100)(s|ms|us|ns|ps|fs)/(1|10|100)(s|ms|us|ns|ps|fs)
+              </entry>
+              <entry>
+                This option is only valid when the -vpi option has been specified. This option allows the user to specify a timescale for the generated 
+                Verilog module created with the -vpi option. If this option is not specified, no timescale will be created for the generated module. If 
+                whitespace is needed between the various values, place the entire contents of timescale in double quotes.
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -y <emphasis>directory</emphasis>
+              </entry>
+              <entry>
+                Directory to find unspecified Verilog files. You may specify this option more than once on a command-line; one for each directory 
+                required.
+              </entry>
+            </row>
+            <row>
+              <entry>
+                +libext+.extension[+.extension]*+
+              </entry>
+              <entry>
+                Extensions of Verilog files to allow in scoring.
               </entry>
             </row>
           </tbody>
@@ -319,24 +319,27 @@
     </para>
   </sect1>
   
-  <sect1 id="section.score.t" xreflabel="Specifying What to Cover">
+  <sect1 id="section.score.t">
     <title>Specifying What to Cover</title>
     <para>
-    Covered is not a logic simulator and, therefore, is not required to parse the entire DUT. True simulation is performed by the Verilog simulator used 
-    to generate the VCD/LXT dumpfile. Covered, therefore, is given the ability to parse only the part of the DUT that is to be scored for coverage. 
-    Having this ability to ignore parts of the DUT has several advantages in the way of performance. Less memory is necessary for coverage simulation/
-    calculation. Additionally, less processing is also required which leads to faster turnaround. On the other hand, since Covered ignores the parts of 
-    the design not being scored, some information is not automatically extracted by Covered that is required for scoring the specified part of the DUT. 
-    The <emphasis>defparam</emphasis> statement is one such statement. More on this is mentioned in the following section.
+      Covered is not a logic simulator and, therefore, is not required to parse the entire DUT. True simulation is performed by the Verilog simulator used 
+      to generate the VCD/LXT dumpfile. Covered, therefore, is given the ability to parse only the part of the DUT that is to be scored for coverage. 
+      Having this ability to ignore parts of the DUT has several advantages in the way of performance. Less memory is necessary for coverage simulation/
+      calculation. Additionally, less processing is also required which leads to faster turnaround. On the other hand, since Covered ignores the parts of 
+      the design not being scored, some information is not automatically extracted by Covered that is required for scoring the specified part of the DUT. 
+      The <emphasis>defparam</emphasis> statement is one such statement. More on this is mentioned in the following section.
     </para>
     <para>
-    The following example describes a complete DUT and how to cause Covered to score various parts of the DUT.
+      The following example describes a complete DUT and how to cause Covered to score various parts of the DUT.
     </para>
     <para>
-      <mediaobject><imageobject><imagedata fileref="img/vhier.png" format="PNG"/></imageobject></mediaobject>
+      <figure id="figure.score.t">
+        <title>Hierarchical Tree View of Example DUT</title>
+        <mediaobject><imageobject><imagedata fileref="img/vhier.png" format="PNG"/></imageobject></mediaobject>
+      </figure>
     </para>
     <para>
-    Assume that the following Verilog modules are used to create this tree.
+      Assume that the following Verilog modules are used to create this tree.
     </para>
     <para>
       <itemizedlist>
@@ -348,66 +351,68 @@
       </itemizedlist>
     </para>
     <para>
-    To get coverage for the entire design, the covered command line would be:
+      To get coverage for the entire design, the covered command line would be:
     </para>
     <para>
       <code>covered score -t test -i test (rest of command-line)</code>
     </para>
     <para>
-    Because both the -t and -i options are the same value (the module name is the same as the instance name), only the -t option needs to be specified. 
-    If the -i option is not specified, Covered will assume that the instance name of the top module is the same name as the top module itself. Note that 
-    the -t option always needs to be specified for the score command.
+      Because both the -t and -i options are the same value (the module name is the same as the instance name), only the -t option needs to be specified. 
+      If the -i option is not specified, Covered will assume that the instance name of the top module is the same name as the top module itself. Note that 
+      the -t option always needs to be specified for the score command.
     </para>
     <para>
-    To get coverage for the instance foo and all modules below it, the covered command line would be:
+      To get coverage for the instance foo and all modules below it, the covered command line would be:
     </para>
     <para>
       <code>covered score -t foomod -i test.foo (rest of command-line)</code>
     </para>
     <para>
-    In this case, we do not wish to score the module test (the top-level file for the design) but rather wish to gain coverage information for module 
-    foomod and all instantiated modules underneath it. Since foomod is not the top-level design file, the -i option must be specified to tell Covered 
-    what the hierarchical scope of the top-level score file is in relation to the entire design. The main reason why this is necessary is so that 
-    Covered will be able to locate the dumpfile information for the modules/instances that need to be scored.
+      In this case, we do not wish to score the module test (the top-level file for the design) but rather wish to gain coverage information for module 
+      foomod and all instantiated modules underneath it. Since foomod is not the top-level design file, the -i option must be specified to tell Covered 
+      what the hierarchical scope of the top-level score file is in relation to the entire design. The main reason why this is necessary is so that 
+      Covered will be able to locate the dumpfile information for the modules/instances that need to be scored.
     </para>
     <para>
-    To get coverage for only the instance foo (and none of the modules instantiated below it in the hierarchy), Covered command-line would look like the 
-    following:
+      To get coverage for only the instance foo (and none of the modules instantiated below it in the hierarchy), Covered command-line would look like the 
+      following:
     </para>
     <para>
       <code>covered score -t foomod -i test.foo -e amod -e bmod</code>
     </para>
     <para>
-    Here we see the use of the -e option, it takes a module name as its value. When a module with the matching name is found in the hierarchy, it and 
-    all of its submodules are removed from coverage. You may specify as many -e arguments as necessary to select the appropriate modules to cover.
+      Here we see the use of the -e option, it takes a module name as its value. When a module with the matching name is found in the hierarchy, it and 
+      all of its submodules are removed from coverage. You may specify as many -e arguments as necessary to select the appropriate modules to cover.
     </para>
     <para>
-    To get coverage for the instance foo and all modules below it, in addition to the instance bar, you would have to run Covered twice (once for each 
-    top instance).
+      To get coverage for the instance foo and all modules below it, in addition to the instance bar, you would have to run Covered twice (once for each 
+      top instance).
     </para>
     <para>
-    The -vcd <emphasis>vcd_dumpfile</emphasis> or -lxt <emphasis>lxt_dumpfile</emphasis> parameter is simply the name of the VCD/LXT dumpfile that 
-    contains all of the module instances selected by the -t parameter (in combination with the -e option -- see below).
+      The -vcd <emphasis>vcd_dumpfile</emphasis> or -lxt <emphasis>lxt_dumpfile</emphasis> parameter is simply the name of the VCD/LXT dumpfile that 
+      contains all of the module instances selected by the -t parameter (in combination with the -e option -- see below).
     </para>
   </sect1>
   
-  <sect1 id="section.score.e" xreflabel="Specifying What Not to Cover (Coverage Exclusions)">
+  <sect1 id="section.score.e">
     <title>Specifying What Not to Cover (Coverage Exclusions)</title>
     <para>
-    Besides the -e option (scope exclusion), Covered comes equipped with several other means of excluding codes from coverage consideration. The -ea, -
-    ec, -ei and -ef exclusion options cause Covered to not simulate always blocks, continuous assignment blocks, initial blocks and final blocks, 
-    respectively, allowing for additional score command performance enhancement opportunities. These options affect all code that is under coverage 
-    consideration for the current score command, and cannot be turned on/off on an individual basis.
+      Besides the -e option (scope exclusion), Covered comes equipped with several other means of excluding codes from coverage consideration. The -ea, -
+      ec, -ei and -ef exclusion options cause Covered to not simulate always blocks, continuous assignment blocks, initial blocks and final blocks, 
+      respectively, allowing for additional score command performance enhancement opportunities. These options affect all code that is under coverage 
+      consideration for the current score command, and cannot be turned on/off on an individual basis.
     </para>
     
-    <sect2 id="section.score.ep" xreflabel="Using the -ep Option for Exclusion">
+    <sect2 id="section.score.ep">
       <title>Using the -ep Option for Exclusion</title>
       <para>
-      The -ep exclusion option allows Covered to exclude all code that has user-specified coverage pragmas embedded inline in the code being considered 
-      for coverage. By default, these pragmas look like the following:
+        The -ep exclusion option allows Covered to exclude all code that has user-specified coverage pragmas embedded inline in the code being considered 
+        for coverage. By default, these pragmas look like the following:
       </para>
       <para>
-        <programlisting>
+        <example xml:id="example.score.ep">
+          <title>Inline Pragmas to Turn Coverage Exclusion On/Off</title>
+          <programlisting>
   module foo;
       
     // coverage off
@@ -415,34 +420,37 @@
     // coverage on
       
   endmodule;      
-        </programlisting>
+          </programlisting>
+        </example>
       </para>
       <para>
-      Any registers, nets, variables, blocks, expressions, FSMs or assertions found within these pragmas within the design being parsed by Covered will 
-      be excluded from coverage consideration when the -ep option is specified. If the -ep option is not specified, these pragmas are ignored by 
-      Covered.
+        Any registers, nets, variables, blocks, expressions, FSMs or assertions found within these pragmas within the design being parsed by Covered will 
+        be excluded from coverage consideration when the -ep option is specified. If the -ep option is not specified, these pragmas are ignored by 
+        Covered.
       </para>
       <para>
-      The code that is found between these pragmas is not removed from resimulation, however. Therefore, if the user decides that any code found within 
-      these pragmas needs to be considered, they may change the exclusion properties via the GUI without needing to rerun Covered's score command. 
-      Coverage numbers in generated reports will treat excluded code as though it has been hit (i.e., the coverage points will be a part of the total 
-      number and the hit counts will be increased as though these coverage points were hit during simulation).
+        The code that is found between these pragmas is not removed from resimulation, however. Therefore, if the user decides that any code found within 
+        these pragmas needs to be considered, they may change the exclusion properties via the GUI without needing to rerun Covered's score command. 
+        Coverage numbers in generated reports will treat excluded code as though it has been hit (i.e., the coverage points will be a part of the total 
+        number and the hit counts will be increased as though these coverage points were hit during simulation).
       </para>
       <para>
-      The coverage pragmas may use either the single-line C++ comment style (//) or the multi-line C comment style (/* */). By default, the pragma is 
-      identified with the keyword 'coverage' following the comment characters. This value can be changed by the user, if needed, by specifying a string 
-      value to the right of the -ep option in the score command. This can be useful if there are other programs that use the same pragma keyword and 
-      causes conflicts with Covered's use of this pragma name. The value specified after the keyword is either 'off' (meaning that code should be 
-      excluded from coverage consideration after this comment) or 'on' (meaning that code should be considered for coverage after this comment). The 
-      values of 'off' and 'on' have the same meanings regardless of the pragma keyword so be sure to rename the pragma keyword to something that is 
-      appropriate.
+        The coverage pragmas may use either the single-line C++ comment style (//) or the multi-line C comment style (/* */). By default, the pragma is 
+        identified with the keyword 'coverage' following the comment characters. This value can be changed by the user, if needed, by specifying a string 
+        value to the right of the -ep option in the score command. This can be useful if there are other programs that use the same pragma keyword and 
+        causes conflicts with Covered's use of this pragma name. The value specified after the keyword is either 'off' (meaning that code should be 
+        excluded from coverage consideration after this comment) or 'on' (meaning that code should be considered for coverage after this comment). The 
+        values of '<code>off</code>' and '<code>on</code>' have the same meanings regardless of the pragma keyword so be sure to rename the pragma keyword 
+        to something that is appropriate.
       </para>
       <para>
-      Coverage pragmas may be embedded within each other, if desired. That is the following code example is allowed and handled properly by Covered' 
-      parser:
+        Coverage pragmas may be embedded within each other, if desired. That is the following code example is allowed and handled properly by Covered' 
+        parser:
       </para>
       <para>
-        <programlisting><![CDATA[
+        <example xml:id="example.score.ep2">
+          <title>Example of Embedded Coverage On/Off Pragmas</title>
+          <programlisting><![CDATA[
   module foobar;
       
     reg b, c, d, e;
@@ -459,54 +467,57 @@
     // coverage on
       
   endmodule]]>     
-        </programlisting>
+          </programlisting>
+        </example>
       </para>
       <para>
-      The net effect of this example is that all code between the outer 'coverage off' and 'coverage on' pragmas are excluded from coverage.
+        The net effect of this example is that all code between the outer '<code>coverage off</code>' and '<code>coverage on</code>' pragmas are 
+        excluded from coverage.
       </para>
       <para>
-      One last note about the -ep option is that coverage exclusion is restricted on a per file basis. That is, if the user specifies a '// coverage 
-      off' pragma within a file and does not specify a '// coverage on' pragma later in the file, the next file to be parsed by Covered will be handled 
-      as if coverage is on. Coverage pragmas can, however, span across multiple modules or other entities within the same file.
+        One last note about the -ep option is that coverage exclusion is restricted on a per file basis. That is, if the user specifies a 
+        '<code>// coverage off</code>' pragma within a file and does not specify a '<code>// coverage on</code>' pragma later in the file, the next file 
+        to be parsed by Covered will be handled as if coverage is on. Coverage pragmas can, however, span across multiple modules or other entities within 
+        the same file.
       </para>
     </sect2>
     
   </sect1>
   
-  <sect1 id="section.score.param" xreflabel="Overriding Parameters">
+  <sect1 id="section.score.param">
     <title>Overriding Parameters (-P option)</title>
     <para>
-    The <emphasis>defparam</emphasis> statement can override any parameter specified in the DUT from any module in the DUT. Since parameter information 
-    is not typically specified in VCD/LXT dumpfiles, Covered needs to know about all parameter values at score time. Since all defparam statements are 
-    ignored by the Covered parser (even those in the DUT being scored), the user must inform Covered of any parameters that need to be overridden. This 
-    is accomplished with the -P option to the score command.
+      The <emphasis>defparam</emphasis> statement can override any parameter specified in the DUT from any module in the DUT. Since parameter information 
+      is not typically specified in VCD/LXT dumpfiles, Covered needs to know about all parameter values at score time. Since all defparam statements are 
+      ignored by the Covered parser (even those in the DUT being scored), the user must inform Covered of any parameters that need to be overridden. This 
+      is accomplished with the -P option to the score command.
     </para>
     <para>
-    The first value in the -P option is the hierarchical reference to the parameter that needs to be overridden. The second value (following the '=' 
-    sign) specifies the value to assign the parameter to. This will override any default value assigned to that parameter. The user may not override the 
-    same parameter value twice on the command-line. Additionally, if the parameter is already being overridden in the design via an inline parameter 
-    override (parameter overrides specified in the '#(...)' part of the module instantiation).
+      The first value in the -P option is the hierarchical reference to the parameter that needs to be overridden. The second value (following the '=' 
+      sign) specifies the value to assign the parameter to. This will override any default value assigned to that parameter. The user may not override the 
+      same parameter value twice on the command-line. Additionally, if the parameter is already being overridden in the design via an inline parameter 
+      override (parameter overrides specified in the '#(...)' part of the module instantiation).
     </para>
     <para>
-    As an example of how to override a parameter value on the score command-line, let's assume that there is a parameter called 'google' in the module 
-    called 'amod' used in the example in Section 9.3. The parameter definition in this module looks like the following:
+      As an example of how to override a parameter value on the score command-line, let's assume that there is a parameter called 'google' in the module 
+      called 'amod' used in the example in Section 9.3. The parameter definition in this module looks like the following:
     </para>
     <para>
       <code>parameter google = 4'hf;</code>
     </para>
     <para>
-    To override this value to a new value of 18, use the following option in the score command:
+      To override this value to a new value of 18, use the following option in the score command:
     </para>
     <para>
       <code>-P test.foo.a.google=18</code>
     </para>
     <para>
-    In this example, notice that we have not only changed the value of google, but we have also changed the bit-width of google from 4 bits to 32 bits 
-    (the size of an integer). This is considered legal behavior by Covered.
+      In this example, notice that we have not only changed the value of google, but we have also changed the bit-width of google from 4 bits to 32 bits 
+      (the size of an integer). This is considered legal behavior by Covered.
     </para>
     <para>
-    It is also possible to specify non-integer values to the parameter override option. Decimal, binary, octal and hexidecimal values may also be 
-    specified, using the same syntax as they are specified in Verilog. The following examples would also be other ways to override the value to 18.
+      It is also possible to specify non-integer values to the parameter override option. Decimal, binary, octal and hexidecimal values may also be 
+      specified, using the same syntax as they are specified in Verilog. The following examples would also be other ways to override the value to 18.
     </para>
     <para>
       <programlisting>
@@ -517,30 +528,30 @@
       </programlisting>
     </para>
     <para>
-    In fact, you may specify any value (with the exception of real numbers) to override a parameter, including the following value types: 'x', 'X', 'z', 
-    'Z', '_', '?'. This means that unknowns may be specified in a parameter. Note that this may generate user reported errors if parameters overridden 
-    to unknown values are used in mathematical equations or are used to specify the width of wires, regs, etc.
+      In fact, you may specify any value (with the exception of real numbers) to override a parameter, including the following value types: 'x', 'X', 'z', 
+      'Z', '_', '?'. This means that unknowns may be specified in a parameter. Note that this may generate user reported errors if parameters overridden 
+      to unknown values are used in mathematical equations or are used to specify the width of wires, regs, etc.
     </para>
     <para>
-    If a defparam statement is encountered in the DUT being scored, a warning message will be output to the user specifying that it has encountered a 
-    defparam statement. The defparam statement is ignored by Covered; however, if the parameter that it is overridding is used in the DUT being scored, 
-    the results of Covered may differ from actual simulation results. As such, please review all of these warning types to determine if the parameter 
-    should be overridden or not. If defparams are not parsed (seen by Covered), no such warning will be output. Please review the DUT for defparams 
-    which affect the DUT being scored.
+      If a defparam statement is encountered in the DUT being scored, a warning message will be output to the user specifying that it has encountered a 
+      defparam statement. The defparam statement is ignored by Covered; however, if the parameter that it is overridding is used in the DUT being scored, 
+      the results of Covered may differ from actual simulation results. As such, please review all of these warning types to determine if the parameter 
+      should be overridden or not. If defparams are not parsed (seen by Covered), no such warning will be output. Please review the DUT for defparams 
+      which affect the DUT being scored.
     </para>
   </sect1>
   
-  <sect1 id="section.score.fsm" xreflabel="Scoring FSMs">
+  <sect1 id="section.score.fsm">
     <title>Scoring FSMs</title>
     <para>
-    At this time Covered does not have the ability to automatically extract FSM information from the design. As a result, it is up to the user to 
-    specify FSM information for Covered to use in scoring FSMs. The ability to automatically extract FSM information is planned to be supported in the 
-    future; however, it is always a good idea to allow the user to specify and potentially override Covered's automatic extraction in the case where 
-    Covered either misses an FSM or incorrectly determines logic to be an FSM in cases where none exists. The information specified in this section 
-    describes how to tell Covered where an FSM exists within the design as of the current development version of Covered.
+      At this time Covered does not have the ability to automatically extract FSM information from the design. As a result, it is up to the user to 
+      specify FSM information for Covered to use in scoring FSMs. The ability to automatically extract FSM information is planned to be supported in the 
+      future; however, it is always a good idea to allow the user to specify and potentially override Covered's automatic extraction in the case where 
+      Covered either misses an FSM or incorrectly determines logic to be an FSM in cases where none exists. The information specified in this section 
+      describes how to tell Covered where an FSM exists within the design as of the current development version of Covered.
     </para>
     <para>
-    First, we need to make a few assumptions about the type of FSMs that Covered will be able to handle and, in the future, identify.
+      First, we need to make a few assumptions about the type of FSMs that Covered will be able to handle and, in the future, identify.
     </para>
     <para>
       <orderedlist>
@@ -552,87 +563,88 @@
       </orderedlist>
     </para>
     <para>
-    There is currently only one way, via the command-line, to specify to Covered where to find FSMs within the design. In the future, the inline 
-    Verilog-2001 "$attribute" function will be used to also allow the user to specify to Covered where an FSM is located. Using the command-line method, 
-    no changes need to be to source Verilog code for Covered's purposes.
+      There is currently only one way, via the command-line, to specify to Covered where to find FSMs within the design. In the future, the inline 
+      Verilog-2001 "$attribute" function will be used to also allow the user to specify to Covered where an FSM is located. Using the command-line method, 
+      no changes need to be to source Verilog code for Covered's purposes.
     </para>
     <para>
-    To specify where an FSM exists within the design, the -F option must be specified to Covered's score command. Each -F option specifies one FSM 
-    within the design. Multiple -F options to the score command are allowed, allowing more than one FSM to be scored simultaneously. The -F option takes 
-    one argument that is subdivided into two or three parts:
+      To specify where an FSM exists within the design, the -F option must be specified to Covered's score command. Each -F option specifies one FSM 
+      within the design. Multiple -F options to the score command are allowed, allowing more than one FSM to be scored simultaneously. The -F option takes 
+      one argument that is subdivided into two or three parts:
     </para>
     <para>
       <code>-F <emphasis>module</emphasis>=(<emphasis>input_state_expression</emphasis>,)<emphasis>output_state_expression</emphasis></code>
     </para>
     <para>
-    The <emphasis>module</emphasis> specifies the Verilog module where the FSM state variables exist. The <emphasis>input_state_expression</emphasis> 
-    specifies the name of the variable(s) that represent the input state of the state machine. The <emphasis>output_state_expression</emphasis> 
-    specifies the name of the variable(s) that represent the output state of the state machine. Most FSMs have one variable as the input state (in most 
-    cases a registered version of the output state) such that the input variable is different than the output variable of the state machine. Specifying 
-    both variables in the -F option provides the user to more accurately specify to Covered the FSM. In the case that an FSM has the same variable for 
-    the input and output state, the user must specify only the output state variable (omitting the <emphasis>input_state_expression</emphasis> and comma 
-    character in the argument).
+      The <emphasis>module</emphasis> specifies the Verilog module where the FSM state variables exist. The <emphasis>input_state_expression</emphasis> 
+      specifies the name of the variable(s) that represent the input state of the state machine. The <emphasis>output_state_expression</emphasis> 
+      specifies the name of the variable(s) that represent the output state of the state machine. Most FSMs have one variable as the input state (in most 
+      cases a registered version of the output state) such that the input variable is different than the output variable of the state machine. Specifying 
+      both variables in the -F option provides the user to more accurately specify to Covered the FSM. In the case that an FSM has the same variable for 
+      the input and output state, the user must specify only the output state variable (omitting the <emphasis>input_state_expression</emphasis> and comma 
+      character in the argument).
     </para>
     <para>
-    The input and output expression to the -F command can represent any signals, parts of signals, or combinations of signals. Constant values or 
-    parameters in the specification of the input/output expression is currently not supported (in fact, there are no future plans to support this 
-    behavior unless user-feedback demands it). The following examples show various legal ways to specify input/output expressions. The syntax is limited 
-    to what it shown in these examples.
+      The input and output expression to the -F command can represent any signals, parts of signals, or combinations of signals. Constant values or 
+      parameters in the specification of the input/output expression is currently not supported (in fact, there are no future plans to support this 
+      behavior unless user-feedback demands it). The following examples show various legal ways to specify input/output expressions. The syntax is limited 
+      to what it shown in these examples.
     </para>
     <para>
       <code>-F foobar=a</code>
     </para>
     <para>
-    Example 1 specifies that the entire vector called "a" should be considered both the input and output state variable.
+      Example 1 specifies that the entire vector called "a" should be considered both the input and output state variable.
     </para>
     <para>
       <code>-F foobar=a[2]</code>
     </para>
     <para>
-    Example 2 specifies that bit 2 of the vector called "a" should be considered both the input and output state variable.
+      Example 2 specifies that bit 2 of the vector called "a" should be considered both the input and output state variable.
     </para>
     <para>
       <code>-F foobar=a[3:1]</code>
     </para>
     <para>
-    Example 3 specifies that bits 3:1 of the vector called "a" should be considered both the input and output state variable.
+      Example 3 specifies that bits 3:1 of the vector called "a" should be considered both the input and output state variable.
     </para>
     <para>
       <code>-F foobar={a,b}</code>
     </para>
     <para>
-    Example 4 specifies that vectors "a" and "b" should be concatenated to form the input/output state variable. Only one set of curly brackets may be 
-    used to specify a concatenated state expression; however, 2 or more signals may be specified within those brackets.
+      Example 4 specifies that vectors "a" and "b" should be concatenated to form the input/output state variable. Only one set of curly brackets may be 
+      used to specify a concatenated state expression; however, 2 or more signals may be specified within those brackets.
     </para>
     <para>
-    Any combination of the above four examples can be used to formalate the input state expression or the output state expression.
+      Any combination of the above four examples can be used to formalate the input state expression or the output state expression.
     </para>
     <para>
-    If the user specifies an FSM that Covered is not able to find (either the module was not included in the design that Covered is scoring or the FSM 
-    uses Verilog code that Covered is not able to handle), an error message is displayed to the user. It is then up to the user to determine if the FSM 
-    was incorrectly specified to Covered or otherwise. This warning is not considered to be a bug in Covered (unless of course, it can be proven that 
-    the FSM should have been found).
+      If the user specifies an FSM that Covered is not able to find (either the module was not included in the design that Covered is scoring or the FSM 
+      uses Verilog code that Covered is not able to handle), an error message is displayed to the user. It is then up to the user to determine if the FSM 
+      was incorrectly specified to Covered or otherwise. This warning is not considered to be a bug in Covered (unless of course, it can be proven that 
+      the FSM should have been found).
     </para>
     <para>
-    At the current time, Covered does not have the ability to extract the states and state transitions of the specified FSM from the design. Currently, 
-    it also doesn't have the ability to specify this information in other ways. To provide meaningful coverage information for the FSM, Covered outputs 
-    all hit states and state transitions in the report when all achievable states and state transitions are not known. This information will be able to 
-    be specified by the user in future versions of Covered, with the ability to automatically extract this information also in the works.
+      At the current time, Covered does not have the ability to extract the states and state transitions of the specified FSM from the design. Currently, 
+      it also doesn't have the ability to specify this information in other ways. To provide meaningful coverage information for the FSM, Covered outputs 
+      all hit states and state transitions in the report when all achievable states and state transitions are not known. This information will be able to 
+      be specified by the user in future versions of Covered, with the ability to automatically extract this information also in the works.
     </para>
   </sect1>
   
-  <sect1 id="section.score.other" xreflabel="Other Notes">
+  <sect1 id="section.score.other">
     <title>Other Notes</title>
     <para>
-    When the Verilog files are parsed, a preprocessor is run on each file that is to be read in by Covered. The preprocessor generates an intermediate 
-    form of each file, resolving defined values and included files. The intermediate form is output to a file which is called "tmpXXXXXX" where XXXXXX 
-    represents some alphanumeric sequence chosen by the OS via the mkstemp() function. The file is guaranteed to be unique to all other files in the 
-    directory and it is automatically removed by Covered when parsing is completed.
+      When the Verilog files are parsed, a preprocessor is run on each file that is to be read in by Covered. The preprocessor generates an intermediate 
+      form of each file, resolving defined values and included files. The intermediate form is output to a file which is called "tmpXXXXXX" where XXXXXX 
+      represents some alphanumeric sequence chosen by the OS via the mkstemp() function. The file is guaranteed to be unique to all other files in the 
+      directory and it is automatically removed by Covered when parsing is completed.
     </para>
     <para>
-    If the user does not want Covered to use this naming convention for specifying this file, the user may use the -p option (see Options section above) 
-    to override the default name. Covered will then use this filename instead of generating a unique name. Make sure that the file specified does not 
-    contain any useful data since Covered will overwrite this file when the score command is run.
+      If the user does not want Covered to use this naming convention for specifying this file, the user may use the -p option (see Options section above) 
+      to override the default name. Covered will then use this filename instead of generating a unique name. Make sure that the file specified does not 
+      contain any useful data since Covered will overwrite this file when the score command is run.
     </para>
   </sect1>
+  
 </chapter>

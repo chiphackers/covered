@@ -1,181 +1,183 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 14. Debugging</title><meta name="generator" content="DocBook XSL Stylesheets V1.71.1"><link rel="start" href="index.html" title="Covered"><link rel="up" href="part.command.line.usage.html" title="Part III. Command-line Usage"><link rel="prev" href="chapter.reading.html" title="Chapter 13. Reading the Report"><link rel="next" href="part.gui.html" title="Part IV. Graphical User Interface"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 14. Debugging</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter.reading.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part III. Command-line Usage</th><td width="20%" align="right"> <a accesskey="n" href="part.gui.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.debug"></a>Chapter 14. Debugging</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.debug.html#section.debug.output">14.1. Verbose Debug Output</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.debug.html#id441337">Building Covered for Verbose Debug Outputting</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.debug.html#section.cli">14.2. Command-Line Interface (CLI)</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.debug.html#id441386">Building Covered for the CLI</a></span></dt><dt><span class="sect2"><a href="chapter.debug.html#id441409">Using the CLI</a></span></dt><dt><span class="sect2"><a href="chapter.debug.html#id441432">CLI commands</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.debug.html#section.profiling">14.3. Source Code Profiling</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.debug.html#id441822">Building Covered for Profiling</a></span></dt><dt><span class="sect2"><a href="chapter.debug.html#id441857">Using Source Code Profiling</a></span></dt><dt><span class="sect2"><a href="chapter.debug.html#id441893">Understanding the Profiling Report</a></span></dt></dl></dd></dl></div><p>
-  As much as it pains the developers of Covered to admit, there will be times when a user of Covered will encounter a 
-  problem in the resimulation process or will experience a performance issue during certain runs and will want to 
-  investigate the issue a bit themselves before posting a bug report. There may also be people out there who just 
-  might want to learn more about how Covered operates "under the hood". For those people whom I have just mentioned, 
-  this section is for you.
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 14. Debugging</title><link rel="stylesheet" href="covered.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.74.0"><link rel="home" href="index.html" title="Covered"><link rel="up" href="part.command.line.usage.html" title="Part III. Command-line Usage"><link rel="prev" href="chapter.reading.html" title="Chapter 13. Reading the Report"><link rel="next" href="part.gui.html" title="Part IV. Graphical User Interface"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 14. Debugging</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter.reading.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part III. Command-line Usage</th><td width="20%" align="right"> <a accesskey="n" href="part.gui.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.debug"></a>Chapter 14. Debugging</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.debug.html#section.debug.output">14.1. Verbose Debug Output</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.debug.html#section.debug.output.building">Building Covered for Verbose Debug Outputting</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.debug.html#section.cli">14.2. Command-Line Interface (CLI)</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.debug.html#section.cli.building">Building Covered for the CLI</a></span></dt><dt><span class="sect2"><a href="chapter.debug.html#section.cli.using">Using the CLI</a></span></dt><dt><span class="sect2"><a href="chapter.debug.html#section.cli.commands">CLI commands</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.debug.html#section.profiling">14.3. Source Code Profiling</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.debug.html#section.profiling.building">Building Covered for Profiling</a></span></dt><dt><span class="sect2"><a href="chapter.debug.html#section.profiling.using">Using Source Code Profiling</a></span></dt><dt><span class="sect2"><a href="chapter.debug.html#section.profiling.report">Understanding the Profiling Report</a></span></dt></dl></dd></dl></div><p>
+    As much as it pains the developers of Covered to admit, there will be times when a user of Covered will encounter a 
+    problem in the resimulation process or will experience a performance issue during certain runs and will want to 
+    investigate the issue a bit themselves before posting a bug report. There may also be people out there who just 
+    might want to learn more about how Covered operates "under the hood". For those people whom I have just mentioned, 
+    this section is for you.
   </p><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.debug.output"></a>14.1. Verbose Debug Output</h2></div></div></div><p>
-    The brute force method of understanding Covered's internals is to generate verbose debug output using the global "-D" 
-    option to any of Covered's commands. The user of this method should take care to note that using this option may 
-    generate an <span class="emphasis"><em>extremely</em></span> large amount of output and will definitely cause Covered's runtime performance 
-    to degrade considerably. If this option is used, its output should probably be redirected to a file for 
-    post-processing purposes. It should be noted that the verbose debug output is most useful for the developer's of 
-    Covered and is not meant to be of much help to the normal user.
-    </p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id441337"></a>Building Covered for Verbose Debug Outputting</h3></div></div></div><p>
-      Because generating verbose debug output can have a tremendous degradation in performance when it is even compiled, 
-      Covered requires the user to specify an option to the configuration/build process to enable this feature. To enable 
-      verbose debug outputting, simply specify the <span class="bold"><strong>--enable-debug</strong></span> option to the configure 
-      script. This will cause Covered to compile in verbose debug output support and enable the use of the -D global option.
+      The brute force method of understanding Covered's internals is to generate verbose debug output using the global "-D" 
+      option to any of Covered's commands. The user of this method should take care to note that using this option may 
+      generate an <span class="emphasis"><em>extremely</em></span> large amount of output and will definitely cause Covered's runtime performance 
+      to degrade considerably. If this option is used, its output should probably be redirected to a file for 
+      post-processing purposes. It should be noted that the verbose debug output is most useful for the developer's of 
+      Covered and is not meant to be of much help to the normal user.
+    </p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.debug.output.building"></a>Building Covered for Verbose Debug Outputting</h3></div></div></div><p>
+        Because generating verbose debug output can have a tremendous degradation in performance when it is even compiled, 
+        Covered requires the user to specify an option to the configuration/build process to enable this feature. To enable 
+        verbose debug outputting, simply specify the <span class="bold"><strong><code class="code">--enable-debug</code></strong></span> option to the configure 
+        script. This will cause Covered to compile in verbose debug output support and enable the use of the -D global option.
       </p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="img/note.gif"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>
-        If the user has not specified the --enable-debug option to the configuration script but proceeds to specify the -D global option, 
-        Covered will emit a warning message that it is unable to output verbose debug information due to the lack of the --enable-debug 
-        option being specified. It will then proceed to ignore the -D option.
+          If the user has not specified the --enable-debug option to the configuration script but proceeds to specify the -D global option, 
+          Covered will emit a warning message that it is unable to output verbose debug information due to the lack of the --enable-debug 
+          option being specified. It will then proceed to ignore the -D option.
         </p></td></tr></table></div></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.cli"></a>14.2. Command-Line Interface (CLI)</h2></div></div></div><p>
-    As an alternative to simply outputting the verbose debug output from Covered, the score command comes equipped with its own 
-    interactive debugging mechanism called the CLI (Command-Line Interface). This interface is a command-line driven utility that 
-    starts at the beginning of the resimulation. Its purpose is to allow the user to step through simulation execution and view 
-    the contents of signals, time, scopes, code and internal thread queues for the purposes of debugging and/or understanding 
-    Covered. This utility works much in the same way as simulator CLIs and the GDB debugging utility.
-    </p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id441386"></a>Building Covered for the CLI</h3></div></div></div><p>
-      Because interactive command-line debugging has a small performance penalty when compiled in and is closely associated with 
-      the verbose debug output option, Covered requires the user to specify an option to the configuation/build process to enable 
-      this feature. To enable the CLI, simply specify the <span class="bold"><strong>--enable-debug</strong></span> option to the configure 
-      script. This will cause Covered to compile in CLI capabilities and enable the user of the -cli score command option.
-      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id441409"></a>Using the CLI</h3></div></div></div><p>
-      To allow the score command to use the CLI for interactive resimulation, simply specify the <span class="bold"><strong>-cli 
-      [<span class="emphasis"><em>filename</em></span>]</strong></span> option to the score command. If filename is specified to this option, the contents 
-      of this file will be parsed and executed once the score command has reached the resimulation process. The contents of this 
-      file are a series of CLI commands (one command per line) in ASCII format and can be automatically produced with the "savehist" 
-      CLI command (see below). This feature allows a user to quickly save off the CLI commands made during one score run and reuse 
-      them in a subsequent score run without having to remember and manually input the same commands.
+      As an alternative to simply outputting the verbose debug output from Covered, the score command comes equipped with its own 
+      interactive debugging mechanism called the CLI (Command-Line Interface). This interface is a command-line driven utility that 
+      starts at the beginning of the resimulation. Its purpose is to allow the user to step through simulation execution and view 
+      the contents of signals, time, scopes, code and internal thread queues for the purposes of debugging and/or understanding 
+      Covered. This utility works much in the same way as simulator CLIs and the GDB debugging utility.
+    </p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.cli.building"></a>Building Covered for the CLI</h3></div></div></div><p>
+        Because interactive command-line debugging has a small performance penalty when compiled in and is closely associated with 
+        the verbose debug output option, Covered requires the user to specify an option to the configuation/build process to enable 
+        this feature. To enable the CLI, simply specify the <span class="bold"><strong><code class="code">--enable-debug</code></strong></span> option to the configure 
+        script. This will cause Covered to compile in CLI capabilities and enable the user of the -cli score command option.
+      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.cli.using"></a>Using the CLI</h3></div></div></div><p>
+        To allow the score command to use the CLI for interactive resimulation, simply specify the 
+        <span class="bold"><strong><code class="code">-cli [<span class="emphasis"><em>filename</em></span>]</code></strong></span> option to the score command. If filename is 
+        specified to this option, the contents of this file will be parsed and executed once the score command has reached the 
+        resimulation process. The contents of this file are a series of CLI commands (one command per line) in ASCII format and can be 
+        automatically produced with the "<code class="code">savehist</code>" CLI command (see below). This feature allows a user to quickly save off 
+        the CLI commands made during one score run and reuse them in a subsequent score run without having to remember and manually input 
+        the same commands.
       </p><p>
-      Once the -cli option is invoked, Covered will run the score command until it gets to the beginning of the resimulation process. 
-      At this time, if the optional filename is specified, it will parse the contents of this file and execute the CLI commands found 
-      there until all commands are executed. If filename was not specified, a prompt will be displayed and the resimulation execution 
-      will halt until the user has specified otherwise via command-line options. After entering a command-line option, simply press 
-      return to invoke that command. In the event that the command was a step, next or continue option, resimulation will resume 
-      until it reaches the next stop point.
-      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id441432"></a>CLI commands</h3></div></div></div><p>
-      The following is a list of all of the CLI options available to the user:
-      </p><div class="table"><a name="id441442"></a><p class="title"><b>Table 14.1. CLI Command-line Options</b></p><div class="table-contents"><table summary="CLI Command-line Options" border="1"><colgroup><col align="left"><col align="left"></colgroup><thead><tr><th align="left">Option</th><th align="left">Description</th></tr></thead><tbody><tr><td align="left">
-              step [<span class="emphasis"><em>num</em></span>]
+        Once the -cli option is invoked, Covered will run the score command until it gets to the beginning of the resimulation process. 
+        At this time, if the optional filename is specified, it will parse the contents of this file and execute the CLI commands found 
+        there until all commands are executed. If filename was not specified, a prompt will be displayed and the resimulation execution 
+        will halt until the user has specified otherwise via command-line options. After entering a command-line option, simply press 
+        return to invoke that command. In the event that the command was a step, next or continue option, resimulation will resume 
+        until it reaches the next stop point.
+      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.cli.commands"></a>CLI commands</h3></div></div></div><p>
+        The following is a list of all of the CLI options available to the user:
+      </p><div class="table"><a name="id2659753"></a><p class="title"><b>Table 14.1. CLI Command-line Options</b></p><div class="table-contents"><table summary="CLI Command-line Options" border="1"><colgroup><col align="left"><col align="left"></colgroup><thead><tr><th align="left">Option</th><th align="left">Description</th></tr></thead><tbody><tr><td align="left">
+                step [<span class="emphasis"><em>num</em></span>]
               </td><td align="left">
-              Advances to the next statement if <span class="emphasis"><em>num</em></span> is not specified; otherwise, advances <span class="emphasis"><em>num</em></span> 
-              statements before returning to the CLI prompt.
+                Advances to the next statement if <span class="emphasis"><em>num</em></span> is not specified; otherwise, advances <span class="emphasis"><em>num</em></span> 
+                statements before returning to the CLI prompt.
               </td></tr><tr><td align="left">
-              next [<span class="emphasis"><em>num</em></span>]
+                next [<span class="emphasis"><em>num</em></span>]
               </td><td align="left">
-              Advances to the next timestep if <span class="emphasis"><em>num</em></span> is not specified; otherwise, advances <span class="emphasis"><em>num</em></span> 
-              timesteps before returning to the CLI prompt.
+                Advances to the next timestep if <span class="emphasis"><em>num</em></span> is not specified; otherwise, advances <span class="emphasis"><em>num</em></span> 
+                timesteps before returning to the CLI prompt.
               </td></tr><tr><td align="left">
-              goto <span class="emphasis"><em>num</em></span>
+                goto <span class="emphasis"><em>num</em></span>
               </td><td align="left">
-              Advances to the given timestep (or the next timestep after the given value if the timestep is not executed) specified by 
+                Advances to the given timestep (or the next timestep after the given value if the timestep is not executed) specified by 
               <span class="emphasis"><em>num</em></span>.
               </td></tr><tr><td align="left">
-              run
+                run
               </td><td align="left">
-              Runs the simulation to completion.
+                Runs the simulation to completion.
               </td></tr><tr><td align="left">
-              continue
+                continue
               </td><td align="left">
-              Continues running the simulation to completion.
+                Continues running the simulation to completion.
               </td></tr><tr><td align="left">
-              thread active
+                thread active
               </td><td align="left">
-              Displays the current state of the internal active simulation queue. This queue consists of process threads that will be executed 
-              in the current timestep.
+                Displays the current state of the internal active simulation queue. This queue consists of process threads that will be executed 
+                in the current timestep.
               </td></tr><tr><td align="left">
-              thread delayed
+                thread delayed
               </td><td align="left">
-              Displays the current state of the internal delayed simulation queue. This queue consists of process threads that will be executed 
-              at a later time as dictated by a delay statement.
+                Displays the current state of the internal delayed simulation queue. This queue consists of process threads that will be executed 
+                at a later time as dictated by a delay statement.
               </td></tr><tr><td align="left">
-              thread waiting
+                thread waiting
               </td><td align="left">
-              Displays the current state of the internal waiting simulation queue. This queue consists of process threads that are not active 
-              or delayed but may be activated by a value change in one of the signals in its expression tree.
+                Displays the current state of the internal waiting simulation queue. This queue consists of process threads that are not active 
+                or delayed but may be activated by a value change in one of the signals in its expression tree.
               </td></tr><tr><td align="left">
-              thread all
+                thread all
               </td><td align="left">
-              Displays the current state of all process threads in the simulator.
+                Displays the current state of all process threads in the simulator.
               </td></tr><tr><td align="left">
-              current
+                current
               </td><td align="left">
-              Displays the current scope, block, filename and line number of the statement that is about to be executed in the active queue.
+                Displays the current scope, block, filename and line number of the statement that is about to be executed in the active queue.
               </td></tr><tr><td align="left">
-              time
+                time
               </td><td align="left">
-              Displays the current simulation time.
+                Displays the current simulation time.
               </td></tr><tr><td align="left">
-              signal <span class="emphasis"><em>name</em></span>
+                signal <span class="emphasis"><em>name</em></span>
               </td><td align="left">
-              Displays the current value of the given net/variable.
+                Displays the current value of the given net/variable.
               </td></tr><tr><td align="left">
-              expr <span class="emphasis"><em>num</em></span>
+                expr <span class="emphasis"><em>num</em></span>
               </td><td align="left">
-              Displays the given expression and its current value where <span class="emphasis"><em>num</em></span> is the ID of the expression to output.
+                Displays the given expression and its current value where <span class="emphasis"><em>num</em></span> is the ID of the expression to output.
               </td></tr><tr><td align="left">
-              debug [on | off]
+                debug [on | off]
               </td><td align="left">
-              Turns verbose debug output from the simulator on or off. If 'on' or 'off' is not specified, displays the current debug mode.
+                Turns verbose debug output from the simulator on or off. If 'on' or 'off' is not specified, displays the current debug mode.
               </td></tr><tr><td align="left">
-              list [<span class="emphasis"><em>num</em></span>]
+                list [<span class="emphasis"><em>num</em></span>]
               </td><td align="left">
-              Lists the contents of the file where the current statement is to be executed. If <span class="emphasis"><em>num</em></span> is specified, 
-              outputs the given number of lines; otherwise, outputs 10 lines.
+                Lists the contents of the file where the current statement is to be executed. If <span class="emphasis"><em>num</em></span> is specified, 
+                outputs the given number of lines; otherwise, outputs 10 lines.
               </td></tr><tr><td align="left">
-              savehist <span class="emphasis"><em>filename</em></span>
+                savehist <span class="emphasis"><em>filename</em></span>
               </td><td align="left">
-              Saves the current history to the specified file.
+                Saves the current history to the specified file.
               </td></tr><tr><td align="left">
-              history [(<span class="emphasis"><em>num</em></span> | all)]
+                history [(<span class="emphasis"><em>num</em></span> | all)]
               </td><td align="left">
-              Displays the last 10 lines of command-line history. If 'all' is specified, the entire history contents will be displayed. 
-              If <span class="emphasis"><em>num</em></span> is specified, the last <span class="emphasis"><em>num</em></span> commands will be displayed.
+                Displays the last 10 lines of command-line history. If 'all' is specified, the entire history contents will be displayed. 
+                If <span class="emphasis"><em>num</em></span> is specified, the last <span class="emphasis"><em>num</em></span> commands will be displayed.
               </td></tr><tr><td align="left">
-              !<span class="emphasis"><em>num</em></span>
+                !<span class="emphasis"><em>num</em></span>
               </td><td align="left">
-              Executes the command at the <span class="emphasis"><em>num</em></span> position in history.
+                Executes the command at the <span class="emphasis"><em>num</em></span> position in history.
               </td></tr><tr><td align="left">
-              !!
+                !!
               </td><td align="left">
-              Executes the last valid command.
+                Executes the last valid command.
               </td></tr><tr><td align="left">
-              help
+                help
               </td><td align="left">
-              Displays the available command-line options.
+                Displays the available command-line options.
               </td></tr><tr><td align="left">
-              quit
+                quit
               </td><td align="left">
-              Ends simulation immediately.
+                Ends simulation immediately.
               </td></tr></tbody></table></div></div><br class="table-break"></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.profiling"></a>14.3. Source Code Profiling</h2></div></div></div><p>
-    The built-in source code profiling facility allows the user to run any Covered command and understand performance metrics 
-    about the internal Covered source code, such as how many times a given function was called, how much wall-clock time was 
-    spent executing a given function, how many times a function allocated and deallocated memory from the heap, etc. This 
-    information can be useful in understanding where performance bottlenecks are during a given Covered command run. This 
-    feature does not provide the end-user any useful information about the design that they are testing.
-    </p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id441822"></a>Building Covered for Profiling</h3></div></div></div><p>
-      Because internal source code profiling is not a function of obtaining Verilog code coverage and adds a performance 
-      penalty for being compiled in and used, Covered requires the user to specify an option to the configuration/build 
-      process to enable this feature. To enable internal source code profiling, simply specify the 
-      <span class="bold"><strong>--enable-profiling</strong></span> option to the configure script. This will cause Covered to 
-      compile in profiling capabilities and enable the use of the -P global option.
+      The built-in source code profiling facility allows the user to run any Covered command and understand performance metrics 
+      about the internal Covered source code, such as how many times a given function was called, how much wall-clock time was 
+      spent executing a given function, how many times a function allocated and deallocated memory from the heap, etc. This 
+      information can be useful in understanding where performance bottlenecks are during a given Covered command run. This 
+      feature does not provide the end-user any useful information about the design that they are testing.
+    </p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.profiling.building"></a>Building Covered for Profiling</h3></div></div></div><p>
+        Because internal source code profiling is not a function of obtaining Verilog code coverage and adds a performance 
+        penalty for being compiled in and used, Covered requires the user to specify an option to the configuration/build 
+        process to enable this feature. To enable internal source code profiling, simply specify the 
+        <span class="bold"><strong><code class="code">--enable-profiling</code></strong></span> option to the configure script. This will cause Covered to 
+        compile in profiling capabilities and enable the use of the -P global option.
       </p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="img/note.gif"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>
-        If the user has not specified the --enable-profiling option to the configuration script but proceeds to specify the -P global option, Covered will emit a 
-        warning message that it is unable to do profiling due to the lack of the --enable-profiling option being specified. It will then proceed to ignore the -P 
-        option.
-        </p></td></tr></table></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id441857"></a>Using Source Code Profiling</h3></div></div></div><p>
-      Once Covered has had profiling functionality configured and built into it, the user may optionally enable profiling for any 
-      command by specifying the -P [<span class="emphasis"><em>filename</em></span>] global option. If the -P option is specified without a filename 
-      associated with it, the profiling report generated from the command run will be output to a file called "covered.prof" in the 
-      same directory where Covered was run. If a filename is associated with the -P option, the contents of the profiling report 
-      will be output to that file.
+          If the user has not specified the --enable-profiling option to the configuration script but proceeds to specify the -P 
+          global option, Covered will emit a warning message that it is unable to do profiling due to the lack of the 
+          --enable-profiling option being specified. It will then proceed to ignore the -P option.
+        </p></td></tr></table></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.profiling.using"></a>Using Source Code Profiling</h3></div></div></div><p>
+        Once Covered has had profiling functionality configured and built into it, the user may optionally enable profiling for any 
+        command by specifying the <span class="bold"><strong><code class="code">-P [<span class="emphasis"><em>filename</em></span>]</code></strong></span> global option. If 
+        the -P option is specified without a filename associated with it, the profiling report generated from the command run will 
+        be output to a file called "covered.prof" in the same directory where Covered was run. If a filename is associated with the 
+        -P option, the contents of the profiling report will be output to that file.
       </p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="img/note.gif"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>
-        The specified filename can be anything except "score", "merge" or "report" as this name will be interpreted by Covered's command-line parser to indicate the 
-        type of command being run. If one of these command keywords are specified after the -P option, it is assumed that the user has not specified a filename and the 
-        contents of the profiling report will be sent to the default file of "covered.prof".
-        </p></td></tr></table></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id441893"></a>Understanding the Profiling Report</h3></div></div></div><p>
-      After a command has been run with the global -P option specified, a report file will contain several profiling statistics, 
-      including the following:
+          The specified filename can be anything except "score", "merge" or "report" as this name will be interpreted by Covered's 
+          command-line parser to indicate the type of command being run. If one of these command keywords are specified after the 
+          -P option, it is assumed that the user has not specified a filename and the contents of the profiling report will be sent 
+          to the default file of "covered.prof".
+        </p></td></tr></table></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.profiling.report"></a>Understanding the Profiling Report</h3></div></div></div><p>
+        After a command has been run with the global -P option specified, a report file will contain several profiling statistics, 
+        including the following:
       </p><p>
         </p><div class="orderedlist"><ol type="1"><li><p>The amount of time spent running the entire command</p></li><li><p>The number of times each executed function was called</p></li><li><p>The total amount of wall clock time spent executing each function</p></li><li><p>The average amount of time spent executing each function</p></li><li><p>The number of times each function allocated heap memory</p></li><li><p>The number of times each function deallocated heap memory</p></li></ol></div><p>
       </p><p>
-      In addition to providing this information on a per function basis, the profiling report also provides the information 
-      in three different sections with each function ordered from most to least by the following statistic columns:
+        In addition to providing this information on a per function basis, the profiling report also provides the information 
+        in three different sections with each function ordered from most to least by the following statistic columns:
       </p><p>
         </p><div class="orderedlist"><ol type="1"><li><p>The number of times each executed function was called</p></li><li><p>The total amount of wall clock time spent executing each function</p></li><li><p>The average amount of time spent executing each function</p></li></ol></div><p>
       </p><p>
-      By ordering this information, it will help the users and developers determine where the performance bottlenecks in execution 
-      are for a given command run.
+        By ordering this information, it will help the users and developers determine where the performance bottlenecks in execution 
+        are for a given command run.
       </p></div></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="chapter.reading.html"><img src="img/prev.gif" alt="Prev"></a> </td><td width="20%" align="center"><a accesskey="u" href="part.command.line.usage.html"><img src="img/up.gif" alt="Up"></a></td><td width="40%" align="right"> <a accesskey="n" href="part.gui.html"><img src="img/next.gif" alt="Next"></a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 13. Reading the Report </td><td width="20%" align="center"><a accesskey="h" href="index.html"><img src="img/home.gif" alt="Home"></a></td><td width="40%" align="right" valign="top"> Part IV. Graphical User Interface</td></tr></table></div></body></html>

@@ -1,52 +1,55 @@
-<chapter id="chapter.attr" xreflabel="Inline Attributes">
+<chapter id="chapter.attr">
   <title>Inline Attributes</title>
   
-  <sect1 id="section.attr" xreflabel="What are inline attributes?">
+  <sect1 id="section.attr">
     <title>What are inline attributes?</title>
     <para>
-    In the IEEE Verilog 1364-2001 standard, an attribute is a way to add information to a Verilog object, statement or 
-    groups of statements that is tool-specific and does not affect simulation of that design. All Verilog-2001 
-    attributes begin with the token (* and end with the token *). An attribute can be multi-line and is "attached" to 
-    the Verilog object, statement, or group of statements that is specified immediately beneath the attribute.
+      In the IEEE Verilog 1364-2001 standard, an attribute is a way to add information to a Verilog object, statement or 
+      groups of statements that is tool-specific and does not affect simulation of that design. All Verilog-2001 
+      attributes begin with the token <code>(*</code> and end with the token <code>*)</code>. An attribute can be 
+      multi-line and is "attached" to the Verilog object, statement, or group of statements that is specified immediately 
+      beneath the attribute.
     </para>
     <para>
-    Covered uses the Verilog-2001 attribute for allowing users to specify coverage-specific information about embedded 
-    objects within a particular design. When an attribute is found, it is interrogated to see if it is a Covered 
-    attribute. If the attribute is a Covered attribute, its contents are parsed. If the attribute is not found to be a 
-    Covered attribute, it is ignored and parsing continues normally.
+      Covered uses the Verilog-2001 attribute for allowing users to specify coverage-specific information about embedded 
+      objects within a particular design. When an attribute is found, it is interrogated to see if it is a Covered 
+      attribute. If the attribute is a Covered attribute, its contents are parsed. If the attribute is not found to be a 
+      Covered attribute, it is ignored and parsing continues normally.
     </para>
     <para>
-    The rest of this chapter specifies the attributes that Covered is capable of handling, along with their use and 
-    syntax.
+      The rest of this chapter specifies the attributes that Covered is capable of handling, along with their use and 
+      syntax.
     </para>
   </sect1>
   
-  <sect1 id="section.attr.fsm" xreflabel="Adding FSM attributes">
+  <sect1 id="section.attr.fsm">
     <title>Adding FSM attributes</title>
     <para>
-    There are two ways that Covered currently allows the user to specify the location of and information about FSMs 
-    embedded in a particular design. The first way to specify an FSM is on the score command-line. The benefit to 
-    specifying the location of a state machine this way is that the source code does not need to be modified. The 
-    potential disadvantage to this method is that the FSM location and coverage information can get lost if the FSM is 
-    used in a different testbench (or even a different project if the FSM code is reused in a later project). For more 
-    information on specifying an FSM on the score command-line, please refer to 
-    <xref linkend="section.score.fsm"/>.
+      There are two ways that Covered currently allows the user to specify the location of and information about FSMs 
+      embedded in a particular design. The first way to specify an FSM is on the score command-line. The benefit to 
+      specifying the location of a state machine this way is that the source code does not need to be modified. The 
+      potential disadvantage to this method is that the FSM location and coverage information can get lost if the FSM is 
+      used in a different testbench (or even a different project if the FSM code is reused in a later project). For more 
+      information on specifying an FSM on the score command-line, please refer to 
+      <xref linkend="section.score.fsm"/>.
     </para>
     <para>
-    The second way that an FSM can be specified to Covered is through the use of the Verilog-2001 attribute. The 
-    advantages to using this method are that the FSM information specified in an attribute stays embedded in the design 
-    (for ease of reusing the FSM and still retaining information relevent to coverage). Additionally, at the current 
-    release of Covered, using attributes to specify an FSM is the only way to tell Covered what all of the valid states 
-    and state-transitions are for a specific FSM (the command-line specification does not allow for this). This 
-    provides a unique advantage of this method over the command-line method. The potential disadvantage of this method 
-    for specifying FSM information is that source code needs to be modified.
+      The second way that an FSM can be specified to Covered is through the use of the Verilog-2001 attribute. The 
+      advantages to using this method are that the FSM information specified in an attribute stays embedded in the design 
+      (for ease of reusing the FSM and still retaining information relevent to coverage). Additionally, at the current 
+      release of Covered, using attributes to specify an FSM is the only way to tell Covered what all of the valid states 
+      and state-transitions are for a specific FSM (the command-line specification does not allow for this). This 
+      provides a unique advantage of this method over the command-line method. The potential disadvantage of this method 
+      for specifying FSM information is that source code needs to be modified.
     </para>
     <para>
-    To learn how to specify an FSM attribute within a design, let's use an example of an FSM that is embedded in a 
-    design.
+      To learn how to specify an FSM attribute within a design, let's use an example of an FSM that is embedded in a 
+      design.
     </para>
     <para>
-      <programlisting><![CDATA[
+      <example xml:id="example.attr">
+        <title>Module Containing an Embedded FSM</title>
+        <programlisting><![CDATA[
   module foo (
     input clk,
     input reset,
@@ -81,29 +84,30 @@
       end   
       
   endmodule 
-      ]]></programlisting>
+        ]]></programlisting>
+      </example>
     </para>
     <para>
-    This example shows an FSM that has an input FSM variable called "state" and an output FSM variable called 
-    "next_state". There are four states in the state machine that are represented with the parameters located in this 
-    module (STATE_IDLE, STATE_HEAD, STATE_DATA, STATE_TAIL). There are a total of eight (8) state transitions that this 
-    FSM can take. They are the following:
+      This example shows an FSM that has an input FSM variable called "state" and an output FSM variable called 
+      "next_state". There are four states in the state machine that are represented with the parameters located in this 
+      module (STATE_IDLE, STATE_HEAD, STATE_DATA, STATE_TAIL). There are a total of eight (8) state transitions that this 
+      FSM can take. They are the following:
     </para>
     <para>
       <orderedlist>
-        <listitem><para>STATE_IDLE -> STATE_IDLE (loopback)</para></listitem>
-        <listitem><para>STATE_IDLE -> STATE_HEAD</para></listitem>
-        <listitem><para>STATE_HEAD -> STATE_DATA</para></listitem>
-        <listitem><para>STATE_HEAD -> STATE_TAIL</para></listitem>
-        <listitem><para>STATE_DATA -> STATE_DATA (loopback)</para></listitem>
-        <listitem><para>STATE_DATA -> STATE_TAIL</para></listitem>
-        <listitem><para>STATE_TAIL -> STATE_HEAD</para></listitem>
-        <listitem><para>STATE_TAIL -> STATE_IDLE</para></listitem>
+        <listitem><para><code>STATE_IDLE -> STATE_IDLE</code> (loopback)</para></listitem>
+        <listitem><para><code>STATE_IDLE -> STATE_HEAD</code></para></listitem>
+        <listitem><para><code>STATE_HEAD -> STATE_DATA</code></para></listitem>
+        <listitem><para><code>STATE_HEAD -> STATE_TAIL</code></para></listitem>
+        <listitem><para><code>STATE_DATA -> STATE_DATA</code> (loopback)</para></listitem>
+        <listitem><para><code>STATE_DATA -> STATE_TAIL</code></para></listitem>
+        <listitem><para><code>STATE_TAIL -> STATE_HEAD</code></para></listitem>
+        <listitem><para><code>STATE_TAIL -> STATE_IDLE</code></para></listitem>
       </orderedlist>
     </para>
     <para>
-    All attributes that specify information for an FSM are a comma-separated list of values that contain the following 
-    information:
+      All attributes that specify information for an FSM are a comma-separated list of values that contain the following 
+      information:
     </para>
     <para>
       <orderedlist>
@@ -113,12 +117,12 @@
             <itemizedlist>
               <listitem>
                 <para>
-                MUST be first value in the attribute list
+                  MUST be first value in the attribute list
                 </para>
               </listitem>
               <listitem>
                 <para>
-                Specifies to Covered that this attribute contains information for an FSM that Covered needs to handle.
+                  Specifies to Covered that this attribute contains information for an FSM that Covered needs to handle.
                 </para>
               </listitem>
             </itemizedlist>
@@ -130,17 +134,17 @@
             <itemizedlist>
               <listitem>
                 <para>
-                MUST be second value in the attribute list
+                  MUST be second value in the attribute list
                 </para>
               </listitem>
               <listitem>
                 <para>
-                Specifies a alphanumeric name for this FSM.
+                  Specifies a alphanumeric name for this FSM.
                 </para>
               </listitem>
               <listitem>
                 <para>
-                The name will eventually be used to tie individual attributes that specify information for the same FSM.
+                  The name will eventually be used to tie individual attributes that specify information for the same FSM.
                 </para>
               </listitem>
             </itemizedlist>
@@ -152,28 +156,28 @@
             <itemizedlist>
               <listitem>
                 <para>
-                Syntax: <code>is="<emphasis>expression</emphasis>"</code>
+                  Syntax: <code>is="<emphasis>expression</emphasis>"</code>
                 </para>
               </listitem>
               <listitem>
                 <para>
-                If this is specified, MUST be specified third in the list.
+                  If this is specified, MUST be specified third in the list.
                 </para>
               </listitem>
               <listitem>
                 <para>
-                Specifies the input state expression.
+                  Specifies the input state expression.
                 </para>
               </listitem>
               <listitem>
                 <para>
-                Can be a combination of signal names, signal bit selects, and concatenation operators.
+                  Can be a combination of signal names, signal bit selects, and concatenation operators.
                 </para>
               </listitem>
               <listitem>
                 <para>
-                See <xref linkend="section.score.fsm"/> for more information on the specification of an input 
-                state expression.
+                  See <xref linkend="section.score.fsm"/> for more information on the specification of an input 
+                  state expression.
                 </para>
               </listitem>
             </itemizedlist>
@@ -185,29 +189,29 @@
             <itemizedlist>
               <listitem>
                 <para>
-                Syntax: <code>os="<emphasis>expression</emphasis>"</code>
+                  Syntax: <code>os="<emphasis>expression</emphasis>"</code>
                 </para>
               </listitem>
               <listitem>
                 <para>
-                If the input state expression is specified, MUST be fourth value in list; otherwise, MUST be third 
-                value in list.
+                  If the input state expression is specified, MUST be fourth value in list; otherwise, MUST be third 
+                  value in list.
                 </para>
               </listitem>
               <listitem>
                 <para>
-                Specifies the output state expression of the FSM.
+                  Specifies the output state expression of the FSM.
                 </para>
               </listitem>
               <listitem>
                 <para>
-                Can be a combination of signal names, signal bit selects, and concatenation operators.
+                  Can be a combination of signal names, signal bit selects, and concatenation operators.
                 </para>
               </listitem>
               <listitem>
                 <para>
-                See <xref linkend="section.score.fsm"/> for more information on the specification of an output 
-                state expression.
+                  See <xref linkend="section.score.fsm"/> for more information on the specification of an output 
+                  state expression.
                 </para>
               </listitem>
             </itemizedlist>
@@ -219,23 +223,23 @@
             <itemizedlist>
               <listitem>
                 <para>
-                Syntax: <code>trans="<emphasis>from_state</emphasis>-><emphasis>to_state</emphasis>"</code>
+                  Syntax: <code>trans="<emphasis>from_state</emphasis>-><emphasis>to_state</emphasis>"</code>
                 </para>
               </listitem>
               <listitem>
                 <para>
-                MUST be specified after the above has been specified in the list.
+                  MUST be specified after the above has been specified in the list.
                 </para>
               </listitem>
               <listitem>
                 <para>
-                Arguments MUST be constant values (parameters; numerical values -- binary, octal, decimal, hexidecimal; 
-                and defines that equate to one of these two types of values).
+                  Arguments MUST be constant values (parameters; numerical values -- binary, octal, decimal, hexidecimal; 
+                  and defines that equate to one of these two types of values).
                 </para>
               </listitem>
               <listitem>
                 <para>
-                Each transition that is specified is a unique value in the attribute list.
+                  Each transition that is specified is a unique value in the attribute list.
                 </para>
               </listitem>
             </itemizedlist>
@@ -244,13 +248,13 @@
       </orderedlist>
     </para>
     <para>
-    To specify the FSM attribute in the above example, including input state, output state and all state transitions, 
-    the code would be modified to look like:
+      To specify the FSM attribute in the above example, including input state, output state and all state transitions, 
+      the code would be modified to look like:
     </para>
     <para>
-      <programlisting><![CDATA[
-  ...
-      
+      <example xml:id="example.attr.fsm">
+        <title>FSM Attribute Code Sample</title>
+        <programlisting><![CDATA[
   (* covered_fsm, channel, is="state", os="next_state",
                            trans="STATE_IDLE->STATE_IDLE",
                            trans="STATE_IDLE->STATE_HEAD",
@@ -261,8 +265,9 @@
                            trans="STATE_TAIL->STATE_HEAD",
                            trans="STATE_TAIL->STATE_IDLE" *)
   always @(reset or state or head or tail or valid)
-    ...    
-      ]]></programlisting>
+    ...
+        ]]></programlisting>
+      </example>
     </para>
   </sect1>
   

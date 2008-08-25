@@ -1,58 +1,71 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 4. Race Condition Checking</title><meta name="generator" content="DocBook XSL Stylesheets V1.71.1"><link rel="start" href="index.html" title="Covered"><link rel="up" href="part.overview.html" title="Part I. Overview"><link rel="prev" href="chapter.boundaries.html" title="Chapter 3. Coverage Boundaries"><link rel="next" href="chapter.attr.html" title="Chapter 5. Inline Attributes"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 4. Race Condition Checking</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter.boundaries.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part I. Overview</th><td width="20%" align="right"> <a accesskey="n" href="chapter.attr.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.race"></a>Chapter 4. Race Condition Checking</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.race.html#id430004">4.1. Checked Coding Guidelines</a></span></dt><dt><span class="sect1"><a href="chapter.race.html#section.race.handling">4.2. Race Condition Handling</a></span></dt><dt><span class="sect1"><a href="chapter.race.html#section.race.avoiding">4.3. Avoiding Race Condition Checking</a></span></dt><dt><span class="sect1"><a href="chapter.race.html#id430227">4.4. Reporting Race Conditions</a></span></dt></dl></div><p>
-  Due to Covered's method of abstracting coverage from a dumpfile, a partial "resimulation" of the design is needed 
-  to obtain proper statistics for line, combinational logic and FSM metrics. Therefore, accurately resimulating what 
-  occurred in the actual simulation is a requirement for obtaining correct results. This can be easily achieved so 
-  long as the design doesn't contain any code that could result in potential race conditions.
-  </p><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id430004"></a>4.1. Checked Coding Guidelines</h2></div></div></div><p>
-    To avoid this problem Covered performs automatic race condition checking on the specified design after parsing 
-    has been completed but before simulation/scoring is performed. All statement blocks in the design that don't 
-    adhere to certain coding guidelines are removed from coverage consideration by Covered. By following these coding 
-    guidelines, a design should be void of race condition scenarios that would lead to faulty simulation results. The 
-    following coding guidelines are applied by Covered when checking for race conditions:
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 4. Race Condition Checking</title><link rel="stylesheet" href="covered.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.74.0"><link rel="home" href="index.html" title="Covered"><link rel="up" href="part.overview.html" title="Part I. Overview"><link rel="prev" href="chapter.boundaries.html" title="Chapter 3. Coverage Boundaries"><link rel="next" href="chapter.attr.html" title="Chapter 5. Inline Attributes"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 4. Race Condition Checking</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter.boundaries.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part I. Overview</th><td width="20%" align="right"> <a accesskey="n" href="chapter.attr.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.race"></a>Chapter 4. Race Condition Checking</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.race.html#section.race.guidelines">4.1. Checked Coding Guidelines</a></span></dt><dt><span class="sect1"><a href="chapter.race.html#section.race.handling">4.2. Race Condition Handling</a></span></dt><dt><span class="sect1"><a href="chapter.race.html#section.race.avoiding">4.3. Avoiding Race Condition Checking</a></span></dt><dt><span class="sect1"><a href="chapter.race.html#section.race.conditions">4.4. Reporting Race Conditions</a></span></dt></dl></div><p>
+    Due to Covered's method of abstracting coverage from a dumpfile, a partial "resimulation" of the design is needed 
+    to obtain proper statistics for line, combinational logic and FSM metrics. Therefore, accurately resimulating what 
+    occurred in the actual simulation is a requirement for obtaining correct results. This can be easily achieved so 
+    long as the design doesn't contain any code that could result in potential race conditions.
+  </p><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.race.guidelines"></a>4.1. Checked Coding Guidelines</h2></div></div></div><p>
+      To avoid this problem Covered performs automatic race condition checking on the specified design after parsing 
+      has been completed but before simulation/scoring is performed. All statement blocks in the design that don't 
+      adhere to certain coding guidelines are removed from coverage consideration by Covered. By following these coding 
+      guidelines, a design should be void of race condition scenarios that would lead to faulty simulation results. The 
+      following coding guidelines are applied by Covered when checking for race conditions:
     </p><p>
-      </p><div class="orderedlist"><ol type="1"><li><p>All sequential logic and latches use non-blocking assignments.</p></li><li><p>All combinational logic in an always block uses blocking assignments.</p></li><li><p>
-          All mixed sequential and combinational logic in the same always block uses non-blocking assignments.
-          </p></li><li><p>Blocking and non-blocking assignments should not be used in the same always block.</p></li><li><p>Assignments made to a variable should only be done within one always block.</p></li><li><p>
-          The $strobe system call should only be used to display variables that were assigned using non-blocking 
-          assignments. (Not currently implemented)
-          </p></li><li><p>No #0 procedural assignments should exist. (Not currently implemented)</p></li></ol></div><p>
+      </p><div class="orderedlist"><ol type="1"><li><p>
+            All sequential logic and latches use non-blocking assignments.
+          </p></li><li><p>
+            All combinational logic in an always block uses blocking assignments.
+          </p></li><li><p>
+            All mixed sequential and combinational logic in the same always block uses non-blocking assignments.
+          </p></li><li><p>
+            Blocking and non-blocking assignments should not be used in the same always block.
+          </p></li><li><p>
+            Assignments made to a variable should only be done within one always block.
+          </p></li><li><p>
+            The $strobe system call should only be used to display variables that were assigned using non-blocking 
+            assignments. (Not currently implemented)
+          </p></li><li><p>
+            No #0 procedural assignments should exist. (Not currently implemented)
+          </p></li></ol></div><p>
     </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.race.handling"></a>4.2. Race Condition Handling</h2></div></div></div><p>
     If Covered detects a block as violating any one of the above mentioned coding guidelines, it will do one of two 
     things depending on options specified to the score command by the user.
     </p><p>
       </p><div class="orderedlist"><ol type="1"><li><p>
-          If the -rS, -rW or none of the -r options are specified, Covered will simply remove the non-conforming always 
-          block from coverage consideration and continue with scoring. -rW will display a message describing detected 
-          race conditions during the scoring command while the -rS option will display no messages.
+            If the <span class="bold"><strong><code class="code">-rS</code></strong></span>, <span class="bold"><strong><code class="code">-rW</code></strong></span> 
+            or none of the -r options are specified, Covered will simply remove the non-conforming always block from 
+            coverage consideration and continue with scoring. <span class="bold"><strong><code class="code">-rW</code></strong></span> will 
+            display a message describing detected race conditions during the scoring command while the 
+            <span class="bold"><strong><code class="code">-rS</code></strong></span> option will display no messages.
           </p></li><li><p>
-          If the -rE option is specified, Covered will halt the score command after all race condition checking has 
-          been performed with a message to the user specifying how many always blocks were found to be in 
-          non-compliance to the race-condition-free coding guidelines.
+            If the <span class="bold"><strong><code class="code">-rE</code></strong></span> option is specified, Covered will halt the score 
+            command after all race condition checking has been performed with a message to the user specifying how many 
+            always blocks were found to be in non-compliance to the race-condition-free coding guidelines.
           </p></li></ol></div><p>
     </p><p>
-    The first mode of operation is the recommended mode of operation as this will allow Covered to continue calculating 
-    coverage information for the design while still providing accurate coverage information for the logic that is still 
-    under consideration. The second mode of operation is meant to allow the user to use Covered as a race-condition 
-    checking tool.
+      The first mode of operation is the recommended mode of operation as this will allow Covered to continue calculating 
+      coverage information for the design while still providing accurate coverage information for the logic that is still 
+      under consideration. The second mode of operation is meant to allow the user to use Covered as a race-condition 
+      checking tool.
     </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.race.avoiding"></a>4.3. Avoiding Race Condition Checking</h2></div></div></div><p>
-    Covered has two means of avoiding race condition checking: (1) skip race condition checking for the entire design 
-    altogether or (2) place inline pragmas around specific logic blocks to avoid checking. The main advantage for using 
-    either of these two methods is to allow Covered to score more of the design that would otherwise be excluded due to
-    failing a static race condition checkpoint.  The main disadvantage to avoiding race condition checking using either 
-    of these methods is that you could potentially be ignoring code that contains an actual race condition, causing 
-    Covered to potentially generate incorrect coverage information without warning. These types of "errors" are not 
-    assumed to be Covered bugs.
+      Covered has two means of avoiding race condition checking: (1) skip race condition checking for the entire design 
+     altogether or (2) place inline pragmas around specific logic blocks to avoid checking. The main advantage for using 
+      either of these two methods is to allow Covered to score more of the design that would otherwise be excluded due to
+      failing a static race condition checkpoint.  The main disadvantage to avoiding race condition checking using either 
+      of these methods is that you could potentially be ignoring code that contains an actual race condition, causing 
+      Covered to potentially generate incorrect coverage information without warning. These types of "errors" are not 
+      assumed to be Covered bugs.
     </p><p>
-    To exclude the entire design from race condition checking, simply specify the -rI option on the score command-line. 
-    This will cause Covered to skip the race condition checking phase entirely, outputting a warning message (unless 
-    the global -Q option has been specified). The use of this command-line option is highly discouraged due to its 
-    general assumption by the user that the entire design is void of race conditions.
+      To exclude the entire design from race condition checking, simply specify the 
+      <span class="bold"><strong><code class="code">-rI</code></strong></span> option on the score command-line.  This will cause Covered to skip 
+      the race condition checking phase entirely, outputting a warning message (unless the global -Q option has been 
+      specified). The use of this command-line option is highly discouraged due to its general assumption by the user that 
+      the entire design is void of race conditions.
     </p><p>
-    To exclude portions of the design from race condition checking, the user may also place inline comment-based 
-    pragmas in the design and specify the -rP option to the score command-line. The inline pragmas look like the 
-    following:
+      To exclude portions of the design from race condition checking, the user may also place inline comment-based 
+      pragmas in the design and specify the <span class="bold"><strong><code class="code">-rP</code></strong></span> option to the score 
+      command-line. The inline pragmas look like the following:
     </p><p>
-      </p><pre class="programlisting">
+      </p><div class="example"><a name="example.race"></a><p class="title"><b>Example 4.1. Using a Race Condition Pragma</b></p><div class="example-contents"><pre class="programlisting">
   module foobar;
       
     ...
@@ -66,28 +79,29 @@
     ...
       
   endmodule
-      </pre><p>
+        </pre></div></div><p><br class="example-break">
     </p><p>
-    This example will cause the initial block surrounded by the "racecheck" pragmas to be ignored from race condition
-    checking, thus making it available for coverage consideration. If there are any race condition rules that this block
-    contains or is a part of, they will not be reported.
+      This example will cause the initial block surrounded by the <code class="code">racecheck</code> pragmas to be ignored from race condition
+      checking, thus making it available for coverage consideration. If there are any race condition rules that this block
+      contains or is a part of, they will not be reported.
     </p><p>
-    The keyword "racecheck" is the default pragma keyword for race condition checking avoidance; however, if this name
-    needs to be changed to something else by the user (i.e., if a "racecheck" is used by another tool and has a 
-    different meaning or format), the user may make this keyword anything they please as long as the meaning is 
-    preserved (i.e., "<span class="emphasis"><em>keyword</em></span> off" means that race condition checking should be turned off for all 
-    subsequent code until its matching "<span class="emphasis"><em>keyword</em></span> on" pragma is seen). The new name of this keyword 
-    is passed to the -rP option by specifying -rP=<span class="emphasis"><em>keyword</em></span>. It should also be noted that race 
-    condition pragmas can be embedded within each other (all code within the outside pair are removed from race 
-    checking) and race condition avoidance pragmas ("racecheck off") are in effect on a file-basis -- that is, they are 
-    in effect even beyond their current scope but are no longer in effect after the current file.
-    </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id430227"></a>4.4. Reporting Race Conditions</h2></div></div></div><p>
-    Even though race condition information is displayed (assuming the -rS option was not specified in the score 
-    command-line) during the scoring process, it may be convenient to view this information in a generated report as 
-    well. Because of this need, Covered saves all race condition information to the CDD file for use in using the 
-    report command. By specifying 'r' in the -m option to the report command (race condition report output is not 
-    turned on by default), the statement blocks which were eliminated from coverage consideration will be output to the 
-    coverage report file. Summary coverage will contain the total number of statement blocks eliminated for each 
-    module. Verbose coverage will contain each eliminated statement block, organized by module, specifying both the 
-    starting line of the eliminated statement block and the reason for why the statement block was removed.
+      The keyword <code class="code">racecheck</code> is the default pragma keyword for race condition checking avoidance; however, 
+      if this name needs to be changed to something else by the user (i.e., if <code class="code">racecheck</code> is used by another 
+      tool and has a different meaning or format), the user may make this keyword anything they please as long as the meaning is 
+      preserved (i.e., <code class="code"><span class="emphasis"><em>keyword</em></span> off</code> means that race condition checking should be turned 
+      off for all subsequent code until its matching <code class="code"><span class="emphasis"><em>keyword</em></span> on</code> pragma is seen). The 
+      new name of this keyword is passed to the -rP option by specifying 
+      <span class="bold"><strong><code class="code">-rP=<span class="emphasis"><em>keyword</em></span></code></strong></span>. It should also be noted that race 
+      condition pragmas can be embedded within each other (all code within the outside pair are removed from race 
+      checking) and race condition avoidance pragmas (<code class="code">racecheck off</code>) are in effect on a file-basis -- that is, 
+      they are in effect even beyond their current scope but are no longer in effect after the current file.
+    </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.race.conditions"></a>4.4. Reporting Race Conditions</h2></div></div></div><p>
+      Even though race condition information is displayed (assuming the -rS option was not specified in the score 
+      command-line) during the scoring process, it may be convenient to view this information in a generated report as 
+      well. Because of this need, Covered saves all race condition information to the CDD file for use in using the 
+      report command. By specifying 'r' in the -m option to the report command (race condition report output is not 
+      turned on by default), the statement blocks which were eliminated from coverage consideration will be output to the 
+      coverage report file. Summary coverage will contain the total number of statement blocks eliminated for each 
+      module. Verbose coverage will contain each eliminated statement block, organized by module, specifying both the 
+      starting line of the eliminated statement block and the reason for why the statement block was removed.
     </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="chapter.boundaries.html"><img src="img/prev.gif" alt="Prev"></a> </td><td width="20%" align="center"><a accesskey="u" href="part.overview.html"><img src="img/up.gif" alt="Up"></a></td><td width="40%" align="right"> <a accesskey="n" href="chapter.attr.html"><img src="img/next.gif" alt="Next"></a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 3. Coverage Boundaries </td><td width="20%" align="center"><a accesskey="h" href="index.html"><img src="img/home.gif" alt="Home"></a></td><td width="40%" align="right" valign="top"> Chapter 5. Inline Attributes</td></tr></table></div></body></html>

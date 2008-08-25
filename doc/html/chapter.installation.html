@@ -1,84 +1,97 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 6. Installation</title><meta name="generator" content="DocBook XSL Stylesheets V1.71.1"><link rel="start" href="index.html" title="Covered"><link rel="up" href="part.installation.html" title="Part II. Installation"><link rel="prev" href="part.installation.html" title="Part II. Installation"><link rel="next" href="part.command.line.usage.html" title="Part III. Command-line Usage"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 6. Installation</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="part.installation.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part II. Installation</th><td width="20%" align="right"> <a accesskey="n" href="part.command.line.usage.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.installation"></a>Chapter 6. Installation</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.installation.html#id431337">6.1. Prerequisites</a></span></dt><dt><span class="sect1"><a href="chapter.installation.html#id431438">6.2. Downloading source</a></span></dt><dt><span class="sect1"><a href="chapter.installation.html#section.configuring">6.3. Configuring the build</a></span></dt><dt><span class="sect1"><a href="chapter.installation.html#id431670">6.4. Compiling and Installing</a></span></dt></dl></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id431337"></a>6.1. Prerequisites</h2></div></div></div><p>
-    The goal of Covered was to create a tool that has very few requirements to allow it to be compiled and run on all 
-    platforms. The following is a list of all utilities/resources required to compile Covered. However, Covered is 
-    primarily developed on RedHat/Fedora Core Linux and Mac OS X and as such is primarily tested by the developers on these
-    platforms.
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 6. Installation</title><link rel="stylesheet" href="covered.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.74.0"><link rel="home" href="index.html" title="Covered"><link rel="up" href="part.installation.html" title="Part II. Installation"><link rel="prev" href="part.installation.html" title="Part II. Installation"><link rel="next" href="part.command.line.usage.html" title="Part III. Command-line Usage"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 6. Installation</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="part.installation.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part II. Installation</th><td width="20%" align="right"> <a accesskey="n" href="part.command.line.usage.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.installation"></a>Chapter 6. Installation</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.installation.html#section.installation.prereqs">6.1. Prerequisites</a></span></dt><dt><span class="sect1"><a href="chapter.installation.html#section.installation.download">6.2. Downloading source</a></span></dt><dt><span class="sect1"><a href="chapter.installation.html#section.installation.configuring">6.3. Configuring the build</a></span></dt><dt><span class="sect1"><a href="chapter.installation.html#section.installation.compandinstall">6.4. Compiling and Installing</a></span></dt></dl></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.installation.prereqs"></a>6.1. Prerequisites</h2></div></div></div><p>
+      The goal of Covered was to create a tool that has very few requirements to allow it to be compiled and run on all 
+      platforms. The following is a list of all utilities/resources required to compile Covered. However, Covered is 
+      primarily developed on RedHat/Fedora Core Linux and Mac OS X and as such is primarily tested by the developers on these
+      platforms.
     </p><p>
-      </p><div class="itemizedlist"><ul type="disc"><li><p><a href="http://www.gnu.org/software/gcc/" target="_top">gcc</a> (Version 2.96 or higher)</p></li><li><p><a href="http://www.gnu.org/software/flex/" target="_top">flex</a> (Version 2.5.4 or higher)</p></li><li><p><a href="http://www.gnu.org/software/bison/" target="_top">bison</a> (Version 1.28 or higher)</p></li><li><p><a href="http://www.gnu.org/software/make/" target="_top">GNU make</a> (Version 3.27.1 or higher)</p></li><li><p><a href="http://www.gnu.org/software/gperf/" target="_top">GNU gperf</a> (Version 2.7.2 or higher)</p></li><li><p>
-            <a href="http://tcl.sourceforge.net/" target="_top">Tcl/Tk</a> (Versions 8.4 or higher)
-            </p><div class="itemizedlist"><ul type="circle"><li><p><a href="http://www.nemethi.de/" target="_top">tablelist Tcl/Tk widget</a> (Version 4.9 or higher)</p></li></ul></div><p>
+      </p><div class="itemizedlist"><ul type="disc"><li><p><a class="ulink" href="http://www.gnu.org/software/gcc/" target="_top">gcc</a> (Version 2.96 or higher)</p></li><li><p><a class="ulink" href="http://www.gnu.org/software/flex/" target="_top">flex</a> (Version 2.5.4 or higher)</p></li><li><p><a class="ulink" href="http://www.gnu.org/software/bison/" target="_top">bison</a> (Version 1.28 or higher)</p></li><li><p><a class="ulink" href="http://www.gnu.org/software/make/" target="_top">GNU make</a> (Version 3.27.1 or higher)</p></li><li><p><a class="ulink" href="http://www.gnu.org/software/gperf/" target="_top">GNU gperf</a> (Version 2.7.2 or higher)</p></li><li><p>
+            <a class="ulink" href="http://tcl.sourceforge.net/" target="_top">Tcl/Tk</a> (Versions 8.4 or higher)
+            </p><div class="itemizedlist"><ul type="circle"><li><p><a class="ulink" href="http://www.nemethi.de/" target="_top">tablelist Tcl/Tk widget</a> (Version 4.9 or higher)</p></li></ul></div><p>
           </p></li></ul></div><p>
     </p><p>
-    Covered is primarily developed on Fedora Core but has been known to compile with both 32-bit and 64-bit compilers 
-    that contain the general GNU library of tools. It has also been compiled and run on Cygwin and Mac OS X.
-    </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id431438"></a>6.2. Downloading source</h2></div></div></div><p>
-    To download the source files in .tar.gz format, go to the following URL:
+      Covered is primarily developed on Fedora Core but has been known to compile with both 32-bit and 64-bit compilers 
+      that contain the general GNU library of tools. It has also been compiled and run on Cygwin and Mac OS X.
+    </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.installation.download"></a>6.2. Downloading source</h2></div></div></div><p>
+      To download the source files in .tar.gz format, go to the following URL:
     </p><p>
-      <a href="http://covered.sourceforge.net/downloads/" target="_top">http://covered.sourceforge.net/downloads/</a>
+      <a class="ulink" href="http://covered.sourceforge.net/downloads/" target="_top">http://covered.sourceforge.net/downloads/</a>
     </p><p>
-    Double-click on the .tar.gz version that you wish to install. The browser should immediately bring up a window asking 
-    if you would like to save to disk or open immediately. Choose the "Save to Disk" option. Another window will pop up, 
-    allowing you to choose the directory to store the tarball in. After selecting a directory, click the "Save" button. The 
-    download utility will begin downloading the tarball to the selected directory.
+      Double-click on the .tar.gz version that you wish to install. The browser should immediately bring up a window asking 
+      if you would like to save to disk or open immediately. Choose the "Save to Disk" option. Another window will pop up, 
+      allowing you to choose the directory to store the tarball in. After selecting a directory, click the "Save" button. The 
+      download utility will begin downloading the tarball to the selected directory.
     </p><p>
-    Once you have downloaded a tarball, enter the following to unzip and untar the package:
+      Once you have downloaded a tarball, enter the following to unzip and untar the package:
     </p><p>
       <code class="code">&gt; gzip -dc <span class="emphasis"><em>tarball_filename</em></span> | tar xvf -</code>
     </p><p>
-    This will create a directory called covered-<span class="emphasis"><em>version</em></span>, where <span class="emphasis"><em>version</em></span> will be of the
-    form <span class="emphasis"><em>major version.minor version</em></span> for stable releases or <span class="emphasis"><em>date</em></span> for development
-    releases.  Enter that directory to begin configuring, building and compiling Covered from source.
-    </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.configuring"></a>6.3. Configuring the build</h2></div></div></div><p>
-    At this point, you are ready to configure the build environment to create the executables, libraries and/or documentation 
-    for Covered. However, before you configure the build environment, you will need to make a few decisions which will lead to 
-    different options given to the configure script. These questions are the following:
+      This will create a directory called covered-<span class="emphasis"><em>version</em></span>, where <span class="emphasis"><em>version</em></span> will be of the
+      form <span class="emphasis"><em>major version.minor version</em></span> for stable releases or <span class="emphasis"><em>date</em></span> for development
+      releases.  Enter that directory to begin configuring, building and compiling Covered from source.
+    </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.installation.configuring"></a>6.3. Configuring the build</h2></div></div></div><p>
+      At this point, you are ready to configure the build environment to create the executables, libraries and/or documentation 
+      for Covered. However, before you configure the build environment, you will need to make a few decisions which will lead to 
+      different options given to the configure script. These questions are the following:
     </p><p>
-      </p><div class="orderedlist"><ol type="1"><li><p>Do you need to debug Covered?  (for most users, the answer to this will be "no")</p></li><li><p>Do you want to profile Covered's internal functionality?  (for most users, the answer to this will be "no")</p></li><li><p>Will you being using Covered as a VPI module and, if so, what simulator(s) will you need VPI modules built for?</p></li><li><p>Do you want to use Covered's Tcl/Tk GUI for interactive coverage analysis or just the command-line created reports?</p></li></ol></div><p>
+      </p><div class="orderedlist"><ol type="1"><li><p>
+            <span class="underline">Do you need to debug Covered?  (for most users, the answer to this will be "no")</span>
+          </p><p>
+            If the answer to this question is yes, configure the build environment with the 
+            <span class="bold"><strong><code class="code">--enable-debug</code></strong></span> option to the configure script. Doing so will allow you to use the 
+            global -D option and/or the -cli (<a class="xref" href="chapter.debug.html#section.cli" title="14.2. Command-Line Interface (CLI)">Section 14.2, &#8220;Command-Line Interface (CLI)&#8221;</a>) score command option for debugging; however, it will 
+            also have the side effect of causing the score command to run noticably slower.  For normal usage of Covered, this 
+            option should not be specified when configuring.
+          </p></li><li><p>
+            <span class="underline">Do you want to profile Covered's internal functionality?  (for most users, the answer to this will be "no")</span>
+          </p><p>
+            If the answer to this question is yes, configure the build environment with the 
+            <span class="bold"><strong><code class="code">--enable-profiling</code></strong></span> option to the configure script. Doing so will allow you to use the 
+            global -P option to generate an output file containing internal profiling information for the run command. See 
+            <a class="xref" href="chapter.debug.html#section.profiling" title="14.3. Source Code Profiling">Section 14.3, &#8220;Source Code Profiling&#8221;</a> for more information on the -P option.
+          </p></li><li><p>
+            <span class="underline">Will you being using Covered as a VPI module and, if so, what simulator(s) will you need VPI modules built for?</span>
+          </p><p>
+            If the answer to this question is yes and you need to build a VPI module for the Icarus Verilog simulation tool, simply add 
+            <span class="bold"><strong><code class="code">--with-iv</code></strong></span> on the configure command-line. If a VPI shared object module is needed for the 
+            Cver simulator, simply add <span class="bold"><strong><code class="code">--with-cver=<span class="emphasis"><em>cver_include_dir</em></span></code></strong></span> on the 
+            configure command line, where <span class="emphasis"><em>cver_include_dir</em></span> specifies the directory that contains the vpi_user.h 
+            file. If a VPI shared object module is needed for the VCS simulator, simply add 
+            <span class="bold"><strong><code class="code">--with-vcs=<span class="emphasis"><em>vcs_include_dir</em></span></code></strong></span> on the configure command line, where 
+            <span class="emphasis"><em>vcs_include_dir</em></span> specifies the directory that contains the vpi_user.h file.
+          </p></li><li><p>
+            <span class="underline">Do you want to use Covered's Tcl/Tk GUI for interactive coverage analysis or just the command-line created reports?</span>
+          </p><p>
+            If the answer to this question is yes and you have a Tcl/Tk distribution that the configure script cannot find (i.e., the 
+            tcl-config and tk-config scripts exist in a non-standard directory location), please specify the 
+            <span class="bold"><strong><code class="code">--with-tcl-config=<span class="emphasis"><em>tcl-config_pathname</em></span></code></strong></span> and 
+            <span class="bold"><strong><code class="code">--with-tk-config=<span class="emphasis"><em>tk-config_pathname</em></span></code></strong></span> options to the configure script.  
+            If the answer to this question is no, specify the <span class="bold"><strong><code class="code">--with-tcltk=no</code></strong></span> option to the configure 
+            script to cause the GUI to not be built.
+          </p></li></ol></div><p>
     </p><p>
-    If the answer to question (1) is yes, configure the build environment with the --enable-debug option to the configure script. Doing so will 
-    allow you to use the global -D option and/or the -cli (<a href="chapter.debug.html#section.cli" title="14.2. Command-Line Interface (CLI)">Section 14.2, &#8220;Command-Line Interface (CLI)&#8221;</a>) score command option for debugging; however, it will also 
-    have the side effect of causing the score command to run noticably slower. For normal usage of Covered, this option should not be specified 
-    when configuring.
-    </p><p>
-    If the answer to question (2) is yes, configure the build environment with the --enable-profiling option to the configure script. Doing so 
-    will allow you to use the global -P option to generate an output file containing internal profiling information for the run command. See 
-    <a href="chapter.debug.html#section.profiling" title="14.3. Source Code Profiling">Section 14.3, &#8220;Source Code Profiling&#8221;</a> for more information on the -P option.
-    </p><p>
-    If the answer to question (3) is yes and you need to build a VPI module for the Icarus Verilog simulation tool, simply add --with-iv on the 
-    configure command-line. If a VPI shared object module is needed for the Cver simulator, simply add 
-    <span class="bold"><strong>--with-cver=<span class="emphasis"><em>cver_include_dir</em></span></strong></span> on the configure command line, where 
-    <span class="emphasis"><em>cver_include_dir</em></span> specifies the directory that contains the vpi_user.h file. If a VPI shared object module is needed for the 
-    VCS simulator, simply add <span class="bold"><strong>--with-vcs=<span class="emphasis"><em>vcs_include_dir</em></span></strong></span> on the configure command line, where 
-    <span class="emphasis"><em>vcs_include_dir</em></span> specifies the directory that contains the vpi_user.h file.
-    </p><p>
-    If the answer to question (4) is yes and you have a Tcl/Tk distribution that the configure script cannot find (i.e., the tcl-config and tk-config
-    scripts exist in a non-standard directory location), please specify the <span class="emphasis"><em>--with-tcl-config=<span class="emphasis"><em>tcl-config_pathname</em></span></em></span> 
-    and <span class="bold"><strong>--with-tk-config=<span class="emphasis"><em>tk-config_pathname</em></span></strong></span> options to the configure script.  If the answer to 
-    question (4) is no, specify the <span class="bold"><strong>--with-tcltk=no</strong></span> option to the configure script to cause the GUI to not be built.
-    </p><p>
-    Once you have determined which configuration options you need, simply enter the following command:
+      Once you have determined which configuration options you need, simply enter the following command:
     </p><p>
       <code class="code">
       &gt; ./configure <span class="emphasis"><em>options</em></span>
       </code>
     </p><p>
-    This command will create the Makefiles/include files necessary for your machine to compile the source code correctly. If any errors are generated 
-    during this command run, it is usually an indication that some program or library is missing from your computer that is necessary for Covered 
-    to compile/run. Please install any missing programs/libraries and type this command again.
-    </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id431670"></a>6.4. Compiling and Installing</h2></div></div></div><p>
-    If the configure script completes successfully, you may compile the source with the following command:
+      This command will create the Makefiles/include files necessary for your machine to compile the source code correctly. If any errors are generated 
+      during this command run, it is usually an indication that some program or library is missing from your computer that is necessary for Covered 
+      to compile/run. Please install any missing programs/libraries and type this command again.
+    </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.installation.compandinstall"></a>6.4. Compiling and Installing</h2></div></div></div><p>
+      If the configure script completes successfully, you may compile the source with the following command:
     </p><p>
       <code class="code">
       &gt; make
       </code>
     </p><p>
-    This will begin the process of compiling/linking the source code for Covered. This stage may take a while. When the source files have been compiled, 
-    the covered executable file will have been created. To install this executable in your <code class="code">/usr/local/bin</code> directory, enter the following command:
+      This will begin the process of compiling/linking the source code for Covered. This stage may take a while. When the source files have been compiled, 
+      the covered executable file will have been created. To install this executable in your <code class="code">/usr/local/bin</code> directory, enter the following command:
     </p><p>
       <code class="code">
       &gt; make install
       </code>
     </p><p>
-    This will install the covered executable and manpage help files. Once covered is installed, make sure that <span class="emphasis"><em>/usr/local/bin</em></span> is 
-    in your environment path. You are now ready to run Covered.
+      This will install the covered executable and manpage help files. Once covered is installed, make sure that <code class="code">/usr/local/bin</code> is 
+      in your environment path. You are now ready to run Covered.
     </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="part.installation.html"><img src="img/prev.gif" alt="Prev"></a> </td><td width="20%" align="center"><a accesskey="u" href="part.installation.html"><img src="img/up.gif" alt="Up"></a></td><td width="40%" align="right"> <a accesskey="n" href="part.command.line.usage.html"><img src="img/next.gif" alt="Next"></a></td></tr><tr><td width="40%" align="left" valign="top">Part II. Installation </td><td width="20%" align="center"><a accesskey="h" href="index.html"><img src="img/home.gif" alt="Home"></a></td><td width="40%" align="right" valign="top"> Part III. Command-line Usage</td></tr></table></div></body></html>

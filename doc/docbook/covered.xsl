@@ -35,6 +35,7 @@
   <xsl:param name="navig.graphics" select="1"/>
   <xsl:param name="base.dir" select="'../html/'"/>
   <xsl:param name="toc.max.depth" select="2"/>
+  <xsl:param name="html.stylesheet" select="'covered.css'"/>
 
   <!-- Customized templates -->
   <xsl:template name="body.attributes">

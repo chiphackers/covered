@@ -1,7 +1,7 @@
 <chapter id="chapter.intro">
   <title>Introduction</title>
 
-  <sect1>
+  <sect1 id="section.intro.covered">
     <title>What is Covered?</title>
     <para>
     Covered is a Verilog code coverage analysis tool that can be useful for determining how well a diagnostic 
@@ -10,7 +10,7 @@
     </para>
   </sect1>
 	
-  <sect1>
+  <sect1 id="section.intro.cc.cando">
     <title>What can code coverage do?</title>
     <para>
       Typically, in the design verification work flow, a design verification engineer will develop a self-checking 
@@ -22,6 +22,7 @@
         <listitem><para>"How much logic in the design is actually being exercised?"</para></listitem>
         <listitem><para>"Does my test suite cover all of the DUT?"</para></listitem>
         <listitem><para>"Am I done writing tests for the logic?"</para></listitem>
+        <listitem><para>"Do I have any redundant diagnostics in my test suite?"</para></listitem>
       </itemizedlist>
     </para>
     <para>
@@ -41,7 +42,7 @@
     </para>
   </sect1>
 
-  <sect1>
+  <sect1 id="section.intro.cc.cantdo">
     <title>What can't code coverage do?</title>
     <para>
       It is important to note that any code coverage tool is only useful in indicating how much logic is being 
@@ -58,7 +59,7 @@
     </para>
   </sect1>
 
-  <sect1>
+  <sect1 id="section.intro.cov.cando">
     <title>What does Covered do?</title>
     <para>
       Covered is a tool that uses your design files along with standard VCD or LXT dump files to analyze the code 
@@ -71,7 +72,7 @@
     </para>
   </sect1>
 
-  <sect1>
+  <sect1 id="section.intro.cov.cantdo">
     <title>What does Covered NOT do?</title>
     <para>
       Though Covered does perform some resimulation of the design to derive line, combinational logic, memory, and 
@@ -82,7 +83,7 @@
     </para>
   </sect1>
 
-  <sect1>
+  <sect1 id="section.intro.cov.diff">
     <title>What makes Covered different?</title>
     <para>
       Most Verilog code coverage tools perform a pre-compilation procedure known as instrumenting. During this procedure, 

@@ -1,37 +1,38 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 5. Inline Attributes</title><meta name="generator" content="DocBook XSL Stylesheets V1.71.1"><link rel="start" href="index.html" title="Covered"><link rel="up" href="part.overview.html" title="Part I. Overview"><link rel="prev" href="chapter.race.html" title="Chapter 4. Race Condition Checking"><link rel="next" href="part.installation.html" title="Part II. Installation"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 5. Inline Attributes</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter.race.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part I. Overview</th><td width="20%" align="right"> <a accesskey="n" href="part.installation.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.attr"></a>Chapter 5. Inline Attributes</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.attr.html#section.attr">5.1. What are inline attributes?</a></span></dt><dt><span class="sect1"><a href="chapter.attr.html#section.attr.fsm">5.2. Adding FSM attributes</a></span></dt></dl></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.attr"></a>5.1. What are inline attributes?</h2></div></div></div><p>
-    In the IEEE Verilog 1364-2001 standard, an attribute is a way to add information to a Verilog object, statement or 
-    groups of statements that is tool-specific and does not affect simulation of that design. All Verilog-2001 
-    attributes begin with the token (* and end with the token *). An attribute can be multi-line and is "attached" to 
-    the Verilog object, statement, or group of statements that is specified immediately beneath the attribute.
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 5. Inline Attributes</title><link rel="stylesheet" href="covered.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.74.0"><link rel="home" href="index.html" title="Covered"><link rel="up" href="part.overview.html" title="Part I. Overview"><link rel="prev" href="chapter.race.html" title="Chapter 4. Race Condition Checking"><link rel="next" href="part.installation.html" title="Part II. Installation"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 5. Inline Attributes</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter.race.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part I. Overview</th><td width="20%" align="right"> <a accesskey="n" href="part.installation.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.attr"></a>Chapter 5. Inline Attributes</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.attr.html#section.attr">5.1. What are inline attributes?</a></span></dt><dt><span class="sect1"><a href="chapter.attr.html#section.attr.fsm">5.2. Adding FSM attributes</a></span></dt></dl></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.attr"></a>5.1. What are inline attributes?</h2></div></div></div><p>
+      In the IEEE Verilog 1364-2001 standard, an attribute is a way to add information to a Verilog object, statement or 
+      groups of statements that is tool-specific and does not affect simulation of that design. All Verilog-2001 
+      attributes begin with the token <code class="code">(*</code> and end with the token <code class="code">*)</code>. An attribute can be 
+      multi-line and is "attached" to the Verilog object, statement, or group of statements that is specified immediately 
+      beneath the attribute.
     </p><p>
-    Covered uses the Verilog-2001 attribute for allowing users to specify coverage-specific information about embedded 
-    objects within a particular design. When an attribute is found, it is interrogated to see if it is a Covered 
-    attribute. If the attribute is a Covered attribute, its contents are parsed. If the attribute is not found to be a 
-    Covered attribute, it is ignored and parsing continues normally.
+      Covered uses the Verilog-2001 attribute for allowing users to specify coverage-specific information about embedded 
+      objects within a particular design. When an attribute is found, it is interrogated to see if it is a Covered 
+      attribute. If the attribute is a Covered attribute, its contents are parsed. If the attribute is not found to be a 
+      Covered attribute, it is ignored and parsing continues normally.
     </p><p>
-    The rest of this chapter specifies the attributes that Covered is capable of handling, along with their use and 
-    syntax.
+      The rest of this chapter specifies the attributes that Covered is capable of handling, along with their use and 
+      syntax.
     </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.attr.fsm"></a>5.2. Adding FSM attributes</h2></div></div></div><p>
-    There are two ways that Covered currently allows the user to specify the location of and information about FSMs 
-    embedded in a particular design. The first way to specify an FSM is on the score command-line. The benefit to 
-    specifying the location of a state machine this way is that the source code does not need to be modified. The 
-    potential disadvantage to this method is that the FSM location and coverage information can get lost if the FSM is 
-    used in a different testbench (or even a different project if the FSM code is reused in a later project). For more 
-    information on specifying an FSM on the score command-line, please refer to 
-    <a href="chapter.score.html#section.score.fsm">Scoring FSMs</a>.
+      There are two ways that Covered currently allows the user to specify the location of and information about FSMs 
+      embedded in a particular design. The first way to specify an FSM is on the score command-line. The benefit to 
+      specifying the location of a state machine this way is that the source code does not need to be modified. The 
+      potential disadvantage to this method is that the FSM location and coverage information can get lost if the FSM is 
+      used in a different testbench (or even a different project if the FSM code is reused in a later project). For more 
+      information on specifying an FSM on the score command-line, please refer to 
+      <a class="xref" href="chapter.score.html#section.score.fsm" title="9.6. Scoring FSMs">Section 9.6, &#8220;Scoring FSMs&#8221;</a>.
     </p><p>
-    The second way that an FSM can be specified to Covered is through the use of the Verilog-2001 attribute. The 
-    advantages to using this method are that the FSM information specified in an attribute stays embedded in the design 
-    (for ease of reusing the FSM and still retaining information relevent to coverage). Additionally, at the current 
-    release of Covered, using attributes to specify an FSM is the only way to tell Covered what all of the valid states 
-    and state-transitions are for a specific FSM (the command-line specification does not allow for this). This 
-    provides a unique advantage of this method over the command-line method. The potential disadvantage of this method 
-    for specifying FSM information is that source code needs to be modified.
+      The second way that an FSM can be specified to Covered is through the use of the Verilog-2001 attribute. The 
+      advantages to using this method are that the FSM information specified in an attribute stays embedded in the design 
+      (for ease of reusing the FSM and still retaining information relevent to coverage). Additionally, at the current 
+      release of Covered, using attributes to specify an FSM is the only way to tell Covered what all of the valid states 
+      and state-transitions are for a specific FSM (the command-line specification does not allow for this). This 
+      provides a unique advantage of this method over the command-line method. The potential disadvantage of this method 
+      for specifying FSM information is that source code needs to be modified.
     </p><p>
-    To learn how to specify an FSM attribute within a design, let's use an example of an FSM that is embedded in a 
-    design.
+      To learn how to specify an FSM attribute within a design, let's use an example of an FSM that is embedded in a 
+      design.
     </p><p>
-      </p><pre class="programlisting">
+      </p><div class="example"><a name="example.attr"></a><p class="title"><b>Example 5.1. Module Containing an Embedded FSM</b></p><div class="example-contents"><pre class="programlisting">
   module foo (
     input clk,
     input reset,
@@ -66,78 +67,76 @@
       end   
       
   endmodule 
-      </pre><p>
+        </pre></div></div><p><br class="example-break">
     </p><p>
-    This example shows an FSM that has an input FSM variable called "state" and an output FSM variable called 
-    "next_state". There are four states in the state machine that are represented with the parameters located in this 
-    module (STATE_IDLE, STATE_HEAD, STATE_DATA, STATE_TAIL). There are a total of eight (8) state transitions that this 
-    FSM can take. They are the following:
+      This example shows an FSM that has an input FSM variable called "state" and an output FSM variable called 
+      "next_state". There are four states in the state machine that are represented with the parameters located in this 
+      module (STATE_IDLE, STATE_HEAD, STATE_DATA, STATE_TAIL). There are a total of eight (8) state transitions that this 
+      FSM can take. They are the following:
     </p><p>
-      </p><div class="orderedlist"><ol type="1"><li><p>STATE_IDLE -&gt; STATE_IDLE (loopback)</p></li><li><p>STATE_IDLE -&gt; STATE_HEAD</p></li><li><p>STATE_HEAD -&gt; STATE_DATA</p></li><li><p>STATE_HEAD -&gt; STATE_TAIL</p></li><li><p>STATE_DATA -&gt; STATE_DATA (loopback)</p></li><li><p>STATE_DATA -&gt; STATE_TAIL</p></li><li><p>STATE_TAIL -&gt; STATE_HEAD</p></li><li><p>STATE_TAIL -&gt; STATE_IDLE</p></li></ol></div><p>
+      </p><div class="orderedlist"><ol type="1"><li><p><code class="code">STATE_IDLE -&gt; STATE_IDLE</code> (loopback)</p></li><li><p><code class="code">STATE_IDLE -&gt; STATE_HEAD</code></p></li><li><p><code class="code">STATE_HEAD -&gt; STATE_DATA</code></p></li><li><p><code class="code">STATE_HEAD -&gt; STATE_TAIL</code></p></li><li><p><code class="code">STATE_DATA -&gt; STATE_DATA</code> (loopback)</p></li><li><p><code class="code">STATE_DATA -&gt; STATE_TAIL</code></p></li><li><p><code class="code">STATE_TAIL -&gt; STATE_HEAD</code></p></li><li><p><code class="code">STATE_TAIL -&gt; STATE_IDLE</code></p></li></ol></div><p>
     </p><p>
-    All attributes that specify information for an FSM are a comma-separated list of values that contain the following 
-    information:
+      All attributes that specify information for an FSM are a comma-separated list of values that contain the following 
+      information:
     </p><p>
       </p><div class="orderedlist"><ol type="1"><li><p>"covered_fsm" attribute keyword</p><p>
             </p><div class="itemizedlist"><ul type="disc"><li><p>
-                MUST be first value in the attribute list
+                  MUST be first value in the attribute list
                 </p></li><li><p>
-                Specifies to Covered that this attribute contains information for an FSM that Covered needs to handle.
+                  Specifies to Covered that this attribute contains information for an FSM that Covered needs to handle.
                 </p></li></ul></div><p>
           </p></li><li><p>FSM identifier</p><p>
             </p><div class="itemizedlist"><ul type="disc"><li><p>
-                MUST be second value in the attribute list
+                  MUST be second value in the attribute list
                 </p></li><li><p>
-                Specifies a alphanumeric name for this FSM.
+                  Specifies a alphanumeric name for this FSM.
                 </p></li><li><p>
-                The name will eventually be used to tie individual attributes that specify information for the same FSM.
+                  The name will eventually be used to tie individual attributes that specify information for the same FSM.
                 </p></li></ul></div><p>
           </p></li><li><p>Input state expression (optional)</p><p>
             </p><div class="itemizedlist"><ul type="disc"><li><p>
-                Syntax: <code class="code">is="<span class="emphasis"><em>expression</em></span>"</code>
+                  Syntax: <code class="code">is="<span class="emphasis"><em>expression</em></span>"</code>
                 </p></li><li><p>
-                If this is specified, MUST be specified third in the list.
+                  If this is specified, MUST be specified third in the list.
                 </p></li><li><p>
-                Specifies the input state expression.
+                  Specifies the input state expression.
                 </p></li><li><p>
-                Can be a combination of signal names, signal bit selects, and concatenation operators.
+                  Can be a combination of signal names, signal bit selects, and concatenation operators.
                 </p></li><li><p>
-                See <a href="chapter.score.html#section.score.fsm">Scoring FSMs</a> for more information on the specification of an input 
-                state expression.
+                  See <a class="xref" href="chapter.score.html#section.score.fsm" title="9.6. Scoring FSMs">Section 9.6, &#8220;Scoring FSMs&#8221;</a> for more information on the specification of an input 
+                  state expression.
                 </p></li></ul></div><p>
           </p></li><li><p>Output state expression</p><p>
             </p><div class="itemizedlist"><ul type="disc"><li><p>
-                Syntax: <code class="code">os="<span class="emphasis"><em>expression</em></span>"</code>
+                  Syntax: <code class="code">os="<span class="emphasis"><em>expression</em></span>"</code>
                 </p></li><li><p>
-                If the input state expression is specified, MUST be fourth value in list; otherwise, MUST be third 
-                value in list.
+                  If the input state expression is specified, MUST be fourth value in list; otherwise, MUST be third 
+                  value in list.
                 </p></li><li><p>
-                Specifies the output state expression of the FSM.
+                  Specifies the output state expression of the FSM.
                 </p></li><li><p>
-                Can be a combination of signal names, signal bit selects, and concatenation operators.
+                  Can be a combination of signal names, signal bit selects, and concatenation operators.
                 </p></li><li><p>
-                See <a href="chapter.score.html#section.score.fsm">Scoring FSMs</a> for more information on the specification of an output 
-                state expression.
+                  See <a class="xref" href="chapter.score.html#section.score.fsm" title="9.6. Scoring FSMs">Section 9.6, &#8220;Scoring FSMs&#8221;</a> for more information on the specification of an output 
+                  state expression.
                 </p></li></ul></div><p>
           </p></li><li><p>State-transition specifiers (optional)</p><p>
             </p><div class="itemizedlist"><ul type="disc"><li><p>
-                Syntax: <code class="code">trans="<span class="emphasis"><em>from_state</em></span>-&gt;<span class="emphasis"><em>to_state</em></span>"</code>
+                  Syntax: <code class="code">trans="<span class="emphasis"><em>from_state</em></span>-&gt;<span class="emphasis"><em>to_state</em></span>"</code>
                 </p></li><li><p>
-                MUST be specified after the above has been specified in the list.
+                  MUST be specified after the above has been specified in the list.
                 </p></li><li><p>
-                Arguments MUST be constant values (parameters; numerical values -- binary, octal, decimal, hexidecimal; 
-                and defines that equate to one of these two types of values).
+                  Arguments MUST be constant values (parameters; numerical values -- binary, octal, decimal, hexidecimal; 
+                  and defines that equate to one of these two types of values).
                 </p></li><li><p>
-                Each transition that is specified is a unique value in the attribute list.
+                  Each transition that is specified is a unique value in the attribute list.
                 </p></li></ul></div><p>
           </p></li></ol></div><p>
     </p><p>
-    To specify the FSM attribute in the above example, including input state, output state and all state transitions, 
-    the code would be modified to look like:
+      To specify the FSM attribute in the above example, including input state, output state and all state transitions, 
+      the code would be modified to look like:
     </p><p>
-      </p><pre class="programlisting">
-  ...
-      
+      </p><div class="example"><a name="example.attr.fsm"></a><p class="title"><b>Example 5.2. FSM Attribute Code Sample</b></p><div class="example-contents"><pre class="programlisting">
   (* covered_fsm, channel, is="state", os="next_state",
                            trans="STATE_IDLE-&gt;STATE_IDLE",
                            trans="STATE_IDLE-&gt;STATE_HEAD",
@@ -148,6 +147,6 @@
                            trans="STATE_TAIL-&gt;STATE_HEAD",
                            trans="STATE_TAIL-&gt;STATE_IDLE" *)
   always @(reset or state or head or tail or valid)
-    ...    
-      </pre><p>
+    ...
+        </pre></div></div><p><br class="example-break">
     </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="chapter.race.html"><img src="img/prev.gif" alt="Prev"></a> </td><td width="20%" align="center"><a accesskey="u" href="part.overview.html"><img src="img/up.gif" alt="Up"></a></td><td width="40%" align="right"> <a accesskey="n" href="part.installation.html"><img src="img/next.gif" alt="Next"></a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 4. Race Condition Checking </td><td width="20%" align="center"><a accesskey="h" href="index.html"><img src="img/home.gif" alt="Home"></a></td><td width="40%" align="right" valign="top"> Part II. Installation</td></tr></table></div></body></html>

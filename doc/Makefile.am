@@ -31,6 +31,7 @@ doc_DATA = html/chapter.attr.html \
            html/chapter.score.html \
            html/chapter.start.html \
            html/chapter.using.html \
+           html/covered.css \
            html/index.html \
            html/part.command.line.usage.html \
            html/part.epilogue.html \

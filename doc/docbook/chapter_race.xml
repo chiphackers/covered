@@ -1,55 +1,65 @@
-<chapter id="chapter.race" xreflabel="Race Condition Checking">
+<chapter id="chapter.race">
   <title>Race Condition Checking</title>
   
   <para>
-  Due to Covered's method of abstracting coverage from a dumpfile, a partial "resimulation" of the design is needed 
-  to obtain proper statistics for line, combinational logic and FSM metrics. Therefore, accurately resimulating what 
-  occurred in the actual simulation is a requirement for obtaining correct results. This can be easily achieved so 
-  long as the design doesn't contain any code that could result in potential race conditions.
+    Due to Covered's method of abstracting coverage from a dumpfile, a partial "resimulation" of the design is needed 
+    to obtain proper statistics for line, combinational logic and FSM metrics. Therefore, accurately resimulating what 
+    occurred in the actual simulation is a requirement for obtaining correct results. This can be easily achieved so 
+    long as the design doesn't contain any code that could result in potential race conditions.
   </para>
   
-  <sect1>
+  <sect1 id="section.race.guidelines">
     <title>Checked Coding Guidelines</title>
     <para>
-    To avoid this problem Covered performs automatic race condition checking on the specified design after parsing 
-    has been completed but before simulation/scoring is performed. All statement blocks in the design that don't 
-    adhere to certain coding guidelines are removed from coverage consideration by Covered. By following these coding 
-    guidelines, a design should be void of race condition scenarios that would lead to faulty simulation results. The 
-    following coding guidelines are applied by Covered when checking for race conditions:
+      To avoid this problem Covered performs automatic race condition checking on the specified design after parsing 
+      has been completed but before simulation/scoring is performed. All statement blocks in the design that don't 
+      adhere to certain coding guidelines are removed from coverage consideration by Covered. By following these coding 
+      guidelines, a design should be void of race condition scenarios that would lead to faulty simulation results. The 
+      following coding guidelines are applied by Covered when checking for race conditions:
     </para>
     <para>
       <orderedlist>
         <listitem>
-          <para>All sequential logic and latches use non-blocking assignments.</para>
-        </listitem>
-        <listitem>
-          <para>All combinational logic in an always block uses blocking assignments.</para>
-        </listitem>
-        <listitem>
           <para>
-          All mixed sequential and combinational logic in the same always block uses non-blocking assignments.
+            All sequential logic and latches use non-blocking assignments.
           </para>
         </listitem>
         <listitem>
-          <para>Blocking and non-blocking assignments should not be used in the same always block.</para>
-        </listitem>
-        <listitem>
-          <para>Assignments made to a variable should only be done within one always block.</para>
-        </listitem>
-        <listitem>
           <para>
-          The $strobe system call should only be used to display variables that were assigned using non-blocking 
-          assignments. (Not currently implemented)
+            All combinational logic in an always block uses blocking assignments.
           </para>
         </listitem>
         <listitem>
-          <para>No #0 procedural assignments should exist. (Not currently implemented)</para>
+          <para>
+            All mixed sequential and combinational logic in the same always block uses non-blocking assignments.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Blocking and non-blocking assignments should not be used in the same always block.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            Assignments made to a variable should only be done within one always block.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            The $strobe system call should only be used to display variables that were assigned using non-blocking 
+            assignments. (Not currently implemented)
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            No #0 procedural assignments should exist. (Not currently implemented)
+          </para>
         </listitem>
       </orderedlist>
     </para>
   </sect1>
   
-  <sect1 id="section.race.handling" xreflabel="Race Condition Handling">
+  <sect1 id="section.race.handling">
     <title>Race Condition Handling</title>
     <para>
     If Covered detects a block as violating any one of the above mentioned coding guidelines, it will do one of two 
@@ -59,52 +69,57 @@
       <orderedlist>
         <listitem>
           <para>
-          If the -rS, -rW or none of the -r options are specified, Covered will simply remove the non-conforming always 
-          block from coverage consideration and continue with scoring. -rW will display a message describing detected 
-          race conditions during the scoring command while the -rS option will display no messages.
+            If the <emphasis role="bold"><code>-rS</code></emphasis>, <emphasis role="bold"><code>-rW</code></emphasis> 
+            or none of the -r options are specified, Covered will simply remove the non-conforming always block from 
+            coverage consideration and continue with scoring. <emphasis role="bold"><code>-rW</code></emphasis> will 
+            display a message describing detected race conditions during the scoring command while the 
+            <emphasis role="bold"><code>-rS</code></emphasis> option will display no messages.
           </para>
         </listitem>
         <listitem>
           <para>
-          If the -rE option is specified, Covered will halt the score command after all race condition checking has 
-          been performed with a message to the user specifying how many always blocks were found to be in 
-          non-compliance to the race-condition-free coding guidelines.
+            If the <emphasis role="bold"><code>-rE</code></emphasis> option is specified, Covered will halt the score 
+            command after all race condition checking has been performed with a message to the user specifying how many 
+            always blocks were found to be in non-compliance to the race-condition-free coding guidelines.
           </para>
         </listitem>
       </orderedlist>
     </para>
     <para>
-    The first mode of operation is the recommended mode of operation as this will allow Covered to continue calculating 
-    coverage information for the design while still providing accurate coverage information for the logic that is still 
-    under consideration. The second mode of operation is meant to allow the user to use Covered as a race-condition 
-    checking tool.
+      The first mode of operation is the recommended mode of operation as this will allow Covered to continue calculating 
+      coverage information for the design while still providing accurate coverage information for the logic that is still 
+      under consideration. The second mode of operation is meant to allow the user to use Covered as a race-condition 
+      checking tool.
     </para>
   </sect1>
   
-  <sect1 id="section.race.avoiding" xreflabel="Avoiding Race Condition Checking">
+  <sect1 id="section.race.avoiding">
     <title>Avoiding Race Condition Checking</title>
     <para>
-    Covered has two means of avoiding race condition checking: (1) skip race condition checking for the entire design 
-    altogether or (2) place inline pragmas around specific logic blocks to avoid checking. The main advantage for using 
-    either of these two methods is to allow Covered to score more of the design that would otherwise be excluded due to
-    failing a static race condition checkpoint.  The main disadvantage to avoiding race condition checking using either 
-    of these methods is that you could potentially be ignoring code that contains an actual race condition, causing 
-    Covered to potentially generate incorrect coverage information without warning. These types of "errors" are not 
-    assumed to be Covered bugs.
+      Covered has two means of avoiding race condition checking: (1) skip race condition checking for the entire design 
+     altogether or (2) place inline pragmas around specific logic blocks to avoid checking. The main advantage for using 
+      either of these two methods is to allow Covered to score more of the design that would otherwise be excluded due to
+      failing a static race condition checkpoint.  The main disadvantage to avoiding race condition checking using either 
+      of these methods is that you could potentially be ignoring code that contains an actual race condition, causing 
+      Covered to potentially generate incorrect coverage information without warning. These types of "errors" are not 
+      assumed to be Covered bugs.
     </para>
     <para>
-    To exclude the entire design from race condition checking, simply specify the -rI option on the score command-line. 
-    This will cause Covered to skip the race condition checking phase entirely, outputting a warning message (unless 
-    the global -Q option has been specified). The use of this command-line option is highly discouraged due to its 
-    general assumption by the user that the entire design is void of race conditions.
+      To exclude the entire design from race condition checking, simply specify the 
+      <emphasis role="bold"><code>-rI</code></emphasis> option on the score command-line.  This will cause Covered to skip 
+      the race condition checking phase entirely, outputting a warning message (unless the global -Q option has been 
+      specified). The use of this command-line option is highly discouraged due to its general assumption by the user that 
+      the entire design is void of race conditions.
     </para>
     <para>
-    To exclude portions of the design from race condition checking, the user may also place inline comment-based 
-    pragmas in the design and specify the -rP option to the score command-line. The inline pragmas look like the 
-    following:
+      To exclude portions of the design from race condition checking, the user may also place inline comment-based 
+      pragmas in the design and specify the <emphasis role="bold"><code>-rP</code></emphasis> option to the score 
+      command-line. The inline pragmas look like the following:
     </para>
     <para>
-      <programlisting><![CDATA[
+      <example xml:id="example.race">
+        <title>Using a Race Condition Pragma</title>
+        <programlisting><![CDATA[
   module foobar;
       
     ...
@@ -118,37 +133,39 @@
     ...
       
   endmodule
-      ]]></programlisting>
+        ]]></programlisting>
+      </example>
     </para>
     <para>
-    This example will cause the initial block surrounded by the "racecheck" pragmas to be ignored from race condition
-    checking, thus making it available for coverage consideration. If there are any race condition rules that this block
-    contains or is a part of, they will not be reported.
+      This example will cause the initial block surrounded by the <code>racecheck</code> pragmas to be ignored from race condition
+      checking, thus making it available for coverage consideration. If there are any race condition rules that this block
+      contains or is a part of, they will not be reported.
     </para>
     <para>
-    The keyword "racecheck" is the default pragma keyword for race condition checking avoidance; however, if this name
-    needs to be changed to something else by the user (i.e., if a "racecheck" is used by another tool and has a 
-    different meaning or format), the user may make this keyword anything they please as long as the meaning is 
-    preserved (i.e., "<emphasis>keyword</emphasis> off" means that race condition checking should be turned off for all 
-    subsequent code until its matching "<emphasis>keyword</emphasis> on" pragma is seen). The new name of this keyword 
-    is passed to the -rP option by specifying -rP=<emphasis>keyword</emphasis>. It should also be noted that race 
-    condition pragmas can be embedded within each other (all code within the outside pair are removed from race 
-    checking) and race condition avoidance pragmas ("racecheck off") are in effect on a file-basis -- that is, they are 
-    in effect even beyond their current scope but are no longer in effect after the current file.
+      The keyword <code>racecheck</code> is the default pragma keyword for race condition checking avoidance; however, 
+      if this name needs to be changed to something else by the user (i.e., if <code>racecheck</code> is used by another 
+      tool and has a different meaning or format), the user may make this keyword anything they please as long as the meaning is 
+      preserved (i.e., <code><emphasis>keyword</emphasis> off</code> means that race condition checking should be turned 
+      off for all subsequent code until its matching <code><emphasis>keyword</emphasis> on</code> pragma is seen). The 
+      new name of this keyword is passed to the -rP option by specifying 
+      <emphasis role="bold"><code>-rP=<emphasis>keyword</emphasis></code></emphasis>. It should also be noted that race 
+      condition pragmas can be embedded within each other (all code within the outside pair are removed from race 
+      checking) and race condition avoidance pragmas (<code>racecheck off</code>) are in effect on a file-basis -- that is, 
+      they are in effect even beyond their current scope but are no longer in effect after the current file.
     </para>
   </sect1>
   
-  <sect1>
+  <sect1 id="section.race.conditions">
     <title>Reporting Race Conditions</title>
     <para>
-    Even though race condition information is displayed (assuming the -rS option was not specified in the score 
-    command-line) during the scoring process, it may be convenient to view this information in a generated report as 
-    well. Because of this need, Covered saves all race condition information to the CDD file for use in using the 
-    report command. By specifying 'r' in the -m option to the report command (race condition report output is not 
-    turned on by default), the statement blocks which were eliminated from coverage consideration will be output to the 
-    coverage report file. Summary coverage will contain the total number of statement blocks eliminated for each 
-    module. Verbose coverage will contain each eliminated statement block, organized by module, specifying both the 
-    starting line of the eliminated statement block and the reason for why the statement block was removed.
+      Even though race condition information is displayed (assuming the -rS option was not specified in the score 
+      command-line) during the scoring process, it may be convenient to view this information in a generated report as 
+      well. Because of this need, Covered saves all race condition information to the CDD file for use in using the 
+      report command. By specifying 'r' in the -m option to the report command (race condition report output is not 
+      turned on by default), the statement blocks which were eliminated from coverage consideration will be output to the 
+      coverage report file. Summary coverage will contain the total number of statement blocks eliminated for each 
+      module. Verbose coverage will contain each eliminated statement block, organized by module, specifying both the 
+      starting line of the eliminated statement block and the reason for why the statement block was removed.
     </para>
   </sect1>
   
