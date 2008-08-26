@@ -1,16 +1,16 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 8. Using Covered</title><link rel="stylesheet" href="covered.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.71.1"><link rel="start" href="index.html" title="Covered"><link rel="up" href="part.command.line.usage.html" title="Part III. Command-line Usage"><link rel="prev" href="chapter.start.html" title="Chapter 7. Getting Started"><link rel="next" href="chapter.score.html" title="Chapter 9. The score Command"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 8. Using Covered</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter.start.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part III. Command-line Usage</th><td width="20%" align="right"> <a accesskey="n" href="chapter.score.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.using"></a>Chapter 8. Using Covered</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.using.html#id433929">8.1. Work Flow</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.using.html#id433964">Scoring the Design</a></span></dt><dt><span class="sect2"><a href="chapter.using.html#id433998">Merging CDDs</a></span></dt><dt><span class="sect2"><a href="chapter.using.html#id434020">Creating Coverage Reports</a></span></dt><dt><span class="sect2"><a href="chapter.using.html#id434050">Ranking CDDs</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.using.html#id434092">8.2. Covered usage</a></span></dt><dt><span class="sect1"><a href="chapter.using.html#id434163">8.3. Covered global options</a></span></dt></dl></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id433929"></a>8.1. Work Flow</h2></div></div></div><p>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 8. Using Covered</title><link rel="stylesheet" href="covered.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.74.0"><link rel="home" href="index.html" title="Covered"><link rel="up" href="part.command.line.usage.html" title="Part III. Command-line Usage"><link rel="prev" href="chapter.start.html" title="Chapter 7. Getting Started"><link rel="next" href="chapter.score.html" title="Chapter 9. The score Command"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 8. Using Covered</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter.start.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part III. Command-line Usage</th><td width="20%" align="right"> <a accesskey="n" href="chapter.score.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.using"></a>Chapter 8. Using Covered</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.using.html#id2678140">8.1. Work Flow</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.using.html#id2677541">Scoring the Design</a></span></dt><dt><span class="sect2"><a href="chapter.using.html#id2678188">Merging CDDs</a></span></dt><dt><span class="sect2"><a href="chapter.using.html#id2678222">Creating Coverage Reports</a></span></dt><dt><span class="sect2"><a href="chapter.using.html#id2678252">Ranking CDDs</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.using.html#id2678294">8.2. Covered usage</a></span></dt><dt><span class="sect1"><a href="chapter.using.html#id2678395">8.3. Covered global options</a></span></dt></dl></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id2678140"></a>8.1. Work Flow</h2></div></div></div><p>
       Covered has four basic commands that it uses for gaining coverage information about a design and displaying 
       that information to the user.
     </p><p>
       </p><div class="itemizedlist"><ul type="disc"><li><p>score</p></li><li><p>merge</p></li><li><p>report</p></li><li><p>rank</p></li></ul></div><p>
-    </p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id433964"></a>Scoring the Design</h3></div></div></div><p>
+    </p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2677541"></a>Scoring the Design</h3></div></div></div><p>
         To begin using Covered, you will need to create a special database file called a coverage description 
         database (CDD).  Covered uses this file to store coverage-specific information about the DUT. This file is a 
         text-based file that is written in a specific format (the format of this file is not discussed in this 
         document but can be found in the developer's document) that Covered understands.
       </p><p>
         To create the CDD and populate it with the simulation dumpfile results, you must use the score (see 
-        <a href="chapter.score.html" title="Chapter 9. The score Command">Chapter 9, <i>The score Command</i></a> for details) command.  This command parses in the DUT files and generates 
+        <a class="xref" href="chapter.score.html" title="Chapter 9. The score Command">Chapter 9, <i>The score Command</i></a> for details) command.  This command parses in the DUT files and generates 
         an initial CDD for the design. This CDD does not contain any coverage details but only the design elements 
         that Covered needs to gain coverage results.
       </p><p>
@@ -20,7 +20,7 @@
         this.   Once the dumpfile has been parsed, Covered generates a new version of the CDD containing a 
         populated database.  This CDD may be merged with another CDD from the same DUT and/or reports may be 
         generated from this CDD.
-      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id433998"></a>Merging CDDs</h3></div></div></div><p>
+      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2678188"></a>Merging CDDs</h3></div></div></div><p>
         When two or more CDDs have been generated from the same DUT. It is often desirable to merge their contents 
         to see what the total coverage is for both simulation runs.  The reasons why merging is desirable is that 
         often several tests are written to exercise the entire design (not just one).  This makes tests easier to 
@@ -29,18 +29,18 @@
         effect of the tests on the design.  This is where merging comes into play.
       </p><p>
         Merging multiple CDDs from the same design is easy with Covered, and is accomplished with the merge (see 
-        <a href="chapter.merge.html" title="Chapter 10. The merge Command">Chapter 10, <i>The merge Command</i></a> for details) command.  This command reads in two or more CDDs, merges their 
+        <a class="xref" href="chapter.merge.html" title="Chapter 10. The merge Command">Chapter 10, <i>The merge Command</i></a> for details) command.  This command reads in two or more CDDs, merges their 
         results and outputs the merged CDD to a different file or replaces the first CDD with the results of the merge.
-      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id434020"></a>Creating Coverage Reports</h3></div></div></div><p>
+      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2678222"></a>Creating Coverage Reports</h3></div></div></div><p>
         After a CDD is created or merged, the contents of the CDD can be extracted and transformed into human-readable 
-        coverage reports with the report (see <a href="chapter.report.html" title="Chapter 11. The report Command">Chapter 11, <i>The report Command</i></a> for details) command.  A summary 
+        coverage reports with the report (see <a class="xref" href="chapter.report.html" title="Chapter 11. The report Command">Chapter 11, <i>The report Command</i></a> for details) command.  A summary 
         report containing the percentage of metrics covered is generated for each module.  Additionally, to aid in 
         understanding what and why something was not covered, a verbose reporting mechanism exists.  Verbose 
         reporting will explicitly point to and describe why something was not fully covered for a specific metric.
       </p><p>
         Reports are text-based output that by default are directed toward standard output but may, with the use of an 
         option flag, be output to a specific file for storage purposes.
-      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id434050"></a>Ranking CDDs</h3></div></div></div><p>
+      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="id2678252"></a>Ranking CDDs</h3></div></div></div><p>
         After a collection of CDDs have been generated from a single design (most likely due to a regression run), 
         it is desirable to know which CDDs have an effect on coverage and which CDDs do not add any new coverage 
         information.  The CDDs that do not provide additional coverage may be unnecessary for regression and removing 
@@ -51,10 +51,10 @@
         "confidence") regression that runs in a relatively short period of time and, when run successfully, provides 
         the engineer a level of confidence that recent changes have not severely broke the functionality of the design.
       </p><p>
-        This is the purpose of the rank (see <a href="chapter.rank.html" title="Chapter 12. The rank Command">Chapter 12, <i>The rank Command</i></a> for details) command.  It produces a 
+        This is the purpose of the rank (see <a class="xref" href="chapter.rank.html" title="Chapter 12. The rank Command">Chapter 12, <i>The rank Command</i></a> for details) command.  It produces a 
         report that shows the diagnostics that add to the overall coverage of the suite, the order that those 
         diagnostics should run, and each diagnostic's overall effect on coverage when it is run.
-      </p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id434092"></a>8.2. Covered usage</h2></div></div></div><p>
+      </p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id2678294"></a>8.2. Covered usage</h2></div></div></div><p>
       Covered is initiated with the following command:
     </p><p>
       <code class="code">
@@ -88,12 +88,12 @@
       --enable-profiling configuration option is specified and will cause performance degradation.  This option should 
       only be used by Covered developers or those interested in finding performance bottlenecks in Covered's code. 
       It is not recommended that the --enable-profiling configuration option and the -P global option be specified for 
-      normal users of Covered.  See <a href="chapter.debug.html#section.profiling" title="14.3. Source Code Profiling">Section 14.3, &#8220;Source Code Profiling&#8221;</a> for more information on profiling and 
+      normal users of Covered.  See <a class="xref" href="chapter.debug.html#section.profiling" title="14.3. Source Code Profiling">Section 14.3, &#8220;Source Code Profiling&#8221;</a> for more information on profiling and 
       understanding the profiling report file.
-    </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id434163"></a>8.3. Covered global options</h2></div></div></div><p>
+    </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="id2678395"></a>8.3. Covered global options</h2></div></div></div><p>
       The following table describes options that Covered will accept apart from its normal commands which are described 
       in the next several chapters.
-    </p><div class="table"><a name="id434174"></a><p class="title"><b>Table 8.1. Global Options to Covered</b></p><div class="table-contents"><table summary="Global Options to Covered" border="1"><colgroup><col><col></colgroup><thead><tr><th>
+    </p><div class="table"><a name="id2678406"></a><p class="title"><b>Table 8.1. Global Options to Covered</b></p><div class="table-contents"><table summary="Global Options to Covered" border="1"><colgroup><col><col></colgroup><thead><tr><th>
               Option
             </th><th>
               Description

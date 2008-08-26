@@ -346,9 +346,9 @@
       <sect3 id="section.gui.main.viewmenu.next">
         <title>Next Uncovered</title>
         <para>
-          Causes the line containing the next uncovered metric to be visible in the <xref linkend="section.gui.main.viewer"/>.  If the next uncovered line already visible, 
-          this menu item will have no visible effect.  The search for the next uncovered line starts at (a) the top of the module (when the module is first displayed in 
-          the the Coverage Viewer), (b) from the last uncovered line searched for with the <emphasis role="bold">Next Uncovered</emphasis> or 
+          Causes the line containing the next uncovered metric to be visible in the <link linkend="section.gui.main.viewer">file viewer</link>.  If the next uncovered 
+          line is already visible, this menu item will have no visible effect.  The search for the next uncovered line starts at (a) the top of the module (when the 
+          module is first displayed in the the Coverage Viewer), (b) from the last uncovered line searched for with the <emphasis role="bold">Next Uncovered</emphasis> or 
           <emphasis role="bold">Previous Uncovered</emphasis> calls, or (c) from the last currently selected line (only valid for toggle and combinational logic views).
         </para>
         <para>
@@ -360,10 +360,11 @@
       <sect3 id="section.gui.main.viewmenu.prev">
         <title>Previous Uncovered</title>
         <para>
-          Causes the line containing the previous uncovered metric to be visible in the <xref linkend="section.gui.main.viewer"/>.  If the previous uncovered line is 
-          already visible, this menu item will have no visible effect.  The search for the previous uncovered line starts at (a) the top of the module (when the module is 
-          first displayed in the the Coverage Viewer), (b) from the last uncovered line  searched for with the <emphasis role="bold">Next Uncovered</emphasis> or <emphasis 
-          role="bold">Previous Uncovered</emphasis> calls, or (c) from  the last currently selected line (only valid for toggle and combinational logic views).
+          Causes the line containing the previous uncovered metric to be visible in the <link linkend="section.gui.main.viewer">file viewer</link>.  If the previous 
+          uncovered line is already visible, this menu item will have no visible effect.  The search for the previous uncovered line starts at (a) the top of the 
+          module (when the module is first displayed in the the Coverage Viewer), (b) from the last uncovered line  searched for with the 
+          <emphasis role="bold">Next Uncovered</emphasis> or <emphasis role="bold">Previous Uncovered</emphasis> calls, or (c) from  the last currently selected line 
+          (only valid for toggle and combinational logic views).
         </para>
         <para>
           This menu item is only enabled when another uncovered line exists before the current uncovered line.  It can also be accessed with the accelerator keystroke 
@@ -375,10 +376,10 @@
         <title>Show Current Selection</title>
         <para>
           This menu item is only available if the current metric mode is not "Line", the  user has clicked on an uncovered segment of code, and the associated 
-          <xref linkend="chapter.gui.toggle"/>, <xref linkend="chapter.gui.memory"/>, <xref linkend="chapter.gui.logic"/>, <xref linkend="chapter.gui.fsm"/> or 
-          <xref linkend="chapter.gui.assert"/> exists.  The currently selected line is visually identified in the <xref linkend="section.gui.main.viewer"/> area on the left-
-          hand-side of the line containing the uncovered code. If this line is not currently visible in the Coverage Viewer, selecting this menu item will cause it to be 
-          visible.
+          <link linkend="chapter.gui.toggle">toggle</link>, <link linkend="chapter.gui.memory">memory</link>, <link linkend="chapter.gui.logic">logic</link>, 
+          <link linkend="chapter.gui.fsm">FSM</link> or <link linkend="chapter.gui.assert">assertion</link> verbose window exists.  The currently selected line is 
+          visually identified in the <link linkend="section.gui.main.viewer">file viewer</link> area on the left-hand side of the line containing the uncovered 
+          code. If this line is not currently visible in the Coverage Viewer, selecting this menu item will cause it to be visible.
         </para>
         <para>
           An accelerator keystroke &lt;Control-c&gt; will also invoke this menu item.
@@ -396,7 +397,8 @@
       <sect3 id="section.gui.main.viewmenu.preferences">
         <title>Preferences...</title>
         <para>
-          Causes the <xref linkend="chapter.gui.preferences"/> to be created if it currently does not exist or forces it into the foreground if it does exist.
+          Causes the <link linkend="chapter.gui.preferences">preferences window</link> to be created if it currently does not exist or forces it into the foreground 
+          if it does exist.
         </para>
         <note>
           <para>
@@ -444,12 +446,18 @@
   <sect1 id="section.gui.main.covbar">
     <title>The Coverage Type View Bar</title>
     <para>
-      <xref linkend="figure.gui.main.covbar"/> shows the location of the coverage type view bar.  The bar contains a single selection button with 
-      the currently selected coverage metric displayed.  There are six main types of coverage metrics that Covered can provide:  line, toggle, 
-      memory, logic (combinational logic), FSM (state and arc) and assert (assertion coverage).  When the Covered GUI is first invoked, the line 
-      coverage metric is the default mode.  To view a different metric, simply left click, select the desired coverage metric, and left click again.  
-      Doing so will automatically set the selection indicator to the new mode and display the new metric information in the 
-      <xref linkend="section.gui.main.listbox"/> and <xref linkend="section.gui.main.viewer"/>.
+      <xref linkend="figure.gui.main.covbar"/> shows the location of the coverage type view bar.  The bar contains two selection buttons.  The selection 
+      button on the left side of the bar shows the currently selected coverage metric.  There are six main types of coverage metrics that Covered can 
+      provide:  line, toggle, memory, logic (combinational logic), FSM (state and arc) and assert (assertion coverage).  When the Covered GUI is first 
+      invoked, the line coverage metric is the default mode.  To view a different metric, simply left click, select the desired coverage metric, and left 
+      click again.  Doing so will automatically set the selection indicator to the new mode and display the new metric information in the 
+      <link linkend="section.gui.main.listbox">Module/Instance listbox</link> and <link linkend="section.gui.main.viewer">file viewer</link>.
+    </para>
+    <para>
+      The selection button on the right side of the bar shows the current coverage accumulation mode:  module or instance.  Module coverage takes all of the
+      similar module instances and merges their coverages.  Instance coverage displays each module instance individually.  To select a different value than
+      the one displayed, simply left click the selection button, highlight the desired value and left click again.  This will repopulate the
+      <link linkend="section.gui.main.listbox">Module/Instance lisbox</link> and clear the <link linkend="section.gui.main.viewer">file viewer</link>.
     </para>
     <para>
       <figure id="figure.gui.main.covbar">
@@ -465,8 +473,8 @@
       After a CDD file has been opened in the GUI, the module/instance selection box (shown in 
       <xref linkend="figure.gui.main.listbox"/> below) will contain either a list of all of the modules within the 
       specified design or a list of all of the instances within the design, based on the type of report selected in the 
-      <xref linkend="section.gui.main.reportmenu"/> menu.  Left-clicking on a module/instance name within this box will 
-      cause that file to be output in the <xref linkend="section.gui.main.viewer"/> to the right of the selection box.
+      <link linkend="section.gui.main.reportmenu">report</link> menu.  Left-clicking on a module/instance name within this box will 
+      cause that file to be output in the <link linkend="section.gui.main.viewer">file viewer</link> to the right of the selection box.
     </para>
     <para>
       In addition to the names of the modules or instances of the design, each line also contains a summary view of the 
@@ -483,7 +491,7 @@
       column display values will be changed.
     </para>
     <para>
-      Depending on the selected coverage metric (specified in the <xref linkend="section.gui.main.covbar"/>) and the 
+      Depending on the selected coverage metric (specified in the <link linkend="section.gui.main.covbar">coverage bar</link>) and the 
       coverage results for each module/instance, a module/ instance item will be highlighted in the uncovered logic color 
       if the corresponding module/instance was found to have uncovered logic within that module/instance.  If the 
       specified module/instance was found to be fully covered for the currently selected metric, it will be highlighted 
@@ -514,13 +522,13 @@
     </para>
     <para>
       The coverage file viewer shows the currently selected module (indicated in the 
-      <xref linkend="section.gui.main.infobar"/>) Verilog source.  The coverage file viewer provides a read-only view of the 
+      <link linkend="section.gui.main.infobar">information bar</link>) Verilog source.  The coverage file viewer provides a read-only view of the 
       original source code so all editing of the file must be done in a separate editor.  Each source code line in the 
       viewer window is numbered to the left of the line to aid in debugging and finding the lines in an editor.
     </para>
     <para>
-      Depending on the coverage metric currently selected in the <xref linkend="section.gui.main.covbar"/> and the 
-      covered/uncovered/race condition selections in the <xref linkend="section.gui.main.reportmenu"/>, the lines that are 
+      Depending on the coverage metric currently selected in the <link linkend="section.gui.main.covbar">coverage bar</link> and the 
+      covered/uncovered/race condition selections in the <link linkend="section.gui.main.reportmenu">report menu</link>, the lines that are 
       found to be uncovered, covered, and/or considered a race condition are highlighted in their respective color 
       schemes in the coverage file viewer window.  Using the scrollbars to the right and below the coverage file viewer, 
       the user can find the missed/hit lines quickly for further analysis.
@@ -535,13 +543,13 @@
           <para>
             Select either the <emphasis role="bold">Toggle</emphasis>, <emphasis role="bold">Memory</emphasis>, 
             <emphasis role="bold">Logic</emphasis>, <emphasis role="bold">FSM</emphasis> or 
-            <emphasis role="bold">Assert</emphasis> coverage metric radio button in the 
-            <xref linkend="section.gui.main.covbar"/>.
+            <emphasis role="bold">Assert</emphasis> coverage metric selection button in the 
+            <link linkend="section.gui.main.covbar">coverage bar</link>.
           </para>
         </listitem>
         <listitem>
           <para>
-            Select a module/instance that contains uncovered code in the <xref linkend="section.gui.main.listbox"/>.
+            Select a module/instance that contains uncovered code in the <link linkend="section.gui.main.listbox">listbox</link>.
           </para>
         </listitem>
         <listitem>
@@ -552,9 +560,9 @@
         <listitem>
           <para>
             Left click on the uncovered piece of logic.  Doing so will automatically bring up either the 
-            <xref linkend="chapter.gui.toggle"/>, the <xref linkend="chapter.gui.memory"/>, the 
-            <xref linkend="chapter.gui.logic"/>, the <xref linkend="chapter.gui.fsm"/> or the 
-            <xref linkend="chapter.gui.assert"/>.
+            <link linkend="chapter.gui.toggle">toggle</link>, the <link linkend="chapter.gui.memory">memory</link>, the 
+            <link linkend="chapter.gui.logic">logic</link>, the <link linkend="chapter.gui.fsm">FSM</link> or the 
+            <link linkend="chapter.gui.assert">assertion</link> verbose coverage windows.
           </para>
         </listitem>
       </orderedlist>
@@ -562,7 +570,7 @@
     <para>
       Additionally, the logical blocks that have been disregarded by Covered due to a potential race condition existing 
       are highlighted.  By placing the cursor over one of these logical blocks, the reason for why the logical block was 
-      disregarded is output in the <xref linkend="section.gui.main.infobar"/>.
+      disregarded is output in the <link linkend="section.gui.main.infobar">information bar</link>.
     </para>
     <para>
       To view a new module/instance, simply left click on one in the Module/Instance Listbox. The source code for the 
@@ -581,27 +589,25 @@
         To find the next or previous line containing uncovered logic for the current metric mode, click the 
         left arrow (Previous) or right arrow (Next) buttons.  Doing so will cause the next or previous uncovered line to 
         be visible in the Coverage File Viewer.  Clicking these buttons has the same effect as the "Next Uncovered" or 
-        "Previous Uncovered" menu items in the <xref linkend="section.gui.main.viewmenu"/>.
+        "Previous Uncovered" menu items in the <link linkend="section.gui.main.viewmenu">view menu</link>.
       </para>
     </sect2>
     
     <sect2 id="section.gui.main.viewer.search.string">
       <title>Searching for a String in the Coverage Viewer</title>
       <para>
-        The Coverage Viewer contains a <emphasis role="bold">Find:</emphasis> button, an entry field, and a 
-        <emphasis role="bold">Clear</emphasis> button for performing text searches in the Coverage File Viewer.  The user 
+        The Coverage Viewer contains a find (magnifying lens) button, an entry field, and a 
+        clear (X) button for performing text searches in the Coverage File Viewer.  The user 
         may type in any string (wildcards and pattern matching is not supported) in the entry field. Hitting the "return" 
-        key or the <emphasis role="bold">Find:</emphasis> button will cause the string search to commence.
+        key or the find button will cause the string search to commence.
       </para>
       <para>
         If a match to the search value is found, it is made visible in the Coverage File Viewer and highlighted.  The 
-        user may search on the value again by clicking the <emphasis role="bold">Find:</emphasis> button.  To clear the 
-        current value in the entry field, click on the <emphasis role="bold">Clear</emphasis> button.  If a match occurs, 
-        the specified value in the entry field will remain until either a new value is entered or the 
-        <emphasis role="bold">Clear</emphasis> button is clicked.  If a match was not found for the given string, a 
-        message window will pop-up specifying that the given string was not found.  Clicking the 
-        <emphasis role="bold">OK</emphasis> button will cause this message window to close and the entry field will 
-        automatically be cleared.
+        user may search on the value again by clicking the find button.  To clear the current value in the entry field, click 
+        on the clear button.  If a match occurs, the specified value in the entry field will remain until either a new value 
+        is entered or the clear button is clicked.  If a match was not found for the given string, a message window will 
+        pop-up specifying that the given string was not found.  Clicking the <emphasis role="bold">OK</emphasis> button will 
+        cause this message window to close and the entry field will automatically be cleared.
       </para>
     </sect2>
   </sect1>

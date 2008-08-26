@@ -3,8 +3,8 @@
   <para>
     The Verbose FSM State/State Transition Coverage window allows the user to see which states and state transitions of a 
     currently selected FSM have been covered or are uncovered.  To view this window, simply select the "FSM" coverage 
-    metric mode in the <xref linkend="section.gui.main.covbar"/> in the main window and select an underlined FSM state 
-    variable in the <xref linkend="section.gui.main.viewer"/>.  This will cause the FSM Coverage window to be displayed 
+    metric mode in the <link linkend="section.gui.main.covbar">coverage bar</link> in the main window and select an underlined FSM state 
+    variable in the <link linkend="section.gui.main.viewer">file viewer</link>.  This will cause the FSM Coverage window to be displayed 
     with the currently selected FSM information loaded.  <xref linkend="figure.gui.fsm"/> below shows an example of this 
     window.
   </para>
@@ -29,7 +29,7 @@
     <para>
       To determine which states have been uncovered in the table, simply find all state values in the input column or 
       output row (both show the same information) which are highlighted with the "Uncovered" color selection specified in 
-      the <xref linkend="chapter.gui.preferences"/>. To determine which states have been covered in the table, simply 
+      the <link linkend="chapter.gui.preferences">preferences window</link>. To determine which states have been covered in the table, simply 
       find all state values in the input column or output row which are highlighted with the "Covered" color selection. 
       All other state values which are not highlighted are either impossible values (if all of the state transitions were 
       specified in the Verilog file) or are unknown for coverage (if not all of the state transitions were specified in 
@@ -70,7 +70,7 @@
     </para>
     <para>
       To exit this window, simply click on <emphasis role="bold">Close</emphasis> button. To see this help page for the 
-      FSM window, click on the <emphasis role="bold">Help</emphasis> button.
+      FSM window, click on the help (?) button.
     </para>
   </sect1>
   
@@ -81,7 +81,7 @@
       the "I" (state transition is currently included in coverage results) or "E" (state transition is currently excluded 
       from coverage results) character in the middle of a state transition square.  Changing a state transition from an 
       "I" to an "E" will automatically cause the state transition summary coverage information in the 
-      <xref linkend="section.gui.main.listbox"/> to be updated and the background color of the state transition box will 
+      <link linkend="section.gui.main.listbox">listbox</link> to be updated and the background color of the state transition box will 
       change from the uncovered color to the covered color.  Changing a state transition from an "E" to an "I" will 
       automatically cause the state transition summary coverage information in the Main Window Summary Bar to be updated 
       and the background color of the state transition box will change from the covered color to the uncovered color. 
@@ -96,13 +96,13 @@
     </para>
     <para>
       If all of the state transitions for a state machine have been excluded for coverage consideration, the output state 
-      variable in the <xref linkend="section.gui.main.viewer"/> will change its background from the uncovered to the 
+      variable in the <link linkend="section.gui.main.viewer">file viewer</link> will change its background from the uncovered to the 
       covered background color.  However, the underline will remain under the variable to allow the user to still examine 
       the verbose FSM information for that state machine.
     </para>
     <para>
       If the user excludes any state transition in the design, the <emphasis role="bold">Save CDD...</emphasis> option in 
-      the <xref linkend="section.gui.main.filemenu"/> menu will be enabled.  This allows the user to save the excluded 
+      the <link linkend="section.gui.main.filemenu">file</link> menu will be enabled.  This allows the user to save the excluded 
       property either back to the CDD file (or to a newly named CDD file).  Doing so will allow the user to load the CDD 
       file at a different time and retain the knowledge of which state transitions have been excluded/included for 
       coverage.  Additionally, if a saved CDD file with coverage exclusion is merged with another CDD file, the excluded 
@@ -114,7 +114,7 @@
     <title>Displaying a New FSM</title>
     <para>
       If the Verbose FSM Coverage window is currently displayed, the user may select a new FSM state variable in the 
-      <xref linkend="section.gui.main.viewer"/> of the Main window. When a new FSM is selected, its information 
+      <link linkend="section.gui.main.viewer">file viewer</link> of the Main window. When a new FSM is selected, its information 
       immediately replaces the currently selected FSM.  This feature allows many different FSMs to be viewed one after 
       the other without having to create/destroy a new window for each.
     </para>

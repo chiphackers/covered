@@ -3,7 +3,7 @@
   <para>
     The verbose toggle window allows the user to see which bits for a given signal have toggled from a 0-&gt;1 or a 
     1-&gt;0 during simulation. To display this window, simply click on a highlighted/underlined uncovered signal in the 
-    <xref linkend="section.gui.main.viewer"/> of the main window.  This will cause the verbose toggle viewer to be created 
+    <link linkend="section.gui.main.viewer">file viewer</link> of the main window.  This will cause the verbose toggle viewer to be created 
     for the specified signal as well as display a "--&gt;" symbol in the Coverage Viewer on the same line as the selected 
     signal.  This symbol is simply meant to help the user identify in the Coverage Viewer which signal is currently 
     displayed in the Toggle Viewer window.  <xref linkend="figure.gui.toggle"/> shows the Toggle Viewer loaded with a 
@@ -32,7 +32,7 @@
     </para>
     <para>
       To exit this window, simply click on <emphasis role="bold">Close</emphasis> button.  To see this help page from the 
-      toggle window, click on the <emphasis role="bold">Help</emphasis> button.
+      toggle window, click on the help (?) button.
     </para>
   </sect1>
   
@@ -41,8 +41,8 @@
     <para>
       The user may exclude/include any uncovered signal in the design for toggle coverage by simply clicking on the 
       <emphasis role="bold">Excluded</emphasis> checkbutton.  If this checkbutton is checked, the summary coverage 
-      information will automatically be recalculated and redisplayed in the <xref linkend="section.gui.main.listbox"/> and 
-      the background color of the underlined signal in the <xref linkend="section.gui.main.viewer"/> will change from the 
+      information will automatically be recalculated and redisplayed in the <link linkend="section.gui.main.listbox">listbox</link> and 
+      the background color of the underlined signal in the <link linkend="section.gui.main.viewer">file viewer</link> will change from the 
       uncovered background color to the covered background color.  However, the signal will still remain underlined, 
       allowing the user to see the verbose toggle coverage information, if necessary.  If the 
       <emphasis role="bold">Excluded</emphasis> checkbutton is unchecked, the summary coverage information and background 
@@ -50,7 +50,7 @@
     </para>
     <para>
       If the user excludes any signal for toggle coverage in the design, the <emphasis role="bold">Save CDD...</emphasis> 
-      option in the <xref linkend="section.gui.main.filemenu"/> menu will be enabled.  This allows the user to save the 
+      option in the <link linkend="section.gui.main.filemenu">file</link> menu will be enabled.  This allows the user to save the 
       excluded property either back to the CDD file (or to a newly named CDD file).  Doing so will allow the user to load 
       the CDD file at a different time and retain the knowledge of which signals have been excluded/included for toggle 
       coverage.  Additionally, if a saved CDD file with coverage exclusion is merged with another CDD file, the excluded 
@@ -62,7 +62,7 @@
     <title>Displaying a New Signal for Toggle Coverage</title>
     <para>
       If the Verbose Toggle Coverage window is currently displayed with a signal, the user may select a new signal in the 
-      <xref linkend="section.gui.main.viewer"/> of the Main window.  When a new signal is selected, its value immediately 
+      <link linkend="section.gui.main.viewer">file viewer</link> of the Main window.  When a new signal is selected, its value immediately 
       replaces the currently selecting signal value.  This feature allows many different signals to be viewed one after 
       the other without having to create/destroy a new window for each signal.
     </para>

@@ -23,7 +23,7 @@
   </para>
   <para>
     Clicking the <emphasis role="bold">Cancel</emphasis> button at any time will cause the CDD creation wizard to immediately 
-    exit.  Clicking on the <emphasis role="bold">Help</emphasis> button at any time will bring up the user documentation for 
+    exit.  Clicking on the help (?) button at any time will bring up the user documentation for 
     the current page (context sensitive help).
   </para>
   
@@ -343,7 +343,7 @@
       will display a list of options. Select one of these options to display a window where the contents of that option
       can be specified. Clicking the <emphasis role="bold">OK</emphasis> button in one of those windows will cause the
       option to be added to the option listbox. Clicking <emphasis role="bold">Cancel</emphasis> in one of those windows
-      will cause the option to not be added to the listbox. Clicking <emphasis role="bold">Help</emphasis> will display
+      will cause the option to not be added to the listbox. Clicking help (?) will display
       context-sensitive help information to be displayed about the current window.
     </para>
     <para>

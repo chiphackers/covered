@@ -3,7 +3,7 @@
   <para>
     The preferences window allows the user to adjust the view of some of the GUI elements for the purpose of more easily 
     analyzing coverage information for a specific user. <xref linkend="figure.gui.pref.main"/> shows the preferences 
-    window that is created when the user selects the <emphasis role="bold">Tools > Preferences...</emphasis> menu option 
+    window that is created when the user selects the <emphasis role="bold"><code>View > Preferences...</code></emphasis> menu option 
     from the main window.
   </para>
   <para>
@@ -61,10 +61,10 @@
     </sect2>
     
     <sect2 id="section.gui.pref.buttons.help">
-      <title>Help Button</title>
+      <title>Help (?) Button</title>
       <para>
-        Clicking on the <emphasis role="bold">Help</emphasis> button will cause the help page for the currently selected 
-        'Option Category'.
+        Clicking on the help (?) button will cause the help page for the currently selected'Option Category' to be
+        displayed.
       </para>
     </sect2>
   </sect1>
@@ -131,14 +131,14 @@
     <sect2 id="section.gui.pref.general.wizard">
       <title>Show wizard window on startup</title>
       <para>
-        This checkbutton selects if Covered's <xref linkend="chapter.gui.wizard"/> popup window will be displayed upon
+        This checkbutton selects if Covered's <link linkend="chapter.gui.wizard">wizard</link> popup window will be displayed upon
         starting Covered.  Simply check this button if you would like to see the wizard at the beginning of each startup
         or uncheck it to cause the wizard window to not be displayed on startup. On the wizard window itself, there is
         an option to change this behavior as well.
       </para>
       <para>
         Note that you can always display the wizard window by selecting its menu option in the 
-        <xref linkend="section.gui.main.viewmenu"/> menu.
+        <link linkend="section.gui.main.viewmenu">view</link> menu.
       </para>
     </sect2>
 
@@ -181,7 +181,7 @@
       <title>Set Highlight Color</title>
       <para>
         This frame contains six buttons that affect the foreground and background colors used to highlight code in the 
-        <xref linkend="section.gui.main.viewer"/> portion of the main window. The currently selected foreground/background 
+        <link linkend="section.gui.main.viewer">file viewer</link> portion of the main window. The currently selected foreground/background 
         colors are displayed to the left of the corresponding buttons to allow the user to see the selections prior to 
         committing to them by clicking the <emphasis role="bold">Apply</emphasis> or <emphasis role="bold">OK</emphasis> 
         buttons at the bottom of the Preferences window.
@@ -211,7 +211,7 @@
       <para>
         This frame contains four spinner boxes that contains values between 0 and 100. These values correspond to a 
         coverage percentage for each coverage metric that the user deems to be "good enough". These values are used by 
-        the <xref linkend="section.gui.main.listbox"/> to help visually identify modules/instances that are meeting or 
+        the <link linkend="section.gui.main.listbox">listbox</link> to help visually identify modules/instances that are meeting or 
         exceeding these goals and which modules are not meeting these goals. If a coverage percentage for a 
         module/instance is less than this value, the module is colored red. If the coverage percentage is greater than or 
         equal to this value, the module/instance is colored yellow (or green which indicates that the module/instance 

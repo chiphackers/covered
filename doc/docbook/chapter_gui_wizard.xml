@@ -50,7 +50,7 @@
   </para>
   <para>
     When the wizard window is closed, it can be redisplayed by clicking on the 
-    <emphasis role="bold">View -> Wizard...</emphasis> menu item.  The window will automatically be closed when a button
+    <emphasis role="bold"><code>View > Wizard...</code></emphasis> menu item.  The window will automatically be closed when a button
     on the wizard window is clicked or when the user closes the window with the window manager's "X" button.
   </para>
   

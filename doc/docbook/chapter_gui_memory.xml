@@ -19,7 +19,7 @@
   </para>
   <para>
     To display this window, simply click on a highlighted/underlined uncovered memory in the 
-    <xref linkend="section.gui.main.viewer"/>.  This will cause the verbose memory viewer to be created for the specified 
+    <link linkend="section.gui.main.viewer">file viewer</link>.  This will cause the verbose memory viewer to be created for the specified 
     memory as well as display a "--&gt;" symbol in the Coverage Viewer on the same line as the selected memory.  This 
     symbol is simply meant to help the user identify in the Coverage Viewer which memory is currently displayed in the 
     Memory Viewer window.  Figure 1 shows the Memory Viewer loaded with a 4-dimensional memory called "mem" in which two 
@@ -74,9 +74,9 @@
       </para>
       <para>
         The upper frame will contain all of the AMEs for the selected memory.  The uncovered AMEs will be highlighted in 
-        the uncovered color scheme (as specified in the <xref linkend="chapter.gui.preferences"/>) while all fully covered 
-        AMEs will remain unhighlighted.  To view the coverage information for any uncovered AME, simply click on it and 
-        the information will be viewable in the "Element Coverage" frame below it.
+        the uncovered color scheme (as specified in the <link linkend="chapter.gui.preferences">preferences window</link>) 
+        while all fully covered AMEs will remain unhighlighted.  To view the coverage information for any uncovered AME, 
+        simply click on it and the information will be viewable in the "Element Coverage" frame below it.
       </para>
     </sect2>
     
@@ -104,9 +104,9 @@
         Below the memory name are two other pieces of coverage information about the AME.  The value to the right of the 
         <emphasis role="bold">Written:</emphasis> label will be set to either "Yes" or "No".  If the value is "Yes", this 
         indicates that the currently selected AME was written during simulation and value will be highlighted with the 
-        covered color scheme (as selected in the <xref linkend="chapter.gui.preferences"/>).  If the value is "No", this 
-        indicates that the currently selected AME was not written during simulation and the value will be highlighted 
-        with the uncovered color scheme.
+        covered color scheme (as selected in the <link linkend="chapter.gui.preferences">preferences window</link>).  If 
+        the value is "No", this indicates that the currently selected AME was not written during simulation and the value 
+        will be highlighted with the uncovered color scheme.
       </para>
       <para>
         To the right of the <emphasis role="bold">Written</emphasis> information is the 
@@ -136,8 +136,8 @@
       The user may exclude/include any uncovered memory in the design for memory coverage by simply clicking on the 
       <emphasis role="bold">Excluded</emphasis> checkbutton in the upper right-hand portion of the Memory Coverage 
       window. If this checkbutton is checked, the summary coverage information will automatically be recalculated and 
-      redisplayed in the <xref linkend="section.gui.main.listbox"/> and the background color of the underlined memory in 
-      the <xref linkend="section.gui.main.viewer"/> will change from the uncovered background color to the covered 
+      redisplayed in the <link linkend="section.gui.main.listbox">listbox</link> and the background color of the underlined memory in 
+      the <link linkend="section.gui.main.viewer">file viewer</link> will change from the uncovered background color to the covered 
       background color.  However, the memory will still remain underlined, allowing the user to see the verbose memory 
       coverage information, if necessary.  If the <emphasis role="bold">Excluded</emphasis> checkbutton is unchecked, the 
       summary coverage information and background colors will be readjusted to include the coverage information for this 
@@ -145,7 +145,7 @@
     </para>
     <para>
       If the user excludes any memory for memory coverage in the design, the <emphasis role="bold">Save CDD...</emphasis> 
-      option in the <xref linkend="section.gui.main.filemenu"/> menu.  This allows the user to save the excluded property 
+      option in the <link linkend="section.gui.main.filemenu">file</link> menu.  This allows the user to save the excluded property 
       either back to the CDD file (or to a newly named CDD file).  Doing so will allow the user to load the CDD file at a 
       different time and retain the knowledge of which memories have been excluded/included for memory coverage. 
       Additionally, if a saved CDD file with coverage exclusion is merged with another CDD file, the excluded memory 
@@ -157,7 +157,7 @@
     <title>Displaying a New Memory for Memory Coverage</title>
     <para>
       If the Verbose Memory Coverage window is currently displayed with a memory, the user may select a new memory in 
-      the <xref linkend="section.gui.main.viewer"/> of the Main window.  When a new memory is selected, its value 
+      the <link linkend="section.gui.main.viewer">file viewer</link> of the Main window.  When a new memory is selected, its value 
       immediately replaces the currently selecting memory value.  This feature allows many different memories to be 
       viewed one after the other without having to create/destroy a new window for each memory.
     </para>
