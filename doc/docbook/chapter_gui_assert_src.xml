@@ -1,37 +1,37 @@
-<chapter id="chapter.gui.assert.source" xreflabel="Navigating the Assertion Source Code Window">
+<chapter id="chapter.gui.assert.source">
   <title>Navigating the Assertion Source Code Window</title>
   <para>
-  The Assertion Source Viewer window allows the user to see the source code for the current assertion in the 
-  <xref linkend="chapter.gui.assert"/>. To view this window, simply click the <emphasis role="bold">Show Code</emphasis> 
-  button in the Verbose Assertion Coverage window. <xref linkend="figure.gui.assert.source"/> shows a zero_one_hot OVL 
-  assertion code with syntax highlighting applied.
+    The Assertion Source Viewer window allows the user to see the source code for the current assertion in the 
+    <xref linkend="chapter.gui.assert"/>. To view this window, simply click the <emphasis role="bold">Show Code</emphasis> 
+    button in the Verbose Assertion Coverage window. <xref linkend="figure.gui.assert.source"/> shows a zero_one_hot OVL 
+    assertion code with syntax highlighting applied.
   </para>
   <para>
-    <figure id="figure.gui.assert.source" xreflabel="Assertion Source Viewer Window">
+    <figure id="figure.gui.assert.source">
       <title>Assertion Source Viewer Window</title>
       <mediaobject><imageobject><imagedata fileref="img/assert_src.gif" format="GIF"/></imageobject></mediaobject>
     </figure>
   </para>
 
-  <sect1 id="section.gui.assert.source.navigate" xreflabel="Navigating the Source Code">
+  <sect1 id="section.gui.assert.source.navigate">
     <title>Navigating the Source Code</title>
     <para>
-    The source code for the current assertion will be automatically displayed in the text viewer when the window is 
-    created.  However, the source code will be displayed as it is found in the file system, without preprocessing 
-    applied to it.  This means that included files will not be displayed in an in-lined fashion.  To view included 
-    files, simply click on the included filename (it will be underlined).  This will cause the included file to replace 
-    its includer in the text viewer.  An infinite number of includes may be traversed in this manner. To go back to the 
-    file that included the current file, simply click on the <emphasis role="bold">Back</emphasis> button located in 
-    the bottom left-hand corner of the window. This will cause the current source code to be replaced with its "parent" 
-    source code.
+      The source code for the current assertion will be automatically displayed in the text viewer when the window is 
+      created.  However, the source code will be displayed as it is found in the file system, without preprocessing 
+      applied to it.  This means that included files will not be displayed in an in-lined fashion.  To view included 
+      files, simply click on the included filename (it will be underlined).  This will cause the included file to replace 
+      its includer in the text viewer.  An infinite number of includes may be traversed in this manner. To go back to the 
+      file that included the current file, simply click on the <emphasis role="bold">Back</emphasis> button located in 
+      the bottom left-hand corner of the window. This will cause the current source code to be replaced with its "parent" 
+      source code.
     </para>
     <para>
-    Note that the <emphasis role="bold">Back</emphasis> button will be disabled when the top-level assertion file is 
-    currently displayed.
+      Note that the <emphasis role="bold">Back</emphasis> button will be disabled when the top-level assertion file is 
+      currently displayed.
     </para>
     <para>
-    To exit this window, simply click on <emphasis role="bold">Close</emphasis> button. To see this help page for the 
-    assertion source code window, click on the <emphasis role="bold">Help</emphasis> button.
+      To exit this window, simply click on <emphasis role="bold">Close</emphasis> button. To see this help page for the 
+      assertion source code window, click on the <emphasis role="bold">Help</emphasis> button.
     </para>
   </sect1>
 </chapter>

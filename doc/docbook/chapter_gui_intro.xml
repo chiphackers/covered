@@ -1,4 +1,4 @@
-<chapter id="chapter.gui.intro" xreflabel="Introduction to the GUI">
+<chapter id="chapter.gui.intro">
   <title>Introduction to the GUI</title>
   <para>
     The Covered report viewer GUI allows a user to view the coverage results from one or more CDD (Covered Design Database) files that have been previously 

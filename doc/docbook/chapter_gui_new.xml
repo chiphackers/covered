@@ -33,7 +33,7 @@
       Figure <xref linkend="figure.gui.new.select"/> shows the look of this page of the CDD creation wizard.
     </para>
     <para>
-      <figure id="figure.gui.new.select" xreflabel="CDD Creation Option Selection Page">
+      <figure id="figure.gui.new.select">
         <title>CDD Creation Option Selection Page</title>
         <mediaobject><imageobject><imagedata fileref="img/new_cdd_selection.gif" format="GIF"/></imageobject></mediaobject>
       </figure>
@@ -62,11 +62,11 @@
   <sect1 id="section.gui.new.name">
     <title>Navigating the New CDD Creation CDD Name Page</title>
     <para>
-      This page is used to specify the name of the output CDD file.  Figure <xref linkend="figure.gui.new.name"/> shows 
+      This page is used to specify the name of the output CDD file.  <xref linkend="figure.gui.new.name"/> shows 
       the display of this page.
     </para>
     <para>
-      <figure id="figure.gui.new.name" xreflabel="CDD Creation Output Name Page">
+      <figure id="figure.gui.new.name">
         <title>CDD Creation Output Name Page</title>
         <mediaobject><imageobject><imagedata fileref="img/new_cdd_name.gif" format="GIF"/></imageobject></mediaobject>
       </figure>
@@ -132,7 +132,7 @@
       option page.
     </para>
     <para>
-      <figure id="figure.gui.new.type" xreflabel="CDD Creation Type Page">
+      <figure id="figure.gui.new.type">
         <title>CDD Creation Type Page</title>
         <mediaobject><imageobject><imagedata fileref="img/new_cdd_type.gif" format="GIF"/></imageobject></mediaobject>
       </figure>
@@ -146,7 +146,7 @@
       <xref linkend="figure.gui.new.options1"/> for the layout of this window.
     </para>
     <para>
-      <figure id="figure.gui.new.options1" xreflabel="CDD Creation Options1 Page">
+      <figure id="figure.gui.new.options1">
         <title>CDD Creation Options1 Page</title>
         <mediaobject><imageobject><imagedata fileref="img/new_cdd_options.gif" format="GIF"/></imageobject></mediaobject>
       </figure>
@@ -275,7 +275,7 @@
       </para>
     </sect2>
     
-    <sect2 id="section.gui.new.options1.exclude" xreflabel="CDD Creation Options1 Page - Exclude Options">
+    <sect2 id="section.gui.new.options1.exclude">
       <title>Exclude Options</title>
       <para>
         <itemizedlist>
@@ -333,7 +333,7 @@
       <xref linkend="figure.gui.new.options2"/> for the layout of this option page.
     </para>
     <para>
-      <figure id="figure.gui.new.options2" xreflabel="CDD Creation Options2 Page">
+      <figure id="figure.gui.new.options2">
         <title>CDD Creation Options2 Page</title>
         <mediaobject><imageobject><imagedata fileref="img/new_cdd_options2.gif" format="GIF"/></imageobject></mediaobject>
       </figure>
@@ -382,7 +382,7 @@
         <xref linkend="figure.gui.new.options2.libext"/> is a display of this window.
       </para>
       <para>
-        <figure id="figure.gui.new.options2.libext" xreflabel="CDD Creation Library Extension Window">
+        <figure id="figure.gui.new.options2.libext">
           <title>CDD Creation Library Extension Window</title>
           <mediaobject><imageobject><imagedata fileref="img/new_cdd_lib_ext.gif" format="GIF"/></imageobject></mediaobject>
         </figure>
@@ -432,7 +432,7 @@
       </note>
     </sect2>
     
-    <sect2 id="section.gui.new.options2.param" xreflabel="CDD Creation Parameter Override Option">
+    <sect2 id="section.gui.new.options2.param">
       <title>Parameter Override...</title>
       <para>
       Selecting this insert option will cause a window to be displayed that will allow the user to add a parameter overload
@@ -440,7 +440,7 @@
       override parameter values.
       </para>
       <para>
-        <figure id="figure.gui.new.options2.param" xreflabel="CDD Creation Parameter Override Window">
+        <figure id="figure.gui.new.options2.param">
           <title>CDD Creation Parameter Override Window</title>
           <mediaobject><imageobject><imagedata fileref="img/new_cdd_parm_oride.gif" format="GIF"/></imageobject></mediaobject>
         </figure>
@@ -457,7 +457,7 @@
       </note>
     </sect2>
     
-    <sect2 id="section.gui.new.options2.fsm" xreflabel="CDD Creation FSM Specification Option">
+    <sect2 id="section.gui.new.options2.fsm">
       <title>FSM...</title>
       <para>
       Selecting this insert option will cause a window to be displayed that will allow the user to add an FSM input/output
@@ -465,7 +465,7 @@
       inlining this information with the use of pragmas for the purposes of gaining FSM coverage information.
       </para>
       <para>
-        <figure id="figure.gui.new.options2.fsm" xreflabel="CDD Creation FSM Specification Window">
+        <figure id="figure.gui.new.options2.fsm">
           <title>CDD Creation FSM Specification Window</title>
           <mediaobject><imageobject><imagedata fileref="img/new_cdd_fsm.gif" format="GIF"/></imageobject></mediaobject>
         </figure>
@@ -485,7 +485,7 @@
       </note>
     </sect2>
     
-    <sect2 id="section.gui.new.options2.modgen" xreflabel="CDD Creation Module Generation Option">
+    <sect2 id="section.gui.new.options2.modgen">
       <title>Module Generation...</title>
       <para>
       Selecting this insert option will cause a window to be displayed that will allow the user to specify a Verilog generation
@@ -494,7 +494,7 @@
       design.
       </para>
       <para>
-        <figure id="figure.gui.new.options2.modgen" xreflabel="CDD Creation Module Generation Window">
+        <figure id="figure.gui.new.options2.modgen">
           <title>CDD Creation Module Generation Window</title>
           <mediaobject><imageobject><imagedata fileref="img/new_cdd_mod_gen.gif" format="GIF"/></imageobject></mediaobject>
         </figure>
@@ -510,7 +510,7 @@
       </note>
     </sect2>
     
-    <sect2 id="section.gui.new.options2.modexcl" xreflabel="CDD Creation Module Exclusion Option">
+    <sect2 id="section.gui.new.options2.modexcl">
       <title>Module Exclusion...</title>
       <para>
       Selecting this insert option will cause a window to be displayed that will allow the user to specify a module to exclude
@@ -518,7 +518,7 @@
       <xref linkend="section.score.t"></xref>.
       </para>
       <para>
-        <figure id="figure.gui.new.options2.modexcl" xreflabel="CDD Creation Module Exclusion Window">
+        <figure id="figure.gui.new.options2.modexcl">
           <title>CDD Creation Module Exclusion Window</title>
           <mediaobject><imageobject><imagedata fileref="img/new_cdd_mod_excl.gif" format="GIF"/></imageobject></mediaobject>
         </figure>
@@ -533,7 +533,7 @@
       </note>
     </sect2>
     
-    <sect2 id="section.gui.new.options2.cmdfile" xreflabel="CDD Creation Command File Option">
+    <sect2 id="section.gui.new.options2.cmdfile">
       <title>Command File...</title>
       <para>
       Selecting this insert option will cause an open file selector window to be displayed which will allow the user
@@ -571,7 +571,7 @@
     <emphasis role="bold">Finish</emphasis> button to exit the new CDD creation wizard.
     </para>
     <para>
-      <figure id="figure.gui.new.output" xreflabel="CDD Creation Output Window">
+      <figure id="figure.gui.new.output">
 	      <title>CDD Creation Output Window</title>
 	      <mediaobject><imageobject><imagedata fileref="img/new_cdd_gen.gif" format="GIF"/></imageobject></mediaobject>
       </figure>

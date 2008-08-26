@@ -1,60 +1,75 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 13. Reading the Report</title><link rel="stylesheet" href="covered.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.74.0"><link rel="home" href="index.html" title="Covered"><link rel="up" href="part.command.line.usage.html" title="Part III. Command-line Usage"><link rel="prev" href="chapter.rank.html" title="Chapter 12. The rank Command"><link rel="next" href="chapter.debug.html" title="Chapter 14. Debugging"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 13. Reading the Report</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter.rank.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part III. Command-line Usage</th><td width="20%" align="right"> <a accesskey="n" href="chapter.debug.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.reading"></a>Chapter 13. Reading the Report</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.reading.html#section.reading.line">13.1. Reading Line Coverage</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.reading.html#section.reading.line.summary.mod">Summary Information Description - Module-based</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.line.summary.inst">Summary Information Description - Instance-based</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.line.summary.both">Summary Information Description - Both</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.line.verbose.both">Verbose Information Description - Both</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.reading.html#section.reading.toggle">13.2. Reading Toggle Coverage</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.reading.html#section.reading.toggle.summary.mod">Summary Information Description - Module-based</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.toggle.summary.inst">Summary Information Description - Instance-based</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.toggle.summary.both">Summary Information Description - Both</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.toggle.verbose.both">Verbose Information Description - Both</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.reading.html#section.reading.memory">13.3. Reading Memory Coverage</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.reading.html#section.reading.memory.summary.mod">Summary Information Description - Module-based</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.memory.summary.inst">Summary Information Description - Instance-based</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.memory.summary.both">Summary Information Description - Both</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.memory.verbose.both">Verbose Information Description - Both</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.reading.html#section.reading.logic">13.4. Reading Combinational Logic Coverage</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.reading.html#section.reading.logic.summary.mod">Summary Information Description - Module-based</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.logic.summary.inst">Summary Information Description - Instance-based</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.logic.summary.both">Summary Information Description - Both</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.logic.verbose.both">Verbose Information Description - Both</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.reading.html#section.reading.fsm">13.5. Reading FSM Coverage</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.reading.html#section.reading.fsm.summary.mod">Summary Information Description - Module-based</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.fsm.summary.inst">Summary Information Description - Instance-based</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.fsm.summary.both">Summary Information Description - Both</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.verbose.both">Verbose Information Description - Both</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.reading.html#section.reading.assert">13.6. Reading Assertion Coverage</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.reading.html#section.reading.assert.summary.mod">Summary Information Description - Module-based</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.assert.summary.inst">Summary Information Description - Instance-based</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.assert.summary.both">Summary Information Description - Both</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.assert.verbose.both">Verbose Information Description - Both</a></span></dt></dl></dd></dl></div><p>
-    This chapter describes the meanings of the textual report output that Covered generates when the report command is issued. It is well understood by the 
-    developers of Covered that a code coverage tool is only as good as the output that it generates, and this, of course, includes the ability to discern the 
-    information provided by the report.
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 13. Reading the Report</title><link rel="stylesheet" href="covered.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.71.1"><link rel="start" href="index.html" title="Covered"><link rel="up" href="part.command.line.usage.html" title="Part III. Command-line Usage"><link rel="prev" href="chapter.rank.html" title="Chapter 12. The rank Command"><link rel="next" href="chapter.debug.html" title="Chapter 14. Debugging"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 13. Reading the Report</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter.rank.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part III. Command-line Usage</th><td width="20%" align="right"> <a accesskey="n" href="chapter.debug.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.reading"></a>Chapter 13. Reading the Report</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.reading.html#section.reading.line">13.1. Reading Line Coverage</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.reading.html#section.reading.line.summary.mod">Summary Information Description - Module-based</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.line.summary.inst">Summary Information Description - Instance-based</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.line.summary.both">Summary Information Description - Both</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.line.verbose.both">Verbose Information Description - Both</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.reading.html#section.reading.toggle">13.2. Reading Toggle Coverage</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.reading.html#section.reading.toggle.summary.mod">Summary Information Description - Module-based</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.toggle.summary.inst">Summary Information Description - Instance-based</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.toggle.summary.both">Summary Information Description - Both</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.toggle.verbose.both">Verbose Information Description - Both</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.reading.html#section.reading.memory">13.3. Reading Memory Coverage</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.reading.html#section.reading.memory.summary.mod">Summary Information Description - Module-based</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.memory.summary.inst">Summary Information Description - Instance-based</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.memory.summary.both">Summary Information Description - Both</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.memory.verbose.both">Verbose Information Description - Both</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.reading.html#section.reading.logic">13.4. Reading Combinational Logic Coverage</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.reading.html#section.reading.logic.summary.mod">Summary Information Description - Module-based</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.logic.summary.inst">Summary Information Description - Instance-based</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.logic.summary.both">Summary Information Description - Both</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.logic.verbose.both">Verbose Information Description - Both</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.reading.html#section.reading.fsm">13.5. Reading FSM Coverage</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.reading.html#section.reading.fsm.summary.mod">Summary Information Description - Module-based</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.fsm.summary.inst">Summary Information Description - Instance-based</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.fsm.summary.both">Summary Information Description - Both</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.verbose.both">Verbose Information Description - Both</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.reading.html#section.reading.assert">13.6. Reading Assertion Coverage</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.reading.html#section.reading.assert.summary.mod">Summary Information Description - Module-based</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.assert.summary.inst">Summary Information Description - Instance-based</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.assert.summary.both">Summary Information Description - Both</a></span></dt><dt><span class="sect2"><a href="chapter.reading.html#section.reading.assert.verbose.both">Verbose Information Description - Both</a></span></dt></dl></dd></dl></div><p>
+    This chapter describes the meanings of the textual report output that Covered generates when the report command is 
+    issued. It is well understood by the developers of Covered that a code coverage tool is only as good as the output 
+    that it generates, and this, of course, includes the ability to discern the information provided by the report.
   </p><p>
-    To help describe the various sections of a Covered report, we will use a relatively small Verilog file containing our DUT, generating the two main types of 
-    reports (module and instance) based on the CDD generated for this file. This example file is provided <a class="ulink" href="example.v.html" target="_top">here</a>
+    To help describe the various sections of a Covered report, we will use a relatively small Verilog file containing 
+    our DUT, generating the two main types of reports (module and instance) based on the CDD generated for this file. 
+    This example file is provided <a href="example.v.html" target="_top">here</a>
   </p><p>
     After being compiled and run, this module is scored with the following Covered command:
   </p><p>
     <code class="code">covered score -t main -v example.v -o example.cdd -vcd example.vcd</code>
   </p><p>
-    The module-based verbose report can be viewed in its entirety <a class="ulink" href="example.rptM.html" target="_top">example.rptM.html</a> and is generated with the following command:
+    The module-based verbose report can be viewed in its entirety <a href="example.rptM.html" target="_top">example.rptM.html</a> and is 
+    generated with the following command:
   </p><p>
     <code class="code">covered report -d v example.cdd</code>
   </p><p>
-    The instance-based verbose report can be viewed in its entirety <a class="ulink" href="example.rptI.html" target="_top">here</a> and is generated with the following command:
+    The instance-based verbose report can be viewed in its entirety <a href="example.rptI.html" target="_top">here</a> and is 
+    generated with the following command:
   </p><p>
     <code class="code">covered report -i -d v example.cdd</code>
   </p><p>
-    The instructions for analyzing each of the six types of coverage information from the report can be found on the following pages.
+    The instructions for analyzing each of the six types of coverage information from the report can be found on the 
+    following pages.
   </p><p>
-    </p><div class="orderedlist"><ol type="1"><li><p><a class="xref" href="chapter.reading.html#section.reading.line" title="13.1. Reading Line Coverage">Reading Line Coverage</a></p></li><li><p><a class="xref" href="chapter.reading.html#section.reading.toggle" title="13.2. Reading Toggle Coverage">Reading Toggle Coverage</a></p></li><li><p><a class="xref" href="chapter.reading.html#section.reading.memory" title="13.3. Reading Memory Coverage">Reading Memory Coverage</a></p></li><li><p><a class="xref" href="chapter.reading.html#section.reading.logic" title="13.4. Reading Combinational Logic Coverage">Reading Combinational Logic Coverage</a></p></li><li><p><a class="xref" href="chapter.reading.html#section.reading.fsm" title="13.5. Reading FSM Coverage">Reading FSM Coverage</a></p></li><li><p><a class="xref" href="chapter.reading.html#section.reading.assert" title="13.6. Reading Assertion Coverage">Reading Assertion Coverage</a></p></li></ol></div><p>
+    </p><div class="orderedlist"><ol type="1"><li><p><a href="chapter.reading.html#section.reading.line" title="13.1. Reading Line Coverage">Section 13.1, &#8220;Reading Line Coverage&#8221;</a></p></li><li><p><a href="chapter.reading.html#section.reading.toggle" title="13.2. Reading Toggle Coverage">Section 13.2, &#8220;Reading Toggle Coverage&#8221;</a></p></li><li><p><a href="chapter.reading.html#section.reading.memory" title="13.3. Reading Memory Coverage">Section 13.3, &#8220;Reading Memory Coverage&#8221;</a></p></li><li><p><a href="chapter.reading.html#section.reading.logic" title="13.4. Reading Combinational Logic Coverage">Section 13.4, &#8220;Reading Combinational Logic Coverage&#8221;</a></p></li><li><p><a href="chapter.reading.html#section.reading.fsm" title="13.5. Reading FSM Coverage">Section 13.5, &#8220;Reading FSM Coverage&#8221;</a></p></li><li><p><a href="chapter.reading.html#section.reading.assert" title="13.6. Reading Assertion Coverage">Section 13.6, &#8220;Reading Assertion Coverage&#8221;</a></p></li></ol></div><p>
   </p><p>
-    For information on reading race condition information in the report, please see the user guide page detailing race conditions and viewing the reports.
+    For information on reading race condition information in the report, please see the user guide page detailing race 
+    conditions and viewing the reports.
   </p><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.reading.line"></a>13.1. Reading Line Coverage</h2></div></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.reading.line.summary.mod"></a>Summary Information Description - Module-based</h3></div></div></div><p>
-        For module-based reports, the summary table for line metrics includes information for the name of each module that was covered and the name of the 
-        file in which the module is described in. Lines <a class="ulink" href="example.rptM.html#15" target="_top">15 through 24</a> of the module-based report show what 
-        this information looks like in the report. We have three modules that were scored within our DUT: main, fsma and fsmb. The table shows that all three 
-        modules were described in the file "example.v".
+        For module-based reports, the summary table for line metrics includes information for the name of each module 
+        that was covered and the name of the file in which the module is described in.  Lines 
+        <a href="example.rptM.html#15" target="_top">15 through 24</a> of the module-based report show what this information 
+        looks like in the report. We have three modules that were scored within our DUT: main, fsma and fsmb.  The 
+        table shows that all three modules were described in the file "example.v".
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.reading.line.summary.inst"></a>Summary Information Description - Instance-based</h3></div></div></div><p>
-        For instance-based reports, the summary table for line metrics includes information for the Verilog hierarchy pertaining to each instance on the 
-        left-hand-side of each row. Lines <a class="ulink" href="example.rptI.html#15" target="_top">example.rptI.html#15</a> of the instance-based report show what this information looks like 
-        in the report. In our DUT example, there are three instances within the design with the Verilog hierarchies of "main", "main.fsm1" and "main.fsm2".
+        For instance-based reports, the summary table for line metrics includes information for the Verilog hierarchy 
+        pertaining to each instance on the left-hand-side of each row.  Lines <a href="example.rptI.html#15" target="_top">example.rptI.html#15</a> 
+        of the instance-based report show what this information looks like in the report.  In our DUT example, there 
+        are three instances within the design with the Verilog hierarchies of "main", "main.fsm1" and "main.fsm2".
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.reading.line.summary.both"></a>Summary Information Description - Both</h3></div></div></div><p>
-        On the right-hand side of each row in the table are the hit, miss and total numbers for the line coverage, followed by a calculated percent of the 
-        lines that were hit (calculated by taking the number of lines hit during simulation divided by the total number of lines that Covered simulated). The 
-        hit value indicates how many lines were executed during the simulation; the miss value indicates the number of lines not executed during simulation; 
-        and the total value indicates the total number of lines within the specified module/instance that Covered was able to simulate.
+        On the right-hand side of each row in the table are the hit, miss and total numbers for the line coverage, 
+        followed by a calculated percent of the lines that were hit (calculated by taking the number of lines hit 
+        during simulation divided by the total number of lines that Covered simulated).  The hit value indicates how 
+        many lines were executed during the simulation; the miss value indicates the number of lines not executed 
+        during simulation; and the total value indicates the total number of lines within the specified 
+        module/instance that Covered was able to simulate.
       </p><p>
-        If the percentage value in the far left of the summary table is 100%, this indicates that all lines that Covered was capable of simulating (for the 
-        module/instance of this row) were executed. If the value of the percentage is less than 100%, this indicates that some number of lines were not 
-        executed and full coverage was not achieved for that module/instance. Note that for a module/instance which does not contain any lines in which 
-        Covered was able to simulate, the values of hit, miss, and total will be 0 while the hit percentage value will indicate 100%.
+        If the percentage value in the far left of the summary table is 100%, this indicates that all lines that 
+        Covered was capable of simulating (for the module/instance of this row) were executed. If the value of the 
+        percentage is less than 100%, this indicates that some number of lines were not executed and full coverage 
+        was not achieved for that module/instance. Note that for a module/instance which does not contain any lines 
+        in which Covered was able to simulate, the values of hit, miss, and total will be 0 while the hit percentage 
+        value will indicate 100%.
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.reading.line.verbose.both"></a>Verbose Information Description - Both</h3></div></div></div><p>
-        If the miss value for a particular module was not 0 (indicating that lines were missed during simulation) and the '-d v' option was specified on the 
-        command-line (specifying to output verbose reporting information), the line that was missed during simulation will be output below the summary 
-        information per module that contained missed lines. In our sample report, there was one line that was missed during simulation (according to the 
-        summary output) for the module called "fsmb" (instance "main.fsmb"). The line number and Verilog line that was missed is output in lines <a class="ulink" href="example.rptM.html#25" target="_top">25 through 29</a> of the module-based report and in lines 
-        <a class="ulink" href="example.rptI.html#25" target="_top">25 through 29</a> of the instance-based report.
+        If the miss value for a particular module was not 0 (indicating that lines were missed during simulation) and 
+        the '-d v' option was specified on the command-line (specifying to output verbose reporting information), the 
+        line that was missed during simulation will be output below the summary information per module that contained 
+        missed lines. In our sample report, there was one line that was missed during simulation (according to the 
+        summary output) for the module called "fsmb" (instance "main.fsmb"). The line number and Verilog line that was 
+        missed is output in lines <a href="example.rptM.html#25" target="_top">25 through 29</a> of the module-based report and 
+        in lines <a href="example.rptI.html#25" target="_top">25 through 29</a> of the instance-based report.
       </p><p>
-        If a module does not contain any missed lines and the '-d v' option was specified, no verbose output will be displayed for this module. Likewise, if 
-        a module/instance does not contain any lines that Covered could execute, no verbose output will be displayed.
+        If a module does not contain any missed lines and the '-d v' option was specified, no verbose output will be 
+        displayed for this module. Likewise, if a module/instance does not contain any lines that Covered could 
+        execute, no verbose output will be displayed.
       </p></div><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="img/note.gif"></td><th align="left">Note</th></tr><tr><td align="left" valign="top"><p>
-        The definition of what Covered considers a line is a statement (ex. assignment, conditional, etc.). If a statement is written in such a way that it 
-        consumes multiple file lines, Covered only counts the statement as one line. The user can assume that if the beginning of a statement is labeled as 
-        missed, the entire expression was missed (not just the first line of the expression). For example, consider the following code:
+        The definition of what Covered considers a line is a statement (ex. assignment, conditional, etc.).  If a 
+        statement is written in such a way that it consumes multiple file lines, Covered only counts the statement 
+        as one line. The user can assume that if the beginning of a statement is labeled as missed, the entire 
+        expression was missed (not just the first line of the expression). For example, consider the following code:
       </p><p>
         </p><pre class="programlisting">
   always @(posedge b)
@@ -69,46 +84,54 @@
   a &lt;= (b &amp; c) | (d &amp; e);      
         </pre><p>
       </p><p>
-        is not executed during simulation, Covered will indicate that only one line was missed during execution (not two), and it will display the missing 
-        line (if verbose reporting is specified with the '-d v' option) as the following:
+        is not executed during simulation, Covered will indicate that only one line was missed during execution (not 
+        two), and it will display the missing line (if verbose reporting is specified with the '-d v' option) as the 
+        following:
       </p><p>
         </p><pre class="programlisting">
   2:      assign a &lt;= (b &amp; c) ...      
         </pre><p>
       </p><p>
-        The "..." notation at the end of the Verilog output indicates that the statement was a multiline statement in the source code but is only considered 
-        one line.
+        The "..." notation at the end of the Verilog output indicates that the statement was a multiline statement 
+        in the source code but is only considered one line.
       </p></td></tr></table></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.reading.toggle"></a>13.2. Reading Toggle Coverage</h2></div></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.reading.toggle.summary.mod"></a>Summary Information Description - Module-based</h3></div></div></div><p>
-        For module-based reports, the summary table for toggle metrics includes information for the name of each module that was covered and the name of the 
-        file in which the module is described in. Lines <a class="ulink" href="example.rptM.html#41" target="_top">41 through 51</a> of the module-based report show what 
-        this information looks like in the report. We have three modules that were scored within our DUT: main, fsma and fsmb. The table shows that all three 
-        modules were described in the file "example.v".
+        For module-based reports, the summary table for toggle metrics includes information for the name of each 
+        module that was covered and the name of the file in which the module is described in.  Lines 
+        <a href="example.rptM.html#41" target="_top">41 through 51</a> of the module-based report show what this 
+        information looks like in the report. We have three modules that were scored within our DUT: main, fsma and 
+        fsmb.  The table shows that all three modules were described in the file "example.v".
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.reading.toggle.summary.inst"></a>Summary Information Description - Instance-based</h3></div></div></div><p>
-        For instance-based reports, the summary table for toggle metrics includes information for the Verilog hierarchy pertaining to each instance on the 
-        left-hand-side of each row. Lines <a class="ulink" href="example.rptI.html#41" target="_top">41 through 51</a> of the instance-based report show what this 
-        information looks like in the report. In our DUT example, there are three instances within the design with the Verilog hierarchies of "main", 
-        "main.fsm1" and "main.fsm2".
+        For instance-based reports, the summary table for toggle metrics includes information for the Verilog 
+        hierarchy pertaining to each instance on the left-hand-side of each row.  Lines 
+        <a href="example.rptI.html#41" target="_top">41 through 51</a> of the instance-based report show what this 
+        information looks like in the report. In our DUT example, there are three instances within the design with 
+        the Verilog hierarchies of "main", "main.fsm1" and "main.fsm2".
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.reading.toggle.summary.both"></a>Summary Information Description - Both</h3></div></div></div><p>
-        On the right-hand side of each row in the table are the hit, miss and total numbers for the toggle 0-&gt;1 coverage, followed by a calculated percent of 
-        the signal bits that toggled from a value of 0 to a value of 1 (calculated by taking the number of bits that toggled from 0 to 1 during simulation 
-        divided by the total number of signal bits). The hit value indicates how many signal bits were toggle from a value of 0 to 1 during simulation; the 
-        miss value indicates the number of signal bits that were not toggled from a value of 0 to 1 during simulation; and the total value indicates the 
-        total number of signal bits within the specified module/instance that Covered was able to simulate.
+        On the right-hand side of each row in the table are the hit, miss and total numbers for the toggle 0-&gt;1 
+        coverage, followed by a calculated percent of the signal bits that toggled from a value of 0 to a value of 
+        1 (calculated by taking the number of bits that toggled from 0 to 1 during simulation divided by the total 
+        number of signal bits). The hit value indicates how many signal bits were toggle from a value of 0 to 1 during 
+        simulation; the miss value indicates the number of signal bits that were not toggled from a value of 0 to 1 
+        during simulation; and the total value indicates the total number of signal bits within the specified 
+        module/instance that Covered was able to simulate.
       </p><p>
-        To the right of this information is the hit, miss and total statistics for signal bits that toggled from a value of 1 to a value of 0.
+        To the right of this information is the hit, miss and total statistics for signal bits that toggled from a 
+        value of 1 to a value of 0.
       </p><p>
-        If the percentage values in the right of the summary table are 100%, this indicates that all signal bits toggled from a value of 0 to 1 and back to 0 
-        during simulating (for the module/instance of this row). If the values of the percentage are less than 100%, this indicates that some signal bits did 
-        not fully toggle during simulation and full toggle coverage was not achieved for that module/instance. Note that for a module/instance which does not 
-        contain any signals in which Covered was able to simulate, the values of hit, miss, and total will be 0 while the hit percentage value will indicate 
-        100%.
+        If the percentage values in the right of the summary table are 100%, this indicates that all signal bits 
+        toggled from a value of 0 to 1 and back to 0 during simulating (for the module/instance of this row).  If the 
+        values of the percentage are less than 100%, this indicates that some signal bits did not fully toggle 
+        during simulation and full toggle coverage was not achieved for that module/instance.  Note that for a 
+        module/instance which does not contain any signals in which Covered was able to simulate, the values of hit, 
+        miss, and total will be 0 while the hit percentage value will indicate 100%.
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.reading.toggle.verbose.both"></a>Verbose Information Description - Both</h3></div></div></div><p>
-        If the miss value for a particular module/instance was not 0 (indicating that one or more signal bits did not fully toggle during simulation) and the 
-        '-d v' option was specified on the command-line (specifying to output verbose reporting information), the signals that were missed during simulation 
-        will be output below the summary information per module/instance that contained missed signal bit toggles. In our sample module-based report, there 
-        were three signals in module "main" ("go", "state", and "error"), three signals in module "fsma" ("go", "state" and "next_state"), and three signals 
-        in module "fsmb" ("go", "next_state" and "state") that were not fully toggled (see lines 
-        <a class="ulink" href="example.rptM.html#53" target="_top">53 through 90</a>).
+        If the miss value for a particular module/instance was not 0 (indicating that one or more signal bits did not 
+        fully toggle during simulation) and the '-d v' option was specified on the command-line (specifying to output 
+        verbose reporting information), the signals that were missed during simulation will be output below the 
+        summary information per module/instance that contained missed signal bit toggles. In our sample module-based 
+        report, there were three signals in module "main" ("go", "state", and "error"), three signals in module 
+        "fsma" ("go", "state" and "next_state"), and three signals in module "fsmb" ("go", "next_state" and 
+        "state") that were not fully toggled (see lines <a href="example.rptM.html#53" target="_top">53 through 90</a>).
       </p><p>
         For each signal in the verbose toggle table, the format is the following:
       </p><p>
@@ -118,168 +141,213 @@
         
         </pre><p>
       </p><p>
-        The name of the signal is specified in the upper left corner. The bitwise toggle information for the signal from a value of 0 to a value of 1 is specified in the 
-        upper right corner. The hexidecimal value represents bits in the signal, each bit corresponding to the matching bit of the signal. If a bit value is set to the 
-        value 1, this indicates that this bit in the signal toggled from a value of 0 to a value of 1. If a bit value is set to the value 0, this indicates that this bit 
-        in the signal did NOT toggle from a value of 0 to a value of 1; therefore, full toggle coverage was not achieved for this signal. For example, for the signal 
-        called "go" in the module/instance "main", the verbose toggle information looks like:
+        The name of the signal is specified in the upper left corner. The bitwise toggle information for the signal 
+        from a value of 0 to a value of 1 is specified in the upper right corner.  The hexidecimal value represents 
+        bits in the signal, each bit corresponding to the matching bit of the signal. If a bit value is set to the 
+        value 1, this indicates that this bit in the signal toggled from a value of 0 to a value of 1.  If a bit 
+        value is set to the value 0, this indicates that this bit in the signal did NOT toggle from a value of 0 
+        to a value of 1; therefore, full toggle coverage was not achieved for this signal.  For example, for the 
+        signal called "go" in the module/instance "main", the verbose toggle information looks like:
       </p><p>
         </p><pre class="programlisting">
   go         0-&gt;1: 1'b1
   ...........1-&gt;0: 1'b0      
         </pre><p>
       </p><p>
-        This is indicating that bit 0 of the signal called "go" successfully toggled from a value of 0 to 1 during simulation (because the bit value at bit location 0 is 
-        a value of 1). However, the signal did not toggle from a value of 1 to a value of 0 during simulation, thus the signal was not considered fully toggled.
+        This is indicating that bit 0 of the signal called "go" successfully toggled from a value of 0 to 1 during 
+        simulation (because the bit value at bit location 0 is a value of 1).  However, the signal did not toggle 
+        from a value of 1 to a value of 0 during simulation, thus the signal was not considered fully toggled.
       </p><p>
-        It is important to note that the hexidecimal values are displayed with the least-significant bit of the signal being output on the far right of the value while 
-        the most-significant bit of the signal is output on the far left of the value.
+        It is important to note that the hexidecimal values are displayed with the least-significant bit of the 
+        signal being output on the far right of the value while the most-significant bit of the signal is output 
+        on the far left of the value.
       </p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.reading.memory"></a>13.3. Reading Memory Coverage</h2></div></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.reading.memory.summary.mod"></a>Summary Information Description - Module-based</h3></div></div></div><p>
-        For module-based reports, the summary table for memory metrics includes information for the name of each module, instantiating one or more memories, that was 
-        analyzed and the name of the file in which the module is described in. Lines <a class="ulink" href="example.rptM.html#93" target="_top">93 through 111</a> of the module-based 
-        report show what this information looks like in the report. We have three modules that were scored within our DUT: main, fsma and fsmb. The table shows that all 
-        three modules were described in the file "example.v".
+        For module-based reports, the summary table for memory metrics includes information for the name of each 
+        module, instantiating one or more memories, that was analyzed and the name of the file in which the module 
+        is described in. Lines <a href="example.rptM.html#93" target="_top">93 through 111</a> of the module-based 
+        report show what this information looks like in the report. We have three modules that were scored within 
+        our DUT: main, fsma and fsmb. The table shows that all three modules were described in the file "example.v".
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.reading.memory.summary.inst"></a>Summary Information Description - Instance-based</h3></div></div></div><p>
-        For instance-based reports, the summary table for memory metrics includes information for the Verilog hierarchy pertaining to each instance on the left-hand-side 
-        of each row. Lines <a class="ulink" href="example.rptI.html#93" target="_top">93 through 111</a> of the instance-based report show what this information looks like in the report. 
-        In our DUT example, there are three instances within the design with the Verilog hierarchies of "main", "main.fsm1" and "main.fsm2".
+        For instance-based reports, the summary table for memory metrics includes information for the Verilog 
+        hierarchy pertaining to each instance on the left-hand-side of each row.  Lines 
+        <a href="example.rptI.html#93" target="_top">93 through 111</a> of the instance-based report show what this 
+        information looks like in the report.  In our DUT example, there are three instances within the design 
+        with the Verilog hierarchies of "main", "main.fsm1" and "main.fsm2".
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.reading.memory.summary.both"></a>Summary Information Description - Both</h3></div></div></div><p>
-        On the right-hand side of each row in the table are the hit, miss and total numbers for the various memory coverage metrics, followed by a calculated percent of 
-        each memory coverage metric that was hit (calculated by taking the number hit during simulation divided by the total number that Covered could have simulated). 
-        The hit value indicates how many were executed during the simulation; the miss value indicates the number not executed during simulation; and the total value 
-        indicates the total number within the specified module/instance that Covered can simulate. All four metrics (AME toggle 0-&gt;1, AME toggle 1-&gt;0, AME write and AME 
-        read) are listed in the summary section.
+        On the right-hand side of each row in the table are the hit, miss and total numbers for the various memory 
+        coverage metrics, followed by a calculated percent of each memory coverage metric that was hit (calculated 
+        by taking the number hit during simulation divided by the total number that Covered could have simulated). 
+        The hit value indicates how many were executed during the simulation; the miss value indicates the number 
+        not executed during simulation; and the total value indicates the total number within the specified 
+        module/instance that Covered can simulate. All four metrics (AME toggle 0-&gt;1, AME toggle 1-&gt;0, AME write 
+        and AME read) are listed in the summary section.
       </p><p>
-        If the percentage value in the far left of the summary table is 100%, this indicates that all coverage points that Covered was capable of simulating (for the 
-        module/instance of this row) were executed. If the value of the percentage is less than 100%, this indicates that some number of coverage points were not executed 
-        and full coverage was not achieved for that module/instance. Note that for a module/instance which does not contain any coverage points in which Covered was able 
-        to simulate, the values of hit, miss, and total will be 0 while the hit percentage value will indicate 100%.
+        If the percentage value in the far left of the summary table is 100%, this indicates that all coverage 
+        points that Covered was capable of simulating (for the module/instance of this row) were executed.  If the 
+        value of the percentage is less than 100%, this indicates that some number of coverage points were not 
+        executed and full coverage was not achieved for that module/instance. Note that for a module/instance which 
+        does not contain any coverage points in which Covered was able to simulate, the values of hit, miss, and 
+        total will be 0 while the hit percentage value will indicate 100%.
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.reading.memory.verbose.both"></a>Verbose Information Description - Both</h3></div></div></div><p>
-        When a module/instance is found to be not fully covered (i.e., the number of each hit coverage points is not equal to the associated number of attainable coverage 
-        points), the missed coverage points for each AME in the memory are output to the report as follows:
+        When a module/instance is found to be not fully covered (i.e., the number of each hit coverage points is not 
+        equal to the associated number of attainable coverage points), the missed coverage points for each AME in 
+        the memory are output to the report as follows:
       </p><p>
         </p><pre class="programlisting">
   &lt;AME&gt;  Written: &lt;0 or 1&gt;  0-&gt;1: &lt;hexidecimal_value&gt;
   .....  Read:    &lt;0 or 1&gt;  1-&gt;0: &lt;hexidecimal_value&gt; ...      
         </pre><p>
       </p><p>
-        The answers to each of the questions listed above are specified with a 0 (meaning that the answer is "NO") or a 1 (meaning that the answer is "YES"). Note that in 
-        the toggle coverage information, like toggle coverage verbose information, the individual bits are grouped together and displayed in hexidecimal form to conserve 
-        space and make the task of figuring out exactly which bit positions did not toggle easier. See lines 
-        <a class="ulink" href="example.rptM.html#117" target="_top">117 through 151</a> for an example of this output.
+        The answers to each of the questions listed above are specified with a 0 (meaning that the answer is 
+        "NO") or a 1 (meaning that the answer is "YES").  Note that in the toggle coverage information, like 
+        toggle coverage verbose information, the individual bits are grouped together and displayed in hexidecimal 
+        form to conserve space and make the task of figuring out exactly which bit positions did not toggle easier. 
+        See lines <a href="example.rptM.html#117" target="_top">117 through 151</a> for an example of this output.
       </p><p>
         If the -c option is used, Covered outputs the names of the memories that were fully covered during simulation only.
       </p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.reading.logic"></a>13.4. Reading Combinational Logic Coverage</h2></div></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.reading.logic.summary.mod"></a>Summary Information Description - Module-based</h3></div></div></div><p>
-        For module-based reports, the summary table for combinational logic metrics includes information for the name of each module that was covered and the name of the 
-        file in which the module is described in. Lines <a class="ulink" href="example.rptM.html#154" target="_top">154 through 164</a> of the module-based report show what this 
-        information looks like in the report. We have three modules that were scored within our DUT: main, fsma, and fsmb. The table shows that all three modules were 
-        described in the file "example.v".
+        For module-based reports, the summary table for combinational logic metrics includes information for the name 
+        of each module that was covered and the name of the file in which the module is described in.  Lines 
+        <a href="example.rptM.html#154" target="_top">154 through 164</a> of the module-based report show what this 
+        information looks like in the report. We have three modules that were scored within our DUT: main, fsma, and 
+        fsmb. The table shows that all three modules were described in the file "example.v".
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.reading.logic.summary.inst"></a>Summary Information Description - Instance-based</h3></div></div></div><p>
-        For instance-based reports, the summary table for combinational logic metrics includes information for the Verilog hierarchy pertaining to each instance on the 
-        left-hand-side of each row. Lines <a class="ulink" href="example.rptI.html#154" target="_top">154 through 164</a> of the instance-based report show what this information looks 
-        like in the report. In our DUT example, there are three instances within the design with the Verilog hierarchies of "main", "main.fsm1", and "main.fsm2".
+        For instance-based reports, the summary table for combinational logic metrics includes information for the 
+        Verilog hierarchy pertaining to each instance on the left-hand-side of each row.  Lines 
+        <a href="example.rptI.html#154" target="_top">154 through 164</a> of the instance-based report show what this 
+        information looks like in the report.  In our DUT example, there are three instances within the design with 
+        the Verilog hierarchies of "main", "main.fsm1", and "main.fsm2".
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.reading.logic.summary.both"></a>Summary Information Description - Both</h3></div></div></div><p>
-        On the right-hand side of each row in the table are the hit, miss and total numbers for the combinational logic coverage, followed by a calculated percent of the 
-        combinational logic expression values that were hit (calculated by taking the number of combinational logic expression values hit during simulation divided by the 
-        total number of expression values that Covered could have simulated). The hit value indicates how many expression values were achieved during the simulation; the 
-        miss value indicates the number of expression values not achieved during simulation; and the total value indicates the total number of combinational logic 
+        On the right-hand side of each row in the table are the hit, miss and total numbers for the combinational 
+        logic coverage, followed by a calculated percent of the combinational logic expression values that were 
+        hit (calculated by taking the number of combinational logic expression values hit during simulation divided 
+        by the total number of expression values that Covered could have simulated). The hit value indicates how 
+        many expression values were achieved during the simulation; the miss value indicates the number of expression 
+        values not achieved during simulation; and the total value indicates the total number of combinational logic 
         expression values that could have been achieved in the specified module/instance.
       </p><p>
-        If the percentage value in the far left of the summary table is 100%, this indicates that all combinational logic expression values that Covered was capable of 
-        achieving (for the module/instance of this row) were hit. If the value of the percentage is less than 100%, this indicates that some number of expression values 
-        were not achieved and full coverage was not achieved for that module/instance. Note that for a module/instance which does not contain any combinational logic 
-        expressions in which Covered was able to simulate, the values of hit, miss, and total will be 0 while the hit percentage value will indicate 100%.
+        If the percentage value in the far left of the summary table is 100%, this indicates that all combinational 
+        logic expression values that Covered was capable of achieving (for the module/instance of this row) were hit. 
+        If the value of the percentage is less than 100%, this indicates that some number of expression values 
+        were not achieved and full coverage was not achieved for that module/instance. Note that for a module/instance 
+        which does not contain any combinational logic expressions in which Covered was able to simulate, the values of 
+        hit, miss, and total will be 0 while the hit percentage value will indicate 100%.
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.reading.logic.verbose.both"></a>Verbose Information Description - Both</h3></div></div></div><p>
-        The verbose output for combinational coverage is a bit more sophisticated than the line or toggle. Basically, for each expression that was found to not be fully 
-        covered (either the expression itself or some sub-expression in the tree was not fully covered), the expression is output with various sub-expressions underlined 
-        and identified with a number. Each expression is also supplied with the line number that the expression started at in its module file. In our example, there is an 
-        uncovered expression in the module called "main" (see lines <a class="ulink" href="example.rptM.html#170" target="_top">170 through 205</a> (numbered 5) which contains four 
+        The verbose output for combinational coverage is a bit more sophisticated than the line or toggle.  Basically, 
+        for each expression that was found to not be fully covered (either the expression itself or some sub-expression 
+        in the tree was not fully covered), the expression is output with various sub-expressions underlined 
+        and identified with a number.  Each expression is also supplied with the line number that the expression 
+        started at in its module file. In our example, there is an uncovered expression in the module called "main" 
+        (see lines <a href="example.rptM.html#170" target="_top">170 through 205</a> (numbered 5) which contains four 
         uncovered subexpressions (numbered 1 through 4).
       </p><p>
-        Below each expression, there will be one or more tables which specify a particular sub-expression that was not fully covered along with information describing 
-        what cases were not covered for that sub-expression.
+        Below each expression, there will be one or more tables which specify a particular sub-expression that was not 
+        fully covered along with information describing what cases were not covered for that sub-expression.
       </p><p>
-        In the report output above, we see that there was one expression in module "main" that did not achieve 100% coverage that starts on line 14 of the Verilog source. 
-        The expression is output to the report with certain sub-expressions underlined and labeled with an integer value for reference.
+        In the report output above, we see that there was one expression in module "main" that did not achieve 100% 
+        coverage that starts on line 14 of the Verilog source.  The expression is output to the report with certain 
+        sub-expressions underlined and labeled with an integer value for reference.
       </p><p>
-        For this one expression, there were found to be four subexpressions (labeled 1, 2, 3, 4) that were found to not be 100% covered. Taking a look at subexpression 1 
-        report output, the numbers to the right of the string "Expression 1" tell us the number of logical combinations of this subexpression that were hit (in this case 
-        2 combinations were hit) and the total number of logical combinations that this subexpression can have (in this case 3 combinations were achievable). The 
-        character string below this information tells us the type of subexpression that we are examining. For subexpression 1, the type is the bitwise AND operator.
+        For this one expression, there were found to be four subexpressions (labeled 1, 2, 3, 4) that were found to not 
+        be 100% covered. Taking a look at subexpression 1 report output, the numbers to the right of the string 
+        "Expression 1" tell us the number of logical combinations of this subexpression that were hit (in this case 
+        2 combinations were hit) and the total number of logical combinations that this subexpression can have (in this 
+        case 3 combinations were achievable).  The character string below this information tells us the type of 
+        subexpression that we are examining. For subexpression 1, the type is the bitwise AND operator.
       </p><p>
-        The table below this information for subexpression 1, lists the potential combinations that this subexpression could have reached with a '*' character placed 
-        underneath the combination(s) that were missed. In the case of subexpression 1, the left and right subexpressions did not evaluate to values of 1 simultaneously 
-        The letter 'L' above each possible combination indicates the value that the left subexpression achieved at the same time as the value under the right 
-        subexpression indicated with the letter 'R'. Legal values for a subexpression are '0', '1' or '-' (which indicates that this subexpression value could either be 0 
-        or 1).
+        The table below this information for subexpression 1, lists the potential combinations that this subexpression 
+        could have reached with a '*' character placed underneath the combination(s) that were missed.  In the case of 
+        subexpression 1, the left and right subexpressions did not evaluate to values of 1 simultaneously.  The letter 
+        'L' above each possible combination indicates the value that the left subexpression achieved at the same time 
+        as the value under the right subexpression indicated with the letter 'R'. Legal values for a subexpression are 
+        '0', '1' or '-' (which indicates that this subexpression value could either be 0 or 1).
       </p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.reading.fsm"></a>13.5. Reading FSM Coverage</h2></div></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.reading.fsm.summary.mod"></a>Summary Information Description - Module-based</h3></div></div></div><p>
-        For module-based reports, the summary table for FSM metrics includes information for the name of each module that was covered and the name of the file in which 
-        the module is described in. Lines <a class="ulink" href="example.rptM.html#344" target="_top">344 through 354</a> of the module-based report show what this information looks like 
-        in the report. We have three modules that were scored within our DUT: main, fsma and fsmb. The table shows that all three modules were described in the file 
-        "example.v".
+        For module-based reports, the summary table for FSM metrics includes information for the name of each module 
+        that was covered and the name of the file in which the module is described in.  Lines 
+        <a href="example.rptM.html#344" target="_top">344 through 354</a> of the module-based report show what this information 
+        looks like in the report.  We have three modules that were scored within our DUT: main, fsma and fsmb.  The 
+        table shows that all three modules were described in the file "example.v".
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.reading.fsm.summary.inst"></a>Summary Information Description - Instance-based</h3></div></div></div><p>
-        For instance-based reports, the summary table for FSM metrics includes information for the Verilog hierarchy pertaining to each instance on the left-hand-side of 
-        each row. Lines <a class="ulink" href="example.rptI.html#344" target="_top">344 through 354</a> of the instance-based report show what this information looks like in the report. 
-        In our DUT example, there are three instances within the design with the Verilog hierarchies of "main", "main.fsm1" and "main.fsm2".
+        For instance-based reports, the summary table for FSM metrics includes information for the Verilog hierarchy 
+        pertaining to each instance on the left-hand-side of each row.  Lines <a href="example.rptI.html#344" target="_top">344 
+        through 354</a> of the instance-based report show what this information looks like in the report.  In our 
+        DUT example, there are three instances within the design with the Verilog hierarchies of "main", "main.fsm1" 
+        and "main.fsm2".
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.reading.fsm.summary.both"></a>Summary Information Description - Both</h3></div></div></div><p>
-        On the right-hand side of each row in the table are the hit, miss and total numbers for the FSM state coverage, followed by a calculated percent of the FSM states 
-        that were hit (calculated by taking the number of FSM states hit during simulation divided by the total number of FSM states that Covered could have simulated). 
-        The hit value indicates how many FSM states were executed during the simulation; the miss value indicates the number of FSM states not executed during simulation; 
-        and the total value indicates the total number of FSM states within the specified module/instance that Covered can simulate.
+        On the right-hand side of each row in the table are the hit, miss and total numbers for the FSM state 
+        coverage, followed by a calculated percent of the FSM states that were hit (calculated by taking the number 
+        of FSM states hit during simulation divided by the total number of FSM states that Covered could have 
+        simulated).  The hit value indicates how many FSM states were executed during the simulation; the miss value 
+        indicates the number of FSM states not executed during simulation; and the total value indicates the total 
+        number of FSM states within the specified module/instance that Covered can simulate.
       </p><p>
-        To the right of the FSM state summary information is the FSM state-transition hit, miss, total and percentage hit summary information for each module/instance.
+        To the right of the FSM state summary information is the FSM state-transition hit, miss, total and percentage 
+        hit summary information for each module/instance.
       </p><p>
-        If the percentage value in the far left of the summary table is 100%, this indicates that all FSM states and state-transitions that Covered was capable of 
-        simulating (for the module/instance of this row) were executed. If the value of the percentage is less than 100%, this indicates that some number of FSM states 
-        and/or FSM state-transitions were not executed and full coverage was not achieved for that module/instance. Note that for a module/instance which does not contain 
-        any FSMs in which Covered was able to simulate, the values of hit, miss, and total will be 0 while the hit percentage value will indicate 100%.
+        If the percentage value in the far left of the summary table is 100%, this indicates that all FSM states and 
+        state-transitions that Covered was capable of simulating (for the module/instance of this row) were executed. 
+        If the value of the percentage is less than 100%, this indicates that some number of FSM states and/or FSM 
+        state-transitions were not executed and full coverage was not achieved for that module/instance.  Note that 
+        for a module/instance which does not contain any FSMs in which Covered was able to simulate, the values of 
+        hit, miss, and total will be 0 while the hit percentage value will indicate 100%.
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.reading.verbose.both"></a>Verbose Information Description - Both</h3></div></div></div><p>
-        The verbose output for FSM coverage is split into the state coverage information and the state transition coverage information. When an FSM is found to be not 
-        fully covered (i.e., the number of hit states/state transitions is not equal to the number of attainable states/state transitions), the missed states are output 
+        The verbose output for FSM coverage is split into the state coverage information and the state transition 
+        coverage information.  When an FSM is found to be not fully covered (i.e., the number of hit states/state 
+        transitions is not equal to the number of attainable states/state transitions), the missed states are output 
         to the report as a list of state values in hexidecimal format as follows:
       </p><p>
         </p><pre class="programlisting">
   &lt;hexidecimal value&gt;
         </pre><p>
       </p><p>
-        When an FSM is found to be not fully covered, the missed state transitions are output to the report as a list of state transitions in the format below:
+        When an FSM is found to be not fully covered, the missed state transitions are output to the report as a list 
+        of state transitions in the format below:
       </p><p>
         </p><pre class="programlisting">
   &lt;hexidecimal input state value&gt; -&gt; &lt;hexidecimal output state value&gt;
         </pre><p>
       </p><p>
-        If the -c option is used or the number of attainable state/state transitions are unknown for the specified FSM, Covered outputs this information in the same way 
-        as the missed cases except that the title of the output is "Hit cases". If the number of attainable states/state transitions is unknown, providing the cases that 
-        were hit during simulation is useful in aiding the user in determining coverage. In this case, the summary report will output question marks in the missed and 
-        total categories, showing the user that this information was not known by Covered.
+        If the -c option is used or the number of attainable state/state transitions are unknown for the specified 
+        FSM, Covered outputs this information in the same way as the missed cases except that the title of the 
+        output is "Hit cases". If the number of attainable states/state transitions is unknown, providing the cases 
+        that were hit during simulation is useful in aiding the user in determining coverage.  In this case, the 
+        summary report will output question marks in the missed and total categories, showing the user that this 
+        information was not known by Covered.
       </p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.reading.assert"></a>13.6. Reading Assertion Coverage</h2></div></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.reading.assert.summary.mod"></a>Summary Information Description - Module-based</h3></div></div></div><p>
-        For module-based reports, the summary table for assertion metrics includes information for the name of each module, instantiating one or more assertions, that was 
-        covered and the name of the file in which the module is described in. Lines <a class="ulink" href="example.rptM.html#397" target="_top">397 through 405</a> of the module-based 
-        report show what this information looks like in the report. We have three modules that were scored within our DUT: main, fsma and fsmb. The table shows that all 
-        three modules were described in the file "example.v".
+        For module-based reports, the summary table for assertion metrics includes information for the name of each 
+        module, instantiating one or more assertions, that was covered and the name of the file in which the module 
+        is described in. Lines <a href="example.rptM.html#397" target="_top">397 through 405</a> of the module-based 
+        report show what this information looks like in the report. We have three modules that were scored within our 
+        DUT: main, fsma and fsmb. The table shows that all three modules were described in the file "example.v".
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.reading.assert.summary.inst"></a>Summary Information Description - Instance-based</h3></div></div></div><p>
-        For instance-based reports, the summary table for assertion metrics includes information for the Verilog hierarchy pertaining to each instance on the left-hand-
-        side of each row. Lines <a class="ulink" href="example.rptI.html#397" target="_top">397 through 405</a> of the instance-based report show what this information looks like in the 
-        report. In our DUT example, there are three instances within the design with the Verilog hierarchies of "main", "main.fsm1" and "main.fsm2".
+        For instance-based reports, the summary table for assertion metrics includes information for the Verilog 
+        hierarchy pertaining to each instance on the left-hand side of each row.  Lines 
+        <a href="example.rptI.html#397" target="_top">397 through 405</a> of the instance-based report show what this 
+        information looks like in the report.  In our DUT example, there are three instances within the design 
+        with the Verilog hierarchies of "main", "main.fsm1" and "main.fsm2".
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.reading.assert.summary.both"></a>Summary Information Description - Both</h3></div></div></div><p>
-        On the right-hand side of each row in the table are the hit, miss and total numbers for the assertion coverage points (ACP), followed by a calculated percent of 
-        the ACPs that were hit (calculated by taking the number of ACPs hit during simulation divided by the total number of ACPs that Covered could have simulated). The 
-        hit value indicates how many ACPs were executed during the simulation; the miss value indicates the number of ACPs not executed during simulation; and the total 
-        value indicates the total number of ACPs within the specified module/instance that Covered can simulate. Note that more than one coverage point may exist within a 
-        single assertion coverage module.
+        On the right-hand side of each row in the table are the hit, miss and total numbers for the assertion 
+        coverage points (ACP), followed by a calculated percent of the ACPs that were hit (calculated by taking 
+        the number of ACPs hit during simulation divided by the total number of ACPs that Covered could have 
+        simulated).  The hit value indicates how many ACPs were executed during the simulation; the miss value 
+        indicates the number of ACPs not executed during simulation; and the total value indicates the total 
+        number of ACPs within the specified module/instance that Covered can simulate. Note that more than one 
+        coverage point may exist within a single assertion coverage module.
       </p><p>
-        If the percentage value in the far left of the summary table is 100%, this indicates that all ACPs that Covered was capable of simulating (for the module/instance 
-        of this row) were executed. If the value of the percentage is less than 100%, this indicates that some number of ACPs were not executed and full coverage was not 
-        achieved for that module/instance. Note that for a module/instance which does not contain any ACPs in which Covered was able to simulate, the values of hit, miss, 
-        and total will be 0 while the hit percentage value will indicate 100%.
+        If the percentage value in the far left of the summary table is 100%, this indicates that all ACPs that 
+        Covered was capable of simulating (for the module/instance of this row) were executed.  If the value of the 
+        percentage is less than 100%, this indicates that some number of ACPs were not executed and full coverage 
+        was not achieved for that module/instance.  Note that for a module/instance which does not contain any ACPs 
+        in which Covered was able to simulate, the values of hit, miss, and total will be 0 while the hit 
+        percentage value will indicate 100%.
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.reading.assert.verbose.both"></a>Verbose Information Description - Both</h3></div></div></div><p>
-        When a module/instance is found to be not fully covered (i.e., the number of hit ACPs is not equal to the number of attainable ACPs), the missed coverage points 
-        are output to the report as follows:
+        When a module/instance is found to be not fully covered (i.e., the number of hit ACPs is not equal to the 
+        number of attainable ACPs), the missed coverage points are output to the report as follows:
       </p><p>
         </p><pre class="programlisting">
   &lt;Instance Name&gt;	&lt;Assertion Name&gt;	&lt;Coverage Point Description&gt;
         </pre><p>
       </p><p>
-        If the -c option is used, Covered outputs this information in the same way as the missed cases except that the title of the output is "Hit cases" and the number 
-        of times each ACP was hit is indicated.
+        If the -c option is used, Covered outputs this information in the same way as the missed cases except that 
+        the title of the output is "Hit cases" and the number of times each ACP was hit is indicated.
       </p></div></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="chapter.rank.html"><img src="img/prev.gif" alt="Prev"></a> </td><td width="20%" align="center"><a accesskey="u" href="part.command.line.usage.html"><img src="img/up.gif" alt="Up"></a></td><td width="40%" align="right"> <a accesskey="n" href="chapter.debug.html"><img src="img/next.gif" alt="Next"></a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 12. The rank Command </td><td width="20%" align="center"><a accesskey="h" href="index.html"><img src="img/home.gif" alt="Home"></a></td><td width="40%" align="right" valign="top"> Chapter 14. Debugging</td></tr></table></div></body></html>

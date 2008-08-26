@@ -1,4 +1,4 @@
-<chapter id="chapter.metrics" xreflabel="Coverage Metrics">
+<chapter id="chapter.metrics">
   <title>Coverage Metrics</title>
   
   <para>
@@ -412,7 +412,7 @@
         To help visualize this state machine, let's also display it as a digraph.
       </para>
       <para>
-        <figure id="figure.metrics.fsm" xreflabel="Digraph Version of Example FSM">
+        <figure id="figure.metrics.fsm">
           <title>Digraph Version of Example FSM</title>
           <mediaobject><imageobject><imagedata fileref="img/fsm_example.png" format="PNG"/></imageobject></mediaobject>
         </figure>

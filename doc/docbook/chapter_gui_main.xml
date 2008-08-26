@@ -171,7 +171,7 @@
           descriptions) are available (see <xref linkend="figure.gui.main.generate"/>).
         </para>
         <para>
-          <figure id="figure.gui.main.generate" xreflabel="The Generate Menu List">
+          <figure id="figure.gui.main.generate">
             <title>The Generate Menu List</title>
             <mediaobject><imageobject><imagedata fileref="img/gen_menu.gif" format="GIF"/></imageobject></mediaobject>
           </figure>
@@ -259,7 +259,7 @@
         menu item is described below the figure.
       </para>
       <para>
-        <figure id="figure.gui.main.report.menu" xreflabel="The Report Menu">
+        <figure id="figure.gui.main.report.menu">
           <title>The Report Menu</title>
           <mediaobject><imageobject><imagedata fileref="img/report_menu.gif" format="GIF"/></imageobject></mediaobject>
         </figure>
@@ -286,6 +286,16 @@
           exclusive).
         </para>
       </sect3>
+      
+      <sect3 id="section.gui.main.reportmenu.line">
+        <title>Line, Toggle, Memory, Logic, FSM, Assert</title>
+        <para>
+          These menu options are directly tied to the coverage metric select menubutton in the coverage bar (see 
+          <xref linkend="section.gui.main.covbar"/>).  Changing the value in the menubutton will change the selection of this menu item
+          and vice versa.  Only one of these menu items will be selected at a given time.
+        </para>
+      </sect3>
+      
       
       <sect3 id="section.gui.main.reportmenu.uncov">
         <title>Show Uncovered</title>
@@ -497,7 +507,7 @@
       located.
     </para>
     <para>
-      <figure id="figure.gui.main.viewer" xreflabel="Covered Main Coverage File Viewer">
+      <figure id="figure.gui.main.viewer">
         <title>Covered Main Coverage File Viewer</title>
         <mediaobject><imageobject><imagedata fileref="img/main_viewer.gif" format="GIF"/></imageobject></mediaobject>
       </figure>

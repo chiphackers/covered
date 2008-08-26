@@ -1,57 +1,57 @@
-<chapter id="chapter.gui.wizard" xreflabel="Navigating the Wizard Window">
+<chapter id="chapter.gui.wizard">
   <title>Navigating the Wizard Window</title>
   <para>
-  The Wizard window starts up automatically at the start of the Covered GUI.  It allows the user to quickly perform
-  some of the more regular tasks within the GUI. The window is not necessary for performing these tasks, but for the
-  new user it makes figuring out how to perform these tasks a bit easier.  <xref linkend="figure.gui.wizard"/> shows the
-  layout of this window.
+    The Wizard window starts up automatically at the start of the Covered GUI.  It allows the user to quickly perform
+    some of the more regular tasks within the GUI. The window is not necessary for performing these tasks, but for the
+    new user it makes figuring out how to perform these tasks a bit easier.  <xref linkend="figure.gui.wizard"/> shows the
+    layout of this window.
   </para>
   <para>
-    <figure id="figure.gui.wizard" xreflabel="Covered GUI Wizard Window">
+    <figure id="figure.gui.wizard">
       <title>Covered GUI Wizard Window</title>
       <mediaobject><imageobject><imagedata fileref="img/wizard.gif" format="GIF"/></imageobject></mediaobject>
     </figure>
   </para>
   <para>
-  The buttons at the top of the window are shortcuts to performing the tasks displayed on the button.  Clicking the
-  associated button will cause a window to open to perform the given task.  The following are the available shortcut
-  buttons:
+    The buttons at the top of the window are shortcuts to performing the tasks displayed on the button.  Clicking the
+    associated button will cause a window to open to perform the given task.  The following are the available shortcut
+    buttons:
   </para>
   <para>
     <itemizedlist>
       <listitem>
         <para><emphasis role="bold">Generate New CDD File</emphasis></para>
         <para>
-        Allows the user to create a new CDD file for a given design by specifying the various scoring options needed
-        to create the CDD file.
+          Allows the user to create a new CDD file for a given design by specifying the various scoring options needed
+          to create the CDD file.
         </para>
       </listitem>
       <listitem>
         <para><emphasis role="bold">Open/Merge CDD File(s)</emphasis></para>
         <para>
-        Opens a CDD file for coverage viewing.  If one or more CDD files have previously been opened, this option
-        opens and merges one or more CDD files with the coverage results of the previous CDD files for coverage viewing.
+          Opens a CDD file for coverage viewing.  If one or more CDD files have previously been opened, this option
+          opens and merges one or more CDD files with the coverage results of the previous CDD files for coverage viewing.
         </para>
       </listitem>
       <listitem>
         <para><emphasis role="bold">Rank CDD Files</emphasis></para>
         <para>
-        Allows the user to specify CDD files that will be compared with one another and ranked in the order that they
-        should be run in a regression to achieve the most coverage in the least amount of time.  It also indicates which
-        CDD files do not add any interesting coverage information and could, therefore, be excluded from regression for
-        the purposes of code coverage.
+          Allows the user to specify CDD files that will be compared with one another and ranked in the order that they
+          should be run in a regression to achieve the most coverage in the least amount of time.  It also indicates which
+          CDD files do not add any interesting coverage information and could, therefore, be excluded from regression for
+          the purposes of code coverage.
         </para>
       </listitem>
     </itemizedlist>
   </para>
   <para>
-  At the bottom of the wizard window, there is a checkbutton option that allows the user to not display the wizard
-  window on startup.  This option can be changed in the <xref linkend="section.gui.pref.general"/> at any time.
+    At the bottom of the wizard window, there is a checkbutton option that allows the user to not display the wizard
+    window on startup.  This option can be changed in the <xref linkend="section.gui.pref.general"/> at any time.
   </para>
   <para>
-  When the wizard window is closed, it can be redisplayed by clicking on the 
-  <emphasis role="bold">View -> Wizard...</emphasis> menu item.  The window will automatically be closed when a button
-  on the wizard window is clicked or when the user closes the window with the window manager's "X" button.
+    When the wizard window is closed, it can be redisplayed by clicking on the 
+    <emphasis role="bold">View -> Wizard...</emphasis> menu item.  The window will automatically be closed when a button
+    on the wizard window is clicked or when the user closes the window with the window manager's "X" button.
   </para>
   
 </chapter>

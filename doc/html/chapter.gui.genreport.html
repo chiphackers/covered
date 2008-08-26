@@ -1,131 +1,131 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 25. Creating an ASCII report file</title><link rel="stylesheet" href="covered.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.74.0"><link rel="home" href="index.html" title="Covered"><link rel="up" href="part.gui.html" title="Part IV. Graphical User Interface"><link rel="prev" href="chapter.gui.new.html" title="Chapter 24. Creating a New CDD"><link rel="next" href="chapter.gui.rank.html" title="Chapter 26. Creating a CDD Ranking Report"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 25. Creating an ASCII report file</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter.gui.new.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part IV. Graphical User Interface</th><td width="20%" align="right"> <a accesskey="n" href="chapter.gui.rank.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.gui.genreport"></a>Chapter 25. Creating an ASCII report file</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.gui.genreport.html#section.gui.genreport.select">25.1. Navigating the Report Generator Selection Page</a></span></dt><dt><span class="sect1"><a href="chapter.gui.genreport.html#section.gui.genreport.options">25.2. Report Generation Options Page</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.gui.genreport.html#section.gui.genreport.options.general">Set ASCII Report Generation Options</a></span></dt><dt><span class="sect2"><a href="chapter.gui.genreport.html#section.gui.genreport.options.detail">Level of Detail</a></span></dt><dt><span class="sect2"><a href="chapter.gui.genreport.html#section.gui.genreport.options.mod_inst">Accumulate By</a></span></dt><dt><span class="sect2"><a href="chapter.gui.genreport.html#section.gui.genreport.options.cov_type">Coverage Type</a></span></dt><dt><span class="sect2"><a href="chapter.gui.genreport.html#section.gui.genreport.options.metrics">Show Metrics</a></span></dt><dt><span class="sect2"><a href="chapter.gui.genreport.html#section.gui.genreport.options.save">Save Options to File...</a></span></dt><dt><span class="sect2"><a href="chapter.gui.genreport.html#section.gui.genreport.options.file">Output report to file frame</a></span></dt><dt><span class="sect2"><a href="chapter.gui.genreport.html#section.gui.genreport.options.view">View the report in the GUI after it is created</a></span></dt></dl></dd></dl></div><p>
-  Though Covered's graphical coverage analyzer is very useful for examining coverage, there may still be times when
-  a textual report is necessary.  For that purpose, the GUI has a menu item for generating an ASCII coverage report,
-  running Covered's "report" command on the currently loaded coverage information.
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 25. Creating an ASCII report file</title><link rel="stylesheet" href="covered.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.71.1"><link rel="start" href="index.html" title="Covered"><link rel="up" href="part.gui.html" title="Part IV. Graphical User Interface"><link rel="prev" href="chapter.gui.new.html" title="Chapter 24. Creating a New CDD"><link rel="next" href="chapter.gui.rank.html" title="Chapter 26. Creating a CDD Ranking Report"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 25. Creating an ASCII report file</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter.gui.new.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part IV. Graphical User Interface</th><td width="20%" align="right"> <a accesskey="n" href="chapter.gui.rank.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.gui.genreport"></a>Chapter 25. Creating an ASCII report file</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.gui.genreport.html#section.gui.genreport.select">25.1. Navigating the Report Generator Selection Page</a></span></dt><dt><span class="sect1"><a href="chapter.gui.genreport.html#section.gui.genreport.options">25.2. Report Generation Options Page</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.gui.genreport.html#section.gui.genreport.options.general">Set ASCII Report Generation Options</a></span></dt><dt><span class="sect2"><a href="chapter.gui.genreport.html#section.gui.genreport.options.detail">Level of Detail</a></span></dt><dt><span class="sect2"><a href="chapter.gui.genreport.html#section.gui.genreport.options.mod_inst">Accumulate By</a></span></dt><dt><span class="sect2"><a href="chapter.gui.genreport.html#section.gui.genreport.options.cov_type">Coverage Type</a></span></dt><dt><span class="sect2"><a href="chapter.gui.genreport.html#section.gui.genreport.options.metrics">Show Metrics</a></span></dt><dt><span class="sect2"><a href="chapter.gui.genreport.html#section.gui.genreport.options.save">Save Options to File...</a></span></dt><dt><span class="sect2"><a href="chapter.gui.genreport.html#section.gui.genreport.options.file">Output report to file frame</a></span></dt><dt><span class="sect2"><a href="chapter.gui.genreport.html#section.gui.genreport.options.view">View the report in the GUI after it is created</a></span></dt></dl></dd></dl></div><p>
+    Though Covered's graphical coverage analyzer is very useful for examining coverage, there may still be times when
+    a textual report is necessary.  For that purpose, the GUI has a menu item for generating an ASCII coverage report,
+    running Covered's "report" command on the currently loaded coverage information.
   </p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="img/note.gif"></td><th align="left">Note</th></tr><tr><td align="left" valign="top">
-  The ASCII report generator options are only available if one or more CDD files are currently loaded in the GUI.  
+    The ASCII report generator options are only available if one or more CDD files are currently loaded in the GUI.  
   </td></tr></table></div><p>
-  When the <code class="code">File -&gt; Generate -&gt; ASCII Report</code> menu option is selected (or the
-  "Cntrl-Shift-R" shortcut is used), the ASCII Report Generator Window is created to allow the user to specify the 
-  current report output options and generate the report file.  Once the report has been generated, it can be viewed 
-  within the GUI itself or it can be viewed with any type of file viewer/editor available.
+    When the <code class="code">File -&gt; Generate -&gt; ASCII Report</code> menu option is selected (or the
+    "Cntrl-Shift-R" shortcut is used), the ASCII Report Generator Window is created to allow the user to specify the 
+    current report output options and generate the report file.  Once the report has been generated, it can be viewed 
+    within the GUI itself or it can be viewed with any type of file viewer/editor available.
   </p><p>
-  The following subsections describe the various windows used to create a report file.  Note that the report generation
-  wizard uses several "pages" to describe the various options to set for creating a new report file, using 
-  <span class="bold"><strong>Back</strong></span> and <span class="bold"><strong>Next</strong></span> buttons on each page for navigation.
-  Clicking on the <span class="bold"><strong>Back</strong></span> button will not cause previously filled in pages to be
-  reverted to their default values but rather will remain populated with the user's data. Similarly, if a page has been
-  filled in with data and the <span class="bold"><strong>Back</strong></span> button is clicked and then the 
-  <span class="bold"><strong>Next</strong></span> button is clicked, the page contents are
-  retained.  The only way to clear out fields is to click the <span class="bold"><strong>Cancel</strong></span> button at the 
-  bottom of each page and startup the report generation wizard again.
+    The following subsections describe the various windows used to create a report file.  Note that the report generation
+    wizard uses several "pages" to describe the various options to set for creating a new report file, using 
+    <span class="bold"><strong>Back</strong></span> and <span class="bold"><strong>Next</strong></span> buttons on each page for navigation.
+    Clicking on the <span class="bold"><strong>Back</strong></span> button will not cause previously filled in pages to be
+    reverted to their default values but rather will remain populated with the user's data. Similarly, if a page has been
+    filled in with data and the <span class="bold"><strong>Back</strong></span> button is clicked and then the 
+    <span class="bold"><strong>Next</strong></span> button is clicked, the page contents are
+    retained.  The only way to clear out fields is to click the <span class="bold"><strong>Cancel</strong></span> button at the 
+    bottom of each page and startup the report generation wizard again.
   </p><p>
-  Clicking the <span class="bold"><strong>Cancel</strong></span> button at any time will cause the report generation wizard to 
-  immediately exit.  Clicking on the <span class="bold"><strong>?</strong></span> button at any time will bring up the user 
-  documentation for the current page (context sensitive help).
+    Clicking the <span class="bold"><strong>Cancel</strong></span> button at any time will cause the report generation wizard to 
+    immediately exit.  Clicking on the <span class="bold"><strong>?</strong></span> button at any time will bring up the user 
+    documentation for the current page (context sensitive help).
   </p><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.gui.genreport.select"></a>25.1. Navigating the Report Generator Selection Page</h2></div></div></div><p>
-    Figure <a class="xref" href="chapter.gui.genreport.html#figure.gui.genreport.select" title="Figure 25.1. Report Generation Option Selection Page">Report Generation Option Selection Page</a> shows the look of this page of the report generation wizard.
+      <a href="chapter.gui.genreport.html#figure.gui.genreport.select" title="Figure 25.1. Report Generation Option Selection Page">Figure 25.1, &#8220;Report Generation Option Selection Page&#8221;</a> shows the look of this page of the report generation wizard.
     </p><p>
       </p><div class="figure"><a name="figure.gui.genreport.select"></a><p class="title"><b>Figure 25.1. Report Generation Option Selection Page</b></p><div class="figure-contents"><div class="mediaobject"><img src="img/rpt_gen_selection.gif" alt="Report Generation Option Selection Page"></div></div></div><p><br class="figure-break">
     </p><p>
-    The first page of the report generation window allows the user to select whether all options should be interactively
-    selected within the GUI or if a file should be read in which contains command-line options to the report command
-    to use.  If the latter is chosen, the contents of that file are read in and are populated in the GUI, but the
-    report generation wizard will continue in the same fashion as the first option, allowing the user to change, remove or
-    add to the options found in that file.
+      The first page of the report generation window allows the user to select whether all options should be interactively
+      selected within the GUI or if a file should be read in which contains command-line options to the report command
+      to use.  If the latter is chosen, the contents of that file are read in and are populated in the GUI, but the
+      report generation wizard will continue in the same fashion as the first option, allowing the user to change, remove or
+      add to the options found in that file.
     </p><p>
-    If the <span class="bold"><strong>Create report by interactively selecting options</strong></span> entry is currently selected 
-    and the user wishes to not use a command-line file to populate the rest of the report generation pages, simply click on 
-    the <span class="bold"><strong>Next</strong></span> button at the bottom of the page to continue.  If the 
-    <span class="bold"><strong>Create report by using option file</strong></span> entry is currently selected, the user must either 
-    type a valid filename or select one by clicking the <span class="bold"><strong>Browse...</strong></span> button to the right 
-    of the file entry area and select a valid file. Once a valid filename is selected, the 
-    <span class="bold"><strong>Next</strong></span> button will be enabled and the user may then click it to continue to the next 
-    page. Note that any filename can be selected (whether it's a valid command file or not).  Only valid report command 
-    options found in that file are used to populate the wizard entries. No error message will be displayed if the file 
-    does not contain this information.
+      If the <span class="bold"><strong>Create report by interactively selecting options</strong></span> entry is currently selected 
+      and the user wishes to not use a command-line file to populate the rest of the report generation pages, simply click on 
+      the <span class="bold"><strong>Next</strong></span> button at the bottom of the page to continue.  If the 
+      <span class="bold"><strong>Create report by using option file</strong></span> entry is currently selected, the user must either 
+      type a valid filename or select one by clicking the <span class="bold"><strong>Browse...</strong></span> button to the right 
+      of the file entry area and select a valid file. Once a valid filename is selected, the 
+      <span class="bold"><strong>Next</strong></span> button will be enabled and the user may then click it to continue to the next 
+      page. Note that any filename can be selected (whether it's a valid command file or not).  Only valid report command 
+      options found in that file are used to populate the wizard entries. No error message will be displayed if the file 
+      does not contain this information.
     </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.gui.genreport.options"></a>25.2. Report Generation Options Page</h2></div></div></div><p>
-    This wizard page allows you to setup the options to create the needed report. Figure 
-    <a class="xref" href="chapter.gui.genreport.html#figure.gui.genreport.options" title="Figure 25.2. Report Generation Options Page">Figure 25.2, &#8220;Report Generation Options Page&#8221;</a> shows the contents of this page.
+      This wizard page allows you to setup the options to create the needed report. Figure 
+    <a href="chapter.gui.genreport.html#figure.gui.genreport.options" title="Figure 25.2. Report Generation Options Page">Figure 25.2, &#8220;Report Generation Options Page&#8221;</a> shows the contents of this page.
     </p><p>
       </p><div class="figure"><a name="figure.gui.genreport.options"></a><p class="title"><b>Figure 25.2. Report Generation Options Page</b></p><div class="figure-contents"><div class="mediaobject"><img src="img/rpt_gen_options.gif" alt="Report Generation Options Page"></div></div></div><p><br class="figure-break">
     </p><p>
-    The options page is split into several different categories of options:
+      The options page is split into several different categories of options:
     </p><p>
-      </p><div class="itemizedlist"><ul type="disc"><li><p><a class="xref" href="chapter.gui.genreport.html#section.gui.genreport.options.general" title="Set ASCII Report Generation Options">Set ASCII Report Generation Options</a></p></li><li><p><a class="xref" href="chapter.gui.genreport.html#section.gui.genreport.options.detail" title="Level of Detail">Level of Detail</a></p></li><li><p><a class="xref" href="chapter.gui.genreport.html#section.gui.genreport.options.mod_inst" title="Accumulate By">Accumulate By</a></p></li><li><p><a class="xref" href="chapter.gui.genreport.html#section.gui.genreport.options.cov_type" title="Coverage Type">Coverage Type</a></p></li><li><p><a class="xref" href="chapter.gui.genreport.html#section.gui.genreport.options.metrics" title="Show Metrics">Show Metrics</a></p></li></ul></div><p>
+      </p><div class="itemizedlist"><ul type="disc"><li><p><a href="chapter.gui.genreport.html#section.gui.genreport.options.general" title="Set ASCII Report Generation Options">Set ASCII Report Generation Options</a></p></li><li><p><a href="chapter.gui.genreport.html#section.gui.genreport.options.detail" title="Level of Detail">Level of Detail</a></p></li><li><p><a href="chapter.gui.genreport.html#section.gui.genreport.options.mod_inst" title="Accumulate By">Accumulate By</a></p></li><li><p><a href="chapter.gui.genreport.html#section.gui.genreport.options.cov_type" title="Coverage Type">Coverage Type</a></p></li><li><p><a href="chapter.gui.genreport.html#section.gui.genreport.options.metrics" title="Show Metrics">Show Metrics</a></p></li></ul></div><p>
     </p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.gui.genreport.options.general"></a>Set ASCII Report Generation Options</h3></div></div></div><p>
         </p><div class="itemizedlist"><ul type="disc"><li><p><span class="bold"><strong>Limit line width to X characters</strong></span></p><p>
-            If this option is checked, the number of characters that will be displayed per line when
-            outputting design logic will be limited to the number of characters specified in the entry box.
-            If this option is unchecked, the length of the output design logic will be determined by the
-            way the logic was formatted in the design file. 
+              If this option is checked, the number of characters that will be displayed per line when
+              outputting design logic will be limited to the number of characters specified in the entry box.
+              If this option is unchecked, the length of the output design logic will be determined by the
+              way the logic was formatted in the design file. 
             </p><p>
-            This option can be useful for printing purposes where a logic design file contains logic that
-            is formatted to exceed the number of characters than can be printed on a page or viewed on a
-            screen.
+              This option can be useful for printing purposes where a logic design file contains logic that
+              is formatted to exceed the number of characters than can be printed on a page or viewed on a
+              screen.
             </p></li><li><p>
               <span class="bold"><strong>Suppress modules/instances from output if they contain no coverage information</strong></span>
             </p><p>
-            If this option is checked, any modules (or instances) that were considered for code coverage but did not contain
-            any coverable code will be excluded from the report.  If this option is unchecked, all modules/instances will be
-            reported.
+              If this option is checked, any modules (or instances) that were considered for code coverage but did not contain
+              any coverable code will be excluded from the report.  If this option is unchecked, all modules/instances will be
+              reported.
             </p><p>
-            This option may help make the report files easier to view if there are many modules/instances that do not
-            contain coverage points.
+              This option may help make the report files easier to view if there are many modules/instances that do not
+              contain coverage points.
             </p></li><li><p><span class="bold"><strong>Output combinational logic vector operations in bitwise format</strong></span></p><p>
-            Outputs combinational vector logic expressions in bitwise format instead of treating the vector as a 0 or "not 0"
-            value.  This can create quite a bit of extra output when creating verbose reports, but can provide the information
-            for a more thorough analysis for these expression types.  This option has the same effect as the 
+              Outputs combinational vector logic expressions in bitwise format instead of treating the vector as a 0 or "not 0"
+              value.  This can create quite a bit of extra output when creating verbose reports, but can provide the information
+              for a more thorough analysis for these expression types.  This option has the same effect as the 
             <span class="bold"><strong>-b</strong></span> option to the report command.
             </p></li></ul></div><p>
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.gui.genreport.options.detail"></a>Level of Detail</h3></div></div></div><p>
-      These radiobuttons control the level of detail that is output in the generated report.  Only one value can be selected
-      for the three available detail values:
+        These radiobuttons control the level of detail that is output in the generated report.  Only one value can be selected
+        for the three available detail values:
       </p><p>
         </p><div class="itemizedlist"><ul type="disc"><li><p><span class="bold"><strong>Summary</strong></span></p></li><li><p><span class="bold"><strong>Detailed</strong></span></p></li><li><p><span class="bold"><strong>Verbose</strong></span></p></li></ul></div><p>
       </p><p>
-      See <a class="xref" href="chapter.report.html#section.report.sdv" title="11.3. Summary Vs. Detailed Vs. Verbose">Summary Vs. Detailed Vs. Verbose</a> for information on the difference between these three options.
+      See <a href="chapter.report.html#section.report.sdv" title="11.3. Summary Vs. Detailed Vs. Verbose">Section 11.3, &#8220;Summary Vs. Detailed Vs. Verbose&#8221;</a> for information on the difference between these three options.
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.gui.genreport.options.mod_inst"></a>Accumulate By</h3></div></div></div><p>
-      These radiobuttons control whether coverage information is accumulated by instance or by module.  Only one value
-      can be selected for the two available options.  See <a class="xref" href="chapter.report.html#section.report.mi" title="11.4. Module Vs. Instance">Module Vs. Instance</a> for information on the
-      difference between these two options.
+        These radiobuttons control whether coverage information is accumulated by instance or by module.  Only one value
+        can be selected for the two available options.  See <a href="chapter.report.html#section.report.mi" title="11.4. Module Vs. Instance">Section 11.4, &#8220;Module Vs. Instance&#8221;</a> for information on the
+        difference between these two options.
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.gui.genreport.options.cov_type"></a>Coverage Type</h3></div></div></div><p>
-      These radiobuttons control whether covered or uncovered coverage points are output in the report.  Only one value
-      can be selected for the two available options.  See <a class="xref" href="chapter.report.html#section.report.cu" title="11.5. Covered Vs. Uncovered">Covered Vs. Uncovered</a> for information on the
-      difference between these two options.
+        These radiobuttons control whether covered or uncovered coverage points are output in the report.  Only one value
+        can be selected for the two available options.  See <a href="chapter.report.html#section.report.cu" title="11.5. Covered Vs. Uncovered">Section 11.5, &#8220;Covered Vs. Uncovered&#8221;</a> for information on the
+        difference between these two options.
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.gui.genreport.options.metrics"></a>Show Metrics</h3></div></div></div><p>
-      These checkbuttons control which coverage metric information is output in the generated report.  You may select
-      any number (or combinations) of these options.  All of the metrics available for viewing in the GUI can be
-      output to a report file, including:
+        These checkbuttons control which coverage metric information is output in the generated report.  You may select
+        any number (or combinations) of these options.  All of the metrics available for viewing in the GUI can be
+        output to a report file, including:
       </p><p>
         </p><div class="itemizedlist"><ul type="disc"><li><p><span class="bold"><strong>Line</strong></span></p></li><li><p><span class="bold"><strong>Toggle</strong></span></p></li><li><p><span class="bold"><strong>Memory</strong></span></p></li><li><p><span class="bold"><strong>Combinational Logic</strong></span></p></li><li><p><span class="bold"><strong>FSM</strong></span></p></li><li><p><span class="bold"><strong>Assertion</strong></span></p></li><li><p><span class="bold"><strong>Race Conditions</strong></span></p><p>
-            This item, though it is not a coverage metric, can be useful for understanding what logic was not
-            considered for coverage due to violating the static race condition checks and what check was violated for
-            each block.
+              This item, though it is not a coverage metric, can be useful for understanding what logic was not
+              considered for coverage due to violating the static race condition checks and what check was violated for
+              each block.
             </p></li></ul></div><p>
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.gui.genreport.options.save"></a>Save Options to File...</h3></div></div></div><p>
-      Once the above options have been specified, it can be useful to save those parameters to a file which can be
-      loaded at a later time in the <a class="xref" href="chapter.gui.genreport.html#section.gui.genreport.select" title="25.1. Navigating the Report Generator Selection Page">Navigating the Report Generator Selection Page</a> page of the GUI report
-      generation wizard.  This same file can also be fed "as is" into the Covered's command-line report command
-      via the <span class="bold"><strong>-f</strong></span> option.  Click on this button to open a "Save As" window where you
-      can create a filename to save this information into.  Click on the <span class="bold"><strong>Save</strong></span>
-      button of this window to exit the window and save the information.  Click on the 
-      <span class="bold"><strong>Cancel</strong></span> button to abort this action.
+        Once the above options have been specified, it can be useful to save those parameters to a file which can be
+        loaded at a later time in the <a href="chapter.gui.genreport.html#section.gui.genreport.select" title="25.1. Navigating the Report Generator Selection Page">Section 25.1, &#8220;Navigating the Report Generator Selection Page&#8221;</a> page of the GUI report
+        generation wizard.  This same file can also be fed "as is" into the Covered's command-line report command
+        via the <span class="bold"><strong>-f</strong></span> option.  Click on this button to open a "Save As" window where you
+        can create a filename to save this information into.  Click on the <span class="bold"><strong>Save</strong></span>
+        button of this window to exit the window and save the information.  Click on the 
+        <span class="bold"><strong>Cancel</strong></span> button to abort this action.
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.gui.genreport.options.file"></a>Output report to file frame</h3></div></div></div><p>
-      This frame of the ASCII Report window allows the user to specify a filename/location for the generated 
-      output file.  By default, the report name is the same as the first CDD file loaded, substituting the .cdd 
-      extension for a .rpt extension. By default, the directory location to store the generated report is the same 
-      directory that the first CDD file exists in. To change this name/location, the user may either enter a value in 
-      the entry field or click on the <span class="bold"><strong>Browse...</strong></span> button to display a "Save As" type 
-      window.
+        This frame of the ASCII Report window allows the user to specify a filename/location for the generated 
+        output file.  By default, the report name is the same as the first CDD file loaded, substituting the .cdd 
+        extension for a .rpt extension. By default, the directory location to store the generated report is the same 
+        directory that the first CDD file exists in. To change this name/location, the user may either enter a value in 
+        the entry field or click on the <span class="bold"><strong>Browse...</strong></span> button to display a "Save As" type 
+        window.
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.gui.genreport.options.view"></a>View the report in the GUI after it is created</h3></div></div></div><p>
-      Selecting this option will cause a window to open after the report has been generated which will contain
-      the contents of the generated report in a read-only view.  You can search in this window and scroll
-      to help view the entire document.
+        Selecting this option will cause a window to open after the report has been generated which will contain
+        the contents of the generated report in a read-only view.  You can search in this window and scroll
+        to help view the entire document.
       </p></div><p>
-    Once you have completed setting everything up as you need, click on the <span class="bold"><strong>Create</strong></span>
-    button to generate the report file.  If everything worked, the report generation window will close and, if
-    enabled via the <a class="xref" href="chapter.gui.genreport.html#section.gui.genreport.options.view" title="View the report in the GUI after it is created">View the report in the GUI after it is created</a> selector, a file viewer window will be 
-    displayed with the contents of the newly generated report file.  Click on the "X" button in the window manager
-    to close this window when you have finished with it.
+      Once you have completed setting everything up as you need, click on the <span class="bold"><strong>Create</strong></span>
+      button to generate the report file.  If everything worked, the report generation window will close and, if
+      enabled via the <a href="chapter.gui.genreport.html#section.gui.genreport.options.view" title="View the report in the GUI after it is created">the section called &#8220;View the report in the GUI after it is created&#8221;</a> selector, a file viewer window will be 
+      displayed with the contents of the newly generated report file.  Click on the "X" button in the window manager
+      to close this window when you have finished with it.
     </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="chapter.gui.new.html"><img src="img/prev.gif" alt="Prev"></a> </td><td width="20%" align="center"><a accesskey="u" href="part.gui.html"><img src="img/up.gif" alt="Up"></a></td><td width="40%" align="right"> <a accesskey="n" href="chapter.gui.rank.html"><img src="img/next.gif" alt="Next"></a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 24. Creating a New CDD </td><td width="20%" align="center"><a accesskey="h" href="index.html"><img src="img/home.gif" alt="Home"></a></td><td width="40%" align="right" valign="top"> Chapter 26. Creating a CDD Ranking Report</td></tr></table></div></body></html>

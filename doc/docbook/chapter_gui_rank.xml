@@ -1,4 +1,4 @@
-<chapter id="chapter.gui.rank" xreflabel="Creating a CDD Ranking Report">
+<chapter id="chapter.gui.rank">
   <title>Creating a CDD Ranking Report</title>
   <para>
     Generating a ranking report (see <xref linkend="chapter.rank"/> for more information) can be accomplished in the GUI by 
@@ -24,13 +24,13 @@
     the current page (context sensitive help).
   </para>
   
-  <sect1 id="section.gui.rank.select" xreflabel="CDD Ranking Option Selection Page">
+  <sect1 id="section.gui.rank.select">
     <title>CDD Ranking Option Selection Page</title>
     <para>
       Figure <xref linkend="figure.gui.rank.select"/> shows the look of this page of the CDD ranking wizard.
     </para>
     <para>
-      <figure id="figure.gui.rank.select" xreflabel="CDD Ranking Option Selection Page">
+      <figure id="figure.gui.rank.select">
         <title>CDD Ranking Option Selection Page</title>
         <mediaobject><imageobject><imagedata fileref="img/rank_selection.gif" format="GIF"/></imageobject></mediaobject>
       </figure>
@@ -56,14 +56,14 @@
     </para>
   </sect1>
   
-  <sect1 id="section.gui.rank.options" xreflabel="CDD Ranking Options Page">
+  <sect1 id="section.gui.rank.options">
     <title>CDD Ranking Option Page</title>
     <para>
       This page of the CDD ranking wizard allows the user to specify certain options to the ranking command when it is run.
       The following subsections document each option within this window.
     </para>
     <para>
-      <figure id="figure.gui.rank.options" xreflabel="CDD Ranking Options Page">
+      <figure id="figure.gui.rank.options">
         <title>CDD Ranking Options Page</title>
         <mediaobject><imageobject><imagedata fileref="img/rank_options.gif" format="GIF"/></imageobject></mediaobject>
       </figure>
@@ -121,7 +121,7 @@
     </sect2>
   </sect1>
   
-  <sect1 id="section.gui.rank.files" xreflabel="CDD Ranking Input File Selection Page">
+  <sect1 id="section.gui.rank.files">
     <title>CDD Ranking Input File Selection Page</title>
     <para>
       This page allows the user to add all of the CDD files to rank.  Since the GUI CDD ranking generation command can be run at any
@@ -136,7 +136,7 @@
       navigation bar.
     </para>
     <para>
-      <figure id="figure.gui.rank.files" xreflabel="CDD Ranking Input File Selection Page">
+      <figure id="figure.gui.rank.files">
         <title>CDD Ranking Input File Selection Page</title>
         <mediaobject><imageobject><imagedata fileref="img/rank_files.gif" format="GIF"/></imageobject></mediaobject>
       </figure>
@@ -245,7 +245,7 @@
     </sect2>
   </sect1>
   
-  <sect1 id="section.gui.rank.output" xreflabel="CDD Ranking Command Output Page">
+  <sect1 id="section.gui.rank.output">
     <title>CDD ranking Command Output Page</title>
     <para>
       <figure id="section.gui.rank.output">

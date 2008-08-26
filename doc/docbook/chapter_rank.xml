@@ -1,9 +1,9 @@
-<chapter id="chapter.rank" xreflabel="The rank Command">
+<chapter id="chapter.rank">
   <title>The rank Command</title>
   <para>
-  The rank command allows the user to specify a number of CDD files that have been created from the same DUT (presumably in
-  a regression run -- but not necessarily) and rank them in order of coverage importance.  This information can be useful
-  in accomplishing the following tasks:
+    The rank command allows the user to specify a number of CDD files that have been created from the same DUT (presumably in
+    a regression run -- but not necessarily) and rank them in order of coverage importance.  This information can be useful
+    in accomplishing the following tasks:
   </para>
   <para>
     <itemizedlist>
@@ -30,7 +30,7 @@
     </itemizedlist>
   </para>
   
-  <sect1 id="section.rank.options" xreflabel="Rank Options">
+  <sect1 id="section.rank.options">
     <title>Options</title>
     <para>
       <table>
@@ -39,10 +39,10 @@
           <thead>
             <row>
               <entry>
-               Option
+                Option
               </entry>
               <entry>
-               Description
+                Description
               </entry>
             </row>
           </thead>
@@ -189,7 +189,7 @@
     </para>
   </sect1>
   
-  <sect1 id="section.rank.inputting" xreflabel="Methods for specifying CDDs to rank">
+  <sect1 id="section.rank.inputting">
     <title>Methods for specifying CDDs to rank</title>
     <para>
       The rank command provides several mechanisms for specifying CDD files to rank.  Feel free to use any combination
@@ -262,7 +262,7 @@
     </para>
   </sect1>
   
-  <sect1 id="section.rank.weighting" xreflabel="Specifying metric weights">
+  <sect1 id="section.rank.weighting">
     <title>Specifying metric weights</title>
     <para>
       The rank command has several options that allow the user to weight any and all of the coverage metrics that Covered 
@@ -463,7 +463,7 @@ Order      |        Hit /      Total     %   Timesteps |  R  Name               
     </para>
   </sect1>
   
-  <sect1 id="section.rank.algorithm" xreflabel="Description of ranking algorithm">
+  <sect1 id="section.rank.algorithm">
     <title>Description of ranking algorithm</title>
     <para>
       This section describes the overall algorithm that is used to rank the specified CDD files. The algorithm is being 

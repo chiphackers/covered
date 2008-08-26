@@ -1,72 +1,72 @@
-<chapter id="chapter.gui.genreport" xreflabel="Creating an ASCII report file">
+<chapter id="chapter.gui.genreport">
   <title>Creating an ASCII report file</title>
   <para>
-  Though Covered's graphical coverage analyzer is very useful for examining coverage, there may still be times when
-  a textual report is necessary.  For that purpose, the GUI has a menu item for generating an ASCII coverage report,
-  running Covered's "report" command on the currently loaded coverage information.
+    Though Covered's graphical coverage analyzer is very useful for examining coverage, there may still be times when
+    a textual report is necessary.  For that purpose, the GUI has a menu item for generating an ASCII coverage report,
+    running Covered's "report" command on the currently loaded coverage information.
   </para>
   <note>
-  The ASCII report generator options are only available if one or more CDD files are currently loaded in the GUI.  
+    The ASCII report generator options are only available if one or more CDD files are currently loaded in the GUI.  
   </note>
   <para>
-  When the <code>File -> Generate -> ASCII Report</code> menu option is selected (or the
-  "Cntrl-Shift-R" shortcut is used), the ASCII Report Generator Window is created to allow the user to specify the 
-  current report output options and generate the report file.  Once the report has been generated, it can be viewed 
-  within the GUI itself or it can be viewed with any type of file viewer/editor available.
+    When the <code>File -> Generate -> ASCII Report</code> menu option is selected (or the
+    "Cntrl-Shift-R" shortcut is used), the ASCII Report Generator Window is created to allow the user to specify the 
+    current report output options and generate the report file.  Once the report has been generated, it can be viewed 
+    within the GUI itself or it can be viewed with any type of file viewer/editor available.
   </para>
   <para>
-  The following subsections describe the various windows used to create a report file.  Note that the report generation
-  wizard uses several "pages" to describe the various options to set for creating a new report file, using 
-  <emphasis role="bold">Back</emphasis> and <emphasis role="bold">Next</emphasis> buttons on each page for navigation.
-  Clicking on the <emphasis role="bold">Back</emphasis> button will not cause previously filled in pages to be
-  reverted to their default values but rather will remain populated with the user's data. Similarly, if a page has been
-  filled in with data and the <emphasis role="bold">Back</emphasis> button is clicked and then the 
-  <emphasis role="bold">Next</emphasis> button is clicked, the page contents are
-  retained.  The only way to clear out fields is to click the <emphasis role="bold">Cancel</emphasis> button at the 
-  bottom of each page and startup the report generation wizard again.
+    The following subsections describe the various windows used to create a report file.  Note that the report generation
+    wizard uses several "pages" to describe the various options to set for creating a new report file, using 
+    <emphasis role="bold">Back</emphasis> and <emphasis role="bold">Next</emphasis> buttons on each page for navigation.
+    Clicking on the <emphasis role="bold">Back</emphasis> button will not cause previously filled in pages to be
+    reverted to their default values but rather will remain populated with the user's data. Similarly, if a page has been
+    filled in with data and the <emphasis role="bold">Back</emphasis> button is clicked and then the 
+    <emphasis role="bold">Next</emphasis> button is clicked, the page contents are
+    retained.  The only way to clear out fields is to click the <emphasis role="bold">Cancel</emphasis> button at the 
+    bottom of each page and startup the report generation wizard again.
   </para>
   <para>
-  Clicking the <emphasis role="bold">Cancel</emphasis> button at any time will cause the report generation wizard to 
-  immediately exit.  Clicking on the <emphasis role="bold">?</emphasis> button at any time will bring up the user 
-  documentation for the current page (context sensitive help).
+    Clicking the <emphasis role="bold">Cancel</emphasis> button at any time will cause the report generation wizard to 
+    immediately exit.  Clicking on the <emphasis role="bold">?</emphasis> button at any time will bring up the user 
+    documentation for the current page (context sensitive help).
   </para>
   
-  <sect1 id="section.gui.genreport.select" xreflabel="Navigating the Report Generator Selection Page">
+  <sect1 id="section.gui.genreport.select">
     <title>Navigating the Report Generator Selection Page</title>
     <para>
-    Figure <xref linkend="figure.gui.genreport.select"/> shows the look of this page of the report generation wizard.
+      <xref linkend="figure.gui.genreport.select"/> shows the look of this page of the report generation wizard.
     </para>
     <para>
-      <figure id="figure.gui.genreport.select" xreflabel="Report Generation Option Selection Page">
+      <figure id="figure.gui.genreport.select">
         <title>Report Generation Option Selection Page</title>
         <mediaobject><imageobject><imagedata fileref="img/rpt_gen_selection.gif" format="GIF"/></imageobject></mediaobject>
       </figure>
     </para>
     <para>
-    The first page of the report generation window allows the user to select whether all options should be interactively
-    selected within the GUI or if a file should be read in which contains command-line options to the report command
-    to use.  If the latter is chosen, the contents of that file are read in and are populated in the GUI, but the
-    report generation wizard will continue in the same fashion as the first option, allowing the user to change, remove or
-    add to the options found in that file.
+      The first page of the report generation window allows the user to select whether all options should be interactively
+      selected within the GUI or if a file should be read in which contains command-line options to the report command
+      to use.  If the latter is chosen, the contents of that file are read in and are populated in the GUI, but the
+      report generation wizard will continue in the same fashion as the first option, allowing the user to change, remove or
+      add to the options found in that file.
     </para>
     <para>
-    If the <emphasis role="bold">Create report by interactively selecting options</emphasis> entry is currently selected 
-    and the user wishes to not use a command-line file to populate the rest of the report generation pages, simply click on 
-    the <emphasis role="bold">Next</emphasis> button at the bottom of the page to continue.  If the 
-    <emphasis role="bold">Create report by using option file</emphasis> entry is currently selected, the user must either 
-    type a valid filename or select one by clicking the <emphasis role="bold">Browse...</emphasis> button to the right 
-    of the file entry area and select a valid file. Once a valid filename is selected, the 
-    <emphasis role="bold">Next</emphasis> button will be enabled and the user may then click it to continue to the next 
-    page. Note that any filename can be selected (whether it's a valid command file or not).  Only valid report command 
-    options found in that file are used to populate the wizard entries. No error message will be displayed if the file 
-    does not contain this information.
+      If the <emphasis role="bold">Create report by interactively selecting options</emphasis> entry is currently selected 
+      and the user wishes to not use a command-line file to populate the rest of the report generation pages, simply click on 
+      the <emphasis role="bold">Next</emphasis> button at the bottom of the page to continue.  If the 
+      <emphasis role="bold">Create report by using option file</emphasis> entry is currently selected, the user must either 
+      type a valid filename or select one by clicking the <emphasis role="bold">Browse...</emphasis> button to the right 
+      of the file entry area and select a valid file. Once a valid filename is selected, the 
+      <emphasis role="bold">Next</emphasis> button will be enabled and the user may then click it to continue to the next 
+      page. Note that any filename can be selected (whether it's a valid command file or not).  Only valid report command 
+      options found in that file are used to populate the wizard entries. No error message will be displayed if the file 
+      does not contain this information.
     </para>
   </sect1>
     
-  <sect1 id="section.gui.genreport.options" xreflabel="Report Generation Options Page">
+  <sect1 id="section.gui.genreport.options">
     <title>Report Generation Options Page</title>
     <para>
-    This wizard page allows you to setup the options to create the needed report. Figure 
+      This wizard page allows you to setup the options to create the needed report. Figure 
     <xref linkend="figure.gui.genreport.options"/> shows the contents of this page.
     </para>
     <para>
@@ -76,34 +76,36 @@
       </figure>
     </para>
     <para>
-    The options page is split into several different categories of options:
+      The options page is split into several different categories of options:
     </para>
     <para>
       <itemizedlist>
-        <listitem><para><xref linkend="section.gui.genreport.options.general"/></para></listitem>
-        <listitem><para><xref linkend="section.gui.genreport.options.detail"/></para></listitem>
-        <listitem><para><xref linkend="section.gui.genreport.options.mod_inst"/></para></listitem>
-        <listitem><para><xref linkend="section.gui.genreport.options.cov_type"/></para></listitem>
-        <listitem><para><xref linkend="section.gui.genreport.options.metrics"/></para></listitem>
+        <listitem>
+          <para><link linkend="section.gui.genreport.options.general">Set ASCII Report Generation Options</link></para>
+        </listitem>
+        <listitem><para><link linkend="section.gui.genreport.options.detail">Level of Detail</link></para></listitem>
+        <listitem><para><link linkend="section.gui.genreport.options.mod_inst">Accumulate By</link></para></listitem>
+        <listitem><para><link linkend="section.gui.genreport.options.cov_type">Coverage Type</link></para></listitem>
+        <listitem><para><link linkend="section.gui.genreport.options.metrics">Show Metrics</link></para></listitem>
       </itemizedlist>
     </para>
     
-    <sect2 id="section.gui.genreport.options.general" xreflabel="Set ASCII Report Generation Options">
+    <sect2 id="section.gui.genreport.options.general">
       <title>Set ASCII Report Generation Options</title>
       <para>
         <itemizedlist>
           <listitem>
             <para><emphasis role="bold">Limit line width to X characters</emphasis></para>
             <para>
-            If this option is checked, the number of characters that will be displayed per line when
-            outputting design logic will be limited to the number of characters specified in the entry box.
-            If this option is unchecked, the length of the output design logic will be determined by the
-            way the logic was formatted in the design file. 
+              If this option is checked, the number of characters that will be displayed per line when
+              outputting design logic will be limited to the number of characters specified in the entry box.
+              If this option is unchecked, the length of the output design logic will be determined by the
+              way the logic was formatted in the design file. 
             </para>
             <para>
-            This option can be useful for printing purposes where a logic design file contains logic that
-            is formatted to exceed the number of characters than can be printed on a page or viewed on a
-            screen.
+              This option can be useful for printing purposes where a logic design file contains logic that
+              is formatted to exceed the number of characters than can be printed on a page or viewed on a
+              screen.
             </para>
           </listitem>
           <listitem>
@@ -111,21 +113,21 @@
               <emphasis role="bold">Suppress modules/instances from output if they contain no coverage information</emphasis>
             </para>
             <para>
-            If this option is checked, any modules (or instances) that were considered for code coverage but did not contain
-            any coverable code will be excluded from the report.  If this option is unchecked, all modules/instances will be
-            reported.
+              If this option is checked, any modules (or instances) that were considered for code coverage but did not contain
+              any coverable code will be excluded from the report.  If this option is unchecked, all modules/instances will be
+              reported.
             </para>
             <para>
-            This option may help make the report files easier to view if there are many modules/instances that do not
-            contain coverage points.
+              This option may help make the report files easier to view if there are many modules/instances that do not
+              contain coverage points.
             </para>
           </listitem>
           <listitem>
             <para><emphasis role="bold">Output combinational logic vector operations in bitwise format</emphasis></para>
             <para>
-            Outputs combinational vector logic expressions in bitwise format instead of treating the vector as a 0 or "not 0"
-            value.  This can create quite a bit of extra output when creating verbose reports, but can provide the information
-            for a more thorough analysis for these expression types.  This option has the same effect as the 
+              Outputs combinational vector logic expressions in bitwise format instead of treating the vector as a 0 or "not 0"
+              value.  This can create quite a bit of extra output when creating verbose reports, but can provide the information
+              for a more thorough analysis for these expression types.  This option has the same effect as the 
             <emphasis role="bold">-b</emphasis> option to the report command.
             </para>
           </listitem>
@@ -133,11 +135,11 @@
       </para>
     </sect2>
     
-    <sect2 id="section.gui.genreport.options.detail" xreflabel="Level of Detail">
+    <sect2 id="section.gui.genreport.options.detail">
       <title>Level of Detail</title>
       <para>
-      These radiobuttons control the level of detail that is output in the generated report.  Only one value can be selected
-      for the three available detail values:
+        These radiobuttons control the level of detail that is output in the generated report.  Only one value can be selected
+        for the three available detail values:
       </para>
       <para>
         <itemizedlist>
@@ -151,30 +153,30 @@
       </para>
     </sect2>
     
-    <sect2 id="section.gui.genreport.options.mod_inst" xreflabel="Accumulate By">
+    <sect2 id="section.gui.genreport.options.mod_inst">
       <title>Accumulate By</title>
       <para>
-      These radiobuttons control whether coverage information is accumulated by instance or by module.  Only one value
-      can be selected for the two available options.  See <xref linkend="section.report.mi"/> for information on the
-      difference between these two options.
+        These radiobuttons control whether coverage information is accumulated by instance or by module.  Only one value
+        can be selected for the two available options.  See <xref linkend="section.report.mi"/> for information on the
+        difference between these two options.
       </para>
     </sect2>
     
-    <sect2 id="section.gui.genreport.options.cov_type" xreflabel="Coverage Type">
+    <sect2 id="section.gui.genreport.options.cov_type">
       <title>Coverage Type</title>
       <para>
-      These radiobuttons control whether covered or uncovered coverage points are output in the report.  Only one value
-      can be selected for the two available options.  See <xref linkend="section.report.cu"/> for information on the
-      difference between these two options.
+        These radiobuttons control whether covered or uncovered coverage points are output in the report.  Only one value
+        can be selected for the two available options.  See <xref linkend="section.report.cu"/> for information on the
+        difference between these two options.
       </para>
     </sect2>
 
-    <sect2 id="section.gui.genreport.options.metrics" xreflabel="Show Metrics">
+    <sect2 id="section.gui.genreport.options.metrics">
       <title>Show Metrics</title>
       <para>
-      These checkbuttons control which coverage metric information is output in the generated report.  You may select
-      any number (or combinations) of these options.  All of the metrics available for viewing in the GUI can be
-      output to a report file, including:
+        These checkbuttons control which coverage metric information is output in the generated report.  You may select
+        any number (or combinations) of these options.  All of the metrics available for viewing in the GUI can be
+        output to a report file, including:
       </para>
       <para>
         <itemizedlist>
@@ -187,55 +189,55 @@
           <listitem>
             <para><emphasis role="bold">Race Conditions</emphasis></para>
             <para>
-            This item, though it is not a coverage metric, can be useful for understanding what logic was not
-            considered for coverage due to violating the static race condition checks and what check was violated for
-            each block.
+              This item, though it is not a coverage metric, can be useful for understanding what logic was not
+              considered for coverage due to violating the static race condition checks and what check was violated for
+              each block.
             </para>
           </listitem>
         </itemizedlist>
       </para>
     </sect2>
     
-    <sect2 id="section.gui.genreport.options.save" xreflabel="Save Options to File...">
+    <sect2 id="section.gui.genreport.options.save">
       <title>Save Options to File...</title>
       <para>
-      Once the above options have been specified, it can be useful to save those parameters to a file which can be
-      loaded at a later time in the <xref linkend="section.gui.genreport.select"/> page of the GUI report
-      generation wizard.  This same file can also be fed "as is" into the Covered's command-line report command
-      via the <emphasis role="bold">-f</emphasis> option.  Click on this button to open a "Save As" window where you
-      can create a filename to save this information into.  Click on the <emphasis role="bold">Save</emphasis>
-      button of this window to exit the window and save the information.  Click on the 
-      <emphasis role="bold">Cancel</emphasis> button to abort this action.
+        Once the above options have been specified, it can be useful to save those parameters to a file which can be
+        loaded at a later time in the <xref linkend="section.gui.genreport.select"/> page of the GUI report
+        generation wizard.  This same file can also be fed "as is" into the Covered's command-line report command
+        via the <emphasis role="bold">-f</emphasis> option.  Click on this button to open a "Save As" window where you
+        can create a filename to save this information into.  Click on the <emphasis role="bold">Save</emphasis>
+        button of this window to exit the window and save the information.  Click on the 
+        <emphasis role="bold">Cancel</emphasis> button to abort this action.
       </para>
     </sect2>
     
-    <sect2 id="section.gui.genreport.options.file" xreflabel="Save To File Frame">
+    <sect2 id="section.gui.genreport.options.file">
       <title>Output report to file frame</title>
       <para>
-      This frame of the ASCII Report window allows the user to specify a filename/location for the generated 
-      output file.  By default, the report name is the same as the first CDD file loaded, substituting the .cdd 
-      extension for a .rpt extension. By default, the directory location to store the generated report is the same 
-      directory that the first CDD file exists in. To change this name/location, the user may either enter a value in 
-      the entry field or click on the <emphasis role="bold">Browse...</emphasis> button to display a "Save As" type 
-      window.
+        This frame of the ASCII Report window allows the user to specify a filename/location for the generated 
+        output file.  By default, the report name is the same as the first CDD file loaded, substituting the .cdd 
+        extension for a .rpt extension. By default, the directory location to store the generated report is the same 
+        directory that the first CDD file exists in. To change this name/location, the user may either enter a value in 
+        the entry field or click on the <emphasis role="bold">Browse...</emphasis> button to display a "Save As" type 
+        window.
       </para>
     </sect2>
     
-    <sect2 id="section.gui.genreport.options.view" xreflabel="View the report in the GUI after it is created">
+    <sect2 id="section.gui.genreport.options.view">
       <title>View the report in the GUI after it is created</title>
       <para>
-      Selecting this option will cause a window to open after the report has been generated which will contain
-      the contents of the generated report in a read-only view.  You can search in this window and scroll
-      to help view the entire document.
+        Selecting this option will cause a window to open after the report has been generated which will contain
+        the contents of the generated report in a read-only view.  You can search in this window and scroll
+        to help view the entire document.
       </para>
     </sect2>
     
     <para>
-    Once you have completed setting everything up as you need, click on the <emphasis role="bold">Create</emphasis>
-    button to generate the report file.  If everything worked, the report generation window will close and, if
-    enabled via the <xref linkend="section.gui.genreport.options.view"/> selector, a file viewer window will be 
-    displayed with the contents of the newly generated report file.  Click on the "X" button in the window manager
-    to close this window when you have finished with it.
+      Once you have completed setting everything up as you need, click on the <emphasis role="bold">Create</emphasis>
+      button to generate the report file.  If everything worked, the report generation window will close and, if
+      enabled via the <xref linkend="section.gui.genreport.options.view"/> selector, a file viewer window will be 
+      displayed with the contents of the newly generated report file.  Click on the "X" button in the window manager
+      to close this window when you have finished with it.
     </para>
   </sect1>
   

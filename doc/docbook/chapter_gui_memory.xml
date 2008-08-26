@@ -1,8 +1,8 @@
-<chapter id="chapter.gui.memory" xreflabel="Navigating the Memory Coverage Window">
+<chapter id="chapter.gui.memory">
   <title>Navigating the Memory Coverage Window</title>
   <para>
-  The verbose memory window allows the user to interactively view all of the coverage information for a selected 
-  memory, including the following for each addressable memory element:
+    The verbose memory window allows the user to interactively view all of the coverage information for a selected 
+    memory, including the following for each addressable memory element:
   </para>
   <para>
     <orderedlist>
@@ -18,37 +18,37 @@
     </orderedlist>
   </para>
   <para>
-  To display this window, simply click on a highlighted/underlined uncovered memory in the 
-  <xref linkend="section.gui.main.viewer"/>.  This will cause the verbose memory viewer to be created for the specified 
-  memory as well as display a "--&gt;" symbol in the Coverage Viewer on the same line as the selected memory.  This 
-  symbol is simply meant to help the user identify in the Coverage Viewer which memory is currently displayed in the 
-  Memory Viewer window.  Figure 1 shows the Memory Viewer loaded with a 4-dimensional memory called "mem" in which two 
-  of the dimensions are unpacked (all combinations of unpacked dimensions make up the total number of addressable 
-  elements in the memory), creating a total of 18 addressable elements.  The first addressable element "[0][0]" is 
-  shown in the lower frame in which only a single bit has been toggled from 0 to 1, the element has been written, but 
-  it has not been read.
+    To display this window, simply click on a highlighted/underlined uncovered memory in the 
+    <xref linkend="section.gui.main.viewer"/>.  This will cause the verbose memory viewer to be created for the specified 
+    memory as well as display a "--&gt;" symbol in the Coverage Viewer on the same line as the selected memory.  This 
+    symbol is simply meant to help the user identify in the Coverage Viewer which memory is currently displayed in the 
+    Memory Viewer window.  Figure 1 shows the Memory Viewer loaded with a 4-dimensional memory called "mem" in which two 
+    of the dimensions are unpacked (all combinations of unpacked dimensions make up the total number of addressable 
+    elements in the memory), creating a total of 18 addressable elements.  The first addressable element "[0][0]" is 
+    shown in the lower frame in which only a single bit has been toggled from 0 to 1, the element has been written, but 
+    it has not been read.
   </para>
   <para>
-    <figure id="figure.gui.memory" xreflabel="Verbose Memory Window">
+    <figure id="figure.gui.memory">
       <title>Verbose Memory Window</title>
       <mediaobject><imageobject><imagedata fileref="img/memory_full.gif" format="GIF"/></imageobject></mediaobject>
     </figure>
   </para>
   
-  <sect1 id="section.gui.memory.layout" xreflabel="Understanding the Layout">
+  <sect1 id="section.gui.memory.layout">
     <title>Understanding the Layout</title>
     <para>
-    The Memory Coverage window is split up into three main frames stacked from top to bottom.  These frames, in order 
-    from top to bottom, are the "Addressable Memory Elements" frame, the "Element Coverage" frame, and the button 
-    frame.  Each are described in detail below.
+      The Memory Coverage window is split up into three main frames stacked from top to bottom.  These frames, in order 
+      from top to bottom, are the "Addressable Memory Elements" frame, the "Element Coverage" frame, and the button 
+      frame.  Each are described in detail below.
     </para>
     
-    <sect2 id="section.gui.memory.layout.ame" xreflabel="Addressable Memory Elements Frame">
+    <sect2 id="section.gui.memory.layout.ame">
       <title>Addressable Memory Elements Frame</title>
       <para>
-      The uppermost frame contains all of the addressable memory elements (AMEs) of the memory.  An AME is a single 
-      memory entry that is addressed by specifying a unique combination of values for each of the unpacked dimensions 
-      of the memory.  For example, consider the following memory:
+        The uppermost frame contains all of the addressable memory elements (AMEs) of the memory.  An AME is a single 
+        memory entry that is addressed by specifying a unique combination of values for each of the unpacked dimensions 
+        of the memory.  For example, consider the following memory:
       </para>
       <para>
         <programlisting>
@@ -56,9 +56,9 @@
         </programlisting>
       </para>
       <para>
-      This memory called "foo" contains three dimensions.  One packed dimension which is a 16-bit little endian value 
-      and two unpacked dimensions, containing two entries of four entries (for a total of eight addressable memory 
-      elements).  Each AME being 16 bits wide.  The AMEs for this memory would be:
+        This memory called "foo" contains three dimensions.  One packed dimension which is a 16-bit little endian value 
+        and two unpacked dimensions, containing two entries of four entries (for a total of eight addressable memory 
+        elements).  Each AME being 16 bits wide.  The AMEs for this memory would be:
       </para>
       <para>
         <itemizedlist>
@@ -73,99 +73,99 @@
         </itemizedlist>
       </para>
       <para>
-      The upper frame will contain all of the AMEs for the selected memory.  The uncovered AMEs will be highlighted in 
-      the uncovered color scheme (as specified in the <xref linkend="chapter.gui.preferences"/>) while all fully covered 
-      AMEs will remain unhighlighted.  To view the coverage information for any uncovered AME, simply click on it and 
-      the information will be viewable in the "Element Coverage" frame below it.
+        The upper frame will contain all of the AMEs for the selected memory.  The uncovered AMEs will be highlighted in 
+        the uncovered color scheme (as specified in the <xref linkend="chapter.gui.preferences"/>) while all fully covered 
+        AMEs will remain unhighlighted.  To view the coverage information for any uncovered AME, simply click on it and 
+        the information will be viewable in the "Element Coverage" frame below it.
       </para>
     </sect2>
     
-    <sect2 id="section.gui.memory.layout.elem" xreflabel="Element Coverage Frame">
+    <sect2 id="section.gui.memory.layout.elem">
       <title>Element Coverage Frame</title>
       <para>
-      The Element Coverage frame shows all of the coverage information for the currently selected AME including toggle 
-      coverage (which bits of the element toggled from 0-&gt;1 and 1-&gt;0), write coverage (was this entry written to) 
-      and read coverage (was this entry accessed).
+        The Element Coverage frame shows all of the coverage information for the currently selected AME including toggle 
+        coverage (which bits of the element toggled from 0-&gt;1 and 1-&gt;0), write coverage (was this entry written to) 
+        and read coverage (was this entry accessed).
       </para>
       <para>
-      The bit vector displayed in the toggle window is a binary bit vector, where each value (0 or 1) represents 
-      whether that bit in the signal either toggled (1) or did not toggle (0) during simulation. There are two bit 
-      vectors displayed for the AME, the top vector shows the 0-&gt;1 toggle information while the bottom vector shows 
-      the 1-&gt;0 toggle information.
+        The bit vector displayed in the toggle window is a binary bit vector, where each value (0 or 1) represents 
+        whether that bit in the signal either toggled (1) or did not toggle (0) during simulation. There are two bit 
+        vectors displayed for the AME, the top vector shows the 0-&gt;1 toggle information while the bottom vector shows 
+        the 1-&gt;0 toggle information.
       </para>
       <para>
-      The name of the memory along with its dimensional range information is displayed below the toggle window; 
-      however, if the mouse cursor is placed over a specific bit in the toggle box, the packed dimensional range 
-      information will be changed to show the displayed bit, making it easy for the user to discern exactly which bit 
-      has toggled/not toggled.  If the width of the AME exceeds the given space for the toggle window, a scrollbar will 
-      be allowed to slide left and right to view the rest of the toggle information.
+        The name of the memory along with its dimensional range information is displayed below the toggle window; 
+        however, if the mouse cursor is placed over a specific bit in the toggle box, the packed dimensional range 
+        information will be changed to show the displayed bit, making it easy for the user to discern exactly which bit 
+        has toggled/not toggled.  If the width of the AME exceeds the given space for the toggle window, a scrollbar will 
+        be allowed to slide left and right to view the rest of the toggle information.
       </para>
       <para>
-      Below the memory name are two other pieces of coverage information about the AME.  The value to the right of the 
-      <emphasis role="bold">Written:</emphasis> label will be set to either "Yes" or "No".  If the value is "Yes", this 
-      indicates that the currently selected AME was written during simulation and value will be highlighted with the 
-      covered color scheme (as selected in the <xref linkend="chapter.gui.preferences"/>).  If the value is "No", this 
-      indicates that the currently selected AME was not written during simulation and the value will be highlighted 
-      with the uncovered color scheme.
+        Below the memory name are two other pieces of coverage information about the AME.  The value to the right of the 
+        <emphasis role="bold">Written:</emphasis> label will be set to either "Yes" or "No".  If the value is "Yes", this 
+        indicates that the currently selected AME was written during simulation and value will be highlighted with the 
+        covered color scheme (as selected in the <xref linkend="chapter.gui.preferences"/>).  If the value is "No", this 
+        indicates that the currently selected AME was not written during simulation and the value will be highlighted 
+        with the uncovered color scheme.
       </para>
       <para>
-      To the right of the <emphasis role="bold">Written</emphasis> information is the 
-      <emphasis role="bold">Read</emphasis> label which will also be set to either a value of "Yes" or "No".  If the 
-      value is "Yes", this indicates that the currently selected AME was accessed during simulation and the value will 
-      be highlighted with the covered color scheme. If the value is "No", this indicates that the currently selected 
-      AME was not accessed during simulation and the value will be highlighted with the uncovered color scheme.
+        To the right of the <emphasis role="bold">Written</emphasis> information is the 
+        <emphasis role="bold">Read</emphasis> label which will also be set to either a value of "Yes" or "No".  If the 
+        value is "Yes", this indicates that the currently selected AME was accessed during simulation and the value will 
+        be highlighted with the covered color scheme. If the value is "No", this indicates that the currently selected 
+        AME was not accessed during simulation and the value will be highlighted with the uncovered color scheme.
       </para>
     </sect2>
     
-    <sect2 id="section.gui.memory.layout.button" xreflabel="Button Frame">
+    <sect2 id="section.gui.memory.layout.button">
       <title>Button Frame</title>
       <para>
-      The button frame contains buttons for closing the Memory Coverage window, displaying this help page, or moving to 
-      the next/previous uncovered memory in the same module/instance.
+        The button frame contains buttons for closing the Memory Coverage window, displaying this help page, or moving to 
+        the next/previous uncovered memory in the same module/instance.
       </para>
       <para>
-      To exit this window, simply click on <emphasis role="bold">Close</emphasis> button.  To see this help page from 
-      the toggle window, click on the <emphasis role="bold">Help</emphasis> button.
+        To exit this window, simply click on <emphasis role="bold">Close</emphasis> button.  To see this help page from 
+        the toggle window, click on the <emphasis role="bold">Help</emphasis> button.
       </para>
     </sect2>
   </sect1>
   
-  <sect1 id="section.gui.memory.excl" xreflabel="Excluding/Including a Memory for Memory Coverage">
+  <sect1 id="section.gui.memory.excl">
     <title>Excluding/Including a Memory for Memory Coverage</title>
     <para>
-    The user may exclude/include any uncovered memory in the design for memory coverage by simply clicking on the 
-    <emphasis role="bold">Excluded</emphasis> checkbutton in the upper right-hand portion of the Memory Coverage 
-    window. If this checkbutton is checked, the summary coverage information will automatically be recalculated and 
-    redisplayed in the <xref linkend="section.gui.main.listbox"/> and the background color of the underlined memory in 
-    the <xref linkend="section.gui.main.viewer"/> will change from the uncovered background color to the covered 
-    background color.  However, the memory will still remain underlined, allowing the user to see the verbose memory 
-    coverage information, if necessary.  If the <emphasis role="bold">Excluded</emphasis> checkbutton is unchecked, the 
-    summary coverage information and background colors will be readjusted to include the coverage information for this 
-    memory.
+      The user may exclude/include any uncovered memory in the design for memory coverage by simply clicking on the 
+      <emphasis role="bold">Excluded</emphasis> checkbutton in the upper right-hand portion of the Memory Coverage 
+      window. If this checkbutton is checked, the summary coverage information will automatically be recalculated and 
+      redisplayed in the <xref linkend="section.gui.main.listbox"/> and the background color of the underlined memory in 
+      the <xref linkend="section.gui.main.viewer"/> will change from the uncovered background color to the covered 
+      background color.  However, the memory will still remain underlined, allowing the user to see the verbose memory 
+      coverage information, if necessary.  If the <emphasis role="bold">Excluded</emphasis> checkbutton is unchecked, the 
+      summary coverage information and background colors will be readjusted to include the coverage information for this 
+      memory.
     </para>
     <para>
-    If the user excludes any memory for memory coverage in the design, the <emphasis role="bold">Save CDD...</emphasis> 
-    option in the <xref linkend="section.gui.main.filemenu"/> menu.  This allows the user to save the excluded property 
-    either back to the CDD file (or to a newly named CDD file).  Doing so will allow the user to load the CDD file at a 
-    different time and retain the knowledge of which memories have been excluded/included for memory coverage. 
-    Additionally, if a saved CDD file with coverage exclusion is merged with another CDD file, the excluded memory 
-    information is preserved for the resulting merged CDD file.
+      If the user excludes any memory for memory coverage in the design, the <emphasis role="bold">Save CDD...</emphasis> 
+      option in the <xref linkend="section.gui.main.filemenu"/> menu.  This allows the user to save the excluded property 
+      either back to the CDD file (or to a newly named CDD file).  Doing so will allow the user to load the CDD file at a 
+      different time and retain the knowledge of which memories have been excluded/included for memory coverage. 
+      Additionally, if a saved CDD file with coverage exclusion is merged with another CDD file, the excluded memory 
+      information is preserved for the resulting merged CDD file.
     </para>
   </sect1>
   
-  <sect1 id="section.gui.memory.displaying" xreflabel="Displaying a New Memory for Memory Coverage">
+  <sect1 id="section.gui.memory.displaying">
     <title>Displaying a New Memory for Memory Coverage</title>
     <para>
-    If the Verbose Memory Coverage window is currently displayed with a memory, the user may select a new memory in 
-    the <xref linkend="section.gui.main.viewer"/> of the Main window.  When a new memory is selected, its value 
-    immediately replaces the currently selecting memory value.  This feature allows many different memories to be 
-    viewed one after the other without having to create/destroy a new window for each memory.
+      If the Verbose Memory Coverage window is currently displayed with a memory, the user may select a new memory in 
+      the <xref linkend="section.gui.main.viewer"/> of the Main window.  When a new memory is selected, its value 
+      immediately replaces the currently selecting memory value.  This feature allows many different memories to be 
+      viewed one after the other without having to create/destroy a new window for each memory.
     </para>
     <para>
-    The user may also see the previous or next uncovered memory in the main viewer by clicking either the left arrow 
-    button (for previous memory viewing) or the right arrow button (for next memory viewing).  Note that the left arrow 
-    button will be disabled if there is not a memory previous to the current memory in the given module and the right 
-    arrow button will be disabled if there is not a memory after the current memory in the given module.
+      The user may also see the previous or next uncovered memory in the main viewer by clicking either the left arrow 
+      button (for previous memory viewing) or the right arrow button (for next memory viewing).  Note that the left arrow 
+      button will be disabled if there is not a memory previous to the current memory in the given module and the right 
+      arrow button will be disabled if there is not a memory after the current memory in the given module.
     </para>
   </sect1>
   
