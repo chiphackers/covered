@@ -1,6 +1,109 @@
 Covered-Related NEWS
 ====================
 
+    * 8/26/2008
+
+Development release covered-20080826 made.  This development release contains several new features, bug fixes, GUI
+enhancements and additions, documentation overhaul and testsuite enhancements.  One major feature is the new "rank"
+command which allows you to specify multiple CDD files to it and it will select an "optimal" subset of CDD files
+needed to achieve the same amount of coverage that all of the files together provide, ranked in the order that these
+CDD files should be run in simulation to achieve the most coverage in the fastest amount of time.  A big thanks to
+Ed Spittles (ed.spittles@gmail.com) for his recommendation and insight for this feature.  I think you'll like what
+you see as the time for a new stable release draws nearer (I'm planning on an end-of-the-year release date for the new
+0.7 stable release).  As you can see, Covered development has been very busy since the last development release.
+Please give this a try and report those bugs!  Here's a list of the changes going into this work:
+
+  - Fixed bug 1980954.  Single-bit expression elaboration could lead to segfault.
+  - Fixed bug 1981073.  Parameterized port specified twice (once with port direction, once with type specification)
+    lead to a memory leak.
+  - Fixed bug 1982530.  The empty string "" was not being handled correctly, leading to a segfault.
+  - Added full support for the use of NULL statements ";"
+  - Added configuration checks for the lex (flex) and yacc (bison) code generators.
+  - Added many new diagnostics to cover holes in the regression suite as found by performing C source code coverage.
+  - Added a new "rank" command (there are now four main commands to Covered) which allows multiple CDD files to be
+    ranked in terms of coverage gained.  Generates a report specifying its results and correlating coverage statistics.
+    - Has the ability to show which CDD files are unnecessary in terms of adding new coverage information.  This
+      reduction capability allows users to reduce the size (runtime) of their regressions.
+    - Ranks the "needed" list of CDD files in the order that their simulations should be run (in terms of regression).
+      This information can be useful for creating "quick" regressions that need to hit as much logic as possible (but
+      not necessarily all) in a relatively short period of time for the purposes of design change confidence.
+    - Has the ability to allow user's to specify a list of CDD files that MUST be included in the final list of CDDs
+      to run.
+  - Added -f options to all of the commands (previously, only the score command had this option) which allows a file
+    to be specified containing more command-line options.
+  - Fixed some issues pertaining to -m32 compiler option support (on 64-bit systems).
+  - Fixed bug 1986510.  The compiler error message "lxt2_read.c:1394: error: extended registers have no high halves"
+    when compiling with the -O3 option to the 4.1.x (and later) GCC compilers.
+  - Added ability to create/run regression tests using a perl script (rather than only via Make rules).
+  - Fixed segmentation fault when the global -D option was specified and the input CDD file was empty.
+  - Fixed bug 1997423.  If a fully covered signal was output in toggle coverage when the -c option is specified to
+    the report command, the signal was not being output.
+  - Cleaned up all -Wall GCC warning messages.
+  - Fixed bug 1994896.  Array overflow condition in new vector code causing segfaults.
+  - Optimized --enable-debug enabled code (runs almost as fast now as without the --enable-debug mode).
+  - Reduced the number of files in the regression directories.
+  - Fixed bug 2000732.  Valgrind reported error in new vector code.
+  - Fixed memory leak issue for command option files that contain environment variable references that are not set
+    in the environment.
+  - Fixed bug 2001894.
+  - Fixing splint and GCC -Wextra warnings/errors.
+  - Added -m option to the score command which allows the user to specify a message to be associated with a created
+    CDD file (the contents of this message can be most anything -- the information is currently not being used by
+    Covered but may in the future).
+  - Added -d and -ext options to the merge command (these options exist in the rank command as well) to allow the
+    user to specify a directory and extension to use for finding CDD files to merge.
+  - Fixed CDD file format to remove memory allocation errors when many CDD files are merged into a single CDD file.
+  - Fixed bug 2054686.  Toggle, memory and combinational logic coverage points within an unnamed block were not being
+    reported in the GUI and ASCII reports.
+  - GUI changes
+    - Refreshed the look of the GUI, replacing many widgets with better/newer widgets.  The GUI is now reliant on
+      Tcl/Tk versions of 8.4 (preferable 8.5) and newer (it used to be backward compatible to 8.3).
+    - Replaced most of the listbox widgets with the new tablelist widget (this new widget needs to be downloaded and
+      installed in the user's Tk library prior to using Covered's GUI).
+    - Added a "general" pane to the preferences window that allows the user to modify general components of the GUI.
+    - Added a starting "wizard" window that pops up on startup to allow the user to quickly do various tasks.  This
+      window can be turned off via a checkbutton in its window and/or the general preferences pane.
+    - Added the ability to create new CDD files from the GUI (rather than having to use the command-line score
+      command) via a new "New CDD Creation" wizard accessible from the File > Generate menu (or from the new
+      wizard window).
+      - Ability to create a score command option file from the GUI after options have been selected (this file can
+        be loaded by later references to the New CDD Creation wizard and/or the -f option to the score command.
+    - Added the ability to rank two or more CDD files from the GUI (rather than having to use the new command-line
+      rank command) via a new "Rank CDDs" wizard accessible from the File > Generate menu (or from the new wizard
+      window).
+      - Ability to create a rank command option file from the GUI after options have been selected (this file can
+        be loaded by later references to the Rank CDDs wizard and/or the -f option to the rank command.
+      - Ability to use currently loaded CDD files in the GUI to the rank list.
+      - Includes the ability to view this generated report file directly in the GUI via a new file viewer window.
+    - Reworked the entire ASCII report generation functionality to work as a wizard window (like the New CDD and Rank CDDs
+      wizards).  Removed "ASCII Report Options" pane from the preferences panel.  This feature is accessible via
+      the File > Generate menu option.
+      - Ability to create a report command option file from the GUI after options have been selected (this file can
+        be loaded by later references to the ASCII Report Generation wizard and/or the new -f option to the report
+        command.
+      - Added ability to view this file information directly in the GUI via a new file viewer window.
+    - Fixing memory errors when Tcl/Tk script fails/errors.
+    - Fixed bug 1989398.  Toggle coverage results were not being
+    - Added support for tooltips to many of Covered's widgets.  Tooltips can be turned on/off in the preferences
+      window.
+    - Added ability for GUI to remember window placements, tablelist column sizes/positions/states and other miscellaneous
+      state information while it is being used and, optionally, between application uses.  The ability to remember
+      this information between application runs is configurable in the preferences window.
+    - Added full support for instance-based coverage accumulation in the GUI.  The user can now select either mode
+      in the GUI and get immediate results.  Additionally, coverage exclusions are transferable between modes (excluding
+      a coverage point when in module mode will exclude all instances, but excluding a coverage point in an instance will
+      only exclude the module coverage information if all instances of that module are excluded).
+    - Updated the Next (-->) and Previous (<--) buttons in all windows to use new graphical buttons.
+    - Updated the search widgets to use a more graphical, modern approach.
+    - Fixed bug 2054689.  In verbose combinational logic coverage window, when expression was excluded, the highlighted logic
+      did not change to hit colors.
+    - Fixed bug 2060873.  Excluded subexpression was not outputting its coverage information in the lower window when later
+      selected.
+    - Fixed other various memory leak bugs in GUI.
+  - Switched user guide and GUI documentation from HTML and HTML help formats, respectively, to a single, unified document
+    in DocBook format.  This ties all of Covered user documentation to a single set of source files for easier maintenance.
+    Removed support for HelpSystem in GUI.
+
     * 5/30/2008
 
 Development release covered-20080530 made.  This development release is primarily a scoring optimization

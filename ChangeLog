@@ -1,3 +1,2098 @@
+2008-08-26 14:00  phase1geo
+
+	Completing documentation passes.
+
+2008-08-26 00:42  phase1geo
+
+	Updating development release dates for today (release should occur
+	later today).
+
+2008-08-26 00:37  phase1geo
+
+	More documentation updates.  Checkpointing.
+
+2008-08-25 18:12  phase1geo
+
+	Continuing work on documentation updates/upgrades.  Checkpointing.
+
+2008-08-25 07:22  phase1geo
+
+	Using new help balloon code that fixes issues with previous balloon
+	code.
+
+2008-08-24 01:18  phase1geo
+
+	Updating documentation for rank command.  Regenerated user guide.
+
+2008-08-23 20:28  phase1geo
+
+	Fixing bug 2060873.
+
+2008-08-23 15:00  phase1geo
+
+	Full fix for bug 2054686.  Also cleaned up Cver regressions.
+
+2008-08-22 15:56  phase1geo
+
+	Starting to make updates for proper unnamed scope report handling
+	(fix for bug 2054686).	Not complete yet.  Also making updates to
+	documentation.	Checkpointing.
+
+2008-08-22 00:15  phase1geo
+
+	Updating TODO list.
+
+2008-08-22 00:12  phase1geo
+
+	Completing support for required files.	Updating screenshots per
+	recent changes to the wizard pages.
+
+2008-08-21 15:46  phase1geo
+
+	Integrating documentation updates from old development branch. 
+	Regenerated documentation.
+
+2008-08-21 15:25  phase1geo
+
+	User guide updates.
+
+2008-08-21 11:35  phase1geo
+
+	Adding support for -v option in GUI to rank command.  Fixing some
+	bugs with rank GUI code.  Switching text widgets to not wrap text
+	by default.
+
+2008-08-21 08:16  phase1geo
+
+	Changing the name of the -required option to the rank command to
+	-required-list and adding new -required-cdd option to specify a
+	single CDD file.  Updated regressions for this change which fully
+	pass.
+
+2008-08-21 01:17  phase1geo
+
+	Updating build scripts.
+
+2008-08-21 01:16  phase1geo
+
+	Working on integrating required CDD handling in rank generator
+	wizard.  Checkpointing.
+
+2008-08-20 22:45  phase1geo
+
+	Reverting change.
+
+2008-08-20 22:45  phase1geo
+
+	Modifying verbage in -v output for rank command.  Adding time to
+	read in CDD files to the output.
+
+2008-08-20 12:23  phase1geo
+
+	Modifying Makefile.am in docbook directory to build the html files
+	with the 'html' rule instead of the 'all' rule.
+
+2008-08-19 18:01  phase1geo
+
+	Fix for bug 2054689.  Removing create_new.tcl.
+
+2008-08-19 00:21  phase1geo
+
+	Removing unneeded files.
+
+2008-08-19 00:15  phase1geo
+
+	Removing doc/user and doc/gui directories from configure.in as
+	these no longer exist.
+
+2008-08-19 00:14  phase1geo
+
+	Attempting to fix bug 2054684.
+
+2008-08-19 00:00  phase1geo
+
+	Fixing path for documentation.
+
+2008-08-18 23:51  phase1geo
+
+	Updating Tcl/Tk scripts for branch integration.
+
+2008-08-18 18:07  phase1geo
+
+	Integrating changes from development release branch to main
+	development trunk.  Regression passes.	Still need to update
+	documentation directories and verify that the GUI stuff works
+	properly.
+
+2008-08-18 13:11  phase1geo
+
+	file Makefile was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file example.rptI.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file prep_files was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file example.v.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file example.v was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file example.rptM.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file libs was initially added on branch covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file wizard.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file view_menu.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file new_cdd_options2.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file new_cdd_insert_menu.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file help_menu.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file main_window.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file pref_goals.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file rank_output.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file next.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file rank_report.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file new_cdd_options.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file main_lb.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file new_cdd_mod_excl.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file new_cdd_fsm.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file pref_color.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file populated_lb.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file new_cdd_lib_ext.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file memory_full.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file rank_options.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file main_info.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file pref_gen.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file main_viewer.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file new_cdd_mod_gen.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file new_cdd_define.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file line_incl.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file new_cdd_gen.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file up_button.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file main_menu.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file pref_syntax.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file pref_main.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file rank_files.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file new_cdd_parm_oride.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file new_cdd_type.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file toggle_full.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file report_menu.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file new_cdd_name.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file note.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file vhier.png was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file rpt_gen_options.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file line_excl.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file new_cdd_selection.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file home.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file rpt_gen_view.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file prev.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file main_cov.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file rpt_gen_selection.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file gen_menu.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file up.gif was initially added on branch covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file screenshot.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file rank_selection.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file assert_window.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file comb_simple_or.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file banner.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file comb_simple.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file fsm_window.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file assert_excl.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file comb_simple_and.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file comb_event.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file close_warn.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file comb_unary.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file assert_src.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file file_menu.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file exit_warn.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file dn_button.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file col_show_hide.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file app_menu.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file file_viewer.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file fsm_excl.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file fsm_example.png was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file comb_complex.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.metrics.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.race.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.using.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.rank.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.start.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file part.epilogue.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file part.faq.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.report.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file part.command.line.usage.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file part.installation.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file part.gui.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.reading.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file part.overview.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.score.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.gui.main.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.gui.preferences.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.gui.assert.source.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.gui.rank.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.gui.wizard.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.epilogue.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.installation.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.gui.genreport.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.gui.toggle.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.gui.memory.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.gui.new.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.attr.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.debug.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.gui.line.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.gui.intro.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.merge.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.boundaries.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.gui.assert.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.gui.logic.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.gui.fsm.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.faq.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:11  phase1geo
+
+	file chapter.intro.html was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-18 13:10  phase1geo
+
+	Moving the location of the user HTML documentation.  Fixing a few
+	missing links.
+
+2008-08-17 17:42  phase1geo
+
+	Documenting the generate rank report file GUI wizard.
+
+2008-08-15 17:03  phase1geo
+
+	file chapter_gui_rank.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-15 17:03  phase1geo
+
+	Starting to add chapter for GUI rank report generator. 
+	Checkpointing.
+
+2008-08-15 00:10  phase1geo
+
+	file covered.1 was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-15 00:10  phase1geo
+
+	Converting more old graphics to new style.  Updated documentation. 
+	Cleaned up some issues with the build structure per recent
+	documentation changes.	Also fixing some issues with the GUI and
+	viewing combination logic coverage that is in an unnamed functional
+	unit (more work to do here).  Checkpointing.
+
+2008-08-14 16:50  phase1geo
+
+	Fixing and adding some more tooltips.
+
+2008-08-14 16:44  phase1geo
+
+	Adding tooltips to various windows.
+
+2008-08-14 15:19  phase1geo
+
+	Completing work on report generation documentation.  Added xsltproc
+	command-line options to the covered.xsl customization layer as well
+	as modified some of the settings.  More GUI updates/tweaks.  Added
+	"Show tooltips" general preference option and hooked this up in the
+	balloon.tcl code.  Regenerated documentation.  Checkpointing work.
+
+2008-08-14 01:56  phase1geo
+
+	Using different tooltip code that seems to work a bit better
+	(though not exactly as I would hope on Mac OS X).
+
+2008-08-14 01:56  phase1geo
+
+	file balloon.tcl was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-14 01:46  phase1geo
+
+	Initial attempt to add support for tooltips.  Checkpointing.
+
+2008-08-14 00:54  phase1geo
+
+	More work on documentation.  Started updating screenshots. 
+	Checkpointing.
+
+2008-08-13 18:11  phase1geo
+
+	Completed documentation for the new CDD window.  Integrated GUI
+	help files into GUI buttons.  Enhanced the wizard window look and
+	functionality.	Updated user guide documentation.  Checkpointing.
+
+2008-08-13 08:52  phase1geo
+
+	file Makefile.am was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-13 08:52  phase1geo
+
+	file Makefile.in was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-13 08:52  phase1geo
+
+	Configure updates.
+
+2008-08-12 23:35  phase1geo
+
+	Docbook updates to build using XML cataloging.	Changed background
+	of generated documentation by creating a customization layer called
+	covered.xsl.  Regenerated documentation.  Checkpointing.
+
+2008-08-12 23:35  phase1geo
+
+	file Makefile was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-12 23:35  phase1geo
+
+	file catalog.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-12 23:35  phase1geo
+
+	file covered.xsl was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-12 16:45  phase1geo
+
+	Working on DocBook XSL usage for generating documentation.
+
+2008-08-12 12:52  phase1geo
+
+	Adding another attempt to speed up ranking.
+
+2008-08-12 11:53  phase1geo
+
+	Adding timer information for -v option to the rank command.
+
+2008-08-12 01:17  phase1geo
+
+	Fixing bugs in calculation and report of coverage points in rank
+	reports.
+
+2008-08-11 18:10  phase1geo
+
+	Adding more documentation to User's Guide.
+
+2008-08-11 16:40  phase1geo
+
+	Changing compressed coverage structure to store coverage points as
+	unsigned long values instead of unsigned char to increase
+	performance.
+
+2008-08-10 23:25  phase1geo
+
+	Documentation updates.
+
+2008-08-10 23:02  phase1geo
+
+	Adding -v option to the rank command to display verbose information
+	during the ranking phase.
+
+2008-08-10 00:19  phase1geo
+
+	Completing work of saving off GUI elements.
+
+2008-08-08 18:20  phase1geo
+
+	Fixing bug with report generator.  Modifying search widgets in
+	output viewer.
+
+2008-08-08 18:02  phase1geo
+
+	Modifying the look of the text search element.	Enhancing a few
+	other GUI enhancements.
+
+2008-08-08 18:02  phase1geo
+
+	file find.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-08 18:02  phase1geo
+
+	file clear.gif was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-08 01:04  phase1geo
+
+	Adding capability to move summary listbox columns.  Also change the
+	handling of the listbox hide/show popup window to make it work with
+	movable columns.  This is all working now (still need to make these
+	settings part of the configuration file settings, however).
+
+2008-08-07 22:19  phase1geo
+
+	Missed regression script.
+
+2008-08-07 22:19  phase1geo
+
+	file rank1.1.pl was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-07 18:22  phase1geo
+
+	Added initial code to synchronize module and instance exclusion
+	information.  Checkpointing.
+
+2008-08-07 15:51  phase1geo
+
+	Fixing memory allocation/deallocation issues with GUI.	Also fixing
+	some issues with FSM table output and exclusion.  Checkpointing.
+
+2008-08-07 13:03  phase1geo
+
+	Fixing instance exclusion segfault issue with GUI.  Also cleaned up
+	function documentation in link.c.
+
+2008-08-07 01:39  phase1geo
+
+	Adding "Excluded" column to the summary listbox.
+
+2008-08-06 18:16  phase1geo
+
+	Updating DocBook syntax.
+
+2008-08-06 15:11  phase1geo
+
+	Adding support for instance-based coverage reporting in GUI. 
+	Everything seems to be working except for proper exclusion
+	handling.  Checkpointing.
+
+2008-08-06 00:32  phase1geo
+
+	file merge_err2.1b.v was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-06 00:32  phase1geo
+
+	file merge_err2.1.pl was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-06 00:32  phase1geo
+
+	file merge_err2.1.rptI was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-06 00:32  phase1geo
+
+	file merge_err2.1a.v was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-06 00:32  phase1geo
+
+	file merge_err2.1c.v was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-06 00:32  phase1geo
+
+	file merge_err2.1.rptM was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-06 00:32  phase1geo
+
+	file merge_err2.1.cdd was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-06 00:32  phase1geo
+
+	Another fix for bug 2037791.  Also add new diagnostic to verify the
+	fix for the bug.
+
+2008-08-04 23:29  phase1geo
+
+	file rank1c.v was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-04 23:29  phase1geo
+
+	file rank1.1b.v was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-04 23:29  phase1geo
+
+	file rank1a.v was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-04 23:29  phase1geo
+
+	file rank1b.v was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-04 23:29  phase1geo
+
+	file rank1.1a.v was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-04 23:29  phase1geo
+
+	file rank1.1c.v was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-04 23:29  phase1geo
+
+	file rank1.1b.cfg was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-04 23:29  phase1geo
+
+	file rank1.pl was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-04 23:29  phase1geo
+
+	file rank1.err was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-04 23:29  phase1geo
+
+	file rank1.1.err was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-04 23:29  phase1geo
+
+	file rank1c.cfg was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-04 23:29  phase1geo
+
+	file rank1a.cfg was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-04 23:29  phase1geo
+
+	file rank1.1.required was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-04 23:29  phase1geo
+
+	file rank1.1a.cfg was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-04 23:29  phase1geo
+
+	file rank1b.cfg was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-04 23:29  phase1geo
+
+	file rank1.1c.cfg was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-04 23:29  phase1geo
+
+	file rank1c.cdd was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-04 23:29  phase1geo
+
+	file rank1.1b.cdd was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-04 23:29  phase1geo
+
+	file rank1.1a.cdd was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-04 23:29  phase1geo
+
+	file rank1.1c.cdd was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-04 23:29  phase1geo
+
+	file rank1a.cdd was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-04 23:29  phase1geo
+
+	file rank1b.cdd was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-04 23:29  phase1geo
+
+	Fixing the last issue in regards to required file support.  Added a
+	few diagnostics to the regression list to verify this behavior.
+
+2008-08-04 22:56  phase1geo
+
+	file merge_err2.v was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-04 22:56  phase1geo
+
+	file merge_err2.err was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-04 22:56  phase1geo
+
+	file merge_err2.pl was initially added on branch
+	covered-20080603-branch2.
+
+2008-08-04 22:56  phase1geo
+
+	Completing fix for bug 2037791.  Added diagnostic to regression
+	suite to verify the corrected behavior.
+
+2008-08-04 19:45  phase1geo
+
+	Another attempt to fix bug 2037707.
+
+2008-08-04 12:29  phase1geo
+
+	Attempting to fix bug 2037791.
+
+2008-08-04 11:26  phase1geo
+
+	Attempting to fix bug 2037707.
+
+2008-08-04 10:12  phase1geo
+
+	Fixing summary output issue with ranked CDD files (bug 2037629).
+
+2008-07-31 08:06  phase1geo
+
+	Updating GUI documentation and adding new images for New CDD
+	creation documentation.  Checkpointing.
+
+2008-07-30 08:31  phase1geo
+
+	Adding more DocBook documentation for CDD creation window.  More
+	work to do here.  Checkpointing.
+
+2008-07-29 21:17  phase1geo
+
+	Updates to regression Makefile.
+
+2008-07-29 01:32  phase1geo
+
+	Merging in contents of development branch to the main development
+	trunk.
+
+2008-07-29 01:02  phase1geo
+
+	file chapter_gui_new.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-29 01:02  phase1geo
+
+	Adding missing images to generated DocBook HTML and starting to
+	work on new sections for wizard window pages.
+
+2008-07-28 23:40  phase1geo
+
+	file err6.1.pl was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-28 23:40  phase1geo
+
+	file err6.2.pl was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-28 23:40  phase1geo
+
+	file err6.pl was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-28 23:40  phase1geo
+
+	file err6.3.pl was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-28 23:40  phase1geo
+
+	file err6.4.pl was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-28 23:40  phase1geo
+
+	Updating regressions.  Full regressions should now pass.
+
+2008-07-28 18:15  phase1geo
+
+	file err5.2.pl was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-28 18:15  phase1geo
+
+	file err5.3.pl was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-28 18:15  phase1geo
+
+	Continuing to work on failing regression diagnostics.
+
+2008-07-28 18:03  phase1geo
+
+	file err5.4.pl was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-28 18:03  phase1geo
+
+	Forgot to add this file to the last update.
+
+2008-07-28 18:02  phase1geo
+
+	file err5.1.pl was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-28 18:02  phase1geo
+
+	file err5.pl was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-28 18:02  phase1geo
+
+	Updating regressions for failing diagnostics.
+
+2008-07-28 08:29  phase1geo
+
+	Updating for VCS regressions.
+
+2008-07-25 16:07  phase1geo
+
+	Modifying CDD file format to remove the potential for memory
+	allocation assertion errors due to a large number of merged CDD
+	files.	Updating IV and Cver regressions per this change.
+
+2008-07-25 14:41  phase1geo
+
+	Adding timestep reduction information as well as multiplier
+	improvement information to rank output.  Also updating more
+	documentation.
+
+2008-07-24 18:23  phase1geo
+
+	Adding -required option to the rank command.
+
+2008-07-24 16:17  phase1geo
+
+	Fixing -depth issue.
+
+2008-07-24 09:21  phase1geo
+
+	Adding more verbage to the rank command documentation.
+
+2008-07-23 16:38  phase1geo
+
+	Adding better formatting for ranking reports to allow the inclusion
+	of the full pathname for each CDD file listed.
+
+2008-07-23 13:51  phase1geo
+
+	Removing MAX_MALLOC_SIZE check from calloc_safe1 function call
+	(this function will only get called for fairly big memory chunks
+	anyways.
+
+2008-07-23 13:26  phase1geo
+
+	Moving -d command-line parsing to after the -depth so that they do
+	not conflict.
+
+2008-07-23 00:34  phase1geo
+
+	More updates.
+
+2008-07-23 00:10  phase1geo
+
+	Adding -d and -ext options to rank and merge commands.	Updated
+	necessary files per this change and updated regressions.
+
+2008-07-22 23:38  phase1geo
+
+	Attempting to update rank.c with latest bug fixes.
+
+2008-07-22 15:50  phase1geo
+
+	Fixing issue with -depth option.
+
+2008-07-22 08:00  phase1geo
+
+	Updating TODO list and a few changes to the User's Guide
+	documentation for the rank command (the latter is not finished yet,
+	however).
+
+2008-07-21 22:41  phase1geo
+
+	Fixing small bug with -depth command-line parser.
+
+2008-07-21 16:35  phase1geo
+
+	Fixing bug with deallocation of merge_in array and a later
+	reallocation.  Needed to reset merge_in to NULL and merge_in_num to
+	0.
+
+2008-07-21 16:17  phase1geo
+
+	Adding ability to specify -f - to cause each of the commands to
+	read in command options from standard input (instead of an
+	otherwise specified file).
+
+2008-07-21 01:55  phase1geo
+
+	Regression cleanup from rank-devel-branch integration.
+
+2008-07-21 01:52  phase1geo
+
+	Cleanup from rank-devel-branch integration.
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_start.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_rank.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_using.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_score.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	file covered_doc.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_report.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_reading.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_intro.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_gui_wizard.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_boundaries.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_faq.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_gui.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_installation.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_race.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_epilogue.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_gui_report_gen.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_merge.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_gui_intro.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_gui_toggle.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_cli.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	Initial checkin of new User Guide in DocBook format.  Still have
+	some missing images to resolve but this is a start!
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_gui_assert.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_gui_preferences.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_metrics.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_gui_logic.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_gui_main.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_attributes.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_gui_memory.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_gui_assert_src.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_gui_fsm.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_gui_line.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:39  phase1geo
+
+	file chapter_debug.xml was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-21 01:36  phase1geo
+
+	Updating code from rank-devel-branch branch.
+
+2008-07-21 00:53  phase1geo
+
+	Fixing rank command issues (bugs 2018194 and 2021340).	Also added
+	a note in the ranking report file that shows the amount of CDD file
+	reduction that was calculated.
+
+2008-07-20 22:56  phase1geo
+
+	A few small improvements to the GUI.
+
+2008-07-20 22:28  phase1geo
+
+	Fixing a few more GUI bugs with generation files.
+
+2008-07-19 02:26  phase1geo
+
+	Fixing a few bits and pieces.  Checkpointing.
+
+2008-07-19 02:15  phase1geo
+
+	More updates to the ranking generation wizard.	Still a bit more
+	work to do, but most things are in and working.
+
+2008-07-18 19:25  phase1geo
+
+	Forgot to update some files per the last checkin.
+
+2008-07-18 18:12  phase1geo
+
+	Fixing quirk with the enabling of the Next button in the new CDD
+	generation wizard when the "Parse Design Only" is selected upon
+	window startup.
+
+2008-07-18 17:02  phase1geo
+
+	file gen_rank.tcl was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-18 17:02  phase1geo
+
+	Starting to add rank command GUI window.  Checkpointing progress.
+
+2008-07-18 14:56  phase1geo
+
+	Completing the new CDD generation functionality.  A few minor bugs
+	to clean up here but otherwise, the functionality is all there. 
+	Checkpointing.
+
+2008-07-18 01:03  phase1geo
+
+	More work on new CDD generation wizard.  Checkpointing.
+
+2008-07-17 17:40  phase1geo
+
+	Updates to new CDD generation windows.	Checkpointing.
+
+2008-07-17 09:13  phase1geo
+
+	Modifying height of report generator window for Mac OS X size
+	requirements.
+
+2008-07-16 17:13  phase1geo
+
+	More work on report generation window as well as the new CDD
+	generation window.  Work in progress -- checkpointing.
+
+2008-07-16 17:13  phase1geo
+
+	file gen_report.tcl was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-16 17:13  phase1geo
+
+	file gen_new.tcl was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-16 13:56  phase1geo
+
+	Updates to complete report generator GUI and functionality.
+
+2008-07-16 08:58  phase1geo
+
+	Checkpointing.
+
+2008-07-16 02:15  phase1geo
+
+	More updates for report generation wizard.  Still a bit more work
+	to go -- read in report option files are not being parsed properly.
+	 Checkpointing.
+
+2008-07-15 18:23  phase1geo
+
+	More updates for report generation window.
+
+2008-07-15 18:01  phase1geo
+
+	file viewer.tcl was initially added on branch
+	covered-20080603-branch2.
+
+2008-07-15 18:01  phase1geo
+
+	Added file viewer and started to update the generate report window.
+
+2008-07-14 17:15  phase1geo
+
+	Removing multi-expressions from ranking coverage point
+	consideration.	Treating these as individual expressions.
+
+2008-07-14 13:43  phase1geo
+
+	Fixing issue with toggle index getting incremented when calculating
+	memory toggle coverage.
+
+2008-07-11 13:47  phase1geo
+
+	Attempting to fix bug 2016187.
+
+2008-07-11 12:00  phase1geo
+
+	Fixing output to include rank command if no command is specified.
+
+2008-07-10 17:42  phase1geo
+
+	Merging in rank-devel-branch into this branch.	Added -f options
+	for all commands to allow files containing command-line arguments
+	to be added.  A few error diagnostics are currently failing due to
+	changes in the rank branch that never got fixed in that branch. 
+	Checkpointing.
+
+2008-07-02 18:10  phase1geo
+
+	file msg1.v was initially added on branch rank-devel-branch.
+
+2008-07-02 18:10  phase1geo
+
+	file msg1.cfg was initially added on branch rank-devel-branch.
+
+2008-07-02 18:10  phase1geo
+
+	file msg1.rptI was initially added on branch rank-devel-branch.
+
+2008-07-02 18:10  phase1geo
+
+	file msg1.rptM was initially added on branch rank-devel-branch.
+
+2008-07-02 18:10  phase1geo
+
+	file merge5.err was initially added on branch rank-devel-branch.
+
+2008-07-02 18:10  phase1geo
+
+	file msg1.cdd was initially added on branch rank-devel-branch.
+
+2008-07-02 18:10  phase1geo
+
+	Checking in work on rank function and addition of -m option to
+	score function.  Added new diagnostics to verify beginning
+	functionality.	Checkpointing.
+
+2008-07-02 08:51  phase1geo
+
+	Fixing bug in read mode chosen for ranking.  Should have been a
+	report-no-merge rather than a merge-no-merge flavor.
+
+2008-07-01 23:40  phase1geo
+
+	file ranker.v was initially added on branch rank-devel-branch.
+
+2008-07-01 23:40  phase1geo
+
+	file merge5d.v was initially added on branch rank-devel-branch.
+
+2008-07-01 23:40  phase1geo
+
+	file merge5c.v was initially added on branch rank-devel-branch.
+
+2008-07-01 23:40  phase1geo
+
+	file merge5e.v was initially added on branch rank-devel-branch.
+
+2008-07-01 23:40  phase1geo
+
+	file merge5f.v was initially added on branch rank-devel-branch.
+
+2008-07-01 23:40  phase1geo
+
+	file merge5g.v was initially added on branch rank-devel-branch.
+
+2008-07-01 23:40  phase1geo
+
+	file merge5b.v was initially added on branch rank-devel-branch.
+
+2008-07-01 23:40  phase1geo
+
+	file merge5a.v was initially added on branch rank-devel-branch.
+
+2008-07-01 23:40  phase1geo
+
+	file merge5e.cfg was initially added on branch rank-devel-branch.
+
+2008-07-01 23:40  phase1geo
+
+	file merge5d.cfg was initially added on branch rank-devel-branch.
+
+2008-07-01 23:40  phase1geo
+
+	file merge5a.cfg was initially added on branch rank-devel-branch.
+
+2008-07-01 23:40  phase1geo
+
+	file merge5f.cfg was initially added on branch rank-devel-branch.
+
+2008-07-01 23:40  phase1geo
+
+	file merge5.pl was initially added on branch rank-devel-branch.
+
+2008-07-01 23:40  phase1geo
+
+	file merge5b.cfg was initially added on branch rank-devel-branch.
+
+2008-07-01 23:40  phase1geo
+
+	file merge5g.cfg was initially added on branch rank-devel-branch.
+
+2008-07-01 23:40  phase1geo
+
+	file merge5c.cfg was initially added on branch rank-devel-branch.
+
+2008-07-01 23:40  phase1geo
+
+	file merge5g.cdd was initially added on branch rank-devel-branch.
+
+2008-07-01 23:40  phase1geo
+
+	file merge5c.cdd was initially added on branch rank-devel-branch.
+
+2008-07-01 23:40  phase1geo
+
+	file merge5a.cdd was initially added on branch rank-devel-branch.
+
+2008-07-01 23:40  phase1geo
+
+	Adding merge5* diagnostics to verify rank function (this is not
+	complete yet).	The rank function is a bit broken at this point. 
+	Checkpointing.
+
+2008-07-01 23:40  phase1geo
+
+	file merge5d.cdd was initially added on branch rank-devel-branch.
+
+2008-07-01 23:40  phase1geo
+
+	file merge5e.cdd was initially added on branch rank-devel-branch.
+
+2008-07-01 23:40  phase1geo
+
+	file merge5f.cdd was initially added on branch rank-devel-branch.
+
+2008-07-01 23:40  phase1geo
+
+	file merge5b.cdd was initially added on branch rank-devel-branch.
+
+2008-07-01 18:08  phase1geo
+
+	Initial working version of rank command.  Ranking algorithm needs
+	some more testing at this point.  Checkpointing.
+
+2008-07-01 01:15  phase1geo
+
+	More updates to rank command.  Updating IV/Cver regression for
+	these changes (full regression not passing at this point). 
+	Checkpointing.
+
+2008-06-30 18:02  phase1geo
+
+	More work on the rank command.	Checkpointing.
+
+2008-06-30 08:14  phase1geo
+
+	file rank.h was initially added on branch rank-devel-branch.
+
+2008-06-30 08:14  phase1geo
+
+	file rank.c was initially added on branch rank-devel-branch.
+
+2008-06-30 08:14  phase1geo
+
+	Starting to work on new 'rank' command.  Checkpointing.
+
+2008-06-27 23:44  phase1geo
+
+	More code cleanup.
+
+2008-06-27 22:46  phase1geo
+
+	More code updates for warning removal.
+
+2008-06-27 09:01  phase1geo
+
+	Fixing splint and -Wextra warnings.  Also fixing comment
+	formatting.
+
+2008-06-25 19:31  phase1geo
+
+	Updating CDD files for OVL version 2.3.
+
+2008-06-25 07:38  phase1geo
+
+	Fixing one issue with an array overflow in the stype array (array
+	should have been 3 characters long when it was only two).  This is
+	an attempt to fix bug 2001894 though I am unable to confirm it at
+	this time.
+
+2008-06-24 23:47  phase1geo
+
+	Adding several error diagnostics for the score command to the
+	regression suite.  Removing unnecessary output in score.c.
+
+2008-06-24 22:21  phase1geo
+
+	Adding a missing Verilog file for regressions.
+
+2008-06-24 18:15  phase1geo
+
+	Adding several new diagnostics to regression.  Removing unnecessary
+	output in source files for user errors hit in regressions.  Fixed
+	memory leak in substitute_env_vars when an error is detected in the
+	environment variable.  Fixing issue with gen_test script to make
+	sure that it does not allow an existing diagnostic to be
+	overwritten if the .v file is absent (but the .pl or .cfg file is).
+	 Fixing score_err1.1.pl script to properly remove its "lib2"
+	directory.  Checkpointing.
+
+2008-06-23 23:45  phase1geo
+
+	Adding new score command error diagnostics to regression suite.
+
+2008-06-23 18:34  phase1geo
+
+	Adding more score diagnostics to regression suite for coverage.
+
+2008-06-23 11:12  phase1geo
+
+	Moving memory allocation in instance verbose output so that its
+	test mode output does not interfere with other output.	Adding
+	missing err8.err file from regressions.
+
+2008-06-23 10:55  phase1geo
+
+	Fixing other vector issues related to bug 2000732.
+
+2008-06-23 10:48  phase1geo
+
+	Fixing bug 2000732.
+
+2008-06-22 23:46  phase1geo
+
+	Updating TODO list.
+
+2008-06-22 21:33  phase1geo
+
+	Adding err9 diagnostic to regression suite.
+
+2008-06-22 17:01  phase1geo
+
+	Fixing regression issues.
+
+2008-06-22 15:27  phase1geo
+
+	Removing the *.rptWI files that are no longer needed.
+
+2008-06-22 00:07  phase1geo
+
+	Fixing memory testing error in tcl_funcs.c.  Removed unnecessary
+	output in main_view.tcl.  Added a few more report diagnostics and
+	started to remove width report files (these will no longer be
+	needed and will improve regression runtime and diagnostic memory
+	footprint.
+
+2008-06-20 13:43  phase1geo
+
+	Updating source files to optimize code when the --enable-debug
+	option is specified.  The performance was almost 8x worse with this
+	option enabled, now it should be almost as good as without the mode
+	(although, not completely).  Full regression passes.
+
+2008-06-20 13:12  phase1geo
+
+	Adding a few more diagnostics to regressions.  Cleaning up
+	check_test script to properly cleanup diagnostics that left CDD
+	files around after regressions.  Cleaning up output in source code
+	that is no longer necessary.  Full regressions pass.
+
+2008-06-20 10:48  phase1geo
+
+	Fixing bug 1994896.  Also removing some commented out printf lines
+	that are no longer necessary.
+
+2008-06-20 09:19  phase1geo
+
+	Updating merge.c and report.c to remove unnecessary code and
+	output.
+
+2008-06-20 09:14  phase1geo
+
+	Adding a few more report diagnostics to regression suite.
+
+2008-06-20 08:02  phase1geo
+
+	Adding report_err1.6 to regression suite.
+
+2008-06-20 00:32  phase1geo
+
+	Adding several new diagnostics to regression suite to verify report
+	command error handling and detailed verbosity.	Fixing error
+	formatting for one error in report.c and removing unnecessary
+	output.  Checkpointing.
+
+2008-06-19 21:18  phase1geo
+
+	Adding report4.1 diagnostic to regression suite.
+
+2008-06-19 11:14  phase1geo
+
+	leaned up all warnings in source code from -Wall.  This also seems
+	to have cleared up a few runtime issues.  Full regression passes.
+
+2008-06-19 08:35  phase1geo
+
+	Adding report4 diagnostic to regression suite.
+
+2008-06-19 07:34  phase1geo
+
+	Adding missed report3 diagnostic from regression suite and removing
+	unnecessary output from report.c source file.
+
+2008-06-19 00:52  phase1geo
+
+	Fixing bug 1997423.  Added report coverage diagnostics.
+
+2008-06-18 16:57  phase1geo
+
+	Updating regressions per latest changes to Makefiles.  Full
+	regression now passes.
+
+2008-06-18 15:24  phase1geo
+
+	Finishing diagnostics for merge.c coverage (100%).  Updates to
+	regression files for these tests.  Checkpointing.
+
+2008-06-18 08:22  phase1geo
+
+	Adding merge diagnostics and updating more regression scripting
+	files.	Full regression passes.
+
+2008-06-17 23:58  phase1geo
+
+	Adding merge_err1 to regressions.
+
+2008-06-17 18:03  phase1geo
+
+	Forgot to add this file previously.
+
+2008-06-17 18:03  phase1geo
+
+	Fixing segmentation fault in db.c when a CDD file is found to be
+	empty but the -D global option is specified.  Also enhancing the
+	regression script environment.
+
+2008-06-17 09:40  phase1geo
+
+	Adding merge_err1 diagnostic to regression suite (which is a new
+	script style of diagnostic running) and adding support for
+	script-based regression runs to diagnostic Makefile structures.
+
+2008-06-16 18:10  phase1geo
+
+	Fixing cdd_diff script for error found while running regressions. 
+	Also integrating source code fixes from the
+	covered-20080603-branch2 branch.  Full regression passes.
+
+2008-06-15 23:58  phase1geo
+
+	Second attempt to fix bug 1986510.  This seems to do it.
+
+2008-06-15 23:35  phase1geo
+
+	Fixing reading issue with vectors that seems to pop up when running
+	on a 64-bit machine with the -m32 option.
+
+2008-06-15 23:34  phase1geo
+
+	Removing unnecessary output.
+
+2008-06-15 23:32  phase1geo
+
+	Fixing issue pertaining to bad sscanf handling when compiled on a
+	64-bit machine with the -m32 option to the compiler.  Also checking
+	in the fixed lxt2_read.c for a previously filed bug.
+
+2008-06-13 16:58  phase1geo
+
+	Final update for new CDD window GUI placement.	Still need to add
+	functionality for generating CDD file.	Checkpointing.
+
+2008-06-13 00:19  phase1geo
+
+	More work on new CDD window.  Still not quite there yet. 
+	Checkpointing.
+
+2008-06-12 17:46  phase1geo
+
+	Checkpointing some more work on new CDD window.
+
+2008-06-11 23:04  phase1geo
+
+	More additions to new CDD window.
+
+2008-06-11 17:47  phase1geo
+
+	Fixing various issues with GUI and adding more functionality to new
+	CDD window.  Checkpointing.
+
+2008-06-10 00:07  phase1geo
+
+	Removing unnecessary output.
+
+2008-06-10 00:06  phase1geo
+
+	Fixed bug 1989398.
+
+2008-06-09 10:42  phase1geo
+
+	Updating cdd_diff script.
+
+2008-06-08 21:56  phase1geo
+
+	Adding a few new diagnostics to verify holes in coverage for db.c. 
+	Still a lot more work to go here.
+
+2008-06-07 22:05  phase1geo
+
+	Adding checks for lex (flex) and yacc (bison).	Updating build
+	files.
+
+2008-06-06 16:55  phase1geo
+
+	More updates to new CDD window.
+
+2008-06-06 00:00  phase1geo
+
+	Updates for GUI.  Checkpointing.
+
+2008-06-05 00:42  phase1geo
+
+	Adding FSM argument window.  Checkpointing.
+
+2008-06-04 22:50  phase1geo
+
+	Removing unnecessary output.
+
+2008-06-04 22:50  phase1geo
+
+	Fixing memory errors when Tk initialization fails.
+
+2008-06-04 18:42  phase1geo
+
+	More fixes and updates for new CDD file creation.
+
+2008-06-04 07:47  phase1geo
+
+	Populating "Insert" menu with rest of missing values (no
+	functionality for the newly added values, however).  Also populated
+	console frame with missing scrollbars and repacked this window. 
+	Checkpointing.
+
+2008-06-04 01:28  phase1geo
+
+	More GUI updates to new CDD window.  Still a work in progress. 
+	Checkpointing.
+
+2008-06-03 18:16  phase1geo
+
+	GUI updates.  Checkpointing.
+
+2008-06-03 08:15  phase1geo
+
+	file create_new.tcl was initially added on branch
+	covered-20080603-branch2.
+
+2008-06-03 08:15  phase1geo
+
+	Adding create_new Tcl script and updating build files per this
+	change.
+
+2008-06-03 08:03  phase1geo
+
+	More wizard window updates for GUI.
+
+2008-06-03 01:32  phase1geo
+
+	file wizard.tcl was initially added on branch
+	covered-20080603-branch2.
+
+2008-06-03 01:32  phase1geo
+
+	Starting to add wizard window to GUI.
+
+2008-06-02 23:43  phase1geo
+
+	Fixing bug 1982530.  Updating regression tests.
+
+2008-06-02 18:25  phase1geo
+
+	Initial versions of diagnostics to verify null statements in
+	statement lists.
+
+2008-06-02 18:24  phase1geo
+
+	Adding support for null statements in statement lists.
+
+2008-06-02 18:07  phase1geo
+
+	Adding string diagnostics to recreate bug and verify fix.  Fix is
+	still pending at this point.  Also removing commented out line in
+	cdd_diff to remove *.tmpdiff files after comparing.  Checkpointing.
+
+2008-06-02 16:34  phase1geo
+
+	Fixing bug 1981073.  Adding new tests to verify this fix.
+
+2008-06-01 23:45  phase1geo
+
+	Adding param17 diagnostic to regression suite to verify a
+	forthcoming bug fix.
+
+2008-05-31 17:31  phase1geo
+
+	Fixing bug 1980954.
+
+2008-05-30 21:39  phase1geo
+
+	Updating regressions with cdd_diff fix.
+
+2008-05-30 18:00  phase1geo
+
+	Fixing Doxygen comments to eliminate Doxygen warning messages.
+
+2008-05-30 15:06  phase1geo
+
+	Updating ChangeLog.
+
 2008-05-30 15:04  phase1geo
 
 	Fixing bugs 1979698 and 1965927.  Updating regression files per
@@ -32,2845 +2127,4 @@
 
 	Updating development tree with development branch.  Also attempting
 	to fix bug 1965927.
-
-2008-05-29 22:36  phase1geo
-
-	Fixing bug 1966994.  Updating regression files.  Improved cdd_diff
-	script to strip out the relative path information when performing
-	CDD compares but pay attention to the rest of the score argument
-	information.  Full regression passes.
-
-2008-05-29 18:08  phase1geo
-
-	Fixing cdd_diff script to remove *.tmpdiff files.
-
-2008-05-29 18:04  phase1geo
-
-	Last set of submissions to get full regression passing.  Fixed a
-	few more bugs in vector.c and reentrant.c.
-
-2008-05-29 13:46  phase1geo
-
-	Fixing various bugs found in 64-bit mode in vector.c file.  IV and
-	Cver regressions pass on 64-bit architecturs.  Checkpointing.
-
-2008-05-29 01:54  phase1geo
-
-	Fixing compatibility problems in 64-bit mode.  More work to go. 
-	Checkpointing.
-
-2008-05-29 01:46  phase1geo
-
-	Finishing last submission.
-
-2008-05-29 00:24  phase1geo
-
-	Fixing various issues pertaining to the recent changes.  Updating
-	regression files.  IV and Cver regressions pass at this point. 
-	Checkpointing.
-
-2008-05-28 17:12  phase1geo
-
-	Adding further support for 32-/64-bit support.	Checkpointing.
-
-2008-05-28 00:57  phase1geo
-
-	Updating code to use unsigned long instead of uint32. 
-	Checkpointing.
-
-2008-05-27 18:05  phase1geo
-
-	Fixing sign-extension issue with signal assignments.  Added
-	diagnostic to verify this functionality.  Full regression passes.
-
-2008-05-27 00:52  phase1geo
-
-	Starting to add fix for sign extension.  Not finished at this
-	point.
-
-2008-05-26 23:29  phase1geo
-
-	file err6.2.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 23:29  phase1geo
-
-	file err6.4.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 23:29  phase1geo
-
-	file err6.4.cdd.bad was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 23:29  phase1geo
-
-	file err6.3.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 23:29  phase1geo
-
-	file err6.2.cdd.bad was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 23:29  phase1geo
-
-	file err6.v was initially added on branch covered-20080415-branch.
-
-2008-05-26 23:29  phase1geo
-
-	file err6.3.cdd.bad was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 23:29  phase1geo
-
-	file err6.cdd.bad was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 23:29  phase1geo
-
-	file err6.1.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 23:29  phase1geo
-
-	file err6.1.cdd.bad was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 23:29  phase1geo
-
-	file err6.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 23:29  phase1geo
-
-	file err6.1.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 23:29  phase1geo
-
-	file err6.4.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 23:29  phase1geo
-
-	file err6.3.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 23:29  phase1geo
-
-	file err6.2.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 23:29  phase1geo
-
-	file err6.err was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 23:29  phase1geo
-
-	file err6.2.err was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 23:29  phase1geo
-
-	file err6.3.err was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 23:29  phase1geo
-
-	file err6.4.err was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 23:29  phase1geo
-
-	Fixing memory leak for an FSM arc parser error.  Adding diagnostics
-	to regression suite for coverage purposes.
-
-2008-05-26 23:29  phase1geo
-
-	file err6.1.err was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 00:42  phase1geo
-
-	file err5.3b.cdd.bad was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 00:42  phase1geo
-
-	file err5.3a.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 00:42  phase1geo
-
-	file err5.2a.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 00:42  phase1geo
-
-	file err5.3b.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 00:42  phase1geo
-
-	file err5.4a.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 00:42  phase1geo
-
-	file err5.4b.cdd.bad was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 00:42  phase1geo
-
-	file err5.2b.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 00:42  phase1geo
-
-	file err5.2b.cdd.bad was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 00:42  phase1geo
-
-	file err5.4b.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 00:42  phase1geo
-
-	file err5.3a.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 00:42  phase1geo
-
-	file err5.4a.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 00:42  phase1geo
-
-	file err5.2a.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 00:42  phase1geo
-
-	file err5.2b.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 00:42  phase1geo
-
-	file err5.4b.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 00:42  phase1geo
-
-	file err5.3b.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 00:42  phase1geo
-
-	Adding new error merge diagnostics to regression suite to verify
-	missing vector_db_merge error cases.  Full regression passes.
-
-2008-05-26 00:42  phase1geo
-
-	file err5.2.err was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 00:42  phase1geo
-
-	file err5.3.err was initially added on branch
-	covered-20080415-branch.
-
-2008-05-26 00:42  phase1geo
-
-	file err5.4.err was initially added on branch
-	covered-20080415-branch.
-
-2008-05-25 00:15  phase1geo
-
-	file div1.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-25 00:15  phase1geo
-
-	file mod1.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-25 00:15  phase1geo
-
-	file mod1.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-25 00:15  phase1geo
-
-	file div1.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-25 00:15  phase1geo
-
-	file div1.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-25 00:15  phase1geo
-
-	file mod1.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-25 00:15  phase1geo
-
-	file mod1.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-25 00:15  phase1geo
-
-	file div1.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-25 00:15  phase1geo
-
-	file expand5.err was initially added on branch
-	covered-20080415-branch.
-
-2008-05-25 00:15  phase1geo
-
-	Updating regressions.
-
-2008-05-25 00:15  phase1geo
-
-	file mod1.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-05-25 00:15  phase1geo
-
-	file div1.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 23:27  phase1geo
-
-	file div1.v was initially added on branch covered-20080415-branch.
-
-2008-05-24 23:27  phase1geo
-
-	file div1.dump was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 23:27  phase1geo
-
-	file div1.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 23:27  phase1geo
-
-	Adding div1 and mod1 diagnostics to regression suite.
-
-2008-05-24 23:27  phase1geo
-
-	file mod1.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 23:27  phase1geo
-
-	file mod1.v was initially added on branch covered-20080415-branch.
-
-2008-05-24 22:32  phase1geo
-
-	file unary3.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 22:32  phase1geo
-
-	file unary2.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 22:32  phase1geo
-
-	file unary3.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 22:32  phase1geo
-
-	file unary2.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 22:32  phase1geo
-
-	file unary2.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 22:32  phase1geo
-
-	file unary2.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 22:32  phase1geo
-
-	file unary3.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 22:32  phase1geo
-
-	file unary2.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 22:32  phase1geo
-
-	file unary2.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 22:32  phase1geo
-
-	file unary3.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 22:32  phase1geo
-
-	file expand5.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 22:32  phase1geo
-
-	file expand5.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 22:32  phase1geo
-
-	file unary3.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 22:32  phase1geo
-
-	file unary3.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 22:32  phase1geo
-
-	file unary3.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 22:32  phase1geo
-
-	file unary2.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 22:32  phase1geo
-
-	Adding more diagnostics to regression suite to improve coverage of
-	new vector.c file.
-
-2008-05-24 16:28  phase1geo
-
-	file mult2.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:28  phase1geo
-
-	file mult2.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:28  phase1geo
-
-	file mult2.v was initially added on branch covered-20080415-branch.
-
-2008-05-24 16:28  phase1geo
-
-	file mult2.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:28  phase1geo
-
-	file mult2.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:28  phase1geo
-
-	file mult2.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:28  phase1geo
-
-	Adding mult2 diagnostic to regression suite for enhanced coverage.
-
-2008-05-24 16:28  phase1geo
-
-	file mult2.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file rshift5.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file lshift4.3.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file lshift5.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file not1.v was initially added on branch covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file negate1.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file compx1.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file compx1.3.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file compx1.2.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file compx1.1.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file casez4.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file ashift4.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file cond3.v was initially added on branch covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file ashift3.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file cond3.2.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file cond3.1.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file cond3.3.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file rshift5.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file lshift5.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file rshift5.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file not1.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file negate1.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file rshift5.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file lshift4.3.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file lshift5.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file lshift5.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file negate1.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file negate1.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file negate1.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file not1.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file not1.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file not1.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file rshift5.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file lshift5.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file lshift4.3.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file compx1.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file cond3.3.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file cond3.1.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file cond3.1.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file lshift4.3.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file cond3.2.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file lshift4.3.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file cond3.1.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file compx1.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file compx1.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file compx1.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file cond3.3.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file cond3.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file compx1.3.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file cond3.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file cond3.2.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file cond3.2.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file cond3.3.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file cond3.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file cond3.3.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file cond3.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file cond3.1.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file cond3.2.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file compx1.2.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file ashift4.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file compx1.3.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file compx1.3.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file ashift4.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file ashift3.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file compx1.2.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file ashift4.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file casez4.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file compx1.2.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file casez4.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file compx1.3.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file compx1.2.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file ashift3.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file casez4.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file compx1.1.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file casez4.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file compx1.1.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file ashift4.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file compx1.1.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file compx1.1.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file lshift5.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file not1.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file ashift4.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file negate1.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file lshift4.3.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file ashift3.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file lshift5.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file ashift3.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file not1.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file cond3.3.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file compx1.1.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file rshift5.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file cond3.1.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file rshift5.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file compx1.2.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file cond3.2.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file cond3.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file casez4.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file negate1.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file compx1.3.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file ashift3.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file compx1.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file compx1.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file cond3.1.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file compx1.1.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file ashift4.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file compx1.2.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file casez4.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file cond3.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	Fixing bugs with comparison functions when values contain Xs. 
-	Adding more diagnostics to regression suite to cover coverage
-	holes.
-
-2008-05-24 16:20  phase1geo
-
-	file cond3.2.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file lshift4.3.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file compx1.3.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file cond3.3.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 16:20  phase1geo
-
-	file ashift3.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 01:22  phase1geo
-
-	Updating VCS regression files per latest change.  Full regression
-	now passes.
-
-2008-05-24 00:36  phase1geo
-
-	file bitwise1.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 00:36  phase1geo
-
-	file err5.1.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 00:36  phase1geo
-
-	file bitwise1.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 00:36  phase1geo
-
-	file bitwise1.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 00:36  phase1geo
-
-	file err5.1.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 00:36  phase1geo
-
-	file bitwise1.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 00:36  phase1geo
-
-	file bitwise1.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 00:36  phase1geo
-
-	file err5.1.cdd.bad was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 00:36  phase1geo
-
-	file bitwise1.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 00:36  phase1geo
-
-	file err5.1.err was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 00:36  phase1geo
-
-	file bitwise1.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-05-24 00:36  phase1geo
-
-	Fixing bitwise coverage functionality and updating regression
-	files.	Added new bitwise1 and err5.1 diagnostics to regression
-	suite.	Removing output for uncovered exceptions in command-line
-	parsers.
-
-2008-05-23 18:04  phase1geo
-
-	file err5.cdd.bad was initially added on branch
-	covered-20080415-branch.
-
-2008-05-23 18:04  phase1geo
-
-	file err5.err was initially added on branch
-	covered-20080415-branch.
-
-2008-05-23 18:04  phase1geo
-
-	Adding err5 diagnostic to regression suite.  Fixing memory
-	deallocation bug found with err5.  Full regression passes.
-
-2008-05-23 15:25  phase1geo
-
-	Updating VCS regression files per latest changes.  Full regression
-	passes.
-
-2008-05-23 09:48  phase1geo
-
-	Optimizing vector_op_add and vector_op_subtract algorithms.  Also
-	fixing issue with vector set bit.  Updating regressions per this
-	change.
-
-2008-05-16 11:55  phase1geo
-
-	Fixing issue in vector_op_add.
-
-2008-05-16 10:11  phase1geo
-
-	Fixing problem with set_mem_rd for packed/unpacked arrays.  Updated
-	regression files.  Full regression now passes!
-
-2008-05-16 09:00  phase1geo
-
-	Fixing width extension with sign-extend for comparison operators. 
-	Updating regression files.  Checkpointing.
-
-2008-05-15 17:19  phase1geo
-
-	More regression updates.  Checkpointing.
-
-2008-05-15 16:57  phase1geo
-
-	Updating regression files per changes for increment and decrement
-	operators.  Checkpointing.
-
-2008-05-15 14:24  phase1geo
-
-	Checkpointing regression files.  Removing SET integers in vectors
-	for both signal and expression vector types.
-
-2008-05-15 10:02  phase1geo
-
-	Checkpointing fix for static function diagnostics.
-
-2008-05-15 02:24  phase1geo
-
-	More updates for recent code changes.  Checkpointing.
-
-2008-05-15 02:11  phase1geo
-
-	Updates for IV and Cver regressions (which now pass again). 
-	Checkpointing.
-
-2008-05-15 02:01  phase1geo
-
-	Another attempt to fix static_afunc1 diagnostic failure. 
-	Checkpointing.
-
-2008-05-13 22:22  phase1geo
-
-	More updates for VCS regressions.  Checkpointing.
-
-2008-05-13 21:28  phase1geo
-
-	Another attempt to fix toggle issue.  IV and CVer regressions pass
-	again.	Still need to complete VCS regression.	Checkpointing.
-
-2008-05-13 16:56  phase1geo
-
-	Checkpointing changes.
-
-2008-05-13 07:25  phase1geo
-
-	Updating regression files per latest source file updates. 
-	Checkpointing.
-
-2008-05-13 02:23  phase1geo
-
-	Fixing problem with parameterized multi-bit positive/negative
-	select types.  Full regression passes for IV and Cver. 
-	Checkpointing.
-
-2008-05-13 01:42  phase1geo
-
-	Finishing up initial pass of part-select code modifications.  Still
-	getting an error in regression.  Checkpointing.
-
-2008-05-12 18:12  phase1geo
-
-	Ripping apart part selection code and reworking it.  Things compile
-	but are functionally quite broken at this point.  Checkpointing.
-
-2008-05-11 23:22  phase1geo
-
-	Attempting to fix multi-dimensional array support.  Checkpointing.
-
-2008-05-09 17:07  phase1geo
-
-	Updates for VCS regressions.  Fixing some issues found in that
-	regression suite.  Checkpointing.
-
-2008-05-09 11:47  phase1geo
-
-	Recoding vector_rshift_uint32 function and updating the LAST of the
-	IV failures!  Moving onto VCS regression diagnostics... 
-	Checkpointing.
-
-2008-05-09 10:22  phase1geo
-
-	Fixing memory initialization issue in arc.c that leads to
-	inconsistent results.  Checkpointing.
-
-2008-05-09 08:11  phase1geo
-
-	Updating regression files for CVER-only diagnostics.
-
-2008-05-09 00:52  phase1geo
-
-	Updating regression files.  Checkpointing.
-
-2008-05-09 00:04  phase1geo
-
-	Fixing big endianness assignment when MBIT select is being
-	assigned.  Updating regress files.  Checkpointing.
-
-2008-05-08 23:46  phase1geo
-
-	Fixing signedness handling for comparison operations.  Updating
-	regression files.  Checkpointing.
-
-2008-05-08 18:58  phase1geo
-
-	Updating regression files per latest changes.  Checkpointing.
-
-2008-05-08 18:12  phase1geo
-
-	Fixing several bugs and reworking code in arc to get FSM
-	diagnostics to pass.  Checkpointing.
-
-2008-05-08 13:59  phase1geo
-
-	Fixing bug 1950946.
-
-2008-05-07 22:56  phase1geo
-
-	Updating regression files and reworking arc_find and arc_add
-	functionality.	Checkpointing.
-
-2008-05-07 18:09  phase1geo
-
-	Fixing vector_mem_wr_count function and calling code.  Updating
-	regression files accordingly.  Checkpointing.
-
-2008-05-07 16:59  phase1geo
-
-	Coding optimization for LHS single-bit selects such that if the
-	index value has not changed, don't attempt to recalculate its
-	value.	Updated regression files.  Checkpointing.
-
-2008-05-07 16:09  phase1geo
-
-	Added functionality to allow to_string to output full vector bits
-	(even non-significant bits) for purposes of reporting for FSMs
-	(matches original behavior).
-
-2008-05-07 15:50  phase1geo
-
-	Fixing bit-fill bug in vector_part_select_push function.  Updated
-	regression files.  Checkpointing.
-
-2008-05-07 14:27  phase1geo
-
-	Fixing vector_part_select_push functionality to only set coverage
-	and assign information within the target range (not the entire
-	target vector).  Updating regression files and checkpointing.
-
-2008-05-07 13:09  phase1geo
-
-	Fixing issue with VCD assign functionality.  Updating regression
-	files per this change.	Checkpointing.
-
-2008-05-07 00:57  phase1geo
-
-	First attempt to fix FSM reporting issues.  Updating regression
-	files and checkpointing.
-
-2008-05-07 00:22  phase1geo
-
-	Fixing reporting bug with line coverage for continuous assignments.
-	 Updating regression files and checkpointing.
-
-2008-05-06 23:08  phase1geo
-
-	Fixing bug with logical AND functionality.  Updating regression
-	files.	Checkpointing.
-
-2008-05-06 22:48  phase1geo
-
-	Fixing bug with bitwise OR function.  Updating regression files. 
-	Checkpointing.
-
-2008-05-06 18:06  phase1geo
-
-	Fixing bug with event triggering.  Updating regression files. 
-	Checkpointing.
-
-2008-05-06 15:51  phase1geo
-
-	Fixing bugs with casex and casez.  Checkpointing.
-
-2008-05-06 01:43  phase1geo
-
-	Additional regression file updates.  Checkpointing.
-
-2008-05-06 01:33  phase1geo
-
-	Updating regression files per latest submission of vector.c. 
-	Checkpointing.
-
-2008-05-06 01:17  phase1geo
-
-	Fixing memory errors in vector_set_value_uint32.  Checkpointing.
-
-2008-05-06 00:45  phase1geo
-
-	Attempting to add bit-fill to vector_set_value_uint32 function but
-	it seems that I have possibly created a memory overflow. 
-	Checkpointing.
-
-2008-05-05 23:51  phase1geo
-
-	Fixing issue with toggle coverage.  Updating regression files. 
-	Checkpointing.
-
-2008-05-05 18:49  phase1geo
-
-	Fixing case equality function and updating regressions accordingly.
-	 Checkpointing.
-
-2008-05-05 17:54  phase1geo
-
-	More regression updates.
-
-2008-05-05 17:43  phase1geo
-
-	Regression updates.
-
-2008-05-05 14:49  phase1geo
-
-	file mbit_sel9.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file mbit_sel9.2.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file mbit_sel9.1.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file sbit_sel4.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file sbit_sel4.1.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file mbit_sel9.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file sbit_sel4.1.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file sbit_sel4.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file sbit_sel4.3.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file sbit_sel4.1.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file sbit_sel4.1.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file mbit_sel9.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file mbit_sel9.2.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file sbit_sel4.3.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file sbit_sel4.3.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file sbit_sel4.2.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file mbit_sel9.2.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file mbit_sel9.2.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file sbit_sel4.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file sbit_sel4.3.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file mbit_sel9.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file sbit_sel4.2.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file sbit_sel4.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file mbit_sel9.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file sbit_sel4.2.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file mbit_sel9.2.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file sbit_sel4.2.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file mbit_sel9.1.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file mbit_sel9.1.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file mbit_sel9.1.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file mbit_sel9.2.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file mbit_sel9.1.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file mbit_sel9.1.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file mbit_sel9.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file sbit_sel4.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file sbit_sel4.1.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file sbit_sel4.3.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file sbit_sel4.2.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	Updating regressions, fixing bugs and added new diagnostics. 
-	Checkpointing.
-
-2008-05-05 14:49  phase1geo
-
-	file mbit_sel9.2.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file mbit_sel9.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 14:49  phase1geo
-
-	file mbit_sel9.1.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-05-05 07:57  phase1geo
-
-	Checkpointing some changes for bit-filling in
-	vector_part_select_push (this is not complete at this time).
-
-2008-05-04 17:05  phase1geo
-
-	file sbit_sel4.3.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-04 17:05  phase1geo
-
-	file sbit_sel4.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-04 17:05  phase1geo
-
-	file sbit_sel4.1.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-04 17:05  phase1geo
-
-	file sbit_sel4.2.v was initially added on branch
-	covered-20080415-branch.
-
-2008-05-04 17:05  phase1geo
-
-	file sbit_sel4.2.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-04 17:05  phase1geo
-
-	Adding bit-fill in vector_set_static and changing name of old
-	bit-fill functions in vector.c to sign_extend to reflect their true
-	nature.  Added new diagnostics to regression suite to verify
-	single-bit select bit-fill (these tests do not work at this point).
-	 Checkpointing.
-
-2008-05-04 17:05  phase1geo
-
-	file sbit_sel4.1.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-04 17:05  phase1geo
-
-	file sbit_sel4.3.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-04 17:05  phase1geo
-
-	file sbit_sel4.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-05-04 00:48  phase1geo
-
-	Attempting to fix expression_assign.  Updated regression files.
-
-2008-05-03 23:22  phase1geo
-
-	Fixing vector_to_string bug for quoted strings and updating
-	regression files.  Checkpointing.
-
-2008-05-03 18:58  phase1geo
-
-	Removing skipped vector functions and updating regression suite
-	files accordingly.  Checkpointing.
-
-2008-05-03 15:10  phase1geo
-
-	Fixing some bugs, completing initial pass of vector_op_multiply and
-	updating regression files accordingly.	Checkpointing.
-
-2008-05-02 23:06  phase1geo
-
-	Fixing some arc bugs and updating regressions accordingly. 
-	Checkpointing.
-
-2008-05-02 17:06  phase1geo
-
-	Updating arc code for new data structure.  This code is completely
-	untested but does compile and has been completely rewritten. 
-	Checkpointing.
-
-2008-05-02 00:02  phase1geo
-
-	Completed initial pass of bit-fill code in vector_part_select_push
-	function.  Updating regression files.  Checkpointing.
-
-2008-05-01 18:10  phase1geo
-
-	Fix endianness issues and attempting to fix assignment bit-fill
-	functionality.	Checkpointing.
-
-2008-05-01 14:40  phase1geo
-
-	Fixing bug in unary_or operation.
-
-2008-05-01 13:18  phase1geo
-
-	Implemented initial version of unary (reduction) inclusive OR
-	function.  Updated regressions.
-
-2008-05-01 12:51  phase1geo
-
-	Fixing bit_fill bug and a few other vector/expression bugs and
-	updating regressions.
-
-2008-05-01 01:09  phase1geo
-
-	Adding arshift operation functionality and reworking the bit_fill
-	code.  Updating regression files accordingly.  Checkpointing.
-
-2008-04-30 23:55  phase1geo
-
-	Fixing issue with PEDGE and NEDGE.
-
-2008-04-30 23:08  phase1geo
-
-	Fixing bugs with assignment propagation.
-
-2008-04-30 18:12  phase1geo
-
-	Fixing simulation issues.
-
-2008-04-30 16:59  phase1geo
-
-	file rshift4.2.v was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 16:59  phase1geo
-
-	file rshift4.1.v was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 16:59  phase1geo
-
-	file rshift4.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 16:59  phase1geo
-
-	file rshift4.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 16:59  phase1geo
-
-	file rshift4.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 16:59  phase1geo
-
-	file rshift4.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 16:59  phase1geo
-
-	file rshift4.2.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 16:59  phase1geo
-
-	file rshift4.2.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 16:59  phase1geo
-
-	file rshift4.2.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 16:59  phase1geo
-
-	file rshift4.1.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 16:59  phase1geo
-
-	file rshift4.1.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 16:59  phase1geo
-
-	file rshift4.2.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 16:59  phase1geo
-
-	file rshift4.1.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 16:59  phase1geo
-
-	file rshift4.1.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 16:59  phase1geo
-
-	file rshift4.2.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 16:59  phase1geo
-
-	file rshift4.1.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 16:59  phase1geo
-
-	file rshift4.2.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 16:59  phase1geo
-
-	file rshift4.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 16:59  phase1geo
-
-	Finishing initial work on right-shift functionality.  Added the
-	rest of the diagnostics to verify this work.
-
-2008-04-30 16:59  phase1geo
-
-	file rshift4.1.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 01:07  phase1geo
-
-	file rshift4.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 01:07  phase1geo
-
-	file rshift4.v was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 01:07  phase1geo
-
-	Adding new diagnostic that will be used to test final portion of
-	right-shift functionality.  Checkpointing.
-
-2008-04-30 00:56  phase1geo
-
-	file rshift3.1.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 00:56  phase1geo
-
-	file rshift3.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 00:56  phase1geo
-
-	file rshift3.v was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 00:56  phase1geo
-
-	file rshift3.1.v was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 00:56  phase1geo
-
-	file rshift3.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 00:56  phase1geo
-
-	file rshift3.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 00:56  phase1geo
-
-	file rshift3.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 00:56  phase1geo
-
-	file rshift3.1.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 00:56  phase1geo
-
-	file rshift3.1.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 00:56  phase1geo
-
-	file rshift3.1.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 00:56  phase1geo
-
-	file rshift3.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 00:56  phase1geo
-
-	file rshift3.1.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 00:56  phase1geo
-
-	More work on right-shift function.  Added and connected
-	part_select_push and part_select_pull functionality.  Also added
-	new right-shift diagnostics.  Checkpointing.
-
-2008-04-30 00:56  phase1geo
-
-	file rshift3.1.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-04-30 00:56  phase1geo
-
-	file rshift3.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 23:15  phase1geo
-
-	file rshift2.3.v was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 23:15  phase1geo
-
-	file rshift2.v was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 23:15  phase1geo
-
-	file rshift2.2.v was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 23:15  phase1geo
-
-	file rshift2.1.v was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 23:15  phase1geo
-
-	file rshift2.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 23:15  phase1geo
-
-	file rshift2.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 23:15  phase1geo
-
-	file rshift2.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 23:15  phase1geo
-
-	file rshift2.2.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 23:15  phase1geo
-
-	file rshift2.2.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 23:15  phase1geo
-
-	file rshift2.2.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 23:15  phase1geo
-
-	file rshift2.3.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 23:15  phase1geo
-
-	file rshift2.3.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 23:15  phase1geo
-
-	file rshift2.1.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 23:15  phase1geo
-
-	file rshift2.2.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 23:15  phase1geo
-
-	file rshift2.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 23:15  phase1geo
-
-	file rshift2.1.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 23:15  phase1geo
-
-	file rshift2.1.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 23:15  phase1geo
-
-	file rshift2.2.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 23:15  phase1geo
-
-	file rshift2.3.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 23:15  phase1geo
-
-	file rshift2.3.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 23:15  phase1geo
-
-	file rshift2.1.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 23:15  phase1geo
-
-	file rshift2.3.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 23:15  phase1geo
-
-	file rshift2.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 23:15  phase1geo
-
-	file rshift2.1.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 23:15  phase1geo
-
-	file rshift2.3.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 23:15  phase1geo
-
-	file rshift2.1.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 23:15  phase1geo
-
-	file rshift2.2.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 23:15  phase1geo
-
-	file rshift2.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 23:15  phase1geo
-
-	More work on right-shift operator.  Adding diagnostics to verify
-	functionality.	Checkpointing.
-
-2008-04-29 17:55  phase1geo
-
-	file rshift1.1.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 17:55  phase1geo
-
-	file rshift1.3.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 17:55  phase1geo
-
-	file rshift1.3.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 17:55  phase1geo
-
-	file rshift1.3.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 17:55  phase1geo
-
-	file rshift1.3.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 17:55  phase1geo
-
-	file rshift1.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 17:55  phase1geo
-
-	file rshift1.1.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 17:55  phase1geo
-
-	file rshift1.1.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 17:55  phase1geo
-
-	file rshift1.1.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 17:55  phase1geo
-
-	file rshift1.1.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 17:55  phase1geo
-
-	file rshift1.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 17:55  phase1geo
-
-	file rshift1.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 17:55  phase1geo
-
-	file rshift1.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 17:55  phase1geo
-
-	file rshift1.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 17:55  phase1geo
-
-	file rshift1.2.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 17:55  phase1geo
-
-	file rshift1.2.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 17:55  phase1geo
-
-	file rshift1.3.v was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 17:55  phase1geo
-
-	file rshift1.2.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 17:55  phase1geo
-
-	file rshift1.2.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 17:55  phase1geo
-
-	file rshift1.2.v was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 17:55  phase1geo
-
-	file rshift1.2.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 17:55  phase1geo
-
-	file rshift1.v was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 17:55  phase1geo
-
-	file rshift1.3.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 17:55  phase1geo
-
-	file rshift1.1.v was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 17:55  phase1geo
-
-	file rshift1.2.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 17:55  phase1geo
-
-	file rshift1.3.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 17:55  phase1geo
-
-	file rshift1.1.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 17:55  phase1geo
-
-	Starting to work on right-shift functionality in vector.c.  Added
-	some new diagnostics to regression suite to verify this new code. 
-	More to do.  Checkpointing.
-
-2008-04-29 17:55  phase1geo
-
-	file rshift1.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 00:50  phase1geo
-
-	Created body of right-shift function (although this code is just a
-	copy of the left-shift code at the current time).  Checkpointing.
-
-2008-04-29 00:45  phase1geo
-
-	file lshift4.2.v was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 00:45  phase1geo
-
-	file lshift4.v was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 00:45  phase1geo
-
-	file lshift4.1.v was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 00:45  phase1geo
-
-	file lshift4.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 00:45  phase1geo
-
-	file lshift4.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 00:45  phase1geo
-
-	file lshift4.1.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 00:45  phase1geo
-
-	file lshift4.1.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 00:45  phase1geo
-
-	file lshift4.1.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 00:45  phase1geo
-
-	file lshift4.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 00:45  phase1geo
-
-	file lshift4.1.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 00:45  phase1geo
-
-	file lshift4.1.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 00:45  phase1geo
-
-	file lshift4.2.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 00:45  phase1geo
-
-	file lshift4.2.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 00:45  phase1geo
-
-	file lshift4.2.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 00:45  phase1geo
-
-	file lshift4.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 00:45  phase1geo
-
-	file lshift4.2.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 00:45  phase1geo
-
-	file lshift4.2.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 00:45  phase1geo
-
-	file lshift4.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 00:45  phase1geo
-
-	Completing debug and testing of left-shift operator.  Added new
-	diagnostics to verify the rest of the functionality.
-
-2008-04-29 00:45  phase1geo
-
-	file lshift4.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 00:45  phase1geo
-
-	file lshift4.1.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-04-29 00:45  phase1geo
-
-	file lshift4.2.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift2.1.v was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift3.3.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift3.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift3.1.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift3.1.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift3.1.v was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift1.1.v was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift3.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift3.2.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift3.1.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift3.3.v was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift2.v was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift3.2.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift3.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift3.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift1.2.v was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift3.3.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift3.3.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift3.3.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift3.2.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift3.2.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift1.v was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift3.v was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift2.2.v was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift3.2.v was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift2.3.v was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift2.1.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift1.2.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift2.2.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift2.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift2.2.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift1.2.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift2.1.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift2.3.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift2.1.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift2.2.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift2.3.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift2.3.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift2.2.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift1.2.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift2.3.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift1.1.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift1.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift2.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift1.1.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift3.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift1.1.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift1.2.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift3.3.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift1.2.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift3.1.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift1.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift1.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift3.1.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift2.3.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift2.rptWM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift1.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift2.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift3.2.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift2.1.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift2.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift1.rptWI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift1.1.cfg was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift2.1.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift2.2.rptM was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift1.1.rptI was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift3.1.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift3.2.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift3.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	Fixing memory deallocation issue when CDD file is not present when
-	report command is issued.  Fixing issues with left-shift function
-	(still have one section to go).  Added new tests to regression
-	suite to verify the new left-shift functionality.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift1.1.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift1.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift2.1.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift2.2.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift2.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift1.2.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift3.3.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 16:08  phase1geo
-
-	file lshift2.3.cdd was initially added on branch
-	covered-20080415-branch.
-
-2008-04-28 00:16  phase1geo
-
-	Working on initial version of vector_lshift_uint32 functionality. 
-	More testing and debugging to do here.	Checkpointing.
-
-2008-04-26 07:45  phase1geo
-
-	Fixing bug in from_string for string types.  Updated regressions. 
-	Checkpointing.
-
-2008-04-25 12:39  phase1geo
-
-	Fixing several vector issues.  Coded up vector_unary_inv and
-	vector_op_negate.  Starting to update passing regression files.
-
-2008-04-25 09:12  phase1geo
-
-	Coding left shift vector function.  Checkpointing.
-
-2008-04-25 00:22  phase1geo
-
-	Finished restructuring of vector data.	Continuing to test new
-	code.  Checkpointing.
-
-2008-04-24 18:38  phase1geo
-
-	Starting to restructure vector data structure to help with memory
-	access striding issues.  This work is not complete at this time. 
-	Checkpointing.
-
-2008-04-24 18:09  phase1geo
-
-	Fixing bug 1950946.  Fixing other various bugs in vector code. 
-	Checkpointing.
-
-2008-04-24 08:20  phase1geo
-
-	Completing initial pass of vector_op_subtract function. 
-	Checkpointing.
-
-2008-04-24 00:51  phase1geo
-
-	Added body of subtraction function, although this function does not
-	work at this point.  Checkpointing.
-
-2008-04-24 00:23  phase1geo
-
-	Fixing various vector-related bugs.  Added vector_op_add
-	functionality.
-
-2008-04-23 18:06  phase1geo
-
-	More bug fixes to vector functionality.  Bitwise operators appear
-	to be working correctly when 2-state values are used. 
-	Checkpointing.
-
-2008-04-23 16:27  phase1geo
-
-	Fixing several bugs found in initial testing.  Checkpointing.
-
-2008-04-23 09:33  phase1geo
-
-	Fixing bug in vector display functions that caused infinite
-	looping.  Checkpointing.
-
-2008-04-23 01:32  phase1geo
-
-	Starting to debug vector changes.  Checkpointing.
-
-2008-04-23 00:20  phase1geo
-
-	Completed initial pass of code updates.  I can now begin testing...
-	 Checkpointing.
-
-2008-04-22 18:01  phase1geo
-
-	More updates.  Completed initial pass of expr.c and fsm_arg.c. 
-	Working on memory.c.  Checkpointing.
-
-2008-04-22 09:03  phase1geo
-
-	More work on expr.c.  Checkpointing.
-
-2008-04-22 07:46  phase1geo
-
-	More work on expr.c.  Checkpointing.
-
-2008-04-22 00:51  phase1geo
-
-	Continuing work on expr.c.  Checkpointing.
-
-2008-04-21 18:13  phase1geo
-
-	More work to update other files per vector changes.  Currently in
-	the middle of updating expr.c.	Checkpointing.
-
-2008-04-20 23:37  phase1geo
-
-	Attempting to get other files (besides vector.c) to compile with
-	new vector changes.  Still work to go here.  The initial pass
-	through vector.c is not complete at this time as I am attempting to
-	get what I have completed debugged.  Checkpointing work.
-
-2008-04-20 00:43  phase1geo
-
-	More work on the vector file.  Completed initial pass of conversion
-	operations, bitwise operations and comparison operations.
-
-2008-04-18 17:04  phase1geo
-
-	More work on vector functions for new data structure
-	implementation.  Worked on vector_set_value, bit_fill and some
-	checking functions.  Checkpointing.
-
-2008-04-18 09:14  phase1geo
-
-	More vector updates.
-
-2008-04-18 00:05  phase1geo
-
-	More updates to vector file.  Updated merge and output functions. 
-	Checkpointing.
-
-2008-04-17 18:16  phase1geo
-
-	More work on vector.c.	Completed initial pass of
-	vector_db_write/read and vector_copy/clone functionality. 
-	Checkpointing.
-
-2008-04-16 17:30  phase1geo
-
-	Updates for SIZEOF_FLOAT and SIZEOF_DOUBLE support.
-
-2008-04-16 17:29  phase1geo
-
-	Finished format for new vector value format.  Completed work on
-	vector_init_uint32 and vector_create.
-
-2008-04-15 23:05  phase1geo
-
-	Starting to modify defines.h for new vector data storage scheme. 
-	Just changed some structures and added some newly needed structures
-	at this point.
-
-2008-04-15 16:50  phase1geo
-
-	Updating files for new development release.
-
-2008-04-15 15:37  phase1geo
-
-	Fixing database array support.	Full regression passes.
-
-2008-04-15 08:59  phase1geo
-
-	Starting to add support for multiple databases.  Things compile but
-	are quite broken at the moment.  Checkpointing.
-
-2008-04-15 01:08  phase1geo
-
-	First attempt to get both instance and module coverage calculatable
-	for GUI purposes.  This is not quite complete at the moment though
-	it does compile.
 
