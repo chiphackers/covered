@@ -117,9 +117,17 @@ bool report_instance = FALSE;
 /*!
  If set to a boolean value of TRUE, displays covered logic for a particular CDD file.
  By default, Covered will display uncovered logic.  Must be used in conjunction with
- the -v (verbose output) option.
+ the -d v|d (verbose output) option.
 */
 bool report_covered = FALSE;
+
+/*!
+ If set to a boolean value of TRUE, displays excluded coverage points for a particular CDD file.
+ By default, Covered will not display excluded coverage points.  This can be useful when used in
+ conjunction with the -x option for including excluded coverage points.  Must be used in
+ conjunction with the -d v|d (verbose output) option.
+*/
+bool report_exclusions = FALSE;
 
 /*!
  If set to a boolean value of TRUE, displays GUI report viewer instead of generating text
@@ -169,6 +177,12 @@ static char* input_db = NULL;
 */
 bool flag_suppress_empty_funits = FALSE;
 
+/*!
+ Outputs the exclusion ID for an output coverage point.  The exclusion ID can be used by the
+ exclude command for excluding/including coverage points.
+*/
+bool flag_output_exclusion_ids = FALSE;
+
 #ifdef HAVE_TCLTK
 /*!
  TCL interpreter for this application.
@@ -199,8 +213,10 @@ static void report_usage() {
   printf( "      -d (s|d|v)                Level of report detail (s=summary, d=detailed, v=verbose).\n" );
   printf( "                                  Default is to display summary coverage information.\n" );
   printf( "      -i                        Provides coverage information for instances instead of module/task/function.\n" );
-  printf( "      -c                        If '-d d' or '-d v' is specified, displays covered line, toggle\n" );
-  printf( "                                  and combinational cases.  Default is to display uncovered results.\n" );
+  printf( "      -c                        If '-d d' or '-d v' is specified, displays covered coverage points.\n" );
+  printf( "                                  Default is to display uncovered results.\n" );
+  printf( "      -e                        If '-d d' or '-d v' is specified, displays excluded coverage points.\n" );
+  printf( "                                  Default is to not display excluded coverage points.\n" );
   printf( "      -o <filename>             File to output report information to.  Default is standard output.\n" );
   printf( "      -w [<line_width>]         Causes expressions to be output to best-fit to the specified line\n" );
   printf( "                                  width.  If the -w option is specified without a value, the default\n" );
@@ -211,6 +227,9 @@ static void report_usage() {
   printf( "      -b                        If combinational logic verbose output is reported and the expression is a\n" );
   printf( "                                  vector operation, this option outputs the coverage information on a bitwise basis.\n" );
   printf( "      -f <filename>             Name of file containing additional arguments to parse.\n" );
+  printf( "      -x                        Output exclusion identifiers if the '-d d' or '-d v' options are specified.  The\n" );
+  printf( "                                  identifiers can be used with the 'exclude' command for the purposes of\n" );
+  printf( "                                  excluding/including coverage points.\n" );
   printf( "\n" );
 
 }
@@ -322,6 +341,10 @@ void report_parse_args(
 
       report_covered = TRUE;
 
+    } else if( strncmp( "-e", argv[i], 2 ) == 0 ) {
+
+      report_exclusions = TRUE;
+
     } else if( strncmp( "-d", argv[i], 2 ) == 0 ) {
 
       if( check_option_value( argc, argv, i ) ) {
@@ -405,6 +428,10 @@ void report_parse_args(
       } else {
         Throw 0;
       }
+
+    } else if( strncmp( "-x", argv[i], 2 ) == 0 ) {
+
+      flag_output_exclusion_ids = TRUE;
  
     } else if( (i + 1) == argc ) {
 
@@ -1050,6 +1077,9 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.114  2008/08/23 20:00:30  phase1geo
+ Full fix for bug 2054686.  Also cleaned up Cver regressions.
+
  Revision 1.113  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

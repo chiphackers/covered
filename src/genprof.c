@@ -674,7 +674,7 @@ profiler profiles[NUM_PROFILES] = {
   {"gen_item_create_tfn", NULL, 0, 0, 0, FALSE},
   {"gen_item_create_bind", NULL, 0, 0, 0, FALSE},
   {"gen_item_resize_stmts_and_sigs", NULL, 0, 0, 0, TRUE},
-  {"gen_item_assign_expr_ids", NULL, 0, 0, 0, TRUE},
+  {"gen_item_assign_ids", NULL, 0, 0, 0, TRUE},
   {"gen_item_db_write", NULL, 0, 0, 0, TRUE},
   {"gen_item_db_write_expr_tree", NULL, 0, 0, 0, TRUE},
   {"gen_item_connect", NULL, 0, 0, 0, TRUE},

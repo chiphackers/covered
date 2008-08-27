@@ -51,7 +51,7 @@
  Contains the CDD version number of all CDD files that this version of Covered can write
  and read.
 */
-#define CDD_VERSION        16
+#define CDD_VERSION        17
 
 /*!
  This contains the header information specified when executing this tool.
@@ -2151,6 +2151,7 @@ struct expression_s {
  end of the run, this signal has been simulated.
 */
 struct vsignal_s {
+  unsigned int id;                   /*!< Numerical identifier that is unique from all other signals (used for exclusions) */
   char*        name;                 /*!< Full hierarchical name of signal in design */
   int          line;                 /*!< Specifies line number that this signal was declared on */
   ssuppl       suppl;                /*!< Supplemental information for this signal */
@@ -2855,6 +2856,9 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.303  2008/08/19 05:14:26  phase1geo
+ Attempting to fix bug 2054684.
+
  Revision 1.302  2008/08/18 23:07:26  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

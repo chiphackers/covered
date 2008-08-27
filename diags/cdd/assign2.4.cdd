@@ -1,5 +1,5 @@
-5 10 101 5 *
-8 /Users/trevorw/projects/devel/covered/diags/verilog -t main -vcd assign2.4.vcd -o assign2.4.cdd -v assign2.4.v -D DUMP
+5 11 101 5 *
+8 /ptmp/covered/diags/verilog -t main -vcd assign2.4.vcd -o assign2.4.cdd -v assign2.4.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" assign2.4.v 1 25 1
 2 1 5 160016 2 1 100c 0 0 1 1 b
@@ -24,12 +24,12 @@
 2 20 8 12001e 3 8 11c4 15 19 2 18 0 3 3 3 0 0
 2 21 8 d000e 0 1 1410 0 0 2 1 w3
 2 22 8 d001e 2 36 6 20 21
-1 a 3 70008 1 0 0 0 1 17 0 1 1 0 0
-1 b 3 7000b 1 0 0 0 1 17 0 1 1 0 0
-1 w0 5 6000d 1 0 0 0 1 17 1 1 1 1 0
-1 w1 6 6000d 1 0 31 0 32 17 ffffffff ffffffff 3 1 0
-1 w2 7 6000d 1 0 0 0 1 17 1 1 0 1 0
-1 w3 8 6000d 1 0 1 0 2 17 3 3 0 0 0
+1 a 1 3 70008 1 0 0 0 1 17 0 1 1 0 0
+1 b 2 3 7000b 1 0 0 0 1 17 0 1 1 0 0
+1 w0 3 5 6000d 1 0 0 0 1 17 1 1 1 1 0
+1 w1 4 6 6000d 1 0 31 0 32 17 ffffffff ffffffff 3 1 0
+1 w2 5 7 6000d 1 0 0 0 1 17 1 1 0 1 0
+1 w3 6 8 6000d 1 0 1 0 2 17 3 3 0 0 0
 4 5 f 5 5
 4 10 f 10 10
 4 14 f 14 14

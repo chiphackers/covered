@@ -1,5 +1,5 @@
-5 10 101 4 *
-8 /Users/trevorw/projects/devel/covered/diags/verilog -t main -vcd merge3a.vcd -o merge3a.cdd -v merge3a.v -D DUMP
+5 11 101 4 *
+8 /ptmp/covered/diags/verilog -t main -vcd merge3a.vcd -o merge3a.cdd -v merge3a.v -D DUMP
 12 merge3a.cdd *
 12 merge3b.cdd *
 3 0 $root "$root" NA 0 0 1
@@ -10,9 +10,9 @@
 2 4 13 50005 0 1 1410 0 0 1 1 a
 2 5 13 5000d 3 36 e 3 4
 2 6 15 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0
-1 b 11 870005 1 0 0 0 1 17 0 1 0 1 0
-1 c 11 870008 1 0 0 0 1 17 0 1 0 1 0
-1 a 13 60005 1 0 0 0 1 17 1 1 0 1 0
+1 b 1 11 870005 1 0 0 0 1 17 0 1 0 1 0
+1 c 2 11 870008 1 0 0 0 1 17 0 1 0 1 0
+1 a 3 13 60005 1 0 0 0 1 17 1 1 0 1 0
 4 5 f 5 5
 4 6 1 0 0
 3 1 main.$u0 "main.$u0" merge3a.v 0 20 1

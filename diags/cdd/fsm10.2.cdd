@@ -1,16 +1,16 @@
-5 10 101 37 *
-8 /Users/trevorw/projects/devel/covered/diags/verilog -t main -vcd fsm10.2.vcd -o fsm10.2.cdd -y lib -v fsm10.2.v -F fsm=state,next_state -D DUMP
+5 11 101 37 *
+8 /ptmp/covered/diags/verilog -t main -vcd fsm10.2.vcd -o fsm10.2.cdd -y lib -v fsm10.2.v -F fsm=state,next_state -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" fsm10.2.v 1 58 1
 2 1 53 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u1
-1 clk 3 87000b 1 0 0 0 1 17 0 1 1 1 0
-1 reset 4 7000b 1 0 0 0 1 17 0 1 0 1 0
-1 head1 5 7000b 1 0 0 0 1 17 0 1 1 1 0
-1 head2 5 70012 1 0 0 0 1 17 0 1 0 0 0
-1 tail1 6 7000b 1 0 0 0 1 17 0 1 1 1 0
-1 tail2 6 70012 1 0 0 0 1 17 0 1 0 0 0
-1 valid1 7 7000b 1 0 0 0 1 17 0 1 1 1 0
-1 valid2 7 70013 1 0 0 0 1 17 0 1 0 0 0
+1 clk 1 3 87000b 1 0 0 0 1 17 0 1 1 1 0
+1 reset 2 4 7000b 1 0 0 0 1 17 0 1 0 1 0
+1 head1 3 5 7000b 1 0 0 0 1 17 0 1 1 1 0
+1 head2 4 5 70012 1 0 0 0 1 17 0 1 0 0 0
+1 tail1 5 6 7000b 1 0 0 0 1 17 0 1 1 1 0
+1 tail2 6 6 70012 1 0 0 0 1 17 0 1 0 0 0
+1 valid1 7 7 7000b 1 0 0 0 1 17 0 1 1 1 0
+1 valid2 8 7 70013 1 0 0 0 1 17 0 1 0 0 0
 4 1 1 0 0
 3 0 fsma "main.fsm1" lib/fsma.v 1 46 1
 2 2 23 110015 24 1 100c 0 0 1 1 clock
@@ -36,17 +36,17 @@
 2 22 36 20006 6 3d 5002 0 0 1 18 0 1 0 0 0 0 $u2
 2 23 0 0 6 1 100e 0 0 2 1 next_state
 2 24 0 0 5 1 100e 0 0 2 1 state
-1 STATE_IDLE 0 c0000 1 0 31 0 2 17 0 0 0 0 0
-1 STATE_HEAD 0 c0000 1 0 31 0 2 17 1 0 0 0 0
-1 STATE_DATA 0 c0000 1 0 31 0 2 17 2 0 0 0 0
-1 STATE_TAIL 0 c0000 1 0 31 0 2 17 3 0 0 0 0
-1 clock 9 a 1 0 0 0 1 17 1 1 1 1 0
-1 reset 10 a 1 0 0 0 1 17 1 1 0 1 0
-1 head 11 a 1 0 0 0 1 17 1 1 1 1 0
-1 tail 12 a 1 0 0 0 1 17 1 1 1 1 0
-1 valid 13 a 1 0 0 0 1 17 1 1 1 1 0
-1 state 20 7000b 1 0 1 0 2 17 0 3 3 3 0
-1 next_state 21 87000b 1 0 1 0 2 17 0 3 3 3 0
+1 STATE_IDLE 0 0 c0000 1 0 31 0 2 17 0 0 0 0 0
+1 STATE_HEAD 0 0 c0000 1 0 31 0 2 17 1 0 0 0 0
+1 STATE_DATA 0 0 c0000 1 0 31 0 2 17 2 0 0 0 0
+1 STATE_TAIL 0 0 c0000 1 0 31 0 2 17 3 0 0 0 0
+1 clock 9 9 a 1 0 0 0 1 17 1 1 1 1 0
+1 reset 10 10 a 1 0 0 0 1 17 1 1 0 1 0
+1 head 11 11 a 1 0 0 0 1 17 1 1 1 1 0
+1 tail 12 12 a 1 0 0 0 1 17 1 1 1 1 0
+1 valid 13 13 a 1 0 0 0 1 17 1 1 1 1 0
+1 state 14 20 7000b 1 0 1 0 2 17 0 3 3 3 0
+1 next_state 15 21 87000b 1 0 1 0 2 17 0 3 3 3 0
 4 24 f 24 24
 4 23 f 23 23
 4 10 6 3 3
@@ -132,17 +132,17 @@
 2 90 27 20006 2 3d 5002 0 0 1 18 0 1 0 0 0 0 $u3
 2 91 0 0 2 1 1006 0 0 2 1 next_state
 2 92 0 0 2 1 1006 0 0 2 1 state
-1 STATE_IDLE 0 c0000 1 0 31 0 2 17 0 0 0 0 0
-1 STATE_HEAD 0 c0000 1 0 31 0 2 17 1 0 0 0 0
-1 STATE_DATA 0 c0000 1 0 31 0 2 17 2 0 0 0 0
-1 STATE_TAIL 0 c0000 1 0 31 0 2 17 3 0 0 0 0
-1 clock 9 a 1 0 0 0 1 17 1 1 1 1 0
-1 reset 10 a 1 0 0 0 1 17 1 1 0 1 0
-1 head 11 a 1 0 0 0 1 17 1 1 0 0 0
-1 tail 12 a 1 0 0 0 1 17 1 1 0 0 0
-1 valid 13 a 1 0 0 0 1 17 1 1 0 0 0
-1 state 20 7000b 1 0 1 0 2 17 0 3 0 0 0
-1 next_state 21 87000b 1 0 1 0 2 17 0 3 0 0 0
+1 STATE_IDLE 0 0 c0000 1 0 31 0 2 17 0 0 0 0 0
+1 STATE_HEAD 0 0 c0000 1 0 31 0 2 17 1 0 0 0 0
+1 STATE_DATA 0 0 c0000 1 0 31 0 2 17 2 0 0 0 0
+1 STATE_TAIL 0 0 c0000 1 0 31 0 2 17 3 0 0 0 0
+1 clock 16 9 a 1 0 0 0 1 17 1 1 1 1 0
+1 reset 17 10 a 1 0 0 0 1 17 1 1 0 1 0
+1 head 18 11 a 1 0 0 0 1 17 1 1 0 0 0
+1 tail 19 12 a 1 0 0 0 1 17 1 1 0 0 0
+1 valid 20 13 a 1 0 0 0 1 17 1 1 0 0 0
+1 state 21 20 7000b 1 0 1 0 2 17 0 3 0 0 0
+1 next_state 22 21 87000b 1 0 1 0 2 17 0 3 0 0 0
 4 92 f 92 92
 4 91 f 91 91
 4 78 6 71 71

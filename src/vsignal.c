@@ -46,13 +46,6 @@ extern bool debug_mode;
 
 
 /*!
- \param sig    Pointer to vsignal to initialize.
- \param name   Pointer to vsignal name string.
- \param type   Type of signal to create
- \param value  Pointer to vsignal value.
- \param line   Line number that this signal is declared on.
- \param col    Starting column that this signal is declared on.
- 
  Initializes the specified vsignal with the values of name, value and lsb.  This
  function is called by the vsignal_create routine and is also useful for
  creating temporary vsignals (reduces the need for dynamic memory allocation).
@@ -67,6 +60,7 @@ static void vsignal_init(
   unsigned int col     /*!< Starting column that this signal is declared on */
 ) { PROFILE(VSIGNAL_INIT);
 
+  sig->id              = 0;
   sig->name            = name;
   sig->pdim_num        = 0;
   sig->udim_num        = 0;
@@ -242,9 +236,10 @@ void vsignal_db_write(
       (sig->suppl.part.type != SSUPPL_TYPE_GENVAR) ) {
 
     /* Display identification and value information first */
-    fprintf( file, "%d %s %d %x %u %u",
+    fprintf( file, "%d %s %u %d %x %u %u",
       DB_TYPE_SIGNAL,
       sig->name,
+      sig->id,
       sig->line,
       sig->suppl.all,
       sig->pdim_num,
@@ -268,9 +263,6 @@ void vsignal_db_write(
 }
 
 /*!
- \param line        Pointer to current line from database file to parse.
- \param curr_funit  Pointer to current functional unit instantiating this vsignal.
-
  \throws anonymous Throw Throw Throw vector_db_read
 
  Creates a new vsignal structure, parses current file line for vsignal
@@ -278,11 +270,12 @@ void vsignal_db_write(
  in reading in the current line, returns FALSE; otherwise, returns TRUE.
 */
 void vsignal_db_read(
-  char**     line,
-  func_unit* curr_funit
+  char**     line,       /*!< Pointer to current line from database file to parse */
+  func_unit* curr_funit  /*!< Pointer to current functional unit instantiating this vsignal */
 ) { PROFILE(VSIGNAL_DB_READ);
 
   char         name[256];      /* Name of current vsignal */
+  unsigned int id;             /* ID of signal */
   vsignal*     sig;            /* Pointer to the newly created vsignal */
   vector*      vec;            /* Vector value for this vsignal */
   int          sline;          /* Declared line number */
@@ -294,7 +287,7 @@ void vsignal_db_read(
   unsigned int i;              /* Loop iterator */
 
   /* Get name values. */
-  if( sscanf( *line, "%s %d %x %u %u%n", name, &sline, &(suppl.all), &pdim_num, &udim_num, &chars_read ) == 5 ) {
+  if( sscanf( *line, "%s %u %d %x %u %u%n", name, &id, &sline, &(suppl.all), &pdim_num, &udim_num, &chars_read ) == 6 ) {
 
     *line = *line + chars_read;
 
@@ -321,12 +314,12 @@ void vsignal_db_read(
 
     } Catch_anonymous {
       free_safe( dim, sizeof( dim_range ) );
-      // printf( "vsignal Throw B\n" ); - HIT
       Throw 0;
     }
 
     /* Create new vsignal */
     sig = vsignal_create( name, suppl.part.type, vec->width, sline, suppl.part.col );
+    sig->id                    = id;
     sig->suppl.part.assigned   = suppl.part.assigned;
     sig->suppl.part.mba        = suppl.part.mba;
     sig->suppl.part.big_endian = suppl.part.big_endian;
@@ -361,10 +354,6 @@ void vsignal_db_read(
 }
 
 /*!
- \param base  Signal to store result of merge into.
- \param line  Pointer to line of CDD file to parse.
- \param same  Specifies if vsignal to merge needs to be exactly the same as the existing vsignal.
-
  \throws anonymous vector_db_merge Throw Throw
 
  Parses specified line for vsignal information and performs merge 
@@ -375,12 +364,13 @@ void vsignal_db_read(
  vectors.
 */
 void vsignal_db_merge(
-  vsignal* base,
-  char**   line,
-  bool     same
+  vsignal* base,  /*!< Signal to store result of merge into */
+  char**   line,  /*!< Pointer to line of CDD file to parse */
+  bool     same   /*!< Specifies if vsignal to merge needs to be exactly the same as the existing vsignal */
 ) { PROFILE(VSIGNAL_DB_MERGE);
  
   char         name[256];   /* Name of current vsignal */
+  unsigned int id;          /* Unique ID of current signal */
   int          sline;       /* Declared line number */
   unsigned int pdim_num;    /* Number of packed dimensions */
   unsigned int udim_num;    /* Number of unpacked dimensions */
@@ -393,7 +383,7 @@ void vsignal_db_merge(
   assert( base != NULL );
   assert( base->name != NULL );
 
-  if( sscanf( *line, "%s %d %x %u %u%n", name, &sline, &(suppl.all), &pdim_num, &udim_num, &chars_read ) == 5 ) {
+  if( sscanf( *line, "%s %u %d %x %u %u%n", name, &id, &sline, &(suppl.all), &pdim_num, &udim_num, &chars_read ) == 6 ) {
 
     *line = *line + chars_read;
 
@@ -445,6 +435,7 @@ void vsignal_merge(
   assert( base != NULL );
   assert( base->name != NULL );
   assert( scope_compare( base->name, other->name ) );
+  assert( base->id != other->id );
   assert( base->pdim_num == other->pdim_num );
   assert( base->udim_num == other->udim_num );
 
@@ -456,16 +447,13 @@ void vsignal_merge(
 }
 
 /*!
- \param sig   Pointer to signal to propagate change information from.
- \param time  Current simulation time when signal changed.
-
   When the specified signal in the parameter list has changed values, this function
   is called to propagate the value change to the simulator to cause any statements
   waiting on this value change to be resimulated.
 */
 void vsignal_propagate(
-  vsignal*        sig,
-  const sim_time* time
+  vsignal*        sig,  /*!< Pointer to signal to propagate change information from */
+  const sim_time* time  /*!< Current simulation time when signal changed */
 ) { PROFILE(VSIGNAL_PROPAGATE);
 
   exp_link* curr_expr;  /* Pointer to current expression in signal list */
@@ -475,9 +463,6 @@ void vsignal_propagate(
   while( curr_expr != NULL ) {
 
     /* Add to simulation queue if expression is a RHS, not a function call and not a port assignment */
-//    if( (ESUPPL_IS_LHS( curr_expr->exp->suppl ) == 0) &&
-//        (curr_expr->exp->op != EXP_OP_FUNC_CALL) &&
-//        (curr_expr->exp->op != EXP_OP_PASSIGN) ) {
     if( (curr_expr->exp->op != EXP_OP_FUNC_CALL) &&
         (curr_expr->exp->op != EXP_OP_PASSIGN) ) {
       sim_expr_changed( curr_expr->exp, time );
@@ -554,15 +539,12 @@ void vsignal_vcd_assign(
 }
 
 /*!
- \param sig   Pointer to vsignal to add expression to.
- \param expr  Expression to add to list.
-
  Adds the specified expression to the end of this vsignal's expression
  list.
 */
 void vsignal_add_expression(
-  vsignal*    sig,
-  expression* expr
+  vsignal*    sig,  /*!< Pointer to vsignal to add expression to */
+  expression* expr  /*!< Expression to add to list */
 ) { PROFILE(VSIGNAL_ADD_EXPRESSION);
 
   exp_link_add( expr, &(sig->exp_head), &(sig->exp_tail) );
@@ -782,6 +764,11 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.77  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.72.2.1  2008/07/10 22:43:55  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

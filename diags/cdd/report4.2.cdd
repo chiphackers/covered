@@ -1,5 +1,5 @@
-5 10 101 3 *
-8 /Users/trevorw/projects/devel/covered/diags/verilog -t main -vcd report4.2.vcd -v report4.2.v -o report4.2.cdd
+5 11 101 3 *
+8 /ptmp/covered/diags/verilog -t main -vcd report4.2.vcd -v report4.2.v -o report4.2.cdd
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" report4.2.v 8 26 1
 2 1 12 360036 1 1 1004 0 0 1 1 d
@@ -24,10 +24,10 @@
 2 20 12 50005 0 1 1410 0 0 1 1 a
 2 21 12 50037 2 36 a 19 20
 2 22 14 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0
-1 b 10 870004 1 0 0 0 1 17 0 1 0 0 0
-1 c 10 870007 1 0 0 0 1 17 0 1 0 0 0
-1 d 10 87000a 1 0 0 0 1 17 0 1 0 0 0
-1 a 12 60005 1 0 0 0 1 17 1 1 0 0 0
+1 b 1 10 870004 1 0 0 0 1 17 0 1 0 0 0
+1 c 2 10 870007 1 0 0 0 1 17 0 1 0 0 0
+1 d 3 10 87000a 1 0 0 0 1 17 0 1 0 0 0
+1 a 4 12 60005 1 0 0 0 1 17 1 1 0 0 0
 4 21 f 21 21
 4 22 1 0 0
 3 1 main.$u0 "main.$u0" report4.2.v 0 24 1

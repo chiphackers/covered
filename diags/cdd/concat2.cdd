@@ -1,5 +1,5 @@
-5 10 101 5 *
-8 /Users/trevorw/projects/devel/covered/diags/verilog -t main -vcd concat2.vcd -o concat2.cdd -v concat2.v -D DUMP
+5 11 101 5 *
+8 /ptmp/covered/diags/verilog -t main -vcd concat2.vcd -o concat2.cdd -v concat2.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" concat2.v 1 24 1
 2 1 7 1b001b 2 1 100c 0 0 1 1 c
@@ -12,8 +12,8 @@
 2 8 7 b001e 3 26 100c 7 0 2 18 0 3 3 2 0 0
 2 9 7 70007 0 1 1410 0 0 2 1 a
 2 10 7 7001e 4 35 e 8 9
-1 a 3 6000d 1 0 1 0 2 17 3 3 2 2 0
-1 b 4 7000d 1 0 0 0 1 17 0 1 0 1 0
-1 c 5 7000d 1 0 0 0 1 17 0 1 1 0 0
+1 a 1 3 6000d 1 0 1 0 2 17 3 3 2 2 0
+1 b 2 4 7000d 1 0 0 0 1 17 0 1 0 1 0
+1 c 3 5 7000d 1 0 0 0 1 17 0 1 1 0 0
 4 10 f 10 10
 3 1 main.$u0 "main.$u0" concat2.v 0 22 1

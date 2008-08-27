@@ -11,8 +11,10 @@ Usage:  covered report (-h | -view | [<options>] <database_file>)
       -d (s|d|v)                Level of report detail (s=summary, d=detailed, v=verbose).
                                   Default is to display summary coverage information.
       -i                        Provides coverage information for instances instead of module/task/function.
-      -c                        If '-d d' or '-d v' is specified, displays covered line, toggle
-                                  and combinational cases.  Default is to display uncovered results.
+      -c                        If '-d d' or '-d v' is specified, displays covered coverage points.
+                                  Default is to display uncovered results.
+      -e                        If '-d d' or '-d v' is specified, displays excluded coverage points.
+                                  Default is to not display excluded coverage points.
       -o <filename>             File to output report information to.  Default is standard output.
       -w [<line_width>]         Causes expressions to be output to best-fit to the specified line
                                   width.  If the -w option is specified without a value, the default
@@ -23,4 +25,7 @@ Usage:  covered report (-h | -view | [<options>] <database_file>)
       -b                        If combinational logic verbose output is reported and the expression is a
                                   vector operation, this option outputs the coverage information on a bitwise basis.
       -f <filename>             Name of file containing additional arguments to parse.
+      -x                        Output exclusion identifiers if the '-d d' or '-d v' options are specified.  The
+                                  identifiers can be used with the 'exclude' command for the purposes of
+                                  excluding/including coverage points.
 

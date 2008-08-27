@@ -48,6 +48,12 @@ extern unsigned int curr_db;
 extern char         user_msg[USER_MSG_LENGTH];
 
 
+/*!
+ Signal ID that is used for identification purposes (each signal will receive a unique ID).
+*/
+unsigned int curr_sig_id = 1;
+
+
 static bool instance_resolve_inst( funit_inst*, funit_inst* );
 static void instance_dealloc_single( funit_inst* );
 
@@ -740,10 +746,6 @@ void instance_db_write(
 
   char        tscope[4096];  /* New scope of functional unit to write */
   funit_inst* curr;          /* Pointer to current child functional unit instance */
-  exp_link*   expl;          /* Pointer to current expression link */
-#ifndef VPI_ONLY
-  gitem_link* gil;           /* Pointer to current generate item link */
-#endif
 
   assert( scope != NULL );
 
@@ -751,6 +753,12 @@ void instance_db_write(
 
   /* If we are in parse mode, re-issue expression IDs (we use the ulid field since it is not used in parse mode) */
   if( parse_mode ) {
+
+    exp_link*   expl;
+    sig_link*   sigl;
+#ifndef VPI_ONLY
+    gitem_link* gil;
+#endif
 
     /* First issue IDs to the expressions within the functional unit */
     expl = root->funit->exp_head;
@@ -760,14 +768,22 @@ void instance_db_write(
       expl = expl->next;
     }
 
+    sigl = root->funit->sig_head;
+    while( sigl != NULL ) {
+      sigl->sig->id = curr_sig_id;
+      curr_sig_id++;
+      sigl = sigl->next;
+    }
+    
 #ifndef VPI_ONLY
-    /* Then issue IDs to any generated expressions */
+    /* Then issue IDs to any generated expressions/signals */
     gil = root->gitem_head;
     while( gil != NULL ) {
-      gen_item_assign_expr_ids( gil->gi, root->funit );
+      gen_item_assign_ids( gil->gi, root->funit );
       gil = gil->next;
     }
 #endif
+
 
   }
 
@@ -1132,6 +1148,11 @@ void instance_dealloc(
 
 /*
  $Log$
+ Revision 1.98  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.95.4.2  2008/08/06 20:11:34  phase1geo
  Adding support for instance-based coverage reporting in GUI.  Everything seems to be
  working except for proper exclusion handling.  Checkpointing.

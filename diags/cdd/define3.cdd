@@ -1,5 +1,5 @@
-5 10 101 4 *
-8 /Users/trevorw/projects/devel/covered/diags/verilog -t main -vcd define3.vcd -o define3.cdd -v define3.v -D DUMP
+5 11 101 4 *
+8 /ptmp/covered/diags/verilog -t main -vcd define3.vcd -o define3.cdd -v define3.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" define3.v 1 26 1
 2 1 9 120012 2 1 1008 0 0 4 1 e
@@ -22,11 +22,11 @@
 2 18 12 b0012 3 6 1208 16 17 4 18 0 f 5 1 8 2
 2 19 12 70007 0 1 1410 0 0 4 1 a
 2 20 12 70012 3 35 a 18 19
-1 a 6 6000f 1 0 3 0 4 17 f f 1 0 0
-1 b 6 60012 1 0 3 0 4 17 f f 1 0 0
-1 c 6 60015 1 0 3 0 4 17 f f 1 0 0
-1 d 6 60018 1 0 3 0 4 17 f f 1 0 0
-1 e 7 7000f 1 0 3 0 4 17 0 f 1 0 0
+1 a 1 6 6000f 1 0 3 0 4 17 f f 1 0 0
+1 b 2 6 60012 1 0 3 0 4 17 f f 1 0 0
+1 c 3 6 60015 1 0 3 0 4 17 f f 1 0 0
+1 d 4 6 60018 1 0 3 0 4 17 f f 1 0 0
+1 e 5 7 7000f 1 0 3 0 4 17 0 f 1 0 0
 4 5 f 5 5
 4 10 f 10 10
 4 15 f 15 15

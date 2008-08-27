@@ -1,5 +1,5 @@
-5 10 101 7 *
-8 /Users/trevorw/projects/devel/covered/diags/verilog -t main -vcd sbit_sel1.vcd -o sbit_sel1.cdd -v sbit_sel1.v -D DUMP
+5 11 101 7 *
+8 /ptmp/covered/diags/verilog -t main -vcd sbit_sel1.vcd -o sbit_sel1.cdd -v sbit_sel1.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" sbit_sel1.v 1 33 1
 2 1 7 d000d 6 0 1008 0 0 32 48 1 0
@@ -24,13 +24,13 @@
 2 20 11 b0012 6 23 100c 0 19 1 18 0 1 0 0 0 0 z
 2 21 11 70007 0 1 1410 0 0 1 1 e
 2 22 11 70012 5 35 e 20 21
-1 sel 3 7000b 1 0 2 0 3 17 0 7 0 2 0
-1 z 4 70011 1 0 4 1 4 17 0 f d d 0
-1 a 5 60011 1 0 0 0 1 17 1 1 1 1 0
-1 b 5 60014 1 0 0 0 1 17 1 1 0 0 0
-1 c 5 60017 1 0 0 0 1 17 1 1 1 1 0
-1 d 5 6001a 1 0 0 0 1 17 1 1 1 1 0
-1 e 5 6001d 1 0 0 0 1 17 1 1 1 1 0
+1 sel 1 3 7000b 1 0 2 0 3 17 0 7 0 2 0
+1 z 2 4 70011 1 0 4 1 4 17 0 f d d 0
+1 a 3 5 60011 1 0 0 0 1 17 1 1 1 1 0
+1 b 4 5 60014 1 0 0 0 1 17 1 1 0 0 0
+1 c 5 5 60017 1 0 0 0 1 17 1 1 1 1 0
+1 d 6 5 6001a 1 0 0 0 1 17 1 1 1 1 0
+1 e 7 5 6001d 1 0 0 0 1 17 1 1 1 1 0
 4 4 f 4 4
 4 8 f 8 8
 4 12 f 12 12
