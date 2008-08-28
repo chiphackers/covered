@@ -44,6 +44,9 @@ extern char**       leading_hierarchies;
 extern int          leading_hier_num;
 extern bool         leading_hiers_differ;
 extern isuppl       info_suppl;
+extern bool         report_exclusions;
+extern unsigned int exclusion_id_size;
+extern bool         flag_output_exclusion_ids; 
 
 
 /*!
@@ -990,25 +993,29 @@ static void memory_display_memory(
 }
 
 /*!
+ \return Returns TRUE if at least memory was found to be excluded.
+
  Displays the memories that did not achieve 100% toggle coverage and/or 100%
  write/read coverage to standard output from the specified signal list.
 */
-static void memory_display_verbose(
+static bool memory_display_verbose(
   FILE*      ofile,  /*!< Pointer to file to output results to */
-  func_unit* funit   /*!< Pointer to the current functional unit */
+  func_unit* funit,  /*!< Pointer to the current functional unit */
+  rpt_type   rtype   /*!< Report type to generate */
 ) { PROFILE(MEMORY_DISPLAY_VERBOSE);
 
-  func_iter    fi;        /* Functional unit iterator */
-  vsignal*     sig;       /* Pointer to current signal */
-  unsigned int hit01;     /* Number of bits that toggled from 0 to 1 */
-  unsigned int hit10;     /* Number of bits that toggled from 1 to 0 */
-  char*        pname;     /* Printable version of signal name */
-  unsigned int i;         /* Loop iterator */
+  bool         retval = FALSE;  /* Return value for this function */
+  func_iter    fi;              /* Functional unit iterator */
+  vsignal*     sig;             /* Pointer to current signal */
+  unsigned int hit01;           /* Number of bits that toggled from 0 to 1 */
+  unsigned int hit10;           /* Number of bits that toggled from 1 to 0 */
+  char*        pname;           /* Printable version of signal name */
+  unsigned int i;               /* Loop iterator */
 
-  if( report_covered ) {
-    fprintf( ofile, "    Memories getting 100%% coverage\n\n" );
-  } else {
-    fprintf( ofile, "    Memories not getting 100%% coverage\n\n" );
+  switch( rtype ) {
+    case RPT_TYPE_HIT  :  fprintf( ofile, "    Memories getting 100%% coverage\n\n" );      break;
+    case RPT_TYPE_MISS :  fprintf( ofile, "    Memories not getting 100%% coverage\n\n" );  break;
+    case RPT_TYPE_EXCL :  fprintf( ofile, "    Memories excluded from coverage\n\n" );      break;
   }
 
   func_iter_init( &fi, funit, FALSE, TRUE );
@@ -1023,27 +1030,38 @@ static void memory_display_verbose(
 
     if( sig->suppl.part.type == SSUPPL_TYPE_MEM ) {
 
-      fprintf( ofile, "      ---------------------------------------------------------------------------------------------------------\n" );
-      fprintf( ofile, "      Memory name:  %s", pname );
-      for( i=0; i<sig->udim_num; i++ ) {
-        fprintf( ofile, "[%d:%d]", sig->dim[i].msb, sig->dim[i].lsb );
-      }
-      fprintf( ofile, "\n" );
-      fprintf( ofile, "      ---------------------------------------------------------------------------------------------------------\n" );
+      retval |= sig->suppl.part.excluded;
 
-      vector_toggle_count( sig->value, &hit01, &hit10 );
+      if( ((sig->suppl.part.excluded == 0) && (rtype != RPT_TYPE_EXCL)) ||
+          ((sig->suppl.part.excluded == 1) && (rtype == RPT_TYPE_EXCL)) ) {
 
-      if( report_covered ) {
+        fprintf( ofile, "      ---------------------------------------------------------------------------------------------------------\n" );
+        fprintf( ofile, "      " );
+        if( flag_output_exclusion_ids ) {
+          fprintf( ofile, "(%s)  ", db_gen_exclusion_id( 'M', sig->id ) );
+        }
+        fprintf( ofile, "Memory name:  %s", pname );
+        for( i=0; i<sig->udim_num; i++ ) {
+          fprintf( ofile, "[%d:%d]", sig->dim[i].msb, sig->dim[i].lsb );
+        }
+        fprintf( ofile, "\n" );
+        fprintf( ofile, "      ---------------------------------------------------------------------------------------------------------\n" );
 
-        if( (hit01 == sig->value->width) && (hit10 == sig->value->width) ) {
+        vector_toggle_count( sig->value, &hit01, &hit10 );
 
-          fprintf( ofile, "      %-24s\n", pname );
+        if( rtype == RPT_TYPE_HIT ) {
+
+          if( (hit01 == sig->value->width) && (hit10 == sig->value->width) ) {
+
+            fprintf( ofile, "      %-24s\n", pname );
+
+          }
+
+        } else {
+
+          memory_display_memory( ofile, sig, 0, sig->name, 0, sig->value->width );
 
         }
-
-      } else {
-
-        memory_display_memory( ofile, sig, 0, sig->name, 0, sig->value->width );
 
       }
 
@@ -1097,6 +1115,8 @@ static void memory_instance_verbose(
        (root->stat->mem_wr_hit    < root->stat->mem_ae_total)  ||
        (root->stat->mem_rd_hit    < root->stat->mem_ae_total)) ) {
 
+    bool found_exclusion;
+
     pname = scope_gen_printable( funit_flatten_name( root->funit ) );
 
     fprintf( ofile, "\n" );
@@ -1114,7 +1134,10 @@ static void memory_instance_verbose(
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
     free_safe( pname, (strlen( pname ) + 1) );
 
-    memory_display_verbose( ofile, root->funit );
+    found_exclusion = memory_display_verbose( ofile, root->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
+    if( report_exclusions && found_exclusion ) {
+      (void)memory_display_verbose( ofile, root->funit, RPT_TYPE_EXCL );
+    }
 
   }
 
@@ -1148,6 +1171,8 @@ static void memory_funit_verbose(
          (head->funit->stat->mem_wr_hit    < head->funit->stat->mem_ae_total)  ||
          (head->funit->stat->mem_rd_hit    < head->funit->stat->mem_ae_total)) ) {
 
+      bool found_exclusion;
+
       fprintf( ofile, "\n" );
       switch( head->funit->type ) {
         case FUNIT_MODULE       :  fprintf( ofile, "    Module: " );       break;
@@ -1162,7 +1187,10 @@ static void memory_funit_verbose(
       fprintf( ofile, "%s, File: %s\n", obf_funit( funit_flatten_name( head->funit ) ), obf_file( head->funit->filename ) );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
-      memory_display_verbose( ofile, head->funit );
+      found_exclusion = memory_display_verbose( ofile, head->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
+      if( report_exclusions && found_exclusion ) {
+        (void)memory_display_verbose( ofile, head->funit, RPT_TYPE_EXCL );
+      }
 
     }
 
@@ -1274,6 +1302,9 @@ void memory_report(
 
 /*
  $Log$
+ Revision 1.35  2008/08/23 20:00:29  phase1geo
+ Full fix for bug 2054686.  Also cleaned up Cver regressions.
+
  Revision 1.34  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

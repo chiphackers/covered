@@ -49,6 +49,9 @@ extern char**       leading_hierarchies;
 extern int          leading_hier_num;
 extern bool         leading_hiers_differ;
 extern isuppl       info_suppl;
+extern bool         report_exclusions;
+extern bool         flag_output_exclusion_ids;
+extern unsigned int exclusion_id_size;
 
 
 /*!
@@ -402,25 +405,38 @@ static bool toggle_funit_summary(
 }
 
 /*!
+ \return Returns TRUE if at least one signal was found to be excluded in the given functional unit.
+
  Displays the signals that did not achieve 100% toggle coverage to standard 
  output from the specified signal list.
 */
-static void toggle_display_verbose(
+static bool toggle_display_verbose(
   FILE*      ofile,  /*!< Pointer to file to output results to */
-  func_unit* funit   /*!< Pointer to current named functional unit */
+  func_unit* funit,  /*!< Pointer to current named functional unit */
+  rpt_type   rtype   /*!< Specifies the type of output to generate */
 ) { PROFILE(TOGGLE_DISPLAY_VERBOSE);
 
-  func_iter    fi;     /* Functional unit iterator */
-  vsignal*     sig;    /* Pointer to current signal being evaluated */
-  unsigned int hit01;  /* Number of bits that toggled from 0 to 1 */
-  unsigned int hit10;  /* Number of bits that toggled from 1 to 0 */
-  char*        pname;  /* Printable version of signal name */
+  bool         retval = FALSE;  /* Return value for this function */
+  func_iter    fi;              /* Functional unit iterator */
+  vsignal*     sig;             /* Pointer to current signal being evaluated */
+  unsigned int hit01;           /* Number of bits that toggled from 0 to 1 */
+  unsigned int hit10;           /* Number of bits that toggled from 1 to 0 */
+  char*        pname;           /* Printable version of signal name */
 
-  if( report_covered ) {
-    fprintf( ofile, "    Signals getting 100%% toggle coverage\n\n" );
-  } else {
-    fprintf( ofile, "    Signals not getting 100%% toggle coverage\n\n" );
-    fprintf( ofile, "      Signal                    Toggle\n" );
+  switch( rtype ) {
+    case RPT_TYPE_HIT  :  fprintf( ofile, "    Signals getting 100%% toggle coverage\n\n" );      break;
+    case RPT_TYPE_MISS :  fprintf( ofile, "    Signals not getting 100%% toggle coverage\n\n" );  break;
+    case RPT_TYPE_EXCL :  fprintf( ofile, "    Signals excluded from toggle coverage\n\n" );      break;
+  }
+
+  if( rtype != RPT_TYPE_HIT ) {
+    if( flag_output_exclusion_ids ) {
+      char tmp[30];
+      gen_char_string( tmp, ' ', (exclusion_id_size - 3) );
+      fprintf( ofile, "      EID%s   Signal                    Toggle\n", tmp );
+    } else {
+      fprintf( ofile, "      Signal                    Toggle\n" );
+    }
   }
 
   fprintf( ofile, "      ---------------------------------------------------------------------------------------------------------\n" );
@@ -438,28 +454,48 @@ static void toggle_display_verbose(
     if( (sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
         (sig->suppl.part.type != SSUPPL_TYPE_ENUM)  &&
         (sig->suppl.part.type != SSUPPL_TYPE_MEM)  &&
-        (sig->suppl.part.mba == 0) &&
-        (sig->suppl.part.excluded == 0) ) {
+        (sig->suppl.part.mba == 0) ) {
 
-      vector_toggle_count( sig->value, &hit01, &hit10 );
+      retval |= sig->suppl.part.excluded;
 
-      if( report_covered ) {
+      if( ((sig->suppl.part.excluded == 0) && (rtype != RPT_TYPE_EXCL)) ||
+          ((sig->suppl.part.excluded == 1) && (rtype == RPT_TYPE_EXCL)) ) {
 
-        if( (hit01 == sig->value->width) && (hit10 == sig->value->width) ) {
+        vector_toggle_count( sig->value, &hit01, &hit10 );
+
+        if( rtype == RPT_TYPE_HIT ) {
+
+          if( (hit01 == sig->value->width) && (hit10 == sig->value->width) ) {
         
-          fprintf( ofile, "      %-24s\n", pname );
+            if( flag_output_exclusion_ids ) {
+              fprintf( ofile, "      (%s)  %-24s\n", db_gen_exclusion_id( 'T', sig->id ), pname );
+            } else {
+              fprintf( ofile, "      %-24s\n", pname );
+            }
 
-        }
+          }
 
-      } else {
+        } else {
 
-        if( (hit01 < sig->value->width) || (hit10 < sig->value->width) ) {
+          if( (hit01 < sig->value->width) || (hit10 < sig->value->width) ) {
 
-          fprintf( ofile, "      %-24s  0->1: ", pname );
-          vector_display_toggle01_ulong( sig->value->value.ul, sig->value->width, ofile );      
-          fprintf( ofile, "\n      ......................... 1->0: " );
-          vector_display_toggle10_ulong( sig->value->value.ul, sig->value->width, ofile );      
-          fprintf( ofile, " ...\n" );
+            if( flag_output_exclusion_ids ) {
+              char tmp[30];
+              fprintf( ofile, "      (%s)  %-24s  0->1: ", db_gen_exclusion_id( 'T', sig->id ), pname );
+              vector_display_toggle01_ulong( sig->value->value.ul, sig->value->width, ofile );      
+              gen_char_string( tmp, ' ', (exclusion_id_size - 1) );
+              fprintf( ofile, "\n       %s   ......................... 1->0: ", tmp );
+              vector_display_toggle10_ulong( sig->value->value.ul, sig->value->width, ofile );      
+              fprintf( ofile, " ...\n" );
+            } else {
+              fprintf( ofile, "      %-24s  0->1: ", pname );
+              vector_display_toggle01_ulong( sig->value->value.ul, sig->value->width, ofile );      
+              fprintf( ofile, "\n      ......................... 1->0: " );
+              vector_display_toggle10_ulong( sig->value->value.ul, sig->value->width, ofile );      
+              fprintf( ofile, " ...\n" );
+            }
+
+          }
 
         }
 
@@ -512,6 +548,8 @@ static void toggle_instance_verbose(
       ((!report_covered && ((root->stat->tog01_hit < root->stat->tog_total) || (root->stat->tog10_hit < root->stat->tog_total))) ||
        ( report_covered && root->stat->tog_cov_found)) ) {
 
+    bool found_exclusion;
+
     pname = scope_gen_printable( funit_flatten_name( root->funit ) );
 
     fprintf( ofile, "\n" );
@@ -529,7 +567,10 @@ static void toggle_instance_verbose(
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
     free_safe( pname, (strlen( pname ) + 1) );
 
-    toggle_display_verbose( ofile, root->funit );
+    found_exclusion = toggle_display_verbose( ofile, root->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
+    if( report_exclusions && found_exclusion ) {
+      (void)toggle_display_verbose( ofile, root->funit, RPT_TYPE_EXCL );
+    }
 
   }
 
@@ -563,6 +604,8 @@ static void toggle_funit_verbose(
         ((!report_covered && ((head->funit->stat->tog01_hit < head->funit->stat->tog_total) || (head->funit->stat->tog10_hit < head->funit->stat->tog_total))) ||
          ( report_covered && head->funit->stat->tog_cov_found)) ) {
 
+      bool found_exclusion;
+
       fprintf( ofile, "\n" );
       switch( head->funit->type ) {
         case FUNIT_MODULE       :  fprintf( ofile, "    Module: " );       break;
@@ -577,7 +620,10 @@ static void toggle_funit_verbose(
       fprintf( ofile, "%s, File: %s\n", obf_funit( funit_flatten_name( head->funit ) ), obf_file( head->funit->filename ) );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
-      toggle_display_verbose( ofile, head->funit );
+      found_exclusion = toggle_display_verbose( ofile, head->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
+      if( report_exclusions && found_exclusion ) {
+        (void)toggle_display_verbose( ofile, head->funit, RPT_TYPE_EXCL );
+      }
 
     }
 
@@ -666,6 +712,9 @@ void toggle_report(
 
 /*
  $Log$
+ Revision 1.80  2008/08/23 20:00:30  phase1geo
+ Full fix for bug 2054686.  Also cleaned up Cver regressions.
+
  Revision 1.79  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify
