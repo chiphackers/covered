@@ -111,13 +111,13 @@ Module/Task/Function                Filename                          Hit/Miss/T
 
         Expression 2   (1/2)
         ^^^^^^^^^^^^^ - {{}}
-         E | E
+         E | E 
         =0=|=1=
              *
 
         Expression 3   (1/2)
         ^^^^^^^^^^^^^ - {}
-         E | E
+         E | E 
         =0=|=1=
          *    
 
@@ -129,7 +129,7 @@ Module/Task/Function                Filename                          Hit/Miss/T
 
         Expression 5   (1/2)
         ^^^^^^^^^^^^^ - ~
-         E | E
+         E | E 
         =0=|=1=
              *
 
@@ -141,13 +141,13 @@ Module/Task/Function                Filename                          Hit/Miss/T
 
         Expression 7   (1/2)
         ^^^^^^^^^^^^^ - {{}}
-         E | E
+         E | E 
         =0=|=1=
              *
 
         Expression 8   (1/2)
         ^^^^^^^^^^^^^ - {}
-         E | E
+         E | E 
         =0=|=1=
          *    
 

@@ -118,7 +118,7 @@ Module/Task/Function                Filename                          Hit/Miss/T
 
         Expression 2   (1/2)
         ^^^^^^^^^^^^^ - ?:
-         E | E
+         E | E 
         =0=|=1=
          *    
 
@@ -137,7 +137,7 @@ Module/Task/Function                Filename                          Hit/Miss/T
 
         Expression 2   (0/2)
         ^^^^^^^^^^^^^ - ?:
-         E | E
+         E | E 
         =0=|=1=
          *   *
 
@@ -156,7 +156,7 @@ Module/Task/Function                Filename                          Hit/Miss/T
 
         Expression 2   (1/2)
         ^^^^^^^^^^^^^ - ?:
-         E | E
+         E | E 
         =0=|=1=
              *
 

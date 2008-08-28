@@ -330,7 +330,7 @@ Module/Task/Function                Filename                          Hit/Miss/T
 
         Expression 1   (64/128)
         ^^^^^^^^^^^^^ - ~
-          Bit | E | E
+          Bit | E | E 
         ======|=0=|=1=
           All | *    
         ------|---|---

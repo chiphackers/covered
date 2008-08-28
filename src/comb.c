@@ -90,6 +90,9 @@ extern int            line_width;
 extern char           user_msg[USER_MSG_LENGTH];
 extern const exp_info exp_op_info[EXP_OP_NUM];
 extern isuppl         info_suppl;
+extern bool           report_exclusions;
+extern unsigned int   exclusion_id_size;
+extern bool           flag_output_exclusion_ids;
 
 
 /*!
@@ -1564,6 +1567,10 @@ static void combination_unary(
 
   if( (hit != tot) || (exp->suppl.part.excluded && show_excluded) ) {
 
+    char spaces[30];
+
+    spaces[0] = '\0';
+
     assert( exp->ulid != -1 );
 
     /* Allocate memory for info array */
@@ -1575,31 +1582,41 @@ static void combination_unary(
     rv = snprintf( tmp, 20, "%d", exp->ulid );  assert( rv < 20 );  length += strlen( tmp );
     rv = snprintf( tmp, 20, "%d", hit );        assert( rv < 20 );  length += strlen( tmp );
     rv = snprintf( tmp, 20, "%d", tot );        assert( rv < 20 );  length += strlen( tmp );
+    if( flag_output_exclusion_ids ) {
+      length += (exclusion_id_size - 1) + 4;
+      gen_char_string( spaces, ' ', ((exclusion_id_size - 1) + 4) );
+    }
     (*info)[0] = (char*)malloc_safe( length );
-    rv = snprintf( (*info)[0], length, "        Expression %d   (%d/%d)", exp->ulid, hit, tot );
+    if( flag_output_exclusion_ids ) {
+      rv = snprintf( (*info)[0], length, "        (%s)  Expression %d   (%d/%d)", db_gen_exclusion_id( 'E', exp->id ), exp->ulid, hit, tot );
+    } else {
+      rv = snprintf( (*info)[0], length, "        Expression %d   (%d/%d)", exp->ulid, hit, tot );
+    }
     assert( rv < length );
 
-    length  = 25 + strlen( op );  (*info)[1] = (char*)malloc_safe( length );
-    rv = snprintf( (*info)[1], length, "        ^^^^^^^^^^^^^ - %s", op );
+    length = 25 + strlen( op ) + strlen( spaces );  (*info)[1] = (char*)malloc_safe( length );
+    rv = snprintf( (*info)[1], length, "%s        ^^^^^^^^^^^^^ - %s", spaces, op );
     assert( rv < length );
 
     if( report_bitwise && (exp->value->width > 1) ) {
 
+      char*        tmp;
       unsigned int i;
+   
+      length = 23 + strlen( spaces );
+      (*info)[2] = (char*)malloc_safe( length );  rv = snprintf( (*info)[2], length, "%s          Bit | E | E ", spaces );  assert( rv < length );
+      (*info)[3] = (char*)malloc_safe( length );  rv = snprintf( (*info)[3], length, "%s        ======|=0=|=1=", spaces );  assert( rv < length );
+      (*info)[5] = (char*)malloc_safe( length );  rv = snprintf( (*info)[5], length, "%s        ------|---|---", spaces );  assert( rv < length );
 
-      (*info)[2] = strdup_safe( "          Bit | E | E" );
-      (*info)[3] = strdup_safe( "        ======|=0=|=1=" );
-
-      length = 22;
+      length = 22 + strlen( spaces );
       (*info)[4] = (char*)malloc_safe( length );
-      rv = snprintf( (*info)[4], length, "          All | %c   %c",
+      rv = snprintf( (*info)[4], length, "%s          All | %c   %c", spaces,
                      ((ESUPPL_WAS_FALSE( exp->suppl ) == 1) ? ' ' : '*'),
                      ((ESUPPL_WAS_TRUE( exp->suppl )  == 1) ? ' ' : '*') );
       assert( rv < length );
-      (*info)[5] = strdup_safe( "        ------|---|---" );
       for( i=0; i<exp->value->width; i++ ) {
         (*info)[i+6] = (char*)malloc_safe( length );
-        rv = snprintf( (*info)[i+6], length, "         %4u | %c   %c", i,
+        rv = snprintf( (*info)[i+6], length, "%s         %4u | %c   %c", spaces, i,
                        ((vector_get_eval_a( exp->value, i ) == 1) ? ' ' : '*'),
                        ((vector_get_eval_b( exp->value, i ) == 1) ? ' ' : '*') );
         assert( rv < length );
@@ -1607,11 +1624,13 @@ static void combination_unary(
 
     } else {
 
-      (*info)[2] = strdup_safe( "         E | E" );
-      (*info)[3] = strdup_safe( "        =0=|=1=" );
+      length = 16 + strlen( spaces );
+      (*info)[2] = (char*)malloc_safe( length );  rv = snprintf( (*info)[2], length, "%s         E | E ", spaces );
+      (*info)[3] = (char*)malloc_safe( length );  rv = snprintf( (*info)[3], length, "%s        =0=|=1=", spaces );
 
-      length = 15;  (*info)[4] = (char*)malloc_safe( length );
-      rv = snprintf( (*info)[4], length, "         %c   %c",
+      length = 15 + strlen( spaces );
+      (*info)[4] = (char*)malloc_safe( length );
+      rv = snprintf( (*info)[4], length, "%s         %c   %c", spaces,
                      ((ESUPPL_WAS_FALSE( exp->suppl ) == 1) ? ' ' : '*'),
                      ((ESUPPL_WAS_TRUE( exp->suppl )  == 1) ? ' ' : '*') );
       assert( rv < length );
@@ -1643,7 +1662,10 @@ static void combination_event(
 
   if( !ESUPPL_WAS_TRUE( exp->suppl ) || (exp->suppl.part.excluded && show_excluded) ) {
 
+    char         spaces[30];
     unsigned int rv;
+
+    spaces[0] = '\0';
 
     assert( exp->ulid != -1 );
 
@@ -1653,15 +1675,22 @@ static void combination_event(
 
     /* Allocate lines and assign values */
     length = 28;  rv = snprintf( tmp, 20, "%d", exp->ulid );  assert( rv < 20 );  length += strlen( tmp );
+    if( flag_output_exclusion_ids ) {
+      length += (exclusion_id_size - 1) + 4;
+      gen_char_string( spaces, ' ', ((exclusion_id_size - 1) + 4) );
+    }
     (*info)[0] = (char*)malloc_safe( length );
-    rv = snprintf( (*info)[0], length, "        Expression %d   (0/1)", exp->ulid );
+    if( flag_output_exclusion_ids ) {
+      rv = snprintf( (*info)[0], length, "        (%s)  Expression %d   (0/1)", db_gen_exclusion_id( 'E', exp->id ), exp->ulid );
+    } else {
+      rv = snprintf( (*info)[0], length, "        Expression %d   (0/1)", exp->ulid );
+    }
     assert( rv < length );
 
-    length  = 25 + strlen( op );  (*info)[1] = (char*)malloc_safe( length );
-    rv = snprintf( (*info)[1], length, "        ^^^^^^^^^^^^^ - %s", op );
-    assert( rv < length );
-
-    (*info)[2] = strdup_safe( "         * Event did not occur" );
+    length = 25 + strlen( op ) + strlen( spaces );
+    (*info)[1] = (char*)malloc_safe( length );  rv = snprintf( (*info)[1], length, "%s        ^^^^^^^^^^^^^ - %s", spaces, op );  assert( rv < length );
+    length = 31 + strlen( spaces );
+    (*info)[2] = (char*)malloc_safe( length );  rv = snprintf( (*info)[2], length, "%s         * Event did not occur", spaces );  assert( rv < length );
 
   }
 
@@ -1734,6 +1763,10 @@ static void combination_two_vars(
 
   if( (hit != total) || (exp->suppl.part.excluded && show_excluded) ) {
 
+    char spaces[30];
+
+    spaces[0] = '\0';
+
     assert( exp->ulid != -1 );
 
     /* Allocate memory for info array */
@@ -1745,13 +1778,21 @@ static void combination_two_vars(
     rv = snprintf( tmp, 20, "%d", exp->ulid );  assert( rv < 20 );  length += strlen( tmp );
     rv = snprintf( tmp, 20, "%d", hit );        assert( rv < 20 );  length += strlen( tmp );
     rv = snprintf( tmp, 20, "%d", total );      assert( rv < 20 );  length += strlen( tmp );
+    if( flag_output_exclusion_ids ) {
+      length += (exclusion_id_size - 1) + 4;
+      gen_char_string( spaces, ' ', ((exclusion_id_size - 1) + 4) );
+    }
     (*info)[0] = (char*)malloc_safe( length );
-    rv = snprintf( (*info)[0], length, "        Expression %d   (%d/%d)", exp->ulid, hit, total );
+    if( flag_output_exclusion_ids ) {
+      rv = snprintf( (*info)[0], length, "        (%s)  Expression %d   (%d/%d)", db_gen_exclusion_id( 'E', exp->id ), exp->ulid, hit, total );
+    } else {
+      rv = snprintf( (*info)[0], length, "        Expression %d   (%d/%d)", exp->ulid, hit, total );
+    }
     assert( rv < length );
 
-    length = 25 + strlen( op );
+    length = 25 + strlen( op ) + strlen( spaces );
     (*info)[1] = (char*)malloc_safe( length );
-    rv = snprintf( (*info)[1], length, "        ^^^^^^^^^^^^^ - %s", op );
+    rv = snprintf( (*info)[1], length, "%s        ^^^^^^^^^^^^^ - %s", spaces, op );
     assert( rv < length );
 
     if( exp_op_info[exp->op].suppl.is_comb == AND_COMB ) {
@@ -1760,20 +1801,21 @@ static void combination_two_vars(
 
         unsigned int i;
  
-        (*info)[2] = strdup_safe( "          Bit | LR | LR | LR " );
-        (*info)[3] = strdup_safe( "        ======|=0-=|=-0=|=11=" );
+        length = 30 + strlen( spaces );
+        (*info)[2] = (char*)malloc_safe( length );  rv = snprintf( (*info)[2], length, "%s          Bit | LR | LR | LR ", spaces );  assert( rv < length );
+        (*info)[3] = (char*)malloc_safe( length );  rv = snprintf( (*info)[3], length, "%s        ======|=0-=|=-0=|=11=", spaces );  assert( rv < length );
+        (*info)[5] = (char*)malloc_safe( length );  rv = snprintf( (*info)[5], length, "%s        ------|----|----|----", spaces );  assert( rv < length );
 
-        length = 28;
+        length = 28 + strlen( spaces );
         (*info)[4] = (char*)malloc_safe( length );
-        rv = snprintf( (*info)[4], length, "          All | %c    %c    %c",
+        rv = snprintf( (*info)[4], length, "%s          All | %c    %c    %c", spaces,
                        (ESUPPL_WAS_FALSE( exp->left->suppl )  ? ' ' : '*'),
                        (ESUPPL_WAS_FALSE( exp->right->suppl ) ? ' ' : '*'),
                        ((exp->suppl.part.eval_11 > 0) ? ' ' : '*') );
         assert( rv < length );
-        (*info)[5] = strdup_safe( "        ------|----|----|----" );
         for( i=0; i<exp->value->width; i++ ) {
           (*info)[i+6] = (char*)malloc_safe( length );
-          rv = snprintf( (*info)[i+6], length, "         %4u | %c    %c    %c", i,
+          rv = snprintf( (*info)[i+6], length, "%s         %4u | %c    %c    %c", spaces, i,
                          ((vector_get_eval_a( exp->value, i ) == 1) ? ' ' : '*'),
                          ((vector_get_eval_b( exp->value, i ) == 1) ? ' ' : '*'),
                          ((vector_get_eval_c( exp->value, i ) == 1) ? ' ' : '*') );
@@ -1782,12 +1824,13 @@ static void combination_two_vars(
 
       } else {
 
-        (*info)[2] = strdup_safe( "         LR | LR | LR " );
-        (*info)[3] = strdup_safe( "        =0-=|=-0=|=11=" );
+        length = 23 + strlen( spaces );
+        (*info)[2] = (char*)malloc_safe( length );  rv = snprintf( (*info)[2], length, "%s         LR | LR | LR ", spaces );  assert( rv < length );
+        (*info)[3] = (char*)malloc_safe( length );  rv = snprintf( (*info)[3], length, "%s        =0-=|=-0=|=11=", spaces );  assert( rv < length );
 
-        length = 21;
+        length = 21 + strlen( spaces );
         (*info)[4] = (char*)malloc_safe( length );
-        rv = snprintf( (*info)[4], length, "         %c    %c    %c",
+        rv = snprintf( (*info)[4], length, "%s         %c    %c    %c", spaces,
                        (ESUPPL_WAS_FALSE( exp->left->suppl )  ? ' ' : '*'),
                        (ESUPPL_WAS_FALSE( exp->right->suppl ) ? ' ' : '*'),
                        ((exp->suppl.part.eval_11 > 0) ? ' ' : '*') );
@@ -1801,20 +1844,21 @@ static void combination_two_vars(
 
         unsigned int i;
 
-        (*info)[2] = strdup_safe( "          Bit | LR | LR | LR " );
-        (*info)[3] = strdup_safe( "        ======|=1-=|=-1=|=00=" );
+        length = 30 + strlen( spaces );
+        (*info)[2] = (char*)malloc_safe( length );  rv = snprintf( (*info)[2], length, "%s          Bit | LR | LR | LR ", spaces );  assert( rv < length );
+        (*info)[3] = (char*)malloc_safe( length );  rv = snprintf( (*info)[3], length, "%s        ======|=1-=|=-1=|=00=", spaces );  assert( rv < length );
+        (*info)[5] = (char*)malloc_safe( length );  rv = snprintf( (*info)[5], length, "%s        ------|----|----|----", spaces );  assert( rv < length );
 
-        length = 28;
+        length = 28 + strlen( spaces );
         (*info)[4] = (char*)malloc_safe( length );
-        rv = snprintf( (*info)[4], length, "          All | %c    %c    %c",
+        rv = snprintf( (*info)[4], length, "%s          All | %c    %c    %c", spaces,
                        (ESUPPL_WAS_TRUE( exp->left->suppl )  ? ' ' : '*'),
                        (ESUPPL_WAS_TRUE( exp->right->suppl ) ? ' ' : '*'),
                        ((exp->suppl.part.eval_00 > 0) ? ' ' : '*') );
         assert( rv < length );
-        (*info)[5] = strdup_safe( "        ------|----|----|----" );
         for( i=0; i<exp->value->width; i++ ) {
           (*info)[i+6] = (char*)malloc_safe( length );
-          rv = snprintf( (*info)[i+6], length, "         %4u | %c    %c    %c", i,
+          rv = snprintf( (*info)[i+6], length, "%s         %4u | %c    %c    %c", spaces, i,
                          ((vector_get_eval_a( exp->value, i ) == 1) ? ' ' : '*'),
                          ((vector_get_eval_b( exp->value, i ) == 1) ? ' ' : '*'),
                          ((vector_get_eval_c( exp->value, i ) == 1) ? ' ' : '*') );
@@ -1823,12 +1867,13 @@ static void combination_two_vars(
 
       } else {
 
-        (*info)[2] = strdup_safe( "         LR | LR | LR " );
-        (*info)[3] = strdup_safe( "        =1-=|=-1=|=00=" );
+        length = 23 + strlen( spaces );
+        (*info)[2] = (char*)malloc_safe( length );  rv = snprintf( (*info)[2], length, "%s         LR | LR | LR ", spaces );  assert( rv < length );
+        (*info)[3] = (char*)malloc_safe( length );  rv = snprintf( (*info)[3], length, "%s        =1-=|=-1=|=00=", spaces );  assert( rv < length );
 
-        length = 21;
+        length = 21 + strlen( spaces );
         (*info)[4] = (char*)malloc_safe( length );
-        rv = snprintf( (*info)[4], length, "         %c    %c    %c",
+        rv = snprintf( (*info)[4], length, "%s         %c    %c    %c", spaces,
                        (ESUPPL_WAS_TRUE( exp->left->suppl )  ? ' ' : '*'),
                        (ESUPPL_WAS_TRUE( exp->right->suppl ) ? ' ' : '*'),
                        ((exp->suppl.part.eval_00 > 0) ? ' ' : '*') );
@@ -1842,21 +1887,22 @@ static void combination_two_vars(
 
         unsigned int i;
 
-        (*info)[2] = strdup_safe( "          Bit | LR | LR | LR | LR " );
-        (*info)[3] = strdup_safe( "        ======|=00=|=01=|=10=|=11=" );
+        length = 35 + strlen( spaces );
+        (*info)[2] = (char*)malloc_safe( length );  rv = snprintf( (*info)[2], length, "%s          Bit | LR | LR | LR | LR ", spaces );  assert( rv < length );
+        (*info)[3] = (char*)malloc_safe( length );  rv = snprintf( (*info)[3], length, "%s        ======|=00=|=01=|=10=|=11=", spaces );  assert( rv < length );
+        (*info)[5] = (char*)malloc_safe( length );  rv = snprintf( (*info)[5], length, "%s        ------|----|----|----|----", spaces );  assert( rv < length );
 
-        length = 33;
+        length = 33 + strlen( spaces );
         (*info)[4] = (char*)malloc_safe( length );
-        rv = snprintf( (*info)[4], length, "          All | %c    %c    %c    %c",
+        rv = snprintf( (*info)[4], length, "%s          All | %c    %c    %c    %c", spaces,
                        ((exp->suppl.part.eval_00 == 1) ? ' ' : '*'),
                        ((exp->suppl.part.eval_01 == 1) ? ' ' : '*'),
                        ((exp->suppl.part.eval_10 == 1) ? ' ' : '*'),
                        ((exp->suppl.part.eval_11 == 1) ? ' ' : '*') );
         assert( rv < length );
-        (*info)[5] = strdup_safe( "        ------|----|----|----|----" );
         for( i=0; i<exp->value->width; i++ ) {
           (*info)[i+6] = (char*)malloc_safe( length );
-          rv = snprintf( (*info)[i+6], length, "         %4u | %c    %c    %c    %c", i,
+          rv = snprintf( (*info)[i+6], length, "%s         %4u | %c    %c    %c    %c", spaces, i,
                          ((vector_get_eval_a( exp->value, i ) == 1) ? ' ' : '*'),
                          ((vector_get_eval_b( exp->value, i ) == 1) ? ' ' : '*'),
                          ((vector_get_eval_c( exp->value, i ) == 1) ? ' ' : '*'),
@@ -1866,12 +1912,13 @@ static void combination_two_vars(
 
       } else {
 
-        (*info)[2] = strdup_safe( "         LR | LR | LR | LR " );
-        (*info)[3] = strdup_safe( "        =00=|=01=|=10=|=11=" );
+        length = 28 + strlen( spaces );
+        (*info)[2] = (char*)malloc_safe( length );  rv = snprintf( (*info)[2], length, "%s         LR | LR | LR | LR ", spaces );  assert( rv < length );
+        (*info)[3] = (char*)malloc_safe( length );  rv = snprintf( (*info)[3], length, "%s        =00=|=01=|=10=|=11=", spaces );  assert( rv < length );
   
-        length = 26;
+        length = 26 + strlen( spaces );
         (*info)[4] = (char*)malloc_safe( length );
-        rv = snprintf( (*info)[4], length, "         %c    %c    %c    %c",
+        rv = snprintf( (*info)[4], length, "%s         %c    %c    %c    %c", spaces,
                        ((exp->suppl.part.eval_00 == 1) ? ' ' : '*'),
                        ((exp->suppl.part.eval_01 == 1) ? ' ' : '*'),
                        ((exp->suppl.part.eval_10 == 1) ? ' ' : '*'),
@@ -2118,16 +2165,33 @@ static void combination_multi_expr_output(
       unsigned int slen2 = strlen( line2 + start ) + 9;
       unsigned int slen3 = strlen( line3 + start ) + 9;
 
+      if( flag_output_exclusion_ids ) {
+        slen1 += (exclusion_id_size - 1) + 4;
+        slen2 += (exclusion_id_size - 1) + 4;
+        slen3 += (exclusion_id_size - 1) + 4;
+      }
+
       info[info_index+0] = (char*)malloc_safe( slen1 );
       info[info_index+1] = (char*)malloc_safe( slen2 );
       info[info_index+2] = (char*)malloc_safe( slen3 );
 
-      rv = snprintf( info[info_index+0], slen1, "        %s", (line1 + start) );
-      assert( rv < slen1 );
-      rv = snprintf( info[info_index+1], slen2, "        %s", (line2 + start) );
-      assert( rv < slen2 );
-      rv = snprintf( info[info_index+2], slen3, "        %s", (line3 + start) );
-      assert( rv < slen3 );
+      if( flag_output_exclusion_ids ) {
+        char tmp[30];
+        gen_char_string( tmp, ' ', ((exclusion_id_size - 1) + 4) );
+        rv = snprintf( info[info_index+0], slen1, "%s        %s", tmp, (line1 + start) );
+        assert( rv < slen1 );
+        rv = snprintf( info[info_index+1], slen2, "%s        %s", tmp, (line2 + start) );
+        assert( rv < slen2 );
+        rv = snprintf( info[info_index+2], slen3, "%s        %s", tmp, (line3 + start) );
+        assert( rv < slen3 );
+      } else {
+        rv = snprintf( info[info_index+0], slen1, "        %s", (line1 + start) );
+        assert( rv < slen1 );
+        rv = snprintf( info[info_index+1], slen2, "        %s", (line2 + start) );
+        assert( rv < slen2 );
+        rv = snprintf( info[info_index+2], slen3, "        %s", (line3 + start) );
+        assert( rv < slen3 );
+      }
 
     } else if( (line1[i] == '|') && ((i - start) >= line_width) ) {
 
@@ -2144,16 +2208,33 @@ static void combination_multi_expr_output(
       slen2 = strlen( line2 + start ) + 10;
       slen3 = strlen( line3 + start ) + 11;
 
+      if( flag_output_exclusion_ids ) {
+        slen1 += (exclusion_id_size - 1) + 4;
+        slen2 += (exclusion_id_size - 1) + 4;
+        slen3 += (exclusion_id_size - 1) + 4;
+      }
+
       info[info_index+0] = (char*)malloc_safe( slen1 );
       info[info_index+1] = (char*)malloc_safe( slen2 );
       info[info_index+2] = (char*)malloc_safe( slen3 );
 
-      rv = snprintf( info[info_index+0], slen1, "        %s|",   (line1 + start) );
-      assert( rv < slen1 );
-      rv = snprintf( info[info_index+1], slen2, "        %s|",   (line2 + start) );
-      assert( rv < slen2 );
-      rv = snprintf( info[info_index+2], slen3, "        %s \n", (line3 + start) );
-      assert( rv < slen3 );
+      if( flag_output_exclusion_ids ) {
+        char tmp[30];
+        gen_char_string( tmp, ' ', ((exclusion_id_size - 1) + 4) );
+        rv = snprintf( info[info_index+0], slen1, "%s        %s|",   tmp, (line1 + start) );
+        assert( rv < slen1 );
+        rv = snprintf( info[info_index+1], slen2, "%s        %s|",   tmp, (line2 + start) );
+        assert( rv < slen2 );
+        rv = snprintf( info[info_index+2], slen3, "%s        %s \n", tmp, (line3 + start) );
+        assert( rv < slen3 );
+      } else {
+        rv = snprintf( info[info_index+0], slen1, "        %s|",   (line1 + start) );
+        assert( rv < slen1 );
+        rv = snprintf( info[info_index+1], slen2, "        %s|",   (line2 + start) );
+        assert( rv < slen2 );
+        rv = snprintf( info[info_index+2], slen3, "        %s \n", (line3 + start) );
+        assert( rv < slen3 );
+      }
 
       start       = i + 1;
       info_index += 3;
@@ -2213,27 +2294,50 @@ static void combination_multi_vars(
       *info      = (char**)malloc_safe( sizeof( char* ) * (*info_size) );
 
       /* Calculate needed line length */
-      rv = snprintf( tmp, 20, "%d", exp->ulid );
-      assert( rv < 20 );
-      line_size += strlen( tmp );
       rv = snprintf( tmp, 20, "%u", hit );
       assert( rv < 20 );
       line_size += strlen( tmp );
       rv = snprintf( tmp, 20, "%u", total );
       assert( rv < 20 );
       line_size += strlen( tmp );
+      rv = snprintf( tmp, 20, "%d", exp->ulid );
+      assert( rv < 20 );
+      line_size += strlen( tmp );
       line_size += 25;                   /* Number of additional characters in line below */
+      if( flag_output_exclusion_ids ) {
+        line_size += (exclusion_id_size - 1) + 4;
+      }
       (*info)[0] = (char*)malloc_safe( line_size );
     
-      rv = snprintf( (*info)[0], line_size, "        Expression %d   (%u/%u)", exp->ulid, hit, total );
-      assert( rv < line_size );
-    
-      switch( exp->op ) {
-        case EXP_OP_AND  :  (*info)[1] = strdup_safe( "        ^^^^^^^^^^^^^ - &" );   break;
-        case EXP_OP_OR   :  (*info)[1] = strdup_safe( "        ^^^^^^^^^^^^^ - |" );   break;
-        case EXP_OP_LAND :  (*info)[1] = strdup_safe( "        ^^^^^^^^^^^^^ - &&" );  break;
-        case EXP_OP_LOR  :  (*info)[1] = strdup_safe( "        ^^^^^^^^^^^^^ - ||" );  break;
-        default          :  break;
+      if( flag_output_exclusion_ids ) {
+        char* tmp;
+        char  spaces[30];
+        int   size;
+        rv = snprintf( (*info)[0], line_size, "        (%s)  Expression %d   (%u/%u)", db_gen_exclusion_id( 'E', exp->id ), exp->ulid, hit, total );
+        assert( rv < line_size );
+        switch( exp->op ) {
+          case EXP_OP_AND  :  tmp = strdup_safe( "        ^^^^^^^^^^^^^ - &" );   break;
+          case EXP_OP_OR   :  tmp = strdup_safe( "        ^^^^^^^^^^^^^ - |" );   break;
+          case EXP_OP_LAND :  tmp = strdup_safe( "        ^^^^^^^^^^^^^ - &&" );  break;
+          case EXP_OP_LOR  :  tmp = strdup_safe( "        ^^^^^^^^^^^^^ - ||" );  break;
+          default          :  break;
+        }
+        size = strlen( tmp ) + (exclusion_id_size - 1) + 5;
+        gen_char_string( spaces, ' ', (exclusion_id_size - 1) );
+        (*info)[1] = (char*)malloc_safe( size );
+        rv = snprintf( (*info)[1], size, "%s    %s", spaces, tmp );
+        assert( rv < size );
+        free_safe( tmp, (strlen( tmp ) + 1) );
+      } else {
+        rv = snprintf( (*info)[0], line_size, "        Expression %d   (%u/%u)", exp->ulid, hit, total );
+        assert( rv < line_size );
+        switch( exp->op ) {
+          case EXP_OP_AND  :  (*info)[1] = strdup_safe( "        ^^^^^^^^^^^^^ - &" );   break;
+          case EXP_OP_OR   :  (*info)[1] = strdup_safe( "        ^^^^^^^^^^^^^ - |" );   break;
+          case EXP_OP_LAND :  (*info)[1] = strdup_safe( "        ^^^^^^^^^^^^^ - &&" );  break;
+          case EXP_OP_LOR  :  (*info)[1] = strdup_safe( "        ^^^^^^^^^^^^^ - ||" );  break;
+          default          :  break;
+        }
       }
 
       /* Output the lines paying attention to the current line width */
@@ -2332,7 +2436,7 @@ static void combination_list_missed(
     combination_list_missed( ofile, exp->right, combination_calc_depth( exp, curr_depth, FALSE ) );
 
     /* Get coverage information for this expression */
-    combination_get_missed_expr( &info, &info_size, exp, curr_depth, FALSE );
+    combination_get_missed_expr( &info, &info_size, exp, curr_depth, report_exclusions );
 
     /* If there was any coverage information for this expression, output it to the specified output stream */
     if( info_size > 0 ) {
@@ -2362,18 +2466,19 @@ static void combination_list_missed(
  combinational logic.
 */
 static void combination_output_expr(
-            expression*  expr,           /*!< Pointer to root of expression tree to search */
-            unsigned int curr_depth,     /*!< Specifies current depth of expression tree */
-  /*@out@*/ int*         any_missed,     /*!< Pointer to indicate if any subexpressions were missed in the specified expression */
-  /*@out@*/ int*         any_measurable  /*!< Pointer to indicate if any subexpressions were measurable in the specified expression */
+            expression*  expr,            /*!< Pointer to root of expression tree to search */
+            unsigned int curr_depth,      /*!< Specifies current depth of expression tree */
+  /*@out@*/ int*         any_missed,      /*!< Pointer to indicate if any subexpressions were missed in the specified expression */
+  /*@out@*/ int*         any_measurable,  /*!< Pointer to indicate if any subexpressions were measurable in the specified expression */
+  /*@out@*/ int*         any_excluded     /*!< Pointer to indicate if any subexpressions were excluded */
 ) { PROFILE(COMBINATION_OUTPUT_EXPR);
 
   if( (expr != NULL) && (ESUPPL_WAS_COMB_COUNTED( expr->suppl ) == 1) ) {
 
     expr->suppl.part.comb_cntd = 0;
 
-    combination_output_expr( expr->right, combination_calc_depth( expr, curr_depth, FALSE ), any_missed, any_measurable );
-    combination_output_expr( expr->left,  combination_calc_depth( expr, curr_depth, TRUE ),  any_missed, any_measurable );
+    combination_output_expr( expr->right, combination_calc_depth( expr, curr_depth, FALSE ), any_missed, any_measurable, any_excluded );
+    combination_output_expr( expr->left,  combination_calc_depth( expr, curr_depth, TRUE ),  any_missed, any_measurable, any_excluded );
 
     if( ((report_comb_depth == REPORT_DETAILED) && (curr_depth <= report_comb_depth)) ||
          (report_comb_depth == REPORT_VERBOSE) ) {
@@ -2381,8 +2486,12 @@ static void combination_output_expr(
       if( expr->ulid != -1 ) {
         *any_missed = 1;
       }
-      if( (EXPR_IS_MEASURABLE( expr ) == 1) && (ESUPPL_EXCLUDED( expr->suppl ) == 0) ) {
-        *any_measurable = 1;
+      if( EXPR_IS_MEASURABLE( expr ) == 1 ) {
+        if( ESUPPL_EXCLUDED( expr->suppl ) == 0 ) {
+          *any_measurable = 1;
+        } else {
+          *any_excluded   = 1;
+        }
       }
 
     }
@@ -2394,6 +2503,8 @@ static void combination_output_expr(
 }
 
 /*!
+ \return Returns TRUE if at least one expression was found to be excluded.
+
  \throws anonymous combination_underline
 
  Displays the expressions (and groups of expressions) that were considered 
@@ -2404,22 +2515,25 @@ static void combination_output_expr(
  the Verilog code, showing those logical combinations that were not hit
  during simulation.
 */
-static void combination_display_verbose(
+static bool combination_display_verbose(
   FILE*      ofile,  /*!< Pointer to file to output results to */
-  func_unit* funit   /*!< Pointer to functional unit to display verbose combinational logic output for */
+  func_unit* funit,  /*!< Pointer to functional unit to display verbose combinational logic output for */
+  rpt_type   rtype   /*!< Specifies the type of report to display */
 ) { PROFILE(COMBINATION_DISPLAY_VERBOSE);
 
+  bool         retval = FALSE;  /* Return value for this function */
   func_iter    fi;              /* Functional unit iterator */
   statement*   stmt;            /* Pointer to current statement */
   char**       code;            /* Code string from code generator */
   unsigned int code_depth;      /* Depth of code array */
   int          any_missed;      /* Specifies if any of the subexpressions were missed in this expression */
   int          any_measurable;  /* Specifies if any of the subexpressions were measurable in this expression */
+  int          any_excluded;    /* Specifies if any of the subexpressions were excluded in this expression */
 
-  if( report_covered ) {
-    fprintf( ofile, "    Hit Combinations\n\n" );
-  } else { 
-    fprintf( ofile, "    Missed Combinations  (* = missed value)\n\n" );
+  switch( rtype ) {
+    case RPT_TYPE_HIT  :  fprintf( ofile, "    Hit Combinations\n\n" );                         break;
+    case RPT_TYPE_MISS :  fprintf( ofile, "    Missed Combinations  (* = missed value)\n\n" );  break;
+    case RPT_TYPE_EXCL :  fprintf( ofile, "    Excluded Combinations\n\n" );                    break;
   }
 
   /* Initialize functional unit iterator */
@@ -2431,12 +2545,16 @@ static void combination_display_verbose(
 
     any_missed     = 0;
     any_measurable = 0;
+    any_excluded   = 0;
 
-    combination_output_expr( stmt->exp, 0, &any_missed, &any_measurable );
+    combination_output_expr( stmt->exp, 0, &any_missed, &any_measurable, &any_excluded );
 
-    if( ((report_covered == 0) && (any_missed == 1) && (any_measurable == 1)) ||
-        ((report_covered == 1) && (any_missed == 0) && (any_measurable == 1)) ) {
- 
+    retval |= any_excluded;
+
+    if( ((rtype == RPT_TYPE_MISS) && (any_missed == 1) && (any_measurable == 1)) ||
+        ((rtype == RPT_TYPE_HIT)  && (any_missed == 0) && (any_measurable == 1)) ||
+        ((rtype == RPT_TYPE_EXCL) && (any_excluded == 1)) ) {
+
       stmt->exp->suppl.part.comb_cntd = 0;
 
       fprintf( ofile, "      =========================================================================================================\n" );
@@ -2463,6 +2581,8 @@ static void combination_display_verbose(
   func_iter_dealloc( &fi );
 
   PROFILE_END;
+
+  return( retval );
 
 }
 
@@ -2502,6 +2622,8 @@ static void combination_instance_verbose(
       (((root->stat->comb_hit < root->stat->comb_total) && !report_covered) ||
        ((root->stat->comb_hit > 0) && report_covered)) ) {
 
+    bool found_exclusion;
+
     /* Get printable version of functional unit name */
     pname = scope_gen_printable( funit_flatten_name( root->funit ) );
 
@@ -2521,7 +2643,10 @@ static void combination_instance_verbose(
 
     free_safe( pname, (strlen( pname ) + 1) );
 
-    combination_display_verbose( ofile, root->funit );
+    found_exclusion = combination_display_verbose( ofile, root->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
+    if( report_exclusions && found_exclusion ) {
+      (void)combination_display_verbose( ofile, root->funit, RPT_TYPE_EXCL );
+    }
 
   }
 
@@ -2554,6 +2679,8 @@ static void combination_funit_verbose(
         (((head->funit->stat->comb_hit < head->funit->stat->comb_total) && !report_covered) ||
          ((head->funit->stat->comb_hit > 0) && report_covered)) ) {
 
+      bool found_exclusion;
+
       /* Get printable version of functional unit name */
       pname = scope_gen_printable( funit_flatten_name( head->funit ) );
 
@@ -2573,7 +2700,10 @@ static void combination_funit_verbose(
 
       free_safe( pname, (strlen( pname ) + 1) );
 
-      combination_display_verbose( ofile, head->funit );
+      found_exclusion = combination_display_verbose( ofile, head->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
+      if( report_exclusions && found_exclusion ) {
+        (void)combination_display_verbose( ofile, head->funit, RPT_TYPE_EXCL );
+      }
 
     }
 
@@ -2601,6 +2731,7 @@ void combination_collect(
   statement* stmt;            /* Pointer to current statement */
   int        any_missed;      /* Specifies if any of the subexpressions were missed in this expression */
   int        any_measurable;  /* Specifies if any of the subexpressions were measurable in this expression */
+  int        any_excluded;    /* Specifies if any of the subexpressions were excluded in this expression */
  
   /* Reset combination counted bits */
   combination_reset_counted_exprs( funit );
@@ -2617,8 +2748,9 @@ void combination_collect(
 
     any_missed     = 0;
     any_measurable = 0;
+    any_excluded   = 0;
 
-    combination_output_expr( stmt->exp, 0, &any_missed, &any_measurable );
+    combination_output_expr( stmt->exp, 0, &any_missed, &any_measurable, &any_excluded );
 
     /* Check for uncovered statements */
     if( ((cov == 0) && (any_missed == 1)) ||
@@ -2904,6 +3036,9 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.200  2008/08/24 01:28:05  phase1geo
+ Fixing bug 2060873.
+
  Revision 1.199  2008/08/22 20:56:35  phase1geo
  Starting to make updates for proper unnamed scope report handling (fix for bug 2054686).
  Not complete yet.  Also making updates to documentation.  Checkpointing.
