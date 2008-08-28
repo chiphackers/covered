@@ -43,6 +43,7 @@
 
 extern char user_msg[USER_MSG_LENGTH];
 extern bool debug_mode;
+extern int  curr_sig_id;
 
 
 /*!
@@ -236,7 +237,7 @@ void vsignal_db_write(
       (sig->suppl.part.type != SSUPPL_TYPE_GENVAR) ) {
 
     /* Display identification and value information first */
-    fprintf( file, "%d %s %u %d %x %u %u",
+    fprintf( file, "%d %s %d %d %x %u %u",
       DB_TYPE_SIGNAL,
       sig->name,
       sig->id,
@@ -275,7 +276,6 @@ void vsignal_db_read(
 ) { PROFILE(VSIGNAL_DB_READ);
 
   char         name[256];      /* Name of current vsignal */
-  unsigned int id;             /* ID of signal */
   vsignal*     sig;            /* Pointer to the newly created vsignal */
   vector*      vec;            /* Vector value for this vsignal */
   int          sline;          /* Declared line number */
@@ -287,7 +287,7 @@ void vsignal_db_read(
   unsigned int i;              /* Loop iterator */
 
   /* Get name values. */
-  if( sscanf( *line, "%s %u %d %x %u %u%n", name, &id, &sline, &(suppl.all), &pdim_num, &udim_num, &chars_read ) == 6 ) {
+  if( sscanf( *line, "%s %d %d %x %u %u%n", name, &curr_sig_id, &sline, &(suppl.all), &pdim_num, &udim_num, &chars_read ) == 6 ) {
 
     *line = *line + chars_read;
 
@@ -319,7 +319,7 @@ void vsignal_db_read(
 
     /* Create new vsignal */
     sig = vsignal_create( name, suppl.part.type, vec->width, sline, suppl.part.col );
-    sig->id                    = id;
+    sig->id                    = curr_sig_id;
     sig->suppl.part.assigned   = suppl.part.assigned;
     sig->suppl.part.mba        = suppl.part.mba;
     sig->suppl.part.big_endian = suppl.part.big_endian;
@@ -370,7 +370,7 @@ void vsignal_db_merge(
 ) { PROFILE(VSIGNAL_DB_MERGE);
  
   char         name[256];   /* Name of current vsignal */
-  unsigned int id;          /* Unique ID of current signal */
+  int          id;          /* Unique ID of current signal */
   int          sline;       /* Declared line number */
   unsigned int pdim_num;    /* Number of packed dimensions */
   unsigned int udim_num;    /* Number of unpacked dimensions */
@@ -383,7 +383,7 @@ void vsignal_db_merge(
   assert( base != NULL );
   assert( base->name != NULL );
 
-  if( sscanf( *line, "%s %u %d %x %u %u%n", name, &id, &sline, &(suppl.all), &pdim_num, &udim_num, &chars_read ) == 6 ) {
+  if( sscanf( *line, "%s %d %d %x %u %u%n", name, &id, &sline, &(suppl.all), &pdim_num, &udim_num, &chars_read ) == 6 ) {
 
     *line = *line + chars_read;
 
@@ -764,6 +764,10 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.78  2008/08/27 23:06:00  phase1geo
+ Starting to make updates for supporting command-line exclusions.  Signals now
+ have a unique ID associated with them in the CDD file.  Checkpointing.
+
  Revision 1.77  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

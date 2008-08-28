@@ -51,7 +51,7 @@ extern char         user_msg[USER_MSG_LENGTH];
 /*!
  Signal ID that is used for identification purposes (each signal will receive a unique ID).
 */
-unsigned int curr_sig_id = 1;
+int curr_sig_id = 1;
 
 
 static bool instance_resolve_inst( funit_inst*, funit_inst* );
@@ -1148,6 +1148,10 @@ void instance_dealloc(
 
 /*
  $Log$
+ Revision 1.99  2008/08/27 23:06:00  phase1geo
+ Starting to make updates for supporting command-line exclusions.  Signals now
+ have a unique ID associated with them in the CDD file.  Checkpointing.
+
  Revision 1.98  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

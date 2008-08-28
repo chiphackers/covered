@@ -76,6 +76,8 @@ extern int         generate_mode;
 extern int         generate_top_mode;
 extern int         generate_expr_mode;
 extern int         for_mode;
+extern int         curr_sig_id;
+extern bool        flag_output_exclusion_ids;
 
 /*!
  Array of database pointers storing all currently loaded databases.
@@ -186,6 +188,16 @@ unsigned int ignore_racecheck_mode = 0;
 */
 uint64 num_timesteps = 0;
 
+/*!
+ Contains the current exclusion identifier created by the db_gen_exclusion_id function.
+*/
+/*@null@*/ static char* exclusion_id = NULL;
+
+/*!
+ Number of chars allocated for the exclusion_id array.
+*/
+static unsigned int exclusion_id_size = 0;
+
 
 /*!
  \return Returns pointer to newly allocated and initialized database structure
@@ -260,6 +272,9 @@ void db_close() { PROFILE(DB_CLOSE);
 
   /* Deallocate the information section memory */
   info_dealloc();
+
+  /* Deallocate the exclusion identifier container, if it exists */
+  free_safe( exclusion_id, exclusion_id_size );
 
   /* Finally, deallocate the database list */
   free_safe( db_list, (sizeof( db ) * db_size) );
@@ -785,6 +800,49 @@ func_unit* db_get_curr_funit() { PROFILE(DB_GET_CURR_FUNIT);
 
   return( curr_funit );
 
+}
+
+/*!
+ \return Returns the generated exclusion ID given the parameters and the value of the report_exclusions global flag.
+
+ Generates the exclusion ID string and stores the result in the excl_id array.
+*/
+char* db_gen_exclusion_id(
+  char type,  /*!< Single character specifying the metric type (L, T, M, C, A, F) */
+  int  id     /*!< Numerical unique identifier */
+) { PROFILE(DB_GEN_EXCLUSION_ID);
+
+  /* If the exclusion ID has not been created, create it now */
+  if( exclusion_id == NULL ) {
+
+    if( flag_output_exclusion_ids ) {
+
+      char tmp[30];
+
+      snprintf( tmp, 30, "%d", curr_sig_id );
+      exclusion_id_size = strlen( tmp ) + 3;
+      exclusion_id      = (char*)malloc_safe( exclusion_id_size );
+
+    } else {
+
+      exclusion_id      = strdup( "" );
+      exclusion_id_size = 1;
+
+    }
+
+  }
+
+  /* Only create exclusion ID if the user has specified to do so (otherwise return the empty string) */
+  if( flag_output_exclusion_ids ) {
+    char tmp[30];
+    snprintf( tmp, 30, "%%c%%0%dd ", (exclusion_id_size - 2) );
+    snprintf( exclusion_id, exclusion_id_size, tmp, type, id );
+  }
+ 
+  PROFILE_END;
+
+  return( exclusion_id );
+ 
 }
 
 /*!
@@ -2915,6 +2973,11 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.318  2008/08/18 23:07:26  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.309.2.3  2008/08/06 20:11:33  phase1geo
  Adding support for instance-based coverage reporting in GUI.  Everything seems to be
  working except for proper exclusion handling.  Checkpointing.

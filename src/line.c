@@ -55,6 +55,8 @@ extern int          leading_hier_num;
 extern bool         leading_hiers_differ;
 extern isuppl       info_suppl;
 extern bool         flag_suppress_empty_funits;
+extern bool         flag_output_exclusion_ids;
+extern bool         report_exclusions;
 
 
 /*!
@@ -409,8 +411,7 @@ static void line_display_verbose(
   func_iter_init( &fi, funit, TRUE, FALSE );
 
   /* Display current instance missed lines */
-  stmt = func_iter_get_next_statement( &fi );
-  while( stmt != NULL ) {
+  while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
 
     if( (stmt->exp->op != EXP_OP_DELAY)   &&
         (stmt->exp->op != EXP_OP_CASE)    &&
@@ -423,15 +424,18 @@ static void line_display_verbose(
         (stmt->exp->op != EXP_OP_NOOP)    &&
         (stmt->exp->line != 0) ) {
 
-      if( (((stmt->exp->exec_num > 0) ? 1 : 0) == report_covered) && (stmt->suppl.part.excluded == 0) ) {
+      if( ((((stmt->exp->exec_num > 0) ? 1 : 0) == report_covered) && (stmt->suppl.part.excluded == 0)) ||
+          ((stmt->suppl.part.excluded == 1) && report_exclusions) ) {
 
         unexec_exp = stmt->exp;
 
         codegen_gen_expr( unexec_exp, unexec_exp->op, &code, &code_depth, funit );
         if( code_depth == 1 ) {
-          fprintf( ofile, "      %7d:    %s\n", unexec_exp->line, code[0] );
+          fprintf( ofile, "      %c %s%7d:    %s\n",
+            ((stmt->suppl.part.excluded == 1) ? 'E' : ' '), db_gen_exclusion_id( 'L', stmt->exp->id ), unexec_exp->line, code[0] );
         } else {
-          fprintf( ofile, "      %7d:    %s...\n", unexec_exp->line, code[0] );
+          fprintf( ofile, "      %c %s%7d:    %s...\n",
+            ((stmt->suppl.part.excluded == 1) ? 'E' : ' '), db_gen_exclusion_id( 'L', stmt->exp->id ), unexec_exp->line, code[0] );
         }
         for( i=0; i<code_depth; i++ ) {
           free_safe( code[i], (strlen( code[i] ) + 1) );
@@ -441,8 +445,6 @@ static void line_display_verbose(
       }
 
     }
-
-    stmt = func_iter_get_next_statement( &fi );
 
   }
 
@@ -647,6 +649,10 @@ void line_report(
 
 /*
  $Log$
+ Revision 1.95  2008/08/22 20:56:35  phase1geo
+ Starting to make updates for proper unnamed scope report handling (fix for bug 2054686).
+ Not complete yet.  Also making updates to documentation.  Checkpointing.
+
  Revision 1.94  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

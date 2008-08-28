@@ -61,6 +61,12 @@ void db_set_timescale( int unit, int precision );
 /*! \brief Returns a pointer to the current functional unit. */
 func_unit* db_get_curr_funit();
 
+/*! \brief Allocates memory for and generates the exclusion identifier. */
+char* db_gen_exclusion_id(
+  char type,
+  int  id
+);
+
 /*! \brief Creates a scope name for an unnamed scope.  Called only during parsing. */
 char* db_create_unnamed_scope();
 
@@ -205,6 +211,11 @@ bool db_do_timestep( uint64 time, bool final );
 
 /*
  $Log$
+ Revision 1.91  2008/08/18 23:07:26  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.88.4.1  2008/07/10 22:43:50  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

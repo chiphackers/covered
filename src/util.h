@@ -203,9 +203,21 @@ void read_command_file(
   /*@out@*/ int*        arg_num
 );
 
+/*! \brief Generates the exclusion identifier */
+void gen_exclusion_id(
+  char* excl_id,
+  char  type,
+  int   id
+);
+
 
 /*
  $Log$
+ Revision 1.45  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.41.4.3  2008/08/12 16:53:10  phase1geo
  Adding timer information for -v option to the rank command.
 

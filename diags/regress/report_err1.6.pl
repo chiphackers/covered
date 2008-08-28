@@ -9,7 +9,7 @@ require "../verilog/regress_subs.pl";
 &initialize( "report_err1.6", 1, @ARGV );
 
 # Run the report command
-&runReportCommand( "-d v -x -o report_err1.6.rpt report_err1.6.cdd 2> report_err1.6.err" );
+&runReportCommand( "-d v -z -o report_err1.6.rpt report_err1.6.cdd 2> report_err1.6.err" );
 system( "cat report_err1.6.err" ) && die;
 
 # Perform the file comparison checks
