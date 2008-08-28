@@ -91,7 +91,6 @@ extern char           user_msg[USER_MSG_LENGTH];
 extern const exp_info exp_op_info[EXP_OP_NUM];
 extern isuppl         info_suppl;
 extern bool           report_exclusions;
-extern unsigned int   exclusion_id_size;
 extern bool           flag_output_exclusion_ids;
 
 
@@ -1567,7 +1566,12 @@ static void combination_unary(
 
   if( (hit != tot) || (exp->suppl.part.excluded && show_excluded) ) {
 
-    char spaces[30];
+    char         spaces[30];
+    unsigned int eid_size;
+
+    if( flag_output_exclusion_ids ) {
+      eid_size = db_get_exclusion_id_size();
+    }
 
     spaces[0] = '\0';
 
@@ -1583,8 +1587,8 @@ static void combination_unary(
     rv = snprintf( tmp, 20, "%d", hit );        assert( rv < 20 );  length += strlen( tmp );
     rv = snprintf( tmp, 20, "%d", tot );        assert( rv < 20 );  length += strlen( tmp );
     if( flag_output_exclusion_ids ) {
-      length += (exclusion_id_size - 1) + 4;
-      gen_char_string( spaces, ' ', ((exclusion_id_size - 1) + 4) );
+      length += (eid_size - 1) + 4;
+      gen_char_string( spaces, ' ', ((eid_size - 1) + 4) );
     }
     (*info)[0] = (char*)malloc_safe( length );
     if( flag_output_exclusion_ids ) {
@@ -1664,6 +1668,11 @@ static void combination_event(
 
     char         spaces[30];
     unsigned int rv;
+    unsigned int eid_size;
+
+    if( flag_output_exclusion_ids ) {
+      eid_size = db_get_exclusion_id_size();
+    }
 
     spaces[0] = '\0';
 
@@ -1676,8 +1685,8 @@ static void combination_event(
     /* Allocate lines and assign values */
     length = 28;  rv = snprintf( tmp, 20, "%d", exp->ulid );  assert( rv < 20 );  length += strlen( tmp );
     if( flag_output_exclusion_ids ) {
-      length += (exclusion_id_size - 1) + 4;
-      gen_char_string( spaces, ' ', ((exclusion_id_size - 1) + 4) );
+      length += (eid_size - 1) + 4;
+      gen_char_string( spaces, ' ', ((eid_size - 1) + 4) );
     }
     (*info)[0] = (char*)malloc_safe( length );
     if( flag_output_exclusion_ids ) {
@@ -1763,7 +1772,12 @@ static void combination_two_vars(
 
   if( (hit != total) || (exp->suppl.part.excluded && show_excluded) ) {
 
-    char spaces[30];
+    char         spaces[30];
+    unsigned int eid_size;
+
+    if( flag_output_exclusion_ids ) {
+      eid_size = db_get_exclusion_id_size();
+    }
 
     spaces[0] = '\0';
 
@@ -1779,8 +1793,8 @@ static void combination_two_vars(
     rv = snprintf( tmp, 20, "%d", hit );        assert( rv < 20 );  length += strlen( tmp );
     rv = snprintf( tmp, 20, "%d", total );      assert( rv < 20 );  length += strlen( tmp );
     if( flag_output_exclusion_ids ) {
-      length += (exclusion_id_size - 1) + 4;
-      gen_char_string( spaces, ' ', ((exclusion_id_size - 1) + 4) );
+      length += (eid_size - 1) + 4;
+      gen_char_string( spaces, ' ', ((eid_size - 1) + 4) );
     }
     (*info)[0] = (char*)malloc_safe( length );
     if( flag_output_exclusion_ids ) {
@@ -2151,10 +2165,15 @@ static void combination_multi_expr_output(
   char*  line3   /*!< Third line of multi-variable expression output */
 ) { PROFILE(COMBINATION_MULTI_EXPR_OUTPUT);
 
-  int start      = 0;
-  int i;
-  int len        = strlen( line1 );
-  int info_index = 2;
+  int          start      = 0;
+  int          i;
+  int          len        = strlen( line1 );
+  int          info_index = 2;
+  unsigned int eid_size;
+
+  if( flag_output_exclusion_ids ) {
+    eid_size = db_get_exclusion_id_size();
+  }
 
   for( i=0; i<len; i++ ) {
 
@@ -2166,9 +2185,9 @@ static void combination_multi_expr_output(
       unsigned int slen3 = strlen( line3 + start ) + 9;
 
       if( flag_output_exclusion_ids ) {
-        slen1 += (exclusion_id_size - 1) + 4;
-        slen2 += (exclusion_id_size - 1) + 4;
-        slen3 += (exclusion_id_size - 1) + 4;
+        slen1 += (eid_size - 1) + 4;
+        slen2 += (eid_size - 1) + 4;
+        slen3 += (eid_size - 1) + 4;
       }
 
       info[info_index+0] = (char*)malloc_safe( slen1 );
@@ -2177,7 +2196,7 @@ static void combination_multi_expr_output(
 
       if( flag_output_exclusion_ids ) {
         char tmp[30];
-        gen_char_string( tmp, ' ', ((exclusion_id_size - 1) + 4) );
+        gen_char_string( tmp, ' ', ((eid_size - 1) + 4) );
         rv = snprintf( info[info_index+0], slen1, "%s        %s", tmp, (line1 + start) );
         assert( rv < slen1 );
         rv = snprintf( info[info_index+1], slen2, "%s        %s", tmp, (line2 + start) );
@@ -2209,9 +2228,9 @@ static void combination_multi_expr_output(
       slen3 = strlen( line3 + start ) + 11;
 
       if( flag_output_exclusion_ids ) {
-        slen1 += (exclusion_id_size - 1) + 4;
-        slen2 += (exclusion_id_size - 1) + 4;
-        slen3 += (exclusion_id_size - 1) + 4;
+        slen1 += (eid_size - 1) + 4;
+        slen2 += (eid_size - 1) + 4;
+        slen3 += (eid_size - 1) + 4;
       }
 
       info[info_index+0] = (char*)malloc_safe( slen1 );
@@ -2220,7 +2239,7 @@ static void combination_multi_expr_output(
 
       if( flag_output_exclusion_ids ) {
         char tmp[30];
-        gen_char_string( tmp, ' ', ((exclusion_id_size - 1) + 4) );
+        gen_char_string( tmp, ' ', ((eid_size - 1) + 4) );
         rv = snprintf( info[info_index+0], slen1, "%s        %s|",   tmp, (line1 + start) );
         assert( rv < slen1 );
         rv = snprintf( info[info_index+1], slen2, "%s        %s|",   tmp, (line2 + start) );
@@ -2280,6 +2299,11 @@ static void combination_multi_vars(
       unsigned int slen1;
       unsigned int slen2;
       unsigned int slen3;
+      unsigned int eid_size;
+
+      if( flag_output_exclusion_ids ) {
+        eid_size = db_get_exclusion_id_size();
+      }
 
       /* Gather report output for this expression */
       combination_multi_var_exprs( &line1, &line2, &line3, exp );
@@ -2305,7 +2329,7 @@ static void combination_multi_vars(
       line_size += strlen( tmp );
       line_size += 25;                   /* Number of additional characters in line below */
       if( flag_output_exclusion_ids ) {
-        line_size += (exclusion_id_size - 1) + 4;
+        line_size += (eid_size - 1) + 4;
       }
       (*info)[0] = (char*)malloc_safe( line_size );
     
@@ -2322,8 +2346,8 @@ static void combination_multi_vars(
           case EXP_OP_LOR  :  tmp = strdup_safe( "        ^^^^^^^^^^^^^ - ||" );  break;
           default          :  break;
         }
-        size = strlen( tmp ) + (exclusion_id_size - 1) + 5;
-        gen_char_string( spaces, ' ', (exclusion_id_size - 1) );
+        size = strlen( tmp ) + (eid_size - 1) + 5;
+        gen_char_string( spaces, ' ', (eid_size - 1) );
         (*info)[1] = (char*)malloc_safe( size );
         rv = snprintf( (*info)[1], size, "%s    %s", spaces, tmp );
         assert( rv < size );
@@ -2645,6 +2669,7 @@ static void combination_instance_verbose(
 
     found_exclusion = combination_display_verbose( ofile, root->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
     if( report_exclusions && found_exclusion ) {
+      combination_reset_counted_exprs( root->funit );
       (void)combination_display_verbose( ofile, root->funit, RPT_TYPE_EXCL );
     }
 
@@ -2702,6 +2727,7 @@ static void combination_funit_verbose(
 
       found_exclusion = combination_display_verbose( ofile, head->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
       if( report_exclusions && found_exclusion ) {
+        combination_reset_counted_exprs( head->funit );
         (void)combination_display_verbose( ofile, head->funit, RPT_TYPE_EXCL );
       }
 
@@ -3036,6 +3062,10 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.201  2008/08/28 18:51:42  phase1geo
+ Added support to output exclusion identifiers in combinational logic expression
+ verbose output.  Updated regression suite for these changes.  Checkpointing.
+
  Revision 1.200  2008/08/24 01:28:05  phase1geo
  Fixing bug 2060873.
 

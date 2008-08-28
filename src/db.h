@@ -61,6 +61,9 @@ void db_set_timescale( int unit, int precision );
 /*! \brief Returns a pointer to the current functional unit. */
 func_unit* db_get_curr_funit();
 
+/*! \brief Calculates and returns the size of the exclusion ID string */
+unsigned int db_get_exclusion_id_size();
+
 /*! \brief Allocates memory for and generates the exclusion identifier. */
 char* db_gen_exclusion_id(
   char type,
@@ -211,6 +214,10 @@ bool db_do_timestep( uint64 time, bool final );
 
 /*
  $Log$
+ Revision 1.92  2008/08/28 04:37:17  phase1geo
+ Starting to add support for exclusion output and exclusion IDs to generated
+ reports.  These changes should break regressions.  Checkpointing.
+
  Revision 1.91  2008/08/18 23:07:26  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

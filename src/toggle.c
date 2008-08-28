@@ -51,7 +51,6 @@ extern bool         leading_hiers_differ;
 extern isuppl       info_suppl;
 extern bool         report_exclusions;
 extern bool         flag_output_exclusion_ids;
-extern unsigned int exclusion_id_size;
 
 
 /*!
@@ -422,6 +421,7 @@ static bool toggle_display_verbose(
   unsigned int hit01;           /* Number of bits that toggled from 0 to 1 */
   unsigned int hit10;           /* Number of bits that toggled from 1 to 0 */
   char*        pname;           /* Printable version of signal name */
+  unsigned int eid_size;
 
   switch( rtype ) {
     case RPT_TYPE_HIT  :  fprintf( ofile, "    Signals getting 100%% toggle coverage\n\n" );      break;
@@ -429,10 +429,14 @@ static bool toggle_display_verbose(
     case RPT_TYPE_EXCL :  fprintf( ofile, "    Signals excluded from toggle coverage\n\n" );      break;
   }
 
+  if( flag_output_exclusion_ids ) { 
+    eid_size = db_get_exclusion_id_size();
+  }
+
   if( rtype != RPT_TYPE_HIT ) {
     if( flag_output_exclusion_ids ) {
       char tmp[30];
-      gen_char_string( tmp, ' ', (exclusion_id_size - 3) );
+      gen_char_string( tmp, ' ', (eid_size - 3) );
       fprintf( ofile, "      EID%s   Signal                    Toggle\n", tmp );
     } else {
       fprintf( ofile, "      Signal                    Toggle\n" );
@@ -483,7 +487,7 @@ static bool toggle_display_verbose(
               char tmp[30];
               fprintf( ofile, "      (%s)  %-24s  0->1: ", db_gen_exclusion_id( 'T', sig->id ), pname );
               vector_display_toggle01_ulong( sig->value->value.ul, sig->value->width, ofile );      
-              gen_char_string( tmp, ' ', (exclusion_id_size - 1) );
+              gen_char_string( tmp, ' ', (eid_size - 1) );
               fprintf( ofile, "\n       %s   ......................... 1->0: ", tmp );
               vector_display_toggle10_ulong( sig->value->value.ul, sig->value->width, ofile );      
               fprintf( ofile, " ...\n" );
@@ -712,6 +716,9 @@ void toggle_report(
 
 /*
  $Log$
+ Revision 1.81  2008/08/28 16:52:22  phase1geo
+ Adding toggle and memory exclusion support in report command.  Checkpointing.
+
  Revision 1.80  2008/08/23 20:00:30  phase1geo
  Full fix for bug 2054686.  Also cleaned up Cver regressions.
 

@@ -42,6 +42,7 @@ extern char**       leading_hierarchies;
 extern int          leading_hier_num;
 extern bool         leading_hiers_differ;
 extern isuppl       info_suppl;
+extern bool         report_exclusions;
 
 
 /*!
@@ -258,27 +259,34 @@ static bool assertion_funit_summary(
 }
 
 /*!
+ \return Returns TRUE if there was at least one excluded assertion found.
+
  Displays the verbose hit/miss assertion information for the given functional unit.
 */
-static void assertion_display_verbose(
+static bool assertion_display_verbose(
   FILE*            ofile,  /*!< Pointer to the file to output the verbose information to */
-  const func_unit* funit   /*!< Pointer to the functional unit to display */
+  const func_unit* funit,  /*!< Pointer to the functional unit to display */
+  rpt_type         rtype   /*!< Type of report output to generate */
 ) { PROFILE(ASSERTION_DISPLAY_VERBOSE);
 
-  if( report_covered ) {
-    fprintf( ofile, "    Hit Assertions\n\n" );
-  } else {
-    fprintf( ofile, "    Missed Assertions\n\n" );
+  bool retval = FALSE;  /* Return value for this function */
+
+  switch( rtype ) {
+    case RPT_TYPE_HIT  :  fprintf( ofile, "    Hit Assertions\n\n" );       break;
+    case RPT_TYPE_MISS :  fprintf( ofile, "    Missed Assertions\n\n" );    break;
+    case RPT_TYPE_EXCL :  fprintf( ofile, "    Excluded Assertions\n\n" );  break;
   }
 
   /* If OVL assertion coverage is needed, output it in the OVL style */
   if( info_suppl.part.assert_ovl == 1 ) {
-    ovl_display_verbose( ofile, funit );
+    retval = ovl_display_verbose( ofile, funit, rtype );
   }
 
   fprintf( ofile, "\n" );
 
   PROFILE_END;
+
+  return( retval );
 
 }
 
@@ -315,6 +323,8 @@ static void assertion_instance_verbose(
       (((root->stat->assert_hit < root->stat->assert_total) && !report_covered) ||
        ((root->stat->assert_hit > 0) && report_covered)) ) {
 
+    bool found_exclusion;
+
     /* Get printable version of functional unit name */
     pname = scope_gen_printable( funit_flatten_name( root->funit ) );
 
@@ -334,7 +344,10 @@ static void assertion_instance_verbose(
 
     free_safe( pname, (strlen( pname ) + 1) );
 
-    assertion_display_verbose( ofile, root->funit );
+    found_exclusion = assertion_display_verbose( ofile, root->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
+    if( report_exclusions && found_exclusion ) {
+      (void)assertion_display_verbose( ofile, root->funit, RPT_TYPE_EXCL );
+    }
 
   }
 
@@ -365,6 +378,8 @@ static void assertion_funit_verbose(
         (((head->funit->stat->assert_hit < head->funit->stat->assert_total) && !report_covered) ||
          ((head->funit->stat->assert_hit > 0) && report_covered)) ) {
 
+      bool found_exclusion;
+
       /* Get printable version of functional unit name */
       pname = scope_gen_printable( funit_flatten_name( head->funit ) );
 
@@ -384,7 +399,10 @@ static void assertion_funit_verbose(
 
       free_safe( pname, (strlen( pname ) + 1) );
 
-      assertion_display_verbose( ofile, head->funit );
+      found_exclusion = assertion_display_verbose( ofile, head->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
+      if( report_exclusions && found_exclusion ) {
+        (void)assertion_display_verbose( ofile, head->funit, RPT_TYPE_EXCL );
+      }
 
     }
 
@@ -540,6 +558,11 @@ void assertion_get_coverage(
 
 /*
  $Log$
+ Revision 1.35  2008/08/18 23:07:25  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.32.4.3  2008/08/07 06:39:10  phase1geo
  Adding "Excluded" column to the summary listbox.
 

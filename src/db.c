@@ -192,11 +192,6 @@ uint64 num_timesteps = 0;
 */
 /*@null@*/ static char* exclusion_id = NULL;
 
-/*!
- Number of chars allocated for the exclusion_id array.
-*/
-unsigned int exclusion_id_size = 0;
-
 
 /*!
  \return Returns pointer to newly allocated and initialized database structure
@@ -273,7 +268,7 @@ void db_close() { PROFILE(DB_CLOSE);
   info_dealloc();
 
   /* Deallocate the exclusion identifier container, if it exists */
-  free_safe( exclusion_id, exclusion_id_size );
+  free_safe( exclusion_id, db_get_exclusion_id_size() );
 
   /* Finally, deallocate the database list */
   free_safe( db_list, (sizeof( db ) * db_size) );
@@ -802,22 +797,15 @@ func_unit* db_get_curr_funit() { PROFILE(DB_GET_CURR_FUNIT);
 }
 
 /*!
- \return Returns the generated exclusion ID given the parameters and the value of the report_exclusions global flag.
-
- Generates the exclusion ID string and stores the result in the excl_id array.
-
- \note
- This function should ONLY be called when the flag_output_exclusion_ids is set to TRUE.
+ \return Returns the size needed to allocate for an entire exclusion ID.
 */
-char* db_gen_exclusion_id(
-  char type,  /*!< Single character specifying the metric type (L, T, M, C, A, F) */
-  int  id     /*!< Numerical unique identifier */
-) { PROFILE(DB_GEN_EXCLUSION_ID);
+unsigned int db_get_exclusion_id_size() { PROFILE(DB_GET_EXCLUSION_ID_SIZE);
 
-  char tmp[30];  /* Temporary string holder */
+  static unsigned int exclusion_id_size = 0;
 
-  /* If the exclusion ID has not been created, create it now */
-  if( exclusion_id == NULL ) {
+  if( exclusion_id_size == 0 ) {
+
+    char tmp[30];
 
     /* Calculate the size needed to store the largest signal ID */
     snprintf( tmp, 30, "%d", curr_sig_id );
@@ -831,16 +819,48 @@ char* db_gen_exclusion_id(
       exclusion_id_size = strlen( tmp ) + 2;
     }
 
+    /* The minimum size of the exclusion ID should be 3 characters */
+    if( exclusion_id_size < 4 ) {
+      exclusion_id_size = 4;
+    }
+
+  }
+
+  PROFILE_END;
+
+  return( exclusion_id_size );
+
+}
+
+/*!
+ \return Returns the generated exclusion ID given the parameters and the value of the report_exclusions global flag.
+
+ Generates the exclusion ID string and stores the result in the excl_id array.
+
+ \note
+ This function should ONLY be called when the flag_output_exclusion_ids is set to TRUE.
+*/
+char* db_gen_exclusion_id(
+  char type,  /*!< Single character specifying the metric type (L, T, M, C, A, F) */
+  int  id     /*!< Numerical unique identifier */
+) { PROFILE(DB_GEN_EXCLUSION_ID);
+
+  char tmp[30];
+  int  size = db_get_exclusion_id_size();
+
+  /* If the exclusion ID has not been created, create it now */
+  if( exclusion_id == NULL ) {
+
     /* Allocate the memory needed */
-    exclusion_id = (char*)malloc_safe( exclusion_id_size );
+    exclusion_id = (char*)malloc_safe( size );
 
   }
 
   /* Create format string */
-  snprintf( tmp, 30, "%%c%%0%dd", (exclusion_id_size - 2) );
+  snprintf( tmp, 30, "%%c%%0%dd", (size - 2) );
 
   /* Generate exclusion_id string */
-  snprintf( exclusion_id, exclusion_id_size, tmp, type, id );
+  snprintf( exclusion_id, size, tmp, type, id );
  
   PROFILE_END;
 
@@ -2976,6 +2996,9 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.321  2008/08/28 16:52:22  phase1geo
+ Adding toggle and memory exclusion support in report command.  Checkpointing.
+
  Revision 1.320  2008/08/28 13:59:18  phase1geo
  More updates to be more efficient in outputting exclusion IDs.  Also added
  capability (or the start of) to output exclusions when the -e option is

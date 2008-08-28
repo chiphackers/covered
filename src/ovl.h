@@ -45,9 +45,10 @@ void ovl_get_funit_stats(
 );
 
 /*! \brief Displays the verbose hit/miss information to the given output file for the given functional unit. */
-void ovl_display_verbose(
+bool ovl_display_verbose(
   FILE*            ofile,
-  const func_unit* funit
+  const func_unit* funit,
+  rpt_type         rtype
 );
 
 /*! \brief Finds the instance names of all uncovered and covered assertions in the specified functional unit. */
@@ -70,6 +71,11 @@ void ovl_get_coverage(
 
 /*
  $Log$
+ Revision 1.17  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.14.6.3  2008/08/07 06:39:11  phase1geo
  Adding "Excluded" column to the summary listbox.
 
