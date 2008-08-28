@@ -1429,7 +1429,6 @@ void expression_db_read(
   bool       eval         /*!< If TRUE, evaluate expression if children are static */
 ) { PROFILE(EXPRESSION_DB_READ);
 
-  int          id;          /* Holder of expression ID */
   expression*  expr;        /* Pointer to newly created expression */
   int          linenum;     /* Holder of current line for this expression */
   unsigned int column;      /* Holder of column alignment information */
@@ -1444,14 +1443,14 @@ void expression_db_read(
   vector*      vec;         /* Holders vector value of this expression */
   exp_link*    expl;        /* Pointer to found expression in functional unit */
 
-  if( sscanf( *line, "%d %d %x %x %x %x %d %d%n", &id, &linenum, &column, &exec_num, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 8 ) {
+  if( sscanf( *line, "%d %d %x %x %x %x %d %d%n", &curr_expr_id, &linenum, &column, &exec_num, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 8 ) {
 
     *line = *line + chars_read;
 
     /* Find functional unit instance name */
     if( curr_funit == NULL ) {
 
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  expression (%d) in database written before its functional unit", id );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  expression (%d) in database written before its functional unit", curr_expr_id );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       printf( "expr Throw C\n" );
@@ -1463,7 +1462,7 @@ void expression_db_read(
       if( right_id == 0 ) {
         right = NULL;
       } else if( (expl = exp_link_find( right_id, curr_funit->exp_head )) == NULL ) {
-        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  root expression (%d) found before leaf expression (%d) in database file", id, right_id );
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  root expression (%d) found before leaf expression (%d) in database file", curr_expr_id, right_id );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         printf( "expr Throw D\n" );
@@ -1476,7 +1475,7 @@ void expression_db_read(
       if( left_id == 0 ) {
         left = NULL;
       } else if( (expl = exp_link_find( left_id, curr_funit->exp_head )) == NULL ) {
-        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  root expression (%d) found before leaf expression (%d) in database file", id, left_id );
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  root expression (%d) found before leaf expression (%d) in database file", curr_expr_id, left_id );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         printf( "expr Throw E\n" );
@@ -1486,7 +1485,7 @@ void expression_db_read(
       }
 
       /* Create new expression */
-      expr = expression_create( right, left, op, ESUPPL_IS_LHS( suppl ), id, linenum,
+      expr = expression_create( right, left, op, ESUPPL_IS_LHS( suppl ), curr_expr_id, linenum,
                                 ((column >> 16) & 0xffff), (column & 0xffff), ESUPPL_OWNS_VEC( suppl ) );
 
       expr->suppl.all = suppl.all;
@@ -1573,10 +1572,6 @@ void expression_db_read(
 }
 
 /*!
- \param base  Expression to merge data into.
- \param line  Pointer to CDD line to parse.
- \param same  Specifies if expression to be merged needs to be exactly the same as the existing expression.
-
  \throws anonymous Throw vector_db_merge
 
  Parses specified line for expression information and merges contents into the
@@ -1587,9 +1582,9 @@ void expression_db_read(
  merge.
 */
 void expression_db_merge(
-  expression* base,
-  char**      line,
-  bool        same
+  expression* base,  /*!< Expression to merge data into */
+  char**      line,  /*!< Pointer to CDD line to parse */
+  bool        same   /*!< Specifies if expression to be merged needs to be exactly the same as the existing expression */
 ) { PROFILE(EXPRESSION_DB_MERGE);
 
   int          id;             /* Expression ID field */
@@ -5613,6 +5608,11 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.339  2008/08/18 23:07:26  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.332.2.1  2008/07/10 22:43:50  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

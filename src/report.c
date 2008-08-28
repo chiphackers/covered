@@ -694,6 +694,10 @@ void report_print_header(
     fprintf( ofile, "* Reported by                    : Module\n\n" );
   }
 
+  if( flag_output_exclusion_ids ) {
+    fprintf( ofile, "* Report contains exclusion IDs (value within parenthesis preceding verbose output)\n\n" );
+  }
+
   if( (info_suppl.part.excl_assign == 1) ||
       (info_suppl.part.excl_always == 1) ||
       (info_suppl.part.excl_init   == 1) ||
@@ -1077,6 +1081,10 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.115  2008/08/27 23:06:00  phase1geo
+ Starting to make updates for supporting command-line exclusions.  Signals now
+ have a unique ID associated with them in the CDD file.  Checkpointing.
+
  Revision 1.114  2008/08/23 20:00:30  phase1geo
  Full fix for bug 2054686.  Also cleaned up Cver regressions.
 

@@ -77,7 +77,6 @@ extern int         generate_top_mode;
 extern int         generate_expr_mode;
 extern int         for_mode;
 extern int         curr_sig_id;
-extern bool        flag_output_exclusion_ids;
 
 /*!
  Array of database pointers storing all currently loaded databases.
@@ -806,38 +805,42 @@ func_unit* db_get_curr_funit() { PROFILE(DB_GET_CURR_FUNIT);
  \return Returns the generated exclusion ID given the parameters and the value of the report_exclusions global flag.
 
  Generates the exclusion ID string and stores the result in the excl_id array.
+
+ \note
+ This function should ONLY be called when the flag_output_exclusion_ids is set to TRUE.
 */
 char* db_gen_exclusion_id(
   char type,  /*!< Single character specifying the metric type (L, T, M, C, A, F) */
   int  id     /*!< Numerical unique identifier */
 ) { PROFILE(DB_GEN_EXCLUSION_ID);
 
+  char tmp[30];  /* Temporary string holder */
+
   /* If the exclusion ID has not been created, create it now */
   if( exclusion_id == NULL ) {
 
-    if( flag_output_exclusion_ids ) {
+    /* Calculate the size needed to store the largest signal ID */
+    snprintf( tmp, 30, "%d", curr_sig_id );
+    exclusion_id_size = strlen( tmp ) + 2;
 
-      char tmp[30];
+    /* Now calculate the size needed to store the largest expression ID */
+    snprintf( tmp, 30, "%d", curr_expr_id );
 
-      snprintf( tmp, 30, "%d", curr_sig_id );
-      exclusion_id_size = strlen( tmp ) + 3;
-      exclusion_id      = (char*)malloc_safe( exclusion_id_size );
-
-    } else {
-
-      exclusion_id      = strdup( "" );
-      exclusion_id_size = 1;
-
+    /* Figure out which value is greater and use that for the size of the exclusion ID */
+    if( (strlen( tmp ) + 2) > exclusion_id_size ) {
+      exclusion_id_size = strlen( tmp ) + 2;
     }
 
+    /* Allocate the memory needed */
+    exclusion_id = (char*)malloc_safe( exclusion_id_size );
+
   }
 
-  /* Only create exclusion ID if the user has specified to do so (otherwise return the empty string) */
-  if( flag_output_exclusion_ids ) {
-    char tmp[30];
-    snprintf( tmp, 30, "%%c%%0%dd ", (exclusion_id_size - 2) );
-    snprintf( exclusion_id, exclusion_id_size, tmp, type, id );
-  }
+  /* Create format string */
+  snprintf( tmp, 30, "%%c%%0%dd", (exclusion_id_size - 2) );
+
+  /* Generate exclusion_id string */
+  snprintf( exclusion_id, exclusion_id_size, tmp, type, id );
  
   PROFILE_END;
 
@@ -2973,6 +2976,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.319  2008/08/28 04:37:17  phase1geo
+ Starting to add support for exclusion output and exclusion IDs to generated
+ reports.  These changes should break regressions.  Checkpointing.
+
  Revision 1.318  2008/08/18 23:07:26  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

@@ -1131,6 +1131,15 @@ typedef enum cp_indices_e {
 } cp_indices;
 
 /*!
+ Enumeration of report types to output.
+*/
+typedef enum rpt_type_e {
+  RPT_TYPE_HIT,
+  RPT_TYPE_MISS,
+  RPT_TYPE_EXCL
+} rpt_type;
+
+/*!
  Mask for signal supplemental field when writing to CDD file.
 */
 #define VSUPPL_MASK               0x7f
@@ -2856,6 +2865,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.305  2008/08/28 04:37:17  phase1geo
+ Starting to add support for exclusion output and exclusion IDs to generated
+ reports.  These changes should break regressions.  Checkpointing.
+
  Revision 1.304  2008/08/27 23:06:00  phase1geo
  Starting to make updates for supporting command-line exclusions.  Signals now
  have a unique ID associated with them in the CDD file.  Checkpointing.
