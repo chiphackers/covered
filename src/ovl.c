@@ -295,7 +295,7 @@ bool ovl_display_verbose(
   char         tmp[30];
 
   fprintf( ofile, "      " );
-  if( flag_output_exclusion_ids ) {
+  if( flag_output_exclusion_ids && (rtype != RPT_TYPE_HIT) ) {
     eid_size = db_get_exclusion_id_size();
     gen_char_string( tmp, ' ', (eid_size - 2) );
     fprintf( ofile, "EID%s  ", tmp );
@@ -342,13 +342,8 @@ bool ovl_display_verbose(
                        obf_inst( curr_child->name ), obf_funit( funit_flatten_name( curr_child->funit ) ), cov_point );
             }
           } else if( (stmt->exp->exec_num > 0) && (rtype == RPT_TYPE_HIT) ) {
-            if( flag_output_exclusion_ids ) {
-              fprintf( ofile, "      (%s)  %-26s  %-22s  \"%-38s\"  %9u\n", db_gen_exclusion_id( 'A', stmt->exp->id ),
-                       obf_inst( curr_child->name ), obf_funit( funit_flatten_name( curr_child->funit ) ), cov_point, stmt->exp->exec_num );
-            } else {
-              fprintf( ofile, "      %-26s  %-22s  \"%-38s\"  %9u\n",
-                       obf_inst( curr_child->name ), obf_funit( funit_flatten_name( curr_child->funit ) ), cov_point, stmt->exp->exec_num );
-            }
+            fprintf( ofile, "      %-26s  %-22s  \"%-38s\"  %9u\n",
+                     obf_inst( curr_child->name ), obf_funit( funit_flatten_name( curr_child->funit ) ), cov_point, stmt->exp->exec_num );
           }
 
           /* Deallocate the coverage point */
@@ -530,6 +525,10 @@ void ovl_get_coverage(
 
 /*
  $Log$
+ Revision 1.32  2008/08/28 21:24:15  phase1geo
+ Adding support for exclusion output for assertions.  Updated regressions accordingly.
+ Checkpointing.
+
  Revision 1.31  2008/08/22 20:56:35  phase1geo
  Starting to make updates for proper unnamed scope report handling (fix for bug 2054686).
  Not complete yet.  Also making updates to documentation.  Checkpointing.

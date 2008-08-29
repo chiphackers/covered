@@ -461,6 +461,16 @@ void report_parse_args(
 
   }
 
+  /*
+   If the user has specified the -x and -c (but not -e), we are not going to be outputting exclusion IDs
+   because covered items cannot be excluded.  So... we will set flag_output_exclusion_ids to false and
+   output a warning message.
+  */
+  if( flag_output_exclusion_ids && report_covered && !report_exclusions ) {
+    flag_output_exclusion_ids = FALSE;
+    print_output( "The -x and -c options were specified.  Covered items cannot be excluded so no exclusion IDs will be output.", WARNING, __FILE__, __LINE__ );
+  }
+
   PROFILE_END;
 
 }
@@ -1081,6 +1091,11 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.116  2008/08/28 13:59:19  phase1geo
+ More updates to be more efficient in outputting exclusion IDs.  Also added
+ capability (or the start of) to output exclusions when the -e option is
+ specified.  Updated regressions per these changes.  Checkpointing.
+
  Revision 1.115  2008/08/27 23:06:00  phase1geo
  Starting to make updates for supporting command-line exclusions.  Signals now
  have a unique ID associated with them in the CDD file.  Checkpointing.

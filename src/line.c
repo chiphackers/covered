@@ -436,7 +436,7 @@ static bool line_display_verbose(
         unexec_exp = stmt->exp;
 
         codegen_gen_expr( unexec_exp, unexec_exp->op, &code, &code_depth, funit );
-        if( flag_output_exclusion_ids ) {
+        if( flag_output_exclusion_ids && (rtype != RPT_TYPE_HIT) ) {
           fprintf( ofile, "      (%s)  %7d:    %s%s\n",
                    db_gen_exclusion_id( 'L', unexec_exp->id ), unexec_exp->line, code[0], ((code_depth == 1) ? "" : "...") );
         } else {
@@ -666,6 +666,11 @@ void line_report(
 
 /*
  $Log$
+ Revision 1.97  2008/08/28 13:59:19  phase1geo
+ More updates to be more efficient in outputting exclusion IDs.  Also added
+ capability (or the start of) to output exclusions when the -e option is
+ specified.  Updated regressions per these changes.  Checkpointing.
+
  Revision 1.96  2008/08/28 04:37:18  phase1geo
  Starting to add support for exclusion output and exclusion IDs to generated
  reports.  These changes should break regressions.  Checkpointing.
