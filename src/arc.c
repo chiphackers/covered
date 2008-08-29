@@ -136,6 +136,13 @@
 
 
 /*!
+ Unique identifier for each arc in the design (used for exclusion purposes).  This value is
+ assigned to an arc when it is read from the CDD file.
+*/
+int curr_arc_id = 1;
+
+
+/*!
  Displays the given state transition arcs in a human-readable format.
 */
 /*@unused@*/ static void arc_display(
@@ -599,6 +606,7 @@ void arc_db_read(
             Throw 0;
           } else {
             *line += chars_read;
+            (*table)->arcs[i]->id = curr_arc_id++;
           }
 
         }
@@ -747,6 +755,7 @@ void arc_get_states(
 void arc_get_transitions(
   /*@out@*/ char***          from_states,  /*!< Pointer to string array containing from_state values */
   /*@out@*/ char***          to_states,    /*!< Pointer to string array containing to_state values */
+  /*@out@*/ int**            ids,          /*!< List of arc IDs */
   /*@out@*/ int**            excludes,     /*!< Pointer to integer array containing exclude values */
   /*@out@*/ int*             arc_size,     /*!< Number of elements in both the from_states and to_states arrays */
             const fsm_table* table,        /*!< Pointer to FSM table */
@@ -761,6 +770,7 @@ void arc_get_transitions(
   /* Initialize state arrays and arc_size */
   *from_states = NULL;
   *to_states   = NULL;
+  *ids         = NULL;
   *excludes    = NULL;
   *arc_size    = 0;
 
@@ -770,12 +780,12 @@ void arc_get_transitions(
     if( (table->arcs[i]->suppl.part.hit == hit) || any ) {
       *from_states                = (char**)realloc_safe( *from_states, (sizeof( char* ) * (*arc_size)), (sizeof( char* ) * (*arc_size + 1)) );
       *to_states                  = (char**)realloc_safe( *to_states,   (sizeof( char* ) * (*arc_size)), (sizeof( char* ) * (*arc_size + 1)) );
-      if( any ) {
-        *excludes = (int*)realloc_safe( *excludes, (sizeof( int ) * (*arc_size)), (sizeof( int ) * (*arc_size + 1)) );
-        (*excludes)[(*arc_size)] = table->arcs[i]->suppl.part.excluded;
-      }
+      *ids                        = (int*)realloc_safe( *ids, (sizeof( int ) * (*arc_size)), (sizeof( int ) * (*arc_size + 1)) );
+      *excludes                   = (int*)realloc_safe( *excludes, (sizeof( int ) * (*arc_size)), (sizeof( int ) * (*arc_size + 1)) );
       (*from_states)[(*arc_size)] = vector_to_string( table->fr_states[table->arcs[i]->from], HEXIDECIMAL, TRUE );
       (*to_states)[(*arc_size)]   = vector_to_string( table->to_states[table->arcs[i]->to],   HEXIDECIMAL, TRUE );
+      (*ids)[(*arc_size)]         = table->arcs[i]->id;
+      (*excludes)[(*arc_size)] = table->arcs[i]->suppl.part.excluded;
       (*arc_size)++;
     }
 
@@ -846,6 +856,11 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.66  2008/08/18 23:07:25  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.62.2.2  2008/08/07 06:39:10  phase1geo
  Adding "Excluded" column to the summary listbox.
 

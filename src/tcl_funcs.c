@@ -1330,6 +1330,7 @@ int tcl_func_get_fsm_coverage(
   unsigned int hit_state_num;    /* Number of elements in the hit_states array */
   char**       total_from_arcs;  /* String array containing all possible state transition input states */
   char**       total_to_arcs;    /* String array containing all possible state transition output states */
+  int*         total_ids;        /* Integer array containing exclusion IDs for each state transition */
   int*         excludes;         /* Integer array containing exclude values for each state transition */
   int          total_arc_num;    /* Number of elements in both the total_from_arcs and total_to_arcs arrays */
   char**       hit_from_arcs;    /* String array containing hit state transition input states */
@@ -1348,7 +1349,7 @@ int tcl_func_get_fsm_coverage(
   if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
 
     fsm_get_coverage( funit, expr_id, &total_states, &total_state_num, &hit_states, &hit_state_num,
-                      &total_from_arcs, &total_to_arcs, &excludes, &total_arc_num, &hit_from_arcs, &hit_to_arcs, &hit_arc_num,
+                      &total_from_arcs, &total_to_arcs, &total_ids, &excludes, &total_arc_num, &hit_from_arcs, &hit_to_arcs, &hit_arc_num,
                       &input_state, &input_size, &output_state, &output_size );
 
     /* Load FSM total states into Tcl */
@@ -1382,6 +1383,7 @@ int tcl_func_get_fsm_coverage(
     if( total_arc_num > 0 ) {
       free_safe( total_from_arcs, (sizeof( char* ) * total_arc_num) );
       free_safe( total_to_arcs, (sizeof( char* ) * total_arc_num) );
+      free_safe( total_ids, (sizeof( int ) * total_arc_num) );
       free_safe( excludes, (sizeof( int ) * total_arc_num) );
     }
 
@@ -3021,6 +3023,9 @@ void tcl_func_initialize(
 
 /*
  $Log$
+ Revision 1.82  2008/08/23 20:00:30  phase1geo
+ Full fix for bug 2054686.  Also cleaned up Cver regressions.
+
  Revision 1.81  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

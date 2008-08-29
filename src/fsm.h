@@ -114,6 +114,7 @@ void fsm_get_coverage(
   /*@out@*/ unsigned int* hit_state_num,
   /*@out@*/ char***       total_from_arcs,
   /*@out@*/ char***       total_to_arcs,
+  /*@out@*/ int**         total_ids,
   /*@out@*/ int**         excludes,
   /*@out@*/ int*          total_arc_num,
   /*@out@*/ char***       hit_from_arcs,
@@ -133,6 +134,11 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.32  2008/08/18 23:07:26  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.29.2.4  2008/08/07 20:51:04  phase1geo
  Fixing memory allocation/deallocation issues with GUI.  Also fixing some issues with FSM
  table output and exclusion.  Checkpointing.

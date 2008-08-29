@@ -62,6 +62,8 @@ extern int          leading_hier_num;
 extern bool         leading_hiers_differ;
 extern char         user_msg[USER_MSG_LENGTH];
 extern isuppl       info_suppl;
+extern bool         report_exclusions;
+extern bool         flag_output_exclusion_ids;
 
 
 /*!
@@ -571,6 +573,7 @@ void fsm_get_coverage(
   /*@out@*/ unsigned int* hit_fr_state_num,    /*!< Pointer to the number of elements in the hit_states array */
   /*@out@*/ char***       total_from_arcs,     /*!< Pointer to a string array containing all possible state transition from states */
   /*@out@*/ char***       total_to_arcs,       /*!< Pointer to a string array containing all possible state transition to states */
+  /*@out@*/ int**         total_ids,           /*!< Pointer to an integer array containing the arc transition IDs for each transition */
   /*@out@*/ int**         excludes,            /*!< Pointer to an integer array containing the exclude values for each state transition */
   /*@out@*/ int*          total_arc_num,       /*!< Pointer to the number of elements in both the total_from_arcs, total_to_arcs and excludes arrays */
   /*@out@*/ char***       hit_from_arcs,       /*!< Pointer to a string array containing the hit state transition from states */
@@ -583,6 +586,7 @@ void fsm_get_coverage(
 ) { PROFILE(FSM_GET_COVERAGE);
 
   fsm_link*    curr_fsm;            /* Pointer to current FSM link */
+  int*         tmp_ids;             /* Temporary integer array */
   int*         tmp;                 /* Temporary integer array */
   char**       total_to_states;     /* Temporary array */
   unsigned int total_to_state_num;  /* Temporary size indicator */
@@ -601,8 +605,8 @@ void fsm_get_coverage(
   arc_get_states( hit_fr_states,   hit_fr_state_num,   &hit_to_states,   &hit_to_state_num,   curr_fsm->table->table, TRUE, FALSE );
 
   /* Get state transition information */
-  arc_get_transitions( total_from_arcs, total_to_arcs, excludes, total_arc_num, curr_fsm->table->table, TRUE, TRUE );
-  arc_get_transitions( hit_from_arcs,   hit_to_arcs,   &tmp,     hit_arc_num,   curr_fsm->table->table, TRUE, FALSE );
+  arc_get_transitions( total_from_arcs, total_to_arcs, total_ids, excludes, total_arc_num, curr_fsm->table->table, TRUE, TRUE );
+  arc_get_transitions( hit_from_arcs,   hit_to_arcs,   &tmp_ids,  &tmp,     hit_arc_num,   curr_fsm->table->table, TRUE, FALSE );
 
   /* Get input state code */
   codegen_gen_expr( curr_fsm->table->from_state, curr_fsm->table->from_state->op, input_state, input_size, NULL );
@@ -624,6 +628,10 @@ void fsm_get_coverage(
       free_safe( hit_to_states[i], (strlen( hit_to_states[i] ) + 1) );
     }
     free_safe( hit_to_states, (sizeof( char* ) * hit_to_state_num) );
+  }
+  if( *hit_arc_num > 0 ) {
+    free_safe( tmp_ids, (sizeof( int ) * (*hit_arc_num)) );
+    free_safe( tmp,     (sizeof( int ) * (*hit_arc_num)) );
   }
 
   PROFILE_END;
@@ -893,36 +901,48 @@ static void fsm_display_state_verbose(
 }
 
 /*!
+ \return Returns TRUE if at least one arc transition was excluded.
+
  Displays verbose information for hit/missed state transitions to
  the specified output file.
 */
-static void fsm_display_arc_verbose(
-  FILE* ofile,  /*!< File handle of output file to send report output to */
-  fsm*  table   /*!< Pointer to FSM structure to output */
+static bool fsm_display_arc_verbose(
+  FILE*    ofile,  /*!< File handle of output file to send report output to */
+  fsm*     table,  /*!< Pointer to FSM structure to output */
+  rpt_type rtype   /*!< Specifies the type of report to generate */
 ) { PROFILE(FSM_DISPLAY_ARC_VERBOSE);
 
-  bool         trans_known;   /* Set to TRUE if the number of state transitions is known */
-  char         fstr[100];     /* Format string */
-  char         tmp[20];       /* Temporary string */
-  int          width;         /* Width (in characters) of the entire output value */
-  int          val_width;     /* Number of bits in output state expression */
-  int          len_width;     /* Number of characters needed to store the width of the output state expression */
-  char**       from_states;   /* String array containing from_state information */
-  char**       to_states;     /* String array containing to_state information */
-  int*         excludes;      /* Temporary container (not used in this functio) */
-  int          arc_size;      /* Number of elements in the from_states and to_states arrays */
-  int          i;             /* Loop iterator */
-  char         tmpfst[4096];  /* Temporary string holder for from_state value */
-  char         tmptst[4096];  /* Temporary string holder for to_state value */
-  unsigned int rv;            /* Return value from snprintf calls */
+  bool         retval = FALSE;  /* Return value for this function */
+  bool         trans_unknown;   /* Set to TRUE if the number of state transitions is known */
+  char         fstr[100];       /* Format string */
+  char         tmp[20];         /* Temporary string */
+  int          width;           /* Width (in characters) of the entire output value */
+  int          val_width;       /* Number of bits in output state expression */
+  int          len_width;       /* Number of characters needed to store the width of the output state expression */
+  char**       from_states;     /* String array containing from_state information */
+  char**       to_states;       /* String array containing to_state information */
+  int*         ids;             /* List of exclusion IDs per from/to state transition */
+  int*         excludes;        /* List of excluded arcs */
+  int          arc_size;        /* Number of elements in the from_states and to_states arrays */
+  int          i;               /* Loop iterator */
+  char         tmpfst[4096];    /* Temporary string holder for from_state value */
+  char         tmptst[4096];    /* Temporary string holder for to_state value */
+  unsigned int rv;              /* Return value from snprintf calls */
+  char         spaces[30];      /* Placeholder for spaces */
+  unsigned int eid_size;
+  char*        eid;
 
   /* Figure out if transactions were known */
-  trans_known = (table->table->suppl.part.known == 0);
+  trans_unknown = (table->table->suppl.part.known == 0);
 
-  if( report_covered || trans_known ) {
+  spaces[0] = '\0';
+
+  if( (rtype == RPT_TYPE_HIT) || trans_unknown ) {
     fprintf( ofile, "        Hit State Transitions\n\n" );
-  } else {
+  } else if( rtype == RPT_TYPE_MISS ) {
     fprintf( ofile, "        Missed State Transitions\n\n" );
+  } else if( rtype == RPT_TYPE_EXCL ) {
+    fprintf( ofile, "        Excluded State Transitions\n\n" );
   }
 
   val_width = table->to_state->value->width;
@@ -936,24 +956,42 @@ static void fsm_display_arc_verbose(
   width = ((val_width % 4) == 0) ? (val_width / 4) : ((val_width / 4) + 1);
   width = width + len_width + 2;
   width = (width > 10) ? width : 10;
-  rv = snprintf( fstr, 100, "          %%-%d.%ds    %%-%d.%ds\n", width, width, width, width );
+
+  /* Generate format string */
+  rv = snprintf( fstr, 100, "          %%s%%-%d.%ds %%s %%-%d.%ds\n", width, width, width, width );
   assert( rv < 100 );
 
-  fprintf( ofile, fstr, "From State", "To State" );
-  fprintf( ofile, fstr, "==========", "==========" );
+  if( flag_output_exclusion_ids && (rtype != RPT_TYPE_HIT) && !trans_unknown ) {
+    gen_char_string( spaces, ' ', ((db_get_exclusion_id_size() - 1) + 4) );
+    eid_size = db_get_exclusion_id_size() + 4;
+    eid      = (char*)malloc_safe( eid_size );
+  } else {
+    eid_size = 1;
+    eid      = (char*)malloc_safe( eid_size );
+    eid[0]   = '\0';
+  }
+
+  fprintf( ofile, fstr, spaces, "From State", "  ", "To State" );
+  fprintf( ofile, fstr, spaces, "==========", "  ", "==========" );
 
   /* Get the state transition information */
-  arc_get_transitions( &from_states, &to_states, &excludes, &arc_size, table->table, (report_covered || trans_known), FALSE );
+  arc_get_transitions( &from_states, &to_states, &ids, &excludes, &arc_size, table->table, ((rtype == RPT_TYPE_HIT) || trans_unknown), FALSE );
 
   /* Output the information to the specified output stream */
-  rv = snprintf( fstr, 100, "          %%-%d.%ds -> %%-%d.%ds\n", width, width, width, width );
-  assert( rv < 100 );
   for( i=0; i<arc_size; i++ ) {
-    rv = snprintf( tmpfst, 4096, "%s", from_states[i] );
-    assert( rv < 4096 );
-    rv = snprintf( tmptst, 4096, "%s", to_states[i] );
-    assert( rv < 4096 );
-    fprintf( ofile, fstr, tmpfst, tmptst );
+    retval |= excludes[i];
+    if( ((rtype != RPT_TYPE_EXCL) && (excludes[i] == 0)) ||
+        ((rtype == RPT_TYPE_EXCL) && (excludes[i] == 1)) ) {
+      rv = snprintf( tmpfst, 4096, "%s", from_states[i] );
+      assert( rv < 4096 );
+      rv = snprintf( tmptst, 4096, "%s", to_states[i] );
+      assert( rv < 4096 );
+      if( flag_output_exclusion_ids && (rtype != RPT_TYPE_HIT) && !trans_unknown ) {
+        rv = snprintf( eid, eid_size, "(%s)  ", db_gen_exclusion_id( 'F', ids[i] ) );
+        assert( rv < eid_size );
+      }
+      fprintf( ofile, fstr, eid, tmpfst, "->", tmptst );
+    }
     free_safe( from_states[i], (strlen( from_states[i] ) + 1) );
     free_safe( to_states[i], (strlen( to_states[i] ) + 1) );
   }
@@ -964,9 +1002,14 @@ static void fsm_display_arc_verbose(
   if( arc_size > 0 ) {
     free_safe( from_states, (sizeof( char* ) * arc_size) );
     free_safe( to_states, (sizeof( char* ) * arc_size) );
+    free_safe( ids, (sizeof( int ) * arc_size) );
+    free_safe( excludes, (sizeof( int ) * arc_size) );
   }
+  free_safe( eid, eid_size );
 
   PROFILE_END;
+
+  return( retval );
 
 }
 
@@ -986,6 +1029,8 @@ static void fsm_display_verbose(
   unsigned int i;            /* Loop iterator */
 
   while( head != NULL ) {
+
+    bool found_exclusion;
 
     if( head->table->from_state->id == head->table->to_state->id ) {
       codegen_gen_expr( head->table->to_state, head->table->to_state->op, &ocode, &ocode_depth, NULL );
@@ -1009,7 +1054,10 @@ static void fsm_display_verbose(
     }
 
     fsm_display_state_verbose( ofile, head->table );
-    fsm_display_arc_verbose( ofile, head->table );
+    found_exclusion = fsm_display_arc_verbose( ofile, head->table, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
+    if( report_exclusions && found_exclusion ) {
+      (void)fsm_display_arc_verbose( ofile, head->table, RPT_TYPE_EXCL );
+    }
 
     if( head->next != NULL ) {
       fprintf( ofile, "      - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n" );
@@ -1267,6 +1315,11 @@ void fsm_dealloc(
 
 /*
  $Log$
+ Revision 1.100  2008/08/18 23:07:26  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.97.2.5  2008/08/07 20:51:04  phase1geo
  Fixing memory allocation/deallocation issues with GUI.  Also fixing some issues with FSM
  table output and exclusion.  Checkpointing.

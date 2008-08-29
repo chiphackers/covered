@@ -77,6 +77,7 @@ extern int         generate_top_mode;
 extern int         generate_expr_mode;
 extern int         for_mode;
 extern int         curr_sig_id;
+extern int         curr_arc_id;
 
 /*!
  Array of database pointers storing all currently loaded databases.
@@ -805,14 +806,26 @@ unsigned int db_get_exclusion_id_size() { PROFILE(DB_GET_EXCLUSION_ID_SIZE);
 
   if( exclusion_id_size == 0 ) {
 
-    char tmp[30];
+    char         tmp[30];
+    unsigned int rv;
 
     /* Calculate the size needed to store the largest signal ID */
-    snprintf( tmp, 30, "%d", curr_sig_id );
+    rv = snprintf( tmp, 30, "%d", curr_sig_id );
+    assert( rv < 30 );
     exclusion_id_size = strlen( tmp ) + 2;
 
     /* Now calculate the size needed to store the largest expression ID */
-    snprintf( tmp, 30, "%d", curr_expr_id );
+    rv = snprintf( tmp, 30, "%d", curr_expr_id );
+    assert( rv < 30 );
+
+    /* Figure out which value is greater and use that for the size of the exclusion ID */
+    if( (strlen( tmp ) + 2) > exclusion_id_size ) {
+      exclusion_id_size = strlen( tmp ) + 2;
+    }
+
+    /* Now calculate the size needed to store the largest arc ID */
+    rv = snprintf( tmp, 30, "%d", curr_arc_id );
+    assert( rv < 30 );
 
     /* Figure out which value is greater and use that for the size of the exclusion ID */
     if( (strlen( tmp ) + 2) > exclusion_id_size ) {
@@ -2996,6 +3009,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.322  2008/08/28 21:24:14  phase1geo
+ Adding support for exclusion output for assertions.  Updated regressions accordingly.
+ Checkpointing.
+
  Revision 1.321  2008/08/28 16:52:22  phase1geo
  Adding toggle and memory exclusion support in report command.  Checkpointing.
 

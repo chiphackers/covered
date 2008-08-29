@@ -2192,6 +2192,7 @@ struct fsm_table_arc_s {
   asuppl       suppl;                /*!< Supplemental field for this state transition entry */
   unsigned int from;                 /*!< Index to from_state vector value in fsm_table vector array */
   unsigned int to;                   /*!< Index to to_state vector value in fsm_table vector array */
+  unsigned int id;                   /*!< Unique identifier used for exclusions */
 };
 
 /*!
@@ -2865,6 +2866,11 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.306  2008/08/28 13:59:18  phase1geo
+ More updates to be more efficient in outputting exclusion IDs.  Also added
+ capability (or the start of) to output exclusions when the -e option is
+ specified.  Updated regressions per these changes.  Checkpointing.
+
  Revision 1.305  2008/08/28 04:37:17  phase1geo
  Starting to add support for exclusion output and exclusion IDs to generated
  reports.  These changes should break regressions.  Checkpointing.
