@@ -27,6 +27,7 @@
 #include "expr.h"
 #include "fsm.h"
 #include "func_iter.h"
+#include "func_unit.h"
 #include "instance.h"
 #include "line.h"
 #include "link.h"
@@ -737,18 +738,110 @@ static void exclude_parse_args(
 }
 
 /*!
+ \return Returns a pointer to the found exclusion reason that matches the given type and ID; otherwise,
+         returns a value of NULL.
+*/
+exclude_reason* exclude_find_exclude_reason(
+  char       type,
+  int        id,
+  func_unit* funit
+) { PROFILE(EXCLUDE_FIND_EXCLUDE_REASON);
+
+  exclude_reason* er;  /* Pointer to current exclude reason structure */
+
+  er = funit->er_head;
+  while( (er != NULL) && ((er->type != type) || (er->id != id)) ) {
+    er = er->next;
+  }
+
+  PROFILE_END;
+
+  return( er );
+
+}
+
+/*!
+ Writes the given exclude reason to the specified output stream.
+*/
+void exclude_db_write(
+  exclude_reason* er,    /*!< Pointer to exclude reason structure to output */
+  FILE*           ofile  /*!< Pointer to output file stream */
+) { PROFILE(EXCLUDE_DB_WRITE);
+
+  fprintf( ofile, "%d %c %d %s\n", DB_TYPE_EXCLUDE, er->type, er->id, er->reason );
+
+  PROFILE_END;
+
+}
+
+/*!
+ Reads the given exclude reason structure information from the line read from the CDD file.
+*/
+void exclude_db_read(
+  char**     line,       /*!< Pointer to the line read from the CDD file */
+  func_unit* curr_funit  /*!< Pointer to the current functional unit */
+) { PROFILE(EXCLUDE_DB_READ);
+
+  char type;        /* Specifies the type of exclusion this structure represents */
+  int  id;          /* ID of signal/expression/FSM */
+  int  chars_read;  /* Number of characters read from line */
+
+  if( sscanf( *line, " %c %d%n", &type, &id, &chars_read ) == 2 ) {
+
+    exclude_reason* er;
+
+    *line = *line + chars_read;
+
+    /* Allocate and initialize the exclude reason structure */
+    er         = (exclude_reason*)malloc_safe( sizeof( exclude_reason ) );
+    er->type   = type;
+    er->id     = id;
+    er->reason = NULL;
+    er->next   = NULL;
+
+    /* Remove leading whitespace */
+    while( (*line)[0] == ' ' ) {
+      (*line)++;
+    }
+    er->reason = strdup( *line );
+
+    /* Add the given exclude reason to the current functional unit list */
+    if( curr_funit->er_head == NULL ) {
+      curr_funit->er_head = curr_funit->er_tail = er;
+    } else {
+      curr_funit->er_tail->next = er;
+      curr_funit->er_tail       = er;
+    }
+
+  } else {
+
+    print_output( "CDD being read is not compatible with this version of Covered", FATAL, __FILE__, __LINE__ );
+    Throw 0;
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  \return Returns pointer to found signal if it was found; otherwise, returns NULL.
 */
 vsignal* exclude_find_signal(
-  int id  /*!< Exclusion ID to search for */
+            int         id,          /*!< Exclusion ID to search for */
+  /*@out@*/ func_unit** found_funit  /*!< Pointer to functional unit containing found signal */
 ) { PROFILE(EXCLUDE_FIND_SIGNAL);
 
   inst_link* instl;  /* Pointer to current instance link */
   vsignal*   sig;    /* Pointer to found signal */
 
   instl = db_list[curr_db]->inst_head;
-  while( (instl != NULL) && ((sig = instance_find_signal_by_exclusion_id( instl->inst, id )) == NULL) ) {
+  while( (instl != NULL) && ((sig = instance_find_signal_by_exclusion_id( instl->inst, id, found_funit )) == NULL) ) {
     instl = instl->next;
+  }
+
+  if( sig != NULL ) {
+    *found_funit = funit_get_curr_module( *found_funit );
   }
 
   PROFILE_END;
@@ -761,15 +854,20 @@ vsignal* exclude_find_signal(
  \return Returns pointer to found expression if it was found; otherwise, returns NULL.
 */
 expression* exclude_find_expression(
-  int id  /*!< Exclusion ID to search for */
+            int         id,          /*!< Exclusion ID to search for */
+  /*@out@*/ func_unit** found_funit  /*!< Pointer to functional unit containing found expression */
 ) { PROFILE(EXCLUDE_FIND_EXPRESSION);
 
   inst_link*  instl;  /* Pointer to current instance link */
   expression* exp;    /* Pointer to found expression */
 
   instl = db_list[curr_db]->inst_head;
-  while( (instl != NULL) && ((exp = instance_find_expression_by_exclusion_id( instl->inst, id )) == NULL) ) {
+  while( (instl != NULL) && ((exp = instance_find_expression_by_exclusion_id( instl->inst, id, found_funit )) == NULL) ) {
     instl = instl->next;
+  }
+
+  if( exp != NULL ) {
+    *found_funit = funit_get_curr_module( *found_funit );
   }
 
   PROFILE_END;
@@ -821,16 +919,152 @@ static char* exclude_get_message(
 
   if( strlen( str ) > 0 ) {
     msg = (char*)realloc_safe( msg, msg_size, (msg_size + strlen( str ) + 1) );
+    if( msg_size == 0 ) {
+      msg[0] = '\0';
+    }
     strcat( msg, str );
+    msg[strlen(msg)-1] = '\0';
   }
 
   printf( "\n" );
 
   PROFILE_END;
 
-  printf( "Message: %s\n", msg );
-
   return( msg );
+
+}
+
+/*!
+ Handle the creation/deallocation of the exclude reason structure for the given signal.
+*/
+static void exclude_handle_signal_er(
+  int         prev_excluded,  /*!< Specifies if this signal was previously excluded or not */
+  const char* id,             /*!< Exclusion ID */
+  vsignal*    sig,            /*!< Signal being excluded/included */
+  func_unit*  funit           /*!< Functional unit containing sig */
+) { PROFILE(EXCLUDE_HANDLE_SIGNAL_ER);
+
+  /*
+   If the coverage point was not previously excluded, allow the user to specify a reason and
+   store this information in the functional unit.
+  */
+  if( prev_excluded == 0 ) { 
+
+    char* str = exclude_get_message( id );
+
+    if( strlen( str ) > 0 ) { 
+      exclude_reason* er = (exclude_reason*)malloc_safe( sizeof( exclude_reason ) );
+      er->type     = id[0];
+      er->id       = atoi( id + 1 );
+      er->reason   = str;
+      er->next     = NULL;
+      if( funit->er_head == NULL ) { 
+        funit->er_head = funit->er_tail = er; 
+      } else {
+        funit->er_tail->next = er; 
+        funit->er_tail       = er; 
+      }   
+    } else {
+      free_safe( str, (strlen( str ) + 1) );
+    }
+
+  /*
+   If the coverage point was previously excluded, attempt to find the matching exclusion reason, and, if
+   it is found, remove it from the list.
+  */
+  } else {
+
+    exclude_reason* last_er = NULL;
+    exclude_reason* er      = funit->er_head;
+
+    while( (er != NULL) && ((er->type != id[0]) || (er->id != atoi( id + 1))) ) {
+      last_er = er; 
+      er      = er->next;
+    }
+
+    if( er != NULL ) { 
+      if( last_er == NULL ) { 
+        funit->er_head = er->next;
+        if( er->next == NULL ) {
+          funit->er_tail = NULL;
+        }
+      } else {
+        last_er->next = er->next;
+      }
+      free_safe( er->reason, (strlen( er->reason ) + 1) );
+      free_safe( er, sizeof( exclude_reason ) );
+    }
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Handle the creation/deallocation of the exclude reason structure for the given expression.
+*/
+static void exclude_handle_expression_er(
+  int         prev_excluded,  /*!< Specifies if this expression was previously excluded or not */
+  const char* id,             /*!< Exclusion ID */
+  expression* exp,            /*!< Expression being excluded/included */
+  func_unit*  funit           /*!< Functional unit containing exp */
+) { PROFILE(EXCLUDE_HANDLE_EXPRESSION_ER);
+
+  /*
+   If the coverage point was not previously excluded, allow the user to specify a reason and
+   store this information in the functional unit.
+  */
+  if( prev_excluded == 0 ) {
+
+    char* str = exclude_get_message( id );
+
+    if( strlen( str ) > 0 ) {
+      exclude_reason* er = (exclude_reason*)malloc_safe( sizeof( exclude_reason ) );
+      er->type     = id[0];
+      er->id       = atoi( id + 1 );
+      er->reason   = str;
+      er->next     = NULL;
+      if( funit->er_head == NULL ) {
+        funit->er_head = funit->er_tail = er;
+      } else {
+        funit->er_tail->next = er;
+        funit->er_tail       = er;
+      }
+    } else {
+      free_safe( str, (strlen( str ) + 1) );
+    }
+
+  /*
+   If the coverage point was previously excluded, attempt to find the matching exclusion reason, and, if
+   it is found, remove it from the list.
+  */
+  } else {
+
+    exclude_reason* last_er = NULL;
+    exclude_reason* er      = funit->er_head;
+
+    while( (er != NULL) && ((er->type != id[0]) || (er->id != atoi( id + 1))) ) {
+      last_er = er;
+      er      = er->next;
+    }
+
+    if( er != NULL ) {
+      if( last_er == NULL ) {
+        funit->er_head = er->next;
+        if( er->next == NULL ) {
+          funit->er_tail = NULL;
+        }
+      } else {
+        last_er->next = er->next;
+      }
+      free_safe( er->reason, (strlen( er->reason ) + 1) );
+      free_safe( er, sizeof( exclude_reason ) );
+    }
+
+  }
+
+  PROFILE_END;
 
 }
 
@@ -844,26 +1078,35 @@ static bool exclude_line_from_id(
   const char* id  /*!< String version of exclusion ID */
 ) { PROFILE(EXCLUDE_LINE_FROM_ID);
 
-  expression* exp;  /* Pointer to found expression */
+  expression* exp;          /* Pointer to found expression */
+  func_unit*  found_funit;  /* Pointer to functional unit containing found expression */
 
-  if( (exp = exclude_find_expression( atoi( id + 1 ) )) != NULL ) {
+  if( (exp = exclude_find_expression( atoi( id + 1 ), &found_funit )) != NULL ) {
 
-    int prev_excluded;
+    int          prev_excluded;
+    unsigned int rv;
 
     assert( ESUPPL_IS_ROOT( exp->suppl ) == 1 );
 
     /* Get the previously excluded value */
     prev_excluded = exp->parent->stmt->suppl.part.excluded;
 
+    /* Output result */
+    if( prev_excluded == 0 ) {
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Excluding %s", id );
+    } else {
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Including %s", id );
+    }
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+
     /* Set the exclude bits in the expression supplemental field */
     exp->suppl.part.excluded               = (prev_excluded ^ 1);
     exp->parent->stmt->suppl.part.excluded = (prev_excluded ^ 1);
 
     /* If we are excluding and the -m option was specified, get an exclusion reason from the user */
-    if( (prev_excluded == 0) && exclude_prompt_for_msgs ) {
-      char* str = exclude_get_message( id );
-      /* TBD - What to do with the exclusion message? */
-      free_safe( str, (strlen( str ) + 1) );
+    if( exclude_prompt_for_msgs || (prev_excluded == 1) ) {
+      exclude_handle_expression_er( prev_excluded, id, exp, found_funit );
     }
 
   } else {
@@ -889,20 +1132,29 @@ static bool exclude_toggle_from_id(
   const char* id  /*!< String version of exclusion ID */
 ) { PROFILE(EXCLUDE_TOGGLE_FROM_ID);
 
-  vsignal* sig;  /* Pointer to found signal */
+  vsignal*   sig;          /* Pointer to found signal */
+  func_unit* found_funit;  /* Pointer to functional unit containing sig */
   
-  if( (sig = exclude_find_signal( atoi( id + 1 ) )) != NULL ) {
+  if( (sig = exclude_find_signal( atoi( id + 1 ), &found_funit )) != NULL ) {
   
-    int prev_excluded = sig->suppl.part.excluded;
+    int          prev_excluded = sig->suppl.part.excluded;
+    unsigned int rv;
+
+    /* Output result */
+    if( prev_excluded == 0 ) {
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Excluding %s", id );
+    } else {
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Including %s", id );
+    }
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     
     /* Set the exclude bits in the expression supplemental field */
     sig->suppl.part.excluded = (prev_excluded ^ 1);
     
     /* If we are excluding and the -m option was specified, get an exclusion reason from the user */
-    if( (prev_excluded == 0) && exclude_prompt_for_msgs ) { 
-      char* str = exclude_get_message( id );
-      /* TBD - What to do with the exclusion message? */
-      free_safe( str, (strlen( str ) + 1) );
+    if( exclude_prompt_for_msgs || (prev_excluded == 1) ) { 
+      exclude_handle_signal_er( prev_excluded, id, sig, found_funit );
     }
 
   } else {
@@ -928,20 +1180,29 @@ static bool exclude_memory_from_id(
   const char* id  /*!< String version of exclusion ID */
 ) { PROFILE(EXCLUDE_MEMORY_FROM_ID);
 
-  vsignal* sig;  /* Pointer to found signal */
+  vsignal*   sig;          /* Pointer to found signal */
+  func_unit* found_funit;  /* Pointer to functional unit containing sig */
   
-  if( (sig = exclude_find_signal( atoi( id + 1 ) )) != NULL ) {
+  if( (sig = exclude_find_signal( atoi( id + 1 ), &found_funit )) != NULL ) {
   
-    int prev_excluded = sig->suppl.part.excluded;
+    int          prev_excluded = sig->suppl.part.excluded;
+    unsigned int rv;
     
+    /* Output result */
+    if( prev_excluded == 0 ) {
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Excluding %s", id );
+    } else {
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Including %s", id );
+    }
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+
     /* Set the exclude bits in the expression supplemental field */
     sig->suppl.part.excluded = (prev_excluded ^ 1);
    
     /* If we are excluding and the -m option was specified, get an exclusion reason from the user */
-    if( (prev_excluded == 0) && exclude_prompt_for_msgs ) {
-      char* str = exclude_get_message( id );
-      /* TBD - What to do with the exclusion message? */
-      free_safe( str, (strlen( str ) + 1) );
+    if( exclude_prompt_for_msgs || (prev_excluded == 1) ) {
+      exclude_handle_signal_er( prev_excluded, id, sig, found_funit );
     }
   
   } else {
@@ -967,23 +1228,32 @@ static bool exclude_expr_from_id(
   const char* id  /*!< String version of exclusion ID */
 ) { PROFILE(EXCLUDE_EXPR_FROM_ID);
 
-  expression* exp;  /* Pointer to found expression */
+  expression* exp;          /* Pointer to found expression */
+  func_unit*  found_funit;  /* Pointer to functional unit containing exp */
   
-  if( (exp = exclude_find_expression( atoi( id + 1 ) )) != NULL ) {
+  if( (exp = exclude_find_expression( atoi( id + 1 ), &found_funit )) != NULL ) {
   
-    int prev_excluded;
+    int          prev_excluded;
+    unsigned int rv;
     
     /* Get the previously excluded value */
     prev_excluded = exp->suppl.part.excluded;
     
+    /* Output result */
+    if( prev_excluded == 0 ) {
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Excluding %s", id );
+    } else {
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Including %s", id );
+    }
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+
     /* Set the exclude bits in the expression supplemental field */
     exp->suppl.part.excluded = (prev_excluded ^ 1);
     
     /* If we are excluding and the -m option was specified, get an exclusion reason from the user */
-    if( (prev_excluded == 0) && exclude_prompt_for_msgs ) { 
-      char* str = exclude_get_message( id );
-      /* TBD - What to do with the exclusion message? */
-      free_safe( str, (strlen( str ) + 1) );
+    if( exclude_prompt_for_msgs || (prev_excluded == 1) ) { 
+      exclude_handle_expression_er( prev_excluded, id, exp, found_funit );
     }
 
   } else {
@@ -1027,11 +1297,44 @@ static bool exclude_assert_from_id(
   const char* id  /*!< String version of exclusion ID */
 ) { PROFILE(EXCLUDE_ASSERT_FROM_ID);
 
-  bool retval = FALSE;  /* Return value for this function */
+  expression* exp;          /* Pointer to found expression */
+  func_unit*  found_funit;  /* Pointer to functional unit containing exp */
+
+  if( (exp = exclude_find_expression( atoi( id + 1 ), &found_funit )) != NULL ) {
+
+    int          prev_excluded;
+    unsigned int rv;
+
+    /* Get the previously excluded value */
+    prev_excluded = exp->suppl.part.excluded;
+
+    /* Output result */
+    if( prev_excluded == 0 ) {
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Excluding %s", id );
+    } else {
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Including %s", id );
+    }
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+
+    /* Set the exclude bits in the expression supplemental field */
+    exp->suppl.part.excluded = (prev_excluded ^ 1);
+
+    /* If we are excluding and the -m option was specified, get an exclusion reason from the user */
+    if( exclude_prompt_for_msgs || (prev_excluded == 1) ) {
+      exclude_handle_expression_er( prev_excluded, id, exp, found_funit );
+    }
+
+  } else {
+
+    snprintf( user_msg, USER_MSG_LENGTH, "Unable to find assertion associated with exclusion ID %s", id );
+    print_output( user_msg, WARNING, __FILE__, __LINE__ );
+
+  }
 
   PROFILE_END;
 
-  return( retval );
+  return( exp != NULL );
 
 }
 
@@ -1104,6 +1407,9 @@ void command_exclude(
 
     /* Apply the specified exclusion IDs */
     if( exclude_apply_exclusions() ) {
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "Writing CDD file \"%s\"", exclude_cdd );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, NORMAL, __FILE__, __LINE__ );
       db_write( exclude_cdd, FALSE, TRUE );
     }
 
@@ -1123,6 +1429,10 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.32  2008/09/02 13:12:39  phase1geo
+ Adding code to remove all formatting characters from exclude messages.
+ Checkpointing.
+
  Revision 1.31  2008/09/02 05:53:54  phase1geo
  More code additions for exclude command.  Fixing a few bugs in this code as well.
  Checkpointing.

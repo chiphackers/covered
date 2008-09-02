@@ -261,6 +261,11 @@
 */
 #define DB_TYPE_MERGED_CDD   12
 
+/*!
+ Specifies that the current line describes an exclusion reason.
+*/
+#define DB_TYPE_EXCLUDE      13
+
 /*! @} */
 
 /*!
@@ -1715,6 +1720,7 @@ struct profiler_s;
 struct db_s;
 struct sim_time_s;
 struct comp_cdd_cov_s;
+struct exclude_reason_s;
 
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION TYPEDEFS  */
@@ -2025,6 +2031,11 @@ typedef struct sim_time_s sim_time;
  Renaming comp_cdd_cov_s structure for convenience.
 */
 typedef struct comp_cdd_cov_s comp_cdd_cov;
+
+/*!
+ Renaming exclude_reason_s structure for convenience.
+*/
+typedef struct exclude_reason_s exclude_reason;
 
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION DEFINITIONS  */
@@ -2401,40 +2412,42 @@ struct race_blk_s {
  Contains information for a functional unit (i.e., module, named block, function or task).
 */
 struct func_unit_s {
-  int           type;                /*!< Specifies the type of functional unit this structure represents.
+  int             type;              /*!< Specifies the type of functional unit this structure represents.
                                           Legal values are defined in \ref func_unit_types */
-  char*         name;                /*!< Functional unit name */
-  char*         filename;            /*!< File name where functional unit exists */
-  int           start_line;          /*!< Starting line number of functional unit in its file */
-  int           end_line;            /*!< Ending line number of functional unit in its file */
-  int           ts_unit;             /*!< Timescale unit value */
-  uint64        timescale;           /*!< Timescale for this functional unit contents */
-  statistic*    stat;                /*!< Pointer to functional unit coverage statistics structure */
-  sig_link*     sig_head;            /*!< Head pointer to list of signals in this functional unit */
-  sig_link*     sig_tail;            /*!< Tail pointer to list of signals in this functional unit */
-  exp_link*     exp_head;            /*!< Head pointer to list of expressions in this functional unit */
-  exp_link*     exp_tail;            /*!< Tail pointer to list of expressions in this functional unit */
-  statement*    first_stmt;          /*!< Pointer to first head statement in this functional unit (for tasks/functions only) */
-  stmt_link*    stmt_head;           /*!< Head pointer to list of statements in this functional unit */
-  stmt_link*    stmt_tail;           /*!< Tail pointer to list of statements in this functional unit */
-  fsm_link*     fsm_head;            /*!< Head pointer to list of FSMs in this functional unit */
-  fsm_link*     fsm_tail;            /*!< Tail pointer to list of FSMs in this functional unit */
-  race_blk*     race_head;           /*!< Head pointer to list of race condition blocks in this functional unit if we are a module */
-  race_blk*     race_tail;           /*!< Tail pointer to list of race condition blocks in this functional unit if we are a module */
-  mod_parm*     param_head;          /*!< Head pointer to list of parameters in this functional unit if we are a module */
-  mod_parm*     param_tail;          /*!< Tail pointer to list of parameters in this functional unit if we are a module */
-  gitem_link*   gitem_head;          /*!< Head pointer to list of generate items within this module */
-  gitem_link*   gitem_tail;          /*!< Tail pointer to list of generate items within this module */
-  func_unit*    parent;              /*!< Pointer to parent functional unit (only valid for functions, tasks and named blocks */
-  funit_link*   tf_head;             /*!< Head pointer to list of task/function functional units if we are a module */
-  funit_link*   tf_tail;             /*!< Tail pointer to list of task/function functional units if we are a module */
-  typedef_item* tdi_head;            /*!< Head pointer to list of typedef types for this functional unit */
-  typedef_item* tdi_tail;            /*!< Tail pointer to list of typedef types for this functional unit */
-  enum_item*    ei_head;             /*!< Head pointer to list of enumerated values for this functional unit */
-  enum_item*    ei_tail;             /*!< Tail pointer to list of enumerated values for this functional unit */
-  struct_union* su_head;             /*!< Head pointer to list of struct/unions for this functional unit */
-  struct_union* su_tail;             /*!< Tail pointer to list of struct/unions for this functional unit */
-  int           elem_type;           /*!< Set to 0 if elem should be treated as a thread pointer; set to 1 if elem should be treated
+  char*           name;              /*!< Functional unit name */
+  char*           filename;          /*!< File name where functional unit exists */
+  int             start_line;        /*!< Starting line number of functional unit in its file */
+  int             end_line;          /*!< Ending line number of functional unit in its file */
+  int             ts_unit;           /*!< Timescale unit value */
+  uint64          timescale;         /*!< Timescale for this functional unit contents */
+  statistic*      stat;              /*!< Pointer to functional unit coverage statistics structure */
+  sig_link*       sig_head;          /*!< Head pointer to list of signals in this functional unit */
+  sig_link*       sig_tail;          /*!< Tail pointer to list of signals in this functional unit */
+  exp_link*       exp_head;          /*!< Head pointer to list of expressions in this functional unit */
+  exp_link*       exp_tail;          /*!< Tail pointer to list of expressions in this functional unit */
+  statement*      first_stmt;        /*!< Pointer to first head statement in this functional unit (for tasks/functions only) */
+  stmt_link*      stmt_head;         /*!< Head pointer to list of statements in this functional unit */
+  stmt_link*      stmt_tail;         /*!< Tail pointer to list of statements in this functional unit */
+  fsm_link*       fsm_head;          /*!< Head pointer to list of FSMs in this functional unit */
+  fsm_link*       fsm_tail;          /*!< Tail pointer to list of FSMs in this functional unit */
+  race_blk*       race_head;         /*!< Head pointer to list of race condition blocks in this functional unit if we are a module */
+  race_blk*       race_tail;         /*!< Tail pointer to list of race condition blocks in this functional unit if we are a module */
+  mod_parm*       param_head;        /*!< Head pointer to list of parameters in this functional unit if we are a module */
+  mod_parm*       param_tail;        /*!< Tail pointer to list of parameters in this functional unit if we are a module */
+  gitem_link*     gitem_head;        /*!< Head pointer to list of generate items within this module */
+  gitem_link*     gitem_tail;        /*!< Tail pointer to list of generate items within this module */
+  func_unit*      parent;            /*!< Pointer to parent functional unit (only valid for functions, tasks and named blocks */
+  funit_link*     tf_head;           /*!< Head pointer to list of task/function functional units if we are a module */
+  funit_link*     tf_tail;           /*!< Tail pointer to list of task/function functional units if we are a module */
+  typedef_item*   tdi_head;          /*!< Head pointer to list of typedef types for this functional unit */
+  typedef_item*   tdi_tail;          /*!< Tail pointer to list of typedef types for this functional unit */
+  enum_item*      ei_head;           /*!< Head pointer to list of enumerated values for this functional unit */
+  enum_item*      ei_tail;           /*!< Tail pointer to list of enumerated values for this functional unit */
+  struct_union*   su_head;           /*!< Head pointer to list of struct/unions for this functional unit */
+  struct_union*   su_tail;           /*!< Tail pointer to list of struct/unions for this functional unit */
+  exclude_reason* er_head;           /*!< Head pointer to list of exclusion reason structures for this functional unit */
+  exclude_reason* er_tail;           /*!< Tail pointer to list of exclusion reason structures for this functional unit */
+  int             elem_type;         /*!< Set to 0 if elem should be treated as a thread pointer; set to 1 if elem should be treated
                                           as a thread list pointer. */
   union {
     thread*   thr;                   /*!< Pointer to a single thread that this statement is associated with */
@@ -2858,6 +2871,17 @@ struct comp_cdd_cov_s {
 };
 
 /*!
+ Structure that holds the information for an exclusion reason.  This structure is stored in the functional
+ unit that contains the signal, expression or FSM table.
+*/
+struct exclude_reason_s {
+  char            type;                 /*!< Specifies the type of exclusion (L=line, T=toggle, M=memory, E=expression, F=FSM, A=assertion) */
+  int             id;                   /*!< Specifies the numerical ID of the exclusion (type and id together make a unique identifier) */
+  char*           reason;               /*!< String containing reason for exclusion */
+  exclude_reason* next;                 /*!< Pointer to the next exclusion reason structure */
+};
+
+/*!
  This will define the exception type that gets thrown (Covered does not care about this value)
 */
 define_exception_type(int);
@@ -2866,6 +2890,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.307  2008/08/29 05:38:37  phase1geo
+ Adding initial pass of FSM exclusion ID output.  Need to fix issues with the -e
+ option usage for all metrics, I believe (certainly for FSM).  Checkpointing.
+
  Revision 1.306  2008/08/28 13:59:18  phase1geo
  More updates to be more efficient in outputting exclusion IDs.  Also added
  capability (or the start of) to output exclusions when the -e option is

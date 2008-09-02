@@ -913,6 +913,62 @@ void report_save_cdd(
 }
 
 /*!
+ Outputs the given exclude report message to the specified output stream, handling the appropriate formatting.
+*/
+void report_output_exclusion_reason(
+  FILE* ofile,
+  int   leading_spaces,
+  char* msg
+) { PROFILE(REPORT_OUTPUT_EXCLUSION_REASON);
+
+  char* msg_cpy;
+  char* msg_tcpy;
+  char* lead_sp;
+  int   curr_width;
+  char* word;
+
+  /* Copy the message */
+  msg_cpy  = strdup_safe( msg );
+  msg_tcpy = msg_cpy;
+
+  /* Allocate and populate the leading spaces string */
+  lead_sp = (char*)malloc_safe( leading_spaces + 1 );
+  gen_char_string( lead_sp, ' ', leading_spaces );
+
+  /* Output message */
+  fprintf( ofile, "\n%sReason:  ", lead_sp );
+
+  curr_width = leading_spaces + 9;
+  word       = msg_cpy;
+  while( *msg_cpy != '\0' ) {
+    /* Get the next token */
+    while( (*msg_cpy != '\0') && (*msg_cpy != ' ') ) msg_cpy++;
+    if( *msg_cpy == ' ' ) {
+      *msg_cpy = '\0';
+      msg_cpy++;
+    }
+    if( (strlen( word ) + curr_width) > line_width ) {
+      fprintf( ofile, "\n%s         ", lead_sp );
+      curr_width = leading_spaces + 9;
+    }
+    fprintf( ofile, "%s ", word );
+    if( word[strlen(word)-1] == '.' ) {
+      fprintf( ofile, " " );
+    }
+    curr_width += strlen( word ) + 1;
+    word = msg_cpy;
+  }
+  fprintf( ofile, "\n\n" );
+
+  /* Deallocate memory */
+  free_safe( msg_tcpy, (strlen( msg ) + 1) );
+  free_safe( lead_sp, (strlen( lead_sp ) + 1) );
+
+  PROFILE_END;
+
+}
+
+/*!
  Performs report command functionality.
 */
 void command_report(
@@ -1091,6 +1147,9 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.117  2008/08/29 13:01:17  phase1geo
+ Removing exclusion ID from covered coverage points.  Checkpointing.
+
  Revision 1.116  2008/08/28 13:59:19  phase1geo
  More updates to be more efficient in outputting exclusion IDs.  Also added
  capability (or the start of) to output exclusions when the -e option is

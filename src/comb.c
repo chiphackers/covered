@@ -66,6 +66,7 @@
 #include "comb.h"
 #include "db.h"
 #include "defines.h"
+#include "exclude.h"
 #include "expr.h"
 #include "func_iter.h"
 #include "func_unit.h"
@@ -73,6 +74,7 @@
 #include "link.h"
 #include "obfuscate.h"
 #include "ovl.h"
+#include "report.h"
 #include "util.h"
 #include "vector.h"
 
@@ -2445,9 +2447,10 @@ static void combination_get_missed_expr(
  during simulation.
 */
 static void combination_list_missed(
-  FILE*        ofile,      /*!< Pointer to file to output results to */
-  expression*  exp,        /*!< Pointer to expression tree to evaluate */
-  unsigned int curr_depth  /*!< Specifies current depth of expression tree */
+  FILE*        ofile,       /*!< Pointer to file to output results to */
+  expression*  exp,         /*!< Pointer to expression tree to evaluate */
+  unsigned int curr_depth,  /*!< Specifies current depth of expression tree */
+  func_unit*   funit        /*!< Pointer to current functional unit */
 ) { PROFILE(COMBINATION_LIST_MISSED);
 
   char** info;       /* String array containing combination coverage information for this expression */
@@ -2455,9 +2458,11 @@ static void combination_list_missed(
   int    i;          /* Loop iterator */
   
   if( exp != NULL ) {
+
+    exclude_reason* er;
     
-    combination_list_missed( ofile, exp->left,  combination_calc_depth( exp, curr_depth, TRUE ) );
-    combination_list_missed( ofile, exp->right, combination_calc_depth( exp, curr_depth, FALSE ) );
+    combination_list_missed( ofile, exp->left,  combination_calc_depth( exp, curr_depth, TRUE ),  funit );
+    combination_list_missed( ofile, exp->right, combination_calc_depth( exp, curr_depth, FALSE ), funit );
 
     /* Get coverage information for this expression */
     combination_get_missed_expr( &info, &info_size, exp, curr_depth, report_exclusions );
@@ -2470,6 +2475,15 @@ static void combination_list_missed(
         fprintf( ofile, "%s\n", info[i] );
         free_safe( info[i], (strlen( info[i] ) + 1) );
 
+      }
+
+      /* Output the exclusion reason information, if it exists */
+      if( report_exclusions && (er = exclude_find_exclude_reason( 'E', exp->id, funit )) != NULL ) {
+        if( flag_output_exclusion_ids ) {
+          report_output_exclusion_reason( ofile, (14 + (db_get_exclusion_id_size() - 1)), er->reason );
+        } else {
+          report_output_exclusion_reason( ofile, 10, er->reason );
+        }
       }
 
       fprintf( ofile, "\n" );
@@ -2593,7 +2607,7 @@ static bool combination_display_verbose(
       fprintf( ofile, "\n" );
 
       /* Output logical combinations that missed complete coverage */
-      combination_list_missed( ofile, stmt->exp, 0 );
+      combination_list_missed( ofile, stmt->exp, 0, funit );
 
     }
     
@@ -2644,9 +2658,8 @@ static void combination_instance_verbose(
 
   if( !funit_is_unnamed( root->funit ) &&
       (((root->stat->comb_hit < root->stat->comb_total) && !report_covered) ||
-       ((root->stat->comb_hit > 0) && report_covered)) ) {
-
-    bool found_exclusion;
+       ((root->stat->comb_hit > 0) && report_covered) ||
+       ((root->stat->comb_excluded > 0) && report_exclusions)) ) {
 
     /* Get printable version of functional unit name */
     pname = scope_gen_printable( funit_flatten_name( root->funit ) );
@@ -2667,10 +2680,13 @@ static void combination_instance_verbose(
 
     free_safe( pname, (strlen( pname ) + 1) );
 
-    found_exclusion = combination_display_verbose( ofile, root->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
-    if( report_exclusions && found_exclusion ) {
+    if( ((root->stat->comb_hit < root->stat->comb_total) && !report_covered) ||
+        ((root->stat->comb_hit > 0) && report_covered && (!report_exclusions || (root->stat->comb_hit > root->stat->comb_excluded))) ) {
+      combination_display_verbose( ofile, root->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
+    }
+    if( report_exclusions && (root->stat->comb_excluded > 0) ) {
       combination_reset_counted_exprs( root->funit );
-      (void)combination_display_verbose( ofile, root->funit, RPT_TYPE_EXCL );
+      combination_display_verbose( ofile, root->funit, RPT_TYPE_EXCL );
     }
 
   }
@@ -2702,9 +2718,8 @@ static void combination_funit_verbose(
 
     if( !funit_is_unnamed( head->funit ) &&
         (((head->funit->stat->comb_hit < head->funit->stat->comb_total) && !report_covered) ||
-         ((head->funit->stat->comb_hit > 0) && report_covered)) ) {
-
-      bool found_exclusion;
+         ((head->funit->stat->comb_hit > 0) && report_covered) ||
+         ((head->funit->stat->comb_excluded > 0) && report_exclusions)) ) {
 
       /* Get printable version of functional unit name */
       pname = scope_gen_printable( funit_flatten_name( head->funit ) );
@@ -2725,10 +2740,13 @@ static void combination_funit_verbose(
 
       free_safe( pname, (strlen( pname ) + 1) );
 
-      found_exclusion = combination_display_verbose( ofile, head->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
-      if( report_exclusions && found_exclusion ) {
+      if( ((head->funit->stat->comb_hit < head->funit->stat->comb_total) && !report_covered) ||
+          ((head->funit->stat->comb_hit > 0) && report_covered && (!report_exclusions || (head->funit->stat->comb_hit > head->funit->stat->comb_excluded))) ) {
+        combination_display_verbose( ofile, head->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
+      }
+      if( (head->funit->stat->comb_excluded > 0) && report_exclusions ) {
         combination_reset_counted_exprs( head->funit );
-        (void)combination_display_verbose( ofile, head->funit, RPT_TYPE_EXCL );
+        combination_display_verbose( ofile, head->funit, RPT_TYPE_EXCL );
       }
 
     }
@@ -3027,7 +3045,7 @@ void combination_report(
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
     (void)combination_display_instance_summary( ofile, "Accumulated", acc_hits, acc_total );
     
-    if( verbose && (missed_found || report_covered) ) {
+    if( verbose && (missed_found || report_covered || report_exclusions) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       instl = db_list[curr_db]->inst_head;
       while( instl != NULL ) {
@@ -3046,7 +3064,7 @@ void combination_report(
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
     (void)combination_display_funit_summary( ofile, "Accumulated", "", acc_hits, acc_total );
 
-    if( verbose && (missed_found || report_covered) ) {
+    if( verbose && (missed_found || report_covered || report_exclusions) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       combination_funit_verbose( ofile, db_list[curr_db]->funit_head );
     }
@@ -3062,6 +3080,10 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.202  2008/08/28 21:24:14  phase1geo
+ Adding support for exclusion output for assertions.  Updated regressions accordingly.
+ Checkpointing.
+
  Revision 1.201  2008/08/28 18:51:42  phase1geo
  Added support to output exclusion identifiers in combinational logic expression
  verbose output.  Updated regression suite for these changes.  Checkpointing.

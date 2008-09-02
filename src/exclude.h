@@ -109,6 +109,27 @@ void exclude_set_assert_exclude(
   /*@out@*/ statistic* stat
 );
 
+/*! \brief Returns a pointer to the found exclude reason if one is found for the given type and ID; otherwise,
+           returns NULL. */
+exclude_reason* exclude_find_exclude_reason(
+  char       type,
+  int        id,
+  func_unit* funit
+);
+
+/*! \brief Outputs the given exclude reason structure to the specified file stream. */
+void exclude_db_write(
+  exclude_reason* er,
+  FILE*           ofile
+);
+
+/*! \brief Reads the given exclude reason from the specified line and stores its information in the curr_funit
+           structure. */
+void exclude_db_read(
+  char**     line,
+  func_unit* curr_funit
+);
+
 /*! \brief Allows the user to exclude coverage points from reporting. */
 void command_exclude(
   int          argc,
@@ -119,6 +140,9 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.10  2008/09/02 05:20:40  phase1geo
+ More updates for exclude command.  Updates to CVER regression.
+
  Revision 1.9  2008/08/18 23:07:26  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

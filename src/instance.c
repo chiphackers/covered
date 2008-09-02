@@ -344,8 +344,9 @@ funit_inst* instance_find_by_funit(
  exclusion ID as the one specified.
 */
 vsignal* instance_find_signal_by_exclusion_id(
-  funit_inst* root,  /*!< Pointer to root instance */
-  int         id     /*!< Exclusion ID to search for */
+            funit_inst* root,        /*!< Pointer to root instance */
+            int         id,          /*!< Exclusion ID to search for */
+  /*@out@*/ func_unit** found_funit  /*!< Pointer to functional unit containing this signal */
 ) { PROFILE(INSTANCE_FIND_SIGNAL_BY_EXCLUSION_ID);
  
   vsignal* sig = NULL;  /* Pointer to found signal */
@@ -355,8 +356,8 @@ vsignal* instance_find_signal_by_exclusion_id(
     assert( root->funit != NULL );
 
     if( (root->funit->sig_head != NULL) &&
-        (root->funit->sig_head->sig->id >= id) &&
-        (root->funit->sig_tail->sig->id <= id) ) {
+        (root->funit->sig_head->sig->id <= id) &&
+        (root->funit->sig_tail->sig->id >= id) ) {
 
       sig_link* sigl = root->funit->sig_head;
 
@@ -364,12 +365,13 @@ vsignal* instance_find_signal_by_exclusion_id(
         sigl = sigl->next;
       }
       assert( sigl->sig != NULL );
-      sig = sigl->sig;
+      sig          = sigl->sig;
+      *found_funit = root->funit;
 
     } else {
 
       funit_inst* child = root->child_head;
-      while( (child != NULL) && ((sig = instance_find_signal_by_exclusion_id( child, id )) == NULL) ) {
+      while( (child != NULL) && ((sig = instance_find_signal_by_exclusion_id( child, id, found_funit )) == NULL) ) {
         child = child->next;
       }
 
@@ -390,8 +392,9 @@ vsignal* instance_find_signal_by_exclusion_id(
  exclusion ID as the one specified.
 */
 expression* instance_find_expression_by_exclusion_id(
-  funit_inst* root,  /*!< Pointer to root instance */
-  int         id     /*!< Exclusion ID to search for */
+            funit_inst* root,        /*!< Pointer to root instance */
+            int         id,          /*!< Exclusion ID to search for */
+  /*@out@*/ func_unit** found_funit  /*!< Pointer to functional unit containing this expression */
 ) { PROFILE(INSTANCE_FIND_EXPRESSION_BY_EXCLUSION_ID); 
     
   expression* exp = NULL;  /* Pointer to found expression */
@@ -410,12 +413,13 @@ expression* instance_find_expression_by_exclusion_id(
         expl = expl->next;           
       }
       assert( expl->exp != NULL );
-      exp = expl->exp;
+      exp          = expl->exp;
+      *found_funit = root->funit;
 
     } else {
 
       funit_inst* child = root->child_head;
-      while( (child != NULL) && ((exp = instance_find_expression_by_exclusion_id( child, id )) == NULL) ) {
+      while( (child != NULL) && ((exp = instance_find_expression_by_exclusion_id( child, id, found_funit )) == NULL) ) {
         child = child->next;
       }
 
@@ -1240,6 +1244,10 @@ void instance_dealloc(
 
 /*
  $Log$
+ Revision 1.102  2008/09/02 05:53:54  phase1geo
+ More code additions for exclude command.  Fixing a few bugs in this code as well.
+ Checkpointing.
+
  Revision 1.101  2008/09/02 05:20:41  phase1geo
  More updates for exclude command.  Updates to CVER regression.
 

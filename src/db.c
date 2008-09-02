@@ -498,6 +498,13 @@ void db_read(
               /* Parse rest of line for FSM info */
               fsm_db_read( &rest_line, curr_funit );
 
+            } else if( type == DB_TYPE_EXCLUDE ) {
+
+              assert( !merge_mode );
+
+              /* Parse rest of line for exclude info */
+              exclude_db_read( &rest_line, curr_funit );
+
             } else if( type == DB_TYPE_RACE ) {
 
               assert( !merge_mode );
@@ -3009,6 +3016,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.323  2008/08/29 05:38:36  phase1geo
+ Adding initial pass of FSM exclusion ID output.  Need to fix issues with the -e
+ option usage for all metrics, I believe (certainly for FSM).  Checkpointing.
+
  Revision 1.322  2008/08/28 21:24:14  phase1geo
  Adding support for exclusion output for assertions.  Updated regressions accordingly.
  Checkpointing.

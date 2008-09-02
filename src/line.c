@@ -33,6 +33,7 @@
 #include "codegen.h"
 #include "db.h"
 #include "defines.h"
+#include "exclude.h"
 #include "expr.h"
 #include "func_iter.h"
 #include "func_unit.h"
@@ -42,6 +43,7 @@
 #include "link.h"
 #include "obfuscate.h"
 #include "ovl.h"
+#include "report.h"
 #include "util.h"
 
 extern db**         db_list;
@@ -386,24 +388,21 @@ static bool line_funit_summary(
 }
 
 /*!
- \return Returns TRUE if at least one excluded line was found.
-
  Displays the lines missed during simulation to standard output from the
  specified expression list.
 */
-static bool line_display_verbose(
+static line_display_verbose(
   FILE*      ofile,  /*!< Pointer to file to output results to */
   func_unit* funit,  /*!< Pointer to functional unit containing lines to display in verbose format */
   rpt_type   rtype   /*!< Specifies the type of lines to output */
 ) { PROFILE(LINE_DISPLAY_VERBOSE);
 
-  bool         retval = FALSE;  /* Return value for this function */
-  statement*   stmt;            /* Pointer to current statement */
-  expression*  unexec_exp;      /* Pointer to current unexecuted expression */
-  char**       code;            /* Pointer to code string from code generator */
-  unsigned int code_depth;      /* Depth of code array */
-  unsigned int i;               /* Loop iterator */
-  func_iter    fi;              /* Functional unit iterator */
+  statement*   stmt;        /* Pointer to current statement */
+  expression*  unexec_exp;  /* Pointer to current unexecuted expression */
+  char**       code;        /* Pointer to code string from code generator */
+  unsigned int code_depth;  /* Depth of code array */
+  unsigned int i;           /* Loop iterator */
+  func_iter    fi;          /* Functional unit iterator */
 
   switch( rtype ) {
     case RPT_TYPE_HIT  :  fprintf( ofile, "    Hit Lines\n\n" );       break;
@@ -428,8 +427,6 @@ static bool line_display_verbose(
         (stmt->exp->op != EXP_OP_NOOP)    &&
         (stmt->exp->line != 0) ) {
 
-      retval |= stmt->suppl.part.excluded;
-
       if( ((((stmt->exp->exec_num > 0) ? 1 : 0) == report_covered) && (stmt->suppl.part.excluded == 0) && (rtype != RPT_TYPE_EXCL)) ||
           ((stmt->suppl.part.excluded == 1) && (rtype == RPT_TYPE_EXCL)) ) {
 
@@ -437,10 +434,18 @@ static bool line_display_verbose(
 
         codegen_gen_expr( unexec_exp, unexec_exp->op, &code, &code_depth, funit );
         if( flag_output_exclusion_ids && (rtype != RPT_TYPE_HIT) ) {
+          exclude_reason* er;
           fprintf( ofile, "      (%s)  %7d:    %s%s\n",
                    db_gen_exclusion_id( 'L', unexec_exp->id ), unexec_exp->line, code[0], ((code_depth == 1) ? "" : "...") );
+          if( (rtype == RPT_TYPE_EXCL) && ((er = exclude_find_exclude_reason( 'L', unexec_exp->id, funit )) != NULL) ) {
+            report_output_exclusion_reason( ofile, (22 + (db_get_exclusion_id_size() - 1)), er->reason );
+          }
         } else {
+          exclude_reason* er;
           fprintf( ofile, "      %7d:    %s%s\n", unexec_exp->line, code[0], ((code_depth == 1) ? "" : "...") );
+          if( (rtype == RPT_TYPE_EXCL) && ((er = exclude_find_exclude_reason( 'L', unexec_exp->id, funit )) != NULL) ) {
+            report_output_exclusion_reason( ofile, 18, er->reason );
+          }
         }
         for( i=0; i<code_depth; i++ ) {
           free_safe( code[i], (strlen( code[i] ) + 1) );
@@ -458,8 +463,6 @@ static bool line_display_verbose(
   fprintf( ofile, "\n" );
 
   PROFILE_END;
-
-  return( retval );
 
 }
 
@@ -497,9 +500,8 @@ static void line_instance_verbose(
 
   if( !funit_is_unnamed( root->funit ) &&
       (((root->stat->line_hit < root->stat->line_total) && !report_covered) ||
-       ((root->stat->line_hit > 0) && report_covered)) ) {
-
-    bool exclusion_found;
+       ((root->stat->line_hit > 0) && report_covered) ||
+       ((root->stat->line_excluded > 0) && report_exclusions)) ) {
 
     /* Get printable version of functional unit name */
     pname = scope_gen_printable( funit_flatten_name( root->funit ) );
@@ -520,9 +522,12 @@ static void line_instance_verbose(
 
     free_safe( pname, (strlen( pname ) + 1) );
 
-    exclusion_found = line_display_verbose( ofile, root->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
-    if( report_exclusions && exclusion_found ) {
-      (void)line_display_verbose( ofile, root->funit, RPT_TYPE_EXCL );
+    if( ((root->stat->line_hit < root->stat->line_total) && !report_covered) ||
+        ((root->stat->line_hit > 0) && report_covered && (!report_exclusions || (root->stat->line_hit > root->stat->line_excluded))) ) {
+      line_display_verbose( ofile, root->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
+    }
+    if( (root->stat->line_excluded > 0) && report_exclusions ) {
+      line_display_verbose( ofile, root->funit, RPT_TYPE_EXCL );
     }
 
   }
@@ -554,9 +559,8 @@ static void line_funit_verbose(
 
     if( !funit_is_unnamed( head->funit ) &&
         (((head->funit->stat->line_hit < head->funit->stat->line_total) && !report_covered) ||
-         ((head->funit->stat->line_hit > 0) && report_covered)) ) {
-
-      bool exclusion_found;
+         ((head->funit->stat->line_hit > 0) && report_covered) ||
+         ((head->funit->stat->line_excluded > 0) && report_exclusions)) ) {
 
       /* Get printable version of functional unit name */
       pname = scope_gen_printable( funit_flatten_name( head->funit ) );
@@ -577,9 +581,12 @@ static void line_funit_verbose(
 
       free_safe( pname, (strlen( pname ) + 1) );
 
-      exclusion_found = line_display_verbose( ofile, head->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
-      if( report_exclusions && exclusion_found ) {
-        (void)line_display_verbose( ofile, head->funit, RPT_TYPE_EXCL );
+      if( ((head->funit->stat->line_hit < head->funit->stat->line_total) && !report_covered) ||
+          ((head->funit->stat->line_hit > 0) && report_covered && (!report_exclusions || (head->funit->stat->line_hit > head->funit->stat->line_excluded))) ) {
+        line_display_verbose( ofile, head->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
+      }
+      if( (head->funit->stat->line_excluded > 0) && report_exclusions ) {
+        line_display_verbose( ofile, head->funit, RPT_TYPE_EXCL );
       }
   
     }
@@ -633,7 +640,7 @@ void line_report(
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
     (void)line_display_instance_summary( ofile, "Accumulated", acc_hits, acc_total );
     
-    if( verbose && (missed_found || report_covered) ) {
+    if( verbose && (missed_found || report_covered || report_exclusions) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       instl = db_list[curr_db]->inst_head;
       while( instl != NULL ) {
@@ -651,7 +658,7 @@ void line_report(
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
     (void)line_display_funit_summary( ofile, "Accumulated", "", acc_hits, acc_total );
 
-    if( verbose && (missed_found || report_covered) ) {
+    if( verbose && (missed_found || report_covered || report_exclusions) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       line_funit_verbose( ofile, db_list[curr_db]->funit_head );
     }
@@ -666,6 +673,9 @@ void line_report(
 
 /*
  $Log$
+ Revision 1.98  2008/08/29 13:01:17  phase1geo
+ Removing exclusion ID from covered coverage points.  Checkpointing.
+
  Revision 1.97  2008/08/28 13:59:19  phase1geo
  More updates to be more efficient in outputting exclusion IDs.  Also added
  capability (or the start of) to output exclusions when the -e option is

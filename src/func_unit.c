@@ -33,6 +33,7 @@
 #include "db.h"
 #include "defines.h"
 #include "enumerate.h"
+#include "exclude.h"
 #include "expr.h"
 #include "fsm.h"
 #include "func_unit.h"
@@ -92,6 +93,8 @@ static void funit_init(
   funit->tdi_tail   = NULL;
   funit->ei_head    = NULL;
   funit->ei_tail    = NULL;
+  funit->er_head    = NULL;
+  funit->er_tail    = NULL;
   funit->parent     = NULL;
   funit->elem_type  = 0;
   funit->elem.thr   = NULL;
@@ -525,17 +528,18 @@ void funit_db_write(
                                 the report command */
 ) { PROFILE(FUNIT_DB_WRITE);
 
-  sig_link*   curr_sig;       /* Pointer to current functional unit sig_link element */
-  exp_link*   curr_exp;       /* Pointer to current functional unit exp_link element */
-  stmt_iter   curr_stmt;      /* Statement list iterator */
-  inst_parm*  curr_parm;      /* Pointer to current instance parameter */
-  fsm_link*   curr_fsm;       /* Pointer to current functional unit fsm_link element */
-  race_blk*   curr_race;      /* Pointer to current race condition block */
+  sig_link*       curr_sig;       /* Pointer to current functional unit sig_link element */
+  exp_link*       curr_exp;       /* Pointer to current functional unit exp_link element */
+  stmt_iter       curr_stmt;      /* Statement list iterator */
+  inst_parm*      curr_parm;      /* Pointer to current instance parameter */
+  fsm_link*       curr_fsm;       /* Pointer to current functional unit fsm_link element */
+  race_blk*       curr_race;      /* Pointer to current race condition block */
 #ifndef VPI_ONLY
-  gitem_link* curr_gi;        /* Pointer to current gitem_link element */
+  gitem_link*     curr_gi;        /* Pointer to current gitem_link element */
 #endif
-  char        modname[4096];  /* Name of module */
-  char        tmp[4096];      /* Temporary string holder */
+  exclude_reason* curr_er;        /* Pointer to current exclude reason element */
+  char            modname[4096];  /* Name of module */
+  char            tmp[4096];      /* Temporary string holder */
 
   if( funit->type != FUNIT_NO_SCORE ) {
 
@@ -661,6 +665,12 @@ void funit_db_write(
     while( curr_fsm != NULL ) {
       fsm_db_write( curr_fsm->table, file, (inst != NULL) );
       curr_fsm = curr_fsm->next;
+    }
+
+    curr_er = funit->er_head;
+    while( curr_er != NULL ) {
+      exclude_db_write( curr_er, file );
+      curr_er = curr_er->next;
     }
 
     /* Now print all race condition block structures in functional unit (if we are a module) */
@@ -1340,9 +1350,11 @@ static void funit_clean(
   func_unit* funit  /*!< Pointer to functional unit element to clean */
 ) { PROFILE(FUNIT_CLEAN);
 
-  func_unit*    old_funit = curr_funit;  /* Holds the original functional unit in curr_funit */
-  typedef_item* tdi;                     /* Pointer to current typedef item */
-  typedef_item* ttdi;                    /* Pointer to temporary typedef item */
+  func_unit*      old_funit = curr_funit;  /* Holds the original functional unit in curr_funit */
+  typedef_item*   tdi;                     /* Pointer to current typedef item */
+  typedef_item*   ttdi;                    /* Pointer to temporary typedef item */
+  exclude_reason* er;                      /* Pointer to current exclude reason item */
+  exclude_reason* ter;                     /* Pointer to temporary exclude reason item */
 
   if( funit != NULL ) {
 
@@ -1405,6 +1417,17 @@ static void funit_clean(
     funit->tdi_head = NULL;
     funit->tdi_tail = NULL;
 
+    /* Free exclusion reason items */
+    er = funit->er_head;
+    while( er != NULL ) {
+      ter = er;
+      er  = er->next;
+      free_safe( ter->reason, (strlen( ter->reason ) + 1) );
+      free_safe( ter, sizeof( exclude_reason ) );
+    }
+    funit->er_head = NULL;
+    funit->er_tail = NULL;
+
     /* Free enumerated elements */
     enumerate_dealloc_list( funit );
 
@@ -1466,6 +1489,11 @@ void funit_dealloc(
 
 /*
  $Log$
+ Revision 1.108  2008/08/18 23:07:26  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.104.2.2  2008/08/06 20:11:33  phase1geo
  Adding support for instance-based coverage reporting in GUI.  Everything seems to be
  working except for proper exclusion handling.  Checkpointing.

@@ -62,9 +62,21 @@ void report_save_cdd(
   const char* filename
 );
 
+/*! \brief Outputs the given exclusion reason to the given output stream */
+void report_output_exclusion_reason(
+  FILE* ofile,
+  int   leading_spaces,
+  char* msg
+);
+
 
 /*
  $Log$
+ Revision 1.18  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.16.4.1  2008/07/10 22:43:54  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

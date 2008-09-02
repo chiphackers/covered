@@ -31,6 +31,7 @@
 
 #include "db.h"
 #include "defines.h"
+#include "exclude.h"
 #include "func_iter.h"
 #include "func_unit.h"
 #include "link.h"
@@ -404,24 +405,21 @@ static bool toggle_funit_summary(
 }
 
 /*!
- \return Returns TRUE if at least one signal was found to be excluded in the given functional unit.
-
  Displays the signals that did not achieve 100% toggle coverage to standard 
  output from the specified signal list.
 */
-static bool toggle_display_verbose(
+static void toggle_display_verbose(
   FILE*      ofile,  /*!< Pointer to file to output results to */
   func_unit* funit,  /*!< Pointer to current named functional unit */
   rpt_type   rtype   /*!< Specifies the type of output to generate */
 ) { PROFILE(TOGGLE_DISPLAY_VERBOSE);
 
-  bool         retval = FALSE;  /* Return value for this function */
-  func_iter    fi;              /* Functional unit iterator */
-  vsignal*     sig;             /* Pointer to current signal being evaluated */
-  unsigned int hit01;           /* Number of bits that toggled from 0 to 1 */
-  unsigned int hit10;           /* Number of bits that toggled from 1 to 0 */
-  char*        pname;           /* Printable version of signal name */
-  unsigned int eid_size;
+  func_iter    fi;        /* Functional unit iterator */
+  vsignal*     sig;       /* Pointer to current signal being evaluated */
+  unsigned int hit01;     /* Number of bits that toggled from 0 to 1 */
+  unsigned int hit10;     /* Number of bits that toggled from 1 to 0 */
+  char*        pname;     /* Printable version of signal name */
+  unsigned int eid_size;  /* String length of exclusion ID */
 
   switch( rtype ) {
     case RPT_TYPE_HIT  :  fprintf( ofile, "    Signals getting 100%% toggle coverage\n\n" );      break;
@@ -460,8 +458,6 @@ static bool toggle_display_verbose(
         (sig->suppl.part.type != SSUPPL_TYPE_MEM)  &&
         (sig->suppl.part.mba == 0) ) {
 
-      retval |= sig->suppl.part.excluded;
-
       if( ((sig->suppl.part.excluded == 0) && (rtype != RPT_TYPE_EXCL)) ||
           ((sig->suppl.part.excluded == 1) && (rtype == RPT_TYPE_EXCL)) ) {
 
@@ -477,7 +473,10 @@ static bool toggle_display_verbose(
 
         } else {
 
-          if( (hit01 < sig->value->width) || (hit10 < sig->value->width) ) {
+          if( (((hit01 < sig->value->width) || (hit10 < sig->value->width)) && (rtype == RPT_TYPE_MISS)) ||
+              ((sig->suppl.part.excluded == 1) && (rtype == RPT_TYPE_EXCL)) ) {
+
+            exclude_reason* er;
 
             if( flag_output_exclusion_ids ) {
               char tmp[30];
@@ -487,12 +486,18 @@ static bool toggle_display_verbose(
               fprintf( ofile, "\n       %s   ......................... 1->0: ", tmp );
               vector_display_toggle10_ulong( sig->value->value.ul, sig->value->width, ofile );      
               fprintf( ofile, " ...\n" );
+              if( (rtype == RPT_TYPE_EXCL) && ((er = exclude_find_exclude_reason( 'T', sig->id, funit )) != NULL) ) {
+                report_output_exclusion_reason( ofile, (12 + (eid_size - 1)), er->reason );
+              }
             } else {
               fprintf( ofile, "      %-24s  0->1: ", pname );
               vector_display_toggle01_ulong( sig->value->value.ul, sig->value->width, ofile );      
               fprintf( ofile, "\n      ......................... 1->0: " );
               vector_display_toggle10_ulong( sig->value->value.ul, sig->value->width, ofile );      
               fprintf( ofile, " ...\n" );
+              if( (rtype == RPT_TYPE_EXCL) && ((er = exclude_find_exclude_reason( 'T', sig->id, funit )) != NULL) ) {
+                report_output_exclusion_reason( ofile, 8, er->reason );
+              }
             }
 
           }
@@ -508,6 +513,8 @@ static bool toggle_display_verbose(
   }
 
   func_iter_dealloc( &fi );
+
+  fprintf( ofile, "\n" );
 
   PROFILE_END;
 
@@ -546,9 +553,8 @@ static void toggle_instance_verbose(
 
   if( !funit_is_unnamed( root->funit ) &&
       ((!report_covered && ((root->stat->tog01_hit < root->stat->tog_total) || (root->stat->tog10_hit < root->stat->tog_total))) ||
-       ( report_covered && root->stat->tog_cov_found)) ) {
-
-    bool found_exclusion;
+       ( report_covered && root->stat->tog_cov_found) ||
+       (report_exclusions && (root->stat->tog_excluded > 0))) ) {
 
     pname = scope_gen_printable( funit_flatten_name( root->funit ) );
 
@@ -567,9 +573,12 @@ static void toggle_instance_verbose(
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
     free_safe( pname, (strlen( pname ) + 1) );
 
-    found_exclusion = toggle_display_verbose( ofile, root->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
-    if( report_exclusions && found_exclusion ) {
-      (void)toggle_display_verbose( ofile, root->funit, RPT_TYPE_EXCL );
+    if( (!report_covered && ((root->stat->tog01_hit < root->stat->tog_total) || (root->stat->tog10_hit < root->stat->tog_total))) ||
+        ( report_covered && root->stat->tog_cov_found) ) {
+      toggle_display_verbose( ofile, root->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
+    }
+    if( report_exclusions && (root->stat->tog_excluded > 0) ) {
+      toggle_display_verbose( ofile, root->funit, RPT_TYPE_EXCL );
     }
 
   }
@@ -602,9 +611,8 @@ static void toggle_funit_verbose(
 
     if( !funit_is_unnamed( head->funit ) &&
         ((!report_covered && ((head->funit->stat->tog01_hit < head->funit->stat->tog_total) || (head->funit->stat->tog10_hit < head->funit->stat->tog_total))) ||
-         ( report_covered && head->funit->stat->tog_cov_found)) ) {
-
-      bool found_exclusion;
+         ( report_covered && head->funit->stat->tog_cov_found) ||
+         (report_exclusions && (head->funit->stat->tog_excluded > 0))) ) {
 
       fprintf( ofile, "\n" );
       switch( head->funit->type ) {
@@ -620,9 +628,12 @@ static void toggle_funit_verbose(
       fprintf( ofile, "%s, File: %s\n", obf_funit( funit_flatten_name( head->funit ) ), obf_file( head->funit->filename ) );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
-      found_exclusion = toggle_display_verbose( ofile, head->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
-      if( report_exclusions && found_exclusion ) {
-        (void)toggle_display_verbose( ofile, head->funit, RPT_TYPE_EXCL );
+      if( (!report_covered && ((head->funit->stat->tog01_hit < head->funit->stat->tog_total) || (head->funit->stat->tog10_hit < head->funit->stat->tog_total))) ||
+          ( report_covered && head->funit->stat->tog_cov_found) ) {
+        toggle_display_verbose( ofile, head->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
+      }
+      if( report_exclusions && (head->funit->stat->tog_excluded > 0) ) {
+        toggle_display_verbose( ofile, head->funit, RPT_TYPE_EXCL );
       }
 
     }
@@ -678,7 +689,7 @@ void toggle_report(
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
     (void)toggle_display_instance_summary( ofile, "Accumulated", acc_hits01, acc_hits10, acc_total );
     
-    if( verbose && (missed_found || report_covered) ) {
+    if( verbose && (missed_found || report_covered || report_exclusions) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       instl = db_list[curr_db]->inst_head;
       while( instl != NULL ) {
@@ -697,7 +708,7 @@ void toggle_report(
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
     (void)toggle_display_funit_summary( ofile, "Accumulated", "", acc_hits01, acc_hits10, acc_total );
 
-    if( verbose && (missed_found || report_covered) ) {
+    if( verbose && (missed_found || report_covered || report_exclusions) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       toggle_funit_verbose( ofile, db_list[curr_db]->funit_head );
     }
@@ -712,6 +723,9 @@ void toggle_report(
 
 /*
  $Log$
+ Revision 1.83  2008/08/29 13:01:17  phase1geo
+ Removing exclusion ID from covered coverage points.  Checkpointing.
+
  Revision 1.82  2008/08/28 21:24:15  phase1geo
  Adding support for exclusion output for assertions.  Updated regressions accordingly.
  Checkpointing.
