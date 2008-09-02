@@ -781,9 +781,8 @@ expression* exclude_find_expression(
 /*!
  \return Returns the message specified by the user.
 */
-char* exclude_get_message(
-  char etype,  /*!< Exclusion ID type */
-  char eid     /*!< Exclusion numerical ID */
+static char* exclude_get_message(
+  const char* eid  /*!< Exclusion ID to get message for */
 ) { PROFILE(EXCLUDED_GET_MESSAGE);
 
   char* msg          = NULL;  /* Pointer to the message from the user */
@@ -793,7 +792,7 @@ char* exclude_get_message(
   int   index        = 0;     /* Current string index */
   char  str[101];
 
-  printf( "Please specify a reason for exclusion for exclusion ID %c%d (Enter . (period) on a newline to end):\n", etype, eid );
+  printf( "Please specify a reason for exclusion for exclusion ID %s (Enter a '.' (period) on a newline to end):\n", eid );
 
   str[0] = '\0';
 
@@ -832,13 +831,13 @@ char* exclude_get_message(
  Finds the line that matches the given exclusion ID and toggles its exclusion value, providing a reason
  for exclusion if it is excluding the coverage point and the -m option was specified on the command-line.
 */
-bool exclude_line_from_id(
-  int id  /*!< Numerical portion of the exclusion ID that identifies a line coverage point */
+static bool exclude_line_from_id(
+  const char* id  /*!< String version of exclusion ID */
 ) { PROFILE(EXCLUDE_LINE_FROM_ID);
 
   expression* exp;  /* Pointer to found expression */
 
-  if( (exp = exclude_find_expression( id )) != NULL ) {
+  if( (exp = exclude_find_expression( atoi( id + 1 ) )) != NULL ) {
 
     int prev_excluded;
 
@@ -853,10 +852,15 @@ bool exclude_line_from_id(
 
     /* If we are excluding and the -m option was specified, get an exclusion reason from the user */
     if( (prev_excluded == 0) && exclude_prompt_for_msgs ) {
-      char* str = exclude_get_message( 'L', id );
+      char* str = exclude_get_message( id );
       /* TBD - What to do with the exclusion message? */
       free_safe( str, (strlen( str ) + 1) );
     }
+
+  } else {
+
+    snprintf( user_msg, USER_MSG_LENGTH, "Unable to find line associated with exclusion ID %s", id );
+    print_output( user_msg, WARNING, __FILE__, __LINE__ );
 
   }
 
@@ -872,15 +876,36 @@ bool exclude_line_from_id(
  Finds the signal that matches the given exclusion ID and toggles its exclusion value, providing a reason
  for exclusion if it is excluding the coverage point and the -m option was specified on the command-line.
 */
-bool exclude_toggle_from_id(
-  int id  /*!< Numerical portion of the exclusion ID that identifies a toggle coverage point */
+static bool exclude_toggle_from_id(
+  const char* id  /*!< String version of exclusion ID */
 ) { PROFILE(EXCLUDE_TOGGLE_FROM_ID);
 
-  bool retval = FALSE;  /* Return value for this function */
+  vsignal* sig;  /* Pointer to found signal */
+  
+  if( (sig = exclude_find_signal( atoi( id + 1 ) )) != NULL ) {
+  
+    int prev_excluded = sig->suppl.part.excluded;
+    
+    /* Set the exclude bits in the expression supplemental field */
+    sig->suppl.part.excluded = (prev_excluded ^ 1);
+    
+    /* If we are excluding and the -m option was specified, get an exclusion reason from the user */
+    if( (prev_excluded == 0) && exclude_prompt_for_msgs ) { 
+      char* str = exclude_get_message( id );
+      /* TBD - What to do with the exclusion message? */
+      free_safe( str, (strlen( str ) + 1) );
+    }
+
+  } else {
+
+    snprintf( user_msg, USER_MSG_LENGTH, "Unable to find toggle signal associated with exclusion ID %s", id );
+    print_output( user_msg, WARNING, __FILE__, __LINE__ );
+
+  }
 
   PROFILE_END;
 
-  return( retval );
+  return( sig != NULL );
 
 }
 
@@ -890,15 +915,36 @@ bool exclude_toggle_from_id(
  Finds the memory that matches the given exclusion ID and toggles its exclusion value, providing a reason
  for exclusion if it is excluding the coverage point and the -m option was specified on the command-line.
 */
-bool exclude_memory_from_id(
-  int id  /*!< Numerical portion of the exclusion ID that identifies a memory coverage point */
+static bool exclude_memory_from_id(
+  const char* id  /*!< String version of exclusion ID */
 ) { PROFILE(EXCLUDE_MEMORY_FROM_ID);
 
-  bool retval = FALSE;  /* Return value for this function */
+  vsignal* sig;  /* Pointer to found signal */
+  
+  if( (sig = exclude_find_signal( atoi( id + 1 ) )) != NULL ) {
+  
+    int prev_excluded = sig->suppl.part.excluded;
+    
+    /* Set the exclude bits in the expression supplemental field */
+    sig->suppl.part.excluded = (prev_excluded ^ 1);
+   
+    /* If we are excluding and the -m option was specified, get an exclusion reason from the user */
+    if( (prev_excluded == 0) && exclude_prompt_for_msgs ) {
+      char* str = exclude_get_message( id );
+      /* TBD - What to do with the exclusion message? */
+      free_safe( str, (strlen( str ) + 1) );
+    }
+  
+  } else {
+
+    snprintf( user_msg, USER_MSG_LENGTH, "Unable to find memory associated with exclusion ID %s", id );
+    print_output( user_msg, WARNING, __FILE__, __LINE__ );
+
+  }
 
   PROFILE_END;
 
-  return( retval );
+  return( sig != NULL );
 
 }
 
@@ -908,15 +954,39 @@ bool exclude_memory_from_id(
  Finds the expression that matches the given exclusion ID and toggles its exclusion value, providing a reason
  for exclusion if it is excluding the coverage point and the -m option was specified on the command-line.
 */
-bool exclude_expr_from_id(
-  int id  /*!< Numerical portion of the exclusion ID that identifies a combinational logic coverage point */
+static bool exclude_expr_from_id(
+  const char* id  /*!< String version of exclusion ID */
 ) { PROFILE(EXCLUDE_EXPR_FROM_ID);
 
-  bool retval = FALSE;  /* Return value for this function */
+  expression* exp;  /* Pointer to found expression */
+  
+  if( (exp = exclude_find_expression( atoi( id + 1 ) )) != NULL ) {
+  
+    int prev_excluded;
+    
+    /* Get the previously excluded value */
+    prev_excluded = exp->suppl.part.excluded;
+    
+    /* Set the exclude bits in the expression supplemental field */
+    exp->suppl.part.excluded = (prev_excluded ^ 1);
+    
+    /* If we are excluding and the -m option was specified, get an exclusion reason from the user */
+    if( (prev_excluded == 0) && exclude_prompt_for_msgs ) { 
+      char* str = exclude_get_message( id );
+      /* TBD - What to do with the exclusion message? */
+      free_safe( str, (strlen( str ) + 1) );
+    }
+
+  } else {
+
+    snprintf( user_msg, USER_MSG_LENGTH, "Unable to find expression associated with exclusion ID %s", id );
+    print_output( user_msg, WARNING, __FILE__, __LINE__ );
+
+  }
 
   PROFILE_END;
 
-  return( retval );
+  return( exp != NULL );
 
 }
 
@@ -926,8 +996,8 @@ bool exclude_expr_from_id(
  Finds the FSM that matches the given exclusion ID and toggles its exclusion value, providing a reason
  for exclusion if it is excluding the coverage point and the -m option was specified on the command-line.
 */
-bool exclude_fsm_from_id(
-  int id  /*!< Numerical portion of the exclusion ID that identifies a FSM coverage point */
+static bool exclude_fsm_from_id(
+  const char* id  /*!< String version of exclusion ID */
 ) { PROFILE(EXCLUDE_FSM_FROM_ID);
 
   bool retval = FALSE;  /* Return value for this function */
@@ -944,8 +1014,8 @@ bool exclude_fsm_from_id(
  Finds the assertion that matches the given exclusion ID and toggles its exclusion value, providing a reason
  for exclusion if it is excluding the coverage point and the -m option was specified on the command-line.
 */
-bool exclude_assert_from_id(
-  int id  /*!< Numerical portion of the exclusion ID that identifies an assertion coverage point */
+static bool exclude_assert_from_id(
+  const char* id  /*!< String version of exclusion ID */
 ) { PROFILE(EXCLUDE_ASSERT_FROM_ID);
 
   bool retval = FALSE;  /* Return value for this function */
@@ -969,12 +1039,12 @@ bool exclude_apply_exclusions() { PROFILE(EXCLUDE_APPLY_EXCLUSIONS);
   strl = excl_ids_head;
   while( strl != NULL ) {
     switch( strl->str[0] ) {
-      case 'L' :  retval |= exclude_line_from_id( atoi( strl->str + 1 ) );    break;
-      case 'T' :  retval |= exclude_toggle_from_id( atoi( strl->str + 1 ) );  break;
-      case 'M' :  retval |= exclude_memory_from_id( atoi( strl->str + 1 ) );  break;
-      case 'E' :  retval |= exclude_expr_from_id( atoi( strl->str + 1 ) );    break;
-      case 'F' :  retval |= exclude_fsm_from_id( atoi( strl->str + 1 ) );     break;
-      case 'A' :  retval |= exclude_assert_from_id( atoi( strl->str + 1 ) );  break;
+      case 'L' :  retval |= exclude_line_from_id( strl->str );    break;
+      case 'T' :  retval |= exclude_toggle_from_id( strl->str );  break;
+      case 'M' :  retval |= exclude_memory_from_id( strl->str );  break;
+      case 'E' :  retval |= exclude_expr_from_id( strl->str );    break;
+      case 'F' :  retval |= exclude_fsm_from_id( strl->str );     break;
+      case 'A' :  retval |= exclude_assert_from_id( strl->str );  break;
       default  :
         snprintf( user_msg, USER_MSG_LENGTH, "Illegal exclusion identifier specified (%s)", strl->str );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -1044,6 +1114,9 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.30  2008/09/02 05:20:40  phase1geo
+ More updates for exclude command.  Updates to CVER regression.
+
  Revision 1.29  2008/08/23 20:00:29  phase1geo
  Full fix for bug 2054686.  Also cleaned up Cver regressions.
 

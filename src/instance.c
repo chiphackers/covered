@@ -401,8 +401,8 @@ expression* instance_find_expression_by_exclusion_id(
     assert( root->funit != NULL );
  
     if( (root->funit->exp_head != NULL) && 
-        (root->funit->exp_head->exp->id >= id) && 
-        (root->funit->exp_tail->exp->id <= id) ) {
+        (root->funit->exp_head->exp->id <= id) && 
+        (root->funit->exp_tail->exp->id >= id) ) {
 
       exp_link* expl = root->funit->exp_head;
 
@@ -1240,6 +1240,9 @@ void instance_dealloc(
 
 /*
  $Log$
+ Revision 1.101  2008/09/02 05:20:41  phase1geo
+ More updates for exclude command.  Updates to CVER regression.
+
  Revision 1.100  2008/08/28 04:37:18  phase1geo
  Starting to add support for exclusion output and exclusion IDs to generated
  reports.  These changes should break regressions.  Checkpointing.
