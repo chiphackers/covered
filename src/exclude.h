@@ -109,9 +109,21 @@ void exclude_set_assert_exclude(
   /*@out@*/ statistic* stat
 );
 
+/*! \brief Allows the user to exclude coverage points from reporting. */
+void command_exclude(
+  int          argc,
+  int          last_arg,
+  const char** argv
+);
+
 
 /*
  $Log$
+ Revision 1.9  2008/08/18 23:07:26  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.8.6.3  2008/08/07 23:22:49  phase1geo
  Added initial code to synchronize module and instance exclusion information.  Checkpointing.
 

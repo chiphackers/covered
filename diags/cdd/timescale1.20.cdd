@@ -1,9 +1,9 @@
-5 10 101 4 *
-8 /Users/trevorw/projects/devel/covered/diags/verilog -t main -vcd timescale1.20.vcd -o timescale1.20.cdd -v timescale1.20.v -D DUMP
+5 11 101 4 *
+8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd timescale1.20.vcd -o timescale1.20.cdd -v timescale1.20.v -D DUMP
 3 0 $root "$root" NA 0 0 10
 3 0 main "main" timescale1.20.v 11 30 10
 2 1 15 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0
-1 a 13 870004 1 0 0 0 1 17 0 1 1 0 0
+1 a 1 13 870004 1 0 0 0 1 17 0 1 1 0 0
 4 1 1 0 0
 3 1 main.$u0 "main.$u0" timescale1.20.v 0 19 10
 2 2 16 50008 1 0 21004 0 0 1 16 0 0

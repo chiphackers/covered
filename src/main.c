@@ -33,6 +33,7 @@
 
 #include "devel_doc.h"
 #include "defines.h"
+#include "exclude.h"
 #include "merge.h"
 #include "obfuscate.h"
 #include "profiler.h"
@@ -92,6 +93,7 @@ static void usage() {
   printf( "      merge                   Merges two database files into one.\n" );
   printf( "      report                  Generates human-readable coverage reports from database file.\n" );
   printf( "      rank                    Generates ranked list of CDD files to run for optimal coverage in a regression run.\n" );
+  printf( "      exclude                 Excludes coverage points from a given CDD and saves the modified CDD for further commands.\n" );
   printf( "\n" );
   printf( "   For individual help information for each of the above commands, enter:\n" );
   printf( "      covered <command> -h\n" );
@@ -202,6 +204,11 @@ int main( int argc, const char** argv ) {
             command_rank( argc, curr_arg, argv );
             cmd_found = TRUE;
 
+          } else if( strncmp( "exclude", argv[curr_arg], 7 ) == 0 ) {
+
+            command_exclude( argc, curr_arg, argv );
+            cmd_found = TRUE;
+
           } else {
 
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown command/global option \"%s\".  Please see \"covered -h\" for usage.", argv[curr_arg] );
@@ -218,7 +225,7 @@ int main( int argc, const char** argv ) {
 
         if( !cmd_found ) {
  
-          print_output( "Must specify a command (score, merge, report, rank, -v, or -h)", FATAL, __FILE__, __LINE__ );
+          print_output( "Must specify a command (score, merge, report, rank, exclude, -v, or -h)", FATAL, __FILE__, __LINE__ );
           printf( "main Throw B\n" );
           Throw 0;
 
@@ -252,6 +259,11 @@ int main( int argc, const char** argv ) {
 
 /*
  $Log$
+ Revision 1.38  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.35.2.2  2008/07/21 06:36:29  phase1geo
  Updating code from rank-devel-branch branch.
 

@@ -39,7 +39,23 @@ void instance_gen_scope( char* scope, funit_inst* leaf, bool flatten );
 funit_inst* instance_find_scope( funit_inst* root, char* scope, bool rm_unnamed );
 
 /*! \brief Returns instance that points to specified functional unit for each instance. */
-funit_inst* instance_find_by_funit( funit_inst* root, const func_unit* funit, int* ignore );
+funit_inst* instance_find_by_funit(
+            funit_inst*      root,
+            const func_unit* funit,
+  /*@out@*/ int*             ignore
+);
+
+/*! \brief Returns signal that matches the given exclusion ID */
+vsignal* instance_find_signal_by_exclusion_id(
+  funit_inst* root,
+  int         id
+);
+
+/*! \brief Returns expression that matches the given exclusion ID */
+expression* instance_find_expression_by_exclusion_id(
+  funit_inst* root,
+  int         id
+);
 
 /*! \brief Attaches the given child instance to the given parent instance */
 void instance_attach_child( funit_inst* parent, funit_inst* child );
@@ -78,6 +94,9 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.34  2008/01/10 04:59:04  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.33  2007/11/20 05:28:58  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

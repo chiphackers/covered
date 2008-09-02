@@ -1645,10 +1645,6 @@ static void rank_output(
 }
 
 /*!
- \param argc      Number of arguments in command-line to parse.
- \param last_arg  Index of last parsed argument from list.
- \param argv      List of arguments from command-line to parse.
-
  Performs merge command functionality.
 */
 void command_rank(
@@ -1744,6 +1740,10 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.7  2008/08/22 20:56:35  phase1geo
+ Starting to make updates for proper unnamed scope report handling (fix for bug 2054686).
+ Not complete yet.  Also making updates to documentation.  Checkpointing.
+
  Revision 1.6  2008/08/21 13:16:37  phase1geo
  Changing the name of the -required option to the rank command to -required-list
  and adding new -required-cdd option to specify a single CDD file.  Updated
@@ -1759,6 +1759,10 @@ void command_rank(
  that the GUI stuff works properly.
 
  $Log$
+ Revision 1.7  2008/08/22 20:56:35  phase1geo
+ Starting to make updates for proper unnamed scope report handling (fix for bug 2054686).
+ Not complete yet.  Also making updates to documentation.  Checkpointing.
+
  Revision 1.6  2008/08/21 13:16:37  phase1geo
  Changing the name of the -required option to the rank command to -required-list
  and adding new -required-cdd option to specify a single CDD file.  Updated

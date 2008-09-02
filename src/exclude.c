@@ -40,6 +40,28 @@
 extern db**         db_list;
 extern unsigned int curr_db;
 extern isuppl       info_suppl;
+extern char         user_msg[USER_MSG_LENGTH];
+
+/*!
+ Name of CDD file that will be read, modified with exclusion modifications and written back.
+*/
+static char* exclude_cdd = NULL;
+
+/*!
+ Pointer to the head of the list of exclusion IDs to toggle exclusion/inclusion mode of.
+*/
+static str_link* excl_ids_head = NULL;
+
+/*!
+ Pointer to the tail of the list of exclusion IDs to toggle exclusion/inclusion mode of.
+*/
+static str_link* excl_ids_tail = NULL;
+
+/*!
+ If set to TRUE, causes a message prompt to be displayed for each coverage point that will
+ be excluded from coverage.
+*/
+static bool exclude_prompt_for_msgs = FALSE;
 
 
 /*!
@@ -601,9 +623,430 @@ void exclude_set_assert_exclude(
 
 }
 
+/********************************************************************************************/
+
+/*!
+ Outputs usage information to standard output for exclude command.
+*/
+static void exclude_usage() {
+
+  printf( "\n" );
+  printf( "Usage:  covered exclude (-h | ([<options>] <exclusion_ids>+ <database_file>)\n" );
+  printf( "\n" );
+  printf( "   -h                           Displays this help information.\n" );
+  printf( "\n" );
+  printf( "   Options:\n" );
+  printf( "      -f <filename>             Name of file containing additional arguments to parse.\n" );
+  printf( "      -m                        Allows a message to be associated with an exclusion.\n" );
+  printf( "                                  The message should describe the reason why a coverage point\n" );
+  printf( "                                  is being excluded.  If a coverage point is being included for\n" );
+  printf( "                                  coverage (i.e., it was previously excluded from coverage), no\n" );
+  printf( "                                  message prompt will be specified.\n" );
+  printf( "\n" );
+
+}
+
+/*!
+ \throws anonymous Throw Throw Throw
+
+ Parses the exclude argument list, placing all parsed values into
+ global variables.  If an argument is found that is not valid
+ for the score operation, an error message is displayed to the
+ user.
+*/
+static void exclude_parse_args(
+  int          argc,      /*!< Number of arguments in argument list argv */
+  int          last_arg,  /*!< Index of last parsed argument from list */
+  const char** argv       /*!< Argument list passed to this program */
+) {
+
+  int i;
+
+  i = last_arg + 1;
+
+  while( i < argc ) {
+
+    if( strncmp( "-h", argv[i], 2 ) == 0 ) {
+
+      exclude_usage();
+      Throw 0;
+
+    } else if( strncmp( "-f", argv[i], 2 ) == 0 ) {
+
+      if( check_option_value( argc, argv, i ) ) {
+        char**       arg_list = NULL;
+        int          arg_num  = 0;
+        unsigned int j;
+        i++;
+        Try {
+          read_command_file( argv[i], &arg_list, &arg_num );
+          exclude_parse_args( arg_num, -1, (const char**)arg_list );
+        } Catch_anonymous {
+          for( j=0; j<arg_num; j++ ) {
+            free_safe( arg_list[j], (strlen( arg_list[j] ) + 1) );
+          }
+          free_safe( arg_list, (sizeof( char* ) * arg_num) );
+          Throw 0;
+        }
+        for( j=0; j<arg_num; j++ ) {
+          free_safe( arg_list[j], (strlen( arg_list[j] ) + 1) );
+        }
+        free_safe( arg_list, (sizeof( char* ) * arg_num) );
+      } else {
+        Throw 0;
+      }
+
+    } else if( strncmp( "-m", argv[i], 2 ) == 0 ) {
+
+      exclude_prompt_for_msgs = TRUE;
+
+    } else if( strncmp( "-", argv[i], 1 ) == 0 ) {
+
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown exclude option (%s) specified.", argv[i] );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      Throw 0;
+
+    } else if( (i + 1) == argc ) {
+
+      /* Check to make sure that the user has specified at least one exclusion ID */
+      if( excl_ids_head == NULL ) {
+        print_output( "At least one exclusion ID must be specified", FATAL, __FILE__, __LINE__ );
+        Throw 0;
+      }
+
+      if( file_exists( argv[i] ) ) {
+        exclude_cdd = strdup_safe( argv[i] );
+      } else {
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Specified CDD file (%s) does not exist", argv[i] );
+        assert( rv < USER_MSG_LENGTH );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        Throw 0;
+      }
+
+    } else {
+
+      str_link_add( strdup_safe( argv[i] ), &excl_ids_head, &excl_ids_tail );
+
+    }
+
+    i++;
+
+  }
+
+}
+
+/*!
+ \return Returns pointer to found signal if it was found; otherwise, returns NULL.
+*/
+vsignal* exclude_find_signal(
+  int id  /*!< Exclusion ID to search for */
+) { PROFILE(EXCLUDE_FIND_SIGNAL);
+
+  inst_link* instl;  /* Pointer to current instance link */
+  vsignal*   sig;    /* Pointer to found signal */
+
+  instl = db_list[curr_db]->inst_head;
+  while( (instl != NULL) && ((sig = instance_find_signal_by_exclusion_id( instl->inst, id )) == NULL) ) {
+    instl = instl->next;
+  }
+
+  PROFILE_END;
+
+  return( sig );
+
+}
+
+/*!
+ \return Returns pointer to found expression if it was found; otherwise, returns NULL.
+*/
+expression* exclude_find_expression(
+  int id  /*!< Exclusion ID to search for */
+) { PROFILE(EXCLUDE_FIND_EXPRESSION);
+
+  inst_link*  instl;  /* Pointer to current instance link */
+  expression* exp;    /* Pointer to found expression */
+
+  instl = db_list[curr_db]->inst_head;
+  while( (instl != NULL) && ((exp = instance_find_expression_by_exclusion_id( instl->inst, id )) == NULL) ) {
+    instl = instl->next;
+  }
+
+  PROFILE_END;
+
+  return( exp );
+
+}
+
+/*!
+ \return Returns the message specified by the user.
+*/
+char* exclude_get_message(
+  char etype,  /*!< Exclusion ID type */
+  char eid     /*!< Exclusion numerical ID */
+) { PROFILE(EXCLUDED_GET_MESSAGE);
+
+  char* msg          = NULL;  /* Pointer to the message from the user */
+  int   msg_size     = 0;     /* The current size of the specified message */
+  char  c;                    /* Current character */
+  bool  nl_just_seen = TRUE;  /* Set to TRUE if a newline was just seen */
+  int   index        = 0;     /* Current string index */
+  char  str[101];
+
+  printf( "Please specify a reason for exclusion for exclusion ID %c%d (Enter . (period) on a newline to end):\n", etype, eid );
+
+  str[0] = '\0';
+
+  while( ((c = (char)getchar()) != '.') || !nl_just_seen ) {
+    if( c == '\n' ) {
+      nl_just_seen = TRUE;
+    } else {
+      nl_just_seen = FALSE;
+    }
+    str[(index % 100) + 0] = c;
+    str[(index % 100) + 1] = '\0';
+    if( ((index + 1) % 100) == 0 ) {
+      msg       = (char*)realloc_safe( msg, msg_size, (msg_size + 100) );
+      msg_size += 100;
+      strcat( msg, str );
+    }
+    index++;
+  }
+
+  if( strlen( str ) > 0 ) {
+    msg = (char*)realloc_safe( msg, msg_size, (msg_size + strlen( str ) + 1) );
+    strcat( msg, str );
+  }
+
+  printf( "\n" );
+
+  PROFILE_END;
+
+  return( msg );
+
+}
+
+/*!
+ \return Returns TRUE if the exclusion ID was found and the exclusion applied; otherwise, returns FALSE.
+
+ Finds the line that matches the given exclusion ID and toggles its exclusion value, providing a reason
+ for exclusion if it is excluding the coverage point and the -m option was specified on the command-line.
+*/
+bool exclude_line_from_id(
+  int id  /*!< Numerical portion of the exclusion ID that identifies a line coverage point */
+) { PROFILE(EXCLUDE_LINE_FROM_ID);
+
+  expression* exp;  /* Pointer to found expression */
+
+  if( (exp = exclude_find_expression( id )) != NULL ) {
+
+    int prev_excluded;
+
+    assert( ESUPPL_IS_ROOT( exp->suppl ) == 1 );
+
+    /* Get the previously excluded value */
+    prev_excluded = exp->parent->stmt->suppl.part.excluded;
+
+    /* Set the exclude bits in the expression supplemental field */
+    exp->suppl.part.excluded               = (prev_excluded ^ 1);
+    exp->parent->stmt->suppl.part.excluded = (prev_excluded ^ 1);
+
+    /* If we are excluding and the -m option was specified, get an exclusion reason from the user */
+    if( (prev_excluded == 0) && exclude_prompt_for_msgs ) {
+      char* str = exclude_get_message( 'L', id );
+      /* TBD - What to do with the exclusion message? */
+      free_safe( str, (strlen( str ) + 1) );
+    }
+
+  }
+
+  PROFILE_END;
+
+  return( exp != NULL );
+
+}
+
+/*!
+ \return Returns TRUE if the exclusion ID was found and the exclusion applied; otherwise, returns FALSE.
+
+ Finds the signal that matches the given exclusion ID and toggles its exclusion value, providing a reason
+ for exclusion if it is excluding the coverage point and the -m option was specified on the command-line.
+*/
+bool exclude_toggle_from_id(
+  int id  /*!< Numerical portion of the exclusion ID that identifies a toggle coverage point */
+) { PROFILE(EXCLUDE_TOGGLE_FROM_ID);
+
+  bool retval = FALSE;  /* Return value for this function */
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns TRUE if the exclusion ID was found and the exclusion applied; otherwise, returns FALSE.
+
+ Finds the memory that matches the given exclusion ID and toggles its exclusion value, providing a reason
+ for exclusion if it is excluding the coverage point and the -m option was specified on the command-line.
+*/
+bool exclude_memory_from_id(
+  int id  /*!< Numerical portion of the exclusion ID that identifies a memory coverage point */
+) { PROFILE(EXCLUDE_MEMORY_FROM_ID);
+
+  bool retval = FALSE;  /* Return value for this function */
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns TRUE if the exclusion ID was found and the exclusion applied; otherwise, returns FALSE.
+
+ Finds the expression that matches the given exclusion ID and toggles its exclusion value, providing a reason
+ for exclusion if it is excluding the coverage point and the -m option was specified on the command-line.
+*/
+bool exclude_expr_from_id(
+  int id  /*!< Numerical portion of the exclusion ID that identifies a combinational logic coverage point */
+) { PROFILE(EXCLUDE_EXPR_FROM_ID);
+
+  bool retval = FALSE;  /* Return value for this function */
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns TRUE if the exclusion ID was found and the exclusion applied; otherwise, returns FALSE.
+
+ Finds the FSM that matches the given exclusion ID and toggles its exclusion value, providing a reason
+ for exclusion if it is excluding the coverage point and the -m option was specified on the command-line.
+*/
+bool exclude_fsm_from_id(
+  int id  /*!< Numerical portion of the exclusion ID that identifies a FSM coverage point */
+) { PROFILE(EXCLUDE_FSM_FROM_ID);
+
+  bool retval = FALSE;  /* Return value for this function */
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns TRUE if the exclusion ID was found and the exclusion applied; otherwise, returns FALSE.
+
+ Finds the assertion that matches the given exclusion ID and toggles its exclusion value, providing a reason
+ for exclusion if it is excluding the coverage point and the -m option was specified on the command-line.
+*/
+bool exclude_assert_from_id(
+  int id  /*!< Numerical portion of the exclusion ID that identifies an assertion coverage point */
+) { PROFILE(EXCLUDE_ASSERT_FROM_ID);
+
+  bool retval = FALSE;  /* Return value for this function */
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns TRUE if one or more exclusion IDs were applied; otherwise, returns FALSE.
+
+ Applies the user-specified exclusion IDs to the currently opened database.
+*/
+bool exclude_apply_exclusions() { PROFILE(EXCLUDE_APPLY_EXCLUSIONS);
+
+  bool      retval = FALSE;  /* Return value for this function */
+  str_link* strl;            /* Pointer to current string link */
+
+  strl = excl_ids_head;
+  while( strl != NULL ) {
+    switch( strl->str[0] ) {
+      case 'L' :  retval |= exclude_line_from_id( atoi( strl->str + 1 ) );    break;
+      case 'T' :  retval |= exclude_toggle_from_id( atoi( strl->str + 1 ) );  break;
+      case 'M' :  retval |= exclude_memory_from_id( atoi( strl->str + 1 ) );  break;
+      case 'E' :  retval |= exclude_expr_from_id( atoi( strl->str + 1 ) );    break;
+      case 'F' :  retval |= exclude_fsm_from_id( atoi( strl->str + 1 ) );     break;
+      case 'A' :  retval |= exclude_assert_from_id( atoi( strl->str + 1 ) );  break;
+      default  :
+        snprintf( user_msg, USER_MSG_LENGTH, "Illegal exclusion identifier specified (%s)", strl->str );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        Throw 0;
+        break;
+    }
+    strl = strl->next;
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ Performs the exclude command.
+*/
+void command_exclude(
+  int          argc,      /*!< Number of arguments in command-line to parse */
+  int          last_arg,  /*!< Index of last parsed argument from list */
+  const char** argv       /*!< List of arguments from command-line to parse */
+) { PROFILE(COMMAND_EXCLUDE);
+
+  unsigned int   rv;
+  comp_cdd_cov** comp_cdds    = NULL;
+  unsigned int   comp_cdd_num = 0;
+
+  /* Output header information */
+  rv = snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
+  assert( rv < USER_MSG_LENGTH );
+  print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+
+  Try {
+
+    unsigned int rv;
+
+    /* Parse score command-line */
+    exclude_parse_args( argc, last_arg, argv );
+
+    /* Read in database */
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading CDD file \"%s\"", exclude_cdd );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+
+    db_read( exclude_cdd, READ_MODE_REPORT_NO_MERGE );
+    bind_perform( TRUE, 0 );
+
+    /* Apply the specified exclusion IDs */
+    if( exclude_apply_exclusions() ) {
+      db_write( exclude_cdd, FALSE, TRUE );
+    }
+
+  } Catch_anonymous {}
+
+  /* Close down the database */
+  db_close();
+    
+  /* Deallocate other allocated variables */
+  str_link_delete_list( excl_ids_head );
+  free_safe( exclude_cdd, (strlen( exclude_cdd ) + 1) );
+      
+  PROFILE_END;
+ 
+}   
+
 
 /*
  $Log$
+ Revision 1.29  2008/08/23 20:00:29  phase1geo
+ Full fix for bug 2054686.  Also cleaned up Cver regressions.
+
  Revision 1.28  2008/08/22 20:56:35  phase1geo
  Starting to make updates for proper unnamed scope report handling (fix for bug 2054686).
  Not complete yet.  Also making updates to documentation.  Checkpointing.

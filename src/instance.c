@@ -338,6 +338,98 @@ funit_inst* instance_find_by_funit(
 }
 
 /*!
+ \return Returns the pointer to the signal that contains the same exclusion ID.
+
+ Recursively searches the given instance tree to find the signal that has the same
+ exclusion ID as the one specified.
+*/
+vsignal* instance_find_signal_by_exclusion_id(
+  funit_inst* root,  /*!< Pointer to root instance */
+  int         id     /*!< Exclusion ID to search for */
+) { PROFILE(INSTANCE_FIND_SIGNAL_BY_EXCLUSION_ID);
+ 
+  vsignal* sig = NULL;  /* Pointer to found signal */
+
+  if( root != NULL ) {
+
+    assert( root->funit != NULL );
+
+    if( (root->funit->sig_head != NULL) &&
+        (root->funit->sig_head->sig->id >= id) &&
+        (root->funit->sig_tail->sig->id <= id) ) {
+
+      sig_link* sigl = root->funit->sig_head;
+
+      while( (sigl != NULL) && (sigl->sig->id != id) ) {
+        sigl = sigl->next;
+      }
+      assert( sigl->sig != NULL );
+      sig = sigl->sig;
+
+    } else {
+
+      funit_inst* child = root->child_head;
+      while( (child != NULL) && ((sig = instance_find_signal_by_exclusion_id( child, id )) == NULL) ) {
+        child = child->next;
+      }
+
+    }
+    
+  }
+
+  PROFILE_END;
+
+  return( sig );
+
+}
+
+/*!
+ \return Returns the pointer to the expression that contains the same exclusion ID. 
+                                        
+ Recursively searches the given instance tree to find the expression that has the same
+ exclusion ID as the one specified.
+*/
+expression* instance_find_expression_by_exclusion_id(
+  funit_inst* root,  /*!< Pointer to root instance */
+  int         id     /*!< Exclusion ID to search for */
+) { PROFILE(INSTANCE_FIND_EXPRESSION_BY_EXCLUSION_ID); 
+    
+  expression* exp = NULL;  /* Pointer to found expression */
+    
+  if( root != NULL ) {
+
+    assert( root->funit != NULL );
+ 
+    if( (root->funit->exp_head != NULL) && 
+        (root->funit->exp_head->exp->id >= id) && 
+        (root->funit->exp_tail->exp->id <= id) ) {
+
+      exp_link* expl = root->funit->exp_head;
+
+      while( (expl != NULL) && (expl->exp->id != id) ) {
+        expl = expl->next;           
+      }
+      assert( expl->exp != NULL );
+      exp = expl->exp;
+
+    } else {
+
+      funit_inst* child = root->child_head;
+      while( (child != NULL) && ((exp = instance_find_expression_by_exclusion_id( child, id )) == NULL) ) {
+        child = child->next;
+      }
+
+    }
+    
+  }
+  
+  PROFILE_END; 
+  
+  return( exp );
+  
+}
+
+/*!
  \return Returns pointer to newly created functional unit instance if this instance name isn't already in
          use in the current instance; otherwise, returns NULL.
  
@@ -1148,6 +1240,10 @@ void instance_dealloc(
 
 /*
  $Log$
+ Revision 1.100  2008/08/28 04:37:18  phase1geo
+ Starting to add support for exclusion output and exclusion IDs to generated
+ reports.  These changes should break regressions.  Checkpointing.
+
  Revision 1.99  2008/08/27 23:06:00  phase1geo
  Starting to make updates for supporting command-line exclusions.  Signals now
  have a unique ID associated with them in the CDD file.  Checkpointing.
