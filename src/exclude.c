@@ -789,6 +789,7 @@ static char* exclude_get_message(
   int   msg_size     = 0;     /* The current size of the specified message */
   char  c;                    /* Current character */
   bool  nl_just_seen = TRUE;  /* Set to TRUE if a newline was just seen */
+  bool  sp_just_seen = TRUE;  /* Set to TRUE if a space character was just seen */
   int   index        = 0;     /* Current string index */
   char  str[101];
 
@@ -797,19 +798,25 @@ static char* exclude_get_message(
   str[0] = '\0';
 
   while( ((c = (char)getchar()) != '.') || !nl_just_seen ) {
-    if( c == '\n' ) {
-      nl_just_seen = TRUE;
-    } else {
-      nl_just_seen = FALSE;
+
+    /* Mark if we have just seen a newline (for the purposes of determining if the user has completed input) */
+    nl_just_seen = (c == '\n') ? TRUE : FALSE;
+
+    /* Convert any formatting characters to spaces */
+    c = ((c == '\n') || (c == '\t') || (c == '\r')) ? ' ' : c; 
+
+    /* If the user has specified multiple formatting characters together, ignore all but the first. */
+    if( (c != ' ') || !sp_just_seen ) {
+      sp_just_seen = (c == ' ') ? TRUE : FALSE;
+      str[(index % 100) + 0] = c;
+      str[(index % 100) + 1] = '\0';
+      if( ((index + 1) % 100) == 0 ) {
+        msg       = (char*)realloc_safe( msg, msg_size, (msg_size + 100) );
+        msg_size += 100;
+        strcat( msg, str );
+      }
+      index++;
     }
-    str[(index % 100) + 0] = c;
-    str[(index % 100) + 1] = '\0';
-    if( ((index + 1) % 100) == 0 ) {
-      msg       = (char*)realloc_safe( msg, msg_size, (msg_size + 100) );
-      msg_size += 100;
-      strcat( msg, str );
-    }
-    index++;
   }
 
   if( strlen( str ) > 0 ) {
@@ -820,6 +827,8 @@ static char* exclude_get_message(
   printf( "\n" );
 
   PROFILE_END;
+
+  printf( "Message: %s\n", msg );
 
   return( msg );
 
@@ -1114,6 +1123,10 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.31  2008/09/02 05:53:54  phase1geo
+ More code additions for exclude command.  Fixing a few bugs in this code as well.
+ Checkpointing.
+
  Revision 1.30  2008/09/02 05:20:40  phase1geo
  More updates for exclude command.  Updates to CVER regression.
 
