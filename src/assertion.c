@@ -259,17 +259,13 @@ static bool assertion_funit_summary(
 }
 
 /*!
- \return Returns TRUE if there was at least one excluded assertion found.
-
  Displays the verbose hit/miss assertion information for the given functional unit.
 */
-static bool assertion_display_verbose(
+static void assertion_display_verbose(
   FILE*            ofile,  /*!< Pointer to the file to output the verbose information to */
   const func_unit* funit,  /*!< Pointer to the functional unit to display */
   rpt_type         rtype   /*!< Type of report output to generate */
 ) { PROFILE(ASSERTION_DISPLAY_VERBOSE);
-
-  bool retval = FALSE;  /* Return value for this function */
 
   switch( rtype ) {
     case RPT_TYPE_HIT  :  fprintf( ofile, "    Hit Assertions\n\n" );       break;
@@ -279,14 +275,12 @@ static bool assertion_display_verbose(
 
   /* If OVL assertion coverage is needed, output it in the OVL style */
   if( info_suppl.part.assert_ovl == 1 ) {
-    retval = ovl_display_verbose( ofile, funit, rtype );
+    ovl_display_verbose( ofile, funit, rtype );
   }
 
   fprintf( ofile, "\n" );
 
   PROFILE_END;
-
-  return( retval );
 
 }
 
@@ -321,9 +315,8 @@ static void assertion_instance_verbose(
 
   if( !funit_is_unnamed( root->funit ) &&
       (((root->stat->assert_hit < root->stat->assert_total) && !report_covered) ||
-       ((root->stat->assert_hit > 0) && report_covered)) ) {
-
-    bool found_exclusion;
+       ((root->stat->assert_hit > 0) && report_covered) ||
+       ((root->stat->assert_excluded > 0) && report_exclusions)) ) {
 
     /* Get printable version of functional unit name */
     pname = scope_gen_printable( funit_flatten_name( root->funit ) );
@@ -344,9 +337,12 @@ static void assertion_instance_verbose(
 
     free_safe( pname, (strlen( pname ) + 1) );
 
-    found_exclusion = assertion_display_verbose( ofile, root->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
-    if( report_exclusions && found_exclusion ) {
-      (void)assertion_display_verbose( ofile, root->funit, RPT_TYPE_EXCL );
+    if( ((root->stat->assert_hit < root->stat->assert_total) && !report_covered) ||
+        ((root->stat->assert_hit > 0) && report_covered && (!report_exclusions || (root->stat->assert_hit > root->stat->assert_excluded))) ) {
+      assertion_display_verbose( ofile, root->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
+    }
+    if( report_exclusions && (root->stat->assert_excluded > 0) ) {
+      assertion_display_verbose( ofile, root->funit, RPT_TYPE_EXCL );
     }
 
   }
@@ -376,9 +372,8 @@ static void assertion_funit_verbose(
 
     if( !funit_is_unnamed( head->funit ) &&
         (((head->funit->stat->assert_hit < head->funit->stat->assert_total) && !report_covered) ||
-         ((head->funit->stat->assert_hit > 0) && report_covered)) ) {
-
-      bool found_exclusion;
+         ((head->funit->stat->assert_hit > 0) && report_covered) ||
+         ((head->funit->stat->assert_excluded > 0) && report_exclusions)) ) {
 
       /* Get printable version of functional unit name */
       pname = scope_gen_printable( funit_flatten_name( head->funit ) );
@@ -399,9 +394,12 @@ static void assertion_funit_verbose(
 
       free_safe( pname, (strlen( pname ) + 1) );
 
-      found_exclusion = assertion_display_verbose( ofile, head->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
-      if( report_exclusions && found_exclusion ) {
-        (void)assertion_display_verbose( ofile, head->funit, RPT_TYPE_EXCL );
+      if( ((head->funit->stat->assert_hit < head->funit->stat->assert_total) && !report_covered) ||
+          ((head->funit->stat->assert_hit > 0) && report_covered && (!report_exclusions || (head->funit->stat->assert_hit > head->funit->stat->assert_excluded))) ) {
+        assertion_display_verbose( ofile, head->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
+      }
+      if( report_exclusions && (head->funit->stat->assert_excluded > 0) ) {
+        assertion_display_verbose( ofile, head->funit, RPT_TYPE_EXCL );
       }
 
     }
@@ -558,6 +556,10 @@ void assertion_get_coverage(
 
 /*
  $Log$
+ Revision 1.36  2008/08/28 21:24:14  phase1geo
+ Adding support for exclusion output for assertions.  Updated regressions accordingly.
+ Checkpointing.
+
  Revision 1.35  2008/08/18 23:07:25  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

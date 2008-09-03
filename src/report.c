@@ -549,7 +549,8 @@ void report_gather_instance_stats(
                         &(root->stat->mem_tog01_hit),
                         &(root->stat->mem_tog10_hit),
                         &(root->stat->mem_tog_total),
-                        &(root->stat->mem_excluded) );
+                        &(root->stat->mem_excluded),
+                        &(root->stat->mem_cov_found) );
     }
 
     /* Only get race condition statistics for this instance module if the module hasn't been gathered yet */
@@ -634,7 +635,8 @@ static void report_gather_funit_stats(
                           &(head->funit->stat->mem_tog01_hit),
                           &(head->funit->stat->mem_tog10_hit),
                           &(head->funit->stat->mem_tog_total),
-                          &(head->funit->stat->mem_excluded) );
+                          &(head->funit->stat->mem_excluded),
+                          &(head->funit->stat->mem_cov_found) );
       }
 
       if( report_race ) {
@@ -1147,6 +1149,10 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.118  2008/09/02 22:41:45  phase1geo
+ Starting to work on adding exclusion reason output to report files.  Added
+ support for exclusion reasons to CDD files.  Checkpointing.
+
  Revision 1.117  2008/08/29 13:01:17  phase1geo
  Removing exclusion ID from covered coverage points.  Checkpointing.
 

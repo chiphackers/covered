@@ -38,6 +38,7 @@ void memory_get_stat(
   /*@out@*/ unsigned int* tog10_hit,
   /*@out@*/ unsigned int* tog_total,
   /*@out@*/ unsigned int* excluded,
+  /*@out@*/ bool*         cov_found,
             bool          ignore_excl
 );
 
@@ -50,7 +51,8 @@ void memory_get_stats(
   /*@out@*/ unsigned int* tog01_hit,
   /*@out@*/ unsigned int* tog10_hit,
   /*@out@*/ unsigned int* tog_total,
-  /*@out@*/ unsigned int* excluded
+  /*@out@*/ unsigned int* excluded,
+  /*@out@*/ bool*         cov_found
 );
 
 /*! \brief Gets memory summary information for a GUI request */
@@ -97,6 +99,9 @@ void memory_report(
 
 /*
  $Log$
+ Revision 1.14  2008/08/23 20:00:30  phase1geo
+ Full fix for bug 2054686.  Also cleaned up Cver regressions.
+
  Revision 1.13  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

@@ -185,9 +185,10 @@ static void exclude_sig_assign_and_recalc(
     unsigned int tog10_hit    = 0;  /* Number of bits toggling from 1->0 */
     unsigned int tog_total    = 0;  /* Total number of toggle bits */
     unsigned int mem_excluded = 0;  /* Number of excluded memory coverage points */
+    bool         cov_found;
 
     /* Get the stats for the current memory */
-    memory_get_stat( sig, &wr_hit, &rd_hit, &ae_total, &tog01_hit, &tog10_hit, &tog_total, &mem_excluded, TRUE );
+    memory_get_stat( sig, &wr_hit, &rd_hit, &ae_total, &tog01_hit, &tog10_hit, &tog_total, &mem_excluded, &cov_found, TRUE );
 
     /* Recalculate the total and hit values for memory coverage */
     if( excluded ) {
@@ -1429,6 +1430,10 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.33  2008/09/02 22:41:45  phase1geo
+ Starting to work on adding exclusion reason output to report files.  Added
+ support for exclusion reasons to CDD files.  Checkpointing.
+
  Revision 1.32  2008/09/02 13:12:39  phase1geo
  Adding code to remove all formatting characters from exclude messages.
  Checkpointing.

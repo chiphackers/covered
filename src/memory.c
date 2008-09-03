@@ -25,12 +25,14 @@
 
 #include "db.h"
 #include "defines.h"
+#include "exclude.h"
 #include "func_iter.h"
 #include "func_unit.h"
 #include "link.h"
 #include "memory.h"
 #include "obfuscate.h"
 #include "ovl.h"
+#include "report.h"
 #include "vector.h"
 #include "vsignal.h"
 #include "util.h"
@@ -61,13 +63,14 @@ void memory_get_stat(
   unsigned int* tog10_hit,   /*!< Pointer to total number of bits toggling from 1->0 */
   unsigned int* tog_total,   /*!< Pointer to total number of bits in memories that can be toggled */
   unsigned int* excluded,    /*!< Pointer to total number of excluded memory coverage points */
+  bool*         cov_found,   /*!< Pointer to value that is set to TRUE if at least one memory was found to be fully covered */
   bool          ignore_excl  /*!< If set to TRUE, ignores the current value of the excluded bit */
 ) { PROFILE(MEMORY_GET_STAT);
 
-  unsigned int i;       /* Loop iterator */
-  unsigned int wr;      /* Number of bits written within an addressable element */
-  unsigned int rd;      /* Number of bits read within an addressable element */
-  unsigned int pwidth;  /* Width of packed portion of memory */
+  unsigned int i;                      /* Loop iterator */
+  unsigned int pwidth;                 /* Width of packed portion of memory */
+  bool         ae_cov_found  = TRUE;   /* Set to TRUE if wr/rd hits equals the total */
+  bool         tog_cov_found = FALSE;  /* Set to TRUE if tog01/10 hits equals the total */
 
   /* Calculate width of smallest addressable element */
   pwidth = 1;
@@ -86,8 +89,8 @@ void memory_get_stat(
       (*rd_hit)++;
       *excluded += 2;
     } else {
-      wr = 0;
-      rd = 0;
+      unsigned int wr = 0;
+      unsigned int rd = 0;
       vector_mem_rw_count( sig->value, (int)i, (int)((i + pwidth) - 1), &wr, &rd );
       if( wr > 0 ) {
         (*wr_hit)++;
@@ -95,6 +98,7 @@ void memory_get_stat(
       if( rd > 0 ) {
         (*rd_hit)++;
       }
+      ae_cov_found &= (wr > 0) && (rd > 0);
     }
     (*ae_total)++;
   }
@@ -106,8 +110,15 @@ void memory_get_stat(
     *tog10_hit += sig->value->width;
     *excluded  += (sig->value->width * 2);
   } else {
-    vector_toggle_count( sig->value, tog01_hit, tog10_hit );
+    unsigned int hit01 = 0;
+    unsigned int hit10 = 0;
+    vector_toggle_count( sig->value, &hit01, &hit10 );
+    *tog01_hit += hit01;
+    *tog10_hit += hit10;
+    tog_cov_found = (hit01 == sig->value->width) && (hit10 == sig->value->width);
   }
+
+  *cov_found |= ae_cov_found && tog_cov_found;
 
   PROFILE_END;
 
@@ -124,7 +135,8 @@ void memory_get_stats(
   /*@out@*/ unsigned int* tog01_hit,  /*!< Pointer to total number of bits toggling from 0->1 */
   /*@out@*/ unsigned int* tog10_hit,  /*!< Pointer to total number of bits toggling from 1->0 */
   /*@out@*/ unsigned int* tog_total,  /*!< Pointer to total number of bits in memories that can be toggled */
-  /*@out@*/ unsigned int* excluded    /*!< Pointer to total number of excluded memory coverage points */
+  /*@out@*/ unsigned int* excluded,   /*!< Pointer to total number of excluded memory coverage points */
+  /*@out@*/ bool*         cov_found   /*!< Pointer to value indicating that at least one memory was found to be fully covered */
 ) { PROFILE(MEMORY_GET_STATS);
 
   if( !funit_is_unnamed( funit ) ) {
@@ -139,7 +151,7 @@ void memory_get_stats(
       /* Calculate only for memory elements (must contain one or more unpacked dimensions) */
       if( (sig->suppl.part.type == SSUPPL_TYPE_MEM) && (sig->udim_num > 0) ) {
 
-        memory_get_stat( sig, wr_hit, rd_hit, ae_total, tog01_hit, tog10_hit, tog_total, excluded, FALSE );
+        memory_get_stat( sig, wr_hit, rd_hit, ae_total, tog01_hit, tog10_hit, tog_total, excluded, cov_found, FALSE );
 
       }
 
@@ -496,6 +508,7 @@ void memory_collect(
   unsigned int hit10     = 0;  /* Number of bits that toggled from 1 to 0 */
   unsigned int tog_total = 0;  /* Total number of toggle bits */
   unsigned int excluded  = 0;  /* Number of excluded memory coverage points */
+  bool         cov_found;
 
   func_iter_init( &fi, funit, FALSE, TRUE );
 
@@ -505,7 +518,7 @@ void memory_collect(
 
       ae_total = 0;
    
-      memory_get_stat( sig, &ae_total, &wr_hit, &rd_hit, &tog_total, &hit01, &hit10, &excluded, TRUE );
+      memory_get_stat( sig, &ae_total, &wr_hit, &rd_hit, &tog_total, &hit01, &hit10, &excluded, &cov_found, TRUE );
 
       /* If this signal meets the coverage requirement, add it to the signal list */
       if( ((cov == 1) && (wr_hit > 0) && (rd_hit > 0) && (hit01 == tog_total) && (hit10 == tog_total)) ||
@@ -993,24 +1006,21 @@ static void memory_display_memory(
 }
 
 /*!
- \return Returns TRUE if at least memory was found to be excluded.
-
  Displays the memories that did not achieve 100% toggle coverage and/or 100%
  write/read coverage to standard output from the specified signal list.
 */
-static bool memory_display_verbose(
+static void memory_display_verbose(
   FILE*      ofile,  /*!< Pointer to file to output results to */
   func_unit* funit,  /*!< Pointer to the current functional unit */
   rpt_type   rtype   /*!< Report type to generate */
 ) { PROFILE(MEMORY_DISPLAY_VERBOSE);
 
-  bool         retval = FALSE;  /* Return value for this function */
-  func_iter    fi;              /* Functional unit iterator */
-  vsignal*     sig;             /* Pointer to current signal */
-  unsigned int hit01;           /* Number of bits that toggled from 0 to 1 */
-  unsigned int hit10;           /* Number of bits that toggled from 1 to 0 */
-  char*        pname;           /* Printable version of signal name */
-  unsigned int i;               /* Loop iterator */
+  func_iter    fi;     /* Functional unit iterator */
+  vsignal*     sig;    /* Pointer to current signal */
+  unsigned int hit01;  /* Number of bits that toggled from 0 to 1 */
+  unsigned int hit10;  /* Number of bits that toggled from 1 to 0 */
+  char*        pname;  /* Printable version of signal name */
+  unsigned int i;      /* Loop iterator */
 
   switch( rtype ) {
     case RPT_TYPE_HIT  :  fprintf( ofile, "    Memories getting 100%% coverage\n\n" );      break;
@@ -1030,8 +1040,6 @@ static bool memory_display_verbose(
 
     if( sig->suppl.part.type == SSUPPL_TYPE_MEM ) {
 
-      retval |= sig->suppl.part.excluded;
-
       if( ((sig->suppl.part.excluded == 0) && (rtype != RPT_TYPE_EXCL)) ||
           ((sig->suppl.part.excluded == 1) && (rtype == RPT_TYPE_EXCL)) ) {
 
@@ -1050,17 +1058,15 @@ static bool memory_display_verbose(
         vector_toggle_count( sig->value, &hit01, &hit10 );
 
         if( rtype == RPT_TYPE_HIT ) {
-
           if( (hit01 == sig->value->width) && (hit10 == sig->value->width) ) {
-
             fprintf( ofile, "      %-24s\n", pname );
-
           }
-
         } else {
-
+          exclude_reason* er;
           memory_display_memory( ofile, sig, 0, sig->name, 0, sig->value->width );
-
+          if( (rtype == RPT_TYPE_EXCL) && ((er = exclude_find_exclude_reason( 'M', sig->id, funit )) != NULL) ) {
+            report_output_exclusion_reason( ofile, 10, er->reason );
+          }
         }
 
       }
@@ -1072,6 +1078,8 @@ static bool memory_display_verbose(
   }
 
   func_iter_dealloc( &fi );
+
+  fprintf( ofile, "\n" );
 
   PROFILE_END;
 
@@ -1110,12 +1118,12 @@ static void memory_instance_verbose(
   free_safe( pname, (strlen( pname ) + 1) );
 
   if( !funit_is_unnamed( root->funit ) &&
-      ((root->stat->mem_tog01_hit < root->stat->mem_tog_total) ||
-       (root->stat->mem_tog10_hit < root->stat->mem_tog_total) ||
-       (root->stat->mem_wr_hit    < root->stat->mem_ae_total)  ||
-       (root->stat->mem_rd_hit    < root->stat->mem_ae_total)) ) {
-
-    bool found_exclusion;
+      ((((root->stat->mem_tog01_hit < root->stat->mem_tog_total) ||
+         (root->stat->mem_tog10_hit < root->stat->mem_tog_total) ||
+         (root->stat->mem_wr_hit    < root->stat->mem_ae_total)  ||
+         (root->stat->mem_rd_hit    < root->stat->mem_ae_total)) && !report_covered) ||
+       (root->stat->mem_cov_found && report_covered) ||
+       ((root->stat->mem_excluded > 0) && report_exclusions)) ) {
 
     pname = scope_gen_printable( funit_flatten_name( root->funit ) );
 
@@ -1134,9 +1142,15 @@ static void memory_instance_verbose(
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
     free_safe( pname, (strlen( pname ) + 1) );
 
-    found_exclusion = memory_display_verbose( ofile, root->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
-    if( report_exclusions && found_exclusion ) {
-      (void)memory_display_verbose( ofile, root->funit, RPT_TYPE_EXCL );
+    if( (((root->stat->mem_tog01_hit < root->stat->mem_tog_total) ||
+          (root->stat->mem_tog10_hit < root->stat->mem_tog_total) ||
+          (root->stat->mem_wr_hit    < root->stat->mem_ae_total)  ||
+          (root->stat->mem_rd_hit    < root->stat->mem_ae_total)) && !report_covered) || 
+        (root->stat->mem_cov_found && report_covered) ) {
+      memory_display_verbose( ofile, root->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
+    }
+    if( report_exclusions && (root->stat->mem_excluded > 0) ) {
+      memory_display_verbose( ofile, root->funit, RPT_TYPE_EXCL );
     }
 
   }
@@ -1166,12 +1180,12 @@ static void memory_funit_verbose(
   while( head != NULL ) {
 
     if( !funit_is_unnamed( head->funit ) &&
-        ((head->funit->stat->mem_tog01_hit < head->funit->stat->mem_tog_total) ||
-         (head->funit->stat->mem_tog10_hit < head->funit->stat->mem_tog_total) ||
-         (head->funit->stat->mem_wr_hit    < head->funit->stat->mem_ae_total)  ||
-         (head->funit->stat->mem_rd_hit    < head->funit->stat->mem_ae_total)) ) {
-
-      bool found_exclusion;
+        ((((head->funit->stat->mem_tog01_hit < head->funit->stat->mem_tog_total) ||
+           (head->funit->stat->mem_tog10_hit < head->funit->stat->mem_tog_total) ||
+           (head->funit->stat->mem_wr_hit    < head->funit->stat->mem_ae_total)  ||
+           (head->funit->stat->mem_rd_hit    < head->funit->stat->mem_ae_total)) && !report_covered) ||
+         (head->funit->stat->mem_cov_found && report_covered) ||
+         ((head->funit->stat->mem_excluded > 0) && report_exclusions)) ) {
 
       fprintf( ofile, "\n" );
       switch( head->funit->type ) {
@@ -1187,9 +1201,15 @@ static void memory_funit_verbose(
       fprintf( ofile, "%s, File: %s\n", obf_funit( funit_flatten_name( head->funit ) ), obf_file( head->funit->filename ) );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
-      found_exclusion = memory_display_verbose( ofile, head->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
-      if( report_exclusions && found_exclusion ) {
-        (void)memory_display_verbose( ofile, head->funit, RPT_TYPE_EXCL );
+      if( (((head->funit->stat->mem_tog01_hit < head->funit->stat->mem_tog_total) ||
+            (head->funit->stat->mem_tog10_hit < head->funit->stat->mem_tog_total) ||
+            (head->funit->stat->mem_wr_hit    < head->funit->stat->mem_ae_total)  ||
+            (head->funit->stat->mem_rd_hit    < head->funit->stat->mem_ae_total)) && !report_covered) || 
+         (head->funit->stat->mem_cov_found && report_covered) ) {
+        memory_display_verbose( ofile, head->funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
+      }
+      if( report_exclusions && (head->funit->stat->mem_excluded > 0) ) {
+        memory_display_verbose( ofile, head->funit, RPT_TYPE_EXCL );
       }
 
     }
@@ -1258,7 +1278,7 @@ void memory_report(
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
     (void)memory_display_ae_instance_summary( ofile, "Accumulated", acc_wr_hits, acc_rd_hits, acc_ae_total );
 
-    if( verbose && missed_found ) {
+    if( verbose && (missed_found || report_covered || report_exclusions) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       instl = db_list[curr_db]->inst_head;
       while( instl != NULL ) {
@@ -1286,7 +1306,7 @@ void memory_report(
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
     (void)memory_display_ae_funit_summary( ofile, "Accumulated", "", acc_wr_hits, acc_rd_hits, acc_ae_total );
 
-    if( verbose && missed_found ) {
+    if( verbose && (missed_found || report_covered || report_exclusions) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       memory_funit_verbose( ofile, db_list[curr_db]->funit_head );
     }
@@ -1302,6 +1322,9 @@ void memory_report(
 
 /*
  $Log$
+ Revision 1.37  2008/08/29 13:01:17  phase1geo
+ Removing exclusion ID from covered coverage points.  Checkpointing.
+
  Revision 1.36  2008/08/28 16:52:22  phase1geo
  Adding toggle and memory exclusion support in report command.  Checkpointing.
 

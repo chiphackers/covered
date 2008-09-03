@@ -2350,6 +2350,7 @@ struct statistic_s {
   unsigned int mem_tog01_hit;               /*!< Total number of bits toggling from 0 to 1 in memories */
   unsigned int mem_tog10_hit;               /*!< Total number of bits toggling from 1 to 0 in memories */
   unsigned int mem_tog_total;               /*!< Total number of bits in memories */
+  bool         mem_cov_found;               /*!< Specifies if a fully covered memory was found */
   unsigned int mem_excluded;                /*!< Total number of excluded memory coverage points */
   bool         show;                        /*!< Set to TRUE if this module should be output to the report */
 };
@@ -2890,6 +2891,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.308  2008/09/02 22:41:45  phase1geo
+ Starting to work on adding exclusion reason output to report files.  Added
+ support for exclusion reasons to CDD files.  Checkpointing.
+
  Revision 1.307  2008/08/29 05:38:37  phase1geo
  Adding initial pass of FSM exclusion ID output.  Need to fix issues with the -e
  option usage for all metrics, I believe (certainly for FSM).  Checkpointing.

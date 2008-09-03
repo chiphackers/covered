@@ -31,6 +31,7 @@
 #include <stdlib.h>
 
 #include "defines.h"
+#include "exclude.h"
 #include "func_iter.h"
 #include "func_unit.h"
 #include "instance.h"
@@ -38,6 +39,7 @@
 #include "link.h"
 #include "obfuscate.h"
 #include "ovl.h"
+#include "report.h"
 #include "search.h"
 #include "util.h"
 #include "vector.h"
@@ -271,26 +273,23 @@ static char* ovl_get_coverage_point(
 }
 
 /*!
- \return Returns TRUE if at least one assertion coverage point was excluded in the given functional unit.
-
  Displays the verbose hit/miss information to the given output file for the given functional
  unit.
 */
-bool ovl_display_verbose(
+void ovl_display_verbose(
   FILE*            ofile,  /*!< Pointer to output file to display verbose information to */
   const func_unit* funit,  /*!< Pointer to module containing assertions that were not covered */
   rpt_type         rtype   /*!< Specifies the type of report to generate */
 ) { PROFILE(OVL_DISPLAY_VERBOSE);
 
-  bool         retval   = FALSE;  /* Return value for this function */
-  funit_inst*  funiti;            /* Pointer to functional unit instance found for this functional unit */
-  int          ignore   = 0;      /* Specifies that we do not want to ignore any modules */
-  funit_inst*  curr_child;        /* Pointer to current child instance of this module */
-  char*        cov_point;         /* Pointer to name of current coverage point */
-  func_iter    fi;                /* Functional unit iterator */
-  statement*   stmt;              /* Pointer to current statement */
-  unsigned int eid_size = 1;
-  char         tmp[30];
+  funit_inst*  funiti;        /* Pointer to functional unit instance found for this functional unit */
+  int          ignore   = 0;  /* Specifies that we do not want to ignore any modules */
+  funit_inst*  curr_child;    /* Pointer to current child instance of this module */
+  char*        cov_point;     /* Pointer to name of current coverage point */
+  func_iter    fi;            /* Functional unit iterator */
+  statement*   stmt;          /* Pointer to current statement */
+  unsigned int eid_size = 1;  /* Number of characters needed to store an exclusion ID */
+  char         tmp[30];       /* Temporary string */
 
   fprintf( ofile, "      " );
   if( flag_output_exclusion_ids && (rtype != RPT_TYPE_HIT) ) {
@@ -322,31 +321,42 @@ bool ovl_display_verbose(
 
       while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
 
-        /* If this statement is a task call to the task "ovl_cover_t", get its total and hit information */
-        if( ovl_is_coverage_point( stmt->exp ) ) {
+        if( ((((stmt->exp->exec_num > 0) ? 1 : 0) == report_covered) && (stmt->exp->suppl.part.excluded == 0) && (rtype != RPT_TYPE_EXCL)) ||
+            ((stmt->exp->suppl.part.excluded == 1) && (rtype == RPT_TYPE_EXCL)) ) {
 
-          retval |= stmt->exp->suppl.part.excluded;
+          /* If this statement is a task call to the task "ovl_cover_t", get its total and hit information */
+          if( ovl_is_coverage_point( stmt->exp ) ) {
 
-          /* Get coverage point name */
-          cov_point = ovl_get_coverage_point( stmt );
+            /* Get coverage point name */
+            cov_point = ovl_get_coverage_point( stmt );
 
-          /* Output the coverage verbose results to the specified output file */
-          if( (stmt->exp->exec_num == 0) && (rtype != RPT_TYPE_HIT) ) {
-            if( flag_output_exclusion_ids ) {
-              fprintf( ofile, "      (%s)  %-26s  %-22s  \"%-38s\"\n", db_gen_exclusion_id( 'A', stmt->exp->id ),
-                       obf_inst( curr_child->name ), obf_funit( funit_flatten_name( curr_child->funit ) ), cov_point );
-            } else {
-              fprintf( ofile, "      %-26s  %-22s  \"%-38s\"\n",
-                       obf_inst( curr_child->name ), obf_funit( funit_flatten_name( curr_child->funit ) ), cov_point );
+            /* Output the coverage verbose results to the specified output file */
+            if( (stmt->exp->exec_num == 0) && (rtype != RPT_TYPE_HIT) ) {
+              if( flag_output_exclusion_ids ) {
+                exclude_reason* er;
+                fprintf( ofile, "      (%s)  %-26s  %-22s  \"%-38s\"\n", db_gen_exclusion_id( 'A', stmt->exp->id ),
+                         obf_inst( curr_child->name ), obf_funit( funit_flatten_name( curr_child->funit ) ), cov_point );
+                if( (rtype == RPT_TYPE_EXCL) && ((er = exclude_find_exclude_reason( 'A', stmt->exp->id, curr_child->funit )) != NULL) ) {
+                  report_output_exclusion_reason( ofile, (12 + (db_get_exclusion_id_size() - 1)), er->reason );
+                }
+              } else {
+                exclude_reason* er;
+                fprintf( ofile, "      %-26s  %-22s  \"%-38s\"\n",
+                         obf_inst( curr_child->name ), obf_funit( funit_flatten_name( curr_child->funit ) ), cov_point );
+                if( (rtype == RPT_TYPE_EXCL) && ((er = exclude_find_exclude_reason( 'A', stmt->exp->id, curr_child->funit )) != NULL) ) {
+                  report_output_exclusion_reason( ofile, (8 + (db_get_exclusion_id_size() - 1)), er->reason );
+                }
+              }
+            } else if( (stmt->exp->exec_num > 0) && (rtype == RPT_TYPE_HIT) ) {
+              fprintf( ofile, "      %-26s  %-22s  \"%-38s\"  %9u\n",
+                       obf_inst( curr_child->name ), obf_funit( funit_flatten_name( curr_child->funit ) ), cov_point, stmt->exp->exec_num );
             }
-          } else if( (stmt->exp->exec_num > 0) && (rtype == RPT_TYPE_HIT) ) {
-            fprintf( ofile, "      %-26s  %-22s  \"%-38s\"  %9u\n",
-                     obf_inst( curr_child->name ), obf_funit( funit_flatten_name( curr_child->funit ) ), cov_point, stmt->exp->exec_num );
+
+            /* Deallocate the coverage point */
+            free_safe( cov_point, (strlen( cov_point ) + 1) );
+          
           }
 
-          /* Deallocate the coverage point */
-          free_safe( cov_point, (strlen( cov_point ) + 1) );
-          
         }
 
       }
@@ -362,8 +372,6 @@ bool ovl_display_verbose(
   }
 
   PROFILE_END;
-
-  return( retval );
 
 }
 
@@ -523,6 +531,9 @@ void ovl_get_coverage(
 
 /*
  $Log$
+ Revision 1.34  2008/09/02 05:20:41  phase1geo
+ More updates for exclude command.  Updates to CVER regression.
+
  Revision 1.33  2008/08/29 13:01:17  phase1geo
  Removing exclusion ID from covered coverage points.  Checkpointing.
 
