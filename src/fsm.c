@@ -41,12 +41,14 @@
 #include "codegen.h"
 #include "db.h"
 #include "defines.h"
+#include "exclude.h"
 #include "expr.h"
 #include "func_unit.h"
 #include "fsm.h"
 #include "link.h"
 #include "obfuscate.h"
 #include "ovl.h"
+#include "report.h"
 #include "sim.h"
 #include "util.h"
 #include "vector.h"
@@ -907,9 +909,10 @@ static void fsm_display_state_verbose(
  the specified output file.
 */
 static bool fsm_display_arc_verbose(
-  FILE*    ofile,  /*!< File handle of output file to send report output to */
-  fsm*     table,  /*!< Pointer to FSM structure to output */
-  rpt_type rtype   /*!< Specifies the type of report to generate */
+  FILE*      ofile,  /*!< File handle of output file to send report output to */
+  fsm*       table,  /*!< Pointer to FSM structure to output */
+  func_unit* funit,  /*!< Pointer to functional unit containing this FSM */
+  rpt_type   rtype   /*!< Specifies the type of report to generate */
 ) { PROFILE(FSM_DISPLAY_ARC_VERBOSE);
 
   bool         retval = FALSE;  /* Return value for this function */
@@ -979,6 +982,7 @@ static bool fsm_display_arc_verbose(
 
   /* Output the information to the specified output stream */
   for( i=0; i<arc_size; i++ ) {
+    exclude_reason* er;
     retval |= excludes[i];
     if( ((rtype != RPT_TYPE_EXCL) && (excludes[i] == 0)) ||
         ((rtype == RPT_TYPE_EXCL) && (excludes[i] == 1)) ) {
@@ -991,6 +995,13 @@ static bool fsm_display_arc_verbose(
         assert( rv < eid_size );
       }
       fprintf( ofile, fstr, eid, tmpfst, "->", tmptst );
+    }
+    if( (rtype == RPT_TYPE_EXCL) && ((er = exclude_find_exclude_reason( 'F', ids[i], funit )) != NULL) ) {
+      if( flag_output_exclusion_ids ) {
+        report_output_exclusion_reason( ofile, (16 + (db_get_exclusion_id_size() - 1)), er->reason );
+      } else {
+        report_output_exclusion_reason( ofile, 12, er->reason );
+      }
     }
     free_safe( from_states[i], (strlen( from_states[i] ) + 1) );
     free_safe( to_states[i], (strlen( to_states[i] ) + 1) );
@@ -1018,16 +1029,18 @@ static bool fsm_display_arc_verbose(
  output file.
 */
 static void fsm_display_verbose(
-  FILE*     ofile,  /*!< File handle of output file to send report output to */
-  fsm_link* head    /*!< Pointer to head of FSM link for a functional unit */
+  FILE*      ofile,  /*!< File handle of output file to send report output to */
+  func_unit* funit   /*!< Pointer to functional unit containing the FSMs to display */
 ) { PROFILE(FSM_DISPLAY_VERBOSE);
 
+  fsm_link*    head;         /* Pointer to current FSM link */
   char**       icode;        /* Verilog output of input state variable expression */
   unsigned int icode_depth;  /* Number of valid entries in the icode array */
   char**       ocode;        /* Verilog output of output state variable expression */
   unsigned int ocode_depth;  /* Number of valid entries in the ocode array */
   unsigned int i;            /* Loop iterator */
 
+  head = funit->fsm_head;
   while( head != NULL ) {
 
     bool found_exclusion;
@@ -1054,9 +1067,9 @@ static void fsm_display_verbose(
     }
 
     fsm_display_state_verbose( ofile, head->table );
-    found_exclusion = fsm_display_arc_verbose( ofile, head->table, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
+    found_exclusion = fsm_display_arc_verbose( ofile, head->table, funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
     if( report_exclusions && found_exclusion ) {
-      (void)fsm_display_arc_verbose( ofile, head->table, RPT_TYPE_EXCL );
+      (void)fsm_display_arc_verbose( ofile, head->table, funit, RPT_TYPE_EXCL );
     }
 
     if( head->next != NULL ) {
@@ -1104,7 +1117,8 @@ static void fsm_instance_verbose(
       ((((root->stat->state_hit < root->stat->state_total) || (root->stat->arc_hit < root->stat->arc_total)) && !report_covered) ||
          (root->stat->state_total == -1) ||
          (root->stat->arc_total   == -1) ||
-       (((root->stat->state_hit > 0) || (root->stat->arc_hit > 0)) && report_covered)) ) {
+       (((root->stat->state_hit > 0) || (root->stat->arc_hit > 0)) && report_covered) ||
+       ((root->stat->arc_excluded > 0) && report_exclusions)) ) {
 
     /* Get printable version of functional unit name */
     pname = scope_gen_printable( funit_flatten_name( root->funit ) );
@@ -1125,7 +1139,7 @@ static void fsm_instance_verbose(
 
     free_safe( pname, (strlen( pname ) + 1) );
 
-    fsm_display_verbose( ofile, root->funit->fsm_head );
+    fsm_display_verbose( ofile, root->funit );
 
   }
 
@@ -1156,7 +1170,8 @@ static void fsm_funit_verbose(
            (head->funit->stat->arc_hit < head->funit->stat->arc_total)) && !report_covered) ||
            (head->funit->stat->state_total == -1) ||
            (head->funit->stat->arc_total   == -1) ||
-         (((head->funit->stat->state_hit > 0) || (head->funit->stat->arc_hit > 0)) && report_covered)) ) {
+         (((head->funit->stat->state_hit > 0) || (head->funit->stat->arc_hit > 0)) && report_covered) ||
+         ((head->funit->stat->arc_excluded > 0) && report_exclusions)) ) {
 
       /* Get printable version of functional unit name */
       pname = scope_gen_printable( funit_flatten_name( head->funit ) );
@@ -1177,7 +1192,7 @@ static void fsm_funit_verbose(
 
       free_safe( pname, (strlen( pname ) + 1) );
 
-      fsm_display_verbose( ofile, head->funit->fsm_head );
+      fsm_display_verbose( ofile, head->funit );
 
     }
 
@@ -1233,7 +1248,7 @@ void fsm_report(
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
     (void)fsm_display_instance_summary( ofile, "Accumulated", acc_st_hits, acc_st_total, acc_arc_hits, acc_arc_total );
    
-    if( verbose && (missed_found || report_covered) ) {
+    if( verbose && (missed_found || report_covered || report_exclusions) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       instl = db_list[curr_db]->inst_head;
       while( instl != NULL ) {
@@ -1252,7 +1267,7 @@ void fsm_report(
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
     (void)fsm_display_funit_summary( ofile, "Accumulated", "", acc_st_hits, acc_st_total, acc_arc_hits, acc_arc_total );
 
-    if( verbose && (missed_found || report_covered) ) {
+    if( verbose && (missed_found || report_covered || report_exclusions) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       fsm_funit_verbose( ofile, db_list[curr_db]->funit_head );
     }
@@ -1315,6 +1330,10 @@ void fsm_dealloc(
 
 /*
  $Log$
+ Revision 1.101  2008/08/29 05:38:37  phase1geo
+ Adding initial pass of FSM exclusion ID output.  Need to fix issues with the -e
+ option usage for all metrics, I believe (certainly for FSM).  Checkpointing.
+
  Revision 1.100  2008/08/18 23:07:26  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

@@ -878,6 +878,33 @@ expression* exclude_find_expression(
 }
 
 /*!
+ \return Returns the index of the state transition that was found with the given exclusion ID.
+*/
+int exclude_find_fsm_arc(
+            int         id,          /*!< Exclusion ID to search for */
+  /*@out@*/ fsm_table** found_fsm,   /*!< Pointer to FSM table that was found */
+  /*@out@*/ func_unit** found_funit  /*!< Pointer to found functional unit */
+) { PROFILE(EXCLUDE_FIND_FSM_ARC);
+
+  inst_link* instl;  /* Pointer to current instance link */
+  int arc_index;
+
+  instl = db_list[curr_db]->inst_head;
+  while( (instl != NULL) && ((arc_index = instance_find_fsm_arc_index_by_exclusion_id( instl->inst, id, found_fsm, found_funit )) == -1) ) {
+    instl = instl->next;
+  }
+
+  if( arc_index != -1 ) {
+    *found_funit = funit_get_curr_module( *found_funit );
+  }
+
+  PROFILE_END;
+
+  return( arc_index );
+
+}
+
+/*!
  \return Returns the message specified by the user.
 */
 static char* exclude_get_message(
@@ -936,14 +963,13 @@ static char* exclude_get_message(
 }
 
 /*!
- Handle the creation/deallocation of the exclude reason structure for the given signal.
+ Handle the creation/deallocation of the exclude reason structure.
 */
-static void exclude_handle_signal_er(
-  int         prev_excluded,  /*!< Specifies if this signal was previously excluded or not */
+static void exclude_handle_exclude_reason(
+  int         prev_excluded,  /*!< Specifies if the coverage point was previously excluded or not */
   const char* id,             /*!< Exclusion ID */
-  vsignal*    sig,            /*!< Signal being excluded/included */
   func_unit*  funit           /*!< Functional unit containing sig */
-) { PROFILE(EXCLUDE_HANDLE_SIGNAL_ER);
+) { PROFILE(EXCLUDE_HANDLE_EXCLUDE_REASON);
 
   /*
    If the coverage point was not previously excluded, allow the user to specify a reason and
@@ -1003,73 +1029,6 @@ static void exclude_handle_signal_er(
 }
 
 /*!
- Handle the creation/deallocation of the exclude reason structure for the given expression.
-*/
-static void exclude_handle_expression_er(
-  int         prev_excluded,  /*!< Specifies if this expression was previously excluded or not */
-  const char* id,             /*!< Exclusion ID */
-  expression* exp,            /*!< Expression being excluded/included */
-  func_unit*  funit           /*!< Functional unit containing exp */
-) { PROFILE(EXCLUDE_HANDLE_EXPRESSION_ER);
-
-  /*
-   If the coverage point was not previously excluded, allow the user to specify a reason and
-   store this information in the functional unit.
-  */
-  if( prev_excluded == 0 ) {
-
-    char* str = exclude_get_message( id );
-
-    if( strlen( str ) > 0 ) {
-      exclude_reason* er = (exclude_reason*)malloc_safe( sizeof( exclude_reason ) );
-      er->type     = id[0];
-      er->id       = atoi( id + 1 );
-      er->reason   = str;
-      er->next     = NULL;
-      if( funit->er_head == NULL ) {
-        funit->er_head = funit->er_tail = er;
-      } else {
-        funit->er_tail->next = er;
-        funit->er_tail       = er;
-      }
-    } else {
-      free_safe( str, (strlen( str ) + 1) );
-    }
-
-  /*
-   If the coverage point was previously excluded, attempt to find the matching exclusion reason, and, if
-   it is found, remove it from the list.
-  */
-  } else {
-
-    exclude_reason* last_er = NULL;
-    exclude_reason* er      = funit->er_head;
-
-    while( (er != NULL) && ((er->type != id[0]) || (er->id != atoi( id + 1))) ) {
-      last_er = er;
-      er      = er->next;
-    }
-
-    if( er != NULL ) {
-      if( last_er == NULL ) {
-        funit->er_head = er->next;
-        if( er->next == NULL ) {
-          funit->er_tail = NULL;
-        }
-      } else {
-        last_er->next = er->next;
-      }
-      free_safe( er->reason, (strlen( er->reason ) + 1) );
-      free_safe( er, sizeof( exclude_reason ) );
-    }
-
-  }
-
-  PROFILE_END;
-
-}
-
-/*!
  \return Returns TRUE if the exclusion ID was found and the exclusion applied; otherwise, returns FALSE.
 
  Finds the line that matches the given exclusion ID and toggles its exclusion value, providing a reason
@@ -1107,12 +1066,13 @@ static bool exclude_line_from_id(
 
     /* If we are excluding and the -m option was specified, get an exclusion reason from the user */
     if( exclude_prompt_for_msgs || (prev_excluded == 1) ) {
-      exclude_handle_expression_er( prev_excluded, id, exp, found_funit );
+      exclude_handle_exclude_reason( prev_excluded, id, found_funit );
     }
 
   } else {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Unable to find line associated with exclusion ID %s", id );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to find line associated with exclusion ID %s", id );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, WARNING, __FILE__, __LINE__ );
 
   }
@@ -1155,12 +1115,13 @@ static bool exclude_toggle_from_id(
     
     /* If we are excluding and the -m option was specified, get an exclusion reason from the user */
     if( exclude_prompt_for_msgs || (prev_excluded == 1) ) { 
-      exclude_handle_signal_er( prev_excluded, id, sig, found_funit );
+      exclude_handle_exclude_reason( prev_excluded, id, found_funit );
     }
 
   } else {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Unable to find toggle signal associated with exclusion ID %s", id );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to find toggle signal associated with exclusion ID %s", id );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, WARNING, __FILE__, __LINE__ );
 
   }
@@ -1203,12 +1164,13 @@ static bool exclude_memory_from_id(
    
     /* If we are excluding and the -m option was specified, get an exclusion reason from the user */
     if( exclude_prompt_for_msgs || (prev_excluded == 1) ) {
-      exclude_handle_signal_er( prev_excluded, id, sig, found_funit );
+      exclude_handle_exclude_reason( prev_excluded, id, found_funit );
     }
   
   } else {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Unable to find memory associated with exclusion ID %s", id );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to find memory associated with exclusion ID %s", id );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, WARNING, __FILE__, __LINE__ );
 
   }
@@ -1254,12 +1216,13 @@ static bool exclude_expr_from_id(
     
     /* If we are excluding and the -m option was specified, get an exclusion reason from the user */
     if( exclude_prompt_for_msgs || (prev_excluded == 1) ) { 
-      exclude_handle_expression_er( prev_excluded, id, exp, found_funit );
+      exclude_handle_exclude_reason( prev_excluded, id, found_funit );
     }
 
   } else {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Unable to find expression associated with exclusion ID %s", id );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to find expression associated with exclusion ID %s", id );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, WARNING, __FILE__, __LINE__ );
 
   }
@@ -1280,11 +1243,46 @@ static bool exclude_fsm_from_id(
   const char* id  /*!< String version of exclusion ID */
 ) { PROFILE(EXCLUDE_FSM_FROM_ID);
 
-  bool retval = FALSE;  /* Return value for this function */
+  int        arc_index;    /* Index of found state transition in arcs array */
+  fsm_table* found_fsm;    /* Pointer to found FSM structure */
+  func_unit* found_funit;  /* Pointer to functional unit containing arc */
+
+  if( (arc_index = exclude_find_fsm_arc( atoi( id + 1 ), &found_fsm, &found_funit )) != -1 ) {
+
+    int         prev_excluded;
+    unsigned int rv;
+
+    /* Get the previously excluded value */
+    prev_excluded = found_fsm->arcs[arc_index]->suppl.part.excluded;
+
+    /* Output result */
+    if( prev_excluded == 0 ) {
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Excluding %s", id );
+    } else {
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Including %s", id );
+    }
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+
+    /* Toggle the exclude bit */
+    found_fsm->arcs[arc_index]->suppl.part.excluded = (prev_excluded ^ 1);
+
+    /* If we are excluding and the -m option was specified, get an exclusion reason from the user */
+    if( exclude_prompt_for_msgs || (prev_excluded == 1) ) {
+      exclude_handle_exclude_reason( prev_excluded, id, found_funit );
+    }
+
+  } else {
+
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to find FSM arc associated with exclusion ID %s", id );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, WARNING, __FILE__, __LINE__ );
+
+  }
 
   PROFILE_END;
 
-  return( retval );
+  return( arc_index != -1 );
 
 }
 
@@ -1323,12 +1321,13 @@ static bool exclude_assert_from_id(
 
     /* If we are excluding and the -m option was specified, get an exclusion reason from the user */
     if( exclude_prompt_for_msgs || (prev_excluded == 1) ) {
-      exclude_handle_expression_er( prev_excluded, id, exp, found_funit );
+      exclude_handle_exclude_reason( prev_excluded, id, found_funit );
     }
 
   } else {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Unable to find assertion associated with exclusion ID %s", id );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to find assertion associated with exclusion ID %s", id );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, WARNING, __FILE__, __LINE__ );
 
   }
@@ -1430,6 +1429,9 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.34  2008/09/03 03:46:37  phase1geo
+ Updates for memory and assertion exclusion output.  Checkpointing.
+
  Revision 1.33  2008/09/02 22:41:45  phase1geo
  Starting to work on adding exclusion reason output to report files.  Added
  support for exclusion reasons to CDD files.  Checkpointing.

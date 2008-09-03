@@ -30,6 +30,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include "arc.h"
 #include "db.h"
 #include "defines.h"
 #include "expr.h"
@@ -431,6 +432,48 @@ expression* instance_find_expression_by_exclusion_id(
   
   return( exp );
   
+}
+
+/*!
+ \return Returns the index of the state transition in the arcs array of the found_fsm in the found_funit that matches the
+         given exclusion ID (if one is found); otherwise, returns -1.
+*/
+int instance_find_fsm_arc_index_by_exclusion_id(
+            funit_inst* root,
+            int         id,
+  /*@out@*/ fsm_table** found_fsm,
+  /*@out@*/ func_unit** found_funit
+) { PROFILE(INSTANCE_FIND_FSM_ARC_INDEX_BY_EXCLUSION_ID);
+
+  int arc_index = -1;  /* Index of found FSM arc */
+
+  if( root != NULL ) {
+
+    fsm_link* fsml;
+
+    assert( root->funit != NULL );
+  
+    fsml = root->funit->fsm_head;
+    while( (fsml != NULL) && ((arc_index = arc_find_arc_by_exclusion_id( fsml->table->table, id )) == -1) ) {
+      fsml = fsml->next;
+    }
+
+    if( arc_index != -1 ) {
+      *found_fsm   = fsml->table->table;
+      *found_funit = root->funit;
+    } else {
+      funit_inst* child = root->child_head;
+      while( (child != NULL) && ((arc_index = instance_find_fsm_arc_index_by_exclusion_id( child, id, found_fsm, found_funit )) == -1) ) {
+        child = child->next;
+      }
+    }
+
+  }
+
+  PROFILE_END;
+
+  return( arc_index );
+
 }
 
 /*!
@@ -1244,6 +1287,10 @@ void instance_dealloc(
 
 /*
  $Log$
+ Revision 1.103  2008/09/02 22:41:45  phase1geo
+ Starting to work on adding exclusion reason output to report files.  Added
+ support for exclusion reasons to CDD files.  Checkpointing.
+
  Revision 1.102  2008/09/02 05:53:54  phase1geo
  More code additions for exclude command.  Fixing a few bugs in this code as well.
  Checkpointing.

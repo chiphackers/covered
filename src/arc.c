@@ -235,7 +235,7 @@ int arc_find_to_state(
 }
 
 /*!
- \return Returns the index of the found arc in the arcs array if it is found, otherwise, returns -1.
+ \return Returns the index of the found arc in the arcs array if it is found; otherwise, returns -1.
 
  Searches for the arc in the arcs array of the given FSM table specified by the given state indices.
 */
@@ -250,6 +250,30 @@ int arc_find_arc(
 
   while( (i < table->num_arcs) && (index == -1) ) {
     if( (table->arcs[i]->from == fr_index) && (table->arcs[i]->to == to_index) ) {
+      index = i;
+    }
+    i++;
+  }
+
+  PROFILE_END;
+
+  return( index );
+
+}
+
+/*!
+ \return Returns the index of the found arc in the arcs array if it is found; otherwise, returns -1. 
+*/
+int arc_find_arc_by_exclusion_id(
+  const fsm_table* table,  /*!< Pointer to FSM table structure to search */
+  int              id      /*!< Exclusion ID to search for */
+) { PROFILE(ARC_FIND_ARC_BY_EXCLUSION_ID);
+
+  int          index = -1;
+  unsigned int i     = 0;
+
+  while( (i < table->num_arcs) && (index == -1) ) {
+    if( table->arcs[i]->id == id ) {
       index = i;
     }
     i++;
@@ -856,6 +880,10 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.67  2008/08/29 05:38:36  phase1geo
+ Adding initial pass of FSM exclusion ID output.  Need to fix issues with the -e
+ option usage for all metrics, I believe (certainly for FSM).  Checkpointing.
+
  Revision 1.66  2008/08/18 23:07:25  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

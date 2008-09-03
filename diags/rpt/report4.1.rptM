@@ -60,6 +60,7 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
       error                     0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
+
     Module: fsma, File: report4.1.v
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
@@ -73,6 +74,7 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
       next_state                0->1: 3'h2
       ......................... 1->0: 3'h1 ...
 
+
     Module: fsmb, File: report4.1.v
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
@@ -85,6 +87,7 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
       ......................... 1->0: 3'h1 ...
       state                     0->1: 3'h2
       ......................... 1->0: 3'h1 ...
+
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

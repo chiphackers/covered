@@ -59,6 +59,12 @@ int arc_find_arc(
   unsigned int     to_index
 );
 
+/*! \brief Finds the specified state transition in the given FSM table by the exclusion ID */ 
+int arc_find_arc_by_exclusion_id(
+  const fsm_table* table,
+  int              id
+);
+
 /*! \brief Calculates all state and state transition values for reporting purposes. */
 void arc_get_stats(
             const fsm_table* table,
@@ -128,6 +134,10 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.32  2008/08/29 05:38:36  phase1geo
+ Adding initial pass of FSM exclusion ID output.  Need to fix issues with the -e
+ option usage for all metrics, I believe (certainly for FSM).  Checkpointing.
+
  Revision 1.31  2008/08/18 23:07:25  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

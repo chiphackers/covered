@@ -59,6 +59,14 @@ expression* instance_find_expression_by_exclusion_id(
   /*@out@*/ func_unit** found_funit
 );
 
+/*! \brief Returns FSM that matches the given exclusion ID */
+int instance_find_fsm_arc_index_by_exclusion_id(
+            funit_inst* root,
+            int         id,
+  /*@out@*/ fsm_table** found_fsm,
+  /*@out@*/ func_unit** found_funit
+);
+
 /*! \brief Attaches the given child instance to the given parent instance */
 void instance_attach_child( funit_inst* parent, funit_inst* child );
 
@@ -96,6 +104,10 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.36  2008/09/02 22:41:45  phase1geo
+ Starting to work on adding exclusion reason output to report files.  Added
+ support for exclusion reasons to CDD files.  Checkpointing.
+
  Revision 1.35  2008/09/02 05:20:41  phase1geo
  More updates for exclude command.  Updates to CVER regression.
 
