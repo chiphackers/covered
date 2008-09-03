@@ -2,6 +2,8 @@
 
 set rsel_wsel  0
 set rsel_width "105"
+set rsel_eid   0
+set rsel_excl  0
 
 proc create_report_generation_window {} {
 
@@ -20,8 +22,8 @@ proc create_report_generation_window {} {
     set rptgen_fname ""
     
     # Add panes
-    .rselwin.p add [create_report_generation_source  .rselwin.p.rs] -width 600 -height 600
-    .rselwin.p add [create_report_generation_options .rselwin.p.ro] -width 600 -height 600 -hide true
+    .rselwin.p add [create_report_generation_source  .rselwin.p.rs] -width 600 -height 650
+    .rselwin.p add [create_report_generation_options .rselwin.p.ro] -width 600 -height 650 -hide true
 
     # Pack the panedwindow
     pack .rselwin.p -fill both -expand yes
@@ -37,6 +39,7 @@ proc read_report_option_file {fname} {
   
   global rsel_wsel rsel_width rsel_sdv rsel_cu rsel_mi rsel_sup rsel_bw
   global rsel_l rsel_t rsel_m rsel_c rsel_f rsel_a rsel_r
+  global rsel_eid rsel_excl
   global rsel_fname rptgen_fname
     
   if {[catch {set fp [open $rptgen_fname "r"]}]} {
@@ -112,6 +115,12 @@ proc read_report_option_file {fname} {
     } elseif {[lindex $contents $i] eq "-c"} {
       set rsel_cu "-c"
       
+    } elseif {[lindex $contents $i] eq "-x"} {
+      set rsel_eid 1
+
+    } elseif {[lindex $contents $i] eq "-e"} {
+      set rsel_excl 1
+
     } elseif {[lindex $contents $i] eq "-f"} {
       incr i
       if {[string index [lindex $contents $i] 0] ne "-"} {
@@ -130,23 +139,26 @@ proc create_report_cmd_options {} {
   
   global rsel_wsel rsel_width rsel_sdv rsel_mi rsel_cu rsel_sup rsel_bw
   global rsel_l rsel_t rsel_m rsel_c rsel_f rsel_a rsel_r
+  global rsel_eid rsel_excl
   global rsel_fname cdd_name
   
   # Create command-line to report command of Covered
-  if {$rsel_wsel == 0}     { set w   "" } else { set w " -w $rsel_width" }
-  if {$rsel_mi  == "None"} { set mi  "" } else { set mi  " $rsel_mi" }
-  if {$rsel_cu  == "None"} { set cu  "" } else { set cu  " $rsel_cu" }
-  if {$rsel_sup == "None"} { set sup "" } else { set sup " $rsel_sup" }
-  if {$rsel_bw  == "None"} { set bw  "" } else { set bw  " $rsel_bw" }
-  if {$rsel_l   == "None"} { set l   "" } else { set l   $rsel_l }
-  if {$rsel_t   == "None"} { set t   "" } else { set t   $rsel_t }
-  if {$rsel_m   == "None"} { set m   "" } else { set m   $rsel_m }
-  if {$rsel_c   == "None"} { set c   "" } else { set c   $rsel_c }
-  if {$rsel_f   == "None"} { set f   "" } else { set f   $rsel_f }
-  if {$rsel_a   == "None"} { set a   "" } else { set a   $rsel_a }
-  if {$rsel_r   == "None"} { set r   "" } else { set r   $rsel_r }
+  if {$rsel_wsel == 0}      { set w    "" } else { set w    " -w $rsel_width" }
+  if {$rsel_mi   == "None"} { set mi   "" } else { set mi   " $rsel_mi" }
+  if {$rsel_cu   == "None"} { set cu   "" } else { set cu   " $rsel_cu" }
+  if {$rsel_sup  == "None"} { set sup  "" } else { set sup  " $rsel_sup" }
+  if {$rsel_bw   == "None"} { set bw   "" } else { set bw   " $rsel_bw" }
+  if {$rsel_l    == "None"} { set l    "" } else { set l    $rsel_l }
+  if {$rsel_t    == "None"} { set t    "" } else { set t    $rsel_t }
+  if {$rsel_m    == "None"} { set m    "" } else { set m    $rsel_m }
+  if {$rsel_c    == "None"} { set c    "" } else { set c    $rsel_c }
+  if {$rsel_f    == "None"} { set f    "" } else { set f    $rsel_f }
+  if {$rsel_a    == "None"} { set a    "" } else { set a    $rsel_a }
+  if {$rsel_r    == "None"} { set r    "" } else { set r    $rsel_r }
+  if {$rsel_eid  == 0}      { set eid  "" } else { set eid  " -x" }
+  if {$rsel_excl == 0}      { set excl "" } else { set excl " -e" }
   
-  set cmd "-d $rsel_sdv$mi$cu -m $l$t$m$c$f$a$r$w$sup$bw"
+  set cmd "-d $rsel_sdv$mi$cu -m $l$t$m$c$f$a$r$w$sup$bw$eid$excl"
   
   return $cmd
   
@@ -170,6 +182,7 @@ proc setup_report_selection_options {} {
 
   global rsel_wsel rsel_width rsel_sdv rsel_cu rsel_mi rsel_sup rsel_bw
   global rsel_l rsel_t rsel_m rsel_c rsel_f rsel_a rsel_r
+  global rsel_eid rsel_excl
   global rptgen_fname
 
   if {$rptgen_fname ne ""} {
@@ -188,6 +201,8 @@ proc setup_report_selection_options {} {
     set rsel_f     None
     set rsel_a     None
     set rsel_r     None
+    set rsel_eid   0
+    set rsel_excl  0
 
     read_report_option_file $rptgen_fname
 
@@ -207,6 +222,8 @@ proc setup_report_selection_options {} {
     set rsel_f     f
     set rsel_a     None
     set rsel_r     None
+    set rsel_eid   0
+    set rsel_excl  0
 
   }
 
@@ -324,11 +341,15 @@ proc create_report_generation_options {w} {
   # Create bitwise vector combinational logic output
   checkbutton $w.f.misc.bw_val -text "Output combinational logic vector operations in bitwise format" -variable rsel_bw -onvalue "-b" -offvalue "None" -anchor w
 
+  # Create checkbutton for showing exclusion IDs
+  checkbutton $w.f.misc.eid_val -text "Show exclusion IDs in detailed/verbose output" -variable rsel_eid -onvalue 1 -offvalue 0 -anchor w
+
   grid $w.f.misc.width_val -row 0 -column 0 -sticky news -pady 4
   grid $w.f.misc.width_w   -row 0 -column 1 -sticky news -pady 4
   grid $w.f.misc.width_lbl -row 0 -column 2 -sticky news -pady 4
   grid $w.f.misc.sup_val   -row 1 -column 0 -columnspan 3 -sticky nw -pady 4
   grid $w.f.misc.bw_val    -row 2 -column 0 -columnspan 3 -sticky nw -pady 4
+  grid $w.f.misc.eid_val   -row 3 -column 0 -columnspan 3 -sticky nw -pady 4
 
   # Create and pack detail selection area
   labelframe  $w.f.sdv -text "Level of Detail" -labelanchor nw -padx 4 -pady 6
@@ -367,12 +388,14 @@ proc create_report_generation_options {w} {
   pack $w.f.metric.r -anchor w
 
   # Create covered/uncovered selection area
-  labelframe  $w.f.cu -text "Coverage Type" -labelanchor nw -padx 4 -pady 6
-  radiobutton $w.f.cu.u -text "Uncovered" -variable rsel_cu -value "None" -anchor w
-  radiobutton $w.f.cu.c -text "Covered"   -variable rsel_cu -value "-c" -anchor w
+  labelframe  $w.f.cue   -text "Coverage Type" -labelanchor nw -padx 4 -pady 6
+  radiobutton $w.f.cue.u -text "Uncovered" -variable rsel_cu -value "None" -anchor w
+  radiobutton $w.f.cue.c -text "Covered"   -variable rsel_cu -value "-c" -anchor w
+  checkbutton $w.f.cue.e -text "Excluded" -variable rsel_excl -onvalue 1 -offvalue 0 -anchor w
 
-  pack $w.f.cu.u -anchor w
-  pack $w.f.cu.c -anchor w
+  pack $w.f.cue.u -anchor w
+  pack $w.f.cue.c -anchor w
+  pack $w.f.cue.e -anchor w
 
   # Now pack all of the labelframes
   grid columnconfigure $w.f 2 -weight 1
@@ -380,7 +403,7 @@ proc create_report_generation_options {w} {
   grid $w.f.sdv    -row 1 -column 0               -sticky news -pady 4 -padx 6
   grid $w.f.metric -row 1 -column 2 -rowspan 3    -sticky news -pady 4 -padx 6
   grid $w.f.mi     -row 2 -column 0               -sticky news -pady 4 -padx 6
-  grid $w.f.cu     -row 3 -column 0               -sticky news -pady 4 -padx 6
+  grid $w.f.cue    -row 3 -column 0               -sticky news -pady 4 -padx 6
   
   # Create save frame
   frame $w.save
