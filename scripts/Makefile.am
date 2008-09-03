@@ -8,6 +8,7 @@ tcl_SCRIPTS = assert.tcl \
               comb.tcl \
               cov_create.tcl \
               cov_icon.gif \
+              exclude.tcl \
               find.gif \
               fsm.tcl \
               gen_new.tcl \
