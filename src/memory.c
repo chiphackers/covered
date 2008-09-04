@@ -1065,7 +1065,7 @@ static void memory_display_verbose(
           exclude_reason* er;
           memory_display_memory( ofile, sig, 0, sig->name, 0, sig->value->width );
           if( (rtype == RPT_TYPE_EXCL) && ((er = exclude_find_exclude_reason( 'M', sig->id, funit )) != NULL) ) {
-            report_output_exclusion_reason( ofile, 10, er->reason );
+            report_output_exclusion_reason( ofile, 10, er->reason, TRUE );
           }
         }
 
@@ -1322,6 +1322,9 @@ void memory_report(
 
 /*
  $Log$
+ Revision 1.38  2008/09/03 03:46:37  phase1geo
+ Updates for memory and assertion exclusion output.  Checkpointing.
+
  Revision 1.37  2008/08/29 13:01:17  phase1geo
  Removing exclusion ID from covered coverage points.  Checkpointing.
 

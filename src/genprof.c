@@ -188,6 +188,7 @@ profiler profiles[NUM_PROFILES] = {
   {"exclude_find_fsm_arc", NULL, 0, 0, 0, TRUE},
   {"excluded_get_message", NULL, 0, 0, 0, TRUE},
   {"exclude_handle_exclude_reason", NULL, 0, 0, 0, TRUE},
+  {"exclude_print_exclusion", NULL, 0, 0, 0, TRUE},
   {"exclude_line_from_id", NULL, 0, 0, 0, TRUE},
   {"exclude_toggle_from_id", NULL, 0, 0, 0, TRUE},
   {"exclude_memory_from_id", NULL, 0, 0, 0, TRUE},

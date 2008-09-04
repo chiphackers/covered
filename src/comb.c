@@ -2480,9 +2480,9 @@ static void combination_list_missed(
       /* Output the exclusion reason information, if it exists */
       if( report_exclusions && (er = exclude_find_exclude_reason( 'E', exp->id, funit )) != NULL ) {
         if( flag_output_exclusion_ids ) {
-          report_output_exclusion_reason( ofile, (14 + (db_get_exclusion_id_size() - 1)), er->reason );
+          report_output_exclusion_reason( ofile, (14 + (db_get_exclusion_id_size() - 1)), er->reason, TRUE );
         } else {
-          report_output_exclusion_reason( ofile, 10, er->reason );
+          report_output_exclusion_reason( ofile, 10, er->reason, TRUE );
         }
       }
 
@@ -3080,6 +3080,10 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.203  2008/09/02 22:41:45  phase1geo
+ Starting to work on adding exclusion reason output to report files.  Added
+ support for exclusion reasons to CDD files.  Checkpointing.
+
  Revision 1.202  2008/08/28 21:24:14  phase1geo
  Adding support for exclusion output for assertions.  Updated regressions accordingly.
  Checkpointing.

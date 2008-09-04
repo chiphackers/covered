@@ -37,6 +37,7 @@
 #include "link.h"
 #include "obfuscate.h"
 #include "ovl.h"
+#include "report.h"
 #include "toggle.h"
 #include "util.h"
 #include "vector.h"
@@ -487,7 +488,7 @@ static void toggle_display_verbose(
               vector_display_toggle10_ulong( sig->value->value.ul, sig->value->width, ofile );      
               fprintf( ofile, " ...\n" );
               if( (rtype == RPT_TYPE_EXCL) && ((er = exclude_find_exclude_reason( 'T', sig->id, funit )) != NULL) ) {
-                report_output_exclusion_reason( ofile, (12 + (eid_size - 1)), er->reason );
+                report_output_exclusion_reason( ofile, (12 + (eid_size - 1)), er->reason, TRUE );
               }
             } else {
               fprintf( ofile, "      %-24s  0->1: ", pname );
@@ -496,7 +497,7 @@ static void toggle_display_verbose(
               vector_display_toggle10_ulong( sig->value->value.ul, sig->value->width, ofile );      
               fprintf( ofile, " ...\n" );
               if( (rtype == RPT_TYPE_EXCL) && ((er = exclude_find_exclude_reason( 'T', sig->id, funit )) != NULL) ) {
-                report_output_exclusion_reason( ofile, 8, er->reason );
+                report_output_exclusion_reason( ofile, 8, er->reason, TRUE );
               }
             }
 
@@ -723,6 +724,10 @@ void toggle_report(
 
 /*
  $Log$
+ Revision 1.84  2008/09/02 22:41:47  phase1geo
+ Starting to work on adding exclusion reason output to report files.  Added
+ support for exclusion reasons to CDD files.  Checkpointing.
+
  Revision 1.83  2008/08/29 13:01:17  phase1geo
  Removing exclusion ID from covered coverage points.  Checkpointing.
 

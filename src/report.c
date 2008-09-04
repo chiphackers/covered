@@ -918,9 +918,10 @@ void report_save_cdd(
  Outputs the given exclude report message to the specified output stream, handling the appropriate formatting.
 */
 void report_output_exclusion_reason(
-  FILE* ofile,
-  int   leading_spaces,
-  char* msg
+  FILE* ofile,           /*!< Output file stream */
+  int   leading_spaces,  /*!< Number of leading spaces (for formatting purposes) */
+  char* msg,             /*!< Message to display (no newlines and only one space between each word) */
+  bool  header           /*!< If set to TRUE, display a header before outputting; otherwise, avoid the header */
 ) { PROFILE(REPORT_OUTPUT_EXCLUSION_REASON);
 
   char* msg_cpy;
@@ -938,7 +939,11 @@ void report_output_exclusion_reason(
   gen_char_string( lead_sp, ' ', leading_spaces );
 
   /* Output message */
-  fprintf( ofile, "\n%sReason:  ", lead_sp );
+  if( header ) {
+    fprintf( ofile, "\n%sReason:  ", lead_sp );
+  } else {
+    fprintf( ofile, "\n%s", lead_sp );
+  }
 
   curr_width = leading_spaces + 9;
   word       = msg_cpy;
@@ -950,7 +955,11 @@ void report_output_exclusion_reason(
       msg_cpy++;
     }
     if( (strlen( word ) + curr_width) > line_width ) {
-      fprintf( ofile, "\n%s         ", lead_sp );
+      if( header ) {
+        fprintf( ofile, "\n%s         ", lead_sp );
+      } else {
+        fprintf( ofile, "\n%s", lead_sp );
+      }
       curr_width = leading_spaces + 9;
     }
     fprintf( ofile, "%s ", word );
@@ -1149,6 +1158,9 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.119  2008/09/03 03:46:37  phase1geo
+ Updates for memory and assertion exclusion output.  Checkpointing.
+
  Revision 1.118  2008/09/02 22:41:45  phase1geo
  Starting to work on adding exclusion reason output to report files.  Added
  support for exclusion reasons to CDD files.  Checkpointing.

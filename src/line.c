@@ -438,13 +438,13 @@ static line_display_verbose(
           fprintf( ofile, "      (%s)  %7d:    %s%s\n",
                    db_gen_exclusion_id( 'L', unexec_exp->id ), unexec_exp->line, code[0], ((code_depth == 1) ? "" : "...") );
           if( (rtype == RPT_TYPE_EXCL) && ((er = exclude_find_exclude_reason( 'L', unexec_exp->id, funit )) != NULL) ) {
-            report_output_exclusion_reason( ofile, (22 + (db_get_exclusion_id_size() - 1)), er->reason );
+            report_output_exclusion_reason( ofile, (22 + (db_get_exclusion_id_size() - 1)), er->reason, TRUE );
           }
         } else {
           exclude_reason* er;
           fprintf( ofile, "      %7d:    %s%s\n", unexec_exp->line, code[0], ((code_depth == 1) ? "" : "...") );
           if( (rtype == RPT_TYPE_EXCL) && ((er = exclude_find_exclude_reason( 'L', unexec_exp->id, funit )) != NULL) ) {
-            report_output_exclusion_reason( ofile, 18, er->reason );
+            report_output_exclusion_reason( ofile, 18, er->reason, TRUE );
           }
         }
         for( i=0; i<code_depth; i++ ) {
@@ -673,6 +673,10 @@ void line_report(
 
 /*
  $Log$
+ Revision 1.99  2008/09/02 22:41:45  phase1geo
+ Starting to work on adding exclusion reason output to report files.  Added
+ support for exclusion reasons to CDD files.  Checkpointing.
+
  Revision 1.98  2008/08/29 13:01:17  phase1geo
  Removing exclusion ID from covered coverage points.  Checkpointing.
 

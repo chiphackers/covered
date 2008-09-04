@@ -998,9 +998,9 @@ static bool fsm_display_arc_verbose(
     }
     if( (rtype == RPT_TYPE_EXCL) && ((er = exclude_find_exclude_reason( 'F', ids[i], funit )) != NULL) ) {
       if( flag_output_exclusion_ids ) {
-        report_output_exclusion_reason( ofile, (16 + (db_get_exclusion_id_size() - 1)), er->reason );
+        report_output_exclusion_reason( ofile, (16 + (db_get_exclusion_id_size() - 1)), er->reason, TRUE );
       } else {
-        report_output_exclusion_reason( ofile, 12, er->reason );
+        report_output_exclusion_reason( ofile, 12, er->reason, TRUE );
       }
     }
     free_safe( from_states[i], (strlen( from_states[i] ) + 1) );
@@ -1330,6 +1330,10 @@ void fsm_dealloc(
 
 /*
  $Log$
+ Revision 1.102  2008/09/03 05:33:06  phase1geo
+ Adding in FSM exclusion support to exclude and report -e commands.  Updating
+ regressions per recent changes.  Checkpointing.
+
  Revision 1.101  2008/08/29 05:38:37  phase1geo
  Adding initial pass of FSM exclusion ID output.  Need to fix issues with the -e
  option usage for all metrics, I believe (certainly for FSM).  Checkpointing.

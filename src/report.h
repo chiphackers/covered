@@ -66,12 +66,17 @@ void report_save_cdd(
 void report_output_exclusion_reason(
   FILE* ofile,
   int   leading_spaces,
-  char* msg
+  char* msg,
+  bool  header
 );
 
 
 /*
  $Log$
+ Revision 1.19  2008/09/02 22:41:46  phase1geo
+ Starting to work on adding exclusion reason output to report files.  Added
+ support for exclusion reasons to CDD files.  Checkpointing.
+
  Revision 1.18  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

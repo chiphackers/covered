@@ -337,14 +337,14 @@ void ovl_display_verbose(
                 fprintf( ofile, "      (%s)  %-26s  %-22s  \"%-38s\"\n", db_gen_exclusion_id( 'A', stmt->exp->id ),
                          obf_inst( curr_child->name ), obf_funit( funit_flatten_name( curr_child->funit ) ), cov_point );
                 if( (rtype == RPT_TYPE_EXCL) && ((er = exclude_find_exclude_reason( 'A', stmt->exp->id, curr_child->funit )) != NULL) ) {
-                  report_output_exclusion_reason( ofile, (12 + (db_get_exclusion_id_size() - 1)), er->reason );
+                  report_output_exclusion_reason( ofile, (12 + (db_get_exclusion_id_size() - 1)), er->reason, TRUE );
                 }
               } else {
                 exclude_reason* er;
                 fprintf( ofile, "      %-26s  %-22s  \"%-38s\"\n",
                          obf_inst( curr_child->name ), obf_funit( funit_flatten_name( curr_child->funit ) ), cov_point );
                 if( (rtype == RPT_TYPE_EXCL) && ((er = exclude_find_exclude_reason( 'A', stmt->exp->id, curr_child->funit )) != NULL) ) {
-                  report_output_exclusion_reason( ofile, (8 + (db_get_exclusion_id_size() - 1)), er->reason );
+                  report_output_exclusion_reason( ofile, (8 + (db_get_exclusion_id_size() - 1)), er->reason, TRUE );
                 }
               }
             } else if( (stmt->exp->exec_num > 0) && (rtype == RPT_TYPE_HIT) ) {
@@ -531,6 +531,9 @@ void ovl_get_coverage(
 
 /*
  $Log$
+ Revision 1.35  2008/09/03 03:46:37  phase1geo
+ Updates for memory and assertion exclusion output.  Checkpointing.
+
  Revision 1.34  2008/09/02 05:20:41  phase1geo
  More updates for exclude command.  Updates to CVER regression.
 

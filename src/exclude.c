@@ -64,6 +64,12 @@ static str_link* excl_ids_tail = NULL;
 */
 static bool exclude_prompt_for_msgs = FALSE;
 
+/*!
+ If set to TRUE, prints the status and exclusion reason for the given exclusion ID.  Set to
+ TRUE via the -p option.
+*/
+static bool exclude_print = FALSE;
+
 
 /*!
  \return Returns TRUE if a parent expression of this expression was found to be excluded from
@@ -644,6 +650,8 @@ static void exclude_usage() {
   printf( "                                  is being excluded.  If a coverage point is being included for\n" );
   printf( "                                  coverage (i.e., it was previously excluded from coverage), no\n" );
   printf( "                                  message prompt will be specified.\n" );
+  printf( "      -p                        Outputs the status of the exclusion ID and an exclusion message\n" );
+  printf( "                                  if one exists.  No excluding will occur if this option is set.\n" );
   printf( "\n" );
 
 }
@@ -701,6 +709,10 @@ static void exclude_parse_args(
     } else if( strncmp( "-m", argv[i], 2 ) == 0 ) {
 
       exclude_prompt_for_msgs = TRUE;
+
+    } else if( strncmp( "-p", argv[i], 2 ) == 0 ) {
+
+      exclude_print = TRUE;
 
     } else if( strncmp( "-", argv[i], 1 ) == 0 ) {
 
@@ -1029,6 +1041,34 @@ static void exclude_handle_exclude_reason(
 }
 
 /*!
+ Prints the exclusion information to standard output.
+*/
+static void exclude_print_exclusion(
+  const char* id,        /*!< Exclusion ID to output */
+  int         excluded,  /*!< Specifies the current value of the exclusion is exclude (1) or include (0) */
+  func_unit*  funit      /*!< Pointer to functional unit containing the excluded structure */
+) { PROFILE(EXCLUDE_PRINT_EXCLUSION);
+
+  printf( "Exclusion ID: %s, Status: %s\n", id, ((excluded == 1) ? "EXCLUDED" : "INCLUDED") );
+
+  /* Only output an exclusion message if we are currently excluded */
+  if( excluded == 1 ) {
+
+    exclude_reason* er = exclude_find_exclude_reason( id[0], atoi( id + 1 ), funit );
+
+    if( er != NULL ) {
+      report_output_exclusion_reason( stdout, 2, er->reason, FALSE );
+    } else {
+      report_output_exclusion_reason( stdout, 2, "No exclusion information has been specified.", FALSE );
+    }
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  \return Returns TRUE if the exclusion ID was found and the exclusion applied; otherwise, returns FALSE.
 
  Finds the line that matches the given exclusion ID and toggles its exclusion value, providing a reason
@@ -1051,22 +1091,32 @@ static bool exclude_line_from_id(
     /* Get the previously excluded value */
     prev_excluded = exp->parent->stmt->suppl.part.excluded;
 
-    /* Output result */
-    if( prev_excluded == 0 ) {
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Excluding %s", id );
+    /* If the user wants to print the information do so */
+    if( exclude_print ) {
+
+      exclude_print_exclusion( id, prev_excluded, found_funit );
+
+    /* Otherwise, perform the exclusion */
     } else {
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Including %s", id );
-    }
-    assert( rv < USER_MSG_LENGTH );
-    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
-    /* Set the exclude bits in the expression supplemental field */
-    exp->suppl.part.excluded               = (prev_excluded ^ 1);
-    exp->parent->stmt->suppl.part.excluded = (prev_excluded ^ 1);
+      /* Output result */
+      if( prev_excluded == 0 ) {
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "  Excluding %s", id );
+      } else {
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "  Including %s", id );
+      }
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+  
+      /* Set the exclude bits in the expression supplemental field */
+      exp->suppl.part.excluded               = (prev_excluded ^ 1);
+      exp->parent->stmt->suppl.part.excluded = (prev_excluded ^ 1);
 
-    /* If we are excluding and the -m option was specified, get an exclusion reason from the user */
-    if( exclude_prompt_for_msgs || (prev_excluded == 1) ) {
-      exclude_handle_exclude_reason( prev_excluded, id, found_funit );
+      /* If we are excluding and the -m option was specified, get an exclusion reason from the user */
+      if( exclude_prompt_for_msgs || (prev_excluded == 1) ) {
+        exclude_handle_exclude_reason( prev_excluded, id, found_funit );
+      }
+
     }
 
   } else {
@@ -1079,7 +1129,7 @@ static bool exclude_line_from_id(
 
   PROFILE_END;
 
-  return( exp != NULL );
+  return( (exp != NULL) && !exclude_print );
 
 }
 
@@ -1101,21 +1151,31 @@ static bool exclude_toggle_from_id(
     int          prev_excluded = sig->suppl.part.excluded;
     unsigned int rv;
 
-    /* Output result */
-    if( prev_excluded == 0 ) {
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Excluding %s", id );
+    /* If the user wants to print the information do so */
+    if( exclude_print ) {
+
+      exclude_print_exclusion( id, prev_excluded, found_funit );
+
+    /* Otherwise, perform the exclusion */
     } else {
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Including %s", id );
-    }
-    assert( rv < USER_MSG_LENGTH );
-    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+
+      /* Output result */
+      if( prev_excluded == 0 ) {
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "  Excluding %s", id );
+      } else {
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "  Including %s", id );
+      }
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     
-    /* Set the exclude bits in the expression supplemental field */
-    sig->suppl.part.excluded = (prev_excluded ^ 1);
+      /* Set the exclude bits in the expression supplemental field */
+      sig->suppl.part.excluded = (prev_excluded ^ 1);
     
-    /* If we are excluding and the -m option was specified, get an exclusion reason from the user */
-    if( exclude_prompt_for_msgs || (prev_excluded == 1) ) { 
-      exclude_handle_exclude_reason( prev_excluded, id, found_funit );
+      /* If we are excluding and the -m option was specified, get an exclusion reason from the user */
+      if( exclude_prompt_for_msgs || (prev_excluded == 1) ) { 
+        exclude_handle_exclude_reason( prev_excluded, id, found_funit );
+      }
+
     }
 
   } else {
@@ -1128,7 +1188,7 @@ static bool exclude_toggle_from_id(
 
   PROFILE_END;
 
-  return( sig != NULL );
+  return( (sig != NULL) && !exclude_print );
 
 }
 
@@ -1150,21 +1210,31 @@ static bool exclude_memory_from_id(
     int          prev_excluded = sig->suppl.part.excluded;
     unsigned int rv;
     
-    /* Output result */
-    if( prev_excluded == 0 ) {
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Excluding %s", id );
-    } else {
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Including %s", id );
-    }
-    assert( rv < USER_MSG_LENGTH );
-    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+    /* If the user has specified to print the exclusion, do so */
+    if( exclude_print ) {
 
-    /* Set the exclude bits in the expression supplemental field */
-    sig->suppl.part.excluded = (prev_excluded ^ 1);
+      exclude_print_exclusion( id, prev_excluded, found_funit );
+
+    /* Otherwise, perform the exclusion */
+    } else {
+
+      /* Output result */
+      if( prev_excluded == 0 ) {
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "  Excluding %s", id );
+      } else {
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "  Including %s", id );
+      }
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+
+      /* Set the exclude bits in the expression supplemental field */
+      sig->suppl.part.excluded = (prev_excluded ^ 1);
    
-    /* If we are excluding and the -m option was specified, get an exclusion reason from the user */
-    if( exclude_prompt_for_msgs || (prev_excluded == 1) ) {
-      exclude_handle_exclude_reason( prev_excluded, id, found_funit );
+      /* If we are excluding and the -m option was specified, get an exclusion reason from the user */
+      if( exclude_prompt_for_msgs || (prev_excluded == 1) ) {
+        exclude_handle_exclude_reason( prev_excluded, id, found_funit );
+      }
+
     }
   
   } else {
@@ -1177,7 +1247,7 @@ static bool exclude_memory_from_id(
 
   PROFILE_END;
 
-  return( sig != NULL );
+  return( (sig != NULL) && !exclude_print );
 
 }
 
@@ -1201,22 +1271,32 @@ static bool exclude_expr_from_id(
     
     /* Get the previously excluded value */
     prev_excluded = exp->suppl.part.excluded;
-    
-    /* Output result */
-    if( prev_excluded == 0 ) {
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Excluding %s", id );
-    } else {
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Including %s", id );
-    }
-    assert( rv < USER_MSG_LENGTH );
-    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
-    /* Set the exclude bits in the expression supplemental field */
-    exp->suppl.part.excluded = (prev_excluded ^ 1);
+    /* If the user has specified to print the exclusion, do so */
+    if( exclude_print ) {
+
+      exclude_print_exclusion( id, prev_excluded, found_funit );
+
+    /* Otherwise, perform the exclusion */
+    } else {
     
-    /* If we are excluding and the -m option was specified, get an exclusion reason from the user */
-    if( exclude_prompt_for_msgs || (prev_excluded == 1) ) { 
-      exclude_handle_exclude_reason( prev_excluded, id, found_funit );
+      /* Output result */
+      if( prev_excluded == 0 ) {
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "  Excluding %s", id );
+      } else {
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "  Including %s", id );
+      }
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+
+      /* Set the exclude bits in the expression supplemental field */
+      exp->suppl.part.excluded = (prev_excluded ^ 1);
+    
+      /* If we are excluding and the -m option was specified, get an exclusion reason from the user */
+      if( exclude_prompt_for_msgs || (prev_excluded == 1) ) { 
+        exclude_handle_exclude_reason( prev_excluded, id, found_funit );
+      }
+
     }
 
   } else {
@@ -1229,7 +1309,7 @@ static bool exclude_expr_from_id(
 
   PROFILE_END;
 
-  return( exp != NULL );
+  return( (exp != NULL) && !exclude_print );
 
 }
 
@@ -1255,21 +1335,31 @@ static bool exclude_fsm_from_id(
     /* Get the previously excluded value */
     prev_excluded = found_fsm->arcs[arc_index]->suppl.part.excluded;
 
-    /* Output result */
-    if( prev_excluded == 0 ) {
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Excluding %s", id );
+    /* If the user has specified to print the exclusion, do so */
+    if( exclude_print ) {
+
+      exclude_print_exclusion( id, prev_excluded, found_funit );
+
+    /* Otherwise, perform the exclusion */
     } else {
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Including %s", id );
-    }
-    assert( rv < USER_MSG_LENGTH );
-    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
-    /* Toggle the exclude bit */
-    found_fsm->arcs[arc_index]->suppl.part.excluded = (prev_excluded ^ 1);
+      /* Output result */
+      if( prev_excluded == 0 ) {
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "  Excluding %s", id );
+      } else {
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "  Including %s", id );
+      }
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
-    /* If we are excluding and the -m option was specified, get an exclusion reason from the user */
-    if( exclude_prompt_for_msgs || (prev_excluded == 1) ) {
-      exclude_handle_exclude_reason( prev_excluded, id, found_funit );
+      /* Toggle the exclude bit */
+      found_fsm->arcs[arc_index]->suppl.part.excluded = (prev_excluded ^ 1);
+
+      /* If we are excluding and the -m option was specified, get an exclusion reason from the user */
+      if( exclude_prompt_for_msgs || (prev_excluded == 1) ) {
+        exclude_handle_exclude_reason( prev_excluded, id, found_funit );
+      }
+
     }
 
   } else {
@@ -1282,7 +1372,7 @@ static bool exclude_fsm_from_id(
 
   PROFILE_END;
 
-  return( arc_index != -1 );
+  return( (arc_index != -1) && !exclude_print );
 
 }
 
@@ -1307,21 +1397,31 @@ static bool exclude_assert_from_id(
     /* Get the previously excluded value */
     prev_excluded = exp->suppl.part.excluded;
 
-    /* Output result */
-    if( prev_excluded == 0 ) {
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Excluding %s", id );
+    /* If the user has specified to print the exclusion, do so */
+    if( exclude_print ) {
+
+      exclude_print_exclusion( id, prev_excluded, found_funit );
+
+    /* Otherwise, perform the exclusion */
     } else {
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Including %s", id );
-    }
-    assert( rv < USER_MSG_LENGTH );
-    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
-    /* Set the exclude bits in the expression supplemental field */
-    exp->suppl.part.excluded = (prev_excluded ^ 1);
+      /* Output result */
+      if( prev_excluded == 0 ) {
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "  Excluding %s", id );
+      } else {
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "  Including %s", id );
+      }
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
-    /* If we are excluding and the -m option was specified, get an exclusion reason from the user */
-    if( exclude_prompt_for_msgs || (prev_excluded == 1) ) {
-      exclude_handle_exclude_reason( prev_excluded, id, found_funit );
+      /* Set the exclude bits in the expression supplemental field */
+      exp->suppl.part.excluded = (prev_excluded ^ 1);
+  
+      /* If we are excluding and the -m option was specified, get an exclusion reason from the user */
+      if( exclude_prompt_for_msgs || (prev_excluded == 1) ) {
+        exclude_handle_exclude_reason( prev_excluded, id, found_funit );
+      }
+
     }
 
   } else {
@@ -1334,7 +1434,7 @@ static bool exclude_assert_from_id(
 
   PROFILE_END;
 
-  return( exp != NULL );
+  return( (exp != NULL) && !exclude_print );
 
 }
 
@@ -1343,7 +1443,7 @@ static bool exclude_assert_from_id(
 
  Applies the user-specified exclusion IDs to the currently opened database.
 */
-bool exclude_apply_exclusions() { PROFILE(EXCLUDE_APPLY_EXCLUSIONS);
+static bool exclude_apply_exclusions() { PROFILE(EXCLUDE_APPLY_EXCLUSIONS);
 
   bool      retval = FALSE;  /* Return value for this function */
   str_link* strl;            /* Pointer to current string link */
@@ -1429,6 +1529,10 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.35  2008/09/03 05:33:06  phase1geo
+ Adding in FSM exclusion support to exclude and report -e commands.  Updating
+ regressions per recent changes.  Checkpointing.
+
  Revision 1.34  2008/09/03 03:46:37  phase1geo
  Updates for memory and assertion exclusion output.  Checkpointing.
 
