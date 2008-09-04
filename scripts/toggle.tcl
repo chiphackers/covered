@@ -60,6 +60,9 @@ proc create_toggle_window {signal} {
 
     # Create exclude checkbutton
     checkbutton .togwin.f.excl -text "Exclude" -variable toggle_excluded -command {
+      if {$exclude_reasons_enabled == 1 && $toggle_excluded == 1} {
+        set reason [get_exclude_reason]
+      }
       tcl_func_set_toggle_exclude $curr_block $sig_name $toggle_excluded
       set text_x [.bot.right.txt xview]
       set text_y [.bot.right.txt yview]
@@ -69,9 +72,6 @@ proc create_toggle_window {signal} {
       populate_listbox
       enable_cdd_save
       set_pointer curr_toggle_ptr $curr_toggle_ptr
-      if {$exclude_reasons_enabled == 1 && $toggle_excluded == 1} {
-        create_exclude_reason
-      }
     }
     set_balloon .togwin.f.excl "If set, excludes this signal from toggle coverage consideration"
 
