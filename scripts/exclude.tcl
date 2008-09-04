@@ -3,7 +3,7 @@ set more_up_img [image create bitmap -data "#define up_width 22\n#define up_heig
 
 set exclude_default_reasons {{This is a standard reason for exclusion, but it is quite long as you can tell.  What is going to happen with it I wonder?} {Another reason.}}
 
-proc get_exclude_reason {} {
+proc get_exclude_reason {w} {
 
   global more_dn_img more_up_img
   global exclude_default_reasons exclude_reason
@@ -71,6 +71,9 @@ proc get_exclude_reason {} {
   frame .exclwin.pw.bot.l
   tablelist::tablelist .exclwin.pw.bot.l.tl -columns {0 "Default Exclusion Reasons"} -labelcommand tablelist::sortByColumn \
     -yscrollcommand {.exclwin.pw.bot.l.vb set} -stretch all -movablecolumns 1
+  foreach {key value} [array get tablelistopts] {
+    .exclwin.pw.bot.l.tl configure -$key $value
+  }
   bind .exclwin.pw.bot.l.tl <<ListboxSelect>> {
     set row [.exclwin.pw.bot.l.tl curselection]
     .exclwin.pw.top.t.t delete 1.0 end
@@ -95,13 +98,20 @@ proc get_exclude_reason {} {
   }
 
   # Make sure that this window is a transient window and set focus
-  wm transient .mgenwin .newwin
-  focus .mgenwin.f.e
+  wm transient .exclwin $w
+  focus .exclwin.pw.top.t.t
 
   # Wait for window to be destroyed before moving on
   tkwait window .exclwin
 
-  return 
+  return $exclude_reason
 
 }
 
+proc show_exclude_reason {} {
+
+  # TBD
+  toplevel .exclwin
+  label .exclwin.l -text "PROVIDE REASON HERE"
+
+}

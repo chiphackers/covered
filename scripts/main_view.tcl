@@ -35,6 +35,18 @@ set main_start_search_index 1.0
 set curr_uncov_index        ""
 set prev_uncov_index        ""
 set next_uncov_index        ""
+array set tablelistopts {
+  selectbackground   RoyalBlue1
+  selectforeground   white
+  stretch	     all
+  stripebackground   #EDF3FE
+  relief             flat
+  border             0
+  showseparators     yes
+  takefocus          0
+  setfocus           1
+  activestyle        none
+}
 
 proc main_view {} {
 
