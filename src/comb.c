@@ -2824,7 +2824,9 @@ void combination_collect(
 */
 static void combination_get_exclude_list(
             expression*   exp,          /*!< Pointer to current expression */
+            func_unit*    funit,        /*!< Pointer to functional unit containing the exclude reasons for this expression tree */
   /*@out@*/ int**         excludes,     /*!< Array of exclude values for each underlined expression in this tree */
+  /*@out@*/ char***       reasons,      /*!< Array of exclude reasons for each underlined expression in this tree */
   /*@out@*/ unsigned int* exclude_size  /*!< Number of elements in the excludes array */
 ) { PROFILE(COMBINATION_GET_EXCLUDE_LIST);
 
@@ -2832,19 +2834,29 @@ static void combination_get_exclude_list(
 
     /* Store the exclude value for this expression */
     if( exp->ulid != -1 ) {
+
+      exclude_reason* er;
      
       if( (exp->ulid > 0) && ((unsigned int)exp->ulid > *exclude_size) ) {
         *excludes     = (int*)realloc_safe( *excludes, (sizeof( int ) * exp->ulid), (sizeof( int ) * (exp->ulid + 1)) );
+        *reasons      = (char**)realloc_safe( *reasons, (sizeof( int ) * exp->ulid), (sizeof( int ) * (exp->ulid + 1)) );
         *exclude_size = exp->ulid + 1;
       }
 
       (*excludes)[exp->ulid] = ESUPPL_EXCLUDED( exp->suppl );
 
+      /* If the expression is currently excluded, check to see if there's a reason associated with it */
+      if( (ESUPPL_EXCLUDED( exp->suppl ) == 1) && ((er = exclude_find_exclude_reason( 'E', exp->id, funit )) != NULL) ) {
+        (*reasons)[exp->ulid] = strdup_safe( er->reason );
+      } else {
+        (*reasons)[exp->ulid] = NULL;
+      }
+
     }
 
     /* Get exclude values for children */
-    combination_get_exclude_list( exp->left,  excludes, exclude_size );
-    combination_get_exclude_list( exp->right, excludes, exclude_size );
+    combination_get_exclude_list( exp->left,  funit, excludes, reasons, exclude_size );
+    combination_get_exclude_list( exp->right, funit, excludes, reasons, exclude_size );
 
   }
 
@@ -2867,6 +2879,7 @@ void combination_get_expression(
   /*@out@*/ unsigned int* uline_size,    /*!< Pointer to value that will be set to indicate the number of elements in the ulines array */
   /*@out@*/ int**         excludes,      /*!< Pointer to an array of values that determine if the associated subexpression is currently
                                               excluded or not from coverage */
+  /*@out@*/ char***       reasons,       /*!< Pointer to an array of strings that specify the reason for exclusion */
   /*@out@*/ unsigned int* exclude_size   /*!< Pointer to value that will be set to indicate the number of elements in excludes */
 ) { PROFILE(COMBINATION_GET_EXPRESSION);
 
@@ -2893,8 +2906,9 @@ void combination_get_expression(
 
   /* Generate exclude information */
   *excludes     = NULL;
+  *reasons      = NULL;
   *exclude_size = 0;
-  combination_get_exclude_list( expl->exp, excludes, exclude_size );
+  combination_get_exclude_list( expl->exp, funit_get_curr_module( funit ), excludes, reasons, exclude_size );
 
   Try {
 
@@ -3077,6 +3091,10 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.205  2008/09/04 21:34:19  phase1geo
+ Completed work to get exclude reason support to work with toggle coverage.
+ Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
+
  Revision 1.204  2008/09/04 04:15:08  phase1geo
  Adding -p option to exclude command.  Updating other files per this change.
  Checkpointing.

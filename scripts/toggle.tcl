@@ -60,11 +60,11 @@ proc create_toggle_window {signal} {
 
     # Create exclude checkbutton
     checkbutton .togwin.f.excl -text "Exclude" -variable toggle_excluded -command {
-      set reason ""
+      set toggle_reason ""
       if {$exclude_reasons_enabled == 1 && $toggle_excluded == 1} {
-        set reason [get_exclude_reason .togwin]
+        set toggle_reason [get_exclude_reason .togwin]
       }
-      tcl_func_set_toggle_exclude $curr_block $sig_name $toggle_excluded $reason
+      tcl_func_set_toggle_exclude $curr_block $sig_name $toggle_excluded $toggle_reason
       set text_x [.bot.right.txt xview]
       set text_y [.bot.right.txt yview]
       process_toggle_cov

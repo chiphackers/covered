@@ -893,8 +893,7 @@ int tcl_func_get_toggle_coverage(
  \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
          TCL_ERROR.
 
- Populates the global variable "memory_verbose" with the verbose memory coverage information for the
- specified signal in the specified functional unit.
+ Returns the verbose memory coverage information for the specified signal in the specified functional unit.
 */
 int tcl_func_get_memory_coverage(
   ClientData  d,      /*!< Not used */
@@ -910,6 +909,7 @@ int tcl_func_get_memory_coverage(
   char*      udim_str;         /* String containing signal unpacked dimensional information */
   char*      memory_info;      /* Memory information */
   int        excluded;         /* Specifies if signal should be excluded */
+  char*      reason;           /* Exclusion reason */
   char       str[200];         /* Temporary string for conversion purposes */
   func_unit* funit;            /* Pointer to found functional unit */
 
@@ -920,12 +920,12 @@ int tcl_func_get_memory_coverage(
     int   str_size;
     char* str;
 
-    memory_get_coverage( funit, signame, &pdim_str, &pdim_array, &udim_str, &memory_info, &excluded );
+    memory_get_coverage( funit, signame, &pdim_str, &pdim_array, &udim_str, &memory_info, &excluded, &reason );
 
-    str_size = strlen( udim_str ) + 1 + strlen( pdim_str ) + 1 + strlen( pdim_array ) + 1 + strlen( memory_info ) + 1 + 20 + 1;
+    str_size = strlen( udim_str ) + 1 + strlen( pdim_str ) + 1 + strlen( pdim_array ) + 1 + strlen( memory_info ) + 1 + 20 + 1 + ((reason != NULL) ? strlen( reason ) : 0) + 1;
     str      = Tcl_Alloc( str_size );
 
-    snprintf( str, str_size, "{%s} {%s} {%s} {%s} %d", udim_str, pdim_str, pdim_array, memory_info, excluded );
+    snprintf( str, str_size, "{%s} {%s} {%s} {%s} %d {%s}", udim_str, pdim_str, pdim_array, memory_info, excluded, ((reason != NULL) ? reason : "") );
     Tcl_SetResult( tcl, str, TCL_DYNAMIC );
 
     /* Free up allocated memory */
@@ -1086,6 +1086,7 @@ int tcl_func_get_comb_expression(
   char**       ulines;           /* Array of strings containing the underline lines returned from the underliner */
   unsigned int uline_size;       /* Number of elements stored in the ulines array */
   int*         excludes;         /* Array of integers containing the exclude value for a given underlined expression */
+  char**       reasons;          /* Array of strings containing the exclude reason for a given underlined expression */
   unsigned int exclude_size;     /* Number of elements stored in the excludes array */
   unsigned int i;                /* Loop iterator */
   char         tmp[20];          /* Temporary string container */
@@ -1099,7 +1100,7 @@ int tcl_func_get_comb_expression(
     curr_db = 0;
   }
 
-  combination_get_expression( expr_id, &code, &uline_groups, &code_size, &ulines, &uline_size, &excludes, &exclude_size );
+  combination_get_expression( expr_id, &code, &uline_groups, &code_size, &ulines, &uline_size, &excludes, &reasons, &exclude_size );
 
   for( i=0; i<code_size; i++ ) {
     Tcl_SetVar( tcl, "comb_code", code[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
@@ -1116,6 +1117,7 @@ int tcl_func_get_comb_expression(
   for( i=0; i<exclude_size; i++ ) {
     snprintf( tmp, 20, "%d", excludes[i] );
     Tcl_SetVar( tcl, "comb_exp_excludes", tmp, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+    Tcl_SetVar( tcl, "comb_exp_reasons", ((reasons[i] != NULL) ? reasons[i] : "{}"), (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
   }
 
   /* Free up allocated memory */
@@ -2297,12 +2299,12 @@ int tcl_func_set_line_exclude(
       unsigned int i;
 
       /* Set the line exclusion value for the functional unit database */
-      exclude_set_line_exclude( funit, line, value, strdup_safe( reason ), funit->stat );
+      exclude_set_line_exclude( funit, line, value, ((reason != NULL) ? strdup_safe( reason ) : NULL), funit->stat );
 
       /* Now set the line exclusion in all matching instances in the instance database */
       for( i=0; i<gui_inst_index; i++ ) {
         if( (strcmp( gui_inst_list[i]->funit->name, funit->name ) == 0) && (gui_inst_list[i]->funit->type == funit->type) ) {
-          exclude_set_line_exclude( gui_inst_list[i]->funit, line, value, strdup_safe( reason ), gui_inst_list[i]->stat );
+          exclude_set_line_exclude( gui_inst_list[i]->funit, line, value, ((reason != NULL) ? strdup_safe( reason ) : NULL), gui_inst_list[i]->stat );
         }
       }
 
@@ -2318,7 +2320,7 @@ int tcl_func_set_line_exclude(
       unsigned int i = gui_inst_index;
 
       /* Set the line exclusion value for the instance database */
-      exclude_set_line_exclude( inst->funit, line, value, strdup_safe( reason ), inst->stat );
+      exclude_set_line_exclude( inst->funit, line, value, ((reason != NULL) ? strdup_safe( reason ) : NULL), inst->stat );
 
       /* If we are attempting to exclude the line, check all other instances -- if they all exclude this line, exclude the line from the functional unit */
       if( value == 1 ) {
@@ -2337,7 +2339,7 @@ int tcl_func_set_line_exclude(
         i = 0;
         while( (i<gui_funit_index) && ((strcmp( gui_funit_list[i]->name, inst->funit->name ) != 0) || (gui_funit_list[i]->type != inst->funit->type)) ) i++;
         if( i < gui_funit_index ) {
-          exclude_set_line_exclude( gui_funit_list[i], line, value, strdup_safe( reason ), gui_funit_list[i]->stat );
+          exclude_set_line_exclude( gui_funit_list[i], line, value, ((reason != NULL) ? strdup_safe( reason ) : NULL), gui_funit_list[i]->stat );
         }
       }
 
@@ -2494,12 +2496,12 @@ int tcl_func_set_memory_exclude(
       unsigned int i;
 
       /* Set the memory exclusion value for the functional unit database */
-      exclude_set_toggle_exclude( funit, sig_name, value, 'M', strdup_safe( reason ), funit->stat );
+      exclude_set_toggle_exclude( funit, sig_name, value, 'M', ((reason != NULL) ? strdup_safe( reason ) : NULL), funit->stat );
 
       /* Now set the memory exclusion in all matching instances in the instance database */
       for( i=0; i<gui_inst_index; i++ ) {
         if( (strcmp( gui_inst_list[i]->funit->name, funit->name ) == 0) && (gui_inst_list[i]->funit->type == funit->type) ) {
-          exclude_set_toggle_exclude( gui_inst_list[i]->funit, sig_name, value, 'M', strdup_safe( reason ), gui_inst_list[i]->stat );
+          exclude_set_toggle_exclude( gui_inst_list[i]->funit, sig_name, value, 'M', ((reason != NULL) ? strdup_safe( reason ) : NULL), gui_inst_list[i]->stat );
         }
       }
 
@@ -2515,7 +2517,7 @@ int tcl_func_set_memory_exclude(
       unsigned int i = gui_inst_index;
 
       /* Set the memory exclusion value for the instance database */
-      exclude_set_toggle_exclude( inst->funit, sig_name, value, 'M', strdup_safe( reason ), inst->stat );
+      exclude_set_toggle_exclude( inst->funit, sig_name, value, 'M', ((reason != NULL) ? strdup_safe( reason ) : NULL), inst->stat );
 
       /* If we are attempting to exclude the signal, check all other instances -- if they all exclude this signal, exclude the signal from the functional unit */
       if( value == 1 ) {
@@ -2534,7 +2536,7 @@ int tcl_func_set_memory_exclude(
         i = 0;
         while( (i<gui_funit_index) && ((strcmp( gui_funit_list[i]->name, inst->funit->name ) != 0) || (gui_funit_list[i]->type != inst->funit->type)) ) i++;
         if( i < gui_funit_index ) {
-          exclude_set_toggle_exclude( gui_funit_list[i], sig_name, value, 'M', strdup_safe( reason ), gui_funit_list[i]->stat );
+          exclude_set_toggle_exclude( gui_funit_list[i], sig_name, value, 'M', ((reason != NULL) ? strdup_safe( reason ) : NULL), gui_funit_list[i]->stat );
         }
       }
 
@@ -2596,12 +2598,12 @@ int tcl_func_set_comb_exclude(
       unsigned int i;
 
       /* Set the combinational logic exclusion value for the functional unit database */
-      exclude_set_comb_exclude( funit, expr_id, uline_id, value, strdup_safe( reason ), funit->stat );
+      exclude_set_comb_exclude( funit, expr_id, uline_id, value, ((reason != NULL) ? strdup_safe( reason ) : NULL), funit->stat );
 
       /* Now set the combinational logic exclusion in all matching instances in the instance database */
       for( i=0; i<gui_inst_index; i++ ) {
         if( (strcmp( gui_inst_list[i]->funit->name, funit->name ) == 0) && (gui_inst_list[i]->funit->type == funit->type) ) {
-          exclude_set_comb_exclude( gui_inst_list[i]->funit, expr_id, uline_id, value, strdup_safe( reason ), gui_inst_list[i]->stat ); 
+          exclude_set_comb_exclude( gui_inst_list[i]->funit, expr_id, uline_id, value, ((reason != NULL) ? strdup_safe( reason ) : NULL), gui_inst_list[i]->stat ); 
         }
       }
 
@@ -2617,7 +2619,7 @@ int tcl_func_set_comb_exclude(
       unsigned int i = gui_inst_index;
 
       /* Set the combinational logic exclusion value for the instance database */
-      exclude_set_comb_exclude( funit, expr_id, uline_id, value, strdup_safe( reason ), inst->stat );
+      exclude_set_comb_exclude( funit, expr_id, uline_id, value, ((reason != NULL) ? strdup_safe( reason ) : NULL), inst->stat );
 
       /* If we are attempting to exclude the expression, check all other instances -- if they all exclude this expression, exclude the expression from the functional unit */
       if( value == 1 ) {
@@ -2636,7 +2638,7 @@ int tcl_func_set_comb_exclude(
         i = 0;
         while( (i<gui_funit_index) && ((strcmp( gui_funit_list[i]->name, inst->funit->name ) != 0) || (gui_funit_list[i]->type != inst->funit->type)) ) i++;
         if( i < gui_funit_index ) {
-          exclude_set_comb_exclude( gui_funit_list[i], expr_id, uline_id, value, strdup_safe( reason ), gui_funit_list[i]->stat );
+          exclude_set_comb_exclude( gui_funit_list[i], expr_id, uline_id, value, ((reason != NULL) ? strdup_safe( reason ) : NULL), gui_funit_list[i]->stat );
         }
       }
 
@@ -2698,12 +2700,12 @@ int tcl_func_set_fsm_exclude(
       unsigned int i;
 
       /* Set the combinational logic exclusion value for the functional unit database */
-      exclude_set_fsm_exclude( funit, expr_id, from_state, to_state, value, strdup_safe( reason ), funit->stat );
+      exclude_set_fsm_exclude( funit, expr_id, from_state, to_state, value, ((reason != NULL) ? strdup_safe( reason ) : NULL), funit->stat );
 
       /* Now set the combinational logic exclusion in all matching instances in the instance database */
       for( i=0; i<gui_inst_index; i++ ) {
         if( (strcmp( gui_inst_list[i]->funit->name, funit->name ) == 0) && (gui_inst_list[i]->funit->type == funit->type) ) {
-          exclude_set_fsm_exclude( gui_inst_list[i]->funit, expr_id, from_state, to_state, value, strdup_safe( reason ), gui_inst_list[i]->stat );
+          exclude_set_fsm_exclude( gui_inst_list[i]->funit, expr_id, from_state, to_state, value, ((reason != NULL) ? strdup_safe( reason ) : NULL), gui_inst_list[i]->stat );
         }
       }
 
@@ -2719,7 +2721,7 @@ int tcl_func_set_fsm_exclude(
       unsigned int i = gui_inst_index;
   
       /* Set the combinational logic exclusion value for the instance database */
-      exclude_set_fsm_exclude( inst->funit, expr_id, from_state, to_state, value, strdup_safe( reason ), inst->stat );
+      exclude_set_fsm_exclude( inst->funit, expr_id, from_state, to_state, value, ((reason != NULL) ? strdup_safe( reason ) : NULL), inst->stat );
   
       /* If we are attempting to exclude the expression, check all other instances -- if they all exclude this expression, exclude the expression from the functional unit */
       if( value == 1 ) {
@@ -2738,7 +2740,7 @@ int tcl_func_set_fsm_exclude(
         i = 0;
         while( (i<gui_funit_index) && ((strcmp( gui_funit_list[i]->name, inst->funit->name ) != 0) || (gui_funit_list[i]->type != inst->funit->type)) ) i++;
         if( i < gui_funit_index ) {
-          exclude_set_fsm_exclude( gui_funit_list[i], expr_id, from_state, to_state, value, strdup_safe( reason ), gui_funit_list[i]->stat );
+          exclude_set_fsm_exclude( gui_funit_list[i], expr_id, from_state, to_state, value, ((reason != NULL) ? strdup_safe( reason ) : NULL), gui_funit_list[i]->stat );
         }
       }
 
@@ -2801,13 +2803,13 @@ int tcl_func_set_assert_exclude(
 
       /* Set the combinational logic exclusion value for the functional unit database */
       curr_db = 1;
-      exclude_set_assert_exclude( funit, inst_name, expr_id, value, strdup_safe( reason ), funit->stat );
+      exclude_set_assert_exclude( funit, inst_name, expr_id, value, ((reason != NULL) ? strdup_safe( reason ) : NULL), funit->stat );
 
       /* Now set the combinational logic exclusion in all matching instances in the instance database */
       for( i=0; i<gui_inst_index; i++ ) {
         if( (strcmp( gui_inst_list[i]->funit->name, funit->name ) == 0) && (gui_inst_list[i]->funit->type == funit->type) ) {
           curr_db = 0;
-          exclude_set_assert_exclude( gui_inst_list[i]->funit, inst_name, expr_id, value, strdup_safe( reason ), gui_inst_list[i]->stat );
+          exclude_set_assert_exclude( gui_inst_list[i]->funit, inst_name, expr_id, value, ((reason != NULL) ? strdup_safe( reason ) : NULL), gui_inst_list[i]->stat );
         }
       }
 
@@ -2824,7 +2826,7 @@ int tcl_func_set_assert_exclude(
   
       /* Set the combinational logic exclusion value for the instance database */
       curr_db = 0;
-      exclude_set_assert_exclude( inst->funit, inst_name, expr_id, value, strdup_safe( reason ), inst->stat );
+      exclude_set_assert_exclude( inst->funit, inst_name, expr_id, value, ((reason != NULL) ? strdup_safe( reason ) : NULL), inst->stat );
   
       /* If we are attempting to exclude the expression, check all other instances -- if they all exclude this expression, exclude the expression from the functional unit */
       if( value == 1 ) {
@@ -2844,7 +2846,7 @@ int tcl_func_set_assert_exclude(
         while( (i<gui_funit_index) && ((strcmp( gui_funit_list[i]->name, inst->funit->name ) != 0) || (gui_funit_list[i]->type != inst->funit->type)) ) i++;
         if( i < gui_funit_index ) {
           curr_db = 1;
-          exclude_set_assert_exclude( gui_funit_list[i], inst_name, expr_id, value, strdup_safe( reason ), gui_funit_list[i]->stat );
+          exclude_set_assert_exclude( gui_funit_list[i], inst_name, expr_id, value, ((reason != NULL) ? strdup_safe( reason ) : NULL), gui_funit_list[i]->stat );
         }
       }
 
@@ -2862,6 +2864,7 @@ int tcl_func_set_assert_exclude(
   }
 
   free_safe( inst_name, (strlen( inst_name ) + 1) );
+  free_safe( reason, (strlen( reason ) + 1) );
 
   PROFILE_END;
 
@@ -3042,6 +3045,10 @@ void tcl_func_initialize(
 
 /*
  $Log$
+ Revision 1.84  2008/09/04 21:34:20  phase1geo
+ Completed work to get exclude reason support to work with toggle coverage.
+ Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
+
  Revision 1.83  2008/08/29 05:38:37  phase1geo
  Adding initial pass of FSM exclusion ID output.  Need to fix issues with the -e
  option usage for all metrics, I believe (certainly for FSM).  Checkpointing.

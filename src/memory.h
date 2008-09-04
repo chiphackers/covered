@@ -79,7 +79,8 @@ void memory_get_coverage(
   /*@out@*/ char**      pdim_array,
   /*@out@*/ char**      udim_str,
   /*@out@*/ char**      memory_info,
-  /*@out@*/ int*        excluded
+  /*@out@*/ int*        excluded,
+  /*@out@*/ char**      reason
 );
 
 /*! \brief Collects all signals that are memories and match the given coverage metric for the given functional unit */
@@ -99,6 +100,9 @@ void memory_report(
 
 /*
  $Log$
+ Revision 1.15  2008/09/03 03:46:37  phase1geo
+ Updates for memory and assertion exclusion output.  Checkpointing.
+
  Revision 1.14  2008/08/23 20:00:30  phase1geo
  Full fix for bug 2054686.  Also cleaned up Cver regressions.
 

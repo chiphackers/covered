@@ -408,15 +408,17 @@ void memory_get_coverage(
   /*@out@*/ char**      pdim_array,   /*!< Pointer to string to store packed dimensional array */
   /*@out@*/ char**      udim_str,     /*!< Pointer to string to store unpacked dimensional information */
   /*@out@*/ char**      memory_info,  /*!< Pointer to string to store memory information into */
-  /*@out@*/ int*        excluded      /*!< Pointer to excluded indicator to store */
+  /*@out@*/ int*        excluded,     /*!< Pointer to excluded indicator to store */
+  /*@out@*/ char**      reason        /*!< Pointer to reason for exclusion */
 ) { PROFILE(MEMORY_GET_COVERAGE);
 
-  func_iter    fi;        /* Functional unit iterator */
-  vsignal*     sig;       /* Pointer to current signal */
-  unsigned int i;         /* Loop iterator */
-  char         tmp1[20];  /* Temporary string holder */
-  char         tmp2[20];  /* Temporary string holder */
-  unsigned int rv;        /* Return value */
+  func_iter       fi;        /* Functional unit iterator */
+  vsignal*        sig;       /* Pointer to current signal */
+  unsigned int    i;         /* Loop iterator */
+  char            tmp1[20];  /* Temporary string holder */
+  char            tmp2[20];  /* Temporary string holder */
+  unsigned int    rv;        /* Return value */
+  exclude_reason* er;
 
   /* Find the signal in the functional unit */
   func_iter_init( &fi, funit, FALSE, TRUE );
@@ -480,6 +482,13 @@ void memory_get_coverage(
 
   /* Populate the excluded value */
   *excluded = sig->suppl.part.excluded;
+
+  /* Populate the exclusion reason */
+  if( (*excluded == 1) && ((er = exclude_find_exclude_reason( 'M', sig->id, funit )) != NULL) ) {
+    *reason = strdup_safe( er->reason );
+  } else {
+    *reason = NULL;
+  }
   
   PROFILE_END;
 
@@ -1319,6 +1328,10 @@ void memory_report(
 
 /*
  $Log$
+ Revision 1.40  2008/09/04 21:34:20  phase1geo
+ Completed work to get exclude reason support to work with toggle coverage.
+ Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
+
  Revision 1.39  2008/09/04 04:15:10  phase1geo
  Adding -p option to exclude command.  Updating other files per this change.
  Checkpointing.

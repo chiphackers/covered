@@ -178,6 +178,7 @@ proc display_comb_coverage {ulid} {
 
   global curr_block comb_expr_cov comb_curr_exp_id
   global comb_curr_excluded comb_exp_excludes
+  global comb_curr_reason comb_exp_reasons
 
   # Allow us to clear out text box and repopulate
   .combwin.pw.bot.t configure -state normal
@@ -199,6 +200,7 @@ proc display_comb_coverage {ulid} {
   # Set excluded checkbutton correctly
   .combwin.pw.bot.e configure -state normal
   set comb_curr_excluded [lindex $comb_exp_excludes $ulid]
+  set comb_curr_reason   [lindex $comb_exp_reasons $ulid]
 
 }
 
@@ -544,8 +546,8 @@ proc create_comb_window {expr_id sline} {
   global curr_block
   global comb_curr_info
   global prev_comb_index next_comb_index
-  global curr_comb_ptr comb_curr_excluded
-  global comb_exp_excludes HOME
+  global curr_comb_ptr comb_curr_excluded comb_curr_reason
+  global comb_exp_excludes comb_exp_reasons HOME
   global comb_geometry comb_gui_saved
 
   # Clear the comb_curr_excluded global variable
@@ -574,12 +576,13 @@ proc create_comb_window {expr_id sline} {
     # Add expression coverage information
     label .combwin.pw.bot.l -anchor w -text "Coverage Information:  ('*' represents a case that was not hit)"
     checkbutton .combwin.pw.bot.e -anchor e -text "Excluded" -state disabled -variable comb_curr_excluded -command {
-      set reason ""
+      set comb_curr_reason ""
       if {$exclude_reasons_enabled == 1 && $comb_curr_excluded == 1} {
-        set reason [get_exclude_reason .combwin]
+        set comb_curr_reason [get_exclude_reason .combwin]
       }
-      tcl_func_set_comb_exclude $curr_block $comb_curr_exp_id $comb_curr_uline_id $comb_curr_excluded $reason
+      tcl_func_set_comb_exclude $curr_block $comb_curr_exp_id $comb_curr_uline_id $comb_curr_excluded $comb_curr_reason
       set comb_exp_excludes [lreplace $comb_exp_excludes $comb_curr_uline_id $comb_curr_uline_id $comb_curr_excluded]
+      set comb_exp_reasons  [lreplace $comb_exp_reasons  $comb_curr_uline_id $comb_curr_uline_id $comb_curr_reason]
       set text_x [.bot.right.txt xview]
       set text_y [.bot.right.txt yview]
       process_comb_cov
@@ -589,6 +592,16 @@ proc create_comb_window {expr_id sline} {
       populate_listbox
       enable_cdd_save
       set_pointer curr_comb_ptr $curr_comb_ptr
+    }
+    bind .combwin.pw.bot.e <ButtonPress-3> {
+      if {$comb_curr_excluded == 1 && $comb_curr_reason != ""} {
+        balloon::show %W "Exclude Reason: $comb_curr_reason"
+      }
+    }
+    bind .combwin.pw.bot.e <ButtonRelease-3> { 
+      if {$comb_curr_excluded == 1 && $comb_curr_reason != ""} {
+        balloon::hide %W
+      }
     }
     set_balloon .combwin.pw.bot.e "If set, excludes the expression/subexpression displayed in the lower panel from coverage consideration"
     text  .combwin.pw.bot.t -height 10 -width 100 -xscrollcommand ".combwin.pw.bot.hb set" -yscrollcommand ".combwin.pw.bot.vb set" -wrap none -state disabled
@@ -691,6 +704,7 @@ proc create_comb_window {expr_id sline} {
   set comb_uline_groups "" 
   set comb_ulines       ""
   set comb_exp_excludes ""
+  set comb_exp_reasons  ""
   set comb_curr_exp_id  $expr_id
   tcl_func_get_comb_expression $curr_block $expr_id
 

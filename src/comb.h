@@ -83,6 +83,7 @@ void combination_get_expression(
   /*@out@*/ char***       ulines,
   /*@out@*/ unsigned int* uline_size,
   /*@out@*/ int**         excludes,
+  /*@out@*/ char***       reasons,
   /*@out@*/ unsigned int* exclude_size
 );
 
@@ -103,6 +104,11 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.28  2008/08/18 23:07:26  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.25.6.4  2008/08/15 05:11:05  phase1geo
  Converting more old graphics to new style.  Updated documentation.  Cleaned up
  some issues with the build structure per recent documentation changes.  Also fixing

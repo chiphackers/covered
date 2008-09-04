@@ -108,14 +108,6 @@ proc get_exclude_reason {w} {
   # Wait for window to be destroyed before moving on
   tkwait window .exclwin
 
-  return $exclude_reason
-
-}
-
-proc show_exclude_reason {reason} {
-
-  # TBD
-  toplevel .exclwin
-  label .exclwin.l -text $reason
+  return [string trim $exclude_reason]
 
 }

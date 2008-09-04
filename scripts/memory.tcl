@@ -31,7 +31,7 @@ proc display_memory {curr_index} {
 
 proc create_memory_window {signal} {
 
-  global memory_udim memory_pdim memory_pdim_array memory_array memory_excluded
+  global memory_udim memory_pdim memory_pdim_array memory_array memory_excluded memory_reason
   global mem_name prev_memory_index next_memory_index
   global curr_block
   global curr_memory_ptr
@@ -62,7 +62,11 @@ proc create_memory_window {signal} {
 
     # Create exclude checkbutton
     checkbutton .memwin.f.fae.excl -text "Excluded" -variable memory_excluded -command {
-      tcl_func_set_memory_exclude $curr_block $mem_name $memory_excluded
+      set memory_reason "" 
+      if {$exclude_reasons_enabled == 1 && $memory_excluded == 1} {
+        set memory_reason [get_exclude_reason .memwin]
+      }
+      tcl_func_set_memory_exclude $curr_block $mem_name $memory_excluded $memory_reason
       set text_x [.bot.right.txt xview]
       set text_y [.bot.right.txt yview]
       process_memory_cov
@@ -71,6 +75,16 @@ proc create_memory_window {signal} {
       populate_listbox
       enable_cdd_save
       set_pointer curr_memory_ptr $curr_memory_ptr
+    }
+    bind .memwin.f.fae.excl <ButtonPress-3> {
+      if {$memory_excluded == 1 && $memory_reason != ""} {
+        balloon::show .memwin.f.fae.excl "Exclude Reason: $memory_reason"
+      }
+    }
+    bind .memwin.f.fae.excl <ButtonRelease-3> {
+      if {$memory_excluded == 1 && $memory_reason != ""} {
+        balloon::hide .memwin.f.fae.excl
+      }
     }
     set_balloon .memwin.f.fae.excl "If set, excludes this entire memory from coverage consideration"
 
@@ -176,6 +190,7 @@ proc create_memory_window {signal} {
   set memory_pdim_array [lindex $memory_info 2]
   set memory_array      [lindex $memory_info 3]
   set memory_excluded   [lindex $memory_info 4]
+  set memory_reason     [lindex $memory_info 5]
 
   #################################################
   # POPULATE THE ADDRESSABLE MEMORY ELEMENT TEXTBOX
