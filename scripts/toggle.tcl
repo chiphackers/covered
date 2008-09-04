@@ -69,6 +69,9 @@ proc create_toggle_window {signal} {
       populate_listbox
       enable_cdd_save
       set_pointer curr_toggle_ptr $curr_toggle_ptr
+      if {$exclude_reasons_enabled == 1 && $toggle_excluded == 1} {
+        create_exclude_reason
+      }
     }
     set_balloon .togwin.f.excl "If set, excludes this signal from toggle coverage consideration"
 

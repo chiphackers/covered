@@ -15,8 +15,6 @@ tcl_SCRIPTS = assert.tcl \
               gen_rank.tcl \
               gen_report.tcl \
               help.tcl \
-              help_wrapper.tcl \
-              help_tbl.tcl \
               left_arrow.gif \
               main_view.tcl \
               memory.tcl \

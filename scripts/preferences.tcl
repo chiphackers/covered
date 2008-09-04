@@ -35,6 +35,7 @@ set mod_inst_tl_init_hidden {1 0 0 0 0 0 0}
 set rc_file_to_write        ""
 set hl_mode                 0
 set last_pref_index         -1
+set exclude_reasons_enabled 1
 
 # Create a list from 100 to 0
 for {set i 100} {$i >= 0} {incr i -1} {
