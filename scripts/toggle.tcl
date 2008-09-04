@@ -30,7 +30,7 @@ proc display_toggle {curr_index} {
 
 proc create_toggle_window {signal} {
 
-  global sig_name prev_toggle_index next_toggle_index toggle_excluded
+  global sig_name prev_toggle_index next_toggle_index toggle_excluded toggle_reason
   global toggle_msb toggle_lsb
   global curr_block
   global curr_toggle_ptr HOME
@@ -60,10 +60,11 @@ proc create_toggle_window {signal} {
 
     # Create exclude checkbutton
     checkbutton .togwin.f.excl -text "Exclude" -variable toggle_excluded -command {
+      set reason ""
       if {$exclude_reasons_enabled == 1 && $toggle_excluded == 1} {
         set reason [get_exclude_reason .togwin]
       }
-      tcl_func_set_toggle_exclude $curr_block $sig_name $toggle_excluded
+      tcl_func_set_toggle_exclude $curr_block $sig_name $toggle_excluded $reason
       set text_x [.bot.right.txt xview]
       set text_y [.bot.right.txt yview]
       process_toggle_cov
@@ -72,6 +73,16 @@ proc create_toggle_window {signal} {
       populate_listbox
       enable_cdd_save
       set_pointer curr_toggle_ptr $curr_toggle_ptr
+    }
+    bind .togwin.f.excl <ButtonPress-3> {
+      if {$toggle_excluded == 1 && $toggle_reason != ""} {
+        balloon::show .togwin.f.excl "Exclude Reason: $toggle_reason"
+      }
+    }
+    bind .togwin.f.excl <ButtonRelease-3> {
+      if {$toggle_excluded == 1 && $toggle_reason != ""} {
+        balloon::hide .togwin.f.excl
+      }
     }
     set_balloon .togwin.f.excl "If set, excludes this signal from toggle coverage consideration"
 
@@ -146,6 +157,7 @@ proc create_toggle_window {signal} {
   set toggle01_verbose [lindex $toggle_info 2]
   set toggle10_verbose [lindex $toggle_info 3]
   set toggle_excluded  [lindex $toggle_info 4]
+  set toggle_reason    [lindex $toggle_info 5]
 
   # Allow us to clear out text box
   .togwin.f.t configure -state normal

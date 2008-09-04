@@ -38,6 +38,7 @@ void exclude_set_line_exclude(
             func_unit* funit,
             int        line,
             int        value,
+            char*      reason,
   /*@out@*/ statistic* stat
 );
 
@@ -53,6 +54,8 @@ void exclude_set_toggle_exclude(
             func_unit*  funit,
             const char* sig_name,
             int         value,
+            char        type,
+            char*       reason,
   /*@out@*/ statistic*  stat
 );
 
@@ -70,6 +73,7 @@ void exclude_set_comb_exclude(
             int        expr_id,
             int        uline_id,
             int        value,
+            char*      reason,
   /*@out@*/ statistic* stat
 );
 
@@ -89,6 +93,7 @@ void exclude_set_fsm_exclude(
             char*      from_state,
             char*      to_state,
             int        value,
+            char*      reason,
   /*@out@*/ statistic* stat
 );
 
@@ -106,6 +111,7 @@ void exclude_set_assert_exclude(
             char*      inst_name,
             int        expr_id,
             int        value,
+            char*      reason,
   /*@out@*/ statistic* stat
 );
 
@@ -115,6 +121,11 @@ exclude_reason* exclude_find_exclude_reason(
   char       type,
   int        id,
   func_unit* funit
+);
+
+/*! \brief Formats the reason string for storage purposes. */
+char* exclude_format_reason(
+  const char* old_str
 );
 
 /*! \brief Outputs the given exclude reason structure to the specified file stream. */
@@ -140,6 +151,10 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.11  2008/09/02 22:41:45  phase1geo
+ Starting to work on adding exclusion reason output to report files.  Added
+ support for exclusion reasons to CDD files.  Checkpointing.
+
  Revision 1.10  2008/09/02 05:20:40  phase1geo
  More updates for exclude command.  Updates to CVER regression.
 

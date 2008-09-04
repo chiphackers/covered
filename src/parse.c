@@ -244,9 +244,6 @@ void parse_and_score_dumpfile(
     }
 #endif
 
-    /* Initialize all global information variables */
-    info_initialize();
-
     /* Read in contents of specified database file */
     db_read( db, READ_MODE_NO_MERGE );
   
@@ -302,6 +299,11 @@ void parse_and_score_dumpfile(
 
 /*
  $Log$
+ Revision 1.71  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.66.4.1  2008/07/10 22:43:53  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

@@ -54,7 +54,8 @@ void toggle_get_coverage(
   /*@out@*/ int*       lsb,
   /*@out@*/ char**     tog01,
   /*@out@*/ char**     tog10,
-  /*@out@*/ int*       excluded
+  /*@out@*/ int*       excluded,
+  /*@out@*/ char**     reason
 );
 
 /*! \brief Gets total and hit toggle signal status for the specified functional unit */
@@ -82,6 +83,9 @@ void toggle_report(
 
 /*
  $Log$
+ Revision 1.22  2008/08/23 20:00:30  phase1geo
+ Full fix for bug 2054686.  Also cleaned up Cver regressions.
+
  Revision 1.21  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

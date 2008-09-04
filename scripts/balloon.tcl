@@ -4,6 +4,7 @@ namespace eval balloon {
   variable off_delay 5000
   variable delay $long_delay
   variable family {}
+  variable after_id {}
 }
 
 bind . <Enter> {
@@ -22,10 +23,10 @@ proc balloon_show {w help} {
   global show_tooltips
 
   if {$show_tooltips == true} {
-    after $balloon::delay [list balloon::show $w $help]
+    set balloon::after_id [after $balloon::delay [list balloon::show $w $help]]
     set balloon::delay $balloon::short_delay
     set balloon::family [balloon::getwfamily $w]
-    after $balloon::off_delay destroy $w.balloon
+    set balloon::after_id [after $balloon::off_delay destroy $w.balloon]
   }
 
 }
@@ -35,7 +36,7 @@ proc balloon_destroy {w} {
   global show_tooltips
 
   if {$show_tooltips == true} {
-    destroy $w.balloon
+    balloon::hide $w
   }
 
 }
@@ -57,6 +58,7 @@ proc balloon::show {w arg} {
 
   if {[eval winfo containing  [winfo pointerxy .]]!=$w} {return}
 
+  after cancel $balloon::after_id
   set top $w.balloon
   catch {destroy $top}
   toplevel $top -bd 1 -bg black
@@ -64,7 +66,7 @@ proc balloon::show {w arg} {
   if {[string equal [tk windowingsystem] aqua]}  {
     ::tk::unsupported::MacWindowStyle style $top help none
   }
-  pack [message $top.txt -aspect 10000 -bg lightyellow -padx 1 -pady 0 \
+  pack [message $top.txt -aspect 1500 -bg lightyellow -padx 1 -pady 0 \
           -text $arg]
   set wmx [expr [winfo rootx $w]+5]
   set wmy [expr [winfo rooty $w]+[winfo height $w]+7]
@@ -72,4 +74,8 @@ proc balloon::show {w arg} {
     [winfo reqwidth $top.txt]x[winfo reqheight $top.txt]+$wmx+$wmy
   raise $top
 
+}
+
+proc balloon::hide {w} {
+  destroy $w.balloon
 }

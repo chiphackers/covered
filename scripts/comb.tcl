@@ -574,7 +574,11 @@ proc create_comb_window {expr_id sline} {
     # Add expression coverage information
     label .combwin.pw.bot.l -anchor w -text "Coverage Information:  ('*' represents a case that was not hit)"
     checkbutton .combwin.pw.bot.e -anchor e -text "Excluded" -state disabled -variable comb_curr_excluded -command {
-      tcl_func_set_comb_exclude $curr_block $comb_curr_exp_id $comb_curr_uline_id $comb_curr_excluded
+      set reason ""
+      if {$exclude_reasons_enabled == 1 && $comb_curr_excluded == 1} {
+        set reason [get_exclude_reason .combwin]
+      }
+      tcl_func_set_comb_exclude $curr_block $comb_curr_exp_id $comb_curr_uline_id $comb_curr_excluded $reason
       set comb_exp_excludes [lreplace $comb_exp_excludes $comb_curr_uline_id $comb_curr_uline_id $comb_curr_excluded]
       set text_x [.bot.right.txt xview]
       set text_y [.bot.right.txt yview]

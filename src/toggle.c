@@ -47,9 +47,6 @@ extern db**         db_list;
 extern unsigned int curr_db;
 extern bool         report_covered;
 extern bool         report_instance;
-extern char**       leading_hierarchies;
-extern int          leading_hier_num;
-extern bool         leading_hiers_differ;
 extern isuppl       info_suppl;
 extern bool         report_exclusions;
 extern bool         flag_output_exclusion_ids;
@@ -167,11 +164,13 @@ void toggle_get_coverage(
   /*@out@*/ int*       lsb,       /*!< Least-significant bit position of the requested signal */
   /*@out@*/ char**     tog01,     /*!< Toggle vector of bits transitioning from a 0 to a 1 */
   /*@out@*/ char**     tog10,     /*!< Toggle vector of bits transitioning from a 1 to a 0 */
-  /*@out@*/ int*       excluded   /*!< Pointer to integer specifying if this signal should be excluded or not */
+  /*@out@*/ int*       excluded,  /*!< Pointer to integer specifying if this signal should be excluded or not */
+  /*@out@*/ char**     reason     /*!< Reason for exclusion if one exists */
 ) { PROFILE(TOGGLE_GET_COVERAGE);
 
-  func_iter fi;   /* Functional unit iterator */
-  vsignal*  sig;  /* Pointer to current signal */
+  func_iter       fi;   /* Functional unit iterator */
+  vsignal*        sig;  /* Pointer to current signal */
+  exclude_reason* er;   /* Pointer to found exclude reason structure */
 
   /* Find the matching signal */
   func_iter_init( &fi, funit, FALSE, TRUE );
@@ -186,6 +185,13 @@ void toggle_get_coverage(
   *tog01    = vector_get_toggle01_ulong( sig->value->value.ul, sig->value->width );
   *tog10    = vector_get_toggle10_ulong( sig->value->value.ul, sig->value->width );
   *excluded = sig->suppl.part.excluded;
+
+  /* If the toggle is currently excluded, check to see if there's a reason associated with it */
+  if( (*excluded == 1) && ((er = exclude_find_exclude_reason( 'T', sig->id, funit )) != NULL) ) {
+    *reason = strdup_safe( er->reason );
+  } else {
+    *reason = NULL;
+  }
 
   PROFILE_END;
 
@@ -671,11 +677,11 @@ void toggle_report(
 
   if( report_instance ) {
 
-    if( leading_hiers_differ ) {
+    if( db_list[curr_db]->leading_hiers_differ ) {
       strcpy( tmp, "<NA>" );
     } else {
-      assert( leading_hier_num > 0 );
-      strcpy( tmp, leading_hierarchies[0] );
+      assert( db_list[curr_db]->leading_hier_num > 0 );
+      strcpy( tmp, db_list[curr_db]->leading_hierarchies[0] );
     }
 
     fprintf( ofile, "                                                           Toggle 0 -> 1                       Toggle 1 -> 0\n" );
@@ -724,6 +730,10 @@ void toggle_report(
 
 /*
  $Log$
+ Revision 1.85  2008/09/04 04:15:10  phase1geo
+ Adding -p option to exclude command.  Updating other files per this change.
+ Checkpointing.
+
  Revision 1.84  2008/09/02 22:41:47  phase1geo
  Starting to work on adding exclusion reason output to report files.  Added
  support for exclusion reasons to CDD files.  Checkpointing.

@@ -260,6 +260,75 @@ static void exclude_arc_assign_and_recalc(
 }
 
 /*!
+ Handle the creation of the exclude reason structure.
+*/
+static void exclude_add_exclude_reason(
+  char       type,    /*!< Exclusion ID type */
+  int        id,      /*!< Exclusion ID number */
+  char*      reason,  /*!< Exclusion reason */
+  func_unit* funit    /*!< Functional unit containing sig */
+) { PROFILE(EXCLUDE_ADD_EXCLUDE_REASON);
+
+  exclude_reason* er;
+
+  /*
+   If the coverage point was not previously excluded, allow the user to specify a reason and
+   store this information in the functional unit.
+  */
+  er         = (exclude_reason*)malloc_safe( sizeof( exclude_reason ) );
+  er->type   = type;
+  er->id     = id;
+  er->reason = reason;
+  er->next   = NULL;
+
+  if( funit->er_head == NULL ) { 
+    funit->er_head = funit->er_tail = er; 
+  } else {
+    funit->er_tail->next = er; 
+    funit->er_tail       = er; 
+  }   
+
+}
+
+/*!
+ Handles the deallocation of the exclude reason structure.
+*/
+static void exclude_remove_exclude_reason(
+  char       type,  /*!< Exclusion ID type */
+  int        id,    /*!< Exclusion ID number */
+  func_unit* funit  /*!< Functional unit containing sig */
+) { PROFILE(EXCLUDE_REMOVE_EXCLUDE_REASON);
+
+  exclude_reason* last_er = NULL;
+  exclude_reason* er      = funit->er_head;
+
+  /*
+   If the coverage point was previously excluded, attempt to find the matching exclusion reason, and, if
+   it is found, remove it from the list.
+  */
+  while( (er != NULL) && ((er->type != type) || (er->id != id)) ) {
+    last_er = er; 
+    er      = er->next;
+  }
+
+  if( er != NULL ) { 
+    if( last_er == NULL ) { 
+      funit->er_head = er->next;
+      if( er->next == NULL ) {
+        funit->er_tail = NULL;
+      }
+    } else {
+      last_er->next = er->next;
+    }
+    free_safe( er->reason, (strlen( er->reason ) + 1) );
+    free_safe( er, sizeof( exclude_reason ) );
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  \param funit_name  Name of functional unit to search for
  \param funit_type  Type of functional unit to search for
 
@@ -313,10 +382,11 @@ bool exclude_is_line_excluded(
  of the expression and recalculating the summary coverage information.
 */
 void exclude_set_line_exclude(
-            func_unit* funit,  /*!< Pointer to functional unit */
-            int        line,   /*!< Line number of expression that needs to be set */
-            int        value,  /*!< Specifies if we should exclude (1) or include (0) the specified line */
-  /*@out@*/ statistic* stat    /*!< Pointer to statistics structure to update */
+            func_unit* funit,   /*!< Pointer to functional unit */
+            int        line,    /*!< Line number of expression that needs to be set */
+            int        value,   /*!< Specifies if we should exclude (1) or include (0) the specified line */
+            char*      reason,  /*!< Reason for the exclusion if value is 1 */
+  /*@out@*/ statistic* stat     /*!< Pointer to statistics structure to update */
 ) { PROFILE(EXCLUDE_SET_LINE_EXCLUDE);
 
   func_iter  fi;    /* Functional unit iterator */
@@ -327,7 +397,18 @@ void exclude_set_line_exclude(
   do {
     while( ((stmt = func_iter_get_next_statement( &fi )) != NULL) && (stmt->exp->line != line) );
     if( stmt != NULL ) {
+
       exclude_expr_assign_and_recalc( stmt->exp, funit, (value == 1), TRUE, stat );
+
+      /* Handle the exclusion reason */
+      if( value == 1 ) {
+        if( reason != NULL ) {
+          exclude_add_exclude_reason( 'L', stmt->exp->id, reason, funit );
+        } 
+      } else {
+        exclude_remove_exclude_reason( 'L', stmt->exp->id, funit );
+      }
+
     }
   } while( stmt != NULL );
 
@@ -367,6 +448,8 @@ void exclude_set_toggle_exclude(
             func_unit*  funit,     /*!< Pointer to functional unit */
             const char* sig_name,  /*!< Name of signal to set the toggle exclusion for */
             int         value,     /*!< Specifies if we should exclude (1) or include (0) the specified line */
+            char        type,      /*!< Exclusion ID type (T=toggle, M=memory) */
+            char*       reason,    /*!< Reason for exclusion (if value is 1) */
   /*@out@*/ statistic*  stat       /*!< Pointer to statistics structure to update */
 ) { PROFILE(EXCLUDE_SET_TOGGLE_EXCLUDE);
 
@@ -380,9 +463,21 @@ void exclude_set_toggle_exclude(
 
   /* Set its exclude bit if it exists */
   if( sig != NULL ) {
+
+    /* Exclude/include the signal and recalculate the summary information */
     exclude_sig_assign_and_recalc( sig, (value == 1), stat );
-  }
+
+    /* Handle the exclusion reason */
+    if( value == 1 ) {
+      if( reason != NULL ) {
+        exclude_add_exclude_reason( type, sig->id, reason, funit ); 
+      }
+    } else {
+      exclude_remove_exclude_reason( type, sig->id, funit );
+    }
       
+  }
+
   PROFILE_END;
 
 }
@@ -391,9 +486,9 @@ void exclude_set_toggle_exclude(
  \return Returns TRUE if specified underlined expression is excluded from coverage; otherwise, returns FALSE.
 */
 bool exclude_is_comb_excluded(
-  func_unit* funit,
-  int        expr_id,
-  int        uline_id
+  func_unit* funit,    /*!< Pointer to functional unit containing the expression to exclude/include */
+  int        expr_id,  /*!< Expression ID of the root expression to exclude/include */
+  int        uline_id  /*!< Underline ID of expression to exclude/include */
 ) { PROFILE(EXCLUDE_IS_COMB_EXCLUDED);
 
   func_iter   fi;      /* Functional unit iterator */
@@ -425,6 +520,7 @@ void exclude_set_comb_exclude(
             int        expr_id,   /*!< Expression ID of root expression to set exclude value for */
             int        uline_id,  /*!< Underline ID of expression to set exclude value for */
             int        value,     /*!< Specifies if we should exclude (1) or include (0) the specified line */
+            char*      reason,    /*!< Reason for the exclusion (if value is 1) */
   /*@out@*/ statistic* stat       /*!< Pointer to statistic structure to update */
 ) { PROFILE(EXCLUDE_SET_COMB_EXCLUDE);
 
@@ -437,10 +533,25 @@ void exclude_set_comb_exclude(
   func_iter_dealloc( &fi );
 
   if( stmt != NULL ) {
+
     expression* subexp;
+
     if( (subexp = expression_find_uline_id( stmt->exp, uline_id )) != NULL ) {
+
+      /* Exclude/include the expression and recalculate the summary information */
       exclude_expr_assign_and_recalc( subexp, funit, (value == 1), FALSE, stat );
+
+      /* Handle the exclusion reason */
+      if( value == 1 ) {
+        if( reason != NULL ) {
+          exclude_add_exclude_reason( 'E', subexp->id, reason, funit );
+        }
+      } else {
+        exclude_remove_exclude_reason( 'E', subexp->id, funit );
+      }
+
     }
+
   }
 
   PROFILE_END;
@@ -451,10 +562,10 @@ void exclude_set_comb_exclude(
  \return Returns TRUE if the given FSM state transition was excluded from coverage; otherwise, returns FALSE.
 */
 bool exclude_is_fsm_excluded(
-  func_unit* funit,
-  int        expr_id,
-  char*      from_state,
-  char*      to_state
+  func_unit* funit,       /*!< Pointer to functional unit containing FSM to exclude/include */
+  int        expr_id,     /*!< Expression ID of FSM */
+  char*      from_state,  /*!< String form of the from_state value */
+  char*      to_state     /*!< String form of the to_state value */
 ) { PROFILE(EXCLUDE_IS_FSM_EXCLUDED);
 
   fsm_link* curr_fsm;     /* Pointer to current FSM structure */
@@ -501,6 +612,7 @@ void exclude_set_fsm_exclude(
             char*      from_state,  /*!< String containing input state value */
             char*      to_state,    /*!< String containing output state value */
             int        value,       /*!< Specifies if we should exclude (1) or include (0) the specified line */
+            char*      reason,      /*!< Reason for the exclusion (if value is 1) */
   /*@out@*/ statistic* stat         /*!< Pointer to statistics structure to update */
 ) { PROFILE(EXCLUDE_SET_FSM_EXCLUDE);
 
@@ -525,7 +637,19 @@ void exclude_set_fsm_exclude(
 
     /* Find the arc entry and perform the exclusion assignment and coverage recalculation */
     if( (found_index = arc_find_arc( curr_fsm->table->table, arc_find_from_state( curr_fsm->table->table, from_vec ), arc_find_to_state( curr_fsm->table->table, to_vec ) )) != -1 ) {
+
+      /* Handle the exclusion and recalculate the summary values */
       exclude_arc_assign_and_recalc( curr_fsm->table->table, found_index, (value == 1), stat );
+ 
+      /* Handle the exclusion reason */
+      if( value == 1 ) {
+        if( reason != NULL ) {
+          exclude_add_exclude_reason( 'F', curr_fsm->table->table->arcs[found_index]->id, reason, funit );
+        }
+      } else {
+        exclude_remove_exclude_reason( 'F', curr_fsm->table->table->arcs[found_index]->id, funit );
+      }
+
     }
 
     /* Deallocate vectors */
@@ -542,9 +666,9 @@ void exclude_set_fsm_exclude(
  \return Returns TRUE if the given assertion is excluded from coverage consideration; otherwise, returns FALSE.
 */
 bool exclude_is_assert_excluded(
-  func_unit* funit,
-  char*      inst_name, 
-  int        expr_id
+  func_unit* funit,      /*!< Pointer to functional unit containing the assertion to exclude/include */
+  char*      inst_name,  /*!< Name of assertion instance to exclude/include */
+  int        expr_id     /*!< Expression ID to exclude/include */
 ) { PROFILE(EXCLUDE_IS_ASSERT_EXCLUDED);
 
   funit_inst* inst;        /* Pointer to found functional unit instance */
@@ -591,6 +715,7 @@ void exclude_set_assert_exclude(
             char*      inst_name,  /*!< Name of child instance to find in given functional unit */
             int        expr_id,    /*!< Expression ID of expression to set exclude value for */
             int        value,      /*!< Specifies if we should exclude (1) or include (0) the specified line */
+            char*      reason,     /*!< Reason for the exclusion (if value is 1) */
   /*@out@*/ statistic* stat        /*!< Pointer to statistic structure to update */
 ) { PROFILE(EXCLUDE_SET_ASSERT_EXCLUDE);
 
@@ -619,7 +744,19 @@ void exclude_set_assert_exclude(
 
     /* Find the signal that matches the given signal name and sets its excluded bit */
     if( stmt->exp->id == expr_id ) {
+
+      /* Exclude/include the assertion and recalculate the summary information */
       exclude_expr_assign_and_recalc( stmt->exp, curr_child->funit, (value == 1), FALSE, stat );
+
+      /* Handle the exclusion reason */
+      if( value == 1 ) {
+        if( reason != NULL ) {
+          exclude_add_exclude_reason( 'A', stmt->exp->id, reason, curr_child->funit );
+        }
+      } else {
+        exclude_remove_exclude_reason( 'A', stmt->exp->id, curr_child->funit );
+      }
+
     }
 
     /* Deallocate functional unit statement iterator */
@@ -917,6 +1054,62 @@ int exclude_find_fsm_arc(
 }
 
 /*!
+ \return Returns the reformatted string that removes all newlines and extra spaces.
+*/
+char* exclude_format_reason(
+  const char* old_str  /*!< Pointer to string that needs to be formatted */
+) { PROFILE(EXCLUDE_FORMAT_REASON);
+
+  char*        msg          = NULL;  /* Pointer to the reformatted message */
+  unsigned int msg_size     = 0;     /* Current size of message array */
+  char         c;                    /* Current character */
+  bool         sp_just_seen = TRUE;  /* Set to TRUE if a space character was just seen */
+  char         str[101];             /* Temporary string */
+  unsigned int i;                    /* Loop iterator */
+  unsigned int index        = 0;     /* Index into str array to store next character */
+
+  str[0] = '\0';
+
+  for( i=0; i<strlen( old_str ); i++ ) {
+
+    c = old_str[i];
+
+    /* Convert any formatting characters to spaces */
+    c = ((c == '\n') || (c == '\t') || (c == '\r')) ? ' ' : c;
+
+    /* If the user has specified multiple formatting characters together, ignore all but the first. */
+    if( (c != ' ') || !sp_just_seen ) {
+      sp_just_seen = (c == ' ') ? TRUE : FALSE;
+      str[(index % 100) + 0] = c;
+      str[(index % 100) + 1] = '\0';
+      if( ((index + 1) % 100) == 0 ) {
+        msg       = (char*)realloc_safe( msg, msg_size, (msg_size + 100) );
+        msg_size += 100;
+        strcat( msg, str );
+        str[0] = '\0';
+      }
+      index++;
+    }
+
+  }
+
+  /* Take what's left in the str array and put it into the msg array */
+  if( strlen( str ) > 0 ) {
+    msg = (char*)realloc_safe( msg, msg_size, (msg_size + strlen( str ) + 1) );
+    if( msg_size == 0 ) {
+      msg[0] = '\0';
+    }
+    strcat( msg, str );
+    msg[strlen(msg)-1] = '\0';
+  }
+
+  PROFILE_END;
+
+  return( msg );
+
+} 
+
+/*!
  \return Returns the message specified by the user.
 */
 static char* exclude_get_message(
@@ -930,6 +1123,7 @@ static char* exclude_get_message(
   bool  sp_just_seen = TRUE;  /* Set to TRUE if a space character was just seen */
   int   index        = 0;     /* Current string index */
   char  str[101];
+  char* formatted_msg;        /* Formatted message */
 
   printf( "Please specify a reason for exclusion for exclusion ID %s (Enter a '.' (period) on a newline to end):\n", eid );
 
@@ -940,21 +1134,22 @@ static char* exclude_get_message(
     /* Mark if we have just seen a newline (for the purposes of determining if the user has completed input) */
     nl_just_seen = (c == '\n') ? TRUE : FALSE;
 
-    /* Convert any formatting characters to spaces */
-    c = ((c == '\n') || (c == '\t') || (c == '\r')) ? ' ' : c; 
+    /* Place the read character into the temporary string */
+    str[(index % 100) + 0] = c;
+    str[(index % 100) + 1] = '\0';
 
-    /* If the user has specified multiple formatting characters together, ignore all but the first. */
-    if( (c != ' ') || !sp_just_seen ) {
-      sp_just_seen = (c == ' ') ? TRUE : FALSE;
-      str[(index % 100) + 0] = c;
-      str[(index % 100) + 1] = '\0';
-      if( ((index + 1) % 100) == 0 ) {
-        msg       = (char*)realloc_safe( msg, msg_size, (msg_size + 100) );
-        msg_size += 100;
-        strcat( msg, str );
-      }
-      index++;
+    /*
+     If the temporary string has been filled, realloc the msg and append the contents of the the temporary array to this newly
+     allocated array.
+    */
+    if( ((index + 1) % 100) == 0 ) {
+      msg       = (char*)realloc_safe( msg, msg_size, (msg_size + 100) );
+      msg_size += 100;
+      strcat( msg, str );
     }
+
+    index++;
+
   }
 
   if( strlen( str ) > 0 ) {
@@ -968,9 +1163,14 @@ static char* exclude_get_message(
 
   printf( "\n" );
 
+  /* Now reformat the message */
+  formatted_msg = exclude_format_reason( msg );
+
+  free_safe( msg, (strlen( msg ) + 1) );
+
   PROFILE_END;
 
-  return( msg );
+  return( formatted_msg );
 
 }
 
@@ -991,20 +1191,8 @@ static void exclude_handle_exclude_reason(
 
     char* str = exclude_get_message( id );
 
-    if( strlen( str ) > 0 ) { 
-      exclude_reason* er = (exclude_reason*)malloc_safe( sizeof( exclude_reason ) );
-      er->type     = id[0];
-      er->id       = atoi( id + 1 );
-      er->reason   = str;
-      er->next     = NULL;
-      if( funit->er_head == NULL ) { 
-        funit->er_head = funit->er_tail = er; 
-      } else {
-        funit->er_tail->next = er; 
-        funit->er_tail       = er; 
-      }   
-    } else {
-      free_safe( str, (strlen( str ) + 1) );
+    if( strlen( str ) > 0 ) {
+      exclude_add_exclude_reason( id[0], atoi( id + 1 ), str, funit );
     }
 
   /*
@@ -1013,26 +1201,7 @@ static void exclude_handle_exclude_reason(
   */
   } else {
 
-    exclude_reason* last_er = NULL;
-    exclude_reason* er      = funit->er_head;
-
-    while( (er != NULL) && ((er->type != id[0]) || (er->id != atoi( id + 1))) ) {
-      last_er = er; 
-      er      = er->next;
-    }
-
-    if( er != NULL ) { 
-      if( last_er == NULL ) { 
-        funit->er_head = er->next;
-        if( er->next == NULL ) {
-          funit->er_tail = NULL;
-        }
-      } else {
-        last_er->next = er->next;
-      }
-      free_safe( er->reason, (strlen( er->reason ) + 1) );
-      free_safe( er, sizeof( exclude_reason ) );
-    }
+    exclude_remove_exclude_reason( id[0], atoi( id + 1 ), funit );
 
   }
 
@@ -1529,6 +1698,10 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.36  2008/09/04 04:15:08  phase1geo
+ Adding -p option to exclude command.  Updating other files per this change.
+ Checkpointing.
+
  Revision 1.35  2008/09/03 05:33:06  phase1geo
  Adding in FSM exclusion support to exclude and report -e commands.  Updating
  regressions per recent changes.  Checkpointing.

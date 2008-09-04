@@ -63,8 +63,6 @@ extern char*       top_module;
 extern str_link*   no_score_head;
 extern char        user_msg[USER_MSG_LENGTH];
 extern bool        one_instance_found;
-extern char**      leading_hierarchies;
-extern int         leading_hier_num;
 extern isuppl      info_suppl;
 extern uint64      timestep_update;
 extern bool        debug_mode;
@@ -204,11 +202,14 @@ db* db_create() { PROFILE(DB_CREATE);
   db* new_db;  /* Pointer to new database structure */
 
   /* Allocate new database */
-  new_db             = (db*)malloc_safe( sizeof( db ) );
-  new_db->inst_head  = NULL;
-  new_db->inst_tail  = NULL;
-  new_db->funit_head = NULL;
-  new_db->funit_tail = NULL;
+  new_db                       = (db*)malloc_safe( sizeof( db ) );
+  new_db->inst_head            = NULL;
+  new_db->inst_tail            = NULL;
+  new_db->funit_head           = NULL;
+  new_db->funit_tail           = NULL;
+  new_db->leading_hierarchies  = NULL;
+  new_db->leading_hier_num     = 0;
+  new_db->leading_hiers_differ = FALSE;
 
   /* Add this new database to the database array */
   db_list = (db**)realloc_safe( db_list, (sizeof( db ) * db_size), (sizeof( db ) * (db_size + 1)) );
@@ -242,6 +243,12 @@ void db_close() { PROFILE(DB_CLOSE);
 
     }
 
+    /* Deallocate all information regarding hierarchies */
+    for( i=0; i<db_list[i]->leading_hier_num; i++ ) {
+      free_safe( db_list[i]->leading_hierarchies[i], (strlen( db_list[i]->leading_hierarchies[i] ) + 1) );
+    }
+    free_safe( db_list[i]->leading_hierarchies, (sizeof( char* ) * db_list[i]->leading_hier_num) );
+
     /* Deallocate database structure */
     free_safe( db_list[i], sizeof( db ) );
 
@@ -264,9 +271,6 @@ void db_close() { PROFILE(DB_CLOSE);
     
   /* Free memory associated with current instance scope */
   assert( curr_inst_scope_size == 0 );
-
-  /* Deallocate the information section memory */
-  info_dealloc();
 
   /* Deallocate the exclusion identifier container, if it exists */
   free_safe( exclusion_id, db_get_exclusion_id_size() );
@@ -666,7 +670,7 @@ void db_read(
 #endif
 
   /* Check to make sure that the CDD file contained valid information */
-  if( leading_hier_num == 0 ) {
+  if( db_list[curr_db]->leading_hier_num == 0 ) {
     print_output( "CDD file was found to be empty", FATAL, __FILE__, __LINE__ );
     Throw 0;
   }
@@ -2732,12 +2736,12 @@ void db_sync_curr_instance() { PROFILE(DB_SYNC_CURR_INSTANCE);
   char  stripped_scope[4096];  /* Temporary string */
   char* scope;                 /* Current instance scope string */
 
-  assert( leading_hier_num > 0 );
+  assert( db_list[curr_db]->leading_hier_num > 0 );
 
   if( (scope = db_gen_curr_inst_scope()) != NULL ) {
 
-    if( strcmp( leading_hierarchies[0], "*" ) != 0 ) {
-      scope_extract_scope( scope, leading_hierarchies[0], stripped_scope );
+    if( strcmp( db_list[curr_db]->leading_hierarchies[0], "*" ) != 0 ) {
+      scope_extract_scope( scope, db_list[curr_db]->leading_hierarchies[0], stripped_scope );
     } else {
       strcpy( stripped_scope, scope );
     }
@@ -3016,6 +3020,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.324  2008/09/02 22:41:45  phase1geo
+ Starting to work on adding exclusion reason output to report files.  Added
+ support for exclusion reasons to CDD files.  Checkpointing.
+
  Revision 1.323  2008/08/29 05:38:36  phase1geo
  Adding initial pass of FSM exclusion ID output.  Need to fix issues with the -e
  option usage for all metrics, I believe (certainly for FSM).  Checkpointing.

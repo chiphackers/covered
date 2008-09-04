@@ -59,9 +59,6 @@ extern unsigned int curr_db;
 extern bool         report_covered; 
 extern unsigned int report_comb_depth;
 extern bool         report_instance;
-extern char**       leading_hierarchies;
-extern int          leading_hier_num;
-extern bool         leading_hiers_differ;
 extern char         user_msg[USER_MSG_LENGTH];
 extern isuppl       info_suppl;
 extern bool         report_exclusions;
@@ -1229,11 +1226,11 @@ void fsm_report(
 
   if( report_instance ) {
 
-    if( leading_hiers_differ ) {
+    if( db_list[curr_db]->leading_hiers_differ ) {
       strcpy( tmp, "<NA>" );
     } else {
-      assert( leading_hier_num > 0 );
-      strcpy( tmp, leading_hierarchies[0] );
+      assert( db_list[curr_db]->leading_hier_num > 0 );
+      strcpy( tmp, db_list[curr_db]->leading_hierarchies[0] );
     }
 
     fprintf( ofile, "                                                               State                             Arc\n" );
@@ -1330,6 +1327,10 @@ void fsm_dealloc(
 
 /*
  $Log$
+ Revision 1.103  2008/09/04 04:15:08  phase1geo
+ Adding -p option to exclude command.  Updating other files per this change.
+ Checkpointing.
+
  Revision 1.102  2008/09/03 05:33:06  phase1geo
  Adding in FSM exclusion support to exclude and report -e commands.  Updating
  regressions per recent changes.  Checkpointing.

@@ -59,9 +59,6 @@ extern unsigned int db_size;
 extern unsigned int curr_db;
 extern str_link*    merge_in_head;
 extern str_link*    merge_in_tail;
-extern char**       leading_hierarchies;
-extern int          leading_hier_num;
-extern bool         leading_hiers_differ;
 extern isuppl       info_suppl;
 
 /*!
@@ -741,10 +738,10 @@ void report_print_header(
       fprintf( ofile, "* Report generated from CDD file that was merged from the following files with the following leading hierarchies:\n" );
       fprintf( ofile, "    Filename                                           Leading Hierarchy\n" );
       fprintf( ofile, "    -----------------------------------------------------------------------------------------------------------------\n" );
-      fprintf( ofile, "    %-49.49s  %-62.62s\n", input_db,           leading_hierarchies[0] );
-      fprintf( ofile, "    %-49.49s  %-62.62s\n", merge_in_head->str, leading_hierarchies[1] ); 
+      fprintf( ofile, "    %-49.49s  %-62.62s\n", input_db,           db_list[curr_db]->leading_hierarchies[0] );
+      fprintf( ofile, "    %-49.49s  %-62.62s\n", merge_in_head->str, db_list[curr_db]->leading_hierarchies[1] ); 
 
-      if( report_instance && leading_hiers_differ ) {
+      if( report_instance && db_list[curr_db]->leading_hiers_differ ) {
         fprintf( ofile, "\n* Merged CDD files contain different leading hierarchies, will use value \"<NA>\" to represent leading hierarchy.\n\n" );
       }
 
@@ -758,11 +755,11 @@ void report_print_header(
 
       i = 1;
       while( strl != NULL ) {
-        fprintf( ofile, "    %-49.49s  %-62.62s\n", strl->str, leading_hierarchies[i++] );
+        fprintf( ofile, "    %-49.49s  %-62.62s\n", strl->str, db_list[curr_db]->leading_hierarchies[i++] );
         strl = strl->next;
       }
 
-      if( report_instance && leading_hiers_differ ) {
+      if( report_instance && db_list[curr_db]->leading_hiers_differ ) {
         fprintf( ofile, "\n* Merged CDD files contain different leading hierarchies, will use value \"<NA>\" to represent leading hierarchy.\n\n" );
       }
 
@@ -908,11 +905,86 @@ void report_save_cdd(
   const char* filename  /*!< Name to use for saving the currently loaded filename */
 ) { PROFILE(REPORT_SAVE_CDD);
 
+  /* Write the instance database */
+  curr_db = 1;
+
   db_write( filename, FALSE, TRUE );
+
+  /* Restore the database */
+  curr_db = 0;
 
   PROFILE_END;
 
 }
+
+#ifdef OBSOLETE
+/*!
+ \return Returns a formatted exclude reason ready to be output.
+*/
+char* report_format_exclusion_reason(
+  int   leading_spaces,  /*!< Number of leading spaces (for formatting purposes) */
+  char* msg,             /*!< Message to display (no newlines and only one space between each word) */
+  bool  header,          /*!< If set to TRUE, display a header before outputting; otherwise, avoid the header */
+  int   width            /*!< Width (in characters) to restrict the output to */
+) { PROFILE(REPORT_FORMAT_EXCLUSION_REASON);
+
+  char* msg_cpy;
+  char* msg_tcpy;
+  char* lead_sp;
+  int   curr_width;
+  char* word;
+
+  /* Copy the message */
+  msg_cpy  = strdup_safe( msg );
+  msg_tcpy = msg_cpy;
+
+  /* Allocate and populate the leading spaces string */
+  lead_sp = (char*)malloc_safe( leading_spaces + 1 );
+  gen_char_string( lead_sp, ' ', leading_spaces );
+
+  /* Output message */
+  if( header ) {
+    fprintf( ofile, "\n%sReason:  ", lead_sp );
+  } else {
+    fprintf( ofile, "\n%s", lead_sp );
+  }
+
+  curr_width = leading_spaces + 9;
+  word       = msg_cpy;
+  while( *msg_cpy != '\0' ) {
+    /* Get the next token */
+    while( (*msg_cpy != '\0') && (*msg_cpy != ' ') ) msg_cpy++;
+    if( *msg_cpy == ' ' ) {
+      *msg_cpy = '\0';
+      msg_cpy++;
+    }
+    if( (strlen( word ) + curr_width) > line_width ) {
+      if( header ) {
+        fprintf( ofile, "\n%s         ", lead_sp );
+      } else {
+        fprintf( ofile, "\n%s", lead_sp );
+      }
+      curr_width = leading_spaces + 9;
+    }
+    fprintf( ofile, "%s ", word );
+    if( word[strlen(word)-1] == '.' ) {
+      fprintf( ofile, " " );
+    }
+    curr_width += strlen( word ) + 1;
+    word = msg_cpy;
+  }
+  fprintf( ofile, "\n\n" );
+
+  /* Deallocate memory */
+  free_safe( msg_tcpy, (strlen( msg ) + 1) );
+  free_safe( lead_sp, (strlen( lead_sp ) + 1) );
+
+  PROFILE_END;
+
+  return( msg );
+
+}
+#endif
 
 /*!
  Outputs the given exclude report message to the specified output stream, handling the appropriate formatting.
@@ -1007,9 +1079,6 @@ void command_report(
 
     /* Parse score command-line */
     report_parse_args( argc, last_arg, argv );
-
-    /* Initialize all global variables */
-    info_initialize();
 
     if( !report_gui ) {
 
@@ -1158,6 +1227,10 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.120  2008/09/04 04:15:10  phase1geo
+ Adding -p option to exclude command.  Updating other files per this change.
+ Checkpointing.
+
  Revision 1.119  2008/09/03 03:46:37  phase1geo
  Updates for memory and assertion exclusion output.  Checkpointing.
 

@@ -52,9 +52,6 @@ extern unsigned int curr_db;
 extern bool         report_covered;
 extern unsigned int report_comb_depth;
 extern bool         report_instance;
-extern char**       leading_hierarchies;
-extern int          leading_hier_num;
-extern bool         leading_hiers_differ;
 extern isuppl       info_suppl;
 extern bool         flag_suppress_empty_funits;
 extern bool         flag_output_exclusion_ids;
@@ -622,11 +619,11 @@ void line_report(
 
   if( report_instance ) {
 
-    if( leading_hiers_differ ) {
+    if( db_list[curr_db]->leading_hiers_differ ) {
       strcpy( tmp, "<NA>" );
     } else {
-      assert( leading_hier_num > 0 );
-      strcpy( tmp, leading_hierarchies[0] );
+      assert( db_list[curr_db]->leading_hier_num > 0 );
+      strcpy( tmp, db_list[curr_db]->leading_hierarchies[0] );
     }
 
     fprintf( ofile, "Instance                                           Hit/ Miss/Total    Percent hit\n" );
@@ -673,6 +670,10 @@ void line_report(
 
 /*
  $Log$
+ Revision 1.100  2008/09/04 04:15:09  phase1geo
+ Adding -p option to exclude command.  Updating other files per this change.
+ Checkpointing.
+
  Revision 1.99  2008/09/02 22:41:45  phase1geo
  Starting to work on adding exclusion reason output to report files.  Added
  support for exclusion reasons to CDD files.  Checkpointing.

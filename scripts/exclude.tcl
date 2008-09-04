@@ -98,7 +98,11 @@ proc get_exclude_reason {w} {
   }
 
   # Make sure that this window is a transient window and set focus
-  wm transient .exclwin $w
+  #if {[winfo viewable $w] } {
+  #  wm transient .exclwin $w
+  #}
+  tkwait visibility .exclwin
+  catch {grab .exclwin}
   focus .exclwin.pw.top.t.t
 
   # Wait for window to be destroyed before moving on
@@ -108,10 +112,10 @@ proc get_exclude_reason {w} {
 
 }
 
-proc show_exclude_reason {} {
+proc show_exclude_reason {reason} {
 
   # TBD
   toplevel .exclwin
-  label .exclwin.l -text "PROVIDE REASON HERE"
+  label .exclwin.l -text $reason
 
 }

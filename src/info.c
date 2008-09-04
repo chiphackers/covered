@@ -36,35 +36,21 @@
 #include "util.h"
 
 
-extern str_link* merge_in_head;
-extern str_link* merge_in_tail;
-extern int       merge_in_num;
-extern char*     merged_file;
-extern uint64    num_timesteps;
-extern char*     cdd_message;
-extern char      user_msg[USER_MSG_LENGTH];
+extern db**         db_list;
+extern unsigned int curr_db;
+extern str_link*    merge_in_head;
+extern str_link*    merge_in_tail;
+extern int          merge_in_num;
+extern char*        merged_file;
+extern uint64       num_timesteps;
+extern char*        cdd_message;
+extern char         user_msg[USER_MSG_LENGTH];
 
 
 /*!
  Informational line for the CDD file.
 */
 isuppl info_suppl = {0};
-
-/*!
- This string specifies the Verilog hierarchy leading up to the DUT.  This value is
- taken from the -i value (or is a value of '*' if the -t option is only specified).
-*/
-char** leading_hierarchies;
-
-/*!
- Specifies the number of hierarchies stored in the leading_hierarchies array.
-*/
-int leading_hier_num;
-
-/*!
- Set to TRUE if more than one leading hierarchy exists and it differs with the first leading hierarchy.
-*/
-bool leading_hiers_differ;
 
 /*!
  Contains the CDD version number of all CDD files that this version of Covered can write
@@ -87,18 +73,6 @@ char score_run_path[4096];
 */
 int score_arg_num = 0;
 
-
-/*!
- Initializes all variables used for information.
-*/
-void info_initialize() { PROFILE(INFO_INITIALIZE);
-
-  leading_hier_num     = 0;
-  leading_hiers_differ = FALSE;
-
-  PROFILE_END;
-
-}
 
 /*!
  Sets the vector element size in the global info_suppl structure based on the current machine
@@ -132,7 +106,7 @@ void info_db_write(
 
   int i;  /* Loop iterator */
 
-  assert( leading_hier_num > 0 );
+  assert( db_list[curr_db]->leading_hier_num > 0 );
 
   /* Calculate vector element size */
   info_set_vector_elem_size();
@@ -142,7 +116,7 @@ void info_db_write(
            CDD_VERSION,
            info_suppl.all,
            num_timesteps,
-           leading_hierarchies[0] );
+           db_list[curr_db]->leading_hierarchies[0] );
 
   /* Display score arguments */
   fprintf( file, "%d %s", DB_TYPE_SCORE_ARGS, score_run_path );
@@ -159,12 +133,12 @@ void info_db_write(
   }
 
   /* Display the merged CDD information, if there are any */
-  if( leading_hier_num == merge_in_num ) {
+  if( db_list[curr_db]->leading_hier_num == merge_in_num ) {
     str_link* strl = merge_in_head;
     i = 0;
     while( strl != NULL ) {
       if( strcmp( strl->str, merged_file ) != 0 ) {
-        fprintf( file, "%d %s %s\n", DB_TYPE_MERGED_CDD, strl->str, leading_hierarchies[i++] );
+        fprintf( file, "%d %s %s\n", DB_TYPE_MERGED_CDD, strl->str, db_list[curr_db]->leading_hierarchies[i++] );
       } else {
         i++;
       }
@@ -172,11 +146,11 @@ void info_db_write(
     }
   } else { 
     str_link* strl = merge_in_head;
-    assert( (leading_hier_num - 1) == merge_in_num );
+    assert( (db_list[curr_db]->leading_hier_num - 1) == merge_in_num );
     i = 1; 
     while( strl != NULL ) {
       if( strcmp( strl->str, merged_file ) != 0 ) {
-        fprintf( file, "%d %s %s\n", DB_TYPE_MERGED_CDD, strl->str, leading_hierarchies[i++] );
+        fprintf( file, "%d %s %s\n", DB_TYPE_MERGED_CDD, strl->str, db_list[curr_db]->leading_hierarchies[i++] );
       } else {
         i++;
       }
@@ -219,14 +193,14 @@ void info_db_read(
       *line = *line + chars_read;
 
       /* Set leading_hiers_differ to TRUE if this is not the first hierarchy and it differs from the first */
-      if( (leading_hier_num > 0) && (strcmp( leading_hierarchies[0], tmp ) != 0) ) {
-        leading_hiers_differ = TRUE;
+      if( (db_list[curr_db]->leading_hier_num > 0) && (strcmp( db_list[curr_db]->leading_hierarchies[0], tmp ) != 0) ) {
+        db_list[curr_db]->leading_hiers_differ = TRUE;
       }
 
       /* Assign this hierarchy to the leading hierarchies array */
-      leading_hierarchies = (char**)realloc_safe( leading_hierarchies, (sizeof( char* ) * leading_hier_num), (sizeof( char* ) * (leading_hier_num + 1)) );
-      leading_hierarchies[leading_hier_num] = strdup_safe( tmp );
-      leading_hier_num++;
+      db_list[curr_db]->leading_hierarchies = (char**)realloc_safe( db_list[curr_db]->leading_hierarchies, (sizeof( char* ) * db_list[curr_db]->leading_hier_num), (sizeof( char* ) * (db_list[curr_db]->leading_hier_num + 1)) );
+      db_list[curr_db]->leading_hierarchies[db_list[curr_db]->leading_hier_num] = strdup_safe( tmp );
+      db_list[curr_db]->leading_hier_num++;
 
       /* Set scored flag to correct value */
       if( info_suppl.part.scored == 0 ) {
@@ -326,14 +300,14 @@ void merged_cdd_db_read(
       merge_in_num++;
 
       /* Set leading_hiers_differ to TRUE if this is not the first hierarchy and it differs from the first */
-      if( strcmp( leading_hierarchies[0], tmp2 ) != 0 ) {
-        leading_hiers_differ = TRUE;
+      if( strcmp( db_list[curr_db]->leading_hierarchies[0], tmp2 ) != 0 ) {
+        db_list[curr_db]->leading_hiers_differ = TRUE;
       }
 
       /* Add its hierarchy */
-      leading_hierarchies = (char**)realloc_safe( leading_hierarchies, (sizeof( char* ) * leading_hier_num), (sizeof( char* ) * (leading_hier_num + 1)) );
-      leading_hierarchies[leading_hier_num] = strdup_safe( tmp2 );
-      leading_hier_num++;
+      db_list[curr_db]->leading_hierarchies = (char**)realloc_safe( db_list[curr_db]->leading_hierarchies, (sizeof( char* ) * db_list[curr_db]->leading_hier_num), (sizeof( char* ) * (db_list[curr_db]->leading_hier_num + 1)) );
+      db_list[curr_db]->leading_hierarchies[db_list[curr_db]->leading_hier_num] = strdup_safe( tmp2 );
+      db_list[curr_db]->leading_hier_num++;
 
     } else if( merge_in_num > 0 ) {
 
@@ -362,15 +336,6 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
   int i;  /* Loop iterator */
 
-  /* Deallocate all information regarding hierarchies */
-  for( i=0; i<leading_hier_num; i++ ) {
-    free_safe( leading_hierarchies[i], (strlen( leading_hierarchies[i] ) + 1) );
-  }
-  free_safe( leading_hierarchies, (sizeof( char* ) * leading_hier_num) );
-
-  leading_hierarchies = NULL;
-  leading_hier_num    = 0;
-
   /* Free score arguments */
   for( i=0; i<score_arg_num; i++ ) {
     free_safe( score_args[i], (strlen( score_args[i] ) + 1) );
@@ -396,6 +361,11 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
 /*
  $Log$
+ Revision 1.38  2008/08/18 23:07:26  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.32.2.7  2008/08/06 05:32:41  phase1geo
  Another fix for bug 2037791.  Also add new diagnostic to verify the fix for the bug.
 

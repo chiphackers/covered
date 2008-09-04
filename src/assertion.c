@@ -38,9 +38,6 @@ extern db**         db_list;
 extern unsigned int curr_db;
 extern bool         report_covered;
 extern bool         report_instance;
-extern char**       leading_hierarchies;
-extern int          leading_hier_num;
-extern bool         leading_hiers_differ;
 extern isuppl       info_suppl;
 extern bool         report_exclusions;
 
@@ -432,11 +429,11 @@ void assertion_report(
 
   if( report_instance ) {
 
-    if( leading_hiers_differ ) {
+    if( db_list[curr_db]->leading_hiers_differ ) {
       strcpy( tmp, "<NA>" );
     } else {
-      assert( leading_hier_num > 0 );
-      strcpy( tmp, leading_hierarchies[0] );
+      assert( db_list[curr_db]->leading_hier_num > 0 );
+      strcpy( tmp, db_list[curr_db]->leading_hierarchies[0] );
     }
 
     fprintf( ofile, "Instance                                           Hit/ Miss/Total    Percent hit\n" );
@@ -556,6 +553,9 @@ void assertion_get_coverage(
 
 /*
  $Log$
+ Revision 1.37  2008/09/03 03:46:37  phase1geo
+ Updates for memory and assertion exclusion output.  Checkpointing.
+
  Revision 1.36  2008/08/28 21:24:14  phase1geo
  Adding support for exclusion output for assertions.  Updated regressions accordingly.
  Checkpointing.

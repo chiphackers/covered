@@ -692,9 +692,6 @@ PLI_INT32 covered_sim_calltf( char* name ) {
     }
   }
 
-  /* Initialize all global information variables */
-  info_initialize();
-    
   /* Read in contents of specified database file */
   Try {
     db_read( in_db_name, READ_MODE_MERGE_NO_MERGE ); 

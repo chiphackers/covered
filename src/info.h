@@ -26,9 +26,6 @@
 #include <stdio.h>
 
 
-/*! \brief Initializes all information variables. */
-void info_initialize();
-
 /*! \brief Writes info line to specified CDD file. */
 void info_db_write( FILE* file );
 
@@ -50,6 +47,11 @@ void info_dealloc();
 
 /*
  $Log$
+ Revision 1.10  2008/08/18 23:07:27  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.8.4.2  2008/07/25 21:08:35  phase1geo
  Modifying CDD file format to remove the potential for memory allocation assertion
  errors due to a large number of merged CDD files.  Updating IV and Cver regressions per this

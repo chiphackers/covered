@@ -271,9 +271,6 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
     /* Parse score command-line */
     merge_parse_args( argc, last_arg, argv );
 
-    /* Initialize all global information */
-    info_initialize();
-
     /* Read in base database */
     rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading CDD file \"%s\"", merge_in_head->str );
     assert( rv < USER_MSG_LENGTH );
@@ -313,6 +310,11 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.53  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.47.2.4  2008/08/06 05:32:41  phase1geo
  Another fix for bug 2037791.  Also add new diagnostic to verify the fix for the bug.
 
