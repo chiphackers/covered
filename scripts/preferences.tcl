@@ -421,6 +421,7 @@ proc create_preferences {start_index} {
     .prefwin.lbf.lb insert end "Colors"
     .prefwin.lbf.lb insert end "Coverage Goals"
     .prefwin.lbf.lb insert end "Syntax Highlighting"
+    .prefwin.lbf.lb insert end "Exclusions"
 
     pack .prefwin.lbf.l  -pady 4
     pack .prefwin.lbf.lb -fill y -expand 1
@@ -453,6 +454,7 @@ proc create_preferences {start_index} {
         1 { help_show_manual chapter.gui.preferences "section.gui.pref.color" }
         2 { help_show_manual chapter.gui.preferences "section.gui.pref.goals" }
         3 { help_show_manual chapter.gui.preferences "section.gui.pref.syntax" }
+        4 { help_show_manual chapter.gui.preferences "section.gui.pref.exclusions" }
         default { help_show_manual chapter.gui.preferences "" }
       }
     }
@@ -777,6 +779,8 @@ proc populate_pref {} {
       create_cov_goal_pref
     } elseif {$index == 3} {
       create_syntax_pref
+    } elseif {$index == 4} {
+      create_exclusion_pref
     }
 
     set last_pref_index $index
@@ -988,6 +992,38 @@ proc create_syntax_pref {} {
   pack .prefwin.pf.f -fill both
 
   synchronize_syntax_widgets $tmp_vlog_hl_mode
+
+}
+
+proc create_exclusion_pref {} {
+
+  global exclude_reasons_enabled tablelistopts
+
+  # Create widgets
+  frame .prefwin.pf.f
+
+  checkbutton .prefwin.pf.f.ecb -text "When an item is excluded from coverage, allow user to provide the reason for the exclusion" \
+    -variable exclude_reasons_enabled -anchor w
+
+  labelframe .prefwin.pf.f.elf -labelanchor nw -text "Create General Exclusion Reasons" -padx 4 -pady 6
+  frame .prefwin.pf.f.elf.tf
+  tablelist::tablelist .prefwin.pf.f.elf.tf.tl -columns "0 {Exclusion Reason}" -stretch all \
+    -xscrollcommand {.prefwin.pf.f.elf.tf.hb set} -yscrollcommand {.prefwin.pf.f.elf.tf.vb set}
+  foreach {key value} [array get tablelistopts] {
+    .prefwin.pf.f.elf.tf.tl configure -$key $value
+  }
+  bind .prefwin.pf.f.elf.tf.tl <<ListboxSelect>> {
+    set row [.prefwin.pf.f.elf.tf.tl curselection]
+  }
+  scrollbar .prefwin.pf.f.elf.tf.hb -command {.prefwin.pf.f.elf.tf.tl xview}
+  scrollbar .prefwin.pf.f.elf.tf.vb -command {.prefwin.pf.f.elf.tf.tl yview}
+  grid rowconfigure    .prefwin.pf.f.elf.tf 0 -weight 1
+  grid columnconfigure .prefwin.pf.f.elf.tf 0 -weight 1
+  grid .prefwin.pf.f.elf.tf.tl -row 0 -column 0 -sticky news
+  grid .prefwin.pf.f.elf.tf.vb -row 0 -column 1 -sticky ns
+  grid .prefwin.pf.f.elf.tf.hb -row 1 -column 0 -sticky ew
+
+  # TBD
 
 }
 

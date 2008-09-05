@@ -7,6 +7,7 @@ proc get_exclude_reason {w} {
 
   global more_dn_img more_up_img
   global exclude_default_reasons exclude_reason
+  global tablelistopts
 
   # Clear the exclusion reason string
   set exclude_reason ""
