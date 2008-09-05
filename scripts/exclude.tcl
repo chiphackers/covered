@@ -1,12 +1,10 @@
 set more_dn_img [image create bitmap -data "#define dn_width 22\n#define dn_height 22\nstatic unsigned char dn_bits[] = {\n0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x3f, 0x00, 0x00, 0x3f, 0x00, 0x00, 0x1e, 0x00, 0x00, 0x1e, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};"] 
 set more_up_img [image create bitmap -data "#define up_width 22\n#define up_height 22\nstatic unsigned char up_bits[] = {\n0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x1e, 0x00, 0x00, 0x1e, 0x00, 0x00, 0x3f, 0x00, 0x00, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};"]
 
-set exclude_default_reasons {{This is a standard reason for exclusion, but it is quite long as you can tell.  What is going to happen with it I wonder?} {Another reason.}}
-
 proc get_exclude_reason {w} {
 
   global more_dn_img more_up_img
-  global exclude_default_reasons exclude_reason
+  global exclude_reasons exclude_reason
   global tablelistopts
 
   # Clear the exclusion reason string
@@ -39,7 +37,7 @@ proc get_exclude_reason {w} {
   # Create button frame
   frame  .exclwin.pw.top.bf
   button .exclwin.pw.top.bf.save -text "Save" -width 10 -state disabled -command {
-    set exclude_reason [.exclwin.pw.top.t.t get 1.0 end]
+    set exclude_reason [string trim [string map {\n { } \r { } \t { }} [.exclwin.pw.top.t.t get 1.0 end]]]
     destroy .exclwin
   } 
   button .exclwin.pw.top.bf.close -text "Close" -width 10 -command {
@@ -94,8 +92,8 @@ proc get_exclude_reason {w} {
   pack .exclwin.pw -fill both -expand yes
 
   # Populate the hidden listbox
-  foreach reason $exclude_default_reasons {
-    .exclwin.pw.bot.l.tl insert end [list $reason]
+  foreach reason $exclude_reasons {
+    .exclwin.pw.bot.l.tl insert end $reason
   }
 
   # Make sure that this window is a transient window and set focus
@@ -110,5 +108,30 @@ proc get_exclude_reason {w} {
   tkwait window .exclwin
 
   return [string trim $exclude_reason]
+
+}
+
+proc show_exclude_reason_balloon {w excluded reason} {
+
+  global cov_bgColor cov_fgColor
+
+  if {$excluded == 1 && $reason != ""} {
+    balloon::show $w "Exclude Reason: $reason" $cov_bgColor $cov_fgColor
+  }
+
+}
+
+proc hide_exclude_reason_balloon {w excluded reason} {
+
+  if {$excluded == 1 && $reason != ""} {
+    balloon::hide $w
+  }
+
+}
+
+proc set_exclude_reason_balloon {w excluded reason} {
+
+  bind $w <ButtonPress-3>   "show_exclude_reason_balloon %W $excluded $reason"
+  bind $w <ButtonRelease-3> "hide_exclude_reason_balloon %W $excluded $reason"
 
 }

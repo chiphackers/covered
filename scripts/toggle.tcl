@@ -74,16 +74,7 @@ proc create_toggle_window {signal} {
       enable_cdd_save
       set_pointer curr_toggle_ptr $curr_toggle_ptr
     }
-    bind .togwin.f.excl <ButtonPress-3> {
-      if {$toggle_excluded == 1 && $toggle_reason != ""} {
-        balloon::show .togwin.f.excl "Exclude Reason: $toggle_reason"
-      }
-    }
-    bind .togwin.f.excl <ButtonRelease-3> {
-      if {$toggle_excluded == 1 && $toggle_reason != ""} {
-        balloon::hide .togwin.f.excl
-      }
-    }
+    set_exclude_reason_balloon .togwin.f.excl {$toggle_excluded} {$toggle_reason}
     set_balloon .togwin.f.excl "If set, excludes this signal from toggle coverage consideration"
 
     # Create bottom button bar

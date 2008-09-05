@@ -593,16 +593,7 @@ proc create_comb_window {expr_id sline} {
       enable_cdd_save
       set_pointer curr_comb_ptr $curr_comb_ptr
     }
-    bind .combwin.pw.bot.e <ButtonPress-3> {
-      if {$comb_curr_excluded == 1 && $comb_curr_reason != ""} {
-        balloon::show %W "Exclude Reason: $comb_curr_reason"
-      }
-    }
-    bind .combwin.pw.bot.e <ButtonRelease-3> { 
-      if {$comb_curr_excluded == 1 && $comb_curr_reason != ""} {
-        balloon::hide %W
-      }
-    }
+    set_exclude_reason_balloon .combwin.pw.bot.e {$comb_curr_excluded} {$comb_curr_reason}
     set_balloon .combwin.pw.bot.e "If set, excludes the expression/subexpression displayed in the lower panel from coverage consideration"
     text  .combwin.pw.bot.t -height 10 -width 100 -xscrollcommand ".combwin.pw.bot.hb set" -yscrollcommand ".combwin.pw.bot.vb set" -wrap none -state disabled
     scrollbar .combwin.pw.bot.hb -orient horizontal -command ".combwin.pw.bot.t xview"

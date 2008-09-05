@@ -41,6 +41,7 @@ void line_collect(
             int        cov,
   /*@out@*/ int**      lines,
   /*@out@*/ int**      excludes,
+  /*@out@*/ char***    reasons,
   /*@out@*/ int*       line_cnt,
   /*@out@*/ int*       line_size
 );
@@ -70,6 +71,11 @@ void line_report(
 
 /*
  $Log$
+ Revision 1.22  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.18.6.3  2008/08/07 06:39:11  phase1geo
  Adding "Excluded" column to the summary listbox.
 

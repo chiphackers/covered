@@ -1229,6 +1229,8 @@ proc handle_new_cdd_parse2_lb {w} {
 
 proc create_new_cdd_parse2 {w} {
 
+  global tablelistopts
+
   frame $w
   frame $w.opts
 
@@ -1236,6 +1238,9 @@ proc create_new_cdd_parse2 {w} {
   frame     $w.opts.lbf
   tablelist::tablelist $w.opts.lbf.lb -exportselection 0 -movablerows 1 -selectmode single -columns {0 "Type" 0 "Argument"} \
     -labelcommand tablelist::sortByColumn -xscrollcommand "$w.opts.lbf.hb set" -yscrollcommand "$w.opts.lbf.vf.vb set" -stretch all
+  foreach {key value} [array get tablelistopts] {
+    $w.opts.lbf.lb configure -$key $value
+  }
   frame     $w.opts.lbf.vf
   label     $w.opts.lbf.vf.l
   scrollbar $w.opts.lbf.vf.vb -command "$w.opts.lbf.lb yview" -takefocus 0

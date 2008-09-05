@@ -475,6 +475,7 @@ int tcl_func_collect_uncovered_lines(
   int        retval = TCL_OK;  /* Return value for this function */
   int*       lines;            /* Array of line numbers that were found to be uncovered during simulation */
   int*       excludes;         /* Array of exclude values */
+  char**     reasons;          /* Array of exclude reasons */
   int        line_cnt;         /* Number of elements in the lines and excludes arrays */
   int        line_size;        /* Number of elements allocated in lines and excludes arrays */
   int        i;                /* Loop iterator */
@@ -483,15 +484,17 @@ int tcl_func_collect_uncovered_lines(
 
   if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
 
-    line_collect( funit, 0, &lines, &excludes, &line_cnt, &line_size );
+    line_collect( funit, 0, &lines, &excludes, &reasons, &line_cnt, &line_size );
 
     for( i=0; i<line_cnt; i++ ) {
-      snprintf( str, 50, "%d %d", lines[i], excludes[i] );
+      snprintf( str, 50, "%d %d {%s}", lines[i], excludes[i], ((reasons[i] != NULL) ? reasons[i] : "") );
       Tcl_AppendElement( tcl, str );
+      free_safe( reasons[i], (strlen( reasons[i] ) + 1) );
     }
 
-    free_safe( lines, (sizeof( int ) * line_size) );
+    free_safe( lines,    (sizeof( int ) * line_size) );
     free_safe( excludes, (sizeof( int ) * line_size) );
+    free_safe( reasons,  (sizeof( char* ) * line_size) );
 
   } else {
 
@@ -523,6 +526,7 @@ int tcl_func_collect_covered_lines(
   int        retval  = TCL_OK;  /* Return value for this function */
   int*       lines;             /* Array of line numbers that were covered during simulation */
   int*       excludes;          /* Array of exclusion values */
+  char**     reasons;           /* Array of exclusion reasons */
   int        line_cnt;          /* Number of elements in the lines and excludes arrays */
   int        line_size;         /* Number of elements allocated in the lines and excludes arrays */
   int        i;                 /* Loop iterator */
@@ -531,15 +535,17 @@ int tcl_func_collect_covered_lines(
 
   if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
 
-    line_collect( funit, 1, &lines, &excludes, &line_cnt, &line_size );
+    line_collect( funit, 1, &lines, &excludes, &reasons, &line_cnt, &line_size );
 
     for( i=0; i<line_cnt; i++ ) {
-      snprintf( str, 50, "%d %d", lines[i], excludes[i] );
+      snprintf( str, 50, "%d %d {%s}", lines[i], excludes[i], ((reasons[i] != NULL) ? reasons[i] : "") );
       Tcl_AppendElement( tcl, str );
+      free_safe( reasons[i], (strlen( reasons[i] ) + 1) );
     }
 
-    free_safe( lines, (sizeof( int ) * line_size) );
+    free_safe( lines,    (sizeof( int ) * line_size) );
     free_safe( excludes, (sizeof( int ) * line_size) );
+    free_safe( reasons,  (sizeof( char* ) * line_size) );
 
   } else {
 
@@ -3045,6 +3051,9 @@ void tcl_func_initialize(
 
 /*
  $Log$
+ Revision 1.85  2008/09/04 23:08:06  phase1geo
+ More work on exclusions via GUI.  Still work to go.  Checkpointing.
+
  Revision 1.84  2008/09/04 21:34:20  phase1geo
  Completed work to get exclude reason support to work with toggle coverage.
  Ground-work is laid for the rest of the coverage metrics.  Checkpointing.

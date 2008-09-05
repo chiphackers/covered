@@ -54,7 +54,7 @@ proc balloon::getwfamily {w} {
   return [winfo children [winfo parent $w]]
 }
 
-proc balloon::show {w arg} {
+proc balloon::show {w arg {bgcolor lightyellow} {fgcolor black}} {
 
   if {[eval winfo containing  [winfo pointerxy .]]!=$w} {return}
 
@@ -66,12 +66,10 @@ proc balloon::show {w arg} {
   if {[string equal [tk windowingsystem] aqua]}  {
     ::tk::unsupported::MacWindowStyle style $top help none
   }
-  pack [message $top.txt -aspect 1500 -bg lightyellow -padx 1 -pady 0 \
-          -text $arg]
-  set wmx [expr [winfo rootx $w]+5]
-  set wmy [expr [winfo rooty $w]+[winfo height $w]+7]
-  wm geometry $top \
-    [winfo reqwidth $top.txt]x[winfo reqheight $top.txt]+$wmx+$wmy
+  pack [message $top.txt -aspect 1500 -bg $bgcolor -fg $fgcolor -padx 1 -pady 0 -text $arg]
+  set wmx [winfo pointerx $w]
+  set wmy [expr [winfo pointery $w]+20]
+  wm geometry $top [winfo reqwidth $top.txt]x[winfo reqheight $top.txt]+$wmx+$wmy
   raise $top
 
 }

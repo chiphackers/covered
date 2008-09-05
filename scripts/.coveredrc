@@ -135,5 +135,17 @@ HighlightStringColor = red
 
 HighlightSymbolColor = coral
 
+# If this value is set to true, a popup dialog box will be created whenever the user excludes a coverage
+# point, allowing for the creation of a reason for the exclusion.  If this value is set to false, no popup
+# box will be displayed when a coverage point is marked for exclusion.  The exclusion reason information
+# is saved to the CDD (if specified from the GUI).
+
+EnableExclusionReasons = 1
+
+# This string specifies default reasons for exclusion.  These reasons may be used wherever
+# a coverage point is excluded (or the user may specify a unique reason).
+
+ExclusionReasons = {This is really simple test. }:{This is another simple test. }
+
 # THE FOLLOWING LINES ARE FOR STORING GUI STATE INFORMATION -- DO NOT MODIFY LINES BELOW THIS COMMENT!
 

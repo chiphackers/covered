@@ -36,6 +36,7 @@ set rc_file_to_write        ""
 set hl_mode                 0
 set last_pref_index         -1
 set exclude_reasons_enabled 1
+set exclude_reasons         {}
 
 # Create a list from 100 to 0
 for {set i 100} {$i >= 0} {incr i -1} {
@@ -55,6 +56,7 @@ proc read_coveredrc {} {
   global HOME USER_HOME rc_file_to_write
   global main_geometry toggle_geometry memory_geometry comb_geometry fsm_geometry assert_geometry
   global mod_inst_tl_columns mod_inst_type mod_inst_tl_init_hidden mod_inst_tl_width
+  global exclude_reasons_enabled exclude_reasons
 
   # Find the correct configuration file to read and eventually write
   if {[file exists ".coveredrc"] == 1} {
@@ -131,6 +133,10 @@ proc read_coveredrc {} {
           set vlog_hl_string_color $value
         } elseif {$field == "HighlightSymbolColor"} {
           set vlog_hl_symbol_color $value
+        } elseif {$field == "EnableExclusionReasons"} {
+          set exclude_reasons_enabled $value
+        } elseif {$field == "ExclusionReasons"} {
+          set exclude_reasons [split $value :]
 
         # The following are GUI state-saved information -- only use this information if SaveGuiOnExit was set to true
         } elseif {$save_gui_on_exit == "true"} {
@@ -180,6 +186,7 @@ proc write_coveredrc {exiting} {
   global rc_file_to_write
   global mod_inst_tl_columns mod_inst_type tableColHide
   global main_geometry toggle_geometry memory_geometry comb_geometry fsm_geometry assert_geometry
+  global exclude_reasons_enabled exclude_reasons
 
   if {$rc_file_to_write != ""} {
 
@@ -323,6 +330,18 @@ proc write_coveredrc {exiting} {
 
     puts $rc "HighlightSymbolColor = $vlog_hl_symbol_color\n"
 
+    puts $rc "# If this value is set to true, a popup dialog box will be created whenever the user excludes a coverage"
+    puts $rc "# point, allowing for the creation of a reason for the exclusion.  If this value is set to false, no popup"
+    puts $rc "# box will be displayed when a coverage point is marked for exclusion.  The exclusion reason information"
+    puts $rc "# is saved to the CDD (if specified from the GUI).\n"
+
+    puts $rc "EnableExclusionReasons = $exclude_reasons_enabled\n"
+
+    puts $rc "# This string specifies default reasons for exclusion.  These reasons may be used wherever"
+    puts $rc "# a coverage point is excluded (or the user may specify a unique reason).\n"
+
+    puts $rc "ExclusionReasons = [join $exclude_reasons :]\n"
+
     puts $rc "# THE FOLLOWING LINES ARE FOR STORING GUI STATE INFORMATION -- DO NOT MODIFY LINES BELOW THIS COMMENT!\n"
 
     if {$save_gui_on_exit == true && $exiting == 1} {
@@ -373,6 +392,8 @@ proc create_preferences {start_index} {
   global vlog_hl_string_color    tmp_vlog_hl_string_color
   global vlog_hl_symbol_color    tmp_vlog_hl_symbol_color
   global hl_mode last_pref_index
+  global exclude_reasons_enabled tmp_exclude_reasons_enabled
+  global exclude_reasons         tmp_exclude_reasons
 
   # Now create the window and set the grab to this window
   if {[winfo exists .prefwin] == 0} {
@@ -400,6 +421,8 @@ proc create_preferences {start_index} {
     set tmp_vlog_hl_value_color     $vlog_hl_value_color
     set tmp_vlog_hl_string_color    $vlog_hl_string_color
     set tmp_vlog_hl_symbol_color    $vlog_hl_symbol_color
+    set tmp_exclude_reasons_enabled $exclude_reasons_enabled
+    set tmp_exclude_reasons         $exclude_reasons
 
     # Specify that there was no last index selected
     set last_pref_index -1
@@ -544,6 +567,8 @@ proc apply_preferences {} {
   global vlog_hl_value_color     tmp_vlog_hl_value_color
   global vlog_hl_string_color    tmp_vlog_hl_string_color
   global vlog_hl_symbol_color    tmp_vlog_hl_symbol_color
+  global exclude_reasons_enabled tmp_exclude_reasons_enabled
+  global exclude_reasons         tmp_exclude_reasons
 
   # Save spinner values to temporary storage items
   save_spinners [.prefwin.lbf.lb curselection]
@@ -637,6 +662,14 @@ proc apply_preferences {} {
   }
   if {$vlog_hl_symbol_color != $tmp_vlog_hl_symbol_color} {
     set vlog_hl_symbol_color $tmp_vlog_hl_symbol_color
+    set changed 1
+  }
+  if {$exclude_reasons_enabled != $tmp_exclude_reasons_enabled} {
+    set exclude_reasons_enabled $tmp_exclude_reasons_enabled
+    set changed 1
+  }
+  if {$exclude_reasons != $tmp_exclude_reasons} {
+    set exclude_reasons $tmp_exclude_reasons
     set changed 1
   }
 
@@ -995,35 +1028,105 @@ proc create_syntax_pref {} {
 
 }
 
+proc store_exclude_reasons {} {
+
+  global tmp_exclude_reasons
+
+  set tmp_exclude_reasons [.prefwin.pf.f.elf.lf.tl get 0 end]
+
+}
+
 proc create_exclusion_pref {} {
 
-  global exclude_reasons_enabled tablelistopts
+  global HOME tablelistopts
+  global tmp_exclude_reasons_enabled tmp_exclude_reasons
 
   # Create widgets
   frame .prefwin.pf.f
 
-  checkbutton .prefwin.pf.f.ecb -text "When an item is excluded from coverage, allow user to provide the reason for the exclusion" \
-    -variable exclude_reasons_enabled -anchor w
+  # Create checkbutton for turning exclusion reason support on/off
+  labelframe  .prefwin.pf.f.ecf    -text "Exclusion Options"
+  checkbutton .prefwin.pf.f.ecf.cb -text "Enable exclusion reason support when items are excluded" -variable tmp_exclude_reasons_enabled -anchor w
+  pack .prefwin.pf.f.ecf.cb -fill x -padx 3 -pady 3
 
+  # Create labelframe for creating general reasons for exclusion
   labelframe .prefwin.pf.f.elf -labelanchor nw -text "Create General Exclusion Reasons" -padx 4 -pady 6
-  frame .prefwin.pf.f.elf.tf
-  tablelist::tablelist .prefwin.pf.f.elf.tf.tl -columns "0 {Exclusion Reason}" -stretch all \
-    -xscrollcommand {.prefwin.pf.f.elf.tf.hb set} -yscrollcommand {.prefwin.pf.f.elf.tf.vb set}
-  foreach {key value} [array get tablelistopts] {
-    .prefwin.pf.f.elf.tf.tl configure -$key $value
-  }
-  bind .prefwin.pf.f.elf.tf.tl <<ListboxSelect>> {
-    set row [.prefwin.pf.f.elf.tf.tl curselection]
-  }
-  scrollbar .prefwin.pf.f.elf.tf.hb -command {.prefwin.pf.f.elf.tf.tl xview}
-  scrollbar .prefwin.pf.f.elf.tf.vb -command {.prefwin.pf.f.elf.tf.tl yview}
-  grid rowconfigure    .prefwin.pf.f.elf.tf 0 -weight 1
-  grid columnconfigure .prefwin.pf.f.elf.tf 0 -weight 1
-  grid .prefwin.pf.f.elf.tf.tl -row 0 -column 0 -sticky news
-  grid .prefwin.pf.f.elf.tf.vb -row 0 -column 1 -sticky ns
-  grid .prefwin.pf.f.elf.tf.hb -row 1 -column 0 -sticky ew
 
-  # TBD
+  # Create tablelist frame
+  frame .prefwin.pf.f.elf.lf
+  tablelist::tablelist .prefwin.pf.f.elf.lf.tl -columns "0 {Exclusion Reason}" -stretch all \
+    -xscrollcommand {.prefwin.pf.f.elf.lf.hb set} -yscrollcommand {.prefwin.pf.f.elf.lf.vb set} -movablerows 1 -selectmode single
+  foreach {key value} [array get tablelistopts] {
+    .prefwin.pf.f.elf.lf.tl configure -$key $value
+  }
+  bind .prefwin.pf.f.elf.lf.tl <<ListboxSelect>> {
+    set row [.prefwin.pf.f.elf.lf.tl curselection]
+    .prefwin.pf.f.elf.tf.t   delete 1.0 end
+    .prefwin.pf.f.elf.tf.t   insert end [%W getcells [list $row,0]]
+    .prefwin.pf.f.elf.bf.add configure -state normal
+    .prefwin.pf.f.elf.bf.del configure -state normal
+  }
+  scrollbar .prefwin.pf.f.elf.lf.hb -command {.prefwin.pf.f.elf.lf.tl xview} -orient horizontal
+  scrollbar .prefwin.pf.f.elf.lf.vb -command {.prefwin.pf.f.elf.lf.tl yview}
+  grid rowconfigure    .prefwin.pf.f.elf.lf 0 -weight 1
+  grid columnconfigure .prefwin.pf.f.elf.lf 0 -weight 1
+  grid .prefwin.pf.f.elf.lf.tl -row 0 -column 0 -sticky news
+  grid .prefwin.pf.f.elf.lf.vb -row 0 -column 1 -sticky ns
+  grid .prefwin.pf.f.elf.lf.hb -row 1 -column 0 -sticky ew
+
+  # Create button frame
+  frame  .prefwin.pf.f.elf.bf
+  set plus [image create bitmap -data "#define plus_width 18\n#define plus_height 18\nstatic unsigned char plus_bits[] = {\n0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x03, 0x00, 0x00, 0x03, 0x00, 0x00, 0x03, 0x00, 0xf0, 0x3f, 0x00, 0xf0, 0x3f, 0x00, 0x00, 0x03, 0x00, 0x00, 0x03, 0x00, 0x00, 0x03, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};"]
+  button .prefwin.pf.f.elf.bf.add -image $plus -state disabled -command {
+    .prefwin.pf.f.elf.lf.tl  insert end [string trim [string map {\n { } \r { } \t { }} [list [.prefwin.pf.f.elf.tf.t get 1.0 end]]]]
+    .prefwin.pf.f.elf.tf.t   delete 1.0 end
+    .prefwin.pf.f.elf.bf.add configure -state disabled
+    store_exclude_reasons
+  }
+  set_balloon .prefwin.pf.f.elf.bf.add "Adds the reason to the list"
+  set minus [image create bitmap -data "#define minus_width 18\n#define minus_height 18\nstatic unsigned char minus_bits[] = {\n0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf0, 0x3f, 0x00, 0xf0, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};"]
+  button .prefwin.pf.f.elf.bf.del -image $minus -state disabled -command {
+    .prefwin.pf.f.elf.lf.tl  delete [.prefwin.pf.f.elf.lf.tl curselection]
+    .prefwin.pf.f.elf.tf.t   delete 1.0 end
+    .prefwin.pf.f.elf.bf.add configure -state disabled
+    .prefwin.pf.f.elf.bf.del configure -state disabled
+    store_exclude_reasons
+  }
+  set_balloon .prefwin.pf.f.elf.bf.del "Removes the selected reason from the list"
+  pack .prefwin.pf.f.elf.bf.add -side left -padx 3 -pady 3
+  pack .prefwin.pf.f.elf.bf.del -side left -padx 3 -pady 3
+
+  # Create text frame
+  frame .prefwin.pf.f.elf.tf
+  text  .prefwin.pf.f.elf.tf.t -wrap word -yscrollcommand {.prefwin.pf.f.elf.tf.vb set} -height 6
+  bind .prefwin.pf.f.elf.tf.t <KeyRelease> {
+    if {[%W count -chars 1.0 end] < 2} {
+      .prefwin.pf.f.elf.bf.add configure -state disabled
+    } else {
+      .prefwin.pf.f.elf.bf.add configure -state normal
+    }
+  }
+  scrollbar .prefwin.pf.f.elf.tf.vb -command {.prefwin.pf.f.elf.tf.t yview}
+  grid columnconfigure .prefwin.pf.f.elf.tf 0 -weight 1
+  grid .prefwin.pf.f.elf.tf.t  -row 0 -column 0 -sticky news
+  grid .prefwin.pf.f.elf.tf.vb -row 0 -column 1 -sticky ns
+
+  # Pack the tablelist, button and text frames
+  pack .prefwin.pf.f.elf.lf -fill both -expand yes
+  pack .prefwin.pf.f.elf.bf -fill both
+  pack .prefwin.pf.f.elf.tf -fill both
+
+  # Pack the labelframe
+  pack .prefwin.pf.f.ecf -fill x
+  pack .prefwin.pf.f.elf -fill both -expand yes
+
+  # Pack the entire exclusion reason window
+  pack .prefwin.pf.f -fill both
+
+  # Insert the values into the tablelist
+  foreach exclude_reason $tmp_exclude_reasons {
+    .prefwin.pf.f.elf.lf.tl insert end $exclude_reason
+  }
 
 }
 

@@ -828,7 +828,7 @@ proc save_required_cdds_to_file {w} {
 
 proc create_rank_cdds_files {w} {
 
-  global rank_view
+  global rank_view tablelistopts
 
   # Create top-most frame
   frame $w
@@ -839,6 +839,9 @@ proc create_rank_cdds_files {w} {
   tablelist::tablelist $w.f.t.lb -columns {0 "Required" center 0 "CDD Filename"} -selectmode extended \
     -xscrollcommand "$w.f.t.hb set" -yscrollcommand "$w.f.t.vb set" -stretch {1} -movablerows 1 \
     -editendcommand rank_files_edit_end_cmd
+  foreach {key value} [array get tablelistopts] {
+    $w.f.t.lb configure -$key $value
+  }
   $w.f.t.lb columnconfigure 0 -name required -editable 1 -editwindow checkbutton -formatcommand empty_string
   scrollbar $w.f.t.hb -orient horizontal -command "$w.f.t.lb xview" -takefocus 0
   scrollbar $w.f.t.vb -command "$w.f.t.lb yview" -takefocus 0

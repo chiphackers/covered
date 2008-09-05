@@ -76,16 +76,7 @@ proc create_memory_window {signal} {
       enable_cdd_save
       set_pointer curr_memory_ptr $curr_memory_ptr
     }
-    bind .memwin.f.fae.excl <ButtonPress-3> {
-      if {$memory_excluded == 1 && $memory_reason != ""} {
-        balloon::show .memwin.f.fae.excl "Exclude Reason: $memory_reason"
-      }
-    }
-    bind .memwin.f.fae.excl <ButtonRelease-3> {
-      if {$memory_excluded == 1 && $memory_reason != ""} {
-        balloon::hide .memwin.f.fae.excl
-      }
-    }
+    set_exclude_reason_balloon .memwin.f.fae.excl {$memory_excluded} {$memory_reason}
     set_balloon .memwin.f.fae.excl "If set, excludes this entire memory from coverage consideration"
 
     # Pack the addressable memory elements frame

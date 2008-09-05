@@ -118,12 +118,13 @@ void line_get_stats(
  not hit during simulation.
 */
 void line_collect(
-            func_unit* funit,       /*!< Pointer to functional unit */
-            int        cov,         /*!< If set to 1, gets covered lines, if 0 retrieves uncovered lines; otherwise, gets all lines */
-  /*@out@*/ int**      lines,       /*!< Pointer to array of integers that will contain the line numbers */
-  /*@out@*/ int**      excludes,    /*!< Pointer to array of integers that will contain the exclude values */
-  /*@out@*/ int*       line_cnt,    /*!< Pointer to size of lines and excludes arrays */
-  /*@out@*/ int*       line_size    /*!< Pointer to the total number of lines/excludes integers allocated */
+            func_unit* funit,     /*!< Pointer to functional unit */
+            int        cov,       /*!< If set to 1, gets covered lines, if 0 retrieves uncovered lines; otherwise, gets all lines */
+  /*@out@*/ int**      lines,     /*!< Pointer to array of integers that will contain the line numbers */
+  /*@out@*/ int**      excludes,  /*!< Pointer to array of integers that will contain the exclude values */
+  /*@out@*/ char***    reasons,   /*!< Pointer to array of strings that may contain exclusion reasons */
+  /*@out@*/ int*       line_cnt,  /*!< Pointer to size of lines and excludes arrays */
+  /*@out@*/ int*       line_size  /*!< Pointer to the total number of lines/excludes integers allocated */
 ) { PROFILE(LINE_COLLECT);
 
   int         i;          /* Loop iterator */
@@ -136,6 +137,7 @@ void line_collect(
   *line_cnt  = 0;
   *lines     = (int*)malloc_safe( sizeof( int ) * (*line_size) );
   *excludes  = (int*)malloc_safe( sizeof( int ) * (*line_size) );
+  *reasons   = (char**)malloc_safe( sizeof( char* ) * (*line_size) );
 
   /* Initialize the functional unit iterator */
   func_iter_init( &fi, funit, TRUE, FALSE );
@@ -158,13 +160,22 @@ void line_collect(
 
         last_line = expression_get_last_line_expr( stmt->exp )->line;
         for( i=stmt->exp->line; i<=last_line; i++ ) {
+          exclude_reason* er;
           if( *line_cnt == *line_size ) {
             *line_size += 20;
             *lines      = (int*)realloc_safe( *lines,    (sizeof( int ) * (*line_size - 20)), (sizeof( int ) * (*line_size)) );
             *excludes   = (int*)realloc_safe( *excludes, (sizeof( int ) * (*line_size - 20)), (sizeof( int ) * (*line_size)) );
+            *reasons    = (char**)realloc_safe( *reasons, (sizeof( char* ) * (*line_size - 20)), (sizeof( char* ) * (*line_size)) );
           }
           (*lines)[(*line_cnt)]    = i;
           (*excludes)[(*line_cnt)] = ESUPPL_EXCLUDED( stmt->exp->suppl );
+
+          /* If the toggle is currently excluded, check to see if there's a reason associated with it */
+          if( (ESUPPL_EXCLUDED( stmt->exp->suppl ) == 1) && ((er = exclude_find_exclude_reason( 'L', stmt->exp->id, funit )) != NULL) ) {
+            (*reasons)[(*line_cnt)] = strdup_safe( er->reason );
+          } else {
+            (*reasons)[(*line_cnt)] = NULL;
+          }
           (*line_cnt)++;
         }
 
@@ -670,6 +681,10 @@ void line_report(
 
 /*
  $Log$
+ Revision 1.101  2008/09/04 21:34:20  phase1geo
+ Completed work to get exclude reason support to work with toggle coverage.
+ Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
+
  Revision 1.100  2008/09/04 04:15:09  phase1geo
  Adding -p option to exclude command.  Updating other files per this change.
  Checkpointing.

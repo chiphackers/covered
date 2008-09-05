@@ -28,6 +28,8 @@ set assert_summary_hit      0
 set assert_summary_excluded 0
 set assert_summary_total    0
 set curr_block              0 
+set line_excluded           0
+set line_reason             ""
 
 # TODO : 
 # Suppose that a really large verilog file has a lot of lines uncovered.
@@ -229,7 +231,11 @@ proc display_line_cov {} {
           } else {
             set excl_value 1
           }
-          tcl_func_set_line_exclude $curr_block $selected_line $excl_value
+          set line_reason ""
+          if {$exclude_reasons_enabled == 1 && $excl_value == 1} {
+            set line_reason [get_exclude_reason .]
+          }
+          tcl_func_set_line_exclude $curr_block $selected_line $excl_value $line_reason
           set text_x [.bot.right.txt xview]
           set text_y [.bot.right.txt yview]
           process_line_cov
@@ -237,6 +243,42 @@ proc display_line_cov {} {
           .bot.right.txt yview moveto [lindex $text_y 0]
           populate_listbox
           enable_cdd_save
+        }
+        .bot.right.txt tag bind uncov_button <ButtonPress-3> {
+          set selected_line [expr [lindex [split [.bot.right.txt index current] .] 0] + ($start_line - 1)]
+          set entry [lsearch -index 0 -inline $uncovered_lines $selected_line]
+          if {$entry != ""} {
+            set line_excluded [lindex $entry 1]
+            set line_reason   [lindex $entry 2]
+            if {$line_excluded == 1 && $line_reason != ""} {
+              balloon::show .bot.right.txt "Exclude Reason: $line_reason" $cov_bgColor $cov_fgColor
+            }
+          } else {
+            set entry [lsearch -index 0 -inline $covered_lines $selected_line]
+            set line_excluded [lindex $entry 1]
+            set line_reason   [lindex $entry 2]
+            if {$line_excluded == 1 && $line_reason != ""} {
+              balloon::show .bot.right.txt "Exclude Reason: $line_reason" $cov_bgColor $cov_fgColor
+            }
+          }
+        }
+        .bot.right.txt tag bind uncov_button <ButtonRelease-3> {
+          set selected_line [expr [lindex [split [.bot.right.txt index current] .] 0] + ($start_line - 1)]
+          set entry [lsearch -index 0 -inline $uncovered_lines $selected_line]
+          if {$entry != ""} {
+            set line_excluded [lindex $entry 1]
+            set line_reason   [lindex $entry 2]
+            if {$line_excluded == 1 && $line_reason != ""} {
+              balloon::hide .bot.right.txt
+            }
+          } else {
+            set entry [lsearch -index 0 -inline $covered_lines $selected_line]
+            set line_excluded [lindex $entry 1]
+            set line_reason   [lindex $entry 2]
+            if {$line_excluded == 1 && $line_reason != ""} {
+              balloon::hide .bot.right.txt
+            }
+          }
         }
 
       }
