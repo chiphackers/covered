@@ -1342,6 +1342,7 @@ int tcl_func_get_fsm_coverage(
   char**       total_to_arcs;    /* String array containing all possible state transition output states */
   int*         total_ids;        /* Integer array containing exclusion IDs for each state transition */
   int*         excludes;         /* Integer array containing exclude values for each state transition */
+  char**       reasons;          /* String array containing exclusion reasons */
   int          total_arc_num;    /* Number of elements in both the total_from_arcs and total_to_arcs arrays */
   char**       hit_from_arcs;    /* String array containing hit state transition input states */
   char**       hit_to_arcs;      /* String array containing hit state transition output states */
@@ -1359,7 +1360,7 @@ int tcl_func_get_fsm_coverage(
   if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
 
     fsm_get_coverage( funit, expr_id, &total_states, &total_state_num, &hit_states, &hit_state_num,
-                      &total_from_arcs, &total_to_arcs, &total_ids, &excludes, &total_arc_num, &hit_from_arcs, &hit_to_arcs, &hit_arc_num,
+                      &total_from_arcs, &total_to_arcs, &total_ids, &excludes, &reasons, &total_arc_num, &hit_from_arcs, &hit_to_arcs, &hit_arc_num,
                       &input_state, &input_size, &output_state, &output_size );
 
     /* Load FSM total states into Tcl */
@@ -1384,10 +1385,11 @@ int tcl_func_get_fsm_coverage(
 
     /* Load FSM total arcs into Tcl */
     for( i=0; i<total_arc_num; i++ ) {
-      snprintf( str, 4096, "%s %s %d", total_from_arcs[i], total_to_arcs[i], excludes[i] );
+      snprintf( str, 4096, "%s %s %d {%s}", total_from_arcs[i], total_to_arcs[i], excludes[i], ((reasons[i] != NULL) ? reasons[i] : "") );
       Tcl_SetVar( tcl, "fsm_arcs", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
       free_safe( total_from_arcs[i], (strlen( total_from_arcs[i] ) + 1) );
       free_safe( total_to_arcs[i], (strlen( total_to_arcs[i] ) + 1) );
+      free_safe( reasons[i], (strlen( reasons[i] ) + 1) );
     }
 
     if( total_arc_num > 0 ) {
@@ -1395,6 +1397,7 @@ int tcl_func_get_fsm_coverage(
       free_safe( total_to_arcs, (sizeof( char* ) * total_arc_num) );
       free_safe( total_ids, (sizeof( int ) * total_arc_num) );
       free_safe( excludes, (sizeof( int ) * total_arc_num) );
+      free_safe( reasons, (sizeof( char* ) * total_arc_num) );
     }
 
     /* Load FSM hit arcs into Tcl */
@@ -1585,7 +1588,7 @@ int tcl_func_get_assert_coverage(
 
     curr_cp = cp_head;
     while( curr_cp != NULL ) {
-      snprintf( str, 4096, "{%s} %d %d %d", curr_cp->str, curr_cp->suppl, curr_cp->suppl2, curr_cp->suppl3 );
+      snprintf( str, 4096, "{%s} %d %d %d {%s}", curr_cp->str, curr_cp->suppl, curr_cp->suppl2, curr_cp->suppl3, ((curr_cp->str2 != NULL) ? curr_cp->str2 : "") );
       Tcl_SetVar( tcl, "assert_cov_points", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
       curr_cp = curr_cp->next;
     }
@@ -3051,6 +3054,10 @@ void tcl_func_initialize(
 
 /*
  $Log$
+ Revision 1.86  2008/09/05 23:19:03  phase1geo
+ Adding exclusion preference pane.  Also added support for exclusion reason for
+ line coverage.  Checkpointing.
+
  Revision 1.85  2008/09/04 23:08:06  phase1geo
  More work on exclusions via GUI.  Still work to go.  Checkpointing.
 

@@ -62,6 +62,7 @@ str_link* str_link_add(
   tmp = (str_link*)malloc_safe( sizeof( str_link ) );
 
   tmp->str    = str;
+  tmp->str2   = NULL;
   tmp->suppl  = 0x0;
   tmp->suppl2 = 0x0;
   tmp->suppl3 = 0x0;
@@ -1019,11 +1020,12 @@ void str_link_delete_list(
     tmp  = head;
     head = tmp->next;
 
-    /* Deallocate memory for stored string */
-    if( tmp->str != NULL ) {
-      free_safe( tmp->str, (strlen( tmp->str ) + 1) );
-      tmp->str = NULL;
-    }
+    /* Deallocate memory for stored string(s) */
+    free_safe( tmp->str,  (strlen( tmp->str )  + 1) );
+    free_safe( tmp->str2, (strlen( tmp->str2 ) + 1) );
+
+    tmp->str  = NULL;
+    tmp->str2 = NULL;
 
     /* Deallocate str_link element itself */
     free_safe( tmp, sizeof( str_link ) );
@@ -1297,6 +1299,11 @@ void inst_link_delete_list(
 
 /*
  $Log$
+ Revision 1.82  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.79.4.3  2008/08/07 18:03:51  phase1geo
  Fixing instance exclusion segfault issue with GUI.  Also cleaned up function
  documentation in link.c.

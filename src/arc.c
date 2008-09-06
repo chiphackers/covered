@@ -127,12 +127,13 @@
 #include <stdio.h>
 #include <assert.h>
 
-#include "defines.h"
 #include "arc.h"
+#include "defines.h"
+#include "exclude.h"
+#include "expr.h"
 #include "profiler.h"
 #include "util.h"
 #include "vector.h"
-#include "expr.h"
 
 
 /*!
@@ -781,8 +782,10 @@ void arc_get_transitions(
   /*@out@*/ char***          to_states,    /*!< Pointer to string array containing to_state values */
   /*@out@*/ int**            ids,          /*!< List of arc IDs */
   /*@out@*/ int**            excludes,     /*!< Pointer to integer array containing exclude values */
+  /*@out@*/ char***          reasons,      /*!< Pointer to string array containing exclude reasons */
   /*@out@*/ int*             arc_size,     /*!< Number of elements in both the from_states and to_states arrays */
             const fsm_table* table,        /*!< Pointer to FSM table */
+            func_unit*       funit,        /*!< Pointer to functional unit containing this FSM */
             bool             hit,          /*!< Specifies if hit or missed transitions should be gathered */
             bool             any           /*!< Specifies if all arc transitions or just the ones that meet the hit criteria should be gathered */
 ) { PROFILE(ARC_GET_TRANSITIONS);
@@ -796,20 +799,32 @@ void arc_get_transitions(
   *to_states   = NULL;
   *ids         = NULL;
   *excludes    = NULL;
+  *reasons     = NULL;
   *arc_size    = 0;
 
   /* Iterate through arc transitions */
   for( i=0; i<table->num_arcs; i++ ) {
 
     if( (table->arcs[i]->suppl.part.hit == hit) || any ) {
+      exclude_reason* er;
+
       *from_states                = (char**)realloc_safe( *from_states, (sizeof( char* ) * (*arc_size)), (sizeof( char* ) * (*arc_size + 1)) );
       *to_states                  = (char**)realloc_safe( *to_states,   (sizeof( char* ) * (*arc_size)), (sizeof( char* ) * (*arc_size + 1)) );
       *ids                        = (int*)realloc_safe( *ids, (sizeof( int ) * (*arc_size)), (sizeof( int ) * (*arc_size + 1)) );
       *excludes                   = (int*)realloc_safe( *excludes, (sizeof( int ) * (*arc_size)), (sizeof( int ) * (*arc_size + 1)) );
+      *reasons                    = (char**)realloc_safe( *reasons, (sizeof( char* ) * (*arc_size)), (sizeof( char* ) * (*arc_size + 1)) );
       (*from_states)[(*arc_size)] = vector_to_string( table->fr_states[table->arcs[i]->from], HEXIDECIMAL, TRUE );
       (*to_states)[(*arc_size)]   = vector_to_string( table->to_states[table->arcs[i]->to],   HEXIDECIMAL, TRUE );
       (*ids)[(*arc_size)]         = table->arcs[i]->id;
-      (*excludes)[(*arc_size)] = table->arcs[i]->suppl.part.excluded;
+      (*excludes)[(*arc_size)]    = table->arcs[i]->suppl.part.excluded;
+
+      /* If the assertion is currently excluded, check to see if there's a reason associated with it */
+      if( (table->arcs[i]->suppl.part.excluded == 1) && ((er = exclude_find_exclude_reason( 'F', table->arcs[i]->id, funit )) != NULL) ) {
+        (*reasons)[(*arc_size)] = strdup_safe( er->reason );
+      } else {
+        (*reasons)[(*arc_size)] = NULL;
+      }
+
       (*arc_size)++;
     }
 
@@ -880,6 +895,10 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.68  2008/09/03 05:33:06  phase1geo
+ Adding in FSM exclusion support to exclude and report -e commands.  Updating
+ regressions per recent changes.  Checkpointing.
+
  Revision 1.67  2008/08/29 05:38:36  phase1geo
  Adding initial pass of FSM exclusion ID output.  Need to fix issues with the -e
  option usage for all metrics, I believe (certainly for FSM).  Checkpointing.

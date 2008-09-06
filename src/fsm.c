@@ -574,6 +574,7 @@ void fsm_get_coverage(
   /*@out@*/ char***       total_to_arcs,       /*!< Pointer to a string array containing all possible state transition to states */
   /*@out@*/ int**         total_ids,           /*!< Pointer to an integer array containing the arc transition IDs for each transition */
   /*@out@*/ int**         excludes,            /*!< Pointer to an integer array containing the exclude values for each state transition */
+  /*@out@*/ char***       reasons,             /*!< Pointer to a string array containing exclusion reasons */
   /*@out@*/ int*          total_arc_num,       /*!< Pointer to the number of elements in both the total_from_arcs, total_to_arcs and excludes arrays */
   /*@out@*/ char***       hit_from_arcs,       /*!< Pointer to a string array containing the hit state transition from states */
   /*@out@*/ char***       hit_to_arcs,         /*!< Pointer to a string array containing the hit state transition to states */
@@ -591,6 +592,7 @@ void fsm_get_coverage(
   unsigned int total_to_state_num;  /* Temporary size indicator */
   char**       hit_to_states;       /* Temporary array */
   unsigned int hit_to_state_num;    /* Temporary size indicator */
+  char**       tmp_reasons;         /* Temporary reason array */
 
   curr_fsm = funit->fsm_head;
   while( (curr_fsm != NULL) && (curr_fsm->table->to_state->id != expr_id) ) {
@@ -604,8 +606,8 @@ void fsm_get_coverage(
   arc_get_states( hit_fr_states,   hit_fr_state_num,   &hit_to_states,   &hit_to_state_num,   curr_fsm->table->table, TRUE, FALSE );
 
   /* Get state transition information */
-  arc_get_transitions( total_from_arcs, total_to_arcs, total_ids, excludes, total_arc_num, curr_fsm->table->table, TRUE, TRUE );
-  arc_get_transitions( hit_from_arcs,   hit_to_arcs,   &tmp_ids,  &tmp,     hit_arc_num,   curr_fsm->table->table, TRUE, FALSE );
+  arc_get_transitions( total_from_arcs, total_to_arcs, total_ids, excludes, reasons,      total_arc_num, curr_fsm->table->table, funit, TRUE, TRUE );
+  arc_get_transitions( hit_from_arcs,   hit_to_arcs,   &tmp_ids,  &tmp,     &tmp_reasons, hit_arc_num,   curr_fsm->table->table, funit, TRUE, FALSE );
 
   /* Get input state code */
   codegen_gen_expr( curr_fsm->table->from_state, curr_fsm->table->from_state->op, input_state, input_size, NULL );
@@ -629,8 +631,13 @@ void fsm_get_coverage(
     free_safe( hit_to_states, (sizeof( char* ) * hit_to_state_num) );
   }
   if( *hit_arc_num > 0 ) {
+    unsigned int i;
     free_safe( tmp_ids, (sizeof( int ) * (*hit_arc_num)) );
     free_safe( tmp,     (sizeof( int ) * (*hit_arc_num)) );
+    for( i=0; i<(*hit_arc_num); i++ ) {
+      free_safe( tmp_reasons[i], (strlen( tmp_reasons[i] ) + 1) );
+    }
+    free_safe( tmp_reasons, (sizeof( char* ) * (*hit_arc_num)) );
   }
 
   PROFILE_END;
@@ -923,6 +930,7 @@ static bool fsm_display_arc_verbose(
   char**       to_states;       /* String array containing to_state information */
   int*         ids;             /* List of exclusion IDs per from/to state transition */
   int*         excludes;        /* List of excluded arcs */
+  char**       reasons;         /* Exclusion reasons */
   int          arc_size;        /* Number of elements in the from_states and to_states arrays */
   int          i;               /* Loop iterator */
   char         tmpfst[4096];    /* Temporary string holder for from_state value */
@@ -975,7 +983,7 @@ static bool fsm_display_arc_verbose(
   fprintf( ofile, fstr, spaces, "==========", "  ", "==========" );
 
   /* Get the state transition information */
-  arc_get_transitions( &from_states, &to_states, &ids, &excludes, &arc_size, table->table, ((rtype == RPT_TYPE_HIT) || trans_unknown), FALSE );
+  arc_get_transitions( &from_states, &to_states, &ids, &excludes, &reasons, &arc_size, table->table, funit, ((rtype == RPT_TYPE_HIT) || trans_unknown), FALSE );
 
   /* Output the information to the specified output stream */
   for( i=0; i<arc_size; i++ ) {
@@ -993,15 +1001,16 @@ static bool fsm_display_arc_verbose(
       }
       fprintf( ofile, fstr, eid, tmpfst, "->", tmptst );
     }
-    if( (rtype == RPT_TYPE_EXCL) && ((er = exclude_find_exclude_reason( 'F', ids[i], funit )) != NULL) ) {
+    if( (rtype == RPT_TYPE_EXCL) && (reasons[i] != NULL) ) {
       if( flag_output_exclusion_ids ) {
-        report_output_exclusion_reason( ofile, (16 + (db_get_exclusion_id_size() - 1)), er->reason, TRUE );
+        report_output_exclusion_reason( ofile, (16 + (db_get_exclusion_id_size() - 1)), reasons[i], TRUE );
       } else {
-        report_output_exclusion_reason( ofile, 12, er->reason, TRUE );
+        report_output_exclusion_reason( ofile, 12, reasons[i], TRUE );
       }
     }
     free_safe( from_states[i], (strlen( from_states[i] ) + 1) );
     free_safe( to_states[i], (strlen( to_states[i] ) + 1) );
+    free_safe( reasons[i], (strlen( reasons[i] ) + 1) );
   }
 
   fprintf( ofile, "\n" );
@@ -1012,6 +1021,7 @@ static bool fsm_display_arc_verbose(
     free_safe( to_states, (sizeof( char* ) * arc_size) );
     free_safe( ids, (sizeof( int ) * arc_size) );
     free_safe( excludes, (sizeof( int ) * arc_size) );
+    free_safe( reasons, (sizeof( char* ) * arc_size) );
   }
   free_safe( eid, eid_size );
 
@@ -1327,6 +1337,10 @@ void fsm_dealloc(
 
 /*
  $Log$
+ Revision 1.104  2008/09/04 21:34:20  phase1geo
+ Completed work to get exclude reason support to work with toggle coverage.
+ Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
+
  Revision 1.103  2008/09/04 04:15:08  phase1geo
  Adding -p option to exclude command.  Updating other files per this change.
  Checkpointing.

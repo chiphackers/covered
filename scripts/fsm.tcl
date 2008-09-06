@@ -9,6 +9,8 @@ set fsm_bheight    -1
 set curr_fsm_ptr   ""
 set fsm_geometry   ""
 set fsm_gui_saved  0
+set fsm_excluded   0
+set fsm_reason     ""
 
 proc create_fsm_window {expr_id} {
 
@@ -132,6 +134,54 @@ proc display_fsm_state_exprs {} {
 
   # Disable the textbox
   .fsmwin.pw.io.t configure -state disabled
+
+}
+
+proc fsm_find_arc {} {
+
+  global fsm_arcs fsm_states
+
+  # Get current coordinates
+  set coord [.fsmwin.pw.t.c coords [.fsmwin.pw.t.c find withtag current]]
+
+  # Figure out from_state
+  set fsl [.fsmwin.pw.t.c find withtag from_state]
+  for {set in 0} {$in < [llength $fsl]} {incr in} {
+    set fcoord [.fsmwin.pw.t.c coords [lindex $fsl $in]]
+    if {[lindex $coord 1] == [lindex $fcoord 1]} {
+      break
+    }
+  }
+
+  # Figure out to_state
+  set tsl [.fsmwin.pw.t.c find withtag to_state]
+  for {set out 0} {$out < [llength $tsl]} {incr out} {
+    set tcoord [.fsmwin.pw.t.c coords [lindex $tsl $out]]
+    if {[lindex $coord 0] == [lindex $tcoord 0]} {
+      break
+    }
+  }
+
+  # Now find the arc
+  set arc   {{} {} {} {}}
+  set i     0
+  set found 0
+  while {[expr $i < [llength $fsm_arcs]] && [expr $found == 0]} {
+
+    set arc [lindex $fsm_arcs $i]
+
+    if {[expr [string compare [lindex $arc 0] [lindex $fsm_states $in]] == 0] && \
+        [expr [string compare [lindex $arc 1] [lindex $fsm_states $out]] == 0]} {
+      set found 1
+    }
+
+    incr i
+
+  }
+
+  puts "Found arc: $arc"
+
+  return $arc
 
 }
 
@@ -396,7 +446,11 @@ proc display_fsm_table {} {
           .fsmwin.pw.t.c itemconfigure $rid -fill $cov_bgColor
           .fsmwin.pw.t.c itemconfigure current -text "E"
         }
-        tcl_func_set_fsm_exclude $curr_block $curr_fsm_expr_id $from_st $to_st $exclude
+        set fsm_reason ""
+        if {$exclude_reasons_enabled == 1 && $exclude == 1} {
+          set fsm_reason [get_exclude_reason .fsmwin] 
+        }
+        tcl_func_set_fsm_exclude $curr_block $curr_fsm_expr_id $from_st $to_st $exclude $fsm_reason
         set text_x [.bot.right.txt xview]
         set text_y [.bot.right.txt yview]
         process_fsm_cov
@@ -405,6 +459,22 @@ proc display_fsm_table {} {
         populate_listbox
         enable_cdd_save
         set_pointer curr_fsm_ptr $curr_fsm_ptr
+      }
+      .fsmwin.pw.t.c bind uncov_arc <ButtonPress-3> {
+        set arc          [fsm_find_arc]
+        set fsm_excluded [lindex $arc 2]
+        set fsm_reason   [lindex $arc 3]
+        if {$fsm_excluded == 1 && $fsm_reason != ""} {
+          balloon::show .fsmwin.pw.t.c "Exclude Reason: $fsm_reason" $cov_bgColor $cov_fgColor
+        }
+      }
+      .fsmwin.pw.t.c bind uncov_arc <ButtonRelease-3> {
+        set arc          [fsm_find_arc]
+        set fsm_excluded [lindex $arc 2]
+        set fsm_reason   [lindex $arc 3]
+        if {$fsm_excluded == 1 && $fsm_reason != ""} {
+          balloon::hide .fsmwin.pw.t.c
+        }
       }
 
       # If we are in row 0, column 0, draw the special output

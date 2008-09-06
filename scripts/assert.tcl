@@ -1,6 +1,8 @@
 set curr_assert_ptr  ""
 set assert_geometry  ""
 set assert_gui_saved 0
+set assert_excluded  0
+set assert_reason    ""
 
 proc assert_yset {args} {
 
@@ -202,7 +204,11 @@ proc create_assert_window {inst} {
     } else {
       set curr_excl 0
     }
-    tcl_func_set_assert_exclude $curr_block $curr_assert_inst $curr_exp $curr_excl
+    set assert_reason ""
+    if {$exclude_reasons_enabled == 1 && $curr_excl == 1} {
+      set assert_reason [get_exclude_reason .assertwin]
+    }
+    tcl_func_set_assert_exclude $curr_block $curr_assert_inst $curr_exp $curr_excl $assert_reason
     set text_x [.bot.right.txt xview]
     set text_y [.bot.right.txt yview]
     process_assert_cov
@@ -212,6 +218,22 @@ proc create_assert_window {inst} {
     enable_cdd_save
     set_pointer curr_assert_ptr $curr_assert_ptr
     create_assert_window $curr_assert_inst
+  }
+  .assertwin.f.tc tag bind tc_uncov_uline <ButtonPress-3> {
+    set curr_index      [expr [lindex [split [.assertwin.f.tc index current] .] 0] - 1]
+    set assert_excluded [lindex [lindex $assert_cov_points $curr_index] 3]
+    set assert_reason   [lindex [lindex $assert_cov_points $curr_index] 4]
+    if {$assert_excluded == 1 && $assert_reason != ""} {
+      balloon::show .assertwin.f.tc "Exclude Reason: $assert_reason" $cov_bgColor $cov_fgColor
+    }
+  }
+  .assertwin.f.tc tag bind tc_uncov_uline <ButtonRelease-3> {
+    set curr_index [expr [lindex [split [.assertwin.f.tc index current] .] 0] - 1]
+    set assert_excluded [lindex [lindex $assert_cov_points $curr_index] 3]
+    set assert_reason   [lindex [lindex $assert_cov_points $curr_index] 4]
+    if {$assert_excluded == 1 && $assert_reason != ""} {
+      balloon::hide .assertwin.f.tc
+    }
   }
 
   # Keep user from writing in text boxes

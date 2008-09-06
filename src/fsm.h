@@ -116,6 +116,7 @@ void fsm_get_coverage(
   /*@out@*/ char***       total_to_arcs,
   /*@out@*/ int**         total_ids,
   /*@out@*/ int**         excludes,
+  /*@out@*/ char***       reasons,
   /*@out@*/ int*          total_arc_num,
   /*@out@*/ char***       hit_from_arcs,
   /*@out@*/ char***       hit_to_arcs,
@@ -134,6 +135,10 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.33  2008/08/29 05:38:37  phase1geo
+ Adding initial pass of FSM exclusion ID output.  Need to fix issues with the -e
+ option usage for all metrics, I believe (certainly for FSM).  Checkpointing.
+
  Revision 1.32  2008/08/18 23:07:26  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

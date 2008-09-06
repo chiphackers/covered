@@ -509,11 +509,20 @@ void ovl_get_coverage(
     /* If this statement is a task call to the task "ovl_cover_t", get its total and hit information */
     if( ovl_is_coverage_point( stmt->exp ) ) {
 
+      exclude_reason* er;
+
       /* Store the coverage point string and execution count */
       (void)str_link_add( ovl_get_coverage_point( stmt ), cp_head, cp_tail );
       (*cp_tail)->suppl  = stmt->exp->exec_num;
       (*cp_tail)->suppl2 = stmt->exp->id;
       (*cp_tail)->suppl3 = ESUPPL_EXCLUDED( stmt->exp->suppl );
+
+      /* If the toggle is currently excluded, check to see if there's a reason associated with it */
+      if( (ESUPPL_EXCLUDED( stmt->exp->suppl ) == 1) && ((er = exclude_find_exclude_reason( 'A', stmt->exp->id, curr_child->funit )) != NULL) ) {
+        (*cp_tail)->str2 = strdup_safe( er->reason );
+      } else {
+        (*cp_tail)->str2 = NULL;
+      }
 
     }
 
@@ -531,6 +540,10 @@ void ovl_get_coverage(
 
 /*
  $Log$
+ Revision 1.36  2008/09/04 04:15:10  phase1geo
+ Adding -p option to exclude command.  Updating other files per this change.
+ Checkpointing.
+
  Revision 1.35  2008/09/03 03:46:37  phase1geo
  Updates for memory and assertion exclusion output.  Checkpointing.
 

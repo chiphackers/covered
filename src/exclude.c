@@ -1100,7 +1100,7 @@ char* exclude_format_reason(
       msg[0] = '\0';
     }
     strcat( msg, str );
-    msg[strlen(msg)-1] = '\0';
+    msg[strlen(msg)] = '\0';
   }
 
   PROFILE_END;
@@ -1698,6 +1698,10 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.37  2008/09/04 21:34:20  phase1geo
+ Completed work to get exclude reason support to work with toggle coverage.
+ Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
+
  Revision 1.36  2008/09/04 04:15:08  phase1geo
  Adding -p option to exclude command.  Updating other files per this change.
  Checkpointing.

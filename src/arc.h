@@ -116,8 +116,10 @@ void arc_get_transitions(
   /*@out@*/ char***          to_states,
   /*@out@*/ int**            ids,
   /*@out@*/ int**            excludes,
+  /*@out@*/ char***          reasons,
   /*@out@*/ int*             arc_size,
             const fsm_table* table,
+            func_unit*       funit,
             bool             hit,
             bool             any
 );
@@ -134,6 +136,10 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.33  2008/09/03 05:33:06  phase1geo
+ Adding in FSM exclusion support to exclude and report -e commands.  Updating
+ regressions per recent changes.  Checkpointing.
+
  Revision 1.32  2008/08/29 05:38:36  phase1geo
  Adding initial pass of FSM exclusion ID output.  Need to fix issues with the -e
  option usage for all metrics, I believe (certainly for FSM).  Checkpointing.
