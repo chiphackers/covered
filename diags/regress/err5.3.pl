@@ -23,8 +23,8 @@ while( <OLD_CDD> ) {
   chomp;
   @line = split;
   if( ($line[0] eq "1") && ($line[1] eq "b") ) {
-    $#line = 7;
-    # vsignal outputs 6 items + 2 dimensional items, vector outputs 2 items + data items -- so truncate line to 8 items
+    $#line = 8;
+    # vsignal outputs 7 items + 2 dimensional items, vector outputs 2 items + data items -- so truncate line to 9 items
     print NEW_CDD "@line\n";
   } else {
     print NEW_CDD "$_\n";

@@ -264,6 +264,9 @@ void db_close() { PROFILE(DB_CLOSE);
   /* Deallocate the binding list */
   bind_dealloc();
 
+  /* Deallocate database information */
+  info_dealloc();
+
   /* Deallocate the needed module list */
   str_link_delete_list( modlist_head );
   modlist_head = NULL;
@@ -670,7 +673,7 @@ void db_read(
 #endif
 
   /* Check to make sure that the CDD file contained valid information */
-  if( db_list[curr_db]->leading_hier_num == 0 ) {
+  if( db_size == 0 ) {
     print_output( "CDD file was found to be empty", FATAL, __FILE__, __LINE__ );
     Throw 0;
   }
@@ -3020,6 +3023,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.326  2008/09/07 04:03:11  phase1geo
+ Fixing some recently added segmentation faults.  Fixed FSM exclusion reason
+ handling.
+
  Revision 1.325  2008/09/04 21:34:20  phase1geo
  Completed work to get exclude reason support to work with toggle coverage.
  Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
