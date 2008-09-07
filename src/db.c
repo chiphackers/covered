@@ -227,7 +227,7 @@ db* db_create() { PROFILE(DB_CREATE);
 */
 void db_close() { PROFILE(DB_CLOSE);
   
-  unsigned int i;
+  unsigned int i, j;
 
   for( i=0; i<db_size; i++ ) {
 
@@ -244,8 +244,8 @@ void db_close() { PROFILE(DB_CLOSE);
     }
 
     /* Deallocate all information regarding hierarchies */
-    for( i=0; i<db_list[i]->leading_hier_num; i++ ) {
-      free_safe( db_list[i]->leading_hierarchies[i], (strlen( db_list[i]->leading_hierarchies[i] ) + 1) );
+    for( j=0; j<db_list[i]->leading_hier_num; j++ ) {
+      free_safe( db_list[i]->leading_hierarchies[j], (strlen( db_list[i]->leading_hierarchies[j] ) + 1) );
     }
     free_safe( db_list[i]->leading_hierarchies, (sizeof( char* ) * db_list[i]->leading_hier_num) );
 
@@ -3020,6 +3020,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.325  2008/09/04 21:34:20  phase1geo
+ Completed work to get exclude reason support to work with toggle coverage.
+ Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
+
  Revision 1.324  2008/09/02 22:41:45  phase1geo
  Starting to work on adding exclusion reason output to report files.  Added
  support for exclusion reasons to CDD files.  Checkpointing.

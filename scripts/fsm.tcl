@@ -167,21 +167,15 @@ proc fsm_find_arc {} {
   set i     0
   set found 0
   while {[expr $i < [llength $fsm_arcs]] && [expr $found == 0]} {
-
     set arc [lindex $fsm_arcs $i]
-
     if {[expr [string compare [lindex $arc 0] [lindex $fsm_states $in]] == 0] && \
         [expr [string compare [lindex $arc 1] [lindex $fsm_states $out]] == 0]} {
       set found 1
     }
-
     incr i
-
   }
 
-  puts "Found arc: $arc"
-
-  return $arc
+  return [list [expr $i - 1] [lindex $fsm_states $in] [lindex $fsm_states $out]]
 
 }
 
@@ -421,35 +415,28 @@ proc display_fsm_table {} {
             break
           }
         }
-        set fsl [.fsmwin.pw.t.c find withtag from_state]
-        for {set i 0} {$i < [llength $fsl]} {incr i} {
-          set fcoord [.fsmwin.pw.t.c coords [lindex $fsl $i]]
-          if {[lindex $coord 1] == [lindex $fcoord 1]} {
-            set from_st [lindex $fsm_states $i]
-            break
-          }
-        }
-        set tsl [.fsmwin.pw.t.c find withtag to_state]
-        for {set i 0} {$i < [llength $tsl]} {incr i} {
-          set tcoord [.fsmwin.pw.t.c coords [lindex $tsl $i]]
-          if {[lindex $coord 0] == [lindex $tcoord 0]} {
-            set to_st [lindex $fsm_states $i]
-            break
-          }
-        }
+        set arc_list [fsm_find_arc]
+        set from_st  [lindex $arc_list 1]
+        set to_st    [lindex $arc_list 2]
         if {[.fsmwin.pw.t.c itemcget current -text] == "E"} {
           set exclude 0
-          .fsmwin.pw.t.c itemconfigure $rid -fill $uncov_bgColor
-          .fsmwin.pw.t.c itemconfigure current -text "I"
         } else {
           set exclude 1
-          .fsmwin.pw.t.c itemconfigure $rid -fill $cov_bgColor
-          .fsmwin.pw.t.c itemconfigure current -text "E"
         }
         set fsm_reason ""
         if {$exclude_reasons_enabled == 1 && $exclude == 1} {
           set fsm_reason [get_exclude_reason .fsmwin] 
         }
+        if {[.fsmwin.pw.t.c itemcget current -text] == "E"} {
+          .fsmwin.pw.t.c itemconfigure $rid -fill $uncov_bgColor
+          .fsmwin.pw.t.c itemconfigure current -text "I"
+        } else {
+          .fsmwin.pw.t.c itemconfigure $rid -fill $cov_bgColor
+          .fsmwin.pw.t.c itemconfigure current -text "E"
+        }
+        set arc      [lindex $fsm_arcs [lindex $arc_list 0]]
+        set arc      [lreplace $arc 2 3 $exclude $fsm_reason]
+        set fsm_arcs [lreplace $fsm_arcs [lindex $arc_list 0] [lindex $arc_list 0] $arc]
         tcl_func_set_fsm_exclude $curr_block $curr_fsm_expr_id $from_st $to_st $exclude $fsm_reason
         set text_x [.bot.right.txt xview]
         set text_y [.bot.right.txt yview]
@@ -461,17 +448,17 @@ proc display_fsm_table {} {
         set_pointer curr_fsm_ptr $curr_fsm_ptr
       }
       .fsmwin.pw.t.c bind uncov_arc <ButtonPress-3> {
-        set arc          [fsm_find_arc]
-        set fsm_excluded [lindex $arc 2]
-        set fsm_reason   [lindex $arc 3]
+        set arc_list     [fsm_find_arc]
+        set fsm_excluded [lindex [lindex $fsm_arcs [lindex $arc_list 0]] 2]
+        set fsm_reason   [lindex [lindex $fsm_arcs [lindex $arc_list 0]] 3]
         if {$fsm_excluded == 1 && $fsm_reason != ""} {
           balloon::show .fsmwin.pw.t.c "Exclude Reason: $fsm_reason" $cov_bgColor $cov_fgColor
         }
       }
       .fsmwin.pw.t.c bind uncov_arc <ButtonRelease-3> {
-        set arc          [fsm_find_arc]
-        set fsm_excluded [lindex $arc 2]
-        set fsm_reason   [lindex $arc 3]
+        set arc_list     [fsm_find_arc]
+        set fsm_excluded [lindex [lindex $fsm_arcs [lindex $arc_list 0]] 2]
+        set fsm_reason   [lindex [lindex $fsm_arcs [lindex $arc_list 0]] 3]
         if {$fsm_excluded == 1 && $fsm_reason != ""} {
           balloon::hide .fsmwin.pw.t.c
         }

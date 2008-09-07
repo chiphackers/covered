@@ -221,6 +221,7 @@ proc create_assert_window {inst} {
   }
   .assertwin.f.tc tag bind tc_uncov_uline <ButtonPress-3> {
     set curr_index      [expr [lindex [split [.assertwin.f.tc index current] .] 0] - 1]
+    puts "assert_cov_points: $assert_cov_points, curr_index: $curr_index"
     set assert_excluded [lindex [lindex $assert_cov_points $curr_index] 3]
     set assert_reason   [lindex [lindex $assert_cov_points $curr_index] 4]
     if {$assert_excluded == 1 && $assert_reason != ""} {

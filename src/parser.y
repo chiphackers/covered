@@ -6460,6 +6460,7 @@ gate_instance
         str_link* tmp;
         tmp        = (str_link*)malloc_safe( sizeof( str_link ) );
         tmp->str   = $1;
+        tmp->str2  = NULL;
         tmp->range = NULL;
         tmp->next  = NULL;
         $$ = tmp;
@@ -6481,6 +6482,7 @@ gate_instance
         } else {
           tmp        = (str_link*)malloc_safe( sizeof( str_link ) );
           tmp->str   = $1;
+          tmp->str2  = NULL;
           tmp->range = curr_prange.dim;
           tmp->next  = NULL;
           $$ = tmp;
@@ -6496,6 +6498,7 @@ gate_instance
         str_link* tmp;
         tmp        = (str_link*)malloc_safe( sizeof( str_link ) );
         tmp->str   = $1;
+        tmp->str2  = NULL;
         tmp->range = NULL;
         tmp->next  = NULL;
         $$ = tmp;
@@ -6517,6 +6520,7 @@ gate_instance
         } else {
           tmp        = (str_link*)malloc_safe( sizeof( str_link ) );
           tmp->str   = $1;
+          tmp->str2  = NULL;
           tmp->range = curr_prange.dim;
           tmp->next  = NULL;
           $$ = tmp;
@@ -6928,6 +6932,7 @@ list_of_names
       if( ignore_mode == 0 ) {
         str_link* strl = (str_link*)malloc_safe( sizeof( str_link ) );
         strl->str    = $1;
+        strl->str2   = NULL;
         strl->suppl  = @1.first_line;
         strl->suppl2 = @1.first_column;
         strl->next   = NULL;
@@ -6943,6 +6948,7 @@ list_of_names
         str_link* strl = (str_link*)malloc_safe( sizeof( str_link ) );
         str_link* strt = $1;
         strl->str    = $3;
+        strl->str    = NULL;
         strl->suppl  = @3.first_line;
         strl->suppl2 = @3.first_column;
         strl->next   = NULL;
