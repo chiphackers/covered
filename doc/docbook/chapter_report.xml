@@ -68,6 +68,16 @@
             </row>
             <row>
               <entry>
+                -e
+              </entry>
+              <entry>
+                Outputs exclusion cases when the -d v or -d d options are specified on the command-line.  The exclusion
+                cases are displayed in the verbose format along with an exclusion reason (if one is associated with the
+                excluded case).
+              </entry>
+            </row>
+            <row>
+              <entry>
                 -f <emphasis>filename</emphasis>
               </entry>
               <entry>
@@ -137,6 +147,17 @@
                 of the current line as possible, wrapping text when the line reaches the maximum line width. The default 
                 maximum line width is 115 characters (this value is used if no number is specified with the -w option). 
                 If a number is specified with the -w option, this value is used for the maximum line width.
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -x
+              </entry>
+              <entry>
+                When used in conjunction with the -d v or -d d option, causes all uncovered or excluded coverage points 
+                to display an associated "exclusion ID" to the left of the verbose output within parenthesis.  This
+                exclusion ID can be used in calls to the <link linkend="chapter.exclude">exclude</link> command for the
+                purposes of excluding or including coverage points.
               </entry>
             </row>
           </tbody>
