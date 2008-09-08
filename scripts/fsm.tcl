@@ -17,7 +17,6 @@ proc create_fsm_window {expr_id} {
   global prev_fsm_index next_fsm_index HOME
   global fsm_geometry fsm_gui_saved
 
-  # Now create the window and set the grab to this window
   if {[winfo exists .fsmwin] == 0} {
 
     set fsm_gui_saved 0
@@ -50,23 +49,19 @@ proc create_fsm_window {expr_id} {
     grid .fsmwin.pw.io.vb  -row 1 -column 1 -sticky news
     grid .fsmwin.pw.io.hb  -row 2 -column 0 -sticky news
 
-    # Create canvas frame components
+    # Create FSM tablelist frame
     label .fsmwin.pw.t.l -anchor w -text "FSM State and State Transition Table"
-    canvas .fsmwin.pw.t.c -relief sunken -borderwidth 2 \
-           -xscrollcommand ".fsmwin.pw.t.hb set" -yscrollcommand ".fsmwin.pw.t.vb set"
-    scrollbar .fsmwin.pw.t.hb -orient horizontal -command ".fsmwin.pw.t.c xview"
-    scrollbar .fsmwin.pw.t.vb -command ".fsmwin.pw.t.c yview"
+    tablelist::tablelist .fsmwin.pw.t.tl -titlecolumns 1 -xscrollcommand {.fsmwin.pw.t.hb set} -yscrollcommand {.fsmwin.pw.t.vb set} -showseparators 1 -resizablecolumns 0 -selecttype cell -stripebg #EDF3FE -bg white
+    scrollbar .fsmwin.pw.t.hb -command {.fsmwin.pw.t.tl xview} -orient horizontal
+    scrollbar .fsmwin.pw.t.vb -command {.fsmwin.pw.t.tl yview} 
 
-    # Create general information window
-    label .fsmwin.info -anchor w -relief raised -borderwidth 1 -width 60
-
-    # Pack the main frame widgets
+    # Pack the tablelist frame
     grid rowconfigure    .fsmwin.pw.t 1 -weight 1
     grid columnconfigure .fsmwin.pw.t 0 -weight 1
     grid .fsmwin.pw.t.l  -row 0 -column 0 -sticky news
-    grid .fsmwin.pw.t.c  -row 1 -column 0 -sticky news
-    grid .fsmwin.pw.t.hb -row 2 -column 0 -sticky news
-    grid .fsmwin.pw.t.vb -row 1 -column 1 -sticky news
+    grid .fsmwin.pw.t.tl -row 1 -column 0 -sticky news
+    grid .fsmwin.pw.t.vb -row 1 -column 1 -sticky ns
+    grid .fsmwin.pw.t.hb -row 2 -column 0 -sticky ew
 
     # Create the button frame
     frame .fsmwin.bf -relief raised -borderwidth 1
@@ -88,6 +83,9 @@ proc create_fsm_window {expr_id} {
     pack .fsmwin.bf.next  -side left
     pack .fsmwin.bf.help  -side right -padx 8 -pady 4
     pack .fsmwin.bf.close -side right -padx 8 -pady 4
+
+    # Create general information window
+    label .fsmwin.info -anchor w -relief raised -borderwidth 1 -width 60
 
     # Pack frames into window
     pack .fsmwin.pw   -fill both -expand yes
@@ -117,6 +115,206 @@ proc create_fsm_window {expr_id} {
   raise .fsmwin
 
 }
+
+proc display_fsm_window {expr_id} {
+
+  global curr_block
+  global fsm_curr_info
+  global fsm_in_states fsm_out_states fsm_in_hit_states fsm_out_hit_states
+  global fsm_arcs fsm_hit_arcs
+  global fsm_in_state fsm_out_state
+  global curr_fsm_expr_id
+
+  # Get information from design for this expression ID
+  set fsm_in_states      ""
+  set fsm_out_states     ""
+  set fsm_in_hit_states  ""
+  set fsm_out_hit_states ""
+  set fsm_arcs           ""
+  set fsm_hit_arcs       ""
+  set fsm_in_state       ""
+  set fsm_out_state      ""
+  tcl_func_get_fsm_coverage $curr_block $expr_id
+
+  # Display the state expressions
+  display_fsm_state_exprs
+
+  # Initialize current expression ID
+  set curr_fsm_expr_id $expr_id
+
+  # Display the state transition table
+  display_fsm_table
+
+  # Display the information in the information bar
+  set fsm_curr_info "Filename: [tcl_func_get_filename $curr_block], module: [tcl_func_get_funit_name $curr_block]"
+  .fsmwin.info configure -text $fsm_curr_info
+
+}
+
+proc display_fsm_table {} {
+
+  global fsm_in_states fsm_in_hit_states fsm_out_states fsm_out_hit_states fsm_arcs fsm_hit_arcs
+  global uncov_fgColor uncov_bgColor cov_fgColor cov_bgColor
+
+  puts "fsm_in_states:      $fsm_in_states"
+  puts "fsm_out_states:     $fsm_out_states"
+  puts "fsm_in_hit_states:  $fsm_in_hit_states"
+  puts "fsm_out_hit_states: $fsm_out_hit_states"
+  puts "fsm_arcs:           $fsm_arcs"
+  puts "fsm_hit_arcs:       $fsm_hit_arcs"
+
+  # Create the table
+  set out_states {0 "IN \\ OUT"}
+  foreach out_state $fsm_out_states {
+    lappend out_states 0 [fsm_gen_vertical_text $out_state]
+  }
+  .fsmwin.pw.t.tl configure -columns $out_states
+
+  # Add in the input FSM states
+  foreach in_state $fsm_in_states {
+    .fsmwin.pw.t.tl insert end [join $in_state [lrepeat [llength $fsm_out_states] {}]]
+  }
+
+  # Now add the total arcs
+  foreach arc $fsm_arcs {
+    set row [lsearch $fsm_in_states [lindex $arc 0]]
+    set col [expr [lsearch $fsm_out_states [lindex $arc 1]] + 1]
+    if {[lindex $arc 2] == 1} {
+      .fsmwin.pw.t.tl cellconfigure $row,$col -bg $cov_bgColor -fg $cov_fgColor -text "E"
+      if {[.fsmwin.pw.t.tl columncget $col -labelbg] != $uncov_bgColor} {
+        .fsmwin.pw.t.tl columnconfigure -labelbg $cov_bgColor -labelfg $cov_fgColor
+      }
+      if {[.fsmwin.pw.t.tl cellcget $row,0 -bg] != $uncov_bgColor} {
+        .fsmwin.pw.t.tl cellconfigure $row,0 -bg $cov_bgColor -fg $cov_fgColor
+      }
+    } else {
+      .fsmwin.pw.t.tl cellconfigure $row,$col -bg $uncov_bgColor -fg $uncov_fgColor -text "I"
+      .fsmwin.pw.t.tl columnconfigure $col -labelbg $uncov_bgColor -labelfg $uncov_fgColor
+      .fsmwin.pw.t.tl cellconfigure $row,0 -bg $uncov_bgColor -fg $uncov_fgColor
+    }
+  }
+
+  # Finally, add the hit arcs
+  foreach arc $fsm_hit_arcs {
+    set row [lsearch $fsm_in_states [lindex $arc 0]]
+    set col [expr [lsearch $fsm_out_states [lindex $arc 1]] + 1]
+    .fsmwin.pw.t.tl cellconfigure $row,$col -bg $cov_bgColor -fg $cov_fgColor
+    if {[.fsmwin.pw.t.tl columncget $col -labelbg] != $uncov_bgColor} {
+      .fsmwin.pw.t.tl columnconfigure -labelbg $cov_bgColor -labelfg $cov_fgColor
+    }
+    if {[.fsmwin.pw.t.tl cellcget $row,0 -bg] != $uncov_bgColor} {
+      .fsmwin.pw.t.tl cellconfigure $row,0 -bg $cov_bgColor -fg $cov_fgColor
+    }
+  }
+
+}
+
+
+#proc create_fsm_window {expr_id} {
+#
+#  global prev_fsm_index next_fsm_index HOME
+#  global fsm_geometry fsm_gui_saved
+#
+#  # Now create the window and set the grab to this window
+#  if {[winfo exists .fsmwin] == 0} {
+#
+#    set fsm_gui_saved 0
+#
+#    # Create new window
+#    toplevel .fsmwin
+#    wm title .fsmwin "FSM State/State Transition Coverage - Verbose"
+#
+#    # Create all frames for window
+#    panedwindow .fsmwin.pw -width 500 -height 350 -sashwidth 4 -sashrelief raised -orient vertical
+#    frame .fsmwin.pw.io     -relief raised -borderwidth 1
+#    frame .fsmwin.pw.t      -relief raised -borderwidth 1
+#
+#    # Add movable frames to panedwindow
+#    .fsmwin.pw add .fsmwin.pw.io
+#    .fsmwin.pw add .fsmwin.pw.t
+#
+#    # Create input/output expression frame components
+#    label .fsmwin.pw.io.l -anchor w -text "FSM Input/Output State Expressions"
+#    text .fsmwin.pw.io.t -height 4 -width 60 -xscrollcommand ".fsmwin.pw.io.hb set" \
+#                        -yscrollcommand ".fsmwin.pw.io.vb set" -wrap none -state disabled
+#    scrollbar .fsmwin.pw.io.hb -orient horizontal -command ".fsmwin.pw.io.t xview"
+#    scrollbar .fsmwin.pw.io.vb -command ".fsmwin.pw.io.t yview"
+#
+#    # Pack the input/output expression frame
+#    grid rowconfigure    .fsmwin.pw.io 1 -weight 1
+#    grid columnconfigure .fsmwin.pw.io 0 -weight 1
+#    grid .fsmwin.pw.io.l   -row 0 -column 0 -sticky news
+#    grid .fsmwin.pw.io.t   -row 1 -column 0 -sticky news
+#    grid .fsmwin.pw.io.vb  -row 1 -column 1 -sticky news
+#    grid .fsmwin.pw.io.hb  -row 2 -column 0 -sticky news
+#
+#    # Create canvas frame components
+#    label .fsmwin.pw.t.l -anchor w -text "FSM State and State Transition Table"
+#    canvas .fsmwin.pw.t.c -relief sunken -borderwidth 2 \
+#           -xscrollcommand ".fsmwin.pw.t.hb set" -yscrollcommand ".fsmwin.pw.t.vb set"
+#    scrollbar .fsmwin.pw.t.hb -orient horizontal -command ".fsmwin.pw.t.c xview"
+#    scrollbar .fsmwin.pw.t.vb -command ".fsmwin.pw.t.c yview"
+#
+#    # Create general information window
+#    label .fsmwin.info -anchor w -relief raised -borderwidth 1 -width 60
+#
+#    # Pack the main frame widgets
+#    grid rowconfigure    .fsmwin.pw.t 1 -weight 1
+#    grid columnconfigure .fsmwin.pw.t 0 -weight 1
+#    grid .fsmwin.pw.t.l  -row 0 -column 0 -sticky news
+#    grid .fsmwin.pw.t.c  -row 1 -column 0 -sticky news
+#    grid .fsmwin.pw.t.hb -row 2 -column 0 -sticky news
+#    grid .fsmwin.pw.t.vb -row 1 -column 1 -sticky news
+#
+#    # Create the button frame
+#    frame .fsmwin.bf -relief raised -borderwidth 1
+#    button .fsmwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -relief flat -state disabled -command {
+#      display_fsm $prev_fsm_index
+#    }
+#    set_balloon .fsmwin.bf.prev "Click to view the previous uncovered FSM in this window"
+#    button .fsmwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -relief flat -state disabled -command {
+#      display_fsm $next_fsm_index
+#    }
+#    set_balloon .fsmwin.bf.prev "Click to view the next uncovered FSM in this window"
+#    button .fsmwin.bf.close -text "Close" -width 10 -command {
+#      destroy .fsmwin
+#    }
+#    help_button .fsmwin.bf.help chapter.gui.fsm
+#
+#    # Pack the buttons into the button frame
+#    pack .fsmwin.bf.prev  -side left
+#    pack .fsmwin.bf.next  -side left
+#    pack .fsmwin.bf.help  -side right -padx 8 -pady 4
+#    pack .fsmwin.bf.close -side right -padx 8 -pady 4
+#
+#    # Pack frames into window
+#    pack .fsmwin.pw   -fill both -expand yes
+#    pack .fsmwin.info -fill both
+#    pack .fsmwin.bf   -fill x
+#
+#    # Set window geometry, if specified
+#    if {$fsm_geometry != ""} {
+#      wm geometry .fsmwin $fsm_geometry
+#    }
+#
+#    # Handle the destruction of this window
+#    wm protocol .fsmwin WM_DELETE_WINDOW {
+#      save_fsm_gui_elements 0
+#      destroy .fsmwin
+#    }
+#    bind .fsmwin <Destroy> {
+#      save_fsm_gui_elements 0
+#    }
+#
+#  }
+#
+#  # Display the current FSM table
+#  display_fsm_window $expr_id
+#
+#  # Raise this window to the foreground
+#  raise .fsmwin
+#
+#}
 
 proc display_fsm_state_exprs {} {
 
@@ -304,222 +502,222 @@ proc fsm_calc_arc_fillcolor {in out dfltColor} {
 
 }
 
-proc display_fsm_table {} {
+#proc display_fsm_table {} {
+#
+#  global fsm_hit_states fsm_states fsm_hit_arcs fsm_arcs
+#  global uncov_bgColor cov_bgColor
+#  global curr_fsm_expr_id
+#
+#  # Initialize padding values
+#  set tpad 10
+#  set xpad 20
+#  set ypad 20
+#
+#  # Calculate the width of a horizontal FSM state value
+#  .fsmwin.pw.t.c create text 1c 1c -text [lindex $fsm_states 1] -anchor nw -tags htext
+#  set hstate_coords [.fsmwin.pw.t.c bbox htext]
+#  .fsmwin.pw.t.c delete htext
+#
+#  # Calculate the width of a vertical FSM state value
+#  .fsmwin.pw.t.c create text 1c 1c -text [fsm_gen_vertical_text [lindex $fsm_states 1]] -anchor nw -tags vtext
+#  set vstate_coords [.fsmwin.pw.t.c bbox vtext]
+#  .fsmwin.pw.t.c delete vtext
+#
+#  # Initialize y coordinate
+#  set y $ypad
+#
+#  # Calculate the number of the rows/columns
+#  set width [expr [llength $fsm_states] + 1]
+#
+#  # Step through each row
+#  for {set row 0} {$row<$width} {incr row} {
+#
+#    # Reset X coordinate to 0
+#    set x $xpad
+#
+#    # Step through each column
+#    for {set col 0} {$col<$width} {incr col} {
+#
+#      # Calculate text, xwidth, ywidth and fillcolor
+#      if {$row == 0} {
+#        if {$col == 0} {
+#          set t ""
+#          set xwidth [fsm_calc_xwidth $hstate_coords [expr $tpad * 2]]
+#          set ywidth [fsm_calc_ywidth $vstate_coords [expr $tpad * 2]]
+#          set fillcolor [.fsmwin.pw.t.c cget -bg]
+#          set tagname "title"
+#          set uline 0
+#        } else {
+#          set t [fsm_gen_vertical_text [lindex $fsm_states [expr $col - 1]]]
+#          set xwidth [fsm_calc_xwidth $vstate_coords [expr $tpad * 2]]
+#          set ywidth [fsm_calc_ywidth $vstate_coords [expr $tpad * 2]]
+#          set fillcolor [fsm_calc_state_fillcolor [expr $col - 1]]
+#          set tagname "to_state"
+#          set uline 0
+#        }
+#      } elseif {$col == 0} {
+#        set t [lindex $fsm_states [expr $row - 1]]
+#        set xwidth [fsm_calc_xwidth $hstate_coords [expr $tpad * 2]]
+#        set ywidth [fsm_calc_ywidth $hstate_coords [expr $tpad * 2]]
+#        set fillcolor [fsm_calc_state_fillcolor [expr $row - 1]]
+#        set tagname "from_state"
+#        set uline 0
+#      } else {
+#        set coverage [fsm_calc_arc_coverage [expr $row - 1] [expr $col - 1]]
+#        if {$coverage == 2} {
+#          set tagname "uncov_arc"
+#          set t       "I"
+#          set uline   1
+#        } elseif {$coverage == 3} {
+#          set tagname "uncov_arc"
+#          set t       "E"
+#          set uline   1
+#        } else {
+#          set tagname "arc"
+#          set t       ""
+#          set uline   0
+#        }
+#        set xwidth [fsm_calc_xwidth $vstate_coords [expr $tpad * 2]]
+#        set ywidth [fsm_calc_ywidth $hstate_coords [expr $tpad * 2]]
+#        set fillcolor [fsm_calc_arc_fillcolor [expr $row - 1] [expr $col - 1] [.fsmwin.pw.t.c cget -bg]]
+#      }
+#
+#      # Create square
+#      .fsmwin.pw.t.c create rect $x $y [expr $x + $xwidth] [expr $y + $ywidth] \
+#                                -outline black -fill $fillcolor -tags rect
+#
+#      # Create text
+#      if {$t != ""} {
+#        set tid [.fsmwin.pw.t.c create text [expr $x + $tpad] [expr $y + $tpad] -text $t -anchor nw -tags $tagname]
+#        if {$uline == 1} {
+#          set font_str "Courier [font actual [.fsmwin.pw.t.c itemcget $tid -font] -size] underline"
+#          .fsmwin.pw.t.c itemconfigure $tid -font $font_str
+#        }
+#      }
+#
+#      # Bind each square
+#      .fsmwin.pw.t.c bind uncov_arc <Enter> {
+#        set curr_cursor [.fsmwin.pw.t.c cget -cursor]
+#        set curr_info   [.fsmwin.info cget -text]
+#        .fsmwin.pw.t.c configure -cursor hand2
+#        .fsmwin.info configure -text "Click the left button to exclude/include state transition"
+#      }
+#      .fsmwin.pw.t.c bind uncov_arc <Leave> {
+#        .fsmwin.pw.t.c configure -cursor $curr_cursor
+#        .fsmwin.info configure -text $curr_info
+#      }
+#      .fsmwin.pw.t.c bind uncov_arc <Button-1> {
+#        set coord [.fsmwin.pw.t.c coords [.fsmwin.pw.t.c find withtag current]]
+#        foreach rid [.fsmwin.pw.t.c find overlapping [lindex $coord 0] [lindex $coord 1] [lindex $coord 0] [lindex $coord 1]] {
+#          if {[.fsmwin.pw.t.c type $rid] == "rectangle"} {
+#            break
+#          }
+#        }
+#        set arc_list [fsm_find_arc]
+#        set from_st  [lindex $arc_list 1]
+#        set to_st    [lindex $arc_list 2]
+#        if {[.fsmwin.pw.t.c itemcget current -text] == "E"} {
+#          set exclude 0
+#        } else {
+#          set exclude 1
+#        }
+#        set fsm_reason ""
+#        if {$exclude_reasons_enabled == 1 && $exclude == 1} {
+#          set fsm_reason [get_exclude_reason .fsmwin] 
+#        }
+#        if {[.fsmwin.pw.t.c itemcget current -text] == "E"} {
+#          .fsmwin.pw.t.c itemconfigure $rid -fill $uncov_bgColor
+#          .fsmwin.pw.t.c itemconfigure current -text "I"
+#        } else {
+#          .fsmwin.pw.t.c itemconfigure $rid -fill $cov_bgColor
+#          .fsmwin.pw.t.c itemconfigure current -text "E"
+#        }
+#        set arc      [lindex $fsm_arcs [lindex $arc_list 0]]
+#        set arc      [lreplace $arc 2 3 $exclude $fsm_reason]
+#        set fsm_arcs [lreplace $fsm_arcs [lindex $arc_list 0] [lindex $arc_list 0] $arc]
+#        tcl_func_set_fsm_exclude $curr_block $curr_fsm_expr_id $from_st $to_st $exclude $fsm_reason
+#        set text_x [.bot.right.txt xview]
+#        set text_y [.bot.right.txt yview]
+#        process_fsm_cov
+#        .bot.right.txt xview moveto [lindex $text_x 0]
+#        .bot.right.txt yview moveto [lindex $text_y 0]
+#        populate_listbox
+#        enable_cdd_save
+#        set_pointer curr_fsm_ptr $curr_fsm_ptr
+#      }
+#      .fsmwin.pw.t.c bind uncov_arc <ButtonPress-3> {
+#        set arc_list     [fsm_find_arc]
+#        set fsm_excluded [lindex [lindex $fsm_arcs [lindex $arc_list 0]] 2]
+#        set fsm_reason   [lindex [lindex $fsm_arcs [lindex $arc_list 0]] 3]
+#        if {$fsm_excluded == 1 && $fsm_reason != ""} {
+#          balloon::show .fsmwin.pw.t.c "Exclude Reason: $fsm_reason" $cov_bgColor $cov_fgColor
+#        }
+#      }
+#      .fsmwin.pw.t.c bind uncov_arc <ButtonRelease-3> {
+#        set arc_list     [fsm_find_arc]
+#        set fsm_excluded [lindex [lindex $fsm_arcs [lindex $arc_list 0]] 2]
+#        set fsm_reason   [lindex [lindex $fsm_arcs [lindex $arc_list 0]] 3]
+#        if {$fsm_excluded == 1 && $fsm_reason != ""} {
+#          balloon::hide .fsmwin.pw.t.c
+#        }
+#      }
+#
+#      # If we are in row 0, column 0, draw the special output
+#      if {[expr $row == 0] && [expr $col == 0]} {
+#        .fsmwin.pw.t.c create line $x $y [expr $x + $xwidth] [expr $y + $ywidth] -tags line
+#        .fsmwin.pw.t.c create text [expr [expr $xwidth * 0.25] + $xpad] [expr [expr $ywidth * 0.75] + $ypad] \
+#                                -text "IN"  -anchor center -tags text
+#        .fsmwin.pw.t.c create text [expr [expr $xwidth * 0.75] + $xpad] [expr [expr $ywidth * 0.25] + $ypad] \
+#                                -text "OUT" -anchor center -tags text
+#      }
+#
+#      # Recalculate the x coordinates
+#      set x [expr $x + $xwidth]
+#
+#    }
+#
+#    # Recalculate the y coordinates
+#    set y [expr $y + $ywidth]
+#
+#  }
+#
+#  # Set the canvas scrollregion so that our rows/columns will fit
+#  .fsmwin.pw.t.c configure -scrollregion "0 0 [expr $x + $xwidth] [expr $y + $ywidth]"
+#
+#}
 
-  global fsm_hit_states fsm_states fsm_hit_arcs fsm_arcs
-  global uncov_bgColor cov_bgColor
-  global curr_fsm_expr_id
-
-  # Initialize padding values
-  set tpad 10
-  set xpad 20
-  set ypad 20
-
-  # Calculate the width of a horizontal FSM state value
-  .fsmwin.pw.t.c create text 1c 1c -text [lindex $fsm_states 1] -anchor nw -tags htext
-  set hstate_coords [.fsmwin.pw.t.c bbox htext]
-  .fsmwin.pw.t.c delete htext
-
-  # Calculate the width of a vertical FSM state value
-  .fsmwin.pw.t.c create text 1c 1c -text [fsm_gen_vertical_text [lindex $fsm_states 1]] -anchor nw -tags vtext
-  set vstate_coords [.fsmwin.pw.t.c bbox vtext]
-  .fsmwin.pw.t.c delete vtext
-
-  # Initialize y coordinate
-  set y $ypad
-
-  # Calculate the number of the rows/columns
-  set width [expr [llength $fsm_states] + 1]
-
-  # Step through each row
-  for {set row 0} {$row<$width} {incr row} {
-
-    # Reset X coordinate to 0
-    set x $xpad
-
-    # Step through each column
-    for {set col 0} {$col<$width} {incr col} {
-
-      # Calculate text, xwidth, ywidth and fillcolor
-      if {$row == 0} {
-        if {$col == 0} {
-          set t ""
-          set xwidth [fsm_calc_xwidth $hstate_coords [expr $tpad * 2]]
-          set ywidth [fsm_calc_ywidth $vstate_coords [expr $tpad * 2]]
-          set fillcolor [.fsmwin.pw.t.c cget -bg]
-          set tagname "title"
-          set uline 0
-        } else {
-          set t [fsm_gen_vertical_text [lindex $fsm_states [expr $col - 1]]]
-          set xwidth [fsm_calc_xwidth $vstate_coords [expr $tpad * 2]]
-          set ywidth [fsm_calc_ywidth $vstate_coords [expr $tpad * 2]]
-          set fillcolor [fsm_calc_state_fillcolor [expr $col - 1]]
-          set tagname "to_state"
-          set uline 0
-        }
-      } elseif {$col == 0} {
-        set t [lindex $fsm_states [expr $row - 1]]
-        set xwidth [fsm_calc_xwidth $hstate_coords [expr $tpad * 2]]
-        set ywidth [fsm_calc_ywidth $hstate_coords [expr $tpad * 2]]
-        set fillcolor [fsm_calc_state_fillcolor [expr $row - 1]]
-        set tagname "from_state"
-        set uline 0
-      } else {
-        set coverage [fsm_calc_arc_coverage [expr $row - 1] [expr $col - 1]]
-        if {$coverage == 2} {
-          set tagname "uncov_arc"
-          set t       "I"
-          set uline   1
-        } elseif {$coverage == 3} {
-          set tagname "uncov_arc"
-          set t       "E"
-          set uline   1
-        } else {
-          set tagname "arc"
-          set t       ""
-          set uline   0
-        }
-        set xwidth [fsm_calc_xwidth $vstate_coords [expr $tpad * 2]]
-        set ywidth [fsm_calc_ywidth $hstate_coords [expr $tpad * 2]]
-        set fillcolor [fsm_calc_arc_fillcolor [expr $row - 1] [expr $col - 1] [.fsmwin.pw.t.c cget -bg]]
-      }
-
-      # Create square
-      .fsmwin.pw.t.c create rect $x $y [expr $x + $xwidth] [expr $y + $ywidth] \
-                                -outline black -fill $fillcolor -tags rect
-
-      # Create text
-      if {$t != ""} {
-        set tid [.fsmwin.pw.t.c create text [expr $x + $tpad] [expr $y + $tpad] -text $t -anchor nw -tags $tagname]
-        if {$uline == 1} {
-          set font_str "Courier [font actual [.fsmwin.pw.t.c itemcget $tid -font] -size] underline"
-          .fsmwin.pw.t.c itemconfigure $tid -font $font_str
-        }
-      }
-
-      # Bind each square
-      .fsmwin.pw.t.c bind uncov_arc <Enter> {
-        set curr_cursor [.fsmwin.pw.t.c cget -cursor]
-        set curr_info   [.fsmwin.info cget -text]
-        .fsmwin.pw.t.c configure -cursor hand2
-        .fsmwin.info configure -text "Click the left button to exclude/include state transition"
-      }
-      .fsmwin.pw.t.c bind uncov_arc <Leave> {
-        .fsmwin.pw.t.c configure -cursor $curr_cursor
-        .fsmwin.info configure -text $curr_info
-      }
-      .fsmwin.pw.t.c bind uncov_arc <Button-1> {
-        set coord [.fsmwin.pw.t.c coords [.fsmwin.pw.t.c find withtag current]]
-        foreach rid [.fsmwin.pw.t.c find overlapping [lindex $coord 0] [lindex $coord 1] [lindex $coord 0] [lindex $coord 1]] {
-          if {[.fsmwin.pw.t.c type $rid] == "rectangle"} {
-            break
-          }
-        }
-        set arc_list [fsm_find_arc]
-        set from_st  [lindex $arc_list 1]
-        set to_st    [lindex $arc_list 2]
-        if {[.fsmwin.pw.t.c itemcget current -text] == "E"} {
-          set exclude 0
-        } else {
-          set exclude 1
-        }
-        set fsm_reason ""
-        if {$exclude_reasons_enabled == 1 && $exclude == 1} {
-          set fsm_reason [get_exclude_reason .fsmwin] 
-        }
-        if {[.fsmwin.pw.t.c itemcget current -text] == "E"} {
-          .fsmwin.pw.t.c itemconfigure $rid -fill $uncov_bgColor
-          .fsmwin.pw.t.c itemconfigure current -text "I"
-        } else {
-          .fsmwin.pw.t.c itemconfigure $rid -fill $cov_bgColor
-          .fsmwin.pw.t.c itemconfigure current -text "E"
-        }
-        set arc      [lindex $fsm_arcs [lindex $arc_list 0]]
-        set arc      [lreplace $arc 2 3 $exclude $fsm_reason]
-        set fsm_arcs [lreplace $fsm_arcs [lindex $arc_list 0] [lindex $arc_list 0] $arc]
-        tcl_func_set_fsm_exclude $curr_block $curr_fsm_expr_id $from_st $to_st $exclude $fsm_reason
-        set text_x [.bot.right.txt xview]
-        set text_y [.bot.right.txt yview]
-        process_fsm_cov
-        .bot.right.txt xview moveto [lindex $text_x 0]
-        .bot.right.txt yview moveto [lindex $text_y 0]
-        populate_listbox
-        enable_cdd_save
-        set_pointer curr_fsm_ptr $curr_fsm_ptr
-      }
-      .fsmwin.pw.t.c bind uncov_arc <ButtonPress-3> {
-        set arc_list     [fsm_find_arc]
-        set fsm_excluded [lindex [lindex $fsm_arcs [lindex $arc_list 0]] 2]
-        set fsm_reason   [lindex [lindex $fsm_arcs [lindex $arc_list 0]] 3]
-        if {$fsm_excluded == 1 && $fsm_reason != ""} {
-          balloon::show .fsmwin.pw.t.c "Exclude Reason: $fsm_reason" $cov_bgColor $cov_fgColor
-        }
-      }
-      .fsmwin.pw.t.c bind uncov_arc <ButtonRelease-3> {
-        set arc_list     [fsm_find_arc]
-        set fsm_excluded [lindex [lindex $fsm_arcs [lindex $arc_list 0]] 2]
-        set fsm_reason   [lindex [lindex $fsm_arcs [lindex $arc_list 0]] 3]
-        if {$fsm_excluded == 1 && $fsm_reason != ""} {
-          balloon::hide .fsmwin.pw.t.c
-        }
-      }
-
-      # If we are in row 0, column 0, draw the special output
-      if {[expr $row == 0] && [expr $col == 0]} {
-        .fsmwin.pw.t.c create line $x $y [expr $x + $xwidth] [expr $y + $ywidth] -tags line
-        .fsmwin.pw.t.c create text [expr [expr $xwidth * 0.25] + $xpad] [expr [expr $ywidth * 0.75] + $ypad] \
-                                -text "IN"  -anchor center -tags text
-        .fsmwin.pw.t.c create text [expr [expr $xwidth * 0.75] + $xpad] [expr [expr $ywidth * 0.25] + $ypad] \
-                                -text "OUT" -anchor center -tags text
-      }
-
-      # Recalculate the x coordinates
-      set x [expr $x + $xwidth]
-
-    }
-
-    # Recalculate the y coordinates
-    set y [expr $y + $ywidth]
-
-  }
-
-  # Set the canvas scrollregion so that our rows/columns will fit
-  .fsmwin.pw.t.c configure -scrollregion "0 0 [expr $x + $xwidth] [expr $y + $ywidth]"
-
-}
-
-proc display_fsm_window {expr_id} {
-
-  global curr_block
-  global fsm_curr_info
-  global fsm_states fsm_hit_states
-  global fsm_arcs fsm_hit_arcs
-  global fsm_in_state fsm_out_state
-  global curr_fsm_expr_id
-
-  # Get information from design for this expression ID
-  set fsm_states     ""
-  set fsm_hit_states ""
-  set fsm_arcs       ""
-  set fsm_hit_arcs   ""
-  set fsm_in_state   ""
-  set fsm_out_state  ""
-  tcl_func_get_fsm_coverage $curr_block $expr_id
-
-  # Display the state expressions
-  display_fsm_state_exprs
-
-  # Initialize current expression ID
-  set curr_fsm_expr_id $expr_id
-
-  # Display the state transition table
-  display_fsm_table
-
-  # Display the information in the information bar
-  set fsm_curr_info "Filename: [tcl_func_get_filename $curr_block], module: [tcl_func_get_funit_name $curr_block]"
-  .fsmwin.info configure -text $fsm_curr_info
-
-}
+#proc display_fsm_window {expr_id} {
+#
+#  global curr_block
+#  global fsm_curr_info
+#  global fsm_states fsm_hit_states
+#  global fsm_arcs fsm_hit_arcs
+#  global fsm_in_state fsm_out_state
+#  global curr_fsm_expr_id
+#
+#  # Get information from design for this expression ID
+#  set fsm_states     ""
+#  set fsm_hit_states ""
+#  set fsm_arcs       ""
+#  set fsm_hit_arcs   ""
+#  set fsm_in_state   ""
+#  set fsm_out_state  ""
+#  tcl_func_get_fsm_coverage $curr_block $expr_id
+#
+#  # Display the state expressions
+#  display_fsm_state_exprs
+#
+#  # Initialize current expression ID
+#  set curr_fsm_expr_id $expr_id
+#
+#  # Display the state transition table
+#  display_fsm_table
+#
+#  # Display the information in the information bar
+#  set fsm_curr_info "Filename: [tcl_func_get_filename $curr_block], module: [tcl_func_get_funit_name $curr_block]"
+#  .fsmwin.info configure -text $fsm_curr_info
+#
+#}
 
 # Main function to call that will create the FSM verbose viewer (if needed) and populate it
 # with the currently selected uncovered FSM.

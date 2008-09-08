@@ -90,7 +90,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 rshift1.1       rshift1.2       rshift1.3       rshift2         rshift2.1 \
                 rshift2.2       rshift2.3       rshift3         rshift3.1       rshift4 \
                 rshift4.1       rshift4.2       rshift5         sbit_sel1       sbit_sel1.1 \
-                sbit_sel2       sbit_sel2.1     sbit_sel3       sbit_sel3.1     sbit_sel4 \
+                sbit_sel2       sbit_sel3       sbit_sel3.1     sbit_sel4 \
                 sbit_sel4.1     sbit_sel4.2     sbit_sel4.3     score_env1      score_ts1 \
                 signed1         signed3         signed3.1       signed3.2       signed3.3 \
                 signed3.4       signed3.5       signed3.6       signed4         signed4.2 \
@@ -193,7 +193,7 @@ VCSONLYDIAGS1 = afunc1          always_comb1    always_ff1      always_latch1   
                 generate2       generate3       generate3.1     generate6       generate7 \
                 generate7.1     generate7.2     generate8.1     generate8.2     generate8.3 \
                 generate8.4     generate8.5     generate8.6     generate8.7     generate8.8 \
-                generate9       generate9.1     generate11.4 \
+                generate9       generate9.1     generate9.2     generate9.3     generate11.4 \
                 generate13      generate14      hier1.1         inc1            inc1.1 \
                 inc2            inc3            inc3.1          int1            line1 \
                 logic1          longint1        long_sig        marray1         marray1.1 \
@@ -220,7 +220,7 @@ IVCVERDIAGS4  =
 
 IVVCSDIAGS1   = define3         exclude7.3      generate2.1     generate4       generate4.1 \
                 generate5       generate5.1     generate5.2     generate5.3     generate8 \
-                generate9.2     generate9.3     generate10      generate10.1    generate10.2 \
+                generate10      generate10.1    generate10.2 \
                 generate11      generate11.1    generate11.2    generate11.3    hier3           localparam1 \
                 localparam1.1   localparam1.2   localparam1.3   localparam2     localparam3 \
                 mbit_sel5       mbit_sel5.1     mbit_sel5.2     mbit_sel5.3     mbit_sel6 \
@@ -233,8 +233,8 @@ IVVCSDIAGS2   =
 IVVCSDIAGS3   =
 IVVCSDIAGS4   =
 
-CVERVCSDIAGS1 = port4           timescale1.20   timescale2.6    timescale2.7    null_stmt2 \
-                null_stmt2.1
+CVERVCSDIAGS1 = null_stmt2      null_stmt2.1    port4           sbit_sel2.1     timescale1.20 \
+                timescale2.6    timescale2.7
 CVERVCSDIAGS2 =
 CVERVCSDIAGS3 =
 CVERVCSDIAGS4 =

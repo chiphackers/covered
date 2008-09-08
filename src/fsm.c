@@ -566,10 +566,14 @@ void fsm_collect(
 void fsm_get_coverage(
             func_unit*    funit,               /*!< Pointer to functional unit */
             int           expr_id,             /*!< Expression ID of output state expression to find */
-  /*@out@*/ char***       total_fr_states,     /*!< Pointer to a string array containing all possible states in this FSM */
-  /*@out@*/ unsigned int* total_fr_state_num,  /*!< Pointer to the number of elements in the total_states array */
-  /*@out@*/ char***       hit_fr_states,       /*!< Pointer to a string array containing the hit states in this FSM */
-  /*@out@*/ unsigned int* hit_fr_state_num,    /*!< Pointer to the number of elements in the hit_states array */
+  /*@out@*/ char***       total_fr_states,     /*!< Pointer to a string array containing all possible from states in this FSM */
+  /*@out@*/ unsigned int* total_fr_state_num,  /*!< Pointer to the number of elements in the total_fr_states array */
+  /*@out@*/ char***       total_to_states,     /*!< Pointer to a string array containing all possible to states in this FSM */
+  /*@out@*/ unsigned int* total_to_state_num,  /*!< Pointer to the number of elements in the total_to_states array */
+  /*@out@*/ char***       hit_fr_states,       /*!< Pointer to a string array containing the hit fr_states in this FSM */
+  /*@out@*/ unsigned int* hit_fr_state_num,    /*!< Pointer to the number of elements in the hit_fr_states array */
+  /*@out@*/ char***       hit_to_states,       /*!< Pointer to a string array containing the hit to_states in this FSM */
+  /*@out@*/ unsigned int* hit_to_state_num,    /*!< Pointer to the number of elements in the hit_to_states array */
   /*@out@*/ char***       total_from_arcs,     /*!< Pointer to a string array containing all possible state transition from states */
   /*@out@*/ char***       total_to_arcs,       /*!< Pointer to a string array containing all possible state transition to states */
   /*@out@*/ int**         total_ids,           /*!< Pointer to an integer array containing the arc transition IDs for each transition */
@@ -585,14 +589,10 @@ void fsm_get_coverage(
   /*@out@*/ unsigned int* output_size          /*!< Pointer to the number of elements stored in the output state array */
 ) { PROFILE(FSM_GET_COVERAGE);
 
-  fsm_link*    curr_fsm;            /* Pointer to current FSM link */
-  int*         tmp_ids;             /* Temporary integer array */
-  int*         tmp;                 /* Temporary integer array */
-  char**       total_to_states;     /* Temporary array */
-  unsigned int total_to_state_num;  /* Temporary size indicator */
-  char**       hit_to_states;       /* Temporary array */
-  unsigned int hit_to_state_num;    /* Temporary size indicator */
-  char**       tmp_reasons;         /* Temporary reason array */
+  fsm_link* curr_fsm;     /* Pointer to current FSM link */
+  int*      tmp_ids;      /* Temporary integer array */
+  int*      tmp;          /* Temporary integer array */
+  char**    tmp_reasons;  /* Temporary reason array */
 
   curr_fsm = funit->fsm_head;
   while( (curr_fsm != NULL) && (curr_fsm->table->to_state->id != expr_id) ) {
@@ -602,8 +602,8 @@ void fsm_get_coverage(
   assert( curr_fsm != NULL );
 
   /* Get state information */
-  arc_get_states( total_fr_states, total_fr_state_num, &total_to_states, &total_to_state_num, curr_fsm->table->table, TRUE, TRUE ); 
-  arc_get_states( hit_fr_states,   hit_fr_state_num,   &hit_to_states,   &hit_to_state_num,   curr_fsm->table->table, TRUE, FALSE );
+  arc_get_states( total_fr_states, total_fr_state_num, total_to_states, total_to_state_num, curr_fsm->table->table, TRUE, TRUE ); 
+  arc_get_states( hit_fr_states,   hit_fr_state_num,   hit_to_states,   hit_to_state_num,   curr_fsm->table->table, TRUE, FALSE );
 
   /* Get state transition information */
   arc_get_transitions( total_from_arcs, total_to_arcs, total_ids, excludes, reasons,      total_arc_num, curr_fsm->table->table, funit, TRUE, TRUE );
@@ -616,20 +616,6 @@ void fsm_get_coverage(
   codegen_gen_expr( curr_fsm->table->to_state, curr_fsm->table->to_state->op, output_state, output_size, NULL );
 
   /* Deallocate unused state information */
-  if( total_to_state_num > 0 ) {
-    unsigned int i;
-    for( i=0; i<total_to_state_num; i++ ) {
-      free_safe( total_to_states[i], (strlen( total_to_states[i] ) + 1) );
-    }
-    free_safe( total_to_states, (sizeof( char* ) * total_to_state_num) );
-  }
-  if( hit_to_state_num > 0 ) {
-    unsigned int i;
-    for( i=0; i<hit_to_state_num; i++ ) {
-      free_safe( hit_to_states[i], (strlen( hit_to_states[i] ) + 1) );
-    }
-    free_safe( hit_to_states, (sizeof( char* ) * hit_to_state_num) );
-  }
   if( *hit_arc_num > 0 ) {
     unsigned int i;
     free_safe( tmp_ids, (sizeof( int ) * (*hit_arc_num)) );
@@ -1337,6 +1323,12 @@ void fsm_dealloc(
 
 /*
  $Log$
+ Revision 1.105  2008/09/06 05:59:45  phase1geo
+ Adding assertion exclusion reason support and have most code implemented for
+ FSM exclusion reason support (still working on debugging this code).  I believe
+ that assertions, FSMs and lines might suffer from the same problem...
+ Checkpointing.
+
  Revision 1.104  2008/09/04 21:34:20  phase1geo
  Completed work to get exclude reason support to work with toggle coverage.
  Ground-work is laid for the rest of the coverage metrics.  Checkpointing.

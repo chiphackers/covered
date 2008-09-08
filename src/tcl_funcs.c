@@ -1332,56 +1332,69 @@ int tcl_func_get_fsm_coverage(
   const char* argv[]  /*!< Array of arguments passed to this function */
 ) { PROFILE(TCL_FUNC_GET_FSM_COVERAGE);
 
-  int          retval = TCL_OK;  /* Return value for this function */
-  int          expr_id;          /* Expression ID of output state expression */
-  char**       total_states;     /* String array containing all possible states for this FSM */
-  unsigned int total_state_num;  /* Number of elements in the total_states array */
-  char**       hit_states;       /* String array containing hit states for this FSM */
-  unsigned int hit_state_num;    /* Number of elements in the hit_states array */
-  char**       total_from_arcs;  /* String array containing all possible state transition input states */
-  char**       total_to_arcs;    /* String array containing all possible state transition output states */
-  int*         total_ids;        /* Integer array containing exclusion IDs for each state transition */
-  int*         excludes;         /* Integer array containing exclude values for each state transition */
-  char**       reasons;          /* String array containing exclusion reasons */
-  int          total_arc_num;    /* Number of elements in both the total_from_arcs and total_to_arcs arrays */
-  char**       hit_from_arcs;    /* String array containing hit state transition input states */
-  char**       hit_to_arcs;      /* String array containing hit state transition output states */
-  int          hit_arc_num;      /* Number of elements in both the hit_from_arcs and hit_to_arcs arrays */
-  char**       input_state;      /* String containing the input state code */
-  unsigned int input_size;       /* Number of elements in the input_state array */
-  char**       output_state;     /* String containing the output state code */
-  unsigned int output_size;      /* Number of elements in the output_state array */
-  char         str[4096];        /* Temporary string container */
-  int          i;                /* Loop iterator */
-  func_unit*   funit;            /* Pointer to found functional unit */
+  int          retval = TCL_OK;     /* Return value for this function */
+  int          expr_id;             /* Expression ID of output state expression */
+  char**       total_fr_states;     /* String array containing all possible states for this FSM */
+  unsigned int total_fr_state_num;  /* Number of elements in the total_states array */
+  char**       total_to_states;     /* String array containing all possible states for this FSM */
+  unsigned int total_to_state_num;  /* Number of elements in the total_states array */
+  char**       hit_fr_states;       /* String array containing hit states for this FSM */
+  unsigned int hit_fr_state_num;    /* Number of elements in the hit_states array */
+  char**       hit_to_states;       /* String array containing hit states for this FSM */
+  unsigned int hit_to_state_num;    /* Number of elements in the hit_states array */
+  char**       total_from_arcs;     /* String array containing all possible state transition input states */
+  char**       total_to_arcs;       /* String array containing all possible state transition output states */
+  int*         total_ids;           /* Integer array containing exclusion IDs for each state transition */
+  int*         excludes;            /* Integer array containing exclude values for each state transition */
+  char**       reasons;             /* String array containing exclusion reasons */
+  int          total_arc_num;       /* Number of elements in both the total_from_arcs and total_to_arcs arrays */
+  char**       hit_from_arcs;       /* String array containing hit state transition input states */
+  char**       hit_to_arcs;         /* String array containing hit state transition output states */
+  int          hit_arc_num;         /* Number of elements in both the hit_from_arcs and hit_to_arcs arrays */
+  char**       input_state;         /* String containing the input state code */
+  unsigned int input_size;          /* Number of elements in the input_state array */
+  char**       output_state;        /* String containing the output state code */
+  unsigned int output_size;         /* Number of elements in the output_state array */
+  char         str[4096];           /* Temporary string container */
+  int          i;                   /* Loop iterator */
+  func_unit*   funit;               /* Pointer to found functional unit */
 
   expr_id = atoi( argv[2] );
 
   if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
 
-    fsm_get_coverage( funit, expr_id, &total_states, &total_state_num, &hit_states, &hit_state_num,
+    fsm_get_coverage( funit, expr_id, &total_fr_states, &total_fr_state_num, &total_to_states, &total_to_state_num,
+                      &hit_fr_states, &hit_fr_state_num, &hit_to_states, &hit_to_state_num,
                       &total_from_arcs, &total_to_arcs, &total_ids, &excludes, &reasons, &total_arc_num, &hit_from_arcs, &hit_to_arcs, &hit_arc_num,
                       &input_state, &input_size, &output_state, &output_size );
 
-    /* Load FSM total states into Tcl */
-    for( i=0; i<total_state_num; i++ ) {
-      Tcl_SetVar( tcl, "fsm_states", total_states[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-      free_safe( total_states[i], (strlen( total_states[i] ) + 1) );
+    /* Load FSM total from states into Tcl */
+    for( i=0; i<total_fr_state_num; i++ ) {
+      Tcl_SetVar( tcl, "fsm_in_states", total_fr_states[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      free_safe( total_fr_states[i], (strlen( total_fr_states[i] ) + 1) );
     }
+    free_safe( total_fr_states, (sizeof( char* ) * total_fr_state_num) );
 
-    if( total_state_num > 0 ) {
-      free_safe( total_states, (sizeof( char* ) * total_state_num) );
+    /* Load FSM total to states into Tcl */
+    for( i=0; i<total_to_state_num; i++ ) {
+      Tcl_SetVar( tcl, "fsm_out_states", total_to_states[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      free_safe( total_to_states[i], (strlen( total_to_states[i] ) + 1) );
     }
+    free_safe( total_to_states, (sizeof( char* ) * total_to_state_num) );
 
-    /* Load FSM hit states into Tcl */
-    for( i=0; i<hit_state_num; i++ ) {
-      Tcl_SetVar( tcl, "fsm_hit_states", hit_states[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-      free_safe( hit_states[i], (strlen( hit_states[i] ) + 1) );
+    /* Load FSM hit from states into Tcl */
+    for( i=0; i<hit_fr_state_num; i++ ) {
+      Tcl_SetVar( tcl, "fsm_in_hit_states", hit_fr_states[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      free_safe( hit_fr_states[i], (strlen( hit_fr_states[i] ) + 1) );
     }
+    free_safe( hit_fr_states, (sizeof( char* ) * hit_fr_state_num) );
 
-    if( hit_state_num > 0 ) {
-      free_safe( hit_states, (sizeof( char* ) * hit_state_num) );
+    /* Load FSM hit to states into Tcl */
+    for( i=0; i<hit_to_state_num; i++ ) {
+      Tcl_SetVar( tcl, "fsm_out_hit_states", hit_to_states[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      free_safe( hit_to_states[i], (strlen( hit_to_states[i] ) + 1) );
     }
+    free_safe( hit_to_states, (sizeof( char* ) * hit_to_state_num) );
 
     /* Load FSM total arcs into Tcl */
     for( i=0; i<total_arc_num; i++ ) {
@@ -1391,14 +1404,11 @@ int tcl_func_get_fsm_coverage(
       free_safe( total_to_arcs[i], (strlen( total_to_arcs[i] ) + 1) );
       free_safe( reasons[i], (strlen( reasons[i] ) + 1) );
     }
-
-    if( total_arc_num > 0 ) {
-      free_safe( total_from_arcs, (sizeof( char* ) * total_arc_num) );
-      free_safe( total_to_arcs, (sizeof( char* ) * total_arc_num) );
-      free_safe( total_ids, (sizeof( int ) * total_arc_num) );
-      free_safe( excludes, (sizeof( int ) * total_arc_num) );
-      free_safe( reasons, (sizeof( char* ) * total_arc_num) );
-    }
+    free_safe( total_from_arcs, (sizeof( char* ) * total_arc_num) );
+    free_safe( total_to_arcs, (sizeof( char* ) * total_arc_num) );
+    free_safe( total_ids, (sizeof( int ) * total_arc_num) );
+    free_safe( excludes, (sizeof( int ) * total_arc_num) );
+    free_safe( reasons, (sizeof( char* ) * total_arc_num) );
 
     /* Load FSM hit arcs into Tcl */
     for( i=0; i<hit_arc_num; i++ ) {
@@ -1407,11 +1417,8 @@ int tcl_func_get_fsm_coverage(
       free_safe( hit_from_arcs[i], (strlen( hit_from_arcs[i] ) + 1) );
       free_safe( hit_to_arcs[i], (strlen( hit_to_arcs[i] ) + 1) );
     }
-
-    if( hit_arc_num > 0 ) {
-      free_safe( hit_from_arcs, (sizeof( char* ) * hit_arc_num) );
-      free_safe( hit_to_arcs, (sizeof( char* ) * hit_arc_num) );
-    }
+    free_safe( hit_from_arcs, (sizeof( char* ) * hit_arc_num) );
+    free_safe( hit_to_arcs, (sizeof( char* ) * hit_arc_num) );
 
     /* Load FSM input state into Tcl */
     if( input_size > 0 ) {
@@ -3054,6 +3061,12 @@ void tcl_func_initialize(
 
 /*
  $Log$
+ Revision 1.87  2008/09/06 05:59:45  phase1geo
+ Adding assertion exclusion reason support and have most code implemented for
+ FSM exclusion reason support (still working on debugging this code).  I believe
+ that assertions, FSMs and lines might suffer from the same problem...
+ Checkpointing.
+
  Revision 1.86  2008/09/05 23:19:03  phase1geo
  Adding exclusion preference pane.  Also added support for exclusion reason for
  line coverage.  Checkpointing.

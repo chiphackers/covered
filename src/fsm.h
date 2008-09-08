@@ -108,10 +108,14 @@ void fsm_collect(
 void fsm_get_coverage(
             func_unit*    funit,
             int           expr_id,
-  /*@out@*/ char***       total_states,
-  /*@out@*/ unsigned int* total_state_num,
-  /*@out@*/ char***       hit_states,
-  /*@out@*/ unsigned int* hit_state_num,
+  /*@out@*/ char***       total_fr_states,
+  /*@out@*/ unsigned int* total_fr_state_num,
+  /*@out@*/ char***       total_to_states,
+  /*@out@*/ unsigned int* total_to_state_num,
+  /*@out@*/ char***       hit_fr_states,
+  /*@out@*/ unsigned int* hit_fr_state_num,
+  /*@out@*/ char***       hit_to_states,
+  /*@out@*/ unsigned int* hit_to_state_num,
   /*@out@*/ char***       total_from_arcs,
   /*@out@*/ char***       total_to_arcs,
   /*@out@*/ int**         total_ids,
@@ -135,6 +139,12 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.34  2008/09/06 05:59:45  phase1geo
+ Adding assertion exclusion reason support and have most code implemented for
+ FSM exclusion reason support (still working on debugging this code).  I believe
+ that assertions, FSMs and lines might suffer from the same problem...
+ Checkpointing.
+
  Revision 1.33  2008/08/29 05:38:37  phase1geo
  Adding initial pass of FSM exclusion ID output.  Need to fix issues with the -e
  option usage for all metrics, I believe (certainly for FSM).  Checkpointing.
