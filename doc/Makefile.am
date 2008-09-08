@@ -5,9 +5,11 @@ doc_DATA = html/chapter.attr.html \
            html/chapter.boundaries.html \
            html/chapter.debug.html \
            html/chapter.epilogue.html \
+           html/chapter.exclude.html \
            html/chapter.faq.html \
            html/chapter.gui.assert.html \
            html/chapter.gui.assert.source.html \
+           html/chapter.gui.exclude.html \
            html/chapter.gui.fsm.html \
            html/chapter.gui.genreport.html \
            html/chapter.gui.intro.html \
@@ -58,6 +60,8 @@ img_DATA = html/img/app_menu.gif \
            html/img/comb_simple_or.gif \
            html/img/comb_unary.gif \
            html/img/dn_button.gif \
+           html/img/er_full.gif \
+           html/img/er_part.gif \
            html/img/exit_warn.gif \
            html/img/file_menu.gif \
            html/img/file_viewer.gif \
@@ -93,6 +97,7 @@ img_DATA = html/img/app_menu.gif \
            html/img/note.gif \
            html/img/populated_lb.gif \
            html/img/pref_color.gif \
+           html/img/pref_exclude.gif \
            html/img/pref_goals.gif \
            html/img/pref_main.gif \
            html/img/pref_syntax.gif \

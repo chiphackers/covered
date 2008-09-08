@@ -361,7 +361,7 @@
       </para>
     </sect2>
     
-    <sect2>
+    <sect2 id="section.metrics.fsm.example">
       <title>Example</title>
       <para>
         Suppose the DUT comprised of the following finite state machine:

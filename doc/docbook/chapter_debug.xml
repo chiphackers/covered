@@ -84,7 +84,7 @@
       <para>
         The following is a list of all of the CLI options available to the user:
       </para>
-      <table frame="all">
+      <table frame="all" id="table.cli.commands">
         <title>CLI Command-line Options</title>
         <tgroup cols='2' align='left' colsep='1' rowsep='1'>
           <colspec colwidth='1*'/>

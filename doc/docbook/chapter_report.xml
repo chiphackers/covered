@@ -25,7 +25,7 @@
       The following table lists the options available for use with the report command.
     </para>
     <para>
-      <table>
+      <table id="table.report.options">
         <title>Options to report Command</title>
         <tgroup cols='2'>
           <thead>

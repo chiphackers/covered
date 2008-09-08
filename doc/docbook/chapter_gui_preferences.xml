@@ -26,6 +26,7 @@
         <listitem><para><xref linkend="section.gui.pref.color"/></para></listitem>
         <listitem><para><xref linkend="section.gui.pref.goals"/></para></listitem>
         <listitem><para><xref linkend="section.gui.pref.syntax"/></para></listitem>
+        <listitem><para><xref linkend="section.gui.pref.exclude"/></para></listitem>
       </itemizedlist>
     </para>
   </sect1>
@@ -89,7 +90,7 @@
       configuration file location was initially loaded. The following table describes this correlation.
     </para>
     <para>
-      <table>
+      <table id="table.gui.pref.coveredrc">
         <title>Location of Written .coveredrc File According to the Location of Read .coveredrc File</title>
         <tgroup cols='2'>
           <thead>
@@ -302,6 +303,66 @@
       </para>
       <para>
         If the syntax highlighting mode is disabled by the user, the color selection buttons will be disabled.
+      </para>
+    </sect2>
+  </sect1>
+  
+  <sect1 id="section.gui.pref.exclude">
+    <title>Preferences Exclusion Pane</title>
+    <para>
+      The exclude preferences pane allows the user to control whether or not the coverage exclusion reason window
+      automatically pops up when a coverage point is excluded, and it allows the user to create some general purpose
+      exclusion reasons.  The reasons created in this pane can be selected in the exclusion reason window's drop-down
+      table and can help to expedite the exclusion process when many coverage points are being excluded for the same
+      reason.  <xref linkend="figure.gui.pref.exclude"/> shows the layout of this preference pane.
+    </para>
+    <para>
+      <figure id="figure.gui.pref.exclude">
+        <title>Exclusion Preferences Pane</title>
+        <mediaobject><imageobject><imagedata fileref="img/pref_exclude.gif" format="GIF"/></imageobject></mediaobject>
+      </figure>
+    </para>
+    <sect2 id="section.gui.pref.exclude.enable">
+      <title>Enable exclusion reason support when items are excluded</title>
+      <para>
+        If this option is enabled, whenever the user clicks on a coverage point to cause it to be excluded from
+        coverage, a popup window will be displayed, allowing for an exclusion message to be associated with the
+        excluded coverage point.
+      </para>
+      <para>
+        If this option is not enabled, the coverage point will still be excluded but no exclusion message will
+        be associated with it.
+      </para>
+      <note>
+        If a coverage point was excluded and is selected to be included and the coverage point had an exclusion
+        message associated with it, the exclusion message will be forgotten/deleted.
+      </note>
+    </sect2>
+    <sect2 id="section.gui.pref.exclude.genreasons">
+      <title>Create General Exclusion Reasons</title>
+      <para>
+        This frame allows the user to add/delete general purpose exclusion reasons that can be selected from within
+        the <link linkend="chapter.gui.exclude">exclusion reason popup window's</link> drop-down table.  Having these 
+        reasons specified can help to speed up coverage point exclusion when multiple coverage points need to be 
+        excluded for the same reason.
+      </para>
+      <para>
+        To add a new general purpose exclusion reason, simply type in the general purpose exclusion reason in the
+        bottom textbox (note that any formatting characters such as newlines, tabs, extra spaces will be removed
+        from the exclusion message) and click the "+" button.  You will see the exclusion reason get added to the
+        table when this occurs.  Note that the "+" button will only be enabled when you have entered at least one
+        character in the textbox.
+      </para>
+      <para>
+        To remove a general purpose exclusion reason from the table, simply click on the reason in the table and
+        click the "-" button.  Note that the "-" button will only be enabled once an entry has been selected in
+        the table.
+      </para>
+      <para>
+        To help find an exclusion reason more easily within the exclusion reason popup window, you may also rearrange
+        the order of the exclusions within the table by simply clicking on an entry and dragging it to the desired
+        location.  The order of the exclusion reasons specified in this table will be the initial order of the
+        exclusion reasons in the popup window.
       </para>
     </sect2>
   </sect1>

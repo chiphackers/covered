@@ -543,7 +543,7 @@
       </para>
     </sect2>
     
-    <sect2>
+    <sect2 id="section.gui.new.options2.notes">
       <title>Other Notes</title>
       <para>
       After all options have been specified, the <emphasis role="bold">Save Options to File...</emphasis> button can

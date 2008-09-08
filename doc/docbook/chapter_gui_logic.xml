@@ -200,7 +200,7 @@
         combinational subexpressions:  AND-type, OR-type and other.  The differences are explained below.
       </para>
       
-      <sect3>
+      <sect3 id="section.gui.logic.simple.and">
         <title>Simple AND-type Combinational Subexpressions</title>
         <para>
           These subexpressions have three possible combinational outcomes:
@@ -239,7 +239,7 @@
         </para>
       </sect3>
       
-      <sect3>
+      <sect3 id="section.gui.logic.simple.or">
         <title>Simple OR-type Combinational Subexpressions</title>
         <para>
           These subexpressions have three possible combinational outcomes:
@@ -280,7 +280,7 @@
         </para>
       </sect3>
       
-      <sect3>
+      <sect3 id="section.gui.logic.simple.other">
         <title>Simple Other-type Combinational Subexpressions</title>
         <para>
           These subexpressions have four possible combinational outcomes:

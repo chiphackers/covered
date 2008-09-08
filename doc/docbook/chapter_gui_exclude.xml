@@ -1,0 +1,47 @@
+<chapter id="chapter.gui.exclude">
+  <title>The Exclusion Reason Popup Window</title>
+  <para>
+    When an uncovered coverage point needs to be excluded for various reasons, a user-supplied message
+    may be associated with the exclusion, specifying the reason for the exclusion.  This information can
+    be useful documentation for a coverage analysis and is possible to achieve using the Covered GUI.
+    This task is accomplished with the exclusion reason popup window which is automatically popped up
+    when a coverage point is marked for exclusion (assuming that the capability is enabled in the
+    <link linkend="section.gui.pref.exclude">exclusion preferences pane</link>).  
+    <xref linkend="figure.gui.exclude.partial"/> shows what this popup window looks like.
+  </para>
+  <para>
+    <figure id="figure.gui.exclude.partial">
+      <title>The Exclusion Reason Popup Window</title>
+      <mediaobject><imageobject><imagedata fileref="img/er_part.gif" format="GIF"/></imageobject></mediaobject>
+    </figure>
+  </para>
+  <para>
+    To specify an exclusion reason, you may do either enter the exclusion reason into the textbox located on the
+    left side of this window or you may select a pre-created, general purpose exclusion reason in the drop-down
+    table.  To view this table, click on the down arrow button at the bottom of this window (see 
+    <xref linkend="figure.gui.exclude.full"/>).  To hide this table, click on the same button (which will be
+    changed to an up arrow button).  If a general-purpose exclusion reason is selected from the table, it will
+    be displayed in the top textbox where it may be optionally edited for the current coverage point.
+  </para>
+  <para>
+    <figure id="figure.gui.exclude.full">
+      <title>Full View of the Exclusion Reason Popup Window</title>
+      <mediaobject><imageobject><imagedata fileref="img/er_full.gif" format="GIF"/></imageobject></mediaobject>
+    </figure>
+  </para>
+  <para>
+    Once the exclusion reason has been entered as desired in the textbox (please note that any formatting characters
+    such as newlines, tabs and/or multiple spaces will be automatically removed and replaced with a single space
+    character), simply click on the <emphasis role="bold">OK</emphasis> button which will associate the exclusion 
+    reason with the excluded coverage point and close the popup window.  Note that the <emphasis role="bold">OK</emphasis>
+    button will only be enabled if at least one character is entered in the textbox.
+  </para>
+  <note>
+    Editing a general purpose reason in the popup window only has an effect for this coverage point; it does not change
+    the general purpose reason value itself (this can only be done in the preferences window).
+  </note>
+  <para>
+    To not specify an exclusion reason with an excluded coverage point, simply click on the 
+    <emphasis role="bold">Cancel</emphasis> button.
+  </para>
+</chapter>

@@ -27,7 +27,7 @@
   <sect1 id="section.merge.options">
     <title>Options</title>
     <para>
-      <table>
+      <table id="table.merge.options">
         <title>Options to merge Command</title>
         <tgroup cols='2'>
           <thead>

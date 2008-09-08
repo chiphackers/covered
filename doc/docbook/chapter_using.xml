@@ -1,7 +1,7 @@
 <chapter id="chapter.using">
   <title>Using Covered</title>
   
-  <sect1>
+  <sect1 id="section.using.flow">
     <title>Work Flow</title>
     <para>
       Covered has four basic commands that it uses for gaining coverage information about a design and displaying 
@@ -16,7 +16,7 @@
       </itemizedlist>
     </para>
     
-    <sect2>
+    <sect2 id="section.using.flow.score">
       <title>Scoring the Design</title>
       <para>
         To begin using Covered, you will need to create a special database file called a coverage description 
@@ -40,7 +40,7 @@
       </para>
     </sect2>
     
-    <sect2>
+    <sect2 id="section.using.flow.merge">
       <title>Merging CDDs</title>
       <para>
         When two or more CDDs have been generated from the same DUT. It is often desirable to merge their contents 
@@ -57,7 +57,7 @@
       </para>
     </sect2>
     
-    <sect2>
+    <sect2 id="section.using.flow.report">
       <title>Creating Coverage Reports</title>
       <para>
         After a CDD is created or merged, the contents of the CDD can be extracted and transformed into human-readable 
@@ -72,7 +72,7 @@
       </para>
     </sect2>
     
-    <sect2>
+    <sect2 id="section.using.flow.rank">
       <title>Ranking CDDs</title>
       <para>
         After a collection of CDDs have been generated from a single design (most likely due to a regression run), 
@@ -92,16 +92,39 @@
         diagnostics should run, and each diagnostic's overall effect on coverage when it is run.
       </para>
     </sect2>
+    
+    <sect2 id="section.using.flow.exclude">
+      <title>Excluding CDD Coverage Points</title>
+      <para>
+        Not all unhit coverage points reported by Covered will be valid for your design.  Some coverage points may
+        be extraneous, some may be due to obsolete logic that is not pulled from the design for various reasons, and
+        some coverage points may be hit in other verification environments but not in the current environment.
+      </para>
+      <para>
+        Whatever the reason may be (and some reasons may be much more specific that these suggestions), Covered
+        allows the user to exclude those coverage points from coverage reporting (they will still be reported but they
+        will be considered "covered" points instead of "uncovered" points).  Additionally, each excluded coverage
+        point can have an option message attached to it that explains the reason for exclusion.  This message is stored
+        with the coverage information in the CDD file and can be displayed in a standard coverage report or in a
+        stand-alone exclusion report.  This information helps to document the coverage analysis process.
+      </para>
+      <para>
+        In addition to being able to exclude coverage points, the user can also include previously excluded coverage
+        points (in the event that a mistake was made or if the design has changed).  Coverage exclusion can be
+        accomplished via the command-line <link linkend="chapter.exclude">exclude</link> command or within the GUI
+        coverage analyzer.
+      </para>
+    </sect2>
   </sect1>
   
-  <sect1>
+  <sect1 id="section.using.usage">
     <title>Covered usage</title>
     <para>
       Covered is initiated with the following command:
     </para>
     <para>
       <code>
-        covered (-h | -v | [-P [<emphasis>filename</emphasis>]] [-D|-Q] (score|merge|report|rank) <emphasis>command_options</emphasis>)
+        covered (-h | -v | [-P [<emphasis>filename</emphasis>]] [-B] [-D|-Q]) (score|merge|report|rank) <emphasis>command_options</emphasis>)
       </code>
     </para>
     <para>
@@ -142,13 +165,13 @@
     </para>
   </sect1>
   
-  <sect1>
+  <sect1 id="section.using.globalopts">
     <title>Covered global options</title>
     <para>
       The following table describes options that Covered will accept apart from its normal commands which are described 
       in the next several chapters.
     </para>
-    <table>
+    <table id="table.using.globalopts">
       <title>Global Options to Covered</title>
       <tgroup cols='2'>
         <thead>

@@ -13,6 +13,7 @@
 <!ENTITY cmerge          SYSTEM "chapter_merge.xml">
 <!ENTITY creport         SYSTEM "chapter_report.xml">
 <!ENTITY crank           SYSTEM "chapter_rank.xml">
+<!ENTITY cexclude        SYSTEM "chapter_exclude.xml">
 <!ENTITY creading        SYSTEM "chapter_reading.xml">
 <!ENTITY cdebug          SYSTEM "chapter_debug.xml">
 <!ENTITY cguiintro       SYSTEM "chapter_gui_intro.xml">
@@ -28,6 +29,7 @@
 <!ENTITY cguireportgen   SYSTEM "chapter_gui_report_gen.xml">
 <!ENTITY cguirank        SYSTEM "chapter_gui_rank.xml">
 <!ENTITY cguipreferences SYSTEM "chapter_gui_preferences.xml">
+<!ENTITY cguiexclude     SYSTEM "chapter_gui_exclude.xml">
 <!ENTITY cguiwizard      SYSTEM "chapter_gui_wizard.xml">
 <!ENTITY cfaq            SYSTEM "chapter_faq.xml">
 <!ENTITY cepilogue       SYSTEM "chapter_epilogue.xml">
@@ -75,6 +77,7 @@
     &cmerge;
     &creport;
     &crank;
+    &cexclude;
     &creading;
     &cdebug;
   </part>
@@ -94,6 +97,7 @@
     &cguireportgen;
     &cguirank;
     &cguipreferences;
+    &cguiexclude;
     &cguiwizard;
   </part>
   

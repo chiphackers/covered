@@ -1,0 +1,99 @@
+<chapter id="chapter.exclude">
+  <title>The exclude Command</title>
+  <para>
+    The exclude command allows the user to exclude uncovered coverage points from coverage (effectively
+    turning the uncovered points into covered points) or include coverage points that were previously
+    excluded.  Additionally, the exclude command allows the user to specify a reason why the coverage
+    point is being excluded.  This capability allows for good documentation of these coverage points for
+    later evaluation and can be output into various report formats to go along with a verification testplan.
+  </para>
+  
+  <sect1 id="section.exclude.usage">
+    <title>Usage</title>
+    <para>
+      The exclude command is specified with the given call:
+    </para>
+    <para>
+      <code>
+        covered [<emphasis>global options</emphasis>] exclude [<emphasis>options</emphasis>] 
+        <emphasis>exclusion ID</emphasis>+ <emphasis>CDD file</emphasis>
+      </code>
+    </para>
+    <para>
+      The exclusion ID information can be obtained via a Covered report command call with the 
+      <emphasis role="bold">-d (d|v)</emphasis> and <emphasis role="bold">-e</emphasis> options.  Exclusion 
+      IDs consist of an alphanumeric value that will be specified with parenthesis prior to a coverage point.
+    </para>
+    <para>
+      You may specify one or more exclusion IDs per call to the exclude command.  If the 
+      <emphasis role="bold">-m</emphasis> option is specified, a prompt will be specified for each exclusion
+      ID, individually.  If a coverage point is currently included in the CDD prior to an exclude call, the coverage
+      point will be toggled to be excluded and a user message can be attached to the coverage point, specifying
+      the reason for exclusion.  If a coverage point is currently excluded in the CDD prior to an exclude call,
+      the coverage point will be toggled to be included and any previouly assigned user message will be forgotten.
+    </para>
+  </sect1>
+  
+  <sect1 id="section.exclude.options">
+    <title>Options</title>
+    <para>
+      <table id="table.exclude.options">
+        <title>Options to the exclude command</title>
+        <tgroup cols='2'>
+          <thead>
+            <row>
+              <entry>
+                Option
+              </entry>
+              <entry>
+                Description
+              </entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>
+                -f <emphasis>filename</emphasis>
+              </entry>
+              <entry>
+                Allows the user to specify a file that contains additional exclude command options to parse.
+                This option may be specified more than once for a single call to the exclude command.
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -h
+              </entry>
+              <entry>
+                Displays help information for the exclude command.
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -m
+              </entry>
+              <entry>
+                Allows a user message specifying the reason for excluding any coverage points being excluded on
+                the command-line.  An interactive prompt will be specified in the shell.  Simply enter your reason
+                at the prompt, hit return and specify a single period (.) character followed by a return to end
+                the user input for a coverage point.  You may use as many lines of text that you would like; 
+                however, all formatting characters (i.e., newlines, tabs, extra spaces, etc.) will be removed
+                when reporting the information.
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -p
+              </entry>
+              <entry>
+                Outputs the current exclusion status of the specified exclusion ID(s) and displays any exclusion
+                reason messages associated with the specified exclusion ID(s) to standard output.
+              </entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+    </para>
+  </sect1>
+
+</chapter>

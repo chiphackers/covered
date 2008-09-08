@@ -145,7 +145,7 @@ EnableExclusionReasons = 1
 # This string specifies default reasons for exclusion.  These reasons may be used wherever
 # a coverage point is excluded (or the user may specify a unique reason).
 
-ExclusionReasons = {This is really simple test. }:{This is another simple test. }
+ExclusionReasons = {Logic is obsolete but will not be removed for future enhancement possibilities. }
 
 # THE FOLLOWING LINES ARE FOR STORING GUI STATE INFORMATION -- DO NOT MODIFY LINES BELOW THIS COMMENT!
 

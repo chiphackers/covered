@@ -36,11 +36,11 @@ proc get_exclude_reason {w} {
 
   # Create button frame
   frame  .exclwin.pw.top.bf
-  button .exclwin.pw.top.bf.save -text "Save" -width 10 -state disabled -command {
+  button .exclwin.pw.top.bf.save -text "OK" -width 10 -state disabled -command {
     set exclude_reason [string trim [string map {\n { } \r { } \t { }} [.exclwin.pw.top.t.t get 1.0 end]]]
     destroy .exclwin
   } 
-  button .exclwin.pw.top.bf.close -text "Close" -width 10 -command {
+  button .exclwin.pw.top.bf.close -text "Cancel" -width 10 -command {
     destroy .exclwin
   }
   frame  .exclwin.pw.top.bf.ibf

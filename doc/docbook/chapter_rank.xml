@@ -33,7 +33,7 @@
   <sect1 id="section.rank.options">
     <title>Options</title>
     <para>
-      <table>
+      <table id="table.rank.options">
         <title>Options to rank Command</title>
         <tgroup cols='2'>
           <thead>

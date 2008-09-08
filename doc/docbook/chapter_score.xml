@@ -27,7 +27,7 @@
       specifying that it was unable to find the required Verilog modules.
     </para>
     <para>
-      <table>
+      <table id="table.score.options">
         <title>Options to score Command</title>
         <tgroup cols='2'>
           <thead>
