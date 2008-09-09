@@ -34,17 +34,33 @@ proc help_show_manual {chapter {section ""}} {
 
   global HOME BROWSER
 
-  set fpath "file://[file join $HOME doc html $chapter].html"
+  if {[string first "kfmclient" $BROWSER] != -1} {
 
-  if {$section != ""} {
-    set fpath $fpath#$section
-  }
+    set fpath "file:[file join $HOME doc html $chapter].html"
 
-  if {[catch {exec $BROWSER -remote "openURL( $fpath )"}]} {
+    if {$section != ""} {
+      set fpath $fpath#$section
+    }
 
-    # perhaps browser doesn't understand -remote flag
-    if {[catch "exec $BROWSER \"$fpath\" &" emsg]} {
-      error "Error displaying $fname in browser\n$emsg"
+    if {[catch {exec $BROWSER exec $fpath}]} {
+      error "Error displaying $fpath in browser\n$emsg"
+    }
+
+  } else {
+
+    set fpath "file://[file join $HOME doc html $chapter].html"
+
+    if {$section != ""} {
+      set fpath $fpath#$section
+    }
+
+    if {[catch {exec $BROWSER -remote "openURL( $fpath )"}]} {
+
+      # perhaps browser doesn't understand -remote flag
+      if {[catch "exec $BROWSER \"$fpath\" &" emsg]} {
+        error "Error displaying $fpath in browser\n$emsg"
+      }
+
     }
 
   }
