@@ -1,11 +1,11 @@
 <chapter id="chapter.gui.logic">
   <title>Navigating the Combinational Logic Window</title>
   <para>
-    The Verbose Combinational Logic viewer allows the user to look at the subexpressions of a selected statement to 
-    determine exactly why a statement did not achieve 100% coverage. The window is split up into two text frames.  The 
-    top frame displays the selected statement, underlining and numbering subexpressions that were found to not achieve 
-    full coverage. The bottom frame displays which combinations of a selected subexpression were hit/missed, allowing the 
-    user to discern which combinations of logic are still in need of verification.  Figure 1 shows the verbose 
+    The Verbose Combinational Logic viewer allows the user to look at the subexpressions of a selected statement to
+    determine exactly why a statement did not achieve 100% coverage. The window is split up into two text frames.  The
+    top frame displays the selected statement, underlining and numbering subexpressions that were found to not achieve
+    full coverage. The bottom frame displays which combinations of a selected subexpression were hit/missed, allowing the
+    user to discern which combinations of logic are still in need of verification.  Figure 1 shows the verbose
     combination logic window.
   </para>
   <para>
@@ -14,31 +14,31 @@
       <mediaobject><imageobject><imagedata fileref="img/comb_complex.gif" format="GIF"/></imageobject></mediaobject>
     </figure>
   </para>
-  
+
   <sect1 id="section.gui.logic.navigate">
     <title>Navigating a Statement</title>
     <para>
-      To understand what subexpressions of a statement caused it to not achieve 100% coverage, the viewer window allows 
-      the user to traverse uncovered subexpressions, displaying the coverage information for each subexpression in the 
-      lower frame.  To see an uncovered subexpression in the lower frame, simply click the left mouse on the underlined 
-      subexpression.  If the subexpression has one or more children subexpressions, these will be individually underlined 
-      and numbered.  If the subexpression is a leaf subexpression of the statement, only its coverage information will be 
-      displayed in the lower pane.  To traverse upward in a subexpression, simply click the right mouse button on the 
-      underlined subexpression.  This will cause the parent subexpression to be underlined and its parent (if one exists) 
+      To understand what subexpressions of a statement caused it to not achieve 100% coverage, the viewer window allows
+      the user to traverse uncovered subexpressions, displaying the coverage information for each subexpression in the
+      lower frame.  To see an uncovered subexpression in the lower frame, simply click the left mouse on the underlined
+      subexpression.  If the subexpression has one or more children subexpressions, these will be individually underlined
+      and numbered.  If the subexpression is a leaf subexpression of the statement, only its coverage information will be
+      displayed in the lower pane.  To traverse upward in a subexpression, simply click the right mouse button on the
+      underlined subexpression.  This will cause the parent subexpression to be underlined and its parent (if one exists)
       will have its coverage information displayed in the lower frame.
     </para>
     <para>
-      To exit this window, simply click on <emphasis role="bold">Close</emphasis> button. To see this help page for the 
+      To exit this window, simply click on <emphasis role="bold">Close</emphasis> button. To see this help page for the
       combinational logic window, click on the help (?) button.
     </para>
   </sect1>
-  
+
   <sect1 id="section.gui.logic.info">
     <title>Understanding the Coverage Information</title>
     <para>
       The coverage information for a selected subexpression can be one of four different types:
     </para>
-    
+
     <sect2 id="section.gui.logic.info.event">
       <title>Event Subexpression</title>
       <para>
@@ -85,7 +85,7 @@
         In this diagram, we see that a certain <code>@(posedge clock)</code> expression never occured.
       </para>
     </sect2>
-    
+
     <sect2 id="section.gui.info.unary">
       <title>Unary Subexpression</title>
       <para>
@@ -110,7 +110,7 @@
   <emphasis>signal_value</emphasis>[<emphasis>expression</emphasis>]
   <emphasis>signal_value</emphasis>[<emphasis>value</emphasis>:<emphasis>value</emphasis>]
   <emphasis>signal_value</emphasis>[<emphasis>expression</emphasis>+:<emphasis>value</emphasis>]
-  <emphasis>signal_value</emphasis>[<emphasis>expression</emphasis>-:<emphasis>value</emphasis>]          
+  <emphasis>signal_value</emphasis>[<emphasis>expression</emphasis>-:<emphasis>value</emphasis>]
               </programlisting>
             </para>
           </listitem>
@@ -118,7 +118,7 @@
             <para><emphasis role="bold">Function call</emphasis>:</para>
             <para>
               <programlisting>
-  <emphasis>function_name</emphasis>( ... )            
+  <emphasis>function_name</emphasis>( ... )
               </programlisting>
             </para>
           </listitem>
@@ -196,10 +196,10 @@
     <sect2 id="section.gui.logic.simple">
       <title>Simple Combinational Subexpression</title>
       <para>
-        These subexpressions have two child expressions (L=left and R=right).  There are three flavors of simple 
+        These subexpressions have two child expressions (L=left and R=right).  There are three flavors of simple
         combinational subexpressions:  AND-type, OR-type and other.  The differences are explained below.
       </para>
-      
+
       <sect3 id="section.gui.logic.simple.and">
         <title>Simple AND-type Combinational Subexpressions</title>
         <para>
@@ -238,7 +238,7 @@
           </figure>
         </para>
       </sect3>
-      
+
       <sect3 id="section.gui.logic.simple.or">
         <title>Simple OR-type Combinational Subexpressions</title>
         <para>
@@ -279,7 +279,7 @@
           </figure>
         </para>
       </sect3>
-      
+
       <sect3 id="section.gui.logic.simple.other">
         <title>Simple Other-type Combinational Subexpressions</title>
         <para>
@@ -334,28 +334,28 @@
         </para>
       </sect3>
     </sect2>
-    
+
     <sect2 id="section.gui.logic.complex">
       <title>Complex Combinational Subexpression</title>
       <para>
-        These subexpression have three or more child expressions that all are connected by the same operator.  For 
-        example, the statement <code><![CDATA[a = (b & c & d)]]></code> would contain the complex combinational 
-        subexpression of <code><![CDATA[(b & c & d)]]></code> where b, c and d are the three child expressions all 
+        These subexpression have three or more child expressions that all are connected by the same operator.  For
+        example, the statement <code><![CDATA[a = (b & c & d)]]></code> would contain the complex combinational
+        subexpression of <code><![CDATA[(b & c & d)]]></code> where b, c and d are the three child expressions all
         combined using the bitwise AND operator.
       </para>
       <para>
-        The effect of each subexpression on the value of the entire subexpression as well as the combination of each 
-        child toward the parent is displayed.  For example, if the combinational operator is a bitwise OR, each child is 
-        checked to see if it evaluated to TRUE (in an OR operation, only one subexpression needs to evaluate to TRUE for 
-        the entire subexpression to be TRUE).  Additionally, all child subexpressions are checked to see if all evaluated 
+        The effect of each subexpression on the value of the entire subexpression as well as the combination of each
+        child toward the parent is displayed.  For example, if the combinational operator is a bitwise OR, each child is
+        checked to see if it evaluated to TRUE (in an OR operation, only one subexpression needs to evaluate to TRUE for
+        the entire subexpression to be TRUE).  Additionally, all child subexpressions are checked to see if all evaluated
         to 0 simultaneously (this is the only way to get the whole subexpression to evaluate to 0).
       </para>
       <para>
-        The unique identifier below each subexpression is used in the displayed coverage information for these types of 
+        The unique identifier below each subexpression is used in the displayed coverage information for these types of
         subexpressions for identifying which subexpression did not behave correctly.
       </para>
       <para>
-        All simple combinational subexpressions can be output as complex combinational subexpressions if there are three 
+        All simple combinational subexpressions can be output as complex combinational subexpressions if there are three
         or more child subexpressions to the operation.
       </para>
       <para>
@@ -365,28 +365,30 @@
         </figure>
       </para>
       <para>
-        In this example, subexpression 1 never evaluated to a value of TRUE (which would have made the entire expression 
-        TRUE) and all three subexpressions 1, 2, and 3 were never a value of 0 simultaneously (which would have made the 
+        In this example, subexpression 1 never evaluated to a value of TRUE (which would have made the entire expression
+        TRUE) and all three subexpressions 1, 2, and 3 were never a value of 0 simultaneously (which would have made the
         entire expression FALSE).  However, subexpressions 2 and 3 both evaluated to TRUE at some point.
       </para>
     </sect2>
   </sect1>
-  
+
   <sect1 id="section.gui.logic.excl">
     <title>Excluding/Including a Subexpression</title>
     <para>
-      For any displayed subexpression within a statement, the user may choose to disregard the coverage information for 
-      that subexpression by clicking on the <emphasis role="bold">Excluded</emphasis> checkbutton on the right side of 
-      the window.  If this option is checked, Covered will recalculate combinational logic summary coverage information 
-      for the current module/instance by adding to the "Hit" count the number of uncovered combinational logic values for 
-      the given subexpression (and all subexpressions below this expression within the expression tree).  This new 
-      summary information will be redisplayed on the <link linkend="section.gui.main.listbox">listbox</link>. The subexpression 
-      background color in the top frame will also change from the uncovered background color to the covered background 
-      color.  However, the subexpression will still contain an underline that may be clicked on at any time to view its 
-      coverage information or the coverage information for any subexpressions that are uncovered.  To include a 
-      previously excluded subexpression, simply uncheck the <emphasis role="bold">Excluded</emphasis> checkbutton. This 
-      will automatically cause the summary information and background color to be updated for the given subexpression. 
-      <xref linkend="figure.gui.logic.excl"/> below shows an example of a subexpression that has been excluded from 
+      For any displayed subexpression within a statement, the user may choose to disregard the coverage information for
+      that subexpression by clicking on the <emphasis role="bold">Excluded</emphasis> checkbutton on the right side of
+      the window.  If this option is checked, Covered will display a <link linkend="chapter.gui.exclude">exclusion
+      reason popup window</link> to allow the user to specify a reason for excluding the subexpression.  Once a reason
+      has been entered, the combinational logic summary coverage information will be recalculated
+      for the current module/instance by adding to the "Exclude" count the number of uncovered combinational logic values for
+      the given subexpression (and all subexpressions below this expression within the expression tree).  This new
+      summary information will be redisplayed on the <link linkend="section.gui.main.listbox">listbox</link>. The subexpression
+      background color in the top frame will also change from the uncovered background color to the covered background
+      color.  However, the subexpression will still contain an underline that may be clicked on at any time to view its
+      coverage information or the coverage information for any subexpressions that are uncovered.  To include a
+      previously excluded subexpression, simply uncheck the <emphasis role="bold">Excluded</emphasis> checkbutton. This
+      will automatically cause the summary information and background color to be updated for the given subexpression.
+      <xref linkend="figure.gui.logic.excl"/> below shows an example of a subexpression that has been excluded from
       coverage consideration.
     </para>
     <para>
@@ -396,37 +398,44 @@
       </figure>
     </para>
     <para>
-      If an expression tree has been entirely excluded from coverage (all subexpressions have the 
-      <emphasis role="bold">Excluded</emphasis> checkbutton checked), the background color in the 
-      <link linkend="section.gui.main.viewer">file viewer</link> will change from an uncovered background color to the covered background 
-      color to indicate at the top-level that this entire statement has been excluded from coverage.  However, the 
-      statement will still be underlined in the Main Coverage File Viewer to allow the user to view the statement, if 
+      If an expression tree has been entirely excluded from coverage (all subexpressions have the
+      <emphasis role="bold">Excluded</emphasis> checkbutton checked), the background color in the
+      <link linkend="section.gui.main.viewer">file viewer</link> will change from an uncovered background color to the covered background
+      color to indicate at the top-level that this entire statement has been excluded from coverage.  However, the
+      statement will still be underlined in the Main Coverage File Viewer to allow the user to view the statement, if
       necessary.
     </para>
     <para>
-      If the user excludes any subexpression in the design, the <emphasis role="bold">Save CDD...</emphasis> option in 
-      the <link linkend="section.gui.main.filemenu">file</link> menu will be enabled.  This allows the user to save the excluded 
-      property either back to the CDD file (or to a newly named CDD file).  Doing so will allow the user to load the CDD 
-      file at a different time and retain the knowledge of which subexpressions have been excluded/included for coverage. 
-      Additionally, if a saved CDD file with coverage exclusion is merged with another CDD file, the excluded 
+      If the user excludes any subexpression in the design, the <emphasis role="bold">Save CDD...</emphasis> option in
+      the <link linkend="section.gui.main.filemenu">file</link> menu will be enabled.  This allows the user to save the excluded
+      property either back to the CDD file (or to a newly named CDD file).  Doing so will allow the user to load the CDD
+      file at a different time and retain the knowledge of which subexpressions have been excluded/included for coverage.
+      Additionally, if a saved CDD file with coverage exclusion is merged with another CDD file, the excluded
       subexpression information is preserved for the resulting merged CDD file.
     </para>
+    <para>
+      If a subexpression has been excluded from coverage and an exclusion reason was specified, you can view the reason for exclusion
+      by selecting the subexpression in the top window (so that it is displayed in the lower window and right-click-and-holding on the
+      <emphasis role="bold">Excluded</emphasis> checkbutton.  This will cause a tooltip-style window to be displayed specifying the
+      reason for exclusion.  The background color of the tooltip will be the same color as the "covered" background color to help
+      distinguish it from a normal tooltip.  To cause the exclusion reason tooltip to disappear, simply release the button.
+    </para>
   </sect1>
-  
+
   <sect1 id="section.gui.logic.display">
     <title>Displaying a New Statement</title>
     <para>
-      If the Verbose Combinational Logic Coverage window is currently displayed with a statement, the user may select a 
-      new statement in the <link linkend="section.gui.main.viewer">file viewer</link> of the Mainwindow.  When a new statement is selected, 
-      its value immediately replaces the currently selected statement.  This feature allows many different statements to 
+      If the Verbose Combinational Logic Coverage window is currently displayed with a statement, the user may select a
+      new statement in the <link linkend="section.gui.main.viewer">file viewer</link> of the Mainwindow.  When a new statement is selected,
+      its value immediately replaces the currently selected statement.  This feature allows many different statements to
       be viewed one after the other without having to create/destroy a new window for each.
     </para>
     <para>
-      The user may also see the previous or next uncovered statement in the main viewer by clicking either the left arrow 
-      button (for previous signal viewing) or the right arrow button (for next signal viewing).  Note that the left arrow 
+      The user may also see the previous or next uncovered statement in the main viewer by clicking either the left arrow
+      button (for previous signal viewing) or the right arrow button (for next signal viewing).  Note that the left arrow
       button will be disabled if there is not a signal previous to the current signal in the given module and the right
       arrow button will be disabled if there is not a signal after the current signal in the given module.
     </para>
   </sect1>
-  
+
 </chapter>

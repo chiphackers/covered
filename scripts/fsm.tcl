@@ -72,7 +72,7 @@ proc fsm_tablelist_selected {} {
 
   global fsm_arcs fsm_reason fsm_exclude exclude_reasons_enabled
   global uncov_bgColor uncov_fgColor cov_bgColor cov_fgColor
-  global curr_block curr_fsm_expr_id
+  global curr_block curr_fsm_expr_id curr_fsm_ptr
 
   set selected_cell [split [.fsmwin.pw.t.tl curcellselection] ,]
   set arc_index     [fsm_find_arc_index [lindex $selected_cell 0] [expr [lindex $selected_cell 1] - 1]]
@@ -81,6 +81,7 @@ proc fsm_tablelist_selected {} {
   if {$arc_index != -1} {
     set arc [lindex $fsm_arcs $arc_index]
     if {[.fsmwin.pw.t.tl cellcget [.fsmwin.pw.t.tl curcellselection] -text] != ""} {
+      fsm_arc_hide_tooltip .fsmwin.pw.t.tl
       set fsm_reason   ""
       set fsm_excluded [expr ! [lindex $arc 2]]
       if {$exclude_reasons_enabled == 1 && $fsm_excluded == 1} {
@@ -90,6 +91,15 @@ proc fsm_tablelist_selected {} {
       set fsm_arcs [lreplace $fsm_arcs $arc_index $arc_index $arc]
       tcl_func_set_fsm_exclude $curr_block $curr_fsm_expr_id [lindex $arc 0] [lindex $arc 1] $fsm_excluded $fsm_reason
       display_fsm_table
+      fsm_arc_show_tooltip .fsmwin.pw.t.tl [lindex $selected_cell 0] [lindex $selected_cell 1]
+      set text_x [.bot.right.txt xview]
+      set text_y [.bot.right.txt yview]
+      process_fsm_cov
+      .bot.right.txt xview moveto [lindex $text_x 0]
+      .bot.right.txt yview moveto [lindex $text_y 0]
+      populate_listbox
+      enable_cdd_save
+      set_pointer curr_fsm_ptr $curr_fsm_ptr 
     }
   }
 
@@ -247,8 +257,8 @@ proc display_fsm_table {} {
   # Delete all columns if this tablelist has been previously populated
   .fsmwin.pw.t.tl delete 0 end
   if {[.fsmwin.pw.t.tl columncount] > 0} {
-    for {set i 1} {$i < [expr [llength $fsm_out_states] + 1]} {incr i} {
-      .fsmwin.pw.t.tl columnconfigure $i -labelbg white
+    for {set i 1} {$i < [.fsmwin.pw.t.tl columncount]} {incr i} {
+      .fsmwin.pw.t.tl columnconfigure $i -labelbg $uncov_fgColor
     }
   }
 
@@ -286,15 +296,15 @@ proc display_fsm_table {} {
   for {set col 1} {$col < [expr [llength $fsm_out_states] + 1]} {incr col} {
     for {set row 0} {$row < [llength $fsm_in_states]} {incr row} {
       if {[.fsmwin.pw.t.tl cellcget $row,$col -bg] == $cov_bgColor} {
-        if {[.fsmwin.pw.t.tl columncget $col -labelbg] != $uncov_bgColor} {
-          .fsmwin.pw.t.tl columnconfigure $col -labelbg $cov_bgColor -labelfg $cov_fgColor
-        }
-        if {[.fsmwin.pw.t.tl cellcget $row,0 -bg] != $uncov_bgColor} {
-          .fsmwin.pw.t.tl cellconfigure $row,0 -bg $cov_bgColor -fg $cov_fgColor -selectbackground $cov_bgColor -selectforeground $cov_fgColor
-        }
+        .fsmwin.pw.t.tl columnconfigure $col -labelbg $cov_bgColor -labelfg $cov_fgColor
+        .fsmwin.pw.t.tl cellconfigure $row,0 -bg $cov_bgColor -fg $cov_fgColor -selectbackground $cov_bgColor -selectforeground $cov_fgColor
       } elseif {[.fsmwin.pw.t.tl cellcget $row,$col -bg] == $uncov_bgColor} {
-        .fsmwin.pw.t.tl columnconfigure $col -labelbg $uncov_bgColor -labelfg $uncov_fgColor
-        .fsmwin.pw.t.tl cellconfigure $row,0 -bg $uncov_bgColor -fg $uncov_fgColor -selectbackground $uncov_bgColor -selectforeground $uncov_fgColor
+        if {[.fsmwin.pw.t.tl columncget $col -labelbg] != $cov_bgColor} {
+          .fsmwin.pw.t.tl columnconfigure $col -labelbg $uncov_bgColor -labelfg $uncov_fgColor
+        }
+        if {[.fsmwin.pw.t.tl cellcget $row,0 -bg] != $cov_bgColor} {
+          .fsmwin.pw.t.tl cellconfigure $row,0 -bg $uncov_bgColor -fg $uncov_fgColor -selectbackground $uncov_bgColor -selectforeground $uncov_fgColor
+        }
       } else {
         .fsmwin.pw.t.tl cellconfigure $row,$col -bg white -fg white
       }

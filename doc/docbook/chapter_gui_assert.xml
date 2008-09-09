@@ -1,19 +1,19 @@
 <chapter id="chapter.gui.assert">
   <title>Navigating the Assertion Coverage Window</title>
   <para>
-    The Verbose Assertion Coverage window allows the user to see exactly which coverage points were hit or missed for a 
-    selected assertion instantiation in the design and, if hit, how many times the assertion coverage point (ACP) was hit 
-    during simulation.  Additionally, this window allows you to bring up the 
-    <link linkend="chapter.gui.assert.source">verbose assertion window</link> to view the internal assertion module code 
-    for the currently selected assertion instance. This lets the user view the code to determine what logically needs to 
+    The Verbose Assertion Coverage window allows the user to see exactly which coverage points were hit or missed for a
+    selected assertion instantiation in the design and, if hit, how many times the assertion coverage point (ACP) was hit
+    during simulation.  Additionally, this window allows you to bring up the
+    <link linkend="chapter.gui.assert.source">verbose assertion window</link> to view the internal assertion module code
+    for the currently selected assertion instance. This lets the user view the code to determine what logically needs to
     occur to hit a given ACP.
   </para>
   <para>
-    To view this window, select the "Assert" mode in the <link linkend="section.gui.main.covbar">coverage bar</link> in the main window and 
-    click on an underlined assertion instance name in the <link linkend="section.gui.main.viewer">file viewer</link>. Note that both 
-    covered and uncovered assertion instance names can be selected. Doing so will cause the Verbose Assertion Coverage 
-    Window to be displayed for the selected assertion instantiation.  <xref linkend="figure.gui.assert"/> shows an example 
-    of a zero_one_hot assertion that had the "test_expr_change covered" ACP covered (hit twice during simulation) and the 
+    To view this window, select the "Assert" mode in the <link linkend="section.gui.main.covbar">coverage bar</link> in the main window and
+    click on an underlined assertion instance name in the <link linkend="section.gui.main.viewer">file viewer</link>. Note that both
+    covered and uncovered assertion instance names can be selected. Doing so will cause the Verbose Assertion Coverage
+    Window to be displayed for the selected assertion instantiation.  <xref linkend="figure.gui.assert"/> shows an example
+    of a zero_one_hot assertion that had the "test_expr_change covered" ACP covered (hit twice during simulation) and the
     other two ACPs uncovered during simulation.
   </para>
   <para>
@@ -22,42 +22,43 @@
       <mediaobject><imageobject><imagedata fileref="img/assert_window.gif" format="GIF"/></imageobject></mediaobject>
     </figure>
   </para>
-  
+
   <sect1 id="section.gui.assert.navigate">
     <title>Navigating the Assertion Coverage Window</title>
     <para>
-      The window is made up of a simple table which contains the coverage point names within the selected assertion on 
-      the left and the number of times each of these coverage points were hit during simulation on the right. If a 
-      coverage point has not been hit, both the coverage point name and the number of hits (0) will be highlighted with 
-      the "uncovered" color selection as selected in the <link linkend="chapter.gui.preferences">preferences window</link>. If a coverage point 
-      has been hit at least once, both the coverage point name and the number of hits will be highlighted with the 
+      The window is made up of a simple table which contains the coverage point names within the selected assertion on
+      the left and the number of times each of these coverage points were hit during simulation on the right. If a
+      coverage point has not been hit, both the coverage point name and the number of hits (0) will be highlighted with
+      the "uncovered" color selection as selected in the <link linkend="chapter.gui.preferences">preferences window</link>. If a coverage point
+      has been hit at least once, both the coverage point name and the number of hits will be highlighted with the
       "covered" color selection as selected in the Preferences window.
     </para>
     <para>
-      Below the table the name of the currently selected assertion type is named.  To view the source code for this 
-      assertion, simply click on the <emphasis role="bold">Show Code</emphasis> button at the bottom right-hand portion 
-      of the coverage table.  This will cause the source code for this assertion to be displayed in a new 
+      Below the table the name of the currently selected assertion type is named.  To view the source code for this
+      assertion, simply click on the <emphasis role="bold">Show Code</emphasis> button at the bottom right-hand portion
+      of the coverage table.  This will cause the source code for this assertion to be displayed in a new
       <link linkend="chapter.gui.assert.source">assertion source viewer</link>.
     </para>
     <para>
-      To exit this window, simply click on <emphasis role="bold">Close</emphasis> button. To see this help page for the 
+      To exit this window, simply click on <emphasis role="bold">Close</emphasis> button. To see this help page for the
       assertion coverage window, click on the help (?) button.
     </para>
   </sect1>
-  
+
   <sect1 id="section.gui.assert.excl">
     <title>Excluding/Including Assertion Coverage Points</title>
     <para>
-      Individual ACPs can be excluded/included for coverage consideration using the verbose assertion coverage window. 
-      This is accomplished by clicking on the "0" (ACP is currently included in coverage) or "E" (ACP is current excluded 
-      from coverage) value in the "# of hits" column.  Changing an ACP from "0" to "E" (excluding the ACP from coverage 
-     consideration) will cause the summary assertion coverage information to be recalculated and redisplayed in the 
-      <link linkend="section.gui.main.listbox">listbox</link> and the background color of the ACP will change from the uncovered to the 
-      covered background color.  Changing an ACP from "E" to "0" (including the ACP for coverage consideration) will 
-      cause the summary assertion coverage information to be recalculated and redisplayed in the Main Window Summary Bar 
-      and background color of the ACP will change from the covered to the uncovered background color. 
-      <xref linkend="figure.gui.assert.exclude"/> below shows the above assertion instance with the last coverage point 
-      excluded from coverage.
+      Individual ACPs can be excluded/included for coverage consideration using the verbose assertion coverage window.
+      This is accomplished by clicking on the "0" (ACP is currently included in coverage) or "E" (ACP is current excluded
+      from coverage) value in the "# of hits" column.  Changing an ACP from "0" to "E" (excluding the ACP from coverage
+      consideration) will cause the <link linkend="chapter.gui.exclude">exclusion reason popup window</link> to be displayed,
+      allowing you to specify a reason for excluding the ACP.  Once a reason has been entered, the summary assertion coverage
+      information to be recalculated and redisplayed in the <link linkend="section.gui.main.listbox">listbox</link> and the
+      background color of the ACP will change from the uncovered to the covered background color.  Changing an ACP from
+      "E" to "0" (including the ACP for coverage consideration) will cause the summary assertion coverage information to be
+      recalculated and redisplayed in the Main Window Summary Bar and background color of the ACP will change from the
+      covered to the uncovered background color.  <xref linkend="figure.gui.assert.exclude"/> below shows the above assertion
+      instance with the last coverage point excluded from coverage.
     </para>
     <para>
       <figure id="figure.gui.assert.exclude">
@@ -66,35 +67,42 @@
       </figure>
     </para>
     <para>
-      If all ACPs for a given assertion instance have been excluded from coverage consideration, the 
-      <link linkend="section.gui.main.viewer">file viewer</link> will automatically change the background color of the assertion instance 
-      name from the uncovered to the covered background color.  The assertion instance name will still be underlined, 
-      allowing the user to still see the coverage information for that given assertion instance.
+      If all ACPs for a given assertion instance have been excluded from coverage consideration, the
+      <link linkend="section.gui.main.viewer">file viewer</link> will automatically change the background color of the
+      assertion instance name from the uncovered to the covered background color.  The assertion instance name will still
+      be underlined, allowing the user to still see the coverage information for that given assertion instance.
     </para>
     <para>
-      If the user excludes any ACP in the design, the <emphasis role="bold">Save CDD...</emphasis> option in the 
-      <link linkend="section.gui.main.filemenu">file</link> menu will be enabled.  This allows the user to save the excluded 
-      property either back to the CDD file (or to a newly named CDD file).  Doing so will allow the user to load the CDD 
-      file at a different time and retain the knowledge of which ACPs have been excluded/included for coverage. 
-      Additionally, if a saved CDD file with coverage exclusion is merged with another CDD file, the excluded ACP 
-      information is preserved for the resulting merged CDD file.
+      If the user excludes any ACP in the design, the <emphasis role="bold">Save CDD...</emphasis> option in the
+      <link linkend="section.gui.main.filemenu">file</link> menu will be enabled.  This allows the user to save the excluded
+      property either back to the CDD file (or to a newly named CDD file).  Doing so will allow the user to load the CDD
+      file at a different time and retain the knowledge of which ACPs have been excluded/included for coverage along with
+      any specified reasons for exclusion.  Additionally, if a saved CDD file with coverage exclusion is merged with another
+      CDD file, the excluded ACP information is preserved for the resulting merged CDD file.
+    </para>
+    <para>
+      If an ACP has been excluded from coverage and an exclusion reason was specified, you can view the reason for exclusion
+      by right-click-and-holding on the "E" next to the ACP.  This will cause a tooltip-style window to be displayed specifying
+      the reason for exclusion.  The background color of the tooltip will be the same color as the "covered" background color
+      to help distinguish it from a normal tooltip.  To cause the exclusion reason tooltip to disappear, simply release the
+      button.
     </para>
   </sect1>
-  
+
   <sect1 id="section.gui.assert.display">
     <title>Displaying a New Assertion Instance</title>
     <para>
-      If the Verbose Assertion Coverage window is currently displayed, the user may select a new assertion in the 
-      <link linkend="section.gui.main.viewer">file viewer</link> of the Main window. When a new assertion is selected, its information 
-      immediately replaces the currently selected assertion. This feature allows many different assertions to be viewed 
+      If the Verbose Assertion Coverage window is currently displayed, the user may select a new assertion in the
+      <link linkend="section.gui.main.viewer">file viewer</link> of the Main window. When a new assertion is selected, its information
+      immediately replaces the currently selected assertion. This feature allows many different assertions to be viewed
       one after the other without having to create/destroy a new window for each.
     </para>
     <para>
-      The user may also see the previous or next uncovered assertion in the main viewer by clicking either the left arrow 
-      button (for previous signal viewing) or the right arrow button (for next signal viewing).  Note that the left arrow 
-      button will be disabled if there is not a signal previous to the current signal in the given module and the right 
+      The user may also see the previous or next uncovered assertion in the main viewer by clicking either the left arrow
+      button (for previous signal viewing) or the right arrow button (for next signal viewing).  Note that the left arrow
+      button will be disabled if there is not a signal previous to the current signal in the given module and the right
       arrow button will be disabled if there is not a signal after the current signal in the given module.
     </para>
   </sect1>
-  
+
 </chapter>

@@ -1,12 +1,12 @@
 <chapter id="chapter.gui.toggle">
   <title>Navigating the Toggle Coverage Window</title>
   <para>
-    The verbose toggle window allows the user to see which bits for a given signal have toggled from a 0-&gt;1 or a 
-    1-&gt;0 during simulation. To display this window, simply click on a highlighted/underlined uncovered signal in the 
-    <link linkend="section.gui.main.viewer">file viewer</link> of the main window.  This will cause the verbose toggle viewer to be created 
-    for the specified signal as well as display a "--&gt;" symbol in the Coverage Viewer on the same line as the selected 
-    signal.  This symbol is simply meant to help the user identify in the Coverage Viewer which signal is currently 
-    displayed in the Toggle Viewer window.  <xref linkend="figure.gui.toggle"/> shows the Toggle Viewer loaded with a 
+    The verbose toggle window allows the user to see which bits for a given signal have toggled from a 0-&gt;1 or a
+    1-&gt;0 during simulation. To display this window, simply click on a highlighted/underlined uncovered signal in the
+    <link linkend="section.gui.main.viewer">file viewer</link> of the main window.  This will cause the verbose toggle viewer to be created
+    for the specified signal as well as display a "--&gt;" symbol in the Coverage Viewer on the same line as the selected
+    signal.  This symbol is simply meant to help the user identify in the Coverage Viewer which signal is currently
+    displayed in the Toggle Viewer window.  <xref linkend="figure.gui.toggle"/> shows the Toggle Viewer loaded with a
     4-bit signal called "err_vec" in which bits 3:2 have successfully toggled from a 0-&gt;1.
   </para>
   <para>
@@ -15,63 +15,73 @@
       <mediaobject><imageobject><imagedata fileref="img/toggle_full.gif" format="GIF"/></imageobject></mediaobject>
     </figure>
   </para>
-  
+
   <sect1 id="section.gui.toggle.layout">
     <title>Understanding the Layout</title>
     <para>
-      The bit vector displayed is a binary bit vector, each value (0 or 1) represents whether that bit in the signal 
-      either toggled (1) or did not toggle (0) during simulation.  There are two bit vectors displayed for the signal, 
+      The bit vector displayed is a binary bit vector, each value (0 or 1) represents whether that bit in the signal
+      either toggled (1) or did not toggle (0) during simulation.  There are two bit vectors displayed for the signal,
       the top vector shows the 0-&gt;1 toggle information while the bottom vector shows the 1-&gt;0 toggle information.
     </para>
     <para>
-      The name of the signal along with its MSB:LSB information is displayed at the bottom of the window; however, if the 
-      mouse cursor is placed over a specific bit in the toggle box, the MSB:LSB will be changed to show the displayed 
-      bit, making it easy for the user to discern exactly which bit has toggled/not toggled.  If the width of the signal 
-      exceeds the given space for the toggle window, a scrollbar will be allowed to slide left and right to view the rest 
+      The name of the signal along with its MSB:LSB information is displayed at the bottom of the window; however, if the
+      mouse cursor is placed over a specific bit in the toggle box, the MSB:LSB will be changed to show the displayed
+      bit, making it easy for the user to discern exactly which bit has toggled/not toggled.  If the width of the signal
+      exceeds the given space for the toggle window, a scrollbar will be allowed to slide left and right to view the rest
       of the toggle information.
     </para>
     <para>
-      To exit this window, simply click on <emphasis role="bold">Close</emphasis> button.  To see this help page from the 
+      To exit this window, simply click on <emphasis role="bold">Close</emphasis> button.  To see this help page from the
       toggle window, click on the help (?) button.
     </para>
   </sect1>
-  
+
   <sect1 id="section.gui.toggle.excl">
     <title>Excluding/Including a Signal for Toggle Coverage</title>
     <para>
-      The user may exclude/include any uncovered signal in the design for toggle coverage by simply clicking on the 
-      <emphasis role="bold">Excluded</emphasis> checkbutton.  If this checkbutton is checked, the summary coverage 
-      information will automatically be recalculated and redisplayed in the <link linkend="section.gui.main.listbox">listbox</link> and 
-      the background color of the underlined signal in the <link linkend="section.gui.main.viewer">file viewer</link> will change from the 
-      uncovered background color to the covered background color.  However, the signal will still remain underlined, 
-      allowing the user to see the verbose toggle coverage information, if necessary.  If the 
-      <emphasis role="bold">Excluded</emphasis> checkbutton is unchecked, the summary coverage information and background 
-      colors will be readjusted to include the coverage information for this signal.
+      The user may exclude/include any uncovered signal in the design for toggle coverage by simply clicking on the
+      <emphasis role="bold">Excluded</emphasis> checkbutton.  If this checkbutton is checked, the
+      <link linkend="chapter.gui.exclude">exclusion reason popup window</link> will be displayed, allowing the user to
+      specify a reason for excluding this signal from toggle coverage.  Once a reason has been specified, the summary
+      coverage information will automatically be recalculated and redisplayed in the
+      <link linkend="section.gui.main.listbox">listbox</link> and the background color of the underlined signal in the
+      <link linkend="section.gui.main.viewer">file viewer</link> will change from the uncovered background color to the
+      covered background color.  However, the signal will still remain underlined, allowing the user to see the verbose
+      toggle coverage information, if necessary.  If the <emphasis role="bold">Excluded</emphasis> checkbutton is
+      unchecked, the summary coverage information and background colors will be readjusted to include the coverage
+      information for this signal.
     </para>
     <para>
-      If the user excludes any signal for toggle coverage in the design, the <emphasis role="bold">Save CDD...</emphasis> 
-      option in the <link linkend="section.gui.main.filemenu">file</link> menu will be enabled.  This allows the user to save the 
-      excluded property either back to the CDD file (or to a newly named CDD file).  Doing so will allow the user to load 
-      the CDD file at a different time and retain the knowledge of which signals have been excluded/included for toggle 
-      coverage.  Additionally, if a saved CDD file with coverage exclusion is merged with another CDD file, the excluded 
+      If the user excludes any signal for toggle coverage in the design, the <emphasis role="bold">Save CDD...</emphasis>
+      option in the <link linkend="section.gui.main.filemenu">file</link> menu will be enabled.  This allows the user to save the
+      excluded property either back to the CDD file (or to a newly named CDD file).  Doing so will allow the user to load
+      the CDD file at a different time and retain the knowledge of which signals have been excluded/included for toggle
+      coverage.  Additionally, if a saved CDD file with coverage exclusion is merged with another CDD file, the excluded
       signal information is preserved for the resulting merged CDD file.
     </para>
+    <para>
+      If a signal has been excluded from coverage and an exclusion reason was specified, you can view the reason for exclusion
+      by right-click-and-holding on the <emphasis role="bold">Excluded</emphasis> checkbutton.  This will cause a tooltip-style
+      window to be displayed specifying the reason for exclusion.  The background color of the tooltip will be the same color
+      as the "covered" background color to help distinguish it from a normal tooltip.  To cause the exclusion reason tooltip
+      to disappear, simply release the button.
+    </para>
   </sect1>
-  
+
   <sect1 id="section.gui.toggle.display">
     <title>Displaying a New Signal for Toggle Coverage</title>
     <para>
-      If the Verbose Toggle Coverage window is currently displayed with a signal, the user may select a new signal in the 
-      <link linkend="section.gui.main.viewer">file viewer</link> of the Main window.  When a new signal is selected, its value immediately 
-      replaces the currently selecting signal value.  This feature allows many different signals to be viewed one after 
+      If the Verbose Toggle Coverage window is currently displayed with a signal, the user may select a new signal in the
+      <link linkend="section.gui.main.viewer">file viewer</link> of the Main window.  When a new signal is selected, its value immediately
+      replaces the currently selecting signal value.  This feature allows many different signals to be viewed one after
       the other without having to create/destroy a new window for each signal.
     </para>
     <para>
-      The user may also see the previous or next uncovered signal in the main viewer by clicking either the left arrow 
-      button (for previous signal viewing) or the right arrow button (for next signal viewing).  Note that the left arrow 
-      button will be disabled if there is not a signal previous to the current signal in the given module and the right 
+      The user may also see the previous or next uncovered signal in the main viewer by clicking either the left arrow
+      button (for previous signal viewing) or the right arrow button (for next signal viewing).  Note that the left arrow
+      button will be disabled if there is not a signal previous to the current signal in the given module and the right
       arrow button will be disabled if there is not a signal after the current signal in the given module.
     </para>
   </sect1>
-  
+
 </chapter>
