@@ -54,7 +54,7 @@ proc get_exclude_reason {w} {
     }
   }
   set_balloon .exclwin.pw.top.bf.ibf.more "Click to show/hide the default exclusion reason list"
-  help_button .exclwin.pw.top.bf.ibf.help ""
+  help_button .exclwin.pw.top.bf.ibf.help "chapter.gui.exclude"
   pack .exclwin.pw.top.bf.ibf.more -side left -padx 3
   pack .exclwin.pw.top.bf.ibf.help -side right
   pack .exclwin.pw.top.bf.save     -fill x -pady 3
