@@ -2505,15 +2505,16 @@ static void combination_output_expr(
             unsigned int curr_depth,      /*!< Specifies current depth of expression tree */
   /*@out@*/ int*         any_missed,      /*!< Pointer to indicate if any subexpressions were missed in the specified expression */
   /*@out@*/ int*         any_measurable,  /*!< Pointer to indicate if any subexpressions were measurable in the specified expression */
-  /*@out@*/ int*         any_excluded     /*!< Pointer to indicate if any subexpressions were excluded */
+  /*@out@*/ int*         any_excluded,    /*!< Pointer to indicate if any subexpressions were excluded */
+  /*@out@*/ int*         all_excluded     /*!< Pointer to indicate if all subexpressions that can be excluded are */
 ) { PROFILE(COMBINATION_OUTPUT_EXPR);
 
   if( (expr != NULL) && (ESUPPL_WAS_COMB_COUNTED( expr->suppl ) == 1) ) {
 
     expr->suppl.part.comb_cntd = 0;
 
-    combination_output_expr( expr->right, combination_calc_depth( expr, curr_depth, FALSE ), any_missed, any_measurable, any_excluded );
-    combination_output_expr( expr->left,  combination_calc_depth( expr, curr_depth, TRUE ),  any_missed, any_measurable, any_excluded );
+    combination_output_expr( expr->right, combination_calc_depth( expr, curr_depth, FALSE ), any_missed, any_measurable, any_excluded, all_excluded );
+    combination_output_expr( expr->left,  combination_calc_depth( expr, curr_depth, TRUE ),  any_missed, any_measurable, any_excluded, all_excluded );
 
     if( ((report_comb_depth == REPORT_DETAILED) && (curr_depth <= report_comb_depth)) ||
          (report_comb_depth == REPORT_VERBOSE) ) {
@@ -2524,8 +2525,12 @@ static void combination_output_expr(
       if( EXPR_IS_MEASURABLE( expr ) == 1 ) {
         if( ESUPPL_EXCLUDED( expr->suppl ) == 0 ) {
           *any_measurable = 1;
+          if( expr->ulid != -1 ) {
+            *all_excluded = 0;
+          }
         } else {
-          *any_excluded   = 1;
+          *any_excluded = 1;
+          *all_excluded = 1;
         }
       }
 
@@ -2561,9 +2566,6 @@ static bool combination_display_verbose(
   statement*   stmt;            /* Pointer to current statement */
   char**       code;            /* Code string from code generator */
   unsigned int code_depth;      /* Depth of code array */
-  int          any_missed;      /* Specifies if any of the subexpressions were missed in this expression */
-  int          any_measurable;  /* Specifies if any of the subexpressions were measurable in this expression */
-  int          any_excluded;    /* Specifies if any of the subexpressions were excluded in this expression */
 
   switch( rtype ) {
     case RPT_TYPE_HIT  :  fprintf( ofile, "    Hit Combinations\n\n" );                         break;
@@ -2578,11 +2580,12 @@ static bool combination_display_verbose(
   stmt = func_iter_get_next_statement( &fi );
   while( stmt != NULL ) {
 
-    any_missed     = 0;
-    any_measurable = 0;
-    any_excluded   = 0;
+    int any_missed     = 0;
+    int any_measurable = 0;
+    int any_excluded   = 0;
+    int all_excluded   = 0;
 
-    combination_output_expr( stmt->exp, 0, &any_missed, &any_measurable, &any_excluded );
+    combination_output_expr( stmt->exp, 0, &any_missed, &any_measurable, &any_excluded, &all_excluded );
 
     retval |= any_excluded;
 
@@ -2770,9 +2773,6 @@ void combination_collect(
 
   func_iter  fi;              /* Functional unit iterator */
   statement* stmt;            /* Pointer to current statement */
-  int        any_missed;      /* Specifies if any of the subexpressions were missed in this expression */
-  int        any_measurable;  /* Specifies if any of the subexpressions were measurable in this expression */
-  int        any_excluded;    /* Specifies if any of the subexpressions were excluded in this expression */
  
   /* Reset combination counted bits */
   combination_reset_counted_exprs( funit );
@@ -2787,11 +2787,12 @@ void combination_collect(
   stmt = func_iter_get_next_statement( &fi );
   while( stmt != NULL ) {
 
-    any_missed     = 0;
-    any_measurable = 0;
-    any_excluded   = 0;
+    int any_missed     = 0;
+    int any_measurable = 0;
+    int any_excluded   = 0;
+    int all_excluded   = 0;
 
-    combination_output_expr( stmt->exp, 0, &any_missed, &any_measurable, &any_excluded );
+    combination_output_expr( stmt->exp, 0, &any_missed, &any_measurable, &any_excluded, &all_excluded );
 
     /* Check for uncovered statements */
     if( ((cov == 0) && (any_missed == 1)) ||
@@ -2801,7 +2802,7 @@ void combination_collect(
         *excludes =         (int*)realloc_safe( *excludes, (sizeof( int* )        * (*exp_cnt)), (sizeof( int* )        * (*exp_cnt + 1)) );
 
         (*exprs)[(*exp_cnt)]    = stmt->exp;
-        (*excludes)[(*exp_cnt)] = (any_measurable && (stmt->suppl.part.excluded == 0)) ? 0 : 1;
+        (*excludes)[(*exp_cnt)] = all_excluded ? 1 : 0;
         (*exp_cnt)++;
       }
       stmt->exp->suppl.part.comb_cntd = 0;
@@ -3091,6 +3092,9 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.206  2008/09/04 23:08:05  phase1geo
+ More work on exclusions via GUI.  Still work to go.  Checkpointing.
+
  Revision 1.205  2008/09/04 21:34:19  phase1geo
  Completed work to get exclude reason support to work with toggle coverage.
  Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
