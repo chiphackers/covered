@@ -70,6 +70,7 @@ proc create_memory_window {signal} {
       set text_x [.bot.right.txt xview]
       set text_y [.bot.right.txt yview]
       process_memory_cov
+      create_memory_window $mem_name
       .bot.right.txt xview moveto [lindex $text_x 0]
       .bot.right.txt yview moveto [lindex $text_y 0]
       populate_listbox

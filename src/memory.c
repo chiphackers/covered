@@ -346,7 +346,7 @@ static void memory_get_mem_coverage(
       vector_mem_rw_count( vec, 0, (int)(vec->width - 1), &wr, &rd );
 
       /* Output the addressable memory element if it is found to be lacking in coverage */
-      if( (tog01 < dim_width) || (tog10 < dim_width) || (wr == 0) || (rd == 0) ) {
+      if( ((tog01 < dim_width) || (tog10 < dim_width) || (wr == 0) || (rd == 0)) && (sig->suppl.part.excluded == 0) ) {
         strcpy( hit_str, "0" );
       } else {
         strcpy( hit_str, "1" );
@@ -1328,6 +1328,9 @@ void memory_report(
 
 /*
  $Log$
+ Revision 1.41  2008/09/04 23:08:06  phase1geo
+ More work on exclusions via GUI.  Still work to go.  Checkpointing.
+
  Revision 1.40  2008/09/04 21:34:20  phase1geo
  Completed work to get exclude reason support to work with toggle coverage.
  Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
