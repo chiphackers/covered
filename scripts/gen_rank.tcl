@@ -85,7 +85,6 @@ proc read_rank_option_file {w fname} {
               .rankwin.p.files.f.t.lb insert end [list 1 $fname]
               .rankwin.p.files.f.t.lb cellconfigure end,required -image $rank_img_checked
             } else {
-              puts "Found matching at index $index"
               .rankwin.p.files.f.t.lb cellconfigure $index,required -image $rank_img_checked
             }
             incr rank_req_check_cnt

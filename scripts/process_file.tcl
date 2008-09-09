@@ -247,7 +247,6 @@ proc display_line_cov {} {
         .bot.right.txt tag bind uncov_button <ButtonPress-3> {
           set selected_line [expr [lindex [split [.bot.right.txt index current] .] 0] + ($start_line - 1)]
           set entry [lsearch -index 0 -inline $uncovered_lines $selected_line]
-          puts "line entry: $entry"
           if {$entry != ""} {
             set line_excluded [lindex $entry 1]
             set line_reason   [lindex $entry 2]
