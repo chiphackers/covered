@@ -56,7 +56,7 @@ proc balloon::getwfamily {w} {
 
 proc balloon::show {w arg {bgcolor lightyellow} {fgcolor black}} {
 
-  if {[eval winfo containing  [winfo pointerxy .]]!=$w} {return}
+  if {[string compare -length [string length $w] [eval winfo containing  [winfo pointerxy .]] $w] != 0} {return}
 
   after cancel $balloon::after_id
   set top $w.balloon
