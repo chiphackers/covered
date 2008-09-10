@@ -953,7 +953,7 @@ void exclude_db_read(
     while( (*line)[0] == ' ' ) {
       (*line)++;
     }
-    er->reason = strdup( *line );
+    er->reason = strdup_safe( *line );
 
     /* Add the given exclude reason to the current functional unit list */
     if( curr_funit->er_head == NULL ) {
@@ -1125,11 +1125,12 @@ static char* exclude_get_message(
   char  str[101];
   char* formatted_msg;        /* Formatted message */
 
-  printf( "Please specify a reason for exclusion for exclusion ID %s (Enter a '.' (period) on a newline to end):\n", eid );
+  snprintf( user_msg, USER_MSG_LENGTH, "Please specify a reason for exclusion for exclusion ID %s (Enter a '.' (period) on a newline to end):\n", eid );
+  print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
   str[0] = '\0';
 
-  while( ((c = (char)getchar()) != '.') || !nl_just_seen ) {
+  while( ((c = (char)getchar()) != EOF) && ((c != '.') || !nl_just_seen) ) {
 
     /* Mark if we have just seen a newline (for the purposes of determining if the user has completed input) */
     nl_just_seen = (c == '\n') ? TRUE : FALSE;
@@ -1161,12 +1162,12 @@ static char* exclude_get_message(
     msg[strlen(msg)-1] = '\0';
   }
 
-  printf( "\n" );
+  print_output( "", NORMAL, __FILE__, __LINE__ );
 
   /* Now reformat the message */
   formatted_msg = exclude_format_reason( msg );
 
-  free_safe( msg, (strlen( msg ) + 1) );
+  free_safe( msg, (strlen( msg ) + 2) );
 
   PROFILE_END;
 
@@ -1698,6 +1699,12 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.38  2008/09/06 05:59:45  phase1geo
+ Adding assertion exclusion reason support and have most code implemented for
+ FSM exclusion reason support (still working on debugging this code).  I believe
+ that assertions, FSMs and lines might suffer from the same problem...
+ Checkpointing.
+
  Revision 1.37  2008/09/04 21:34:20  phase1geo
  Completed work to get exclude reason support to work with toggle coverage.
  Ground-work is laid for the rest of the coverage metrics.  Checkpointing.

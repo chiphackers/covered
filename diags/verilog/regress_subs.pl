@@ -26,6 +26,12 @@ $COVERED_REPORT_GFLAGS = "";
 # Global rank command flags to use when running the runRankCommand subroutine
 $COVERED_RANK_GFLAGS = "";
 
+# Global exclude command flags to use when running the runExcludeCommand subroutine
+$COVERED_EXCLUDE_GFLAGS = "";
+
+# Global rank command flags to use when running the runRankCommand subroutine
+$COVERED_RANK_GFLAGS = "";
+
 # Specifies which simulator should be used for simulating the design (IV, CVER, VCS)
 $SIMULATOR = "IV";
 
@@ -93,6 +99,10 @@ sub initialize {
         $COVERED_MERGE_GFLAGS = $varvalue;
       } elsif( $varname eq "COVERED_REPORT_GFLAG" ) {
         $COVERED_REPORT_GFLAGS = $varvalue;
+      } elsif( $varname eq "COVERED_RANK_GFLAG" ) {
+        $COVERED_RANK_GFLAGS = $varvalue;
+      } elsif( $varname eq "COVERED_EXCLUDE_GFLAG" ) {
+        $COVERED_EXCLUDE_GFLAGS = $varvalue;
       } elsif( $varname eq "USE_CVER" ) {
         $SIMULATOR = "CVER";
       } elsif( $varname eq "USE_VCS" ) {
@@ -185,7 +195,19 @@ sub runRankCommand {
   my( $rank_args ) = $_[0];
 
   # Create rank command
-  my( $cmd ) = "$COVERED $COVERED_GFLAGS $COVERED_REPORT_GFLAGS rank $rank_args $CHECK_MEM_CMD";
+  my( $cmd ) = "$COVERED $COVERED_GFLAGS $COVERED_RANK_GFLAGS rank $rank_args $CHECK_MEM_CMD";
+
+  &runCommand( $cmd );
+
+}
+
+# Runs the exclude command with the given arguments.
+sub runExcludeCommand {
+
+  my( $exclude_args ) = $_[0];
+
+  # Create exclude command
+  my( $cmd ) = "$COVERED $COVERED_GFLAGS $COVERED_EXCLUDE_GFLAGS exclude $exclude_args $CHECK_MEM_CMD";
 
   &runCommand( $cmd );
 

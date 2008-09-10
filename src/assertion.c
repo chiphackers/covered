@@ -553,6 +553,10 @@ void assertion_get_coverage(
 
 /*
  $Log$
+ Revision 1.38  2008/09/04 21:34:19  phase1geo
+ Completed work to get exclude reason support to work with toggle coverage.
+ Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
+
  Revision 1.37  2008/09/03 03:46:37  phase1geo
  Updates for memory and assertion exclusion output.  Checkpointing.
 
@@ -581,7 +585,6 @@ void assertion_get_coverage(
  Revision 1.33  2008/06/27 14:02:00  phase1geo
  Fixing splint and -Wextra warnings.  Also fixing comment formatting.
 
->>>>>>> 1.32.4.3
  Revision 1.32  2008/04/15 20:37:07  phase1geo
  Fixing database array support.  Full regression passes.
 

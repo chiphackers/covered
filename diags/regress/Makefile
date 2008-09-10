@@ -43,14 +43,15 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 concat6         concat7         cond1           cond2           cond3 \
                 cond3.1         cond3.2         cond3.3         delay1          delay2 \
                 define1         define1.1       define1.2       define2         define2.1 \
-                define4         define5         define6         define6.1       disable1        disable1.1 \
-                disable2        disable2.1      disable3        div1            dly_assign1 \
-                endian1         endian2         endian3         event1          event1.1 \
-                exclude1        exclude2        exclude3        exclude4        exclude6 \
-                exclude6.1      exclude7        exclude7.1      exclude7.2      exclude8 \
-                exclude8.1      exclude9        exclude9.1      exclude9.2      exclude9.3 \
-                exclude9.4      exclude9.5      exclude9.6      exclude9.7      exclude9.8 \
-                exclude9.9      expand1         expand2         expand3         expand4 \
+                define4         define5         define6         define6.1       disable1 \
+                disable1.1      disable2        disable2.1      disable3        div1 \
+                dly_assign1     endian1         endian2         endian3         event1 \
+                event1.1        exclude1        exclude2        exclude3        exclude4 \
+                exclude6        exclude6.1      exclude7        exclude7.1      exclude7.2 \
+                exclude8        exclude8.1      exclude9        exclude9.1      exclude9.2 \
+                exclude9.3      exclude9.4      exclude9.5      exclude9.6      exclude9.7 \
+                exclude9.8      exclude9.9      exclude10       exclude10.1     exclude10.2 \
+                exclude10.3     exclude10.4     expand1         expand2         expand3         expand4 \
                 expand4.1       expand4.2       expand4.3       expand4.4       finish1 \
                 for1            for2            forever1        fork1           fork2 \
                 fsm3            fsm4            fsm4.1          fsm5            fsm5.1 \
@@ -98,7 +99,8 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 slist3          slist3.2        slist4          static1         string1 \
                 string2         string2.1       supply0         supply1         task1 \
                 task1.1         task2           task2.1         task2.2         task2.3 \
-                task3           task3.1         task4           task4.1         timescale1 \
+                task3           task3.1         task4           task4.1         task6 \
+                timescale1 \
                 timescale1.6    timescale1.9    timescale1.12   timescale1.15   timescale1.16 \
                 timescale1.17   timescale1.18   timescale2      timescale2.2    timescale2.3 \
                 timescale2.4    timescale2.5    timescale2.8    toggle          tri \
