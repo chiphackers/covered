@@ -44,10 +44,8 @@
     </para>
     <para>
       <itemizedlist>
-        <listitem><para>1 -&gt; 2</para></listitem>
-        <listitem><para>3 -&gt; 1</para></listitem>
-        <listitem><para>2 -&gt; 3</para></listitem>
-        <listitem><para>2 -&gt; 2 (loopback case)</para></listitem>
+        <listitem><para>2 -&gt; 4</para></listitem>
+        <listitem><para>4 -&gt; 1</para></listitem>
       </itemizedlist>
     </para>
     <para>
@@ -57,10 +55,9 @@
     </para>
     <para>
       <itemizedlist>
-        <listitem><para>0 -&gt; 0 (loopback case)</para></listitem>
-        <listitem><para>0 -&gt; 1</para></listitem>
-        <listitem><para>1 -&gt; 3</para></listitem>
-        <listitem><para>3 -&gt; 0</para></listitem>
+        <listitem><para>1 -&gt; 2</para></listitem>
+        <listitem><para>1 -&gt; 1 (loopback case)</para></listitem>
+        <listitem><para>2 -&gt; 2 (loopback case)</para></listitem>
       </itemizedlist>
     </para>
     <para>
