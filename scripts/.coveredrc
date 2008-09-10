@@ -13,7 +13,7 @@ ShowWizardOnStartup = true
 # which will be used when the application is restarted at a later time.  Set to false
 # to cause the Covered GUI to use the default values.
 
-SaveGuiOnExit = false
+SaveGuiOnExit = true
 
 # If set to true, causes tooltips to be used for many widgets within the GUI.  If set
 # to false, causes all tooltip support to be disabled.
@@ -149,3 +149,13 @@ ExclusionReasons = {Logic is obsolete but will not be removed for future enhance
 
 # THE FOLLOWING LINES ARE FOR STORING GUI STATE INFORMATION -- DO NOT MODIFY LINES BELOW THIS COMMENT!
 
+MainWindowGeometry                = 1000x550+705+34
+ToggleWindowGeometry              = 
+MemoryWindowGeometry              = 570x376+715+66
+CombWindowGeometry                = 
+FsmWindowGeometry                 = 
+AssertWindowGeometry              = 
+ModuleInstanceType                = Module
+ModuleInstanceTableListWidth      = 309
+ModuleInstanceTableListColumns    = 0:Instance Name:left:0:Module Name:left:0:Hit:right:0:Miss:right:0:Excluded:right:0:Total:right:0:Hit %:right:0:Index:left
+ModuleInstanceTableListInitHidden = 1:0:0:0:0:0:0

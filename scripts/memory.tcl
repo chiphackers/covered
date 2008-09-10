@@ -6,13 +6,16 @@ set memory_gui_saved 0
 
 proc display_memory {curr_index} {
 
-  global prev_memory_index next_memory_index curr_memory_ptr
+  global prev_memory_index next_memory_index curr_memory_ptr curr_mem_index
 
   # Get range of current signal
   set curr_range [.bot.right.txt tag prevrange uncov_button "$curr_index + 1 chars"]
 
   # Calculate the current signal string
   set curr_signal [string trim [lindex [split [.bot.right.txt get [lindex $curr_range 0] [lindex $curr_range 1]] "\["] 0]]
+
+  # Clear global memory index
+  set curr_mem_index ""
 
   # Make sure that the selected signal is visible in the text box and is shown as selected
   set_pointer curr_memory_ptr [lindex [split [lindex $curr_range 0] .] 0]
@@ -34,7 +37,7 @@ proc create_memory_window {signal} {
   global memory_udim memory_pdim memory_pdim_array memory_array memory_excluded memory_reason
   global mem_name prev_memory_index next_memory_index
   global curr_block
-  global curr_memory_ptr
+  global curr_memory_ptr curr_mem_index
   global uncov_fgColor uncov_bgColor
   global cov_fgColor cov_bgColor
   global HOME
@@ -222,7 +225,7 @@ proc create_memory_window {signal} {
       # Append to appropriate tags
       set cmd_enter [concat $cmd_enter $start_pos $end_pos]
       set cmd_leave [concat $cmd_leave $start_pos $end_pos]
-      if {[lindex $entry 1] == 0} {
+      if {[lindex $entry 1] == 0 && $memory_excluded == 0} {
         set cmd_ubutton [concat $cmd_ubutton $start_pos $end_pos]
       } else {
         set cmd_cbutton [concat $cmd_cbutton $start_pos $end_pos]
@@ -235,8 +238,12 @@ proc create_memory_window {signal} {
   # Evaluate tag commands
   eval $cmd_enter
   eval $cmd_leave
-  eval $cmd_ubutton
-  eval $cmd_cbutton
+  if {$cmd_ubutton != ".memwin.f.fae.t tag add mem_ubutton"} {
+    eval $cmd_ubutton
+  }
+  if {$cmd_cbutton != ".memwin.f.fae.t tag add mem_cbutton"} {
+    eval $cmd_cbutton
+  }
 
   # Configure tags
   .memwin.f.fae.t tag configure mem_ubutton -background $uncov_bgColor -foreground $uncov_fgColor
@@ -255,14 +262,16 @@ proc create_memory_window {signal} {
     .memwin.f.fae.t tag delete mem_select
     .memwin.f.fae.t tag add mem_select [lindex $mem_curr_range 0] [lindex $mem_curr_range 1]
     .memwin.f.fae.t tag configure mem_select -background $uncov_fgColor -foreground $uncov_bgColor
-    populate_memory_entry_frame [expr [lsearch [.memwin.f.fae.t tag ranges mem_enter] [lindex $mem_curr_range 0]] / 2]
+    set curr_mem_index [expr [lsearch [.memwin.f.fae.t tag ranges mem_enter] [lindex $mem_curr_range 0]] / 2]
+    populate_memory_entry_frame $curr_mem_index
   }
   .memwin.f.fae.t tag bind mem_cbutton <ButtonPress-1> {
     set mem_curr_range [.memwin.f.fae.t tag prevrange mem_enter "current + 1 chars"]
     .memwin.f.fae.t tag delete mem_select
     .memwin.f.fae.t tag add mem_select [lindex $mem_curr_range 0] [lindex $mem_curr_range 1]
     .memwin.f.fae.t tag configure mem_select -background $cov_fgColor -foreground $cov_bgColor
-    populate_memory_entry_frame [expr [lsearch [.memwin.f.fae.t tag ranges mem_enter] [lindex $mem_curr_range 0]] / 2]
+    set curr_mem_index [expr [lsearch [.memwin.f.fae.t tag ranges mem_enter] [lindex $mem_curr_range 0]] / 2]
+    populate_memory_entry_frame $curr_mem_index
   }
   
   # Keep user from writing in text box
@@ -271,15 +280,20 @@ proc create_memory_window {signal} {
   # Set the information bar in the toggle frame
   .memwin.f.ft.info configure -text "$mem_name$memory_udim$memory_pdim"
 
+  # Repopulate current memory index, if you has been set
+  if {$curr_mem_index != ""} {
+    populate_memory_entry_frame $curr_mem_index
+  }
+
   # Raise this window to the foreground
   raise .memwin
 
 }
 
-proc populate_memory_entry_frame { sel_mem_index } {
+proc populate_memory_entry_frame {sel_mem_index} {
 
   global memory_array memory_pdim memory_udim memory_pdim mem_name
-  global memory_msb memory_lsb mem_curr_entry
+  global memory_msb memory_lsb mem_curr_entry memory_excluded
   global uncov_bgColor uncov_fgColor
   global cov_bgColor cov_fgColor
   global memory_pdim_array
@@ -324,12 +338,22 @@ proc populate_memory_entry_frame { sel_mem_index } {
 
   # Configure written/read labels
   if {[lindex $entry 2] == 0} {
-    .memwin.f.ft.l_wv configure -text "No"  -background $uncov_bgColor -foreground $uncov_fgColor
+    .memwin.f.ft.l_wv configure -text "No"
+    if {$memory_excluded == 0} {
+      .memwin.f.ft.l_wv configure -background $uncov_bgColor -foreground $uncov_fgColor
+    } else {
+      .memwin.f.ft.l_wv configure -background $cov_bgColor -foreground $uncov_fgColor
+    }
   } else {
     .memwin.f.ft.l_wv configure -text "Yes" -background $cov_bgColor   -foreground $cov_fgColor
   }
   if {[lindex $entry 3] == 0} {
-    .memwin.f.ft.l_rv configure -text "No"  -background $uncov_bgColor -foreground $uncov_fgColor
+    .memwin.f.ft.l_rv configure -text "No"
+    if {$memory_excluded == 0} {
+      .memwin.f.ft.l_rv configure -background $uncov_bgColor -foreground $uncov_fgColor
+    } else {
+      .memwin.f.ft.l_rv configure -background $cov_bgColor   -foreground $cov_fgColor
+    }
   } else {
     .memwin.f.ft.l_rv configure -text "Yes" -background $cov_bgColor   -foreground $cov_fgColor
   }

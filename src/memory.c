@@ -346,7 +346,7 @@ static void memory_get_mem_coverage(
       vector_mem_rw_count( vec, 0, (int)(vec->width - 1), &wr, &rd );
 
       /* Output the addressable memory element if it is found to be lacking in coverage */
-      if( ((tog01 < dim_width) || (tog10 < dim_width) || (wr == 0) || (rd == 0)) && (sig->suppl.part.excluded == 0) ) {
+      if( (tog01 < dim_width) || (tog10 < dim_width) || (wr == 0) || (rd == 0) ) {
         strcpy( hit_str, "0" );
       } else {
         strcpy( hit_str, "1" );
@@ -1328,6 +1328,10 @@ void memory_report(
 
 /*
  $Log$
+ Revision 1.42  2008/09/09 22:42:50  phase1geo
+ Working on fix for bug 2095799.  Not working correctly at this point but I'm
+ checkpointing.
+
  Revision 1.41  2008/09/04 23:08:06  phase1geo
  More work on exclusions via GUI.  Still work to go.  Checkpointing.
 
