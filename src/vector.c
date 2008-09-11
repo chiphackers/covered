@@ -3548,26 +3548,9 @@ bool vector_op_cne(
   switch( tgt->suppl.part.data_type ) {
     case VDATA_UL :
       {
-        ulong        scratchl = 0;
-        ulong        scratchh = 0;
-        unsigned int lsize = UL_SIZE(left->width);
-        unsigned int rsize = UL_SIZE(right->width);
-        int          i     = ((lsize < rsize) ? rsize : lsize);
-        unsigned int lmsb        = (left->width - 1);
-        unsigned int rmsb        = (right->width - 1);
-        bool         lmsb_is_one = (((left->value.ul[UL_DIV(lmsb)][VTYPE_INDEX_VAL_VALL]  >> UL_MOD(lmsb)) & 1) == 1);
-        bool         rmsb_is_one = (((right->value.ul[UL_DIV(rmsb)][VTYPE_INDEX_VAL_VALL] >> UL_MOD(rmsb)) & 1) == 1);
-        ulong        lvall;
-        ulong        lvalh;
-        ulong        rvall;
-        ulong        rvalh;
-        do {
-          i--;
-          vector_copy_val_and_sign_extend_ulong( left,  i, lmsb_is_one, &lvall, &lvalh );
-          vector_copy_val_and_sign_extend_ulong( right, i, rmsb_is_one, &rvall, &rvalh );
-        } while( (i > 0) && ((lvall & ~lvalh) == (rvall & ~rvalh)) );
-        scratchl = (lvall != rvall); 
-        retval   = vector_set_coverage_and_assign_ulong( tgt, &scratchl, &scratchh, 0, 0 );
+        ulong scratchl = !vector_ceq_ulong( left, right );
+        ulong scratchh = 0;
+        retval = vector_set_coverage_and_assign_ulong( tgt, &scratchl, &scratchh, 0, 0 );
       }
       break;
     default :  assert( 0 );  break;
@@ -4699,6 +4682,11 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.152  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.142.2.3  2008/07/10 22:43:55  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

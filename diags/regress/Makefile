@@ -38,7 +38,8 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 case5           casex1          casex1.1        casex1.2        casex1.3 \
                 casex1.4        casex2          casez1          casez1.1        casez1.2 \
                 casez1.3        casez1.4        casez2          casez3          casez4 \
-                compx1          compx1.1        compx1.2        compx1.3        concat1 \
+                ceq1            cne1            compx1          compx1.1        compx1.2 \
+                compx1.3        concat1 \
                 concat2         concat3         concat4.1       concat4.2       concat5 \
                 concat6         concat7         cond1           cond2           cond3 \
                 cond3.1         cond3.2         cond3.3         delay1          delay2 \
@@ -76,9 +77,9 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 multi_exp1.6    multi_exp1.7    multi_exp1.8    multi_exp1.9    multi_exp1.10 \
                 multi_exp1.11   multi_exp1.12   multi_exp1.13   multi_exp1.14   multi_exp1.15 \
                 multi_exp2      multi_exp2.1    multi_exp3      multi_exp4      named_block1 \
-                named_block2    named_block3    named_block4    negate1         negate2 \
-                nested_block1   nested_block2 \
-                nested_block2.1 nested_block3   not1            null_stmt1      null_stmt1.1 \
+                named_block2    named_block3    named_block4    nand1           negate1 \
+                negate2         nested_block1   nested_block2   nested_block2.1 nested_block3 \
+                nor1            not1            null_stmt1      null_stmt1.1 \
                 null_stmt1.2    null_stmt1.3    null_stmt1.5    null_stmt1.6    null_stmt1.7 \
                 null_stmt1.8    null_stmt1.9    null_stmt1.10   param1          param1.1 \
                 param1.2        param1.3        param3          param3.1        param3.2 \
