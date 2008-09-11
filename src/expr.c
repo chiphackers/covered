@@ -4827,6 +4827,9 @@ bool expression_op_func__dim(
   /* If the right-hand dimensional LSB value is different than our own, set it to the new value and return TRUE */
   retval = (rlsb != expr->elem.dim->curr_lsb);
   expr->elem.dim->curr_lsb = rlsb;
+
+  /* Get coverage information */
+  expression_set_tf_preclear( expr, retval );
  
   PROFILE_END;
 
@@ -5608,6 +5611,11 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.340  2008/08/28 13:59:18  phase1geo
+ More updates to be more efficient in outputting exclusion IDs.  Also added
+ capability (or the start of) to output exclusions when the -e option is
+ specified.  Updated regressions per these changes.  Checkpointing.
+
  Revision 1.339  2008/08/18 23:07:26  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify
