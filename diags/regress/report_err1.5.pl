@@ -12,6 +12,9 @@ require "../verilog/regress_subs.pl";
 &runReportCommand( "-d v -o report_err1.5.rpt report_err1.5.cdd 2> report_err1.5.err" );
 system( "cat report_err1.5.err" ) && die;
 
+# Remove report file
+system( "rm -f report_err1.5.rpt" ) && die;
+
 # Perform the file comparison checks
 &checkTest( "report_err1.5", 1, 1 );
 

@@ -88,6 +88,7 @@ static funit_inst* defparam_list = NULL;
 extern char         user_msg[USER_MSG_LENGTH];
 extern db**         db_list;
 extern unsigned int curr_db;
+extern int          curr_sig_id;
 
 
 /*!
@@ -1038,6 +1039,10 @@ void param_db_write(
   */
   if( iparm->sig->name != NULL ) {
 
+    /* Assign a signal ID and increment it for the next signal -- this is okay to do because parameters only exist during parsing */
+    iparm->sig->id = curr_sig_id++;
+
+    /* Write the signal */
     vsignal_db_write( iparm->sig, file );
 
   }
@@ -1129,6 +1134,10 @@ void inst_parm_dealloc(
 
 /*
  $Log$
+ Revision 1.113  2008/09/04 21:34:20  phase1geo
+ Completed work to get exclude reason support to work with toggle coverage.
+ Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
+
  Revision 1.112  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify
