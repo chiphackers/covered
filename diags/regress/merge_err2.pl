@@ -12,7 +12,7 @@ require "../verilog/regress_subs.pl";
 if( $SIMULATOR eq "IV" ) {
   system( "iverilog -DDUMP merge_err2.v; ./a.out" ) && die;
 } elsif( $SIMULATOR eq "CVER" ) {
-  system( "cver +define+DUMP merge_err2.v" ) && die;
+  system( "cver -q +define+DUMP merge_err2.v" ) && die;
 } elsif( $SIMULATOR eq "VCS" ) {
   system( "vcs +define+DUMP merge_err2.v; ./simv" ) && die;
 }

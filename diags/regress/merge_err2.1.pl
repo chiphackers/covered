@@ -14,9 +14,9 @@ if( $SIMULATOR eq "IV" ) {
   system( "iverilog -DDUMP -y lib merge_err2.1b.v; ./a.out" ) && die;
   system( "iverilog -DDUMP -y lib merge_err2.1c.v; ./a.out" ) && die;
 } elsif( $SIMULATOR eq "CVER" ) {
-  system( "cver +define+DUMP -y lib merge_err2.1a.v" ) && die;
-  system( "cver +define+DUMP -y lib merge_err2.1b.v" ) && die;
-  system( "cver +define+DUMP -y lib merge_err2.1c.v" ) && die;
+  system( "cver -q +define+DUMP -y lib merge_err2.1a.v" ) && die;
+  system( "cver -q +define+DUMP -y lib merge_err2.1b.v" ) && die;
+  system( "cver -q +define+DUMP -y lib merge_err2.1c.v" ) && die;
 } elsif( $SIMULATOR eq "VCS" ) {
   system( "vcs +define+DUMP -y lib merge_err2.1a.v; ./simv" ) && die;
   system( "vcs +define+DUMP -y lib merge_err2.1b.v; ./simv" ) && die;

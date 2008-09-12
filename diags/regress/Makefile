@@ -52,8 +52,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 exclude8        exclude8.1      exclude9        exclude9.1      exclude9.2 \
                 exclude9.3      exclude9.4      exclude9.5      exclude9.6      exclude9.7 \
                 exclude9.8      exclude9.9      exclude10       exclude10.1     exclude10.2 \
-                exclude10.3     exclude10.4     exclude10.5     expand1         expand2 \
-                expand3         expand4 \
+                exclude10.3     exclude10.4     expand1         expand2         expand3         expand4 \
                 expand4.1       expand4.2       expand4.3       expand4.4       finish1 \
                 for1            for2            forever1        fork1           fork2 \
                 fsm3            fsm4            fsm4.1          fsm5            fsm5.1 \
@@ -71,15 +70,14 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 lshift5         mbit_sel1       mbit_sel2       mbit_sel3       mbit_sel3.1 \
                 mbit_sel4       mbit_sel4.1     mbit_sel4.2     mbit_sel4.3     mbit_sel7 \
                 mbit_sel9       mbit_sel9.1     mbit_sel9.2     mem1            mem2 \
-                mem4            mem4.1          mod1            msg1            mult1 \
-                mult2           multi_exp1 \
+                mod1            msg1            mult1           mult2           multi_exp1 \
                 multi_exp1.1    multi_exp1.2    multi_exp1.3    multi_exp1.4    multi_exp1.5 \
                 multi_exp1.6    multi_exp1.7    multi_exp1.8    multi_exp1.9    multi_exp1.10 \
                 multi_exp1.11   multi_exp1.12   multi_exp1.13   multi_exp1.14   multi_exp1.15 \
                 multi_exp2      multi_exp2.1    multi_exp3      multi_exp4      named_block1 \
-                named_block2    named_block3    named_block4    nand1           negate1 \
+                named_block2    named_block3    named_block4    negate1 \
                 negate2         nedge1          nested_block1   nested_block2   nested_block2.1 \
-                nested_block3   nor1            not1            null_stmt1      null_stmt1.1 \
+                nested_block3   not1            null_stmt1      null_stmt1.1 \
                 null_stmt1.2    null_stmt1.3    null_stmt1.5    null_stmt1.6    null_stmt1.7 \
                 null_stmt1.8    null_stmt1.9    null_stmt1.10   param1          param1.1 \
                 param1.2        param1.3        param3          param3.1        param3.2 \
@@ -225,13 +223,14 @@ IVCVERDIAGS2  =
 IVCVERDIAGS3  =
 IVCVERDIAGS4  =
 
-IVVCSDIAGS1   = define3         exclude7.3      generate2.1     generate4       generate4.1 \
-                generate5       generate5.1     generate5.2     generate5.3     generate8 \
-                generate10      generate10.1    generate10.2 \
-                generate11      generate11.1    generate11.2    generate11.3    hier3           localparam1 \
+IVVCSDIAGS1   = define3         exclude7.3      exclude10.5     generate2.1     generate4 \
+                generate4.1     generate5       generate5.1     generate5.2     generate5.3 \
+                generate8       generate10      generate10.1    generate10.2    generate11 \
+                generate11.1    generate11.2    generate11.3    hier3           localparam1 \
                 localparam1.1   localparam1.2   localparam1.3   localparam2     localparam3 \
                 mbit_sel5       mbit_sel5.1     mbit_sel5.2     mbit_sel5.3     mbit_sel6 \
-                mbit_sel6.1     mbit_sel6.2     mbit_sel6.3     ovl1            ovl1.1 \
+                mbit_sel6.1     mbit_sel6.2     mbit_sel6.3     mem4            mem4.1 \
+                nand1           nor1            ovl1            ovl1.1 \
                 ovl1.2          ovl1.3          param10.1       param10.5       port2 \
                 timescale1.1    timescale1.2    timescale1.3    timescale1.4    timescale1.5 \
                 timescale1.7    timescale1.8    timescale1.10   timescale1.11   timescale1.13 \

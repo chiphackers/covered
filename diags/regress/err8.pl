@@ -13,7 +13,7 @@ require "../verilog/regress_subs.pl";
 if( $SIMULATOR eq "IV" ) {
   system( "iverilog -DDUMP err8.v; ./a.out" ) && die;
 } elsif( $SIMULATOR eq "CVER" ) {
-  system( "cver +define+DUMP err8.v" ) && die;
+  system( "cver -q +define+DUMP err8.v" ) && die;
 } elsif( $SIMULATOR eq "VCS" ) {
   system( "vcs +define+DUMP err8.v; ./simv" ) && die;
 }

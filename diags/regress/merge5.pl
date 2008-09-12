@@ -39,7 +39,7 @@ sub run {
   if( $SIMULATOR eq "IV" ) {
     system( "iverilog -DDUMP -y lib ${bname}.v; ./a.out" ) && die; 
   } elsif( $SIMULATOR eq "CVER" ) {
-    system( "cver +define+DUMP +libext+.v+ -y lib ${bname}.v" ) && die;
+    system( "cver -q +define+DUMP +libext+.v+ -y lib ${bname}.v" ) && die;
   } elsif( $SIMULATOR eq "VCS" ) {
     system( "vcs +define+DUMP +v2k -sverilog +libext+.v+ -y lib ${bname}.v; ./simv" ) && die; 
   } else {

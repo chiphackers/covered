@@ -14,7 +14,7 @@ require "../verilog/regress_subs.pl";
 if( $SIMULATOR eq "IV" ) {
   system( "iverilog -DDUMP -y lib err6.4.v; ./a.out" ) && die;
 } elsif( $SIMULATOR eq "CVER" ) {
-  system( "cver +define+DUMP -y lib err6.4.v" ) && die;
+  system( "cver -q +define+DUMP -y lib err6.4.v" ) && die;
 } elsif( $SIMULATOR eq "VCS" ) {
   system( "vcs +define+DUMP -y lib err6.4.v; ./simv" ) && die;
 }

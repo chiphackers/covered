@@ -13,7 +13,7 @@ require "../verilog/regress_subs.pl";
 if( $SIMULATOR eq "IV" ) {
   system( "iverilog -cconfig_file -DDUMP exclude10.5.v; ./a.out" ) && die;
 } elsif( $SIMULATOR eq "CVER" ) {
-  system( "cver +define+DUMP +libext+.v+.vlib+ -y ./ovl +incdir+./ovl +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 exclude10.5.v" ) && die;
+  system( "cver -q +define+DUMP +libext+.v+.vlib+ -y ./ovl +incdir+./ovl +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 exclude10.5.v" ) && die;
 } elsif( $SIMULATOR eq "VCS" ) {
   system( "vcs +define+DUMP +libext+.v+.vlib+ -y ./ovl +incdir+./ovl +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 exclude10.5.v; ./simv" ) && die;
 }
