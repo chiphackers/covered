@@ -4,6 +4,8 @@
 # Author:   Trevor Williams  (phase1geo<gmail.com>)
 # Date:     11/21/2006
 # Usage:    cdd_diff <CDD> <CDD>
+# Warning:  The contents of this file are dependent upon the contents of the CDD file.  Any change to the format of the CDD
+#           file may required modifications to the script!
 
 $cdd1 = $ARGV[0];
 $cdd2 = $ARGV[1];
@@ -55,9 +57,9 @@ sub parse_cdd {
       # a different size than the first CDD file.
       if( ($num == 1) && ($vec_ul_size[0] != $vec_ul_size[1]) ) { 
 
-        my( $pdim_num  ) = $line[4];
-        my( $udim_num  ) = $line[5];
-        my( $first_vec ) = 6 + (($pdim_num + $udim_num) * 2);
+        my( $pdim_num  ) = $line[5];
+        my( $udim_num  ) = $line[6];
+        my( $first_vec ) = 7 + (($pdim_num + $udim_num) * 2);
         my( $next_start, @tmp_line ) = &parse_vector( $first_vec, $num, @line );
 
         # Remove the old data and replace it with the newly formatted data
