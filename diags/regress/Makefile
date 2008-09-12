@@ -184,7 +184,8 @@ IVONLYDIAGS2  =
 IVONLYDIAGS3  = 
 IVONLYDIAGS4  = 
 
-VCSONLYDIAGS1 = afunc1          always_comb1    always_ff1      always_latch1   assert1 \
+VCSONLYDIAGS1 = afunc1          always_comb1    always_comb2    always_ff1      always_latch1 \
+                always_latch2   assert1 \
                 atask1          bit1            byte1           char1           dec1 \
                 dec1.1          dec2            dec3            dec3.1          dly_assign1.1 \
                 dly_assign1.2   dly_assign1.3   dly_assign1.4   dly_assign2     dly_assign2.1 \
@@ -305,13 +306,13 @@ iverilog:
 
 vcs:
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS1)" DIAGLIST="$(DIAGS1) $(VCSONLYDIAGS1) $(IVVCSDIAGS1) $(CVERVCSDIAGS1)" DIAG2LIST="$(BDIAGS1)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS1)" DIAGLIST="$(VCSONLYDIAGS1)" DIAG2LIST="$(BDIAGS1)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS2)" DIAGLIST="$(DIAGS2) $(VCSONLYDIAGS2) $(IVVCSDIAGS2) $(CVERVCSDIAGS2)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS2)" DIAGLIST="$(VCSONLYDIAGS2)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS3)" DIAGLIST="$(DIAGS3) $(VCSONLYDIAGS3) $(IVVCSDIAGS3) $(CVERVCSDIAGS3)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS3)" DIAGLIST="$(VCSONLYDIAGS3)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS4)" DIAGLIST="$(DIAGS4) $(VCSONLYDIAGS4) $(IVVCSDIAGS4) $(CVERVCSDIAGS4)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS4)" DIAGLIST="$(VCSONLYDIAGS4)" regress
 	@cd ../verilog;  $(MAKE) eot;  $(MAKE) clean
 
 cver:

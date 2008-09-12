@@ -1,8 +1,8 @@
-5 10 181 3 *
+5 11 181 3 *
 8 /home/bryce3/trevorw/covered/diags/verilog -t main -vcd generate7.vcd -o generate7.cdd -v generate7.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" generate7.v 1 25 1
-1 A 0 c0000 1 0 31 0 32 17 0 0 0 0 0
+1 A 0 0 c0000 1 0 31 0 32 17 0 0 0 0 0
 3 1 main.$u0 "main.$u0" generate7.v 0 23 1
 3 0 foo "main.f" generate7.v 29 33 1
-1 x 31 70004 1 0 0 0 1 17 0 1 1 0 0
+1 x 1 31 70004 1 0 0 0 1 17 0 1 1 0 0

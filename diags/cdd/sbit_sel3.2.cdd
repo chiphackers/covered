@@ -1,10 +1,10 @@
-5 10 181 2 *
+5 11 181 2 *
 8 /home/bryce3/trevorw/covered/diags/verilog -t main -vcd sbit_sel3.2.vcd -o sbit_sel3.2.cdd -v sbit_sel3.2.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" sbit_sel3.2.v 10 40 1
 2 1 14 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0
-1 a 12 87000b 1 0 31 0 32 17 0 ffffffff 8 0 0
-1 b 12 87000e 1 0 31 0 32 17 0 ffffffff 0 0 0
+1 a 1 12 87000b 1 0 31 0 32 17 0 ffffffff 8 0 0
+1 b 2 12 87000e 1 0 31 0 32 17 0 ffffffff 0 0 0
 4 1 1 0 0
 3 1 main.$u0 "main.$u0" sbit_sel3.2.v 0 18 1
 2 2 15 50005 1 0 1004 0 0 32 48 0 0
@@ -25,8 +25,8 @@
 3 1 main.$u1 "main.$u1" sbit_sel3.2.v 0 27 1
 3 5 main.foo "main.foo" sbit_sel3.2.v 30 38 1
 2 14 32 20006 3 3d 5802 0 0 1 18 0 1 0 0 0 0 $u2
-1 foo 30 89001a 1 0 31 0 32 17 ffffffff ffffffff 0 0 0
-1 x 31 80000f 1 0 31 0 32 17 ffffffff ffffffff 1 3 0
+1 foo 3 30 89001a 1 0 31 0 32 17 ffffffff ffffffff 0 0 0
+1 x 4 31 80000f 1 0 31 0 32 17 ffffffff ffffffff 1 3 0
 4 14 11 0 0
 3 7 main.foo.$u2 "main.foo.$u2" sbit_sel3.2.v 0 37 1
 2 15 33 d000d 1 0 1804 0 0 32 48 0 0
