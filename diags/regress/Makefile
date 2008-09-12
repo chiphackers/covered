@@ -78,8 +78,8 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 multi_exp1.11   multi_exp1.12   multi_exp1.13   multi_exp1.14   multi_exp1.15 \
                 multi_exp2      multi_exp2.1    multi_exp3      multi_exp4      named_block1 \
                 named_block2    named_block3    named_block4    nand1           negate1 \
-                negate2         nested_block1   nested_block2   nested_block2.1 nested_block3 \
-                nor1            not1            null_stmt1      null_stmt1.1 \
+                negate2         nedge1          nested_block1   nested_block2   nested_block2.1 \
+                nested_block3   nor1            not1            null_stmt1      null_stmt1.1 \
                 null_stmt1.2    null_stmt1.3    null_stmt1.5    null_stmt1.6    null_stmt1.7 \
                 null_stmt1.8    null_stmt1.9    null_stmt1.10   param1          param1.1 \
                 param1.2        param1.3        param3          param3.1        param3.2 \
@@ -88,8 +88,9 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 param8.1        param9          param9.1        param9.2        param10 \
                 param10.2       param10.3       param10.4       param11         param13 \
                 param13.1       param14         param15         param16         param17 \
-                param17.1       port1           port3           pulldown1       pullup1 \
-                rassign1        real1           repeat1         repeat2         report1 \
+                param17.1       pedge1          port1           port3           pulldown1 \
+                pullup1         rassign1        real1           repeat1         repeat2 \
+                repeat3         report1 \
                 report2         report3         report3.1       report4.2       report5 \
                 report6         report7         report7.1       report8         rshift1 \
                 rshift1.1       rshift1.2       rshift1.3       rshift2         rshift2.1 \
