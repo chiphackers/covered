@@ -644,10 +644,10 @@ void exclude_set_fsm_exclude(
       /* Handle the exclusion reason */
       if( value == 1 ) {
         if( reason != NULL ) {
-          exclude_add_exclude_reason( 'F', curr_fsm->table->table->arcs[found_index]->id, reason, funit );
+          exclude_add_exclude_reason( 'F', (curr_fsm->table->table->id + found_index), reason, funit );
         }
       } else {
-        exclude_remove_exclude_reason( 'F', curr_fsm->table->table->arcs[found_index]->id, funit );
+        exclude_remove_exclude_reason( 'F', (curr_fsm->table->table->id + found_index), funit );
       }
 
     }
@@ -1699,6 +1699,10 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.39  2008/09/10 23:06:36  phase1geo
+ Adding several new diagnostics for coverage testing purposes.  Fixed a few
+ bugs that surfaced when performing this testing.
+
  Revision 1.38  2008/09/06 05:59:45  phase1geo
  Adding assertion exclusion reason support and have most code implemented for
  FSM exclusion reason support (still working on debugging this code).  I believe

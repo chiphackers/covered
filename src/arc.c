@@ -157,7 +157,7 @@ int curr_arc_id = 1;
   for( i=0; i<table->num_arcs; i++ ) {
 
     char* lvec = vector_to_string( table->fr_states[table->arcs[i]->from], HEXIDECIMAL, TRUE );
-    char* rvec = vector_to_string( table->to_states[table->arcs[i]->to],     HEXIDECIMAL, TRUE );
+    char* rvec = vector_to_string( table->to_states[table->arcs[i]->to],   HEXIDECIMAL, TRUE );
 
     printf( "       entry %u: ", i );
 
@@ -270,14 +270,10 @@ int arc_find_arc_by_exclusion_id(
   int              id      /*!< Exclusion ID to search for */
 ) { PROFILE(ARC_FIND_ARC_BY_EXCLUSION_ID);
 
-  int          index = -1;
-  unsigned int i     = 0;
+  int index = -1;
 
-  while( (i < table->num_arcs) && (index == -1) ) {
-    if( table->arcs[i]->id == id ) {
-      index = i;
-    }
-    i++;
+  if( (table->id <= id) && ((table->id + table->num_arcs) > id) ) {
+    index = id - table->id;
   }
 
   PROFILE_END;
@@ -301,6 +297,7 @@ fsm_table* arc_create() { PROFILE(ARC_CREATE);
 
   /* Initialize */
   table->suppl.all     = 0;
+  table->id            = 0;
   table->fr_states     = NULL;
   table->num_fr_states = 0;
   table->to_states     = NULL;
@@ -584,6 +581,9 @@ void arc_db_read(
 
       *line += chars_read;
 
+      /* Set exclusion ID */
+      (*table)->id = curr_arc_id;
+
       /* Allocate and initialize fr_states array */
       (*table)->fr_states     = (vector**)malloc_safe( sizeof( vector* ) * num_fr_states );
       (*table)->num_fr_states = num_fr_states;
@@ -631,7 +631,7 @@ void arc_db_read(
             Throw 0;
           } else {
             *line += chars_read;
-            (*table)->arcs[i]->id = curr_arc_id++;
+            curr_arc_id++;
           }
 
         }
@@ -815,11 +815,11 @@ void arc_get_transitions(
       *reasons                    = (char**)realloc_safe( *reasons, (sizeof( char* ) * (*arc_size)), (sizeof( char* ) * (*arc_size + 1)) );
       (*from_states)[(*arc_size)] = vector_to_string( table->fr_states[table->arcs[i]->from], HEXIDECIMAL, TRUE );
       (*to_states)[(*arc_size)]   = vector_to_string( table->to_states[table->arcs[i]->to],   HEXIDECIMAL, TRUE );
-      (*ids)[(*arc_size)]         = table->arcs[i]->id;
+      (*ids)[(*arc_size)]         = table->id + i;
       (*excludes)[(*arc_size)]    = table->arcs[i]->suppl.part.excluded;
 
       /* If the assertion is currently excluded, check to see if there's a reason associated with it */
-      if( (table->arcs[i]->suppl.part.excluded == 1) && ((er = exclude_find_exclude_reason( 'F', table->arcs[i]->id, funit )) != NULL) ) {
+      if( (table->arcs[i]->suppl.part.excluded == 1) && ((er = exclude_find_exclude_reason( 'F', (table->id + i), funit )) != NULL) ) {
         (*reasons)[(*arc_size)] = strdup_safe( er->reason );
       } else {
         (*reasons)[(*arc_size)] = NULL;
@@ -895,6 +895,12 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.69  2008/09/06 05:59:45  phase1geo
+ Adding assertion exclusion reason support and have most code implemented for
+ FSM exclusion reason support (still working on debugging this code).  I believe
+ that assertions, FSMs and lines might suffer from the same problem...
+ Checkpointing.
+
  Revision 1.68  2008/09/03 05:33:06  phase1geo
  Adding in FSM exclusion support to exclude and report -e commands.  Updating
  regressions per recent changes.  Checkpointing.
