@@ -285,28 +285,28 @@ sub checkTest {
         }
         if( $check1 == 0 ) {
           if( $rm_cdd > 0 ) {
-            system( "rm ${test}.cdd" ) && die;
+            system( "rm -f ${test}.cdd" ) && die;
           }
           if( $rm_cdd > 1 ) {
-            system( "rm ${test}a.cdd" ) && die;
+            system( "rm -f ${test}a.cdd" ) && die;
           }
           if( $rm_cdd > 2 ) {
-            system( "rm ${test}b.cdd" ) && die;
+            system( "rm -f ${test}b.cdd" ) && die;
           }
           if( $rm_cdd > 3 ) {
-            system( "rm ${test}c.cdd" ) && die;
+            system( "rm -f ${test}c.cdd" ) && die;
           }
           if( $rm_cdd > 4 ) {
-            system( "rm ${test}d.cdd" ) && die;
+            system( "rm -f ${test}d.cdd" ) && die;
           }
           if( $rm_cdd > 5 ) {
-            system( "rm ${test}e.cdd" ) && die;
+            system( "rm -f ${test}e.cdd" ) && die;
           }
           if( $rm_cdd > 6 ) {
-            system( "rm ${test}f.cdd" ) && die;
+            system( "rm -f ${test}f.cdd" ) && die;
           }
           if( $rm_cdd > 7 ) {
-            system( "rm ${test}g.cdd" ) && die;
+            system( "rm -f ${test}g.cdd" ) && die;
           }
         }
       } elsif( $mode == 0 ) {

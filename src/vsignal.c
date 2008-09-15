@@ -303,7 +303,6 @@ void vsignal_db_read(
           *line = *line + chars_read;
         } else {
           print_output( "Unable to parse signal line in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
-          printf( "vsignal Throw A\n" );
           Throw 0;
         }
         i++;
@@ -335,7 +334,6 @@ void vsignal_db_read(
     /* Add vsignal to vsignal list */
     if( curr_funit == NULL ) {
       print_output( "Internal error:  vsignal in database written before its functional unit", FATAL, __FILE__, __LINE__ );
-      printf( "vsignal Throw C\n" );
       Throw 0;
     } else {
       sig_link_add( sig, &(curr_funit->sig_head), &(curr_funit->sig_tail) );
@@ -344,7 +342,6 @@ void vsignal_db_read(
   } else {
 
     print_output( "Unable to parse signal line in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
-    printf( "vsignal Throw D\n" );
     Throw 0;
 
   }
@@ -391,7 +388,6 @@ void vsignal_db_merge(
 
       print_output( "Attempting to merge two databases derived from different designs.  Unable to merge",
                     FATAL, __FILE__, __LINE__ );
-      printf( "vsignal Throw E\n" );
       Throw 0;
 
     } else {
@@ -414,7 +410,6 @@ void vsignal_db_merge(
   } else {
 
     print_output( "Unable to parse vsignal in database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
-    printf( "vsignal Throw F\n" );
     Throw 0;
 
   }
@@ -764,6 +759,10 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.79  2008/08/28 04:37:18  phase1geo
+ Starting to add support for exclusion output and exclusion IDs to generated
+ reports.  These changes should break regressions.  Checkpointing.
+
  Revision 1.78  2008/08/27 23:06:00  phase1geo
  Starting to make updates for supporting command-line exclusions.  Signals now
  have a unique ID associated with them in the CDD file.  Checkpointing.

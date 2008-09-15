@@ -15,9 +15,9 @@
 * Report generated from CDD file that was merged from the following files:
     Filename                                           Leading Hierarchy
     -----------------------------------------------------------------------------------------------------------------
-    merge_err2.1c.cdd                                  main_a                                                        
-    merge_err2.1b.cdd                                  main_b                                                        
-    merge_err2.1a.cdd                                  main_c                                                        
+    /ptmp/covered/diags/verilog/merge_err2.1c.cdd      main_a                                                        
+    /ptmp/covered/diags/verilog/merge_err2.1b.cdd      main_b                                                        
+    /ptmp/covered/diags/verilog/merge_err2.1a.cdd      main_c                                                        
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   LINE COVERAGE RESULTS   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

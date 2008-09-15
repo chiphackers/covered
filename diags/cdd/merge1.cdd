@@ -1,7 +1,7 @@
 5 11 101 3 main1
 8 /ptmp/covered/diags/verilog -t dut_and -i main1.dut -vcd merge1a.vcd -o merge1a.cdd -v merge1a.v -y ./lib -D DUMP
-12 merge1a.cdd main1
-12 merge1b.cdd main2
+12 /ptmp/covered/diags/verilog/merge1a.cdd main1
+12 /ptmp/covered/diags/verilog/merge1b.cdd main2
 3 0 $root "$root" NA 0 0 1
 3 0 dut_and "dut" ./lib/dut_and.v 1 9 1
 2 1 7 f000f 1 1 1004 0 0 1 1 c
