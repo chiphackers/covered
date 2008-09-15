@@ -17,24 +17,6 @@
  \file     vector.c
  \author   Trevor Williams  (phase1geo@gmail.com)
  \date     12/1/2001
- 
- \par
- The vector is the data structure that stores all of the current value and coverage
- information for a particular signal or expression.  All simulated operations are
- performed on vector structures and as such are the most used and optimized data
- structures used by Covered.  To keep the memory image of a vector to as small as
- possible, a vector is comprised of three components:
- 
- \par
-   -# A least-significant bit (LSB) value which specifies the current vector's LSB.
-   -# A width value which specifies the number of bits contained in the current vector.
-      To get the MSB of the vector, simply add the width to the LSB and subtract one.
-   -# A value array which contains the vector's current value and other coverage
-      information gained during simulation.  This array is an array of unsigned long values
-      (or uint8s) whose length is determined by the width of the vector divided by four.
-      We divide the width by 4 because one uint8 contains all of the information for
-      up to 4 bits of four-state data.  For a break-down of the bits within a nibble,
-      please consult the \ref nibble table.
 */
 
 #ifdef HAVE_CONFIG_H
@@ -4688,6 +4670,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.154  2008/09/15 03:43:49  phase1geo
+ Cleaning up splint warnings.
+
  Revision 1.153  2008/09/11 20:19:50  phase1geo
  Fixing !== operator (bug 2106313).  Adding more diagnostics to regression to
  verify codegen code.
