@@ -23,7 +23,11 @@
 #include "util.h"
 
 
-extern int merged_code;
+extern db**         db_list;
+extern unsigned int curr_db;
+extern int          merged_code;
+extern char         user_msg[USER_MSG_LENGTH];
+
 
 /*!
  Specifies the output filename of the CDD file that contains the merged data.
@@ -50,7 +54,6 @@ str_link* merge_in_cl_last = NULL;
 */
 int merge_in_num  = 0;
 
-extern char user_msg[USER_MSG_LENGTH];
 
 /*!
  Outputs usage informaiton to standard output for merge command.
@@ -268,6 +271,7 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
     str_link* strl;
     bool      stop_merging;
+    int       curr_leading_hier_num = 0;
 
     /* Parse score command-line */
     merge_parse_args( argc, last_arg, argv );
@@ -279,6 +283,12 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
     db_read( merge_in_head->str, READ_MODE_MERGE_NO_MERGE );
     bind_perform( TRUE, 0 );
 
+    /* If the currently read CDD didn't contain any merged CDDs it is a leaf CDD so mark it as such */
+    if( (db_list[curr_db]->leading_hier_num - curr_leading_hier_num) == 1 ) {
+      merge_in_head->suppl = 1;
+    }
+    curr_leading_hier_num = db_list[curr_db]->leading_hier_num;
+
     /* Read in databases to merge */
     strl         = merge_in_head->next;
     stop_merging = (strl == merge_in_head);
@@ -287,6 +297,13 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
       db_read( strl->str, READ_MODE_MERGE_INST_MERGE );
+
+      /* If we have not merged any CDD files from this CDD, this is a leaf CDD so mark it as such */
+      if( (db_list[curr_db]->leading_hier_num - curr_leading_hier_num) == 1 ) {
+        strl->suppl = 1;
+      }
+      curr_leading_hier_num = db_list[curr_db]->leading_hier_num;
+
       stop_merging = (strl == merge_in_cl_last);
       strl         = strl->next;
     }
@@ -311,6 +328,9 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.55  2008/09/15 03:43:49  phase1geo
+ Cleaning up splint warnings.
+
  Revision 1.54  2008/09/04 21:34:20  phase1geo
  Completed work to get exclude reason support to work with toggle coverage.
  Ground-work is laid for the rest of the coverage metrics.  Checkpointing.

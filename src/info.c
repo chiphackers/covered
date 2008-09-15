@@ -139,7 +139,7 @@ void info_db_write(
     str_link* strl = merge_in_head;
     i = 0;
     while( strl != NULL ) {
-      if( strcmp( strl->str, merged_file ) != 0 ) {
+      if( (strcmp( strl->str, merged_file ) != 0) && (strl->suppl == 1) ) {
         fprintf( file, "%d %s %s\n", DB_TYPE_MERGED_CDD, strl->str, db_list[curr_db]->leading_hierarchies[i++] );
       } else {
         i++;
@@ -151,7 +151,7 @@ void info_db_write(
     assert( (db_list[curr_db]->leading_hier_num - 1) == merge_in_num );
     i = 1; 
     while( strl != NULL ) {
-      if( strcmp( strl->str, merged_file ) != 0 ) {
+      if( (strcmp( strl->str, merged_file ) != 0) && (strl->suppl == 1) ) {
         fprintf( file, "%d %s %s\n", DB_TYPE_MERGED_CDD, strl->str, db_list[curr_db]->leading_hierarchies[i++] );
       } else {
         i++;
@@ -300,7 +300,8 @@ void merged_cdd_db_read(
     /* Add merged file */
     if( (strl = str_link_find( tmp1, merge_in_head)) == NULL ) {
 
-      (void)str_link_add( strdup_safe( tmp1 ), &merge_in_head, &merge_in_tail );
+      strl = str_link_add( strdup_safe( tmp1 ), &merge_in_head, &merge_in_tail );
+      strl->suppl = 1;
       merge_in_num++;
 
       /* Set leading_hiers_differ to TRUE if this is not the first hierarchy and it differs from the first */
@@ -366,6 +367,9 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
 /*
  $Log$
+ Revision 1.40  2008/09/15 03:43:49  phase1geo
+ Cleaning up splint warnings.
+
  Revision 1.39  2008/09/04 21:34:20  phase1geo
  Completed work to get exclude reason support to work with toggle coverage.
  Ground-work is laid for the rest of the coverage metrics.  Checkpointing.

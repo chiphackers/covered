@@ -32,6 +32,9 @@ $COVERED_EXCLUDE_GFLAGS = "";
 # Global rank command flags to use when running the runRankCommand subroutine
 $COVERED_RANK_GFLAGS = "";
 
+# Specifies the location of the check_mem script
+$CHECK_MEM = "./check_mem";
+
 # Specifies which simulator should be used for simulating the design (IV, CVER, VCS)
 $SIMULATOR = "IV";
 
@@ -131,7 +134,7 @@ sub checkForTestMode {
   open( MFILE, "../../src/Makefile" ) || die "Can't open ../../src/Makefile for reading: $!\n";
   while( <MFILE> ) {
     if( /-DTESTMODE/ ) {
-      $check_mem_cmd = "| ./check_mem";
+      $check_mem_cmd = "| $CHECK_MEM";
       break;
     }
   }
