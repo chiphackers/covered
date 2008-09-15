@@ -105,6 +105,7 @@ static unsigned int longest_name_len = 0;
 static bool rank_verbose = FALSE;
 
 
+#ifdef OBSOLETE
 /*!
  \return Returns the number of bits that are set in the given unsigned char
 */
@@ -154,6 +155,7 @@ static inline unsigned int rank_count_bits_uint64(
   return( (unsigned int)v );
 
 }
+#endif
 
 /*!
  \return Returns a pointer to a newly allocated and initialized compressed CDD coverage structure.
@@ -358,7 +360,8 @@ static void rank_parse_args(
         if( file_exists( argv[i] ) ) {
           FILE* file;
           if( (file = fopen( argv[i], "r" )) != NULL ) {
-            char fname[4096];
+            char         fname[4096];
+            unsigned int rv;
             while( fscanf( file, "%s", fname ) == 1 ) {
               if( file_exists( fname ) ) {
                 str_link* strl;
@@ -367,19 +370,23 @@ static void rank_parse_args(
                 }
                 strl->suppl = 1;
               } else {
-                snprintf( user_msg, USER_MSG_LENGTH, "Filename (%s) specified in -required file (%s) does not exist", fname, argv[i] );
+                unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Filename (%s) specified in -required file (%s) does not exist", fname, argv[i] );
+                assert( rv < USER_MSG_LENGTH );
                 print_output( user_msg, FATAL, __FILE__, __LINE__ );
                 Throw 0;
               }
             }
-            fclose( file );
+            rv = fclose( file );
+            assert( rv == 0 );
           } else {
-            snprintf( user_msg, USER_MSG_LENGTH, "Unable to read -required-list file (%s)", argv[i] );
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to read -required-list file (%s)", argv[i] );
+            assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
             Throw 0;
           }
         } else {
-          snprintf( user_msg, USER_MSG_LENGTH, "Filename specified for -required-list option (%s) does not exist", argv[i] );
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Filename specified for -required-list option (%s) does not exist", argv[i] );
+          assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           Throw 0;
         }
@@ -399,7 +406,8 @@ static void rank_parse_args(
           }
           strl->suppl = 1;
         } else {
-          snprintf( user_msg, USER_MSG_LENGTH, "Unable to read -required-cdd file (%s)", argv[i] );
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to read -required-cdd file (%s)", argv[i] );
+          assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           Throw 0;
         }
@@ -411,7 +419,7 @@ static void rank_parse_args(
 
       if( check_option_value( argc, argv, i ) ) {
         i++;
-        str_link_add( strdup_safe( argv[i] ), &ext_head, &ext_tail );
+        (void)str_link_add( strdup_safe( argv[i] ), &ext_head, &ext_tail );
       } else {
         Throw 0;
       }
@@ -549,9 +557,10 @@ static void rank_parse_args(
       if( check_option_value( argc, argv, i ) ) {
         i++;
         if( directory_exists( argv[i] ) ) {
-          str_link_add( strdup_safe( argv[i] ), &dir_head, &dir_tail );
+          (void)str_link_add( strdup_safe( argv[i] ), &dir_head, &dir_tail );
         } else {
-          snprintf( user_msg, USER_MSG_LENGTH, "Specified -d directory (%s) does not exist", argv[i] );
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Specified -d directory (%s) does not exist", argv[i] );
+          assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           Throw 0;
         }
@@ -571,7 +580,7 @@ static void rank_parse_args(
         if( str_link_find( argv[i], rank_in_head ) == NULL ) {
 
           /* Add the specified rank file to the list */
-          str_link_add( strdup_safe( argv[i] ), &rank_in_head, &rank_in_tail );
+          (void)str_link_add( strdup_safe( argv[i] ), &rank_in_head, &rank_in_tail );
 
         }
 
@@ -640,8 +649,7 @@ static void rank_check_index(
 ) { PROFILE(RANK_CHECK_INDEX);
 
   if( index >= num_cps[type] ) {
-    assert( 0 );
-    snprintf( user_msg, USER_MSG_LENGTH, "Last read in CDD file is incompatible with previously read in CDD files.  Exiting..." );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Last read in CDD file is incompatible with previously read in CDD files.  Exiting..." );
     print_output( user_msg, FATAL, __FILE__, line );
     Throw 0;
   }
@@ -1121,8 +1129,10 @@ static void rank_selected_cdd_cov(
   /* Output status indicator, if necessary */
   if( (!output_suppressed || debug_mode) && !rank_verbose ) {
     while( ((unsigned int)(((next_cdd + 1) / (float)comp_cdd_num) * 100) - (dots_output * 10)) >= 10 ) { 
+      unsigned int rv;
       printf( "." );
-      fflush( stdout );
+      rv = fflush( stdout );
+      assert( rv == 0 );
       dots_output++;
     }
   }
@@ -1157,11 +1167,13 @@ static void rank_selected_cdd_cov(
 
   if( (!output_suppressed || debug_mode) && !rank_verbose ) {
     if( (next_cdd + 1) == comp_cdd_num ) {
+      unsigned int rv;
       if( dots_output < 10 ) {
         printf( "." );
       }
       printf( "\n" );
-      fflush( stdout );
+      rv = fflush( stdout );
+      assert( rv == 0 );
     }
   }
 
@@ -1179,7 +1191,6 @@ static void rank_perform_weighted_selection(
             unsigned int   comp_cdd_num,     /*!< Number of compressed CDD coverage structures in the comp_cdds array */
             uint16*        ranked_merged,    /*!< Array of ranked merged information from all of the compressed CDD coverage structures */
             uint16*        unranked_merged,  /*!< Array of unranked merged information from all of the compressed CDD coverage structures */
-            uint64         merged_num,       /*!< Number of elements in merged array */
             unsigned int   next_cdd,         /*!< Next index in comp_cdds array to set */
   /*@out@*/ unsigned int*  cdds_ranked       /*!< Number of CDDs that were ranked with unique coverage in this function */
 ) { PROFILE(RANK_PERFORM_WEIGHTED_SELECTION);
@@ -1330,10 +1341,12 @@ static void rank_perform(
   unsigned int count;
   unsigned int cdds_ranked  = 0;
   timer*       atimer       = NULL;
+  unsigned int rv;
 
   if( (!output_suppressed || debug_mode) && !rank_verbose ) {
     printf( "Ranking CDD files " );
-    fflush( stdout );
+    rv = fflush( stdout );
+    assert( rv == 0 );
   }
 
   /* Calculate the total number of needed merged entries to store accumulated information */
@@ -1347,8 +1360,11 @@ static void rank_perform(
   unranked_merged = (uint16*)malloc_safe_nolimit( sizeof( uint16 ) * total );
 
   if( rank_verbose ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "\nRanking %u CDD files with %llu coverage points (%llu line, %llu toggle, %llu memory, %llu logic, %llu FSM, %llu assertion)",
+    /*@-duplicatequals -formattype@*/
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "\nRanking %u CDD files with %llu coverage points (%llu line, %llu toggle, %llu memory, %llu logic, %llu FSM, %llu assertion)",
               comp_cdd_num, total, num_cps[CP_TYPE_LINE], num_cps[CP_TYPE_TOGGLE], num_cps[CP_TYPE_MEM], num_cps[CP_TYPE_LOGIC], num_cps[CP_TYPE_FSM], num_cps[CP_TYPE_ASSERT] );
+    /*@=duplicatequals =formattype@*/
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
   }
 
@@ -1375,11 +1391,15 @@ static void rank_perform(
 
   if( rank_verbose ) {
     total_hitable = rank_count_cps( unranked_merged, total ); 
-    snprintf( user_msg, USER_MSG_LENGTH, "Ignoring %llu coverage points that were not hit by any CDD file", (total - total_hitable) );
+    /*@-duplicatequals +ignorequals@*/
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "Ignoring %llu coverage points that were not hit by any CDD file", (total - total_hitable) );
+    /*@=duplicatequals =ignorequals@*/
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
     print_output( "\nPhase 1:  Adding user-required files", NORMAL, __FILE__, __LINE__ );
-    fflush( stdout );
+    rv = fflush( stdout );
+    assert( rv == 0 );
     timer_clear( &atimer );
     timer_start( &atimer );
   }
@@ -1395,16 +1415,22 @@ static void rank_perform(
   if( rank_verbose ) {
     uint64 ranked_cps = rank_count_cps( ranked_merged, total );
     timer_stop( &atimer );
-    snprintf( user_msg, USER_MSG_LENGTH, "  Ranked %u CDD files (Total ranked: %u, Remaining: %u)", next_cdd, next_cdd, (comp_cdd_num - next_cdd) );
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "  Ranked %u CDD files (Total ranked: %u, Remaining: %u)", next_cdd, next_cdd, (comp_cdd_num - next_cdd) );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-    snprintf( user_msg, USER_MSG_LENGTH, "  %llu points covered, %llu points remaining", ranked_cps, (total_hitable - ranked_cps) );
+    /*@-duplicatequals -formattype@*/
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "  %llu points covered, %llu points remaining", ranked_cps, (total_hitable - ranked_cps) );
+    /*@=duplicatequals =formattype@*/
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-    snprintf( user_msg, USER_MSG_LENGTH, "Completed phase 1 in %s", timer_to_string( atimer ) );
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "Completed phase 1 in %s", timer_to_string( atimer ) );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
   
     count = next_cdd;
     print_output( "\nPhase 2:  Adding files that hit unique coverage points", NORMAL, __FILE__, __LINE__ );
-    fflush( stdout );
+    rv = fflush( stdout );
+    assert( rv == 0 );
     timer_clear( &atimer );
     timer_start( &atimer );
   }
@@ -1426,37 +1452,49 @@ static void rank_perform(
   if( rank_verbose ) {
     uint64 ranked_cps = rank_count_cps( ranked_merged, total );
     timer_stop( &atimer );
-    snprintf( user_msg, USER_MSG_LENGTH, "  Ranked %u CDD files (Total ranked: %u, Remaining: %u)", (next_cdd - count), next_cdd, (comp_cdd_num - next_cdd) );
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "  Ranked %u CDD files (Total ranked: %u, Remaining: %u)", (next_cdd - count), next_cdd, (comp_cdd_num - next_cdd) );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-    snprintf( user_msg, USER_MSG_LENGTH, "  %llu points covered, %llu points remaining", ranked_cps, (total_hitable - ranked_cps) );
+    /*@-duplicatequals -formattype@*/
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "  %llu points covered, %llu points remaining", ranked_cps, (total_hitable - ranked_cps) );
+    /*@=duplicatequals =formattype@*/
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-    snprintf( user_msg, USER_MSG_LENGTH, "Completed phase 2 in %s", timer_to_string( atimer ) );
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "Completed phase 2 in %s", timer_to_string( atimer ) );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
    
     count = next_cdd;
     print_output( "\nPhase 3:  Adding files that hit remaining coverage points and eliminating redundant files", NORMAL, __FILE__, __LINE__ );
-    fflush( stdout );
+    rv = fflush( stdout );
+    assert( rv == 0 );
     timer_clear( &atimer );
     timer_start( &atimer );
   }
 
   /* Step 4 - Select coverage based on user-specified factors */
   if( next_cdd < comp_cdd_num ) {
-    rank_perform_weighted_selection( comp_cdds, comp_cdd_num, ranked_merged, unranked_merged, total, next_cdd, &cdds_ranked );
+    rank_perform_weighted_selection( comp_cdds, comp_cdd_num, ranked_merged, unranked_merged, next_cdd, &cdds_ranked );
   }
 
   if( rank_verbose ) {
     uint64 ranked_cps = rank_count_cps( ranked_merged, total );
     timer_stop( &atimer );
-    snprintf( user_msg, USER_MSG_LENGTH, "  Ranked %u CDD files (Total ranked: %u, Eliminated: %u)", cdds_ranked, (count + cdds_ranked), (comp_cdd_num - (count + cdds_ranked)) );
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "  Ranked %u CDD files (Total ranked: %u, Eliminated: %u)", cdds_ranked, (count + cdds_ranked), (comp_cdd_num - (count + cdds_ranked)) );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-    snprintf( user_msg, USER_MSG_LENGTH, "  %llu points covered, %llu points remaining", ranked_cps, (total_hitable - ranked_cps) );
+    /*@-duplicatequals -formattype@*/
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "  %llu points covered, %llu points remaining", ranked_cps, (total_hitable - ranked_cps) );
+    /*@=duplicatequals =formattype@*/
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-    snprintf( user_msg, USER_MSG_LENGTH, "Completed phase 3 in %s", timer_to_string( atimer ) );
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "Completed phase 3 in %s", timer_to_string( atimer ) );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
     print_output( "\nPhase 4:  Sorting CDD files selected for ranking (no reductions)", NORMAL, __FILE__, __LINE__ );
-    fflush( stdout );
+    rv = fflush( stdout );
+    assert( rv == 0 );
     timer_clear( &atimer );
     timer_start( &atimer );
   }
@@ -1466,15 +1504,19 @@ static void rank_perform(
 
   if( rank_verbose ) {
     timer_stop( &atimer );
-    snprintf( user_msg, USER_MSG_LENGTH, "Completed phase 4 in %s", timer_to_string( atimer ) );
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "Completed phase 4 in %s", timer_to_string( atimer ) );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-    fflush( stdout );
+    rv = fflush( stdout );
+    assert( rv == 0 );
     free_safe( atimer, sizeof( timer ) );
 
     if( comp_cdd_num == (count + cdds_ranked) ) {
-      snprintf( user_msg, USER_MSG_LENGTH, "\nSUMMARY:  No reduction occurred.  %u needed/required", (count + cdds_ranked) );
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "\nSUMMARY:  No reduction occurred.  %u needed/required", (count + cdds_ranked) );
+      assert( rv < USER_MSG_LENGTH );
     } else {
-      snprintf( user_msg, USER_MSG_LENGTH, "\nSUMMARY:  Reduced %u CDD files down to %u needed/required", comp_cdd_num, (count + cdds_ranked) );
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "\nSUMMARY:  Reduced %u CDD files down to %u needed/required", comp_cdd_num, (count + cdds_ranked) );
+      assert( rv < USER_MSG_LENGTH );
     }
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
   }
@@ -1497,12 +1539,13 @@ static void rank_output(
   unsigned int   comp_cdd_num  /*!< Number of allocated structures in comp_cdds array */
 ) { PROFILE(RANK_OUTPUT);
 
-  FILE* ofile;
+  FILE*        ofile;
+  unsigned int rv;
 
   if( rank_file == NULL ) {
     print_output( "\nGenerating report output to standard output...", NORMAL, __FILE__, __LINE__ );
   } else {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "\nGenerating report file \"%s\"...", rank_file );
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "\nGenerating report file \"%s\"...", rank_file );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
   }
@@ -1571,15 +1614,21 @@ static void rank_output(
         }
 
         /* Figure out the largest number for the first column */
-        snprintf( str, 30, "%llu", total_timesteps );   col1 = strlen( str );
-        snprintf( str, 30, "%llu", ranked_timesteps );  col2 = strlen( str );
+        /*@-duplicatequals -formattype@*/
+        rv = snprintf( str, 30, "%llu", total_timesteps );   col1 = strlen( str );
+        assert( rv < 30 );
+        rv = snprintf( str, 30, "%llu", ranked_timesteps );  col2 = strlen( str );
+        /*@=duplicatequals =formattype@*/
+        assert( rv < 30 );
 
         /* Create line for CDD files */
-        snprintf( fmt, 4096, "* Reduced %%%uu CDD files down to %%%uu needed to maintain coverage (%%3.0f%%%% reduction, %%5.1fx improvement)\n", col1, col2 );
+        rv = snprintf( fmt, 4096, "* Reduced %%%uu CDD files down to %%%uu needed to maintain coverage (%%3.0f%%%% reduction, %%5.1fx improvement)\n", col1, col2 );
+        assert( rv < 4096 );
         fprintf( ofile, fmt, comp_cdd_num, i, (((comp_cdd_num - i) / (float)comp_cdd_num) * 100), (comp_cdd_num / (float)i) );
 
         /* Create line for timesteps */
-        snprintf( fmt, 4096, "* Reduced %%%ullu timesteps down to %%%ullu needed to maintain coverage (%%3.0f%%%% reduction, %%5.1fx improvement)\n", col1, col2 );
+        rv = snprintf( fmt, 4096, "* Reduced %%%ullu timesteps down to %%%ullu needed to maintain coverage (%%3.0f%%%% reduction, %%5.1fx improvement)\n", col1, col2 );
+        assert( rv < 4096 );
         fprintf( ofile, fmt, total_timesteps, ranked_timesteps, (((total_timesteps - ranked_timesteps) / (double)total_timesteps) * 100), (total_timesteps / (double)ranked_timesteps) );
       }
       fprintf( ofile, "\n" );
@@ -1596,7 +1645,8 @@ static void rank_output(
       fprintf( ofile, "\n" );
 
       /* Calculate a string format */
-      snprintf( format, 100, "%%10u   %%10llu   %%10llu  %%3.0f%%%%  %%10llu    %%c  %%-%us  %%10llu   %%10llu  %%3.0f%%%%  %%10llu\n", longest_name_len );
+      rv = snprintf( format, 100, "%%10u   %%10llu   %%10llu  %%3.0f%%%%  %%10llu    %%c  %%-%us  %%10llu   %%10llu  %%3.0f%%%%  %%10llu\n", longest_name_len );
+      assert( rv < 100 );
 
       for( i=0; i<comp_cdd_num; i++ ) {
         acc_timesteps  += comp_cdds[i]->timesteps; 
@@ -1633,7 +1683,7 @@ static void rank_output(
 
   } else {
 
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open ranking file \"%s\" for writing", rank_file );
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open ranking file \"%s\" for writing", rank_file );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     Throw 0;
@@ -1694,7 +1744,8 @@ void command_rank(
       rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading CDD file \"%s\"", strl->str );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-      fflush( stdout );
+      rv = fflush( stdout );
+      assert( rv == 0 );
       rank_read_cdd( strl->str, (strl->suppl == 1), first, &comp_cdds, &comp_cdd_num );
       first = FALSE;
       strl  = strl->next;
@@ -1702,7 +1753,8 @@ void command_rank(
 
     if( rank_verbose ) {
       timer_stop( &atimer );
-      snprintf( user_msg, USER_MSG_LENGTH, "Completed reading in CDD files in %s", timer_to_string( atimer ) );
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "Completed reading in CDD files in %s", timer_to_string( atimer ) );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
       free_safe( atimer, sizeof( timer ) );
     }
@@ -1740,6 +1792,9 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.8  2008/09/02 05:20:41  phase1geo
+ More updates for exclude command.  Updates to CVER regression.
+
  Revision 1.7  2008/08/22 20:56:35  phase1geo
  Starting to make updates for proper unnamed scope report handling (fix for bug 2054686).
  Not complete yet.  Also making updates to documentation.  Checkpointing.
@@ -1759,6 +1814,9 @@ void command_rank(
  that the GUI stuff works properly.
 
  $Log$
+ Revision 1.8  2008/09/02 05:20:41  phase1geo
+ More updates for exclude command.  Updates to CVER regression.
+
  Revision 1.7  2008/08/22 20:56:35  phase1geo
  Starting to make updates for proper unnamed scope report handling (fix for bug 2054686).
  Not complete yet.  Also making updates to documentation.  Checkpointing.
