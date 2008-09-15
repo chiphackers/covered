@@ -329,33 +329,6 @@ static void exclude_remove_exclude_reason(
 }
 
 /*!
- \param funit_name  Name of functional unit to search for
- \param funit_type  Type of functional unit to search for
-
- \return Returns a pointer to the functional unit instance that points to the functional unit
-         described in the parameter list if one is found; otherwise, returns NULL.
-
- Using the specified functional unit information, returns the functional unit instance that
- corresponds to this description.  If one could not be found, a value of NULL is returned.
-*/
-static funit_inst* exclude_find_instance_from_funit_info(
-  const char* funit_name,
-  int         funit_type
-) {
-
-  funit_link* funitl;         /* Found functional unit link */
-  int         ignore = 0;     /* Number of functional unit instances to ignore in search */
-  funit_inst* inst   = NULL;  /* Found functional unit instance */
-
-  if( (funitl = funit_link_find( funit_name, funit_type, db_list[curr_db]->funit_head )) != NULL ) {
-    inst = inst_link_find_by_funit( funitl->funit, db_list[curr_db]->inst_head, &ignore );
-  }
-
-  return( inst );
-
-}
-
-/*!
  \return Returns TRUE if the specified line is excluded in the given functional unit; otherwise, returns FALSE.
 */
 bool exclude_is_line_excluded(
@@ -877,7 +850,7 @@ static void exclude_parse_args(
 
     } else {
 
-      str_link_add( strdup_safe( argv[i] ), &excl_ids_head, &excl_ids_tail );
+      (void)str_link_add( strdup_safe( argv[i] ), &excl_ids_head, &excl_ids_tail );
 
     }
 
@@ -1116,16 +1089,18 @@ static char* exclude_get_message(
   const char* eid  /*!< Exclusion ID to get message for */
 ) { PROFILE(EXCLUDED_GET_MESSAGE);
 
-  char* msg          = NULL;  /* Pointer to the message from the user */
-  int   msg_size     = 0;     /* The current size of the specified message */
-  char  c;                    /* Current character */
-  bool  nl_just_seen = TRUE;  /* Set to TRUE if a newline was just seen */
-  bool  sp_just_seen = TRUE;  /* Set to TRUE if a space character was just seen */
-  int   index        = 0;     /* Current string index */
-  char  str[101];
-  char* formatted_msg;        /* Formatted message */
+  char*        msg          = NULL;  /* Pointer to the message from the user */
+  int          msg_size     = 0;     /* The current size of the specified message */
+  char         c;                    /* Current character */
+  bool         nl_just_seen = TRUE;  /* Set to TRUE if a newline was just seen */
+  bool         sp_just_seen = TRUE;  /* Set to TRUE if a space character was just seen */
+  int          index        = 0;     /* Current string index */
+  char         str[101];
+  char*        formatted_msg;        /* Formatted message */
+  unsigned int rv;
 
-  snprintf( user_msg, USER_MSG_LENGTH, "Please specify a reason for exclusion for exclusion ID %s (Enter a '.' (period) on a newline to end):\n", eid );
+  rv = snprintf( user_msg, USER_MSG_LENGTH, "Please specify a reason for exclusion for exclusion ID %s (Enter a '.' (period) on a newline to end):\n", eid );
+  assert( rv < USER_MSG_LENGTH );
   print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
   str[0] = '\0';
@@ -1615,8 +1590,9 @@ static bool exclude_assert_from_id(
 */
 static bool exclude_apply_exclusions() { PROFILE(EXCLUDE_APPLY_EXCLUSIONS);
 
-  bool      retval = FALSE;  /* Return value for this function */
-  str_link* strl;            /* Pointer to current string link */
+  bool         retval = FALSE;  /* Return value for this function */
+  str_link*    strl;            /* Pointer to current string link */
+  unsigned int rv;
 
   strl = excl_ids_head;
   while( strl != NULL ) {
@@ -1628,10 +1604,13 @@ static bool exclude_apply_exclusions() { PROFILE(EXCLUDE_APPLY_EXCLUSIONS);
       case 'F' :  retval |= exclude_fsm_from_id( strl->str );     break;
       case 'A' :  retval |= exclude_assert_from_id( strl->str );  break;
       default  :
-        snprintf( user_msg, USER_MSG_LENGTH, "Illegal exclusion identifier specified (%s)", strl->str );
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal exclusion identifier specified (%s)", strl->str );
+        assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         Throw 0;
+        /*@-unreachable@*/
         break;
+        /*@=unreachable@*/
     }
     strl = strl->next;
   }
@@ -1699,6 +1678,11 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.40  2008/09/13 13:04:47  phase1geo
+ Moving exclusion ID of FSM from the arc transitions to the FSM itself (only one
+ ID needed to be stored).  This improves on memory usage and performance when
+ searching for exclusions.
+
  Revision 1.39  2008/09/10 23:06:36  phase1geo
  Adding several new diagnostics for coverage testing purposes.  Fixed a few
  bugs that surfaced when performing this testing.

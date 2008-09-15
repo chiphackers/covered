@@ -838,8 +838,7 @@ static void report_generate(
  interaction with this CDD file. 
 */
 void report_read_cdd_and_ready(
-  const char* ifile,     /*!< Name of CDD file to read from */
-  int         read_mode  /*!< Specifies mode to read from CDD file (merge or replace) */
+  const char* ifile  /*!< Name of CDD file to read from */
 ) { PROFILE(REPORT_READ_CDD_AND_READY);
 
   /* Open database file for reading */
@@ -1138,7 +1137,7 @@ void command_report(
         unsigned int rv;
 
         if( input_db != NULL ) {
-          report_read_cdd_and_ready( input_db, READ_MODE_REPORT_NO_MERGE );
+          report_read_cdd_and_ready( input_db );
         }
 
         /* Initialize the Tcl/Tk interpreter */
@@ -1227,6 +1226,10 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.121  2008/09/04 21:34:20  phase1geo
+ Completed work to get exclude reason support to work with toggle coverage.
+ Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
+
  Revision 1.120  2008/09/04 04:15:10  phase1geo
  Adding -p option to exclude command.  Updating other files per this change.
  Checkpointing.

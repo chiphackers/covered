@@ -1636,7 +1636,7 @@ int tcl_func_open_cdd(
     ifile = strdup_safe( argv[1] );
 
     Try {
-      report_read_cdd_and_ready( ifile, READ_MODE_REPORT_NO_MERGE );
+      report_read_cdd_and_ready( ifile );
     } Catch_anonymous {
       retval = TCL_ERROR;
     }
@@ -1761,7 +1761,7 @@ int tcl_func_merge_cdd(
     merge_in_num++;
 
     Try {
-      report_read_cdd_and_ready( ifile, READ_MODE_MERGE_INST_MERGE );
+      report_read_cdd_and_ready( ifile );
     } Catch_anonymous {
       retval = TCL_ERROR;
     }
@@ -3061,6 +3061,10 @@ void tcl_func_initialize(
 
 /*
  $Log$
+ Revision 1.88  2008/09/08 22:15:17  phase1geo
+ Regression updates and modifications for new FSM GUI output (this isn't complete
+ at this time).  Checkpointing.
+
  Revision 1.87  2008/09/06 05:59:45  phase1geo
  Adding assertion exclusion reason support and have most code implemented for
  FSM exclusion reason support (still working on debugging this code).  I believe

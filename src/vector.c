@@ -434,7 +434,9 @@ void vector_db_read(
                   /* If the CDD file size is 64-bit and we are 32-bit, store one elements to our two */
                   } else if( info_suppl.part.vec_ul_size == 3 ) {
                     unsigned long long val;
+                    /*@-duplicatequals +ignorequals@*/
                     if( sscanf( *line, "%llx%n", &val, &chars_read ) == 1 ) {
+                    /*@=duplicatequals =ignorequals@*/
                       *line += chars_read;
                       (*vec)->value.ul[(i*2)+0][j] = (ulong)(val & 0xffffffffLL);
                       (*vec)->value.ul[(i*2)+1][j] = (ulong)((val >> 32) & 0xffffffffLL);
@@ -566,7 +568,9 @@ void vector_db_merge(
                 /* If the CDD file size is 64-bit and we are 32-bit, store one elements to our two */
                 } else if( info_suppl.part.vec_ul_size == 3 ) {
                   unsigned long long val;
+                  /*@-duplicatequals +ignorequals@*/
                   if( sscanf( *line, "%llx%n", &val, &chars_read ) == 1 ) {
+                  /*@=duplicatequals =ignorequals@*/
                     *line += chars_read;
                     if( j >= 2 ) {
                       base->value.ul[(i*2)+0][j] = (ulong)(val & 0xffffffffLL);
@@ -938,7 +942,7 @@ void vector_display_toggle10_ulong(
       
   for( i=UL_SIZE(width); i--; ) {
     for( j=bits_left; j>=0; j-- ) {
-      nib |= (((value[i][VTYPE_INDEX_SIG_TOG10] >> j) & 0x1) << ((unsigned)j % 4));
+      nib |= (((value[i][VTYPE_INDEX_SIG_TOG10] >> (unsigned int)j) & 0x1) << ((unsigned int)j % 4));
       if( (j % 4) == 0 ) {
         fprintf( ofile, "%1x", nib );
         nib = 0;
@@ -1446,8 +1450,8 @@ static void vector_lshift_ulong(
 
   if( UL_DIV(lsb) == UL_DIV(msb) ) {
 
-    vall[diff] = (vec->value.ul[0][VTYPE_INDEX_VAL_VALL] << lsb);
-    valh[diff] = (vec->value.ul[0][VTYPE_INDEX_VAL_VALH] << lsb);
+    vall[diff] = (vec->value.ul[0][VTYPE_INDEX_VAL_VALL] << (unsigned int)lsb);
+    valh[diff] = (vec->value.ul[0][VTYPE_INDEX_VAL_VALH] << (unsigned int)lsb);
 
   } else if( UL_MOD(lsb) == 0 ) {
 
@@ -2065,7 +2069,9 @@ int vector_to_int(
   /* If the vector is signed, sign-extend the integer */
   if( vec->suppl.part.is_signed == 1 ) {
     unsigned int width = (vec->width > 32) ? 32 : vec->width;
+    /*@-shiftimplementation@*/
     retval |= (UL_SET * ((retval >> (width - 1)) & 0x1)) << width;
+    /*@=shiftimplementation@*/
   }
 
   PROFILE_END;
@@ -2329,7 +2335,7 @@ char* vector_to_string(
           for( i=UL_SIZE(vec->width); i--; ) {
             ulong val = vec->value.ul[i][VTYPE_INDEX_VAL_VALL]; 
             for( j=(offset - 1); j>=0; j-- ) {
-              str[pos] = (val >> (j * 8)) & 0xff;
+              str[pos] = (val >> ((unsigned int)j * 8)) & 0xff;
               pos++;
             }
             offset = SIZEOF_LONG;
@@ -2474,8 +2480,6 @@ void vector_from_string(
   char value[MAX_BIT_WIDTH];  /* String to store string value in */
   char stype[3];              /* Temporary holder for type of string being parsed */
   int  chars_read;            /* Number of characters read by a sscanf() function call */
-  int  i;                     /* Loop iterator */
-  int  pos;                   /* Bit position */
 
   if( quoted ) {
 
@@ -2494,10 +2498,12 @@ void vector_from_string(
 
     } else {
 
+      unsigned int pos = 0;
+      int          i;
+
       /* Create vector */
       *vec  = vector_create( size, VTYPE_VAL, VDATA_UL, TRUE );
       *base = QSTRING;
-      pos   = 0;
 
       for( i=(strlen( *str ) - 1); i>=0; i-- ) {
         (*vec)->value.ul[pos>>(UL_DIV_VAL-3)][VTYPE_INDEX_VAL_VALL] |= (ulong)((*str)[i]) << ((pos & (UL_MOD_VAL >> 3)) << 3);
@@ -4682,6 +4688,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.153  2008/09/11 20:19:50  phase1geo
+ Fixing !== operator (bug 2106313).  Adding more diagnostics to regression to
+ verify codegen code.
+
  Revision 1.152  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

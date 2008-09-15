@@ -2546,8 +2546,6 @@ static void combination_output_expr(
 }
 
 /*!
- \return Returns TRUE if at least one expression was found to be excluded.
-
  \throws anonymous combination_underline
 
  Displays the expressions (and groups of expressions) that were considered 
@@ -2558,17 +2556,16 @@ static void combination_output_expr(
  the Verilog code, showing those logical combinations that were not hit
  during simulation.
 */
-static bool combination_display_verbose(
+static void combination_display_verbose(
   FILE*      ofile,  /*!< Pointer to file to output results to */
   func_unit* funit,  /*!< Pointer to functional unit to display verbose combinational logic output for */
   rpt_type   rtype   /*!< Specifies the type of report to display */
 ) { PROFILE(COMBINATION_DISPLAY_VERBOSE);
 
-  bool         retval = FALSE;  /* Return value for this function */
-  func_iter    fi;              /* Functional unit iterator */
-  statement*   stmt;            /* Pointer to current statement */
-  char**       code;            /* Code string from code generator */
-  unsigned int code_depth;      /* Depth of code array */
+  func_iter    fi;          /* Functional unit iterator */
+  statement*   stmt;        /* Pointer to current statement */
+  char**       code;        /* Code string from code generator */
+  unsigned int code_depth;  /* Depth of code array */
 
   switch( rtype ) {
     case RPT_TYPE_HIT  :  fprintf( ofile, "    Hit Combinations\n\n" );                         break;
@@ -2589,8 +2586,6 @@ static bool combination_display_verbose(
     int all_excluded   = 0;
 
     combination_output_expr( stmt->exp, 0, &any_missed, &any_measurable, &any_excluded, &all_excluded );
-
-    retval |= any_excluded;
 
     if( ((rtype == RPT_TYPE_MISS) && (any_missed == 1) && (any_measurable == 1)) ||
         ((rtype == RPT_TYPE_HIT)  && (any_missed == 0) && (any_measurable == 1)) ||
@@ -2622,8 +2617,6 @@ static bool combination_display_verbose(
   func_iter_dealloc( &fi );
 
   PROFILE_END;
-
-  return( retval );
 
 }
 
@@ -3095,6 +3088,10 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.208  2008/09/11 04:51:21  phase1geo
+ Fixing bugs 2104947 and 2104924.  Adding mem4 diagnostic to verify.  Also
+ added negate2 diagnostic for coverage purposes.
+
  Revision 1.207  2008/09/09 22:07:47  phase1geo
  Fixing bug 2095796.
 

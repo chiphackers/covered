@@ -153,9 +153,10 @@ static void merge_parse_args(
       if( check_option_value( argc, argv, i ) ) {
         i++;
         if( directory_exists( argv[i] ) ) {
-          str_link_add( strdup_safe( argv[i] ), &dir_head, &dir_tail );
+          (void)str_link_add( strdup_safe( argv[i] ), &dir_head, &dir_tail );
         } else {
-          snprintf( user_msg, USER_MSG_LENGTH, "Specified -d directory (%s) does not exist", argv[i] );
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Specified -d directory (%s) does not exist", argv[i] );
+          assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           Throw 0;
         }
@@ -167,7 +168,7 @@ static void merge_parse_args(
 
       if( check_option_value( argc, argv, i ) ) {
         i++;
-        str_link_add( strdup_safe( argv[i] ), &ext_head, &ext_tail );
+        (void)str_link_add( strdup_safe( argv[i] ), &ext_head, &ext_tail );
       } else {
         Throw 0;
       } 
@@ -183,7 +184,7 @@ static void merge_parse_args(
         }
 
         /* Add the specified merge file to the list */
-        str_link_add( strdup_safe( argv[i] ), &merge_in_head, &merge_in_tail );
+        (void)str_link_add( strdup_safe( argv[i] ), &merge_in_head, &merge_in_tail );
 
       } else {
 
@@ -310,6 +311,10 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.54  2008/09/04 21:34:20  phase1geo
+ Completed work to get exclude reason support to work with toggle coverage.
+ Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
+
  Revision 1.53  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

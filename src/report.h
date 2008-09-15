@@ -50,8 +50,7 @@ void report_parse_args(
 
 /*! \brief Reads the CDD and readies the design for reporting */
 void report_read_cdd_and_ready(
-  const char* ifile,
-  int         read_mode
+  const char* ifile
 );
 
 /*! \brief Closes the currently loaded CDD */
@@ -73,6 +72,10 @@ void report_output_exclusion_reason(
 
 /*
  $Log$
+ Revision 1.20  2008/09/04 04:15:10  phase1geo
+ Adding -p option to exclude command.  Updating other files per this change.
+ Checkpointing.
+
  Revision 1.19  2008/09/02 22:41:46  phase1geo
  Starting to work on adding exclusion reason output to report files.  Added
  support for exclusion reasons to CDD files.  Checkpointing.

@@ -111,12 +111,14 @@ void info_db_write(
   /* Calculate vector element size */
   info_set_vector_elem_size();
 
+  /*@-formattype -duplicatequals@*/
   fprintf( file, "%d %x %x %llu %s\n",
            DB_TYPE_INFO,
            CDD_VERSION,
            info_suppl.all,
            num_timesteps,
            db_list[curr_db]->leading_hierarchies[0] );
+  /*@=formattype =duplicatequals@*/
 
   /* Display score arguments */
   fprintf( file, "%d %s", DB_TYPE_SCORE_ARGS, score_run_path );
@@ -188,7 +190,9 @@ void info_db_read(
       Throw 0;
     }
 
+    /*@-formattype -duplicatequals@*/
     if( sscanf( *line, "%x %llu %s%n", &(info_suppl.all), &num_timesteps, tmp, &chars_read ) == 3 ) {
+    /*@=formattype =duplicatequals@*/
 
       *line = *line + chars_read;
 
@@ -296,7 +300,7 @@ void merged_cdd_db_read(
     /* Add merged file */
     if( (strl = str_link_find( tmp1, merge_in_head)) == NULL ) {
 
-      str_link_add( strdup_safe( tmp1 ), &merge_in_head, &merge_in_tail );
+      (void)str_link_add( strdup_safe( tmp1 ), &merge_in_head, &merge_in_tail );
       merge_in_num++;
 
       /* Set leading_hiers_differ to TRUE if this is not the first hierarchy and it differs from the first */
@@ -311,7 +315,8 @@ void merged_cdd_db_read(
 
     } else if( merge_in_num > 0 ) {
 
-      snprintf( user_msg, USER_MSG_LENGTH, "File %s in CDD file has been specified on the command-line", tmp1 );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "File %s in CDD file has been specified on the command-line", tmp1 );
+      assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       Throw 0;
 
@@ -361,6 +366,10 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
 /*
  $Log$
+ Revision 1.39  2008/09/04 21:34:20  phase1geo
+ Completed work to get exclude reason support to work with toggle coverage.
+ Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
+
  Revision 1.38  2008/08/18 23:07:26  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

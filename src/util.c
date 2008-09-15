@@ -659,7 +659,7 @@ bool get_quoted_string(
   } else {
 
     for( ; i >= 0; i-- ) {
-      ungetc( c[i], file );
+      (void)ungetc( c[i], file );
     }
 
   }
@@ -1245,11 +1245,11 @@ void* realloc_safe1(
  and performs some memory statistic handling.
 */
 void* calloc_safe1(
-  size_t       num,           /*!< Number of elements to allocate */
-  size_t       size,          /*!< Size of each element that is allocated */
-  const char*  file,          /*!< Name of file that called this function */
-  int          line,          /*!< Line number of file that called this function */
-  unsigned int profile_index  /*!< Profile index of function that called this function */
+               size_t       num,           /*!< Number of elements to allocate */
+               size_t       size,          /*!< Size of each element that is allocated */
+  /*@unused@*/ const char*  file,          /*!< Name of file that called this function */
+  /*@unused@*/ int          line,          /*!< Line number of file that called this function */
+  /*@unused@*/ unsigned int profile_index  /*!< Profile index of function that called this function */
 ) {
 
   void*  obj;
@@ -1360,17 +1360,36 @@ char* timer_to_string(
 
   /* If the time is less than a minute, output the seconds and milliseconds */
   if( tm->total < 10 ) {
-    snprintf( str, 33, "0.00000%1llu seconds", tm->total );
+    /*@-duplicatequals -formattype@*/
+    unsigned int rv = snprintf( str, 33, "0.00000%1llu seconds", tm->total );
+    /*@=duplicatequals =formattype@*/
+    assert( rv < 33 );
   } else if( tm->total < 100 ) {
-    snprintf( str, 33, "0.0000%1llu seconds", (tm->total / 10) ); 
+    /*@-duplicatequals -formattype@*/
+    unsigned int rv = snprintf( str, 33, "0.0000%1llu seconds", (tm->total / 10) ); 
+    /*@=duplicatequals =formattype@*/
+    assert( rv < 33 );
   } else if( tm->total < 1000 ) {
-    snprintf( str, 33, "0.000%1llu seconds", (tm->total / 100) );
+    /*@-duplicatequals -formattype@*/
+    unsigned int rv = snprintf( str, 33, "0.000%1llu seconds", (tm->total / 100) );
+    /*@=duplicatequals =formattype@*/
+    assert( rv < 33 );
   } else if( tm->total < 60000000 ) {
-    snprintf( str, 33, "%2llu.%03llu seconds", (tm->total / 1000000), ((tm->total % 1000000) / 1000) );
+    /*@-duplicatequals -formattype@*/
+    unsigned int rv = snprintf( str, 33, "%2llu.%03llu seconds", (tm->total / 1000000), ((tm->total % 1000000) / 1000) );
+    /*@=duplicatequals =formattype@*/
+    assert( rv < 33 );
   } else if( tm->total < 3600000000LL ) {
-    snprintf( str, 33, "%2llu minutes, %2llu seconds", (tm->total / 60000000), ((tm->total % 60000000) / 1000000) );
+    /*@-duplicatequals -formattype@*/
+    unsigned int rv = snprintf( str, 33, "%2llu minutes, %2llu seconds", (tm->total / 60000000), ((tm->total % 60000000) / 1000000) );
+    /*@=duplicatequals =formattype@*/
+    assert( rv < 33 );
   } else {
-    snprintf( str, 33, "%2llu hours, %2llu minutes, %2llu seconds", (tm->total / 3600000000LL), ((tm->total % 3600000000LL) / 60000000), ((tm->total % 60000000) / 1000000) );
+    /*@-duplicatequals -formattype@*/
+    unsigned int rv = snprintf( str, 33, "%2llu hours, %2llu minutes, %2llu seconds", 
+                                (tm->total / 3600000000LL), ((tm->total % 3600000000LL) / 60000000), ((tm->total % 60000000) / 1000000) );
+    /*@=duplicatequals =formattype@*/
+    assert( rv < 33 );
   }
 
   return( str );
@@ -1520,6 +1539,10 @@ void read_command_file(
 
 /*
  $Log$
+ Revision 1.102  2008/08/21 03:45:24  phase1geo
+ Modifying verbage in -v output for rank command.  Adding time to read in CDD
+ files to the output.
+
  Revision 1.101  2008/08/19 05:14:26  phase1geo
  Attempting to fix bug 2054684.
 

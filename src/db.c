@@ -872,8 +872,9 @@ char* db_gen_exclusion_id(
   int  id     /*!< Numerical unique identifier */
 ) { PROFILE(DB_GEN_EXCLUSION_ID);
 
-  char tmp[30];
-  int  size = db_get_exclusion_id_size();
+  char         tmp[30];
+  int          size = db_get_exclusion_id_size();
+  unsigned int rv;
 
   /* If the exclusion ID has not been created, create it now */
   if( exclusion_id == NULL ) {
@@ -884,10 +885,12 @@ char* db_gen_exclusion_id(
   }
 
   /* Create format string */
-  snprintf( tmp, 30, "%%c%%0%dd", (size - 2) );
+  rv = snprintf( tmp, 30, "%%c%%0%dd", (size - 2) );
+  assert( rv < 30 );
 
   /* Generate exclusion_id string */
-  snprintf( exclusion_id, size, tmp, type, id );
+  rv = snprintf( exclusion_id, size, tmp, type, id );
+  assert( rv < size );
  
   PROFILE_END;
 
@@ -3023,6 +3026,9 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.327  2008/09/07 05:06:29  phase1geo
+ Fixing regression bugs.  IV and Cver regressions now run cleanly again.
+
  Revision 1.326  2008/09/07 04:03:11  phase1geo
  Fixing some recently added segmentation faults.  Fixed FSM exclusion reason
  handling.

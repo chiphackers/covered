@@ -477,12 +477,13 @@ void ovl_get_coverage(
   /*@out@*/ str_link**       cp_tail      /*!< Pointer to tail of coverage point list */
 ) { PROFILE(OVL_GET_COVERAGE);
 
-  funit_inst* funiti;      /* Pointer to found functional unit instance */
-  funit_inst* curr_child;  /* Pointer to current child functional instance */
-  int         ignore = 0;  /* Number of functional units to ignore */
-  func_iter   fi;          /* Functional unit iterator to iterate through statements */
-  statement*  stmt;        /* Pointer to current statement */
-  int         str_size;    /* Size of assert_mod string needed for memory allocation */
+  funit_inst*  funiti;      /* Pointer to found functional unit instance */
+  funit_inst*  curr_child;  /* Pointer to current child functional instance */
+  int          ignore = 0;  /* Number of functional units to ignore */
+  func_iter    fi;          /* Functional unit iterator to iterate through statements */
+  statement*   stmt;        /* Pointer to current statement */
+  int          str_size;    /* Size of assert_mod string needed for memory allocation */
+  unsigned int rv;          /* Return value */
 
   /* Get one instance of this module from the design */
   funiti = inst_link_find_by_funit( funit, db_list[curr_db]->inst_head, &ignore );
@@ -498,7 +499,8 @@ void ovl_get_coverage(
   /* Get the module name and store it in assert_mod */
   str_size    = strlen( curr_child->funit->name ) + 1 + strlen( curr_child->funit->filename ) + 1;
   *assert_mod = (char*)malloc_safe( str_size ); 
-  snprintf( *assert_mod, str_size, "%s %s", curr_child->funit->name, curr_child->funit->filename );
+  rv = snprintf( *assert_mod, str_size, "%s %s", curr_child->funit->name, curr_child->funit->filename );
+  assert( rv < str_size );
 
   /* Initialize the functional unit iterator */
   func_iter_init( &fi, curr_child->funit, TRUE, FALSE );
@@ -540,6 +542,12 @@ void ovl_get_coverage(
 
 /*
  $Log$
+ Revision 1.37  2008/09/06 05:59:45  phase1geo
+ Adding assertion exclusion reason support and have most code implemented for
+ FSM exclusion reason support (still working on debugging this code).  I believe
+ that assertions, FSMs and lines might suffer from the same problem...
+ Checkpointing.
+
  Revision 1.36  2008/09/04 04:15:10  phase1geo
  Adding -p option to exclude command.  Updating other files per this change.
  Checkpointing.
