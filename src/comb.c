@@ -2447,10 +2447,11 @@ static void combination_get_missed_expr(
  during simulation.
 */
 static void combination_list_missed(
-  FILE*        ofile,       /*!< Pointer to file to output results to */
-  expression*  exp,         /*!< Pointer to expression tree to evaluate */
-  unsigned int curr_depth,  /*!< Specifies current depth of expression tree */
-  func_unit*   funit        /*!< Pointer to current functional unit */
+  FILE*        ofile,           /*!< Pointer to file to output results to */
+  expression*  exp,             /*!< Pointer to expression tree to evaluate */
+  unsigned int curr_depth,      /*!< Specifies current depth of expression tree */
+  func_unit*   funit,           /*!< Pointer to current functional unit */
+  bool         show_exclusions  /*!< Set to TRUE to display exclusions */
 ) { PROFILE(COMBINATION_LIST_MISSED);
 
   char** info;       /* String array containing combination coverage information for this expression */
@@ -2461,11 +2462,11 @@ static void combination_list_missed(
 
     exclude_reason* er;
     
-    combination_list_missed( ofile, exp->left,  combination_calc_depth( exp, curr_depth, TRUE ),  funit );
-    combination_list_missed( ofile, exp->right, combination_calc_depth( exp, curr_depth, FALSE ), funit );
+    combination_list_missed( ofile, exp->left,  combination_calc_depth( exp, curr_depth, TRUE ),  funit, show_exclusions );
+    combination_list_missed( ofile, exp->right, combination_calc_depth( exp, curr_depth, FALSE ), funit, show_exclusions );
 
     /* Get coverage information for this expression */
-    combination_get_missed_expr( &info, &info_size, exp, curr_depth, report_exclusions );
+    combination_get_missed_expr( &info, &info_size, exp, curr_depth, show_exclusions );
 
     /* If there was any coverage information for this expression, output it to the specified output stream */
     if( info_size > 0 ) {
@@ -2587,7 +2588,7 @@ static void combination_display_verbose(
 
     combination_output_expr( stmt->exp, 0, &any_missed, &any_measurable, &any_excluded, &all_excluded );
 
-    if( ((rtype == RPT_TYPE_MISS) && (any_missed == 1) && (any_measurable == 1)) ||
+    if( ((rtype == RPT_TYPE_MISS) && (any_missed == 1) && (all_excluded == 0) && (any_measurable == 1)) ||
         ((rtype == RPT_TYPE_HIT)  && (any_missed == 0) && (any_measurable == 1)) ||
         ((rtype == RPT_TYPE_EXCL) && (any_excluded == 1)) ) {
 
@@ -2605,7 +2606,7 @@ static void combination_display_verbose(
       fprintf( ofile, "\n" );
 
       /* Output logical combinations that missed complete coverage */
-      combination_list_missed( ofile, stmt->exp, 0, funit );
+      combination_list_missed( ofile, stmt->exp, 0, funit, (rtype == RPT_TYPE_EXCL) );
 
     }
     
@@ -3088,6 +3089,9 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.209  2008/09/15 03:43:49  phase1geo
+ Cleaning up splint warnings.
+
  Revision 1.208  2008/09/11 04:51:21  phase1geo
  Fixing bugs 2104947 and 2104924.  Adding mem4 diagnostic to verify.  Also
  added negate2 diagnostic for coverage purposes.
