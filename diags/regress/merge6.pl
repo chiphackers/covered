@@ -1,6 +1,6 @@
-# Name:     merge4.pl
+# Name:     merge6.pl
 # Author:   Trevor Williams  (phase1geo@gmail.com)
-# Date:     06/18/2008
+# Date:     09/16/2008
 # Purpose:  Verifies that a two-level merge works properly.
 
 require "../verilog/regress_subs.pl";

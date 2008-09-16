@@ -68,11 +68,10 @@ char* obfuscate_name(
 ) { PROFILE(OBFUSCATE_NAME);
 
   tnode*       obfnode;    /* Pointer to obfuscated tree node */
-  char*        obfname;    /* Obfuscated name */
   char*        key;        /* Temporary name used for searching */
   char         tname[30];  /* Temporary name used for sizing obfuscation ID */
-  unsigned int slen;       /* Length of string to allocate and populate */
   unsigned int rv;         /* Return value from snprintf calls */
+  unsigned int slen;       /* String length */
 
   /* Create temporary name */
   slen = strlen( real_name ) + 3;
@@ -80,27 +79,16 @@ char* obfuscate_name(
   rv = snprintf( key, slen, "%s-%c", real_name, prefix );
   assert( rv < slen );
 
-  /* If the name was previously obfuscated, return that name */
-  if( (obfnode = tree_find( key, obf_tree )) != NULL ) {
-
-    obfname = obfnode->value;
-
-  /* Otherwise, create a new obfuscated entry in the tree and return the new name */
-  } else {
-
-    /* Calculate the size needed for storing the obfuscated name */
-    rv = snprintf( tname, 30, "%04d", obf_curr_id );
-    assert( rv < 30 );
+  /* If the name was not previously obfuscated, create a new obfuscated entry in the tree and return the new name */
+  if( (obfnode = tree_find( key, obf_tree )) == NULL ) {
 
     /* Create obfuscated name */
-    slen    = strlen( tname ) + 2;
-    obfname = (char*)malloc_safe( slen );
-    rv = snprintf( obfname, slen, "%c%04d", prefix, obf_curr_id );
+    rv = snprintf( tname, 30, "%c%04d", prefix, obf_curr_id );
     assert( rv < slen );
     obf_curr_id++;
 
-    /* Add the obfuscated name to the tree */
-    (void)tree_add( key, obfname, FALSE, &obf_tree );
+    /* Add the obfuscated name to the tree and get the pointer to the new node */
+    obfnode = tree_add( key, tname, FALSE, &obf_tree );
 
   }
 
@@ -109,7 +97,7 @@ char* obfuscate_name(
 
   PROFILE_END;
 
-  return( obfname );
+  return( obfnode->value );
 
 }
 
@@ -127,6 +115,11 @@ void obfuscate_dealloc() { PROFILE(OBFUSCATE_DEALLOC);
 
 /*
  $Log$
+ Revision 1.15  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.12.4.1  2008/07/10 22:43:52  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

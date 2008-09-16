@@ -738,13 +738,8 @@ void report_print_header(
       fprintf( ofile, "* Report generated from CDD file that was merged from the following files with the following leading hierarchies:\n" );
       fprintf( ofile, "    Filename                                           Leading Hierarchy\n" );
       fprintf( ofile, "    -----------------------------------------------------------------------------------------------------------------\n" );
-#ifdef TESTMODE
-      fprintf( ofile, "    %-49.49s  %-62.62s\n", get_basename( input_db ),           db_list[curr_db]->leading_hierarchies[0] );
-      fprintf( ofile, "    %-49.49s  %-62.62s\n", get_basename( merge_in_head->str ), db_list[curr_db]->leading_hierarchies[1] ); 
-#else
       fprintf( ofile, "    %-49.49s  %-62.62s\n", input_db,           db_list[curr_db]->leading_hierarchies[0] );
       fprintf( ofile, "    %-49.49s  %-62.62s\n", merge_in_head->str, db_list[curr_db]->leading_hierarchies[1] ); 
-#endif
 
       if( report_instance && db_list[curr_db]->leading_hiers_differ ) {
         fprintf( ofile, "\n* Merged CDD files contain different leading hierarchies, will use value \"<NA>\" to represent leading hierarchy.\n\n" );
@@ -760,11 +755,7 @@ void report_print_header(
 
       i = 1;
       while( strl != NULL ) {
-#ifdef TESTMODE
-        fprintf( ofile, "    %-49.49s  %-62.62s\n", get_basename( strl->str ), db_list[curr_db]->leading_hierarchies[i++] );
-#else
         fprintf( ofile, "    %-49.49s  %-62.62s\n", strl->str, db_list[curr_db]->leading_hierarchies[i++] );
-#endif
         strl = strl->next;
       }
 
@@ -1235,6 +1226,11 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.123  2008/09/16 04:51:10  phase1geo
+ Fixing file removal in checkTest regression subroutine.  Also added code for
+ regression testing that allows us to verify that reports get generated correctly.
+ Full IV regression now passes with no leftover files.
+
  Revision 1.122  2008/09/15 03:43:49  phase1geo
  Cleaning up splint warnings.
 

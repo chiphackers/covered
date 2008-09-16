@@ -36,17 +36,17 @@
 
 
 /*!
- \param key       String containing search key for node retrieval.
- \param value     Value associated with this node.
- \param override  If TRUE, causes new value to overwrite old value if match found.
- \param root      Pointer to root of tree to add to.
- 
  \return Returns pointer to newly created tree node.
  
  Creates new node for this pairing and adds it to the binary tree
  for quick lookup.
 */
-tnode* tree_add( const char* key, const char* value, bool override, tnode** root ) { PROFILE(TREE_ADD);
+tnode* tree_add(
+  const char* key,       /*!< String containing search key for node retrieval */
+  const char* value,     /*!< Value associated with this node */
+  bool        override,  /*!< If TRUE, causes new value to overwrite old value if match found */
+  tnode**     root       /*!< Pointer to root of tree to add to */
+) { PROFILE(TREE_ADD);
   
   tnode* node;            /* Pointer to newly created tree node */
   tnode* curr   = *root;  /* Pointer to current node */
@@ -75,6 +75,7 @@ tnode* tree_add( const char* key, const char* value, bool override, tnode** root
           curr->value = node->value;
         } else {
           free_safe( node->value, (strlen( node->value ) + 1) );
+          node->value = NULL;
         }
 
         free_safe( node->name, (strlen( node->name ) + 1) );
@@ -113,16 +114,16 @@ tnode* tree_add( const char* key, const char* value, bool override, tnode** root
 }
 
 /*!
- \param key   Key value to search for in tree.
- \param root  Pointer to root of binary tree to search.
- 
  \return Returns pointer to found node or NULL if not found.
  
  Searches binary tree for key that matches the specified name parameter.
  If found, a pointer to the node is returned; otherwise, the value of NULL
  is returned.
 */
-tnode* tree_find( const char* key, tnode* root ) { PROFILE(TREE_FIND);
+tnode* tree_find(
+  const char* key,  /*!< Key value to search for in tree */
+  tnode*      root  /*!< Pointer to root of binary tree to search */
+) { PROFILE(TREE_FIND);
 
   int comp;  /* Value of string comparison */
 
@@ -141,14 +142,14 @@ tnode* tree_find( const char* key, tnode* root ) { PROFILE(TREE_FIND);
 }
 
 /*!
- \param key   Key to search for and remove from tree.
- \param root  Pointer to root of tree to search.
- 
  Looks up the specified node (based on key value) and removes it from
  the tree in such a was as to keep the integrity of the tree in check
  for continual quick searching.
 */
-void tree_remove( const char* key, tnode** root ) { PROFILE(TREE_REMOVE);
+void tree_remove(
+  const char* key,  /*!< Key to search for and remove from tree */
+  tnode**     root  /*!< Pointer to root of tree to search */
+) { PROFILE(TREE_REMOVE);
   
   tnode* node;  /* Pointer to found tree node to remove */
   tnode* tail;  /* Temporary pointer to tail node */
@@ -266,12 +267,12 @@ void tree_remove( const char* key, tnode** root ) { PROFILE(TREE_REMOVE);
 }
 
 /*!
- \param root  Pointer to root of tree to deallocate.
- 
  Recursively traverses specified tree, deallocating all memory associated with
  that tree.
 */
-void tree_dealloc( tnode* root ) { PROFILE(TREE_DEALLOC);
+void tree_dealloc(
+  tnode* root  /*!< Pointer to root of tree to deallocate */
+) { PROFILE(TREE_DEALLOC);
   
   if( root != NULL ) {
     
@@ -295,6 +296,11 @@ void tree_dealloc( tnode* root ) { PROFILE(TREE_DEALLOC);
 
 /*
  $Log$
+ Revision 1.9  2008/03/17 22:02:32  phase1geo
+ Adding new check_mem script and adding output to perform memory checking during
+ regression runs.  Completed work on free_safe and added realloc_safe function
+ calls.  Regressions are pretty broke at the moment.  Checkpointing.
+
  Revision 1.8  2007/12/18 23:55:21  phase1geo
  Starting to remove 64-bit time and replacing it with a sim_time structure
  for performance enhancement purposes.  Also removing global variables for time-related
