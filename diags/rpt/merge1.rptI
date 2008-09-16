@@ -15,8 +15,8 @@
 * Report generated from CDD file that was merged from the following files:
     Filename                                           Leading Hierarchy
     -----------------------------------------------------------------------------------------------------------------
-    /ptmp/covered/diags/verilog/merge1a.cdd            main1                                                         
-    /ptmp/covered/diags/verilog/merge1b.cdd            main2                                                         
+    merge1a.cdd                                        main1                                                         
+    merge1b.cdd                                        main2                                                         
 
 * Merged CDD files contain different leading hierarchies, will use value "<NA>" to represent leading hierarchy.
 

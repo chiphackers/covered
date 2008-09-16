@@ -147,6 +147,11 @@ sub parse_cdd {
 
       }
 
+    # Merged CDD
+    } elsif( $line[0] eq "12" ) {
+
+      $line[1] = "cdd";
+
     }
 
     # Output the current line to the temporary output CDD file

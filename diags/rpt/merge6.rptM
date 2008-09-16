@@ -15,10 +15,10 @@
 * Report generated from CDD file that was merged from the following files:
     Filename                                           Leading Hierarchy
     -----------------------------------------------------------------------------------------------------------------
-    /ptmp/covered/diags/verilog/merge6_1/merge6a.cdd   main                                                          
-    /ptmp/covered/diags/verilog/merge6_1/merge6b.cdd   main                                                          
-    /ptmp/covered/diags/verilog/merge6_2/merge6c.cdd   main                                                          
-    /ptmp/covered/diags/verilog/merge6_2/merge6d.cdd   main                                                          
+    merge6a.cdd                                        main                                                          
+    merge6b.cdd                                        main                                                          
+    merge6c.cdd                                        main                                                          
+    merge6d.cdd                                        main                                                          
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   LINE COVERAGE RESULTS   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -39,7 +39,7 @@ if( $SIMULATOR eq "IV" ) {
 &runReportCommand( "-d v -i -o merge_err2.1.rptI merge_err2.1.cdd" );
 
 # Perform the file comparison checks
-&checkTest( "merge_err2.1", 3, 0 );
+&checkTest( "merge_err2.1", 4, 0 );
 
 exit 0;
 

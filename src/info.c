@@ -316,7 +316,11 @@ void merged_cdd_db_read(
 
     } else if( merge_in_num > 0 ) {
 
+#ifdef TESTMODE
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "File %s in CDD file has been specified on the command-line", get_basename( tmp1 ) );
+#else
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "File %s in CDD file has been specified on the command-line", tmp1 );
+#endif
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       Throw 0;
@@ -367,6 +371,10 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
 /*
  $Log$
+ Revision 1.41  2008/09/15 22:04:42  phase1geo
+ Fixing bug 2112858.  Also added new exclude10.3.1 diagnostic which recreates
+ bug 2112613 (this bug is not fixed yet, however).
+
  Revision 1.40  2008/09/15 03:43:49  phase1geo
  Cleaning up splint warnings.
 
