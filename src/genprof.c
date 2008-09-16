@@ -189,6 +189,8 @@ profiler profiles[NUM_PROFILES] = {
   {"is_legal_filename", NULL, 0, 0, 0, TRUE},
   {"get_basename", NULL, 0, 0, 0, TRUE},
   {"get_dirname", NULL, 0, 0, 0, TRUE},
+  {"get_absolute_path", NULL, 0, 0, 0, TRUE},
+  {"get_relative_path", NULL, 0, 0, 0, TRUE},
   {"directory_exists", NULL, 0, 0, 0, TRUE},
   {"directory_load", NULL, 0, 0, 0, TRUE},
   {"file_exists", NULL, 0, 0, 0, TRUE},

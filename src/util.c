@@ -458,6 +458,143 @@ char* get_dirname(
 }
 
 /*!
+ \return Returns absolute path of the given absolute pathname to the current path.
+*/
+char* get_absolute_path(
+  const char* filename  /*!< Filename to get the absolute pathname of */
+) { PROFILE(GET_ABSOLUTE_PATH);
+
+  char*        abs_path = NULL;
+  char*        tmp;
+  char*        dir;
+  const char*  file;
+  char         this_cwd[4096];
+  char*        srv;
+  unsigned int irv;
+
+  /* Get a copy of the filename and calculate its directory and basename */
+  tmp  = strdup_safe( filename );
+  dir  = get_dirname( tmp );
+  file = dir + strlen( dir ) + 1;
+
+  /* Get the original working directory so that we can return there */
+  srv = getcwd( this_cwd, 4096 );
+  assert( srv != NULL );
+
+  /* If we have a directory to go to, change to the directory */
+  if( dir != file ) {
+
+    char         cwd[4096];
+    unsigned int slen;
+
+    /* Change to the specified directory */
+    irv = chdir( dir );
+    assert( irv == 0 );
+
+    /* Get the current working directory and create the absolute path */
+    srv = getcwd( cwd, 4096 );
+    assert( srv != NULL );
+
+    slen     = strlen( cwd ) + strlen( file ) + 2;
+    abs_path = (char*)malloc_safe( slen );
+    irv      = snprintf( abs_path, slen, "%s/%s", cwd, file );
+    assert( irv < slen );
+
+    /* Return to the original directory */
+    irv = chdir( this_cwd );
+    assert( irv == 0 );
+
+  /* Otherwise, the file is in this directory */
+  } else {
+
+    unsigned int slen = strlen( this_cwd ) + strlen( file ) + 2;
+
+    abs_path = (char*)malloc_safe( slen );
+    irv      = snprintf( abs_path, slen, "%s/%s", this_cwd, file );
+    assert( irv < slen );
+
+  }
+
+  /* Deallocate used memory */
+  free_safe( tmp, (strlen( filename ) + 1) );
+
+  PROFILE_END;
+
+  return( abs_path );
+
+}
+
+/*!
+ \return Returns relative path of the given absolute pathname to the current path.
+*/
+char* get_relative_path(
+  const char* abs_path  /*!< Absolute pathname of file to get relative path for */
+) { PROFILE(GET_RELATIVE_PATH);
+
+  char*        rel_path = NULL;
+  char         cwd[4096];
+  char*        rv;
+  unsigned int i;
+
+  /* Get the current working directory */
+  rv = getcwd( cwd, 4096 );
+  assert( rv != NULL );
+
+  /*
+   Compare the absolute path to the current working directory path and stop when we see a
+   miscompare or run into the end of a path string.
+  */
+  i = 0;
+  while( (i < strlen( cwd )) && (i < strlen( abs_path )) && (abs_path[i] == cwd[i]) ) i++;
+
+  /* We should have never gotten to the end of the absolute path */
+  assert( i == strlen( abs_path ) );
+
+  /*
+   If the current working directory is completely a part of the absolute path, the relative pathname
+   is beneath the current working directory.
+  */
+  if( i == strlen( cwd ) ) {
+    rel_path = strdup_safe( abs_path + i + 1 );
+
+  /*
+   Otherwise, we need to back up and go forward.
+  */
+  } else {
+
+    unsigned int save_i;
+    char         trel[4096];
+
+    /* Find the previous backslash */
+    while( (i > 0) && (cwd[i] != '/') ) i--;
+    assert( cwd[i] == '/' );
+    
+    /* Save the current position of i */
+    save_i = i + 1; 
+
+    /* Create back portion of path */
+    trel[0] = '\0';
+    for( ; i<strlen( cwd ); i++ ) {
+      if( cwd[i] == '/' ) {
+        strcat( trel, "../" );
+      }
+    }
+
+    /* Now append the absolute path */
+    strcat( trel, (abs_path + save_i) );
+
+    /* Finally, make a copy of the calculated relative path */
+    rel_path = strdup_safe( trel );
+
+  }
+
+  PROFILE_END;
+
+  return( rel_path );
+
+}
+
+/*!
  \return Returns TRUE if the specified directory exists; otherwise, returns FALSE.
 
  Checks to see if the specified directory actually exists in the file structure.
@@ -1539,6 +1676,9 @@ void read_command_file(
 
 /*
  $Log$
+ Revision 1.103  2008/09/15 03:43:49  phase1geo
+ Cleaning up splint warnings.
+
  Revision 1.102  2008/08/21 03:45:24  phase1geo
  Modifying verbage in -v output for rank command.  Adding time to read in CDD
  files to the output.

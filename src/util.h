@@ -82,6 +82,12 @@ const char* get_basename( /*@returned@*/ const char* str );
 /*! \brief Extracts directory path from file pathname. */
 char* get_dirname( char* str );
 
+/*! \brief Allocates memory for and gets the absolute pathname for a given filename. */
+char* get_absolute_path( const char* filename );
+
+/*! \brief Allocates memory for and gets the relative pathname for a given absolute filename. */
+char* get_relative_path( const char* abs_path );
+
 /*! \brief Returns TRUE if the specified directory exists. */
 bool directory_exists( const char* dir );
 
@@ -213,6 +219,10 @@ void gen_exclusion_id(
 
 /*
  $Log$
+ Revision 1.46  2008/08/28 04:37:18  phase1geo
+ Starting to add support for exclusion output and exclusion IDs to generated
+ reports.  These changes should break regressions.  Checkpointing.
+
  Revision 1.45  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify
