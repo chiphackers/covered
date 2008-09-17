@@ -178,20 +178,11 @@ static void merge_parse_args(
 
     } else {
 
-      char file[4096];
-
-      /* Create absolute filename */
-      if( getcwd( file, 4096 ) != -1 ) {
-        assert( strlen( argv[i] ) <= (4094 - strlen( file )) );
-        strncat( file, "/", 1 );
-        strncat( file, argv[i], (4094 - strlen( file )) ); 
-      } else {
-        print_output( "Unable to get current working directory", FATAL, __FILE__, __LINE__ );
-        Throw 0;
-      }
-
       /* The name of a file to merge */
-      if( file_exists( file ) ) {
+      if( file_exists( argv[i] ) ) {
+
+        /* Create absolute filename */
+        char* file = get_absolute_path( argv[i] );
 
         /* If we have not specified a merge file explicitly, set it implicitly to the first CDD file found */
         if( (merge_in_head == NULL) && (merged_file == NULL) ) {
@@ -199,7 +190,7 @@ static void merge_parse_args(
         }
 
         /* Add the specified merge file to the list */
-        (void)str_link_add( strdup_safe( file ), &merge_in_head, &merge_in_tail );
+        (void)str_link_add( file, &merge_in_head, &merge_in_tail );
 
       } else {
 
@@ -340,6 +331,9 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.57  2008/09/15 22:42:07  phase1geo
+ Fixing bug 2112509.
+
  Revision 1.56  2008/09/15 22:04:42  phase1geo
  Fixing bug 2112858.  Also added new exclude10.3.1 diagnostic which recreates
  bug 2112613 (this bug is not fixed yet, however).

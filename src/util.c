@@ -467,25 +467,24 @@ char* get_absolute_path(
   char*        abs_path = NULL;
   char*        tmp;
   char*        dir;
-  const char*  file;
   char         this_cwd[4096];
   char*        srv;
   unsigned int irv;
 
   /* Get a copy of the filename and calculate its directory and basename */
-  tmp  = strdup_safe( filename );
-  dir  = get_dirname( tmp );
-  file = dir + strlen( dir ) + 1;
+  tmp = strdup_safe( filename );
+  dir = get_dirname( tmp );
 
   /* Get the original working directory so that we can return there */
   srv = getcwd( this_cwd, 4096 );
   assert( srv != NULL );
 
   /* If we have a directory to go to, change to the directory */
-  if( dir != file ) {
+  if( dir[0] != '\0' ) {
 
     char         cwd[4096];
     unsigned int slen;
+    char*        file = dir + strlen( dir ) + 1;
 
     /* Change to the specified directory */
     irv = chdir( dir );
@@ -507,10 +506,12 @@ char* get_absolute_path(
   /* Otherwise, the file is in this directory */
   } else {
 
-    unsigned int slen = strlen( this_cwd ) + strlen( file ) + 2;
+    unsigned int slen;
+
+    slen = strlen( this_cwd ) + strlen( filename ) + 2;
 
     abs_path = (char*)malloc_safe( slen );
-    irv      = snprintf( abs_path, slen, "%s/%s", this_cwd, file );
+    irv      = snprintf( abs_path, slen, "%s/%s", this_cwd, filename );
     assert( irv < slen );
 
   }
@@ -548,7 +549,7 @@ char* get_relative_path(
   while( (i < strlen( cwd )) && (i < strlen( abs_path )) && (abs_path[i] == cwd[i]) ) i++;
 
   /* We should have never gotten to the end of the absolute path */
-  assert( i == strlen( abs_path ) );
+  assert( i < strlen( abs_path ) );
 
   /*
    If the current working directory is completely a part of the absolute path, the relative pathname
@@ -1676,6 +1677,11 @@ void read_command_file(
 
 /*
  $Log$
+ Revision 1.104  2008/09/16 23:15:20  phase1geo
+ Adding initial versions of utility functions to calculate the relative and
+ absolute pathnames of files.  This functionality has not been tested and has
+ not been used in the code at this time.  Checkpointing.
+
  Revision 1.103  2008/09/15 03:43:49  phase1geo
  Cleaning up splint warnings.
 

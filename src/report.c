@@ -735,11 +735,15 @@ void report_print_header(
 
     if( merge_in_head == merge_in_tail ) {
 
+      char* file;
+
       fprintf( ofile, "* Report generated from CDD file that was merged from the following files with the following leading hierarchies:\n" );
       fprintf( ofile, "    Filename                                           Leading Hierarchy\n" );
       fprintf( ofile, "    -----------------------------------------------------------------------------------------------------------------\n" );
       fprintf( ofile, "    %-49.49s  %-62.62s\n", input_db,           db_list[curr_db]->leading_hierarchies[0] );
-      fprintf( ofile, "    %-49.49s  %-62.62s\n", merge_in_head->str, db_list[curr_db]->leading_hierarchies[1] ); 
+      file = get_relative_path( merge_in_head->str );
+      fprintf( ofile, "    %-49.49s  %-62.62s\n", file, db_list[curr_db]->leading_hierarchies[1] ); 
+      free_safe( file, (strlen( file ) + 1) );
 
       if( report_instance && db_list[curr_db]->leading_hiers_differ ) {
         fprintf( ofile, "\n* Merged CDD files contain different leading hierarchies, will use value \"<NA>\" to represent leading hierarchy.\n\n" );
@@ -755,7 +759,9 @@ void report_print_header(
 
       i = 1;
       while( strl != NULL ) {
-        fprintf( ofile, "    %-49.49s  %-62.62s\n", strl->str, db_list[curr_db]->leading_hierarchies[i++] );
+        char* file = get_relative_path( strl->str );
+        fprintf( ofile, "    %-49.49s  %-62.62s\n", file, db_list[curr_db]->leading_hierarchies[i++] );
+        free_safe( file, (strlen( file ) + 1) );
         strl = strl->next;
       }
 
@@ -1226,6 +1232,10 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.124  2008/09/16 13:00:17  phase1geo
+ Fixing some memory issues with the obfuscation functionality and minore
+ optimizations to this code.  Other insignificant updates.
+
  Revision 1.123  2008/09/16 04:51:10  phase1geo
  Fixing file removal in checkTest regression subroutine.  Also added code for
  regression testing that allows us to verify that reports get generated correctly.

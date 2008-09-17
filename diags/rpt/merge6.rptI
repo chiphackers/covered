@@ -15,10 +15,10 @@
 * Report generated from CDD file that was merged from the following files:
     Filename                                           Leading Hierarchy
     -----------------------------------------------------------------------------------------------------------------
-    merge6a.cdd                                        main                                                          
-    merge6b.cdd                                        main                                                          
-    merge6c.cdd                                        main                                                          
-    merge6d.cdd                                        main                                                          
+    merge6_1/merge6a.cdd                               main                                                          
+    merge6_1/merge6b.cdd                               main                                                          
+    merge6_2/merge6c.cdd                               main                                                          
+    merge6_2/merge6d.cdd                               main                                                          
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   LINE COVERAGE RESULTS   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

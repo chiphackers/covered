@@ -316,8 +316,10 @@ void merged_cdd_db_read(
 
     } else if( merge_in_num > 0 ) {
 
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "File %s in CDD file has been specified on the command-line", tmp1 );
+      char* file = get_relative_path( tmp1 );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "File %s in CDD file has been specified on the command-line", file );
       assert( rv < USER_MSG_LENGTH );
+      free_safe( file, (strlen( file ) + 1) );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       Throw 0;
 
@@ -367,6 +369,10 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
 /*
  $Log$
+ Revision 1.43  2008/09/16 13:00:17  phase1geo
+ Fixing some memory issues with the obfuscation functionality and minore
+ optimizations to this code.  Other insignificant updates.
+
  Revision 1.42  2008/09/16 04:51:10  phase1geo
  Fixing file removal in checkTest regression subroutine.  Also added code for
  regression testing that allows us to verify that reports get generated correctly.
