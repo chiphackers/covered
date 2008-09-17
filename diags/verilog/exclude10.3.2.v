@@ -1,28 +1,24 @@
 /*
- Name:        exclude10.3.v
+ Name:        exclude10.3.2.v
  Author:      Trevor Williams  (phase1geo@gmail.com)
- Date:        09/10/2008
+ Date:        09/17/2008
  Purpose:     See script for details.
 */
 
 module main;
 
-wire a, b, c;
-reg  d, e;
+wire a;
+reg  b, c;
 
-assign a = d & e;
-assign b = d | e;
-assign c = d ^ e;
+assign a = (b == c);
 
 initial begin
 `ifdef DUMP
-        $dumpfile( "exclude10.3.vcd" );
+        $dumpfile( "exclude10.3.2.vcd" );
         $dumpvars( 0, main );
 `endif
-	d = 1'b0;
-	e = 1'b0;
-	#5;
-	e = 1'b1;
+	b = 1'b0;
+	c = 1'b1;
         #10;
         $finish;
 end

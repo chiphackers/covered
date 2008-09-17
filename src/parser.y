@@ -6237,7 +6237,7 @@ event_control
       } else {
         $$ = NULL;
       }
-      free_safe( $2, (sizeof( $2 ) + 1) );
+      free_safe( $2, (strlen( $2 ) + 1) );
     }
   | '@' '(' event_expression_list ')'
     {
