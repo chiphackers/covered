@@ -424,3 +424,9 @@ sub convertCfg {
 
 }
 
+sub dequote {
+  local $_ = shift;
+  s/^\s*\@\@\@[ ]?//gm;
+  return $_;
+}
+

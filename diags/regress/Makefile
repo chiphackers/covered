@@ -54,7 +54,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 exclude9.8      exclude9.9      exclude10       exclude10.1     exclude10.2 \
                 exclude10.3     exclude10.3.1   exclude10.3.2   exclude10.3.3   exclude10.4 \
                 exclude11       exclude12       exclude12.1     exclude12.2     exclude12.3 \
-                exclude12.4     exclude12.6     expand1         expand2 \
+                exclude12.4     exclude12.6     exclude13       expand1         expand2 \
                 expand3         expand4 \
                 expand4.1       expand4.2       expand4.3       expand4.4       finish1 \
                 for1            for2            forever1        fork1           fork2 \

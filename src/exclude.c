@@ -1072,6 +1072,7 @@ char* exclude_format_reason(
 
   /* Take what's left in the str array and put it into the msg array */
   if( strlen( str ) > 0 ) {
+    printf( "msg_size: %d, str: %s, str_len: %d\n", msg_size, str, strlen( str ) );
     msg = (char*)realloc_safe( msg, msg_size, (msg_size + strlen( str ) + 1) );
     if( msg_size == 0 ) {
       msg[0] = '\0';
@@ -1682,6 +1683,9 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.42  2008/09/18 06:04:40  phase1geo
+ Adding more diagnostics to regression to cover exclude.c missed cases.
+
  Revision 1.41  2008/09/15 03:43:49  phase1geo
  Cleaning up splint warnings.
 
