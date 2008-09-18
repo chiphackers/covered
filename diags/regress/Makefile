@@ -53,7 +53,9 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 exclude9.3      exclude9.4      exclude9.5      exclude9.6      exclude9.7 \
                 exclude9.8      exclude9.9      exclude10       exclude10.1     exclude10.2 \
                 exclude10.3     exclude10.3.1   exclude10.3.2   exclude10.3.3   exclude10.4 \
-                exclude11       expand1         expand2         expand3         expand4 \
+                exclude11       exclude12       exclude12.1     exclude12.2     exclude12.3 \
+                exclude12.4     exclude12.5     exclude12.6     expand1         expand2 \
+                expand3         expand4 \
                 expand4.1       expand4.2       expand4.3       expand4.4       finish1 \
                 for1            for2            forever1        fork1           fork2 \
                 fsm3            fsm4            fsm4.1          fsm5            fsm5.1 \
@@ -136,7 +138,7 @@ ERRREPORT     = err7            err7.1          err8            err8.1          
                 err9            report_err1     report_err1.1   report_err1.2 \
                 report_err1.3   report_err1.4   report_err1.5   report_err1.6   report_err1.7 \
                 report_err1.8   report_help
-ERREXCLUDE    = exclude_err1    exclude_err1.1  exclude_err1.2  exclude_help
+ERREXCLUDE    = exclude_err1    exclude_err1.1  exclude_err1.2  exclude_err2    exclude_help
 
 NOSIMLIST     = gen1            gen1.1          gen1.3          gen1.4          gen1.5 \
                 gen2.1          gen3.1          gen4.1          gen5.1          gen6.1 \

@@ -1043,25 +1043,29 @@ char* exclude_format_reason(
 
   str[0] = '\0';
 
-  for( i=0; i<strlen( old_str ); i++ ) {
+  if( old_str != NULL ) {
 
-    c = old_str[i];
+    for( i=0; i<strlen( old_str ); i++ ) {
 
-    /* Convert any formatting characters to spaces */
-    c = ((c == '\n') || (c == '\t') || (c == '\r')) ? ' ' : c;
+      c = old_str[i];
 
-    /* If the user has specified multiple formatting characters together, ignore all but the first. */
-    if( (c != ' ') || !sp_just_seen ) {
-      sp_just_seen = (c == ' ') ? TRUE : FALSE;
-      str[(index % 100) + 0] = c;
-      str[(index % 100) + 1] = '\0';
-      if( ((index + 1) % 100) == 0 ) {
-        msg       = (char*)realloc_safe( msg, msg_size, (msg_size + 100) );
-        msg_size += 100;
-        strcat( msg, str );
-        str[0] = '\0';
+      /* Convert any formatting characters to spaces */
+      c = ((c == '\n') || (c == '\t') || (c == '\r')) ? ' ' : c;
+
+      /* If the user has specified multiple formatting characters together, ignore all but the first. */
+      if( (c != ' ') || !sp_just_seen ) {
+        sp_just_seen = (c == ' ') ? TRUE : FALSE;
+        str[(index % 100) + 0] = c;
+        str[(index % 100) + 1] = '\0';
+        if( ((index + 1) % 100) == 0 ) {
+          msg       = (char*)realloc_safe( msg, msg_size, (msg_size + 100) );
+          msg_size += 100;
+          strcat( msg, str );
+          str[0] = '\0';
+        }
+        index++;
       }
-      index++;
+
     }
 
   }
@@ -1167,7 +1171,7 @@ static void exclude_handle_exclude_reason(
 
     char* str = exclude_get_message( id );
 
-    if( strlen( str ) > 0 ) {
+    if( (str != NULL) && (strlen( str ) > 0) ) {
       exclude_add_exclude_reason( id[0], atoi( id + 1 ), str, funit );
     }
 
@@ -1678,6 +1682,9 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.41  2008/09/15 03:43:49  phase1geo
+ Cleaning up splint warnings.
+
  Revision 1.40  2008/09/13 13:04:47  phase1geo
  Moving exclusion ID of FSM from the arc transitions to the FSM itself (only one
  ID needed to be stored).  This improves on memory usage and performance when
