@@ -103,7 +103,7 @@ LOGFILE = regress.log
 
 .PHONY:	view_vg_errs check-ovl covered
 
-regress:	covered $(DIAGLIST) $(DIAG2LIST) $(RACELIST) $(MERGELIST) $(MERGE3LIST) $(ERRSCORELIST) $(ERRMERGELIST) $(NOSIMLIST) $(NOSIMERRLIST) $(ERRREPORTLIST)
+regress:	covered $(DIAGLIST) $(DIAG2LIST) $(RACELIST) $(MERGELIST) $(MERGE3LIST) $(ERRSCORELIST) $(ERRMERGELIST) $(NOSIMLIST) $(NOSIMERRLIST) $(ERRREPORTLIST) $(ERREXCLUDELIST)
 
 check-ovl:
 	@if test ! -h ovl; then \
@@ -397,6 +397,33 @@ $(ERRREPORTLIST):
 	@if test ! -f $@.done; then \
 		if test ! -f ../regress/$@.pl; then \
 			$(MAKE) DIAG=$@ errreportrun; \
+		else \
+			perl ../regress/$@.pl $(MAKEFLAGS); \
+		fi; \
+	else \
+		echo Skipping $@; \
+		./check_test $@ 1 2; \
+	fi
+
+errexcluderun:
+ifndef VPI
+	@echo Running $(DIAG) -- should see an error message
+	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
+ifndef USE_CVER
+	@$(VERILOG_CMD)
+endif
+	@./convert_cfg $(CFG_CMD) $(DIAG).cfg
+	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
+	$(COVERED) $(COVERED_GFLAG) exclude -p $(DIAG).cdd 2> $(DIAG).err $(CHECKMEM)
+	@rm -f $(DIAG).cfg
+	@cat $(DIAG).err
+	@./check_test $(DIAG) 1 1
+endif
+
+$(ERREXCLUDELIST):
+	@if test ! -f $@.done; then \
+		if test ! -f ../regress/$@.pl; then \
+			$(MAKE) DIAG=$@ errexcluderun; \
 		else \
 			perl ../regress/$@.pl $(MAKEFLAGS); \
 		fi; \

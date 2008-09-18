@@ -7,8 +7,7 @@
 
 module main;
 
-event a;
-reg   b;
+reg a, b;
 
 initial begin
 	@(posedge a);

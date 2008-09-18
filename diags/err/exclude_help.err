@@ -1,0 +1,15 @@
+
+Usage:  covered exclude (-h | ([<options>] <exclusion_ids>+ <database_file>)
+
+   -h                           Displays this help information.
+
+   Options:
+      -f <filename>             Name of file containing additional arguments to parse.
+      -m                        Allows a message to be associated with an exclusion.
+                                  The message should describe the reason why a coverage point
+                                  is being excluded.  If a coverage point is being included for
+                                  coverage (i.e., it was previously excluded from coverage), no
+                                  message prompt will be specified.
+      -p                        Outputs the status of the exclusion ID and an exclusion message
+                                  if one exists.  No excluding will occur if this option is set.
+
