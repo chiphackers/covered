@@ -54,7 +54,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 exclude9.8      exclude9.9      exclude10       exclude10.1     exclude10.2 \
                 exclude10.3     exclude10.3.1   exclude10.3.2   exclude10.3.3   exclude10.4 \
                 exclude11       exclude12       exclude12.1     exclude12.2     exclude12.3 \
-                exclude12.4     exclude12.5     exclude12.6     expand1         expand2 \
+                exclude12.4     exclude12.6     expand1         expand2 \
                 expand3         expand4 \
                 expand4.1       expand4.2       expand4.3       expand4.4       finish1 \
                 for1            for2            forever1        fork1           fork2 \
@@ -228,14 +228,14 @@ IVCVERDIAGS2  =
 IVCVERDIAGS3  =
 IVCVERDIAGS4  =
 
-IVVCSDIAGS1   = define3         exclude7.3      exclude10.5     generate2.1     generate4 \
-                generate4.1     generate5       generate5.1     generate5.2     generate5.3 \
-                generate8       generate10      generate10.1    generate10.2    generate11 \
-                generate11.1    generate11.2    generate11.3    hier3           localparam1 \
-                localparam1.1   localparam1.2   localparam1.3   localparam2     localparam3 \
-                mbit_sel5       mbit_sel5.1     mbit_sel5.2     mbit_sel5.3     mbit_sel6 \
-                mbit_sel6.1     mbit_sel6.2     mbit_sel6.3     mem4            mem4.1 \
-                nand1           nor1            ovl1            ovl1.1 \
+IVVCSDIAGS1   = define3         exclude7.3      exclude10.5     exclude12.5     generate2.1 \
+                generate4       generate4.1     generate5       generate5.1     generate5.2 \
+                generate5.3     generate8       generate10      generate10.1    generate10.2 \
+                generate11      generate11.1    generate11.2    generate11.3    hier3 \
+                localparam1     localparam1.1   localparam1.2   localparam1.3   localparam2 \
+                localparam3     mbit_sel5       mbit_sel5.1     mbit_sel5.2     mbit_sel5.3 \
+                mbit_sel6       mbit_sel6.1     mbit_sel6.2     mbit_sel6.3     mem4 \
+                mem4.1          nand1           nor1            ovl1            ovl1.1 \
                 ovl1.2          ovl1.3          param10.1       param10.5       port2 \
                 timescale1.1    timescale1.2    timescale1.3    timescale1.4    timescale1.5 \
                 timescale1.7    timescale1.8    timescale1.10   timescale1.11   timescale1.13 \
