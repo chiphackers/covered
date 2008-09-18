@@ -1496,6 +1496,9 @@ char* timer_to_string(
 
   static char str[33];  /* Minimal amount of space needed to store the current time */
 
+#ifdef TESTMODE
+  strcpy( str, "NA" );
+#else
   /* If the time is less than a minute, output the seconds and milliseconds */
   if( tm->total < 10 ) {
     /*@-duplicatequals -formattype@*/
@@ -1529,6 +1532,7 @@ char* timer_to_string(
     /*@=duplicatequals =formattype@*/
     assert( rv < 33 );
   }
+#endif
 
   return( str );
 
@@ -1677,6 +1681,11 @@ void read_command_file(
 
 /*
  $Log$
+ Revision 1.105  2008/09/17 04:55:46  phase1geo
+ Integrating new get_absolute_path and get_relative_path functions and
+ updating regressions.  Also fixed a few coding bugs with these new functions.
+ IV and Cver regressions fully pass at the moment.
+
  Revision 1.104  2008/09/16 23:15:20  phase1geo
  Adding initial versions of utility functions to calculate the relative and
  absolute pathnames of files.  This functionality has not been tested and has

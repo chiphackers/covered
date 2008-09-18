@@ -138,6 +138,7 @@ ERRREPORT     = err7            err7.1          err8            err8.1          
                 err9            report_err1     report_err1.1   report_err1.2 \
                 report_err1.3   report_err1.4   report_err1.5   report_err1.6   report_err1.7 \
                 report_err1.8   report_help
+ERRRANK       = rank_help
 ERREXCLUDE    = exclude_err1    exclude_err1.1  exclude_err1.2  exclude_err2    exclude_err3 \
                 exclude_err3.1  exclude_help
 
@@ -300,7 +301,7 @@ RACELIST     := $(filter-out $(NOLXTDIAGS), $(RACELIST))
 
 iverilog:
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS1)" DIAGLIST="$(DIAGS1) $(IVONLYDIAGS1) $(IVVCSDIAGS1) $(IVCVERDIAGS1)" DIAG2LIST="$(BDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" ERRSCORELIST="$(ERRSCORE)" ERRMERGELIST="$(ERRMERGE)" ERRREPORTLIST="$(ERRREPORT)" ERREXCLUDELIST="$(ERREXCLUDE)" RACELIST="$(RACELIST)" NOSIMLIST="$(NOSIMLIST)" NOSIMERRLIST="$(NOSIMERRLIST)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS1)" DIAGLIST="$(DIAGS1) $(IVONLYDIAGS1) $(IVVCSDIAGS1) $(IVCVERDIAGS1)" DIAG2LIST="$(BDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" ERRSCORELIST="$(ERRSCORE)" ERRMERGELIST="$(ERRMERGE)" ERRREPORTLIST="$(ERRREPORT)" ERRRANKLIST="$(ERRRANK)" ERREXCLUDELIST="$(ERREXCLUDE)" RACELIST="$(RACELIST)" NOSIMLIST="$(NOSIMLIST)" NOSIMERRLIST="$(NOSIMERRLIST)" regress
 	@cd ../verilog; \
 	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS2)" DIAGLIST="$(DIAGS2) $(IVONLYDIAGS2) $(IVVCSDIAGS2) $(IVCVERDIAGS2)" regress
 	@cd ../verilog; \

@@ -103,7 +103,7 @@ LOGFILE = regress.log
 
 .PHONY:	view_vg_errs check-ovl covered
 
-regress:	covered $(DIAGLIST) $(DIAG2LIST) $(RACELIST) $(MERGELIST) $(MERGE3LIST) $(ERRSCORELIST) $(ERRMERGELIST) $(NOSIMLIST) $(NOSIMERRLIST) $(ERRREPORTLIST) $(ERREXCLUDELIST)
+regress:	covered $(DIAGLIST) $(DIAG2LIST) $(RACELIST) $(MERGELIST) $(MERGE3LIST) $(ERRSCORELIST) $(ERRMERGELIST) $(NOSIMLIST) $(NOSIMERRLIST) $(ERRREPORTLIST) $(ERRRANKLIST) $(ERREXCLUDELIST)
 
 check-ovl:
 	@if test ! -h ovl; then \
@@ -398,6 +398,16 @@ $(ERRREPORTLIST):
 		if test ! -f ../regress/$@.pl; then \
 			$(MAKE) DIAG=$@ errreportrun; \
 		else \
+			perl ../regress/$@.pl $(MAKEFLAGS); \
+		fi; \
+	else \
+		echo Skipping $@; \
+		./check_test $@ 1 2; \
+	fi
+
+$(ERRRANKLIST):
+	@if test ! -f $@.done; then \
+		if test -f ../regress/$@.pl; then \
 			perl ../regress/$@.pl $(MAKEFLAGS); \
 		fi; \
 	else \

@@ -1,0 +1,37 @@
+
+Covered covered-20080826 -- Verilog Code Coverage Utility
+Written by Trevor Williams  (phase1geo@gmail.com)
+Freely distributable under the GPL license
+
+Reading CDD file "rank2a.cdd"
+Reading CDD file "rank2b.cdd"
+Reading CDD file "rank2c.cdd"
+Completed reading in CDD files in NA
+
+Ranking 3 CDD files with 17 coverage points (2 line, 8 toggle, 0 memory, 7 logic, 0 FSM, 0 assertion)
+Ignoring 4 coverage points that were not hit by any CDD file
+
+Phase 1:  Adding user-required files
+  Ranked 0 CDD files (Total ranked: 0, Remaining: 3)
+  0 points covered, 13 points remaining
+Completed phase 1 in NA
+
+Phase 2:  Adding files that hit unique coverage points
+  Ranked 1 CDD files (Total ranked: 1, Remaining: 2)
+  9 points covered, 4 points remaining
+Completed phase 2 in NA
+
+Phase 3:  Adding files that hit remaining coverage points and eliminating redundant files
+  Ranked 1 CDD files (Total ranked: 2, Eliminated: 1)
+  13 points covered, 0 points remaining
+Completed phase 3 in NA
+
+Phase 4:  Sorting CDD files selected for ranking (no reductions)
+Completed phase 4 in NA
+
+SUMMARY:  Reduced 3 CDD files down to 2 needed/required
+
+Generating report file "rank2.rpt"...
+
+Dynamic memory allocated:   2843 bytes
+
