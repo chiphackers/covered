@@ -10,6 +10,7 @@ require "../verilog/regress_subs.pl";
 
 # Perform diagnostic running code here
 &runReportCommand( "-m 2> report_err1.err" );
+system( "cat report_err1.err" ) && die;
 
 # Perform the file comparison checks
 &checkTest( "report_err1", 1, 1 );
