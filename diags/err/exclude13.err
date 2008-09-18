@@ -1,0 +1,6 @@
+Exclusion ID: L10, Status: EXCLUDED
+
+  This is a very long exclusion message.  I don't know why I need to make this reason so long but 
+  it's the only way to verify that Covered can handle the long exclusion message.  Hopefully, 
+  there's no problem with it! 
+

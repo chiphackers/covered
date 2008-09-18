@@ -1033,15 +1033,17 @@ char* exclude_format_reason(
   const char* old_str  /*!< Pointer to string that needs to be formatted */
 ) { PROFILE(EXCLUDE_FORMAT_REASON);
 
-  char*        msg          = NULL;  /* Pointer to the reformatted message */
-  unsigned int msg_size     = 0;     /* Current size of message array */
+  char*        msg;                  /* Pointer to the reformatted message */
+  unsigned int msg_size;             /* Current size of message array */
   char         c;                    /* Current character */
   bool         sp_just_seen = TRUE;  /* Set to TRUE if a space character was just seen */
-  char         str[101];             /* Temporary string */
+  char         str[100];             /* Temporary string */
   unsigned int i;                    /* Loop iterator */
   unsigned int index        = 0;     /* Index into str array to store next character */
 
-  str[0] = '\0';
+  msg      = strdup_safe( "" );
+  msg_size = 1;
+  str[0]   = '\0';
 
   if( old_str != NULL ) {
 
@@ -1055,11 +1057,11 @@ char* exclude_format_reason(
       /* If the user has specified multiple formatting characters together, ignore all but the first. */
       if( (c != ' ') || !sp_just_seen ) {
         sp_just_seen = (c == ' ') ? TRUE : FALSE;
-        str[(index % 100) + 0] = c;
-        str[(index % 100) + 1] = '\0';
-        if( ((index + 1) % 100) == 0 ) {
-          msg       = (char*)realloc_safe( msg, msg_size, (msg_size + 100) );
-          msg_size += 100;
+        str[(index % 99) + 0] = c;
+        str[(index % 99) + 1] = '\0';
+        if( ((index + 1) % 99) == 0 ) {
+          msg = (char*)realloc_safe( msg, msg_size, (msg_size + strlen( str )) );
+          msg_size += strlen( str );
           strcat( msg, str );
           str[0] = '\0';
         }
@@ -1072,11 +1074,7 @@ char* exclude_format_reason(
 
   /* Take what's left in the str array and put it into the msg array */
   if( strlen( str ) > 0 ) {
-    printf( "msg_size: %d, str: %s, str_len: %d\n", msg_size, str, strlen( str ) );
-    msg = (char*)realloc_safe( msg, msg_size, (msg_size + strlen( str ) + 1) );
-    if( msg_size == 0 ) {
-      msg[0] = '\0';
-    }
+    msg = (char*)realloc_safe( msg, msg_size, (msg_size + strlen( str )) );
     strcat( msg, str );
     msg[strlen(msg)] = '\0';
   }
@@ -1094,13 +1092,13 @@ static char* exclude_get_message(
   const char* eid  /*!< Exclusion ID to get message for */
 ) { PROFILE(EXCLUDED_GET_MESSAGE);
 
-  char*        msg          = NULL;  /* Pointer to the message from the user */
-  int          msg_size     = 0;     /* The current size of the specified message */
+  char*        msg;                  /* Pointer to the message from the user */
+  unsigned int msg_size;             /* The current size of the specified message */
   char         c;                    /* Current character */
   bool         nl_just_seen = TRUE;  /* Set to TRUE if a newline was just seen */
   bool         sp_just_seen = TRUE;  /* Set to TRUE if a space character was just seen */
   int          index        = 0;     /* Current string index */
-  char         str[101];
+  char         str[100];
   char*        formatted_msg;        /* Formatted message */
   unsigned int rv;
 
@@ -1108,7 +1106,9 @@ static char* exclude_get_message(
   assert( rv < USER_MSG_LENGTH );
   print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
-  str[0] = '\0';
+  msg      = strdup_safe( "" );
+  msg_size = 1;
+  str[0]   = '\0';
 
   while( ((c = (char)getchar()) != EOF) && ((c != '.') || !nl_just_seen) ) {
 
@@ -1116,16 +1116,16 @@ static char* exclude_get_message(
     nl_just_seen = (c == '\n') ? TRUE : FALSE;
 
     /* Place the read character into the temporary string */
-    str[(index % 100) + 0] = c;
-    str[(index % 100) + 1] = '\0';
+    str[(index % 99) + 0] = c;
+    str[(index % 99) + 1] = '\0';
 
     /*
      If the temporary string has been filled, realloc the msg and append the contents of the the temporary array to this newly
      allocated array.
     */
-    if( ((index + 1) % 100) == 0 ) {
-      msg       = (char*)realloc_safe( msg, msg_size, (msg_size + 100) );
-      msg_size += 100;
+    if( ((index + 1) % 99) == 0 ) {
+      msg = (char*)realloc_safe( msg, msg_size, (msg_size + strlen( str )) );
+      msg_size += strlen( str );
       strcat( msg, str );
     }
 
@@ -1134,10 +1134,7 @@ static char* exclude_get_message(
   }
 
   if( strlen( str ) > 0 ) {
-    msg = (char*)realloc_safe( msg, msg_size, (msg_size + strlen( str ) + 1) );
-    if( msg_size == 0 ) {
-      msg[0] = '\0';
-    }
+    msg = (char*)realloc_safe( msg, msg_size, (msg_size + strlen( str )) );
     strcat( msg, str );
     msg[strlen(msg)-1] = '\0';
   }
@@ -1147,7 +1144,7 @@ static char* exclude_get_message(
   /* Now reformat the message */
   formatted_msg = exclude_format_reason( msg );
 
-  free_safe( msg, (strlen( msg ) + 2) );
+  free_safe( msg, (strlen( msg ) + ((strlen( str ) > 0) ? 2 : 1)) );
 
   PROFILE_END;
 
@@ -1174,6 +1171,8 @@ static void exclude_handle_exclude_reason(
 
     if( (str != NULL) && (strlen( str ) > 0) ) {
       exclude_add_exclude_reason( id[0], atoi( id + 1 ), str, funit );
+    } else {
+      free_safe( str, (strlen( str ) + 1) );
     }
 
   /*
@@ -1683,6 +1682,9 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.43  2008/09/18 14:18:36  phase1geo
+ Working on exclude13 diagnostic.  Not working quite yet.  Checkpointing.
+
  Revision 1.42  2008/09/18 06:04:40  phase1geo
  Adding more diagnostics to regression to cover exclude.c missed cases.
 
