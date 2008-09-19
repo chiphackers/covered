@@ -836,6 +836,7 @@ profiler profiles[NUM_PROFILES] = {
   {"funit_size_elements", NULL, 0, 0, 0, TRUE},
   {"funit_db_write", NULL, 0, 0, 0, TRUE},
   {"funit_db_read", NULL, 0, 0, 0, TRUE},
+  {"funit_version_db_read", NULL, 0, 0, 0, TRUE},
   {"funit_db_merge", NULL, 0, 0, 0, TRUE},
   {"funit_merge", NULL, 0, 0, 0, TRUE},
   {"funit_flatten_name", NULL, 0, 0, 0, TRUE},

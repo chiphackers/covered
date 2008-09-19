@@ -68,6 +68,12 @@ void funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
            and adds to functional unit list. */
 void funit_db_read( func_unit* funit, /*@out@*/char* scope, char** line );
 
+/*! \brief Reads the functional unit version information from the functional unit line and adds it to the current functional unit */
+void funit_version_db_read(
+  func_unit* funit,
+  char**     line
+);
+
 /*! \brief Merges two functional units into the base functional unit. */
 void funit_merge(
   func_unit* base,
@@ -130,6 +136,11 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.37  2008/04/15 06:08:46  phase1geo
+ First attempt to get both instance and module coverage calculatable for
+ GUI purposes.  This is not quite complete at the moment though it does
+ compile.
+
  Revision 1.36  2008/02/29 00:08:31  phase1geo
  Completed optimization code in simulator.  Still need to verify that code
  changes enhanced performances as desired.  Checkpointing.

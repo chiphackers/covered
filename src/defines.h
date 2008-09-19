@@ -266,6 +266,11 @@
 */
 #define DB_TYPE_EXCLUDE      13
 
+/*!
+ Specifies a version ID for a functional unit (based on the associated file version).
+*/
+#define DB_TYPE_FUNIT_VERSION 14
+
 /*! @} */
 
 /*!
@@ -2418,6 +2423,7 @@ struct func_unit_s {
                                           Legal values are defined in \ref func_unit_types */
   char*           name;              /*!< Functional unit name */
   char*           filename;          /*!< File name where functional unit exists */
+  char*           version;           /*!< Version information for functional unit (if one exists) */
   int             start_line;        /*!< Starting line number of functional unit in its file */
   int             end_line;          /*!< Ending line number of functional unit in its file */
   int             ts_unit;           /*!< Timescale unit value */
@@ -2895,6 +2901,11 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.312  2008/09/13 13:04:47  phase1geo
+ Moving exclusion ID of FSM from the arc transitions to the FSM itself (only one
+ ID needed to be stored).  This improves on memory usage and performance when
+ searching for exclusions.
+
  Revision 1.311  2008/09/06 05:59:45  phase1geo
  Adding assertion exclusion reason support and have most code implemented for
  FSM exclusion reason support (still working on debugging this code).  I believe

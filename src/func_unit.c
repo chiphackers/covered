@@ -69,6 +69,7 @@ static void funit_init(
   funit->type       = FUNIT_MODULE;
   funit->name       = NULL;
   funit->filename   = NULL;
+  funit->version    = NULL;
   funit->start_line = 0;
   funit->end_line   = 0;
   funit->stat       = NULL;
@@ -593,6 +594,11 @@ void funit_db_write(
     );
     /*@=duplicatequals =formattype@*/
 
+    /* If a version was specified for this functional unit, write it now */
+    if( funit->version != NULL ) {
+      fprintf( file, "%d %s\n", DB_TYPE_FUNIT_VERSION, funit->version );
+    }
+
     /* Now print all expressions in functional unit */
     curr_exp = funit->exp_head;
     while( curr_exp != NULL ) {
@@ -726,6 +732,27 @@ void funit_db_read(
 }
 
 /*!
+ Reads in the functional unit version information from the specified CDD line.
+*/
+void funit_version_db_read(
+  func_unit* funit,  /*!< Pointer to current functional unit to read version into */
+  char**     line    /*!< Pointer to current line to parse */
+) { PROFILE(FUNIT_VERSION_DB_READ);
+
+  /* The current functional unit version must not have already been set */
+  assert( funit->version == NULL );
+
+  /* Strip the leading whitespace */
+  while( **line == ' ' ) (*line)++;
+  
+  /* The rest of the line will be the version information (internal whitespace is allowed) */
+  funit->version = strdup_safe( *line );
+
+  PROFILE_END;
+
+}
+
+/*!
  \throws anonymous fsm_db_merge Throw Throw expression_db_merge vsignal_db_merge
 
  Parses specified line for functional unit information and performs a merge of the two 
@@ -752,6 +779,36 @@ void funit_db_merge(
 
   assert( base != NULL );
   assert( base->name != NULL );
+
+  /* Handle the functional unit version, if specified */
+  if( base->version != NULL ) {
+    if( util_readline( file, &curr_line, &curr_line_size ) ) {
+      Try {
+        if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
+          rest_line = curr_line + chars_read;
+          if( type == DB_TYPE_FUNIT_VERSION ) {
+            while( *rest_line == ' ' ) rest_line++;
+            if( strcmp( base->version, rest_line ) != 0 ) {
+              print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+              Throw 0;
+            }
+          } else {
+            print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+            Throw 0;
+          }
+        } else {
+          print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+          Throw 0;
+        }
+      } Catch_anonymous {
+        free_safe( curr_line, curr_line_size );
+        Throw 0;
+      }
+    } else {
+      print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
+      Throw 0;
+    }
+  }
 
   /* Handle all functional unit expressions */
   curr_base_exp = base->exp_head;
@@ -1489,6 +1546,10 @@ void funit_dealloc(
 
 /*
  $Log$
+ Revision 1.109  2008/09/02 22:41:45  phase1geo
+ Starting to work on adding exclusion reason output to report files.  Added
+ support for exclusion reasons to CDD files.  Checkpointing.
+
  Revision 1.108  2008/08/18 23:07:26  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify
