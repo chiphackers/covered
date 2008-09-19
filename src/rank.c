@@ -572,6 +572,13 @@ static void rank_parse_args(
 
       rank_verbose = TRUE;
 
+    } else if( strncmp( "-", argv[i], 1 ) == 0 ) {
+
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown rank option (%s) specified.", argv[i] );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      Throw 0;
+
     } else {
 
       /* The name of a file to rank */
@@ -1792,6 +1799,9 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.9  2008/09/15 04:18:03  phase1geo
+ Adding rank.c to splint checker and cleaned up all splint warnings with this file.
+
  Revision 1.8  2008/09/02 05:20:41  phase1geo
  More updates for exclude command.  Updates to CVER regression.
 
@@ -1814,6 +1824,9 @@ void command_rank(
  that the GUI stuff works properly.
 
  $Log$
+ Revision 1.9  2008/09/15 04:18:03  phase1geo
+ Adding rank.c to splint checker and cleaned up all splint warnings with this file.
+
  Revision 1.8  2008/09/02 05:20:41  phase1geo
  More updates for exclude command.  Updates to CVER regression.
 

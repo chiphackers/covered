@@ -10,7 +10,6 @@ require "../verilog/regress_subs.pl";
 
 # Perform diagnostic running code here
 &runRankCommand( "-h 2> rank_help.err" );
-system( "cat rank_help.err" ) && die;
 
 # Perform the file comparison checks
 &checkTest( "rank_help", 1, 1 );

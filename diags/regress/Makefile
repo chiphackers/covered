@@ -138,7 +138,11 @@ ERRREPORT     = err7            err7.1          err8            err8.1          
                 err9            report_err1     report_err1.1   report_err1.2 \
                 report_err1.3   report_err1.4   report_err1.5   report_err1.6   report_err1.7 \
                 report_err1.8   report_help
-ERRRANK       = rank_help
+ERRRANK       = rank_err1       rank_err1.1     rank_err2       rank_err2.1     rank_err3 \
+                rank_err4       rank_err4.1     rank_err4.2     rank_err4.3     rank_err5 \
+                rank_err5.1     rank_err6       rank_err7       rank_err7.1     rank_err8 \
+                rank_err8.1     rank_err9       rank_err9.1     rank_err10      rank_err10.1 \
+                rank_err11      rank_err11.1    rank_err12      rank_err12.1    rank_help
 ERREXCLUDE    = exclude_err1    exclude_err1.1  exclude_err1.2  exclude_err2    exclude_err3 \
                 exclude_err3.1  exclude_help
 
