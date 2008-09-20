@@ -36,6 +36,8 @@
   <xsl:param name="base.dir" select="'../html/'"/>
   <xsl:param name="toc.max.depth" select="2"/>
   <xsl:param name="html.stylesheet" select="'covered.css'"/>
+  <xsl:param name="header.image.filename" select="'img/banner.jpg'"/>
+  <xsl:param name="region.before.extent" select="100"/>
 
   <!-- Customized templates -->
   <xsl:template name="body.attributes">

@@ -50,7 +50,7 @@ img_DATA = html/img/app_menu.gif \
            html/img/assert_excl.gif \
            html/img/assert_src.gif \
            html/img/assert_window.gif \
-           html/img/banner.gif \
+           html/img/banner.jpg \
            html/img/close_warn.gif \
            html/img/col_show_hide.gif \
            html/img/comb_complex.gif \
