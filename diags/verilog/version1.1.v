@@ -19,7 +19,7 @@ end
 
 initial begin
 `ifdef DUMP
-        $dumpfile( "version1.vcd" );
+        $dumpfile( "version1.1.vcd" );
         $dumpvars( 0, main );
 `endif
         #10;
