@@ -9,6 +9,8 @@
 
 module main;
 
+reg a, b;
+
 foo_mod mod( a, b );
 
 initial begin
