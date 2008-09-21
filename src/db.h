@@ -73,8 +73,14 @@ char* db_gen_exclusion_id(
 /*! \brief Creates a scope name for an unnamed scope.  Called only during parsing. */
 char* db_create_unnamed_scope();
 
-/*! Returns TRUE if the given scope is an unnamed scope name; otherwise, returns FALSE. */
+/*! \brief Returns TRUE if the given scope is an unnamed scope name; otherwise, returns FALSE. */
 bool db_is_unnamed_scope( char* scope );
+
+/*! \brief Adds the given filename and version information to the database. */
+void db_add_file_version(
+  const char* file,
+  const char* version
+);
 
 /*! \brief Adds specified functional unit node to functional unit tree.  Called by parser. */
 func_unit* db_add_instance( char* scope, char* name, int type, vector_width* range );
@@ -214,6 +220,10 @@ bool db_do_timestep( uint64 time, bool final );
 
 /*
  $Log$
+ Revision 1.93  2008/08/28 21:24:14  phase1geo
+ Adding support for exclusion output for assertions.  Updated regressions accordingly.
+ Checkpointing.
+
  Revision 1.92  2008/08/28 04:37:17  phase1geo
  Starting to add support for exclusion output and exclusion IDs to generated
  reports.  These changes should break regressions.  Checkpointing.

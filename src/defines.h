@@ -2864,6 +2864,8 @@ struct db_s {
   inst_link*  inst_tail;             /*!< Pointer to tail of instance tree list */
   funit_link* funit_head;            /*!< Pointer to head of functional unit list */
   funit_link* funit_tail;            /*!< Pointer to tail of functional unit list */
+  str_link*   fver_head;             /*!< Pointer to head of file version list */
+  str_link*   fver_tail;             /*!< Pointer to head of file version list */
 };
 
 /*!
@@ -2901,6 +2903,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.313  2008/09/19 22:59:16  phase1geo
+ Adding initial support for module version information.  Verified that the new
+ code does not break existing regression.  Also added new Covered banner.
+
  Revision 1.312  2008/09/13 13:04:47  phase1geo
  Moving exclusion ID of FSM from the arc transitions to the FSM itself (only one
  ID needed to be stored).  This improves on memory usage and performance when

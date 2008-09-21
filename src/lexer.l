@@ -116,6 +116,11 @@ char* pragma_coverage_name = NULL;
 */
 char* pragma_racecheck_name = NULL;
 
+/*!
+ Saves file version information (if found) for the current file.
+*/
+char* file_version = NULL;
+
 /*@-unreachable@*/
 %}
 
@@ -927,6 +932,10 @@ static int yywrap() { PROFILE(LEXER_YYWRAP);
     rv = fclose( yyin );
     assert( rv == 0 );
   }
+
+  /* Clear the file version information (if found) */
+  free_safe( file_version, (strlen( file_version ) + 1) );
+  file_version = NULL;
   
   /* Delete the current buffer */
   yy_delete_buffer( YY_CURRENT_BUFFER );
@@ -1111,6 +1120,7 @@ void check_for_pragma(
 
     char* keyword = strdup_safe( comment );
     char* value   = strdup_safe( comment );
+    char* ptr;
     int   str_len = strlen( comment ) + 1;
 
     /* Get the keyword and value if this comment is a pragma */
@@ -1145,6 +1155,26 @@ void check_for_pragma(
         } else if( strcmp( value, "off" ) == 0 ) {
           ignore_racecheck_mode++;
         }
+
+      }
+
+    }
+
+    /* Attempt to check to see if we have an rcs version string */
+    if( (ptr = strstr( comment, "$Id:" )) != NULL ) {
+      
+      /* If the $Id string was found, extract the version information before the next $ (removing leading whitespace) */
+      if( sscanf( (ptr + 4), "%[^$]", value ) == 1 ) {
+
+        /* Remove trailing whitespace */
+        ptr = value + (strlen( value ) - 1);
+        while( (ptr > value) && ((*ptr == ' ') || (*ptr == '\t')) ) {
+          *ptr = '\0';
+          ptr--;
+        }
+
+        /* Save the file version information in the database */
+        db_add_file_version( yylloc.text, value );
 
       }
 

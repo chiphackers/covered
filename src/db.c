@@ -207,6 +207,8 @@ db* db_create() { PROFILE(DB_CREATE);
   new_db->inst_tail            = NULL;
   new_db->funit_head           = NULL;
   new_db->funit_tail           = NULL;
+  new_db->fver_head            = NULL;
+  new_db->fver_tail            = NULL;
   new_db->leading_hierarchies  = NULL;
   new_db->leading_hier_num     = 0;
   new_db->leading_hiers_differ = FALSE;
@@ -248,6 +250,11 @@ void db_close() { PROFILE(DB_CLOSE);
       free_safe( db_list[i]->leading_hierarchies[j], (strlen( db_list[i]->leading_hierarchies[j] ) + 1) );
     }
     free_safe( db_list[i]->leading_hierarchies, (sizeof( char* ) * db_list[i]->leading_hier_num) );
+
+    /* Deallocate the file version information */
+    str_link_delete_list( db_list[i]->fver_head );
+    db_list[i]->fver_head = NULL;
+    db_list[i]->fver_tail = NULL;
 
     /* Deallocate database structure */
     free_safe( db_list[i], sizeof( db ) );
@@ -354,8 +361,22 @@ void db_write(
 
       instl = db_list[curr_db]->inst_head;
       while( instl != NULL ) {
+
+        str_link* strl;
+
+        /*
+         If the file version information has not been set for this instance's functional unit and a file version
+         has been specified for this functional unit's file, set it now.
+        */
+        if( (instl->inst->funit->version == NULL) && ((strl = str_link_find( instl->inst->funit->filename, db_list[curr_db]->fver_head )) != NULL) ) {
+          instl->inst->funit->version = strdup_safe( strl->str2 );
+        }
+
+        /* Now write the instance */
         instance_db_write( instl->inst, db_handle, instl->inst->name, parse_mode, report_save );
+
         instl = instl->next;
+
       }
 
     } Catch_anonymous {
@@ -518,6 +539,13 @@ void db_read(
 
               /* Parse rest of line for race condition block info */
               race_db_read( &rest_line, curr_funit );
+
+            } else if( type == DB_TYPE_FUNIT_VERSION ) {
+
+              assert( !merge_mode );
+  
+              /* Parse rest of line for functional unit version information */
+              funit_version_db_read( curr_funit, &rest_line );
 
             } else if( type == DB_TYPE_FUNIT ) {
 
@@ -896,6 +924,24 @@ char* db_gen_exclusion_id(
 
   return( exclusion_id );
  
+}
+
+/*!
+ Adds the given filename and version information to the database.
+*/
+void db_add_file_version(
+  const char* file,    /*!< Name of file to set version information to */
+  const char* version  /*!< Name of file version */
+) { PROFILE(DB_ADD_FILE_VERSION);
+
+  str_link* strl;
+
+  /* Add the new file version information */
+  strl       = str_link_add( strdup_safe( file ), &(db_list[curr_db]->fver_head), &(db_list[curr_db]->fver_tail) );
+  strl->str2 = strdup_safe( version );
+
+  PROFILE_END;
+
 }
 
 /*!
@@ -3026,6 +3072,9 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.328  2008/09/15 03:43:49  phase1geo
+ Cleaning up splint warnings.
+
  Revision 1.327  2008/09/07 05:06:29  phase1geo
  Fixing regression bugs.  IV and Cver regressions now run cleanly again.
 

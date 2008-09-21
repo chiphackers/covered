@@ -1500,6 +1500,12 @@ static void funit_clean(
       funit->filename = NULL;
     }
 
+    /* Free functional unit version */
+    if( funit->version != NULL ) {
+      free_safe( funit->version, (strlen( funit->version ) + 1) );
+      funit->version = NULL;
+    }
+
     /* Free thread list, if available */
     if( funit->elem_type == 1 ) {
       thr_link* thrl = funit->elem.tlist->head;
@@ -1546,6 +1552,10 @@ void funit_dealloc(
 
 /*
  $Log$
+ Revision 1.110  2008/09/19 22:59:16  phase1geo
+ Adding initial support for module version information.  Verified that the new
+ code does not break existing regression.  Also added new Covered banner.
+
  Revision 1.109  2008/09/02 22:41:45  phase1geo
  Starting to work on adding exclusion reason output to report files.  Added
  support for exclusion reasons to CDD files.  Checkpointing.

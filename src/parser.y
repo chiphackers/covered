@@ -52,6 +52,7 @@ extern int    delay_expr_type;
 extern int    stmt_conn_id;
 extern int    gi_conn_id;
 extern isuppl info_suppl;
+extern char*  file_version;
 
 /* Functions from lexer */
 extern void lex_start_udp_table();
