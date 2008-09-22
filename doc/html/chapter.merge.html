@@ -24,6 +24,46 @@
                 Directory to search for CDD files to include.  This option is used in conjunction with the -ext option 
                 which specifies the file extension to use for determining which files in the directory are CDD files.
               </td></tr><tr><td>
+                -er (first|current|all|new|old)
+              </td><td>
+                <p>
+                  Specifies how to handle exclusion reason resolution.  If two or more CDD files being merged have exclusion
+                  reasons specified for the same coverage point, the exclusion reason needs to be resolved (unless it is the
+                  same string value).  If this option is not specified and a conflict is found, Covered will interactively
+                  request input for each exclusion as to how to handle it.  If this option is specified, it tells Covered
+                  how to handle all exclusion reason conflicts.  The values are as follows:
+                </p>
+                <p>
+                  </p><div class="table"><a name="table.merge.er.values"></a><p class="title"><b>Table 10.2. </b></p><div class="table-contents"><table border="1"><colgroup><col><col></colgroup><thead><tr><th>
+                            Value
+                          </th><th>
+                            Description
+                          </th></tr></thead><tbody><tr><td>
+                            first
+                          </td><td>
+                            The CDD file that contained the first occurence of the exclusion should use its reason in the
+                            merged CDD file.
+                          </td></tr><tr><td>
+                            last
+                          </td><td>
+                            The last CDD file that conflicts with a previous CDD file should use its reason in the merged
+                            CDD file.
+                          </td></tr><tr><td>
+                            all
+                          </td><td>
+                            All conflicting coverage points will merge their exclusion reason information into a single
+                            exclusion reason.
+                          </td></tr><tr><td>
+                            new
+                          </td><td>
+                            The newest exclusion reason should be used (all exclusion reasons are timestamped).
+                          </td></tr><tr><td>
+                            old
+                          </td><td>
+                            The oldest exclusion reason should be used (all exclusion reasons are timestamped).
+                          </td></tr></tbody></table></div></div><p><br class="table-break">
+                </p>
+              </td></tr><tr><td>
                 -ext <span class="emphasis"><em>extension</em></span>
               </td><td>
                 Used in conjunction with the -d option.  If no -ext options are specified on the command-line, the 
@@ -37,6 +77,11 @@
                 -h
               </td><td>
                 Outputs usage information for the merge command.
+              </td></tr><tr><td>
+                -m <span class="emphasis"><em>message</em></span>
+              </td><td>
+                Allows the user to specify information about this CDD file which can be most anything.  All messages
+                found in merged CDDs will not be included in the merged CDD file.
               </td></tr><tr><td>
                 -o <span class="emphasis"><em>filename</em></span>
               </td><td>

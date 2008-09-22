@@ -52,6 +52,81 @@
             </row>
             <row>
               <entry>
+                -er (first|last|all|new|old)
+              </entry>
+              <entry>
+                <para>
+                  Specifies how to handle exclusion reason resolution.  If two or more CDD files being merged have exclusion
+                  reasons specified for the same coverage point, the exclusion reason needs to be resolved (unless it is the
+                  same string value).  If this option is not specified and a conflict is found, Covered will interactively
+                  request input for each exclusion as to how to handle it.  If this option is specified, it tells Covered
+                  how to handle all exclusion reason conflicts.  The values are as follows:
+                </para>
+                <para>
+                  <table id="table.merge.er.values">
+                    <tgroup cols='2'>
+                      <thead>
+                        <row>
+                          <entry>
+                            Value
+                          </entry>
+                          <entry>
+                            Description
+                          </entry>
+                        </row>
+                      </thead>
+                      <tbody>
+                        <row>
+                          <entry>
+                            first
+                          </entry>
+                          <entry>
+                            The CDD file that contained the first occurence of the exclusion should use its reason in the
+                            merged CDD file.
+                          </entry>
+                        </row>
+                        <row>
+                          <entry>
+                            last
+                          </entry>
+                          <entry>
+                            The last CDD file that conflicts with a previous CDD file should use its reason in the merged
+                            CDD file.
+                          </entry>
+                        </row>
+                        <row>
+                          <entry>
+                            all
+                          </entry>
+                          <entry>
+                            All conflicting coverage points will merge their exclusion reason information into a single
+                            exclusion reason.
+                          </entry>
+                        </row>
+                        <row>
+                          <entry>
+                            new
+                          </entry>
+                          <entry>
+                            The newest exclusion reason should be used (all exclusion reasons are timestamped).
+                          </entry>
+                        </row>
+                        <row>
+                          <entry>
+                            old
+                          </entry>
+                          <entry>
+                            The oldest exclusion reason should be used (all exclusion reasons are timestamped).
+                          </entry>
+                        </row>
+                      </tbody>
+                    </tgroup>
+                  </table>
+                </para>
+              </entry>
+            </row>
+            <row>
+              <entry>
                 -ext <emphasis>extension</emphasis>
               </entry>
               <entry>
