@@ -392,6 +392,9 @@ void vsignal_db_merge(
 
     } else {
 
+      /* Make sure that the exclude bit is merged */
+      base->suppl.part.excluded |= suppl.part.excluded;
+
       i = 0;
       while( (i < (pdim_num + udim_num)) && (sscanf( *line, " %d %d%n", &msb, &lsb, &chars_read ) == 2) ) {
         *line = *line + chars_read;
@@ -759,6 +762,9 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.80  2008/09/15 23:01:39  phase1geo
+ Updating regressions per latest change.
+
  Revision 1.79  2008/08/28 04:37:18  phase1geo
  Starting to add support for exclusion output and exclusion IDs to generated
  reports.  These changes should break regressions.  Checkpointing.

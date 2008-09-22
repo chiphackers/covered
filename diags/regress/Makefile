@@ -120,7 +120,8 @@ DIAGS4        = delay1.3
 BDIAGS1       = bitwise1
 
 MERGE1        = merge1          merge3          merge4          merge5          merge6 \
-                merge6.1        fsm2            rank1           rank1.1
+                merge6.1        merge7          merge7.1        fsm2            rank1 \
+                rank1.1
 MERGE3        = merge2
 
 RACELIST      = race1           race1.1         race1.2         race2.1         race2.2 \

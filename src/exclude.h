@@ -141,6 +141,12 @@ void exclude_db_read(
   func_unit* curr_funit
 );
 
+/*! \brief Reads the given exclude reason from the specified line and merges its information with the base functional unit. */
+void exclude_db_merge(
+  func_unit* base,
+  char**     line
+);
+
 /*! \brief Allows the user to exclude coverage points from reporting. */
 void command_exclude(
   int          argc,
@@ -151,6 +157,10 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.12  2008/09/04 21:34:20  phase1geo
+ Completed work to get exclude reason support to work with toggle coverage.
+ Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
+
  Revision 1.11  2008/09/02 22:41:45  phase1geo
  Starting to work on adding exclusion reason output to report files.  Added
  support for exclusion reasons to CDD files.  Checkpointing.

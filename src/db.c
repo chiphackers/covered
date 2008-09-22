@@ -530,10 +530,12 @@ void db_read(
 
             } else if( type == DB_TYPE_EXCLUDE ) {
 
-              assert( !merge_mode );
-
               /* Parse rest of line for exclude info */
-              exclude_db_read( &rest_line, curr_funit );
+              if( merge_mode ) {
+                exclude_db_merge( foundinst->funit, &rest_line );
+              } else {
+                exclude_db_read( &rest_line, curr_funit );
+              }
 
             } else if( type == DB_TYPE_RACE ) {
 
@@ -3074,6 +3076,9 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.330  2008/09/22 04:19:53  phase1geo
+ Fixing bug 2122019.  Also adding exclusion reason timestamp support to CDD files.
+
  Revision 1.329  2008/09/21 13:36:59  phase1geo
  Completing code to get functional unit version information into CDD file and
  functional units.  Added new version1 and version1.1 diagnostics to verify that

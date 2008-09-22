@@ -11,6 +11,17 @@ Usage:  covered merge (-h | [<options>] <existing_database> <database_to_merge>+
       -d <directory>          Directory to search for CDD files to include.  This option is used in
                                 conjunction with the -ext option which specifies the file extension
                                 to use for determining which files in the directory are CDD files.
+      -er <value>             Specifies how to handle exclusion reason resolution.  If two or more CDD files being
+                                merged have exclusion reasons specified for the same coverage point, the exclusion
+                                reason needs to be resolved (unless it is the same string value).  If this option
+                                is not specified and a conflict is found, Covered will interactively request input
+                                for each exclusion as to how to handle it.  If this option is specified, it tells
+                                Covered how to handle all exclusion reason conflicts.  The values are as follows:
+                                  first - CDD file that contained the first exclusion reason is used.
+                                  last  - CDD file that contained the last exclusion reason is used.
+                                  all   - All exclusion reasons are used (concatenated).
+                                  new   - Use the newest exclusion reason specified.
+                                  old   - Use the oldest exclusion reason specified.
       -ext <extension>        Used in conjunction with the -d option.  If no -ext options are specified
                                 on the command-line, the default value of '.cdd' is used.  Note that
                                 a period (.) should be specified.

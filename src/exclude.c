@@ -22,6 +22,7 @@
 #include "arc.h"
 #include "assertion.h"
 #include "comb.h"
+#include "db.h"
 #include "defines.h"
 #include "exclude.h"
 #include "expr.h"
@@ -42,6 +43,7 @@ extern db**         db_list;
 extern unsigned int curr_db;
 extern isuppl       info_suppl;
 extern char         user_msg[USER_MSG_LENGTH];
+extern int          merge_er_value;
 
 /*!
  Name of CDD file that will be read, modified with exclusion modifications and written back.
@@ -69,6 +71,9 @@ static bool exclude_prompt_for_msgs = FALSE;
  TRUE via the -p option.
 */
 static bool exclude_print = FALSE;
+
+
+static char* exclude_get_message( const char* eid );
 
 
 /*!
@@ -957,6 +962,173 @@ void exclude_db_read(
 }
 
 /*!
+ Resolves an exclusion reason conflict according to the merge option specified by the user.
+*/
+void exclude_resolve_reason(
+  exclude_reason* orig_er,       /*!< Pointer to the original exclusion reason structure */
+  func_unit*      orig_funit,    /*!< Pointer to the original functional unit */
+  int             resolution,    /*!< Type of resolution to perform */
+  const char*     new_reason,    /*!< Reason from new CDD file */
+  long            new_timestamp  /*!< Timestamp from new CDD file */
+) { PROFILE(EXCLUDE_RESOLVE_REASON);
+
+  unsigned int slen;
+  char*        eid;
+  char         c;
+ 
+  switch( resolution ) {
+
+    case MERGE_ER_NONE :
+      eid = db_gen_exclusion_id( orig_er->type, orig_er->id );
+      printf( "Exclusion reason conflict for %s\n", eid );
+      printf( "  Exclusion reason #1:\n" );
+      report_output_exclusion_reason( stdout, 4, orig_er->reason, FALSE );
+      printf( "  Exclusion reason #2:\n" );
+      report_output_exclusion_reason( stdout, 4, new_reason, FALSE );
+      printf( "Choose an exclusion reason to use (none, 1, 2, both, rewrite, abort): " );
+      c = (char)getchar();
+      while( (char)getchar() != EOF );
+      switch( (char)getchar() ) {
+        case 'n' :
+          exclude_remove_exclude_reason( orig_er->type, orig_er->id, orig_funit );
+          break;
+        case '1' :
+          /* No need to do anything */
+          break;
+        case '2' :
+          exclude_resolve_reason( orig_er, orig_funit, MERGE_ER_LAST, new_reason, new_timestamp );
+          break;
+        case 'b' :
+          exclude_resolve_reason( orig_er, orig_funit, MERGE_ER_ALL, new_reason, new_timestamp );
+          break;
+        case 'r' :
+          free_safe( orig_er->reason, (strlen( orig_er->reason ) + 1) );
+          orig_er->reason = exclude_get_message( eid );
+          break;
+        case 'a' :
+          Throw 0;
+          break;
+      }
+      free_safe( eid, (strlen( eid ) + 1) );
+      break;
+
+    case MERGE_ER_FIRST :
+      /* Do nothing.  The first message is already in the base. */
+      break;
+
+    case MERGE_ER_LAST :
+      free_safe( orig_er->reason, (strlen( orig_er->reason ) + 1) );
+      orig_er->reason = strdup_safe( new_reason );
+      break;
+
+    case MERGE_ER_ALL :
+      slen = strlen( orig_er->reason ) + 1 + strlen( new_reason ) + 1;
+      if( orig_er->reason[strlen( orig_er->reason ) - 1] != '.' ) {
+        slen++;
+      }
+      orig_er->reason = (char*)realloc_safe( orig_er->reason, (strlen( orig_er->reason ) + 1), slen );
+      if( orig_er->reason[strlen( orig_er->reason ) - 1] != '.' ) {
+        strcat( orig_er->reason, "." );
+      }
+      strcat( orig_er->reason, " " );
+      strcat( orig_er->reason, new_reason );
+      break;
+
+    case MERGE_ER_NEW :
+      if( orig_er->timestamp < new_timestamp ) {
+        free_safe( orig_er->reason, (strlen( orig_er->reason ) + 1) );
+        orig_er->reason = strdup_safe( new_reason );
+      }
+      break;
+
+    case MERGE_ER_OLD :
+      if( orig_er->timestamp > new_timestamp ) {
+        free_safe( orig_er->reason, (strlen( orig_er->reason ) + 1) );
+        orig_er->reason = strdup_safe( new_reason );
+      }
+      break;
+
+    default :
+      assert( 0 );
+      break;
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Reads the given exclude reason structure information from the line read from the CDD file.
+*/
+void exclude_db_merge(
+  func_unit* base,  /*!< Pointer to base functional unit to merge into */
+  char**     line   /*!< Pointer to the line read from the CDD file */
+) { PROFILE(EXCLUDE_DB_MERGE);
+
+  char   type;        /* Specifies the type of exclusion this structure represents */
+  int    id;          /* ID of signal/expression/FSM */
+  int    chars_read;  /* Number of characters read from line */
+  time_t timestamp;   /* Reason timestamp */
+  char*  reason;      /* Pointer to the exclusion reason from the CDD file */
+
+  if( sscanf( *line, " %c %d %ld%n", &type, &id, &timestamp, &chars_read ) == 3 ) {
+
+    exclude_reason* er;
+
+    *line = *line + chars_read;
+
+    /* Get the reason string and remove leading whitespace */
+    while( (*line)[0] == ' ' ) {
+      (*line)++;
+    }
+    reason = *line;
+    assert( reason != NULL );
+    assert( reason[0] != '\0' );
+
+    /* If the exclusion reason does not exist in the base CDD, go ahead and add it */
+    if( (er = exclude_find_exclude_reason( type, id, base )) == NULL ) {
+
+      /* Allocate and initialize the exclude reason structure */
+      er            = (exclude_reason*)malloc_safe( sizeof( exclude_reason ) );
+      er->type      = type;
+      er->id        = id;
+      er->timestamp = timestamp;
+      er->reason    = strdup_safe( reason );
+      er->next      = NULL;
+
+      /* Add the given exclude reason to the current functional unit list */
+      if( base->er_head == NULL ) {
+        base->er_head = base->er_tail = er;
+      } else {
+        base->er_tail->next = er;
+        base->er_tail       = er;
+      }
+ 
+    /* Otherwise, if the exclusion reason does exist, check for a conflict and handle it */
+    } else {
+
+      /*
+       If the exclusion reason string does not match the current string, resolve the conflict appropriately
+       (otherwise, just use the reason in the base functional unit).
+      */
+      if( strcmp( er->reason, reason ) != 0 ) {
+        exclude_resolve_reason( er, base, merge_er_value, reason, timestamp );
+      }
+
+    }
+
+  } else {
+
+    print_output( "CDD being read is not compatible with this version of Covered", FATAL, __FILE__, __LINE__ );
+    Throw 0;
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  \return Returns pointer to found signal if it was found; otherwise, returns NULL.
 */
 vsignal* exclude_find_signal(
@@ -1691,6 +1863,9 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.45  2008/09/22 04:19:54  phase1geo
+ Fixing bug 2122019.  Also adding exclusion reason timestamp support to CDD files.
+
  Revision 1.44  2008/09/18 21:55:21  phase1geo
  Fixing memory issues in exclude.c and adding missing exclude13.err file in
  regressions.

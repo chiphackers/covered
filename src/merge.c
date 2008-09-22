@@ -23,25 +23,6 @@
 #include "util.h"
 
 
-/*! Specifies that no -er option was specified on the merge command-line.  Interactively resolve exclusion reason conflicts. */
-#define MERGE_ER_NONE    0
-
-/*! Specifies that the first value was specified to the -er option.  Use the first exclusion reason found. */
-#define MERGE_ER_FIRST   1
-
-/*! Specifies that the last value was specified to the -er option.  Use the last exclusion reason found. */
-#define MERGE_ER_LAST    2
-
-/*! Specifies that the exclusion reasons should be merged. */
-#define MERGE_ER_ALL     3
-
-/*! Specified that the newest exclusion reasons should be used. */
-#define MERGE_ER_NEW     4
-
-/*! Specified that the oldest exclusion reasons should be used. */
-#define MERGE_ER_OLD     5
-
-
 extern db**         db_list;
 extern unsigned int curr_db;
 extern int          merged_code;
@@ -408,6 +389,9 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.60  2008/09/22 05:04:50  phase1geo
+ Adding parsing support for new -er option.
+
  Revision 1.59  2008/09/22 04:19:57  phase1geo
  Fixing bug 2122019.  Also adding exclusion reason timestamp support to CDD files.
 

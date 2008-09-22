@@ -312,6 +312,34 @@
 /*! @} */
 
 /*!
+ \addtogroup merge_exclusion_resolution_types Exclusion Merge Resolution Types
+
+ The following defines specify the various methods that can be used to globally resolve exclusion reason conflicts.
+
+ @{
+*/
+
+/*! Specifies that no -er option was specified on the merge command-line.  Interactively resolve exclusion reason conflicts. */
+#define MERGE_ER_NONE    0
+
+/*! Specifies that the first value was specified to the -er option.  Use the first exclusion reason found. */
+#define MERGE_ER_FIRST   1
+
+/*! Specifies that the last value was specified to the -er option.  Use the last exclusion reason found. */
+#define MERGE_ER_LAST    2
+
+/*! Specifies that the exclusion reasons should be merged. */
+#define MERGE_ER_ALL     3
+
+/*! Specified that the newest exclusion reasons should be used. */
+#define MERGE_ER_NEW     4
+
+/*! Specified that the oldest exclusion reasons should be used. */
+#define MERGE_ER_OLD     5
+
+/*! @} */
+
+/*!
  \addtogroup report_detail Detailedness of reports.
 
  The following defines specify the amount of detail to include in a generated report.
@@ -2904,6 +2932,9 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.315  2008/09/22 04:19:53  phase1geo
+ Fixing bug 2122019.  Also adding exclusion reason timestamp support to CDD files.
+
  Revision 1.314  2008/09/21 13:36:59  phase1geo
  Completing code to get functional unit version information into CDD file and
  functional units.  Added new version1 and version1.1 diagnostics to verify that

@@ -676,7 +676,7 @@ void arc_db_merge(
 
   /* Merge state transitions */
   for( i=0; i<table->num_arcs; i++ ) {
-    arc_add( base, table->fr_states[table->arcs[i]->from], table->to_states[table->arcs[i]->to], table->arcs[i]->suppl.part.hit, FALSE );
+    arc_add( base, table->fr_states[table->arcs[i]->from], table->to_states[table->arcs[i]->to], table->arcs[i]->suppl.part.hit, table->arcs[i]->suppl.part.excluded );
   }
 
   /* Deallocate the merged table */
@@ -701,7 +701,7 @@ void arc_merge(
 
   /* Merge state transitions */
   for( i=0; i<other->num_arcs; i++ ) {
-    arc_add( base, other->fr_states[other->arcs[i]->from], other->to_states[other->arcs[i]->to], other->arcs[i]->suppl.part.hit, FALSE );
+    arc_add( base, other->fr_states[other->arcs[i]->from], other->to_states[other->arcs[i]->to], other->arcs[i]->suppl.part.hit, other->arcs[i]->suppl.part.excluded );
   }
 
   PROFILE_END;
@@ -895,6 +895,11 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.70  2008/09/13 13:04:47  phase1geo
+ Moving exclusion ID of FSM from the arc transitions to the FSM itself (only one
+ ID needed to be stored).  This improves on memory usage and performance when
+ searching for exclusions.
+
  Revision 1.69  2008/09/06 05:59:45  phase1geo
  Adding assertion exclusion reason support and have most code implemented for
  FSM exclusion reason support (still working on debugging this code).  I believe
