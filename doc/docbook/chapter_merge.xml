@@ -78,6 +78,15 @@
             </row>
             <row>
               <entry>
+                -m <emphasis>message</emphasis>
+              </entry>
+              <entry>
+                Allows the user to specify information about this CDD file which can be most anything.  All messages
+                found in merged CDDs will not be included in the merged CDD file.
+              </entry>
+            </row>
+            <row>
+              <entry>
                 -o <emphasis>filename</emphasis>
               </entry>
               <entry>

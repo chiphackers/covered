@@ -60,6 +60,7 @@ extern unsigned int curr_db;
 extern str_link*    merge_in_head;
 extern str_link*    merge_in_tail;
 extern isuppl       info_suppl;
+extern char*        cdd_message;
 
 /*!
  If set to a boolean value of TRUE, reports the line coverage for the specified database
@@ -697,6 +698,12 @@ void report_print_header(
 
   fprintf( ofile, "* Report generated from CDD file : %s\n\n", input_db );
 
+  /* If the CDD contains a user-supplied message output it here, formatting it as needed. */
+  if( cdd_message != NULL ) {
+    fprintf( ofile, "* User-supplied CDD message      :\n" );
+    report_output_exclusion_reason( ofile, 4, cdd_message, FALSE );
+  }
+
   if( report_instance ) {
     fprintf( ofile, "* Reported by                    : Instance\n\n" );
   } else {
@@ -1232,6 +1239,11 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.125  2008/09/17 04:55:46  phase1geo
+ Integrating new get_absolute_path and get_relative_path functions and
+ updating regressions.  Also fixed a few coding bugs with these new functions.
+ IV and Cver regressions fully pass at the moment.
+
  Revision 1.124  2008/09/16 13:00:17  phase1geo
  Fixing some memory issues with the obfuscation functionality and minore
  optimizations to this code.  Other insignificant updates.

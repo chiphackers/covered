@@ -272,7 +272,7 @@ void message_db_read(
 ) { PROFILE(MESSAGE_DB_READ);
 
   /* All we need to do is copy the message */
-  if( strlen( *line + 1 ) > 0 ) {
+  if( (cdd_message == NULL) && (strlen( *line + 1 ) > 0) ) {
     cdd_message = strdup_safe( *line + 1 );
   }
 
@@ -369,6 +369,11 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
 /*
  $Log$
+ Revision 1.44  2008/09/17 04:55:46  phase1geo
+ Integrating new get_absolute_path and get_relative_path functions and
+ updating regressions.  Also fixed a few coding bugs with these new functions.
+ IV and Cver regressions fully pass at the moment.
+
  Revision 1.43  2008/09/16 13:00:17  phase1geo
  Fixing some memory issues with the obfuscation functionality and minore
  optimizations to this code.  Other insignificant updates.

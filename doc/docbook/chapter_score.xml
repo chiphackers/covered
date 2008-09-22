@@ -197,6 +197,16 @@
             </row>
             <row>
               <entry>
+                -m <emphasis>message</emphasis>
+              </entry>
+              <entry>
+                Allows the user to specify information about this CDD file.  This information can be anything (messages with whitespace
+                should be surrounded by double-quotation marks), but may include something about the simulation arguments to more easily
+                link the CDD file to its simulation for purposes of recreating the CDD file.
+              </entry>
+            </row>
+            <row>
+              <entry>
                 -o <emphasis>filename</emphasis>
               </entry>
               <entry>

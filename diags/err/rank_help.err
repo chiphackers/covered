@@ -1,0 +1,44 @@
+
+Usage:  covered rank (-h | ([<options>] <database_to_rank> <database_to_rank>+)
+
+   -h                           Displays this help information.
+
+   Options:
+      -depth <number>           Specifies the minimum number of CDD files to hit each coverage point.
+                                  The value of <number> should be a value of 1 or more.  Default is 1.
+      -names-only               If specified, outputs only the needed CDD filenames that need to be
+                                  run in the order they need to be run.  If this option is not set, a
+                                  report-style output is provided with additional information.
+      -f <filename>             Name of file containing additional arguments to parse.
+      -required-list <filename> Name of file containing list of CDD files which are required to be in the
+                                  list of ranked CDDs to be run.
+      -required-cdd <filename>  Name of CDD file that is required to be in the list of ranked CDDs to be run.
+      -d <directory>            Directory to search for CDD files to include.  This option is used in
+                                  conjunction with the -ext option which specifies the file extension
+                                  to use for determining which files in the directory are CDD files.
+      -ext <extension>          Used in conjunction with the -d option.  If no -ext options are specified
+                                  on the command-line, the default value of '.cdd' is used.  Note that
+                                  a period (.) should be specified.
+      -o <filename>             Name of file to output ranking information to.  Default is stdout.
+      -weight-line <number>     Specifies a relative weighting for line coverage used to rank
+                                  non-unique coverage points.  A value of 0 removes line coverage
+                                  from ranking consideration.  Default value is 1.
+      -weight-toggle <number>   Specifies a relative weighting for toggle coverage used to rank
+                                  non-unique coverage points.  A value of 0 removes toggle coverage
+                                  from ranking consideration.  Default value is 1.
+      -weight-memory <number>   Specifies a relative weighting for memory coverage used to rank
+                                  non-unique coverage points.  A value of 0 removes memory coverage
+                                  from ranking consideration.  Default value is 1.
+      -weight-comb <number>     Specifies a relative weighting for combinational logic coverage used
+                                  to rank non-unique coverage points.  A value of 0 removes combinational
+                                  logic coverage from ranking consideration.  Default value is 1.
+      -weight-fsm <number>      Specifies a relative weighting for FSM state/state transition coverage
+                                  used to rank non-unique coverage points.  A value of 0 removes FSM
+                                  coverage from ranking consideration.  Default value is 1.
+      -weight-assert <number>   Specifies a relative weighting for assertion coverage used to rank
+                                  non-unique coverage points.  A value of 0 removes assertion coverage
+                                  from ranking consideration.  Default value is 0.
+      -v                        Outputs verbose information during the rank selection process.  This output
+                                  is not for debugging purposes, but rather gives the user insight into
+                                  what's going on "behind the scenes" during the ranking process.
+

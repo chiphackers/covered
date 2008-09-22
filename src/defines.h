@@ -2890,6 +2890,7 @@ struct comp_cdd_cov_s {
 struct exclude_reason_s {
   char            type;                 /*!< Specifies the type of exclusion (L=line, T=toggle, M=memory, E=expression, F=FSM, A=assertion) */
   int             id;                   /*!< Specifies the numerical ID of the exclusion (type and id together make a unique identifier) */
+  time_t          timestamp;            /*!< Time that the reason was added to the CDD */
   char*           reason;               /*!< String containing reason for exclusion */
   exclude_reason* next;                 /*!< Pointer to the next exclusion reason structure */
 };
@@ -2903,6 +2904,12 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.314  2008/09/21 13:36:59  phase1geo
+ Completing code to get functional unit version information into CDD file and
+ functional units.  Added new version1 and version1.1 diagnostics to verify that
+ this functionality works as expected.  Still need to make use of this
+ information.
+
  Revision 1.313  2008/09/19 22:59:16  phase1geo
  Adding initial support for module version information.  Verified that the new
  code does not break existing regression.  Also added new Covered banner.

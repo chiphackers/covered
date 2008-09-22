@@ -152,6 +152,11 @@ sub parse_cdd {
 
       $line[1] = "cdd";
 
+    # Exclusion reason
+    } elsif( $line[0] eq "13" ) {
+
+      $line[3] = "0";
+
     }
 
     # Output the current line to the temporary output CDD file

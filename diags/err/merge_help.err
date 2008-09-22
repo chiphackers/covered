@@ -14,4 +14,8 @@ Usage:  covered merge (-h | [<options>] <existing_database> <database_to_merge>+
       -ext <extension>        Used in conjunction with the -d option.  If no -ext options are specified
                                 on the command-line, the default value of '.cdd' is used.  Note that
                                 a period (.) should be specified.
+      -m <message>            Allows the user to specify information about this CDD file.  This information
+                                can be anything (messages with whitespace should be surrounded by double-quotation
+                                marks), but may include something about the simulation arguments to more easily
+                                link the CDD file to its simulation for purposes of recreating the CDD file.
 

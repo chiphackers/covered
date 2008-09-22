@@ -27,6 +27,7 @@ extern db**         db_list;
 extern unsigned int curr_db;
 extern int          merged_code;
 extern char         user_msg[USER_MSG_LENGTH];
+extern char*        cdd_message;
 
 
 /*!
@@ -76,6 +77,10 @@ static void merge_usage() {
   printf( "      -ext <extension>        Used in conjunction with the -d option.  If no -ext options are specified\n" );
   printf( "                                on the command-line, the default value of '.cdd' is used.  Note that\n" );
   printf( "                                a period (.) should be specified.\n" );
+  printf( "      -m <message>            Allows the user to specify information about this CDD file.  This information\n" );
+  printf( "                                can be anything (messages with whitespace should be surrounded by double-quotation\n" );
+  printf( "                                marks), but may include something about the simulation arguments to more easily\n" );
+  printf( "                                link the CDD file to its simulation for purposes of recreating the CDD file.\n" );
   printf( "\n" );
 
 }
@@ -175,6 +180,19 @@ static void merge_parse_args(
       } else {
         Throw 0;
       } 
+
+    } else if( strncmp( "-m", argv[i], 2 ) == 0 ) {
+
+      if( check_option_value( argc, argv, i ) ) {
+        i++;
+        if( cdd_message != NULL ) {
+          print_output( "Only one -m option is allowed on the merge command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
+        } else {
+          cdd_message = strdup_safe( argv[i] );
+        }
+      } else {
+        Throw 0;
+      }
 
     } else {
 
@@ -331,6 +349,11 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.58  2008/09/17 04:55:46  phase1geo
+ Integrating new get_absolute_path and get_relative_path functions and
+ updating regressions.  Also fixed a few coding bugs with these new functions.
+ IV and Cver regressions fully pass at the moment.
+
  Revision 1.57  2008/09/15 22:42:07  phase1geo
  Fixing bug 2112509.
 
