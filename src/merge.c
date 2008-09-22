@@ -23,6 +23,25 @@
 #include "util.h"
 
 
+/*! Specifies that no -er option was specified on the merge command-line.  Interactively resolve exclusion reason conflicts. */
+#define MERGE_ER_NONE    0
+
+/*! Specifies that the first value was specified to the -er option.  Use the first exclusion reason found. */
+#define MERGE_ER_FIRST   1
+
+/*! Specifies that the last value was specified to the -er option.  Use the last exclusion reason found. */
+#define MERGE_ER_LAST    2
+
+/*! Specifies that the exclusion reasons should be merged. */
+#define MERGE_ER_ALL     3
+
+/*! Specified that the newest exclusion reasons should be used. */
+#define MERGE_ER_NEW     4
+
+/*! Specified that the oldest exclusion reasons should be used. */
+#define MERGE_ER_OLD     5
+
+
 extern db**         db_list;
 extern unsigned int curr_db;
 extern int          merged_code;
@@ -55,6 +74,11 @@ str_link* merge_in_cl_last = NULL;
 */
 int merge_in_num  = 0;
 
+/*!
+ Specifies the value of the -er option.
+*/
+int merge_er_value = MERGE_ER_NONE;
+
 
 /*!
  Outputs usage informaiton to standard output for merge command.
@@ -74,6 +98,17 @@ static void merge_usage() {
   printf( "      -d <directory>          Directory to search for CDD files to include.  This option is used in\n" );
   printf( "                                conjunction with the -ext option which specifies the file extension\n" );
   printf( "                                to use for determining which files in the directory are CDD files.\n" );
+  printf( "      -er <value>             Specifies how to handle exclusion reason resolution.  If two or more CDD files being\n" );
+  printf( "                                merged have exclusion reasons specified for the same coverage point, the exclusion\n" );
+  printf( "                                reason needs to be resolved (unless it is the same string value).  If this option\n" );
+  printf( "                                is not specified and a conflict is found, Covered will interactively request input\n" );
+  printf( "                                for each exclusion as to how to handle it.  If this option is specified, it tells\n" );
+  printf( "                                Covered how to handle all exclusion reason conflicts.  The values are as follows:\n" );
+  printf( "                                  first - CDD file that contained the first exclusion reason is used.\n" );
+  printf( "                                  last  - CDD file that contained the last exclusion reason is used.\n" );
+  printf( "                                  all   - All exclusion reasons are used (concatenated).\n" );
+  printf( "                                  new   - Use the newest exclusion reason specified.\n" );
+  printf( "                                  old   - Use the oldest exclusion reason specified.\n" );
   printf( "      -ext <extension>        Used in conjunction with the -d option.  If no -ext options are specified\n" );
   printf( "                                on the command-line, the default value of '.cdd' is used.  Note that\n" );
   printf( "                                a period (.) should be specified.\n" );
@@ -164,6 +199,30 @@ static void merge_parse_args(
           (void)str_link_add( strdup_safe( argv[i] ), &dir_head, &dir_tail );
         } else {
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Specified -d directory (%s) does not exist", argv[i] );
+          assert( rv < USER_MSG_LENGTH );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          Throw 0;
+        }
+      } else {
+        Throw 0;
+      }
+
+    } else if( strncmp( "-er", argv[i], 3 ) == 0 ) {
+
+      if( check_option_value( argc, argv, i ) ) {
+        i++;
+        if( strncmp( "first", argv[i], 5 ) == 0 ) {
+          merge_er_value = MERGE_ER_FIRST;
+        } else if( strncmp( "last", argv[i], 4 ) == 0 ) {
+          merge_er_value = MERGE_ER_LAST;
+        } else if( strncmp( "all", argv[i], 3 ) == 0 ) {
+          merge_er_value = MERGE_ER_ALL;
+        } else if( strncmp( "new", argv[i], 3 ) == 0 ) {
+          merge_er_value = MERGE_ER_NEW;
+        } else if( strncmp( "old", argv[i], 3 ) == 0 ) {
+          merge_er_value = MERGE_ER_OLD;
+        } else {
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal value to use for the -er option (%s).  Valid values are: first, last, all, new, old", argv[i] );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           Throw 0;
@@ -349,6 +408,9 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.59  2008/09/22 04:19:57  phase1geo
+ Fixing bug 2122019.  Also adding exclusion reason timestamp support to CDD files.
+
  Revision 1.58  2008/09/17 04:55:46  phase1geo
  Integrating new get_absolute_path and get_relative_path functions and
  updating regressions.  Also fixed a few coding bugs with these new functions.
