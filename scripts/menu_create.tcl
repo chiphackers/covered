@@ -298,6 +298,7 @@ proc open_files {fnames} {
 
   global file_types cdd_name fname open_type
   global win_cursor txt_cursor e_cursor
+  global exclude_resolution
 
   # Get all cursor values from various widgets (so we can properly restore them after the open)
   set win_cursor [. cget -cursor]
@@ -329,7 +330,7 @@ proc open_files {fnames} {
       if {$open_type == "open"} {
         tcl_func_open_cdd $fname
       } else {
-        tcl_func_merge_cdd $fname
+        tcl_func_merge_cdd $fname $exclude_resolution
         .menubar.file entryconfigure 3 -state normal
       }
 

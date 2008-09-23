@@ -76,6 +76,7 @@ extern bool         report_assertion;
 extern bool         report_race;
 extern bool         report_instance;
 extern isuppl       info_suppl;
+extern int          merge_er_value;
 
 
 /*!
@@ -1755,6 +1756,21 @@ int tcl_func_merge_cdd(
   if( argv[1][0] != '\0' ) {
 
     ifile = strdup_safe( argv[1] );
+    
+    /* Set the exclusion resolution value */
+    if( strncmp( "first", argv[2], 5 ) == 0 ) {
+      merge_er_value = MERGE_ER_FIRST;
+    } else if( strncmp( "last", argv[2], 4 ) == 0 ) {
+      merge_er_value = MERGE_ER_LAST;
+    } else if( strncmp( "all", argv[2], 3 ) == 0 ) {
+      merge_er_value = MERGE_ER_ALL;
+    } else if( strncmp( "new", argv[2], 3 ) == 0 ) {
+      merge_er_value = MERGE_ER_NEW;
+    } else if( strncmp( "old", argv[2], 3 ) == 0 ) {
+      merge_er_value = MERGE_ER_OLD;
+    } else {
+      merge_er_value = MERGE_ER_FIRST;
+    }
 
     /* Add the specified merge file to the list */
     str_link_add( ifile, &merge_in_head, &merge_in_tail );
@@ -3061,6 +3077,9 @@ void tcl_func_initialize(
 
 /*
  $Log$
+ Revision 1.89  2008/09/15 03:43:49  phase1geo
+ Cleaning up splint warnings.
+
  Revision 1.88  2008/09/08 22:15:17  phase1geo
  Regression updates and modifications for new FSM GUI output (this isn't complete
  at this time).  Checkpointing.
