@@ -10,8 +10,8 @@ require "../verilog/regress_subs.pl";
 &initialize( "merge7.1", 0, @ARGV );
 
 # Simulate the CDD files to merge
-$retval = &run( "merge7.1a" ) || $retval;
-$retval = &run( "merge7.1b" ) || $retval;
+&run( "merge7.1a" ) && die;
+&run( "merge7.1b" ) && die;
 
 # Exclude variable "a" from toggle coverage in merge7a
 &runCommand( "echo The output variable a is not being used > merge7.1.excl" );
@@ -64,13 +64,6 @@ sub run {
 
   # Score CDD file
   &runScoreCommand( "-f ${bname}.cfg" );
-
-  # Check that the CDD file matches
-  if( $DUMPTYPE eq "VCD" ) {
-    $retval = &checkTest( $bname, 0, 0 );
-  } else {
-    $retval = &checkTest( $bname, 0, 5 );
-  }
 
   return $retval;
 

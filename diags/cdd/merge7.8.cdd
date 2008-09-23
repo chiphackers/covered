@@ -1,0 +1,16 @@
+5 11 101 3 main
+8 /Users/trevorw/projects/covered/diags/verilog -t dut_and -i main.a -vcd merge7.8b.vcd -o merge7.8b.cdd -v merge7.8b.v -y lib
+12 /Users/trevorw/projects/covered/diags/verilog/merge7.8b.cdd main
+12 /Users/trevorw/projects/covered/diags/verilog/merge7.8a.cdd main
+3 0 $root "$root" NA 0 0 1
+3 0 dut_and "a" lib/dut_and.v 1 9 1
+2 1 7 f000f 1 1 100c 0 0 1 1 c
+2 2 7 b000b 1 1 1004 0 0 1 1 b
+2 3 7 b000f 1 8 10c4 1 2 1 18 0 1 1 1 0 0
+2 4 7 70007 0 1 1410 0 0 1 1 a
+2 5 7 7000f 2 35 6 3 4
+1 a 1 3 220008 1 0 0 0 1 17 1 1 0 0 0
+1 b 2 4 8 1 0 0 0 1 17 1 1 0 0 0
+1 c 3 5 8 1 0 0 0 1 17 1 1 0 0 0
+4 5 f 5 5
+13 T 1 1222140696 The output variable a is not being used
