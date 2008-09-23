@@ -44,8 +44,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 concat6         concat7         cond1           cond2           cond3 \
                 cond3.1         cond3.2         cond3.3         delay1          delay2 \
                 define1         define1.1       define1.2       define2         define2.1 \
-                define4         define5         define6         define6.1       delay3 \
-                disable1 \
+                define4         define5         define6         define6.1       disable1 \
                 disable1.1      disable2        disable2.1      disable3        div1 \
                 dly_assign1     endian1         endian2         endian3         event1 \
                 event1.1        exclude1        exclude2        exclude3        exclude4 \
@@ -237,7 +236,7 @@ IVCVERDIAGS2  =
 IVCVERDIAGS3  =
 IVCVERDIAGS4  =
 
-IVVCSDIAGS1   = define3         exclude7.3      exclude10.5     exclude12.5     generate2.1 \
+IVVCSDIAGS1   = define3         delay3          exclude7.3      exclude10.5     exclude12.5     generate2.1 \
                 generate4       generate4.1     generate5       generate5.1     generate5.2 \
                 generate5.3     generate8       generate10      generate10.1    generate10.2 \
                 generate11      generate11.1    generate11.2    generate11.3    hier3 \
