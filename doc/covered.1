@@ -1,4 +1,4 @@
-.TH "Covered" "1" "covered-20080826" "Trevor Williams" "Code Analysis"
+.TH "Covered" "1" "covered-20080928" "Trevor Williams" "Code Analysis"
 .SH "NAME"
 .LP 
 Covered \- Verilog Code Coverage Analyzer
@@ -167,6 +167,19 @@ The following options are valid for the merge command:
 \fB\-d\fR \fIfilename\fR
 Directory to search for CDD files to include.  This option is used in conjunction with the \fB\-ext\fR option which specifies the file extension to use for determining which files in the directory are CDD files.
 .TP 
+\fB\-er\fR (\fIfirst\fR|\fIlast\fR|\fIall\fR|\fInew\fR|\fIold\fR)
+Specifies how to handle exclusion reason resolution.  If two or more CDD files being merged have exclusion reasons specified for the same coverage point, the exclusion reason needs to be resolved (unless it is the same string value).  If this option is not specified and a conflict is found, Covered will interactively request input for each exclusion as to how to handle it.  If this option is specified, it tells Covered how to handle all exclusion reason conflicts.  The values are as follows:.br 
+.IP 
+\fIfirst\fR \- CDD file that contained the first exclusion reason is used.
+.IP 
+\fIlast\fR  \- CDD file that contained the last exclusion reason is used.
+.IP 
+\fIall\fR   \- All exclusion reasons are used (concatenated).
+.IP 
+\fInew\fR   \- Use the newest exclusion reason specified.
+.IP 
+\fIold\fR   \- Use the oldest exclusion reason specified.
+.TP 
 \fB\-ext\fR \fIextension\fR
 Used in conjunction with the \fB\-d\fR option.  If no \fB\-ext\fR options are specified on the command\-line, the default value of '.cdd' is used.  Note that a period (.) should be specified.
 .TP 
@@ -175,6 +188,9 @@ Name of file containing additional arguments to parse.
 .TP 
 \fB\-h\fR
 Displays this help information.
+.TP 
+\fB\-m\fR \fImessage\fR
+Allows the user to specify information about this CDD file.  This information can be anything (messages with whitespace should be surrounded by double\-quotation marks).
 .TP 
 \fB\-o\fR \fIfilename\fR
 File to output new database to.  If this argument is not specified, the \fIexisting_database\fR is used as the output database name.
