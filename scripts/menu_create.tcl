@@ -104,6 +104,7 @@ proc menu_create {} {
     check_to_save_and_close_cdd closing
     .info configure -text "$cdd_name closed"
     set cdd_name ""
+    set curr_block 0
     clear_cdd_filelist
     populate_listbox
     clear_all_windows

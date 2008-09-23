@@ -1164,11 +1164,11 @@ proc create_merging_pref {} {
 
   # Create the exclusion reason conflict resolution frame
   labelframe .prefwin.pf.f.ecr -text "Exclusion Reason Conflict Resolution"
-  radiobutton .prefwin.pf.f.ecr.first -text "Use the first reason"  -anchor w -variable exclude_resolution -value first
-  radiobutton .prefwin.pf.f.ecr.last  -text "Use the last reason"   -anchor w -variable exclude_resolution -value last
-  radiobutton .prefwin.pf.f.ecr.new   -text "Use the newest reason" -anchor w -variable exclude_resolution -value new
-  radiobutton .prefwin.pf.f.ecr.old   -text "Use the oldest reason" -anchor w -variable exclude_resolution -value old
-  radiobutton .prefwin.pf.f.ecr.all   -text "Merge all reasons"     -anchor w -variable exclude_resolution -value all
+  radiobutton .prefwin.pf.f.ecr.first -text "Use the first reason"  -anchor w -variable tmp_exclude_resolution -value first
+  radiobutton .prefwin.pf.f.ecr.last  -text "Use the last reason"   -anchor w -variable tmp_exclude_resolution -value last
+  radiobutton .prefwin.pf.f.ecr.new   -text "Use the newest reason" -anchor w -variable tmp_exclude_resolution -value new
+  radiobutton .prefwin.pf.f.ecr.old   -text "Use the oldest reason" -anchor w -variable tmp_exclude_resolution -value old
+  radiobutton .prefwin.pf.f.ecr.all   -text "Merge all reasons"     -anchor w -variable tmp_exclude_resolution -value all
 
   pack .prefwin.pf.f.ecr.first -anchor w -padx 3 -pady 3
   pack .prefwin.pf.f.ecr.last  -anchor w -padx 3 -pady 3
