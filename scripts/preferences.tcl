@@ -37,6 +37,7 @@ set hl_mode                 0
 set last_pref_index         -1
 set exclude_reasons_enabled 1
 set exclude_reasons         {}
+set exclude_resolution      "first"
 
 # Create a list from 100 to 0
 for {set i 100} {$i >= 0} {incr i -1} {
@@ -56,7 +57,7 @@ proc read_coveredrc {} {
   global HOME USER_HOME rc_file_to_write
   global main_geometry toggle_geometry memory_geometry comb_geometry fsm_geometry assert_geometry
   global mod_inst_tl_columns mod_inst_type mod_inst_tl_init_hidden mod_inst_tl_width
-  global exclude_reasons_enabled exclude_reasons
+  global exclude_reasons_enabled exclude_reasons exclude_resolution
 
   # Find the correct configuration file to read and eventually write
   if {[file exists ".coveredrc"] == 1} {
@@ -137,6 +138,8 @@ proc read_coveredrc {} {
           set exclude_reasons_enabled $value
         } elseif {$field == "ExclusionReasons"} {
           set exclude_reasons [split $value :]
+        } elseif {$field == "ExclusionReasonConflictResolution"} {
+          set exclude_resolution $value
 
         # The following are GUI state-saved information -- only use this information if SaveGuiOnExit was set to true
         } elseif {$save_gui_on_exit == "true"} {
@@ -186,7 +189,7 @@ proc write_coveredrc {exiting} {
   global rc_file_to_write
   global mod_inst_tl_columns mod_inst_type tableColHide
   global main_geometry toggle_geometry memory_geometry comb_geometry fsm_geometry assert_geometry
-  global exclude_reasons_enabled exclude_reasons
+  global exclude_reasons_enabled exclude_reasons exclude_resolution
 
   if {$rc_file_to_write != ""} {
 
@@ -342,6 +345,17 @@ proc write_coveredrc {exiting} {
 
     puts $rc "ExclusionReasons = [join $exclude_reasons :]\n"
 
+    puts $rc "# This value specifies how to handle exclusion reason conflicts that arise when two or more CDD files"
+    puts $rc "# are merged that contain mismatching exclusion reasons for identical coverage points.  The valid"
+    puts $rc "# values are the following:"
+    puts $rc "#   first - Use the exclusion reason from the first CDD file read in that contains the reason"
+    puts $rc "#   last  - Use the exclusion reason from the last CDD file read in that contains the reason"
+    puts $rc "#   all   - Merge all exclusion reasons into one" 
+    puts $rc "#   new   - Use the newest exclusion reason specified"
+    puts $rc "#   old   - Use the oldest exclusion reason specified\n"
+
+    puts $rc "ExclusionReasonConflictResolution = $exclude_resolution\n"
+
     puts $rc "# THE FOLLOWING LINES ARE FOR STORING GUI STATE INFORMATION -- DO NOT MODIFY LINES BELOW THIS COMMENT!\n"
 
     if {$save_gui_on_exit == true && $exiting == 1} {
@@ -394,6 +408,7 @@ proc create_preferences {start_index} {
   global hl_mode last_pref_index
   global exclude_reasons_enabled tmp_exclude_reasons_enabled
   global exclude_reasons         tmp_exclude_reasons
+  global exclude_resolution      tmp_exclude_resolution
 
   # Now create the window and set the grab to this window
   if {[winfo exists .prefwin] == 0} {
@@ -423,6 +438,7 @@ proc create_preferences {start_index} {
     set tmp_vlog_hl_symbol_color    $vlog_hl_symbol_color
     set tmp_exclude_reasons_enabled $exclude_reasons_enabled
     set tmp_exclude_reasons         $exclude_reasons
+    set tmp_exclude_resolution      $exclude_resolution
 
     # Specify that there was no last index selected
     set last_pref_index -1
@@ -431,7 +447,7 @@ proc create_preferences {start_index} {
     toplevel .prefwin
     wm title .prefwin "Covered - Preferences"
     # wm resizable .prefwin 0 0
-    wm geometry .prefwin =600x450
+    wm geometry .prefwin =600x500
 
     # Create listbox frame
     frame .prefwin.lbf -relief raised -borderwidth 1
@@ -445,6 +461,7 @@ proc create_preferences {start_index} {
     .prefwin.lbf.lb insert end "Coverage Goals"
     .prefwin.lbf.lb insert end "Syntax Highlighting"
     .prefwin.lbf.lb insert end "Exclusions"
+    .prefwin.lbf.lb insert end "Merging"
 
     pack .prefwin.lbf.l  -pady 4
     pack .prefwin.lbf.lb -fill y -expand 1
@@ -478,6 +495,7 @@ proc create_preferences {start_index} {
         2 { help_show_manual chapter.gui.preferences "section.gui.pref.goals" }
         3 { help_show_manual chapter.gui.preferences "section.gui.pref.syntax" }
         4 { help_show_manual chapter.gui.preferences "section.gui.pref.exclusions" }
+        5 { help_show_manual chapter.gui.preferences "section.gui.pref.merging" }
         default { help_show_manual chapter.gui.preferences "" }
       }
     }
@@ -569,6 +587,7 @@ proc apply_preferences {} {
   global vlog_hl_symbol_color    tmp_vlog_hl_symbol_color
   global exclude_reasons_enabled tmp_exclude_reasons_enabled
   global exclude_reasons         tmp_exclude_reasons
+  global exclude_resolution      tmp_exclude_resolution
 
   # Save spinner values to temporary storage items
   save_spinners [.prefwin.lbf.lb curselection]
@@ -670,6 +689,10 @@ proc apply_preferences {} {
   }
   if {$exclude_reasons != $tmp_exclude_reasons} {
     set exclude_reasons $tmp_exclude_reasons
+    set changed 1
+  }
+  if {$exclude_resolution != $tmp_exclude_resolution} {
+    set exclude_resolution $tmp_exclude_resolution
     set changed 1
   }
 
@@ -814,6 +837,8 @@ proc populate_pref {} {
       create_syntax_pref
     } elseif {$index == 4} {
       create_exclusion_pref
+    } elseif {$index == 5} {
+      create_merging_pref
     }
 
     set last_pref_index $index
@@ -1127,6 +1152,35 @@ proc create_exclusion_pref {} {
   foreach exclude_reason $tmp_exclude_reasons {
     .prefwin.pf.f.elf.lf.tl insert end $exclude_reason
   }
+
+}
+
+proc create_merging_pref {} {
+
+  global tmp_exclude_resolution
+
+  # Create widgets
+  frame .prefwin.pf.f
+
+  # Create the exclusion reason conflict resolution frame
+  labelframe .prefwin.pf.f.ecr -text "Exclusion Reason Conflict Resolution"
+  radiobutton .prefwin.pf.f.ecr.first -text "Use the first reason"  -anchor w -variable exclude_resolution -value first
+  radiobutton .prefwin.pf.f.ecr.last  -text "Use the last reason"   -anchor w -variable exclude_resolution -value last
+  radiobutton .prefwin.pf.f.ecr.new   -text "Use the newest reason" -anchor w -variable exclude_resolution -value new
+  radiobutton .prefwin.pf.f.ecr.old   -text "Use the oldest reason" -anchor w -variable exclude_resolution -value old
+  radiobutton .prefwin.pf.f.ecr.all   -text "Merge all reasons"     -anchor w -variable exclude_resolution -value all
+
+  pack .prefwin.pf.f.ecr.first -anchor w -padx 3 -pady 3
+  pack .prefwin.pf.f.ecr.last  -anchor w -padx 3 -pady 3
+  pack .prefwin.pf.f.ecr.new   -anchor w -padx 3 -pady 3
+  pack .prefwin.pf.f.ecr.old   -anchor w -padx 3 -pady 3
+  pack .prefwin.pf.f.ecr.all   -anchor w -padx 3 -pady 3
+
+  # Pack the labelframes
+  pack .prefwin.pf.f.ecr -fill both -expand yes
+
+  # Pack the entire preference frame
+  pack .prefwin.pf.f -fill both
 
 }
 

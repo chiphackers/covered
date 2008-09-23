@@ -18,7 +18,7 @@
   - GNU gperf (Version 2.7.2 or higher)
   - TCL (Version 8.4 or higher)
   - TK (Version 8.4 or higher)
-  - tablelist4.8 (tablelist is a Tk widget that can be found at:
+  - tablelist4.9 (tablelist is a Tk widget that can be found at:
     //http://www.nemethi.de/)
 
   If you would like to use LXT2 formatted dumpfiles with Covered, you now may but
