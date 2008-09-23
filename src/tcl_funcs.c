@@ -1782,8 +1782,6 @@ int tcl_func_merge_cdd(
       retval = TCL_ERROR;
     }
 
-    free_safe( ifile, (strlen( ifile ) + 1) );
-
   }
 
   return( retval );
@@ -3077,6 +3075,9 @@ void tcl_func_initialize(
 
 /*
  $Log$
+ Revision 1.90  2008/09/23 14:02:02  phase1geo
+ Adding exclusion reason conflict resolution to GUI.
+
  Revision 1.89  2008/09/15 03:43:49  phase1geo
  Cleaning up splint warnings.
 

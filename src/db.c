@@ -532,7 +532,7 @@ void db_read(
 
               /* Parse rest of line for exclude info */
               if( merge_mode ) {
-                exclude_db_merge( foundinst->funit, &rest_line );
+                exclude_db_merge( curr_funit, &rest_line );
               } else {
                 exclude_db_read( &rest_line, curr_funit );
               }
@@ -3076,6 +3076,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.331  2008/09/22 22:15:01  phase1geo
+ Initial code for supporting the merging and resolution of exclusion reasons.
+ This code is completely untested at this point but does compile.  Checkpointing.
+
  Revision 1.330  2008/09/22 04:19:53  phase1geo
  Fixing bug 2122019.  Also adding exclusion reason timestamp support to CDD files.
 

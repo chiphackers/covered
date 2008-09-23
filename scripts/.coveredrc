@@ -147,15 +147,26 @@ EnableExclusionReasons = 1
 
 ExclusionReasons = {Logic is obsolete but will not be removed for future enhancement possibilities. }
 
+# This value specifies how to handle exclusion reason conflicts that arise when two or more CDD files
+# are merged that contain mismatching exclusion reasons for identical coverage points.  The valid
+# values are the following:
+#   first - Use the exclusion reason from the first CDD file read in that contains the reason
+#   last  - Use the exclusion reason from the last CDD file read in that contains the reason
+#   all   - Merge all exclusion reasons into one
+#   new   - Use the newest exclusion reason specified
+#   old   - Use the oldest exclusion reason specified
+
+ExclusionReasonConflictResolution = all
+
 # THE FOLLOWING LINES ARE FOR STORING GUI STATE INFORMATION -- DO NOT MODIFY LINES BELOW THIS COMMENT!
 
-MainWindowGeometry                = 1000x550+705+34
-ToggleWindowGeometry              = 
-MemoryWindowGeometry              = 570x376+715+66
+MainWindowGeometry                = 1000x548+633+127
+ToggleWindowGeometry              = 366x125+50+289
+MemoryWindowGeometry              = 
 CombWindowGeometry                = 
 FsmWindowGeometry                 = 
 AssertWindowGeometry              = 
 ModuleInstanceType                = Module
-ModuleInstanceTableListWidth      = 309
+ModuleInstanceTableListWidth      = 302
 ModuleInstanceTableListColumns    = 0:Instance Name:left:0:Module Name:left:0:Hit:right:0:Miss:right:0:Excluded:right:0:Total:right:0:Hit %:right:0:Index:left
 ModuleInstanceTableListInitHidden = 1:0:0:0:0:0:0
