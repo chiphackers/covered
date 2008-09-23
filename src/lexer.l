@@ -294,7 +294,7 @@ WSPACE [ \t\b\f]+
 	BEGIN( state_enter );
         tmpstr = strdup_safe( yytext );
         tmpstr[ str_len - 1 ] = '\0';
-        vector_from_string( &tmpstr, TRUE, &(yylval.number.vec), &(yylval.number.base) );
+        vector_from_string( &tmpstr, TRUE, &(yylval.num.vec), &(yylval.num.base) );
         free_safe( tmpstr, (str_len + 1) );
         return STRING;
  }
@@ -511,76 +511,46 @@ WSPACE [ \t\b\f]+
      return SYSTEM_IDENTIFIER; 
  }
 
-  /* Decimal number - Size indicated */
-<PARSE>[0-9][0-9_]*[ \t]*\'[sS]?[dD][ \t]*[0-9][0-9_]* {
-     yylloc.first_column = yylloc.last_column;
-     yylloc.last_column += strlen( yytext );
-     vector_from_string( &yytext, FALSE, &(yylval.number.vec), &(yylval.number.base) );
-     return NUMBER;
- }
-
-  /* Binary number - Size indicated */
-<PARSE>[0-9][0-9_]*[ \t]*\'[sS]?[bB][ \t]*[0-1xzXZ_\?]+ {
-     yylloc.first_column = yylloc.last_column;
-     yylloc.last_column += strlen( yytext );
-     vector_from_string( &yytext, FALSE, &(yylval.number.vec), &(yylval.number.base) );
-     return NUMBER;
- }
-
-  /* Octal number - Size indicated */
-<PARSE>[0-9][0-9_]*[ \t]*\'[sS]?[oO][ \t]*[0-7xzXZ_\?]+ {
-     yylloc.first_column = yylloc.last_column;
-     yylloc.last_column += strlen( yytext );
-     vector_from_string( &yytext, FALSE, &(yylval.number.vec), &(yylval.number.base) );
-     return NUMBER;
- }
-
-  /* Hexidecimal number - Size indicated */
-<PARSE>[0-9][0-9_]*[ \t]*\'[sS]?[hH][ \t]*[0-9a-fA-FxzXZ_\?]+ {
-     yylloc.first_column = yylloc.last_column;
-     yylloc.last_column += strlen( yytext );
-     vector_from_string( &yytext, FALSE, &(yylval.number.vec), &(yylval.number.base) );
-     return NUMBER;
- }
-
-  /* Decimal number - unsized */
-<PARSE>\'[sS]?[dD][ \t]*[0-9][0-9_]* {
-     yylloc.first_column = yylloc.last_column;
-     yylloc.last_column += strlen( yytext );
-     vector_from_string( &yytext, FALSE, &(yylval.number.vec), &(yylval.number.base) );
-     return NUMBER;
- }
-
-  /* Binary number - unsized */
-<PARSE>\'[sS]?[bB][ \t]*[0-1xzXZ_\?]+ {
-     yylloc.first_column = yylloc.last_column;
-     yylloc.last_column += strlen( yytext );
-     vector_from_string( &yytext, FALSE, &(yylval.number.vec), &(yylval.number.base) );
-     return NUMBER;
- }
-
-  /* Octal number - unsized */
-<PARSE>\'[sS]?[oO][ \t]*[0-7xzXZ_\?]+ {
-     yylloc.first_column = yylloc.last_column;
-     yylloc.last_column += strlen( yytext );
-     vector_from_string( &yytext, FALSE, &(yylval.number.vec), &(yylval.number.base) );
-     return NUMBER;
- }
-
-  /* Hexidecimal number - unsized */
-<PARSE>\'[sS]?[hH][ \t]*[0-9a-fA-FxzXZ_\?]+ {
-     yylloc.first_column = yylloc.last_column;
-     yylloc.last_column += strlen( yytext );
-     vector_from_string( &yytext, FALSE, &(yylval.number.vec), &(yylval.number.base) );
-     return NUMBER;
- }
-
   /* Unsized decimal number */
 <PARSE>[0-9][0-9_]* {
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
-     vector_from_string( &yytext, FALSE, &(yylval.number.vec), &(yylval.number.base) );
-     return NUMBER;
+     yylval.text = strdup_safe( yytext );
+     return DEC_NUMBER;
+ }
+
+  /* Decimal number */
+<PARSE>\'[sS]?[dD][ \t]*[0-9][0-9_]* {
+     yylloc.first_column = yylloc.last_column;
+     yylloc.last_column += strlen( yytext );
+     yylval.text = strdup_safe( yytext );
+     return BASE_NUMBER;
+ }
+
+  /* Binary number */
+<PARSE>\'[sS]?[bB][ \t]*[0-1xzXZ_\?]+ {
+     yylloc.first_column = yylloc.last_column;
+     yylloc.last_column += strlen( yytext );
+     yylval.text = strdup_safe( yytext );
+     return BASE_NUMBER;
+ }
+
+  /* Octal number */
+<PARSE>\'[sS]?[oO][ \t]*[0-7xzXZ_\?]+ {
+     yylloc.first_column = yylloc.last_column;
+     yylloc.last_column += strlen( yytext );
+     yylval.text = strdup_safe( yytext );
+ //    vector_from_string( &yytext, FALSE, &(yylval.num.vec), &(yylval.num.base) );
+     return BASE_NUMBER;
+ }
+
+  /* Hexidecimal number - Size indicated */
+<PARSE>\'[sS]?[hH][ \t]*[0-9a-fA-FxzXZ_\?]+ {
+     yylloc.first_column = yylloc.last_column;
+     yylloc.last_column += strlen( yytext );
+     yylval.text = strdup_safe( yytext );
+//     vector_from_string( &yytext, FALSE, &(yylval.num.vec), &(yylval.num.base) );
+     return BASE_NUMBER;
  }
 
   /* Real numbers -- we ignore this information */

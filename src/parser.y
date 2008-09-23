@@ -234,7 +234,7 @@ int yydebug = 1;
   bool            logical;
   char*           text;
   int	          integer;
-  const_value     number;
+  const_value     num;
   double          realtime;
   vsignal*        sig;
   expression*     expr;
@@ -255,9 +255,9 @@ int yydebug = 1;
 %token <text>     IDENTIFIER SYSTEM_IDENTIFIER
 %token <typdef>   TYPEDEF_IDENTIFIER
 %token <text>     PATHPULSE_IDENTIFIER
-%token <number>   NUMBER
+%token <text>     DEC_NUMBER BASE_NUMBER
 %token <realtime> REALTIME
-%token <number>   STRING
+%token <num>      STRING
 %token IGNORE
 %token K_LE K_GE K_EG K_EQ K_NE K_CEQ K_CNE K_LS K_LSS K_RS K_RSS K_SG
 %token K_ADD_A K_SUB_A K_MLT_A K_DIV_A K_MOD_A K_AND_A K_OR_A K_XOR_A K_LS_A K_RS_A K_ALS_A K_ARS_A K_INC K_DEC K_POW
@@ -306,6 +306,7 @@ int yydebug = 1;
 
 %token KK_attribute
 
+%type <num>       number
 %type <logical>   automatic_opt block_item_decls_opt
 %type <integer>   net_type net_type_sign_range_opt var_type data_type_opt
 %type <text>      identifier begin_end_id
@@ -817,6 +818,32 @@ port_reference_list
   | port_reference_list ',' port_reference
   ;
 
+number
+  : DEC_NUMBER
+    {
+      char* num = $1;
+      vector_from_string( &num, FALSE, &($$.vec), &($$.base) );
+      free_safe( $1, (strlen( $1 ) + 1) );
+    }
+  | BASE_NUMBER
+    { 
+      char* num = $1;
+      vector_from_string( &num, FALSE, &($$.vec), &($$.base) );
+      free_safe( $1, (strlen( $1 ) + 1) );
+    }
+  | DEC_NUMBER BASE_NUMBER
+    {
+      int   slen     = strlen( $1 ) + strlen( $2 ) + 1;
+      char* combined = (char*)malloc_safe( slen );
+      char* num      = combined;
+      snprintf( num, slen, "%s%s", $1, $2 );
+      vector_from_string( &num, FALSE, &($$.vec), &($$.base) );
+      free_safe( $1, (strlen( $1 ) + 1) );
+      free_safe( $2, (strlen( $2 ) + 1) );
+      free_safe( combined, slen );
+    }
+  ;
+
 static_expr_port_list
   : static_expr_port_list ',' static_expr
     {
@@ -1042,7 +1069,7 @@ static_expr
   ;
 
 static_expr_primary
-  : NUMBER
+  : number
     { PROFILE(PARSER_STATIC_EXPR_PRIMARY_A);
       static_expr* tmp;
       if( (ignore_mode == 0) && ($1.vec != NULL) ) {
@@ -1722,7 +1749,7 @@ expression
   ;
 
 expr_primary
-  : NUMBER
+  : number
     {
       if( (ignore_mode == 0) && ($1.vec != NULL) ) {
         Try {
@@ -2281,7 +2308,7 @@ udp_init_opt
   ;
 
 udp_initial
-  : K_initial IDENTIFIER '=' NUMBER ';'
+  : K_initial IDENTIFIER '=' number ';'
     {
       free_safe( $2, (strlen( $2 ) + 1) );
       vector_dealloc( $4.vec );
@@ -5740,23 +5767,25 @@ delay_value
   ;
 
 delay_value_simple
-  : NUMBER
+  : DEC_NUMBER
     {
-      if( (ignore_mode == 0) && ($1.vec != NULL) ) {
+      if( (ignore_mode == 0) && ($1 != NULL) ) {
         Try {
+          int   base;
+          char* num = $1;
           $$ = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-          $$->suppl.part.base = $1.base;
           assert( $$->value->value.ul == NULL );
           free_safe( $$->value, sizeof( vector ) );
-          $$->value = $1.vec;
+          vector_from_string( &num, FALSE, &($$->value), &base );
+          $$->suppl.part.base = base;
         } Catch_anonymous {
           error_count++;
           $$ = NULL;
         }
       } else {
-        vector_dealloc( $1.vec );
         $$ = NULL;
       }
+      free_safe( $1, (strlen( $1 ) + 1) );
     }
   | REALTIME
     {
@@ -6380,9 +6409,9 @@ parameter_value_opt
       }
     }
   | '#' '(' parameter_value_byname_list ')'
-  | '#' NUMBER
+  | '#' DEC_NUMBER
     {
-      vector_dealloc( $2.vec );
+      free_safe( $2, (strlen( $2 ) + 1) );
     }
   | '#' error
     {
