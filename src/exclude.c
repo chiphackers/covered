@@ -974,6 +974,7 @@ void exclude_resolve_reason(
 
   unsigned int slen;
   char*        eid;
+  char         answer;
   char         c;
  
   switch( resolution ) {
@@ -985,10 +986,12 @@ void exclude_resolve_reason(
       report_output_exclusion_reason( stdout, 4, orig_er->reason, FALSE );
       printf( "  Exclusion reason #2:\n" );
       report_output_exclusion_reason( stdout, 4, new_reason, FALSE );
-      printf( "Choose an exclusion reason to use (none, 1, 2, both, rewrite, abort): " );
-      c = (char)getchar();
-      while( (char)getchar() != EOF );
-      switch( (char)getchar() ) {
+      do {
+        printf( "Choose an exclusion reason to use (none, 1, 2, both, rewrite, abort): " );
+        answer = (char)getchar();
+        while( ((c = (char)getchar()) != EOF) && (c != '\n') );
+      } while( (answer != 'n') && (answer != '1') && (answer != '2') && (answer != 'b') && (answer != 'r') && (answer != 'a') );
+      switch( answer ) {
         case 'n' :
           exclude_remove_exclude_reason( orig_er->type, orig_er->id, orig_funit );
           break;
@@ -1863,6 +1866,10 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.46  2008/09/22 22:15:02  phase1geo
+ Initial code for supporting the merging and resolution of exclusion reasons.
+ This code is completely untested at this point but does compile.  Checkpointing.
+
  Revision 1.45  2008/09/22 04:19:54  phase1geo
  Fixing bug 2122019.  Also adding exclusion reason timestamp support to CDD files.
 
