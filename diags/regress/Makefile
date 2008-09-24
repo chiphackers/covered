@@ -55,13 +55,13 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 exclude10.3     exclude10.3.1   exclude10.3.2   exclude10.3.3   exclude10.4 \
                 exclude11       exclude12       exclude12.1     exclude12.2     exclude12.3 \
                 exclude12.4     exclude12.6     exclude13       exclude14       expand1 \
-                expand2         expand3         expand4 \
-                expand4.1       expand4.2       expand4.3       expand4.4       finish1 \
-                for1            for2            forever1        fork1           fork2 \
-                fsm3            fsm4            fsm4.1          fsm5            fsm5.1 \
-                fsm5.2          fsm5.3          fsm11           func1           func2 \
-                func5           gate1           hier1           hier3.1         hier3.2 \
-                hier3.3         hier3.4         hier4           ifdef1          ifdef1.2 \
+                expand2         expand3         expand4         expand4.1       expand4.2 \
+                expand4.3       expand4.4       finish1         for1            for2 \
+                forever1        fork1           fork2           fsm3            fsm4 \
+                fsm4.1          fsm5            fsm5.1          fsm5.2          fsm5.3 \
+                fsm11           func1           func2           func5           gate1 \
+                hier1           hier3.1         hier3.2         hier3.3         hier3.4 \
+                hier4           if1             ifdef1          ifdef1.2 \
                 ifdef2.1        ifdef2.2        ifdef2.3        ifelse1         implicit2.1 \
                 include1        include1.1      include2        initial1        instance1 \
                 instance1.1     instance1.2     instance2       instance3       instance4 \

@@ -82,6 +82,12 @@ int    generate_expr_mode  = 0;
 bool   cli_debug_mode      = FALSE;
 bool   flag_use_command_line_debug = FALSE;
 struct exception_context the_exception_context[1];
+str_link* merge_in_head = NULL;
+str_link* merge_in_tail = NULL;
+char*     cdd_message   = NULL;
+char*     merged_file   = NULL;
+bool      flag_output_exclusion_ids = FALSE;
+bool      report_exclusions = FALSE;
 
 extern bool        debug_mode;
 extern symtable*   vcd_symtab;
@@ -271,6 +277,14 @@ PLI_INT32 covered_end_of_sim( p_cb_data cb ) { PROFILE(COVERED_END_OF_SIM);
   }
 
   /* Deallocate memory */
+  if( curr_inst_scope_size > 0 ) {
+    unsigned int i;
+    for( i=0; i<curr_inst_scope_size; i++ ) {
+      free_safe( curr_inst_scope[i], (strlen( curr_inst_scope[i] ) + 1) );
+    }
+    free_safe( curr_inst_scope, sizeof( char* ) );
+    curr_inst_scope_size = 0;
+  }
   symtable_dealloc( vcd_symtab );
   sim_dealloc();
   db_close();

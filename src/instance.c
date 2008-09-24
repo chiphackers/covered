@@ -883,59 +883,64 @@ void instance_db_write(
   bool        report_save  /*!< Specifies if we are saving a CDD file after modifying it with the report command */
 ) { PROFILE(INSTANCE_DB_WRITE);
 
-  char        tscope[4096];  /* New scope of functional unit to write */
-  funit_inst* curr;          /* Pointer to current child functional unit instance */
+  assert( root != NULL );
 
-  assert( scope != NULL );
+  if( root->funit->type != FUNIT_NO_SCORE ) {
 
-  curr = parse_mode ? root : NULL;
+    char        tscope[4096];  /* New scope of functional unit to write */
+    funit_inst* curr;          /* Pointer to current child functional unit instance */
 
-  /* If we are in parse mode, re-issue expression IDs (we use the ulid field since it is not used in parse mode) */
-  if( parse_mode ) {
+    assert( scope != NULL );
 
-    exp_link*   expl;
-    sig_link*   sigl;
+    curr = parse_mode ? root : NULL;
+
+    /* If we are in parse mode, re-issue expression IDs (we use the ulid field since it is not used in parse mode) */
+    if( parse_mode ) {
+
+      exp_link*   expl;
+      sig_link*   sigl;
 #ifndef VPI_ONLY
-    gitem_link* gil;
+      gitem_link* gil;
 #endif
 
-    /* First issue IDs to the expressions within the functional unit */
-    expl = root->funit->exp_head;
-    while( expl != NULL ) {
-      expl->exp->ulid = curr_expr_id;
-      curr_expr_id++;
-      expl = expl->next;
-    }
+      /* First issue IDs to the expressions within the functional unit */
+      expl = root->funit->exp_head;
+      while( expl != NULL ) {
+        expl->exp->ulid = curr_expr_id;
+        curr_expr_id++;
+        expl = expl->next;
+      }
 
-    sigl = root->funit->sig_head;
-    while( sigl != NULL ) {
-      sigl->sig->id = curr_sig_id;
-      curr_sig_id++;
-      sigl = sigl->next;
-    }
+      sigl = root->funit->sig_head;
+      while( sigl != NULL ) {
+        sigl->sig->id = curr_sig_id;
+        curr_sig_id++;
+        sigl = sigl->next;
+      }
     
 #ifndef VPI_ONLY
-    /* Then issue IDs to any generated expressions/signals */
-    gil = root->gitem_head;
-    while( gil != NULL ) {
-      gen_item_assign_ids( gil->gi, root->funit );
-      gil = gil->next;
-    }
+      /* Then issue IDs to any generated expressions/signals */
+      gil = root->gitem_head;
+      while( gil != NULL ) {
+        gen_item_assign_ids( gil->gi, root->funit );
+        gil = gil->next;
+      }
 #endif
 
+    }
 
-  }
+    /* Display root functional unit */
+    funit_db_write( root->funit, scope, file, curr, report_save );
 
-  /* Display root functional unit */
-  funit_db_write( root->funit, scope, file, curr, report_save );
+    /* Display children */
+    curr = root->child_head;
+    while( curr != NULL ) {
+      unsigned int rv = snprintf( tscope, 4096, "%s.%s", scope, curr->name );
+      assert( rv < 4096 );
+      instance_db_write( curr, file, tscope, parse_mode, report_save );
+      curr = curr->next;
+    }
 
-  /* Display children */
-  curr = root->child_head;
-  while( curr != NULL ) {
-    unsigned int rv = snprintf( tscope, 4096, "%s.%s", scope, curr->name );
-    assert( rv < 4096 );
-    instance_db_write( curr, file, tscope, parse_mode, report_save );
-    curr = curr->next;
   }
 
   PROFILE_END;
@@ -1287,6 +1292,10 @@ void instance_dealloc(
 
 /*
  $Log$
+ Revision 1.104  2008/09/03 05:33:06  phase1geo
+ Adding in FSM exclusion support to exclude and report -e commands.  Updating
+ regressions per recent changes.  Checkpointing.
+
  Revision 1.103  2008/09/02 22:41:45  phase1geo
  Starting to work on adding exclusion reason output to report files.  Added
  support for exclusion reasons to CDD files.  Checkpointing.
