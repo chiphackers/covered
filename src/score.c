@@ -277,7 +277,6 @@ static void score_generate_top_vpi_module(
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open %s for writing", vpi_file );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        printf( "score Throw A\n" );
         Throw 0;
 
       }
@@ -285,7 +284,6 @@ static void score_generate_top_vpi_module(
     } else {
 
       print_output( "Specified -vpi filename did not contain a file extension", FATAL, __FILE__, __LINE__ );
-      printf( "score Throw B\n" );
       Throw 0;
 
     }
@@ -293,7 +291,6 @@ static void score_generate_top_vpi_module(
   } Catch_anonymous {
     free_safe( mod_name, (strlen( mod_name ) + 1) );
     free_safe( ext, (strlen( ext ) + 1) );
-    printf( "score Throw C\n" );
     Throw 0;
   }
 
@@ -342,7 +339,6 @@ static void score_generate_pli_tab_file(
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open %s for writing", mod_name );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        printf( "score Throw D\n" );
         Throw 0;
 
       }
@@ -350,7 +346,6 @@ static void score_generate_pli_tab_file(
     } else {
 
       print_output( "Specified -vpi filename did not contain a file extension", FATAL, __FILE__, __LINE__ );
-      printf( "score Throw E\n" );
       Throw 0;
 
     }
@@ -358,7 +353,6 @@ static void score_generate_pli_tab_file(
   } Catch_anonymous {
     free_safe( mod_name, (strlen( mod_name ) + 1) );
     free_safe( ext, (strlen( ext ) + 1) );
-    printf( "score Throw F\n" );
     Throw 0;
   }
 
@@ -636,7 +630,6 @@ static void score_parse_args(
             /*@=unreachable@*/
           case DUMP_FMT_LXT :
             print_output( "Both the -vcd and -lxt options were specified on the command-line", FATAL, __FILE__, __LINE__ );
-            printf( "score Throw Z\n" );
             Throw 0;
             /*@-unreachable@*/
             break;
@@ -664,20 +657,17 @@ static void score_parse_args(
               unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "LXT dumpfile not found \"%s\"", argv[i] );
               assert( rv < USER_MSG_LENGTH );
               print_output( user_msg, FATAL, __FILE__, __LINE__ );
-              printf( "score Throw AB\n" );
               Throw 0;
             }
             break;
           case DUMP_FMT_VCD :
             print_output( "Both the -vcd and -lxt options were specified on the command-line", FATAL, __FILE__, __LINE__ );
-            printf( "score Throw AC\n" );
             Throw 0;
             /*@-unreachable@*/
             break;
             /*@=unreachable@*/
           case DUMP_FMT_LXT :
             print_output( "Only one -lxt option is allowed on the score command-line", FATAL, __FILE__, __LINE__ );
-            printf( "score Throw AD\n" );
             Throw 0;
             /*@-unreachable@*/
             break;
@@ -687,7 +677,6 @@ static void score_parse_args(
             break;
         }
       } else {
-        printf( "score Throw AE\n" );
         Throw 0;
       }
 
@@ -772,7 +761,6 @@ static void score_parse_args(
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unrecognizable filename %s specified for -p option.", argv[i] );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            printf( "score Throw AI\n" );
             Throw 0;
           }
         }
@@ -793,7 +781,6 @@ static void score_parse_args(
           if( *ptr == '\0' ) {
             print_output( "Option -P must specify a value to assign.  See \"covered score -h\" for more information.",
                           FATAL, __FILE__, __LINE__ );
-            printf( "score Throw AK\n" );
             Throw 0;
           } else {
             vector* vec;
@@ -807,7 +794,6 @@ static void score_parse_args(
           }
         } Catch_anonymous {
           free_safe( tmp, (strlen( argv[i] ) + 1) );
-          printf( "score Throw AL\n" );
           Throw 0;
         }
         free_safe( tmp, (strlen( argv[i] ) + 1) );
@@ -838,12 +824,10 @@ static void score_parse_args(
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown -T value (%s).  Please specify min, max or typ.", argv[i] );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            printf( "score Throw AN\n" );
             Throw 0;
           }
         }
       } else {
-        printf( "score Throw AO\n" );
         Throw 0;
       }
 
@@ -894,11 +878,9 @@ static void score_parse_args(
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown -A value (%s).  Please specify ovl.", argv[i] );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          printf( "score Throw AQ\n" );
           Throw 0;
         }
       } else {
-        printf( "score Throw AR\n" );
         Throw 0;
       }
 
@@ -965,7 +947,6 @@ static void score_parse_args(
       }
 #else
       print_output( "Command-line debugger (-cli option) is not available because Covered was not configured with the --enable-debug option", FATAL, __FILE__, __LINE__ );
-      printf( "score Throw AV\n" );
       Throw 0;
 #endif
 
@@ -1115,6 +1096,10 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.136  2008/09/04 21:34:20  phase1geo
+ Completed work to get exclude reason support to work with toggle coverage.
+ Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
+
  Revision 1.135  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

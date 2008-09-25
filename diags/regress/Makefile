@@ -258,6 +258,11 @@ CVERVCSDIAGS2 =
 CVERVCSDIAGS3 =
 CVERVCSDIAGS4 =
 
+# List of diagnostics that should not be run if we are using VCD dumpfiles
+ifdef VCD
+NOVCDDIAGS   := 
+endif
+
 # List of diagnostics that should not be run if we are using LXT dumpfiles (because they don't output any value changes after time 0)
 ifdef LXT
 NOLXTDIAGS   := add1            always7         always7.1       always11.2      ashift1 \
@@ -270,7 +275,10 @@ NOLXTDIAGS   := add1            always7         always7.1       always11.2      
                 localparam2     localparam3     long_exp1       long_exp2       long_exp3 \
                 mbit_sel3       mbit_sel3.1     mbit_sel4       mbit_sel4.1     mbit_sel4.2 \
                 mbit_sel4.3     mem1            mem2            merge1          merge2 \
-                merge5          multi_exp1      multi_exp1.1    multi_exp1.2    multi_exp1.3    multi_exp1.4 \
+                merge5          merge6          merge6.1        merge7          merge7.1 \
+                merge7.2        merge7.3        merge7.4        merge7.5        merge7.6 \
+                merge7.7        merge7.8        multi_exp1      multi_exp1.1    multi_exp1.2 \
+                multi_exp1.3    multi_exp1.4 \
                 multi_exp1.5    multi_exp1.6    multi_exp1.7    multi_exp1.8    multi_exp3 \
                 named_block2    nested_block1   nested_block2   nested_block2.1 param4 \
                 param6          param6.1        param7          param8          param8.1 \
@@ -278,7 +286,8 @@ NOLXTDIAGS   := add1            always7         always7.1       always11.2      
                 param10.2       param10.3       param10.4       param10.5       param13 \
                 param13.1       param14         param16         port1           port2 \
                 port3           race1           race1.1         race1.2         rassign1 \
-                real1           repeat1         sbit_sel1.1     sbit_sel2.1     signed1 \
+                real1           repeat1         sbit_sel1.1     sbit_sel2.1     score_err1.15 \
+                signed1 \
                 signed3         signed4         signed4.2       slist2          static1 \
                 static2         static2.1       static2.2       task3.1         timescale1.16 \
                 timescale1.17   timescale1.18   timescale1.19   timescale2.8    trigger1 \
@@ -286,25 +295,25 @@ NOLXTDIAGS   := add1            always7         always7.1       always11.2      
 endif
                  
 # Remove filtered diagnostics
-DIAGS1       := $(filter-out $(NOLXTDIAGS), $(DIAGS1))
-DIAGS2       := $(filter-out $(NOLXTDIAGS), $(DIAGS2))
-DIAGS3       := $(filter-out $(NOLXTDIAGS), $(DIAGS3))
-DIAGS4       := $(filter-out $(NOLXTDIAGS), $(DIAGS4))
-IVONLYDIAGS1 := $(filter-out $(NOLXTDIAGS), $(IVONLYDIAGS1))
-IVONLYDIAGS2 := $(filter-out $(NOLXTDIAGS), $(IVONLYDIAGS2))
-IVONLYDIAGS3 := $(filter-out $(NOLXTDIAGS), $(IVONLYDIAGS3))
-IVONLYDIAGS4 := $(filter-out $(NOLXTDIAGS), $(IVONLYDIAGS4))
-IVVCSDIAGS1  := $(filter-out $(NOLXTDIAGS), $(IVVCSDIAGS1))
-IVVCSDIAGS2  := $(filter-out $(NOLXTDIAGS), $(IVVCSDIAGS2))
-IVVCSDIAGS3  := $(filter-out $(NOLXTDIAGS), $(IVVCSDIAGS3))
-IVVCSDIAGS4  := $(filter-out $(NOLXTDIAGS), $(IVVCSDIAGS4))
-IVCVERDIAGS1 := $(filter-out $(NOLXTDIAGS), $(IVCVERDIAGS1))
-IVCVERDIAGS2 := $(filter-out $(NOLXTDIAGS), $(IVCVERDIAGS2))
-IVCVERDIAGS3 := $(filter-out $(NOLXTDIAGS), $(IVCVERDIAGS3))
-IVCVERDIAGS4 := $(filter-out $(NOLXTDIAGS), $(IVCVERDIAGS4))
-MERGE1       := $(filter-out $(NOLXTDIAGS), $(MERGE1))
-MERGE3       := $(filter-out $(NOLXTDIAGS), $(MERGE3))
-RACELIST     := $(filter-out $(NOLXTDIAGS), $(RACELIST))
+DIAGS1       := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS), $(DIAGS1))
+DIAGS2       := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS), $(DIAGS2))
+DIAGS3       := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS), $(DIAGS3))
+DIAGS4       := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS), $(DIAGS4))
+IVONLYDIAGS1 := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS), $(IVONLYDIAGS1))
+IVONLYDIAGS2 := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS), $(IVONLYDIAGS2))
+IVONLYDIAGS3 := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS), $(IVONLYDIAGS3))
+IVONLYDIAGS4 := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS), $(IVONLYDIAGS4))
+IVVCSDIAGS1  := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS), $(IVVCSDIAGS1))
+IVVCSDIAGS2  := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS), $(IVVCSDIAGS2))
+IVVCSDIAGS3  := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS), $(IVVCSDIAGS3))
+IVVCSDIAGS4  := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS), $(IVVCSDIAGS4))
+IVCVERDIAGS1 := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS), $(IVCVERDIAGS1))
+IVCVERDIAGS2 := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS), $(IVCVERDIAGS2))
+IVCVERDIAGS3 := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS), $(IVCVERDIAGS3))
+IVCVERDIAGS4 := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS), $(IVCVERDIAGS4))
+MERGE1       := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS), $(MERGE1))
+MERGE3       := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS), $(MERGE3))
+RACELIST     := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS), $(RACELIST))
 
 iverilog:
 	@cd ../verilog; \
