@@ -264,12 +264,13 @@ NOLXTDIAGS   := add1            always7         always7.1       always11.2      
                 ashift2         bassign2        bassign3        case5           casex2 \
                 casez3          concat6         define5         disable1        disable2.1 \
                 exclude1        exclude9.7      exclude9.8      exclude9.9      finish1 \
-                for1            fsm11           func5           hier1           hier2 \
+                for1            fsm11           func5           generate2.1     generate5.1 \
+                generate8       generate10      generate10.1    generate10.2    hier1           hier2 \
                 hier4           localparam1     localparam1.1   localparam1.2   localparam1.3 \
                 localparam2     localparam3     long_exp1       long_exp2       long_exp3 \
                 mbit_sel3       mbit_sel3.1     mbit_sel4       mbit_sel4.1     mbit_sel4.2 \
                 mbit_sel4.3     mem1            mem2            merge1          merge2 \
-                multi_exp1      multi_exp1.1    multi_exp1.2    multi_exp1.3    multi_exp1.4 \
+                merge5          multi_exp1      multi_exp1.1    multi_exp1.2    multi_exp1.3    multi_exp1.4 \
                 multi_exp1.5    multi_exp1.6    multi_exp1.7    multi_exp1.8    multi_exp3 \
                 named_block2    nested_block1   nested_block2   nested_block2.1 param4 \
                 param6          param6.1        param7          param8          param8.1 \
@@ -280,8 +281,8 @@ NOLXTDIAGS   := add1            always7         always7.1       always11.2      
                 real1           repeat1         sbit_sel1.1     sbit_sel2.1     signed1 \
                 signed3         signed4         signed4.2       slist2          static1 \
                 static2         static2.1       static2.2       task3.1         timescale1.16 \
-                timescale1.17   timescale1.18   timescale1.19   timescale2.8    unary1 \
-                wait1           wait1.1
+                timescale1.17   timescale1.18   timescale1.19   timescale2.8    trigger1 \
+                unary1          wait1           wait1.1
 endif
                  
 # Remove filtered diagnostics

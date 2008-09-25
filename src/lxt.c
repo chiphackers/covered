@@ -217,7 +217,6 @@ void lxt_parse(
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
         }
 
-        printf( "lxt Throw A\n" );
         Throw 0;
 
       }
@@ -236,14 +235,23 @@ void lxt_parse(
       }
 
     } Catch_anonymous {
+      assert( curr_inst_scope_size == 1 );
+      free_safe( curr_inst_scope[0], 4096 );
+      free_safe( curr_inst_scope, sizeof( char* ) );
+      curr_inst_scope      = NULL;
+      curr_inst_scope_size = 0;
       symtable_dealloc( vcd_symtab );
       free_safe( timestep_tab, (sizeof( symtable* ) * vcd_symtab_size) );
       lxt2_rd_close( lt );
-      printf( "lxt Throw B\n" );
       Throw 0;
     }
 
     /* Deallocate memory */
+    assert( curr_inst_scope_size == 1 );
+    free_safe( curr_inst_scope[0], 4096 );
+    free_safe( curr_inst_scope, sizeof( char* ) );
+    curr_inst_scope      = NULL;
+    curr_inst_scope_size = 0;
     symtable_dealloc( vcd_symtab );
     free_safe( timestep_tab, (sizeof( symtable* ) * vcd_symtab_size) );
 
@@ -253,7 +261,6 @@ void lxt_parse(
   } else {
 
     print_output( "Unable to read data from LXT dumpfile.  Exiting without scoring.", FATAL, __FILE__, __LINE__ );
-    printf( "lxt Throw C\n" );
     Throw 0;
 
   }
@@ -264,6 +271,11 @@ void lxt_parse(
 
 /*
  $Log$
+ Revision 1.28  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.25.4.1  2008/07/10 22:43:52  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

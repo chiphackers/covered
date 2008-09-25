@@ -327,11 +327,10 @@ static void lxt2_rd_iter_radix(
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  vch(%u) >= num_dict_entries(%u)", vch, (unsigned int)b->num_dict_entries );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            printf( "lxt2_read Throw A\n" );
             Throw 0;
           }
           if( lt->flags[idx] & (LXT2_RD_SYM_F_DOUBLE | LXT2_RD_SYM_F_STRING) ) {
-            free_safe( lt->value[idx], 0 );  /* TBD */
+            free_safe( lt->value[idx], (strlen( lt->value[idx] ) + 1) );
             lt->value[idx] = strdup_safe( (char*)b->string_pointers[vch] );
             break;
           }
@@ -468,7 +467,7 @@ static void lxt2_rd_iter_radix0(
       }
       if( lt->flags[idx] & (LXT2_RD_SYM_F_DOUBLE | LXT2_RD_SYM_F_STRING) ) {
         if( strcmp( lt->value[idx], (char*)b->string_pointers[vch] ) ) {
-          free_safe( lt->value[idx], 0 );  /* TBD */
+          free_safe( lt->value[idx], ((lt->len[idx] + 1) * sizeof( char )) );
           lt->value[idx] = strdup_safe( (char*)b->string_pointers[vch] );
           uniq = 1;
         }
@@ -663,7 +662,6 @@ static int lxt2_rd_process_block(
 
   if( vld != LXT2_RD_GRAN_SECT_DICT ) {
     print_output( "Malformed section", FATAL, __FILE__, __LINE__ );
-    printf( "lxt2_read Throw F\n" );
     Throw 0;
   }
 
@@ -678,9 +676,8 @@ static int lxt2_rd_process_block(
     }
     if( pnt != b->map_start ) {
       print_output( "Dictionary corrupt, exiting...", FATAL, __FILE__, __LINE__ );
-      free_safe( b->string_pointers, 0 );  /* TBD */
-      free_safe( b->string_lens, 0 );  /* TBD */
-      printf( "lxt2_read Throw G\n" );
+      free_safe( b->string_pointers, (b->num_dict_entries * sizeof( char* )) );
+      free_safe( b->string_lens, (b->num_dict_entries * sizeof( unsigned int )) );
       Throw 0;
     }
   }
@@ -742,7 +739,6 @@ static int lxt2_rd_process_block(
       /*@=formatcode@*/
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      printf( "lxt2_read Throw H\n" );
       Throw 0;
     }
     pnt++;
@@ -780,7 +776,6 @@ static int lxt2_rd_process_block(
       /*@=formatcode@*/
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      printf( "lxt2_read Throw I\n" );
       Throw 0;
     }
     pnt++;
@@ -991,6 +986,7 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) { PROFILE(LXT2_RD_INIT);
       lt->next_radix = malloc_safe_nolimit( lt->numfacs * sizeof( void* ) );
 
       for( i=0; i<lt->numfacs; i++ ) {
+        unsigned int j;
         lt->rows[i]  = lxt2_rd_get_32( m + i * 16, 0 );
         lt->msb[i]   = lxt2_rd_get_32( m + i * 16, 4 );
         lt->lsb[i]   = lxt2_rd_get_32( m + i * 16, 8 );
@@ -1002,6 +998,10 @@ struct lxt2_rd_trace* lxt2_rd_init( const char* name ) { PROFILE(LXT2_RD_INIT);
           lt->len[i] = 32;
         }
         lt->value[i] = calloc_safe( (lt->len[i] + 1), sizeof( char ) );
+        for( j=0; j<lt->len[i]; j++ ) {
+          lt->value[i][j] = 'a';
+        }
+        lt->value[i][j] = '\0';
       }
 
       for( lt->numrealfacs=0; lt->numrealfacs<lt->numfacs; lt->numrealfacs++ ) {
@@ -1134,6 +1134,15 @@ void lxt2_rd_close(
     struct lxt2_rd_block* bt;
     unsigned int          i;
 
+    if( lt->value != NULL ) {
+      for( i=0; i<lt->numfacs; i++ ) {
+        free_safe( lt->value[i], (strlen( lt->value[i] ) + 1) );
+        lt->value[i] = NULL; 
+      }
+      free_safe( lt->value, (lt->numfacs * sizeof( char* )) );
+      lt->value = NULL;
+    }
+
     free_safe( lt->process_mask, ((lt->numfacs / 8) + 1) );
     free_safe( lt->process_mask_compressed, ((lt->numfacs / LXT2_RD_PARTIAL_SIZE) + 1) );
     free_safe( lt->rows,  (lt->numfacs * sizeof( lxtint32_t )) );
@@ -1152,34 +1161,25 @@ void lxt2_rd_close(
     lt->len                     = NULL;
     lt->next_radix              = NULL;
 
-    if( lt->value != NULL ) {
-      for( i=0; i<lt->numfacs; i++ ) {
-        free_safe( lt->value[i], ((lt->len[i] + 1) * sizeof( char )) );
-        lt->value[i] = NULL; 
-      }
-      free_safe( lt->value, 0 );  /* TBD */
-      lt->value = NULL;
-    }
-
-    free_safe( lt->zfacnames, 0 );  /* TBD */
+    free_safe( lt->zfacnames, lt->zfacname_predec_size );
     lt->zfacnames = NULL;
 
     if( lt->faccache ) {
 
-      free_safe( lt->faccache->bufprev, 0 );  /* TBD */
-      free_safe( lt->faccache->bufcurr, 0 );
+      free_safe( lt->faccache->bufprev, (lt->longestname + 1) );
+      free_safe( lt->faccache->bufcurr, (lt->longestname + 1) );
 
       lt->faccache->bufprev = NULL;
       lt->faccache->bufcurr = NULL;
 
-      free_safe( lt->faccache, 0 );  /* TBD */
+      free_safe( lt->faccache, sizeof( struct lxt2_rd_facname_cache ) );
       lt->faccache = NULL;
 
     }
 
-    free_safe( lt->fac_map, 0 );  /* TBD */
+    free_safe( lt->fac_map, lt->numfacs * sizeof( granmsk_t ) );
     lt->fac_map = NULL;
-    free_safe( lt->fac_curpos, 0 );  /* TBD */
+    free_safe( lt->fac_curpos, lt->numfacs * sizeof( char* ) );
     lt->fac_curpos = NULL;
 
     b = lt->block_head;
@@ -1187,15 +1187,15 @@ void lxt2_rd_close(
 
       bt = b->next;
 
-      free_safe( b->mem, 0 );  /* TBD */
-      free_safe( b->string_pointers, 0 );  /* TBD */
-      free_safe( b->string_lens, 0 );  /* TBD */
+      free_safe( b->mem, b->uncompressed_siz );
+      free_safe( b->string_pointers, (b->num_dict_entries * sizeof( char* )) );
+      free_safe( b->string_lens, (b->num_dict_entries * sizeof( unsigned int)) );
 
       b->mem             = NULL;
       b->string_pointers = NULL;
       b->string_lens     = NULL;
 
-      free_safe( b, 0 );  /* TBD */
+      free_safe( b, sizeof( struct lxt2_rd_block ) );
 
       b = bt;
 

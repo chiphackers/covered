@@ -43,25 +43,27 @@ sub run {
 
   my( $bname )  = $_[0];
   my( $retval ) = 0;
-
-  # Simulate the design
-  if( $SIMULATOR eq "IV" ) {
-    system( "iverilog -DDUMP -y lib ${bname}.v; ./a.out" ) && die;
-  } elsif( $SIMULATOR eq "CVER" ) {
-    system( "cver -q +define+DUMP +libext+.v+ -y lib ${bname}.v" ) && die;
-  } elsif( $SIMULATOR eq "VCS" ) {
-    system( "vcs +define+DUMP +v2k -sverilog +libext+.v+ -y lib ${bname}.v; ./simv" ) && die;
-  } else {
-    die "Illegal SIMULATOR value (${SIMULATOR})\n";
-  }
+  my( $fmt )    = "";
 
   # Convert configuration file
   if( $DUMPTYPE eq "VCD" ) {
     &convertCfg( "vcd", "${bname}.cfg" );
   } elsif( $DUMPTYPE eq "LXT" ) {
     &convertCfg( "lxt", "${bname}.cfg" );
+    $fmt = "-lxt2";
   } else {
     die "Illegal DUMPTYPE value (${DUMPTYPE})\n";
+  }
+
+  # Simulate the design
+  if( $SIMULATOR eq "IV" ) {
+    system( "iverilog -DDUMP -y lib ${bname}.v; ./a.out ${fmt}" ) && die;
+  } elsif( $SIMULATOR eq "CVER" ) {
+    system( "cver -q +define+DUMP +libext+.v+ -y lib ${bname}.v" ) && die;
+  } elsif( $SIMULATOR eq "VCS" ) {
+    system( "vcs +define+DUMP +v2k -sverilog +libext+.v+ -y lib ${bname}.v; ./simv" ) && die;
+  } else {
+    die "Illegal SIMULATOR value (${SIMULATOR})\n";
   }
 
   # Score CDD file
