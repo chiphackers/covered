@@ -113,7 +113,8 @@ sub initialize {
       } elsif( $varname eq "LXT" ) {
         $DUMPTYPE = "LXT";
       } elsif( $varname eq "VPI" ) {
-        $USE_VPI = 1;
+        $USE_VPI  = 1;
+        $DUMPTYPE = "VPI";
       }
 
     }

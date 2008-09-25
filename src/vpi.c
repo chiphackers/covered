@@ -372,6 +372,7 @@ void covered_create_value_change_cb( vpiHandle sig ) { PROFILE(COVERED_CREATE_VA
   s_vpi_value value;
 
   /* Only add the signal if it is in our database and needs to be assigned from the simulator */
+//  if( (vsigl = sig_link_find( vpi_get_str( vpiName, sig ), curr_instance->funit->sig_head )) != NULL ) {
   if( ((vsigl = sig_link_find( vpi_get_str( vpiName, sig ), curr_instance->funit->sig_head )) != NULL) &&
       (vsigl->sig->suppl.part.assigned == 0) ) {
 
@@ -708,7 +709,7 @@ PLI_INT32 covered_sim_calltf( char* name ) {
 
   /* Read in contents of specified database file */
   Try {
-    db_read( in_db_name, READ_MODE_MERGE_NO_MERGE ); 
+    db_read( in_db_name, READ_MODE_NO_MERGE ); 
   } Catch_anonymous {
     vpi_printf( "covered VPI: Unable to read database file\n" );
     vpi_control( vpiFinish, EXIT_FAILURE );

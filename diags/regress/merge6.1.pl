@@ -77,8 +77,6 @@ sub run {
     &convertCfg( "vcd", "${bname}.cfg" );
   } elsif( $DUMPTYPE eq "LXT" ) {
     &convertCfg( "lxt", "${bname}.cfg" );
-  } else {
-    die "Illegal DUMPTYPE value (${DUMPTYPE})\n";
   }
 
   # Score CDD file

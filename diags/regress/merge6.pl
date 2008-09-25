@@ -54,31 +54,56 @@ exit 0;
 
 sub run {
 
-  my( $bname )  = $_[0];
-  my( $retval ) = 0;
+  my( $bname )     = $_[0];
+  my( $retval )    = 0;
+  my( $vpi_debug ) = "";
+
+  # If we are using the VPI, run the score command and add the needed pieces to the simulation runs
+  if( $USE_VPI == 1 ) {
+    &convertCfg( "vpi", "${bname}.cfg" );
+    &runScoreCommand( "-f ${bname}.cfg" );
+    if( $COVERED_GFLAGS eq "-D" ) {
+      $vpi_debug = "+covered_debug";
+    }
+  }
 
   # Simulate the design
   if( $SIMULATOR eq "IV" ) {
-    system( "iverilog -DDUMP -y lib ${bname}.v; ./a.out" ) && die; 
+    if( $USE_VPI == 1 ) {
+      system( "iverilog -y lib -m ../../lib/covered.vpi ${bname}.v covered_vpi.v; ./a.out +covered_cdd=${bname}.cdd ${vpi_debug}" ) && die; 
+    } else {
+      system( "iverilog -DDUMP -y lib ${bname}.v; ./a.out" ) && die; 
+    }
   } elsif( $SIMULATOR eq "CVER" ) {
-    system( "cver -q +define+DUMP +libext+.v+ -y lib ${bname}.v" ) && die;
+    if( $USE_VPI == 1 ) {
+      system( "cver -q +libext+.v+ -y lib +loadvpi=../../lib/covered.cver.so:vpi_compat_bootstrap ${bname}.v covered_vpi.v +covered_cdd=${bname}.cdd ${vpi_debug}" ) && die;
+    } else {
+      system( "cver -q +define+DUMP +libext+.v+ -y lib ${bname}.v" ) && die;
+    }
   } elsif( $SIMULATOR eq "VCS" ) {
-    system( "vcs +define+DUMP +v2k -sverilog +libext+.v+ -y lib ${bname}.v; ./simv" ) && die; 
+    if( $USE_VPI == 1 ) {
+      system( "vcs +v2k -sverilog +libext+.v+ -y lib +vpi -load ../../lib/covered.vcs.so:covered_register ${bname}.v covered_vpi.v; ./simv +covered_cdd=${bname}.cdd ${vpi_debug}" ) && die; 
+    } else {
+      system( "vcs +define+DUMP +v2k -sverilog +libext+.v+ -y lib ${bname}.v; ./simv" ) && die; 
+    }
   } else {
     die "Illegal SIMULATOR value (${SIMULATOR})\n";
   }
 
-  # Convert configuration file
-  if( $DUMPTYPE eq "VCD" ) {
-    &convertCfg( "vcd", "${bname}.cfg" );
-  } elsif( $DUMPTYPE eq "LXT" ) {
-    &convertCfg( "lxt", "${bname}.cfg" );
-  } else {
-    die "Illegal DUMPTYPE value (${DUMPTYPE})\n";
-  }
+  # If we are doing VCD/LXT simulation, run the score command post-process
+  if( $USE_VPI == 0 ) {
 
-  # Score CDD file
-  &runScoreCommand( "-f ${bname}.cfg -D DUMP" );
+    # Convert configuration file
+    if( $DUMPTYPE eq "VCD" ) {
+      &convertCfg( "vcd", "${bname}.cfg" );
+    } elsif( $DUMPTYPE eq "LXT" ) {
+      &convertCfg( "lxt", "${bname}.cfg" );
+    }
+
+    # Score CDD file
+    &runScoreCommand( "-f ${bname}.cfg -D DUMP" );
+
+  }
 
   return $retval;
 
