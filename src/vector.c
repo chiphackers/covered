@@ -285,9 +285,9 @@ void vector_db_write(
   mask = write_data ? 0xff : 0xfc;
   switch( vec->suppl.part.type ) {
     case VTYPE_VAL :  mask = mask & 0x03;  break;
-    case VTYPE_SIG :  mask = mask & 0x0f;  break;
+    case VTYPE_SIG :  mask = mask & 0x1b;  break;
     case VTYPE_EXP :  mask = mask & 0x3f;  break;
-    case VTYPE_MEM :  mask = mask & 0x3f;  break;
+    case VTYPE_MEM :  mask = mask & 0x7b;  break;
     default        :  break;
   }
 
@@ -1257,12 +1257,6 @@ bool vector_set_assigned(
 }
 
 /*!
- \param vec  Pointer to vector to calculate coverage metrics for and perform scratch -> actual assignment
- \param scratchl  Pointer to scratch array containing new lower data
- \param scratchh  Pointer to scratch array containing new upper data
- \param lsb  Least-significant bit to get coverage for
- \param msb  Most-significant bit to get coverage for
-
  \return Returns TRUE if the assigned value has changed; otherwise, returns FALSE.
 
  This function is called after a value has been stored in the SCRATCH arrays.  This
@@ -1270,11 +1264,11 @@ bool vector_set_assigned(
  from the SCRATCH array to the 
 */
 bool vector_set_coverage_and_assign_ulong(
-  vector*      vec,
-  const ulong* scratchl,
-  const ulong* scratchh,
-  int          lsb,
-  int          msb
+  vector*      vec,       /*!< Pointer to vector to calculate coverage metrics for and perform scratch -> actual assignment */
+  const ulong* scratchl,  /*!< Pointer to scratch array containing new lower data */
+  const ulong* scratchh,  /*!< Pointer to scratch array containing new upper data */
+  int          lsb,       /*!< Least-significant bit to get coverage for */
+  int          msb        /*!< Most-significant bit to get coverage for */
 ) { PROFILE(VECTOR_SET_COVERAGE_AND_ASSIGN);
 
   bool         changed = FALSE;          /* Set to TRUE if the assigned value has changed */
@@ -1311,12 +1305,16 @@ bool vector_set_coverage_and_assign_ulong(
         ulong  tvall = entry[VTYPE_INDEX_SIG_VALL];
         ulong  tvalh = entry[VTYPE_INDEX_SIG_VALH];
         if( (fvall != (tvall & mask)) || (fvalh != (tvalh & mask)) ) {
+          ulong tvalx = tvalh & ~tvall & entry[VTYPE_INDEX_SIG_MISC];
+          ulong xval  = entry[VTYPE_INDEX_SIG_XHOLD];
           if( prev_set == 1 ) {
-            entry[VTYPE_INDEX_SIG_TOG01] |= (~tvalh & ~tvall) & (~fvalh &  fvall) & mask;
-            entry[VTYPE_INDEX_SIG_TOG10] |= (~tvalh &  tvall) & (~fvalh & ~fvall) & mask;
+            entry[VTYPE_INDEX_SIG_TOG01] |= ((~tvalh & ~tvall) | (tvalx & ~xval)) & (~fvalh &  fvall) & mask;
+            entry[VTYPE_INDEX_SIG_TOG10] |= ((~tvalh &  tvall) | (tvalx &  xval)) & (~fvalh & ~fvall) & mask;
           }
-          entry[VTYPE_INDEX_SIG_VALL] = (tvall & ~mask) | fvall;
-          entry[VTYPE_INDEX_SIG_VALH] = (tvalh & ~mask) | fvalh;
+          entry[VTYPE_INDEX_SIG_VALL]  = (tvall & ~mask) | fvall;
+          entry[VTYPE_INDEX_SIG_VALH]  = (tvalh & ~mask) | fvalh;
+          entry[VTYPE_INDEX_SIG_XHOLD] = (xval  & ~mask) | (tvall & mask);
+          entry[VTYPE_INDEX_SIG_MISC] |= ~fvalh & mask;
           changed = TRUE;
         }
       }
@@ -1330,11 +1328,15 @@ bool vector_set_coverage_and_assign_ulong(
         ulong  tvall = entry[VTYPE_INDEX_MEM_VALL];
         ulong  tvalh = entry[VTYPE_INDEX_MEM_VALH];
         if( (fvall != (tvall & mask)) || (fvalh != (tvalh & mask)) ) {
-          entry[VTYPE_INDEX_MEM_TOG01] |= (~tvalh & ~tvall) & (~fvalh &  fvall) & mask;
-          entry[VTYPE_INDEX_MEM_TOG10] |= (~tvalh &  tvall) & (~fvalh & ~fvall) & mask;
+          ulong tvalx = tvalh & ~tvall & entry[VTYPE_INDEX_MEM_MISC];
+          ulong xval  = entry[VTYPE_INDEX_MEM_XHOLD];
+          entry[VTYPE_INDEX_MEM_TOG01] |= ((~tvalh & ~tvall) | (tvalx & ~xval)) & (~fvalh &  fvall) & mask;
+          entry[VTYPE_INDEX_MEM_TOG10] |= ((~tvalh &  tvall) | (tvalx &  xval)) & (~fvalh & ~fvall) & mask;
           entry[VTYPE_INDEX_MEM_WR]    |= mask;
           entry[VTYPE_INDEX_MEM_VALL]   = (tvall & ~mask) | fvall;
           entry[VTYPE_INDEX_MEM_VALH]   = (tvalh & ~mask) | fvalh;
+          entry[VTYPE_INDEX_MEM_XHOLD]  = (xval  & ~mask) | (tvall & mask);
+          entry[VTYPE_INDEX_MEM_MISC]  |= ~fvalh & mask;
           changed = TRUE;
         }
       }
@@ -4670,6 +4672,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.155  2008/09/15 05:00:19  phase1geo
+ Documentation updates.
+
  Revision 1.154  2008/09/15 03:43:49  phase1geo
  Cleaning up splint warnings.
 

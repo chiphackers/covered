@@ -2,13 +2,13 @@
 8 /ptmp/covered/diags/verilog -t main -vcd ovl1.3.vcd -o ovl1.3.cdd -v ovl1.3.v -A ovl -D OVL_COVER_DEFAULT=15 +libext+.vlib+ -y ./ovl -I ./ovl -I ./ovl/vlog95 -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" ovl1.3.v 1 34 1
-1 width 4 0 c0000 1 0 31 0 32 17 4 0 0 0 0
-1 clock 1 3 6000a 1 0 0 0 1 17 1 1 1 1 0
-1 reset_n 2 4 7000a 1 0 0 0 1 17 0 1 1 0 0
-1 a 3 5 7000a 1 0 3 0 4 17 0 f f f 0
+1 width 4 0 c0000 1 0 31 0 32 17 4 0 0 0 0 0
+1 clock 1 3 6000a 1 0 0 0 1 17 1 1 0 1 1 0
+1 reset_n 2 4 7000a 1 0 0 0 1 17 0 1 0 1 0 0
+1 a 3 5 7000a 1 0 3 0 4 17 0 f 0 f f 0
 3 0 clock_gen "main.clkgen" ovl1.3.v 37 46 1
 2 1 41 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u1
-1 clock 5 38 83000d 1 0 0 0 1 17 0 1 1 1 0
+1 clock 5 38 83000d 1 0 0 0 1 17 0 1 0 1 1 0
 4 1 1 0 0
 3 1 clock_gen.$u1 "main.clkgen.$u1" ovl1.3.v 0 44 1
 2 2 42 100013 1 0 21004 0 0 1 16 0 0
@@ -107,30 +107,30 @@
 2 91 112 190076 9 18 138c 81 90 1 18 0 1 1 1 1 0
 2 92 112 90014 0 1 1410 0 0 1 1 fire_cover_3
 2 93 112 90077 4 35 e 91 92
-1 severity_level 20 0 c0000 1 0 31 0 32 17 1 0 0 0 0
-1 width 21 0 c0000 1 0 31 0 32 17 4 0 0 0 0
-1 property_type 22 0 c0000 1 0 31 0 32 17 0 0 0 0 0
-1 msg 23 0 c0000 1 0 31 0 72 17 54494f4e 0 0 0 0 494f4c41 0 0 0 0 56 0 0 0 0
-1 coverage_level 24 0 c0000 1 0 31 0 32 17 f 0 0 0 0
-1 assert_name 25 0 c0000 1 0 31 0 152 17 5f484f54 0 0 0 0 5f4f4e45 0 0 0 0 5a45524f 0 0 0 0 4552545f 0 0 0 0 415353 0 0 0 0
-1 OVL_COVER_SANITY_ON 26 0 c0000 1 0 31 0 32 17 1 0 0 0 0
-1 OVL_COVER_BASIC_ON 27 0 c0000 1 0 31 0 32 17 2 0 0 0 0
-1 OVL_COVER_CORNER_ON 28 0 c0000 1 0 31 0 32 17 4 0 0 0 0
-1 OVL_COVER_STATISTIC_ON 29 0 c0000 1 0 31 0 32 17 8 0 0 0 0
-1 clk 6 14 14 1 0 0 0 1 17 1 1 1 1 0
-1 reset_n 7 14 19 1 0 0 0 1 17 1 1 1 0 0
-1 test_expr 8 15 14 1 0 3 0 4 17 f f f f 0
-1 error_count 9 6 7000a 1 0 31 0 32 49 0 ffffffff 0 0 0
-1 cover_count 10 7 7000a 1 0 31 0 32 49 0 ffffffff 7 3 0
-1 dec_test_expr 11 9 60015 1 0 3 0 4 17 f f f 7 0
-1 zoh_test_expr 12 10 60015 1 0 0 0 1 17 1 1 0 0 0
-1 valid_test_expr 13 11 60013 1 0 0 0 1 17 1 1 0 0 0
-1 one_hots_checked 14 75 70017 1 0 3 0 4 17 0 f f 0 0
-1 prev_one_hots_checked 15 76 70012 1 0 3 0 4 17 0 f f 0 0
-1 prev_test_expr 16 77 70012 1 0 3 0 4 17 0 f f f 0
-1 fire_cover_1 17 92 60007 1 0 0 0 1 17 1 1 1 1 0
-1 fire_cover_2 18 92 60015 1 0 0 0 1 17 1 1 1 1 0
-1 fire_cover_3 19 92 60023 1 0 0 0 1 17 1 1 1 1 0
+1 severity_level 20 0 c0000 1 0 31 0 32 17 1 0 0 0 0 0
+1 width 21 0 c0000 1 0 31 0 32 17 4 0 0 0 0 0
+1 property_type 22 0 c0000 1 0 31 0 32 17 0 0 0 0 0 0
+1 msg 23 0 c0000 1 0 31 0 72 17 54494f4e 0 0 0 0 0 494f4c41 0 0 0 0 0 56 0 0 0 0 0
+1 coverage_level 24 0 c0000 1 0 31 0 32 17 f 0 0 0 0 0
+1 assert_name 25 0 c0000 1 0 31 0 152 17 5f484f54 0 0 0 0 0 5f4f4e45 0 0 0 0 0 5a45524f 0 0 0 0 0 4552545f 0 0 0 0 0 415353 0 0 0 0 0
+1 OVL_COVER_SANITY_ON 26 0 c0000 1 0 31 0 32 17 1 0 0 0 0 0
+1 OVL_COVER_BASIC_ON 27 0 c0000 1 0 31 0 32 17 2 0 0 0 0 0
+1 OVL_COVER_CORNER_ON 28 0 c0000 1 0 31 0 32 17 4 0 0 0 0 0
+1 OVL_COVER_STATISTIC_ON 29 0 c0000 1 0 31 0 32 17 8 0 0 0 0 0
+1 clk 6 14 14 1 0 0 0 1 17 1 1 0 1 1 0
+1 reset_n 7 14 19 1 0 0 0 1 17 1 1 0 1 0 0
+1 test_expr 8 15 14 1 0 3 0 4 17 f f 0 f f 0
+1 error_count 9 6 7000a 1 0 31 0 32 49 0 ffffffff 0 0 0 0
+1 cover_count 10 7 7000a 1 0 31 0 32 49 0 ffffffff 0 7 3 0
+1 dec_test_expr 11 9 60015 1 0 3 0 4 17 f f 0 f 7 0
+1 zoh_test_expr 12 10 60015 1 0 0 0 1 17 1 1 0 0 0 0
+1 valid_test_expr 13 11 60013 1 0 0 0 1 17 1 1 0 0 0 0
+1 one_hots_checked 14 75 70017 1 0 3 0 4 17 0 f 0 f 0 0
+1 prev_one_hots_checked 15 76 70012 1 0 3 0 4 17 0 f 0 f 0 0
+1 prev_test_expr 16 77 70012 1 0 3 0 4 17 0 f 0 f f 0
+1 fire_cover_1 17 92 60007 1 0 0 0 1 17 1 1 0 1 1 0
+1 fire_cover_2 18 92 60015 1 0 0 0 1 17 1 1 0 1 1 0
+1 fire_cover_3 19 92 60023 1 0 0 0 1 17 1 1 0 1 1 0
 4 13 1 0 0
 4 16 1 0 0
 4 28 f 28 28
@@ -145,7 +145,7 @@
 4 93 f 93 93
 3 3 assert_zero_one_hot.ovl_cover_t "main.foo.ovl_cover_t" std_ovl_task.h 117 135 1
 2 94 119 20006 7 3d 5002 0 0 1 18 0 1 0 0 0 0 $u19
-1 cvr_msg 30 118 800016 1 0 1023 0 1024 17 ffffffff ffffffff 0 0 0 ffffffff ffffffff 0 0 0 ffffffff ffffffff 6110a13 20d0205 0 ffffffff ffffffff 2d2c1f1f 331f230d 0 ffffffff ffffffff 301a0f03 1f0d2812 0 ffffffff ffffffff 1b1b042b 1b211227 0 ffffffff ffffffff 617c6d7f 6108080c 0 ffffffff ffffffff 0 0 0 ffffffff ffffffff 0 0 0 ffffffff ffffffff 0 0 0 ffffffff ffffffff 0 0 0 ffffffff ffffffff 0 0 0 ffffffff ffffffff 0 0 0 ffffffff ffffffff 0 0 0 ffffffff ffffffff 0 0 0 ffffffff ffffffff 0 0 0 ffffffff ffffffff 0 0 0 ffffffff ffffffff 0 0 0 ffffffff ffffffff 0 0 0 ffffffff ffffffff 0 0 0 ffffffff ffffffff 0 0 0 ffffffff ffffffff 0 0 0 ffffffff ffffffff 0 0 0 ffffffff ffffffff 0 0 0 ffffffff ffffffff 0 0 0 ffffffff ffffffff 0 0 0 ffffffff ffffffff 0 0 0 ffffffff ffffffff 0 0 0 ffffffff ffffffff 0 0 0 ffffffff ffffffff 0 0 0 ffffffff ffffffff 0 0 0 ffffffff ffffffff 0 0 0
+1 cvr_msg 30 118 800016 1 0 1023 0 1024 17 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 6110a13 20d0205 0 ffffffff ffffffff 0 2d2c1f1f 331f230d 0 ffffffff ffffffff 0 301a0f03 1f0d2812 0 ffffffff ffffffff 0 1b1b042b 1b211227 0 ffffffff ffffffff 0 617c6d7f 6108080c 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0
 4 94 11 0 0
 3 1 assert_zero_one_hot.ovl_cover_t.$u19 "main.foo.ovl_cover_t.$u19" std_ovl_task.h 0 134 1
 2 95 122 210021 1 0 1008 0 0 32 48 1 0
@@ -165,8 +165,8 @@
 4 99 11 103 103
 3 2 assert_zero_one_hot.ovl_fire_2state_f "main.foo.ovl_fire_2state_f" std_ovl_task.h 157 170 1
 2 106 160 20006 0 3d 5802 0 0 1 18 0 1 0 0 0 0 $u20
-1 ovl_fire_2state_f 31 157 9000b 1 0 0 0 1 17 1 1 0 0 0
-1 property_type 32 158 c 1 0 31 0 32 17 ffffffff ffffffff 0 0 0
+1 ovl_fire_2state_f 31 157 9000b 1 0 0 0 1 17 1 1 0 0 0 0
+1 property_type 32 158 c 1 0 31 0 32 17 ffffffff ffffffff 0 0 0 0
 4 106 11 0 0
 3 1 assert_zero_one_hot.ovl_fire_2state_f.$u20 "main.foo.ovl_fire_2state_f.$u20" std_ovl_task.h 0 169 1
 2 107 163 60006 0 0 1810 0 0 32 48 1 0
@@ -203,8 +203,8 @@
 4 111 11 130 115
 3 2 assert_zero_one_hot.ovl_fire_xcheck_f "main.foo.ovl_fire_xcheck_f" std_ovl_task.h 173 191 1
 2 131 176 20006 0 3d 5802 0 0 1 18 0 1 0 0 0 0 $u21
-1 ovl_fire_xcheck_f 33 173 9000b 1 0 0 0 1 17 1 1 0 0 0
-1 property_type 34 174 c 1 0 31 0 32 17 ffffffff ffffffff 0 0 0
+1 ovl_fire_xcheck_f 33 173 9000b 1 0 0 0 1 17 1 1 0 0 0 0
+1 property_type 34 174 c 1 0 31 0 32 17 ffffffff ffffffff 0 0 0 0
 4 131 11 0 0
 3 1 assert_zero_one_hot.ovl_fire_xcheck_f.$u21 "main.foo.ovl_fire_xcheck_f.$u21" std_ovl_task.h 0 190 1
 2 132 183 60006 0 0 1810 0 0 32 48 1 0
@@ -241,8 +241,8 @@
 4 136 11 155 140
 3 2 assert_zero_one_hot.ovl_fire_cover_f "main.foo.ovl_fire_cover_f" std_ovl_task.h 193 208 1
 2 156 196 20006 0 3d 5802 0 0 1 18 0 1 0 0 0 0 $u22
-1 ovl_fire_cover_f 35 193 9000b 1 0 0 0 1 17 1 1 0 0 0
-1 coverage_level 36 194 c 1 0 31 0 32 17 ffffffff ffffffff 0 0 0
+1 ovl_fire_cover_f 35 193 9000b 1 0 0 0 1 17 1 1 0 0 0 0
+1 coverage_level 36 194 c 1 0 31 0 32 17 ffffffff ffffffff 0 0 0 0
 4 156 11 0 0
 3 1 assert_zero_one_hot.ovl_fire_cover_f.$u22 "main.foo.ovl_fire_cover_f.$u22" std_ovl_task.h 0 207 1
 2 157 197 17001a 0 0 21810 0 0 1 16 0 0

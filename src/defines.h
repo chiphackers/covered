@@ -1125,6 +1125,7 @@ typedef enum vtype_val_indices_e {
 typedef enum vtype_sig_indices_e {
   VTYPE_INDEX_SIG_VALL,
   VTYPE_INDEX_SIG_VALH,
+  VTYPE_INDEX_SIG_XHOLD,
   VTYPE_INDEX_SIG_TOG01,
   VTYPE_INDEX_SIG_TOG10,
   VTYPE_INDEX_SIG_MISC,
@@ -1135,10 +1136,12 @@ typedef enum vtype_sig_indices_e {
 typedef enum vtype_mem_indices_e {
   VTYPE_INDEX_MEM_VALL,
   VTYPE_INDEX_MEM_VALH,
+  VTYPE_INDEX_MEM_XHOLD,
   VTYPE_INDEX_MEM_TOG01,
   VTYPE_INDEX_MEM_TOG10,
   VTYPE_INDEX_MEM_WR,
   VTYPE_INDEX_MEM_RD,
+  VTYPE_INDEX_MEM_MISC,
   VTYPE_INDEX_MEM_NUM
 } vtype_mem_indices;
 
@@ -2932,6 +2935,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.316  2008/09/22 22:15:02  phase1geo
+ Initial code for supporting the merging and resolution of exclusion reasons.
+ This code is completely untested at this point but does compile.  Checkpointing.
+
  Revision 1.315  2008/09/22 04:19:53  phase1geo
  Fixing bug 2122019.  Also adding exclusion reason timestamp support to CDD files.
 
