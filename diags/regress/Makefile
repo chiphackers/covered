@@ -286,8 +286,8 @@ NOLXTDIAGS   := add1            always7         always7.1       always11.2      
                 param10.2       param10.3       param10.4       param10.5       param13 \
                 param13.1       param14         param16         port1           port2 \
                 port3           race1           race1.1         race1.2         rassign1 \
-                real1           repeat1         sbit_sel1.1     sbit_sel2.1     score_err1.15 \
-                signed1 \
+                real1           repeat1         sbit_sel1.1     sbit_sel2.1     score_err1.14 \
+                score_err1.15   score_err1.16   signed1 \
                 signed3         signed4         signed4.2       slist2          static1 \
                 static2         static2.1       static2.2       task3.1         timescale1.16 \
                 timescale1.17   timescale1.18   timescale1.19   timescale2.8    trigger1 \
