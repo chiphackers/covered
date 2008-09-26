@@ -12,10 +12,10 @@ require "../verilog/regress_subs.pl";
 system( "mkdir -p merge6_1 merge6_2" ) && die;
 
 # Run all of the CDDs to be merged
-$retval = &run( "merge6a" ) || $retval;
-$retval = &run( "merge6b" ) || $retval;
-$retval = &run( "merge6c" ) || $retval;
-$retval = &run( "merge6d" ) || $retval;
+$retval = &run( "merge6a", "merge6_1" ) || $retval;
+$retval = &run( "merge6b", "merge6_1" ) || $retval;
+$retval = &run( "merge6c", "merge6_2" ) || $retval;
+$retval = &run( "merge6d", "merge6_2" ) || $retval;
 
 # Save the value of CHECK_MEM_CMD
 $ORIG_CHECK_MEM_CMD = $CHECK_MEM_CMD;
@@ -48,41 +48,46 @@ system( "rm -rf merge6_1 merge6_2" ) && die;
 &runReportCommand( "-d v -i -o merge6.rptI merge6.cdd" );
 
 # Perform the file comparison checks
-&checkTest( "merge6", 5, 0 );
+if( $DUMPTYPE eq "VCD" ) {
+  &checkTest( "merge6", 5, 0 );
+} else {
+  &checkTest( "merge6", 5, 5 );
+}
 
 exit 0;
 
 sub run {
 
-  my( $bname )     = $_[0];
-  my( $retval )    = 0;
-  my( $vpi_debug ) = "";
+  my( $bname, $odir ) = @_;
+  my( $retval )       = 0;
+  my( $vpi_debug )    = "";
 
   # If we are using the VPI, run the score command and add the needed pieces to the simulation runs
   if( $USE_VPI == 1 ) {
     &convertCfg( "vpi", "${bname}.cfg" );
     &runScoreCommand( "-f ${bname}.cfg" );
+    $vpi_args = "+covered_cdd=${odir}/${bname}.cdd";
     if( $COVERED_GFLAGS eq "-D" ) {
-      $vpi_debug = "+covered_debug";
+      $vpi_args .= " +covered_debug";
     }
   }
 
   # Simulate the design
   if( $SIMULATOR eq "IV" ) {
     if( $USE_VPI == 1 ) {
-      system( "iverilog -y lib -m ../../lib/covered.vpi ${bname}.v covered_vpi.v; ./a.out +covered_cdd=${bname}.cdd ${vpi_debug}" ) && die; 
+      system( "iverilog -y lib -m ../../lib/covered.vpi ${bname}.v covered_vpi.v; ./a.out ${vpi_args}" ) && die; 
     } else {
       system( "iverilog -DDUMP -y lib ${bname}.v; ./a.out" ) && die; 
     }
   } elsif( $SIMULATOR eq "CVER" ) {
     if( $USE_VPI == 1 ) {
-      system( "cver -q +libext+.v+ -y lib +loadvpi=../../lib/covered.cver.so:vpi_compat_bootstrap ${bname}.v covered_vpi.v +covered_cdd=${bname}.cdd ${vpi_debug}" ) && die;
+      system( "cver -q +libext+.v+ -y lib +loadvpi=../../lib/covered.cver.so:vpi_compat_bootstrap ${bname}.v covered_vpi.v ${vpi_args}" ) && die;
     } else {
       system( "cver -q +define+DUMP +libext+.v+ -y lib ${bname}.v" ) && die;
     }
   } elsif( $SIMULATOR eq "VCS" ) {
     if( $USE_VPI == 1 ) {
-      system( "vcs +v2k -sverilog +libext+.v+ -y lib +vpi -load ../../lib/covered.vcs.so:covered_register ${bname}.v covered_vpi.v; ./simv +covered_cdd=${bname}.cdd ${vpi_debug}" ) && die; 
+      system( "vcs +v2k -sverilog +libext+.v+ -y lib +vpi -load ../../lib/covered.vcs.so:covered_register ${bname}.v covered_vpi.v; ./simv ${vpi_args}" ) && die; 
     } else {
       system( "vcs +define+DUMP +v2k -sverilog +libext+.v+ -y lib ${bname}.v; ./simv" ) && die; 
     }
