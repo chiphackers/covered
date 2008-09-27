@@ -100,6 +100,7 @@ img_DATA = html/img/app_menu.gif \
            html/img/pref_exclude.gif \
            html/img/pref_goals.gif \
            html/img/pref_main.gif \
+           html/img/pref_merge.gif \
            html/img/pref_syntax.gif \
            html/img/prev.gif \
            html/img/rank_files.gif \

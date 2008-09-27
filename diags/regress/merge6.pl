@@ -41,7 +41,7 @@ $CHECK_MEM_CMD = $ORIG_CHECK_MEM_CMD;
 &runMergeCommand( "-o merge6.cdd merge6_1/merge6.cdd merge6_2/merge6.cdd" );
 
 # Remove the temporary directories
-system( "rm -rf merge6_1 merge6_2" ) && die;
+#system( "rm -rf merge6_1 merge6_2" ) && die;
 
 # Now perform report commands
 &runReportCommand( "-d v -o merge6.rptM merge6.cdd" );
