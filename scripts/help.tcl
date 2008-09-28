@@ -42,7 +42,7 @@ proc help_show_manual {chapter {section ""}} {
       set fpath $fpath#$section
     }
 
-    if {[catch {exec $BROWSER exec $fpath}]} {
+    if {[catch {exec $BROWSER exec $fpath} emsg]} {
       error "Error displaying $fpath in browser\n$emsg"
     }
 

@@ -27,6 +27,7 @@
         <listitem><para><xref linkend="section.gui.pref.goals"/></para></listitem>
         <listitem><para><xref linkend="section.gui.pref.syntax"/></para></listitem>
         <listitem><para><xref linkend="section.gui.pref.exclude"/></para></listitem>
+        <listitem><para><xref linkend="section.gui.pref.merging"/></para></listitem>
       </itemizedlist>
     </para>
   </sect1>
@@ -363,6 +364,70 @@
         the order of the exclusions within the table by simply clicking on an entry and dragging it to the desired
         location.  The order of the exclusion reasons specified in this table will be the initial order of the
         exclusion reasons in the popup window.
+      </para>
+    </sect2>
+  </sect1>
+  
+  <sect1 id="section.gui.pref.merging">
+    <title>Preference Merging Pane</title>
+    <para>
+      The merging pane is needed to specify to Covered how to resolve conflicts that are found when merging CDD
+      files.  Although coverage points and exclusions are simply merged (ORed) together, things such as exclusion
+      reasons can exist for the same coverage point but contain different information.  When two exclusion reasons
+      are given for the same coverage point, Covered must decide how to resolve this information and this preference
+      pane allows the user to set what this behavior will be.
+    </para>
+    <para>
+      <figure id="figure.gui.pref.merging">
+        <title>Merging Preferences Pane</title>
+        <mediaobject><imageobject><imagedata fileref="img/pref_merge.gif" format="GIF"/></imageobject></mediaobject>
+      </figure>
+    </para>
+    <sect2 id="section.gui.pref.merging.er">
+      <title>Exclusion Reason Conflict Resolution Frame</title>
+      <para>
+        This frame allows the user to specify the way in which exclusion reason conflicts should be resolved.  The
+        following options are provided:
+      </para>
+      <para>
+        <itemizedlist>
+          <listitem>
+            <para><emphasis role="bold">Use the first reason</emphasis></para>
+            <para>
+              Specifies if two or more exclusion reasons are found for the same coverage point, Covered should use
+              the exclusion reason found in the first CDD file merged.  The rest of the exclusion reasons are thrown away.
+            </para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="bold">Use the last reason</emphasis></para>
+            <para>
+              Specifies if two or more exclusion reasons are found for the same coverage point, Covered should use
+              the exclusion reason found in the last CDD file merged.  The rest of the exclusion reasons are thrown away.
+            </para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="bold">Use the newest reason</emphasis></para>
+            <para>
+              Specifies if two or more exclusion reasons are found for the same coverage point, Covered should use
+              the newest exclusion reason (when an exclusion is created, a timestamp is saved along with the
+              coverage reason).  The rest of the exclusion reasons are thrown away.
+            </para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="bold">Use the oldest reason</emphasis></para>
+            <para>
+              Specifies if two or more exclusion reasons are found for the same coverage point, Covered should use
+              the oldest exclusion reason.  The rest of the exclusion reasons are thrown away.
+            </para>
+          </listitem>
+          <listitem>
+            <para><emphasis role="bold">Merge all reasons</emphasis></para>
+            <para>
+              Specifies if two or more exclusion reasons are found for the same coverage point, Covered should
+              merge all of them.  No information is lost in this case.
+            </para>
+          </listitem>
+        </itemizedlist>
       </para>
     </sect2>
   </sect1>
