@@ -82,6 +82,12 @@ void db_add_file_version(
   const char* version
 );
 
+/*! \brief Creates an expression to handle the given system call and returns a pointer to the new expression. */
+expression* db_create_expr_for_system_call(
+  const char* str,
+  bool        lhs_mode
+);
+
 /*! \brief Adds specified functional unit node to functional unit tree.  Called by parser. */
 func_unit* db_add_instance( char* scope, char* name, int type, vector_width* range );
 
@@ -220,6 +226,12 @@ bool db_do_timestep( uint64 time, bool final );
 
 /*
  $Log$
+ Revision 1.94  2008/09/21 13:36:59  phase1geo
+ Completing code to get functional unit version information into CDD file and
+ functional units.  Added new version1 and version1.1 diagnostics to verify that
+ this functionality works as expected.  Still need to make use of this
+ information.
+
  Revision 1.93  2008/08/28 21:24:14  phase1geo
  Adding support for exclusion output for assertions.  Updated regressions accordingly.
  Checkpointing.

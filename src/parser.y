@@ -1865,15 +1865,7 @@ expr_primary
     {
       if( (ignore_mode == 0) && ($1 != NULL) ) {
         Try {
-          if( strncmp( $1, "$display", 8 ) == 0 ) {
-            $$ = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
-          } else if( strncmp( $1, "$finish", 7 ) == 0 ) {
-            $$ = db_create_expression( NULL, NULL, EXP_OP_SFINISH, lhs_mode, 0, 0, 0, NULL );
-          } else if( strncmp( $1, "$stop", 5 ) == 0 ) {
-            $$ = db_create_expression( NULL, NULL, EXP_OP_SSTOP, lhs_mode, 0, 0, 0, NULL );
-          } else {
-            $$ = NULL;
-          }
+          $$ = db_create_expr_for_system_call( $1, lhs_mode );
         } Catch_anonymous {
           error_count++;
           $$ = NULL;
@@ -1987,15 +1979,7 @@ expr_primary
     {
       if( (ignore_mode == 0) && ($1 != NULL) ) {
         Try {
-          if( strncmp( $1, "$display", 8 ) == 0 ) {
-            $$ = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
-          } else if( strncmp( $1, "$finish", 7 ) == 0 ) {
-            $$ = db_create_expression( NULL, NULL, EXP_OP_SFINISH, lhs_mode, 0, 0, 0, NULL );
-          } else if( strncmp( $1, "$stop", 5 ) == 0 ) {
-            $$ = db_create_expression( NULL, NULL, EXP_OP_SSTOP, lhs_mode, 0, 0, 0, NULL );
-          } else {
-            $$ = NULL;
-          }
+          $$ = db_create_expr_for_system_call( $1, lhs_mode );
         } Catch_anonymous {
           error_count++;
           $$ = NULL;
@@ -4923,15 +4907,7 @@ statement
     {
       if( (ignore_mode == 0) && ($1 != NULL) ) {
         Try {
-          if( strncmp( $1, "$display", 8 ) == 0 ) {
-            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL ) );
-          } else if( strncmp( $1, "$finish", 7 ) == 0 ) {
-            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_SFINISH, lhs_mode, 0, 0, 0, NULL ) );
-          } else if( strncmp( $1, "$stop", 5 ) == 0 ) {
-            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_SSTOP, lhs_mode, 0, 0, 0, NULL ) );
-          } else {
-            $$ = NULL;
-          }
+          $$ = db_create_statement( db_create_expr_for_system_call( $1, lhs_mode ) );
         } Catch_anonymous {
           error_count++;
         }
@@ -4944,15 +4920,7 @@ statement
     {
       if( (ignore_mode == 0) && ($1 != NULL) ) {
         Try {
-          if( strncmp( $1, "$display", 8 ) == 0 ) {
-            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL ) );
-          } else if( strncmp( $1, "$finish", 7 ) == 0 ) {
-            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_SFINISH, lhs_mode, 0, 0, 0, NULL ) );
-          } else if( strncmp( $1, "$stop", 7 ) == 0 ) {
-            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_SSTOP, lhs_mode, 0, 0, 0, NULL ) );
-          } else {
-            $$  = NULL;
-          }
+          $$ = db_create_statement( db_create_expr_for_system_call( $1, lhs_mode ) );
         } Catch_anonymous {
           error_count++;
         }

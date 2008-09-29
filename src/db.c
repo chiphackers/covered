@@ -949,6 +949,43 @@ void db_add_file_version(
 }
 
 /*!
+ \return Returns a pointer to the newly created expression to handle the given system call.
+*/
+expression* db_create_expr_for_system_call(
+  const char* str,      /*!< String containing system function call */
+  bool        lhs_mode  /*!< Specifies LHS mode of system call */
+) { PROFILE(DB_CREATE_EXPR_FOR_SYSTEM_CALL);
+
+  expression* expr = NULL;
+
+  if( (strncmp( str, "$display",         8 ) == 0) ||
+      (strncmp( str, "$fdisplay",        9 ) == 0) ||
+      (strncmp( str, "$write",           6 ) == 0) ||
+      (strncmp( str, "$fwrite",          7 ) == 0) ||
+      (strncmp( str, "$strobe",          7 ) == 0) ||
+      (strncmp( str, "$fstrobe",         8 ) == 0) ||
+      (strncmp( str, "$monitor",         8 ) == 0) ||
+      (strncmp( str, "$fmonitor",        9 ) == 0) ||
+      (strncmp( str, "$monitoron",      10 ) == 0) ||
+      (strncmp( str, "$monitoroff",     11 ) == 0) ||
+      (strncmp( str, "$printtimescale", 15 ) == 0) ||
+      (strncmp( str, "$timeformat",     11 ) == 0) ||
+      (strncmp( str, "$dumpfile",        9 ) == 0) ||
+      (strncmp( str, "$dumpvars",        9 ) == 0) ) {
+    expr = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
+  } else if( strncmp( str, "$finish", 7 ) == 0 ) {
+    expr = db_create_expression( NULL, NULL, EXP_OP_SFINISH, lhs_mode, 0, 0, 0, NULL );
+  } else if( strncmp( str, "$stop", 5 ) == 0 ) {
+    expr = db_create_expression( NULL, NULL, EXP_OP_SSTOP, lhs_mode, 0, 0, 0, NULL );
+  }
+
+  PROFILE_END;
+
+  return( expr );
+
+}
+
+/*!
  \return Returns a pointer to the created functional unit if the instance was added to the hierarchy;
          otherwise, returns NULL.
 
@@ -3076,6 +3113,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.332  2008/09/23 21:38:55  phase1geo
+ Fixing segmentation fault issues with GUI and fixing exclusion reason conflict
+ resolution code.  This now works in the GUI as needed.
+
  Revision 1.331  2008/09/22 22:15:01  phase1geo
  Initial code for supporting the merging and resolution of exclusion reasons.
  This code is completely untested at this point but does compile.  Checkpointing.
