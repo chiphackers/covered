@@ -189,7 +189,7 @@ sub parse_vector {
   my( $next_start );
 
   # Mapping of vector type sizes
-  my( @vec_type_sizes ) = (2, 5, 6, 6);
+  my( @vec_type_sizes ) = (2, 6, 6, 8);
 
   # If the vector owns its data, parse and transform it 
   if( $owns_data == 1 ) {
