@@ -393,7 +393,6 @@ void db_write(
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Could not open %s for writing", obf_file( file ) );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    printf( "db Throw B\n" );
     Throw 0;
 
   }
@@ -618,7 +617,6 @@ void db_read(
               unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unexpected type %d when parsing database file %s", type, obf_file( file ) );
               assert( rv < USER_MSG_LENGTH );
               print_output( user_msg, FATAL, __FILE__, __LINE__ );
-              printf( "db Throw D\n" );
               Throw 0;
 
             }
@@ -628,7 +626,6 @@ void db_read(
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unexpected line in database file %s", obf_file( file ) );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            printf( "db Throw E\n" );
             Throw 0;
 
           }
@@ -663,7 +660,6 @@ void db_read(
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Could not open %s for reading", obf_file( file ) );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    printf( "db Throw H\n" );
     Throw 0;
 
   }
@@ -970,13 +966,19 @@ expression* db_create_expr_for_system_call(
       (strncmp( str, "$monitoroff",     11 ) == 0) ||
       (strncmp( str, "$printtimescale", 15 ) == 0) ||
       (strncmp( str, "$timeformat",     11 ) == 0) ||
+#ifndef TESTMODE
       (strncmp( str, "$dumpfile",        9 ) == 0) ||
+#endif
       (strncmp( str, "$dumpvars",        9 ) == 0) ) {
     expr = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
   } else if( strncmp( str, "$finish", 7 ) == 0 ) {
     expr = db_create_expression( NULL, NULL, EXP_OP_SFINISH, lhs_mode, 0, 0, 0, NULL );
   } else if( strncmp( str, "$stop", 5 ) == 0 ) {
     expr = db_create_expression( NULL, NULL, EXP_OP_SSTOP, lhs_mode, 0, 0, 0, NULL );
+  } else if( strncmp( str, "$time", 5 ) == 0 ) {
+    expr = db_create_expression( NULL, NULL, EXP_OP_STIME, lhs_mode, 0, 0, 0, NULL );
+  //} else if( strncmp( str, "$random", 7 ) == 0 ) {
+  //  expr = db_create_expression( NULL, NULL, EXP_OP_SRANDOM, lhs_mode, 0, 0, 0, NULL );
   }
 
   PROFILE_END;
@@ -1704,7 +1706,6 @@ vsignal* db_find_signal(
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to find variable %s in module %s", obf_sig( name ), obf_funit( curr_funit->name ) );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    printf( "db Throw L\n" );
     Throw 0;
 
   }
@@ -2088,7 +2089,6 @@ expression* db_create_expr_from_static(
 
   } Catch_anonymous {
     static_expr_dealloc( se, FALSE );
-    printf( "db Throw N\n" );
     Throw 0;
   }
 
@@ -2201,7 +2201,6 @@ expression* db_create_sensitivity_list(
 
     } Catch_anonymous {
       str_link_delete_list( sig_head );
-      printf( "db Throw O\n" );
       Throw 0;
     }
 
@@ -2275,7 +2274,6 @@ statement* db_parallelize_statement(
 
     } Catch_anonymous {
       expression_dealloc( exp, FALSE );
-      printf( "db Throw P\n" );
       Throw 0;
     }
 
@@ -2337,7 +2335,6 @@ statement* db_create_statement(
     } Catch_anonymous {
       statement_dealloc( stmt );
       expression_dealloc( exp, FALSE );
-      printf( "db Throw Q\n" );
       Throw 0;
     }
 
@@ -3113,6 +3110,9 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.333  2008/09/29 05:53:04  phase1geo
+ Adding support for several more system calls to parser.
+
  Revision 1.332  2008/09/23 21:38:55  phase1geo
  Fixing segmentation fault issues with GUI and fixing exclusion reason conflict
  resolution code.  This now works in the GUI as needed.

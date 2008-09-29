@@ -4310,9 +4310,19 @@ statement
   | K_forever inc_block_depth statement dec_block_depth
     {
       if( $3 != NULL ) {
+        expression* expr;
+        statement*  stmt;
+        Try {
+          expr = db_create_expression( NULL, NULL, EXP_OP_FOREVER, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+        } Catch_anonymous {
+          error_count++;
+        }
+        stmt = db_create_statement( expr );
         if( db_statement_connect( $3, $3 ) ) {
-          $$ = $3;
+          db_connect_statement_false( stmt, $3 );
+          $$ = stmt;
         } else {
+          db_remove_statement( stmt );
           db_remove_statement( $3 );
           $$ = NULL;
         }

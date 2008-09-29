@@ -835,6 +835,9 @@ typedef enum exp_op_type_e {
   EXP_OP_RS_A,            /*!< 101:0x65.  Specifies the '>>=' operator */
   EXP_OP_ALS_A,           /*!< 102:0x66.  Specifies the '<<<=' operator */
   EXP_OP_ARS_A,           /*!< 103:0x67.  Specifies the '>>>=' operator */
+  EXP_OP_FOREVER,         /*!< 104:0x68.  Specifies the 'forever' statement */
+  EXP_OP_STIME,           /*!< 105:0x69.  Specifies the $time call */
+  EXP_OP_SRANDOM,         /*!< 106:0x6a.  Specifies the $random call */
   EXP_OP_NUM              /*!< The total number of defines for expression values */
 } exp_op_type;
 
@@ -2935,6 +2938,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.317  2008/09/26 22:38:59  phase1geo
+ Added feature request 2129623.  Updated regressions for this change (except for
+ VCS regression at this point).
+
  Revision 1.316  2008/09/22 22:15:02  phase1geo
  Initial code for supporting the merging and resolution of exclusion reasons.
  This code is completely untested at this point but does compile.  Checkpointing.

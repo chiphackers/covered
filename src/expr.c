@@ -247,6 +247,8 @@ static bool expression_op_func__xor_a( expression*, thread*, const sim_time* );
 static bool expression_op_func__lshift_a( expression*, thread*, const sim_time* );
 static bool expression_op_func__rshift_a( expression*, thread*, const sim_time* );
 static bool expression_op_func__arshift_a( expression*, thread*, const sim_time* );
+static bool expression_op_func__time( expression*, thread*, const sim_time* );
+static bool expression_op_func__random( expression*, thread*, const sim_time* );
 
 static void expression_assign( expression*, expression*, int*, thread*, const sim_time*, bool eval_lhs );
 
@@ -357,7 +359,10 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",             ex
                                            {"LSHIFT_A",       "<<=",          expression_op_func__lshift_a,   {0, 0, NOT_COMB,   1, 1, 0, 1, 1} },
                                            {"RSHIFT_A",       ">>=",          expression_op_func__rshift_a,   {0, 0, NOT_COMB,   1, 1, 0, 1, 1} },
                                            {"ALSHIFT_A",      "<<<=",         expression_op_func__lshift_a,   {0, 0, NOT_COMB,   1, 1, 0, 1, 1} },
-                                           {"ARSHIFT_A",      ">>>=",         expression_op_func__arshift_a,  {0, 0, NOT_COMB,   1, 1, 0, 1, 1} }
+                                           {"ARSHIFT_A",      ">>>=",         expression_op_func__arshift_a,  {0, 0, NOT_COMB,   1, 1, 0, 1, 1} },
+                                           {"FOREVER",        "",             expression_op_func__null,       {0, 0, NOT_COMB,   0, 0, 0, 0, 0} },
+                                           {"STIME",          "$time",        expression_op_func__time,       {0, 0, NOT_COMB,   0, 0, 0, 0, 0} },
+                                           {"SRANDOM",        "$random",      expression_op_func__random,     {0, 0, NOT_COMB,   0, 0, 0, 0, 0} }
  };
 
 
@@ -445,7 +450,6 @@ static void expression_create_value(
                                   width, MAX_BIT_WIDTH );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      printf( "expr Throw A\n" );
       Throw 0;
     }
 
@@ -468,16 +472,6 @@ static void expression_create_value(
 }
 
 /*!
- \param right    Pointer to expression on right.
- \param left     Pointer to expression on left.
- \param op       Operation to perform for this expression.
- \param lhs      Specifies this expression is a left-hand-side assignment expression.
- \param id       ID for this expression as determined by the parent.
- \param line     Line number this expression is on.
- \param first    First column index of expression.
- \param last     Last column index of expression.
- \param data     Specifies if we should create a uint8 array for the vector value.
-
  \return Returns pointer to newly created expression.
 
  \throws anonymous Throw expression_create_value expression_create_value expression_create_value expression_create_value expression_create_value expression_create_value expression_create_value expression_create_value
@@ -486,15 +480,15 @@ static void expression_create_value(
  usage.  Right and left expressions need to be created before this function is called.
 */
 expression* expression_create(
-  expression*  right,
-  expression*  left,
-  exp_op_type  op,
-  bool         lhs,
-  int          id,
-  int          line,
-  unsigned int first,
-  unsigned int last,
-  bool         data
+  expression*  right,  /*!< Pointer to expression on right */
+  expression*  left,   /*!< Pointer to expression on left */
+  exp_op_type  op,     /*!< Operation to perform for this expression */
+  bool         lhs,    /*!< Specifies this expression is a left-hand-side assignment expression */
+  int          id,     /*!< ID for this expression as determined by the parent */
+  int          line,   /*!< Line number this expression is on */
+  unsigned int first,  /*!< First column index of expression */
+  unsigned int last,   /*!< Last column index of expression */
+  bool         data    /*!< Specifies if we should create a uint8 array for the vector value */
 ) { PROFILE(EXPRESSION_CREATE);
 
   expression* new_expr;    /* Pointer to newly created expression */
@@ -584,6 +578,16 @@ expression* expression_create(
         expression_create_value( new_expr, 1, data );
       }
 
+    /* $time expressions are always 64-bits wide */
+    } else if( op == EXP_OP_STIME ) {
+
+      expression_create_value( new_expr, 64, data );
+
+    /* $random expressions are always 32-bits wide */
+    } else if( op == EXP_OP_SRANDOM ) {
+
+      expression_create_value( new_expr, 32, data );
+
     } else if( (op == EXP_OP_LT   )   ||
                (op == EXP_OP_GT   )   ||
                (op == EXP_OP_EQ   )   ||
@@ -647,7 +651,6 @@ expression* expression_create(
 
   } Catch_anonymous {
     expression_dealloc( new_expr, TRUE );
-    printf( "expr Throw B\n" );
     Throw 0;
   }
 
@@ -1453,7 +1456,6 @@ void expression_db_read(
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  expression (%d) in database written before its functional unit", curr_expr_id );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      printf( "expr Throw C\n" );
       Throw 0;
 
     } else {
@@ -1465,7 +1467,6 @@ void expression_db_read(
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  root expression (%d) found before leaf expression (%d) in database file", curr_expr_id, right_id );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        printf( "expr Throw D\n" );
         Throw 0;
       } else {
         right = expl->exp;
@@ -1478,7 +1479,6 @@ void expression_db_read(
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  root expression (%d) found before leaf expression (%d) in database file", curr_expr_id, left_id );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        printf( "expr Throw E\n" );
         Throw 0;
       } else {
         left = expl->exp;
@@ -1505,7 +1505,6 @@ void expression_db_read(
 
         } Catch_anonymous {
           expression_dealloc( expr, FALSE );
-          // printf( "expr Throw F\n" ); - HIT
           Throw 0;
         }
 
@@ -1562,7 +1561,6 @@ void expression_db_read(
   } else {
 
     print_output( "Unable to read expression value", FATAL, __FILE__, __LINE__ );
-    printf( "expr Throw G\n" );
     Throw 0;
 
   }
@@ -1607,7 +1605,6 @@ void expression_db_merge(
 
       print_output( "Attempting to merge databases derived from different designs.  Unable to merge",
                     FATAL, __FILE__, __LINE__ );
-      printf( "expr Throw H\n" );
       Throw 0;
 
     } else {
@@ -1632,7 +1629,6 @@ void expression_db_merge(
   } else {
 
     print_output( "Unable to parse expression line in database.  Unable to merge.", FATAL, __FILE__, __LINE__ );
-    printf( "expr Throw I\n" );
     Throw 0;
 
   }
@@ -1795,16 +1791,13 @@ inline static void expression_set_tf_preclear(
 }
 
 /*!
- \param expr     Pointer to expression to set true/false indicators of
- \param changed  Set to TRUE if the expression changed value
-  
  This function sets the true/false indicators in the expression supplemental field as
  needed.  This function should only be called by expression_op_func__* functions whose
  return value is TRUE AND whose op type is either STATIC or PARAM.
 */
 inline static void expression_set_tf(
-  expression* expr,
-  bool        changed
+  expression* expr,    /*!< Pointer to expression to set true/false indicators of */
+  bool        changed  /*!< Set to TRUE if the expression changed value */
 ) {
 
   /* If the expression changed value or it has never been set, calculate coverage information */
@@ -1829,13 +1822,13 @@ inline static void expression_set_tf(
 }
 
 /*!
- \param expr  Pointer to expression to set 00/01/10/11 supplemental bits.
-
  Sets the eval_00/01/10/11 supplemental bits as necessary.  This function should be
  called by expression_op_func__* functions that are NOT events and have both the left
  and right expression children present.
 */
-inline static void expression_set_eval_NN( expression* expr ) {
+inline static void expression_set_eval_NN(
+  expression* expr  /*!< Pointer to expression to set 00/01/10/11 supplemental bits */
+) {
 
   uint32 lf = ESUPPL_IS_FALSE( expr->left->suppl  );
   uint32 lt = ESUPPL_IS_TRUE(  expr->left->suppl  );
@@ -1850,18 +1843,14 @@ inline static void expression_set_eval_NN( expression* expr ) {
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs XOR operation.
 */
 bool expression_op_func__xor(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__XOR);
 
   /* Perform XOR operation */
@@ -2779,6 +2768,45 @@ bool expression_op_func__arshift_a(
   PROFILE_END;
 
   return( retval );
+
+}
+
+/*!
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs the $time system call.
+*/
+bool expression_op_func__time(
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
+) { PROFILE(EXPRESSION_OP_FUNC__TIME);
+
+  /* Convert the current time to the current vector */
+  vector_from_uint64( expr->value, time->full );
+
+  PROFILE_END;
+
+  return( TRUE );
+
+}
+
+/*!
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs the $random system call.
+*/
+bool expression_op_func__random(
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
+) { PROFILE(EXPRESSION_OP_FUNC__RANDOM);
+
+  /* TBD */
+
+  PROFILE_END;
+
+  return( TRUE );
 
 }
 
@@ -5611,6 +5639,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.341  2008/09/11 04:51:21  phase1geo
+ Fixing bugs 2104947 and 2104924.  Adding mem4 diagnostic to verify.  Also
+ added negate2 diagnostic for coverage purposes.
+
  Revision 1.340  2008/08/28 13:59:18  phase1geo
  More updates to be more efficient in outputting exclusion IDs.  Also added
  capability (or the start of) to output exclusions when the -e option is
