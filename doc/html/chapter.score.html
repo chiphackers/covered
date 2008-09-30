@@ -26,7 +26,7 @@
               </td></tr><tr><td>
                 -cli [<span class="emphasis"><em>filename</em></span>]
               </td><td>
-                Causes the command-line debugger to be used during VCD/LXT dumpfile scoring. If <span class="emphasis"><em>filename</em></span> is 
+                Causes the command-line debugger to be used during VCD/LXT2 dumpfile scoring. If <span class="emphasis"><em>filename</em></span> is 
                 specified, this file contains information saved in a previous call to savehist on the CLI and causes the history 
                 contained in this file to be replayed prior to the CLI command prompt. If <span class="emphasis"><em>filename</em></span> is not 
                 specified, the CLI prompt will be immediately available at the start of simulation. This option is only available 
@@ -106,7 +106,7 @@
               </td></tr><tr><td>
                 -lxt <span class="emphasis"><em>dumpfile</em></span>
               </td><td>
-                Name of LXT/LXT2 dumpfile to score design with. If this option or the -vcd option is not used, Covered will only create an initial CDD 
+                Name of LXT2 dumpfile to score design with. If this option or the -vcd option is not used, Covered will only create an initial CDD 
                 file from the design and will not attempt to score the design.
               </td></tr><tr><td>
                 -m <span class="emphasis"><em>message</em></span>
@@ -162,7 +162,7 @@
                 If this option is specified without the -vcd or -lxt options, the design is parsed, a CDD file is created and a top-level Verilog module 
                 named <span class="emphasis"><em>filename</em></span> (if this value is specified) or "covered_vpi.v" (if filename is not specified) is created along with a 
                 PLI table file called <span class="emphasis"><em>filename</em></span>.tab or "covered_vpi.v.tab". Both of these files are used in the compilation of the 
-                simulator to use Covered as a VPI module. If either the -vcd or -lxt options are specified, this option has no effect. See <a href="chapter.start.html#section.start.dump.lxt" title="Creating an LXT dumpfile">the section called &#8220;Creating an LXT dumpfile&#8221;</a>
+                simulator to use Covered as a VPI module. If either the -vcd or -lxt options are specified, this option has no effect. See <a href="chapter.start.html#section.start.dump.lxt" title="Creating an LXT2 dumpfile">the section called &#8220;Creating an LXT2 dumpfile&#8221;</a>
               </td></tr><tr><td>
                 -vpi_ts (1|10|100)(s|ms|us|ns|ps|fs)/(1|10|100)(s|ms|us|ns|ps|fs)
               </td><td>
@@ -181,7 +181,7 @@
               </td></tr></tbody></table></div></div><p><br class="table-break">
     </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.score.t"></a>9.3. Specifying What to Cover</h2></div></div></div><p>
       Covered is not a logic simulator and, therefore, is not required to parse the entire DUT. True simulation is performed by the Verilog simulator used 
-      to generate the VCD/LXT dumpfile. Covered, therefore, is given the ability to parse only the part of the DUT that is to be scored for coverage. 
+      to generate the VCD/LXT2 dumpfile. Covered, therefore, is given the ability to parse only the part of the DUT that is to be scored for coverage. 
       Having this ability to ignore parts of the DUT has several advantages in the way of performance. Less memory is necessary for coverage simulation/
       calculation. Additionally, less processing is also required which leads to faster turnaround. On the other hand, since Covered ignores the parts of 
       the design not being scored, some information is not automatically extracted by Covered that is required for scoring the specified part of the DUT. 
@@ -223,7 +223,7 @@
       To get coverage for the instance foo and all modules below it, in addition to the instance bar, you would have to run Covered twice (once for each 
       top instance).
     </p><p>
-      The -vcd <span class="emphasis"><em>vcd_dumpfile</em></span> or -lxt <span class="emphasis"><em>lxt_dumpfile</em></span> parameter is simply the name of the VCD/LXT dumpfile that 
+      The -vcd <span class="emphasis"><em>vcd_dumpfile</em></span> or -lxt <span class="emphasis"><em>lxt_dumpfile</em></span> parameter is simply the name of the VCD/LXT2 dumpfile that 
       contains all of the module instances selected by the -t parameter (in combination with the -e option -- see below).
     </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.score.e"></a>9.4. Specifying What Not to Cover (Coverage Exclusions)</h2></div></div></div><p>
       Besides the -e option (scope exclusion), Covered comes equipped with several other means of excluding codes from coverage consideration. The -ea, -
@@ -292,7 +292,7 @@
         the same file.
       </p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.score.param"></a>9.5. Overriding Parameters (-P option)</h2></div></div></div><p>
       The <span class="emphasis"><em>defparam</em></span> statement can override any parameter specified in the DUT from any module in the DUT. Since parameter information 
-      is not typically specified in VCD/LXT dumpfiles, Covered needs to know about all parameter values at score time. Since all defparam statements are 
+      is not typically specified in VCD/LXT2 dumpfiles, Covered needs to know about all parameter values at score time. Since all defparam statements are 
       ignored by the Covered parser (even those in the DUT being scored), the user must inform Covered of any parameters that need to be overridden. This 
       is accomplished with the -P option to the score command.
     </p><p>

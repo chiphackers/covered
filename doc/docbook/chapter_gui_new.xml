@@ -90,7 +90,7 @@
         <listitem>
           <para>
             An unscored CDD file that was created by parsing the design. This CDD file can later be scored via a VCD or
-            LXT dumpfile. 
+            LXT2 dumpfile. 
           </para>
           <para>
             This option can be chosen by selecting the <emphasis role="bold">Parse Design Only</emphasis> radiobutton.
@@ -98,11 +98,11 @@
         </listitem>
         <listitem>
           <para>
-            A scored CDD file created from the design and from a previously created VCD or LXT dumpfile. 
+            A scored CDD file created from the design and from a previously created VCD or LXT2 dumpfile. 
           </para>
           <para>
             This option can be chosen by selecting the <emphasis role="bold">Dumpfile:</emphasis> option. If this option 
-            is chosen, a VCD or LXT dumpfile is required to be specified before the next option page can be used. Either 
+            is chosen, a VCD or LXT2 dumpfile is required to be specified before the next option page can be used. Either 
             specify this dumpfile name by typing in an existing dumpfile name in the entry field or use the 
             <emphasis role="bold">Browse...</emphasis> button to select a dumpfile.
           </para>

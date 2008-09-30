@@ -62,7 +62,7 @@
   <sect1 id="section.intro.cov.cando">
     <title>What does Covered do?</title>
     <para>
-      Covered is a tool that uses your design files along with standard VCD or LXT dump files to analyze the code 
+      Covered is a tool that uses your design files along with standard VCD or LXT2 dump files to analyze the code 
       coverage of the DUT. The code coverage information is stored in a special database file that can be retrieved 
       and "merged" with new coverage information to create a summed coverage total for several tests. After a database 
       file has been created, the user may generate various ASCII reports that summarize the coverage information or 

@@ -18,7 +18,7 @@
         <listitem>
           <para>
             Ed Spittles - Thank you for your tireless efforts in logging bugs, providing suggestions on enhancements/optimizations (including 
-            the tip on using of FIFOs to replace VCD/LXT file usage), your input into scoring optimizations for vectors and CDD ranking, and 
+            the tip on using of FIFOs to replace VCD/LXT2 file usage), your input into scoring optimizations for vectors and CDD ranking, and 
             for allowing me access to needed information for fixing those "hard to reproduce" bugs.
           </para>
         </listitem>

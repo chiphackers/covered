@@ -55,7 +55,7 @@
                 -cli [<emphasis>filename</emphasis>]
               </entry>
               <entry>
-                Causes the command-line debugger to be used during VCD/LXT dumpfile scoring. If <emphasis>filename</emphasis> is 
+                Causes the command-line debugger to be used during VCD/LXT2 dumpfile scoring. If <emphasis>filename</emphasis> is 
                 specified, this file contains information saved in a previous call to savehist on the CLI and causes the history 
                 contained in this file to be replayed prior to the CLI command prompt. If <emphasis>filename</emphasis> is not 
                 specified, the CLI prompt will be immediately available at the start of simulation. This option is only available 
@@ -191,7 +191,7 @@
                 -lxt <emphasis>dumpfile</emphasis>
               </entry>
               <entry>
-                Name of LXT/LXT2 dumpfile to score design with. If this option or the -vcd option is not used, Covered will only create an initial CDD 
+                Name of LXT2 dumpfile to score design with. If this option or the -vcd option is not used, Covered will only create an initial CDD 
                 file from the design and will not attempt to score the design.
               </entry>
             </row>
@@ -333,7 +333,7 @@
     <title>Specifying What to Cover</title>
     <para>
       Covered is not a logic simulator and, therefore, is not required to parse the entire DUT. True simulation is performed by the Verilog simulator used 
-      to generate the VCD/LXT dumpfile. Covered, therefore, is given the ability to parse only the part of the DUT that is to be scored for coverage. 
+      to generate the VCD/LXT2 dumpfile. Covered, therefore, is given the ability to parse only the part of the DUT that is to be scored for coverage. 
       Having this ability to ignore parts of the DUT has several advantages in the way of performance. Less memory is necessary for coverage simulation/
       calculation. Additionally, less processing is also required which leads to faster turnaround. On the other hand, since Covered ignores the parts of 
       the design not being scored, some information is not automatically extracted by Covered that is required for scoring the specified part of the DUT. 
@@ -399,7 +399,7 @@
       top instance).
     </para>
     <para>
-      The -vcd <emphasis>vcd_dumpfile</emphasis> or -lxt <emphasis>lxt_dumpfile</emphasis> parameter is simply the name of the VCD/LXT dumpfile that 
+      The -vcd <emphasis>vcd_dumpfile</emphasis> or -lxt <emphasis>lxt_dumpfile</emphasis> parameter is simply the name of the VCD/LXT2 dumpfile that 
       contains all of the module instances selected by the -t parameter (in combination with the -e option -- see below).
     </para>
   </sect1>
@@ -498,7 +498,7 @@
     <title>Overriding Parameters (-P option)</title>
     <para>
       The <emphasis>defparam</emphasis> statement can override any parameter specified in the DUT from any module in the DUT. Since parameter information 
-      is not typically specified in VCD/LXT dumpfiles, Covered needs to know about all parameter values at score time. Since all defparam statements are 
+      is not typically specified in VCD/LXT2 dumpfiles, Covered needs to know about all parameter values at score time. Since all defparam statements are 
       ignored by the Covered parser (even those in the DUT being scored), the user must inform Covered of any parameters that need to be overridden. This 
       is accomplished with the -P option to the score command.
     </para>

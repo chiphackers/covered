@@ -47,8 +47,8 @@
         <para>
           <orderedlist>
             <listitem><para>The design being scored is sufficiently large</para></listitem>
-            <listitem><para>The VCD/LXT dumpfile is sufficiently large</para></listitem>
-            <listitem><para>The VCD/LXT dumpfile contains dump information for a part of the design not being scored</para></listitem>
+            <listitem><para>The VCD/LXT2 dumpfile is sufficiently large</para></listitem>
+            <listitem><para>The VCD/LXT2 dumpfile contains dump information for a part of the design not being scored</para></listitem>
             <listitem><para>When Covered was configured, the --enable-debug and/or --enable-profiling options were specified</para></listitem>
           </orderedlist>
         </para>
@@ -80,7 +80,7 @@
           If reason (2) is true, nothing can be done except to shorten the run time of the diagnostics to produce shorter dumpfiles.
         </para>
         <para>
-          If reason (3) is true, the $dumpvars call in the simulator should be modified to only generate VCD/LXT dump information for the 
+          If reason (3) is true, the $dumpvars call in the simulator should be modified to only generate VCD/LXT2 dump information for the 
           modules included in scoring.  If there are modules not being scored which are included in the $dumpvars calls, please remove 
           these unnecessary modules from dumpfile output.
         </para>
