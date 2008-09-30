@@ -297,7 +297,7 @@ endif
 
 # List of diagnostics that should not be run if we are using VPI
 ifdef VPI
-NOVPIDIAGS   := err5.2          err5.3          err5.4
+NOVPIDIAGS   := err5.2          err5.3          err5.4          score_err1.14   score_err1.16
 endif
                  
 # Remove filtered diagnostics
