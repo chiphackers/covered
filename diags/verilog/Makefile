@@ -165,7 +165,7 @@ ifdef USE_CVER
 	@if test "$(COVERED_GFLAG)" = "-D"; then \
 		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd +covered_debug; \
 	else \
-		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd+$(DIAG).cdd; \
+		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd; \
 	fi
 else
 	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v

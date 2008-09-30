@@ -112,13 +112,13 @@ void vpi_print_output( const char* msg ) {
 }
 
 /*!
- \param sym    Symbol string of signal to store.
- \param value  Initial signal value to store.
-
  Stores the given signal symbol and initial value in the sym_value list that
  will be assigned to the simulator once the timestep table has been allocated.
 */
-void sym_value_store( char* sym, char* value ) { PROFILE(SYM_VALUE_STORE);
+void sym_value_store(
+  char* sym,   /*!< Symbol string of signal to store */
+  char* value  /*!< Initial signal value to store */
+) { PROFILE(SYM_VALUE_STORE);
 
   sym_value* sval;  /* Pointer to newly allocated sym_value structure */
 
@@ -169,15 +169,15 @@ void add_sym_values_to_sim() { PROFILE(ADD_SYM_VALUES_TO_SIM);
 }
 
 /*!
- \param cb  Pointer to callback data structure from vpi_user.h
-
  \return Returns 0.
 
  This callback function is called whenever a signal changes within the simulator.  It places
  this value in the Covered symtable and calls the db_do_timestep if this value change occurred
  on a new timestep.
 */
-PLI_INT32 covered_value_change( p_cb_data cb ) { PROFILE(COVERED_VALUE_CHANGE);
+PLI_INT32 covered_value_change(
+  p_cb_data cb  /*!< Pointer to callback data structure from vpi_user.h */
+) { PROFILE(COVERED_VALUE_CHANGE);
 
 #ifndef NOIV
   s_vpi_value value;
@@ -244,9 +244,7 @@ PLI_INT32 covered_end_of_sim( p_cb_data cb ) { PROFILE(COVERED_END_OF_SIM);
   p_vpi_time final_time;
 
   if( use_last_time ) {
-    if( !db_do_timestep( last_time, FALSE ) ) {
-      vpi_control( vpiFinish, EXIT_SUCCESS );
-    }
+    (void)db_do_timestep( last_time, FALSE );
   }
 
   /* Get the final simulation time */
@@ -256,14 +254,10 @@ PLI_INT32 covered_end_of_sim( p_cb_data cb ) { PROFILE(COVERED_END_OF_SIM);
 
   /* Flush any pending statement trees that are waiting for delay */
   last_time = ((uint64)final_time->high << 32) | (uint64)final_time->low;
-  if( !db_do_timestep( last_time, FALSE ) ) {
-    vpi_control( vpiFinish, EXIT_SUCCESS );
-  }
+  (void)db_do_timestep( last_time, FALSE );
 
   /* Perform one last simulation timestep */
-  if( !db_do_timestep( 0, TRUE ) ) {
-    vpi_control( vpiFinish, EXIT_SUCCESS );
-  }
+  (void)db_do_timestep( 0, TRUE );
 
   /* Indicate that this CDD contains scored information */
   info_suppl.part.scored = 1;
@@ -357,14 +351,14 @@ char* gen_next_symbol() { PROFILE(GEN_NEXT_SYMBOL);
 }
 
 /*!
- \param sig  Pointer to vpiHandle for a given signal.
-
  Finds the given VPI signal in Covered's database and creates a callback function that will
  be called whenever this signal changes value during simulation.  Also retrieves the initial
  value of the signal and stores it in the sym_value list and creates a symbol in the symtable
  structure for this signal.
 */
-void covered_create_value_change_cb( vpiHandle sig ) { PROFILE(COVERED_CREATE_VALUE_CHANGE_CB);
+void covered_create_value_change_cb(
+  vpiHandle sig  /*!< Pointer to vpiHandle for a given signal */
+) { PROFILE(COVERED_CREATE_VALUE_CHANGE_CB);
 
   p_cb_data   cb;
   sig_link*   vsigl;

@@ -176,16 +176,12 @@ static bool force_stop = FALSE;
 
 
 /*!
- \param thr         Pointer to thread to display to standard output
- \param show_queue  If set to TRUE, displays queue_prev/queue_next; otherwise, displays all_prev/all_next
- \param endl        If set to TRUE, prints a newline character
-
  Displays the contents of the given thread to standard output.
 */
 void sim_display_thread(
-  const thread* thr,
-  bool          show_queue,
-  bool          endl
+  const thread* thr,         /*!< Pointer to thread to display to standard output */
+  bool          show_queue,  /*!< If set to TRUE, displays queue_prev/queue_next; otherwise, displays all_prev/all_next */
+  bool          endl         /*!< If set to TRUE, prints a newline character */
 ) {
 
   if( !endl ) {
@@ -217,14 +213,11 @@ void sim_display_thread(
 }
 
 /*!
- \param queue_head  Pointer to head of queue to display
- \param queue_tail  Pointer to tail of queue to display
-
  Displays the current state of the active queue (for debug purposes only).
 */
 static void sim_display_queue(
-  thread* queue_head,
-  thread* queue_tail
+  thread* queue_head,  /*!< Pointer to head of queue to display */
+  thread* queue_tail   /*!< Pointer to tail of queue to display */
 ) {
 
   thread* thr;  /* Pointer to current thread */
@@ -758,12 +751,12 @@ thread* sim_add_thread(
 }
 
 /*!
- \param thr  Thread to remove from simulation
-
  Removes the specified thread from its parent and the thread simulation queue and finally deallocates
  the specified thread.
 */
-static void sim_kill_thread( thread* thr ) { PROFILE(SIM_KILL_THREAD);
+static void sim_kill_thread(
+  thread* thr  /*!< Thread to remove from simulation */
+) { PROFILE(SIM_KILL_THREAD);
 
   assert( thr != NULL );
 
@@ -847,13 +840,13 @@ static void sim_kill_thread( thread* thr ) { PROFILE(SIM_KILL_THREAD);
 }
 
 /*!
- \param funit  Pointer to functional unit of thread to kill
-
  Searches the current state of the active queue for the thread containing the specified head statement.
  If a thread was found to match, kill it.  This function is called whenever the DISABLE statement is
  run.
 */
-void sim_kill_thread_with_funit( func_unit* funit ) { PROFILE(SIM_KILL_THREAD_WITH_FUNIT);
+void sim_kill_thread_with_funit(
+  func_unit* funit  /*!< Pointer to functional unit of thread to kill */
+) { PROFILE(SIM_KILL_THREAD_WITH_FUNIT);
 
   thread* thr;  /* Pointer to current thread */
 
@@ -901,11 +894,6 @@ static void sim_add_statics() { PROFILE(SIM_ADD_STATICS);
 }
 
 /*!
- \param expr  Pointer to expression to simulate.
- \param thr   Pointer to current thread that is being simulated.
- \param time  Pointer to current simulation time.
- \param lhs   Specifies if we should only traverse LHS expressions or RHS expressions
-
  \return Returns TRUE if this expression has changed value from previous sim; otherwise,
          returns FALSE.
 
@@ -917,10 +905,10 @@ static void sim_add_statics() { PROFILE(SIM_ADD_STATICS);
  return.
 */
 bool sim_expression(
-  expression*     expr,
-  thread*         thr,
-  const sim_time* time,
-  bool            lhs
+  expression*     expr,  /*!< Pointer to expression to simulate */
+  thread*         thr,   /*!< Pointer to current thread that is being simulated */
+  const sim_time* time,  /*!< Pointer to current simulation time */
+  bool            lhs    /*!< Specifies if we should only traverse LHS expressions or RHS expressions */
 ) { PROFILE(SIM_EXPRESSION);
 
   bool retval        = FALSE;  /* Return value for this function */
@@ -993,17 +981,14 @@ bool sim_expression(
 }
 
 /*!
- \param thr   Pointer to current thread to simulate.
- \param time  Current simulation time to simulate.
-
  Performs statement simulation as described above.  Calls expression simulator if
  the associated root expression is specified that signals have changed value within
  it.  Continues to run for current statement tree until statement tree hits a
  wait-for-event condition (or we reach the end of a simulation tree).
 */
 void sim_thread(
-  thread*         thr,
-  const sim_time* time
+  thread*         thr,  /*!< Pointer to current thread to simulate */
+  const sim_time* time  /*!< Current simulation time to simulate */
 ) { PROFILE(SIM_THREAD);
 
   statement* stmt;                  /* Pointer to current statement to evaluate */
@@ -1108,8 +1093,6 @@ void sim_thread(
 }
 
 /*!
- \param time  Current simulation time from dumpfile or simulator.
-
  \return Returns TRUE if simulation should continue; otherwise, returns FALSE to indicate
          that simulation should no longer continue.
 
@@ -1118,7 +1101,7 @@ void sim_thread(
  the appropriate simulation functions.  See above explanation on this procedure.
 */
 bool sim_simulate(
-  const sim_time* time
+  const sim_time* time  /*!< Current simulation time from dumpfile or simulator */
 ) { PROFILE(SIM_SIMULATE);
 
   /* Simulate all threads in the active queue */
@@ -1241,6 +1224,11 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.132  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.127.2.1  2008/07/10 22:43:54  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics
