@@ -6,6 +6,8 @@
 # Purpose:      Runs regression suite for Verilog
 ######################################################
 
+PROCESSOR = $(shell uname -p)
+
 VG_LOG_PREFIX = mem_check
 VG_EXEC       = valgrind
 VG_FLAGS      = --tool=memcheck --leak-check=yes --show-reachable=yes --num-callers=15 --log-file=$(VG_LOG_PREFIX) --suppressions=vg_supp -v
@@ -58,6 +60,9 @@ VCS       = vcs
 VCS_FLAGS = +libext+.v+.vlib+ -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 +v2k -sverilog -PP +vcs+lic+wait
 ifdef VPI
 VCS_FLAGS += +vpi -load ../../lib/covered.vcs.so:covered_register
+ifeq ($(PROCESSOR),x86_64)
+VCS_FLAGS += -full64
+endif
 else
 VCS_FLAGS += +define+DUMP
 endif
@@ -123,7 +128,7 @@ ifdef USE_CVER
 		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd; \
 	fi
 else
-	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v
+	$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v
 	@if test "$(COVERED_GFLAG)" = "-D"; then \
 		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd +covered_debug; \
 	else \
