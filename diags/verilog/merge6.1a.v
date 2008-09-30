@@ -10,7 +10,7 @@ module main;
 wire a;
 reg  b, c;
 
-dut_and a(
+dut_and dut(
   .a(a),
   .b(b),
   .c(c)

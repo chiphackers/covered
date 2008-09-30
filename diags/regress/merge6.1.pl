@@ -13,10 +13,10 @@ require "../verilog/regress_subs.pl";
 system( "mkdir -p merge6_1 merge6_2" ) && die;
 
 # Run all of the CDDs to be merged
-$retval = &run( "merge6.1a", 1 ) || $retval;
-$retval = &run( "merge6.1b", 0 ) || $retval;
-$retval = &run( "merge6.1c", 1 ) || $retval;
-$retval = &run( "merge6.1d", 0 ) || $retval;
+$retval = &run( "merge6.1a", "merge6_1", 1 ) || $retval;
+$retval = &run( "merge6.1b", "merge6_1", 0 ) || $retval;
+$retval = &run( "merge6.1c", "merge6_2", 1 ) || $retval;
+$retval = &run( "merge6.1d", "merge6_2", 0 ) || $retval;
 
 # Save the value of CHECK_MEM_CMD
 $ORIG_CHECK_MEM_CMD = $CHECK_MEM_CMD;
@@ -49,38 +49,70 @@ system( "rm -rf merge6_1 merge6_2" ) && die;
 &runReportCommand( "-d v -i -o merge6.1.rptI merge6.1.cdd" );
 
 # Perform the file comparison checks
-&checkTest( "merge6.1", 5, 0 );
+if( $DUMPTYPE eq "VCD" ) {
+  &checkTest( "merge6.1", 5, 0 );
+} else {
+  &checkTest( "merge6.1", 5, 5 );
+}   
 
 exit 0;
 
 sub run {
 
-  my( $bname, $d ) = @_;
-  my( $retval ) = 0;
+  my( $bname, $odir, $d ) = @_;
+  my( $retval )       = 0;
+  my( $vpi_debug )    = "";
 
+  # If we are using the VPI, run the score command and add the needed pieces to the simulation runs
+  if( $USE_VPI == 1 ) {
+    &convertCfg( "vpi", "${bname}.cfg" );
+    &runScoreCommand( "-f ${bname}.cfg" );
+    $vpi_args = "+covered_cdd=${odir}/${bname}.cdd";
+    if( $COVERED_GFLAGS eq "-D" ) {
+      $vpi_args .= " +covered_debug";
+    }
+  }
+  
   # Simulate the design
   if( $SIMULATOR eq "IV" ) {
     $def = ($d == 1) ? "-DTEST1" : "";
-    system( "iverilog -DDUMP $def -y lib ${bname}.v; ./a.out" ) && die; 
+    if( $USE_VPI == 1 ) {
+      &runCommand( "iverilog $def -y lib -m ../../lib/covered.vpi ${bname}.v covered_vpi.v; ./a.out ${vpi_args}" );
+    } else {
+      &runCommand( "iverilog $def -DDUMP -y lib ${bname}.v; ./a.out" );
+    }
   } elsif( $SIMULATOR eq "CVER" ) {
     $def = ($d == 1) ? "+define+TEST1" : "";
-    system( "cver -q +define+DUMP $def +libext+.v+ -y lib ${bname}.v" ) && die;
+    if( $USE_VPI == 1 ) {
+      &runCommand( "cver -q $def +libext+.v+ -y lib +loadvpi=../../lib/covered.cver.so:vpi_compat_bootstrap ${bname}.v covered_vpi.v ${vpi_args}" );
+    } else {
+      &runCommand( "cver -q $def +define+DUMP +libext+.v+ -y lib ${bname}.v" );
+    }
   } elsif( $SIMULATOR eq "VCS" ) {
     $def = ($d == 1) ? "+define+TEST1" : "";
-    system( "vcs +define+DUMP $def +v2k -sverilog +libext+.v+ -y lib ${bname}.v; ./simv" ) && die; 
+    if( $USE_VPI == 1 ) {
+      &runCommand( "vcs $def +v2k -sverilog +libext+.v+ -y lib +vpi -load ../../lib/covered.vcs.so:covered_register ${bname}.v covered_vpi.v; ./simv ${vpi_args}" );
+    } else {
+      &runCommand( "vcs $def +define+DUMP +v2k -sverilog +libext+.v+ -y lib ${bname}.v; ./simv" );
+    }
   } else {
     die "Illegal SIMULATOR value (${SIMULATOR})\n";
   }
-
-  # Convert configuration file
-  if( $DUMPTYPE eq "VCD" ) {
-    &convertCfg( "vcd", "${bname}.cfg" );
-  } elsif( $DUMPTYPE eq "LXT" ) {
-    &convertCfg( "lxt", "${bname}.cfg" );
+  
+  # If we are doing VCD/LXT simulation, run the score command post-process
+  if( $USE_VPI == 0 ) {
+    
+    # Convert configuration file
+    if( $DUMPTYPE eq "VCD" ) {
+      &convertCfg( "vcd", "${bname}.cfg" );
+    } elsif( $DUMPTYPE eq "LXT" ) {
+      &convertCfg( "lxt", "${bname}.cfg" );
+    }
+    
+    # Score CDD file
+    &runScoreCommand( "-f ${bname}.cfg -D DUMP" );
+  
   }
-
-  # Score CDD file
-  &runScoreCommand( "-f ${bname}.cfg -D DUMP" );
 
   return $retval;
 
