@@ -2130,9 +2130,6 @@ void vector_to_sim_time(
 }
 
 /*!
- \param vec    Pointer to vector store value into.
- \param value  Integer value to convert into vector.
-
  Converts an integer value into a vector, creating a vector value to store the
  new vector into.  This function is used along with the vector_to_int for
  mathematical vector operations.  We will first convert vectors into integers,
@@ -2140,13 +2137,21 @@ void vector_to_sim_time(
  the vectors.
 */
 void vector_from_int(
-  vector* vec,
-  int     value
+  vector* vec,   /*!< Pointer to vector store value into */
+  int     value  /*!< Integer value to convert into vector */
 ) { PROFILE(VECTOR_FROM_INT);
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL :
-      vec->value.ul[0][VTYPE_INDEX_VAL_VALL] = value & UL_HMASK(vec->width - 1);
+      {
+        unsigned int i;
+        unsigned int size = UL_SIZE( vec->width );
+        for( i=0; i<size; i++ ) {
+          vec->value.ul[i][VTYPE_INDEX_VAL_VALL] = (ulong)value & UL_SET;
+          vec->value.ul[i][VTYPE_INDEX_VAL_VALH] = 0;
+          value >>= UL_BITS;
+        }
+      }
       break;
     default :  assert( 0 );  break;
   }
@@ -2159,23 +2164,27 @@ void vector_from_int(
 }
 
 /*!
- \param vec    Pointer to vector store value into.
- \param value  64-bit integer value to convert into vector.
-
  Converts a 64-bit integer value into a vector.  This function is used along with
  the vector_to_uint64 for mathematical vector operations.  We will first convert
  vectors into 64-bit integers, perform the mathematical operation, and then revert
  the 64-bit integers back into the vectors.
 */
 void vector_from_uint64(
-  vector* vec,
-  uint64  value
+  vector* vec,   /*!< Pointer to vector store value into */
+  uint64  value  /*!< 64-bit integer value to convert into vector */
 ) { PROFILE(VECTOR_FROM_UINT64);
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL :
-      vec->value.ul[0][VTYPE_INDEX_VAL_VALL] = value & UL_HMASK(vec->width - 1);
-      vec->value.ul[1][VTYPE_INDEX_VAL_VALL] = ((uint64)value >> 32) & UL_HMASK(vec->width - 1);
+      {
+        unsigned int i;
+        unsigned int size = UL_SIZE( vec->width );
+        for( i=0; i<size; i++ ) {
+          vec->value.ul[i][VTYPE_INDEX_VAL_VALL] = (ulong)value & UL_SET;
+          vec->value.ul[i][VTYPE_INDEX_VAL_VALH] = 0;
+          value >>= UL_BITS;
+        }
+      }
       break;
     default :  assert( 0 );  break;
   }
@@ -4041,18 +4050,14 @@ bool vector_op_divide(
 }
 
 /*!
- \param tgt    Pointer to vector that will store divide result
- \param left   Pointer to left vector
- \param right  Pointer to right vector
-
  \return Returns TRUE if value changes; otherwise, returns FALSE.
 
  Performs vector modulus operation.
 */
 bool vector_op_modulus(
-  vector*       tgt,
-  const vector* left,
-  const vector* right
+  vector*       tgt,   /*!< Pointer to vector that will store divide result */
+  const vector* left,  /*!< Pointer to left vector */
+  const vector* right  /*!< Pointer to right vector */
 ) { PROFILE(VECTOR_OP_MODULUS);
 
   bool retval;  /* Return value for this function */
@@ -4672,6 +4677,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.156  2008/09/26 22:38:59  phase1geo
+ Added feature request 2129623.  Updated regressions for this change (except for
+ VCS regression at this point).
+
  Revision 1.155  2008/09/15 05:00:19  phase1geo
  Documentation updates.
 

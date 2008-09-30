@@ -106,7 +106,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 string2         string2.1       supply0         supply1         task1 \
                 task1.1         task2           task2.1         task2.2         task2.3 \
                 task3           task3.1         task4           task4.1         task6 \
-                timescale1      timescale1.6    timescale1.9    timescale1.12   timescale1.15 \
+                time1           timescale1      timescale1.6    timescale1.9    timescale1.12   timescale1.15 \
                 timescale1.16   timescale1.17   timescale1.18   timescale2      timescale2.2 \
                 timescale2.3    timescale2.4    timescale2.5    timescale2.8    toggle \
                 toggle2         toggle2.1       toggle2.2       toggle2.3       tri \

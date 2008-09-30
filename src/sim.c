@@ -905,10 +905,11 @@ static void sim_add_statics() { PROFILE(SIM_ADD_STATICS);
  return.
 */
 bool sim_expression(
-  expression*     expr,  /*!< Pointer to expression to simulate */
-  thread*         thr,   /*!< Pointer to current thread that is being simulated */
-  const sim_time* time,  /*!< Pointer to current simulation time */
-  bool            lhs    /*!< Specifies if we should only traverse LHS expressions or RHS expressions */
+  expression*     expr,          /*!< Pointer to expression to simulate */
+  thread*         thr,           /*!< Pointer to current thread that is being simulated */
+  const sim_time* time,          /*!< Pointer to current simulation time */
+  bool            lhs,           /*!< Specifies if we should only traverse LHS expressions or RHS expressions */
+  bool*           clear_changed  /*!< Set to TRUE to cause parent changed bits to get cleared */
 ) { PROFILE(SIM_EXPRESSION);
 
   bool retval        = FALSE;  /* Return value for this function */
@@ -936,14 +937,16 @@ bool sim_expression(
          (expr->op == EXP_OP_CASEZ)) &&
         ((expr->op != EXP_OP_DLY_OP) || (expr->left == NULL) || (expr->left->op != EXP_OP_DELAY)) ) {
 
-      /* Clear LEFT CHANGED bit */
-      expr->suppl.part.left_changed = 0;
-
       /* Simulate the left expression if it has changed */
       if( expr->left != NULL ) {
-        left_changed = sim_expression( expr->left, thr, time, lhs );
+        *clear_changed = TRUE;
+        left_changed = sim_expression( expr->left, thr, time, lhs, clear_changed );
+        if( *clear_changed ) {
+          expr->suppl.part.left_changed = 0;
+        }
       } else {
-        left_changed = TRUE;
+        left_changed                  = TRUE;
+        expr->suppl.part.left_changed = 0;
       }
 
     }
@@ -952,14 +955,16 @@ bool sim_expression(
     if( (ESUPPL_IS_RIGHT_CHANGED( expr->suppl ) == 1) &&
         ((expr->op != EXP_OP_DLY_OP) || !thr->suppl.part.exec_first) ) {
   
-      /* Clear RIGHT CHANGED bit */
-      expr->suppl.part.right_changed = 0;
-  
       /* Simulate the right expression if it has changed */
       if( expr->right != NULL ) {
-        right_changed = sim_expression( expr->right, thr, time, lhs );
+        *clear_changed = TRUE;
+        right_changed = sim_expression( expr->right, thr, time, lhs, clear_changed );
+        if( *clear_changed ) {
+          expr->suppl.part.right_changed = 0;
+        }
       } else {
-        right_changed = TRUE;
+        right_changed                  = TRUE;
+        expr->suppl.part.right_changed = 0;
       }
 
     }
@@ -971,6 +976,9 @@ bool sim_expression(
     if( (ESUPPL_IS_ROOT( expr->suppl ) == 0) || (expr->parent->stmt == NULL) || (expr->parent->stmt->suppl.part.cont == 0) || left_changed || right_changed || (expr->table != NULL) ) {
       retval = expression_operate( expr, thr, time );
     }
+
+    /* Set clear_changed to FALSE if our expression is a $time or $random call */
+    *clear_changed = *clear_changed && (expr->op != EXP_OP_STIME) && (expr->op != EXP_OP_SRANDOM);
  
   }
 
@@ -1006,6 +1014,8 @@ void sim_thread(
 
   while( (stmt != NULL) && !thr->suppl.part.kill && simulate ) {
 
+    bool clear_changed = TRUE;
+
 #ifdef DEBUG_MODE
 #ifndef VPI_ONLY
     cli_execute( time, force_stop );
@@ -1014,7 +1024,7 @@ void sim_thread(
 #endif
 
     /* Place expression in expression simulator and run */
-    expr_changed = sim_expression( stmt->exp, thr, time, FALSE );
+    expr_changed = sim_expression( stmt->exp, thr, time, FALSE, &clear_changed );
 
 #ifdef DEBUG_MODE
     if( debug_mode ) {
@@ -1224,6 +1234,10 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.133  2008/09/30 16:02:12  phase1geo
+ More regression updates for Cver VPI simulation.  Also cleaning up some development
+ documentation.
+
  Revision 1.132  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

@@ -361,8 +361,8 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",             ex
                                            {"ALSHIFT_A",      "<<<=",         expression_op_func__lshift_a,   {0, 0, NOT_COMB,   1, 1, 0, 1, 1} },
                                            {"ARSHIFT_A",      ">>>=",         expression_op_func__arshift_a,  {0, 0, NOT_COMB,   1, 1, 0, 1, 1} },
                                            {"FOREVER",        "",             expression_op_func__null,       {0, 0, NOT_COMB,   0, 0, 0, 0, 0} },
-                                           {"STIME",          "$time",        expression_op_func__time,       {0, 0, NOT_COMB,   0, 0, 0, 0, 0} },
-                                           {"SRANDOM",        "$random",      expression_op_func__random,     {0, 0, NOT_COMB,   0, 0, 0, 0, 0} }
+                                           {"STIME",          "$time",        expression_op_func__time,       {0, 1, NOT_COMB,   0, 0, 0, 0, 0} },
+                                           {"SRANDOM",        "$random",      expression_op_func__random,     {0, 1, NOT_COMB,   0, 0, 0, 0, 0} }
  };
 
 
@@ -1885,9 +1885,10 @@ bool expression_op_func__xor_a(
   bool    retval;                                /* Return value for this function */
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
+  bool    clear_changed = TRUE;
 
   /* First, evaluate the left-hand expression */
-  (void)sim_expression( expr->left, thr, time, TRUE );
+  (void)sim_expression( expr->left, thr, time, TRUE, &clear_changed );
 
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
@@ -1955,9 +1956,10 @@ bool expression_op_func__multiply_a(
   bool    retval;                                /* Return value for this function */
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
+  bool    clear_changed = TRUE;
 
   /* First, evaluate the left-hand expression */
-  (void)sim_expression( expr->left, thr, time, TRUE );
+  (void)sim_expression( expr->left, thr, time, TRUE, &clear_changed );
 
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
@@ -2028,9 +2030,10 @@ bool expression_op_func__divide_a(
   bool    retval = FALSE;                        /* Return value for this function */
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
+  bool    clear_changed = TRUE;
   
   /* First, evaluate the left-hand expression */
-  (void)sim_expression( expr->left, thr, time, TRUE );;
+  (void)sim_expression( expr->left, thr, time, TRUE, &clear_changed );
 
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
@@ -2053,10 +2056,6 @@ bool expression_op_func__divide_a(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  \throws anonymous Throw
@@ -2064,13 +2063,14 @@ bool expression_op_func__divide_a(
  Performs a 32-bit modulus operation.
 */
 bool expression_op_func__mod(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__MOD);
 
   /* Perform mod operation */
   bool retval = vector_op_modulus( expr->value, expr->left->value, expr->right->value );
+  vector_display( expr->value );
 
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
@@ -2101,9 +2101,10 @@ bool expression_op_func__mod_a(
   bool    retval;                                /* Return value for this function */
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
+  bool    clear_changed = TRUE;
 
   /* First, evaluate the left-hand expression */
-  (void)sim_expression( expr->left, thr, time, TRUE );;
+  (void)sim_expression( expr->left, thr, time, TRUE, &clear_changed );
 
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
@@ -2172,9 +2173,10 @@ bool expression_op_func__add_a(
   bool    retval;                                /* Return value for this function */
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
+  bool    clear_changed = TRUE;
 
   /* Evaluate the left expression */
-  (void)sim_expression( expr->left, thr, time, TRUE );
+  (void)sim_expression( expr->left, thr, time, TRUE, &clear_changed );
   
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
@@ -2246,9 +2248,10 @@ bool expression_op_func__sub_a(
   bool    retval;                                /* Return value for this function */
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
+  bool    clear_changed = TRUE;
 
   /* First, evaluate the left-hand expression */
-  (void)sim_expression( expr->left, thr, time, TRUE );
+  (void)sim_expression( expr->left, thr, time, TRUE, &clear_changed );
   
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
@@ -2318,9 +2321,10 @@ bool expression_op_func__and_a(
   bool    retval;                                /* Return value for this function */
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
+  bool    clear_changed = TRUE;
 
   /* First, evaluate the left-hand expression */
-  (void)sim_expression( expr->left, thr, time, TRUE );
+  (void)sim_expression( expr->left, thr, time, TRUE, &clear_changed );
 
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
@@ -2389,9 +2393,10 @@ bool expression_op_func__or_a(
   bool    retval;                                /* Return value for this function */
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
+  bool    clear_changed = TRUE;
 
   /* First, evaluate the left-hand expression */
-  (void)sim_expression( expr->left, thr, time, TRUE );
+  (void)sim_expression( expr->left, thr, time, TRUE, &clear_changed );
 
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
@@ -2605,9 +2610,10 @@ bool expression_op_func__lshift_a(
   bool    retval;                                /* Return value for this function */
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
+  bool    clear_changed = TRUE;
   
   /* First, evaluate the left-hand expression */
-  (void)sim_expression( expr->left, thr, time, TRUE );
+  (void)sim_expression( expr->left, thr, time, TRUE, &clear_changed );
 
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
@@ -2676,9 +2682,10 @@ bool expression_op_func__rshift_a(
   bool    retval;                                /* Return value for this function */
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
+  bool    clear_changed = TRUE;
 
   /* First, evaluate the left-hand expression */
-  (void)sim_expression( expr->left, thr, time, TRUE );
+  (void)sim_expression( expr->left, thr, time, TRUE, &clear_changed );
 
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
@@ -2747,9 +2754,10 @@ bool expression_op_func__arshift_a(
   bool    retval;                                /* Return value for this function */
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
+  bool    clear_changed = TRUE;
 
   /* First, evaluate the left-hand expression */
-  (void)sim_expression( expr->left, thr, time, TRUE );
+  (void)sim_expression( expr->left, thr, time, TRUE, &clear_changed );
 
   /* Second, copy the value of the left expression into a temporary vector */
   vector_copy( expr->left->value, tmp );
@@ -2782,8 +2790,12 @@ bool expression_op_func__time(
   const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__TIME);
 
+  printf( "In expression_op_func__time, time: %llu\n", time->full );
+
   /* Convert the current time to the current vector */
   vector_from_uint64( expr->value, time->full );
+
+  vector_display( expr->value );
 
   PROFILE_END;
 
@@ -5327,7 +5339,8 @@ void expression_assign(
         if( lhs->sig->suppl.part.assigned == 1 ) {
           bool changed = FALSE;
           if( eval_lhs && (ESUPPL_IS_LEFT_CHANGED( lhs->suppl ) == 1) ) {
-            (void)sim_expression( lhs->left, thr, time, TRUE );
+            bool clear_changed = TRUE;
+            (void)sim_expression( lhs->left, thr, time, TRUE, &clear_changed );
           }
           if( !vector_is_unknown( lhs->left->value ) ) {
             int intval = (vector_to_int( lhs->left->value ) - dim->dim_lsb) * dim->dim_width;
@@ -5391,7 +5404,8 @@ void expression_assign(
       case EXP_OP_MBIT_POS :
         if( lhs->sig->suppl.part.assigned == 1 ) {
           if( eval_lhs && (ESUPPL_IS_LEFT_CHANGED( lhs->suppl ) == 1) ) {
-            (void)sim_expression( lhs->left, thr, time, TRUE );
+            bool clear_changed = TRUE;
+            (void)sim_expression( lhs->left, thr, time, TRUE, &clear_changed );
           }
           if( !lhs->left->value->suppl.part.unknown ) {
             intval1 = (vector_to_int( lhs->left->value ) - dim_lsb) * lhs->value->width;
@@ -5420,7 +5434,8 @@ void expression_assign(
       case EXP_OP_MBIT_NEG :
         if( lhs->sig->suppl.part.assigned == 1 ) {
           if( eval_lhs && (ESUPPL_IS_LEFT_CHANGED( lhs->suppl ) == 1) ) {
-            (void)sim_expression( lhs->left, thr, time, TRUE );
+            bool clear_changed = TRUE;
+            (void)sim_expression( lhs->left, thr, time, TRUE, &clear_changed );
           }
           if( !lhs->left->value->part.unknown ) {
             intval1 = (vector_to_int( lhs->left->value ) - dim_lsb) * lhs->value->width;
@@ -5639,6 +5654,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.342  2008/09/29 23:00:25  phase1geo
+ Attempting to fix bug 2136474.  Also adding support for $time system function call.
+
  Revision 1.341  2008/09/11 04:51:21  phase1geo
  Fixing bugs 2104947 and 2104924.  Adding mem4 diagnostic to verify.  Also
  added negate2 diagnostic for coverage purposes.

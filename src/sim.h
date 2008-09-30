@@ -69,7 +69,8 @@ bool sim_expression(
   expression*     expr,
   thread*         thr,
   const sim_time* time,
-  bool            lhs
+  bool            lhs,
+  bool*           clear_changed
 );
 
 /*! \brief Simulates one thread until it has either completed or enters a context switch */
@@ -93,6 +94,9 @@ void sim_dealloc();
 
 /*
  $Log$
+ Revision 1.37  2008/03/30 05:14:32  phase1geo
+ Optimizing sim_expr_changed functionality and fixing bug 1928475.
+
  Revision 1.36  2008/02/29 00:08:31  phase1geo
  Completed optimization code in simulator.  Still need to verify that code
  changes enhanced performances as desired.  Checkpointing.
