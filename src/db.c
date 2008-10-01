@@ -966,9 +966,22 @@ expression* db_create_expr_for_system_call(
       (strncmp( str, "$monitoroff",     11 ) == 0) ||
       (strncmp( str, "$printtimescale", 15 ) == 0) ||
       (strncmp( str, "$timeformat",     11 ) == 0) ||
+      (strncmp( str, "$key",             4 ) == 0) ||
+      (strncmp( str, "$nokey",           6 ) == 0) ||
+      (strncmp( str, "$list",            5 ) == 0) ||
+      (strncmp( str, "$log",             4 ) == 0) ||
+      (strncmp( str, "$nolog",           6 ) == 0) ||
+      (strncmp( str, "$showscopes",     11 ) == 0) ||
+      (strncmp( str, "$showvars",        9 ) == 0) ||
+      (strncmp( str, "$showvariables",  14 ) == 0) ||
 #ifndef TESTMODE
       (strncmp( str, "$dumpfile",        9 ) == 0) ||
 #endif
+      (strncmp( str, "$dumpoff",         8 ) == 0) ||
+      (strncmp( str, "$dumpon",          7 ) == 0) ||
+      (strncmp( str, "$dumpall",         8 ) == 0) ||
+      (strncmp( str, "$dumplimit",      10 ) == 0) ||
+      (strncmp( str, "$dumpflush",      11 ) == 0) ||
       (strncmp( str, "$dumpvars",        9 ) == 0) ) {
     expr = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
   } else if( strncmp( str, "$finish", 7 ) == 0 ) {
@@ -1938,6 +1951,12 @@ expression* db_create_expression(
 
   /* If current functional unit is nested in a function, set the IN_FUNC supplemental field bit */
   expr->suppl.part.in_func = (func_funit != NULL) ? 1 : 0;
+
+  /* Set the clear_changed bit if any of our children have their clear_changed bit set or if we are a $time or $random expression */
+  if( ((left  != NULL) && ((left->suppl.part.clear_changed  == 1) || (left->op  == EXP_OP_STIME) || (left->op  == EXP_OP_SRANDOM))) ||
+      ((right != NULL) && ((right->suppl.part.clear_changed == 1) || (right->op == EXP_OP_STIME) || (right->op == EXP_OP_SRANDOM))) ) {
+    expr->suppl.part.clear_changed = 1;
+  }
 
   /* If we are in exclude mode, set the exclude and stmt_exclude bits */
   if( exclude_mode > 0 ) {
@@ -3110,6 +3129,9 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.334  2008/09/29 23:00:22  phase1geo
+ Attempting to fix bug 2136474.  Also adding support for $time system function call.
+
  Revision 1.333  2008/09/29 05:53:04  phase1geo
  Adding support for several more system calls to parser.
 

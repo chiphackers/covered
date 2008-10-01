@@ -45,7 +45,8 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 cond3.1         cond3.2         cond3.3         delay1          delay2 \
                 define1         define1.1       define1.2       define2         define2.1 \
                 define4         define5         define6         define6.1       disable1 \
-                disable1.1      disable2        disable2.1      disable3        div1 \
+                disable1.1      disable2        disable2.1      disable3        display1 \
+                div1 \
                 dly_assign1     endian1         endian2         endian3         event1 \
                 event1.1        exclude1        exclude2        exclude3        exclude4 \
                 exclude6        exclude6.1      exclude7        exclude7.1      exclude7.2 \
@@ -56,10 +57,11 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 exclude11       exclude12       exclude12.1     exclude12.2     exclude12.3 \
                 exclude12.4     exclude12.6     exclude13       exclude14       expand1 \
                 expand2         expand3         expand4         expand4.1       expand4.2 \
-                expand4.3       expand4.4       finish1         for1            for2 \
-                forever1        fork1           fork2           fsm3            fsm4 \
-                fsm4.1          fsm5            fsm5.1          fsm5.2          fsm5.3 \
-                fsm11           func1           func2           func5           gate1 \
+                expand4.3       expand4.4       fdisplay1       finish1 \
+                for1            for2            forever1        fork1           fork2 \
+                fsm3            fsm4            fsm4.1          fsm5            fsm5.1 \
+                fsm5.2          fsm5.3          fsm11           fstrobe1        func1 \
+                func2           func5           fwrite1         gate1 \
                 hier1           hier3.1         hier3.2         hier3.3         hier3.4 \
                 hier4           if1             ifdef1          ifdef1.2 \
                 ifdef2.1        ifdef2.2        ifdef2.3        ifelse1         implicit2.1 \
@@ -73,7 +75,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 lshift5         mbit_sel1       mbit_sel2       mbit_sel3       mbit_sel3.1 \
                 mbit_sel4       mbit_sel4.1     mbit_sel4.2     mbit_sel4.3     mbit_sel7 \
                 mbit_sel9       mbit_sel9.1     mbit_sel9.2     mem1            mem2 \
-                mod1            msg1            mult1           mult2           multi_exp1 \
+                mod1            monitor1        monitor1.1      msg1            mult1           mult2           multi_exp1 \
                 multi_exp1.1    multi_exp1.2    multi_exp1.3    multi_exp1.4    multi_exp1.5 \
                 multi_exp1.6    multi_exp1.7    multi_exp1.8    multi_exp1.9    multi_exp1.10 \
                 multi_exp1.11   multi_exp1.12   multi_exp1.13   multi_exp1.14   multi_exp1.15 \
@@ -89,7 +91,8 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 param8.1        param9          param9.1        param9.2        param10 \
                 param10.2       param10.3       param10.4       param11         param13 \
                 param13.1       param14         param15         param16         param17 \
-                param17.1       pedge1          port1           port3           pulldown1 \
+                param17.1       pedge1          port1           port3           printtimescale1 \
+                pulldown1 \
                 pullup1         rassign1        real1           repeat1         repeat2 \
                 repeat3         report1 \
                 report2         report3         report3.1       report4.2       report5 \
@@ -103,17 +106,17 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 signed3.4       signed3.5       signed3.6       signed4         signed4.2 \
                 slist1          slist1.1        slist1.2        slist1.3        slist2 \
                 slist3          slist3.2        slist4          static1         string1 \
-                string2         string2.1       supply0         supply1         task1 \
+                string2         string2.1       strobe1         supply0         supply1         task1 \
                 task1.1         task2           task2.1         task2.2         task2.3 \
                 task3           task3.1         task4           task4.1         task6 \
-                time1           timescale1      timescale1.6    timescale1.9    timescale1.12   timescale1.15 \
+                time1           time1.1         timeformat1     timescale1      timescale1.6    timescale1.9    timescale1.12   timescale1.15 \
                 timescale1.16   timescale1.17   timescale1.18   timescale2      timescale2.2 \
                 timescale2.3    timescale2.4    timescale2.5    timescale2.8    toggle \
                 toggle2         toggle2.1       toggle2.2       toggle2.3       tri \
                 tri0            tri1            triand          trigger1        trior \
                 unary2          unary3          version1        version1.1      wait1 \
                 wait1.1         wait2           wand            while1          while1.1 \
-                wor
+                wor             write1
 DIAGS2        = delay1.1
 DIAGS3        = delay1.2
 DIAGS4        = delay1.3
@@ -253,8 +256,8 @@ IVVCSDIAGS2   =
 IVVCSDIAGS3   =
 IVVCSDIAGS4   =
 
-CVERVCSDIAGS1 = null_stmt2      null_stmt2.1    port4           sbit_sel2.1     timescale1.20 \
-                timescale2.6    timescale2.7
+CVERVCSDIAGS1 = fmonitor1       null_stmt2      null_stmt2.1    port4           sbit_sel2.1 \
+                timescale1.20   timescale2.6    timescale2.7
 CVERVCSDIAGS2 =
 CVERVCSDIAGS3 =
 CVERVCSDIAGS4 =

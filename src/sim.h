@@ -69,8 +69,7 @@ bool sim_expression(
   expression*     expr,
   thread*         thr,
   const sim_time* time,
-  bool            lhs,
-  bool*           clear_changed
+  bool            lhs
 );
 
 /*! \brief Simulates one thread until it has either completed or enters a context switch */
@@ -94,6 +93,9 @@ void sim_dealloc();
 
 /*
  $Log$
+ Revision 1.38  2008/09/30 23:13:32  phase1geo
+ Checkpointing (TOT is broke at this point).
+
  Revision 1.37  2008/03/30 05:14:32  phase1geo
  Optimizing sim_expr_changed functionality and fixing bug 1928475.
 
