@@ -54,18 +54,20 @@ am_covered_OBJECTS = arc.$(OBJEXT) assertion.$(OBJEXT) attr.$(OBJEXT) \
 	func_iter.$(OBJEXT) func_unit.$(OBJEXT) genprof.$(OBJEXT) \
 	gen_item.$(OBJEXT) info.$(OBJEXT) instance.$(OBJEXT) \
 	iter.$(OBJEXT) keywords_1995.$(OBJEXT) keywords_2001.$(OBJEXT) \
-	keywords_sv.$(OBJEXT) pplexer.$(OBJEXT) lexer.$(OBJEXT) \
-	line.$(OBJEXT) link.$(OBJEXT) lxt.$(OBJEXT) \
-	lxt2_read.$(OBJEXT) main.$(OBJEXT) memory.$(OBJEXT) \
-	merge.$(OBJEXT) obfuscate.$(OBJEXT) ovl.$(OBJEXT) \
-	param.$(OBJEXT) parse.$(OBJEXT) parser_misc.$(OBJEXT) \
-	perf.$(OBJEXT) profiler.$(OBJEXT) race.$(OBJEXT) \
-	rank.$(OBJEXT) reentrant.$(OBJEXT) report.$(OBJEXT) \
-	scope.$(OBJEXT) score.$(OBJEXT) search.$(OBJEXT) sim.$(OBJEXT) \
-	stat.$(OBJEXT) static.$(OBJEXT) static_lexer.$(OBJEXT) \
-	statement.$(OBJEXT) stmt_blk.$(OBJEXT) struct_union.$(OBJEXT) \
-	symtable.$(OBJEXT) tcl_funcs.$(OBJEXT) toggle.$(OBJEXT) \
-	tree.$(OBJEXT) util.$(OBJEXT) vcd.$(OBJEXT) vector.$(OBJEXT) \
+	keywords_sv.$(OBJEXT) keywords_sys_1995.$(OBJEXT) \
+	keywords_sys_2001.$(OBJEXT) keywords_sys_sv.$(OBJEXT) \
+	pplexer.$(OBJEXT) lexer.$(OBJEXT) line.$(OBJEXT) \
+	link.$(OBJEXT) lxt.$(OBJEXT) lxt2_read.$(OBJEXT) \
+	main.$(OBJEXT) memory.$(OBJEXT) merge.$(OBJEXT) \
+	obfuscate.$(OBJEXT) ovl.$(OBJEXT) param.$(OBJEXT) \
+	parse.$(OBJEXT) parser_misc.$(OBJEXT) perf.$(OBJEXT) \
+	profiler.$(OBJEXT) race.$(OBJEXT) rank.$(OBJEXT) \
+	reentrant.$(OBJEXT) report.$(OBJEXT) scope.$(OBJEXT) \
+	score.$(OBJEXT) search.$(OBJEXT) sim.$(OBJEXT) stat.$(OBJEXT) \
+	static.$(OBJEXT) static_lexer.$(OBJEXT) statement.$(OBJEXT) \
+	stmt_blk.$(OBJEXT) struct_union.$(OBJEXT) symtable.$(OBJEXT) \
+	tcl_funcs.$(OBJEXT) toggle.$(OBJEXT) tree.$(OBJEXT) \
+	util.$(OBJEXT) vcd.$(OBJEXT) vector.$(OBJEXT) \
 	vsignal.$(OBJEXT)
 covered_OBJECTS = $(am_covered_OBJECTS)
 am__DEPENDENCIES_1 =
@@ -231,6 +233,9 @@ covered_SOURCES = arc.c \
 		  keywords_1995.c \
 		  keywords_2001.c \
 		  keywords_sv.c \
+                  keywords_sys_1995.c \
+                  keywords_sys_2001.c \
+                  keywords_sys_sv.c \
                   pplexer.c \
 		  lexer.c \
 		  line.c \
@@ -273,7 +278,22 @@ covered_SOURCES = arc.c \
 covered_LDADD = $(TCLTK_LIBS)
 INCLUDES = -I..
 AM_CPPFLAGS = -DINSTALL_DIR=\"@datadir@/covered\" $(TCLTK_CPPFLAGS) $(DEBUGDEF) $(PROFILEDEF) $(TESTMODEDEF)
-CLEANFILES = pplexer.c lexer.c static_lexer.c keywords_1995.c keywords_2001.c keywords_sv.c parser.c parser.h parser.output static_parser.c static_parser.h static_parser.output
+CLEANFILES = pplexer.c \
+             lexer.c \
+             static_lexer.c \
+             keywords_1995.c \
+             keywords_sys_1995.c \
+             keywords_2001.c \
+             keywords_sys_2001.c \
+             keywords_sv.c \
+             keywords_sys_sv.c \
+             parser.c \
+             parser.h \
+             parser.output \
+             static_parser.c \
+             static_parser.h \
+             static_parser.output
+
 all: all-am
 
 .SUFFIXES:
@@ -364,6 +384,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/keywords_1995.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/keywords_2001.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/keywords_sv.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/keywords_sys_1995.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/keywords_sys_2001.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/keywords_sys_sv.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lexer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/line.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/link.Po@am__quote@
@@ -616,11 +639,20 @@ static_lexer.c: $(srcdir)/static_lexer.l
 keywords_1995.c:  keywords_1995.gperf
 	gperf -o -i 7 -C -k 1-3,$$ -L ANSI-C -H keyword_hash_1995 -N check_identifier_1995 -t $(srcdir)/keywords_1995.gperf > keywords_1995.c || (rm -f keywords_1995.c ; false)
 
+keywords_sys_1995.c:  keywords_sys_1995.gperf
+	gperf -o -i 7 -C -k 1-3,$$ -L ANSI-C -H keyword_hash_sys_1995 -N check_identifier_sys_1995 -t $(srcdir)/keywords_sys_1995.gperf > keywords_sys_1995.c || (rm -f keywords_sys_1995.c ; false)
+
 keywords_2001.c:  keywords_2001.gperf
 	gperf -o -i 7 -C -k 1-3,$$ -L ANSI-C -H keyword_hash_2001 -N check_identifier_2001 -t $(srcdir)/keywords_2001.gperf > keywords_2001.c || (rm -f keywords_2001.c ; false)
 
+keywords_sys_2001.c:  keywords_sys_2001.gperf
+	gperf -o -i 7 -C -k 1-3,$$ -L ANSI-C -H keyword_hash_sys_2001 -N check_identifier_sys_2001 -t $(srcdir)/keywords_sys_2001.gperf > keywords_sys_2001.c || (rm -f keywords_sys_2001.c ; false)
+
 keywords_sv.c:  keywords_sv.gperf
 	gperf -o -i 7 -C -k 1-3,$$ -L ANSI-C -D -H keyword_hash_sv -N check_identifier_sv -t $(srcdir)/keywords_sv.gperf > keywords_sv.c || (rm -f keywords_sv.c ; false)
+
+keywords_sys_sv.c:  keywords_sys_sv.gperf
+	gperf -o -i 7 -C -k 1-3,$$ -L ANSI-C -H keyword_hash_sys_sv -N check_identifier_sys_sv -t $(srcdir)/keywords_sys_sv.gperf > keywords_sys_sv.c || (rm -f keywords_sys_sv.c ; false)
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

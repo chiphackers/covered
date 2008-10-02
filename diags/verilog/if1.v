@@ -13,11 +13,11 @@ module main;
 integer a, b;
 
 initial begin
-        a = $random;
+        a = $rtoi( 0.1 );
 	begin
           b = a;
           if( a == 0 ) begin
-            a = $random;
+            a = $rtoi( 0.1 );
           end
         end
 end

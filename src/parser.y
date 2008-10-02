@@ -252,7 +252,7 @@ int yydebug = 1;
   func_unit*      funit;
 };
 
-%token <text>     IDENTIFIER SYSTEM_IDENTIFIER
+%token <text>     IDENTIFIER
 %token <typdef>   TYPEDEF_IDENTIFIER
 %token <text>     PATHPULSE_IDENTIFIER
 %token <text>     DEC_NUMBER BASE_NUMBER
@@ -283,6 +283,7 @@ int yydebug = 1;
 %token K_while K_wire
 %token K_wor K_xnor K_xor
 %token K_Shold K_Speriod K_Srecovery K_Ssetup K_Swidth K_Ssetuphold
+%token S_user S_ignore S_allow S_finish S_stop S_time S_random S_srandom S_dumpfile
 
 %token K_automatic K_cell K_use K_library K_config K_endconfig K_design K_liblist K_instance
 %token K_showcancelled K_noshowcancelled K_pulsestyle_onevent K_pulsestyle_ondetect
@@ -348,7 +349,7 @@ int yydebug = 1;
 %nonassoc K_else
 
 /* Make sure that string elements are deallocated if parser errors occur */
-%destructor { free_safe( $$, (strlen( $$ ) + 1) ); } IDENTIFIER SYSTEM_IDENTIFIER PATHPULSE_IDENTIFIER identifier begin_end_id
+%destructor { free_safe( $$, (strlen( $$ ) + 1) ); } IDENTIFIER PATHPULSE_IDENTIFIER identifier begin_end_id
 
 %%
 
@@ -856,7 +857,7 @@ static_expr_port_list
             error_count++;
           }
           Try {
-            tmp = static_expr_gen( tmp, $1, EXP_OP_LIST, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            tmp = static_expr_gen( tmp, $1, EXP_OP_PLIST, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           } Catch_anonymous {
             error_count++;
           }
@@ -1139,10 +1140,41 @@ static_expr_primary
       }
       free_safe( $1, (strlen( $1 ) + 1) );
     }
-  | SYSTEM_IDENTIFIER
+  | S_ignore
     {
-      free_safe( $1, (strlen( $1 ) + 1) );
       $$ = NULL;
+    }
+  | S_allow
+    {
+      if( ignore_mode == 0 ) {
+        static_expr* tmp;
+        tmp = (static_expr*)malloc_safe( sizeof( static_expr ) );
+        tmp->num = -1;
+        Try {
+          tmp->exp = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
+        } Catch_anonymous {
+          error_count++;
+        }
+        $$ = tmp;
+      } else {
+        $$ = NULL;
+      }
+    }
+  | S_random
+    {
+      if( ignore_mode == 0 ) {
+        static_expr* tmp;
+        tmp = (static_expr*)malloc_safe( sizeof( static_expr ) );
+        tmp->num = -1;
+        Try {
+          tmp->exp = db_create_expression( NULL, NULL, EXP_OP_SRANDOM, lhs_mode, 0, 0, 0, NULL );
+        } Catch_anonymous {
+          error_count++;
+        }
+        $$ = tmp;
+      } else {
+        $$ = NULL;
+      }
     }
   ;
 
@@ -1861,11 +1893,15 @@ expr_primary
       }
       free_safe( $2, (strlen( $2 ) + 1) );
     }
-  | SYSTEM_IDENTIFIER
+  | S_ignore
     {
-      if( (ignore_mode == 0) && ($1 != NULL) ) {
+      $$ = NULL;
+    }
+  | S_allow
+    {
+      if( ignore_mode == 0 ) {
         Try {
-          $$ = db_create_expr_for_system_call( $1, lhs_mode );
+          $$ = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
         } Catch_anonymous {
           error_count++;
           $$ = NULL;
@@ -1873,7 +1909,32 @@ expr_primary
       } else {
         $$ = NULL;
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+    }
+  | S_random
+    {
+      if( ignore_mode == 0 ) {
+        Try {
+          $$ = db_create_expression( NULL, NULL, EXP_OP_SRANDOM, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+        } Catch_anonymous {
+          error_count++;
+          $$ = NULL;
+        }
+      } else {
+        $$ = NULL;
+      }
+    }
+  | S_time
+    {
+      if( ignore_mode == 0 ) {
+        Try {
+          $$ = db_create_expression( NULL, NULL, EXP_OP_STIME, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+        } Catch_anonymous {
+          error_count++;
+          $$ = NULL;
+        }
+      } else {
+        $$ = NULL;
+      }
     }
   | identifier index_expr
     {
@@ -1975,19 +2036,39 @@ expr_primary
       }
       free_safe( $1, (strlen( $1 ) + 1) );
     }
-  | SYSTEM_IDENTIFIER '(' ignore_more expression_port_list ignore_less ')'
+  | S_ignore '(' ignore_more expression_port_list ignore_less ')'
     {
-      if( (ignore_mode == 0) && ($1 != NULL) ) {
+      $$ = NULL;
+    }
+  | S_allow '(' ignore_more expression_port_list ignore_less ')'
+    {
+      $$ = NULL;
+    }
+  | S_random '(' expression_port_list ')'
+    {
+      if( (ignore_mode == 0) && ($3 != NULL) ) {
         Try {
-          $$ = db_create_expr_for_system_call( $1, lhs_mode );
+          $$ = db_create_expression( NULL, $3, EXP_OP_SRANDOM, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
         } Catch_anonymous {
+          expression_dealloc( $3, FALSE );
           error_count++;
           $$ = NULL;
         }
       } else {
+        expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+    }
+  | S_srandom '(' expression_port_list ')'
+    {
+      if( ignore_mode == 0 ) {
+        /* TBD - Need to add support for this */
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
+      } else {
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
+      }
     }
   | '(' expression ')'
     {
@@ -2133,7 +2214,7 @@ expression_port_list
         if( $3 != NULL ) {
           Try {
             expression* tmp = db_create_expression( $3, NULL, EXP_OP_PASSIGN, lhs_mode, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
-            $$ = db_create_expression( tmp, $1, EXP_OP_LIST, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            $$ = db_create_expression( tmp, $1, EXP_OP_PLIST, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -4913,31 +4994,102 @@ statement
         $$ = NULL;
       }
     }
-  | SYSTEM_IDENTIFIER { ignore_mode++; } '(' expression_port_list ')' ';' { ignore_mode--; }
+  | S_ignore '(' ignore_more expression_port_list ignore_less ')' ';'
     {
-      if( (ignore_mode == 0) && ($1 != NULL) ) {
-        Try {
-          $$ = db_create_statement( db_create_expr_for_system_call( $1, lhs_mode ) );
-        } Catch_anonymous {
-          error_count++;
-        }
-      } else {
-        $$ = NULL;
-      }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      $$ = NULL;
     }
-  | SYSTEM_IDENTIFIER ';'
+  | S_allow '(' ignore_more expression_port_list ignore_less ')' ';'
     {
-      if( (ignore_mode == 0) && ($1 != NULL) ) {
+      if( ignore_mode == 0 ) {
         Try {
-          $$ = db_create_statement( db_create_expr_for_system_call( $1, lhs_mode ) );
+          $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, 0, 0, 0, NULL ) );
         } Catch_anonymous {
           error_count++;
+          $$ = NULL;
         }
       } else {
         $$ = NULL;
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
+    }
+  | S_finish '(' ignore_more expression_port_list ignore_less ')' ';'
+    {
+      if( ignore_mode == 0 ) {
+        Try {
+          $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_SFINISH, FALSE, 0, 0, 0, NULL ) );
+        } Catch_anonymous {
+          error_count++;
+          $$ = NULL;
+        }
+      } else {
+        $$ = NULL;
+      }
+    }
+  | S_stop '(' ignore_more expression_port_list ignore_less ')' ';'
+    {
+      if( ignore_mode == 0 ) {
+        Try {
+          $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_SSTOP, FALSE, 0, 0, 0, NULL ) );
+        } Catch_anonymous {
+          error_count++;
+          $$ = NULL;
+        }
+      } else {
+        $$ = NULL;
+      }
+    }
+  | S_srandom '(' expression_port_list ')' ';'
+    {
+      if( (ignore_mode == 0) && ($3 != NULL) ) {
+        /* TBD - Need to add support for srandom */
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
+      } else {
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
+      }
+    }
+  | S_ignore ';'
+    {
+      $$ = NULL;
+    }
+  | S_allow ';'
+    {
+      if( ignore_mode == 0 ) {
+        Try {
+          $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, 0, 0, 0, NULL ) );
+        } Catch_anonymous {
+          error_count++;
+          $$ = NULL;
+        }
+      } else {
+        $$ = NULL;
+      }
+    }
+  | S_finish ';'
+    {
+      if( ignore_mode == 0 ) {
+        Try {
+          $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_SFINISH, FALSE, 0, 0, 0, NULL ) );
+        } Catch_anonymous {
+          error_count++;
+          $$ = NULL;
+        }
+      } else {
+        $$ = NULL;
+      }
+    }
+  | S_stop ';'
+    {
+      if( ignore_mode == 0 ) {
+        Try {
+          $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_SSTOP, FALSE, 0, 0, 0, NULL ) );
+        } Catch_anonymous {
+          error_count++;
+          $$ = NULL;
+        }
+      } else {
+        $$ = NULL;
+      }
     }
   | identifier '(' expression_port_list ')' ';'
     {

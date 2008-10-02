@@ -1,0 +1,56 @@
+%{
+/*
+ Copyright (c) 2006-2008 Trevor Williams
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 2 of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along with this program;
+ if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
+/*
+ Command-line: gperf -o -i 1 -C -k 1-3,$ -L C -H keyword_hash_sys_2001 -N check_identifier_sys_2001 -tT keywords_sys_2001.gperf
+ */
+
+#include <string.h>
+#include "keywords.h"
+#include "defines.h"
+#include "vsignal.h"
+#include "parser.h"
+#include "profiler.h"
+
+%}
+struct keyword_sys_2001 { char *name; int type; };
+%%
+fclose,      S_allow
+fgetc,       S_ignore
+fgets,       S_ignore
+fopen,       S_ignore
+fread,       S_ignore
+fscanf,      S_ignore
+%%
+
+int lexer_keyword_sys_2001_code(
+  const char* str,
+  int         length
+) { PROFILE(LEXER_KEYWORD_SYS_2001_CODE);
+
+  const struct keyword_sys_2001* rc   = check_identifier_sys_2001(str, length);
+  int                            type = S_user;
+
+  if( rc != 0 ) {
+    type = rc->type;
+  }
+
+  PROFILE_END;
+
+  return( type );
+
+}
+

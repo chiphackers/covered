@@ -362,7 +362,8 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",             ex
                                            {"ARSHIFT_A",      ">>>=",         expression_op_func__arshift_a,  {0, 0, NOT_COMB,   1, 1, 0, 1, 1} },
                                            {"FOREVER",        "",             expression_op_func__null,       {0, 0, NOT_COMB,   0, 0, 0, 0, 0} },
                                            {"STIME",          "$time",        expression_op_func__time,       {0, 1, NOT_COMB,   0, 0, 0, 0, 0} },
-                                           {"SRANDOM",        "$random",      expression_op_func__random,     {0, 1, NOT_COMB,   0, 0, 0, 0, 0} }
+                                           {"SRANDOM",        "$random",      expression_op_func__random,     {0, 1, NOT_COMB,   0, 0, 0, 0, 0} },
+                                           {"PLIST",          "",             expression_op_func__null,       {0, 0, NOT_COMB,   0, 0, 0, 0, 0} }
  };
 
 
@@ -810,11 +811,6 @@ void expression_set_signed( expression* exp ) { PROFILE(EXPRESSION_SET_SIGNED);
 }
 
 /*!
- \param expr       Pointer to expression to potentially resize.
- \param funit      Pointer to functional unit containing expression.
- \param recursive  Specifies if we should perform a recursive depth-first resize
- \param alloc      If set to TRUE, allocates vector data for all expressions
-
  \throws anonymous expression_create_value expression_create_value expression_create_value expression_create_value expression_create_value
          expression_create_value expression_create_value expression_create_value expression_create_value expression_create_value expression_create_value
          expression_create_value expression_create_value funit_size_elements expression_resize expression_resize expression_operate_recursively expression_set_value
@@ -825,10 +821,10 @@ void expression_set_signed( expression* exp ) { PROFILE(EXPRESSION_SET_SIGNED);
  recursive is FALSE, only the given expression is evaluated and resized.
 */
 void expression_resize(
-  expression* expr,
-  func_unit*  funit,
-  bool        recursive,
-  bool        alloc
+  expression* expr,       /*!< Pointer to expression to potentially resize */
+  func_unit*  funit,      /*!< Pointer to functional unit containing expression */
+  bool        recursive,  /*!< Specifies if we should perform a recursive depth-first resize */
+  bool        alloc       /*!< If set to TRUE, allocates vector data for all expressions */
 ) { PROFILE(EXPRESSION_RESIZE);
 
   unsigned int largest_width;  /* Holds larger width of left and right children */
@@ -914,6 +910,7 @@ void expression_resize(
       case EXP_OP_NEDGE   :
       case EXP_OP_PEDGE   :
       case EXP_OP_AEDGE   :
+      case EXP_OP_PLIST   :
         if( (expr->value->width != 1) || (expr->value->value.ul == NULL) ) {
           assert( expr->value->value.ul == NULL );
           expression_create_value( expr, 1, alloc );
@@ -2067,7 +2064,6 @@ bool expression_op_func__mod(
 
   /* Perform mod operation */
   bool retval = vector_op_modulus( expr->value, expr->left->value, expr->right->value );
-  vector_display( expr->value );
 
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
@@ -2780,7 +2776,7 @@ bool expression_op_func__time(
 ) { PROFILE(EXPRESSION_OP_FUNC__TIME);
 
   /* Convert the current time to the current vector */
-  vector_from_uint64( expr->value, time->full );
+  vector_from_uint64( expr->value, ((thr == NULL) ? time->full : thr->curr_time.full) );
 
   PROFILE_END;
 
@@ -5636,6 +5632,11 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.344  2008/10/01 06:07:01  phase1geo
+ Finishing code support needed for the $time operation.  Adding several new
+ diagnostics to regression suite to verify the newly supported system task calls.
+ Added several new system task calls to the list of "supported" task calls.
+
  Revision 1.343  2008/09/30 23:13:32  phase1geo
  Checkpointing (TOT is broke at this point).
 

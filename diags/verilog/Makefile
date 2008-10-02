@@ -476,9 +476,8 @@ $(NOSIMERRLIST):
 covered:
 ifdef VPI
 	cd $(COVERED_LIB); $(MAKE)
-else
-	cd $(COVERED_SRC); $(MAKE)
 endif
+	cd $(COVERED_SRC); $(MAKE)
 
 eot:
 	@./check_test dummy 1 $(FINISH_CODE)

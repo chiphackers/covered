@@ -1,0 +1,112 @@
+%{
+/*
+ Copyright (c) 2006 Trevor Williams
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 2 of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along with this program;
+ if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
+/*
+ Command-line: gperf -o -i 1 -C -k 1-3,$ -L C -H keyword_hash_1995 -N check_identifier_1995 -tT keywords_1995.gperf
+ */
+
+#include <string.h>
+#include "keywords.h"
+#include "defines.h"
+#include "vsignal.h"
+#include "parser.h"
+#include "profiler.h"
+
+%}
+struct keyword_sys_1995 { char *name; int type; };
+%%
+bitstoreal,     S_ignore
+countdrivers,   S_ignore
+display,        S_allow
+dumpall,        S_allow
+dumpfile,       S_dumpfile
+dumpflush,      S_allow
+dumplimit,      S_allow
+dumpvars,       S_allow
+dumpoff,        S_allow
+dumpon,         S_allow
+fdisplay,       S_allow
+fmonitor,       S_allow
+fopen,          S_ignore
+fstrobe,        S_allow
+fwrite,         S_allow
+finish,         S_finish
+getpattern,     S_ignore
+history,        S_allow
+incsave,        S_ignore
+input,          S_ignore
+itor,           S_ignore
+key,            S_allow
+list,           S_allow
+log,            S_allow
+monitor,        S_allow
+monitoroff,     S_allow
+monitoron,      S_allow
+nokey,          S_allow
+nolog,          S_allow
+printtimescale, S_allow
+random,         S_random
+readmemb,       S_ignore
+readmemh,       S_ignore
+realtime,       S_ignore
+realtobits,     S_ignore
+reset,          S_ignore
+reset_count,    S_ignore
+reset_value,    S_ignore
+restart,        S_ignore
+rtoi,           S_ignore
+save,           S_ignore
+scale,          S_ignore
+scope,          S_ignore
+showscopes,     S_allow
+showvariables,  S_allow
+showvars,       S_allow
+srandom,        S_srandom
+sreadmemb,      S_ignore
+sreadmemh,      S_ignore
+stime,          S_ignore
+stop,           S_stop
+strobe,         S_allow
+time,           S_time
+timeformat,     S_allow
+write,          S_allow
+%%
+
+int lexer_keyword_sys_1995_code(
+  const char* str,
+  int         length
+) { PROFILE(LEXER_KEYWORD_SYS_1995_CODE);
+
+  const struct keyword_sys_1995* rc   = check_identifier_sys_1995(str, length);
+  int                            type = S_user;
+
+  if( rc != 0 ) {
+    type = rc->type;
+    if( type == S_dumpfile ) {
+#ifdef TESTMODE
+      type = S_ignore;
+#else
+      type = S_allow;
+#endif
+    }
+  }
+
+  PROFILE_END;
+
+  return( type );
+
+}
+

@@ -505,10 +505,19 @@ WSPACE [ \t\b\f]+
 
   /* System call lines -- we ignore this information */
 <PARSE>\$([a-zA-Z0-9$_]+)   { PROFILE(LEXER_SYSTEM_CALL);
+     int rc = lexer_keyword_sys_1995_code( (yytext + 1), (yyleng - 1) );
+     if( (rc == S_user) && parser_check_generation( GENERATION_2001 ) ) {
+       rc = lexer_keyword_sys_2001_code( (yytext + 1), (yyleng - 1) );
+     }
+     if( (rc == S_user) && parser_check_generation( GENERATION_SV ) ) {
+       rc = lexer_keyword_sys_sv_code( (yytext + 1), (yyleng - 1) );
+       if( rc == S_user ) {  /* User PLI calls are ignored for now */
+         rc = S_ignore;
+       }
+     }
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
-     yylval.text = strdup_safe( yytext );
-     return SYSTEM_IDENTIFIER; 
+     return( rc ); 
  }
 
   /* Unsized decimal number */

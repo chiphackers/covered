@@ -945,62 +945,6 @@ void db_add_file_version(
 }
 
 /*!
- \return Returns a pointer to the newly created expression to handle the given system call.
-*/
-expression* db_create_expr_for_system_call(
-  const char* str,      /*!< String containing system function call */
-  bool        lhs_mode  /*!< Specifies LHS mode of system call */
-) { PROFILE(DB_CREATE_EXPR_FOR_SYSTEM_CALL);
-
-  expression* expr = NULL;
-
-  if( (strncmp( str, "$display",         8 ) == 0) ||
-      (strncmp( str, "$fdisplay",        9 ) == 0) ||
-      (strncmp( str, "$write",           6 ) == 0) ||
-      (strncmp( str, "$fwrite",          7 ) == 0) ||
-      (strncmp( str, "$strobe",          7 ) == 0) ||
-      (strncmp( str, "$fstrobe",         8 ) == 0) ||
-      (strncmp( str, "$monitor",         8 ) == 0) ||
-      (strncmp( str, "$fmonitor",        9 ) == 0) ||
-      (strncmp( str, "$monitoron",      10 ) == 0) ||
-      (strncmp( str, "$monitoroff",     11 ) == 0) ||
-      (strncmp( str, "$printtimescale", 15 ) == 0) ||
-      (strncmp( str, "$timeformat",     11 ) == 0) ||
-      (strncmp( str, "$key",             4 ) == 0) ||
-      (strncmp( str, "$nokey",           6 ) == 0) ||
-      (strncmp( str, "$list",            5 ) == 0) ||
-      (strncmp( str, "$log",             4 ) == 0) ||
-      (strncmp( str, "$nolog",           6 ) == 0) ||
-      (strncmp( str, "$showscopes",     11 ) == 0) ||
-      (strncmp( str, "$showvars",        9 ) == 0) ||
-      (strncmp( str, "$showvariables",  14 ) == 0) ||
-#ifndef TESTMODE
-      (strncmp( str, "$dumpfile",        9 ) == 0) ||
-#endif
-      (strncmp( str, "$dumpoff",         8 ) == 0) ||
-      (strncmp( str, "$dumpon",          7 ) == 0) ||
-      (strncmp( str, "$dumpall",         8 ) == 0) ||
-      (strncmp( str, "$dumplimit",      10 ) == 0) ||
-      (strncmp( str, "$dumpflush",      11 ) == 0) ||
-      (strncmp( str, "$dumpvars",        9 ) == 0) ) {
-    expr = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
-  } else if( strncmp( str, "$finish", 7 ) == 0 ) {
-    expr = db_create_expression( NULL, NULL, EXP_OP_SFINISH, lhs_mode, 0, 0, 0, NULL );
-  } else if( strncmp( str, "$stop", 5 ) == 0 ) {
-    expr = db_create_expression( NULL, NULL, EXP_OP_SSTOP, lhs_mode, 0, 0, 0, NULL );
-  } else if( strncmp( str, "$time", 5 ) == 0 ) {
-    expr = db_create_expression( NULL, NULL, EXP_OP_STIME, lhs_mode, 0, 0, 0, NULL );
-  //} else if( strncmp( str, "$random", 7 ) == 0 ) {
-  //  expr = db_create_expression( NULL, NULL, EXP_OP_SRANDOM, lhs_mode, 0, 0, 0, NULL );
-  }
-
-  PROFILE_END;
-
-  return( expr );
-
-}
-
-/*!
  \return Returns a pointer to the created functional unit if the instance was added to the hierarchy;
          otherwise, returns NULL.
 
@@ -3129,6 +3073,11 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.335  2008/10/01 06:07:00  phase1geo
+ Finishing code support needed for the $time operation.  Adding several new
+ diagnostics to regression suite to verify the newly supported system task calls.
+ Added several new system task calls to the list of "supported" task calls.
+
  Revision 1.334  2008/09/29 23:00:22  phase1geo
  Attempting to fix bug 2136474.  Also adding support for $time system function call.
 

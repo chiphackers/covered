@@ -620,7 +620,7 @@ static void bind_task_function_ports(
   if( expr != NULL ) {
 
     /* If the expression is a list, traverse left and right expression trees */
-    if( expr->op == EXP_OP_LIST ) {
+    if( expr->op == EXP_OP_PLIST ) {
 
       bind_task_function_ports( expr->left,  funit, name, order, funit_exp );
       bind_task_function_ports( expr->right, funit, name, order, funit_exp );
@@ -977,6 +977,11 @@ void bind_dealloc() { PROFILE(BIND_DEALLOC);
 
 /* 
  $Log$
+ Revision 1.135  2008/08/18 23:07:25  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.131.2.1  2008/07/10 22:43:49  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

@@ -838,6 +838,7 @@ typedef enum exp_op_type_e {
   EXP_OP_FOREVER,         /*!< 104:0x68.  Specifies the 'forever' statement */
   EXP_OP_STIME,           /*!< 105:0x69.  Specifies the $time call */
   EXP_OP_SRANDOM,         /*!< 106:0x6a.  Specifies the $random call */
+  EXP_OP_PLIST,           /*!< 107:0x6b.  Task/function port list glue */
   EXP_OP_NUM              /*!< The total number of defines for expression values */
 } exp_op_type;
 
@@ -1293,7 +1294,7 @@ typedef enum rpt_type_e {
 #define TIME_CMP_NE(x,y)         (((x).lo ^ (y).lo) || ((x).hi ^ (y).hi))
 
 /*! Performs time increment where x is the sim_time structure to increment and y is a 64-bit value to increment to */
-#define TIME_INC(x,y)           (x).hi+=((0xffffffff-(x).lo)<(y).lo)?((y).hi+1):(y).hi; (x).lo+=(y).lo;
+#define TIME_INC(x,y)           (x).hi+=((0xffffffff-(x).lo)<(y).lo)?((y).hi+1):(y).hi; (x).lo+=(y).lo; (x).full+=(y).full;
 
 /*!
  Defines boolean variables used in most functions.
@@ -2942,6 +2943,11 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.319  2008/10/01 06:07:00  phase1geo
+ Finishing code support needed for the $time operation.  Adding several new
+ diagnostics to regression suite to verify the newly supported system task calls.
+ Added several new system task calls to the list of "supported" task calls.
+
  Revision 1.318  2008/09/29 23:00:24  phase1geo
  Attempting to fix bug 2136474.  Also adding support for $time system function call.
 
