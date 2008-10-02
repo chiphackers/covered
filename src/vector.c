@@ -2043,7 +2043,8 @@ int vector_to_int(
   const vector* vec
 ) { PROFILE(VECTOR_TO_INT);
 
-  int retval;  /* Integer value returned to calling function */
+  int          retval;  /* Integer value returned to calling function */
+  unsigned int width = (vec->width > (sizeof( int ) * 8)) ? (sizeof( int ) * 8) : vec->width;
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL :  retval = vec->value.ul[0][VTYPE_INDEX_VAL_VALL];  break;
@@ -2051,11 +2052,8 @@ int vector_to_int(
   }
 
   /* If the vector is signed, sign-extend the integer */
-  if( vec->suppl.part.is_signed == 1 ) {
-    unsigned int width = (vec->width > 32) ? 32 : vec->width;
-    /*@-shiftimplementation@*/
-    retval |= (UL_SET * ((retval >> (width - 1)) & 0x1)) << width;
-    /*@=shiftimplementation@*/
+  if( (vec->suppl.part.is_signed == 1) && (width < (sizeof( int ) * 8)) ) {
+    retval |= ((UL_SET * ((retval >> (width - 1)) & 0x1)) << width);
   }
 
   PROFILE_END;
@@ -4677,6 +4675,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.157  2008/09/30 23:13:32  phase1geo
+ Checkpointing (TOT is broke at this point).
+
  Revision 1.156  2008/09/26 22:38:59  phase1geo
  Added feature request 2129623.  Updated regressions for this change (except for
  VCS regression at this point).
