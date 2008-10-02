@@ -251,6 +251,7 @@ static bool expression_op_func__rshift_a( expression*, thread*, const sim_time* 
 static bool expression_op_func__arshift_a( expression*, thread*, const sim_time* );
 static bool expression_op_func__time( expression*, thread*, const sim_time* );
 static bool expression_op_func__random( expression*, thread*, const sim_time* );
+static bool expression_op_func__sassign( expression*, thread*, const sim_time* );
 
 static void expression_assign( expression*, expression*, int*, thread*, const sim_time*, bool eval_lhs );
 
@@ -365,7 +366,8 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",             ex
                                            {"FOREVER",        "",             expression_op_func__null,       {0, 0, NOT_COMB,   0, 0, 0, 0, 0} },
                                            {"STIME",          "$time",        expression_op_func__time,       {0, 1, NOT_COMB,   0, 0, 0, 0, 0} },
                                            {"SRANDOM",        "$random",      expression_op_func__random,     {0, 1, NOT_COMB,   0, 0, 0, 0, 0} },
-                                           {"PLIST",          "",             expression_op_func__null,       {0, 0, NOT_COMB,   0, 0, 0, 0, 0} }
+                                           {"PLIST",          "",             expression_op_func__null,       {0, 0, NOT_COMB,   0, 0, 0, 0, 0} },
+                                           {"SASSIGN",        "",             expression_op_func__sassign,    {0, 0, NOT_COMB,   0, 0, 0, 0, 0} }
  };
 
 
@@ -2797,11 +2799,14 @@ bool expression_op_func__random(
   const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__RANDOM);
 
-  static long seed = 0;
+  static long seed   = 0;
   long        rand;
+  bool        seeded = (expr->left != NULL) && (expr->left->op == EXP_OP_SASSIGN);
+  int         intval = 0;
 
   /* If $random contains a seed parameter, get it */
-  if( expr->left != NULL ) {
+  if( seeded ) {
+    printf( "In expression_op_func__random, getting seed: %ld\n", seed );
     seed = (long)vector_to_int( expr->left->value );
   }
   
@@ -2811,9 +2816,34 @@ bool expression_op_func__random(
   /* Convert it to a vector and store it */
   vector_from_int( expr->value, (int)rand ); 
 
+  /* Store the returned seed into the left expression, if one exists */
+  if( seeded ) {
+    vector_from_int( expr->left->value, seed );
+    expression_assign( expr->left->right, expr->left, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
+  }
+
   PROFILE_END;
 
   return( TRUE );
+
+}
+
+/*!
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a system task port assignment.
+*/
+bool expression_op_func__sassign(
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
+) { PROFILE(EXPRESSION_OP_FUNC__SASSIGN);
+
+  bool retval = vector_set_value_ulong( expr->value, expr->right->value->value.ul, expr->right->value->width );
+
+  PROFILE_END;
+
+  return( retval );
 
 }
 
@@ -5646,6 +5676,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.346  2008/10/02 06:46:33  phase1geo
+ Initial $random support added.  Added random1 and random1.1 diagnostics to regression
+ suite.  random1.1 is currently failing.  Checkpointing.
+
  Revision 1.345  2008/10/02 05:51:09  phase1geo
  Reworking system task call parsing which will allow us to implement system tasks with
  parameters (also will allow us to handle system tasks correctly for the given generation).

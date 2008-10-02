@@ -312,7 +312,7 @@ int yydebug = 1;
 %type <integer>   net_type net_type_sign_range_opt var_type data_type_opt
 %type <text>      identifier begin_end_id
 %type <statexp>   static_expr static_expr_primary static_expr_port_list
-%type <expr>      expr_primary expression_list expression expression_port_list
+%type <expr>      expr_primary expression_list expression expression_port_list expression_systask_list
 %type <expr>      lavalue lpvalue
 %type <expr>      event_control event_expression_list event_expression
 %type <expr>      delay_value delay_value_simple
@@ -2044,7 +2044,7 @@ expr_primary
     {
       $$ = NULL;
     }
-  | S_random '(' expression_port_list ')'
+  | S_random '(' expression_systask_list ')'
     {
       if( (ignore_mode == 0) && ($3 != NULL) ) {
         Try {
@@ -2059,7 +2059,7 @@ expr_primary
         $$ = NULL;
       }
     }
-  | S_srandom '(' expression_port_list ')'
+  | S_srandom '(' expression_systask_list ')'
     {
       if( ignore_mode == 0 ) {
         /* TBD - Need to add support for this */
@@ -2232,6 +2232,43 @@ expression_port_list
         Try {
           $$ = db_create_expression( $1, NULL, EXP_OP_PASSIGN, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
         } Catch_anonymous {
+          error_count++;
+          $$ = NULL;
+        }
+      } else {
+        $$ = NULL;
+      }
+    }
+  ;
+
+  /* Expression systask lists are used in system task calls */
+expression_systask_list
+  : expression_systask_list ',' expression
+    {
+      if( ignore_mode == 0 ) {
+        if( $3 != NULL ) {
+          Try {
+            expression* tmp = db_create_expression( $3, NULL, EXP_OP_SASSIGN, lhs_mode, 0, 0, 0, NULL );
+            $$ = db_create_expression( tmp, $1, EXP_OP_PLIST, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          } Catch_anonymous {
+            expression_dealloc( $3, FALSE );
+            error_count++;
+            $$ = NULL;
+          }
+        } else {
+          $$ = $1;
+        }
+      } else {
+        $$ = NULL;
+      }
+    }
+  | expression
+    {
+      if( ignore_mode == 0 ) {
+        Try {
+          $$ = db_create_expression( $1, NULL, EXP_OP_SASSIGN, lhs_mode, 0, 0, 0, NULL );
+        } Catch_anonymous {
+          expression_dealloc( $1, FALSE );
           error_count++;
           $$ = NULL;
         }
@@ -4994,11 +5031,11 @@ statement
         $$ = NULL;
       }
     }
-  | S_ignore '(' ignore_more expression_port_list ignore_less ')' ';'
+  | S_ignore '(' ignore_more expression_systask_list ignore_less ')' ';'
     {
       $$ = NULL;
     }
-  | S_allow '(' ignore_more expression_port_list ignore_less ')' ';'
+  | S_allow '(' ignore_more expression_systask_list ignore_less ')' ';'
     {
       if( ignore_mode == 0 ) {
         Try {
@@ -5011,7 +5048,7 @@ statement
         $$ = NULL;
       }
     }
-  | S_finish '(' ignore_more expression_port_list ignore_less ')' ';'
+  | S_finish '(' ignore_more expression_systask_list ignore_less ')' ';'
     {
       if( ignore_mode == 0 ) {
         Try {
@@ -5024,7 +5061,7 @@ statement
         $$ = NULL;
       }
     }
-  | S_stop '(' ignore_more expression_port_list ignore_less ')' ';'
+  | S_stop '(' ignore_more expression_systask_list ignore_less ')' ';'
     {
       if( ignore_mode == 0 ) {
         Try {
@@ -5037,7 +5074,7 @@ statement
         $$ = NULL;
       }
     }
-  | S_srandom '(' expression_port_list ')' ';'
+  | S_srandom '(' expression_systask_list ')' ';'
     {
       if( (ignore_mode == 0) && ($3 != NULL) ) {
         /* TBD - Need to add support for srandom */

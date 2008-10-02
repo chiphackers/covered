@@ -839,6 +839,7 @@ typedef enum exp_op_type_e {
   EXP_OP_STIME,           /*!< 105:0x69.  Specifies the $time call */
   EXP_OP_SRANDOM,         /*!< 106:0x6a.  Specifies the $random call */
   EXP_OP_PLIST,           /*!< 107:0x6b.  Task/function port list glue */
+  EXP_OP_SASSIGN,         /*!< 108:0x6c.  System task port assignment holder */
   EXP_OP_NUM              /*!< The total number of defines for expression values */
 } exp_op_type;
 
@@ -2943,6 +2944,11 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.320  2008/10/02 05:51:09  phase1geo
+ Reworking system task call parsing which will allow us to implement system tasks with
+ parameters (also will allow us to handle system tasks correctly for the given generation).
+ Fixing bug 2127694.  Fixing issue with current time in threads.  Full regressions pass.
+
  Revision 1.319  2008/10/01 06:07:00  phase1geo
  Finishing code support needed for the $time operation.  Adding several new
  diagnostics to regression suite to verify the newly supported system task calls.
