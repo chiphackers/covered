@@ -133,6 +133,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <limits.h>
 
 #include "binding.h"
 #include "defines.h"
@@ -144,6 +145,7 @@
 #include "reentrant.h"
 #include "sim.h"
 #include "stmt_blk.h"
+#include "sys_tasks.h"
 #include "util.h"
 #include "vector.h"
 #include "vsignal.h"
@@ -2795,7 +2797,19 @@ bool expression_op_func__random(
   const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__RANDOM);
 
-  /* TBD */
+  static long seed = 0;
+  long        rand;
+
+  /* If $random contains a seed parameter, get it */
+  if( expr->left != NULL ) {
+    seed = (long)vector_to_int( expr->left->value );
+  }
+  
+  /* Get the random value */
+  rand = sys_task_dist_uniform( &seed, INT_MIN, INT_MAX );
+
+  /* Convert it to a vector and store it */
+  vector_from_int( expr->value, (int)rand ); 
 
   PROFILE_END;
 
@@ -5632,6 +5646,11 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.345  2008/10/02 05:51:09  phase1geo
+ Reworking system task call parsing which will allow us to implement system tasks with
+ parameters (also will allow us to handle system tasks correctly for the given generation).
+ Fixing bug 2127694.  Fixing issue with current time in threads.  Full regressions pass.
+
  Revision 1.344  2008/10/01 06:07:01  phase1geo
  Finishing code support needed for the $time operation.  Adding several new
  diagnostics to regression suite to verify the newly supported system task calls.

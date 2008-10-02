@@ -59,6 +59,7 @@ covered_SOURCES = arc.c \
 		  stmt_blk.c \
                   struct_union.c \
 		  symtable.c \
+                  sys_tasks.c \
 		  tcl_funcs.c \
 		  toggle.c \
                   tree.c \

@@ -798,6 +798,8 @@ profiler profiles[NUM_PROFILES] = {
   {"symtable_set_value", NULL, 0, 0, 0, TRUE},
   {"symtable_assign", NULL, 0, 0, 0, TRUE},
   {"symtable_dealloc", NULL, 0, 0, 0, TRUE},
+  {"sys_task_uniform", NULL, 0, 0, 0, TRUE},
+  {"sys_task_rtl_dist_uniform", NULL, 0, 0, 0, TRUE},
   {"tcl_func_get_race_reason_msgs", NULL, 0, 0, 0, FALSE},
   {"tcl_func_get_funit_list", NULL, 0, 0, 0, FALSE},
   {"tcl_func_get_instances", NULL, 0, 0, 0, FALSE},

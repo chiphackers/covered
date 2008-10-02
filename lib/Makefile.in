@@ -63,8 +63,9 @@ am_libcovered_a_OBJECTS = arc.$(OBJEXT) assertion.$(OBJEXT) \
 	race.$(OBJEXT) reentrant.$(OBJEXT) scope.$(OBJEXT) \
 	search.$(OBJEXT) sim.$(OBJEXT) stat.$(OBJEXT) \
 	statement.$(OBJEXT) static.$(OBJEXT) stmt_blk.$(OBJEXT) \
-	struct_union.$(OBJEXT) symtable.$(OBJEXT) tree.$(OBJEXT) \
-	util.$(OBJEXT) vector.$(OBJEXT) vsignal.$(OBJEXT)
+	struct_union.$(OBJEXT) symtable.$(OBJEXT) sys_tasks.$(OBJEXT) \
+	tree.$(OBJEXT) util.$(OBJEXT) vector.$(OBJEXT) \
+	vsignal.$(OBJEXT)
 libcovered_a_OBJECTS = $(am_libcovered_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(libexecdir)"
 libexecPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
@@ -251,6 +252,7 @@ libcovered_a_SOURCES = ../src/arc.c \
                        ../src/stmt_blk.c \
                        ../src/struct_union.c \
                        ../src/symtable.c \
+                       ../src/sys_tasks.c \
                        ../src/tree.c \
                        ../src/util.c \
                        ../src/vector.c \
@@ -372,6 +374,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stmt_blk.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/struct_union.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/symtable.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sys_tasks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tree.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/util.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vector.Po@am__quote@
@@ -824,6 +827,20 @@ symtable.obj: ../src/symtable.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../src/symtable.c' object='symtable.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o symtable.obj `if test -f '../src/symtable.c'; then $(CYGPATH_W) '../src/symtable.c'; else $(CYGPATH_W) '$(srcdir)/../src/symtable.c'; fi`
+
+sys_tasks.o: ../src/sys_tasks.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sys_tasks.o -MD -MP -MF $(DEPDIR)/sys_tasks.Tpo -c -o sys_tasks.o `test -f '../src/sys_tasks.c' || echo '$(srcdir)/'`../src/sys_tasks.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sys_tasks.Tpo $(DEPDIR)/sys_tasks.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../src/sys_tasks.c' object='sys_tasks.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sys_tasks.o `test -f '../src/sys_tasks.c' || echo '$(srcdir)/'`../src/sys_tasks.c
+
+sys_tasks.obj: ../src/sys_tasks.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sys_tasks.obj -MD -MP -MF $(DEPDIR)/sys_tasks.Tpo -c -o sys_tasks.obj `if test -f '../src/sys_tasks.c'; then $(CYGPATH_W) '../src/sys_tasks.c'; else $(CYGPATH_W) '$(srcdir)/../src/sys_tasks.c'; fi`
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/sys_tasks.Tpo $(DEPDIR)/sys_tasks.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../src/sys_tasks.c' object='sys_tasks.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sys_tasks.obj `if test -f '../src/sys_tasks.c'; then $(CYGPATH_W) '../src/sys_tasks.c'; else $(CYGPATH_W) '$(srcdir)/../src/sys_tasks.c'; fi`
 
 tree.o: ../src/tree.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT tree.o -MD -MP -MF $(DEPDIR)/tree.Tpo -c -o tree.o `test -f '../src/tree.c' || echo '$(srcdir)/'`../src/tree.c

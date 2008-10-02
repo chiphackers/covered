@@ -38,6 +38,7 @@ libcovered_a_SOURCES = ../src/arc.c \
                        ../src/stmt_blk.c \
                        ../src/struct_union.c \
                        ../src/symtable.c \
+                       ../src/sys_tasks.c \
                        ../src/tree.c \
                        ../src/util.c \
                        ../src/vector.c \
