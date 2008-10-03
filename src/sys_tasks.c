@@ -33,10 +33,19 @@
 #endif
 
 
+/*!
+ Random seed value.
+*/
+static long random_seed = 0;
+
+
+/*!
+ \return Returns a randomly generated number that is uniformly distributed.
+*/
 static double sys_task_uniform(
-  long* seed,
-  long  start,
-  long  end
+  long* seed,   /*!< Pointer to seed value to use and store new seed in */
+  long  start,  /*!< Beginning range */
+  long  end     /*!< Ending range */
 ) { PROFILE(SYS_TASK_UNIFORM);
 
   double        d = 0.00000011920928955078125;
@@ -84,11 +93,17 @@ static double sys_task_uniform(
 
 }
 
-/* copied from IEEE1364-2001, with slight modifications for 64bit machines. */
+/*!
+ \return Returns a randomly generated integer value that is uniformly distributed.
+
+ \note
+ Copied from IEEE1364-2001, with slight modifications for 64bit machines.  This code is taken from
+ Icarus Verilog.
+*/
 long sys_task_dist_uniform(
-  long* seed,
-  long  start,
-  long  end
+  long* seed,   /*!< Pointer to seed value to use and store new seed value to */
+  long  start,  /*!< Starting range of random value */
+  long  end     /*!< Ending range of random value */
 ) { PROFILE(SYS_TASK_RTL_DIST_UNIFORM);
 
   double r;
@@ -159,6 +174,93 @@ long sys_task_dist_uniform(
 
 }
 
+/*!
+ \return Returns a randomly generated signed value
+*/
+long sys_task_random(
+  long* seed  /*!< Pointer to seed value to use and store new information to */
+) { PROFILE(SYS_TASK_RANDOM);
+
+  long result;
+  
+  if( seed != NULL ) {
+    random_seed = *seed;
+  }
+
+  result = rtl_dist_uniform( &random_seed, INT_MIN, INT_MAX );
+
+  if( seed != NULL ) {
+    *seed = random_seed;
+  }
+
+  PROFILE_END;
+
+  return( result );
+
+}
+
+/*!
+ \return Returns a randomly generated unsigned value within a given range
+
+ \note
+ From System Verilog 3.1a.  This code is from the Icarus Verilog project.
+*/
+unsigned long sys_task_urandom(
+  long* seed  /*!< Pointer to seed value to use and store new information to */
+) { PROFILE(SYS_TASK_URANDOM);
+
+  unsigned long result;
+
+  if( seed != NULL ) {
+    random_seed = *seed;
+  }
+
+  result = rtl_dist_uniform( &random_seed, 0, UINT_MAX );
+
+  if( seed != NULL ) {
+    *seed = random_seed;
+  }
+
+  return( result );
+
+}
+
+/*!
+ \return Returns a randomly generated unsigned value within a given range
+
+ \note
+ From System Verilog 3.1a.  This code is from the Icarus Verilog project.
+*/
+unsigned long sys_task_urandom_range(
+  unsigned long max,   /*!< Maximum range value */
+  unsigned long min    /*!< Minimum range value */
+) { PROFILE(SYS_TASK_URANDOM_RANGE);
+
+  unsigned long result;
+  long          max_i, min_i;
+
+  max_i = max + INT_MIN;
+  min_i = min + INT_MIN;
+
+  if( seed != NULL ) {
+    random_seed = *seed;
+  }
+
+  result = rtl_dist_uniform( &random_seed, min_i, max_i ) - INT_MIN;
+
+  if( seed != NULL ) {
+    *seed = random_seed;
+  }
+
+  return( result );
+
+}
+
+
 /*
  $Log$
+ Revision 1.1  2008/10/02 06:46:33  phase1geo
+ Initial $random support added.  Added random1 and random1.1 diagnostics to regression
+ suite.  random1.1 is currently failing.  Checkpointing.
+
 */

@@ -133,7 +133,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <limits.h>
 
 #include "binding.h"
 #include "defines.h"
@@ -2805,30 +2804,33 @@ bool expression_op_func__random(
   const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__RANDOM);
 
-  static long seed   = 0;
-  long        rand;
-  bool        seeded = (expr->left != NULL) && (expr->left->op == EXP_OP_SASSIGN);
-  int         intval = 0;
+  long rand;
 
   /* If $random contains a seed parameter, get it */
-  if( seeded ) {
-    seed = (long)vector_to_int( expr->left->value );
-  }
-  
-  /* Get the random value */
-  rand = sys_task_dist_uniform( &seed, INT_MIN, INT_MAX );
+  if( (expr->left != NULL) && (expr->left->op == EXP_OP_SASSIGN) ) {
 
-  /* Convert it to a vector and store it */
-  vector_from_int( expr->value, (int)rand ); 
+    int         intval = 0;
+    exp_op_type op     = expr->left->right->op;
+    long        seed   = (long)vector_to_int( expr->left->value );
 
-  /* Store the returned seed into the left expression, if one exists */
-  if( seeded ) {
-    exp_op_type op = expr->left->right->op;
+    /* Get random number from seed */
+    rand = sys_task_random( &seed );
+
+    /* Store seed value */
     if( (op == EXP_OP_SIG) || (op == EXP_OP_SBIT_SEL) || (op == EXP_OP_MBIT_SEL) || (op == EXP_OP_DIM) ) {
       vector_from_int( expr->left->value, seed );
       expression_assign( expr->left->right, expr->left, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
     }
+
+  } else {
+
+    /* Get random value using existing seed value */
+    rand = sys_task_random( NULL );
+
   }
+  
+  /* Convert it to a vector and store it */
+  vector_from_int( expr->value, (int)rand ); 
 
   PROFILE_END;
 
@@ -2885,7 +2887,33 @@ bool expression_op_func__urandom(
   const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__URANDOM);
 
-  /* TBD */
+  unsigned long rand;
+
+  /* If $random contains a seed parameter, get it */
+  if( (expr->left != NULL) && (expr->left->op == EXP_OP_SASSIGN) ) {
+
+    int         intval = 0;
+    exp_op_type op     = expr->left->right->op;
+    long        seed   = (long)vector_to_int( expr->left->value );
+
+    /* Get random number from seed */
+    rand = sys_task_urandom( &seed );
+
+    /* Store seed value */
+    if( (op == EXP_OP_SIG) || (op == EXP_OP_SBIT_SEL) || (op == EXP_OP_MBIT_SEL) || (op == EXP_OP_DIM) ) {
+      vector_from_int( expr->left->value, seed );
+      expression_assign( expr->left->right, expr->left, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
+    }
+
+  } else {
+
+    /* Get random value using existing seed value */
+    rand = sys_task_urandom( NULL );
+
+  }
+  
+  /* Convert it to a vector and store it */
+  vector_from_uint64( expr->value, (uint64)rand );
 
   PROFILE_END;
 
@@ -5741,6 +5769,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.350  2008/10/03 13:14:36  phase1geo
+ Inserting placeholders for $srandom, $urandom, and $urandom_range system call
+ support.  Checkpointing.
+
  Revision 1.349  2008/10/02 22:52:52  phase1geo
  Adding code to random function so that we don't attempt to store the new seed
  value into an expression.  Checkpointing.
