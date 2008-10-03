@@ -252,6 +252,9 @@ static bool expression_op_func__arshift_a( expression*, thread*, const sim_time*
 static bool expression_op_func__time( expression*, thread*, const sim_time* );
 static bool expression_op_func__random( expression*, thread*, const sim_time* );
 static bool expression_op_func__sassign( expression*, thread*, const sim_time* );
+static bool expression_op_func__srandom( expression*, thread*, const sim_time* );
+static bool expression_op_func__urandom( expression*, thread*, const sim_time* );
+static bool expression_op_func__urandom_range( expression*, thread*, const sim_time* );
 
 static void expression_assign( expression*, expression*, int*, thread*, const sim_time*, bool eval_lhs );
 
@@ -259,115 +262,118 @@ static void expression_assign( expression*, expression*, int*, thread*, const si
  Array containing static information about expression operation types.  NOTE:  This structure MUST be
  updated if a new expression is added!  The third argument is an initialization to the exp_info_s structure.
 */
-const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",             expression_op_func__null,       {0, 1, NOT_COMB,   1, 0, 0, 0, 0} },
-                                           {"SIG",            "",             expression_op_func__sig,        {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
-                                           {"XOR",            "^",            expression_op_func__xor,        {0, 0, OTHER_COMB, 0, 1, 0, 1, 0} },
-                                           {"MULTIPLY",       "*",            expression_op_func__multiply,   {0, 0, NOT_COMB,   1, 1, 0, 1, 0} },
-                                           {"DIVIDE",         "/",            expression_op_func__divide,     {0, 0, NOT_COMB,   1, 1, 0, 1, 0} },
-                                           {"MOD",            "%",            expression_op_func__mod,        {0, 0, NOT_COMB,   1, 1, 0, 1, 0} },
-                                           {"ADD",            "+",            expression_op_func__add,        {0, 0, OTHER_COMB, 0, 1, 0, 1, 0} },
-                                           {"SUBTRACT",       "-",            expression_op_func__subtract,   {0, 0, OTHER_COMB, 0, 1, 0, 1, 3} },
-                                           {"AND",            "&",            expression_op_func__and,        {0, 0, AND_COMB,   0, 1, 0, 1, 0} },
-                                           {"OR",             "|",            expression_op_func__or,         {0, 0, OR_COMB,    0, 1, 0, 1, 0} },
-                                           {"NAND",           "~&",           expression_op_func__nand,       {0, 0, AND_COMB,   0, 1, 0, 0, 0} },
-                                           {"NOR",            "~|",           expression_op_func__nor,        {0, 0, OR_COMB,    0, 1, 0, 0, 0} },
-                                           {"NXOR",           "~^",           expression_op_func__nxor,       {0, 0, OTHER_COMB, 0, 1, 0, 0, 0} },
-                                           {"LT",             "<",            expression_op_func__lt,         {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
-                                           {"GT",             ">",            expression_op_func__gt,         {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
-                                           {"LSHIFT",         "<<",           expression_op_func__lshift,     {0, 0, NOT_COMB,   1, 1, 0, 1, 0} },
-                                           {"RSHIFT",         ">>",           expression_op_func__rshift,     {0, 0, NOT_COMB,   1, 1, 0, 1, 0} },
-                                           {"EQ",             "==",           expression_op_func__eq,         {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
-                                           {"CEQ",            "===",          expression_op_func__ceq,        {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
-                                           {"LE",             "<=",           expression_op_func__le,         {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
-                                           {"GE",             ">=",           expression_op_func__ge,         {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
-                                           {"NE",             "!=",           expression_op_func__ne,         {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
-                                           {"CNE",            "!==",          expression_op_func__cne,        {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
-                                           {"LOR",            "||",           expression_op_func__lor,        {0, 0, OR_COMB,    0, 1, 0, 0, 0} },
-                                           {"LAND",           "&&",           expression_op_func__land,       {0, 0, AND_COMB,   0, 1, 0, 0, 0} },
-                                           {"COND",           "?:",           expression_op_func__cond,       {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
-                                           {"COND_SEL",       "",             expression_op_func__cond_sel,   {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
-                                           {"UINV",           "~",            expression_op_func__uinv,       {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
-                                           {"UAND",           "&",            expression_op_func__uand,       {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
-                                           {"UNOT",           "!",            expression_op_func__unot,       {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
-                                           {"UOR",            "|",            expression_op_func__uor,        {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
-                                           {"UXOR",           "^",            expression_op_func__uxor,       {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
-                                           {"UNAND",          "~&",           expression_op_func__unand,      {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
-                                           {"UNOR",           "~|",           expression_op_func__unor,       {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
-                                           {"UNXOR",          "~^",           expression_op_func__unxor,      {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
-                                           {"SBIT_SEL",       "[]",           expression_op_func__sbit,       {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
-                                           {"MBIT_SEL",       "[:]",          expression_op_func__mbit,       {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
-                                           {"EXPAND",         "{{}}",         expression_op_func__expand,     {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
-                                           {"CONCAT",         "{}",           expression_op_func__concat,     {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
-                                           {"PEDGE",          "posedge",      expression_op_func__pedge,      {1, 0, NOT_COMB,   0, 1, 1, 0, 1} },
-                                           {"NEDGE",          "negedge",      expression_op_func__nedge,      {1, 0, NOT_COMB,   0, 1, 1, 0, 1} },
-                                           {"AEDGE",          "anyedge",      expression_op_func__aedge,      {1, 0, NOT_COMB,   0, 1, 1, 0, 1} },
-                                           {"LAST",           "",             expression_op_func__null,       {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
-                                           {"EOR",            "or",           expression_op_func__eor,        {1, 0, NOT_COMB,   1, 0, 1, 0, 0} },
-                                           {"DELAY",          "#",            expression_op_func__delay,      {1, 0, NOT_COMB,   0, 0, 1, 0, 0} },
-                                           {"CASE",           "case",         expression_op_func__case,       {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
-                                           {"CASEX",          "casex",        expression_op_func__casex,      {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
-                                           {"CASEZ",          "casez",        expression_op_func__casez,      {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
-                                           {"DEFAULT",        "",             expression_op_func__default,    {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
-                                           {"LIST",           "",             expression_op_func__list,       {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
-                                           {"PARAM",          "",             expression_op_func__sig,        {0, 1, NOT_COMB,   1, 0, 0, 0, 0} },
-                                           {"PARAM_SBIT",     "[]",           expression_op_func__sbit,       {0, 1, NOT_COMB,   1, 0, 0, 0, 0} },
-                                           {"PARAM_MBIT",     "[:]",          expression_op_func__mbit,       {0, 1, NOT_COMB,   1, 0, 0, 0, 0} },
-                                           {"ASSIGN",         "",             expression_op_func__null,       {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
-                                           {"DASSIGN",        "",             expression_op_func__null,       {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
-                                           {"BASSIGN",        "",             expression_op_func__bassign,    {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
-                                           {"NASSIGN",        "",             expression_op_func__null,       {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
-                                           {"IF",             "",             expression_op_func__null,       {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
-                                           {"FUNC_CALL",      "",             expression_op_func__func_call,  {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
-                                           {"TASK_CALL",      "",             expression_op_func__task_call,  {0, 0, NOT_COMB,   1, 0, 1, 0, 0} },
-                                           {"TRIGGER",        "->",           expression_op_func__trigger,    {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
-                                           {"NB_CALL",        "",             expression_op_func__nb_call,    {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
-                                           {"FORK",           "",             expression_op_func__fork,       {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
-                                           {"JOIN",           "",             expression_op_func__join,       {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
-                                           {"DISABLE",        "",             expression_op_func__disable,    {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
-                                           {"REPEAT",         "",             expression_op_func__repeat,     {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
-                                           {"WHILE",          "",             expression_op_func__null,       {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
-                                           {"ALSHIFT",        "<<<",          expression_op_func__lshift,     {0, 0, NOT_COMB,   1, 1, 0, 1, 0} },
-                                           {"ARSHIFT",        ">>>",          expression_op_func__arshift,    {0, 0, NOT_COMB,   1, 1, 0, 1, 0} },
-                                           {"SLIST",          "@*",           expression_op_func__slist,      {1, 0, NOT_COMB,   0, 1, 1, 0, 0} },
-                                           {"EXPONENT",       "**",           expression_op_func__exponent,   {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
-                                           {"PASSIGN",        "",             expression_op_func__passign,    {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
-                                           {"RASSIGN",        "",             expression_op_func__bassign,    {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
-                                           {"MBIT_POS",       "[+:]",         expression_op_func__mbit_pos,   {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
-                                           {"MBIT_NEG",       "[-:]",         expression_op_func__mbit_neg,   {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
-                                           {"PARAM_MBIT_POS", "[+:]",         expression_op_func__mbit_pos,   {0, 1, NOT_COMB,   1, 0, 0, 0, 0} },
-                                           {"PARAM_MBIT_NEG", "[-:]",         expression_op_func__mbit_neg,   {0, 1, NOT_COMB,   1, 0, 0, 0, 0} },
-                                           {"NEGATE",         "-",            expression_op_func__negate,     {0, 0, NOT_COMB,   1, 1, 0, 0, 2} },
-                                           {"NOOP",           "",             expression_op_func__null,       {0, 0, NOT_COMB,   0, 0, 0, 0, 0} },
-                                           {"ALWAYS_COMB",    "always_comb",  expression_op_func__slist,      {1, 0, NOT_COMB,   0, 1, 1, 0, 0} },
-                                           {"ALWAYS_LATCH",   "always_latch", expression_op_func__slist,      {1, 0, NOT_COMB,   0, 1, 1, 0, 0} },
-                                           {"IINC",           "++",           expression_op_func__iinc,       {1, 0, NOT_COMB,   0, 0, 0, 0, 2} },
-                                           {"PINC",           "++",           expression_op_func__pinc,       {1, 0, NOT_COMB,   0, 0, 0, 0, 2} },
-                                           {"IDEC",           "--",           expression_op_func__idec,       {1, 0, NOT_COMB,   0, 0, 0, 0, 5} },
-                                           {"PDEC",           "--",           expression_op_func__pdec,       {1, 0, NOT_COMB,   0, 0, 0, 0, 5} },
-                                           {"DLY_ASSIGN",     "",             expression_op_func__dly_assign, {1, 0, NOT_COMB,   0, 0, 1, 0, 0} },
-                                           {"DLY_OP",         "",             expression_op_func__dly_op,     {1, 0, NOT_COMB,   0, 0, 0, 0, 0} },
-                                           {"RPT_DLY",        "",             expression_op_func__repeat_dly, {1, 0, NOT_COMB,   0, 0, 0, 0, 0} },
-                                           {"DIM",            "",             expression_op_func__dim,        {0, 0, NOT_COMB,   0, 0, 0, 0, 0} },
-                                           {"WAIT",           "wait",         expression_op_func__wait,       {1, 0, NOT_COMB,   0, 1, 1, 0, 0} },
-                                           {"SFINISH",        "$finish",      expression_op_func__finish,     {0, 0, NOT_COMB,   0, 0, 0, 0, 0} },
-                                           {"SSTOP",          "$stop",        expression_op_func__stop,       {0, 0, NOT_COMB,   0, 0, 0, 0, 0} },
-                                           {"ADD_A",          "+=",           expression_op_func__add_a,      {0, 0, OTHER_COMB, 0, 1, 0, 1, 1} },
-                                           {"SUB_A",          "-=",           expression_op_func__sub_a,      {0, 0, OTHER_COMB, 0, 1, 0, 1, 4} },
-                                           {"MLT_A",          "*=",           expression_op_func__multiply_a, {0, 0, NOT_COMB,   1, 1, 0, 1, 1} },
-                                           {"DIV_A",          "/=",           expression_op_func__divide_a,   {0, 0, NOT_COMB,   1, 1, 0, 1, 1} },
-                                           {"MOD_A",          "%=",           expression_op_func__mod_a,      {0, 0, NOT_COMB,   1, 1, 0, 1, 1} },
-                                           {"AND_A",          "&=",           expression_op_func__and_a,      {0, 0, AND_COMB,   0, 1, 0, 1, 1} },
-                                           {"OR_A",           "|=",           expression_op_func__or_a,       {0, 0, OR_COMB,    0, 1, 0, 1, 1} },
-                                           {"XOR_A",          "^=",           expression_op_func__xor_a,      {0, 0, OTHER_COMB, 0, 1, 0, 1, 1} },
-                                           {"LSHIFT_A",       "<<=",          expression_op_func__lshift_a,   {0, 0, NOT_COMB,   1, 1, 0, 1, 1} },
-                                           {"RSHIFT_A",       ">>=",          expression_op_func__rshift_a,   {0, 0, NOT_COMB,   1, 1, 0, 1, 1} },
-                                           {"ALSHIFT_A",      "<<<=",         expression_op_func__lshift_a,   {0, 0, NOT_COMB,   1, 1, 0, 1, 1} },
-                                           {"ARSHIFT_A",      ">>>=",         expression_op_func__arshift_a,  {0, 0, NOT_COMB,   1, 1, 0, 1, 1} },
-                                           {"FOREVER",        "",             expression_op_func__null,       {0, 0, NOT_COMB,   0, 0, 0, 0, 0} },
-                                           {"STIME",          "$time",        expression_op_func__time,       {0, 1, NOT_COMB,   0, 0, 0, 0, 0} },
-                                           {"SRANDOM",        "$random",      expression_op_func__random,     {0, 1, NOT_COMB,   0, 0, 0, 0, 0} },
-                                           {"PLIST",          "",             expression_op_func__null,       {0, 0, NOT_COMB,   0, 0, 0, 0, 0} },
-                                           {"SASSIGN",        "",             expression_op_func__sassign,    {0, 0, NOT_COMB,   0, 0, 0, 0, 0} }
+const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",               expression_op_func__null,          {0, 1, NOT_COMB,   1, 0, 0, 0, 0} },
+                                           {"SIG",            "",               expression_op_func__sig,           {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
+                                           {"XOR",            "^",              expression_op_func__xor,           {0, 0, OTHER_COMB, 0, 1, 0, 1, 0} },
+                                           {"MULTIPLY",       "*",              expression_op_func__multiply,      {0, 0, NOT_COMB,   1, 1, 0, 1, 0} },
+                                           {"DIVIDE",         "/",              expression_op_func__divide,        {0, 0, NOT_COMB,   1, 1, 0, 1, 0} },
+                                           {"MOD",            "%",              expression_op_func__mod,           {0, 0, NOT_COMB,   1, 1, 0, 1, 0} },
+                                           {"ADD",            "+",              expression_op_func__add,           {0, 0, OTHER_COMB, 0, 1, 0, 1, 0} },
+                                           {"SUBTRACT",       "-",              expression_op_func__subtract,      {0, 0, OTHER_COMB, 0, 1, 0, 1, 3} },
+                                           {"AND",            "&",              expression_op_func__and,           {0, 0, AND_COMB,   0, 1, 0, 1, 0} },
+                                           {"OR",             "|",              expression_op_func__or,            {0, 0, OR_COMB,    0, 1, 0, 1, 0} },
+                                           {"NAND",           "~&",             expression_op_func__nand,          {0, 0, AND_COMB,   0, 1, 0, 0, 0} },
+                                           {"NOR",            "~|",             expression_op_func__nor,           {0, 0, OR_COMB,    0, 1, 0, 0, 0} },
+                                           {"NXOR",           "~^",             expression_op_func__nxor,          {0, 0, OTHER_COMB, 0, 1, 0, 0, 0} },
+                                           {"LT",             "<",              expression_op_func__lt,            {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
+                                           {"GT",             ">",              expression_op_func__gt,            {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
+                                           {"LSHIFT",         "<<",             expression_op_func__lshift,        {0, 0, NOT_COMB,   1, 1, 0, 1, 0} },
+                                           {"RSHIFT",         ">>",             expression_op_func__rshift,        {0, 0, NOT_COMB,   1, 1, 0, 1, 0} },
+                                           {"EQ",             "==",             expression_op_func__eq,            {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
+                                           {"CEQ",            "===",            expression_op_func__ceq,           {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
+                                           {"LE",             "<=",             expression_op_func__le,            {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
+                                           {"GE",             ">=",             expression_op_func__ge,            {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
+                                           {"NE",             "!=",             expression_op_func__ne,            {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
+                                           {"CNE",            "!==",            expression_op_func__cne,           {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
+                                           {"LOR",            "||",             expression_op_func__lor,           {0, 0, OR_COMB,    0, 1, 0, 0, 0} },
+                                           {"LAND",           "&&",             expression_op_func__land,          {0, 0, AND_COMB,   0, 1, 0, 0, 0} },
+                                           {"COND",           "?:",             expression_op_func__cond,          {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
+                                           {"COND_SEL",       "",               expression_op_func__cond_sel,      {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
+                                           {"UINV",           "~",              expression_op_func__uinv,          {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
+                                           {"UAND",           "&",              expression_op_func__uand,          {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
+                                           {"UNOT",           "!",              expression_op_func__unot,          {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
+                                           {"UOR",            "|",              expression_op_func__uor,           {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
+                                           {"UXOR",           "^",              expression_op_func__uxor,          {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
+                                           {"UNAND",          "~&",             expression_op_func__unand,         {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
+                                           {"UNOR",           "~|",             expression_op_func__unor,          {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
+                                           {"UNXOR",          "~^",             expression_op_func__unxor,         {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
+                                           {"SBIT_SEL",       "[]",             expression_op_func__sbit,          {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
+                                           {"MBIT_SEL",       "[:]",            expression_op_func__mbit,          {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
+                                           {"EXPAND",         "{{}}",           expression_op_func__expand,        {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
+                                           {"CONCAT",         "{}",             expression_op_func__concat,        {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
+                                           {"PEDGE",          "posedge",        expression_op_func__pedge,         {1, 0, NOT_COMB,   0, 1, 1, 0, 1} },
+                                           {"NEDGE",          "negedge",        expression_op_func__nedge,         {1, 0, NOT_COMB,   0, 1, 1, 0, 1} },
+                                           {"AEDGE",          "anyedge",        expression_op_func__aedge,         {1, 0, NOT_COMB,   0, 1, 1, 0, 1} },
+                                           {"LAST",           "",               expression_op_func__null,          {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
+                                           {"EOR",            "or",             expression_op_func__eor,           {1, 0, NOT_COMB,   1, 0, 1, 0, 0} },
+                                           {"DELAY",          "#",              expression_op_func__delay,         {1, 0, NOT_COMB,   0, 0, 1, 0, 0} },
+                                           {"CASE",           "case",           expression_op_func__case,          {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
+                                           {"CASEX",          "casex",          expression_op_func__casex,         {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
+                                           {"CASEZ",          "casez",          expression_op_func__casez,         {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
+                                           {"DEFAULT",        "",               expression_op_func__default,       {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
+                                           {"LIST",           "",               expression_op_func__list,          {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
+                                           {"PARAM",          "",               expression_op_func__sig,           {0, 1, NOT_COMB,   1, 0, 0, 0, 0} },
+                                           {"PARAM_SBIT",     "[]",             expression_op_func__sbit,          {0, 1, NOT_COMB,   1, 0, 0, 0, 0} },
+                                           {"PARAM_MBIT",     "[:]",            expression_op_func__mbit,          {0, 1, NOT_COMB,   1, 0, 0, 0, 0} },
+                                           {"ASSIGN",         "",               expression_op_func__null,          {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
+                                           {"DASSIGN",        "",               expression_op_func__null,          {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
+                                           {"BASSIGN",        "",               expression_op_func__bassign,       {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
+                                           {"NASSIGN",        "",               expression_op_func__null,          {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
+                                           {"IF",             "",               expression_op_func__null,          {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
+                                           {"FUNC_CALL",      "",               expression_op_func__func_call,     {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
+                                           {"TASK_CALL",      "",               expression_op_func__task_call,     {0, 0, NOT_COMB,   1, 0, 1, 0, 0} },
+                                           {"TRIGGER",        "->",             expression_op_func__trigger,       {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
+                                           {"NB_CALL",        "",               expression_op_func__nb_call,       {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
+                                           {"FORK",           "",               expression_op_func__fork,          {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
+                                           {"JOIN",           "",               expression_op_func__join,          {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
+                                           {"DISABLE",        "",               expression_op_func__disable,       {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
+                                           {"REPEAT",         "",               expression_op_func__repeat,        {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
+                                           {"WHILE",          "",               expression_op_func__null,          {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
+                                           {"ALSHIFT",        "<<<",            expression_op_func__lshift,        {0, 0, NOT_COMB,   1, 1, 0, 1, 0} },
+                                           {"ARSHIFT",        ">>>",            expression_op_func__arshift,       {0, 0, NOT_COMB,   1, 1, 0, 1, 0} },
+                                           {"SLIST",          "@*",             expression_op_func__slist,         {1, 0, NOT_COMB,   0, 1, 1, 0, 0} },
+                                           {"EXPONENT",       "**",             expression_op_func__exponent,      {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
+                                           {"PASSIGN",        "",               expression_op_func__passign,       {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
+                                           {"RASSIGN",        "",               expression_op_func__bassign,       {0, 0, NOT_COMB,   1, 0, 0, 0, 0} },
+                                           {"MBIT_POS",       "[+:]",           expression_op_func__mbit_pos,      {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
+                                           {"MBIT_NEG",       "[-:]",           expression_op_func__mbit_neg,      {0, 0, NOT_COMB,   1, 1, 0, 0, 0} },
+                                           {"PARAM_MBIT_POS", "[+:]",           expression_op_func__mbit_pos,      {0, 1, NOT_COMB,   1, 0, 0, 0, 0} },
+                                           {"PARAM_MBIT_NEG", "[-:]",           expression_op_func__mbit_neg,      {0, 1, NOT_COMB,   1, 0, 0, 0, 0} },
+                                           {"NEGATE",         "-",              expression_op_func__negate,        {0, 0, NOT_COMB,   1, 1, 0, 0, 2} },
+                                           {"NOOP",           "",               expression_op_func__null,          {0, 0, NOT_COMB,   0, 0, 0, 0, 0} },
+                                           {"ALWAYS_COMB",    "always_comb",    expression_op_func__slist,         {1, 0, NOT_COMB,   0, 1, 1, 0, 0} },
+                                           {"ALWAYS_LATCH",   "always_latch",   expression_op_func__slist,         {1, 0, NOT_COMB,   0, 1, 1, 0, 0} },
+                                           {"IINC",           "++",             expression_op_func__iinc,          {1, 0, NOT_COMB,   0, 0, 0, 0, 2} },
+                                           {"PINC",           "++",             expression_op_func__pinc,          {1, 0, NOT_COMB,   0, 0, 0, 0, 2} },
+                                           {"IDEC",           "--",             expression_op_func__idec,          {1, 0, NOT_COMB,   0, 0, 0, 0, 5} },
+                                           {"PDEC",           "--",             expression_op_func__pdec,          {1, 0, NOT_COMB,   0, 0, 0, 0, 5} },
+                                           {"DLY_ASSIGN",     "",               expression_op_func__dly_assign,    {1, 0, NOT_COMB,   0, 0, 1, 0, 0} },
+                                           {"DLY_OP",         "",               expression_op_func__dly_op,        {1, 0, NOT_COMB,   0, 0, 0, 0, 0} },
+                                           {"RPT_DLY",        "",               expression_op_func__repeat_dly,    {1, 0, NOT_COMB,   0, 0, 0, 0, 0} },
+                                           {"DIM",            "",               expression_op_func__dim,           {0, 0, NOT_COMB,   0, 0, 0, 0, 0} },
+                                           {"WAIT",           "wait",           expression_op_func__wait,          {1, 0, NOT_COMB,   0, 1, 1, 0, 0} },
+                                           {"SFINISH",        "$finish",        expression_op_func__finish,        {0, 0, NOT_COMB,   0, 0, 0, 0, 0} },
+                                           {"SSTOP",          "$stop",          expression_op_func__stop,          {0, 0, NOT_COMB,   0, 0, 0, 0, 0} },
+                                           {"ADD_A",          "+=",             expression_op_func__add_a,         {0, 0, OTHER_COMB, 0, 1, 0, 1, 1} },
+                                           {"SUB_A",          "-=",             expression_op_func__sub_a,         {0, 0, OTHER_COMB, 0, 1, 0, 1, 4} },
+                                           {"MLT_A",          "*=",             expression_op_func__multiply_a,    {0, 0, NOT_COMB,   1, 1, 0, 1, 1} },
+                                           {"DIV_A",          "/=",             expression_op_func__divide_a,      {0, 0, NOT_COMB,   1, 1, 0, 1, 1} },
+                                           {"MOD_A",          "%=",             expression_op_func__mod_a,         {0, 0, NOT_COMB,   1, 1, 0, 1, 1} },
+                                           {"AND_A",          "&=",             expression_op_func__and_a,         {0, 0, AND_COMB,   0, 1, 0, 1, 1} },
+                                           {"OR_A",           "|=",             expression_op_func__or_a,          {0, 0, OR_COMB,    0, 1, 0, 1, 1} },
+                                           {"XOR_A",          "^=",             expression_op_func__xor_a,         {0, 0, OTHER_COMB, 0, 1, 0, 1, 1} },
+                                           {"LSHIFT_A",       "<<=",            expression_op_func__lshift_a,      {0, 0, NOT_COMB,   1, 1, 0, 1, 1} },
+                                           {"RSHIFT_A",       ">>=",            expression_op_func__rshift_a,      {0, 0, NOT_COMB,   1, 1, 0, 1, 1} },
+                                           {"ALSHIFT_A",      "<<<=",           expression_op_func__lshift_a,      {0, 0, NOT_COMB,   1, 1, 0, 1, 1} },
+                                           {"ARSHIFT_A",      ">>>=",           expression_op_func__arshift_a,     {0, 0, NOT_COMB,   1, 1, 0, 1, 1} },
+                                           {"FOREVER",        "",               expression_op_func__null,          {0, 0, NOT_COMB,   0, 0, 0, 0, 0} },
+                                           {"STIME",          "$time",          expression_op_func__time,          {0, 1, NOT_COMB,   0, 0, 0, 0, 0} },
+                                           {"SRANDOM",        "$random",        expression_op_func__random,        {0, 1, NOT_COMB,   0, 0, 0, 0, 0} },
+                                           {"PLIST",          "",               expression_op_func__null,          {0, 0, NOT_COMB,   0, 0, 0, 0, 0} },
+                                           {"SASSIGN",        "",               expression_op_func__sassign,       {0, 0, NOT_COMB,   0, 0, 0, 0, 0} },
+                                           {"SSRANDOM",       "$srandom",       expression_op_func__srandom,       {0, 1, NOT_COMB,   0, 0, 0, 0, 0} },
+                                           {"URANDOM",        "$urandom",       expression_op_func__urandom,       {0, 1, NOT_COMB,   0, 0, 0, 0, 0} },
+                                           {"URAND_RANGE",    "$urandom_range", expression_op_func__urandom_range, {0, 1, NOT_COMB,   0, 0, 0, 0, 0} }
  };
 
 
@@ -2846,6 +2852,63 @@ bool expression_op_func__sassign(
   PROFILE_END;
 
   return( retval );
+
+}
+
+/*!
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a $srandom system task call.
+*/
+bool expression_op_func__srandom(
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
+) { PROFILE(EXPRESSION_OP_FUNC__SRANDOM);
+
+  /* TBD */
+
+  PROFILE_END;
+
+  return( TRUE );
+
+}
+
+/*!
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a $urandom system task call.
+*/
+bool expression_op_func__urandom(
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
+) { PROFILE(EXPRESSION_OP_FUNC__URANDOM);
+
+  /* TBD */
+
+  PROFILE_END;
+
+  return( TRUE );
+
+}
+
+/*!
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a $urandom_range system task call.
+*/
+bool expression_op_func__urandom_range(
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
+) { PROFILE(EXPRESSION_OP_FUNC__URANDOM_RANGE);
+
+  /* TBD */
+
+  PROFILE_END;
+
+  return( TRUE );
 
 }
 
@@ -5678,6 +5741,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.349  2008/10/02 22:52:52  phase1geo
+ Adding code to random function so that we don't attempt to store the new seed
+ value into an expression.  Checkpointing.
+
  Revision 1.348  2008/10/02 21:39:25  phase1geo
  Fixing issues with $random system task call.  Added more diagnostics to verify
  its functionality.
