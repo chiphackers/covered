@@ -92,7 +92,8 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 param10.2       param10.3       param10.4       param11         param13 \
                 param13.1       param14         param15         param16         param17 \
                 param17.1       pedge1          port1           port3           printtimescale1 \
-                pulldown1       pullup1         random1         random1.1       rassign1 \
+                pulldown1       pullup1         random1         random1.1       random2 \
+                random2.1       rassign1 \
                 real1           repeat1         repeat2         repeat3         report1 \
                 report2         report3         report3.1       report4.2       report5 \
                 report6         report7         report7.1       report8         rshift1 \
@@ -108,7 +109,8 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 string2         string2.1       strobe1         supply0         supply1         task1 \
                 task1.1         task2           task2.1         task2.2         task2.3 \
                 task3           task3.1         task4           task4.1         task6 \
-                time1           time1.1         timeformat1     timescale1      timescale1.6    timescale1.9    timescale1.12   timescale1.15 \
+                time1           time1.1         time2           timeformat1     timescale1 \
+                timescale1.6    timescale1.9    timescale1.12   timescale1.15 \
                 timescale1.16   timescale1.17   timescale1.18   timescale2      timescale2.2 \
                 timescale2.3    timescale2.4    timescale2.5    timescale2.8    toggle \
                 toggle2         toggle2.1       toggle2.2       toggle2.3       tri \

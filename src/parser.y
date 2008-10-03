@@ -1167,7 +1167,7 @@ static_expr_primary
         tmp = (static_expr*)malloc_safe( sizeof( static_expr ) );
         tmp->num = -1;
         Try {
-          tmp->exp = db_create_expression( NULL, NULL, EXP_OP_SRANDOM, lhs_mode, 0, 0, 0, NULL );
+          tmp->exp = db_create_expression( NULL, NULL, EXP_OP_SRANDOM, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
         } Catch_anonymous {
           error_count++;
         }
@@ -2248,7 +2248,7 @@ expression_systask_list
       if( ignore_mode == 0 ) {
         if( $3 != NULL ) {
           Try {
-            expression* tmp = db_create_expression( $3, NULL, EXP_OP_SASSIGN, lhs_mode, 0, 0, 0, NULL );
+            expression* tmp = db_create_expression( $3, NULL, EXP_OP_SASSIGN, lhs_mode, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
             $$ = db_create_expression( tmp, $1, EXP_OP_PLIST, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           } Catch_anonymous {
             expression_dealloc( $3, FALSE );
@@ -2266,7 +2266,7 @@ expression_systask_list
     {
       if( ignore_mode == 0 ) {
         Try {
-          $$ = db_create_expression( $1, NULL, EXP_OP_SASSIGN, lhs_mode, 0, 0, 0, NULL );
+          $$ = db_create_expression( $1, NULL, EXP_OP_SASSIGN, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
         } Catch_anonymous {
           expression_dealloc( $1, FALSE );
           error_count++;
