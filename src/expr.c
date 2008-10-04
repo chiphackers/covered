@@ -593,8 +593,8 @@ expression* expression_create(
 
       expression_create_value( new_expr, 64, data );
 
-    /* $random expressions are always 32-bits wide */
-    } else if( op == EXP_OP_SRANDOM ) {
+    /* $random, $urandom and $urandom_range expressions are always 32-bits wide */
+    } else if( (op == EXP_OP_SRANDOM) || (op == EXP_OP_SURANDOM) || (op == EXP_OP_SURAND_RANGE) ) {
 
       expression_create_value( new_expr, 32, data );
 
@@ -627,7 +627,8 @@ expression* expression_create(
                (op == EXP_OP_RPT_DLY) ||
                (op == EXP_OP_WAIT)    ||
                (op == EXP_OP_SFINISH) ||
-               (op == EXP_OP_SSTOP) ) {
+               (op == EXP_OP_SSTOP)   ||
+               (op == EXP_OP_SSRANDOM) ) {
   
       /* If this expression will evaluate to a single bit, create vector now */
       expression_create_value( new_expr, 1, data );
@@ -2868,7 +2869,10 @@ bool expression_op_func__srandom(
   const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__SRANDOM);
 
-  /* TBD */
+  assert( (expr->left != NULL) && (expr->left->op == EXP_OP_SASSIGN) );
+
+  /* Get the seed value and set it */
+  sys_task_srandom( (long)vector_to_int( expr->left->value ) );
 
   PROFILE_END;
 
@@ -2932,7 +2936,33 @@ bool expression_op_func__urandom_range(
   const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__URANDOM_RANGE);
 
-  /* TBD */
+  expression*   plist = expr->left;
+  unsigned long max;
+  unsigned long min   = 0;
+  unsigned long rand;
+
+  if( (plist == NULL) || (plist->op != EXP_OP_PLIST) ) {
+    snprintf( user_msg, USER_MSG_LENGTH, "$urandom_range called without any parameters specified (file: %s, line: %d)", thr->funit->filename, expr->line );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    Throw 0;
+  }
+
+  assert( (plist->right != NULL) && (plist->right->op == EXP_OP_SASSIGN) );
+
+  /* Get max value */
+  max   = (long)vector_to_uint64( plist->right->value );
+  plist = plist->left;
+
+  /* Get min value if it has been specified */
+  if( (plist->right != NULL) && (plist->right->op == EXP_OP_SASSIGN) ) {
+    min = (long)vector_to_uint64( plist->right->value );
+  }
+
+  /* Get random number from seed */
+  rand = sys_task_urandom_range( max, min );
+
+  /* Convert it to a vector and store it */
+  vector_from_uint64( expr->value, (uint64)rand );
 
   PROFILE_END;
 
@@ -5769,6 +5799,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.351  2008/10/03 21:47:32  phase1geo
+ Checkpointing more system task work (things might be broken at the moment).
+
  Revision 1.350  2008/10/03 13:14:36  phase1geo
  Inserting placeholders for $srandom, $urandom, and $urandom_range system call
  support.  Checkpointing.

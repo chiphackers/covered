@@ -74,7 +74,6 @@ scope,          S_ignore
 showscopes,     S_allow
 showvariables,  S_allow
 showvars,       S_allow
-srandom,        S_srandom
 sreadmemb,      S_ignore
 sreadmemh,      S_ignore
 stime,          S_ignore

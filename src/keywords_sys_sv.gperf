@@ -28,8 +28,9 @@
 %}
 struct keyword_sys_sv { char *name; int type; };
 %%
-urandom,        S_ignore
-urandom_range,  S_ignore
+srandom,        S_srandom
+urandom,        S_urandom
+urandom_range,  S_urandom_range
 %%
 
 int lexer_keyword_sys_sv_code(

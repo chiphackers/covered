@@ -943,6 +943,11 @@ static void combination_underline_tree(
       *size = 7;
       strcpy( code_fmt, "$random" );
 
+    } else if( (exp->op == EXP_OP_SURANDOM) && (exp->left == NULL) ) {
+
+      *size = 8;
+      strcpy( code_fmt, "$urandom" );
+
     } else {
 
       Try {
@@ -1221,6 +1226,9 @@ static void combination_underline_tree(
               case EXP_OP_PINC     :
               case EXP_OP_PDEC     :  *size = l_size + 2;           strcpy( code_fmt, "%s  "             );  break;
               case EXP_OP_SRANDOM  :  *size = l_size + 11;          strcpy( code_fmt, "         %s  "    );  break;
+              case EXP_OP_SURANDOM :  *size = l_size + 12;          strcpy( code_fmt, "          %s  "   );  break;
+              case EXP_OP_SURAND_RANGE :  *size = l_size + 18;      strcpy( code_fmt, "                %s  " );  break;
+              case EXP_OP_SSRANDOM :  *size = l_size + 12;          strcpy( code_fmt, "          %s  "   );  break;
               default              :
                 rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Unknown expression type in combination_underline_tree (%d)",
                                exp->op );
@@ -3102,6 +3110,10 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.211  2008/10/03 04:22:01  phase1geo
+ Adding support for $random and $time output in reports.  Added diagnostics to
+ verify this behavior works as expected.  Full regressions pass.
+
  Revision 1.210  2008/09/15 23:17:53  phase1geo
  Fix for bug 2112613.
 

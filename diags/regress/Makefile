@@ -252,7 +252,7 @@ IVVCSDIAGS1   = define3         delay3          exclude7.3      exclude10.5     
                 ovl1.2          ovl1.3          param10.1       param10.5       port2 \
                 timescale1.1    timescale1.2    timescale1.3    timescale1.4    timescale1.5 \
                 timescale1.7    timescale1.8    timescale1.10   timescale1.11   timescale1.13 \
-                timescale1.14   timescale1.19   timescale2.1
+                timescale1.14   timescale1.19   timescale2.1    urandom1
 IVVCSDIAGS2   =
 IVVCSDIAGS3   =
 IVVCSDIAGS4   =

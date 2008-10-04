@@ -25,6 +25,11 @@
 */ 
 
 
+/*! \brief Performs $srandom system task call. */
+long sys_task_srandom(
+  long seed
+);
+
 /*! \brief Performs $random system task call. */
 long sys_task_random(
   long* seed
@@ -35,8 +40,17 @@ unsigned long sys_task_urandom(
   long* seed
 );
 
+/*! \brief Performs $urandom_range system task call. */
+unsigned long sys_task_urandom_range(
+  unsigned long max,
+  unsigned long min
+);
+
 /*
  $Log$
+ Revision 1.2  2008/10/03 21:47:32  phase1geo
+ Checkpointing more system task work (things might be broken at the moment).
+
  Revision 1.1  2008/10/02 06:46:33  phase1geo
  Initial $random support added.  Added random1 and random1.1 diagnostics to regression
  suite.  random1.1 is currently failing.  Checkpointing.

@@ -1896,9 +1896,13 @@ expression* db_create_expression(
   /* If current functional unit is nested in a function, set the IN_FUNC supplemental field bit */
   expr->suppl.part.in_func = (func_funit != NULL) ? 1 : 0;
 
-  /* Set the clear_changed bit if any of our children have their clear_changed bit set or if we are a $time or $random expression */
-  if( ((left  != NULL) && ((left->suppl.part.clear_changed  == 1) || (left->op  == EXP_OP_STIME) || (left->op  == EXP_OP_SRANDOM))) ||
-      ((right != NULL) && ((right->suppl.part.clear_changed == 1) || (right->op == EXP_OP_STIME) || (right->op == EXP_OP_SRANDOM))) ) {
+  /* Set the clear_changed bit if any of our children have their clear_changed bit set or if we are a system function expression */
+  if( ((left  != NULL) && 
+       ((left->suppl.part.clear_changed == 1) ||
+        (left->op == EXP_OP_STIME) || (left->op == EXP_OP_SRANDOM) || (left->op == EXP_OP_SURANDOM) || (left->op == EXP_OP_SURAND_RANGE))) ||
+      ((right != NULL) &&
+       ((right->suppl.part.clear_changed == 1) ||
+        (right->op == EXP_OP_STIME) || (right->op == EXP_OP_SRANDOM) || (right->op == EXP_OP_SURANDOM) || (right->op == EXP_OP_SURAND_RANGE))) ) {
     expr->suppl.part.clear_changed = 1;
   }
 
@@ -3073,6 +3077,11 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.336  2008/10/02 05:51:09  phase1geo
+ Reworking system task call parsing which will allow us to implement system tasks with
+ parameters (also will allow us to handle system tasks correctly for the given generation).
+ Fixing bug 2127694.  Fixing issue with current time in threads.  Full regressions pass.
+
  Revision 1.335  2008/10/01 06:07:00  phase1geo
  Finishing code support needed for the $time operation.  Adding several new
  diagnostics to regression suite to verify the newly supported system task calls.
