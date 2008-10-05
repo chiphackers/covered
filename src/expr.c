@@ -2947,11 +2947,10 @@ bool expression_op_func__urandom_range(
     Throw 0;
   }
 
-  assert( (plist->right != NULL) && (plist->right->op == EXP_OP_SASSIGN) );
+  assert( (plist->left != NULL) && (plist->left->op == EXP_OP_SASSIGN) );
 
   /* Get max value */
-  max   = (long)vector_to_uint64( plist->right->value );
-  plist = plist->left;
+  max = (long)vector_to_uint64( plist->left->value );
 
   /* Get min value if it has been specified */
   if( (plist->right != NULL) && (plist->right->op == EXP_OP_SASSIGN) ) {
@@ -5799,6 +5798,11 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.352  2008/10/04 04:28:47  phase1geo
+ Adding code to support $urandom, $srandom and $urandom_range.  Added one test
+ to begin verifying $urandom functionality.  The rest of the system tasks need
+ to be verified.  Checkpointing.
+
  Revision 1.351  2008/10/03 21:47:32  phase1geo
  Checkpointing more system task work (things might be broken at the moment).
 

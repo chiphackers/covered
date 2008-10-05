@@ -225,7 +225,7 @@ VCSONLYDIAGS1 = afunc1          always_comb1    always_comb2    always_ff1      
                 op_assign1      param8.2        param12         param12.1       sbit_sel3.2 \
                 shortint1       signed4.1       slist3.1        slist3.3        static_afunc1 \
                 static_func1    static_func1.1  static_func2    static_func2.1  static_func2.2 \
-                static_func2.3  trireg
+                static_func2.3  trireg          urandom1.2      urandom1.3      urandom_range1
 # null_stmt1.4
 VCSONLYDIAGS2 = 
 VCSONLYDIAGS3 = 
@@ -241,18 +241,19 @@ IVCVERDIAGS2  =
 IVCVERDIAGS3  =
 IVCVERDIAGS4  =
 
-IVVCSDIAGS1   = define3         delay3          exclude7.3      exclude10.5     exclude12.5     generate2.1 \
-                generate4       generate4.1     generate5       generate5.1     generate5.2 \
-                generate5.3     generate8       generate10      generate10.1    generate10.2 \
-                generate11      generate11.1    generate11.2    generate11.3    hier3 \
-                localparam1     localparam1.1   localparam1.2   localparam1.3   localparam2 \
-                localparam3     mbit_sel5       mbit_sel5.1     mbit_sel5.2     mbit_sel5.3 \
-                mbit_sel6       mbit_sel6.1     mbit_sel6.2     mbit_sel6.3     mem4 \
-                mem4.1          nand1           nor1            ovl1            ovl1.1 \
-                ovl1.2          ovl1.3          param10.1       param10.5       port2 \
-                timescale1.1    timescale1.2    timescale1.3    timescale1.4    timescale1.5 \
-                timescale1.7    timescale1.8    timescale1.10   timescale1.11   timescale1.13 \
-                timescale1.14   timescale1.19   timescale2.1    urandom1
+IVVCSDIAGS1   = define3          delay3           exclude7.3       exclude10.5      exclude12.5     generate2.1 \
+                generate4        generate4.1      generate5        generate5.1      generate5.2 \
+                generate5.3      generate8        generate10       generate10.1     generate10.2 \
+                generate11       generate11.1     generate11.2     generate11.3     hier3 \
+                localparam1      localparam1.1    localparam1.2    localparam1.3    localparam2 \
+                localparam3      mbit_sel5        mbit_sel5.1      mbit_sel5.2      mbit_sel5.3 \
+                mbit_sel6        mbit_sel6.1      mbit_sel6.2      mbit_sel6.3      mem4 \
+                mem4.1           nand1            nor1             ovl1             ovl1.1 \
+                ovl1.2           ovl1.3           param10.1        param10.5        port2 \
+                timescale1.1     timescale1.2     timescale1.3     timescale1.4     timescale1.5 \
+                timescale1.7     timescale1.8     timescale1.10    timescale1.11    timescale1.13 \
+                timescale1.14    timescale1.19    timescale2.1     urandom1         urandom1.1 \
+                urandom_range1.1 urandom_range1.2
 IVVCSDIAGS2   =
 IVVCSDIAGS3   =
 IVVCSDIAGS4   =

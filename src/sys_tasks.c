@@ -253,6 +253,14 @@ unsigned long sys_task_urandom_range(
   unsigned long result;
   long          max_i, min_i;
 
+  /* If the max value is less than the min value, swap the two values */
+  if( max < min ) {
+    unsigned long tmp;
+    tmp = max;
+    max = min;
+    min = tmp;
+  }
+
   max_i = max + INT_MIN;
   min_i = min + INT_MIN;
 
@@ -265,6 +273,11 @@ unsigned long sys_task_urandom_range(
 
 /*
  $Log$
+ Revision 1.3  2008/10/04 04:28:47  phase1geo
+ Adding code to support $urandom, $srandom and $urandom_range.  Added one test
+ to begin verifying $urandom functionality.  The rest of the system tasks need
+ to be verified.  Checkpointing.
+
  Revision 1.2  2008/10/03 21:47:32  phase1geo
  Checkpointing more system task work (things might be broken at the moment).
 
