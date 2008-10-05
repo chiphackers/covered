@@ -63,6 +63,7 @@ extern sig_range    curr_prange;
 extern sig_range    curr_urange;
 extern gen_item*    last_gi;
 extern isuppl       info_suppl;
+extern bool         flag_conservative;
 
 /*!
  Contains state before entering exclusive block.
@@ -514,6 +515,10 @@ WSPACE [ \t\b\f]+
        if( rc == S_user ) {  /* User PLI calls are ignored for now */
          rc = S_ignore;
        }
+     }
+     /* If we are running in conservative mode, change $random, $urandom and $urandom_range to ignored lies */
+     if( flag_conservative && ((rc == S_random) || (rc == S_urandom) || (rc == S_urandom_range)) ) {
+       rc = S_ignore;
      }
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );

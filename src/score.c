@@ -114,6 +114,13 @@ static char* vpi_timescale = NULL;
 /*! User-supplied message to include in the CDD database */
 char* cdd_message = NULL;
 
+/*!
+ Specifies if we should be conservative in our approach to simulation.  If this flag is set, we will
+ remove logic blocks from coverage consideration that contain supported functionality but functionality
+ that might not be right depending on the design.
+*/
+bool flag_conservative = FALSE;
+
 
 extern int64     largest_malloc_size;
 extern int64     curr_malloc_size;
@@ -127,6 +134,7 @@ extern char*     pragma_racecheck_name;
 extern char      score_run_path[4096];
 extern char**    score_args;
 extern int       score_arg_num;
+extern bool      warnings_suppressed;
 
 
 extern void process_timescale( const char* txt, bool report );
@@ -211,6 +219,11 @@ static void score_usage() {
   printf( "                                     be anything (messages with whitespace should be surrounded by double-quotation marks),\n" );
   printf( "                                     but may include something about the simulation arguments to more easily link the\n" );
   printf( "                                     CDD file to its simulation for purposes of recreating the CDD file.\n" );
+  printf( "      -conservative                If this option is specified, any logic blocks that contain code that could cause coverage\n" );
+  printf( "                                     discrepancies leading to potentially inaccurate coverage results are removed from\n" );
+  printf( "                                     coverage consideration.  See User's Guide for more information on what type of code\n" );
+  printf( "                                     can lead to coverage inaccuracies.\n" );
+  printf( "      -Wignore                     Suppress the output of warnings during code parsing and simulation.\n" );
   printf( "\n" );
   printf( "      +libext+.<extension>(+.<extension>)+\n" );
   printf( "                                   Extensions of Verilog files to allow in scoring\n" );
@@ -925,7 +938,7 @@ static void score_parse_args(
         Throw 0;
       }
 
-    } else if( strncmp( "-cli", argv[i], 2 ) == 0 ) {
+    } else if( strncmp( "-cli", argv[i], 4 ) == 0 ) {
 
 #ifdef DEBUG_MODE
       i++;
@@ -963,6 +976,14 @@ static void score_parse_args(
         Throw 0;
       }
 
+    } else if( strncmp( "-conservative", argv[i], 13 ) == 0 ) {
+
+      flag_conservative = TRUE;
+
+    } else if( strncmp( "-Wignore", argv[i], 8 ) == 0 ) {
+
+      warnings_suppressed = TRUE;
+
     } else {
 
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown score command option \"%s\".  See \"covered score -h\" for more information.", argv[i] );
@@ -986,16 +1007,12 @@ static void score_parse_args(
 }
 
 /*!
- \param argc      Number of arguments in score command-line.
- \param last_arg  Index of last parsed argument in list.
- \param argv      Arguments from command-line to parse.
-
  Performs score command functionality.
 */
 void command_score(
-  int          argc,
-  int          last_arg,
-  const char** argv
+  int          argc,      /*!< Number of arguments in score command-line */
+  int          last_arg,  /*!< Index of last parsed argument in list */
+  const char** argv       /*!< Arguments from command-line to parse */
 ) { PROFILE(COMMAND_SCORE);
 
   unsigned int rv;  /* Return value from snprintf calls */
@@ -1096,6 +1113,9 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.137  2008/09/25 20:59:31  phase1geo
+ Updates for LXT regressions (which now run cleanly).
+
  Revision 1.136  2008/09/04 21:34:20  phase1geo
  Completed work to get exclude reason support to work with toggle coverage.
  Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
