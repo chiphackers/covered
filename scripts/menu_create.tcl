@@ -325,18 +325,20 @@ proc open_files {fnames} {
     .bot.right.txt        configure -cursor watch
     .bot.right.h.search.e configure -cursor watch
 
-    after 100 {
+    if {$open_type == "open"} {
 
-      # Open the CDD file
-      if {$open_type == "open"} {
+      after 100 {
         tcl_func_open_cdd $fname
-      } else {
-        tcl_func_merge_cdd $fname $exclude_resolution
-        .menubar.file entryconfigure 3 -state normal
+        populate_listbox
       }
 
-      # Populate the listbox
-      populate_listbox
+    } else {
+
+      after 100 {
+        tcl_func_merge_cdd $fname $exclude_resolution
+        .menubar.file entryconfigure 3 -state normal
+        populate_listbox
+      }
 
     }
 
