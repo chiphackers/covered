@@ -1,4 +1,4 @@
-.TH "Covered" "1" "covered-20080928" "Trevor Williams" "Code Analysis"
+.TH "Covered" "1" "covered-20081006" "Trevor Williams" "Code Analysis"
 .SH "NAME"
 .LP 
 Covered \- Verilog Code Coverage Analyzer
@@ -66,6 +66,9 @@ Same as the \-o option.  Useful when CDD file being scored is an input to the sc
 .TP 
 \fB\-cli\fR [\fIfilename\fR]
 Causes the command\-line debugger to be used during VCD/LXT2 dumpfile scoring.  If \fIfilename\fR is specified, this file contains information saved in a previous call to savehist on the CLI and causes the history contained in this file to be replayed prior to the CLI command prompt.  If \fIfilename\fR is not specified, the CLI prompt will be immediately available at the start of simulation.  This option is only available when Covered is configured with the \fI\-\-enable\-debug\fR option.
+.TP 
+\fB\-conservative\fR
+If this option is specified, any logic blocks that contain code that could cause coverage discrepancies leading to potentially inaccurate coverage results are removed from coverage consideration.  See User's Guide for more information on what type of code can lead to coverage inaccuracies.
 .TP 
 \fB\-D\fR \fIdefine_name\fR
 Defines the specified name to 1.
@@ -154,6 +157,9 @@ This option is only valid when the \-vpi option has been specified.  This option
 \fB(1|10|100)(s|ms|us|ns|ps|fs)/(1|10|100)(s|ms|us|ns|ps|fs)\fR
 .IP 
 If whitespace is needed between the various values, place the entire contents of \fItimescale\fR in double quotes.
+.TP 
+\fB\-Wignore\fR
+Suppress the output of warnings during code parsing and simulation.
 .TP 
 \fB\-y\fR \fIdirectory\fR
 Directory to find unspecified Verilog files.
