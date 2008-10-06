@@ -1097,6 +1097,7 @@ static_expr_primary
     }
   | REALTIME
     {
+      stmt_blk_specify_removal_reason( LOGIC_RM_REAL, @1.text, @1.first_line, __FILE__, __LINE__ );
       $$ = NULL;
     }
   | IDENTIFIER
@@ -1142,6 +1143,7 @@ static_expr_primary
     }
   | S_ignore
     {
+      stmt_blk_specify_removal_reason( LOGIC_RM_SYSFUNC, @1.text, @1.first_line, __FILE__, __LINE__ );
       $$ = NULL;
     }
   | S_allow
@@ -1832,6 +1834,7 @@ expr_primary
     }
   | REALTIME
     {
+      stmt_blk_specify_removal_reason( LOGIC_RM_REAL, @1.text, @1.first_line, __FILE__, __LINE__ );
       $$ = NULL;
     }
   | STRING
@@ -1927,6 +1930,7 @@ expr_primary
     }
   | S_ignore
     {
+      stmt_blk_specify_removal_reason( LOGIC_RM_SYSFUNC, @1.text, @1.first_line, __FILE__, __LINE__ );
       $$ = NULL;
     }
   | S_allow
@@ -2083,11 +2087,21 @@ expr_primary
     }
   | S_ignore '(' ignore_more expression_port_list ignore_less ')'
     {
+      stmt_blk_specify_removal_reason( LOGIC_RM_SYSFUNC, @1.text, @1.first_line, __FILE__, __LINE__ );
       $$ = NULL;
     }
   | S_allow '(' ignore_more expression_port_list ignore_less ')'
     {
-      $$ = NULL;
+      if( ignore_mode == 0 ) {
+        Try {
+          $$ = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
+        } Catch_anonymous {
+          error_count++;
+          $$ = NULL;
+        }
+      } else {
+        $$ = NULL;
+      }
     }
   | S_random '(' expression_systask_list ')'
     {
@@ -6024,6 +6038,7 @@ delay_value_simple
     }
   | REALTIME
     {
+      stmt_blk_specify_removal_reason( LOGIC_RM_REAL, @1.text, @1.first_line, __FILE__, __LINE__ );
       $$ = NULL;
     }
   | IDENTIFIER

@@ -22,15 +22,16 @@
 
 #include <assert.h>
 
-#include "defines.h"
-#include "stmt_blk.h"
-#include "link.h"
-#include "func_unit.h"
-#include "statement.h"
 #include "db.h"
+#include "defines.h"
 #include "expr.h"
+#include "func_unit.h"
 #include "gen_item.h"
+#include "link.h"
 #include "obfuscate.h"
+#include "profiler.h"
+#include "statement.h"
+#include "stmt_blk.h"
 
 
 /*! Pointer to head of statement block list to remove */
@@ -39,16 +40,25 @@ static stmt_link* rm_stmt_head    = NULL;
 /*! Pointer to tail of statement block list to remove */
 static stmt_link* rm_stmt_tail    = NULL;
 
+/*! Array containing reasons for logic block removal */
+static const char* logic_rm_msgs[LOGIC_RM_NUM] = {
+  "it contains a real number (currently unsupported)",
+  "it contains an unsupported system function",
+  "it contains an unsupported system task"
+};
+
+
 extern func_unit* curr_funit;
+extern char*      user_msg[USER_MSG_LENGTH];
 
 
 /*!
- \param stmt  Pointer to statement in a statement block that needs to be removed
-
  Adds the statement block containing the specified statement to the list of statement
  blocks to remove after parsing, binding and race condition checking has occurred.
 */
-void stmt_blk_add_to_remove_list( statement* stmt ) {
+void stmt_blk_add_to_remove_list(
+  statement* stmt  /*!< Pointer to statement in a statement block that needs to be removed */
+) { PROFILE(STMT_BLK_ADD_TO_REMOVE_LIST);
 
   func_unit* funit;  /* Pointer to functional unit containing this statement */
 
@@ -79,6 +89,8 @@ void stmt_blk_add_to_remove_list( statement* stmt ) {
   }
 #endif
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -86,7 +98,7 @@ void stmt_blk_add_to_remove_list( statement* stmt ) {
  This function is only called once after the parsing, binding and race condition
  checking phases have completed.
 */
-void stmt_blk_remove() {
+void stmt_blk_remove() { PROFILE(STMT_BLK_REMOVE);
 
   statement* stmt;      /* Temporary pointer to current statement to deallocate */
 
@@ -109,10 +121,35 @@ void stmt_blk_remove() {
     statement_dealloc_recursive( stmt, TRUE );
   }
 
+  PROFILE_END;
+
+}
+
+/*!
+ Outputs the reason why a logic block is being removed from coverage consideration.
+*/
+void stmt_blk_specify_removal_reason(
+  logic_rm_type type,   /*!< Reason for removing the logic block */
+  const char*   file,   /*!< Filename containing logic block being removed */
+  int           line,   /*!< Line containing logic that is causing logic block removal */
+  const char*   cfile,  /*!< File containing removal line */
+  int           cline   /*!< Line containing removal line */
+) { PROFILE(STMT_BLK_SPECIFY_REMOVAL_REASON);
+
+  snprintf( user_msg, USER_MSG_LENGTH, "Removing logic block containing line %d in file %s because", line, file );
+  print_output( user_msg, WARNING, cfile, cline );
+  print_output( logic_rm_msgs[type], WARNING_WRAP, cfile, cline );
+
+  PROFILE_END;
+
 }
 
 /*
  $Log$
+ Revision 1.16  2008/04/06 05:24:17  phase1geo
+ Fixing another regression memory problem.  Updated regression files
+ accordingly.  Checkpointing.
+
  Revision 1.15  2008/02/25 18:22:16  phase1geo
  Moved statement supplemental bits from root expression to statement and starting
  to add support for race condition checking pragmas (still some work left to do

@@ -27,19 +27,33 @@
 
 
 /*!
- Adds the statement block containing the specified statement to the list of statement
- blocks to remove after parsing, binding and race condition checking has occurred.
+ \brief Adds the statement block containing the specified statement to the list of statement
+        blocks to remove after parsing, binding and race condition checking has occurred.
 */
 void stmt_blk_add_to_remove_list( statement* stmt );
 
 /*!
- Removes all statement blocks listed for removal.
+ \brief Removes all statement blocks listed for removal.
 */
 void stmt_blk_remove();
+
+/*!
+ \brief Outputs the reason why a logic block is being removed from coverage consideration.
+*/    
+void stmt_blk_specify_removal_reason(
+  logic_rm_type type,   /*!< Reason for removing the logic block */
+  const char*   file,   /*!< Filename containing logic block being removed */
+  int           line,   /*!< Line containing logic that is causing logic block removal */
+  const char*   cfile,  /*!< File containing removal line */
+  int           cline   /*!< Line containing removal line */
+);
 
 
 /*
  $Log$
+ Revision 1.3  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.2  2006/03/28 22:28:28  phase1geo
  Updates to user guide and added copyright information to each source file in the
  src directory.  Added test directory in user documentation directory containing the
