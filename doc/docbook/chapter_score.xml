@@ -64,6 +64,16 @@
             </row>
             <row>
               <entry>
+                -conservative
+              </entry>
+              <entry>
+                If this option is specified, any logic blocks that contain code that would cause coverage discrepancies leading to
+                potentially inaccurate coverage results are removed from coverage consideration.  See 
+                <xref linkend="section.score.conservative"/> for more information.s
+              </entry>
+            </row>
+            <row>
+              <entry>
                 -D <emphasis>name</emphasis>[=<emphasis>value</emphasis>]
               </entry>
               <entry>
@@ -304,6 +314,14 @@
                 This option is only valid when the -vpi option has been specified. This option allows the user to specify a timescale for the generated 
                 Verilog module created with the -vpi option. If this option is not specified, no timescale will be created for the generated module. If 
                 whitespace is needed between the various values, place the entire contents of timescale in double quotes.
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -Wignore
+              </entry>
+              <entry>
+                Suppresses any warning output during code parsing and/or simulation.
               </entry>
             </row>
             <row>
@@ -639,6 +657,72 @@
       it also doesn't have the ability to specify this information in other ways. To provide meaningful coverage information for the FSM, Covered outputs 
       all hit states and state transitions in the report when all achievable states and state transitions are not known. This information will be able to 
       be specified by the user in future versions of Covered, with the ability to automatically extract this information also in the works.
+    </para>
+  </sect1>
+  
+  <sect1 id="section.score.conservative">
+    <title>The reason for the -conservative feature</title>
+    <para>
+      Though Covered has support for many Verilog-1995, Verilog-2001 and SystemVerilog constructs there are handful of supported
+      constructs that are dependent on correct simulation ordering to provide accurate coverage information.  In certain cases, Covered will
+      be able to accurately determine the order of simulation, but in some cases, it may not.  In these cases, it is best for Covered to run
+      in a "conservative" mode of operation whereby logic blocks that contain these code issues are removed from coverage consideration.
+      Removing logic blocks does not have a negative impact (in terms of coverage accuracy) on the rest of the design.  The only negative
+      consequence is that no coverage results can be obtained for a given logic block.
+    </para>
+    <para>
+      For example, consider the following code:
+    </para>
+    <para>
+      <programlisting><![CDATA[
+  module main;
+    foo a();
+    bar b();
+  endmodule
+  
+  module foo;
+    integer a;
+    initial begin
+      #10;
+      a = $random;
+    end
+  endmodule
+  
+  module bar
+    integer a;
+    initial begin
+      #5;
+      a = $random;
+    end
+  endmodule
+      ]]></programlisting>
+    </para>
+    <para>
+      If only module "foo" is chosen to gather coverage information, the call to the $random function will result in a value
+      that will not match the actual simulation if the <emphasis role="bold">-conservative</emphasis> option is not specified.  This is
+      due to the ordering importance of $random system task calls.  The first call to $random will return a value of X while the second
+      call will return a value of Y.  If we remove the code that calls $random the first time, the code that still calls X will receive
+      the incorrect value.  This discrepancy in simulation results will result in incorrect coverage results.
+    </para>
+    <para>
+      If the <emphasis role="bold">-conservative</emphasis> option is specified to the score command, Covered will automatically remove any
+      coverage blocks that make a call to the $random system function from coverage consideration and any assigned values within these
+      removed blocks will get their value from the dumpfile instead of being calculated by Covered directly.  This will result in correct
+      coverage information for the module "foo".
+    </para>
+    <para>
+      The constructs that can cause issues with Covered simulation correctness (in some situations) are the following:
+    </para>
+    <para>
+      <orderedlist>
+        <listitem><para>$random</para></listitem>
+        <listitem><para>$urandom</para></listitem>
+        <listitem><para>$urandom_range</para></listitem>
+      </orderedlist>
+    </para>
+    <para>
+      It is currently up to the user to determine to determine whether liberal or conservative coverage accumulation should occur and use
+      the <emphasis role="bold">-conservative</emphasis> option to the score command as needed.
     </para>
   </sect1>
   

@@ -1,4 +1,4 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 9. The score Command</title><link rel="stylesheet" href="covered.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.71.1"><link rel="start" href="index.html" title="Covered"><link rel="up" href="part.command.line.usage.html" title="Part III. Command-line Usage"><link rel="prev" href="chapter.using.html" title="Chapter 8. Using Covered"><link rel="next" href="chapter.merge.html" title="Chapter 10. The merge Command"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 9. The score Command</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter.using.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part III. Command-line Usage</th><td width="20%" align="right"> <a accesskey="n" href="chapter.merge.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.score"></a>Chapter 9. The score Command</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.score.html#section.score.usage">9.1. Usage</a></span></dt><dt><span class="sect1"><a href="chapter.score.html#section.score.options">9.2. Options</a></span></dt><dt><span class="sect1"><a href="chapter.score.html#section.score.t">9.3. Specifying What to Cover</a></span></dt><dt><span class="sect1"><a href="chapter.score.html#section.score.e">9.4. Specifying What Not to Cover (Coverage Exclusions)</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.score.html#section.score.ep">Using the -ep Option for Exclusion</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.score.html#section.score.param">9.5. Overriding Parameters (-P option)</a></span></dt><dt><span class="sect1"><a href="chapter.score.html#section.score.fsm">9.6. Scoring FSMs</a></span></dt><dt><span class="sect1"><a href="chapter.score.html#section.score.other">9.7. Other Notes</a></span></dt></dl></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.score.usage"></a>9.1. Usage</h2></div></div></div><p>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 9. The score Command</title><link rel="stylesheet" href="covered.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.71.1"><link rel="start" href="index.html" title="Covered"><link rel="up" href="part.command.line.usage.html" title="Part III. Command-line Usage"><link rel="prev" href="chapter.using.html" title="Chapter 8. Using Covered"><link rel="next" href="chapter.merge.html" title="Chapter 10. The merge Command"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 9. The score Command</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter.using.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part III. Command-line Usage</th><td width="20%" align="right"> <a accesskey="n" href="chapter.merge.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.score"></a>Chapter 9. The score Command</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.score.html#section.score.usage">9.1. Usage</a></span></dt><dt><span class="sect1"><a href="chapter.score.html#section.score.options">9.2. Options</a></span></dt><dt><span class="sect1"><a href="chapter.score.html#section.score.t">9.3. Specifying What to Cover</a></span></dt><dt><span class="sect1"><a href="chapter.score.html#section.score.e">9.4. Specifying What Not to Cover (Coverage Exclusions)</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.score.html#section.score.ep">Using the -ep Option for Exclusion</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.score.html#section.score.param">9.5. Overriding Parameters (-P option)</a></span></dt><dt><span class="sect1"><a href="chapter.score.html#section.score.fsm">9.6. Scoring FSMs</a></span></dt><dt><span class="sect1"><a href="chapter.score.html#section.score.conservative">9.7. The reason for the -conservative feature</a></span></dt><dt><span class="sect1"><a href="chapter.score.html#section.score.other">9.8. Other Notes</a></span></dt></dl></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.score.usage"></a>9.1. Usage</h2></div></div></div><p>
       The score command is initiated with the following call:
     </p><p>
       <code class="code">
@@ -31,6 +31,12 @@
                 contained in this file to be replayed prior to the CLI command prompt. If <span class="emphasis"><em>filename</em></span> is not 
                 specified, the CLI prompt will be immediately available at the start of simulation. This option is only available 
                 when Covered is configured with the --enable-debug option. See <a href="chapter.debug.html#section.cli" title="15.2. Command-Line Interface (CLI)">Section 15.2, &#8220;Command-Line Interface (CLI)&#8221;</a>.
+              </td></tr><tr><td>
+                -conservative
+              </td><td>
+                If this option is specified, any logic blocks that contain code that would cause coverage discrepancies leading to
+                potentially inaccurate coverage results are removed from coverage consideration.  See 
+                <a href="chapter.score.html#section.score.conservative" title="9.7. The reason for the -conservative feature">Section 9.7, &#8220;The reason for the -conservative feature&#8221;</a> for more information.s
               </td></tr><tr><td>
                 -D <span class="emphasis"><em>name</em></span>[=<span class="emphasis"><em>value</em></span>]
               </td><td>
@@ -121,7 +127,7 @@
               </td></tr><tr><td>
                 -p <span class="emphasis"><em>filename</em></span>
               </td><td>
-                Overrides filename used for outputting intermediate preprocessor output.  See <a href="chapter.score.html#section.score.other" title="9.7. Other Notes">Section 9.7, &#8220;Other Notes&#8221;</a>.
+                Overrides filename used for outputting intermediate preprocessor output.  See <a href="chapter.score.html#section.score.other" title="9.8. Other Notes">Section 9.8, &#8220;Other Notes&#8221;</a>.
               </td></tr><tr><td>
                 -P <span class="emphasis"><em>parameter_scope</em></span>=<span class="emphasis"><em>value</em></span>
               </td><td>
@@ -169,6 +175,10 @@
                 This option is only valid when the -vpi option has been specified. This option allows the user to specify a timescale for the generated 
                 Verilog module created with the -vpi option. If this option is not specified, no timescale will be created for the generated module. If 
                 whitespace is needed between the various values, place the entire contents of timescale in double quotes.
+              </td></tr><tr><td>
+                -Wignore
+              </td><td>
+                Suppresses any warning output during code parsing and/or simulation.
               </td></tr><tr><td>
                 -y <span class="emphasis"><em>directory</em></span>
               </td><td>
@@ -394,7 +404,57 @@
       it also doesn't have the ability to specify this information in other ways. To provide meaningful coverage information for the FSM, Covered outputs 
       all hit states and state transitions in the report when all achievable states and state transitions are not known. This information will be able to 
       be specified by the user in future versions of Covered, with the ability to automatically extract this information also in the works.
-    </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.score.other"></a>9.7. Other Notes</h2></div></div></div><p>
+    </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.score.conservative"></a>9.7. The reason for the -conservative feature</h2></div></div></div><p>
+      Though Covered has support for many Verilog-1995, Verilog-2001 and SystemVerilog constructs there are handful of supported
+      constructs that are dependent on correct simulation ordering to provide accurate coverage information.  In certain cases, Covered will
+      be able to accurately determine the order of simulation, but in some cases, it may not.  In these cases, it is best for Covered to run
+      in a "conservative" mode of operation whereby logic blocks that contain these code issues are removed from coverage consideration.
+      Removing logic blocks does not have a negative impact (in terms of coverage accuracy) on the rest of the design.  The only negative
+      consequence is that no coverage results can be obtained for a given logic block.
+    </p><p>
+      For example, consider the following code:
+    </p><p>
+      </p><pre class="programlisting">
+  module main;
+    foo a();
+    bar b();
+  endmodule
+  
+  module foo;
+    integer a;
+    initial begin
+      #10;
+      a = $random;
+    end
+  endmodule
+  
+  module bar
+    integer a;
+    initial begin
+      #5;
+      a = $random;
+    end
+  endmodule
+      </pre><p>
+    </p><p>
+      If only module "foo" is chosen to gather coverage information, the call to the $random function will result in a value
+      that will not match the actual simulation if the <span class="bold"><strong>-conservative</strong></span> option is not specified.  This is
+      due to the ordering importance of $random system task calls.  The first call to $random will return a value of X while the second
+      call will return a value of Y.  If we remove the code that calls $random the first time, the code that still calls X will receive
+      the incorrect value.  This discrepancy in simulation results will result in incorrect coverage results.
+    </p><p>
+      If the <span class="bold"><strong>-conservative</strong></span> option is specified to the score command, Covered will automatically remove any
+      coverage blocks that make a call to the $random system function from coverage consideration and any assigned values within these
+      removed blocks will get their value from the dumpfile instead of being calculated by Covered directly.  This will result in correct
+      coverage information for the module "foo".
+    </p><p>
+      The constructs that can cause issues with Covered simulation correctness (in some situations) are the following:
+    </p><p>
+      </p><div class="orderedlist"><ol type="1"><li><p>$random</p></li><li><p>$urandom</p></li><li><p>$urandom_range</p></li></ol></div><p>
+    </p><p>
+      It is currently up to the user to determine to determine whether liberal or conservative coverage accumulation should occur and use
+      the <span class="bold"><strong>-conservative</strong></span> option to the score command as needed.
+    </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.score.other"></a>9.8. Other Notes</h2></div></div></div><p>
       When the Verilog files are parsed, a preprocessor is run on each file that is to be read in by Covered. The preprocessor generates an intermediate 
       form of each file, resolving defined values and included files. The intermediate form is output to a file which is called "tmpXXXXXX" where XXXXXX 
       represents some alphanumeric sequence chosen by the OS via the mkstemp() function. The file is guaranteed to be unique to all other files in the 
