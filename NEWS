@@ -1,6 +1,82 @@
 Covered-Related NEWS
 ====================
 
+    * 10/06/2008
+
+Development release covered-20081006 made.  This development release is both a feature and a bug fix release.  The main
+feature additions include a new "exclude" command which allows the user to exclude coverage points from the command-line
+and provide (optional) reasons for the exclusion which are saved in the CDD file and can be output in reports.  Exclusion
+reasons can also be specified now using the GUI.  Additionally, support for the $time, $random, $urandom, $urandom_range
+and $srandom system functions are provided along with handling of several system tasks (see User's Guide for a detailed
+list of supported system tasks/functions) such that logic blocks containing these will not be automatically excluded from
+coverage consideration.  The following is a detailed list of the changes that has gone into this development release of
+Covered.
+
+  - Added a new "exclude" command which allows coverage points in the design to be excluded (with an optional exclusion
+    reason provided)/included.  You can also display the current exclusion status and reason for a given coverage point using
+    this command.
+  - Added a new -x option to the report command that will display the exclusion ID for the various coverage points that
+    is used for excluding/including coverage points via the new "exclude" command.
+  - Added a new -e option to the report command that will display excluded coverage points and their reasons for exclusion
+    to the report file.
+  - Added ability in GUI to create generic exclusion reasons in the Preferences window which can be used when providing
+    exclusion reasons in the GUI for common exclusions.
+  - Added ability in GUI to provide exclusion reasons when excluding a coverage point.
+  - Fixing issue with the use of the kfmclient for help viewing (KDE).
+  - Fixed bug 2095796.  When the root expression in the verbose combinational logic window is excluded, the highlight colors
+    were not changing to indicate that the line is "covered".
+  - Fixed bug 2095799.  When a memory element was excluded, the colors in the verbose memory window were not adjusted to indicate
+    that the memory was "covered".
+  - Updated covered.spec (RPM build file) to match current state of Covered.
+  - Fixed bug 2104947.  Missed indexed memory operations are not output in the report file correctly.
+  - Fixed bug 2104924.  Indexed memory operations were not emitting correct coverage information in combinational logic coverage.
+  - Fixed bug 2106313.  The !== operation result was not correct.
+  - Cleaned up splint warnings in source code.
+  - Fixed bug 2112858.  "Multi-tiered" merging was not reporting the correct contributing coverage files.
+  - Fixed bug 2112509.  Support added to merge files with the same basename but different directories (relative pathnames are used).
+  - Fixed bug 2112613.  Multi-expressions that were marked to be excluded were output in the report files as both excluded
+    and uncovered.
+  - Fixed memory issues with obfuscation code and made minor performance enhancements with this functionality.
+  - Fixing issue with rank command when an invalid option was specified (output incorrect output message previously).
+  - Added module version parsing support to parser.  If this information is specified in an $Id..$ string within a comment,
+    it is extracted and saved in the CDD.
+  - Fixed bug 2122019.  Added documentation for the -m option to the score command.
+  - Added new -er option to the merge command which specifies how to resolve exclusion reasons that are specified for the
+    same coverage point in two CDD files that are being merged.  See user guide for more information.
+  - Added new "Merging" preference pane to GUI that allows the user to specify how the GUI will resolve exclusion reasons when
+    reading and merging in CDD files (much like the -er option to the merge command).
+  - Fixed bug 2123730.  Error in parsing unsized constants (i.e., 'h0) in some instances (ex. "assign a = #1 'h0;").
+  - Fixed bug 2123300.  Toggle and FSM coverage points are not properly merged.
+  - Fixed bug 2124635.  If the current GUI metric state is set to "Toggle", no opened files exist and a preference change causes
+    an error to occur stating that the current functional unit could not be found.
+  - Fixed bug 2125451.  Fixed VPI usage errors.
+  - Fixed bug 2127185.  An "if" statement with an empty true scope caused a segmentation fault.
+  - Fixed bug 2127678.  Fixed assertion error in db_close function when LXT2-style dump scoring.
+  - Fixed bug 2127687.  Fixed memory leaks when using the LXT2-style dump scoring.
+  - Fixed bug 2129623.  X values between 0/1 values should not impede on toggle coverage (i.e., 0->X->1 should be considered as a
+    toggle from 0->1 while 0->X->0 is treated as no toggle change (conservative approach)).
+  - Fixed bug 2133113.  Error message displayed when Konqueror browser is used to view help information.
+  - Created new banner graphic for Covered and integrated this into the GUI.
+  - Fixed bug 2136474.  An internal Covered error was displayed when forever blocks were used within fork..join.
+  - Fixed bug 2127674.  LXT-style dump information in documentation should have been specified as LXT2 (LXT not supported).
+  - Fixed bug 2127694.  Task/function port handling caused errors in some instances.
+  - Adding functional support for the $time, $random, $urandom, $urandom_range and $srandom system functions.
+  - Adding coverage handling support for $dumpall, $dumpfile, $dumpflush, $dumplimit, $dumpvars, $dumpoff, $dumpon, $fdisplay,
+    $fmonitor, $fstrobe, $fwrite, $history, $key, $list, $log, $monitor, $monitoroff, $monitoron, $nokey, $nolog, $printtimescale,
+    $showscopes, $showvariables, $showvars, $strobe, $timeformat, $write, and $fclose.
+  - Added -conservative option to the score command to force Covered's parser to remove logic blocks from coverage consideration
+    if they contain code that could potentially lead to coverage inaccuracies.
+  - Added -Wignore option to the score command to suppress warning information from output.
+  - Fixed bug 2124669.  When multiple files are opened simultaneously in the GUI, no design output was displayed in the GUI.
+  - Fixed bug 2131171.  If a block is removed from coverage consideration, no warning message was output to indicate that this
+    was being done and why.
+  - Added lots of new diagnostics to the regression suite to verify new functionality and to improve code coverage in
+    Covered's source code.
+  - Updated necessary documentation in User's Guide and manpage.
+
+Note that the CDD version numbers have changed in this release, making them incompatible with CDD files created from older
+versions of Covered.
+
     * 8/26/2008
 
 Development release covered-20080826 made.  This development release contains several new features, bug fixes, GUI

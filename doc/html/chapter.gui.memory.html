@@ -1,11 +1,11 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 20. Navigating the Memory Coverage Window</title><link rel="stylesheet" href="covered.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.71.1"><link rel="start" href="index.html" title="Covered"><link rel="up" href="part.gui.html" title="Part IV. Graphical User Interface"><link rel="prev" href="chapter.gui.toggle.html" title="Chapter 19. Navigating the Toggle Coverage Window"><link rel="next" href="chapter.gui.logic.html" title="Chapter 21. Navigating the Combinational Logic Window"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 20. Navigating the Memory Coverage Window</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter.gui.toggle.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part IV. Graphical User Interface</th><td width="20%" align="right"> <a accesskey="n" href="chapter.gui.logic.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.gui.memory"></a>Chapter 20. Navigating the Memory Coverage Window</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.gui.memory.html#section.gui.memory.layout">20.1. Understanding the Layout</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.gui.memory.html#section.gui.memory.layout.ame">Addressable Memory Elements Frame</a></span></dt><dt><span class="sect2"><a href="chapter.gui.memory.html#section.gui.memory.layout.elem">Element Coverage Frame</a></span></dt><dt><span class="sect2"><a href="chapter.gui.memory.html#section.gui.memory.layout.button">Button Frame</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.gui.memory.html#section.gui.memory.excl">20.2. Excluding/Including a Memory for Memory Coverage</a></span></dt><dt><span class="sect1"><a href="chapter.gui.memory.html#section.gui.memory.displaying">20.3. Displaying a New Memory for Memory Coverage</a></span></dt></dl></div><p>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 20. Navigating the Memory Coverage Window</title><link rel="stylesheet" href="covered.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.74.0"><link rel="home" href="index.html" title="Covered"><link rel="up" href="part.gui.html" title="Part IV. Graphical User Interface"><link rel="prev" href="chapter.gui.toggle.html" title="Chapter 19. Navigating the Toggle Coverage Window"><link rel="next" href="chapter.gui.logic.html" title="Chapter 21. Navigating the Combinational Logic Window"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 20. Navigating the Memory Coverage Window</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter.gui.toggle.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part IV. Graphical User Interface</th><td width="20%" align="right"> <a accesskey="n" href="chapter.gui.logic.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.gui.memory"></a>Chapter 20. Navigating the Memory Coverage Window</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.gui.memory.html#section.gui.memory.layout">20.1. Understanding the Layout</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.gui.memory.html#section.gui.memory.layout.ame">Addressable Memory Elements Frame</a></span></dt><dt><span class="sect2"><a href="chapter.gui.memory.html#section.gui.memory.layout.elem">Element Coverage Frame</a></span></dt><dt><span class="sect2"><a href="chapter.gui.memory.html#section.gui.memory.layout.button">Button Frame</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.gui.memory.html#section.gui.memory.excl">20.2. Excluding/Including a Memory for Memory Coverage</a></span></dt><dt><span class="sect1"><a href="chapter.gui.memory.html#section.gui.memory.displaying">20.3. Displaying a New Memory for Memory Coverage</a></span></dt></dl></div><p>
     The verbose memory window allows the user to interactively view all of the coverage information for a selected
     memory, including the following for each addressable memory element:
   </p><p>
     </p><div class="orderedlist"><ol type="1"><li><p>Have all bits toggled from 0 -&gt; 1 and from 1 -&gt; 0?</p></li><li><p>Has the entry been written?</p></li><li><p>Has the entry been read?</p></li></ol></div><p>
   </p><p>
     To display this window, simply click on a highlighted/underlined uncovered memory in the
-    <a href="chapter.gui.main.html#section.gui.main.viewer" title="17.4. The Coverage File Viewer">file viewer</a>.  This will cause the verbose memory viewer to be created for the specified
+    <a class="link" href="chapter.gui.main.html#section.gui.main.viewer" title="17.4. The Coverage File Viewer">file viewer</a>.  This will cause the verbose memory viewer to be created for the specified
     memory as well as display a "--&gt;" symbol in the Coverage Viewer on the same line as the selected memory.  This
     symbol is simply meant to help the user identify in the Coverage Viewer which memory is currently displayed in the
     Memory Viewer window.  Figure 1 shows the Memory Viewer loaded with a 4-dimensional memory called "mem" in which two
@@ -35,7 +35,7 @@
         </p><div class="itemizedlist"><ul type="disc"><li><p>foo[0][0]</p></li><li><p>foo[0][1]</p></li><li><p>foo[0][2]</p></li><li><p>foo[0][3]</p></li><li><p>foo[1][0]</p></li><li><p>foo[1][1]</p></li><li><p>foo[1][2]</p></li><li><p>foo[1][3]</p></li></ul></div><p>
       </p><p>
         The upper frame will contain all of the AMEs for the selected memory.  The uncovered AMEs will be highlighted in
-        the uncovered color scheme (as specified in the <a href="chapter.gui.preferences.html" title="Chapter 28. Navigating the Preferences Window">preferences window</a>)
+        the uncovered color scheme (as specified in the <a class="link" href="chapter.gui.preferences.html" title="Chapter 28. Navigating the Preferences Window">preferences window</a>)
         while all fully covered AMEs will remain unhighlighted.  To view the coverage information for any uncovered AME,
         simply click on it and the information will be viewable in the "Element Coverage" frame below it.
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.gui.memory.layout.elem"></a>Element Coverage Frame</h3></div></div></div><p>
@@ -57,7 +57,7 @@
         Below the memory name are two other pieces of coverage information about the AME.  The value to the right of the
         <span class="bold"><strong>Written:</strong></span> label will be set to either "Yes" or "No".  If the value is "Yes", this
         indicates that the currently selected AME was written during simulation and value will be highlighted with the
-        covered color scheme (as selected in the <a href="chapter.gui.preferences.html" title="Chapter 28. Navigating the Preferences Window">preferences window</a>).  If
+        covered color scheme (as selected in the <a class="link" href="chapter.gui.preferences.html" title="Chapter 28. Navigating the Preferences Window">preferences window</a>).  If
         the value is "No", this indicates that the currently selected AME was not written during simulation and the value
         will be highlighted with the uncovered color scheme.
       </p><p>
@@ -75,18 +75,18 @@
       </p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.gui.memory.excl"></a>20.2. Excluding/Including a Memory for Memory Coverage</h2></div></div></div><p>
       The user may exclude/include any uncovered memory in the design for memory coverage by simply clicking on the
       <span class="bold"><strong>Excluded</strong></span> checkbutton in the upper right-hand portion of the Memory Coverage
-      window. If this checkbutton is checked, the <a href="chapter.gui.exclude.html" title="Chapter 29. The Exclusion Reason Popup Window">exclusion reason popup window</a>
+      window. If this checkbutton is checked, the <a class="link" href="chapter.gui.exclude.html" title="Chapter 29. The Exclusion Reason Popup Window">exclusion reason popup window</a>
       will be displayed automatically, allowing the user to specify a reason for excluding the memory.  Once a reason has
       been entered, the summary coverage information will automatically be recalculated and
-      redisplayed in the <a href="chapter.gui.main.html#section.gui.main.listbox" title="17.3. The Module/Instance Listbox">listbox</a> and the background color of the underlined memory in
-      the <a href="chapter.gui.main.html#section.gui.main.viewer" title="17.4. The Coverage File Viewer">file viewer</a> will change from the uncovered background color to the covered
+      redisplayed in the <a class="link" href="chapter.gui.main.html#section.gui.main.listbox" title="17.3. The Module/Instance Listbox">listbox</a> and the background color of the underlined memory in
+      the <a class="link" href="chapter.gui.main.html#section.gui.main.viewer" title="17.4. The Coverage File Viewer">file viewer</a> will change from the uncovered background color to the covered
       background color.  However, the memory will still remain underlined, allowing the user to see the verbose memory
       coverage information, if necessary.  If the <span class="bold"><strong>Excluded</strong></span> checkbutton is unchecked, the
       summary coverage information and background colors will be readjusted to include the coverage information for this
       memory.
     </p><p>
       If the user excludes any memory for memory coverage in the design, the <span class="bold"><strong>Save CDD...</strong></span>
-      option in the <a href="chapter.gui.main.html#section.gui.main.filemenu" title="The File Menu">file</a> menu.  This allows the user to save the excluded property
+      option in the <a class="link" href="chapter.gui.main.html#section.gui.main.filemenu" title="The File Menu">file</a> menu.  This allows the user to save the excluded property
       either back to the CDD file (or to a newly named CDD file).  Doing so will allow the user to load the CDD file at a
       different time and retain the knowledge of which memories have been excluded/included for memory coverage.
       Additionally, if a saved CDD file with coverage exclusion is merged with another CDD file, the excluded memory
@@ -99,7 +99,7 @@
       reason tooltip to disappear, simply release the button.
     </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.gui.memory.displaying"></a>20.3. Displaying a New Memory for Memory Coverage</h2></div></div></div><p>
       If the Verbose Memory Coverage window is currently displayed with a memory, the user may select a new memory in
-      the <a href="chapter.gui.main.html#section.gui.main.viewer" title="17.4. The Coverage File Viewer">file viewer</a> of the Main window.  When a new memory is selected, its value
+      the <a class="link" href="chapter.gui.main.html#section.gui.main.viewer" title="17.4. The Coverage File Viewer">file viewer</a> of the Main window.  When a new memory is selected, its value
       immediately replaces the currently selecting memory value.  This feature allows many different memories to be
       viewed one after the other without having to create/destroy a new window for each memory.
     </p><p>
