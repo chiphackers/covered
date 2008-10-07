@@ -174,7 +174,7 @@ static void score_usage() {
   printf( "                                     other $dumpfile/$dumpvars calls are made, this dump module will provide\n" );
   printf( "                                     additional performance gains.  The name of the dumpfile created is called\n" );
   printf( "                                     <name>.vcd\n" );
-  printf( "      -ts <timescale>             This option is only valid when the -vpi or -dumpvars options have been specified.\n" );
+  printf( "      -top_ts <timescale>          This option is only valid when the -vpi or -dumpvars options have been specified.\n" );
   printf( "                                     This option allows the user to specify a timescale for the generated\n" );
   printf( "                                     Verilog module.  If this option is not specified, no timescale will\n" );
   printf( "                                     be created for the generated module.  The value of <timescale> is\n" );
@@ -768,12 +768,12 @@ static void score_parse_args(
         Throw 0;
       }
 
-    } else if( strncmp( "-ts", argv[i], 3 ) == 0 ) {
+    } else if( strncmp( "-top_ts", argv[i], 7 ) == 0 ) {
 
       if( check_option_value( argc, argv, i ) ) {
         i++;
         if( timescale != NULL ) {
-          print_output( "Only one -ts option is allowed on the score command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
+          print_output( "Only one -top_ts option is allowed on the score command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
           if( (i == argc) || (argv[i][0] == '-') ) {
             i--;
           }
@@ -1209,6 +1209,10 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.139  2008/10/07 05:24:18  phase1geo
+ Adding -dumpvars option.  Need to resolve a few issues before this work is considered
+ complete.
+
  Revision 1.138  2008/10/05 20:21:36  phase1geo
  Adding more diagnostics to regression suite which fully passes.  Added -conservative
  and -Wignore options to the score command.
