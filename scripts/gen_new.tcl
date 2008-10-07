@@ -47,7 +47,7 @@ proc create_new_cdd {} {
 
 }
 
-proc parse_vpi_ts {str rnum rscale} {
+proc parse_top_ts {str rnum rscale} {
 
   upvar $rnum   tnum
   upvar $rscale tscale
@@ -92,7 +92,7 @@ proc create_arglist_for_new_cdd {} {
   
   global cdd_filename
   global dump_vpi_none dump_file
-  global vpi_file vpi_ts vpi_ts_num1 vpi_ts_scale1 vpi_ts_num2 vpi_ts_scale2
+  global vpi_file dumpvars_file top_ts top_ts_num1 top_ts_scale1 top_ts_num2 top_ts_scale2
   global simulator
   global toplevel_name inst_name delay_type
   global race_cond_action race_cond_pragma race_cond_pragma_name
@@ -118,8 +118,17 @@ proc create_arglist_for_new_cdd {} {
     } else {
       lappend args "-vpi $vpi_file"
     }
-    if {$vpi_ts == 1} {
-      lappend args "-vpi_ts $vpi_ts_num1$vpi_ts_scale1/$vpi_ts_num2$vpi_ts_scale2"
+    if {$top_ts == 1} {
+      lappend args "-top_ts $top_ts_num1$top_ts_scale1/$top_ts_num2$top_ts_scale2"
+    }
+  } elseif {$dump_vpi_none eq "dumpvars"} {
+    if {$dumpvars_file eq ""} {
+      lappend args "-dumpvars"
+    } else {
+      lappend args "-dumpvars $dumpvars_file"
+    }
+    if {$top_ts == 1} {
+      lappend args "-top_ts $top_ts_num1$top_ts_scale1/$top_ts_num2$top_ts_scale2"
     }
   }
 
@@ -252,7 +261,7 @@ proc read_score_option_file {w fname} {
 
   global cdd_filename cddgen_fname
   global dump_vpi_none dump_file
-  global vpi_file vpi_ts vpi_ts_num1 vpi_ts_scale1 vpi_ts_num2 vpi_ts_scale2
+  global vpi_file dumpvars_file top_ts top_ts_num1 top_ts_scale1 top_ts_num2 top_ts_scale2
   global toplevel_name inst_name delay_type
   global race_cond_action race_cond_pragma race_cond_pragma_name
   global assert_ovl design_generation
@@ -304,14 +313,24 @@ proc read_score_option_file {w fname} {
         set i [expr $i - 1]
       }
 
-    } elseif {[lindex $contents $i] eq "-vpi_ts"} {
+    } elseif {[lindex $contents $i] eq "-dumpvars"} {
+      set dump_vpi_none "dumpvars"
+      handle_new_cdd_dump_states .newwin.p.dump
       incr i
       if {[string index [lindex $contents $i] 0] ne "-"} {
-        set vpi_ts 1
-        set vpi_ts_elems [split [lindex $contents $i] /]
-        parse_vpi_ts [lindex $vpi_ts_elems 0] vpi_ts_num1 vpi_ts_scale1
-        parse_vpi_ts [lindex $vpi_ts_elems 1] vpi_ts_num2 vpi_ts_scale2
-        handle_new_cdd_dump_vpi_timescale .newwin.p.dump
+        set dumpvars_file [lindex $contents $i]
+      } else {
+        set i [expr $i - 1]
+      }
+
+    } elseif {[lindex $contents $i] eq "-top_ts"} {
+      incr i
+      if {[string index [lindex $contents $i] 0] ne "-"} {
+        set top_ts 1
+        set top_ts_elems [split [lindex $contents $i] /]
+        parse_top_ts [lindex $top_ts_elems 0] top_ts_num1 top_ts_scale1
+        parse_top_ts [lindex $top_ts_elems 1] top_ts_num2 top_ts_scale2
+        handle_new_cdd_dump_top_timescale .newwin.p.dump
       } else {
         set i [expr $i - 1]
       }
@@ -502,7 +521,7 @@ proc setup_cdd_generate_options {w} {
   global cddgen_fname
   global cdd_filename
   global dump_vpi_none dump_file
-  global vpi_file vpi_ts vpi_ts_num1 vpi_ts_scale1 vpi_ts_num2 vpi_ts_scale2
+  global vpi_file dumpvars_file top_ts top_ts_num1 top_ts_scale1 top_ts_num2 top_ts_scale2
   global simulator
   global toplevel_name inst_name delay_type
   global race_cond_action race_cond_pragma race_cond_pragma_name
@@ -516,11 +535,12 @@ proc setup_cdd_generate_options {w} {
     set dump_vpi_none         "none"
     set dump_file             ""
     set vpi_file              ""
-    set vpi_ts                "0"
-    set vpi_ts_num1           "1"
-    set vpi_ts_scale1         "s"
-    set vpi_ts_num2           "1"
-    set vpi_ts_scale2         "s"
+    set dumpvars_file         ""
+    set top_ts                "0"
+    set top_ts_num1           "1"
+    set top_ts_scale1         "s"
+    set top_ts_num2           "1"
+    set top_ts_scale2         "s"
     set simulator             "Icarus Verilog"
     set toplevel_name         ""
     set inst_name             ""
@@ -542,15 +562,16 @@ proc setup_cdd_generate_options {w} {
   } else {
 
     # Otherwise, set global variables to desired default values
-    set cdd_filename         ""
+    set cdd_filename          ""
     set dump_vpi_none         "none"
     set dump_file             ""
     set vpi_file              ""
-    set vpi_ts                "0"
-    set vpi_ts_num1           "1"
-    set vpi_ts_scale1         "s"
-    set vpi_ts_num2           "1"
-    set vpi_ts_scale2         "s"
+    set dumpvars_file         ""
+    set top_ts                "0"
+    set top_ts_num1           "1"
+    set top_ts_scale1         "s"
+    set top_ts_num2           "1"
+    set top_ts_scale2         "s"
     set simulator             "Icarus Verilog"
     set toplevel_name         ""
     set inst_name             ""
@@ -727,7 +748,7 @@ proc create_new_cdd_name {w} {
 
 proc handle_new_cdd_dump_states {w} {
 
-  global dump_vpi_none vpi_ts dump_file
+  global dump_vpi_none top_ts dump_file
 
   if {$dump_vpi_none eq "none"} {
 
@@ -735,6 +756,7 @@ proc handle_new_cdd_dump_states {w} {
     $w.dump.bd configure -state disabled
     $w.dump.ev configure -state disabled
     $w.dump.mv configure -state disabled
+    $w.dump.ep configure -state disabled
     $w.bf.next configure -state normal
     set_widget_state $w.dump.ts disabled
 
@@ -744,6 +766,7 @@ proc handle_new_cdd_dump_states {w} {
     $w.dump.bd configure -state normal
     $w.dump.ev configure -state disabled
     $w.dump.mv configure -state disabled
+    $w.dump.ep configure -state disabled
     if {$dump_file ne ""} {
       $w.bf.next configure -state normal
     } else {
@@ -757,9 +780,23 @@ proc handle_new_cdd_dump_states {w} {
     $w.dump.bd    configure -state disabled
     $w.dump.ev    configure -state normal
     $w.dump.mv    configure -state normal
+    $w.dump.ep    configure -state disabled
     $w.dump.ts.cb configure -state normal
     $w.bf.next    configure -state normal
-    if {$vpi_ts == 1} {
+    if {$top_ts == 1} {
+      set_widget_state $w.dump.ts normal
+    }
+
+  } elseif {$dump_vpi_none eq "dumpvars"} {
+
+    $w.dump.ed    configure -state disabled
+    $w.dump.bd    configure -state disabled
+    $w.dump.ev    configure -state disabled
+    $w.dump.mv    configure -state disabled
+    $w.dump.ep    configure -state normal
+    $w.dump.ts.cb configure -state normal
+    $w.bf.next    configure -state normal
+    if {$top_ts == 1} {
       set_widget_state $w.dump.ts normal
     }
 
@@ -767,11 +804,11 @@ proc handle_new_cdd_dump_states {w} {
 
 }
 
-proc handle_new_cdd_dump_vpi_timescale {w} {
+proc handle_new_cdd_dump_top_timescale {w} {
 
-  global vpi_ts
+  global top_ts
 
-  if {$vpi_ts == 0} {
+  if {$top_ts == 0} {
 
     $w.dump.ts.n1 configure -state disabled
     $w.dump.ts.s1 configure -state disabled
@@ -795,7 +832,7 @@ proc create_new_cdd_dump {w} {
 
   global dump_filetypes
   global dump_vpi_none dump_file
-  global vpi_file vpi_ts vpi_ts_num1 vpi_ts_scale1 vpi_ts_num2 vpi_ts_scale2
+  global vpi_file dumpvars_file top_ts top_ts_num1 top_ts_scale1 top_ts_num2 top_ts_scale2
   global simulator
 
   # Add dumpfile widgets
@@ -812,13 +849,15 @@ proc create_new_cdd_dump {w} {
   radiobutton   $w.dump.rv -text "VPI Module:" -variable dump_vpi_none -value "vpi" -anchor w -command "handle_new_cdd_dump_states $w"
   entry         $w.dump.ev -textvariable vpi_file -state disabled
   tk_optionMenu $w.dump.mv simulator {Icarus Verilog} {Cver} {VCS}
+  radiobutton   $w.dump.rp -text "Dumpvars Module:" -variable dump_vpi_none -value "dumpvars" -anchor w -command "handle_new_cdd_dump_states $w"
+  entry         $w.dump.ep -textvariable dumpvars_file -state disabled
   frame         $w.dump.ts
-  checkbutton   $w.dump.ts.cb -text "Set VPI Module Timescale:" -anchor w -variable vpi_ts -state disabled -command "handle_new_cdd_dump_vpi_timescale $w"
-  tk_optionMenu $w.dump.ts.n1 vpi_ts_num1   {1} {10} {100}
-  tk_optionMenu $w.dump.ts.s1 vpi_ts_scale1 {s} {ms} {us} {ns} {ps} {fs}
+  checkbutton   $w.dump.ts.cb -text "Set Top Module Timescale:" -anchor w -variable top_ts -state disabled -command "handle_new_cdd_dump_top_timescale $w"
+  tk_optionMenu $w.dump.ts.n1 top_ts_num1   {1} {10} {100}
+  tk_optionMenu $w.dump.ts.s1 top_ts_scale1 {s} {ms} {us} {ns} {ps} {fs}
   label         $w.dump.ts.l  -text "/" -state disabled
-  tk_optionMenu $w.dump.ts.n2 vpi_ts_num2   {1} {10} {100}
-  tk_optionMenu $w.dump.ts.s2 vpi_ts_scale2 {s} {ms} {us} {ns} {ps} {fs}
+  tk_optionMenu $w.dump.ts.n2 top_ts_num2   {1} {10} {100}
+  tk_optionMenu $w.dump.ts.s2 top_ts_scale2 {s} {ms} {us} {ns} {ps} {fs}
   pack $w.dump.ts.cb -side left -padx 3 -pady 3
   pack $w.dump.ts.n1 -side left -padx 3 -pady 3
   pack $w.dump.ts.s1 -side left -padx 3 -pady 3
@@ -834,13 +873,18 @@ proc create_new_cdd_dump {w} {
 
   grid columnconfig $w.dump 1 -weight 1
   grid $w.dump.rn -row 0 -column 0 -sticky news -padx 3 -pady 3 -columnspan 2
+  grid rowconfig $w.dump 1 -uniform a
   grid $w.dump.rd -row 1 -column 0 -sticky news -padx 3 -pady 3
   grid $w.dump.ed -row 1 -column 1 -sticky news -padx 3 -pady 3
   grid $w.dump.bd -row 1 -column 2 -sticky news -padx 3 -pady 3
+  grid rowconfig $w.dump 2 -uniform a
   grid $w.dump.rv -row 2 -column 0 -sticky news -padx 3 -pady 3
   grid $w.dump.ev -row 2 -column 1 -sticky news -padx 3 -pady 3
   grid $w.dump.mv -row 2 -column 2 -sticky news -padx 3 -pady 3
-  grid $w.dump.ts -row 3 -column 0 -sticky news -padx 3 -pady 3 -columnspan 3
+  grid rowconfig $w.dump 3 -uniform a
+  grid $w.dump.rp -row 3 -column 0 -sticky news -padx 3 -pady 3
+  grid $w.dump.ep -row 3 -column 1 -sticky news -padx 3 -pady 3
+  grid $w.dump.ts -row 4 -column 0 -sticky news -padx 3 -pady 3 -columnspan 3
 
   # Create button bar
   frame  $w.bf

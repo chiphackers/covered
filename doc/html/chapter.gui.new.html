@@ -1,6 +1,6 @@
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 25. Creating a New CDD</title><link rel="stylesheet" href="covered.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.74.0"><link rel="home" href="index.html" title="Covered"><link rel="up" href="part.gui.html" title="Part IV. Graphical User Interface"><link rel="prev" href="chapter.gui.assert.source.html" title="Chapter 24. Navigating the Assertion Source Code Window"><link rel="next" href="chapter.gui.genreport.html" title="Chapter 26. Creating an ASCII report file"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 25. Creating a New CDD</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter.gui.assert.source.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part IV. Graphical User Interface</th><td width="20%" align="right"> <a accesskey="n" href="chapter.gui.genreport.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.gui.new"></a>Chapter 25. Creating a New CDD</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.gui.new.html#section.gui.new.select">25.1. Navigating the New CDD Creation Option Selection Page</a></span></dt><dt><span class="sect1"><a href="chapter.gui.new.html#section.gui.new.name">25.2. Navigating the New CDD Creation CDD Name Page</a></span></dt><dt><span class="sect1"><a href="chapter.gui.new.html#section.gui.new.type">25.3. CDD Creation Type Page</a></span></dt><dt><span class="sect1"><a href="chapter.gui.new.html#section.gui.new.options1">25.4. CDD Creation Options1 Page</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.gui.new.html#section.gui.new.options1.general">General Options</a></span></dt><dt><span class="sect2"><a href="chapter.gui.new.html#section.gui.new.options1.exclude">Exclude Options</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.gui.new.html#section.gui.new.options2">25.5. CDD Creation Options2 Page</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.gui.new.html#section.gui.new.options2.source">Source File...</a></span></dt><dt><span class="sect2"><a href="chapter.gui.new.html#section.gui.new.options2.libdir">Library Directory...</a></span></dt><dt><span class="sect2"><a href="chapter.gui.new.html#section.gui.new.options2.libext">Library Extension(s)...</a></span></dt><dt><span class="sect2"><a href="chapter.gui.new.html#section.gui.new.options2.incdir">Include Directory...</a></span></dt><dt><span class="sect2"><a href="chapter.gui.new.html#section.gui.new.options2.define">Define...</a></span></dt><dt><span class="sect2"><a href="chapter.gui.new.html#section.gui.new.options2.param">Parameter Override...</a></span></dt><dt><span class="sect2"><a href="chapter.gui.new.html#section.gui.new.options2.fsm">FSM...</a></span></dt><dt><span class="sect2"><a href="chapter.gui.new.html#section.gui.new.options2.modgen">Module Generation...</a></span></dt><dt><span class="sect2"><a href="chapter.gui.new.html#section.gui.new.options2.modexcl">Module Exclusion...</a></span></dt><dt><span class="sect2"><a href="chapter.gui.new.html#section.gui.new.options2.cmdfile">Command File...</a></span></dt><dt><span class="sect2"><a href="chapter.gui.new.html#section.gui.new.options2.notes">Other Notes</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.gui.new.html#section.gui.new.output">25.6. CDD Creation Output Pane</a></span></dt></dl></div><p>
-    Creating a new CDD file from the GUI can be accomplished by either clicking on the 
-    <span class="bold"><strong>Generate New CDD File</strong></span> button in the Wizard window (see 
+    Creating a new CDD file from the GUI can be accomplished by either clicking on the
+    <span class="bold"><strong>Generate New CDD File</strong></span> button in the Wizard window (see
     <a class="xref" href="chapter.gui.wizard.html" title="Chapter 30. Navigating the Wizard Window">Chapter 30, <i>Navigating the Wizard Window</i></a> for more details on this window), by selecting the
     <code class="code">File -&gt; Generate -&gt; New CDD...</code> menu option, or using the shortcut "Shift-Control-N".  This file creation
     "wizard" allows the user to create a new CDD file that can be opened/merged into the GUI for coverage analysis.  The
@@ -8,17 +8,17 @@
     with the command-line commands.
   </p><p>
     The following subsections describe the various windows used to create a CDD.  Note that the CDD creation wizard
-    uses several "pages" to describe the various options to set for creating a new CDD file, using 
+    uses several "pages" to describe the various options to set for creating a new CDD file, using
     <span class="bold"><strong>Back</strong></span> and <span class="bold"><strong>Next</strong></span> buttons on each page for navigation.
     Clicking on the <span class="bold"><strong>Back</strong></span> button will not cause previously filled in pages to be
     reverted to their default values but rather will remain populated with the user's data. Similarly, if a page has been
-    filled in with data and the <span class="bold"><strong>Back</strong></span> button is clicked and then the 
+    filled in with data and the <span class="bold"><strong>Back</strong></span> button is clicked and then the
     <span class="bold"><strong>Next</strong></span> button is clicked, the page contents are
-    retained.  The only way to clear out fields is to click the <span class="bold"><strong>Cancel</strong></span> button at the 
+    retained.  The only way to clear out fields is to click the <span class="bold"><strong>Cancel</strong></span> button at the
     bottom of each page and startup the CDD creation wizard again.
   </p><p>
-    Clicking the <span class="bold"><strong>Cancel</strong></span> button at any time will cause the CDD creation wizard to immediately 
-    exit.  Clicking on the help (?) button at any time will bring up the user documentation for 
+    Clicking the <span class="bold"><strong>Cancel</strong></span> button at any time will cause the CDD creation wizard to immediately
+    exit.  Clicking on the help (?) button at any time will bring up the user documentation for
     the current page (context sensitive help).
   </p><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.gui.new.select"></a>25.1. Navigating the New CDD Creation Option Selection Page</h2></div></div></div><p>
       Figure <a class="xref" href="chapter.gui.new.html#figure.gui.new.select" title="Figure 25.1. CDD Creation Option Selection Page">Figure 25.1, &#8220;CDD Creation Option Selection Page&#8221;</a> shows the look of this page of the CDD creation wizard.
@@ -31,18 +31,18 @@
       CDD creation wizard will continue in the same fashion as the first option, allowing the user to change, remove or
       add to the options found in that file.
     </p><p>
-      If the <span class="bold"><strong>Create CDD by interactively selecting options</strong></span> entry is currently selected 
-      and the user wishes to not use a command-line file to populate the rest of the CDD creation pages, simply click on 
-      the <span class="bold"><strong>Next</strong></span> button at the bottom of the page to continue.  If the 
-      <span class="bold"><strong>Create CDD by using option file</strong></span> entry is currently selected, the user must either 
-      type a valid filename or select one by clicking the <span class="bold"><strong>Browse...</strong></span> button to the right 
-      of the file entry area and select a valid file. Once a valid filename is selected, the 
-      <span class="bold"><strong>Next</strong></span> button will be enabled and the user may then click it to continue to the next 
-      page. Note that any filename can be selected (whether it's a valid command file or not).  Only valid score command 
-      options found in that file are used to populate the wizard entries. No error message will be displayed if the file 
+      If the <span class="bold"><strong>Create CDD by interactively selecting options</strong></span> entry is currently selected
+      and the user wishes to not use a command-line file to populate the rest of the CDD creation pages, simply click on
+      the <span class="bold"><strong>Next</strong></span> button at the bottom of the page to continue.  If the
+      <span class="bold"><strong>Create CDD by using option file</strong></span> entry is currently selected, the user must either
+      type a valid filename or select one by clicking the <span class="bold"><strong>Browse...</strong></span> button to the right
+      of the file entry area and select a valid file. Once a valid filename is selected, the
+      <span class="bold"><strong>Next</strong></span> button will be enabled and the user may then click it to continue to the next
+      page. Note that any filename can be selected (whether it's a valid command file or not).  Only valid score command
+      options found in that file are used to populate the wizard entries. No error message will be displayed if the file
       does not contain this information.
     </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.gui.new.name"></a>25.2. Navigating the New CDD Creation CDD Name Page</h2></div></div></div><p>
-      This page is used to specify the name of the output CDD file.  <a class="xref" href="chapter.gui.new.html#figure.gui.new.name" title="Figure 25.2. CDD Creation Output Name Page">Figure 25.2, &#8220;CDD Creation Output Name Page&#8221;</a> shows 
+      This page is used to specify the name of the output CDD file.  <a class="xref" href="chapter.gui.new.html#figure.gui.new.name" title="Figure 25.2. CDD Creation Output Name Page">Figure 25.2, &#8220;CDD Creation Output Name Page&#8221;</a> shows
       the display of this page.
     </p><p>
       </p><div class="figure"><a name="figure.gui.new.name"></a><p class="title"><b>Figure 25.2. CDD Creation Output Name Page</b></p><div class="figure-contents"><div class="mediaobject"><img src="img/new_cdd_name.gif" alt="CDD Creation Output Name Page"></div></div></div><p><br class="figure-break">
@@ -53,33 +53,48 @@
       the window for creating a filename. When the <span class="bold"><strong>Save</strong></span> button is clicked, the specified
       filename is placed in the entry field and the <span class="bold"><strong>Next</strong></span> button is enabled.
     </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.gui.new.type"></a>25.3. CDD Creation Type Page</h2></div></div></div><p>
-      This page is used to specify what type of CDD file to create. The three types CDD files that can be created are:
+      This page is used to specify what type of CDD file to create. The four types of CDD files that can be created are:
     </p><p>
       </p><div class="orderedlist"><ol type="1"><li><p>
             An unscored CDD file that was created by parsing the design. This CDD file can later be scored via a VCD or
-            LXT2 dumpfile. 
+            LXT2 dumpfile.
           </p><p>
             This option can be chosen by selecting the <span class="bold"><strong>Parse Design Only</strong></span> radiobutton.
           </p></li><li><p>
-            A scored CDD file created from the design and from a previously created VCD or LXT2 dumpfile. 
+            A scored CDD file created from the design and from a previously created VCD or LXT2 dumpfile.
           </p><p>
-            This option can be chosen by selecting the <span class="bold"><strong>Dumpfile:</strong></span> option. If this option 
-            is chosen, a VCD or LXT2 dumpfile is required to be specified before the next option page can be used. Either 
-            specify this dumpfile name by typing in an existing dumpfile name in the entry field or use the 
+            This option can be chosen by selecting the <span class="bold"><strong>Dumpfile:</strong></span> option. If this option
+            is chosen, a VCD or LXT2 dumpfile is required to be specified before the next option page can be used. Either
+            specify this dumpfile name by typing in an existing dumpfile name in the entry field or use the
             <span class="bold"><strong>Browse...</strong></span> button to select a dumpfile.
           </p></li><li><p>
             An unscored CDD file, a top-level Verilog file containing a PLI call to run Covered in VPI mode, and a PLI
             tab file that can be used by some simulators for compilation purposes. See <a class="xref" href="chapter.start.html#section.start.vpi" title="7.3. What is needed for VPI scoring?">Section 7.3, &#8220;What is needed for VPI scoring?&#8221;</a> for
-            details on how to use these files for simulation/scoring purposes. 
+            details on how to use these files for simulation/scoring purposes.
           </p><p>
-            This option can be chosen by selecting the <span class="bold"><strong>VPI Module:</strong></span> radiobutton. If this 
-            option is chosen, the name specified will be the name of the module created that is used to allow Covered
-            to run in VPI mode within a simulation.
+            This option can be chosen by selecting the <span class="bold"><strong>VPI Module:</strong></span> radiobutton. If this
+            option is chosen, the name specified will be the name of the module file created that is used to allow Covered
+            to run in VPI mode within a simulation.  The basename of the module file will be used for the top-level module.
           </p><p>
             In addition to providing a module name when this option is selected, the simulator type that will be used
             when scoring can be specified as well as the timescale information that can, optionally, be specified at the
             top of the generated module.
+          </p></li><li><p>
+            An unscored CDD file and a top-level Verilog file containing the necessary $dumpfile/$dumpvars calls to score
+            the design.  This module can be compiled as a top-level module along with the design to produce a VCD/LXT2
+            dumpfile to be used for coverage scoring.  See <a class="xref" href="chapter.start.html#section.start.dump.selecting" title="Selecting What to Dump">the section called &#8220;Selecting What to Dump&#8221;</a> for
+            details on how to use these files for simulation/scoring purposes.
+          </p><p>
+            This option can be chosen by selecting the <span class="bold"><strong>Dumpvars Module:</strong></span> radiobutton. If this
+            option is chosen, the name specified will be the name of the module file created (the basename will be the name
+            of the module and the basename of the VCD/LXT2 dumpfile created from the simulation) that will contain the
+            $dumpfile/$dumpvars calls needed to score the design.
           </p></li></ol></div><p>
+    </p><p>
+      The timescale specifiers will be enabled if either the "VPI Module" or "Dumpvars Module" buttons are selected.  Selecting
+      the "Set Top Module Timescale" checkbutton will allow you to specify a timescale that will be added to the top of the
+      VPI or dumpvars module file (setting the timescale in top-level modules is sometimes necessary for compilation purposes).
+      If the checkbutton is not selected, no timescale information will be added to the generated top-level module file.
     </p><p>
       Figure <a class="xref" href="chapter.gui.new.html#figure.gui.new.type" title="Figure 25.3. CDD Creation Type Page">Figure 25.3, &#8220;CDD Creation Type Page&#8221;</a> displays the contents of this page. When all necessary fields have been
       specified, the <span class="bold"><strong>Next</strong></span> button will be enabled and clicking it will lead to the next
@@ -87,7 +102,7 @@
     </p><p>
       </p><div class="figure"><a name="figure.gui.new.type"></a><p class="title"><b>Figure 25.3. CDD Creation Type Page</b></p><div class="figure-contents"><div class="mediaobject"><img src="img/new_cdd_type.gif" alt="CDD Creation Type Page"></div></div></div><p><br class="figure-break">
     </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.gui.new.options1"></a>25.4. CDD Creation Options1 Page</h2></div></div></div><p>
-      This page is used to specify several options to Covered's score command. See figure 
+      This page is used to specify several options to Covered's score command. See figure
       <a class="xref" href="chapter.gui.new.html#figure.gui.new.options1" title="Figure 25.4. CDD Creation Options1 Page">Figure 25.4, &#8220;CDD Creation Options1 Page&#8221;</a> for the layout of this window.
     </p><p>
       </p><div class="figure"><a name="figure.gui.new.options1"></a><p class="title"><b>Figure 25.4. CDD Creation Options1 Page</b></p><div class="figure-contents"><div class="mediaobject"><img src="img/new_cdd_options.gif" alt="CDD Creation Options1 Page"></div></div></div><p><br class="figure-break">
@@ -138,7 +153,7 @@
                     checking results allows more of the design to be considered for coverage.
                   </p></li></ul></div><p>
             </p></li><li><p><span class="bold"><strong>Use embedded race condition pragmas</strong></span></p><p>
-              If this option is selected, a user-specified pragma ("racecheck" by default) is parsed and any potential 
+              If this option is selected, a user-specified pragma ("racecheck" by default) is parsed and any potential
               race conditions found between the off/on pragma pair are ignored by the race condition checker.
             </p><p>
               See <a class="xref" href="chapter.race.html#section.race.avoiding" title="4.3. Avoiding Race Condition Checking">Section 4.3, &#8220;Avoiding Race Condition Checking&#8221;</a> for more details.
@@ -175,10 +190,10 @@
       </p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.gui.new.options2"></a>25.5. CDD Creation Options2 Page</h2></div></div></div><p>
       The second CDD creation options page contains a listbox which will contain the various user-specified options
       that have been inserted via the <span class="bold"><strong>Insert...</strong></span> menubutton. Any options that exist
-      within this listbox can be edited by selecting the option and clicking on the 
-      <span class="bold"><strong>Edit...</strong></span> button or deleted by clicking on the 
+      within this listbox can be edited by selecting the option and clicking on the
+      <span class="bold"><strong>Edit...</strong></span> button or deleted by clicking on the
       <span class="bold"><strong>Delete</strong></span> button. Additionally, options may be reorganized within the listbox by
-      simply clicking on an option and dragging it into the needed position. See figure 
+      simply clicking on an option and dragging it into the needed position. See figure
       <a class="xref" href="chapter.gui.new.html#figure.gui.new.options2" title="Figure 25.5. CDD Creation Options2 Page">Figure 25.5, &#8220;CDD Creation Options2 Page&#8221;</a> for the layout of this option page.
     </p><p>
       </p><div class="figure"><a name="figure.gui.new.options2"></a><p class="title"><b>Figure 25.5. CDD Creation Options2 Page</b></p><div class="figure-contents"><div class="mediaobject"><img src="img/new_cdd_options2.gif" alt="CDD Creation Options2 Page"></div></div></div><p><br class="figure-break">
@@ -190,7 +205,7 @@
       will cause the option to not be added to the listbox. Clicking help (?) will display
       context-sensitive help information to be displayed about the current window.
     </p><p>
-      Figure <a class="xref" href="chapter.gui.new.html#figure.gui.new.options2.insmenu" title="Figure 25.6. CDD Creation Insert Menubutton">Figure 25.6, &#8220;CDD Creation Insert Menubutton&#8221;</a> shows the contents of the 
+      Figure <a class="xref" href="chapter.gui.new.html#figure.gui.new.options2.insmenu" title="Figure 25.6. CDD Creation Insert Menubutton">Figure 25.6, &#8220;CDD Creation Insert Menubutton&#8221;</a> shows the contents of the
       <span class="bold"><strong>Insert...</strong></span> menubutton. The following sections describe each option and its
       corresponding entry window.
     </p><p>
@@ -203,7 +218,7 @@
         directory that will be used as a library directory (i.e., the -y option to most Verilog compilers).
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.gui.new.options2.libext"></a>Library Extension(s)...</h3></div></div></div><p>
         Selecting this insert option will cause a window to be displayed that will allow the user to add library file
-        extensions to the library file parser (i.e., the +libext+ option to most Verilog compilers). 
+        extensions to the library file parser (i.e., the +libext+ option to most Verilog compilers).
         <a class="xref" href="chapter.gui.new.html#figure.gui.new.options2.libext" title="Figure 25.7. CDD Creation Library Extension Window">Figure 25.7, &#8220;CDD Creation Library Extension Window&#8221;</a> is a display of this window.
       </p><p>
         </p><div class="figure"><a name="figure.gui.new.options2.libext"></a><p class="title"><b>Figure 25.7. CDD Creation Library Extension Window</b></p><div class="figure-contents"><div class="mediaobject"><img src="img/new_cdd_lib_ext.gif" alt="CDD Creation Library Extension Window"></div></div></div><p><br class="figure-break">
@@ -260,7 +275,7 @@
       <span class="bold"><strong>Input == Output</strong></span> button which will fill in the input state with the same value as the
       output state value.  If the input state differs from the output state, enter the input state in the lower-right entry
       box.  When all entry fields have been filled in, click on the <span class="bold"><strong>OK</strong></span> button to add
-      the FSM description to the main window listbox.  To abort the addition, click on the 
+      the FSM description to the main window listbox.  To abort the addition, click on the
       <span class="bold"><strong>Cancel</strong></span> button.
       </p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><table border="0" summary="Note"><tr><td rowspan="2" align="center" valign="top" width="25"><img alt="[Note]" src="img/note.gif"></td><th align="left">Note</th></tr><tr><td align="left" valign="top">
       The <span class="bold"><strong>OK</strong></span> button will only be enabled if all entry fields have been filled in.
@@ -306,11 +321,11 @@
       </p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.gui.new.output"></a>25.6. CDD Creation Output Pane</h2></div></div></div><p>
     The final pane in the CDD creation window wizard is the output window. After the <span class="bold"><strong>Generate</strong></span>
     button is pressed, the user-supplied options are gathered and executed within a system shell and the output of that command
-    is sent to this pane's textbox. If the score command run was a success, the 
+    is sent to this pane's textbox. If the score command run was a success, the
     <span class="bold"><strong>Open/Merge the newly created CDD</strong></span> checkbutton will be enabled, allowing the user to
     open or merge the new CDD file into the GUI immediately.  To exit the CDD creation process, click on the
-    <span class="bold"><strong>Finish</strong></span> button.  If the score command failed for any reason, the user may click on the 
-    <span class="bold"><strong>Back</strong></span> button to change the options specified to the score command or simply click the 
+    <span class="bold"><strong>Finish</strong></span> button.  If the score command failed for any reason, the user may click on the
+    <span class="bold"><strong>Back</strong></span> button to change the options specified to the score command or simply click the
     <span class="bold"><strong>Finish</strong></span> button to exit the new CDD creation wizard.
     </p><p>
       </p><div class="figure"><a name="figure.gui.new.output"></a><p class="title"><b>Figure 25.13. CDD Creation Output Window</b></p><div class="figure-contents"><div class="mediaobject"><img src="img/new_cdd_gen.gif" alt="CDD Creation Output Window"></div></div></div><p><br class="figure-break">

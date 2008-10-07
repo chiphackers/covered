@@ -1,4 +1,4 @@
-.TH "Covered" "1" "covered-20081006" "Trevor Williams" "Code Analysis"
+.TH "Covered" "1" "covered-20081007" "Trevor Williams" "Code Analysis"
 .SH "NAME"
 .LP 
 Covered \- Verilog Code Coverage Analyzer
@@ -70,6 +70,9 @@ Causes the command\-line debugger to be used during VCD/LXT2 dumpfile scoring.  
 \fB\-conservative\fR
 If this option is specified, any logic blocks that contain code that could cause coverage discrepancies leading to potentially inaccurate coverage results are removed from coverage consideration.  See User's Guide for more information on what type of code can lead to coverage inaccuracies.
 .TP 
+\fB\-dumpvars\fR [\fIfilename\fR]
+If this option is specified without the \-vcd or \-lxt options, the design is parsed, a CDD file is created and a top\-level Verilog module file named \fIfilename\fR (if this value is specified) or "covered_dump.v" (if \fIfilename\fR is not specified) is created.  This file is used in the compilation of the simulator to create a dumpfile that is optimized for obtaining coverage for the specified CDD file.  If either the \-vcd or \-lxt options are specified, this option has no effect.  See the User's Guide for more information on how to use this option.
+.TP 
 \fB\-D\fR \fIdefine_name\fR
 Defines the specified name to 1.
 .TP 
@@ -136,6 +139,13 @@ Outputs simulation statistics after simulation has completed.  This information 
 \fB\-t\fR \fItop\-level module\fR
 Specifies the module name of the top\-most module that will be measured.  Note that this module does not need to be the top\-most module in the simulator.  This field is required for all calls to the score command.
 .TP 
+\fB\-top_ts\fR \fItimescale\fR
+This option is only valid when the \-vpi or \-dumpvars options have been specified.  This option allows the user to specify a timescale for the generated Verilog module created with the \-vpi/\-dumpvars option.  If this option is not specified, no timescale will be created for the generated module.  The value of \fItimescale\fR is specified as follows:
+.IP 
+\fB(1|10|100)(s|ms|us|ns|ps|fs)/(1|10|100)(s|ms|us|ns|ps|fs)\fR
+.IP 
+If whitespace is needed between the various values, place the entire contents of \fItimescale\fR in double quotes.
+.TP 
 \fB\-ts\fR \fInumber\fR
 When scoring occurs, this option allows the user to see how far the simulator has progressed by outputting the current timestep to standard output. The value of \fInumber\fR specifies how many timesteps are allowed to be simulated before outputting the current timestep (results in less calls to output stream).
 .TP 
@@ -149,14 +159,7 @@ Name of specific Verilog file to score.
 Name of VCD dumpfile to score design with.  If this or the \-lxt option is not used, Covered will only create an initial CDD file from the design and will not attempt to score the design.
 .TP 
 \fB\-vpi\fR [\fIfilename\fR]
-If this option is specified without the \-vcd or \-lxt options, the design is parsed, a CDD file is created and a top\-level Verilog module named \fIfilename\fR (if this value is specified) or "covered_vpi.v" (if \fIfilename\fR is not specified) is created along with a PLI table file called \fIfilename\fR.ta b or "covered_vpi.v.ta b".  Both of these files are used in the compilation of the simulator to use Covered as a VPI module.  If either the \-vcd or \-lxt options are specified, this option has no effect.
-.TP 
-\fB\-vpi_ts\fR \fItimescale\fR
-This option is only valid when the \-vpi option has been specified.  This option allows the user to specify a timescale for the generated Verilog module created with the \-vpi option.  If this option is not specified, no timescale will be created for the generated module.  The value of \fItimescale\fR is specified as follows:
-.IP 
-\fB(1|10|100)(s|ms|us|ns|ps|fs)/(1|10|100)(s|ms|us|ns|ps|fs)\fR
-.IP 
-If whitespace is needed between the various values, place the entire contents of \fItimescale\fR in double quotes.
+If this option is specified without the \-vcd or \-lxt options, the design is parsed, a CDD file is created and a top\-level Verilog module file named \fIfilename\fR (if this value is specified) or "covered_vpi.v" (if \fIfilename\fR is not specified) is created along with a PLI table file called \fIfilename\fR.ta b or "covered_vpi.v.ta b".  Both of these files are used in the compilation of the simulator to use Covered as a VPI module.  If either the \-vcd or \-lxt options are specified, this option has no effect.
 .TP 
 \fB\-Wignore\fR
 Suppress the output of warnings during code parsing and simulation.

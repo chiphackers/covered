@@ -1,9 +1,9 @@
 <chapter id="chapter.gui.new">
   <title>Creating a New CDD</title>
-  
+
   <para>
-    Creating a new CDD file from the GUI can be accomplished by either clicking on the 
-    <emphasis role="bold">Generate New CDD File</emphasis> button in the Wizard window (see 
+    Creating a new CDD file from the GUI can be accomplished by either clicking on the
+    <emphasis role="bold">Generate New CDD File</emphasis> button in the Wizard window (see
     <xref linkend="chapter.gui.wizard"/> for more details on this window), by selecting the
     <code>File -> Generate -> New CDD...</code> menu option, or using the shortcut "Shift-Control-N".  This file creation
     "wizard" allows the user to create a new CDD file that can be opened/merged into the GUI for coverage analysis.  The
@@ -12,21 +12,21 @@
   </para>
   <para>
     The following subsections describe the various windows used to create a CDD.  Note that the CDD creation wizard
-    uses several "pages" to describe the various options to set for creating a new CDD file, using 
+    uses several "pages" to describe the various options to set for creating a new CDD file, using
     <emphasis role="bold">Back</emphasis> and <emphasis role="bold">Next</emphasis> buttons on each page for navigation.
     Clicking on the <emphasis role="bold">Back</emphasis> button will not cause previously filled in pages to be
     reverted to their default values but rather will remain populated with the user's data. Similarly, if a page has been
-    filled in with data and the <emphasis role="bold">Back</emphasis> button is clicked and then the 
+    filled in with data and the <emphasis role="bold">Back</emphasis> button is clicked and then the
     <emphasis role="bold">Next</emphasis> button is clicked, the page contents are
-    retained.  The only way to clear out fields is to click the <emphasis role="bold">Cancel</emphasis> button at the 
+    retained.  The only way to clear out fields is to click the <emphasis role="bold">Cancel</emphasis> button at the
     bottom of each page and startup the CDD creation wizard again.
   </para>
   <para>
-    Clicking the <emphasis role="bold">Cancel</emphasis> button at any time will cause the CDD creation wizard to immediately 
-    exit.  Clicking on the help (?) button at any time will bring up the user documentation for 
+    Clicking the <emphasis role="bold">Cancel</emphasis> button at any time will cause the CDD creation wizard to immediately
+    exit.  Clicking on the help (?) button at any time will bring up the user documentation for
     the current page (context sensitive help).
   </para>
-  
+
   <sect1 id="section.gui.new.select">
     <title>Navigating the New CDD Creation Option Selection Page</title>
     <para>
@@ -46,23 +46,23 @@
       add to the options found in that file.
     </para>
     <para>
-      If the <emphasis role="bold">Create CDD by interactively selecting options</emphasis> entry is currently selected 
-      and the user wishes to not use a command-line file to populate the rest of the CDD creation pages, simply click on 
-      the <emphasis role="bold">Next</emphasis> button at the bottom of the page to continue.  If the 
-      <emphasis role="bold">Create CDD by using option file</emphasis> entry is currently selected, the user must either 
-      type a valid filename or select one by clicking the <emphasis role="bold">Browse...</emphasis> button to the right 
-      of the file entry area and select a valid file. Once a valid filename is selected, the 
-      <emphasis role="bold">Next</emphasis> button will be enabled and the user may then click it to continue to the next 
-      page. Note that any filename can be selected (whether it's a valid command file or not).  Only valid score command 
-      options found in that file are used to populate the wizard entries. No error message will be displayed if the file 
+      If the <emphasis role="bold">Create CDD by interactively selecting options</emphasis> entry is currently selected
+      and the user wishes to not use a command-line file to populate the rest of the CDD creation pages, simply click on
+      the <emphasis role="bold">Next</emphasis> button at the bottom of the page to continue.  If the
+      <emphasis role="bold">Create CDD by using option file</emphasis> entry is currently selected, the user must either
+      type a valid filename or select one by clicking the <emphasis role="bold">Browse...</emphasis> button to the right
+      of the file entry area and select a valid file. Once a valid filename is selected, the
+      <emphasis role="bold">Next</emphasis> button will be enabled and the user may then click it to continue to the next
+      page. Note that any filename can be selected (whether it's a valid command file or not).  Only valid score command
+      options found in that file are used to populate the wizard entries. No error message will be displayed if the file
       does not contain this information.
     </para>
   </sect1>
-  
+
   <sect1 id="section.gui.new.name">
     <title>Navigating the New CDD Creation CDD Name Page</title>
     <para>
-      This page is used to specify the name of the output CDD file.  <xref linkend="figure.gui.new.name"/> shows 
+      This page is used to specify the name of the output CDD file.  <xref linkend="figure.gui.new.name"/> shows
       the display of this page.
     </para>
     <para>
@@ -79,18 +79,18 @@
       filename is placed in the entry field and the <emphasis role="bold">Next</emphasis> button is enabled.
     </para>
   </sect1>
-  
+
   <sect1 id="section.gui.new.type">
     <title>CDD Creation Type Page</title>
     <para>
-      This page is used to specify what type of CDD file to create. The three types CDD files that can be created are:
+      This page is used to specify what type of CDD file to create. The four types of CDD files that can be created are:
     </para>
     <para>
       <orderedlist>
         <listitem>
           <para>
             An unscored CDD file that was created by parsing the design. This CDD file can later be scored via a VCD or
-            LXT2 dumpfile. 
+            LXT2 dumpfile.
           </para>
           <para>
             This option can be chosen by selecting the <emphasis role="bold">Parse Design Only</emphasis> radiobutton.
@@ -98,12 +98,12 @@
         </listitem>
         <listitem>
           <para>
-            A scored CDD file created from the design and from a previously created VCD or LXT2 dumpfile. 
+            A scored CDD file created from the design and from a previously created VCD or LXT2 dumpfile.
           </para>
           <para>
-            This option can be chosen by selecting the <emphasis role="bold">Dumpfile:</emphasis> option. If this option 
-            is chosen, a VCD or LXT2 dumpfile is required to be specified before the next option page can be used. Either 
-            specify this dumpfile name by typing in an existing dumpfile name in the entry field or use the 
+            This option can be chosen by selecting the <emphasis role="bold">Dumpfile:</emphasis> option. If this option
+            is chosen, a VCD or LXT2 dumpfile is required to be specified before the next option page can be used. Either
+            specify this dumpfile name by typing in an existing dumpfile name in the entry field or use the
             <emphasis role="bold">Browse...</emphasis> button to select a dumpfile.
           </para>
         </listitem>
@@ -111,12 +111,12 @@
           <para>
             An unscored CDD file, a top-level Verilog file containing a PLI call to run Covered in VPI mode, and a PLI
             tab file that can be used by some simulators for compilation purposes. See <xref linkend="section.start.vpi"/> for
-            details on how to use these files for simulation/scoring purposes. 
+            details on how to use these files for simulation/scoring purposes.
           </para>
           <para>
-            This option can be chosen by selecting the <emphasis role="bold">VPI Module:</emphasis> radiobutton. If this 
-            option is chosen, the name specified will be the name of the module created that is used to allow Covered
-            to run in VPI mode within a simulation.
+            This option can be chosen by selecting the <emphasis role="bold">VPI Module:</emphasis> radiobutton. If this
+            option is chosen, the name specified will be the name of the module file created that is used to allow Covered
+            to run in VPI mode within a simulation.  The basename of the module file will be used for the top-level module.
           </para>
           <para>
             In addition to providing a module name when this option is selected, the simulator type that will be used
@@ -124,7 +124,27 @@
             top of the generated module.
           </para>
         </listitem>
+        <listitem>
+          <para>
+            An unscored CDD file and a top-level Verilog file containing the necessary $dumpfile/$dumpvars calls to score
+            the design.  This module can be compiled as a top-level module along with the design to produce a VCD/LXT2
+            dumpfile to be used for coverage scoring.  See <xref linkend="section.start.dump.selecting"/> for
+            details on how to use these files for simulation/scoring purposes.
+          </para>
+          <para>
+            This option can be chosen by selecting the <emphasis role="bold">Dumpvars Module:</emphasis> radiobutton. If this
+            option is chosen, the name specified will be the name of the module file created (the basename will be the name
+            of the module and the basename of the VCD/LXT2 dumpfile created from the simulation) that will contain the
+            $dumpfile/$dumpvars calls needed to score the design.
+          </para>
+        </listitem>
       </orderedlist>
+    </para>
+    <para>
+      The timescale specifiers will be enabled if either the "VPI Module" or "Dumpvars Module" buttons are selected.  Selecting
+      the "Set Top Module Timescale" checkbutton will allow you to specify a timescale that will be added to the top of the
+      VPI or dumpvars module file (setting the timescale in top-level modules is sometimes necessary for compilation purposes).
+      If the checkbutton is not selected, no timescale information will be added to the generated top-level module file.
     </para>
     <para>
       Figure <xref linkend="figure.gui.new.type"/> displays the contents of this page. When all necessary fields have been
@@ -138,11 +158,11 @@
       </figure>
     </para>
   </sect1>
-  
+
   <sect1 id="section.gui.new.options1">
     <title>CDD Creation Options1 Page</title>
     <para>
-      This page is used to specify several options to Covered's score command. See figure 
+      This page is used to specify several options to Covered's score command. See figure
       <xref linkend="figure.gui.new.options1"/> for the layout of this window.
     </para>
     <para>
@@ -154,7 +174,7 @@
     <para>
       The following is a description about each of the CDD creation options available on this page.
     </para>
-    
+
     <sect2 id="section.gui.new.options1.general">
       <title>General Options</title>
       <para>
@@ -244,7 +264,7 @@
           <listitem>
             <para><emphasis role="bold">Use embedded race condition pragmas</emphasis></para>
             <para>
-              If this option is selected, a user-specified pragma ("racecheck" by default) is parsed and any potential 
+              If this option is selected, a user-specified pragma ("racecheck" by default) is parsed and any potential
               race conditions found between the off/on pragma pair are ignored by the race condition checker.
             </para>
             <para>
@@ -274,7 +294,7 @@
         </itemizedlist>
       </para>
     </sect2>
-    
+
     <sect2 id="section.gui.new.options1.exclude">
       <title>Exclude Options</title>
       <para>
@@ -320,16 +340,16 @@
       </para>
     </sect2>
   </sect1>
-  
+
   <sect1 id="section.gui.new.options2">
     <title>CDD Creation Options2 Page</title>
     <para>
       The second CDD creation options page contains a listbox which will contain the various user-specified options
       that have been inserted via the <emphasis role="bold">Insert...</emphasis> menubutton. Any options that exist
-      within this listbox can be edited by selecting the option and clicking on the 
-      <emphasis role="bold">Edit...</emphasis> button or deleted by clicking on the 
+      within this listbox can be edited by selecting the option and clicking on the
+      <emphasis role="bold">Edit...</emphasis> button or deleted by clicking on the
       <emphasis role="bold">Delete</emphasis> button. Additionally, options may be reorganized within the listbox by
-      simply clicking on an option and dragging it into the needed position. See figure 
+      simply clicking on an option and dragging it into the needed position. See figure
       <xref linkend="figure.gui.new.options2"/> for the layout of this option page.
     </para>
     <para>
@@ -347,7 +367,7 @@
       context-sensitive help information to be displayed about the current window.
     </para>
     <para>
-      Figure <xref linkend="figure.gui.new.options2.insmenu"/> shows the contents of the 
+      Figure <xref linkend="figure.gui.new.options2.insmenu"/> shows the contents of the
       <emphasis role="bold">Insert...</emphasis> menubutton. The following sections describe each option and its
       corresponding entry window.
     </para>
@@ -357,7 +377,7 @@
         <mediaobject><imageobject><imagedata fileref="img/new_cdd_insert_menu.gif" format="GIF"/></imageobject></mediaobject>
       </figure>
     </para>
-    
+
     <sect2 id="section.gui.new.options2.source">
       <title>Source File...</title>
       <para>
@@ -365,7 +385,7 @@
         that will be parsed as a library file (i.e., the -v option to most Verilog compilers).
       </para>
     </sect2>
-    
+
     <sect2 id="section.gui.new.options2.libdir">
       <title>Library Directory...</title>
       <para>
@@ -373,12 +393,12 @@
         directory that will be used as a library directory (i.e., the -y option to most Verilog compilers).
       </para>
     </sect2>
-    
+
     <sect2 id="section.gui.new.options2.libext">
       <title>Library Extension(s)...</title>
       <para>
         Selecting this insert option will cause a window to be displayed that will allow the user to add library file
-        extensions to the library file parser (i.e., the +libext+ option to most Verilog compilers). 
+        extensions to the library file parser (i.e., the +libext+ option to most Verilog compilers).
         <xref linkend="figure.gui.new.options2.libext"/> is a display of this window.
       </para>
       <para>
@@ -397,7 +417,7 @@
         to ignore the recent updates in this window.
       </para>
     </sect2>
-    
+
     <sect2 id="section.gui.new.options2.incdir">
       <title>Include Directory...</title>
       <para>
@@ -405,7 +425,7 @@
         directory that will be used as an include directory (i.e., the +incdir+ option to most Verilog compilers).
       </para>
     </sect2>
-    
+
     <sect2 id="section.gui.new.options2.define">
       <title>Define...</title>
       <para>
@@ -431,7 +451,7 @@
       entry box.
       </note>
     </sect2>
-    
+
     <sect2 id="section.gui.new.options2.param">
       <title>Parameter Override...</title>
       <para>
@@ -456,7 +476,7 @@
       The <emphasis role="bold">OK</emphasis> button will only be enabled if both values are input in the entry boxes.
       </note>
     </sect2>
-    
+
     <sect2 id="section.gui.new.options2.fsm">
       <title>FSM...</title>
       <para>
@@ -477,14 +497,14 @@
       <emphasis role="bold">Input == Output</emphasis> button which will fill in the input state with the same value as the
       output state value.  If the input state differs from the output state, enter the input state in the lower-right entry
       box.  When all entry fields have been filled in, click on the <emphasis role="bold">OK</emphasis> button to add
-      the FSM description to the main window listbox.  To abort the addition, click on the 
+      the FSM description to the main window listbox.  To abort the addition, click on the
       <emphasis role="bold">Cancel</emphasis> button.
       </para>
       <note>
       The <emphasis role="bold">OK</emphasis> button will only be enabled if all entry fields have been filled in.
       </note>
     </sect2>
-    
+
     <sect2 id="section.gui.new.options2.modgen">
       <title>Module Generation...</title>
       <para>
@@ -509,7 +529,7 @@
       The <emphasis role="bold">OK</emphasis> button will only be enabled if a module name is specified in the left entry box.
       </note>
     </sect2>
-    
+
     <sect2 id="section.gui.new.options2.modexcl">
       <title>Module Exclusion...</title>
       <para>
@@ -532,7 +552,7 @@
       The <emphasis role="bold">OK</emphasis> button will only be enabled if a value is specified in the entry box.
       </note>
     </sect2>
-    
+
     <sect2 id="section.gui.new.options2.cmdfile">
       <title>Command File...</title>
       <para>
@@ -542,7 +562,7 @@
       Click on the <emphasis role="bold">Cancel</emphasis> button to abort this action.
       </para>
     </sect2>
-    
+
     <sect2 id="section.gui.new.options2.notes">
       <title>Other Notes</title>
       <para>
@@ -557,17 +577,17 @@
       </para>
     </sect2>
   </sect1>
-  
+
   <sect1 id="section.gui.new.output">
     <title>CDD Creation Output Pane</title>
     <para>
     The final pane in the CDD creation window wizard is the output window. After the <emphasis role="bold">Generate</emphasis>
     button is pressed, the user-supplied options are gathered and executed within a system shell and the output of that command
-    is sent to this pane's textbox. If the score command run was a success, the 
+    is sent to this pane's textbox. If the score command run was a success, the
     <emphasis role="bold">Open/Merge the newly created CDD</emphasis> checkbutton will be enabled, allowing the user to
     open or merge the new CDD file into the GUI immediately.  To exit the CDD creation process, click on the
-    <emphasis role="bold">Finish</emphasis> button.  If the score command failed for any reason, the user may click on the 
-    <emphasis role="bold">Back</emphasis> button to change the options specified to the score command or simply click the 
+    <emphasis role="bold">Finish</emphasis> button.  If the score command failed for any reason, the user may click on the
+    <emphasis role="bold">Back</emphasis> button to change the options specified to the score command or simply click the
     <emphasis role="bold">Finish</emphasis> button to exit the new CDD creation wizard.
     </para>
     <para>
