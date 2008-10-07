@@ -938,11 +938,11 @@ bool sim_expression(
 
       /* Simulate the left expression if it has changed */
       if( expr->left != NULL ) {
-        left_changed = sim_expression( expr->left, thr, time, lhs );
         expr->suppl.part.left_changed = expr->suppl.part.clear_changed;
+        left_changed = sim_expression( expr->left, thr, time, lhs );
       } else {
-        left_changed                  = TRUE;
         expr->suppl.part.left_changed = 0;
+        left_changed                  = TRUE;
       }
 
     }
@@ -953,11 +953,11 @@ bool sim_expression(
   
       /* Simulate the right expression if it has changed */
       if( expr->right != NULL ) {
-        right_changed = sim_expression( expr->right, thr, time, lhs );
         expr->suppl.part.right_changed = expr->suppl.part.clear_changed;
+        right_changed = sim_expression( expr->right, thr, time, lhs );
       } else {
-        right_changed                  = TRUE;
         expr->suppl.part.right_changed = 0;
+        right_changed                  = TRUE;
       }
 
     }
@@ -1222,6 +1222,11 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
 /*
  $Log$
+ Revision 1.135  2008/10/01 06:07:01  phase1geo
+ Finishing code support needed for the $time operation.  Adding several new
+ diagnostics to regression suite to verify the newly supported system task calls.
+ Added several new system task calls to the list of "supported" task calls.
+
  Revision 1.134  2008/09/30 23:13:32  phase1geo
  Checkpointing (TOT is broke at this point).
 

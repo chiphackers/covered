@@ -57,7 +57,7 @@ IVERILOG_EXEC  = a.out
 IVERILOG_INTER = vvp
 
 VCS       = vcs
-VCS_FLAGS = +libext+.v+.vlib+ -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 +v2k -sverilog -PP +vcs+lic+wait
+VCS_FLAGS = +libext+.v+.vlib+ -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 +v2k -sverilog -ntb_opts dtm -PP +vcs+lic+wait
 ifdef VPI
 VCS_FLAGS += +vpi -load ../../lib/covered.vcs.so:covered_register
 ifeq ($(PROCESSOR),x86_64)

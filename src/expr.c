@@ -2941,20 +2941,29 @@ bool expression_op_func__urandom_range(
   unsigned long min   = 0;
   unsigned long rand;
 
-  if( (plist == NULL) || (plist->op != EXP_OP_PLIST) ) {
+  if( (plist == NULL) || ((plist->op != EXP_OP_PLIST) && (plist->op != EXP_OP_SASSIGN)) ) {
     snprintf( user_msg, USER_MSG_LENGTH, "$urandom_range called without any parameters specified (file: %s, line: %d)", thr->funit->filename, expr->line );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     Throw 0;
   }
 
-  assert( (plist->left != NULL) && (plist->left->op == EXP_OP_SASSIGN) );
+  if( plist->op == EXP_OP_SASSIGN ) {
 
-  /* Get max value */
-  max = (long)vector_to_uint64( plist->left->value );
+    /* This value should be max value */
+    max = (long)vector_to_uint64( plist->value );
 
-  /* Get min value if it has been specified */
-  if( (plist->right != NULL) && (plist->right->op == EXP_OP_SASSIGN) ) {
-    min = (long)vector_to_uint64( plist->right->value );
+  } else {
+
+    assert( (plist->left != NULL) && (plist->left->op == EXP_OP_SASSIGN) );
+
+    /* Get max value */
+    max = (long)vector_to_uint64( plist->left->value );
+
+    /* Get min value if it has been specified */
+    if( (plist->right != NULL) && (plist->right->op == EXP_OP_SASSIGN) ) {
+      min = (long)vector_to_uint64( plist->right->value );
+    }
+
   }
 
   /* Get random number from seed */
@@ -5798,6 +5807,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.353  2008/10/05 00:26:57  phase1geo
+ Adding more diagnostics to verify random system functions.  Fixed some bugs
+ in this code area.
+
  Revision 1.352  2008/10/04 04:28:47  phase1geo
  Adding code to support $urandom, $srandom and $urandom_range.  Added one test
  to begin verifying $urandom functionality.  The rest of the system tasks need
