@@ -17,7 +17,13 @@ Usage:  covered score (-h | -t <top-level_module_name> [-vcd <dumpfile> | -lxt <
                                      is not specified, the module file is called covered_vpi.v
                                      If the -vcd option is specified along with this option, this
                                      option will not be used.
-      -vpi_ts <timescale>          This option is only valid when the -vpi option has been specified.
+      -dumpvars (<name>)           Generates Verilog module called <name> which contains code to
+                                     dump only the signals in the design that are necessary for coverage
+                                     purposes.  If compiled as a top-module along with your design and no
+                                     other $dumpfile/$dumpvars calls are made, this dump module will provide
+                                     additional performance gains.  The name of the dumpfile created is called
+                                     <name>.vcd
+      -top_ts <timescale>          This option is only valid when the -vpi or -dumpvars options have been specified.
                                      This option allows the user to specify a timescale for the generated
                                      Verilog module.  If this option is not specified, no timescale will
                                      be created for the generated module.  The value of <timescale> is

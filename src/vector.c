@@ -157,14 +157,11 @@ vector* vector_create(
 }
 
 /*!
- \param from_vec  Vector to copy.
- \param to_vec    Newly created vector copy.
- 
  Copies the contents of the from_vec to the to_vec.
 */
 void vector_copy(
-  const vector* from_vec,
-  vector*       to_vec
+  const vector* from_vec,  /*!< Vector to copy */
+  vector*       to_vec     /*!< Newly created vector copy */
 ) { PROFILE(VECTOR_COPY);
 
   unsigned int i, j;  /* Loop iterators */
@@ -233,14 +230,11 @@ void vector_copy_range(
 }
 
 /*!
- \param from_vec  Vector to copy.
- \param to_vec    Newly created vector copy. 
- 
  Copies the contents of the from_vec to the to_vec, allocating new memory.
 */
 void vector_clone(
-            const vector* from_vec,
-  /*@out@*/ vector**      to_vec
+            const vector* from_vec,  /*!< Vector to copy */
+  /*@out@*/ vector**      to_vec     /*!< Newly created vector copy */
 ) { PROFILE(VECTOR_CLONE);
 
   if( from_vec == NULL ) {
@@ -262,18 +256,13 @@ void vector_clone(
 }
 
 /*!
- \param vec         Pointer to vector to display to database file.
- \param file        Pointer to coverage database file to display to.
- \param write_data  If set to TRUE, causes 4-state data bytes to be included.
- \param net         If set to TRUE, causes default value to be written as Z instead of X.
-
  Writes the specified vector to the specified coverage database file.
 */
 void vector_db_write(
-  vector* vec,
-  FILE*   file,
-  bool    write_data,
-  bool    net
+  vector* vec,         /*!< Pointer to vector to display to database file */
+  FILE*   file,        /*!< Pointer to coverage database file to display to */
+  bool    write_data,  /*!< If set to TRUE, causes 4-state data bytes to be included */
+  bool    net          /*!< If set to TRUE, causes default value to be written as Z instead of X */
 ) { PROFILE(VECTOR_DB_WRITE);
 
   uint8 mask;   /* Mask value for vector values */
@@ -342,17 +331,14 @@ void vector_db_write(
 }
 
 /*!
- \param vec    Pointer to vector to create.
- \param line   Pointer to line to parse for vector information.
-
  \throws anonymous Throw Throw
 
  Creates a new vector structure, parses current file line for vector information
  and returns new vector structure to calling function.
 */
 void vector_db_read(
-  vector** vec,
-  char**   line
+  vector** vec,  /*!< Pointer to vector to create */
+  char**   line  /*!< Pointer to line to parse for vector information */
 ) { PROFILE(VECTOR_DB_READ);
 
   unsigned int width;       /* Vector bit width */
@@ -715,12 +701,10 @@ int vector_get_eval_d(
 }
 
 /*!
- \param vec  Pointer to vector to count eval_a/b bits in
-
  \return Returns the number of eval_a/b bits are set in the given vector.
 */
 int vector_get_eval_ab_count(
-  vector* vec
+  vector* vec  /*!< Pointer to vector to count eval_a/b bits in */
 ) { PROFILE(VECTOR_GET_EVAL_AB_COUNT);
 
   int          count = 0;  /* Number of EVAL_A/B bits set */
@@ -747,12 +731,10 @@ int vector_get_eval_ab_count(
 }
 
 /*!
- \param vec  Pointer to vector to count eval_a/b/c bits in
-
  \return Returns the number of eval_a/b/c bits are set in the given vector.
 */
 int vector_get_eval_abc_count(
-  vector* vec
+  vector* vec  /*!< Pointer to vector to count eval_a/b/c bits in */
 ) { PROFILE(VECTOR_GET_EVAL_ABC_COUNT);
 
   int          count = 0;  /* Number of EVAL_A/B/C bits set */
@@ -781,12 +763,10 @@ int vector_get_eval_abc_count(
 }
 
 /*!
- \param vec  Pointer to vector to count eval_a/b/c/d bits in
-
  \return Returns the number of eval_a/b/c/d bits are set in the given vector.
 */
 int vector_get_eval_abcd_count(
-  vector* vec
+  vector* vec  /*!< Pointer to vector to count eval_a/b/c/d bits in */
 ) { PROFILE(VECTOR_GET_EVAL_ABCD_COUNT);
 
   int          count = 0;  /* Number of EVAL_A/B/C/D bits set */
@@ -1105,12 +1085,10 @@ void vector_display_ulong(
 }
 
 /*!
- \param vec  Pointer to vector to output to standard output.
-
  Outputs contents of vector to standard output (for debugging purposes only).
 */
 void vector_display(
-  const vector* vec
+  const vector* vec  /*!< Pointer to vector to output to standard output */
 ) {
 
   assert( vec != NULL );
@@ -1767,13 +1745,11 @@ bool vector_part_select_push(
 }
 
 /*!
- \param vec  Pointer to vector to set eval_a/b bits for unary operation
-
  Called by expression_op_func__* functions for operations that are unary
  in nature.
 */
 void vector_set_unary_evals(
-  vector* vec
+  vector* vec  /*!< Pointer to vector to set eval_a/b bits for unary operation */
 ) { PROFILE(VECTOR_SET_UNARY_EVALS);
 
   switch( vec->suppl.part.data_type ) {
@@ -1798,18 +1774,14 @@ void vector_set_unary_evals(
 }
 
 /*!
- \param tgt    Pointer to target vector to set eval_a/b/c supplemental bits
- \param left   Pointer to target vector on the left
- \param right  Pointer to target vector on the right
-
  Sets the eval_a/b/c supplemental bits as necessary.  This function should be called
  by expression_op_func__* functions that are AND-type combinational operations only and own their
  own vectors.
 */    
 void vector_set_and_comb_evals(
-  vector* tgt,
-  vector* left,
-  vector* right
+  vector* tgt,   /*!< Pointer to target vector to set eval_a/b/c supplemental bits */
+  vector* left,  /*!< Pointer to target vector on the left */
+  vector* right  /*!< Pointer to target vector on the right */
 ) { PROFILE(VECTOR_SET_AND_COMB_EVALS);
 
   switch( tgt->suppl.part.data_type ) {
@@ -1843,18 +1815,14 @@ void vector_set_and_comb_evals(
 }
 
 /*!
- \param tgt    Pointer to target vector to set eval_a/b/c supplemental bits
- \param left   Pointer to vector on left of expression
- \param right  Pointer to vector on right of expression
-
  Sets the eval_a/b/c supplemental bits as necessary.  This function should be called
  by expression_op_func__* functions that are OR-type combinational operations only and own their
  own vectors.
 */
 void vector_set_or_comb_evals(
-  vector* tgt,
-  vector* left,
-  vector* right
+  vector* tgt,   /*!< Pointer to target vector to set eval_a/b/c supplemental bits */
+  vector* left,  /*!< Pointer to vector on left of expression */
+  vector* right  /*!< Pointer to vector on right of expression */
 ) { PROFILE(VECTOR_SET_OR_COMB_EVALS);
 
   switch( tgt->suppl.part.data_type ) {
@@ -1888,18 +1856,14 @@ void vector_set_or_comb_evals(
 }
 
 /*! 
- \param tgt    Pointer to target vector to set eval_a/b/c/d supplemental bits
- \param left   Pointer to vector on left of expression
- \param right  Pointer to vector on right of expression
-
  Sets the eval_a/b/c/d supplemental bits as necessary.  This function should be called
  by expression_op_func__* functions that are OTHER-type combinational operations only and own their
  own vectors. 
 */
 void vector_set_other_comb_evals(
-  vector* tgt,
-  vector* left,
-  vector* right
+  vector* tgt,   /*!< Pointer to target vector to set eval_a/b/c/d supplemental bits */
+  vector* left,  /*!< Pointer to vector on left of expression */
+  vector* right  /*!< Pointer to vector on right of expression */
 ) { PROFILE(VECTOR_SET_OTHER_COMB_EVALS);
 
   switch( tgt->suppl.part.data_type ) {
@@ -1935,12 +1899,10 @@ void vector_set_other_comb_evals(
 } 
 
 /*!
- \param vec  Pointer to vector check for unknown-ness
-
  \return Returns TRUE if the given vector contains unknown (X or Z) bits; otherwise, returns FALSE.
 */
 bool vector_is_unknown(
-  const vector* vec
+  const vector* vec  /*!< Pointer to vector check for unknown-ness */
 ) { PROFILE(VECTOR_IS_UKNOWN);
 
   unsigned int i = 0;  /* Loop iterator */
@@ -1964,12 +1926,10 @@ bool vector_is_unknown(
 }
 
 /*!
- \param vec  Pointer to vector to check for non-zero-ness
-
  \return Returns TRUE if the given vector contains at least one non-zero bit; otherwise, returns FALSE.
 */
 bool vector_is_not_zero(
-  const vector* vec
+  const vector* vec  /*!< Pointer to vector to check for non-zero-ness */
 ) { PROFILE(VECTOR_IS_NOT_ZERO);
 
   unsigned int i = 0;  /* Loop iterator */
@@ -1993,14 +1953,12 @@ bool vector_is_not_zero(
 }
 
 /*!
- \param vec  Pointer to vector to set to a value of X
-
  \return Returns TRUE if the given vector changed value; otherwise, returns FALSE.
 
  Sets the entire specified vector to a value of X.
 */
 bool vector_set_to_x(
-  vector* vec
+  vector* vec  /*!< Pointer to vector to set to a value of X */
 ) { PROFILE(VECTOR_SET_TO_X);
 
   bool retval;  /* Return value for this function */
@@ -2031,8 +1989,6 @@ bool vector_set_to_x(
 }
 
 /*!
- \param vec  Pointer to vector to convert into integer.
-
  \return Returns integer value of specified vector.
 
  Converts a vector structure into an integer value.  If the number of bits for the
@@ -2040,11 +1996,13 @@ bool vector_set_to_x(
  unused.
 */
 int vector_to_int(
-  const vector* vec
+  const vector* vec  /*!< Pointer to vector to convert into integer */
 ) { PROFILE(VECTOR_TO_INT);
 
   int          retval;  /* Integer value returned to calling function */
   unsigned int width = (vec->width > (sizeof( int ) * 8)) ? (sizeof( int ) * 8) : vec->width;
+
+  assert( width > 0 );
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL :  retval = vec->value.ul[0][VTYPE_INDEX_VAL_VALL];  break;
@@ -2053,7 +2011,9 @@ int vector_to_int(
 
   /* If the vector is signed, sign-extend the integer */
   if( (vec->suppl.part.is_signed == 1) && (width < (sizeof( int ) * 8)) ) {
+    /*@-shiftimplementation@*/
     retval |= ((UL_SET * ((retval >> (width - 1)) & 0x1)) << width);
+    /*@=shiftimplementation@*/
   }
 
   PROFILE_END;
@@ -2063,8 +2023,6 @@ int vector_to_int(
 }
 
 /*!
- \param vec  Pointer to vector to convert into integer.
-
  \return Returns integer value of specified vector.
 
  Converts a vector structure into an integer value.  If the number of bits for the
@@ -2072,7 +2030,7 @@ int vector_to_int(
  unused.
 */
 uint64 vector_to_uint64(
-  const vector* vec
+  const vector* vec  /*!< Pointer to vector to convert into integer */
 ) { PROFILE(VECTOR_TO_UINT64);
 
   uint64 retval = 0;   /* 64-bit integer value returned to calling function */
@@ -2101,16 +2059,13 @@ uint64 vector_to_uint64(
 }
 
 /*!
- \param vec   Pointer to vector to convert into integer.
- \param time  Pointer to sim_time structure to populate.
-
  Converts a vector structure into a sim_time structure.  If the number of bits for the
  vector exceeds the number of bits in an 64-bit integer, the upper bits of the vector are
  unused.
 */
 void vector_to_sim_time(
-  const vector* vec,
-  sim_time*     time
+  const vector* vec,  /*!< Pointer to vector to convert into integer */
+  sim_time*     time  /*!< Pointer to sim_time structure to populate */
 ) { PROFILE(VECTOR_TO_SIM_TIME);
 
   switch( vec->suppl.part.data_type ) {
@@ -2718,10 +2673,6 @@ bool vector_bitwise_and_op(
 }
 
 /*!
- \param tgt    Target vector for operation results to be stored.
- \param src1   Source vector 1 to perform operation on.
- \param src2   Source vector 2 to perform operation on.
-
  \return Returns TRUE if assigned value differs from original vector value; otherwise,
          returns FALSE.
 
@@ -2729,9 +2680,9 @@ bool vector_bitwise_and_op(
  placing zeroes.
 */
 bool vector_bitwise_nand_op(           
-  vector* tgt,                        
-  vector* src1,                       
-  vector* src2                        
+  vector* tgt,   /*!< Target vector for operation results to be stored */
+  vector* src1,  /*!< Source vector 1 to perform operation on */
+  vector* src2   /*!< Source vector 2 to perform operation on */
 ) { PROFILE(VECTOR_BITWISE_NAND_OP);   
                                       
   bool retval;  /* Return value for this function */
@@ -2767,10 +2718,6 @@ bool vector_bitwise_nand_op(
 }
 
 /*!
- \param tgt    Target vector for operation results to be stored.
- \param src1   Source vector 1 to perform operation on.
- \param src2   Source vector 2 to perform operation on.
-
  \return Returns TRUE if assigned value differs from original vector value; otherwise,
          returns FALSE.
 
@@ -2778,9 +2725,9 @@ bool vector_bitwise_nand_op(
  placing zeroes.
 */
 bool vector_bitwise_or_op(
-  vector* tgt,
-  vector* src1,
-  vector* src2
+  vector* tgt,   /*!< Target vector for operation results to be stored */
+  vector* src1,  /*!< Source vector 1 to perform operation on */
+  vector* src2   /*!< Source vector 2 to perform operation on */
 ) { PROFILE(VECTOR_BITWISE_OR_OP);
 
   bool retval;  /* Return value for this function */
@@ -2861,10 +2808,6 @@ bool vector_bitwise_nor_op(
 }
 
 /*!
- \param tgt    Target vector for operation results to be stored.
- \param src1   Source vector 1 to perform operation on.
- \param src2   Source vector 2 to perform operation on.
-
  \return Returns TRUE if assigned value differs from original vector value; otherwise,
          returns FALSE.
 
@@ -2872,9 +2815,9 @@ bool vector_bitwise_nor_op(
  placing zeroes.
 */
 bool vector_bitwise_xor_op(
-  vector* tgt,
-  vector* src1,
-  vector* src2
+  vector* tgt,   /*!< Target vector for operation results to be stored */
+  vector* src1,  /*!< Source vector 1 to perform operation on */
+  vector* src2   /*!< Source vector 2 to perform operation on */
 ) { PROFILE(VECTOR_BITWISE_XOR_OP);
 
   bool retval;  /* Return value for this function */
@@ -2910,10 +2853,6 @@ bool vector_bitwise_xor_op(
 }
 
 /*!
- \param tgt    Target vector for operation results to be stored.
- \param src1   Source vector 1 to perform operation on.
- \param src2   Source vector 2 to perform operation on.
-
  \return Returns TRUE if assigned value differs from original vector value; otherwise,
          returns FALSE.
 
@@ -2921,9 +2860,9 @@ bool vector_bitwise_xor_op(
  placing zeroes.
 */
 bool vector_bitwise_nxor_op(
-  vector* tgt,
-  vector* src1,
-  vector* src2
+  vector* tgt,   /*!< Target vector for operation results to be stored */
+  vector* src1,  /*!< Source vector 1 to perform operation on */
+  vector* src2   /*!< Source vector 2 to perform operation on */
 ) { PROFILE(VECTOR_BITWISE_NXOR_OP);
   
   bool retval;  /* Return value for this function */
@@ -2973,6 +2912,7 @@ inline static bool vector_reverse_for_cmp_ulong(
 }
 
 /*!
+ Copies the specified indexed ulong from the given vector and sign extends the value as necessary.
 */
 inline static void vector_copy_val_and_sign_extend_ulong(
             const vector* vec,         /*!< Pointer to vector to copy and sign extend */
@@ -3008,18 +2948,14 @@ inline static void vector_copy_val_and_sign_extend_ulong(
 }
 
 /*!
- \param tgt    Target vector for storage of results.
- \param left   Expression on left of less than sign.
- \param right  Expression on right of less than sign.
-
  \return Returns TRUE if the assigned value differs from the original value; otherwise, returns FALSE.
 
  Performs a less-than comparison of the left and right expressions.
 */
 bool vector_op_lt(
-  vector*       tgt,
-  const vector* left,
-  const vector* right
+  vector*       tgt,   /*!< Target vector for storage of results */
+  const vector* left,  /*!< Expression on left of less than sign */
+  const vector* right  /*!< Expression on right of less than sign */
 ) { PROFILE(VECTOR_OP_LT);
 
   bool retval;  /* Return value for this function */
@@ -3067,18 +3003,14 @@ bool vector_op_lt(
 }
 
 /*!
- \param tgt    Target vector for storage of results.
- \param left   Expression on left of less than sign.
- \param right  Expression on right of less than sign.
-
  \return Returns TRUE if the assigned value differs from the original value; otherwise, returns FALSE.
 
  Performs a less-than-or-equal comparison of the left and right expressions.
 */
 bool vector_op_le(
-  vector*       tgt,
-  const vector* left,
-  const vector* right
+  vector*       tgt,   /*!< Target vector for storage of results */
+  const vector* left,  /*!< Expression on left of less than sign */
+  const vector* right  /*!< Expression on right of less than sign */
 ) { PROFILE(VECTOR_OP_LE);
 
   bool retval;  /* Return value for this function */
@@ -3126,18 +3058,14 @@ bool vector_op_le(
 }
 
 /*!
- \param tgt    Target vector for storage of results.
- \param left   Expression on left of greater-than sign.
- \param right  Expression on right of greater-than sign.
-
  \return Returns TRUE if the assigned value differs from the original value; otherwise, returns FALSE.
 
  Performs a greater-than comparison of the left and right expressions.
 */
 bool vector_op_gt(
-  vector*       tgt,
-  const vector* left,
-  const vector* right
+  vector*       tgt,   /*!< Target vector for storage of results */
+  const vector* left,  /*!< Expression on left of greater-than sign */
+  const vector* right  /*!< Expression on right of greater-than sign */
 ) { PROFILE(VECTOR_OP_GT);
 
   bool retval;  /* Return value for this function */
@@ -3185,18 +3113,14 @@ bool vector_op_gt(
 }
 
 /*!
- \param tgt    Target vector for storage of results.
- \param left   Expression on left of greater-than-or-equal sign.
- \param right  Expression on right of greater-than-or-equal sign.
-
  \return Returns TRUE if the assigned value differs from the original value; otherwise, returns FALSE.
 
  Performs a greater-than-or-equal comparison of the left and right expressions.
 */
 bool vector_op_ge(
-  vector*       tgt,
-  const vector* left,
-  const vector* right
+  vector*       tgt,   /*!< Target vector for storage of results */
+  const vector* left,  /*!< Expression on left of greater-than-or-equal sign */
+  const vector* right  /*!< Expression on right of greater-than-or-equal sign */
 ) { PROFILE(VECTOR_OP_GE);
 
   bool retval;  /* Return value for this function */
@@ -3244,18 +3168,14 @@ bool vector_op_ge(
 }
 
 /*!
- \param tgt    Target vector for storage of results.
- \param left   Expression on left of greater-than-or-equal sign.
- \param right  Expression on right of greater-than-or-equal sign.
-
  \return Returns TRUE if the assigned value differs from the original value; otherwise, returns FALSE.
 
  Performs an equal comparison of the left and right expressions.
 */
 bool vector_op_eq(
-  vector*       tgt,
-  const vector* left,
-  const vector* right
+  vector*       tgt,   /*!< Target vector for storage of results */
+  const vector* left,  /*!< Expression on left of greater-than-or-equal sign */
+  const vector* right  /*!< Expression on right of greater-than-or-equal sign */
 ) { PROFILE(VECTOR_OP_EQ);
 
   bool retval;  /* Return value for this function */
@@ -3336,18 +3256,14 @@ bool vector_ceq_ulong(
 }
 
 /*!
- \param tgt    Target vector for storage of results.
- \param left   Expression on left of greater-than-or-equal sign.
- \param right  Expression on right of greater-than-or-equal sign.
-
  \return Returns TRUE if the assigned value differs from the original value; otherwise, returns FALSE.
 
  Performs a case equal comparison of the left and right expressions.
 */
 bool vector_op_ceq(
-  vector*       tgt,
-  const vector* left,
-  const vector* right
+  vector*       tgt,   /*!< Target vector for storage of results */
+  const vector* left,  /*!< Expression on left of greater-than-or-equal sign */
+  const vector* right  /*!< Expression on right of greater-than-or-equal sign */
 ) { PROFILE(VECTOR_OP_CEQ);
 
   bool retval;  /* Return value for this function */
@@ -3370,18 +3286,14 @@ bool vector_op_ceq(
 }
 
 /*!
- \param tgt    Target vector for storage of results.
- \param left   Expression on left of greater-than-or-equal sign.
- \param right  Expression on right of greater-than-or-equal sign.
-
  \return Returns TRUE if the assigned value differs from the original value; otherwise, returns FALSE.
 
  Performs a casex equal comparison of the left and right expressions.
 */
 bool vector_op_cxeq(
-  vector*       tgt,
-  const vector* left,
-  const vector* right
+  vector*       tgt,   /*!< Target vector for storage of results */
+  const vector* left,  /*!< Expression on left of greater-than-or-equal sign */
+  const vector* right  /*!< Expression on right of greater-than-or-equal sign */
 ) { PROFILE(VECTOR_OP_CXEQ);
 
   bool retval;  /* Return value for this function */
@@ -3422,18 +3334,14 @@ bool vector_op_cxeq(
 }
 
 /*!
- \param tgt    Target vector for storage of results.
- \param left   Expression on left of greater-than-or-equal sign.
- \param right  Expression on right of greater-than-or-equal sign.
-
  \return Returns TRUE if the assigned value differs from the original value; otherwise, returns FALSE.
 
  Performs a casez equal comparison of the left and right expressions.
 */
 bool vector_op_czeq(
-  vector*       tgt,
-  const vector* left,
-  const vector* right
+  vector*       tgt,   /*!< Target vector for storage of results */
+  const vector* left,  /*!< Expression on left of greater-than-or-equal sign */
+  const vector* right  /*!< Expression on right of greater-than-or-equal sign */
 ) { PROFILE(VECTOR_OP_CZEQ);
 
   bool retval;  /* Return value for this function */
@@ -3477,18 +3385,14 @@ bool vector_op_czeq(
 }
 
 /*!
- \param tgt    Target vector for storage of results.
- \param left   Expression on left of greater-than-or-equal sign.
- \param right  Expression on right of greater-than-or-equal sign.
-
  \return Returns TRUE if the assigned value differs from the original value; otherwise, returns FALSE.
 
  Performs a not-equal comparison of the left and right expressions.
 */
 bool vector_op_ne(
-  vector*       tgt,
-  const vector* left,
-  const vector* right
+  vector*       tgt,   /*!< Target vector for storage of results */
+  const vector* left,  /*!< Expression on left of greater-than-or-equal sign */
+  const vector* right  /*!< Expression on right of greater-than-or-equal sign */
 ) { PROFILE(VECTOR_OP_NE);
 
   bool retval;  /* Return value for this function */
@@ -3536,18 +3440,14 @@ bool vector_op_ne(
 }
 
 /*!
- \param tgt    Target vector for storage of results.
- \param left   Expression on left of greater-than-or-equal sign.
- \param right  Expression on right of greater-than-or-equal sign.
- 
  \return Returns TRUE if the assigned value differs from the original value; otherwise, returns FALSE.
  
  Performs an case not-equal comparison of the left and right expressions.
 */
 bool vector_op_cne(
-  vector*       tgt,
-  const vector* left,
-  const vector* right
+  vector*       tgt,   /*!< Target vector for storage of results */
+  const vector* left,  /*!< Expression on left of greater-than-or-equal sign */
+  const vector* right  /*!< Expression on right of greater-than-or-equal sign */
 ) { PROFILE(VECTOR_OP_CNE);
 
   bool retval;  /* Return value for this function */
@@ -3634,19 +3534,15 @@ bool vector_op_land(
 }
 
 /*!
- \param tgt    Target vector for storage of results.
- \param left   Expression value being shifted left.
- \param right  Expression containing number of bit positions to shift.
-
  \return Returns TRUE if assigned value differs from original value; otherwise, returns FALSE.
 
  Converts right expression into an integer value and left shifts the left
  expression the specified number of bit locations, zero-filling the LSB.
 */
 bool vector_op_lshift(
-  vector*       tgt,
-  const vector* left,
-  const vector* right
+  vector*       tgt,   /*!< Target vector for storage of results */
+  const vector* left,  /*!< Expression value being shifted left */
+  const vector* right  /*!< Expression containing number of bit positions to shift */
 ) { PROFILE(VECTOR_OP_LSHIFT);
 
   bool retval;  /* Return value for this function */
@@ -3680,19 +3576,15 @@ bool vector_op_lshift(
 }
  
 /*!
- \param tgt    Target vector for storage of results.
- \param left   Expression value being shifted left.
- \param right  Expression containing number of bit positions to shift.
-
  \return Returns TRUE if assigned value differs from original value; otherwise, returns FALSE.
 
  Converts right expression into an integer value and right shifts the left
  expression the specified number of bit locations, zero-filling the MSB.
 */
 bool vector_op_rshift(
-  vector*       tgt,
-  const vector* left,
-  const vector* right
+  vector*       tgt,   /*!< Target vector for storage of results */
+  const vector* left,  /*!< Expression value being shifted left */
+  const vector* right  /*!< Expression containing number of bit positions to shift */
 ) { PROFILE(VECTOR_OP_RSHIFT);
 
   bool retval;  /* Return value for this function */
@@ -3726,19 +3618,15 @@ bool vector_op_rshift(
 }
 
 /*!
- \param tgt    Target vector for storage of results.
- \param left   Expression value being shifted left.
- \param right  Expression containing number of bit positions to shift.
-
  \return Returns TRUE if assigned value differs from original value; otherwise, returns FALSE.
 
  Converts right expression into an integer value and right shifts the left
  expression the specified number of bit locations, sign extending the MSB.
 */
 bool vector_op_arshift(
-  vector*       tgt,
-  const vector* left,
-  const vector* right
+  vector*       tgt,   /*!< Target vector for storage of results */
+  const vector* left,  /*!< Expression value being shifted left */
+  const vector* right  /*!< Expression containing number of bit positions to shift */
 ) { PROFILE(VECTOR_OP_ARSHIFT);
 
   bool retval;  /* Return value for this function */
@@ -3778,19 +3666,15 @@ bool vector_op_arshift(
 }
 
 /*!
- \param tgt    Target vector for storage of results.
- \param left   Expression value on left side of + sign.
- \param right  Expression value on right side of + sign.
-
  \return Returns TRUE if assigned value differs from original value; otherwise, returns FALSE.
 
  Performs 4-state bitwise addition on left and right expression values.
  Carry bit is discarded (value is wrapped around).
 */
 bool vector_op_add(
-  vector*       tgt,
-  const vector* left,
-  const vector* right
+  vector*       tgt,   /*!< Target vector for storage of results */
+  const vector* left,  /*!< Expression value on left side of + sign */
+  const vector* right  /*!< Expression value on right side of + sign */
 ) { PROFILE(VECTOR_OP_ADD);
 
   bool retval;  /* Return value for this function */
@@ -3904,10 +3788,6 @@ bool vector_op_negate(
 }
 
 /*!
- \param tgt    Target vector for storage of results.
- \param left   Expression value on left side of - sign.
- \param right  Expression value on right side of - sign.
-
  \return Returns TRUE if assigned value differs from original value; otherwise, returns FALSE.
 
  Performs 4-state bitwise subtraction by performing bitwise inversion
@@ -3915,9 +3795,9 @@ bool vector_op_negate(
  result to the left expression value.
 */
 bool vector_op_subtract(
-  vector*       tgt,
-  const vector* left,
-  const vector* right
+  vector*       tgt,   /*!< Target vector for storage of results */
+  const vector* left,  /*!< Expression value on left side of - sign */
+  const vector* right  /*!< Expression value on right side of - sign */
 ) { PROFILE(VECTOR_OP_SUBTRACT);
 
   bool retval;  /* Return value for this function */
@@ -3964,10 +3844,6 @@ bool vector_op_subtract(
 }
 
 /*!
- \param tgt    Target vector for storage of results.
- \param left   Expression value on left side of * sign.
- \param right  Expression value on right side of * sign.
-
  \return Returns TRUE if assigned value differs from original value; otherwise, returns FALSE.
 
  Performs 4-state conversion multiplication.  If both values
@@ -3977,9 +3853,9 @@ bool vector_op_subtract(
  the value is that of the other vector.
 */
 bool vector_op_multiply(
-  vector*       tgt,
-  const vector* left,
-  const vector* right
+  vector*       tgt,   /*!< Target vector for storage of results */
+  const vector* left,  /*!< Expression value on left side of * sign */
+  const vector* right  /*!< Expression value on right side of * sign */
 ) { PROFILE(VECTOR_OP_MULTIPLY);
 
   bool retval;  /* Return value for this function */
@@ -4010,18 +3886,14 @@ bool vector_op_multiply(
 }
 
 /*!
- \param tgt    Pointer to vector that will store divide result
- \param left   Pointer to left vector
- \param right  Pointer to right vector
-
  \return Returns TRUE if value changes; otherwise, returns FALSE.
 
  Performs vector divide operation.
 */
 bool vector_op_divide(
-  vector*       tgt,
-  const vector* left,
-  const vector* right
+  vector*       tgt,   /*!< Pointer to vector that will store divide result */
+  const vector* left,  /*!< Pointer to left vector */
+  const vector* right  /*!< Pointer to right vector */
 ) { PROFILE(VECTOR_OP_DIVIDE);
 
   bool retval;  /* Return value for this function */
@@ -4102,16 +3974,13 @@ bool vector_op_modulus(
 }
 
 /*!
- \param tgt  Target vector to assign data to
- \param tvb  Pointer to vector block for temporary vectors
-
  \return Returns TRUE (increments will always cause a value change)
 
  Performs an increment operation on the specified vector.
 */
 bool vector_op_inc(
-  vector* tgt,
-  vecblk* tvb
+  vector* tgt,  /*!< Target vector to assign data to */
+  vecblk* tvb   /*!< Pointer to vector block for temporary vectors */
 ) { PROFILE(VECTOR_OP_INC);
 
   vector* tmp1 = &(tvb->vec[tvb->index++]);  /* Pointer to temporary vector containing the same contents as the target */
@@ -4136,16 +4005,13 @@ bool vector_op_inc(
 }
 
 /*!
- \param tgt  Target vector to assign data to
- \param tvb  Pointer to vector block for temporary vectors   
-
  \return Returns TRUE (decrements will always cause a value change)
 
  Performs an decrement operation on the specified vector.
 */
 bool vector_op_dec(
-  vector* tgt,
-  vecblk* tvb
+  vector* tgt,  /*!< Target vector to assign data to */
+  vecblk* tvb   /*!< Pointer to vector block for temporary vectors */
 ) { PROFILE(VECTOR_OP_DEC);
 
   vector* tmp1 = &(tvb->vec[tvb->index++]);  /* Pointer to temporary vector containing the same contents as the target */
@@ -4170,16 +4036,13 @@ bool vector_op_dec(
 }
 
 /*!
- \param tgt  Target vector for operation results to be stored.
- \param src  Source vector to perform operation on.
-
  \return Returns TRUE if assigned value differs from orignal; otherwise, returns FALSE.
 
  Performs a bitwise inversion on the specified vector.
 */
 bool vector_unary_inv(
-  vector*       tgt,
-  const vector* src
+  vector*       tgt,  /*!< Target vector for operation results to be stored */
+  const vector* src   /*!< Source vector to perform operation on */
 ) { PROFILE(VECTOR_UNARY_INV);
 
   bool retval;  /* Return value for this function */
@@ -4216,16 +4079,13 @@ bool vector_unary_inv(
 }
 
 /*!
- \param tgt  Target vector for operation result storage.
- \param src  Source vector to be operated on.
-
  \return Returns TRUE if assigned value differs from original; otherwise, returns FALSE.
 
  Performs unary AND operation on specified vector value.
 */
 bool vector_unary_and(
-  vector*       tgt,
-  const vector* src
+  vector*       tgt,  /*!< Target vector for operation result storage */
+  const vector* src   /*!< Source vector to be operated on */
 ) { PROFILE(VECTOR_UNARY_AND);
 
   bool retval;  /* Return value for this function */
@@ -4257,16 +4117,13 @@ bool vector_unary_and(
 }
 
 /*!
- \param tgt  Target vector for operation result storage.
- \param src  Source vector to be operated on.
-
  \return Returns TRUE if assigned value differs from original; otherwise, returns FALSE.
 
  Performs unary NAND operation on specified vector value.
 */
 bool vector_unary_nand(
-  vector*       tgt,
-  const vector* src
+  vector*       tgt,  /*!< Target vector for operation result storage */
+  const vector* src   /*!< Source vector to be operated on */
 ) { PROFILE(VECTOR_UNARY_NAND);
 
   bool retval;  /* Return value for this function */
@@ -4298,16 +4155,13 @@ bool vector_unary_nand(
 }
 
 /*!
- \param tgt  Target vector for operation result storage.
- \param src  Source vector to be operated on.
-
  \return Returns TRUE if assigned value differs from original; otherwise, returns FALSE.
 
  Performs unary OR operation on specified vector value.
 */
 bool vector_unary_or(
-  vector*       tgt,
-  const vector* src
+  vector*       tgt,  /*!< Target vector for operation result storage */
+  const vector* src   /*!< Source vector to be operated on */
 ) { PROFILE(VECTOR_UNARY_OR);
 
   bool retval;  /* Return value for this function */
@@ -4344,16 +4198,13 @@ bool vector_unary_or(
 }
 
 /*!
- \param tgt  Target vector for operation result storage.
- \param src  Source vector to be operated on.
-
  \return Returns TRUE if assigned value differs from original; otherwise, returns FALSE.
 
  Performs unary NOR operation on specified vector value.
 */
 bool vector_unary_nor(
-  vector*       tgt,
-  const vector* src
+  vector*       tgt,  /*!< Target vector for operation result storage */
+  const vector* src   /*!< Source vector to be operated on */
 ) { PROFILE(VECTOR_UNARY_NOR);
 
   bool retval;  /* Return value for this function */
@@ -4390,16 +4241,13 @@ bool vector_unary_nor(
 }
 
 /*!
- \param tgt  Target vector for operation result storage.
- \param src  Source vector to be operated on.
-
  \return Returns TRUE if assigned value differs from original; otherwise, returns FALSE.
 
  Performs unary XOR operation on specified vector value.
 */
 bool vector_unary_xor(
-  vector*       tgt,
-  const vector* src
+  vector*       tgt,  /*!< Target vector for operation result storage */
+  const vector* src   /*!< Source vector to be operated on */
 ) { PROFILE(VECTOR_UNARY_XOR);
 
   bool retval;  /* Return value for this function */
@@ -4438,16 +4286,13 @@ bool vector_unary_xor(
 }
 
 /*!
- \param tgt  Target vector for operation result storage.
- \param src  Source vector to be operated on.
-
  \return Returns TRUE if assigned value differs from original; otherwise, returns FALSE.
 
  Performs unary NXOR operation on specified vector value.
 */
 bool vector_unary_nxor(
-  vector*       tgt,
-  const vector* src
+  vector*       tgt,  /*!< Target vector for operation result storage */
+  const vector* src   /*!< Source vector to be operated on */
 ) { PROFILE(VECTOR_UNARY_NXOR);
 
   bool retval;  /* Return value for this function */
@@ -4486,16 +4331,13 @@ bool vector_unary_nxor(
 }
 
 /*!
- \param tgt  Target vector for operation result storage.
- \param src  Source vector to be operated on.
-
  \return Returns TRUE if assigned value differs from original; otherwise, returns FALSE.
 
  Performs unary logical NOT operation on specified vector value.
 */
 bool vector_unary_not(
-  vector*       tgt,
-  const vector* src
+  vector*       tgt,  /*!< Target vector for operation result storage */
+  const vector* src   /*!< Source vector to be operated on */
 ) { PROFILE(VECTOR_UNARY_NOT);
 
   bool retval;  /* Return value of this function */
@@ -4658,13 +4500,11 @@ void vector_dealloc_value(
 }
 
 /*!
- \param vec  Pointer to vector to deallocate memory from.
-
  Deallocates all heap memory that was initially allocated with the malloc
  routine.
 */
 void vector_dealloc(
-  vector* vec
+  vector* vec  /*!< Pointer to vector to deallocate memory from */
 ) { PROFILE(VECTOR_DEALLOC);
 
   if( vec != NULL ) {
@@ -4685,6 +4525,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.160  2008/10/03 03:13:49  phase1geo
+ Fixing problem with vector_from_int and vector_from_uint64 changes.  Full regression
+ passes again.
+
  Revision 1.159  2008/10/02 22:54:23  phase1geo
  Attempting to fix vector_from_int and vector_from_uint64 warnings.
 

@@ -834,10 +834,11 @@ number
     }
   | DEC_NUMBER BASE_NUMBER
     {
-      int   slen     = strlen( $1 ) + strlen( $2 ) + 1;
-      char* combined = (char*)malloc_safe( slen );
-      char* num      = combined;
-      snprintf( num, slen, "%s%s", $1, $2 );
+      int          slen     = strlen( $1 ) + strlen( $2 ) + 1;
+      char*        combined = (char*)malloc_safe( slen );
+      char*        num      = combined;
+      unsigned int rv       = snprintf( num, slen, "%s%s", $1, $2 );
+      assert( rv < slen );
       vector_from_string( &num, FALSE, &($$.vec), &($$.base) );
       free_safe( $1, (strlen( $1 ) + 1) );
       free_safe( $2, (strlen( $2 ) + 1) );

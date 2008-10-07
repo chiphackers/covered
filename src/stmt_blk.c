@@ -136,7 +136,8 @@ void stmt_blk_specify_removal_reason(
   int           cline   /*!< Line containing removal line */
 ) { PROFILE(STMT_BLK_SPECIFY_REMOVAL_REASON);
 
-  snprintf( user_msg, USER_MSG_LENGTH, "Removing logic block containing line %d in file %s because", line, file );
+  unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Removing logic block containing line %d in file %s because", line, file );
+  assert( rv < USER_MSG_LENGTH );
   print_output( user_msg, WARNING, cfile, cline );
   print_output( logic_rm_msgs[type], WARNING_WRAP, cfile, cline );
 
@@ -146,6 +147,9 @@ void stmt_blk_specify_removal_reason(
 
 /*
  $Log$
+ Revision 1.18  2008/10/06 22:21:25  phase1geo
+ Fixing compile warning with stmt_blk.c.
+
  Revision 1.17  2008/10/06 04:05:19  phase1geo
  Adding support for logic block removal warning output.
 

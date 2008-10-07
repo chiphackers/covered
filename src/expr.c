@@ -377,17 +377,14 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",               
 
 
 /*!
- \param exp    Pointer to expression to allocate temporary vectors for
- \param width  Number of bits wide the given expression will contain
-
  Allocates the appropriate amount of memory for the temporary vectors for the
  given expression.  This function should only be called when memory is required
  to be allocated and when ourselves and our children expressions within the same
  tree have been sized.
 */
 static void expression_create_tmp_vecs(
-  expression* exp,
-  int         width
+  expression* exp,   /*!< Pointer to expression to allocate temporary vectors for */
+  int         width  /*!< Number of bits wide the given expression will contain */
 ) { PROFILE(EXPRESSION_CREATE_TMP_VECS);
 
   /*
@@ -434,10 +431,6 @@ static void expression_create_tmp_vecs(
 }
 
 /*!
- \param exp    Pointer to expression to add value to.
- \param width  Width of value to create.
- \param data   Specifies if uint8 array should be allocated for vector.
-
  \throws anonymous Throw
 
  Creates a value vector that is large enough to store width number of
@@ -446,9 +439,9 @@ static void expression_create_tmp_vecs(
  function, or the signal db_read function.
 */
 static void expression_create_value(
-  expression* exp,
-  int         width,
-  bool        data
+  expression* exp,    /*!< Pointer to expression to add value to */
+  int         width,  /*!< Width of value to create */
+  bool        data    /*!< Specifies if uint8 array should be allocated for vector */
 ) { PROFILE(EXPRESSION_CREATE_VALUE);
 
   vector* vec = NULL;  /* Temporary storage of vector array */
@@ -676,19 +669,15 @@ expression* expression_create(
 }
 
 /*!
- \param exp    Pointer to expression to set value to.
- \param sig    Pointer to signal containing vector value to set expression to.
- \param funit  Pointer to functional unit containing expression.
-
  \throws anonymous expression_operate_recursively expression_operate_recursively expression_operate_recursively
  
  Sets the specified expression (if necessary) to the value of the
  specified signal's vector value.
 */
 void expression_set_value(
-  expression* exp,
-  vsignal*    sig,
-  func_unit*  funit
+  expression* exp,   /*!< Pointer to expression to set value to */
+  vsignal*    sig,   /*!< Pointer to signal containing vector value to set expression to */
+  func_unit*  funit  /*!< Pointer to functional unit containing expression */
 ) { PROFILE(EXPRESSION_SET_VALUE);
   
   assert( exp != NULL );
@@ -769,13 +758,13 @@ void expression_set_value(
 }
 
 /*!
- \param exp  Pointer to current expression
-
  Recursively sets the signed bit for all parent expressions if both the left and
  right expressions have the signed bit set.  This function is called by the bind()
  function after an expression has been set to a signal.
 */
-void expression_set_signed( expression* exp ) { PROFILE(EXPRESSION_SET_SIGNED);
+void expression_set_signed(
+  expression* exp  /*!< Pointer to current expression */
+) { PROFILE(EXPRESSION_SET_SIGNED);
 
   if( exp != NULL ) {
 
@@ -1082,11 +1071,11 @@ expression* expression_get_first_line_expr(
 }
 
 /*!
- \param expr  Pointer to root expression to extract last line from
-
  \return Returns the line number of the last line in this expression. 
 */
-expression* expression_get_last_line_expr( expression* expr ) { PROFILE(EXPRESSION_GET_LAST_LINE_EXPR);
+expression* expression_get_last_line_expr(
+  expression* expr  /*!< Pointer to root expression to extract last line from */
+) { PROFILE(EXPRESSION_GET_LAST_LINE_EXPR);
 
   expression* last = NULL;
 
@@ -1142,18 +1131,14 @@ unsigned int expression_get_curr_dimension(
 }
 
 /*!
- \param expr  Pointer to expression tree to parse.
- \param head  Pointer to head of signal name list to populate.
- \param tail  Pointer to tail of signal name list to populate.
-
  Recursively parses specified expression list in search of RHS signals.
  When a signal name is found, it is added to the signal name list specified
  by head and tail.
 */
 void expression_find_rhs_sigs(
-  expression* expr,
-  str_link**  head,
-  str_link**  tail
+            expression* expr,  /*!< Pointer to expression tree to parse */
+  /*@out@*/ str_link**  head,  /*!< Pointer to head of signal name list to populate */
+  /*@out@*/ str_link**  tail   /*!< Pointer to tail of signal name list to populate */
 ) { PROFILE(EXPRESSION_FIND_RHS_SIGS);
 
   char* sig_name;  /* Name of signal found */
@@ -1197,17 +1182,13 @@ void expression_find_rhs_sigs(
 }
 
 /*!
- \param expr  Pointer to expression tree to search
- \param head  Pointer to head of expression list containing expressions that use parameter values
- \param tail  Pointer to tail of expression list containing expressions that use parameter values
-
  Recursively traverses given expression tree, adding any expressions found that point to parameter
  values.
 */
 static void expression_find_params(
-    expression* expr,
-    exp_link**  head,
-    exp_link**  tail
+            expression* expr,  /*!< Pointer to expression tree to search */
+  /*@out@*/ exp_link**  head,  /*!< Pointer to head of expression list containing expressions that use parameter values */
+  /*@out@*/ exp_link**  tail   /*!< Pointer to tail of expression list containing expressions that use parameter values */
 ) { PROFILE(EXPRESSION_FIND_PARAMS);
 
   if( expr != NULL ) {
@@ -1232,16 +1213,16 @@ static void expression_find_params(
 }
 
 /*!
- \param expr  Pointer to root expression to search under
- \param ulid  Underline ID to search for
-
  \return Returns a pointer to the found expression; otherwise, returns NULL if the expression
          could not be found.
 
  Recursively searches the given expression tree for the specified underline ID.  If the
  expression is found, a pointer to it is returned; otherwise, returns NULL.
 */
-expression* expression_find_uline_id( expression* expr, int ulid ) { PROFILE(EXPRESSION_FIND_ULINE_ID);
+expression* expression_find_uline_id(
+  expression* expr,  /*!< Pointer to root expression to search under */
+  int         ulid   /*!< Underline ID to search for */
+) { PROFILE(EXPRESSION_FIND_ULINE_ID);
 
   expression* found_exp = NULL;  /* Pointer to found expression */
 
@@ -1675,13 +1656,11 @@ void expression_merge(
 }
 
 /*!
- \param op  Expression operation to get string representation of
-
  \return Returns a non-writable string that contains the user-readable name of the
          specified expression operation.
 */
 const char* expression_string_op(
-  int op
+  int op  /*!< Expression operation to get string representation of */
 ) { PROFILE(EXPRESSION_STRING_OP);
 
   assert( (op >= 0) && (op < EXP_OP_NUM) );
@@ -1693,13 +1672,11 @@ const char* expression_string_op(
 }
 
 /*!
- \param exp  Pointer to expression to display
-
  Returns a pointer to user_msg that will contain a user-friendly string version of
  the given expression
 */
 char* expression_string(
-  expression* exp
+  expression* exp  /*!< Pointer to expression to display */
 ) { PROFILE(EXPRESSION_STRING);
 
   unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "%d (%s line %d)", exp->id, expression_string_op( exp->op ), exp->line );
@@ -1712,13 +1689,11 @@ char* expression_string(
 }
 
 /*!
- \param expr  Pointer to expression to display.
-
  Displays contents of the specified expression to standard output.  This function
  is called by the funit_display function.
 */
 void expression_display(
-  expression* expr
+  expression* expr  /*!< Pointer to expression to display */
 ) {
 
   int right_id;  /* Value of right expression ID */
@@ -1759,17 +1734,14 @@ void expression_display(
 }
 
 /*!
- \param expr     Pointer to expression to set true/false indicators of
- \param changed  Set to TRUE if the expression changed value
-
  This function sets the true/false indicators in the expression supplemental field as
  needed.  This function should only be called by expression_op_func__* functions that
  are NOT events AND whose return value is TRUE AND whose op type is not STATIC or
  PARAM.
 */
 inline static void expression_set_tf_preclear(
-  expression* expr,
-  bool        changed
+  expression* expr,    /*!< Pointer to expression to set true/false indicators of */
+  bool        changed  /*!< Set to TRUE if the expression changed value */
 ) {
 
   /* If the expression changed value or it has never been set, calculate coverage information */
@@ -1875,18 +1847,14 @@ bool expression_op_func__xor(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-    
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs an XOR-and-assign operation.
 */
 bool expression_op_func__xor_a(
-  expression*     expr,
-  thread*         thr,
-  const sim_time* time
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__XOR_A);
 
   bool    retval;                                /* Return value for this function */
@@ -1916,18 +1884,14 @@ bool expression_op_func__xor_a(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a multiply operation.
 */
 bool expression_op_func__multiply(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__MULTIPLY);
 
   /* Perform multiply operation */
@@ -1945,18 +1909,14 @@ bool expression_op_func__multiply(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-    
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs an multiply-and-assign operation.
 */
 bool expression_op_func__multiply_a(
-  expression*     expr,
-  thread*         thr,
-  const sim_time* time
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__MULTIPLY_A);
 
   bool    retval;                                /* Return value for this function */
@@ -1987,10 +1947,6 @@ bool expression_op_func__multiply_a(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  \throws anonymous Throw
@@ -1998,9 +1954,9 @@ bool expression_op_func__multiply_a(
  Performs a 32-bit divide operation.
 */
 bool expression_op_func__divide(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__DIVIDE);
 
   /* Perform divide operation */
@@ -2018,18 +1974,14 @@ bool expression_op_func__divide(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-    
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs an divide-and-assign operation.
 */
 bool expression_op_func__divide_a(
-  expression*     expr,
-  thread*         thr,
-  const sim_time* time
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__DIVIDE_A);
 
   bool    retval = FALSE;                        /* Return value for this function */
@@ -2087,18 +2039,14 @@ bool expression_op_func__mod(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-    
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs an modulus-and-assign operation.
 */
 bool expression_op_func__mod_a(
-  expression*     expr,
-  thread*         thr,
-  const sim_time* time
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__MOD_A);
 
   bool    retval;                                /* Return value for this function */
@@ -2129,18 +2077,14 @@ bool expression_op_func__mod_a(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs an addition operation.
 */
 bool expression_op_func__add(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__ADD);
 
   /* Perform add operation */
@@ -2158,18 +2102,14 @@ bool expression_op_func__add(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-    
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs an add-and-assign operation.
 */
 bool expression_op_func__add_a(
-  expression*     expr,
-  thread*         thr,
-  const sim_time* time
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__ADD_A);
   
   bool    retval;                                /* Return value for this function */
@@ -2200,18 +2140,14 @@ bool expression_op_func__add_a(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a subtraction operation.
 */
 bool expression_op_func__subtract(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__SUBTRACT);
 
   bool retval;  /* Return value for this function */
@@ -2232,18 +2168,14 @@ bool expression_op_func__subtract(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-    
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a subtract-and-assign operation.
 */
 bool expression_op_func__sub_a(
-  expression*     expr,
-  thread*         thr,
-  const sim_time* time
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__SUB_A);
 
   bool    retval;                                /* Return value for this function */
@@ -2275,18 +2207,14 @@ bool expression_op_func__sub_a(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a bitwise AND operation.
 */
 bool expression_op_func__and(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__AND);
 
   /* Perform bitwise AND operation */
@@ -2304,18 +2232,14 @@ bool expression_op_func__and(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-    
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs an AND-and-assign operation.
 */
 bool expression_op_func__and_a(
-  expression*     expr,
-  thread*         thr,
-  const sim_time* time
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__AND_A);
 
   bool    retval;                                /* Return value for this function */
@@ -2346,18 +2270,14 @@ bool expression_op_func__and_a(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a bitwise OR operation.
 */
 bool expression_op_func__or(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__OR);
 
   /* Perform bitwise OR operation */
@@ -2375,18 +2295,14 @@ bool expression_op_func__or(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-    
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs an OR-and-assign operation.
 */
 bool expression_op_func__or_a(
-  expression*     expr,
-  thread*         thr,
-  const sim_time* time
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__OR_A);
 
   bool    retval;                                /* Return value for this function */
@@ -2417,18 +2333,14 @@ bool expression_op_func__or_a(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a bitwise NAND operation.
 */
 bool expression_op_func__nand(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__NAND);
 
   /* Perform bitwise NAND operation */
@@ -2446,18 +2358,14 @@ bool expression_op_func__nand(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a bitwise NOR operation.
 */
 bool expression_op_func__nor(
-                expression*    expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+                expression*    expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__NOR);
 
   /* Perform bitwise NOR operation */
@@ -2475,18 +2383,14 @@ bool expression_op_func__nor(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a bitwise NXOR operation.
 */
 bool expression_op_func__nxor(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__NXOR);
 
   /* Perform bitwise NXOR operation */
@@ -2504,18 +2408,14 @@ bool expression_op_func__nxor(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a less-than comparison operation.
 */
 bool expression_op_func__lt(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__LT);
 
   /* Perform less-than operation */
@@ -2533,18 +2433,14 @@ bool expression_op_func__lt(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a greater-than comparison operation.
 */
 bool expression_op_func__gt(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__GT);
 
   /* Perform greater-than operation */
@@ -2562,18 +2458,14 @@ bool expression_op_func__gt(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a left shift operation.
 */
 bool expression_op_func__lshift(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__LSHIFT);
 
   /* Perform left-shift operation */
@@ -2591,18 +2483,14 @@ bool expression_op_func__lshift(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-    
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs an left-shift-and-assign operation.
 */
 bool expression_op_func__lshift_a(
-  expression*     expr,
-  thread*         thr,
-  const sim_time* time
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__LSHIFT_A);
   
   bool    retval;                                /* Return value for this function */
@@ -2633,18 +2521,14 @@ bool expression_op_func__lshift_a(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a right shift operation.
 */
 bool expression_op_func__rshift(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__RSHIFT);
 
   /* Perform right-shift operation */
@@ -2662,18 +2546,14 @@ bool expression_op_func__rshift(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-    
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs an right-shift-and-assign operation.
 */
 bool expression_op_func__rshift_a(
-  expression*     expr,
-  thread*         thr,
-  const sim_time* time
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__RSHIFT_A);
 
   bool    retval;                                /* Return value for this function */
@@ -2704,18 +2584,14 @@ bool expression_op_func__rshift_a(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs an arithmetic right shift operation.
 */
 bool expression_op_func__arshift(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__ARSHIFT);
 
   /* Perform arithmetic right-shift operation */
@@ -2733,18 +2609,14 @@ bool expression_op_func__arshift(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-    
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs an arithmetic right-shift-and-assign operation.
 */
 bool expression_op_func__arshift_a(
-  expression*     expr,
-  thread*         thr,
-  const sim_time* time
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__ARSHIFT_A);
 
   bool    retval;                                /* Return value for this function */
@@ -2845,9 +2717,9 @@ bool expression_op_func__random(
  Performs a system task port assignment.
 */
 bool expression_op_func__sassign(
-  expression*     expr,  /*!< Pointer to expression to perform operation on */
-  thread*         thr,   /*!< Pointer to thread containing this expression */
-  const sim_time* time   /*!< Pointer to current simulation time */
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__SASSIGN);
 
   bool retval = vector_set_value_ulong( expr->value, expr->right->value->value.ul, expr->right->value->width );
@@ -2864,9 +2736,9 @@ bool expression_op_func__sassign(
  Performs a $srandom system task call.
 */
 bool expression_op_func__srandom(
-  expression*     expr,  /*!< Pointer to expression to perform operation on */
-  thread*         thr,   /*!< Pointer to thread containing this expression */
-  const sim_time* time   /*!< Pointer to current simulation time */
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__SRANDOM);
 
   assert( (expr->left != NULL) && (expr->left->op == EXP_OP_SASSIGN) );
@@ -2931,9 +2803,9 @@ bool expression_op_func__urandom(
  Performs a $urandom_range system task call.
 */
 bool expression_op_func__urandom_range(
-  expression*     expr,  /*!< Pointer to expression to perform operation on */
-  thread*         thr,   /*!< Pointer to thread containing this expression */
-  const sim_time* time   /*!< Pointer to current simulation time */
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+               thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__URANDOM_RANGE);
 
   expression*   plist = expr->left;
@@ -2942,7 +2814,8 @@ bool expression_op_func__urandom_range(
   unsigned long rand;
 
   if( (plist == NULL) || ((plist->op != EXP_OP_PLIST) && (plist->op != EXP_OP_SASSIGN)) ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "$urandom_range called without any parameters specified (file: %s, line: %d)", thr->funit->filename, expr->line );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$urandom_range called without any parameters specified (file: %s, line: %d)", thr->funit->filename, expr->line );
+    assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     Throw 0;
   }
@@ -2979,18 +2852,14 @@ bool expression_op_func__urandom_range(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs an equality (==) comparison operation.
 */
 bool expression_op_func__eq(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__EQ);
 
   /* Perform equality operation */
@@ -3008,18 +2877,14 @@ bool expression_op_func__eq(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs an equality (===) comparison operation.
 */
 bool expression_op_func__ceq(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__CEQ);
 
   /* Perform case equality operation */
@@ -3037,18 +2902,14 @@ bool expression_op_func__ceq(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a less-than-or-equal comparison operation.
 */
 bool expression_op_func__le(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__LE);
 
   /* Perform less-than-or-equal operation */
@@ -3066,18 +2927,14 @@ bool expression_op_func__le(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a greater-than-or-equal comparison operation.
 */
 bool expression_op_func__ge(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__GE);
 
   /* Perform greater-than-or-equal operation */
@@ -3095,18 +2952,14 @@ bool expression_op_func__ge(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a not-equal (!=) comparison operation.
 */
 bool expression_op_func__ne(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__NE);
 
   /* Perform not-equal operation */
@@ -3124,18 +2977,14 @@ bool expression_op_func__ne(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a not-equal (!==) comparison operation.
 */
 bool expression_op_func__cne(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__CNE);
 
   /* Perform case not-equal operation */
@@ -3153,18 +3002,14 @@ bool expression_op_func__cne(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a logical OR operation.
 */
 bool expression_op_func__lor(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__LOR);
 
   /* Perform logical OR operation */
@@ -3182,18 +3027,14 @@ bool expression_op_func__lor(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a logical AND operation.
 */
 bool expression_op_func__land(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__LAND);
 
   /* Perform logical AND operation */
@@ -3211,18 +3052,14 @@ bool expression_op_func__land(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a conditional (?:) operation.
 */
 bool expression_op_func__cond(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__COND);
 
   /* Simple vector copy from right side and gather coverage information */
@@ -3239,18 +3076,14 @@ bool expression_op_func__cond(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a conditional select (?:) operation.
 */
 bool expression_op_func__cond_sel(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__COND_SEL);
 
   bool retval;  /* Return value for this function */
@@ -3277,18 +3110,14 @@ bool expression_op_func__cond_sel(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a unary invert operation.
 */
 bool expression_op_func__uinv(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__UINV);
 
   /* Perform unary inversion operation */
@@ -3305,18 +3134,14 @@ bool expression_op_func__uinv(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a unary AND operation.
 */
 bool expression_op_func__uand(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__UAND);
 
   /* Perform unary AND operation */
@@ -3333,18 +3158,14 @@ bool expression_op_func__uand(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a unary NOT operation.
 */
 bool expression_op_func__unot(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__UNOT);
 
   /* Perform unary NOT operation */
@@ -3361,18 +3182,14 @@ bool expression_op_func__unot(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a unary OR operation.
 */
 bool expression_op_func__uor(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__UOR);
 
   /* Perform unary OR operation */
@@ -3389,18 +3206,14 @@ bool expression_op_func__uor(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a unary XOR operation.
 */
 bool expression_op_func__uxor(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__UXOR);
 
   /* Perform unary XOR operation */
@@ -3417,18 +3230,14 @@ bool expression_op_func__uxor(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a unary NAND operation.
 */
 bool expression_op_func__unand(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__UNAND);
 
   /* Perform unary NAND operation */
@@ -3445,18 +3254,14 @@ bool expression_op_func__unand(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a unary NOR operation.
 */
 bool expression_op_func__unor(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__UNOR);
 
   /* Perform unary NOR operation */
@@ -3473,18 +3278,14 @@ bool expression_op_func__unor(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a unary NXOR operation.
 */
 bool expression_op_func__unxor(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__UNXOR);
 
   /* Perform unary NXOR operation */
@@ -3501,18 +3302,14 @@ bool expression_op_func__unxor(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  No operation is performed -- expression value is assumed to be changed.
 */
 bool expression_op_func__null(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__NULL);
 
   /* Set the true/false indicators as necessary */
@@ -3529,10 +3326,6 @@ bool expression_op_func__null(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-    
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
     
  Performs a signal operation.  This function should be called by any operation that would otherwise
@@ -3540,9 +3333,9 @@ bool expression_op_func__null(
  the unknown and not_zero bits from the signal's vector supplemental field to our own.
 */
 bool expression_op_func__sig(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__SIG);
 
   /* Gather coverage information */
@@ -3559,18 +3352,14 @@ bool expression_op_func__sig(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a single bit select operation.
 */
 bool expression_op_func__sbit(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__SBIT);
 
   bool     retval;                   /* Return value for this function */
@@ -3634,18 +3423,14 @@ bool expression_op_func__sbit(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a multi-bit select operation.
 */
 bool expression_op_func__mbit(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__MBIT);
 
   bool     retval = FALSE;  /* Return value for this function */
@@ -3699,18 +3484,14 @@ bool expression_op_func__mbit(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a expansion ({{}}) operation.
 */
 bool expression_op_func__expand(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__EXPAND);
 
   /* Perform expansion operation */
@@ -3728,18 +3509,14 @@ bool expression_op_func__expand(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a list (,) operation.
 */
 bool expression_op_func__list(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__LIST);
 
   /* Perform list operation */
@@ -3757,18 +3534,14 @@ bool expression_op_func__list(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a concatenation ({}) operation.
 */
 bool expression_op_func__concat(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__CONCAT);
 
   /* Perform concatenation operation */
@@ -3785,18 +3558,14 @@ bool expression_op_func__concat(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a positive edge event operation.
 */
 bool expression_op_func__pedge(
-               expression*     expr,
-               thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+               thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__PEDGE);
 
   bool   retval;   /* Return value for this function */
@@ -3825,18 +3594,14 @@ bool expression_op_func__pedge(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a negative-edge event operation.
 */
 bool expression_op_func__nedge(
-               expression*     expr,
-               thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+               thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__NEDGE);
 
   bool   retval;   /* Return value for this function */
@@ -3865,18 +3630,14 @@ bool expression_op_func__nedge(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs an any-edge event operation.
 */
 bool expression_op_func__aedge(
-               expression*     expr,
-               thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+               thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__AEDGE);
 
   bool retval;  /* Return value of this function */
@@ -3917,18 +3678,14 @@ bool expression_op_func__aedge(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a event OR operation.
 */
 bool expression_op_func__eor(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__EOR);
 
   bool retval;  /* Return value for this function */
@@ -3957,18 +3714,14 @@ bool expression_op_func__eor(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a sensitivity list operation.
 */
 bool expression_op_func__slist(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__SLIST);
 
   bool retval;  /* Return value for this function */
@@ -3996,18 +3749,14 @@ bool expression_op_func__slist(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a delay operation.
 */
 bool expression_op_func__delay(
-  expression*     expr,
-  thread*         thr,
-  const sim_time* time
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__DELAY);
 
   bool retval = FALSE;  /* Return value for this function */
@@ -4053,18 +3802,14 @@ bool expression_op_func__delay(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs an event trigger (->) operation.
 */
 bool expression_op_func__trigger(
-  expression*     expr,
-  thread*         thr,
-  const sim_time* time
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__TRIGGER);
 
   /* Indicate that we have triggered */
@@ -4081,18 +3826,14 @@ bool expression_op_func__trigger(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a case comparison operation.
 */
 bool expression_op_func__case(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__CASE);
 
   /* Perform case comparison operation */
@@ -4110,18 +3851,14 @@ bool expression_op_func__case(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a casex comparison operation.
 */
 bool expression_op_func__casex(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__CASEX);
 
   /* Perform casex comparison operation */
@@ -4139,18 +3876,14 @@ bool expression_op_func__casex(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a casez comparison operation.
 */
 bool expression_op_func__casez(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__CASEZ);
 
   /* Perform casez comparison operation */
@@ -4168,18 +3901,14 @@ bool expression_op_func__casez(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a case default comparison operation.
 */
 bool expression_op_func__default(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__DEFAULT);
 
   bool  retval;    /* Return value for this function */
@@ -4200,18 +3929,14 @@ bool expression_op_func__default(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a blocking assignment operation.
 */
 bool expression_op_func__bassign(
-  expression*     expr,
-  thread*         thr,
-  const sim_time* time
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__BASSIGN);
 
   int intval = 0;  /* Integer value */
@@ -4229,18 +3954,14 @@ bool expression_op_func__bassign(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a function call operation.
 */
 bool expression_op_func__func_call(
-  expression*     expr,
-  thread*         thr,
-  const sim_time* time
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__FUNC_CALL);
 
   bool retval;  /* Return value for this function */
@@ -4268,18 +3989,14 @@ bool expression_op_func__func_call(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a task call operation.
 */
 bool expression_op_func__task_call(
-  expression*     expr,
-  thread*         thr,
-  const sim_time* time
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__TASK_CALL);
 
   (void)sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit, time );
@@ -4294,18 +4011,14 @@ bool expression_op_func__task_call(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a named block call operation.
 */
 bool expression_op_func__nb_call(
-  expression*     expr,
-  thread*         thr,
-  const sim_time* time
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__NB_CALL);
 
   bool retval = FALSE;  /* Return value for this function */
@@ -4327,18 +4040,14 @@ bool expression_op_func__nb_call(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a fork operation.
 */
 bool expression_op_func__fork(
-  expression*     expr,
-  thread*         thr,
-  const sim_time* time
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__FORK);
 
   (void)sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit, time );
@@ -4353,18 +4062,14 @@ bool expression_op_func__fork(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a join operation.
 */
 bool expression_op_func__join(
-  /*@unused@*/ expression*     expr,
-               thread*         thr,
-  /*@unused@*/ const sim_time* time
+  /*@unused@*/ expression*     expr,  /*!< Pointer to expression to perform operation on */
+               thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__JOIN);
 
   /* Gather coverage information */
@@ -4377,18 +4082,14 @@ bool expression_op_func__join(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a block disable operation.
 */
 bool expression_op_func__disable(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__DISABLE);
 
   sim_kill_thread_with_funit( expr->elem.funit );
@@ -4403,18 +4104,14 @@ bool expression_op_func__disable(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a repeat loop operation.
 */
 bool expression_op_func__repeat(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__REPEAT);
 
   bool retval;  /* Return value for this function */
@@ -4438,18 +4135,14 @@ bool expression_op_func__repeat(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs an exponential power operation.
 */
 bool expression_op_func__exponent(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__EXPONENT);
 
   bool retval;  /* Return value for this function */
@@ -4491,18 +4184,14 @@ bool expression_op_func__exponent(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a port assignment operation.
 */
 bool expression_op_func__passign(
-  expression*     expr,
-  thread*         thr,
-  const sim_time* time
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__PASSIGN);
 
   bool retval = FALSE;  /* Return value for this function */
@@ -4617,18 +4306,14 @@ bool expression_op_func__mbit_pos(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a negative variable multi-bit select operation.
 */
 bool expression_op_func__mbit_neg(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__MBIT_NEG);
 
   bool     retval = FALSE;  /* Return value for this function */
@@ -4689,18 +4374,14 @@ bool expression_op_func__mbit_neg(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a negate of the specified expression.
 */
 bool expression_op_func__negate(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__NEGATE);
 
   bool retval;  /* Return value for this function */
@@ -4720,18 +4401,14 @@ bool expression_op_func__negate(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE.
 
  Performs an immediate increment operation.
 */
 bool expression_op_func__iinc(
-  expression*     expr,
-  thread*         thr,
-  const sim_time* time
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__IINC);
 
   /* Perform increment */
@@ -4762,18 +4439,14 @@ bool expression_op_func__iinc(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE.
 
  Performs a postponed increment operation.
 */
 bool expression_op_func__pinc(
-  expression*     expr,
-  thread*         thr,
-  const sim_time* time
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__PINC);
 
   /* Copy the left-hand value to our expression */
@@ -4804,18 +4477,14 @@ bool expression_op_func__pinc(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs an immediate decrement operation.
 */
 bool expression_op_func__idec(
-  expression*     expr,
-  thread*         thr,
-  const sim_time* time
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__IDEC);
 
   /* Perform decrement */
@@ -4846,18 +4515,14 @@ bool expression_op_func__idec(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a postponed decrement operation.
 */
 bool expression_op_func__pdec(
-  expression*     expr,
-  thread*         thr,
-  const sim_time* time
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__PDEC);
 
   /* Copy the left-hand value to our expression */
@@ -4889,18 +4554,14 @@ bool expression_op_func__pdec(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a delayed assignment.
 */
 bool expression_op_func__dly_assign(
-  expression*     expr,
-  thread*         thr,
-  const sim_time* time
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__DLY_ASSIGN);
 
   bool retval;      /* Return value for this function */
@@ -4928,18 +4589,14 @@ bool expression_op_func__dly_assign(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs an assignment and delay for a delayed assignment.
 */
 bool expression_op_func__dly_op(
-  expression*     expr,
-  thread*         thr,
-  const sim_time* time
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__DLY_OP);
 
   /* If we are not waiting for the delay to occur, copy the contents of the operation */
@@ -4961,18 +4618,14 @@ bool expression_op_func__dly_op(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a repeated delay for a given assignment.
 */
 bool expression_op_func__repeat_dly(
-  expression*     expr,
-  thread*         thr,
-  const sim_time* time
+  expression*     expr,  /*!< Pointer to expression to perform operation on */
+  thread*         thr,   /*!< Pointer to thread containing this expression */
+  const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__REPEAT_DLY);
 
   bool retval = FALSE;  /* Return value for this function */
@@ -5003,18 +4656,14 @@ bool expression_op_func__repeat_dly(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a multi-array dimension operation.
 */
 bool expression_op_func__dim(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__DIM);
 
   bool retval;                                  /* Return value for this function */
@@ -5034,18 +4683,14 @@ bool expression_op_func__dim(
 }
 
 /*!
- \param expr  Pointer to expression to perform operation on
- \param thr   Pointer to thread containing this expression
- \param time  Pointer to current simulation time
-
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
  Performs a wait statement operation.
 */
 bool expression_op_func__wait(
-               expression*     expr,
-  /*@unused@*/ thread*         thr,
-  /*@unused@*/ const sim_time* time
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__WAIT);
 
   bool retval;  /* Return value for this function */
@@ -5105,10 +4750,6 @@ bool expression_op_func__stop(
 }
 
 /*!
- \param expr  Pointer to expression to set value to.
- \param thr   Pointer to current thread being simulated. 
- \param time  Pointer to current simulation time.
-
  \return Returns TRUE if the assigned expression value was different than the previously stored value;
          otherwise, returns FALSE.
 
@@ -5120,9 +4761,9 @@ bool expression_op_func__stop(
  suppl uint8 as necessary.
 */
 bool expression_operate(
-  expression*     expr,
-  thread*         thr,
-  const sim_time* time
+  expression*     expr,  /*!< Pointer to expression to set value to */
+  thread*         thr,   /*!< Pointer to current thread being simulated */
+  const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OPERATE);
 
   bool retval = TRUE;  /* Return value for this function */
@@ -5160,10 +4801,6 @@ bool expression_operate(
 }
 
 /*!
- \param expr    Pointer to top of expression tree to perform recursive operations.
- \param funit   Pointer to functional unit containing this expression.
- \param sizing  Set to TRUE if we are evaluating for purposes of sizing.
-
  \throws anonymous expression_resize expression_operate_recursively expression_operate_recursively
  
  Recursively performs the proper operations to cause the top-level expression to
@@ -5172,9 +4809,9 @@ bool expression_operate(
  needs to be evaluated to set the width properly on the MBIT_SEL expression.
 */
 void expression_operate_recursively(
-  expression* expr,
-  func_unit*  funit,
-  bool        sizing
+  expression* expr,   /*!< Pointer to top of expression tree to perform recursive operations */
+  func_unit*  funit,  /*!< Pointer to functional unit containing this expression */
+  bool        sizing  /*!< Set to TRUE if we are evaluating for purposes of sizing */
 ) { PROFILE(EXPRESSION_OPERATE_RECURSIVELY);
     
   if( expr != NULL ) {
@@ -5656,14 +5293,11 @@ void expression_assign(
 }
 
 /*!
- \param expr      Pointer to root expression to deallocate.
- \param exp_only  Removes only the specified expression and not its children.
-
  Deallocates all heap memory allocated with the malloc routine.
 */
 void expression_dealloc(
-  expression* expr,
-  bool        exp_only
+  expression* expr,     /*!< Pointer to root expression to deallocate */
+  bool        exp_only  /*!< Removes only the specified expression and not its children */
 ) { PROFILE(EXPRESSION_DEALLOC);
 
   int        op;        /* Temporary operation holder */
@@ -5807,6 +5441,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.354  2008/10/07 18:37:48  phase1geo
+ Fixing bug introduced in sim.c that kept automatic tasks/functions from working.
+ Updated regressions (VCS fully passes now).
+
  Revision 1.353  2008/10/05 00:26:57  phase1geo
  Adding more diagnostics to verify random system functions.  Fixed some bugs
  in this code area.

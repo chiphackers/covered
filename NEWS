@@ -1,7 +1,7 @@
 Covered-Related NEWS
 ====================
 
-    * 10/06/2008
+    * 10/07/2008
 
 Development release covered-20081006 made.  This development release is both a feature and a bug fix release.  The main
 feature additions include a new "exclude" command which allows the user to exclude coverage points from the command-line
@@ -70,6 +70,12 @@ Covered.
   - Fixed bug 2124669.  When multiple files are opened simultaneously in the GUI, no design output was displayed in the GUI.
   - Fixed bug 2131171.  If a block is removed from coverage consideration, no warning message was output to indicate that this
     was being done and why.
+  - Added -dumpvars option to the score command which will generate a top-level module that will contain the necessary $dumpfile
+    and $dumpvars calls to most effeciently gain coverage for a design that is being scored via a VCD/LXT2 dumpfile.  See
+    the User's Guide for more information.
+  - Added the support for the -dumpvars option to the GUI new CDD creation wizard.
+  - Deprecated the -vpi_ts option to the score command.  This option is now called -top_ts and can be used with either the
+    -vpi or -dumpvars options.
   - Added lots of new diagnostics to the regression suite to verify new functionality and to improve code coverage in
     Covered's source code.
   - Updated necessary documentation in User's Guide and manpage.

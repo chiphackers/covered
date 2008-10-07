@@ -903,7 +903,9 @@ void exclude_db_write(
   FILE*           ofile  /*!< Pointer to output file stream */
 ) { PROFILE(EXCLUDE_DB_WRITE);
 
+  /*@+longintegral@*/
   fprintf( ofile, "%d %c %d %ld %s\n", DB_TYPE_EXCLUDE, er->type, er->id, er->timestamp, er->reason );
+  /*@=longintegral@*/
 
   PROFILE_END;
 
@@ -922,7 +924,9 @@ void exclude_db_read(
   int    chars_read;  /* Number of characters read from line */
   time_t timestamp;   /* Reason timestamp */
 
+  /*@+longintegral@*/
   if( sscanf( *line, " %c %d %ld%n", &type, &id, &timestamp, &chars_read ) == 3 ) {
+  /*@=longintegral@*/
 
     exclude_reason* er;
 
@@ -1010,7 +1014,9 @@ void exclude_resolve_reason(
           break;
         case 'a' :
           Throw 0;
+          /*@-unreachable@*/
           break;
+          /*@=unreachable@*/
       }
       free_safe( eid, (strlen( eid ) + 1) );
       break;
@@ -1074,7 +1080,9 @@ void exclude_db_merge(
   time_t timestamp;   /* Reason timestamp */
   char*  reason;      /* Pointer to the exclusion reason from the CDD file */
 
+  /*@+longintegral@*/
   if( sscanf( *line, " %c %d %ld%n", &type, &id, &timestamp, &chars_read ) == 3 ) {
+  /*@=longintegral@*/
 
     exclude_reason* er;
 
@@ -1866,6 +1874,10 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.47  2008/09/23 06:17:50  phase1geo
+ Fixing a few bugs in the interactive exclusion reason conflict resolver.  Also
+ adding a check for an incorrect answer and re-asking.
+
  Revision 1.46  2008/09/22 22:15:02  phase1geo
  Initial code for supporting the merging and resolution of exclusion reasons.
  This code is completely untested at this point but does compile.  Checkpointing.
