@@ -72,6 +72,9 @@ char* lxt_file = NULL;
 /*! Name of VPI output file to write contents to */
 static char* vpi_file = NULL;
 
+/*! Name of dumpvars output file to write contents to */
+char* dumpvars_file = NULL;
+
 /*! Value to use when a delay expression with min:typ:max */
 int delay_expr_type = DELAY_EXPR_DEFAULT;
 
@@ -109,7 +112,7 @@ str_link* gen_mod_head = NULL;
 static str_link* gen_mod_tail = NULL;
 
 /*! Specifies the user-supplied timescale information for VPI */
-static char* vpi_timescale = NULL;
+static char* timescale = NULL;
 
 /*! User-supplied message to include in the CDD database */
 char* cdd_message = NULL;
@@ -165,7 +168,13 @@ static void score_usage() {
   printf( "                                     is not specified, the module file is called %s\n", DFLT_VPI_NAME );
   printf( "                                     If the -vcd option is specified along with this option, this\n" );
   printf( "                                     option will not be used.\n" );
-  printf( "      -vpi_ts <timescale>          This option is only valid when the -vpi option has been specified.\n" );
+  printf( "      -dumpvars (<name>)           Generates Verilog module called <name> which contains code to\n" );
+  printf( "                                     dump only the signals in the design that are necessary for coverage\n" );
+  printf( "                                     purposes.  If compiled as a top-module along with your design and no\n" );
+  printf( "                                     other $dumpfile/$dumpvars calls are made, this dump module will provide\n" );
+  printf( "                                     additional performance gains.  The name of the dumpfile created is called\n" );
+  printf( "                                     <name>.vcd\n" );
+  printf( "      -ts <timescale>             This option is only valid when the -vpi or -dumpvars options have been specified.\n" );
   printf( "                                     This option allows the user to specify a timescale for the generated\n" );
   printf( "                                     Verilog module.  If this option is not specified, no timescale will\n" );
   printf( "                                     be created for the generated module.  The value of <timescale> is\n" );
@@ -248,18 +257,14 @@ static void score_usage() {
 }
 
 /*!
- \param vpi_file   Name of VPI module to create
- \param output_db  Name of output CDD database file
- \param top_inst   Name of top-level instance
-
  \throws anonymous Throw
 
  Creates a Verilog file that calls the Covered VPI system task.
 */
 static void score_generate_top_vpi_module(
-  const char* vpi_file,
-  const char* output_db,
-  const char* top_inst
+  const char* vpi_file,   /*!< Name of VPI module to create */
+  const char* output_db,  /*!< Name of output CDD database file */
+  const char* top_inst    /*!< Name of top-level instance */
 ) { PROFILE(SCORE_GENERATE_TOP_VPI_MODULE);
 
   FILE* vfile;     /* File handle to VPI top-level module */
@@ -278,8 +283,8 @@ static void score_generate_top_vpi_module(
       if( (vfile = fopen( vpi_file, "w" )) != NULL ) {
   
         unsigned int rv;
-        if( vpi_timescale != NULL ) {
-          fprintf( vfile, "`timescale %s\n", vpi_timescale );
+        if( timescale != NULL ) {
+          fprintf( vfile, "`timescale %s\n", timescale );
         }
         fprintf( vfile, "module %s;\ninitial $covered_sim( \"%s\", %s );\nendmodule\n", mod_name, output_db, top_inst );
         rv = fclose( vfile );
@@ -310,6 +315,76 @@ static void score_generate_top_vpi_module(
   /* Deallocate memory */
   free_safe( mod_name, (strlen( vpi_file ) + 1) );
   free_safe( ext, (strlen( vpi_file ) + 1) );
+
+  PROFILE_END;
+
+}
+
+/*!
+ \throws anonymous Throw
+
+ Creates the dumpvars top-level module to use for dumping only needed portions of the design to the designated
+ dumpfile.
+*/
+void score_generate_top_dumpvars_module(
+  const char* dumpvars_file  /*!< Name of dumpvars file to create */
+) { PROFILE(SCORE_GENERATE_TOP_DUMPVARS_MODULE);
+
+  FILE* vfile;     /* File handle to top-level module */
+  char* mod_name;  /* Name of dumpvars module */
+  char* ext;       /* Extension of dumpvars module */
+
+  /* Extract the name of the module from the given filename */
+  mod_name = strdup_safe( dumpvars_file );
+  ext      = strdup_safe( dumpvars_file );
+  scope_extract_front( dumpvars_file, mod_name, ext );
+
+  Try {
+
+    if( ext[0] != '\0' ) {
+
+      if( (vfile = fopen( dumpvars_file, "w" )) != NULL ) {
+
+        unsigned int rv;
+        if( timescale != NULL ) {
+          fprintf( vfile, "`timescale %s\n", timescale );
+        }
+        fprintf( vfile, "module %s;\n", mod_name );
+        fprintf( vfile, "initial begin\n" );
+        fprintf( vfile, "  $dumpfile( \"%s.vcd\" );\n", mod_name );
+        db_output_dumpvars( vfile );
+        fprintf( vfile, "end\n" );
+        fprintf( vfile, "endmodule\n" );
+        rv = fclose( vfile );
+        assert( rv == 0 );
+
+      } else {
+
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open %s for writing", dumpvars_file );
+        assert( rv < USER_MSG_LENGTH );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        Throw 0;
+
+      }
+
+    } else {
+
+      print_output( "Specified -dumpvars filename did not contain a file extension", FATAL, __FILE__, __LINE__ );
+      Throw 0;
+
+    }
+
+  } Catch_anonymous {
+    free_safe( mod_name, (strlen( mod_name ) + 1) );
+    free_safe( ext, (strlen( ext ) + 1) );
+    Throw 0;
+  }
+
+  /* Deallocate memory */
+  free_safe( mod_name, (strlen( dumpvars_file ) + 1) );
+  free_safe( ext, (strlen( dumpvars_file ) + 1) );
+
+  PROFILE_END;
 
 }
 
@@ -693,18 +768,18 @@ static void score_parse_args(
         Throw 0;
       }
 
-    } else if( strncmp( "-vpi_ts", argv[i], 7 ) == 0 ) {
+    } else if( strncmp( "-ts", argv[i], 3 ) == 0 ) {
 
       if( check_option_value( argc, argv, i ) ) {
         i++;
-        if( vpi_timescale != NULL ) {
-          print_output( "Only one -vpi_ts option is allowed on the score command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
+        if( timescale != NULL ) {
+          print_output( "Only one -ts option is allowed on the score command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
           if( (i == argc) || (argv[i][0] == '-') ) {
             i--;
           }
         } else {
           process_timescale( argv[i], FALSE );
-          vpi_timescale = strdup_safe( argv[i] );
+          timescale = strdup_safe( argv[i] );
           score_add_arg( argv[i-1] );
           score_add_arg( argv[i] );
         }
@@ -727,6 +802,26 @@ static void score_parse_args(
           score_add_arg( argv[i] );
         } else {
           vpi_file = strdup_safe( DFLT_VPI_NAME );
+          i--;
+          score_add_arg( argv[i] );
+        }
+      }
+
+    } else if( strncmp( "-dumpvars", argv[i], 9 ) == 0 ) {
+
+      i++;
+      if( dumpvars_file != NULL ) {
+        print_output( "Only one -dumpvars option is allowed on the score command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
+        if( (i == argc) || (argv[i][0] == '-') ) {
+          i--;
+        }
+      } else {
+        if( (i < argc) && (argv[i][0] != '-') ) {
+          dumpvars_file = strdup_safe( argv[i] );
+          score_add_arg( argv[i-1] );
+          score_add_arg( argv[i] );
+        } else {
+          dumpvars_file = strdup_safe( DFLT_DUMPVARS_NAME );
           i--;
           score_add_arg( argv[i] );
         }
@@ -1097,13 +1192,14 @@ void command_score(
   free_safe( output_db, (strlen( output_db ) + 1) );
   free_safe( dump_file, (strlen( dump_file ) + 1) );
   free_safe( vpi_file, (strlen( vpi_file ) + 1) );
+  free_safe( dumpvars_file, (strlen( dumpvars_file ) + 1) );
   free_safe( top_module, (strlen( top_module ) + 1) );
   free_safe( ppfilename, (strlen( ppfilename ) + 1) );
   ppfilename = NULL;
 
   free_safe( directive_filename, (strlen( directive_filename ) + 1) );
   free_safe( top_instance, (strlen( top_instance ) + 1) );
-  free_safe( vpi_timescale, (strlen( vpi_timescale ) + 1) );
+  free_safe( timescale, (strlen( timescale ) + 1) );
   free_safe( pragma_coverage_name, (strlen( pragma_coverage_name ) + 1) );
   free_safe( pragma_racecheck_name, (strlen( pragma_racecheck_name ) + 1) );
 
@@ -1113,6 +1209,10 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.138  2008/10/05 20:21:36  phase1geo
+ Adding more diagnostics to regression suite which fully passes.  Added -conservative
+ and -Wignore options to the score command.
+
  Revision 1.137  2008/09/25 20:59:31  phase1geo
  Updates for LXT regressions (which now run cleanly).
 

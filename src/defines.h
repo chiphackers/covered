@@ -75,6 +75,11 @@
 #define DFLT_VPI_NAME      "covered_vpi.v"
 
 /*!
+ Default filename that will contain the code necessary to dump only the needed signals of the design.
+*/
+#define DFLT_DUMPVARS_NAME "covered_dumpvars.v"
+
+/*!
  Determine size of integer in bits.
 */
 #define INTEGER_WIDTH	   (SIZEOF_INT * 8)
@@ -2957,6 +2962,9 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.323  2008/10/06 04:05:19  phase1geo
+ Adding support for logic block removal warning output.
+
  Revision 1.322  2008/10/03 13:14:36  phase1geo
  Inserting placeholders for $srandom, $urandom, and $urandom_range system call
  support.  Checkpointing.

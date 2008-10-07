@@ -95,6 +95,9 @@ void instance_remove_stmt_blks_calling_stmt( funit_inst* root, statement* stmt )
 /*! \brief Removes expressions from instance parameters within the given instance that match the given expression */
 void instance_remove_parms_with_expr( funit_inst* root, statement* stmt );
 
+/*! \brief Outputs dumpvars to the given file for the given instance */
+void instance_output_dumpvars( FILE* vfile, funit_inst* root );
+
 /*! \brief Recursively deallocates all memory for the associated instance tree */
 void instance_dealloc_tree( funit_inst* root );
 
@@ -104,6 +107,10 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.37  2008/09/03 05:33:06  phase1geo
+ Adding in FSM exclusion support to exclude and report -e commands.  Updating
+ regressions per recent changes.  Checkpointing.
+
  Revision 1.36  2008/09/02 22:41:45  phase1geo
  Starting to work on adding exclusion reason output to report files.  Added
  support for exclusion reasons to CDD files.  Checkpointing.

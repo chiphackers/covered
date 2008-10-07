@@ -1399,7 +1399,44 @@ void funit_delete_thread(
 
   PROFILE_END;
     
-}   
+}
+
+/*!
+ Outputs all of the needed signals to the specified file.
+*/
+void funit_output_dumpvars( 
+  FILE*       vfile,  /*!< Pointer to file to output dumpvars information to */
+  func_unit*  funit,  /*!< Pointer to functional unit to output */
+  const char* scope   /*!< Instance scope */
+) { PROFILE(FUNIT_OUTPUT_DUMPVARS);
+
+  sig_link* sigl  = funit->sig_head;
+  bool      first = TRUE;
+
+  while( sigl != NULL ) {
+    if( (sigl->sig->suppl.part.assigned == 0) &&
+        (sigl->sig->suppl.part.type != SSUPPL_TYPE_PARAM)  &&
+        (sigl->sig->suppl.part.type != SSUPPL_TYPE_ENUM)   &&
+        (sigl->sig->suppl.part.type != SSUPPL_TYPE_MEM)    &&
+        (sigl->sig->suppl.part.type != SSUPPL_TYPE_GENVAR) &&
+        (sigl->sig->suppl.part.type != SSUPPL_TYPE_EVENT) ) {
+      if( first ) {
+        first = FALSE;
+        fprintf( vfile, "  $dumpvars( 1, %s.%s", scope, sigl->sig->name );
+      } else {
+        fprintf( vfile, ",\n                %s.%s", scope, sigl->sig->name );
+      }
+    }
+    sigl = sigl->next;
+  } 
+
+  if( !first ) {
+    fprintf( vfile, " );\n" );
+  }
+
+  PROFILE_END;
+
+}
 
 /*!
  Deallocates functional unit contents: name and filename strings.
@@ -1553,6 +1590,10 @@ void funit_dealloc(
 
 /*
  $Log$
+ Revision 1.113  2008/09/22 22:15:03  phase1geo
+ Initial code for supporting the merging and resolution of exclusion reasons.
+ This code is completely untested at this point but does compile.  Checkpointing.
+
  Revision 1.112  2008/09/22 05:04:49  phase1geo
  Adding parsing support for new -er option.
 

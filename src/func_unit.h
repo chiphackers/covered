@@ -130,12 +130,23 @@ void funit_delete_thread(
   thread*    thr
 );
 
+/*! \brief Outputs dumpvars calls to the given file. */
+void funit_output_dumpvars(
+  FILE*       vfile,
+  func_unit*  funit,
+  const char* scope
+);
+
 /*! \brief Deallocates functional unit element from heap. */
 void funit_dealloc( func_unit* funit );
 
 
 /*
  $Log$
+ Revision 1.38  2008/09/19 22:59:16  phase1geo
+ Adding initial support for module version information.  Verified that the new
+ code does not break existing regression.  Also added new Covered banner.
+
  Revision 1.37  2008/04/15 06:08:46  phase1geo
  First attempt to get both instance and module coverage calculatable for
  GUI purposes.  This is not quite complete at the moment though it does

@@ -308,12 +308,13 @@
             </row>
             <row>
               <entry>
-                -vpi_ts (1|10|100)(s|ms|us|ns|ps|fs)/(1|10|100)(s|ms|us|ns|ps|fs)
+                -ts (1|10|100)(s|ms|us|ns|ps|fs)/(1|10|100)(s|ms|us|ns|ps|fs)
               </entry>
               <entry>
-                This option is only valid when the -vpi option has been specified. This option allows the user to specify a timescale for the generated 
-                Verilog module created with the -vpi option. If this option is not specified, no timescale will be created for the generated module. If 
-                whitespace is needed between the various values, place the entire contents of timescale in double quotes.
+                This option is only valid when the -vpi or -dumpvars options have been specified. This option allows the user to specify a 
+                timescale for the generated Verilog module created with the -vpi or -dumpvars options. If this option is not specified, no 
+                timescale will be created for the generated module. If whitespace is needed between the various values, place the entire 
+                contents of timescale in double quotes.
               </entry>
             </row>
             <row>

@@ -33,6 +33,7 @@
 #include "parse.h"
 #include "parser_misc.h"
 #include "race.h"
+#include "score.h"
 #include "sim.h"
 #include "stmt_blk.h"
 #include "util.h"
@@ -54,6 +55,7 @@ extern bool      instance_specified;
 extern char*     top_module;
 extern char*     ppfilename;
 extern bool      debug_mode;
+extern char*     dumpvars_file;
 
 /*!
  \return Returns the number of characters read from this line.
@@ -191,6 +193,14 @@ void parse_design(
 
     }
 
+    /* Output the dumpvars module, if specified. */
+    if( dumpvars_file != NULL ) {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Outputting dumpvars file %s...", dumpvars_file );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+      score_generate_top_dumpvars_module( dumpvars_file );
+    }
+
     /* Write contents to baseline database file. */
     db_write( output_db, TRUE, FALSE );
 
@@ -299,6 +309,10 @@ void parse_and_score_dumpfile(
 
 /*
  $Log$
+ Revision 1.72  2008/09/04 21:34:20  phase1geo
+ Completed work to get exclude reason support to work with toggle coverage.
+ Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
+
  Revision 1.71  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify
