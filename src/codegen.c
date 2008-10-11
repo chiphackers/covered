@@ -886,9 +886,7 @@ void codegen_gen_expr(
                                right_code, right_code_depth, expr->right, NULL );
           break;
         case EXP_OP_DASSIGN  :
-          codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, " = ",
-                               right_code, right_code_depth, expr->right, NULL );
-          break;
+        case EXP_OP_RASSIGN  :
         case EXP_OP_BASSIGN  :
           codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, " = ",
                                right_code, right_code_depth, expr->right, NULL );
@@ -993,6 +991,11 @@ void codegen_gen_expr(
 
 /*
  $Log$
+ Revision 1.101  2008/10/04 04:28:47  phase1geo
+ Adding code to support $urandom, $srandom and $urandom_range.  Added one test
+ to begin verifying $urandom functionality.  The rest of the system tasks need
+ to be verified.  Checkpointing.
+
  Revision 1.100  2008/10/03 04:22:01  phase1geo
  Adding support for $random and $time output in reports.  Added diagnostics to
  verify this behavior works as expected.  Full regressions pass.
