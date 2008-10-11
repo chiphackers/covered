@@ -5034,7 +5034,7 @@ void expression_set_assigned(
      If we are on the LHS of a BASSIGN operator, set the assigned bit to indicate that
      this signal will be assigned by Covered and not the dumpfile.
     */
-    if( (curr->op == EXP_OP_BASSIGN) || (curr->op == EXP_OP_RASSIGN) ) {
+    if( curr->op == EXP_OP_BASSIGN ) {
       expr->sig->suppl.part.assigned = 1;
     }
 
@@ -5441,6 +5441,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.355  2008/10/07 22:31:42  phase1geo
+ Cleaning up splint warnings.  Cleaning up development documentation.
+
  Revision 1.354  2008/10/07 18:37:48  phase1geo
  Fixing bug introduced in sim.c that kept automatic tasks/functions from working.
  Updated regressions (VCS fully passes now).
