@@ -22,6 +22,7 @@
 
 #include <limits.h>
 
+#include "defines.h"
 #include "profiler.h"
 
 #if ULONG_MAX > 4294967295UL
@@ -270,9 +271,102 @@ unsigned long sys_task_urandom_range(
 
 }
 
+/*!
+ \return Returns a 64-bit bit representation of the specified double value.
+
+ Converts a 64-bit real value to a 64-bit unsigned value.
+*/
+uint64 sys_task_realtobits(
+  double real  /*!< Real value to convert to bits */
+) { PROFILE(SYS_TASK_REALTOBITS);
+
+  union {
+    double real;
+    uint64 u64;
+  } conversion;
+
+  conversion.real = real;
+
+  PROFILE_END;
+
+  return( conversion.u64 );
+
+}
+
+/*!
+ \return Returns a 64-bit real representation of the specified 64-bit value.
+
+ Converts a 64-bit value to a 64-bit real.
+*/
+double sys_task_bitstoreal(
+  uint64 u64  /*!< 64-bit value to convert to a real */
+) { PROFILE(SYS_TASK_BITSTOREAL);
+
+  union {
+    double real;
+    uint64 u64;
+  } conversion;
+
+  conversion.u64 = u64;
+
+  PROFILE_END;
+
+  return( conversion.real );
+
+}
+
+/*!
+ \return Returns a 32-bit bit representation of the specified double value.
+
+ Converts a 32-bit real value to a 32-bit unsigned value.
+*/
+uint32 sys_task_shortrealtobits(
+  float real  /*!< Real value to convert to bits */
+) { PROFILE(SYS_TASK_SHORTREALTOBITS);
+
+  union {
+    float  real;
+    uint32 u32;
+  } conversion;
+
+  conversion.real = real;
+
+  PROFILE_END;
+
+  return( conversion.u32 );
+
+}
+
+/*!
+ \return Returns a 32-bit real representation of the specified 32-bit value.
+
+ Converts a 32-bit value to a 32-bit real.
+*/
+float sys_task_bitstoshortreal(
+  uint32 u32  /*!< 32-bit value to convert to a real */
+) { PROFILE(SYS_TASK_BITSTOSHORTREAL);
+
+  union {
+    float  real;
+    uint32 u32;
+  } conversion;
+
+  conversion.u32 = u32;
+
+  PROFILE_END;
+
+  return( conversion.real );
+
+}
+
+
 
 /*
  $Log$
+ Revision 1.4  2008/10/05 00:26:57  phase1geo
+ Adding more diagnostics to verify random system functions.  Fixed some bugs
+ in this code area.
+
  Revision 1.3  2008/10/04 04:28:47  phase1geo
  Adding code to support $urandom, $srandom and $urandom_range.  Added one test
  to begin verifying $urandom functionality.  The rest of the system tasks need

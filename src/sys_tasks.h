@@ -46,8 +46,32 @@ unsigned long sys_task_urandom_range(
   unsigned long min
 );
 
+/*! \brief Converts a 64-bit real value to a 64-bit unsigned value. */
+uint64 sys_task_realtobits(
+  double real
+);
+
+/*! \brief Converts a 64-bit value to a 64-bit real. */
+double sys_task_bitstoreal(
+  uint64 u64
+);
+
+/*! \brief Converts a 32-bit real value to a 32-bit unsigned value. */
+uint32 sys_task_shortrealtobits(
+  float real
+);
+
+/*! \brief Converts a 32-bit value to a 32-bit real. */
+float sys_task_bitstoshortreal(
+  uint32 u32
+);
+
+
 /*
  $Log$
+ Revision 1.4  2008/10/07 22:31:42  phase1geo
+ Cleaning up splint warnings.  Cleaning up development documentation.
+
  Revision 1.3  2008/10/04 04:28:47  phase1geo
  Adding code to support $urandom, $srandom and $urandom_range.  Added one test
  to begin verifying $urandom functionality.  The rest of the system tasks need

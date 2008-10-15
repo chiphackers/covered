@@ -851,13 +851,19 @@ typedef enum exp_op_type_e {
   EXP_OP_ALS_A,           /*!< 102:0x66.  Specifies the '<<<=' operator */
   EXP_OP_ARS_A,           /*!< 103:0x67.  Specifies the '>>>=' operator */
   EXP_OP_FOREVER,         /*!< 104:0x68.  Specifies the 'forever' statement */
-  EXP_OP_STIME,           /*!< 105:0x69.  Specifies the $time call */
-  EXP_OP_SRANDOM,         /*!< 106:0x6a.  Specifies the $random call */
+  EXP_OP_STIME,           /*!< 105:0x69.  Specifies the $time system call */
+  EXP_OP_SRANDOM,         /*!< 106:0x6a.  Specifies the $random system call */
   EXP_OP_PLIST,           /*!< 107:0x6b.  Task/function port list glue */
   EXP_OP_SASSIGN,         /*!< 108:0x6c.  System task port assignment holder */
-  EXP_OP_SSRANDOM,        /*!< 109:0x6d.  Specifies the $srandom call */
-  EXP_OP_SURANDOM,        /*!< 110:0x6e.  Specifies the $urandom call */
-  EXP_OP_SURAND_RANGE,    /*!< 111:0x6f.  Specifies the $urandom_range call */
+  EXP_OP_SSRANDOM,        /*!< 109:0x6d.  Specifies the $srandom system call */
+  EXP_OP_SURANDOM,        /*!< 110:0x6e.  Specifies the $urandom system call */
+  EXP_OP_SURAND_RANGE,    /*!< 111:0x6f.  Specifies the $urandom_range system call */
+  EXP_OP_SR2B,            /*!< 112:0x70.  Specifies the $realtobits system call */
+  EXP_OP_SB2R,            /*!< 113:0x71.  Specifies the $bitstoreal system call */
+  EXP_OP_SSR2B,           /*!< 114:0x72.  Specifies the $shortrealtobits system call */
+  EXP_OP_SB2SR,           /*!< 115:0x73.  Specifies the $bitstoshortreal system call */
+  EXP_OP_SI2R,            /*!< 116:0x74.  Specifies the $itor system call */
+  EXP_OP_SR2I,            /*!< 117:0x75.  Specifies the $rtoi system call */
   EXP_OP_NUM              /*!< The total number of defines for expression values */
 } exp_op_type;
 
@@ -2981,6 +2987,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.326  2008/10/15 13:28:37  phase1geo
+ Beginning to add support for real numbers.  Things are broken in regards
+ to real numbers at the moment.  Checkpointing.
+
  Revision 1.325  2008/10/07 20:19:44  phase1geo
  Adding documentation for the new -dumpvars option.  Also added support for this
  feature in the GUI CDD generator wizard.
