@@ -30,13 +30,24 @@
 
 /*! \brief Initializes specified vector. */
 void vector_init_ulong(
-  /*@out@*/ vector*  vec,
-            ulong**  value,
-            ulong    data_l,
-            ulong    data_h,
-            bool     owns_value,
-            int      width,
-            int      type
+  /*@out@*/ vector* vec,
+            ulong** value,
+            ulong   data_l,
+            ulong   data_h,
+            bool    owns_value,
+            int     width,
+            int     type
+);
+
+/*! \brief Initializes specified vector with realtime information. */
+void vector_init_r64(
+  /*@out@*/ vector* vec,
+            rv64*   value,
+            double  data,
+            char*   str,
+            bool    owns_value,
+            int     width,
+            int     type
 );
 
 /*! \brief Creates and initializes new vector */
@@ -581,6 +592,11 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.64  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.60.2.1  2008/07/10 22:43:55  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

@@ -567,21 +567,37 @@ WSPACE [ \t\b\f]+
      return BASE_NUMBER;
  }
 
-  /* Real numbers -- we ignore this information */
+  /* Real numbers */
 <PARSE>[0-9][0-9_]*\.[0-9][0-9_]*([Ee][+-]?[0-9][0-9_]*)? { 
+     double rtime;
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
+     yylval.realtime = (vector*)malloc_safe( sizeof( vector ) );
+     if( sscanf( yytext, "%f", &rtime ) == 1 ) {
+       vector_init_r64( yylval.realtime, (rv64*)malloc_safe( sizeof( rv64 ) ), rtime, yytext, TRUE, 64, VDATA_R64 );
+     } else if( sscanf( yytext, "%g", &rtime ) == 1 ) {
+       vector_init_r64( yylval.realtime, (rv64*)malloc_safe( sizeof( rv64 ) ), rtime, yytext, TRUE, 64, VDATA_R64 );
+     } else {
+       assert( 0 );
+     }
      return REALTIME;
  }
 
-  /* Real numbers -- we ignore this information */
+  /* Real numbers */
 <PARSE>[0-9][0-9_]*[Ee][+-]?[0-9][0-9_]* { 
+     double rtime;
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
+     yylval.realtime = (vector*)malloc_safe( sizeof( vector ) );
+     if( sscanf( yytext, "%g", &rtime ) == 1 ) {
+       vector_init_r64( yylval.realtime, (rv64*)malloc_safe( sizeof( rv64 ) ), rtime, yytext, TRUE, 64, VDATA_R64 );
+     } else {
+       assert( 0 );
+     }
      return REALTIME;
  }
 
-  /* Timescale directive -- we ignore this information */
+  /* Timescale directive */
 ^{WSPACE}?`timescale {
 	yylloc.first_column = yylloc.last_column;
 	yylloc.last_column += strlen( yytext );

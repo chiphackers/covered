@@ -114,6 +114,44 @@ void vector_init_ulong(
 }
 
 /*!
+ Initializes the specified vector with the contents of width and value (if value != NULL).
+ If value != NULL, initializes all contents of value array to NaN.
+*/
+void vector_init_r64(
+  vector*      vec,         /*!< Pointer to vector to initialize */
+  rv64*        value,       /*!< Pointer to real value structure for vector */
+  double       data,        /*!< Initial value to set the data to */
+  char*        str,         /*!< String representation of the value */
+  bool         owns_value,  /*!< Set to TRUE if this vector is responsible for deallocating the given value array */
+  int          width,       /*!< Bit width of specified vector (32 or 64 are the only valid values) */
+  int          type         /*!< Type of vector to initialize this to */
+) { PROFILE(VECTOR_INT_R64);
+
+  assert( (width == 32) || (width == 64) );
+
+  vec->width                = width;
+  vec->suppl.all            = 0;
+  vec->suppl.part.type      = type;
+  vec->suppl.part.data_type = VDATA_R64;
+  vec->suppl.part.owns_data = owns_value;
+  vec->value.r64            = value;
+
+  if( value != NULL ) {
+
+    vec->value.r64->val = data;
+    vec->value.r64->str = strdup_safe( str );
+
+  } else {
+
+    assert( !owns_value );
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  \return Pointer to newly created vector.
 
  Creates new vector from heap memory and initializes all vector contents.
@@ -145,6 +183,15 @@ vector* vector_create(
           }
         }
         vector_init_ulong( new_vec, value, 0x0, 0x0, (value != NULL), width, type );
+      }
+      break;
+    case VDATA_R64 :
+      {
+        rv64* value = NULL;
+        if( data == TRUE ) {
+          value = (rv64*)malloc_safe( sizeof( rv64 ) );
+        }
+        vector_init_r64( new_vec, value, 0.0, "0.0", (value != NULL), width, type );
       }
       break;
     default :  assert( 0 );
@@ -181,6 +228,12 @@ void vector_copy(
             to_vec->value.ul[i][j] = from_vec->value.ul[i][j];
           }
         }
+      }
+      break;
+    case VDATA_R64 :
+      {
+        to_vec->value.r64->val = from_vec->value.r64->val;
+        to_vec->value.r64->str = strdup_safe( from_vec->value.r64->str );
       }
       break;
     default:  assert( 0 );  break;
@@ -221,6 +274,9 @@ void vector_copy_range(
           }
         }
       }
+      break;
+    case VDATA_R64 :
+      assert( 0 );
       break;
     default :  assert( 0 );  break;
   }
@@ -319,6 +375,11 @@ void vector_db_write(
               fprintf( file, " 0" );
             }
           }
+        }
+        break;
+      case VDATA_R64 :
+        {
+          fprintf( file, " %f %s", vec->value.r64->val, vec->value.r64->str );
         }
         break;
       default :  assert( 0 );  break;
@@ -420,6 +481,20 @@ void vector_db_read(
                     Throw 0;
                   }
                 }
+              }
+            }
+            break;
+          case VDATA_R64 :
+            {
+              char   str[4096];
+              double value;
+              if( sscanf( *line, "%f %s%n", &value, str, &chars_read ) == 2 ) {
+                *line += chars_read;
+                (*vec)->value.r64->str = strdup_safe( str );
+                (*vec)->value.r64->val = value;
+              } else {
+                print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+                Throw 0;
               }
             }
             break;
@@ -559,6 +634,16 @@ void vector_db_merge(
             }
           }
           break;
+        case VDATA_R64 :
+          {
+            char   str[4096];
+            double value;
+            if( sscanf( *line, "%f %s%n", &value, str, &chars_read ) != 2 ) {
+              print_output( "Unable to parse vector information in database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
+              Throw 0;
+            }
+          }
+          break;
         default :  assert( 0 );  break;
       }
 
@@ -597,6 +682,9 @@ void vector_merge(
         }
       }
       break;
+    case VDATA_R64 :
+      /* Nothing to do here */
+      break;
     default :  assert( 0 );  break;
   }
 
@@ -618,8 +706,9 @@ int vector_get_eval_a(
   assert( vec->suppl.part.type == VTYPE_EXP );
 
   switch( vec->suppl.part.data_type ) {
-    case VDATA_UL :  retval = (vec->value.ul[UL_DIV(index)][VTYPE_INDEX_EXP_EVAL_A] >> UL_MOD(index)) & 0x1;  break;
-    default       :  assert( 0 );  break;
+    case VDATA_UL  :  retval = (vec->value.ul[UL_DIV(index)][VTYPE_INDEX_EXP_EVAL_A] >> UL_MOD(index)) & 0x1;  break;
+    case VDATA_R64 :  retval = 0;
+    default        :  assert( 0 );  break;
   }
 
   PROFILE_END;
@@ -642,8 +731,9 @@ int vector_get_eval_b(
   assert( vec->suppl.part.type == VTYPE_EXP );
 
   switch( vec->suppl.part.data_type ) {
-    case VDATA_UL :  retval = (vec->value.ul[UL_DIV(index)][VTYPE_INDEX_EXP_EVAL_B] >> UL_MOD(index)) & 0x1;  break;
-    default       :  assert( 0 );  break;
+    case VDATA_UL  :  retval = (vec->value.ul[UL_DIV(index)][VTYPE_INDEX_EXP_EVAL_B] >> UL_MOD(index)) & 0x1;  break;
+    case VDATA_R64 :  retval = 0;
+    default        :  assert( 0 );  break;
   }
 
   PROFILE_END;
@@ -666,8 +756,9 @@ int vector_get_eval_c(
   assert( vec->suppl.part.type == VTYPE_EXP );
 
   switch( vec->suppl.part.data_type ) {
-    case VDATA_UL :  retval = (vec->value.ul[UL_DIV(index)][VTYPE_INDEX_EXP_EVAL_C] >> UL_MOD(index)) & 0x1;  break;
-    default       :  assert( 0 );  break;
+    case VDATA_UL  :  retval = (vec->value.ul[UL_DIV(index)][VTYPE_INDEX_EXP_EVAL_C] >> UL_MOD(index)) & 0x1;  break;
+    case VDATA_R64 :  retval = 0;
+    default        :  assert( 0 );  break;
   }
 
   PROFILE_END;
@@ -690,8 +781,9 @@ int vector_get_eval_d(
   assert( vec->suppl.part.type == VTYPE_EXP );
 
   switch( vec->suppl.part.data_type ) {
-    case VDATA_UL :  retval = (vec->value.ul[UL_DIV(index)][VTYPE_INDEX_EXP_EVAL_D] >> UL_MOD(index)) & 0x1;  break;
-    default       :  assert( 0 );  break;
+    case VDATA_UL  :  retval = (vec->value.ul[UL_DIV(index)][VTYPE_INDEX_EXP_EVAL_D] >> UL_MOD(index)) & 0x1;  break;
+    case VDATA_R64 :  retval = 0;
+    default        :  assert( 0 );  break;
   }
 
   PROFILE_END;
@@ -720,6 +812,8 @@ int vector_get_eval_ab_count(
           count += (value_b >> j) & 0x1;
         }
       }
+      break;
+    case VDATA_R64 :
       break;
     default :  assert( 0 );  break;
   }
@@ -752,6 +846,8 @@ int vector_get_eval_abc_count(
           count += (value_c >> j) & 0x1;
         }
       }
+      break;
+    case VDATA_R64 :
       break;
     default :  assert( 0 );  break;
   }
@@ -786,6 +882,8 @@ int vector_get_eval_abcd_count(
           count += (value_d >> j) & 0x1;
         }
       }
+      break;
+    case VDATA_R64 :
       break;
     default :  assert( 0 );  break;
   }
@@ -1085,6 +1183,17 @@ void vector_display_ulong(
 }
 
 /*!
+ Outputs the contents of a 64-bit real vector value.
+*/
+void vector_display_r64(
+  rv64* value  /*!< Pointer to real64 structure from vector */
+) {
+
+  printf( "read value: %s, stored value: %f", value->str, value->val );
+
+}
+
+/*!
  Outputs contents of vector to standard output (for debugging purposes only).
 */
 void vector_display(
@@ -1099,8 +1208,9 @@ void vector_display(
 
   if( (vec->width > 0) && (vec->value.ul != NULL) ) {
     switch( vec->suppl.part.data_type ) {
-      case VDATA_UL :  vector_display_ulong( vec->value.ul, vec->width, vec->suppl.part.type );  break;
-      default       :  assert( 0 );  break;
+      case VDATA_UL  :  vector_display_ulong( vec->value.ul, vec->width, vec->suppl.part.type );  break;
+      case VDATA_R64 :  vector_display_r64( vec->value.r64 );  break;
+      default        :  assert( 0 );  break;
     }
   } else {
     printf( "NO DATA" );
@@ -1133,6 +1243,8 @@ void vector_toggle_count(
             *tog10_cnt += ((vec->value.ul[i][VTYPE_INDEX_SIG_TOG10] >> j) & 0x1);
           }
         }
+        break;
+      case VDATA_R64 :
         break;
       default :  assert( 0 );  break;
     }
@@ -1175,6 +1287,8 @@ void vector_mem_rw_count(
           }
         }
       }
+      break;
+    case VDATA_R64 :
       break;
     default :  assert( 0 );  break;
   }
@@ -1224,6 +1338,8 @@ bool vector_set_assigned(
           vec->value.ul[i][VTYPE_INDEX_SIG_MISC] |= hmask;
         }
       }
+      break;
+    case VDATA_R64 :
       break;
     default :  assert( 0 );  break;
   }
@@ -1656,6 +1772,7 @@ bool vector_part_select_pull(
         retval = vector_set_coverage_and_assign_ulong( tgt, vall, valh, 0, (tgt->width - 1) );
       }
       break;
+    case VDATA_R64 :  assert( 0 );  break;
     default :  assert( 0 );  break;
   }
 
@@ -1735,6 +1852,7 @@ bool vector_part_select_push(
         retval = vector_set_coverage_and_assign_ulong( tgt, vall, valh, tgt_lsb, tgt_msb );
       }
       break;
+    case VDATA_R64 :  assert( 0 );  break;
     default :  assert( 0 );  break;
   }
 
@@ -1765,6 +1883,8 @@ void vector_set_unary_evals(
           entry[VTYPE_INDEX_EXP_EVAL_B] |= nhval &  lval;
         }
       }
+      break;
+    case VDATA_R64 :
       break;
     default :  assert( 0 );  break;
   }
@@ -1807,6 +1927,8 @@ void vector_set_and_comb_evals(
         }
       }
       break;
+    case VDATA_R64 :
+      break;
     default :  assert( 0 );  break;
   }
 
@@ -1847,6 +1969,8 @@ void vector_set_or_comb_evals(
           val[VTYPE_INDEX_EXP_EVAL_C] |= nlvalh & nrvalh & ~lvall & ~rvall;
         }
       }
+      break;
+    case VDATA_R64 :
       break;
     default :  assert( 0 );  break;
   }
@@ -1891,6 +2015,8 @@ void vector_set_other_comb_evals(
         }
       }
       break;
+    case VDATA_R64 :
+      break;
     default :  assert( 0 );  break;
   }
 
@@ -1915,6 +2041,9 @@ bool vector_is_unknown(
     case VDATA_UL :
       size = UL_SIZE( vec->width );
       while( (i < size) && (vec->value.ul[i][VTYPE_INDEX_VAL_VALH] == 0) ) i++;
+      break;
+    case VDATA_R64 :
+      size = 0;
       break;
     default :  assert( 0 );  break;
   }
@@ -1942,6 +2071,9 @@ bool vector_is_not_zero(
     case VDATA_UL :
       size = UL_SIZE( vec->width );
       while( (i < size) && (vec->value.ul[i][VTYPE_INDEX_VAL_VALL] == 0) ) i++;
+      break;
+    case VDATA_R64 :
+      size = 0;
       break;
     default :  assert( 0 );  break;
   }
@@ -1979,6 +2111,9 @@ bool vector_set_to_x(
         retval = vector_set_coverage_and_assign_ulong( vec, scratchl, scratchh, 0, (vec->width - 1) );
       }
       break;
+    case VDATA_R64 :
+      retval = FALSE;
+      break;
     default :  assert( 0 );  break;
   }
 
@@ -2005,7 +2140,8 @@ int vector_to_int(
   assert( width > 0 );
 
   switch( vec->suppl.part.data_type ) {
-    case VDATA_UL :  retval = vec->value.ul[0][VTYPE_INDEX_VAL_VALL];  break;
+    case VDATA_UL  :  retval = vec->value.ul[0][VTYPE_INDEX_VAL_VALL];  break;
+    case VDATA_R64 :  retval = (int)vec->value.r64->val;
     default        :  assert( 0 );  break;
   }
 
@@ -2043,6 +2179,9 @@ uint64 vector_to_uint64(
         retval = (uint64)vec->value.ul[0][VTYPE_INDEX_VAL_VALL];
       }
       break;
+    case VDATA_R64 :
+      retval = (uint64)vec->value.r64->val;
+      break;
     default :  assert( 0 );  break;
   }
 
@@ -2074,6 +2213,12 @@ void vector_to_sim_time(
       time->lo   = vec->value.ul[0][VTYPE_INDEX_VAL_VALL];
       time->hi   = (vec->width > 32) ? vec->value.ul[1][VTYPE_INDEX_VAL_VALL] : 0;
       time->full = (((uint64)time->hi) << 32) | time->lo;
+      break;
+    case VDATA_R64 :
+      /* TBD */
+      time->lo   = 0;
+      time->hi   = 0;
+      time->full = (uint64)vec->value.r64->val;
       break;
     default :  assert( 0 );  break;
   }
@@ -2110,6 +2255,9 @@ void vector_from_int(
         vec->value.ul[0][VTYPE_INDEX_VAL_VALH] = 0;
 #endif
       }
+      break;
+    case VDATA_R64 :
+      assert( 0 );
       break;
     default :  assert( 0 );  break;
   }
@@ -2149,6 +2297,9 @@ void vector_from_uint64(
 #endif
       }
       break;
+    case VDATA_R64 :
+      assert( 0 );
+      break;
     default :  assert( 0 );  break;
   }
 
@@ -2185,6 +2336,9 @@ static void vector_set_static(
               }
             }
             break;
+          case VDATA_R64 :
+            assert( 0 );  /* TBD */
+            break;
           default :  assert( 0 );  break;
         }
       } else if( (*ptr == 'z') || (*ptr == 'Z') || (*ptr == '?') ) {
@@ -2198,6 +2352,9 @@ static void vector_set_static(
                 vec->value.ul[index][VTYPE_INDEX_VAL_VALH] |= value;
               }
             }
+            break;
+          case VDATA_R64 :
+            assert( 0 );  /* TBD */
             break;
           default :  assert( 0 );  break;
         }
@@ -2218,6 +2375,9 @@ static void vector_set_static(
                 vec->value.ul[UL_DIV(i+pos)][VTYPE_INDEX_VAL_VALL] |= ((val >> i) & 0x1) << UL_MOD(i + pos);
               }
             }
+            break;
+          case VDATA_R64 :
+            assert( 0 );  /* TBD */
             break;
           default :  assert( 0 );  break;
         }
@@ -2251,6 +2411,8 @@ static void vector_set_static(
             vec->value.ul[i][VTYPE_INDEX_VAL_VALH] = hfill & hmask;
           }
         }
+        break;
+      case VDATA_R64 :
         break;
       default :  assert( 0 );
     }
@@ -2297,6 +2459,9 @@ char* vector_to_string(
             offset = SIZEOF_LONG;
           }
         }
+        break;
+      case VDATA_R64 :
+        assert( 0 );
         break;
       default :  assert( 0 );  break;
     }
@@ -4492,6 +4657,10 @@ void vector_dealloc_value(
         vec->value.ul = NULL;
       }
       break;
+    case VDATA_R64 :
+      free_safe( vec->value.r64->str, (strlen( vec->value.r64->str ) + 1) );
+      free_safe( vec->value.r64, sizeof( rv64 ) );
+      break;
     default :  assert( 0 );  break;
   }
 
@@ -4525,6 +4694,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.161  2008/10/07 22:31:42  phase1geo
+ Cleaning up splint warnings.  Cleaning up development documentation.
+
  Revision 1.160  2008/10/03 03:13:49  phase1geo
  Fixing problem with vector_from_int and vector_from_uint64 changes.  Full regression
  passes again.

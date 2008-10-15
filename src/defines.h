@@ -1123,6 +1123,9 @@ typedef enum exp_op_type_e {
 /*! unsigned long */
 #define VDATA_UL      0
 
+/*! 64-bit floating point */
+#define VDATA_R64     1
+
 /*! @} */
 
 /*!
@@ -1721,6 +1724,7 @@ union asuppl_u {
 union  expr_stmt_u;
 struct exp_info_s;
 struct str_link_s;
+struct rv64_s;
 struct vector_s;
 struct const_value_s;
 struct vecblk_s;
@@ -1797,6 +1801,11 @@ typedef struct exp_info_s exp_info;
  Renaming string link structure for convenience.
 */
 typedef struct str_link_s str_link;
+
+/*!
+ Renaming rv64 structure for convenience.
+*/
+typedef struct rv64_s rv64;
 
 /*!
  Renaming vector structure for convenience.
@@ -2148,6 +2157,15 @@ struct str_link_s {
 };
 
 /*!
+ This structure contains the contents needed to store and display the floating point value used
+ within the design.
+*/
+struct rv64_s {
+  char*  str;                        /*!< Specifies the number of values specified to the right of the decimal point */
+  real64 val;                        /*!< Specifies 64-bit double-precision floating point value */
+};
+
+/*!
  Contains information for signal value.  This value is represented as
  a generic vector.  The vector.h/.c files contain the functions that
  manipulate this information.
@@ -2157,6 +2175,7 @@ struct vector_s {
   vsuppl       suppl;                /*!< Supplemental field */
   union {
     ulong** ul;                      /*!< Machine sized unsigned integer array for value, signal, expression and memory types */
+    rv64*   r64;                     /*!< 64-bit floating point value */
   } value;
 };
 
@@ -2962,6 +2981,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.325  2008/10/07 20:19:44  phase1geo
+ Adding documentation for the new -dumpvars option.  Also added support for this
+ feature in the GUI CDD generator wizard.
+
  Revision 1.324  2008/10/07 05:24:17  phase1geo
  Adding -dumpvars option.  Need to resolve a few issues before this work is considered
  complete.

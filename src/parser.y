@@ -235,7 +235,7 @@ int yydebug = 1;
   char*           text;
   int	          integer;
   const_value     num;
-  double          realtime;
+  vector*         realtime;
   vsignal*        sig;
   expression*     expr;
   statement*      state;
@@ -1098,7 +1098,20 @@ static_expr_primary
     }
   | REALTIME
     {
-      stmt_blk_specify_removal_reason( LOGIC_RM_REAL, @1.text, @1.first_line, __FILE__, __LINE__ );
+      static_expr* tmp;
+      if( (ignore_mode == 0) && ($1 != NULL) ) {
+        tmp = (static_expr*)malloc_safe( sizeof( static_expr ) );
+        Try {
+          tmp->exp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+        } Catch_anonymous {
+          error_count++;
+        }
+        vector_dealloc( tmp->exp->value );
+        tmp->exp->value = $1;
+      } else {
+        vector_dealloc( $1 );
+        $$ = NULL;
+      }
       $$ = NULL;
     }
   | IDENTIFIER
@@ -1835,8 +1848,19 @@ expr_primary
     }
   | REALTIME
     {
-      stmt_blk_specify_removal_reason( LOGIC_RM_REAL, @1.text, @1.first_line, __FILE__, __LINE__ );
-      $$ = NULL;
+      if( (ignore_mode == 0) && ($1 != NULL) ) {
+        Try {
+          $$ = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+          vector_dealloc( $$->value );
+          $$->value = $1;
+        } Catch_anonymous {
+          error_count++;
+          $$ = NULL;
+        }
+      } else {
+        vector_dealloc( $1 );
+        $$ = NULL;
+      }
     }
   | STRING
     {
@@ -5659,7 +5683,7 @@ block_item_decl
       int real_size = sizeof( double ) * 8;
       curr_signed   = TRUE;
       curr_mba      = FALSE;
-      curr_handled  = FALSE;
+      curr_handled  = TRUE;
       curr_sig_type = SSUPPL_TYPE_DECL_REG;
       parser_implicitly_set_curr_range( (real_size - 1), 0, TRUE );
     }
@@ -5669,7 +5693,7 @@ block_item_decl
       int real_size = sizeof( double ) * 8;
       curr_signed   = TRUE;
       curr_mba      = FALSE;
-      curr_handled  = FALSE;
+      curr_handled  = TRUE;
       curr_sig_type = SSUPPL_TYPE_DECL_REG;
       parser_implicitly_set_curr_range( (real_size - 1), 0, TRUE );
     }
@@ -6039,8 +6063,20 @@ delay_value_simple
     }
   | REALTIME
     {
-      stmt_blk_specify_removal_reason( LOGIC_RM_REAL, @1.text, @1.first_line, __FILE__, __LINE__ );
-      $$ = NULL;
+      if( (ignore_mode == 0) && ($1 != NULL) ) {
+        Try {
+          $$ = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+          assert( $$->value->value.r64 == NULL );
+          free_safe( $$->value, sizeof( vector ) );
+          $$->value = $1;
+        } Catch_anonymous {
+          error_count++;
+          $$ = NULL;
+        }
+      } else {
+        vector_dealloc( $1 );
+        $$ = NULL;
+      }
     }
   | IDENTIFIER
     {
