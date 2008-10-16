@@ -99,7 +99,7 @@ vsignal* vsignal_create(
   new_sig = (vsignal*)malloc_safe( sizeof( vsignal ) );
 
   vsignal_init( new_sig, ((name != NULL) ? strdup_safe( name ) : NULL),
-                type, vector_create( width, ((type == SSUPPL_TYPE_MEM) ? VTYPE_MEM : VTYPE_SIG), VDATA_UL, TRUE ), line, col );
+                type, vector_create( width, ((type == SSUPPL_TYPE_MEM) ? VTYPE_MEM : VTYPE_SIG), ((type == SSUPPL_TYPE_DECL_REAL) ? VDATA_R64 : VDATA_UL), TRUE ), line, col );
 
   PROFILE_END;
 
@@ -762,6 +762,10 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.81  2008/09/22 22:15:05  phase1geo
+ Initial code for supporting the merging and resolution of exclusion reasons.
+ This code is completely untested at this point but does compile.  Checkpointing.
+
  Revision 1.80  2008/09/15 23:01:39  phase1geo
  Updating regressions per latest change.
 

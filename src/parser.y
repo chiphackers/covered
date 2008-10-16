@@ -5684,7 +5684,7 @@ block_item_decl
       curr_signed   = TRUE;
       curr_mba      = FALSE;
       curr_handled  = TRUE;
-      curr_sig_type = SSUPPL_TYPE_DECL_REG;
+      curr_sig_type = SSUPPL_TYPE_DECL_REAL;
       parser_implicitly_set_curr_range( (real_size - 1), 0, TRUE );
     }
     list_of_variables ';'
@@ -5694,7 +5694,7 @@ block_item_decl
       curr_signed   = TRUE;
       curr_mba      = FALSE;
       curr_handled  = TRUE;
-      curr_sig_type = SSUPPL_TYPE_DECL_REG;
+      curr_sig_type = SSUPPL_TYPE_DECL_REAL;
       parser_implicitly_set_curr_range( (real_size - 1), 0, TRUE );
     }
     list_of_variables ';'

@@ -560,6 +560,9 @@
 /*! This signal is a memory */
 #define SSUPPL_TYPE_MEM           15
 
+/*! This signal is a real */
+#define SSUPPL_TYPE_DECL_REAL     16
+
 /*! @} */
 
 /*!
@@ -1601,7 +1604,7 @@ union ssuppl_u {
   uint32 all;
   struct {
     uint32 col            :16; /*!< Specifies the starting column this signal is declared on */
-    uint32 type           :4;  /*!< Specifies signal type (see \ref ssuppl_type for legal values) */
+    uint32 type           :5;  /*!< Specifies signal type (see \ref ssuppl_type for legal values) */
     uint32 big_endian     :1;  /*!< Specifies if this signal is in big or little endianness */
     uint32 excluded       :1;  /*!< Specifies if this signal should be excluded for toggle coverage */
     uint32 not_handled    :1;  /*!< Specifies if this signal is handled by Covered or not */
@@ -2987,6 +2990,9 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.327  2008/10/15 22:15:19  phase1geo
+ More updates to support real values.  Still a lot of work to go here.
+
  Revision 1.326  2008/10/15 13:28:37  phase1geo
  Beginning to add support for real numbers.  Things are broken in regards
  to real numbers at the moment.  Checkpointing.

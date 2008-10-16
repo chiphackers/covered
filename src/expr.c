@@ -458,27 +458,40 @@ static void expression_create_value(
 
   vector* vec = NULL;  /* Temporary storage of vector array */
 
-  if( (data == TRUE) || ((exp->suppl.part.gen_expr == 1) && (width > 0)) ) {
+  /* If the left or right expressions are storing real numbers, create real number storage for this expression */
+  if( ((exp->left  != NULL) && (exp->left->value  != NULL) && (exp->left->value->suppl.part.data_type  == VDATA_R64) && (exp->op != EXP_OP_COND)) ||
+      ((exp->right != NULL) && (exp->right->value != NULL) && (exp->right->value->suppl.part.data_type == VDATA_R64)) ) {
 
-    if( width > MAX_BIT_WIDTH ) {
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Found an expression width (%d) that exceeds the maximum currently allowed by Covered (%d)",
-                                  width, MAX_BIT_WIDTH );
-      assert( rv < USER_MSG_LENGTH );
-      print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      Throw 0;
-    }
+    printf( "In expression_create_value %s\n", expression_string( exp ) );
 
-    vec = vector_create( width, VTYPE_EXP, VDATA_UL, TRUE );
-    assert( exp->value->value.ul == NULL );
-    vector_init_ulong( exp->value, vec->value.ul, 0x0, 0x0, TRUE, width, vec->suppl.part.type );
-    free_safe( vec, sizeof( vector ) );
+    vector_init_r64( exp->value, (rv64*)malloc_safe( sizeof( rv64 ) ), 0.0, NULL, TRUE, 64, VTYPE_EXP );
 
-    /* Create the temporary vectors now, if needed */
-    expression_create_tmp_vecs( exp, width );
-
+  /* Otherwise, create a ulong vector */
   } else {
 
-    vector_init_ulong( exp->value, NULL, 0x0, 0x0, FALSE, width, VTYPE_EXP );
+    if( (data == TRUE) || ((exp->suppl.part.gen_expr == 1) && (width > 0)) ) {
+
+      if( width > MAX_BIT_WIDTH ) {
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Found an expression width (%d) that exceeds the maximum currently allowed by Covered (%d)",
+                                    width, MAX_BIT_WIDTH );
+        assert( rv < USER_MSG_LENGTH );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        Throw 0;
+      }
+
+      vec = vector_create( width, VTYPE_EXP, VDATA_UL, TRUE );
+      assert( exp->value->value.ul == NULL );
+      vector_init_ulong( exp->value, vec->value.ul, 0x0, 0x0, TRUE, width, vec->suppl.part.type );
+      free_safe( vec, sizeof( vector ) );
+
+      /* Create the temporary vectors now, if needed */
+      expression_create_tmp_vecs( exp, width );
+
+    } else {
+
+      vector_init_ulong( exp->value, NULL, 0x0, 0x0, FALSE, width, VTYPE_EXP );
+
+    }
 
   }
 
@@ -670,9 +683,11 @@ expression* expression_create(
     Throw 0;
   }
 
+/*
   if( (data == FALSE) && (generate_expr_mode == 0) ) {
     assert( new_expr->value->value.ul == NULL );
   }
+*/
 
   PROFILE_END;
 
@@ -3223,8 +3238,15 @@ bool expression_op_func__cond(
   /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__COND);
 
+  bool retval;
+
   /* Simple vector copy from right side and gather coverage information */
-  bool retval = vector_set_value_ulong( expr->value, expr->right->value->value.ul, expr->right->value->width );
+  if( expr->value->suppl.part.data_type == VDATA_UL ) {
+    retval = vector_set_value_ulong( expr->value, expr->right->value->value.ul, expr->right->value->width );
+  } else {
+    retval = (expr->value->value.r64->val != expr->right->value->value.r64->val);
+    expr->value->value.r64->val = expr->right->value->value.r64->val;
+  }
 
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
@@ -3249,14 +3271,37 @@ bool expression_op_func__cond_sel(
 
   bool retval;  /* Return value for this function */
 
-  if( !vector_is_unknown( expr->parent->expr->left->value ) ) {
-    if( !vector_is_not_zero( expr->parent->expr->left->value ) ) {
-      retval = vector_set_value_ulong( expr->value, expr->right->value->value.ul, expr->right->value->width );
-    } else {
-      retval = vector_set_value_ulong( expr->value, expr->left->value->value.ul, expr->left->value->width );
-    }
-  } else {
-    retval = vector_set_to_x( expr->value );
+  switch( expr->value->suppl.part.data_type ) {
+    case VDATA_UL :
+      if( !vector_is_unknown( expr->parent->expr->left->value ) ) {
+        if( !vector_is_not_zero( expr->parent->expr->left->value ) ) {
+          retval = vector_set_value_ulong( expr->value, expr->right->value->value.ul, expr->right->value->width );
+        } else {
+          retval = vector_set_value_ulong( expr->value, expr->left->value->value.ul, expr->left->value->width );
+        }
+      } else {
+        retval = vector_set_to_x( expr->value );
+      }
+      break;
+    case VDATA_R64 :
+      if( !vector_is_unknown( expr->parent->expr->left->value ) ) {
+        if( !vector_is_not_zero( expr->parent->expr->left->value ) ) {
+          real64 rval = (expr->right->value->suppl.part.data_type == VDATA_UL) ? (double)vector_to_uint64( expr->right->value ) : expr->right->value->value.r64->val;
+          retval      = (expr->value->value.r64->val != rval);
+          expr->value->value.r64->val = rval;
+        } else {
+          real64 lval = (expr->left->value->suppl.part.data_type == VDATA_UL) ? (double)vector_to_uint64( expr->left->value ) : expr->left->value->value.r64->val;
+          retval      = (expr->value->value.r64->val != lval);
+          expr->value->value.r64->val = lval;
+        }
+      } else {
+        retval = (expr->value->value.r64->val != 0.0);
+        expr->value->value.r64->val = 0.0;
+      }
+      break;
+    default :
+      assert( 0 );
+      break;
   }
 
   /* Gather coverage information */
@@ -5602,6 +5647,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.357  2008/10/15 22:15:19  phase1geo
+ More updates to support real values.  Still a lot of work to go here.
+
  Revision 1.356  2008/10/11 03:59:19  phase1geo
  Fixing bug 2158626.  Also removing RASSIGN expression statements from line coverage
  (they are always executed and therefore will never be interesting from a line coverage

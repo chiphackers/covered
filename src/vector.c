@@ -139,7 +139,7 @@ void vector_init_r64(
   if( value != NULL ) {
 
     vec->value.r64->val = data;
-    vec->value.r64->str = strdup_safe( str );
+    vec->value.r64->str = (str != NULL) ? strdup_safe( str ) : NULL;
 
   } else {
 
@@ -191,7 +191,7 @@ vector* vector_create(
         if( data == TRUE ) {
           value = (rv64*)malloc_safe( sizeof( rv64 ) );
         }
-        vector_init_r64( new_vec, value, 0.0, "0.0", (value != NULL), width, type );
+        vector_init_r64( new_vec, value, 0.0, NULL, (value != NULL), width, type );
       }
       break;
     default :  assert( 0 );
@@ -379,7 +379,10 @@ void vector_db_write(
         break;
       case VDATA_R64 :
         {
-          fprintf( file, " %f %s", vec->value.r64->val, vec->value.r64->str );
+          fprintf( file, " %f", vec->value.r64->val );
+          if( vec->value.r64->str != NULL ) {
+            fprintf( file, " %s", vec->value.r64->str );
+          }
         }
         break;
       default :  assert( 0 );  break;
@@ -488,10 +491,15 @@ void vector_db_read(
             {
               char   str[4096];
               double value;
-              if( sscanf( *line, "%f %s%n", &value, str, &chars_read ) == 2 ) {
+              if( sscanf( *line, "%f%n", &value, &chars_read ) == 1 ) {
                 *line += chars_read;
-                (*vec)->value.r64->str = strdup_safe( str );
                 (*vec)->value.r64->val = value;
+                if( sscanf( *line, "%s%n", str, &chars_read ) == 1 ) {
+                  *line += chars_read;
+                  (*vec)->value.r64->str = strdup_safe( str );
+                } else {
+                  (*vec)->value.r64->str = NULL;
+                }
               } else {
                 print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
                 Throw 0;
@@ -638,7 +646,12 @@ void vector_db_merge(
           {
             char   str[4096];
             double value;
-            if( sscanf( *line, "%f %s%n", &value, str, &chars_read ) != 2 ) {
+            if( sscanf( *line, "%f%n", &value, &chars_read ) == 1 ) {
+              *line += chars_read;
+              if( sscanf( *line, "%s%n", str, &chars_read ) == 1 ) {
+                *line += chars_read;
+              }
+            } else {
               print_output( "Unable to parse vector information in database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
               Throw 0;
             }
@@ -1852,7 +1865,10 @@ bool vector_part_select_push(
         retval = vector_set_coverage_and_assign_ulong( tgt, vall, valh, tgt_lsb, tgt_msb );
       }
       break;
-    case VDATA_R64 :  assert( 0 );  break;
+    case VDATA_R64 :
+      /* Real values should never be used here */
+      assert( 0 );
+      break;
     default :  assert( 0 );  break;
   }
 
@@ -2073,7 +2089,7 @@ bool vector_is_not_zero(
       while( (i < size) && (vec->value.ul[i][VTYPE_INDEX_VAL_VALL] == 0) ) i++;
       break;
     case VDATA_R64 :
-      size = 0;
+      size = (vec->value.r64->val == 0.0) ? 1 : 0;
       break;
     default :  assert( 0 );  break;
   }
@@ -4694,6 +4710,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.162  2008/10/15 13:28:37  phase1geo
+ Beginning to add support for real numbers.  Things are broken in regards
+ to real numbers at the moment.  Checkpointing.
+
  Revision 1.161  2008/10/07 22:31:42  phase1geo
  Cleaning up splint warnings.  Cleaning up development documentation.
 
