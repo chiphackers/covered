@@ -66,9 +66,21 @@ float sys_task_bitstoshortreal(
   uint32 u32
 );
 
+/*! \brief Returns a real representation of the specified integer value. */
+double sys_task_itor(
+  int ival
+);
+
+/*! \brief Returns an integer representation of the specified real value (value is truncated). */
+int sys_task_rtoi(
+  double real
+);
 
 /*
  $Log$
+ Revision 1.5  2008/10/15 22:15:19  phase1geo
+ More updates to support real values.  Still a lot of work to go here.
+
  Revision 1.4  2008/10/07 22:31:42  phase1geo
  Cleaning up splint warnings.  Cleaning up development documentation.
 

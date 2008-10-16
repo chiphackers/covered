@@ -28,7 +28,7 @@
 %}
 struct keyword_sys_1995 { char *name; int type; };
 %%
-bitstoreal,     S_ignore
+bitstoreal,     S_bitstoreal
 countdrivers,   S_ignore
 display,        S_allow
 dumpall,        S_allow
@@ -48,7 +48,7 @@ getpattern,     S_ignore
 history,        S_allow
 incsave,        S_ignore
 input,          S_ignore
-itor,           S_ignore
+itor,           S_itor
 key,            S_allow
 list,           S_allow
 log,            S_allow
@@ -62,12 +62,12 @@ random,         S_random
 readmemb,       S_ignore
 readmemh,       S_ignore
 realtime,       S_ignore
-realtobits,     S_ignore
+realtobits,     S_realtobits
 reset,          S_ignore
 reset_count,    S_ignore
 reset_value,    S_ignore
 restart,        S_ignore
-rtoi,           S_ignore
+rtoi,           S_rtoi
 save,           S_ignore
 scale,          S_ignore
 scope,          S_ignore

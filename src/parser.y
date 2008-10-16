@@ -284,6 +284,7 @@ int yydebug = 1;
 %token K_wor K_xnor K_xor
 %token K_Shold K_Speriod K_Srecovery K_Ssetup K_Swidth K_Ssetuphold
 %token S_user S_ignore S_allow S_finish S_stop S_time S_random S_srandom S_dumpfile S_urandom S_urandom_range
+%token S_realtobits S_bitstoreal S_rtoi S_itor S_shortrealtobits S_bitstoshortreal
 
 %token K_automatic K_cell K_use K_library K_config K_endconfig K_design K_liblist K_instance
 %token K_showcancelled K_noshowcancelled K_pulsestyle_onevent K_pulsestyle_ondetect
@@ -1200,22 +1201,6 @@ static_expr_primary
         tmp->num = -1;
         Try {
           tmp->exp = db_create_expression( NULL, NULL, EXP_OP_SURANDOM, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-        }
-        $$ = tmp;
-      } else {
-        $$ = NULL;
-      }
-    }
-  | S_urandom_range
-    {
-      if( ignore_mode == 0 ) {
-        static_expr* tmp;
-        tmp = (static_expr*)malloc_safe( sizeof( static_expr ) );
-        tmp->num = -1;
-        Try {
-          tmp->exp = db_create_expression( NULL, NULL, EXP_OP_SURAND_RANGE, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
         } Catch_anonymous {
           error_count++;
         }
@@ -2163,6 +2148,96 @@ expr_primary
       if( (ignore_mode == 0) && ($3 != NULL) ) {
         Try {
           $$ = db_create_expression( NULL, $3, EXP_OP_SURAND_RANGE, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+        } Catch_anonymous {
+          expression_dealloc( $3, FALSE );
+          error_count++;
+          $$ = NULL;
+        }
+      } else {
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
+      }
+    }
+  | S_realtobits '(' expression_systask_list ')'
+    {
+      if( (ignore_mode == 0) && ($3 != NULL) ) {
+        Try {
+          $$ = db_create_expression( NULL, $3, EXP_OP_SR2B, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+        } Catch_anonymous {
+          expression_dealloc( $3, FALSE );
+          error_count++;
+          $$ = NULL;
+        }
+      } else {
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
+      }
+    }
+  | S_bitstoreal '(' expression_systask_list ')'
+    {
+      if( (ignore_mode == 0) && ($3 != NULL) ) {
+        Try {
+          $$ = db_create_expression( NULL, $3, EXP_OP_SB2R, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+        } Catch_anonymous {
+          expression_dealloc( $3, FALSE );
+          error_count++;
+          $$ = NULL;
+        }
+      } else {
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
+      }
+    }
+  | S_itor '(' expression_systask_list ')'
+    {
+      if( (ignore_mode == 0) && ($3 != NULL) ) {
+        Try {
+          $$ = db_create_expression( NULL, $3, EXP_OP_SI2R, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+        } Catch_anonymous {
+          expression_dealloc( $3, FALSE );
+          error_count++;
+          $$ = NULL;
+        }
+      } else {
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
+      }
+    }
+  | S_rtoi '(' expression_systask_list ')'
+    {
+      if( (ignore_mode == 0) && ($3 != NULL) ) {
+        Try {
+          $$ = db_create_expression( NULL, $3, EXP_OP_SR2I, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+        } Catch_anonymous {
+          expression_dealloc( $3, FALSE );
+          error_count++;
+          $$ = NULL;
+        }
+      } else {
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
+      }
+    }
+  | S_shortrealtobits '(' expression_systask_list ')'
+    {
+      if( (ignore_mode == 0) && ($3 != NULL) ) {
+        Try {
+          $$ = db_create_expression( NULL, $3, EXP_OP_SSR2B, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+        } Catch_anonymous {
+          expression_dealloc( $3, FALSE );
+          error_count++;
+          $$ = NULL;
+        }
+      } else {
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
+      }
+    }
+  | S_bitstoshortreal '(' expression_systask_list ')'
+    {
+      if( (ignore_mode == 0) && ($3 != NULL) ) {
+        Try {
+          $$ = db_create_expression( NULL, $3, EXP_OP_SB2SR, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
         } Catch_anonymous {
           expression_dealloc( $3, FALSE );
           error_count++;
@@ -5698,6 +5773,15 @@ block_item_decl
       parser_implicitly_set_curr_range( (real_size - 1), 0, TRUE );
     }
     list_of_variables ';'
+  | attribute_list_opt K_shortreal
+    {
+      int real_size = sizeof( float ) * 8;
+      curr_signed   = TRUE;
+      curr_mba      = FALSE;
+      curr_handled  = TRUE;
+      curr_sig_type = SSUPPL_TYPE_DECL_SREAL;
+      parser_implicitly_set_curr_range( (real_size - 1), 0, TRUE );
+    }
   | attribute_list_opt K_parameter parameter_assign_decl ';'
   | attribute_list_opt K_localparam
     {

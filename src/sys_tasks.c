@@ -359,10 +359,42 @@ float sys_task_bitstoshortreal(
 
 }
 
+/*!
+ \return Returns a real representation of the specified integer value.
+*/
+double sys_task_itor(
+  int ival  /*!< Integer value to convert to real value */
+) { PROFILE(SYS_TASK_ITOR);
+
+  double real = (double)ival;
+
+  PROFILE_END;
+
+  return( real );
+
+}
+
+/*!
+ \return Returns an integer representation of the specified real value (value is truncated).
+*/
+int sys_task_rtoi(
+  double real  /*!< Real value to convert to integer */
+) { PROFILE(SYS_TASK_RTOI);
+
+  int ival = (int)real;
+
+  PROFILE_END;
+
+  return( ival );
+
+}
 
 
 /*
  $Log$
+ Revision 1.5  2008/10/15 22:15:19  phase1geo
+ More updates to support real values.  Still a lot of work to go here.
+
  Revision 1.4  2008/10/05 00:26:57  phase1geo
  Adding more diagnostics to verify random system functions.  Fixed some bugs
  in this code area.

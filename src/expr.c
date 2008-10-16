@@ -462,8 +462,6 @@ static void expression_create_value(
   if( ((exp->left  != NULL) && (exp->left->value  != NULL) && (exp->left->value->suppl.part.data_type  == VDATA_R64) && (exp->op != EXP_OP_COND)) ||
       ((exp->right != NULL) && (exp->right->value != NULL) && (exp->right->value->suppl.part.data_type == VDATA_R64)) ) {
 
-    printf( "In expression_create_value %s\n", expression_string( exp ) );
-
     vector_init_r64( exp->value, (rv64*)malloc_safe( sizeof( rv64 ) ), 0.0, NULL, TRUE, 64, VTYPE_EXP );
 
   /* Otherwise, create a ulong vector */
@@ -867,179 +865,184 @@ void expression_resize(
       expression_resize( expr->right, funit, recursive, alloc );
     }
 
-    /* Get vector supplemental field */
-    old_vec_suppl = expr->value->suppl.all;
+    /* We only need to resize (possibly) if we are storing bit information */
+    if( expr->value->suppl.part.data_type == VDATA_UL ) {
 
-    switch( expr->op ) {
+      /* Get vector supplemental field */
+      old_vec_suppl = expr->value->suppl.all;
 
-      /* Only resize these values if we are recursively resizing */
-      case EXP_OP_PARAM          :
-      case EXP_OP_PARAM_SBIT     :
-      case EXP_OP_PARAM_MBIT     :
-      case EXP_OP_PARAM_MBIT_POS :
-      case EXP_OP_PARAM_MBIT_NEG :
-      case EXP_OP_SIG            :
-      case EXP_OP_SBIT_SEL       :
-      case EXP_OP_MBIT_SEL       :
-      case EXP_OP_MBIT_POS       :
-      case EXP_OP_MBIT_NEG       :
-        if( recursive && (expr->sig != NULL) ) {
-          expression_set_value( expr, expr->sig, funit );
-          assert( expr->value->value.ul != NULL );
-        }
-        break;
+      switch( expr->op ) {
 
-      /* These operations will already be sized so nothing to do here */
-      case EXP_OP_STATIC         :
-      case EXP_OP_TRIGGER        :
-      case EXP_OP_ASSIGN         :
-      case EXP_OP_DASSIGN        :
-      case EXP_OP_BASSIGN        :
-      case EXP_OP_NASSIGN        :
-      case EXP_OP_PASSIGN        :
-      case EXP_OP_RASSIGN        :
-      case EXP_OP_DLY_ASSIGN     :
-      case EXP_OP_IF             :
-      case EXP_OP_WHILE          :
-      case EXP_OP_LAST           :
-      case EXP_OP_DIM            :
-        break;
-
-      /* These operations should always be set to a width 1 */
-      case EXP_OP_LT      :
-      case EXP_OP_GT      :
-      case EXP_OP_EQ      :
-      case EXP_OP_CEQ     :
-      case EXP_OP_LE      :
-      case EXP_OP_GE      :
-      case EXP_OP_NE      :
-      case EXP_OP_CNE     :
-      case EXP_OP_LOR     :
-      case EXP_OP_LAND    :
-      case EXP_OP_UAND    :
-      case EXP_OP_UNOT    :
-      case EXP_OP_UOR     :
-      case EXP_OP_UXOR    :
-      case EXP_OP_UNAND   :
-      case EXP_OP_UNOR    :
-      case EXP_OP_UNXOR   :
-      case EXP_OP_EOR     :
-      case EXP_OP_CASE    :
-      case EXP_OP_CASEX   :
-      case EXP_OP_CASEZ   :
-      case EXP_OP_DEFAULT :
-      case EXP_OP_REPEAT  :
-      case EXP_OP_RPT_DLY :
-      case EXP_OP_WAIT    :
-      case EXP_OP_SFINISH :
-      case EXP_OP_SSTOP   :
-      case EXP_OP_NEDGE   :
-      case EXP_OP_PEDGE   :
-      case EXP_OP_AEDGE   :
-      case EXP_OP_PLIST   :
-        if( (expr->value->width != 1) || (expr->value->value.ul == NULL) ) {
-          assert( expr->value->value.ul == NULL );
-          expression_create_value( expr, 1, alloc );
-        }
-        break;
-
-      /*
-       In the case of an EXPAND, we need to set the width to be the product of the value of
-       the left child and the bit-width of the right child.
-      */
-      case EXP_OP_EXPAND :
-        expression_operate_recursively( expr->left, funit, TRUE );
-        if( vector_is_unknown( expr->left->value ) ) {
-          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown value used for concatenation multiplier, file: %s, line: %d", funit->filename, expr->line );
-          assert( rv < USER_MSG_LENGTH );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          Throw 0;
-        }
-        if( (expr->value->width != (vector_to_int( expr->left->value ) * expr->right->value->width)) ||
-            (expr->value->value.ul == NULL) ) {
-          assert( expr->value->value.ul == NULL );
-          expression_create_value( expr, (vector_to_int( expr->left->value ) * expr->right->value->width), alloc );
-        }
-        break;
-
-      /* 
-       In the case of a MULTIPLY or LIST (for concatenation) operation, its expression width must be the sum of its
-       children's width.  Remove the current vector and replace it with the appropriately
-       sized vector.
-      */
-      case EXP_OP_LIST :
-        if( (expr->value->width != (expr->left->value->width + expr->right->value->width)) ||
-            (expr->value->value.ul == NULL) ) {
-          assert( expr->value->value.ul == NULL );
-          expression_create_value( expr, (expr->left->value->width + expr->right->value->width), alloc );
-        }
-        break;
-
-      /*
-       A FUNC_CALL expression width is set to the same width as that of the function's return value.
-      */
-      case EXP_OP_FUNC_CALL :
-        if( expr->sig != NULL ) {
-          assert( funit != NULL );
-          if( (funit->type != FUNIT_AFUNCTION) && (funit->type != FUNIT_ANAMED_BLOCK) ) {
-            assert( expr->elem.funit != NULL );
-            tmp_inst = inst_link_find_by_funit( expr->elem.funit, db_list[curr_db]->inst_head, &ignore );
-            funit_size_elements( expr->elem.funit, tmp_inst, FALSE, FALSE );
+        /* Only resize these values if we are recursively resizing */
+        case EXP_OP_PARAM          :
+        case EXP_OP_PARAM_SBIT     :
+        case EXP_OP_PARAM_MBIT     :
+        case EXP_OP_PARAM_MBIT_POS :
+        case EXP_OP_PARAM_MBIT_NEG :
+        case EXP_OP_SIG            :
+        case EXP_OP_SBIT_SEL       :
+        case EXP_OP_MBIT_SEL       :
+        case EXP_OP_MBIT_POS       :
+        case EXP_OP_MBIT_NEG       :
+          if( recursive && (expr->sig != NULL) ) {
+            expression_set_value( expr, expr->sig, funit );
+            assert( expr->value->value.ul != NULL );
           }
-          if( (expr->value->width != expr->sig->value->width) || (expr->value->value.ul == NULL) ) {
+          break;
+
+        /* These operations will already be sized so nothing to do here */
+        case EXP_OP_STATIC         :
+        case EXP_OP_TRIGGER        :
+        case EXP_OP_ASSIGN         :
+        case EXP_OP_DASSIGN        :
+        case EXP_OP_BASSIGN        :
+        case EXP_OP_NASSIGN        :
+        case EXP_OP_PASSIGN        :
+        case EXP_OP_RASSIGN        :
+        case EXP_OP_DLY_ASSIGN     :
+        case EXP_OP_IF             :
+        case EXP_OP_WHILE          :
+        case EXP_OP_LAST           :
+        case EXP_OP_DIM            :
+          break;
+
+        /* These operations should always be set to a width 1 */
+        case EXP_OP_LT      :
+        case EXP_OP_GT      :
+        case EXP_OP_EQ      :
+        case EXP_OP_CEQ     :
+        case EXP_OP_LE      :
+        case EXP_OP_GE      :
+        case EXP_OP_NE      :
+        case EXP_OP_CNE     :
+        case EXP_OP_LOR     :
+        case EXP_OP_LAND    :
+        case EXP_OP_UAND    :
+        case EXP_OP_UNOT    :
+        case EXP_OP_UOR     :
+        case EXP_OP_UXOR    :
+        case EXP_OP_UNAND   :
+        case EXP_OP_UNOR    :
+        case EXP_OP_UNXOR   :
+        case EXP_OP_EOR     :
+        case EXP_OP_CASE    :
+        case EXP_OP_CASEX   :
+        case EXP_OP_CASEZ   :
+        case EXP_OP_DEFAULT :
+        case EXP_OP_REPEAT  :
+        case EXP_OP_RPT_DLY :
+        case EXP_OP_WAIT    :
+        case EXP_OP_SFINISH :
+        case EXP_OP_SSTOP   :
+        case EXP_OP_NEDGE   :
+        case EXP_OP_PEDGE   :
+        case EXP_OP_AEDGE   :
+        case EXP_OP_PLIST   :
+          if( (expr->value->width != 1) || (expr->value->value.ul == NULL) ) {
             assert( expr->value->value.ul == NULL );
-            expression_create_value( expr, expr->sig->value->width, alloc );
+            expression_create_value( expr, 1, alloc );
           }
-        }
-        break;
+          break;
 
-      default :
         /*
-         If this expression is either the root, an LHS expression or a lower-level RHS expression,
-         get its size from the largest of its children.
+         In the case of an EXPAND, we need to set the width to be the product of the value of
+         the left child and the bit-width of the right child.
         */
-        if( (ESUPPL_IS_ROOT( expr->suppl ) == 1) ||
-            (ESUPPL_IS_LHS( expr->suppl ) == 1) ||
-            ((expr->parent->expr->op != EXP_OP_ASSIGN) &&
-             (expr->parent->expr->op != EXP_OP_DASSIGN) &&
-             (expr->parent->expr->op != EXP_OP_BASSIGN) &&
-             (expr->parent->expr->op != EXP_OP_NASSIGN) &&
-             (expr->parent->expr->op != EXP_OP_RASSIGN) &&
-             (expr->parent->expr->op != EXP_OP_DLY_OP)) ) {
-          if( (expr->left != NULL) && ((expr->right == NULL) || (expr->left->value->width > expr->right->value->width)) ) {
-            largest_width = expr->left->value->width;
-          } else if( expr->right != NULL ) {
-            largest_width = expr->right->value->width;
+        case EXP_OP_EXPAND :
+          expression_operate_recursively( expr->left, funit, TRUE );
+          if( vector_is_unknown( expr->left->value ) ) {
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown value used for concatenation multiplier, file: %s, line: %d", funit->filename, expr->line );
+            assert( rv < USER_MSG_LENGTH );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            Throw 0;
+          }
+          if( (expr->value->width != (vector_to_int( expr->left->value ) * expr->right->value->width)) ||
+              (expr->value->value.ul == NULL) ) {
+            assert( expr->value->value.ul == NULL );
+            expression_create_value( expr, (vector_to_int( expr->left->value ) * expr->right->value->width), alloc );
+          }
+          break;
+
+        /* 
+         In the case of a MULTIPLY or LIST (for concatenation) operation, its expression width must be the sum of its
+         children's width.  Remove the current vector and replace it with the appropriately
+         sized vector.
+        */
+        case EXP_OP_LIST :
+          if( (expr->value->width != (expr->left->value->width + expr->right->value->width)) ||
+              (expr->value->value.ul == NULL) ) {
+            assert( expr->value->value.ul == NULL );
+            expression_create_value( expr, (expr->left->value->width + expr->right->value->width), alloc );
+          }
+          break;
+
+        /*
+         A FUNC_CALL expression width is set to the same width as that of the function's return value.
+        */
+        case EXP_OP_FUNC_CALL :
+          if( expr->sig != NULL ) {
+            assert( funit != NULL );
+            if( (funit->type != FUNIT_AFUNCTION) && (funit->type != FUNIT_ANAMED_BLOCK) ) {
+              assert( expr->elem.funit != NULL );
+              tmp_inst = inst_link_find_by_funit( expr->elem.funit, db_list[curr_db]->inst_head, &ignore );
+              funit_size_elements( expr->elem.funit, tmp_inst, FALSE, FALSE );
+            }
+            if( (expr->value->width != expr->sig->value->width) || (expr->value->value.ul == NULL) ) {
+              assert( expr->value->value.ul == NULL );
+              expression_create_value( expr, expr->sig->value->width, alloc );
+            }
+          }
+          break;
+
+        default :
+          /*
+           If this expression is either the root, an LHS expression or a lower-level RHS expression,
+           get its size from the largest of its children.
+          */
+          if( (ESUPPL_IS_ROOT( expr->suppl ) == 1) ||
+              (ESUPPL_IS_LHS( expr->suppl ) == 1) ||
+              ((expr->parent->expr->op != EXP_OP_ASSIGN) &&
+               (expr->parent->expr->op != EXP_OP_DASSIGN) &&
+               (expr->parent->expr->op != EXP_OP_BASSIGN) &&
+               (expr->parent->expr->op != EXP_OP_NASSIGN) &&
+               (expr->parent->expr->op != EXP_OP_RASSIGN) &&
+               (expr->parent->expr->op != EXP_OP_DLY_OP)) ) {
+            if( (expr->left != NULL) && ((expr->right == NULL) || (expr->left->value->width > expr->right->value->width)) ) {
+              largest_width = expr->left->value->width;
+            } else if( expr->right != NULL ) {
+              largest_width = expr->right->value->width;
+            } else {
+              largest_width = 1;
+            }
+            if( (expr->value->width != largest_width) || (expr->value->value.ul == NULL) ) {
+              assert( expr->value->value.ul == NULL );
+              expression_create_value( expr, largest_width, alloc );
+            }
+
+          /* If our parent is a DLY_OP, we need to get our value from the LHS of the DLY_ASSIGN expression */
+          } else if( expr->parent->expr->op == EXP_OP_DLY_OP ) {
+            if( (expr->parent->expr->parent->expr->left->value->width != expr->value->width) || (expr->value->value.ul == NULL) ) {
+              assert( expr->value->value.ul == NULL );
+              expression_create_value( expr, expr->parent->expr->parent->expr->left->value->width, alloc );
+            }
+  
+          /* Otherwise, get our value from the size of the expression on the left-hand-side of the assignment */
           } else {
-            largest_width = 1;
+            if( (expr->parent->expr->left->value->width != expr->value->width) || (expr->value->value.ul == NULL) ) {
+              assert( expr->value->value.ul == NULL );
+              expression_create_value( expr, expr->parent->expr->left->value->width, alloc );
+            }
           }
-          if( (expr->value->width != largest_width) || (expr->value->value.ul == NULL) ) {
-            assert( expr->value->value.ul == NULL );
-            expression_create_value( expr, largest_width, alloc );
-          }
+          break;
 
-        /* If our parent is a DLY_OP, we need to get our value from the LHS of the DLY_ASSIGN expression */
-        } else if( expr->parent->expr->op == EXP_OP_DLY_OP ) {
-          if( (expr->parent->expr->parent->expr->left->value->width != expr->value->width) || (expr->value->value.ul == NULL) ) {
-            assert( expr->value->value.ul == NULL );
-            expression_create_value( expr, expr->parent->expr->parent->expr->left->value->width, alloc );
-          }
+      }
 
-        /* Otherwise, get our value from the size of the expression on the left-hand-side of the assignment */
-        } else {
-          if( (expr->parent->expr->left->value->width != expr->value->width) || (expr->value->value.ul == NULL) ) {
-            assert( expr->value->value.ul == NULL );
-            expression_create_value( expr, expr->parent->expr->left->value->width, alloc );
-          }
-        }
-        break;
+      /* Reapply original supplemental field (preserving the owns_data bit) now that expression has been resized */
+      new_owns_data                     = expr->value->suppl.part.owns_data;
+      expr->value->suppl.all            = old_vec_suppl;
+      expr->value->suppl.part.owns_data = new_owns_data;
 
     }
-
-    /* Reapply original supplemental field (preserving the owns_data bit) now that expression has been resized */
-    new_owns_data                     = expr->value->suppl.part.owns_data;
-    expr->value->suppl.all            = old_vec_suppl;
-    expr->value->suppl.part.owns_data = new_owns_data;
 
   }
 
@@ -2970,6 +2973,31 @@ bool expression_op_func__shortrealtobits(
   /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__SHORTREALTOBITS);
 
+  expression* left = expr->left;
+  uint64      u64;
+
+  /* Check to make sure that there is exactly one parameter */
+  if( (left == NULL) || (left->op != EXP_OP_SASSIGN) ) {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$realtobits called with incorrect number of parameters (file: %s, line: %d)", thr->funit->filename, expr->line );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    Throw 0;
+  }
+
+  /* Check to make sure that the parameter is a real */
+  if( left->value->suppl.part.data_type != VDATA_R64 ) {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$realtobits called without real parameter (file: %s, line: %d)", thr->funit->filename, expr->line );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    Throw 0;
+  }
+
+  /* Make sure that the storage vector is a bits type */
+  assert( expr->value->suppl.part.data_type == VDATA_UL );
+
+  /* Convert and store the data */
+  vector_from_uint64( expr->value, sys_task_realtobits( left->value->value.r64->val ) );
+
   PROFILE_END;
 
   return( TRUE );
@@ -4148,7 +4176,14 @@ bool expression_op_func__bassign(
   int intval = 0;  /* Integer value */
 
   /* Perform assignment */
-  expression_assign( expr->left, expr->right, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
+  if( expr->value->suppl.part.data_type == VDATA_UL ) {
+    expression_assign( expr->left, expr->right, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
+  } else {
+    if( expr->left->value->suppl.part.data_type == VDATA_UL ) {
+      uint64 ival = (expr->right->value->suppl.part.data_type == VDATA_R64) ? expr->right->value->value.r64->val : expr->right->value->value.r32->val;
+    } else {
+    }
+  }
 
   /* Gather coverage information */
   expression_set_tf_preclear( expr, TRUE );
@@ -5647,6 +5682,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.358  2008/10/16 05:16:06  phase1geo
+ More work on real number support.  Still a work in progress.  Checkpointing.
+
  Revision 1.357  2008/10/15 22:15:19  phase1geo
  More updates to support real values.  Still a lot of work to go here.
 

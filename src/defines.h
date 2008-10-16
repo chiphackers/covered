@@ -560,8 +560,11 @@
 /*! This signal is a memory */
 #define SSUPPL_TYPE_MEM           15
 
+/*! This signal is a shortreal */
+#define SSUPPL_TYPE_DECL_SREAL    16
+
 /*! This signal is a real */
-#define SSUPPL_TYPE_DECL_REAL     16
+#define SSUPPL_TYPE_DECL_REAL     17
 
 /*! @} */
 
@@ -1134,6 +1137,9 @@ typedef enum exp_op_type_e {
 
 /*! 64-bit floating point */
 #define VDATA_R64     1
+
+/*! 32-bit floating point */
+#define VDATA_R32     2
 
 /*! @} */
 
@@ -1734,6 +1740,7 @@ union  expr_stmt_u;
 struct exp_info_s;
 struct str_link_s;
 struct rv64_s;
+struct rv32_s;
 struct vector_s;
 struct const_value_s;
 struct vecblk_s;
@@ -1815,6 +1822,11 @@ typedef struct str_link_s str_link;
  Renaming rv64 structure for convenience.
 */
 typedef struct rv64_s rv64;
+
+/*!
+ Renaming rv32 structure for convenience.
+*/
+typedef struct rv32_s rv32;
 
 /*!
  Renaming vector structure for convenience.
@@ -2170,8 +2182,17 @@ struct str_link_s {
  within the design.
 */
 struct rv64_s {
-  char*  str;                        /*!< Specifies the number of values specified to the right of the decimal point */
+  char*  str;                        /*!< Specifies the original static string value */
   real64 val;                        /*!< Specifies 64-bit double-precision floating point value */
+};
+
+/*!
+ This structure contains the contents needed to store and display the floating point value used
+ within the design.
+*/
+struct rv32_s {
+  char*  str;                        /*!< Specifies the original static string value */
+  real32 val;                        /*!< Specifies 32-bit double-precision floating point value */
 };
 
 /*!
@@ -2185,6 +2206,7 @@ struct vector_s {
   union {
     ulong** ul;                      /*!< Machine sized unsigned integer array for value, signal, expression and memory types */
     rv64*   r64;                     /*!< 64-bit floating point value */
+    rv32*   r32;                     /*!< 32-bit floating point value (shortreal) */
   } value;
 };
 
@@ -2990,6 +3012,9 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.328  2008/10/16 05:16:06  phase1geo
+ More work on real number support.  Still a work in progress.  Checkpointing.
+
  Revision 1.327  2008/10/15 22:15:19  phase1geo
  More updates to support real values.  Still a lot of work to go here.
 

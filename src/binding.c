@@ -113,20 +113,15 @@ static exp_bind* eb_tail;
 
 
 /*!
- \param type   Type of thing being bound with the specified expression (0=signal, 1=functional unit)
- \param name   Signal/Function/Task scope to bind.
- \param exp    Expression ID to bind.
- \param funit  Pointer to module containing specified expression.
-
  Adds the specified signal/function/task and expression to the bindings linked list.
  This bindings list will be handled after all input Verilog has been
  parsed.
 */
 void bind_add(
-  int         type,
-  const char* name,
-  expression* exp,
-  func_unit*  funit
+  int         type,  /*!< Type of thing being bound with the specified expression (0=signal, 1=functional unit) */
+  const char* name,  /*!< Signal/Function/Task scope to bind */
+  expression* exp,   /*!< Expression ID to bind */
+  func_unit*  funit  /*!< Pointer to module containing specified expression */
 ) { PROFILE(BIND_ADD);
   
   exp_bind* eb;   /* Temporary pointer to signal/expressing binding */
@@ -157,20 +152,16 @@ void bind_add(
 }
 
 /*!
- \param fsm_exp     Expression pertaining to an FSM input state that needs to be sized when
-                    its associated expression is bound to its signal
- \param exp         Expression to match
- \param curr_funit  Functional unit that the FSM expression resides in (this will be the same
-                    functional unit as the expression functional unit).
-
  Searches the expression binding list for the entry that matches the given exp and curr_funit
  parameters.  When the entry is found, the FSM expression is added to the exp_bind structure
  to be sized when the expression is bound.
 */
 void bind_append_fsm_expr(
-  expression*       fsm_exp,
-  const expression* exp,
-  const func_unit*  curr_funit
+  expression*       fsm_exp,    /*!< Expression pertaining to an FSM input state that needs to be sized when
+                                     its associated expression is bound to its signal */
+  const expression* exp,        /*!< Expression to match */
+  const func_unit*  curr_funit  /*!< Functional unit that the FSM expression resides in (this will be the same
+                                     functional unit as the expression functional unit) */
 ) { PROFILE(BIND_APPEND_FSM_EXPR);
 
   exp_bind* curr;
@@ -239,15 +230,12 @@ void bind_display_list() {
 }
 
 /*!
- \param id              Expression ID of binding to remove.
- \param clear_assigned  If set to TRUE, clears the assigned bit in the specified expression.
-
  Removes the binding containing the expression ID of id.  This needs to
  be called before an expression is removed.
 */
 void bind_remove(
-  int  id,
-  bool clear_assigned
+  int  id,             /*!< Expression ID of binding to remove */
+  bool clear_assigned  /*!< If set to TRUE, clears the assigned bit in the specified expression */
 ) { PROFILE(BIND_REMOVE);
 
   exp_bind* curr;  /* Pointer to current exp_bind link */
@@ -301,13 +289,11 @@ void bind_remove(
 }
 
 /*!
- \param exp  Pointer to expression to search for
-
  \return Returns the name of the signal to be bound with the given expression (if one exists);
          otherwise, returns NULL if no match was found.
 */
 char* bind_find_sig_name(
-  const expression* exp
+  const expression* exp  /*!< Pointer to expression to search for */
 ) { PROFILE(BIND_FIND_SIG_NAME);
 
   exp_bind*  curr;         /* Pointer to current exp_bind link */
@@ -356,12 +342,6 @@ char* bind_find_sig_name(
 }
 
 /*!
- \param name          Name of parameter to bind to
- \param exp           Pointer to expression to bind parameter to
- \param funit_exp     Pointer to functional unit containing exp
- \param exp_line      Line number of given expression to bind (for error output purposes only)
- \param bind_locally  Set to TRUE if we are attempting to bind locally.
-
  \return Returns TRUE if the given name referred to a parameter value that was bound; otherwise,
          returns FALSE.
 
@@ -369,11 +349,11 @@ char* bind_find_sig_name(
  returns TRUE; otherwise, returns FALSE.
 */
 static bool bind_param(
-  const char* name,
-  expression* exp,
-  func_unit*  funit_exp,
-  int         exp_line,
-  bool        bind_locally
+  const char* name,          /*!< Name of parameter to bind to */
+  expression* exp,           /*!< Pointer to expression to bind parameter to */
+  func_unit*  funit_exp,     /*!< Pointer to functional unit containing exp */
+  int         exp_line,      /*!< Line number of given expression to bind (for error output purposes only) */
+  bool        bind_locally   /*!< Set to TRUE if we are attempting to bind locally */
 ) { PROFILE(BIND_PARAM);
 
   bool       retval = FALSE;  /* Return value for this function */
@@ -419,15 +399,6 @@ static bool bind_param(
 }
 
 /*!
- \param name            String name of signal to bind to specified expression.
- \param exp             Pointer to expression to bind.
- \param funit_exp       Pointer to functional unit containing expression.
- \param fsm_bind        If set to TRUE, handling binding for FSM binding.
- \param cdd_reading     If set to TRUE, specifies that we are binding after reading a design from a CDD file (instead of the design files).
- \param clear_assigned  If set to TRUE, clears signal assigned bit.
- \param exp_line        Line of specified expression (when expression is NULL)
- \param bind_locally    If TRUE, only search for specified signal within the same functional unit as this expression
-
  \return Returns TRUE if bind occurred successfully; otherwise, returns FALSE.
 
  \throws anonymous expression_set_value
@@ -439,14 +410,14 @@ static bool bind_param(
  be an implicit signal and a 1-bit signal is created.
 */
 bool bind_signal(
-  char*       name,
-  expression* exp,
-  func_unit*  funit_exp,
-  bool        fsm_bind,
-  bool        cdd_reading,
-  bool        clear_assigned,
-  int         exp_line,
-  bool        bind_locally
+  char*       name,            /*!< String name of signal to bind to specified expression */
+  expression* exp,             /*!< Pointer to expression to bind */
+  func_unit*  funit_exp,       /*!< Pointer to functional unit containing expression */
+  bool        fsm_bind,        /*!< If set to TRUE, handling binding for FSM binding */
+  bool        cdd_reading,     /*!< If set to TRUE, specifies that we are binding after reading a design from a CDD file (instead of the design files) */
+  bool        clear_assigned,  /*!< If set to TRUE, clears signal assigned bit */
+  int         exp_line,        /*!< Line of specified expression (when expression is NULL) */
+  bool        bind_locally     /*!< If TRUE, only search for specified signal within the same functional unit as this expression */
 ) { PROFILE(BIND_SIGNAL);
 
   bool         retval = TRUE;  /* Return value for this function */
@@ -593,21 +564,15 @@ bool bind_signal(
 }
 
 /*!
- \param expr       Pointer to port expression to potentially bind to the specified port
- \param funit      Pointer to task/function to bind port list to
- \param name       Hierachical name of function to bind port list to
- \param order      Tracks the port order for the current task/function call parameter
- \param funit_exp  Pointer to functional unit containing the given expression
-
  Binds a given task/function call port parameter to the matching signal in the specified
  task/function.
 */
 static void bind_task_function_ports(
-  expression* expr,
-  func_unit*  funit,
-  char*       name,
-  int*        order,
-  func_unit*  funit_exp
+  expression* expr,      /*!< Pointer to port expression to potentially bind to the specified port */
+  func_unit*  funit,     /*!< Pointer to task/function to bind port list to */
+  char*       name,      /*!< Hierachical name of function to bind port list to */
+  int*        order,     /*!< Tracks the port order for the current task/function call parameter */
+  func_unit*  funit_exp  /*!< Pointer to functional unit containing the given expression */
 ) { PROFILE(BIND_TASK_FUNCTION_PORTS);
 
   sig_link* sigl;            /* Pointer to current signal link to examine */
@@ -682,14 +647,6 @@ static void bind_task_function_ports(
 }
 
 /*!
- \param type          Type of functional unit to bind
- \param name          Name of functional unit to bind
- \param exp           Pointer to expression containing FUNC_CALL/TASK_CALL operation type to bind
- \param funit_exp     Pointer to functional unit containing exp
- \param cdd_reading   Set to TRUE when we are reading from the CDD file (FALSE when parsing)
- \param exp_line      Line number of expression that is being bound (used when exp is NULL)
- \param bind_locally  If set to TRUE, only attempt to bind a task/function local to the expression functional unit
-
  \return Returns TRUE if there were no errors in binding the specified expression to the needed
          functional unit; otherwise, returns FALSE to indicate that we had an error.
 
@@ -698,13 +655,13 @@ static void bind_task_function_ports(
  Binds an expression to a function/task/named block.
 */
 static bool bind_task_function_namedblock(
-  int         type,
-  char*       name,
-  expression* exp,
-  func_unit*  funit_exp,
-  bool        cdd_reading,
-  int         exp_line,
-  bool        bind_locally
+  int         type,         /*!< Type of functional unit to bind */
+  char*       name,         /*!< Name of functional unit to bind */
+  expression* exp,          /*!< Pointer to expression containing FUNC_CALL/TASK_CALL operation type to bind */
+  func_unit*  funit_exp,    /*!< Pointer to functional unit containing exp */
+  bool        cdd_reading,  /*!< Set to TRUE when we are reading from the CDD file (FALSE when parsing) */
+  int         exp_line,     /*!< Line number of expression that is being bound (used when exp is NULL) */
+  bool        bind_locally  /*!< If set to TRUE, only attempt to bind a task/function local to the expression functional unit */
 ) { PROFILE(BIND_TASK_FUNCTION_NAMEDBLOCK);
 
   bool       retval = FALSE;  /* Return value for this function */
@@ -777,9 +734,6 @@ static bool bind_task_function_namedblock(
 }
 
 /*!
- \param cdd_reading  Set to TRUE if we are binding after reading the CDD file; otherwise, set to FALSE.
- \param pass         Specifies the starting pass to perform (setting this to 1 will bypass resolutions).
-
  \throws anonymous Throw param_resolve bind_signal generate_resolve bind_task_function_namedblock bind_task_function_namedblock
 
  In the process of binding, we go through each element of the binding list,
@@ -788,8 +742,8 @@ static bool bind_task_function_namedblock(
  to point to the signal vector.
 */
 void bind_perform(
-  bool cdd_reading,
-  int  pass
+  bool cdd_reading,  /*!< Set to TRUE if we are binding after reading the CDD file; otherwise, set to FALSE */
+  int  pass          /*!< Specifies the starting pass to perform (setting this to 1 will bypass resolutions) */
 ) { PROFILE(BIND_PERFORM);
   
   exp_bind*  curr_eb;   /* Pointer to current expression bind structure */
@@ -977,6 +931,11 @@ void bind_dealloc() { PROFILE(BIND_DEALLOC);
 
 /* 
  $Log$
+ Revision 1.136  2008/10/02 05:51:09  phase1geo
+ Reworking system task call parsing which will allow us to implement system tasks with
+ parameters (also will allow us to handle system tasks correctly for the given generation).
+ Fixing bug 2127694.  Fixing issue with current time in threads.  Full regressions pass.
+
  Revision 1.135  2008/08/18 23:07:25  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

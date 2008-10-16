@@ -28,6 +28,8 @@
 %}
 struct keyword_sys_sv { char *name; int type; };
 %%
+bitstoshortreal S_bitstoshortreal
+shortrealtobits S_shortrealtobits
 srandom,        S_srandom
 urandom,        S_urandom
 urandom_range,  S_urandom_range
