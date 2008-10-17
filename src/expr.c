@@ -615,13 +615,13 @@ expression* expression_create(
         expression_create_value( new_expr, 1, data );
       }
 
-    /* $time expressions are always 64-bits wide */
-    } else if( op == EXP_OP_STIME ) {
+    /* $time, $realtobits, $bitstoreal, $itor and $rtoi expressions are always 64-bits wide */
+    } else if( (op == EXP_OP_STIME) || (op == EXP_OP_SR2B) || (op == EXP_OP_SB2R) || (op == EXP_OP_SI2R) || (op == EXP_OP_SR2I) ) {
 
       expression_create_value( new_expr, 64, data );
 
-    /* $random, $urandom and $urandom_range expressions are always 32-bits wide */
-    } else if( (op == EXP_OP_SRANDOM) || (op == EXP_OP_SURANDOM) || (op == EXP_OP_SURAND_RANGE) ) {
+    /* $random, $urandom, $urandom_range, $shortrealtobits and $bitstoshortreal expressions are always 32-bits wide */
+    } else if( (op == EXP_OP_SRANDOM) || (op == EXP_OP_SURANDOM) || (op == EXP_OP_SURAND_RANGE) || (op == EXP_OP_SSR2B) || (op == EXP_OP_SB2SR) ) {
 
       expression_create_value( new_expr, 32, data );
 
@@ -5696,6 +5696,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.360  2008/10/17 07:26:48  phase1geo
+ Updating regressions per recent changes and doing more work to fixing real
+ value bugs (still not working yet).  Checkpointing.
+
  Revision 1.359  2008/10/16 23:11:50  phase1geo
  More work on support for real numbers.  I believe that all of the code now
  exists in vector.c to support them.  Still need to do work in expr.c.  Added
