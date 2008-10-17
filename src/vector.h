@@ -46,7 +46,6 @@ void vector_init_r64(
             double  data,
             char*   str,
             bool    owns_value,
-            int     width,
             int     type
 );
 
@@ -57,7 +56,6 @@ void vector_init_r32(
             float   data,
             char*   str,
             bool    owns_value,
-            int     width,
             int     type
 );
 
@@ -606,6 +604,12 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.66  2008/10/16 23:11:50  phase1geo
+ More work on support for real numbers.  I believe that all of the code now
+ exists in vector.c to support them.  Still need to do work in expr.c.  Added
+ two new tests for real numbers to begin verifying their support (they both do
+ not currently pass, however).  Checkpointing.
+
  Revision 1.65  2008/10/15 13:28:37  phase1geo
  Beginning to add support for real numbers.  Things are broken in regards
  to real numbers at the moment.  Checkpointing.

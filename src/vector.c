@@ -123,13 +123,10 @@ void vector_init_r64(
   double       data,        /*!< Initial value to set the data to */
   char*        str,         /*!< String representation of the value */
   bool         owns_value,  /*!< Set to TRUE if this vector is responsible for deallocating the given value array */
-  int          width,       /*!< Bit width of specified vector (32 or 64 are the only valid values) */
   int          type         /*!< Type of vector to initialize this to */
 ) { PROFILE(VECTOR_INT_R64);
 
-  assert( width == 64 );
-
-  vec->width                = width;
+  vec->width                = 64;
   vec->suppl.all            = 0;
   vec->suppl.part.type      = type;
   vec->suppl.part.data_type = VDATA_R64;
@@ -161,13 +158,10 @@ void vector_init_r32(
   float        data,        /*!< Initial value to set the data to */
   char*        str,         /*!< String representation of the value */
   bool         owns_value,  /*!< Set to TRUE if this vector is responsible for deallocating the given value array */
-  int          width,       /*!< Bit width of specified vector (32 or 64 are the only valid values) */
   int          type         /*!< Type of vector to initialize this to */
 ) { PROFILE(VECTOR_INT_R32);
 
-  assert( width == 32 );
-
-  vec->width                = width;
+  vec->width                = 32;
   vec->suppl.all            = 0;
   vec->suppl.part.type      = type;
   vec->suppl.part.data_type = VDATA_R32;
@@ -229,7 +223,7 @@ vector* vector_create(
         if( data == TRUE ) {
           value = (rv64*)malloc_safe( sizeof( rv64 ) );
         }
-        vector_init_r64( new_vec, value, 0.0, NULL, (value != NULL), width, type );
+        vector_init_r64( new_vec, value, 0.0, NULL, (value != NULL), type );
       }
       break;
     case VDATA_R32 :
@@ -238,7 +232,7 @@ vector* vector_create(
         if( data == TRUE ) {
           value = (rv32*)malloc_safe( sizeof( rv32 ) );
         }
-        vector_init_r32( new_vec, value, 0.0, NULL, (value != NULL), width, type );
+        vector_init_r32( new_vec, value, 0.0, NULL, (value != NULL), type );
       }
       break;
     default :  assert( 0 );
@@ -4996,6 +4990,12 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.164  2008/10/16 23:11:50  phase1geo
+ More work on support for real numbers.  I believe that all of the code now
+ exists in vector.c to support them.  Still need to do work in expr.c.  Added
+ two new tests for real numbers to begin verifying their support (they both do
+ not currently pass, however).  Checkpointing.
+
  Revision 1.163  2008/10/16 05:16:06  phase1geo
  More work on real number support.  Still a work in progress.  Checkpointing.
 

@@ -1,13 +1,13 @@
 5 11 101 4 *
-8 /ptmp/covered/diags/verilog -t main -vcd block1.vcd -o block1.cdd -v block1.v -D DUMP
+8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd block1.vcd -o block1.cdd -v block1.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" block1.v 1 24 1
 2 1 6 90009 2 1 100c 0 0 1 1 a
 2 2 6 90009 5 29 100a 1 0 1 18 0 1 0 0 0 0
 2 3 7 20006 2 3d 5002 0 0 1 18 0 1 0 0 0 0 foo
 1 a 1 3 70005 1 0 0 0 1 17 0 1 0 1 0 0
-1 b 2 4 870005 1 0 0 0 1 17 0 1 0 1 0 0
-1 c 3 4 870008 1 0 0 0 1 17 0 1 0 0 1 0
+1 b 2 4 1070005 1 0 0 0 1 17 0 1 0 1 0 0
+1 c 3 4 1070008 1 0 0 0 1 17 0 1 0 0 1 0
 4 3 6 2 0
 4 2 1 3 0
 3 1 main.foo "main.foo" block1.v 7 10 1

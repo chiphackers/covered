@@ -2151,14 +2151,15 @@ struct exp_info_s {
   char* op_str;                           /*!< Operation string name for report output purposes */
   bool  (*func)( expression*, thread*, const sim_time* );  /*!< Operation function to call */
   struct {
-    uint32 is_event:1;                   /*!< Specifies if operation is an event */
-    uint32 is_static:1;                  /*!< Specifies if operation is a static value (does not change during simulation) */
-    uint32 is_comb:2;                    /*!< Specifies if operation is combinational (both left/right expressions valid) */
-    uint32 is_unary:1;                   /*!< Specifies if operation is unary (left expression valid only) */
-    uint32 measurable:1;                 /*!< Specifies if this operation type can be measured */
-    uint32 is_context_switch:1;          /*!< Specifies if this operation will cause a context switch */
-    uint32 assignable:1;                 /*!< Specifies if this operation can be immediately assigned (i.e., +=) */
-    uint32 tmp_vecs:3;                   /*!< Number of temporary vectors used by this expression */
+    uint32 is_event:1;                    /*!< Specifies if operation is an event */
+    uint32 is_static:1;                   /*!< Specifies if operation is a static value (does not change during simulation) */
+    uint32 is_comb:2;                     /*!< Specifies if operation is combinational (both left/right expressions valid) */
+    uint32 is_unary:1;                    /*!< Specifies if operation is unary (left expression valid only) */
+    uint32 measurable:1;                  /*!< Specifies if this operation type can be measured */
+    uint32 is_context_switch:1;           /*!< Specifies if this operation will cause a context switch */
+    uint32 assignable:1;                  /*!< Specifies if this operation can be immediately assigned (i.e., +=) */
+    uint32 tmp_vecs:3;                    /*!< Number of temporary vectors used by this expression */
+    uint32 real_op:2;                     /*!< Specifies if this operation can have a real value result. 0=no, 1=only right, 2=only left, 3=either */
   } suppl;                                /*!< Supplemental information about this expression */
 };
 
@@ -3012,6 +3013,12 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.329  2008/10/16 23:11:50  phase1geo
+ More work on support for real numbers.  I believe that all of the code now
+ exists in vector.c to support them.  Still need to do work in expr.c.  Added
+ two new tests for real numbers to begin verifying their support (they both do
+ not currently pass, however).  Checkpointing.
+
  Revision 1.328  2008/10/16 05:16:06  phase1geo
  More work on real number support.  Still a work in progress.  Checkpointing.
 

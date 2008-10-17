@@ -94,12 +94,22 @@ vsignal* vsignal_create(
   unsigned int col     /*!< Starting column that this signal is declared on */
 ) { PROFILE(VSIGNAL_CREATE);
 
-  vsignal* new_sig;  /* Pointer to newly created vsignal */
+  vsignal*     new_sig;  /* Pointer to newly created vsignal */
+  unsigned int vtype;
 
   new_sig = (vsignal*)malloc_safe( sizeof( vsignal ) );
 
+  /* Calculate the type */
+  if( type == SSUPPL_TYPE_DECL_REAL ) {
+    vtype = VDATA_R64;
+  } else if( type == SSUPPL_TYPE_DECL_SREAL ) {
+    vtype = VDATA_R32;
+  } else {
+    vtype = VDATA_UL;
+  }
+
   vsignal_init( new_sig, ((name != NULL) ? strdup_safe( name ) : NULL),
-                type, vector_create( width, ((type == SSUPPL_TYPE_MEM) ? VTYPE_MEM : VTYPE_SIG), ((type == SSUPPL_TYPE_DECL_REAL) ? VDATA_R64 : VDATA_UL), TRUE ), line, col );
+                type, vector_create( width, ((type == SSUPPL_TYPE_MEM) ? VTYPE_MEM : VTYPE_SIG), vtype, TRUE ), line, col );
 
   PROFILE_END;
 
@@ -762,6 +772,9 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.82  2008/10/16 05:16:06  phase1geo
+ More work on real number support.  Still a work in progress.  Checkpointing.
+
  Revision 1.81  2008/09/22 22:15:05  phase1geo
  Initial code for supporting the merging and resolution of exclusion reasons.
  This code is completely untested at this point but does compile.  Checkpointing.

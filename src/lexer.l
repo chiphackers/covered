@@ -574,9 +574,9 @@ WSPACE [ \t\b\f]+
      yylloc.last_column += strlen( yytext );
      yylval.realtime = (vector*)malloc_safe( sizeof( vector ) );
      if( sscanf( yytext, "%f", &rtime ) == 1 ) {
-       vector_init_r64( yylval.realtime, (rv64*)malloc_safe( sizeof( rv64 ) ), rtime, yytext, TRUE, 64, VDATA_R64 );
+       vector_init_r64( yylval.realtime, (rv64*)malloc_safe( sizeof( rv64 ) ), rtime, yytext, TRUE, VTYPE_VAL );
      } else if( sscanf( yytext, "%g", &rtime ) == 1 ) {
-       vector_init_r64( yylval.realtime, (rv64*)malloc_safe( sizeof( rv64 ) ), rtime, yytext, TRUE, 64, VDATA_R64 );
+       vector_init_r64( yylval.realtime, (rv64*)malloc_safe( sizeof( rv64 ) ), rtime, yytext, TRUE, VTYPE_VAL );
      } else {
        assert( 0 );
      }
@@ -590,7 +590,7 @@ WSPACE [ \t\b\f]+
      yylloc.last_column += strlen( yytext );
      yylval.realtime = (vector*)malloc_safe( sizeof( vector ) );
      if( sscanf( yytext, "%g", &rtime ) == 1 ) {
-       vector_init_r64( yylval.realtime, (rv64*)malloc_safe( sizeof( rv64 ) ), rtime, yytext, TRUE, 64, VDATA_R64 );
+       vector_init_r64( yylval.realtime, (rv64*)malloc_safe( sizeof( rv64 ) ), rtime, yytext, TRUE, VTYPE_VAL );
      } else {
        assert( 0 );
      }
