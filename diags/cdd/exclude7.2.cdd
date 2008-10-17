@@ -1,9 +1,9 @@
-5 11 121 37 *
+5 12 121 37 *
 8 /ptmp/covered/diags/verilog -t main -vcd exclude7.2.vcd -o exclude7.2.cdd -v exclude7.2.v -y lib -ep -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" exclude7.2.v 10 56 1
 2 1 51 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u1
-1 clk 1 12 87000b 1 0 0 0 1 17 0 1 0 1 1 0
+1 clk 1 12 107000b 1 0 0 0 1 17 0 1 0 1 1 0
 1 reset 2 13 7000b 1 0 0 0 1 17 0 1 0 0 1 0
 1 head 3 14 7000b 1 0 0 0 1 17 0 1 0 1 1 0
 1 tail 4 15 7000b 1 0 0 0 1 17 0 1 0 1 1 0
@@ -43,7 +43,7 @@
 1 tail 9 12 a 1 0 0 0 1 17 1 1 0 1 1 0
 1 valid 10 13 a 1 0 0 0 1 17 1 1 0 1 1 0
 1 state 11 20 7000b 1 0 1 0 2 17 0 3 0 3 3 0
-1 next_state 12 21 87000b 1 0 1 0 2 17 0 3 0 3 3 0
+1 next_state 12 21 107000b 1 0 1 0 2 17 0 3 0 3 3 0
 4 24 f 24 24
 4 23 f 23 23
 4 10 6 3 3

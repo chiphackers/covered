@@ -1,4 +1,4 @@
-5 11 101 45 *
+5 12 101 45 *
 8 /ptmp/covered/diags/verilog -t main -vcd fsm5.3.vcd -o fsm5.3.cdd -v fsm5.3.v -F main={reset,state},next_state[1] -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" fsm5.3.v 1 52 1
@@ -35,10 +35,10 @@
 2 31 0 0 6 26 100e 30 0 2 18 0 3 3 3 0 0
 1 STATE_IDLE 8 0 c0000 1 0 31 0 1 17 0 0 0 0 0 0
 1 STATE_SEND 9 0 c0000 1 0 31 0 1 17 1 0 0 0 0 0
-1 clock 1 6 87000f 1 0 0 0 1 17 0 1 0 1 1 0
+1 clock 1 6 107000f 1 0 0 0 1 17 0 1 0 1 1 0
 1 reset 2 7 7000f 1 0 0 0 1 17 0 1 0 0 1 0
 1 state 3 8 7000f 1 0 0 0 1 17 0 1 0 1 1 0
-1 next_state 4 9 87000f 1 0 1 0 2 17 0 3 0 3 2 0
+1 next_state 4 9 107000f 1 0 1 0 2 17 0 3 0 3 2 0
 1 msg_ip 5 10 6000f 1 0 0 0 1 17 1 1 0 0 1 0
 1 head 6 11 7000f 1 0 0 0 1 17 0 1 0 1 1 0
 1 valid 7 12 7000f 1 0 0 0 1 17 0 1 0 1 1 0

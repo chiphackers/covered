@@ -1,10 +1,10 @@
-5 11 101 4 *
+5 12 101 4 *
 8 /ptmp/covered/diags/verilog -t main -vcd exclude6.vcd -o exclude6.cdd -v exclude6.v -e main.foo_func1 -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" exclude6.v 8 47 1
 2 1 18 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u1
 1 a 1 10 70004 1 0 0 0 1 17 0 1 0 0 0 0
-1 b 2 10 870007 1 0 0 0 1 17 0 1 0 1 0 0
+1 b 2 10 1070007 1 0 0 0 1 17 0 1 0 1 0 0
 4 1 1 0 0
 3 1 main.$u1 "main.$u1" exclude6.v 0 22 1
 2 2 19 50008 1 0 21004 0 0 1 16 0 0
@@ -23,8 +23,8 @@
 3 1 main.$u2 "main.$u2" exclude6.v 0 31 1
 3 2 main.foo_func2 "main.foo_func2" exclude6.v 40 45 1
 2 12 42 20006 1 3d 5802 0 0 1 18 0 1 0 0 0 0 $u4
-1 foo_func2 3 40 890009 1 0 0 0 1 17 1 1 0 0 0 0
-1 a 4 41 800008 1 0 0 0 1 17 1 1 0 0 0 0
+1 foo_func2 3 40 1090009 1 0 0 0 1 17 1 1 0 0 0 0
+1 a 4 41 1000008 1 0 0 0 1 17 1 1 0 0 0 0
 4 12 11 0 0
 3 1 main.foo_func2.$u4 "main.foo_func2.$u4" exclude6.v 0 44 1
 2 13 43 110011 1 1 1804 0 0 1 1 a

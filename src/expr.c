@@ -296,7 +296,7 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",               
                                            {"COND_SEL",       "",                 expression_op_func__cond_sel,        {0, 0, NOT_COMB,   1, 0, 0, 0, 0, 3} },
                                            {"UINV",           "~",                expression_op_func__uinv,            {0, 0, NOT_COMB,   1, 1, 0, 0, 0, 0} },
                                            {"UAND",           "&",                expression_op_func__uand,            {0, 0, NOT_COMB,   1, 1, 0, 0, 0, 0} },
-                                           {"UNOT",           "!",                expression_op_func__unot,            {0, 0, NOT_COMB,   1, 1, 0, 0, 0, 3} },
+                                           {"UNOT",           "!",                expression_op_func__unot,            {0, 0, NOT_COMB,   1, 1, 0, 0, 0, 1} },
                                            {"UOR",            "|",                expression_op_func__uor,             {0, 0, NOT_COMB,   1, 1, 0, 0, 0, 0} },
                                            {"UXOR",           "^",                expression_op_func__uxor,            {0, 0, NOT_COMB,   1, 1, 0, 0, 0, 0} },
                                            {"UNAND",          "~&",               expression_op_func__unand,           {0, 0, NOT_COMB,   1, 1, 0, 0, 0, 0} },
@@ -375,7 +375,7 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",               
                                            {"STIME",          "$time",            expression_op_func__time,            {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
                                            {"SRANDOM",        "$random",          expression_op_func__random,          {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
                                            {"PLIST",          "",                 expression_op_func__null,            {0, 0, NOT_COMB,   0, 0, 0, 0, 0, 0} },
-                                           {"SASSIGN",        "",                 expression_op_func__sassign,         {0, 0, NOT_COMB,   0, 0, 0, 0, 0, 0} },
+                                           {"SASSIGN",        "",                 expression_op_func__sassign,         {0, 0, NOT_COMB,   0, 0, 0, 0, 0, 1} },
                                            {"SSRANDOM",       "$srandom",         expression_op_func__srandom,         {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
                                            {"URANDOM",        "$urandom",         expression_op_func__urandom,         {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
                                            {"URAND_RANGE",    "$urandom_range",   expression_op_func__urandom_range,   {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
@@ -458,8 +458,8 @@ static void expression_create_value(
 
   vector* vec = NULL;  /* Temporary storage of vector array */
 
-  /* Don't execute the contents of this function if the data_type is real (it's already been sized) */
-  if( exp->value->suppl.part.data_type == VDATA_UL ) {
+  /* If vector data should be created and initialized, do it */
+  if( (data == TRUE) || ((exp->suppl.part.gen_expr == 1) && (width > 0)) ) {
 
     /* If the left or right expressions are storing real numbers, create real number storage for this expression */
     if( ((exp_op_info[exp->op].suppl.real_op & 0x2) && (exp->left->value->suppl.part.data_type  == VDATA_R64)) ||
@@ -476,31 +476,28 @@ static void expression_create_value(
     /* Otherwise, create a ulong vector */
     } else {
 
-      if( (data == TRUE) || ((exp->suppl.part.gen_expr == 1) && (width > 0)) ) {
-
-        if( width > MAX_BIT_WIDTH ) {
-          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Found an expression width (%d) that exceeds the maximum currently allowed by Covered (%d)",
-                                      width, MAX_BIT_WIDTH );
-          assert( rv < USER_MSG_LENGTH );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          Throw 0;
-        }
-
-        vec = vector_create( width, VTYPE_EXP, VDATA_UL, TRUE );
-        assert( exp->value->value.ul == NULL );
-        vector_init_ulong( exp->value, vec->value.ul, 0x0, 0x0, TRUE, width, vec->suppl.part.type );
-        free_safe( vec, sizeof( vector ) );
-
-        /* Create the temporary vectors now, if needed */
-        expression_create_tmp_vecs( exp, width );
-
-      } else {
-
-        vector_init_ulong( exp->value, NULL, 0x0, 0x0, FALSE, width, VTYPE_EXP );
-
+      if( width > MAX_BIT_WIDTH ) {
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Found an expression width (%d) that exceeds the maximum currently allowed by Covered (%d)",
+                                    width, MAX_BIT_WIDTH );
+        assert( rv < USER_MSG_LENGTH );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        Throw 0;
       }
 
+      vec = vector_create( width, VTYPE_EXP, VDATA_UL, TRUE );
+      assert( exp->value->value.ul == NULL );
+      vector_init_ulong( exp->value, vec->value.ul, 0x0, 0x0, TRUE, width, vec->suppl.part.type );
+      free_safe( vec, sizeof( vector ) );
+
+      /* Create the temporary vectors now, if needed */
+      expression_create_tmp_vecs( exp, width );
+
     }
+
+  /* Otherwise, initialize pointers to NULL */
+  } else {
+
+    vector_init_ulong( exp->value, NULL, 0x0, 0x0, FALSE, width, VTYPE_EXP );
 
   }
 
@@ -2766,7 +2763,26 @@ bool expression_op_func__sassign(
   /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__SASSIGN);
 
-  bool retval = vector_set_value_ulong( expr->value, expr->right->value->value.ul, expr->right->value->width );
+  bool retval;
+
+  switch( expr->value->suppl.part.data_type ) {
+    case VDATA_UL  :  retval = vector_set_value_ulong( expr->value, expr->right->value->value.ul, expr->right->value->width );  break;
+    case VDATA_R64 :
+      {
+        double real = expr->right->value->value.r64->val;
+        retval = expr->value->value.r64->val != real;
+        expr->value->value.r64->val = real;
+      }
+      break;
+    case VDATA_R32 :
+      {
+        float real = expr->right->value->value.r32->val;
+        retval = expr->value->value.r32->val != real;
+        expr->value->value.r32->val = real;
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
 
   PROFILE_END;
 
@@ -4027,12 +4043,9 @@ bool expression_op_func__delay(
     uint64   intval;     /* 64-bit value */
 
     /* Get number of clocks to delay */
-    intval = vector_to_uint64( expr->right->value ) * *(expr->elem.scale);
+    vector_to_sim_time( expr->right->value, *(expr->elem.scale), &tmp_time );
 
-    /* Populate the tmp_time structure */
-    tmp_time.lo    = intval & UINT64(0xffffffff);
-    tmp_time.hi    = (intval >> 32) & UINT64(0xffffffff);
-    tmp_time.full  = intval;
+    /* Make sure that we set the final value to FALSE */
     tmp_time.final = FALSE;
 
     /* Add this delay into the delay queue if this is not the final simulation step */
@@ -5696,6 +5709,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.361  2008/10/17 13:50:19  phase1geo
+ A few more code updates for real support.  Updating CDD version and updating
+ regression files (what we can currently run).  Checkpointing.
+
  Revision 1.360  2008/10/17 07:26:48  phase1geo
  Updating regressions per recent changes and doing more work to fixing real
  value bugs (still not working yet).  Checkpointing.

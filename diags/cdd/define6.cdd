@@ -1,4 +1,4 @@
-5 11 101 3 *
+5 12 101 3 *
 8 /ptmp/covered/diags/verilog -t main -vcd define6.vcd -o define6.cdd -v define6.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" define6.v 18 43 1
@@ -29,7 +29,7 @@
 2 25 25 70007 0 1 1400 0 0 2 1 b
 2 26 25 7001d 0 37 22 24 25
 1 a 1 20 7000a 1 0 1 0 2 17 0 3 0 0 0 0
-1 b 2 20 87000d 1 0 1 0 2 17 0 3 0 0 0 0
+1 b 2 20 107000d 1 0 1 0 2 17 0 3 0 0 0 0
 4 15 6 3 3
 4 12 4 15 3
 4 18 6 3 3

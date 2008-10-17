@@ -77,9 +77,11 @@ void toggle_get_stats(
   
     /* Search signal list */
     while( (sig = func_iter_get_next_signal( &fi )) != NULL ) {
-      if( (sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
-          (sig->suppl.part.type != SSUPPL_TYPE_ENUM)  &&
-          (sig->suppl.part.type != SSUPPL_TYPE_MEM)  &&
+      if( (sig->suppl.part.type != SSUPPL_TYPE_PARAM)      &&
+          (sig->suppl.part.type != SSUPPL_TYPE_ENUM)       &&
+          (sig->suppl.part.type != SSUPPL_TYPE_MEM)        &&
+          (sig->suppl.part.type != SSUPPL_TYPE_DECL_REAL)  &&
+          (sig->suppl.part.type != SSUPPL_TYPE_DECL_SREAL) &&
           (sig->suppl.part.mba == 0) ) {
         *total += sig->value->width;
         if( sig->suppl.part.excluded == 1 ) {
@@ -128,9 +130,11 @@ void toggle_collect(
     hit01 = 0;
     hit10 = 0;
 
-    if( (sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
-        (sig->suppl.part.type != SSUPPL_TYPE_ENUM)  &&
-        (sig->suppl.part.type != SSUPPL_TYPE_MEM)  &&
+    if( (sig->suppl.part.type != SSUPPL_TYPE_PARAM)      &&
+        (sig->suppl.part.type != SSUPPL_TYPE_ENUM)       &&
+        (sig->suppl.part.type != SSUPPL_TYPE_MEM)        &&
+        (sig->suppl.part.type != SSUPPL_TYPE_DECL_REAL)  &&
+        (sig->suppl.part.type != SSUPPL_TYPE_DECL_SREAL) &&
         (sig->suppl.part.mba == 0) ) {
 
       vector_toggle_count( sig->value, &hit01, &hit10 );
@@ -460,9 +464,11 @@ static void toggle_display_verbose(
     /* Get printable version of the signal name */
     pname = scope_gen_printable( sig->name );
 
-    if( (sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
-        (sig->suppl.part.type != SSUPPL_TYPE_ENUM)  &&
-        (sig->suppl.part.type != SSUPPL_TYPE_MEM)  &&
+    if( (sig->suppl.part.type != SSUPPL_TYPE_PARAM)      &&
+        (sig->suppl.part.type != SSUPPL_TYPE_ENUM)       &&
+        (sig->suppl.part.type != SSUPPL_TYPE_MEM)        &&
+        (sig->suppl.part.type != SSUPPL_TYPE_DECL_REAL)  &&
+        (sig->suppl.part.type != SSUPPL_TYPE_DECL_SREAL) &&
         (sig->suppl.part.mba == 0) ) {
 
       if( ((sig->suppl.part.excluded == 0) && (rtype != RPT_TYPE_EXCL)) ||
@@ -730,6 +736,10 @@ void toggle_report(
 
 /*
  $Log$
+ Revision 1.86  2008/09/04 21:34:20  phase1geo
+ Completed work to get exclude reason support to work with toggle coverage.
+ Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
+
  Revision 1.85  2008/09/04 04:15:10  phase1geo
  Adding -p option to exclude command.  Updating other files per this change.
  Checkpointing.

@@ -1,8 +1,10 @@
 module main;
 
 wire      a;
+`ifdef RUNTEST
 real      mem0;
 real      mem1;
+`endif
 reg [1:0] entry;
 
 always @*

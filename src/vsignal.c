@@ -138,6 +138,8 @@ void vsignal_create_vec(
   /* If this signal has been previously simulated, don't create a new vector */
   if( !sig->value->suppl.part.set ) {
 
+    unsigned int vtype;
+
     /* Deallocate the old memory */
     vector_dealloc_value( sig->value );
 
@@ -158,8 +160,17 @@ void vsignal_create_vec(
       sig->suppl.part.big_endian = (sig->dim[(sig->pdim_num + sig->udim_num)-1].msb < sig->dim[(sig->pdim_num + sig->udim_num)-1].lsb) ? 1 : 0;
     }
 
+    /* Figure out the vector data type to create */
+    if( sig->suppl.part.type == SSUPPL_TYPE_DECL_REAL ) {
+      vtype = VDATA_R64;
+    } else if( sig->suppl.part.type == SSUPPL_TYPE_DECL_SREAL ) {
+      vtype = VDATA_R32;
+    } else {
+      vtype = VDATA_UL;
+    }
+
     /* Create the vector and assign it to the signal */
-    vec = vector_create( sig->value->width, ((sig->suppl.part.type == SSUPPL_TYPE_MEM) ? VTYPE_MEM : VTYPE_SIG), VDATA_UL, TRUE );
+    vec = vector_create( sig->value->width, ((sig->suppl.part.type == SSUPPL_TYPE_MEM) ? VTYPE_MEM : VTYPE_SIG), vtype, TRUE );
     sig->value->value.ul = vec->value.ul;
     free_safe( vec, sizeof( vector ) );
 
@@ -772,6 +783,10 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.83  2008/10/17 07:26:49  phase1geo
+ Updating regressions per recent changes and doing more work to fixing real
+ value bugs (still not working yet).  Checkpointing.
+
  Revision 1.82  2008/10/16 05:16:06  phase1geo
  More work on real number support.  Still a work in progress.  Checkpointing.
 

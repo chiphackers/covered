@@ -1,4 +1,4 @@
-5 11 101 7 *
+5 12 101 7 *
 8 /ptmp/covered/diags/verilog -t main -vcd concat3.vcd -o concat3.cdd -v concat3.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" concat3.v 1 28 1

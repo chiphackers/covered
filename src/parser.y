@@ -1109,11 +1109,11 @@ static_expr_primary
         }
         vector_dealloc( tmp->exp->value );
         tmp->exp->value = $1;
+        $$ = tmp;
       } else {
         vector_dealloc( $1 );
         $$ = NULL;
       }
-      $$ = NULL;
     }
   | IDENTIFIER
     { PROFILE(PARSER_STATIC_EXPR_PRIMARY_B);
@@ -6054,13 +6054,15 @@ delay_value
             error_count++;
             $$ = NULL;
           }
+          static_expr_dealloc( se, TRUE );
         } else {
           $$ = se->exp;
+          static_expr_dealloc( se, FALSE );
         }
       } else {
         $$ = NULL;
+        static_expr_dealloc( se, TRUE );
       }
-      static_expr_dealloc( se, TRUE );
       PROFILE_END;
     }
   | static_expr ':' static_expr ':' static_expr
@@ -6110,13 +6112,15 @@ delay_value
               error_count++;
               $$ = NULL;
             }
+            static_expr_dealloc( se, TRUE );
           } else {
             $$ = se->exp;
+            static_expr_dealloc( se, FALSE );
           }
         } else {
           $$ = NULL;
+          static_expr_dealloc( se, TRUE );
         }
-        static_expr_dealloc( se, TRUE );
       } else {
         $$ = NULL;
       }

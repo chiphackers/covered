@@ -19,6 +19,8 @@
  \date     12/1/2001
 */
 
+#define _ISOC99_SOURCE 1
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -29,6 +31,7 @@
 #endif
 #include <stdlib.h>
 #include <assert.h>
+#include <math.h>
 
 #ifdef MALLOC_DEBUG
 #include <mpatrol.h>
@@ -547,7 +550,7 @@ void vector_db_read(
             {
               char   str[4096];
               double value;
-              if( sscanf( *line, "%f%n", &value, &chars_read ) == 1 ) {
+              if( sscanf( *line, "%lf%n", &value, &chars_read ) == 1 ) {
                 *line += chars_read;
                 (*vec)->value.r64->val = value;
                 if( sscanf( *line, "%s%n", str, &chars_read ) == 1 ) {
@@ -2251,8 +2254,8 @@ int vector_to_int(
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL  :  retval = vec->value.ul[0][VTYPE_INDEX_VAL_VALL];  break;
-    case VDATA_R64 :  retval = (int)vec->value.r64->val;
-    case VDATA_R32 :  retval = (int)vec->value.r32->val;
+    case VDATA_R64 :  retval = (int)round( vec->value.r64->val );
+    case VDATA_R32 :  retval = (int)roundf( vec->value.r32->val );
     default        :  assert( 0 );  break;
   }
 
@@ -2284,17 +2287,17 @@ uint64 vector_to_uint64(
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL :
-      if( vec->width > 32 ) {
+      if( (vec->width > 32) && (sizeof( ulong ) == 32) ) {
         retval = ((uint64)vec->value.ul[1][VTYPE_INDEX_VAL_VALL] << 32) | (uint64)vec->value.ul[0][VTYPE_INDEX_VAL_VALL];
       } else {
         retval = (uint64)vec->value.ul[0][VTYPE_INDEX_VAL_VALL];
       }
       break;
     case VDATA_R64 :
-      retval = (uint64)vec->value.r64->val;
+      retval = (uint64)round( vec->value.r64->val );
       break;
     case VDATA_R32 :
-      retval = (uint64)vec->value.r32->val;
+      retval = (uint64)roundf( vec->value.r32->val );
       break;
     default :  assert( 0 );  break;
   }
@@ -2342,29 +2345,44 @@ real64 vector_to_real64(
  unused.
 */
 void vector_to_sim_time(
-  const vector* vec,  /*!< Pointer to vector to convert into integer */
-  sim_time*     time  /*!< Pointer to sim_time structure to populate */
+            const vector* vec,    /*!< Pointer to vector to convert into integer */
+            uint64        scale,  /*!< Scaling factor */
+  /*@out@*/ sim_time*     time    /*!< Pointer to sim_time structure to populate */
 ) { PROFILE(VECTOR_TO_SIM_TIME);
 
+  union {
+    struct {
+      uint32 lo;
+      uint32 hi;
+    } u32;
+    uint64 full;
+  } time_u = {0};
+
+  /* Calculate the full (64-bit) time value */
   switch( vec->suppl.part.data_type ) {
-    case VDATA_UL :
-      assert( (vec->value.ul[0][VTYPE_INDEX_VAL_VALH] == 0) && (vec->value.ul[1][VTYPE_INDEX_VAL_VALH] == 0) );
-      time->lo   = vec->value.ul[0][VTYPE_INDEX_VAL_VALL];
-      time->hi   = (vec->width > 32) ? vec->value.ul[1][VTYPE_INDEX_VAL_VALL] : 0;
-      time->full = (((uint64)time->hi) << 32) | time->lo;
+    case VDATA_UL  :
+      assert( vec->value.ul[0][VTYPE_INDEX_VAL_VALH] == 0 );
+#if SIZEOF_LONG == 4
+      time_u.u32.lo = vec->value.ul[0][VTYPE_INDEX_VAL_VALL];
+      if( UL_SIZE( vec->width ) > 1 ) {
+        assert( vec->value.ul[1][VTYPE_INDEX_VAL_VALH] == 0 );
+        time_u.u32.hi = vec->value.ul[1][VTYPE_INDEX_VAL_VALL];
+      }
+#elif SIZEOF_LONG == 8
+      time_u.full = vec->value.ul[0][VTYPE_INDEX_VAL_VALL];
+#else
+#error "Unsupported long size"
+#endif
+      time_u.full *= scale;
       break;
-    case VDATA_R64 :
-      time->full = (uint64)vec->value.r64->val;
-      time->lo   = (uint32)(time->full & 0xffffffff);
-      time->hi   = (uint32)((time->full >> 32) & 0xffffffff);
-      break;
-    case VDATA_R32 :
-      time->full = (uint64)vec->value.r32->val;
-      time->lo   = (uint32)(time->full & 0xffffffff);
-      time->hi   = 0;
-      break;
-    default :  assert( 0 );  break;
+    case VDATA_R64 :  time_u.full = (uint64)round( vec->value.r64->val * scale );  break;
+    case VDATA_R32 :  time_u.full = (uint64)roundf( vec->value.r32->val * scale );  break;
+    default        :  assert( 0 );  break;
   }
+
+  time->lo   = time_u.u32.lo;
+  time->hi   = time_u.u32.hi;
+  time->full = time_u.full;
 
   PROFILE_END;
 
@@ -4990,6 +5008,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.165  2008/10/17 07:26:49  phase1geo
+ Updating regressions per recent changes and doing more work to fixing real
+ value bugs (still not working yet).  Checkpointing.
+
  Revision 1.164  2008/10/16 23:11:50  phase1geo
  More work on support for real numbers.  I believe that all of the code now
  exists in vector.c to support them.  Still need to do work in expr.c.  Added

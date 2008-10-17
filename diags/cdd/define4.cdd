@@ -1,4 +1,4 @@
-5 11 101 4 *
+5 12 101 4 *
 8 /ptmp/covered/diags/verilog -t main -vcd define4.vcd -o define4.cdd -I ./include -v define4.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" define4.v 10 27 1
