@@ -1,9 +1,9 @@
-5 11 101 3 *
+5 12 101 3 *
 8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd random3.1.vcd -o random3.1.cdd -v random3.1.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" random3.1.v 9 29 1
 1 a 1 11 70008 1 0 31 0 32 49 0 ffffffff 0 0 0 0
 1 c 2 11 7000b 1 0 31 0 32 49 0 ffffffff 0 0 0 0
-1 b 3 12 1880008 1 0 0 0 1 17 1 1 0 0 0 0
+1 b 3 12 3080008 1 0 0 0 1 17 1 1 0 0 0 0
 3 1 main.$u0 "main.$u0" random3.1.v 0 18 1
 3 1 main.$u1 "main.$u1" random3.1.v 0 27 1

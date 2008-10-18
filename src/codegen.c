@@ -351,32 +351,48 @@ void codegen_gen_expr(
 
     } else if( expr->op == EXP_OP_STATIC ) {
 
+      unsigned int data_type = expr->value->suppl.part.data_type;
+
       *code       = (char**)malloc_safe( sizeof( char* ) );
       *code_depth = 1;
 
-      if( ESUPPL_STATIC_BASE( expr->suppl ) == DECIMAL ) {
+      if( data_type == VDATA_R64 ) {
 
-        rv = snprintf( code_format, 20, "%d", vector_to_int( expr->value ) );
-        assert( rv < 20 );
-        if( (strlen( code_format ) == 1) && (expr->parent->expr->op == EXP_OP_NEGATE) ) {
-          strcat( code_format, " " );
+        assert( expr->value->value.r64->str != NULL );
+        (*code)[0] = strdup_safe( expr->value->value.r64->str );
+
+      } else if( data_type == VDATA_R32 ) {
+
+        assert( expr->value->value.r32->str != NULL );
+        (*code)[0] = strdup_safe( expr->value->value.r32->str );
+
+      } else {
+
+        if( ESUPPL_STATIC_BASE( expr->suppl ) == DECIMAL ) {
+
+          rv = snprintf( code_format, 20, "%d", vector_to_int( expr->value ) );
+          assert( rv < 20 );
+          if( (strlen( code_format ) == 1) && (expr->parent->expr->op == EXP_OP_NEGATE) ) {
+            strcat( code_format, " " );
+          }
+          (*code)[0] = strdup_safe( code_format );
+
+        } else if( ESUPPL_STATIC_BASE( expr->suppl ) == QSTRING ) {
+
+          unsigned int slen;
+          tmpstr = vector_to_string( expr->value, QSTRING, FALSE );
+          slen   = strlen( tmpstr ) + 3;
+          (*code)[0] = (char*)malloc_safe( slen );
+          rv = snprintf( (*code)[0], slen, "\"%s\"", tmpstr );
+          assert( rv < slen );
+          free_safe( tmpstr, (strlen( tmpstr ) + 1) );
+
+        } else { 
+
+          (*code)[0] = vector_to_string( expr->value, ESUPPL_STATIC_BASE( expr->suppl ), FALSE );
+
         }
-        (*code)[0] = strdup_safe( code_format );
-
-      } else if( ESUPPL_STATIC_BASE( expr->suppl ) == QSTRING ) {
-
-        unsigned int slen;
-        tmpstr = vector_to_string( expr->value, QSTRING, FALSE );
-        slen   = strlen( tmpstr ) + 3;
-        (*code)[0] = (char*)malloc_safe( slen );
-        rv = snprintf( (*code)[0], slen, "\"%s\"", tmpstr );
-        assert( rv < slen );
-        free_safe( tmpstr, (strlen( tmpstr ) + 1) );
-
-      } else { 
-
-        (*code)[0] = vector_to_string( expr->value, ESUPPL_STATIC_BASE( expr->suppl ), FALSE );
-
+   
       }
 
     } else if( (expr->op == EXP_OP_SIG) || (expr->op == EXP_OP_PARAM) ) {
@@ -966,6 +982,30 @@ void codegen_gen_expr(
           codegen_create_expr( code, code_depth, expr->line, "$srandom( ", left_code, left_code_depth, expr->left, " )",
                                NULL, 0, NULL, NULL );
           break;
+        case EXP_OP_SB2R :
+          codegen_create_expr( code, code_depth, expr->line, "$bitstoreal( ", left_code, left_code_depth, expr->left, " )",
+                               NULL, 0, NULL, NULL );
+          break;
+        case EXP_OP_SR2B :
+          codegen_create_expr( code, code_depth, expr->line, "$realtobits( ", left_code, left_code_depth, expr->left, " )",
+                               NULL, 0, NULL, NULL );
+          break;
+        case EXP_OP_SI2R :
+          codegen_create_expr( code, code_depth, expr->line, "$itor( ", left_code, left_code_depth, expr->left, " )",
+                               NULL, 0, NULL, NULL );
+          break;
+        case EXP_OP_SR2I :
+          codegen_create_expr( code, code_depth, expr->line, "$rtoi( ", left_code, left_code_depth, expr->left, " )",
+                               NULL, 0, NULL, NULL );
+          break;
+        case EXP_OP_SSR2B :
+          codegen_create_expr( code, code_depth, expr->line, "$shortrealtobits( ", left_code, left_code_depth, expr->left, " )",
+                               NULL, 0, NULL, NULL );
+          break;
+        case EXP_OP_SB2SR :
+          codegen_create_expr( code, code_depth, expr->line, "$bitstoshortreal( ", left_code, left_code_depth, expr->left, " )",
+                               NULL, 0, NULL, NULL );
+          break;
         default:  break;
       }
 
@@ -991,6 +1031,9 @@ void codegen_gen_expr(
 
 /*
  $Log$
+ Revision 1.102  2008/10/11 02:55:38  phase1geo
+ Fixing bug 2158297.
+
  Revision 1.101  2008/10/04 04:28:47  phase1geo
  Adding code to support $urandom, $srandom and $urandom_range.  Added one test
  to begin verifying $urandom functionality.  The rest of the system tasks need

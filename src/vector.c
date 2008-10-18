@@ -429,19 +429,25 @@ void vector_db_write(
         }
         break;
       case VDATA_R64 :
-        {
-          fprintf( file, " %f", vec->value.r64->val );
+        if( vec->value.r64 != NULL ) {
           if( vec->value.r64->str != NULL ) {
-            fprintf( file, " %s", vec->value.r64->str );
+            fprintf( file, " 1 %s", vec->value.r64->str );
+          } else {
+            fprintf( file, " 0 %f", vec->value.r64->val );
           }
+        } else {
+          fprintf( file, " 0 0.0" );
         }
         break;
       case VDATA_R32 :
-        { 
-          fprintf( file, " %f", vec->value.r32->val );
+        if( vec->value.r32 != NULL ) {
           if( vec->value.r32->str != NULL ) {
-            fprintf( file, " %s", vec->value.r32->str );
+            fprintf( file, " 1 %s", vec->value.r32->str );
+          } else {
+            fprintf( file, " 0 %f", vec->value.r32->val );
           }
+        } else {
+          fprintf( file, " 0 0.0" );
         }
         break;
       default :  assert( 0 );  break;
@@ -548,16 +554,20 @@ void vector_db_read(
             break;
           case VDATA_R64 :
             {
-              char   str[4096];
-              double value;
-              if( sscanf( *line, "%lf%n", &value, &chars_read ) == 1 ) {
+              int store_str;
+              if( sscanf( *line, "%d%n", &store_str, &chars_read ) == 1 ) {
                 *line += chars_read;
-                (*vec)->value.r64->val = value;
-                if( sscanf( *line, "%s%n", str, &chars_read ) == 1 ) {
+                if( store_str == 1 ) {
+                  char str[4096];
+                  if( sscanf( *line, "%s%n", str, &chars_read ) == 1 ) {
+                    (*vec)->value.r64->str = strdup_safe( str );
+                  }
+                }
+                if( sscanf( *line, "%lf%n", &((*vec)->value.r64->val), &chars_read ) == 1 ) {
                   *line += chars_read;
-                  (*vec)->value.r64->str = strdup_safe( str );
                 } else {
-                  (*vec)->value.r64->str = NULL;
+                  print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+                  Throw 0;
                 }
               } else {
                 print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
@@ -567,16 +577,20 @@ void vector_db_read(
             break;
           case VDATA_R32 :
             {
-              char   str[4096];
-              double value;
-              if( sscanf( *line, "%f%n", &value, &chars_read ) == 1 ) {
+              int store_str;
+              if( sscanf( *line, "%d%n", &store_str, &chars_read ) == 1 ) {
                 *line += chars_read;
-                (*vec)->value.r32->val = value;
-                if( sscanf( *line, "%s%n", str, &chars_read ) == 1 ) {
+                if( store_str == 1 ) {
+                  char str[4096];
+                  if( sscanf( *line, "%s%n", str, &chars_read ) == 1 ) {
+                    (*vec)->value.r32->str = strdup_safe( str );
+                  }
+                }
+                if( sscanf( *line, "%f%n", &((*vec)->value.r32->val), &chars_read ) == 1 ) {
                   *line += chars_read;
-                  (*vec)->value.r32->str = strdup_safe( str );
                 } else {
-                  (*vec)->value.r32->str = NULL;
+                  print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+                  Throw 0;
                 }
               } else {
                 print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
@@ -5008,6 +5022,11 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.166  2008/10/17 23:20:51  phase1geo
+ Continuing to add support support for real values.  Making some good progress here
+ (real delays should be working now).  Updated regressions per recent changes.
+ Checkpointing.
+
  Revision 1.165  2008/10/17 07:26:49  phase1geo
  Updating regressions per recent changes and doing more work to fixing real
  value bugs (still not working yet).  Checkpointing.

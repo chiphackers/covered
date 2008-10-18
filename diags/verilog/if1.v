@@ -10,16 +10,18 @@
 
 module main;
 
-integer a, b;
+integer a, b, c;
 
 initial begin
-        a = $rtoi( 0.1 );
+        a = $fopen( "if1a.dat" );
 	begin
-          b = a;
+          b = 0;
           if( a == 0 ) begin
-            a = $rtoi( 0.1 );
+            c = $fopen( "if1a.dat" );
+            $fclose( c );
           end
         end
+	$fclose( a );
 end
 
 initial begin

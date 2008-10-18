@@ -2178,6 +2178,7 @@ expr_primary
       if( (ignore_mode == 0) && ($3 != NULL) ) {
         Try {
           $$ = db_create_expression( NULL, $3, EXP_OP_SB2R, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+          $$->value->suppl.part.data_type = VDATA_R64;
         } Catch_anonymous {
           expression_dealloc( $3, FALSE );
           error_count++;
@@ -2193,6 +2194,7 @@ expr_primary
       if( (ignore_mode == 0) && ($3 != NULL) ) {
         Try {
           $$ = db_create_expression( NULL, $3, EXP_OP_SI2R, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+          $$->value->suppl.part.data_type = VDATA_R64;
         } Catch_anonymous {
           expression_dealloc( $3, FALSE );
           error_count++;
@@ -2238,6 +2240,7 @@ expr_primary
       if( (ignore_mode == 0) && ($3 != NULL) ) {
         Try {
           $$ = db_create_expression( NULL, $3, EXP_OP_SB2SR, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+          $$->value->suppl.part.data_type = VDATA_R32;
         } Catch_anonymous {
           expression_dealloc( $3, FALSE );
           error_count++;
