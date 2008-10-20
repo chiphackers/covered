@@ -106,6 +106,28 @@ static void reentrant_store_data_bits(
             }
           }
           break;
+        case VDATA_R64 :
+          {
+            uint64       real_bits = sys_task_realtobits( sigl->sig->value->value.r64->val );
+            unsigned int i;
+            for( i=0; i<64; i++ ) {
+              ren->data[curr_bit>>3] |= (real_bits & 0x1) << (curr_bit & 0x7);
+              real_bits >>= 1;
+              curr_bit++;
+            }
+          }
+          break;
+        case VDATA_R32 :
+          {
+            uint64       real_bits = sys_task_realtobits( (double)sigl->sig->value->value.r32->val );
+            unsigned int i;
+            for( i=0; i<32; i++ ) {
+              ren->data[curr_bit>>3] |= (real_bits & 0x1) << (curr_bit & 0x7);
+              real_bits >>= 1;
+              curr_bit++;
+            }
+          }
+          break;
         default :  assert( 0 );
       }
       sigl = sigl->next;
@@ -123,6 +145,26 @@ static void reentrant_store_data_bits(
                 ren->data[curr_bit>>3] |= (((entry[VTYPE_INDEX_VAL_VALL] >> UL_MOD(i)) & 0x1) << (curr_bit & 0x7));
                 curr_bit++;
                 ren->data[curr_bit>>3] |= (((entry[VTYPE_INDEX_VAL_VALH] >> UL_MOD(i)) & 0x1) << (curr_bit & 0x7));
+                curr_bit++;
+              }
+            }
+            break;
+          case VDATA_R64 :
+            {
+              uint64 real_bits = sys_task_realtobits( expl->exp->value->value.r64->val );
+              for( i=0; i<64; i++ ) {
+                ren->data[curr_bit>>3] |= (real_bits & 0x1) << (curr_bit & 0x7);
+                real_bits >>= 1;
+                curr_bit++;
+              }
+            }
+            break;
+          case VDATA_R32 :
+            {
+              uint64 real_bits = sys_task_realtobits( (double)expl->exp->value->value.r32->val );
+              for( i=0; i<32; i++ ) {
+                ren->data[curr_bit>>3] |= (real_bits & 0x1) << (curr_bit & 0x7);
+                real_bits >>= 1;
                 curr_bit++;
               }
             }
@@ -197,6 +239,28 @@ static void reentrant_restore_data_bits(
             }
           }
           break;
+        case VDATA_R64 :
+          {
+            uint64       real_bits = 0;
+            unsigned int i;
+            for( i=0; i<64; i++ ) {
+              real_bits |= (uint64)ren->data[curr_bit>>3] << (i - curr_bit);
+              curr_bit++;
+            }
+            sigl->sig->value->value.r64->val = sys_task_bitstoreal( real_bits );
+          }
+          break;
+        case VDATA_R32 :
+          {
+            uint64       real_bits = 0;
+            unsigned int i;
+            for( i=0; i<32; i++ ) {
+              real_bits |= (uint64)ren->data[curr_bit>>3] << (i - curr_bit);
+              curr_bit++;
+            }
+            sigl->sig->value->value.r32->val = (float)sys_task_bitstoreal( real_bits );
+          }
+          break;
         default :  assert( 0 );  break;
       }
       sigl = sigl->next;
@@ -224,6 +288,28 @@ static void reentrant_restore_data_bits(
                   entry[VTYPE_INDEX_VAL_VALH] |= (ulong)((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << UL_MOD(i);
                   curr_bit++;
                 }
+              }
+              break;
+            case VDATA_R64 :
+              {
+                uint64       real_bits = 0;
+                unsigned int i;
+                for( i=0; i<64; i++ ) {
+                  real_bits |= (uint64)ren->data[curr_bit>>3] << (i - curr_bit);
+                  curr_bit++;
+                }
+                expl->exp->value->value.r64->val = sys_task_bitstoreal( real_bits );
+              }
+              break;
+            case VDATA_R32 :
+              {
+                uint64       real_bits = 0;
+                unsigned int i;
+                for( i=0; i<32; i++ ) {
+                  real_bits |= (uint64)ren->data[curr_bit>>3] << (i - curr_bit);
+                  curr_bit++;
+                }
+                expl->exp->value->value.r32->val = (float)sys_task_bitstoreal( real_bits );
               }
               break;
             default :  assert( 0 );
@@ -338,6 +424,11 @@ void reentrant_dealloc(
 
 /*
  $Log$
+ Revision 1.22  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.18.2.1  2008/07/10 22:43:54  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics
