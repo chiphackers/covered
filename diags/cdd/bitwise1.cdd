@@ -1,14 +1,14 @@
-5 11 101 4 *
-8 /ptmp/covered/diags/verilog -t main -vcd bitwise1.vcd -o bitwise1.cdd -v bitwise1.v -D DUMP
+5 12 101 4 *
+8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd bitwise1.vcd -o bitwise1.cdd -v bitwise1.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" bitwise1.v 10 33 1
 2 1 14 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0
-1 a 1 12 87000b 1 0 63 0 64 17 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
-1 b 2 12 87000e 1 0 63 0 64 17 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
-1 c 3 12 870011 1 0 63 0 64 17 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
-1 d 4 12 870014 1 0 63 0 64 17 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
-1 e 5 12 870017 1 0 63 0 64 17 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
-1 f 6 12 87001a 1 0 63 0 64 17 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
+1 a 1 12 107000b 1 0 63 0 64 17 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
+1 b 2 12 107000e 1 0 63 0 64 17 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
+1 c 3 12 1070011 1 0 63 0 64 17 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
+1 d 4 12 1070014 1 0 63 0 64 17 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
+1 e 5 12 1070017 1 0 63 0 64 17 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
+1 f 6 12 107001a 1 0 63 0 64 17 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
 4 1 1 0 0
 3 1 main.$u0 "main.$u0" bitwise1.v 0 22 1
 2 2 15 50019 1 0 61008 0 0 64 16 0 0 ffffffff 0

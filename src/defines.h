@@ -878,6 +878,8 @@ typedef enum exp_op_type_e {
 */
 #define EXPR_IS_MEASURABLE(x)      (((exp_op_info[x->op].suppl.measurable == 1) && \
                                      (ESUPPL_IS_LHS( x->suppl ) == 0) && \
+                                     (x->value->suppl.part.data_type != VDATA_R64) && \
+                                     (x->value->suppl.part.data_type != VDATA_R32) && \
                                      !((ESUPPL_IS_ROOT( x->suppl ) == 0) && \
                                        ((x->op == EXP_OP_SIG) || \
                                         (x->op == EXP_OP_SBIT_SEL) || \
@@ -3013,6 +3015,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.331  2008/10/17 13:50:19  phase1geo
+ A few more code updates for real support.  Updating CDD version and updating
+ regression files (what we can currently run).  Checkpointing.
+
  Revision 1.330  2008/10/17 07:26:48  phase1geo
  Updating regressions per recent changes and doing more work to fixing real
  value bugs (still not working yet).  Checkpointing.

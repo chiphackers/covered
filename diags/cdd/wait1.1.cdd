@@ -1,10 +1,10 @@
-5 11 101 3 *
-8 /ptmp/covered/diags/verilog -t main -vcd wait1.1.vcd -o wait1.1.cdd -v wait1.1.v -D DUMP
+5 12 101 3 *
+8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd wait1.1.vcd -o wait1.1.cdd -v wait1.1.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" wait1.1.v 1 21 1
 2 1 5 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0
-1 a 1 3 870004 1 0 0 0 1 17 0 1 0 0 0 0
-1 b 2 3 870007 1 0 0 0 1 17 0 1 0 1 0 0
+1 a 1 3 1070004 1 0 0 0 1 17 0 1 0 0 0 0
+1 b 2 3 1070007 1 0 0 0 1 17 0 1 0 1 0 0
 4 1 1 0 0
 3 1 main.$u0 "main.$u0" wait1.1.v 0 10 1
 2 2 6 c000f 1 0 21004 0 0 1 16 0 0

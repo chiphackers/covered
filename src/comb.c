@@ -891,7 +891,17 @@ static void combination_underline_tree(
 
     } else if( exp->op == EXP_OP_STATIC ) {
 
-      if( ESUPPL_STATIC_BASE( exp->suppl ) == DECIMAL ) {
+      unsigned int data_type = exp->value->suppl.part.data_type;
+
+      if( data_type == VDATA_R64 ) {
+
+        *size = strlen( exp->value->value.r64->str );
+
+      } else if( data_type == VDATA_R32 ) {
+
+        *size = strlen( exp->value->value.r32->str );
+
+      } else if( ESUPPL_STATIC_BASE( exp->suppl ) == DECIMAL ) {
 
         rv = snprintf( code_fmt, 300, "%d", vector_to_int( exp->value ) );
         assert( rv < 300 );
@@ -3116,6 +3126,10 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.213  2008/10/18 06:14:20  phase1geo
+ Continuing to add support for real values and associated system function calls.
+ Updating regressions per these changes.  Checkpointing.
+
  Revision 1.212  2008/10/04 04:28:47  phase1geo
  Adding code to support $urandom, $srandom and $urandom_range.  Added one test
  to begin verifying $urandom functionality.  The rest of the system tasks need

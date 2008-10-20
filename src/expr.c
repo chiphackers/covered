@@ -4212,9 +4212,11 @@ bool expression_op_func__bassign(
   if( expr->value->suppl.part.data_type == VDATA_UL ) {
     expression_assign( expr->left, expr->right, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
   } else {
-    if( expr->left->value->suppl.part.data_type == VDATA_UL ) {
-      uint64 ival = (expr->right->value->suppl.part.data_type == VDATA_R64) ? expr->right->value->value.r64->val : expr->right->value->value.r32->val;
-    } else {
+    switch( expr->left->value->suppl.part.data_type ) {
+      case VDATA_UL  :  vector_from_uint64( expr->left->value, vector_to_uint64( expr->right->value ) );  break;
+      case VDATA_R64 :
+      case VDATA_R32 :  expr->left->value->value.r64->val = vector_to_real64( expr->right->value );  break;
+      default        :  assert( 0 );  break;
     }
   }
 
@@ -5715,6 +5717,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.363  2008/10/18 06:14:20  phase1geo
+ Continuing to add support for real values and associated system function calls.
+ Updating regressions per these changes.  Checkpointing.
+
  Revision 1.362  2008/10/17 23:20:51  phase1geo
  Continuing to add support support for real values.  Making some good progress here
  (real delays should be working now).  Updated regressions per recent changes.

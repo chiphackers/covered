@@ -1,4 +1,4 @@
-5 11 101 3 main
+5 12 101 3 main
 8 /Users/trevorw/projects/covered/diags/verilog -t dut_and -i main.dut -vcd merge6a.vcd -o merge6_1/merge6a.cdd -v merge6a.v -y lib -D DUMP
 12 /Users/trevorw/projects/covered/diags/verilog/merge6_1/merge6a.cdd main
 12 /Users/trevorw/projects/covered/diags/verilog/merge6_1/merge6b.cdd main

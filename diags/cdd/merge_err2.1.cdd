@@ -1,8 +1,8 @@
-5 11 101 3 main_a
-8 /ptmp/covered/diags/verilog -t adder1 -i main_a.a -v merge_err2.1a.v -y lib -D DUMP -o merge_err2.1.cdd
-12 /ptmp/covered/diags/verilog/merge_err2.1c.cdd main_a
-12 /ptmp/covered/diags/verilog/merge_err2.1b.cdd main_b
-12 /ptmp/covered/diags/verilog/merge_err2.1a.cdd main_c
+5 12 101 3 main_a
+8 /Users/trevorw/projects/covered/diags/verilog -t adder1 -i main_a.a -v merge_err2.1a.v -y lib -D DUMP -o merge_err2.1.cdd
+12 /Users/trevorw/projects/covered/diags/verilog/merge_err2.1c.cdd main_a
+12 /Users/trevorw/projects/covered/diags/verilog/merge_err2.1b.cdd main_b
+12 /Users/trevorw/projects/covered/diags/verilog/merge_err2.1a.cdd main_c
 3 0 $root "$root" NA 0 0 1
 3 0 adder1 "a" lib/adder1.v 1 18 1
 2 1 15 f000f 1 1 100c 0 0 1 1 b

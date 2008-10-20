@@ -1,9 +1,9 @@
-5 11 101 4 *
+5 12 101 4 *
 8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd write1.vcd -o write1.cdd -v write1.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" write1.v 9 29 1
 2 1 13 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0
-1 a 1 11 870004 1 0 0 0 1 17 0 1 0 1 0 0
+1 a 1 11 1070004 1 0 0 0 1 17 0 1 0 1 0 0
 4 1 1 0 0
 3 1 main.$u0 "main.$u0" write1.v 0 18 1
 2 2 0 0 1 4e 1002 0 0 1 18 0 1 0 0 0 0
