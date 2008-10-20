@@ -155,7 +155,7 @@ static_expr* static_expr_gen_unary(
             vector_dealloc( tmpexp->value );
             tmpexp->value = vec;
           }
-          vector_from_int( tmpexp->value, stexp->num );
+          (void)vector_from_int( tmpexp->value, stexp->num, FALSE );
 
           stexp->exp = expression_create( tmpexp, NULL, op, FALSE, curr_expr_id, line, first, last, FALSE );
           curr_expr_id++;
@@ -260,7 +260,7 @@ static_expr* static_expr_gen(
           vector_dealloc( right->exp->value );
           right->exp->value = vec;
         }
-        vector_from_int( right->exp->value, right->num );
+        (void)vector_from_int( right->exp->value, right->num, FALSE );
 
         tmpexp = expression_create( right->exp, left->exp, op, FALSE, curr_expr_id, line, first, last, FALSE );
         curr_expr_id++;
@@ -279,7 +279,7 @@ static_expr* static_expr_gen(
           vector_dealloc( left->exp->value );
           left->exp->value = vec;
         }
-        vector_from_int( left->exp->value, left->num );
+        (void)vector_from_int( left->exp->value, left->num, FALSE );
 
         tmpexp = expression_create( right->exp, left->exp, op, FALSE, curr_expr_id, line, first, last, FALSE );
         curr_expr_id++;
@@ -454,6 +454,11 @@ void static_expr_dealloc(
 
 /*
  $Log$
+ Revision 1.39  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.36.2.1  2008/07/10 22:43:54  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

@@ -290,9 +290,10 @@ void vector_to_sim_time(
 );
 
 /*! \brief Converts integer into vector value. */
-void vector_from_int(
+bool vector_from_int(
   vector* vec,
-  int     value
+  int     value,
+  bool    cover
 );
 
 /*! \brief Converts a 64-bit integer into a vector value. */
@@ -605,6 +606,11 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.68  2008/10/17 23:20:51  phase1geo
+ Continuing to add support support for real values.  Making some good progress here
+ (real delays should be working now).  Updated regressions per recent changes.
+ Checkpointing.
+
  Revision 1.67  2008/10/17 07:26:49  phase1geo
  Updating regressions per recent changes and doing more work to fixing real
  value bugs (still not working yet).  Checkpointing.

@@ -110,24 +110,23 @@ void enumerate_resolve(
     if( ei->value == NULL ) {
 
       if( first ) {
-        vector_from_int( ei->sig->value, 0 );
+        (void)vector_from_int( ei->sig->value, 0, FALSE );
       } else if( last_value == -1 ) {
         unsigned int rv;
         print_output( "Implicit enumerate assignment cannot follow an X or Z value", FATAL, __FILE__, __LINE__ );
         rv = snprintf( user_msg, USER_MSG_LENGTH, "File: %s, Line: %d", obf_file( inst->funit->filename ), ei->sig->line );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL_WRAP, __FILE__, __LINE__ );
-        // printf( "enumerate Throw A\n" ); - HIT
         Throw 0;
       } else {
-        vector_from_int( ei->sig->value, (last_value + 1) );
+        (void)vector_from_int( ei->sig->value, (last_value + 1), FALSE );
       }
 
     /* Otherwise, reduce the static_expr value to a number and assign it */
     } else {
 
       if( ei->value->exp == NULL ) {
-        vector_from_int( ei->sig->value, ei->value->num );
+        (void)vector_from_int( ei->sig->value, ei->value->num, FALSE );
       } else {
         param_expr_eval( ei->value->exp, inst );
         (void)vector_set_value_ulong( ei->sig->value, ei->value->exp->value->value.ul, ei->sig->value->width );
@@ -204,6 +203,11 @@ void enumerate_dealloc_list(
 
 /*
  $Log$
+ Revision 1.21  2008/08/18 23:07:26  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics
  are currently failing due to changes in the rank branch that never got fixed in that

@@ -2403,39 +2403,51 @@ void vector_to_sim_time(
 }
 
 /*!
+ \return Returns TRUE if the value has changed from the last assignment to the given vector.
+
  Converts an integer value into a vector, creating a vector value to store the
  new vector into.  This function is used along with the vector_to_int for
  mathematical vector operations.  We will first convert vectors into integers,
  perform the mathematical operation, and then revert the integers back into
  the vectors.
 */
-void vector_from_int(
-  vector* vec,   /*!< Pointer to vector store value into */
-  int     value  /*!< Integer value to convert into vector */
+bool vector_from_int(
+  vector* vec,    /*!< Pointer to vector store value into */
+  int     value,  /*!< Integer value to convert into vector */
+  bool    cover   /*!< Calculates coverage results if set to TRUE */
 ) { PROFILE(VECTOR_FROM_INT);
+
+  bool retval = TRUE;  /* Return value for this function */
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL :
       {
-#if UL_BITS < (SIZEOF_INT * 8)
+        ulong        scratchl[UL_DIV(MAX_BIT_WIDTH)];
+        ulong        scratchh[UL_DIV(MAX_BIT_WIDTH)];
         unsigned int i;
-        unsigned int size = UL_SIZE( vec->width );
+        unsigned int size        = (vec->width < (sizeof( int ) << 3)) ? UL_SIZE( vec->width ) : UL_SIZE( sizeof( int ) << 3 );
+        bool         sign_extend = (value < 0) && (vec->width > (sizeof( int ) * 8));
+        unsigned int shift       = (UL_BITS <= (sizeof( int ) << 3)) ? UL_BITS : (sizeof( int ) << 3);
         for( i=0; i<size; i++ ) {
           vec->value.ul[i][VTYPE_INDEX_VAL_VALL] = (ulong)value & UL_SET;
           vec->value.ul[i][VTYPE_INDEX_VAL_VALH] = 0;
-          value >>= UL_BITS;
+          value >>= shift;
         }
-#else
-        vec->value.ul[0][VTYPE_INDEX_VAL_VALL] = (ulong)value;
-        vec->value.ul[0][VTYPE_INDEX_VAL_VALH] = 0;
-#endif
+        if( cover ) {
+          if( sign_extend ) {
+            vector_sign_extend_ulong( scratchl, scratchh, UL_BITS, UL_BITS, (vec->width - 1), vec->width );
+          }
+          retval = vector_set_coverage_and_assign_ulong( vec, scratchl, scratchh, 0, (vec->width - 1) );
+        }
       }
       break;
-    case VDATA_R32 :
-      vec->value.r32->val = (float)value;
-      break;
     case VDATA_R64 :
+      retval              = (vec->value.r64->val != (float)value);
       vec->value.r64->val = (double)value;
+      break;
+    case VDATA_R32 :
+      retval              = (vec->value.r32->val != (float)value);
+      vec->value.r32->val = (float)value;
       break;
     default :  assert( 0 );  break;
   }
@@ -2444,6 +2456,8 @@ void vector_from_int(
   vec->suppl.part.is_signed = 1;
 
   PROFILE_END;
+
+  return( retval );
 
 }
 
@@ -2905,7 +2919,7 @@ void vector_from_string(
         /* Create vector */
         *vec = vector_create( size, VTYPE_VAL, VDATA_UL, TRUE );
         if( *base == DECIMAL ) {
-          vector_from_int( *vec, ato32( value ) );
+          (void)vector_from_int( *vec, ato32( value ), FALSE );
         } else {
           vector_set_static( *vec, value, bits_per_char ); 
         }
@@ -5022,6 +5036,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.167  2008/10/18 06:14:21  phase1geo
+ Continuing to add support for real values and associated system function calls.
+ Updating regressions per these changes.  Checkpointing.
+
  Revision 1.166  2008/10/17 23:20:51  phase1geo
  Continuing to add support support for real values.  Making some good progress here
  (real delays should be working now).  Updated regressions per recent changes.

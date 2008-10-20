@@ -2739,7 +2739,7 @@ bool expression_op_func__random(
 
     /* Store seed value */
     if( (op == EXP_OP_SIG) || (op == EXP_OP_SBIT_SEL) || (op == EXP_OP_MBIT_SEL) || (op == EXP_OP_DIM) ) {
-      vector_from_int( expr->left->value, seed );
+      (void)vector_from_int( expr->left->value, seed, FALSE );
       expression_assign( expr->left->right, expr->left, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
     }
 
@@ -2751,7 +2751,7 @@ bool expression_op_func__random(
   }
   
   /* Convert it to a vector and store it */
-  vector_from_int( expr->value, (int)rand ); 
+  (void)vector_from_int( expr->value, (int)rand, FALSE ); 
 
   PROFILE_END;
 
@@ -2844,7 +2844,7 @@ bool expression_op_func__urandom(
 
     /* Store seed value */
     if( (op == EXP_OP_SIG) || (op == EXP_OP_SBIT_SEL) || (op == EXP_OP_MBIT_SEL) || (op == EXP_OP_DIM) ) {
-      vector_from_int( expr->left->value, seed );
+      (void)vector_from_int( expr->left->value, seed, FALSE );
       expression_assign( expr->left->right, expr->left, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
     }
 
@@ -4396,9 +4396,9 @@ bool expression_op_func__repeat(
   retval = vector_op_lt( expr->value, expr->left->value, expr->right->value );
 
   if( expr->value->value.ul[0][VTYPE_INDEX_VAL_VALL] == 0 ) {
-    vector_from_int( expr->left->value, 0 );
+    (void)vector_from_int( expr->left->value, 0, FALSE );
   } else {
-    vector_from_int( expr->left->value, (vector_to_int( expr->left->value ) + 1) );
+    (void)vector_from_int( expr->left->value, (vector_to_int( expr->left->value ) + 1), FALSE );
   }
 
   /* Gather coverage information */
@@ -5718,6 +5718,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.365  2008/10/20 22:29:00  phase1geo
+ Updating more regression files.  Adding reentrant support for real numbers.
+ Also fixing uninitialized memory access issue in expr.c.
+
  Revision 1.364  2008/10/20 13:00:25  phase1geo
  More updates to support real numbers.  Updating regressions per recent changes.
  Checkpointing.

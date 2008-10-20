@@ -4635,7 +4635,7 @@ statement
         statement*  stmt;
         Try {
           expr = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-          vector_from_int( vec, 0x0 );
+          (void)vector_from_int( vec, 0x0, FALSE );
           assert( expr->value->value.ul == NULL );
           free_safe( expr->value, sizeof( vector ) );
           expr->value = vec;
@@ -5146,7 +5146,7 @@ statement
         vector* vec = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
         Try {
           expression* tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-          vector_from_int( vec, 0x0 );
+          (void)vector_from_int( vec, 0x0, FALSE );
           assert( tmp->value->value.ul == NULL );
           free_safe( tmp->value, sizeof( vector ) );
           tmp->value = vec;
@@ -6052,7 +6052,7 @@ delay_value
             $$ = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
             vector_dealloc( $$->value );
             $$->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
-            vector_from_int( $$->value, se->num );
+            (void)vector_from_int( $$->value, se->num, FALSE );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -6110,7 +6110,7 @@ delay_value
               $$ = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
               vector_dealloc( $$->value );
               $$->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
-              vector_from_int( $$->value, se->num );
+              (void)vector_from_int( $$->value, se->num, FALSE );
             } Catch_anonymous {
               error_count++;
               $$ = NULL;
@@ -7433,7 +7433,7 @@ single_index_expr
               expression* tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
               vector_dealloc( tmp->value );
               tmp->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
-              vector_from_int( tmp->value, $4->num );
+              (void)vector_from_int( tmp->value, $4->num, FALSE );
               $$ = db_create_expression( tmp, $2, EXP_OP_MBIT_POS, lhs_mode, @1.first_line, @1.first_column, (@5.last_column - 1), NULL );
             } Catch_anonymous {
               error_count++;
@@ -7473,7 +7473,7 @@ single_index_expr
             }
             vector_dealloc( tmp->value );
             tmp->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
-            vector_from_int( tmp->value, $4->num );
+            (void)vector_from_int( tmp->value, $4->num, FALSE );
             Try {
               tmp = db_create_expression( tmp, $2, EXP_OP_MBIT_NEG, lhs_mode, @1.first_line, @1.first_column, (@5.last_column - 1), NULL );
             } Catch_anonymous {

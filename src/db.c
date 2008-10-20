@@ -2065,7 +2065,7 @@ expression* db_create_expr_from_static(
 
       /* Create the new vector */
       vec = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
-      vector_from_int( vec, se->num );
+      (void)vector_from_int( vec, se->num, FALSE );
 
       /* Assign the new vector to the expression's vector (after deallocating the expression's old vector) */
       assert( expr->value->value.ul == NULL );
@@ -3102,6 +3102,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.341  2008/10/20 22:29:00  phase1geo
+ Updating more regression files.  Adding reentrant support for real numbers.
+ Also fixing uninitialized memory access issue in expr.c.
+
  Revision 1.340  2008/10/16 23:11:50  phase1geo
  More work on support for real numbers.  I believe that all of the code now
  exists in vector.c to support them.  Still need to do work in expr.c.  Added

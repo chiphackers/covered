@@ -91,7 +91,7 @@ static expression* fsm_arg_parse_state(
             curr_expr_id++;
             vector_dealloc( expr->value );
             expr->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
-            vector_from_int( expr->value, sig->dim[0].lsb );
+            (void)vector_from_int( expr->value, sig->dim[0].lsb, FALSE );
 
             expr = expression_create( NULL, expr, EXP_OP_SBIT_SEL, FALSE, curr_expr_id, 0, 0, 0, FALSE );
             curr_expr_id++;
@@ -103,13 +103,13 @@ static expression* fsm_arg_parse_state(
             curr_expr_id++;
             vector_dealloc( expt->value );
             expt->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
-            vector_from_int( expt->value, sig->dim[0].lsb );
+            (void)vector_from_int( expt->value, sig->dim[0].lsb, FALSE );
 
             expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
             curr_expr_id++;
             vector_dealloc( expr->value );
             expr->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
-            vector_from_int( expr->value, ((sig->value->width - 1) + sig->dim[0].lsb) );
+            (void)vector_from_int( expr->value, ((sig->value->width - 1) + sig->dim[0].lsb), FALSE );
 
             switch( sig->suppl.part.type ) {
               case SSUPPL_TYPE_IMPLICIT     :  op = EXP_OP_MBIT_SEL;  break;
@@ -170,7 +170,7 @@ static expression* fsm_arg_parse_state(
           curr_expr_id++;
           vector_dealloc( expr->value );
           expr->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
-          vector_from_int( expr->value, sig->dim[0].lsb );
+          (void)vector_from_int( expr->value, sig->dim[0].lsb, FALSE );
 
           expl = expression_create( NULL, expr, EXP_OP_SBIT_SEL, FALSE, curr_expr_id, 0, 0, 0, FALSE );
           curr_expr_id++;
@@ -181,13 +181,13 @@ static expression* fsm_arg_parse_state(
           curr_expr_id++;
           vector_dealloc( expt->value );
           expt->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
-          vector_from_int( expt->value, sig->dim[0].lsb );
+          (void)vector_from_int( expt->value, sig->dim[0].lsb, FALSE );
 
           expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
           curr_expr_id++;
           vector_dealloc( expr->value );
           expr->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
-          vector_from_int( expr->value, ((sig->value->width - 1) + sig->dim[0].lsb) );
+          (void)vector_from_int( expr->value, ((sig->value->width - 1) + sig->dim[0].lsb), FALSE );
 
           switch( sig->suppl.part.type ) {
             case SSUPPL_TYPE_IMPLICIT     :  op = EXP_OP_MBIT_SEL;  break;
@@ -375,20 +375,19 @@ static expression* fsm_arg_parse_value(
         curr_expr_id++;
         vector_dealloc( left->value );
         left->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
-        vector_from_int( left->value, msb );
+        (void)vector_from_int( left->value, msb, FALSE );
 
         /* Generate right child expression */
         Try {
           right = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         } Catch_anonymous {
           expression_dealloc( left, FALSE );
-          printf( "fsm_arg Throw H\n" );
           Throw 0;
         }
         curr_expr_id++;
         vector_dealloc( right->value );
         right->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
-        vector_from_int( right->value, lsb );
+        (void)vector_from_int( right->value, lsb, FALSE );
 
         /* Generate multi-bit parameter expression */
         Try {
@@ -396,7 +395,6 @@ static expression* fsm_arg_parse_value(
         } Catch_anonymous {
           expression_dealloc( left, FALSE );
           expression_dealloc( right, FALSE );
-          printf( "fsm_arg Throw I\n" );
           Throw 0;
         }
         curr_expr_id++;
@@ -412,20 +410,19 @@ static expression* fsm_arg_parse_value(
         curr_expr_id++;
         vector_dealloc( left->value );
         left->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
-        vector_from_int( left->value, msb );
+        (void)vector_from_int( left->value, msb, FALSE );
 
         /* Generate right child expression */
         Try {
           right = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         } Catch_anonymous {
           expression_dealloc( left, FALSE );
-          printf( "fsm_arg Throw J\n" );
           Throw 0;
         }
         curr_expr_id++;
         vector_dealloc( right->value );
         right->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
-        vector_from_int( right->value, lsb );
+        (void)vector_from_int( right->value, lsb, FALSE );
 
         /* Generate variable positive multi-bit parameter expression */
         Try {
@@ -449,20 +446,19 @@ static expression* fsm_arg_parse_value(
         curr_expr_id++;
         vector_dealloc( left->value );
         left->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
-        vector_from_int( left->value, msb );
+        (void)vector_from_int( left->value, msb, FALSE );
 
         /* Generate right child expression */
         Try {
           right = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         } Catch_anonymous {
           expression_dealloc( left, FALSE );
-          printf( "fsm_arg Throw L\n" );
           Throw 0;
         }
         curr_expr_id++;
         vector_dealloc( right->value );
         right->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
-        vector_from_int( right->value, lsb );
+        (void)vector_from_int( right->value, lsb, FALSE );
 
         /* Generate variable positive multi-bit parameter expression */
         Try {
@@ -486,7 +482,7 @@ static expression* fsm_arg_parse_value(
         curr_expr_id++;
         vector_dealloc( left->value );
         left->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
-        vector_from_int( left->value, lsb );
+        (void)vector_from_int( left->value, lsb, FALSE );
 
         /* Generate single-bit parameter expression */
         Try {
@@ -758,6 +754,10 @@ void fsm_arg_parse_attr(
 
 /*
  $Log$
+ Revision 1.56  2008/09/23 05:48:49  phase1geo
+ Fixing bug 2123730 (bug 2123300 was also fixed in a previous checkin).  Also adding
+ delay3 diagnostic to verify this bug fix.
+
  Revision 1.55  2008/08/18 23:07:26  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify
