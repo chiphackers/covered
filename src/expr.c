@@ -629,7 +629,6 @@ expression* expression_create(
     /* $random, $urandom, $urandom_range, $shortrealtobits and $bitstoshortreal expressions are always 32-bits wide */
     } else if( (op == EXP_OP_SRANDOM) || (op == EXP_OP_SURANDOM) || (op == EXP_OP_SURAND_RANGE) || (op == EXP_OP_SSR2B) || (op == EXP_OP_SB2SR) ) {
 
-      printf( "SETTING urandom width to 32\n" );
       expression_create_value( new_expr, 32, data );
 
     } else if( (op == EXP_OP_LT   )   ||
@@ -704,8 +703,6 @@ expression* expression_create(
     assert( new_expr->value->value.ul == NULL );
   }
 */
-
-  printf( "expression: %s  ", expression_string( new_expr ) );  vector_display( new_expr->value );
 
   PROFILE_END;
 
@@ -925,6 +922,9 @@ void expression_resize(
       case EXP_OP_WHILE          :
       case EXP_OP_LAST           :
       case EXP_OP_DIM            :
+      case EXP_OP_SRANDOM        :
+      case EXP_OP_SURANDOM       :
+      case EXP_OP_SURAND_RANGE   :
         break;
 
       /* These operations should always be set to a width 1 */
@@ -2709,11 +2709,11 @@ bool expression_op_func__time(
 ) { PROFILE(EXPRESSION_OP_FUNC__TIME);
 
   /* Convert the current time to the current vector */
-  vector_from_uint64( expr->value, ((thr == NULL) ? time->full : thr->curr_time.full) );
+  bool retval = vector_from_uint64( expr->value, ((thr == NULL) ? time->full : thr->curr_time.full) );
 
   PROFILE_END;
 
-  return( TRUE );
+  return( retval );
 
 }
 
@@ -2835,8 +2835,6 @@ bool expression_op_func__urandom(
 
   unsigned long rand;
 
-  vector_display( expr->value );
-
   /* If $random contains a seed parameter, get it */
   if( (expr->left != NULL) && (expr->left->op == EXP_OP_SASSIGN) ) {
 
@@ -2862,7 +2860,6 @@ bool expression_op_func__urandom(
 
   /* Convert it to a vector and store it */
   vector_from_uint64( expr->value, (uint64)rand );
-  vector_display( expr->value );
 
   PROFILE_END;
 
@@ -4222,12 +4219,14 @@ bool expression_op_func__bassign(
       }
       break;
     case VDATA_R64 :
-      (void)vector_from_real64( expr->left->value, (real64)expr->right->value->value.r64->val );
-      vector_display( expr->left->value );
+      assert( expr->left->sig != NULL );
+      (void)vector_from_real64( expr->left->sig->value, (real64)expr->right->value->value.r64->val );
+      expr->left->sig->value->suppl.part.set = 1;
       break;
     case VDATA_R32 :
-      (void)vector_from_real64( expr->left->value, (real64)expr->right->value->value.r32->val );
-      vector_display( expr->left->value );
+      assert( expr->left->sig != NULL );
+      (void)vector_from_real64( expr->left->sig->value, (real64)expr->right->value->value.r32->val );
+      expr->left->sig->value->suppl.part.set = 1;
       break;
     default :  assert( 0 );  break;
   }
@@ -5729,6 +5728,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.367  2008/10/21 05:38:41  phase1geo
+ More updates to support real values.  Added vector_from_real64 functionality.
+ Checkpointing.
+
  Revision 1.366  2008/10/20 23:20:02  phase1geo
  Adding support for vector_from_int coverage accumulation (untested at this point).
  Updating Cver regressions.  Checkpointing.

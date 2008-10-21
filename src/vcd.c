@@ -55,12 +55,10 @@ bool one_instance_found = FALSE;
 
 
 /*!
- \param vcd  File handle pointer to opened VCD file.
-
  Parses specified file until $end keyword is seen, ignoring all text inbetween.
 */
 static void vcd_parse_def_ignore(
-  FILE* vcd
+  FILE* vcd  /*!< File handle pointer to opened VCD file */
 ) { PROFILE(VCD_PARSE_DEF_IGNORE);
 
   bool end_seen = FALSE;  /* If set to true, $end keyword was seen */
@@ -81,14 +79,12 @@ static void vcd_parse_def_ignore(
 }
 
 /*!
- \param vcd  File handle pointer to opened VCD file.
-
  \throws anonymous Throw Throw Throw Throw
 
  Parses definition $var keyword line until $end keyword is seen.
 */
 static void vcd_parse_def_var(
-  FILE* vcd
+  FILE* vcd  /*!< File handle pointer to opened VCD file */
 ) { PROFILE(VCD_PARSE_DEF_VAR);
 
   char type[256];     /* Variable type */
@@ -109,53 +105,59 @@ static void vcd_parse_def_var(
     assert( strlen( tmp )     <= 15  );
     assert( strlen( id_code ) <= 256 );
     
-    if( strncmp( "$end", tmp, 4 ) != 0 ) {
+    if( strncmp( "real", type, 4 ) == 0 ) {
 
-      /* A bit select was specified for this signal, get the size */
-      if( sscanf( tmp, "\[%d:%d]", &msb, &lsb ) != 2 ) {
-        
-        if( sscanf( tmp, "\[%d]", &lsb ) != 1 ) {
-          print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
-          printf( "vcd Throw A\n" );
-          Throw 0;
-        } else {
-          msb = lsb;
-        }
-
-      }
-
-      if( (fscanf( vcd, "%s", tmp ) != 1) || (strncmp( "$end", tmp, 4 ) != 0) ) {
-        print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
-        printf( "vcd Throw B\n" );
-        Throw 0;
-      }
-
-    } else if( sscanf( ref, "%[a-zA-Z0-9_]\[%s]", reftmp, tmp ) == 2 ) {
-
-      strcpy( ref, reftmp );
-
-      if( sscanf( tmp, "%d:%d", &msb, &lsb ) != 2 ) {
-        if( sscanf( tmp, "%d", &lsb ) != 1 ) {
-          print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
-          printf( "vcd Throw C\n" );
-          Throw 0;
-        } else {
-          msb = lsb;
-        }
-      }
+      msb = 63;
+      lsb = 0;
 
     } else {
 
-      msb = size - 1;
-      lsb = 0;
+      if( strncmp( "$end", tmp, 4 ) != 0 ) {
 
-    }
+        /* A bit select was specified for this signal, get the size */
+        if( sscanf( tmp, "\[%d:%d]", &msb, &lsb ) != 2 ) {
+        
+          if( sscanf( tmp, "\[%d]", &lsb ) != 1 ) {
+            print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
+            Throw 0;
+          } else {
+            msb = lsb;
+          }
 
-    /* If the signal is output in big endian format, swap the lsb and msb values accordingly */
-    if( lsb > msb ) {
-      tmplsb = lsb;
-      lsb    = msb;
-      msb    = tmplsb;
+        }
+
+        if( (fscanf( vcd, "%s", tmp ) != 1) || (strncmp( "$end", tmp, 4 ) != 0) ) {
+          print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
+          Throw 0;
+        }
+
+      } else if( sscanf( ref, "%[a-zA-Z0-9_]\[%s]", reftmp, tmp ) == 2 ) {
+  
+        strcpy( ref, reftmp );
+  
+        if( sscanf( tmp, "%d:%d", &msb, &lsb ) != 2 ) {
+          if( sscanf( tmp, "%d", &lsb ) != 1 ) {
+            print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
+            Throw 0;
+          } else {
+            msb = lsb;
+          }
+        }
+
+      } else {
+
+        msb = size - 1;
+        lsb = 0;
+
+      }
+
+      /* If the signal is output in big endian format, swap the lsb and msb values accordingly */
+      if( lsb > msb ) {
+        tmplsb = lsb;
+        lsb    = msb;
+        msb    = tmplsb;
+      }
+
     }
 
     /* For now we will let any type and size slide */
@@ -164,7 +166,6 @@ static void vcd_parse_def_var(
   } else {
 
     print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
-    printf( "vcd Throw D\n" );
     Throw 0;
   
   }
@@ -174,14 +175,12 @@ static void vcd_parse_def_var(
 }
 
 /*!
- \param vcd  File handle pointer to opened VCD file.
-
  \throws anonymous Throw
 
  Parses definition $scope keyword line until $end keyword is seen.
 */
 static void vcd_parse_def_scope(
-  FILE* vcd
+  FILE* vcd  /*!< File handle pointer to opened VCD file */
 ) { PROFILE(VCD_PARSE_DEF_SCOPE);
 
   char type[256];  /* Scope type */
@@ -199,7 +198,6 @@ static void vcd_parse_def_scope(
   } else {
 
     print_output( "Unrecognized $scope format", FATAL, __FILE__, __LINE__ );
-    printf( "vcd Throw E\n" );
     Throw 0;
 
   }
@@ -209,14 +207,12 @@ static void vcd_parse_def_scope(
 }
 
 /*!
- \param vcd  File handle pointer to opened VCD file.
-
  \throws anonymous Throw Throw Throw vcd_parse_def_scope vcd_parse_def_var
 
  Parses all definition information from specified file.
 */
 static void vcd_parse_def(
-  FILE* vcd
+  FILE* vcd  /*!< File handle pointer to opened VCD file */
 ) { PROFILE(VCD_PARSE_DEF);
 
   bool enddef_found = FALSE;  /* If set to true, definition section is finished */
@@ -248,7 +244,6 @@ static void vcd_parse_def(
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Non-keyword located where one should have been \"%s\"", keyword );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      printf( "vcd Throw F\n" );
       Throw 0;
 
     }
@@ -257,7 +252,6 @@ static void vcd_parse_def(
 
   if( !enddef_found ) {
     print_output( "Specified VCD file is not a valid VCD file", FATAL, __FILE__, __LINE__ );
-    printf( "vcd Throw G\n" );
     Throw 0;
   }
 
@@ -278,7 +272,6 @@ static void vcd_parse_def(
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
     }
 
-    //printf( "vcd Throw H\n" ); - HIT
     Throw 0;
 
   }
@@ -288,17 +281,14 @@ static void vcd_parse_def(
 }
 
 /*!
- \param vcd    File handle of opened VCD file.
- \param value  String containing value of current signal.
-
  \throws anonymous Throw
 
  Reads the next token from the file and calls the appropriate database storage
  function for this signal change.
 */
 static void vcd_parse_sim_vector(
-  FILE* vcd,
-  char* value
+  FILE* vcd,   /*!< File handle of opened VCD file */
+  char* value  /*!< String containing value of current signal */
 ) { PROFILE(VCD_PARSE_SIM_VECTOR);
 
   char sym[256];    /* String value of signal symbol */
@@ -313,7 +303,6 @@ static void vcd_parse_sim_vector(
   } else {
 
     print_output( "Bad file format", FATAL, __FILE__, __LINE__ );
-    printf( "vcd Throw I\n" );
     Throw 0;
 
   }
@@ -323,15 +312,44 @@ static void vcd_parse_sim_vector(
 }
 
 /*!
- \param vcd  File handle of opened VCD file.
+ \throws anonymous Throw
 
+ Reads the next token from the file and calls the appropriate database storage
+ function for this signal change.
+*/
+static void vcd_parse_sim_real(
+  FILE* vcd,   /*!< File handle of opened VCD file */
+  char* value  /*!< String containing value of current signal */
+) { PROFILE(VCD_PARSE_SIM_REAL);
+
+  char sym[256];    /* String value of signal symbol */
+  int  chars_read;  /* Number of characters scanned in */
+
+  if( fscanf( vcd, "%s%n", sym, &chars_read ) == 1 ) {
+
+    assert( chars_read <= 256 );
+
+    db_set_symbol_string( sym, value );
+
+  } else {
+
+    print_output( "Bad file format", FATAL, __FILE__, __LINE__ );
+    Throw 0;
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  \throws anonymous Throw
 
  Reads in symbol from simulation vector line that is to be ignored 
  (unused).  Signals an error message if the line is improperly formatted.
 */
 static void vcd_parse_sim_ignore(
-  FILE* vcd
+  FILE* vcd  /*!< File handle of opened VCD file */
 ) { PROFILE(VCD_PARSE_SIM_IGNORE);
 
   char sym[256];    /* String value of signal symbol */
@@ -340,7 +358,6 @@ static void vcd_parse_sim_ignore(
   if( fscanf( vcd, "%s%n", sym, &chars_read ) != 1 ) {
 
     print_output( "Bad file format", FATAL, __FILE__, __LINE__ );
-    printf( "vcd Throw J\n" );
     Throw 0;
 
   }
@@ -352,14 +369,12 @@ static void vcd_parse_sim_ignore(
 }
 
 /*!
- \param vcd  File handle of opened VCD file.
-
  \throws anonymous db_do_timestep db_do_timestep vcd_parse_sim_vector Throw vcd_parse_sim_ignore
 
  Parses all lines that occur in the simulation portion of the VCD file.
 */
 static void vcd_parse_sim(
-  FILE* vcd
+  FILE* vcd  /*!< File handle of opened VCD file */
 ) { PROFILE(VCD_PARSE_SIM);
 
   char   token[4100];                /* Current token from VCD file */
@@ -383,7 +398,7 @@ static void vcd_parse_sim(
 
       } else if( (token[0] == 'r') || (token[0] == 'R') || carry_over ) {
 
-        vcd_parse_sim_ignore( vcd );
+        vcd_parse_sim_real( vcd, (token + 1) );
         carry_over = FALSE;
 
       } else if( token[0] == '#' ) {
@@ -408,7 +423,6 @@ static void vcd_parse_sim(
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Badly placed token \"%s\"", token );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        printf( "vcd Throw K\n" );
         Throw 0;
 
       }
@@ -431,8 +445,6 @@ static void vcd_parse_sim(
 }
 
 /*!
- \param vcd_file  Name of VCD file to parse.
-
  \throws anonymous Throw Throw vcd_parse_def vcd_parse_sim
 
  Reads specified VCD file for relevant information and calls the database
@@ -440,7 +452,7 @@ static void vcd_parse_sim(
  need for a lexer and parser which should increase performance.
 */
 void vcd_parse(
-  const char* vcd_file
+  const char* vcd_file  /*!< Name of VCD file to parse */
 ) { PROFILE(VCD_PARSE);
 
   FILE* vcd_handle;        /* Pointer to opened VCD file */
@@ -468,7 +480,6 @@ void vcd_parse(
       free_safe( timestep_tab, (sizeof( symtable*) * vcd_symtab_size) );
       rv = fclose( vcd_handle );
       assert( rv == 0 );
-      //printf( "vcd Throw L\n" ); - HIT
       Throw 0;
     }
 
@@ -483,7 +494,6 @@ void vcd_parse(
   } else {
 
     print_output( "Unable to open specified VCD file", FATAL, __FILE__, __LINE__ );
-    printf( "vcd Throw M\n" );
     Throw 0;
 
   }
@@ -494,6 +504,10 @@ void vcd_parse(
 
 /*
  $Log$
+ Revision 1.42  2008/04/02 05:39:51  phase1geo
+ More updates to support error memory deallocation.  Full regression still
+ fails at this point.  Checkpointing.
+
  Revision 1.41  2008/03/17 22:02:32  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function

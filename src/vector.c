@@ -1314,6 +1314,17 @@ void vector_display_r64(
 }
 
 /*!
+ Outputs the contents of a 32-bit real vector value.
+*/
+void vector_display_r32(
+  rv32* value  /*!< Pointer to real32 structure from vector */
+) {
+
+  printf( "read value: %s, stored value: %f", value->str, value->val );
+
+}
+
+/*!
  Outputs contents of vector to standard output (for debugging purposes only).
 */
 void vector_display(
@@ -1330,6 +1341,7 @@ void vector_display(
     switch( vec->suppl.part.data_type ) {
       case VDATA_UL  :  vector_display_ulong( vec->value.ul, vec->width, vec->suppl.part.type );  break;
       case VDATA_R64 :  vector_display_r64( vec->value.r64 );  break;
+      case VDATA_R32 :  vector_display_r32( vec->value.r32 );  break;
       default        :  assert( 0 );  break;
     }
   } else {
@@ -2479,9 +2491,8 @@ bool vector_from_uint64(
         ulong        scratchl[UL_DIV(MAX_BIT_WIDTH)];
         ulong        scratchh[UL_DIV(MAX_BIT_WIDTH)];
         unsigned int i;
-        unsigned int size  = (vec->width < (sizeof( int ) << 3)) ? UL_SIZE( vec->width ) : UL_SIZE( sizeof( int ) << 3 );
-        unsigned int shift = (UL_BITS <= (sizeof( int ) << 3)) ? UL_BITS : (sizeof( int ) << 3); 
-        printf( "size: %u, shift: %u, value: %llu, width: %d\n", size, shift, value, vec->width );
+        unsigned int size  = (vec->width < (sizeof( uint64 ) << 3)) ? UL_SIZE( vec->width ) : UL_SIZE( sizeof( uint64 ) << 3 );
+        unsigned int shift = (UL_BITS <= (sizeof( uint64 ) << 3)) ? UL_BITS : (sizeof( uint64 ) << 3); 
         for( i=0; i<size; i++ ) {
           scratchl[i] = (ulong)value & UL_SET;
           scratchh[i] = 0;
@@ -3046,13 +3057,25 @@ bool vector_vcd_assign(
       }
       break;
     case VDATA_R64 :
-      if( (sscanf( value, "%f", &(vec->value.r64->val) ) != 1) && (sscanf( value, "%g", &(vec->value.r64->val) ) != 1) ) {
-        assert( 0 );
+      {
+        double real;
+        if( sscanf( value, "%lf", &real ) == 1 ) {
+          retval = (vec->value.r64->val != real);
+          vec->value.r64->val = real;
+        } else {
+          assert( 0 );
+        }
       }
       break;
     case VDATA_R32 :
-      if( (sscanf( value, "%f", &(vec->value.r32->val) ) != 1) && (sscanf( value, "%g", &(vec->value.r32->val) ) != 1) ) {
-        assert( 0 );
+      {
+        float real;
+        if( sscanf( value, "%f", &real ) != 1 ) {
+          retval = (vec->value.r32->val != real);
+          vec->value.r32->val = real;
+        } else {
+          assert( 0 );
+        }
       }
       break;
     default :  assert( 0 );  break;
@@ -5074,6 +5097,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.169  2008/10/21 05:38:42  phase1geo
+ More updates to support real values.  Added vector_from_real64 functionality.
+ Checkpointing.
+
  Revision 1.168  2008/10/20 23:20:02  phase1geo
  Adding support for vector_from_int coverage accumulation (untested at this point).
  Updating Cver regressions.  Checkpointing.

@@ -113,7 +113,7 @@ static void vcd_callback(
 
   if( g->flags & LXT2_RD_SYM_F_DOUBLE ) {
 
-    /* We ignore real values for now */
+    db_set_symbol_string( vcdid( *pnt_facidx ), *pnt_value );
 
   } else if( g->flags & LXT2_RD_SYM_F_STRING ) {
 
@@ -180,7 +180,7 @@ void lxt_parse(
 
         if( g->flags & LXT2_RD_SYM_F_DOUBLE ) {
 
-          /* We ignore real values at the moment */
+          db_assign_symbol( netname, vcdid( newindx ), 63, 0 );
 
         } else if( g->flags & LXT2_RD_SYM_F_STRING ) {
 
@@ -271,6 +271,10 @@ void lxt_parse(
 
 /*
  $Log$
+ Revision 1.29  2008/09/25 05:05:18  phase1geo
+ Regression fixes for LXT runs.  Still not quite finished yet.
+ Checkpointing.  Also contains fixes for bugs 2127678 and 2127687.
+
  Revision 1.28  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify
