@@ -629,6 +629,7 @@ expression* expression_create(
     /* $random, $urandom, $urandom_range, $shortrealtobits and $bitstoshortreal expressions are always 32-bits wide */
     } else if( (op == EXP_OP_SRANDOM) || (op == EXP_OP_SURANDOM) || (op == EXP_OP_SURAND_RANGE) || (op == EXP_OP_SSR2B) || (op == EXP_OP_SB2SR) ) {
 
+      printf( "SETTING urandom width to 32\n" );
       expression_create_value( new_expr, 32, data );
 
     } else if( (op == EXP_OP_LT   )   ||
@@ -703,6 +704,8 @@ expression* expression_create(
     assert( new_expr->value->value.ul == NULL );
   }
 */
+
+  printf( "expression: %s  ", expression_string( new_expr ) );  vector_display( new_expr->value );
 
   PROFILE_END;
 
@@ -2739,7 +2742,7 @@ bool expression_op_func__random(
 
     /* Store seed value */
     if( (op == EXP_OP_SIG) || (op == EXP_OP_SBIT_SEL) || (op == EXP_OP_MBIT_SEL) || (op == EXP_OP_DIM) ) {
-      (void)vector_from_int( expr->left->value, seed, FALSE );
+      (void)vector_from_int( expr->left->value, seed );
       expression_assign( expr->left->right, expr->left, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
     }
 
@@ -2751,7 +2754,7 @@ bool expression_op_func__random(
   }
   
   /* Convert it to a vector and store it */
-  (void)vector_from_int( expr->value, (int)rand, FALSE ); 
+  (void)vector_from_int( expr->value, (int)rand ); 
 
   PROFILE_END;
 
@@ -2832,6 +2835,8 @@ bool expression_op_func__urandom(
 
   unsigned long rand;
 
+  vector_display( expr->value );
+
   /* If $random contains a seed parameter, get it */
   if( (expr->left != NULL) && (expr->left->op == EXP_OP_SASSIGN) ) {
 
@@ -2844,7 +2849,7 @@ bool expression_op_func__urandom(
 
     /* Store seed value */
     if( (op == EXP_OP_SIG) || (op == EXP_OP_SBIT_SEL) || (op == EXP_OP_MBIT_SEL) || (op == EXP_OP_DIM) ) {
-      (void)vector_from_int( expr->left->value, seed, FALSE );
+      (void)vector_from_int( expr->left->value, seed );
       expression_assign( expr->left->right, expr->left, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
     }
 
@@ -2854,9 +2859,10 @@ bool expression_op_func__urandom(
     rand = sys_task_urandom( NULL );
 
   }
-  
+
   /* Convert it to a vector and store it */
   vector_from_uint64( expr->value, (uint64)rand );
+  vector_display( expr->value );
 
   PROFILE_END;
 
@@ -4207,18 +4213,23 @@ bool expression_op_func__bassign(
   const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__BASSIGN);
 
-  int intval = 0;  /* Integer value */
-
   /* Perform assignment */
-  if( expr->value->suppl.part.data_type == VDATA_UL ) {
-    expression_assign( expr->left, expr->right, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
-  } else {
-    switch( expr->left->value->suppl.part.data_type ) {
-      case VDATA_UL  :  vector_from_uint64( expr->left->value, vector_to_uint64( expr->right->value ) );  break;
-      case VDATA_R64 :
-      case VDATA_R32 :  expr->left->value->value.r64->val = vector_to_real64( expr->right->value );  break;
-      default        :  assert( 0 );  break;
-    }
+  switch( expr->right->value->suppl.part.data_type ) {
+    case VDATA_UL :
+      {
+        int intval = 0;
+        expression_assign( expr->left, expr->right, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
+      }
+      break;
+    case VDATA_R64 :
+      (void)vector_from_real64( expr->left->value, (real64)expr->right->value->value.r64->val );
+      vector_display( expr->left->value );
+      break;
+    case VDATA_R32 :
+      (void)vector_from_real64( expr->left->value, (real64)expr->right->value->value.r32->val );
+      vector_display( expr->left->value );
+      break;
+    default :  assert( 0 );  break;
   }
 
   /* Gather coverage information */
@@ -4396,9 +4407,9 @@ bool expression_op_func__repeat(
   retval = vector_op_lt( expr->value, expr->left->value, expr->right->value );
 
   if( expr->value->value.ul[0][VTYPE_INDEX_VAL_VALL] == 0 ) {
-    (void)vector_from_int( expr->left->value, 0, FALSE );
+    (void)vector_from_int( expr->left->value, 0 );
   } else {
-    (void)vector_from_int( expr->left->value, (vector_to_int( expr->left->value ) + 1), FALSE );
+    (void)vector_from_int( expr->left->value, (vector_to_int( expr->left->value ) + 1) );
   }
 
   /* Gather coverage information */
@@ -5718,6 +5729,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.366  2008/10/20 23:20:02  phase1geo
+ Adding support for vector_from_int coverage accumulation (untested at this point).
+ Updating Cver regressions.  Checkpointing.
+
  Revision 1.365  2008/10/20 22:29:00  phase1geo
  Updating more regression files.  Adding reentrant support for real numbers.
  Also fixing uninitialized memory access issue in expr.c.

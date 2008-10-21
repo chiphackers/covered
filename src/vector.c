@@ -2412,9 +2412,8 @@ void vector_to_sim_time(
  the vectors.
 */
 bool vector_from_int(
-  vector* vec,    /*!< Pointer to vector store value into */
-  int     value,  /*!< Integer value to convert into vector */
-  bool    cover   /*!< Calculates coverage results if set to TRUE */
+  vector* vec,   /*!< Pointer to vector store value into */
+  int     value  /*!< Integer value to convert into vector */
 ) { PROFILE(VECTOR_FROM_INT);
 
   bool retval = TRUE;  /* Return value for this function */
@@ -2429,16 +2428,14 @@ bool vector_from_int(
         bool         sign_extend = (value < 0) && (vec->width > (sizeof( int ) * 8));
         unsigned int shift       = (UL_BITS <= (sizeof( int ) << 3)) ? UL_BITS : (sizeof( int ) << 3);
         for( i=0; i<size; i++ ) {
-          vec->value.ul[i][VTYPE_INDEX_VAL_VALL] = (ulong)value & UL_SET;
-          vec->value.ul[i][VTYPE_INDEX_VAL_VALH] = 0;
+          scratchl[i] = (ulong)value & UL_SET;
+          scratchh[i] = 0;
           value >>= shift;
         }
-        if( cover ) {
-          if( sign_extend ) {
-            vector_sign_extend_ulong( scratchl, scratchh, UL_BITS, UL_BITS, (vec->width - 1), vec->width );
-          }
-          retval = vector_set_coverage_and_assign_ulong( vec, scratchl, scratchh, 0, (vec->width - 1) );
+        if( sign_extend ) {
+          vector_sign_extend_ulong( scratchl, scratchh, UL_BITS, UL_BITS, (vec->width - 1), vec->width );
         }
+        retval = vector_set_coverage_and_assign_ulong( vec, scratchl, scratchh, 0, (vec->width - 1) );
       }
       break;
     case VDATA_R64 :
@@ -2462,37 +2459,43 @@ bool vector_from_int(
 }
 
 /*!
+ \return Returns TRUE if the value has changed from the last assignment to the given vector.
+
  Converts a 64-bit integer value into a vector.  This function is used along with
  the vector_to_uint64 for mathematical vector operations.  We will first convert
  vectors into 64-bit integers, perform the mathematical operation, and then revert
  the 64-bit integers back into the vectors.
 */
-void vector_from_uint64(
+bool vector_from_uint64(
   vector* vec,   /*!< Pointer to vector store value into */
   uint64  value  /*!< 64-bit integer value to convert into vector */
 ) { PROFILE(VECTOR_FROM_UINT64);
 
+  bool retval = TRUE;  /* Return value for this function */
+
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL :
       {
-#if UL_BITS < 64
+        ulong        scratchl[UL_DIV(MAX_BIT_WIDTH)];
+        ulong        scratchh[UL_DIV(MAX_BIT_WIDTH)];
         unsigned int i;
-        unsigned int size = UL_SIZE( vec->width );
+        unsigned int size  = (vec->width < (sizeof( int ) << 3)) ? UL_SIZE( vec->width ) : UL_SIZE( sizeof( int ) << 3 );
+        unsigned int shift = (UL_BITS <= (sizeof( int ) << 3)) ? UL_BITS : (sizeof( int ) << 3); 
+        printf( "size: %u, shift: %u, value: %llu, width: %d\n", size, shift, value, vec->width );
         for( i=0; i<size; i++ ) {
-          vec->value.ul[i][VTYPE_INDEX_VAL_VALL] = (ulong)value & UL_SET;
-          vec->value.ul[i][VTYPE_INDEX_VAL_VALH] = 0;
-          value >>= UL_BITS;
+          scratchl[i] = (ulong)value & UL_SET;
+          scratchh[i] = 0;
+          value >>= shift;
         }
-#else
-        vec->value.ul[0][VTYPE_INDEX_VAL_VALL] = (ulong)value;
-        vec->value.ul[0][VTYPE_INDEX_VAL_VALH] = 0;
-#endif
+        retval = vector_set_coverage_and_assign_ulong( vec, scratchl, scratchh, 0, (vec->width - 1) );
       }
       break;
     case VDATA_R64 :
+      retval              = (vec->value.r64->val != (double)value);
       vec->value.r64->val = (double)value;
       break;
     case VDATA_R32 :
+      retval              = (vec->value.r32->val != (float)value);
       vec->value.r32->val = (float)value;
       break;
     default :  assert( 0 );  break;
@@ -2502,6 +2505,41 @@ void vector_from_uint64(
   vec->suppl.part.is_signed = 0;
 
   PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns TRUE if the value has changed from the last assignment to the given vector.
+
+ Converts a 64-bit real value into a vector.
+*/
+bool vector_from_real64(
+  vector* vec,   /*!< Pointer to vector store value into */
+  real64  value  /*!< 64-bit real value to convert into vector */
+) { PROFILE(VECTOR_FROM_REAL64);
+
+  bool retval = TRUE;  /* Return value for this function */
+
+  switch( vec->suppl.part.data_type ) {
+    case VDATA_UL :
+      retval = vector_from_uint64( vec, (uint64)round( value ) );
+      break;
+    case VDATA_R64 :
+      retval              = (vec->value.r64->val != value);
+      vec->value.r64->val = value;
+      break;
+    case VDATA_R32 :
+      retval              = (vec->value.r32->val != (float)value);
+      vec->value.r32->val = (float)value;
+      break;
+    default :  assert( 0 );  break;
+  }
+
+  PROFILE_END;
+
+  return( retval );
 
 }
 
@@ -2919,7 +2957,7 @@ void vector_from_string(
         /* Create vector */
         *vec = vector_create( size, VTYPE_VAL, VDATA_UL, TRUE );
         if( *base == DECIMAL ) {
-          (void)vector_from_int( *vec, ato32( value ), FALSE );
+          (void)vector_from_int( *vec, ato32( value ) );
         } else {
           vector_set_static( *vec, value, bits_per_char ); 
         }
@@ -5036,6 +5074,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.168  2008/10/20 23:20:02  phase1geo
+ Adding support for vector_from_int coverage accumulation (untested at this point).
+ Updating Cver regressions.  Checkpointing.
+
  Revision 1.167  2008/10/18 06:14:21  phase1geo
  Continuing to add support for real values and associated system function calls.
  Updating regressions per these changes.  Checkpointing.

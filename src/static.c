@@ -155,7 +155,7 @@ static_expr* static_expr_gen_unary(
             vector_dealloc( tmpexp->value );
             tmpexp->value = vec;
           }
-          (void)vector_from_int( tmpexp->value, stexp->num, FALSE );
+          (void)vector_from_int( tmpexp->value, stexp->num );
 
           stexp->exp = expression_create( tmpexp, NULL, op, FALSE, curr_expr_id, line, first, last, FALSE );
           curr_expr_id++;
@@ -260,7 +260,7 @@ static_expr* static_expr_gen(
           vector_dealloc( right->exp->value );
           right->exp->value = vec;
         }
-        (void)vector_from_int( right->exp->value, right->num, FALSE );
+        (void)vector_from_int( right->exp->value, right->num );
 
         tmpexp = expression_create( right->exp, left->exp, op, FALSE, curr_expr_id, line, first, last, FALSE );
         curr_expr_id++;
@@ -279,7 +279,7 @@ static_expr* static_expr_gen(
           vector_dealloc( left->exp->value );
           left->exp->value = vec;
         }
-        (void)vector_from_int( left->exp->value, left->num, FALSE );
+        (void)vector_from_int( left->exp->value, left->num );
 
         tmpexp = expression_create( right->exp, left->exp, op, FALSE, curr_expr_id, line, first, last, FALSE );
         curr_expr_id++;
@@ -454,6 +454,10 @@ void static_expr_dealloc(
 
 /*
  $Log$
+ Revision 1.40  2008/10/20 23:20:02  phase1geo
+ Adding support for vector_from_int coverage accumulation (untested at this point).
+ Updating Cver regressions.  Checkpointing.
+
  Revision 1.39  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify
