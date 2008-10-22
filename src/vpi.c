@@ -175,9 +175,9 @@ void add_sym_values_to_sim() { PROFILE(ADD_SYM_VALUES_TO_SIM);
  this value in the Covered symtable and calls the db_do_timestep if this value change occurred
  on a new timestep.
 */
-PLI_INT32 covered_value_change(
+PLI_INT32 covered_value_change_bin(
   p_cb_data cb  /*!< Pointer to callback data structure from vpi_user.h */
-) { PROFILE(COVERED_VALUE_CHANGE);
+) { PROFILE(COVERED_VALUE_CHANGE_BIN);
 
 #ifndef NOIV
   s_vpi_value value;
@@ -188,7 +188,7 @@ PLI_INT32 covered_value_change(
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change, name: %s, time: %lld, value: %s",
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change_bin, name: %s, time: %lld, value: %s",
                                 obf_sig( vpi_get_str( vpiFullName, cb->obj ) ), (((uint64)cb->time->high << 32) | (uint64)cb->time->low), value.value.str );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -210,7 +210,7 @@ PLI_INT32 covered_value_change(
 #else
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change, name: %s, time: %d%0d, value: %s",
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change_bin, name: %s, time: %d%0d, value: %s",
                                 obf_sig( vpi_get_str( vpiFullName, cb->obj ) ), (((uint64)cb->time->high << 32) | (uint64)cb->time->low), cb->value->value.str );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -229,6 +229,79 @@ PLI_INT32 covered_value_change(
 
   /* Set symbol value */
   db_set_symbol_string( cb->user_data, cb->value->value.str );
+#endif
+
+  PROFILE_END;
+
+  return( 0 );
+
+}
+
+/*!
+ \return Returns 0.
+
+ This callback function is called whenever a signal changes within the simulator.  It places
+ this value in the Covered symtable and calls the db_do_timestep if this value change occurred
+ on a new timestep.
+*/
+PLI_INT32 covered_value_change_real(
+  p_cb_data cb  /*!< Pointer to callback data structure from vpi_user.h */
+) { PROFILE(COVERED_VALUE_CHANGE_REAL);
+
+  char real_str[64];
+
+#ifndef NOIV
+  s_vpi_value value;
+
+  /* Setup value */
+  value.format = vpiRealVal;
+  vpi_get_value( cb->obj, &value );
+
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change_real, name: %s, time: %lld, value: %.16f",
+                                obf_sig( vpi_get_str( vpiFullName, cb->obj ) ), (((uint64)cb->time->high << 32) | (uint64)cb->time->low), value.value.real );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
+#endif
+
+  if( ((cb->time->low  != (PLI_INT32)(last_time & 0xffffffff)) ||
+       (cb->time->high != (PLI_INT32)((last_time >> 32) & 0xffffffff))) &&
+      use_last_time ) {
+    if( !db_do_timestep( last_time, FALSE ) ) {
+      vpi_control( vpiFinish, EXIT_SUCCESS );
+    }
+  }
+  last_time     = ((uint64)cb->time->high << 32) | (uint64)cb->time->low;
+  use_last_time = TRUE;
+
+  /* Set symbol value */
+  snprintf( real_str, 64, "%.16f", value.value.real );
+  db_set_symbol_string( cb->user_data, real_str );
+#else
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change_real, name: %s, time: %d%0d, value: %.16f",
+                                obf_sig( vpi_get_str( vpiFullName, cb->obj ) ), (((uint64)cb->time->high << 32) | (uint64)cb->time->low), cb->value->value.real );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
+#endif
+
+  if( ((cb->time->low  != (PLI_INT32)(last_time & 0xffffffff)) ||
+       (cb->time->high != (PLI_INT32)((last_time >> 32) & 0xffffffff))) &&
+      use_last_time ) {
+    if( !db_do_timestep( last_time, FALSE ) ) {
+      vpi_control( vpiFinish, EXIT_SUCCESS );
+    }
+  }
+  last_time     = ((uint64)cb->time->high << 32) | (uint64)cb->time->low;
+  use_last_time = TRUE;
+
+  /* Set symbol value */
+  snprintf( real_str, 64, "%.16f", cb->value->value.real );
+  db_set_symbol_string( cb->user_data, real_str );
 #endif
 
   PROFILE_END;
@@ -389,14 +462,30 @@ void covered_create_value_change_cb(
     db_assign_symbol( vsigl->sig->name, symbol, ((vsigl->sig->value->width + vsigl->sig->dim[0].lsb) - 1), vsigl->sig->dim[0].lsb ); 
 
     /* Get initial value of this signal and store it for later retrieval */
-    value.format = vpiBinStrVal;
-    vpi_get_value( sig, &value );
-    sym_value_store( symbol, value.value.str );
+    if( vpi_get( vpiType, sig ) == vpiRealVar ) {
+
+      char real_str[64];
+      value.format = vpiRealVal;
+      vpi_get_value( sig, &value );
+      snprintf( real_str, 64, "%f", value.value.real );
+      sym_value_store( symbol, real_str );
+
+    } else {
+
+      value.format = vpiBinStrVal;
+      vpi_get_value( sig, &value );
+      sym_value_store( symbol, value.value.str );
+
+    }
 
     /* Add a callback for a value change to this net */
     cb                   = (p_cb_data)malloc( sizeof( s_cb_data ) );
     cb->reason           = cbValueChange;
-    cb->cb_rtn           = covered_value_change;
+    if( vpi_get( vpiType, sig ) == vpiRealVar ) {
+      cb->cb_rtn         = covered_value_change_real;
+    } else {
+      cb->cb_rtn         = covered_value_change_bin;
+    }
     cb->obj              = sig;
     cb->time             = (p_vpi_time)malloc( sizeof( s_vpi_time ) ); 
     cb->time->type       = vpiSimTime;
@@ -404,8 +493,12 @@ void covered_create_value_change_cb(
     cb->time->low        = 0;
 #ifdef NOIV
     cb->value            = (p_vpi_value)malloc( sizeof( s_vpi_value ) );
-    cb->value->format    = vpiBinStrVal;
-    cb->value->value.str = NULL;
+    if( vpi_gate( vpiType, sig ) == vpiRealVar ) {
+      cb->value->format    = vpiRealVal;
+    } else {
+      cb->value->format    = vpiBinStrVal;
+      cb->value->value.str = NULL;
+    }
 #else
     cb->value            = NULL;
 #endif
@@ -479,6 +572,8 @@ void covered_parse_task_func( vpiHandle mod ) { PROFILE(COVERED_PARSE_TASK_FUNC)
                   rv = snprintf( user_msg, USER_MSG_LENGTH, "Found integer %s", obf_sig( vpi_get_str( vpiFullName, handle ) ) );
                 } else if( type == vpiTimeVar ) {
                   rv = snprintf( user_msg, USER_MSG_LENGTH, "Found time %s", obf_sig( vpi_get_str( vpiFullName, handle ) ) );
+                } else if( type == vpiRealVar ) {
+                  rv = snprintf( user_msg, USER_MSG_LENGTH, "Found real %s", obf_sig( vpi_get_str( vpiFullName, handle ) ) );
                 }
                 assert( rv < USER_MSG_LENGTH );
                 print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -544,7 +639,7 @@ void covered_parse_signals( vpiHandle mod ) { PROFILE(COVERED_PARSE_SIGNALS);
   if( (iter = vpi_iterate( vpiVariables, mod )) != NULL ) {
     while( (handle = vpi_scan( iter )) != NULL ) {
       type = vpi_get( vpiType, handle );
-      if( (type == vpiIntegerVar) || (type == vpiTimeVar) || (type == vpiReg) ) {
+      if( (type == vpiIntegerVar) || (type == vpiTimeVar) || (type == vpiReg) || (type == vpiRealVar) ) {
 #ifdef DEBUG_MODE
         if( debug_mode ) {
           unsigned int rv;
@@ -552,7 +647,9 @@ void covered_parse_signals( vpiHandle mod ) { PROFILE(COVERED_PARSE_SIGNALS);
             rv = snprintf( user_msg, USER_MSG_LENGTH, "Found integer: %s", obf_sig( vpi_get_str( vpiName, handle ) ) );
           } else if( type == vpiTimeVar ) {
             rv = snprintf( user_msg, USER_MSG_LENGTH, "Found time: %s", obf_sig( vpi_get_str( vpiName, handle ) ) );
-          } else {
+          } else if( type == vpiRealVar ) {
+            rv = snprintf( user_msg, USER_MSG_LENGTH, "Found real: %s", obf_sig( vpi_get_str( vpiName, handle ) ) );
+          } else if( type == vpiReg ) {
             rv = snprintf( user_msg, USER_MSG_LENGTH, "Found reg: %s", obf_sig( vpi_get_str( vpiName, handle ) ) );
           }
           assert( rv < USER_MSG_LENGTH );
