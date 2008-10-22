@@ -493,7 +493,7 @@ void covered_create_value_change_cb(
     cb->time->low        = 0;
 #ifdef NOIV
     cb->value            = (p_vpi_value)malloc( sizeof( s_vpi_value ) );
-    if( vpi_gate( vpiType, sig ) == vpiRealVar ) {
+    if( vpi_get( vpiType, sig ) == vpiRealVar ) {
       cb->value->format    = vpiRealVal;
     } else {
       cb->value->format    = vpiBinStrVal;
