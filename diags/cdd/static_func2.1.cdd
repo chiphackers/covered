@@ -1,4 +1,4 @@
-5 11 181 3 *
+5 12 181 3 *
 8 /home/bryce3/trevorw/covered/diags/verilog -t main -vcd static_func2.1.vcd -o static_func2.1.cdd -v static_func2.1.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" static_func2.1.v 1 32 1
@@ -21,8 +21,8 @@
 3 1 main.$u0 "main.$u0" static_func2.1.v 0 22 1
 3 2 main.const_func "main.const_func" static_func2.1.v 24 30 1
 2 10 26 20006 1 3d 5802 0 0 1 18 0 1 0 0 0 0 $u1
-1 const_func 5 24 890010 1 0 31 0 32 17 ffffffff ffffffff 0 4 0 0
-1 bit_to_set 6 25 80000f 1 0 31 0 32 17 ffffffff ffffffff 0 0 0 0
+1 const_func 5 24 1090010 1 0 31 0 32 17 ffffffff ffffffff 0 4 0 0
+1 bit_to_set 6 25 100000f 1 0 31 0 32 17 ffffffff ffffffff 0 0 0 0
 4 10 11 0 0
 3 1 main.const_func.$u1 "main.const_func.$u1" static_func2.1.v 0 29 1
 2 11 27 110011 0 0 1810 0 0 32 48 0 0

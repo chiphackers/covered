@@ -6545,9 +6545,9 @@ net_decl_assigns
 net_decl_assign
   : IDENTIFIER '=' expression
     {
-      if( (ignore_mode == 0) && ($1 != NULL) && (info_suppl.part.excl_assign == 0) ) {
+      if( (ignore_mode == 0) && ($1 != NULL) ) {
         db_add_signal( $1, SSUPPL_TYPE_DECL_NET, &curr_prange, NULL, curr_signed, FALSE, @1.first_line, @1.first_column, TRUE );
-        if( $3 != NULL ) {
+        if( (info_suppl.part.excl_assign == 0) && ($3 != NULL) ) {
           expression* tmp = NULL;
           statement*  stmt;
           Try {
@@ -6566,6 +6566,8 @@ net_decl_assign
             db_connect_statement_false( stmt, stmt );
             db_add_statement( stmt, stmt );
           }
+        } else {
+          expression_dealloc( $3, FALSE );
         }
       } else {
         expression_dealloc( $3, FALSE );
@@ -6574,9 +6576,9 @@ net_decl_assign
     }
   | delay1 IDENTIFIER '=' expression
     {
-      if( (ignore_mode == 0) && ($2 != NULL) && (info_suppl.part.excl_assign == 0) ) {
+      if( (ignore_mode == 0) && ($2 != NULL) ) {
         db_add_signal( $2, SSUPPL_TYPE_DECL_NET, &curr_prange, NULL, FALSE, FALSE, @2.first_line, @2.first_column, TRUE );
-        if( $4 != NULL ) {
+        if( (info_suppl.part.excl_assign == 0) && ($4 != NULL) ) {
           expression* tmp = NULL;
           statement*  stmt;
           Try {
@@ -6595,6 +6597,8 @@ net_decl_assign
             db_connect_statement_false( stmt, stmt );
             db_add_statement( stmt, stmt );
           }
+        } else {
+          expression_dealloc( $4, FALSE );
         }
       } else {
         expression_dealloc( $4, FALSE );

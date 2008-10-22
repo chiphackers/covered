@@ -20,17 +20,17 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
   $root                   NA                         0/    0/    0      100%
   main                    generate8.2.v              0/    0/    0      100%
   main.U[0]               generate8.2.v              0/    0/    0      100%
-  main.U[0].V[0]          generate8.2.v              2/    0/    2      100%
-  main.U[0].V[1]          generate8.2.v              2/    0/    2      100%
-  main.U[0].V[2]          generate8.2.v              2/    0/    2      100%
-  main.U[0].V[3]          generate8.2.v              2/    0/    2      100%
+  main.U[0].V[0]          generate8.2.v              1/    0/    1      100%
+  main.U[0].V[1]          generate8.2.v              1/    0/    1      100%
+  main.U[0].V[2]          generate8.2.v              1/    0/    1      100%
+  main.U[0].V[3]          generate8.2.v              1/    0/    1      100%
   main.U[1]               generate8.2.v              0/    0/    0      100%
-  main.U[1].V[0]          generate8.2.v              2/    0/    2      100%
-  main.U[1].V[1]          generate8.2.v              2/    0/    2      100%
-  main.U[1].V[2]          generate8.2.v              2/    0/    2      100%
-  main.U[1].V[3]          generate8.2.v              2/    0/    2      100%
+  main.U[1].V[0]          generate8.2.v              1/    0/    1      100%
+  main.U[1].V[1]          generate8.2.v              1/    0/    1      100%
+  main.U[1].V[2]          generate8.2.v              1/    0/    1      100%
+  main.U[1].V[3]          generate8.2.v              1/    0/    1      100%
 ---------------------------------------------------------------------------------------------------------------------
-  Accumulated                                       16/    0/   16      100%
+  Accumulated                                        8/    0/    8      100%
 ---------------------------------------------------------------------------------------------------------------------
 
 

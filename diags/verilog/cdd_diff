@@ -255,10 +255,12 @@ sub parse_vector {
     # Otherwise, just copy it
     } else {
 
-      @tmp_line = $line[$start];
+      for( $i=$start+2; $i<@line; $i++ ) {
+        @tmp_line = (@tmp_line, $line[$i]);
+      }
 
       # Calculate next start
-      $next_start = $start + 3;
+      $next_start = $start + (($#line - $start) + 1);
 
     }
 

@@ -1,4 +1,4 @@
-5 11 181 3 *
+5 12 181 3 *
 8 /home/bryce3/trevorw/covered/diags/verilog -t main -vcd generate7.vcd -o generate7.cdd -v generate7.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" generate7.v 1 25 1

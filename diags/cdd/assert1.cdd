@@ -1,9 +1,9 @@
-5 11 181 3 *
+5 12 181 3 *
 8 /home/bryce3/trevorw/covered/diags/verilog -t main -vcd assert1.vcd -o assert1.cdd -v assert1.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" assert1.v 1 21 1
 2 1 5 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0
-1 a 1 3 870004 1 0 0 0 1 17 0 1 0 1 0 0
+1 a 1 3 1070004 1 0 0 0 1 17 0 1 0 1 0 0
 4 1 1 0 0
 3 1 main.$u0 "main.$u0" assert1.v 0 10 1
 2 2 6 50005 1 0 1004 0 0 32 48 0 0

@@ -1,4 +1,4 @@
-5 11 181 3 *
+5 12 181 3 *
 8 /home/bryce3/trevorw/covered/diags/verilog -t main -vcd generate8.1.vcd -o generate8.1.cdd -v generate8.1.v -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" generate8.1.v 1 29 1
@@ -16,18 +16,18 @@
 2 9 16 240024 1 0 1008 0 0 32 48 1 0
 2 10 16 1c0024 1 6 1098 9 8 32 18 0 ffffffff fffffffe 1 0 0
 2 11 16 140024 1 37 3a 10 7
-1 count 2 8 870011 1 0 31 0 32 17 0 ffffffff 0 1 0 0
+1 count 2 8 1070011 1 0 31 0 32 17 0 ffffffff 0 1 0 0
 4 3 7 0 0
 4 4 1 0 0
 4 11 6 6 6
 4 6 1 11 0
 3 0 foo "main.b.f" generate8.1.v 33 37 1
-1 x 3 35 870004 1 0 0 0 1 17 0 1 0 1 1 0
+1 x 3 35 1070004 1 0 0 0 1 17 0 1 0 1 1 0
 3 1 main.b.c "main.b.c" generate8.1.v 10 15 1
 2 12 12 f000f 1 0 1008 0 0 32 48 1 0
 2 13 12 e000f 2 2c 900a 12 0 32 18 0 ffffffff 0 0 0 0
 2 14 13 c000e 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0
-1 i 4 11 87000f 1 0 31 0 32 49 0 ffffffff 0 7 3 0
+1 i 4 11 107000f 1 0 31 0 32 49 0 ffffffff 0 7 3 0
 4 14 0 0 0
 4 13 11 14 0
 3 1 main.b.c.$u0 "main.b.c.$u0" generate8.1.v 0 0 1
