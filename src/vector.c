@@ -3690,7 +3690,7 @@ bool vector_op_eq(
             } while( (i > 0) && (lvall == rvall) );
             scratchl = (lvall == rvall);
           } else {
-            scratchl = FEQ( vector_to_real64( left ), vector_to_real64( right )) ? 1 : 0;
+            scratchl = DEQ( vector_to_real64( left ), vector_to_real64( right )) ? 1 : 0;
           }
           retval = vector_set_coverage_and_assign_ulong( tgt, &scratchl, &scratchh, 0, 0 );
         }
@@ -3911,7 +3911,7 @@ bool vector_op_ne(
             } while( (i > 0) && (lvall == rvall) );
             scratchl = (lvall != rvall);
           } else {
-            scratchl = DEQ( vector_to_real64( left ), vector_to_real64( right ) ) ? 1 : 0;
+            scratchl = !DEQ( vector_to_real64( left ), vector_to_real64( right ) ) ? 1 : 0;
           }
           retval = vector_set_coverage_and_assign_ulong( tgt, &scratchl, &scratchh, 0, 0 );
         }
@@ -5098,6 +5098,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.173  2008/10/23 14:21:10  phase1geo
+ Fixing splint errors with new real number support.
+
  Revision 1.172  2008/10/23 12:25:28  phase1geo
  Fixing splint error.
 
