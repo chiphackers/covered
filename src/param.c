@@ -469,7 +469,6 @@ static inst_parm* inst_parm_add(
   
   } Catch_anonymous {
     inst_parm_dealloc( iparm, FALSE );
-    printf( "param Throw A\n" );
     Throw 0;
   }
 
@@ -567,7 +566,12 @@ void defparam_add(
   if( inst_parm_find( scope, defparam_list->param_head ) == NULL ) {
 
     /* Generate MSB and LSB information */
-    msb.num = 31;
+    switch( value->suppl.part.data_type ) {
+      case VDATA_UL  :  msb.num = 31;  break;
+      case VDATA_R64 :  msb.num = 63;  break;
+      case VDATA_R32 :  msb.num = 31;  break;
+      default        :  assert( 0 );   break;
+    }
     msb.exp = NULL;
     lsb.num = 0;
     lsb.exp = NULL;
@@ -576,7 +580,6 @@ void defparam_add(
       (void)inst_parm_add( scope, NULL, &msb, &lsb, FALSE, value, NULL, defparam_list );
     } Catch_anonymous {
       vector_dealloc( value );
-      printf( "param Throw B\n" );
       Throw 0;
     }
 
@@ -587,7 +590,6 @@ void defparam_add(
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Parameter (%s) value is assigned more than once", obf_sig( scope ) );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    printf( "param Throw C\n" );
     Throw 0;
 
   }
@@ -654,7 +656,6 @@ static void param_find_and_set_expr_value(
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Parameter used in expression but not defined in current module, line %d", expr->line );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        printf( "param Throw D\n" );
         Throw 0;
       }
 
@@ -1153,6 +1154,10 @@ void inst_parm_dealloc(
 
 /*
  $Log$
+ Revision 1.115  2008/10/23 20:54:52  phase1geo
+ Adding support for real parameters.  Added more real number diagnostics to
+ regression suite.
+
  Revision 1.114  2008/09/11 23:06:30  phase1geo
  Fixing issue with parameters not being given valid exclusion IDs.  Updated
  regressions and fixed a few perl script diagnostics.  Full regressions for

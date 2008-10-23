@@ -2281,8 +2281,8 @@ int vector_to_int(
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL  :  retval = vec->value.ul[0][VTYPE_INDEX_VAL_VALL];  break;
-    case VDATA_R64 :  retval = (int)round( vec->value.r64->val );
-    case VDATA_R32 :  retval = (int)roundf( vec->value.r32->val );
+    case VDATA_R64 :  retval = (int)round( vec->value.r64->val );       break;
+    case VDATA_R32 :  retval = (int)roundf( vec->value.r32->val );       break;
     default        :  assert( 0 );  break;
   }
 
@@ -2859,12 +2859,12 @@ void vector_from_string(
   int*     base    /*!< Base type of string value parsed */
 ) { PROFILE(VECTOR_FROM_STRING);
 
-  int  bits_per_char;         /* Number of bits represented by a single character in the value string str */
-  int  size;                  /* Specifies bit width of vector to create */
-  char value[MAX_BIT_WIDTH];  /* String to store string value in */
-  char stype[3];              /* Temporary holder for type of string being parsed */
-  int  chars_read;            /* Number of characters read by a sscanf() function call */
-  bool found_real = FALSE;    /* Specifies that a real value was parsed */
+  int    bits_per_char;         /* Number of bits represented by a single character in the value string str */
+  int    size;                  /* Specifies bit width of vector to create */
+  char   value[MAX_BIT_WIDTH];  /* String to store string value in */
+  char   stype[3];              /* Temporary holder for type of string being parsed */
+  int    chars_read;            /* Number of characters read by a sscanf() function call */
+  double real;                  /* Container for real number */
 
   if( quoted ) {
 
@@ -2897,9 +2897,15 @@ void vector_from_string(
 
     }
 
-  } else {
+  } else if( (sscanf( *str, "%[0-9_]%[.]%[0-9_]", value, value, value ) == 3) && (sscanf( *str, "%lf%n", &real, &chars_read ) == 1) ) {
 
-    double real;
+    *vec                         = vector_create( 64, VTYPE_VAL, VDATA_R64, TRUE );
+    (*vec)->value.r64->val       = real;
+    (*vec)->value.r64->str       = strdup_safe( *str );
+    (*vec)->suppl.part.is_signed = 1;
+    *str                         = *str + chars_read;
+
+  } else {
 
     if( sscanf( *str, "%d'%[sSdD]%[0-9]%n", &size, stype, value, &chars_read ) == 3 ) {
       bits_per_char = 10;
@@ -2944,43 +2950,32 @@ void vector_from_string(
       stype[1]      = '\0';
       size          = 32;
       *str          = *str + chars_read;
-    } else if( sscanf( *str, "%lf%n", &real, &chars_read ) == 1 ) {
-      found_real                   = TRUE;
-      *vec                         = vector_create( 64, VTYPE_VAL, VDATA_R64, TRUE );
-      (*vec)->value.r64->val       = real;
-      (*vec)->value.r64->str       = strdup_safe( *str );
-      (*vec)->suppl.part.is_signed = 1;
-      *str                         = *str + chars_read;
     } else {
       /* If the specified string is none of the above, return NULL */
       bits_per_char = 0;
     }
 
-    if( !found_real ) {
+    /* If we have exceeded the maximum number of bits, return a value of NULL */
+    if( (size > MAX_BIT_WIDTH) || (bits_per_char == 0) ) {
 
-      /* If we have exceeded the maximum number of bits, return a value of NULL */
-      if( (size > MAX_BIT_WIDTH) || (bits_per_char == 0) ) {
+      *vec  = NULL;
+      *base = 0;
 
-        *vec  = NULL;
-        *base = 0;
+    } else {
 
+      /* Create vector */
+      *vec = vector_create( size, VTYPE_VAL, VDATA_UL, TRUE );
+      if( *base == DECIMAL ) {
+        (void)vector_from_int( *vec, ato32( value ) );
       } else {
+        vector_set_static( *vec, value, bits_per_char ); 
+      }
 
-        /* Create vector */
-        *vec = vector_create( size, VTYPE_VAL, VDATA_UL, TRUE );
-        if( *base == DECIMAL ) {
-          (void)vector_from_int( *vec, ato32( value ) );
-        } else {
-          vector_set_static( *vec, value, bits_per_char ); 
-        }
-
-        /* Set the signed bit to the appropriate value based on the signed indicator in the vector string */
-        if( (stype[0] == 's') || (stype [0] == 'S') ) {
-          (*vec)->suppl.part.is_signed = 1;
-        } else {
-          (*vec)->suppl.part.is_signed = 0;
-        }
-
+      /* Set the signed bit to the appropriate value based on the signed indicator in the vector string */
+      if( (stype[0] == 's') || (stype [0] == 'S') ) {
+        (*vec)->suppl.part.is_signed = 1;
+      } else {
+        (*vec)->suppl.part.is_signed = 0;
       }
 
     }
@@ -5098,6 +5093,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.174  2008/10/23 14:29:07  phase1geo
+ A few more updates for real number support.  At this time real1.1 fails in
+ regression.  Checkpointing.
+
  Revision 1.173  2008/10/23 14:21:10  phase1geo
  Fixing splint errors with new real number support.
 
