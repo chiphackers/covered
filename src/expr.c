@@ -380,10 +380,10 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",               
                                            {"URANDOM",        "$urandom",         expression_op_func__urandom,         {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
                                            {"URAND_RANGE",    "$urandom_range",   expression_op_func__urandom_range,   {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
                                            {"SR2B",           "$realtobits",      expression_op_func__realtobits,      {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
-                                           {"SB2R",           "$bitstoreal",      expression_op_func__bitstoreal,      {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 3} },
+                                           {"SB2R",           "$bitstoreal",      expression_op_func__bitstoreal,      {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
                                            {"SSR2B",          "$shortrealtobits", expression_op_func__shortrealtobits, {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
-                                           {"SB2SR",          "$bitstoshortreal", expression_op_func__bitstoshortreal, {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 3} },
-                                           {"SI2R",           "$itor",            expression_op_func__itor,            {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 3} },
+                                           {"SB2SR",          "$bitstoshortreal", expression_op_func__bitstoshortreal, {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
+                                           {"SI2R",           "$itor",            expression_op_func__itor,            {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
                                            {"SR2I",           "$rtoi",            expression_op_func__rtoi,            {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} }
  };
 
@@ -2994,7 +2994,7 @@ bool expression_op_func__bitstoreal(
   }
 
   /* Convert and store the data */
-  expr->value->value.r64->val = sys_task_bitstoreal( left->value->value.r64->val );
+  expr->value->value.r64->val = sys_task_bitstoreal( vector_to_uint64( left->value ) );
 
   PROFILE_END;
  
@@ -3088,6 +3088,31 @@ bool expression_op_func__rtoi(
                thread*         thr,   /*!< Pointer to thread containing this expression */
   /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__RTOI);
+
+  expression* left = expr->left;
+  uint64      u64;
+
+  /* Check to make sure that there is exactly one parameter */
+  if( (left == NULL) || (left->op != EXP_OP_SASSIGN) ) {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$rtoi called with incorrect number of parameters (file: %s, line: %d)", thr->funit->filename, expr->line );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    Throw 0;
+  }
+
+  /* Check to make sure that the parameter is a real */
+  if( left->value->suppl.part.data_type != VDATA_R64 ) {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$rtoi called without real parameter (file: %s, line: %d)", thr->funit->filename, expr->line );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    Throw 0;
+  }
+
+  /* Make sure that the storage vector is a bits type */
+  assert( expr->value->suppl.part.data_type == VDATA_UL );
+
+  /* Convert and store the data */
+  vector_from_int( expr->value, sys_task_rtoi( left->value->value.r64->val ) );
 
   PROFILE_END;
 
@@ -4222,9 +4247,11 @@ bool expression_op_func__bassign(
           break;
         case VDATA_R64 :
           expr->left->value->value.r64->val = vector_to_real64( expr->right->value );
+          vsignal_propagate( expr->left->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
           break;
         case VDATA_R32 :
           expr->left->value->value.r32->val = (float)vector_to_real64( expr->right->value );
+          vsignal_propagate( expr->left->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
           break;
         default :  assert( 0 );  break;
       }
@@ -4233,11 +4260,13 @@ bool expression_op_func__bassign(
       assert( expr->left->sig != NULL );
       (void)vector_from_real64( expr->left->sig->value, (real64)expr->right->value->value.r64->val );
       expr->left->sig->value->suppl.part.set = 1;
+      vsignal_propagate( expr->left->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
       break;
     case VDATA_R32 :
       assert( expr->left->sig != NULL );
       (void)vector_from_real64( expr->left->sig->value, (real64)expr->right->value->value.r32->val );
       expr->left->sig->value->suppl.part.set = 1;
+      vsignal_propagate( expr->left->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
       break;
     default :  assert( 0 );  break;
   }
@@ -5739,6 +5768,11 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.369  2008/10/22 22:00:37  phase1geo
+ Updating VCS regressions (fully pass now).  Made a few fixes to get VCS regressions
+ to pass.  We are now at a known good state.  Further testing of real numbers will
+ proceed.
+
  Revision 1.368  2008/10/21 22:55:24  phase1geo
  More updates to get real values working.  IV and Cver regressions work (except for VPI
  mode of operation).  Checkpointing.

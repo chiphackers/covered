@@ -2313,7 +2313,7 @@ uint64 vector_to_uint64(
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL :
-      if( (vec->width > 32) && (sizeof( ulong ) == 32) ) {
+      if( (vec->width > 32) && (sizeof( ulong ) == 4) ) {
         retval = ((uint64)vec->value.ul[1][VTYPE_INDEX_VAL_VALL] << 32) | (uint64)vec->value.ul[0][VTYPE_INDEX_VAL_VALL];
       } else {
         retval = (uint64)vec->value.ul[0][VTYPE_INDEX_VAL_VALL];
@@ -2437,7 +2437,7 @@ bool vector_from_int(
         ulong        scratchh[UL_DIV(MAX_BIT_WIDTH)];
         unsigned int i;
         unsigned int size        = (vec->width < (sizeof( int ) << 3)) ? UL_SIZE( vec->width ) : UL_SIZE( sizeof( int ) << 3 );
-        bool         sign_extend = (value < 0) && (vec->width > (sizeof( int ) * 8));
+        bool         sign_extend = (value < 0) && (vec->width > (sizeof( int ) << 3));
         unsigned int shift       = (UL_BITS <= (sizeof( int ) << 3)) ? UL_BITS : (sizeof( int ) << 3);
         for( i=0; i<size; i++ ) {
           scratchl[i] = (ulong)value & UL_SET;
@@ -2445,7 +2445,12 @@ bool vector_from_int(
           value >>= shift;
         }
         if( sign_extend ) {
-          vector_sign_extend_ulong( scratchl, scratchh, UL_BITS, UL_BITS, (vec->width - 1), vec->width );
+          vector_sign_extend_ulong( scratchl, scratchh, UL_SET, UL_SET, (vec->width - 1), vec->width );
+        } else {
+          size = UL_SIZE( vec->width );
+          for( ; i<size; i++ ) {
+            scratchl[i] = scratchh[i] = 0;
+          }
         }
         retval = vector_set_coverage_and_assign_ulong( vec, scratchl, scratchh, 0, (vec->width - 1) );
       }
@@ -5097,6 +5102,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.170  2008/10/21 22:55:25  phase1geo
+ More updates to get real values working.  IV and Cver regressions work (except for VPI
+ mode of operation).  Checkpointing.
+
  Revision 1.169  2008/10/21 05:38:42  phase1geo
  More updates to support real values.  Added vector_from_real64 functionality.
  Checkpointing.
