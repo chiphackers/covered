@@ -2897,7 +2897,9 @@ void vector_from_string(
 
     }
 
-  } else if( (sscanf( *str, "%[0-9_]%[.]%[0-9_]", value, value, value ) == 3) && (sscanf( *str, "%lf%n", &real, &chars_read ) == 1) ) {
+  } else if( ((sscanf( *str, "%[0-9_]%[.]%[0-9_]", value, value, value ) == 3) ||
+              (sscanf( *str, "-%[0-9_]%[.]%[0-9_]", value, value, value ) == 3)) &&
+             (sscanf( *str, "%lf%n", &real, &chars_read ) == 1) ) {
 
     *vec                         = vector_create( 64, VTYPE_VAL, VDATA_R64, TRUE );
     (*vec)->value.r64->val       = real;
@@ -5093,6 +5095,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.175  2008/10/23 22:16:21  phase1geo
+ Fixing -P support.
+
  Revision 1.174  2008/10/23 14:29:07  phase1geo
  A few more updates for real number support.  At this time real1.1 fails in
  regression.  Checkpointing.

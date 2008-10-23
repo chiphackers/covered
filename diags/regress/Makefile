@@ -96,7 +96,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 random2.1       random3         random3.1       rassign1        rassign2 \
                 real1           real2           real2.1         real3           real3.1 \
                 real3.2         real3.3         real3.4         real3.5         real3.6 \
-                repeat1         repeat2         repeat3         report1 \
+                real3.7         real3.8         repeat1         repeat2         repeat3         report1 \
                 report2         report3         report3.1       report4.2       report5 \
                 report6         report7         report7.1       report8         rshift1 \
                 rshift1.1       rshift1.2       rshift1.3       rshift2         rshift2.1 \
@@ -186,7 +186,7 @@ NOSIMERRLIST  = comment1        enum2           err4            err4.1 \
                 score_err1.14   score_err1.16   score_err1.17   score_err1.18   score_err1.19 \
                 score_err1.20   score_err1.21   score_err1.22   score_err1.23   score_err1.24 \
                 score_err1.25   score_err1.26   score_err1.27   score_err1.28   score_err1.29 \
-                timescale3 \
+                score_err1.30   timescale3 \
                 timescale3.1    timescale3.2    timescale3.3    timescale3.4    timescale3.5 \
                 timescale3.6    timescale3.7    timescale3.8    timescale3.9    timescale3.10 \
                 timescale3.11   timescale3.12   timescale3.13   timescale3.14
@@ -224,7 +224,7 @@ VCSONLYDIAGS1 = afunc1           always_comb1     always_comb2     always_ff1   
                 marray1          marray1.1        marray1.2        marray1.3        marray2 \
                 marray2.1        marray2.2        marray2.3        mbit_sel5.4      mbit_sel6.4 \
                 mem3             op_assign1       param8.2         param12          param12.1 \
-                sbit_sel3.2      shortint1        signed4.1        slist3.1         slist3.3 \
+                real4            sbit_sel3.2      shortint1        signed4.1        slist3.1         slist3.3 \
                 static_afunc1    static_func1     static_func1.1   static_func2     static_func2.1 \
                 static_func2.2   static_func2.3   trireg           urandom1.2       urandom1.3 \
                 urandom_range1   urandom_range2

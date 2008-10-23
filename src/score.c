@@ -898,6 +898,12 @@ static void score_parse_args(
             *ptr = '\0';
             ptr++;
             vector_from_string( &ptr, FALSE, &vec, &base );
+            if( vec == NULL ) {
+              unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to parse value for option -P %s=%s", tmp, ptr );
+              assert( rv < USER_MSG_LENGTH );
+              print_output( user_msg, FATAL, __FILE__, __LINE__ );
+              Throw 0;
+            }
             defparam_add( tmp, vec );
           }
         } Catch_anonymous {
@@ -1209,6 +1215,9 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.140  2008/10/07 15:09:57  phase1geo
+ Changed -vpi_ts to -top_ts.
+
  Revision 1.139  2008/10/07 05:24:18  phase1geo
  Adding -dumpvars option.  Need to resolve a few issues before this work is considered
  complete.
