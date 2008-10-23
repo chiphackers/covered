@@ -1337,10 +1337,10 @@ typedef enum rpt_type_e {
 #define TIME_INC(x,y)           (x).hi+=((0xffffffff-(x).lo)<(y).lo)?((y).hi+1):(y).hi; (x).lo+=(y).lo; (x).full+=(y).full;
 
 /*! Compares two float values */
-#define FEQ(x,y)           (abs(x-y) < FLT_EPSILON)
+#define FEQ(x,y)           (fabs(x-y) < FLT_EPSILON)
       
 /*! Compares two double values */
-#define DEQ(x,y)           (abs(x-y) < DBL_EPSILON)
+#define DEQ(x,y)           (fabs(x-y) < DBL_EPSILON)
 
 /*!
  Defines boolean variables used in most functions.
@@ -3022,6 +3022,9 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.333  2008/10/23 14:21:10  phase1geo
+ Fixing splint errors with new real number support.
+
  Revision 1.332  2008/10/20 13:00:25  phase1geo
  More updates to support real numbers.  Updating regressions per recent changes.
  Checkpointing.

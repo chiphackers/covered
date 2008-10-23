@@ -133,6 +133,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <math.h>
 
 #include "binding.h"
 #include "defines.h"
@@ -5847,6 +5848,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.371  2008/10/23 14:21:10  phase1geo
+ Fixing splint errors with new real number support.
+
  Revision 1.370  2008/10/23 04:56:32  phase1geo
  Added diagnostics to verify the $rtoi, $realtobits and $bitstoreal system
  functions.  Updated code to allow these diagnostics to pass.  Full regression
