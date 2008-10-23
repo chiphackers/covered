@@ -15,8 +15,8 @@ initial begin
         a = 123.456;
         d = 1'b0;
         #5;
-        c = $realtobits( a );
-        b = $bitstoreal( c );
+        c = $shortrealtobits( a );
+        b = $bitstoshortreal( c );
         d = (a == b);
 end
 
