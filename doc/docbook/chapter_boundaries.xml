@@ -58,6 +58,8 @@
           <listitem><para>Memories</para></listitem>
           <listitem><para>$finish and $stop system calls</para></listitem>
           <listitem><para>$time and $random system functions</para></listitem>
+          <listitem><para>Real numbers</para></listitem>
+          <listitem><para>Real number system tasks:  $rtoi, $itor, $realtobits, $bitstoreal</para></listitem>
           <listitem>
             <para>
               The following system tasks are allowed within logic blocks being considered for coverage:
@@ -122,7 +124,7 @@
         <listitem><para>Parsing support for implicit .name ports (i.e., <code>foo f( .a, .b, .c );</code>)</para></listitem>
         <listitem><para>Parsing support for implicit .* ports (i.e., <code>foo f( .* );</code>)</para></listitem>
         <listitem><para>Parsing support for assertions, properties and sequences</para></listitem>
-        <listitem><para>Functional support for $urandom, $urandom_range, and $srandom</para></listitem>
+        <listitem><para>Functional support for $urandom, $urandom_range, $srandom, $shortrealtobits, $bitstoshortreal</para></listitem>
       </orderedlist>
     </sect2>
 
@@ -137,7 +139,6 @@
         <orderedlist>
           <listitem><para>All gate types (i.e., <code>buf, not, or, and,</code> etc.)</para></listitem>
           <listitem><para>All user defined primitives (UDPs)</para></listitem>
-          <listitem><para>All expressions containing types: <code>time, real, realtime</code></para></listitem>
           <listitem><para>System task calls (or any $... call) that are not mentioned in the supported list above</para></listitem>
         </orderedlist>
       </para>
