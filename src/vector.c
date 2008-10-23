@@ -2941,14 +2941,7 @@ void vector_from_string(
       stype[1]      = '\0';
       size          = 32;
       *str          = *str + chars_read;
-    } else if( sscanf( *str, "%f%n", &real, &chars_read ) == 1 ) {
-      found_real                   = TRUE;
-      *vec                         = vector_create( 64, VTYPE_VAL, VDATA_R64, TRUE );
-      (*vec)->value.r64->val       = real;
-      (*vec)->value.r64->str       = strdup_safe( *str );
-      (*vec)->suppl.part.is_signed = 1;
-      *str                         = *str + chars_read;
-    } else if( sscanf( *str, "%g%n", &real, &chars_read ) == 1 ) {
+    } else if( sscanf( *str, "%lf%n", &real, &chars_read ) == 1 ) {
       found_real                   = TRUE;
       *vec                         = vector_create( 64, VTYPE_VAL, VDATA_R64, TRUE );
       (*vec)->value.r64->val       = real;
@@ -5102,6 +5095,11 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.171  2008/10/23 04:56:32  phase1geo
+ Added diagnostics to verify the $rtoi, $realtobits and $bitstoreal system
+ functions.  Updated code to allow these diagnostics to pass.  Full regression
+ passes.
+
  Revision 1.170  2008/10/21 22:55:25  phase1geo
  More updates to get real values working.  IV and Cver regressions work (except for VPI
  mode of operation).  Checkpointing.
