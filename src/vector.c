@@ -32,6 +32,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <math.h>
+#include <float.h>
 
 #ifdef MALLOC_DEBUG
 #include <mpatrol.h>
@@ -738,7 +739,7 @@ void vector_db_merge(
           {
             char   str[4096];
             double value;
-            if( sscanf( *line, "%f%n", &value, &chars_read ) == 1 ) {
+            if( sscanf( *line, "%lf%n", &value, &chars_read ) == 1 ) {
               *line += chars_read;
               if( sscanf( *line, "%s%n", str, &chars_read ) == 1 ) {
                 *line += chars_read;
@@ -751,8 +752,8 @@ void vector_db_merge(
           break;
         case VDATA_R32 :
           {
-            char   str[4096];
-            double value;
+            char  str[4096];
+            float value;
             if( sscanf( *line, "%f%n", &value, &chars_read ) == 1 ) {
               *line += chars_read;
               if( sscanf( *line, "%s%n", str, &chars_read ) == 1 ) {
@@ -2208,10 +2209,10 @@ bool vector_is_not_zero(
       while( (i < size) && (vec->value.ul[i][VTYPE_INDEX_VAL_VALL] == 0) ) i++;
       break;
     case VDATA_R64 :
-      size = (vec->value.r64->val == 0.0) ? 1 : 0;
+      size = DEQ( vec->value.r64->val, 0.0 ) ? 1 : 0;
       break;
     case VDATA_R32 :
-      size = (vec->value.r32->val == 0.0) ? 1 : 0;
+      size = FEQ( vec->value.r32->val, 0.0) ? 1 : 0;
       break;
     default :  assert( 0 );  break;
   }
@@ -2442,7 +2443,9 @@ bool vector_from_int(
         for( i=0; i<size; i++ ) {
           scratchl[i] = (ulong)value & UL_SET;
           scratchh[i] = 0;
+          /*@-shiftimplementation@*/
           value >>= shift;
+          /*@=shiftimplementation@*/
         }
         if( sign_extend ) {
           vector_sign_extend_ulong( scratchl, scratchh, UL_SET, UL_SET, (vec->width - 1), vec->width );
@@ -2456,11 +2459,11 @@ bool vector_from_int(
       }
       break;
     case VDATA_R64 :
-      retval              = (vec->value.r64->val != (float)value);
+      retval              = !DEQ( vec->value.r64->val, (double)value );
       vec->value.r64->val = (double)value;
       break;
     case VDATA_R32 :
-      retval              = (vec->value.r32->val != (float)value);
+      retval              = !FEQ( vec->value.r32->val, (float)value );
       vec->value.r32->val = (float)value;
       break;
     default :  assert( 0 );  break;
@@ -2507,11 +2510,11 @@ bool vector_from_uint64(
       }
       break;
     case VDATA_R64 :
-      retval              = (vec->value.r64->val != (double)value);
+      retval              = !DEQ( vec->value.r64->val, (double)value );
       vec->value.r64->val = (double)value;
       break;
     case VDATA_R32 :
-      retval              = (vec->value.r32->val != (float)value);
+      retval              = !FEQ( vec->value.r32->val, (float)value );
       vec->value.r32->val = (float)value;
       break;
     default :  assert( 0 );  break;
@@ -2543,11 +2546,11 @@ bool vector_from_real64(
       retval = vector_from_uint64( vec, (uint64)round( value ) );
       break;
     case VDATA_R64 :
-      retval              = (vec->value.r64->val != value);
+      retval              = !DEQ( vec->value.r64->val, value );
       vec->value.r64->val = value;
       break;
     case VDATA_R32 :
-      retval              = (vec->value.r32->val != (float)value);
+      retval              = !FEQ( vec->value.r32->val, (float)value);
       vec->value.r32->val = (float)value;
       break;
     default :  assert( 0 );  break;
@@ -3058,7 +3061,7 @@ bool vector_vcd_assign(
       {
         double real;
         if( sscanf( value, "%lf", &real ) == 1 ) {
-          retval = (vec->value.r64->val != real);
+          retval = !DEQ( vec->value.r64->val, real );
           vec->value.r64->val = real;
         } else {
           assert( 0 );
@@ -3069,7 +3072,7 @@ bool vector_vcd_assign(
       {
         float real;
         if( sscanf( value, "%f", &real ) != 1 ) {
-          retval = (vec->value.r32->val != real);
+          retval = !FEQ( vec->value.r32->val, real );
           vec->value.r32->val = real;
         } else {
           assert( 0 );
@@ -3687,7 +3690,7 @@ bool vector_op_eq(
             } while( (i > 0) && (lvall == rvall) );
             scratchl = (lvall == rvall);
           } else {
-            scratchl = (vector_to_real64( left ) == vector_to_real64( right )) ? 1 : 0;
+            scratchl = FEQ( vector_to_real64( left ), vector_to_real64( right )) ? 1 : 0;
           }
           retval = vector_set_coverage_and_assign_ulong( tgt, &scratchl, &scratchh, 0, 0 );
         }
@@ -3908,7 +3911,7 @@ bool vector_op_ne(
             } while( (i > 0) && (lvall == rvall) );
             scratchl = (lvall != rvall);
           } else {
-            scratchl = (vector_to_real64( left ) != vector_to_real64( right )) ? 1 : 0;
+            scratchl = DEQ( vector_to_real64( left ), vector_to_real64( right ) ) ? 1 : 0;
           }
           retval = vector_set_coverage_and_assign_ulong( tgt, &scratchl, &scratchh, 0, 0 );
         }
@@ -4196,14 +4199,14 @@ bool vector_op_add(
       case VDATA_R64 :
         {
           double result       = vector_to_real64( left ) + vector_to_real64( right );
-          retval              = (tgt->value.r64->val != result);
+          retval              = !DEQ( tgt->value.r64->val, result );
           tgt->value.r64->val = result;
         }
         break;
       case VDATA_R32 :
         {
           float result        = (float)(vector_to_real64( left ) + vector_to_real64( right ));
-          retval              = (tgt->value.r32->val != result);
+          retval              = !FEQ( tgt->value.r32->val, result );
           tgt->value.r32->val = result;
         }
         break;
@@ -4278,14 +4281,14 @@ bool vector_op_negate(
       case VDATA_R64 :
         {
           double result       = (0.0 - vector_to_real64( src ));
-          retval              = (tgt->value.r64->val != result);
+          retval              = !DEQ( tgt->value.r64->val, result );
           tgt->value.r64->val = result;
         }
         break;
       case VDATA_R32 :
         {
           float result        = (float)(0.0 - vector_to_real64( src ));
-          retval              = (tgt->value.r32->val != result);
+          retval              = !FEQ( tgt->value.r32->val, result );
           tgt->value.r32->val = result;
         }
         break;
@@ -4348,14 +4351,14 @@ bool vector_op_subtract(
       case VDATA_R64 :
         {
           double result       = vector_to_real64( left ) - vector_to_real64( right );
-          retval              = (tgt->value.r64->val != result);
+          retval              = !DEQ( tgt->value.r64->val, result );
           tgt->value.r64->val = result;
         }
         break;
       case VDATA_R32 :
         {
           float result        = (float)(vector_to_real64( left ) - vector_to_real64( right ));
-          retval              = (tgt->value.r32->val != result);
+          retval              = !FEQ( tgt->value.r32->val, result );
           tgt->value.r32->val = result;
         }
         break;
@@ -4404,14 +4407,14 @@ bool vector_op_multiply(
       case VDATA_R64 :
         {
           double result       = vector_to_real64( left ) * vector_to_real64( right );
-          retval              = (tgt->value.r64->val != result);
+          retval              = !DEQ( tgt->value.r64->val, result );
           tgt->value.r64->val = result;
         }
         break;
       case VDATA_R32 :
         {
           float result        = (float)(vector_to_real64( left ) * vector_to_real64( right ));
-          retval              = (tgt->value.r32->val != result);
+          retval              = !FEQ( tgt->value.r32->val, result );
           tgt->value.r32->val = result;
         }
         break;
@@ -4462,14 +4465,14 @@ bool vector_op_divide(
       case VDATA_R64 :
         {
           double result       = vector_to_real64( left ) / vector_to_real64( right );
-          retval              = (tgt->value.r64->val != result);
+          retval              = !DEQ( tgt->value.r64->val, result);
           tgt->value.r64->val = result;
         }
         break;
       case VDATA_R32 :
         {
           float result        = (float)(vector_to_real64( left ) / vector_to_real64( right ));
-          retval              = (tgt->value.r32->val != result);
+          retval              = !FEQ( tgt->value.r32->val, result );
           tgt->value.r32->val = result;
         }
         break;
@@ -5095,6 +5098,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.172  2008/10/23 12:25:28  phase1geo
+ Fixing splint error.
+
  Revision 1.171  2008/10/23 04:56:32  phase1geo
  Added diagnostics to verify the $rtoi, $realtobits and $bitstoreal system
  functions.  Updated code to allow these diagnostics to pass.  Full regression

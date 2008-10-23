@@ -2780,14 +2780,14 @@ bool expression_op_func__sassign(
     case VDATA_R64 :
       {
         double real = expr->right->value->value.r64->val;
-        retval = expr->value->value.r64->val != real;
+        retval = !DEQ( expr->value->value.r64->val, real );
         expr->value->value.r64->val = real;
       }
       break;
     case VDATA_R32 :
       {
         float real = expr->right->value->value.r32->val;
-        retval = expr->value->value.r32->val != real;
+        retval = !FEQ( expr->value->value.r32->val, real );
         expr->value->value.r32->val = real;
       }
       break;
@@ -2834,6 +2834,7 @@ bool expression_op_func__urandom(
 ) { PROFILE(EXPRESSION_OP_FUNC__URANDOM);
 
   unsigned long rand;
+  bool          retval;
 
   /* If $random contains a seed parameter, get it */
   if( (expr->left != NULL) && (expr->left->op == EXP_OP_SASSIGN) ) {
@@ -2859,11 +2860,11 @@ bool expression_op_func__urandom(
   }
 
   /* Convert it to a vector and store it */
-  vector_from_uint64( expr->value, (uint64)rand );
+  retval = vector_from_uint64( expr->value, (uint64)rand );
 
   PROFILE_END;
 
-  return( TRUE );
+  return( retval );
 
 }
 
@@ -2882,6 +2883,7 @@ bool expression_op_func__urandom_range(
   unsigned long max;
   unsigned long min   = 0;
   unsigned long rand;
+  bool          retval;
 
   if( (plist == NULL) || ((plist->op != EXP_OP_PLIST) && (plist->op != EXP_OP_SASSIGN)) ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$urandom_range called without any parameters specified (file: %s, line: %d)", thr->funit->filename, expr->line );
@@ -2913,11 +2915,11 @@ bool expression_op_func__urandom_range(
   rand = sys_task_urandom_range( max, min );
 
   /* Convert it to a vector and store it */
-  vector_from_uint64( expr->value, (uint64)rand );
+  retval = vector_from_uint64( expr->value, (uint64)rand );
 
   PROFILE_END;
 
-  return( TRUE );
+  return( retval );
 
 }
 
@@ -2934,6 +2936,7 @@ bool expression_op_func__realtobits(
 
   expression* left = expr->left;
   uint64      u64;
+  bool        retval;
 
   /* Check to make sure that there is exactly one parameter */ 
   if( (left == NULL) || (left->op != EXP_OP_SASSIGN) ) {
@@ -2955,11 +2958,11 @@ bool expression_op_func__realtobits(
   assert( expr->value->suppl.part.data_type == VDATA_UL );
 
   /* Convert and store the data */
-  vector_from_uint64( expr->value, sys_task_realtobits( left->value->value.r64->val ) );
+  retval = vector_from_uint64( expr->value, sys_task_realtobits( left->value->value.r64->val ) );
 
   PROFILE_END;
 
-  return( TRUE );
+  return( retval );
 
 }
 
@@ -2976,6 +2979,7 @@ bool expression_op_func__bitstoreal(
 
   expression* left = expr->left;
   uint64      u64;
+  bool        retval;
 
   /* Check to make sure that there is exactly one parameter */
   if( (left == NULL) || (left->op != EXP_OP_SASSIGN) ) {
@@ -2994,11 +2998,11 @@ bool expression_op_func__bitstoreal(
   }
 
   /* Convert and store the data */
-  expr->value->value.r64->val = sys_task_bitstoreal( vector_to_uint64( left->value ) );
+  retval = vector_from_real64( expr->value, sys_task_bitstoreal( vector_to_uint64( left->value ) ) );
 
   PROFILE_END;
  
-  return( TRUE );
+  return( retval );
 
 }
 
@@ -3015,10 +3019,11 @@ bool expression_op_func__shortrealtobits(
 
   expression* left = expr->left;
   uint64      u64;
+  bool        retval;
 
   /* Check to make sure that there is exactly one parameter */
   if( (left == NULL) || (left->op != EXP_OP_SASSIGN) ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$realtobits called with incorrect number of parameters (file: %s, line: %d)", thr->funit->filename, expr->line );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$shortrealtobits called with incorrect number of parameters (file: %s, line: %d)", thr->funit->filename, expr->line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     Throw 0;
@@ -3026,7 +3031,7 @@ bool expression_op_func__shortrealtobits(
 
   /* Check to make sure that the parameter is a real */
   if( left->value->suppl.part.data_type != VDATA_R64 ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$realtobits called without real parameter (file: %s, line: %d)", thr->funit->filename, expr->line );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$shortrealtobits called without real parameter (file: %s, line: %d)", thr->funit->filename, expr->line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     Throw 0;
@@ -3036,11 +3041,11 @@ bool expression_op_func__shortrealtobits(
   assert( expr->value->suppl.part.data_type == VDATA_UL );
 
   /* Convert and store the data */
-  vector_from_uint64( expr->value, sys_task_realtobits( left->value->value.r64->val ) );
+  retval = vector_from_uint64( expr->value, sys_task_shortrealtobits( left->value->value.r64->val ) );
 
   PROFILE_END;
 
-  return( TRUE );
+  return( retval );
 
 }
 
@@ -3055,9 +3060,32 @@ bool expression_op_func__bitstoshortreal(
   /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__BITSTOSHORTREAL);
 
+  expression* left = expr->left;
+  uint64      u64;
+  bool        retval;
+
+  /* Check to make sure that there is exactly one parameter */
+  if( (left == NULL) || (left->op != EXP_OP_SASSIGN) ) {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$bitstoshortreal called with incorrect number of parameters (file: %s, line: %d)", thr->funit->filename, expr->line );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    Throw 0;
+  }
+
+  /* Check to make sure that the parameter is a real */
+  if( left->value->suppl.part.data_type != VDATA_UL ) {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$bitstoshortreal called without non-real parameter (file: %s, line: %d)", thr->funit->filename, expr->line );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    Throw 0;
+  }
+
+  /* Convert and store the data */
+  retval = vector_from_real64( expr->value, sys_task_bitstoshortreal( vector_to_uint64( left->value ) ) );
+
   PROFILE_END;
 
-  return( TRUE );
+  return( retval );
 
 }
 
@@ -3072,25 +3100,9 @@ bool expression_op_func__itor(
   /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__ITOR);
 
-  PROFILE_END;
-
-  return( TRUE );
-
-}
-
-/*!
- \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
-
- Performs a $rtoi system task call.
-*/
-bool expression_op_func__rtoi(
-               expression*     expr,  /*!< Pointer to expression to perform operation on */
-               thread*         thr,   /*!< Pointer to thread containing this expression */
-  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
-) { PROFILE(EXPRESSION_OP_FUNC__RTOI);
-
   expression* left = expr->left;
   uint64      u64;
+  bool        retval;
 
   /* Check to make sure that there is exactly one parameter */
   if( (left == NULL) || (left->op != EXP_OP_SASSIGN) ) {
@@ -3112,11 +3124,54 @@ bool expression_op_func__rtoi(
   assert( expr->value->suppl.part.data_type == VDATA_UL );
 
   /* Convert and store the data */
-  vector_from_int( expr->value, sys_task_rtoi( left->value->value.r64->val ) );
+  retval = vector_from_real64( expr->value, sys_task_itor( vector_to_int( left->value ) ) );
 
   PROFILE_END;
 
-  return( TRUE );
+  return( retval );
+
+}
+
+/*!
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a $rtoi system task call.
+*/
+bool expression_op_func__rtoi(
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+               thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
+) { PROFILE(EXPRESSION_OP_FUNC__RTOI);
+
+  expression* left = expr->left;
+  uint64      u64;
+  bool        retval;
+
+  /* Check to make sure that there is exactly one parameter */
+  if( (left == NULL) || (left->op != EXP_OP_SASSIGN) ) {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$rtoi called with incorrect number of parameters (file: %s, line: %d)", thr->funit->filename, expr->line );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    Throw 0;
+  }
+
+  /* Check to make sure that the parameter is a real */
+  if( left->value->suppl.part.data_type != VDATA_R64 ) {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$rtoi called without real parameter (file: %s, line: %d)", thr->funit->filename, expr->line );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    Throw 0;
+  }
+
+  /* Make sure that the storage vector is a bits type */
+  assert( expr->value->suppl.part.data_type == VDATA_UL );
+
+  /* Convert and store the data */
+  retval = vector_from_int( expr->value, sys_task_rtoi( left->value->value.r64->val ) );
+
+  PROFILE_END;
+
+  return( retval );
 
 }
 
@@ -3334,11 +3389,19 @@ bool expression_op_func__cond(
   bool retval;
 
   /* Simple vector copy from right side and gather coverage information */
-  if( expr->value->suppl.part.data_type == VDATA_UL ) {
-    retval = vector_set_value_ulong( expr->value, expr->right->value->value.ul, expr->right->value->width );
-  } else {
-    retval = (expr->value->value.r64->val != expr->right->value->value.r64->val);
-    expr->value->value.r64->val = expr->right->value->value.r64->val;
+  switch( expr->value->suppl.part.data_type ) {
+    case VDATA_UL :
+      retval = vector_set_value_ulong( expr->value, expr->right->value->value.ul, expr->right->value->width );
+      break;
+    case VDATA_R64 :
+      retval = !DEQ( expr->value->value.r64->val, expr->right->value->value.r64->val );
+      expr->value->value.r64->val = expr->right->value->value.r64->val;
+      break;
+    case VDATA_R32 :
+      retval = !FEQ( expr->value->value.r32->val, expr->right->value->value.r32->val );
+      expr->value->value.r32->val = expr->right->value->value.r32->val;
+      break;
+    default :  assert( 0 );  break;
   }
 
   /* Gather coverage information */
@@ -3380,16 +3443,32 @@ bool expression_op_func__cond_sel(
       if( !vector_is_unknown( expr->parent->expr->left->value ) ) {
         if( !vector_is_not_zero( expr->parent->expr->left->value ) ) {
           real64 rval = (expr->right->value->suppl.part.data_type == VDATA_UL) ? (double)vector_to_uint64( expr->right->value ) : expr->right->value->value.r64->val;
-          retval      = (expr->value->value.r64->val != rval);
+          retval      = !DEQ( expr->value->value.r64->val, rval );
           expr->value->value.r64->val = rval;
         } else {
           real64 lval = (expr->left->value->suppl.part.data_type == VDATA_UL) ? (double)vector_to_uint64( expr->left->value ) : expr->left->value->value.r64->val;
-          retval      = (expr->value->value.r64->val != lval);
+          retval      = !DEQ( expr->value->value.r64->val, lval );
           expr->value->value.r64->val = lval;
         }
       } else {
-        retval = (expr->value->value.r64->val != 0.0);
+        retval = !DEQ( expr->value->value.r64->val, 0.0 );
         expr->value->value.r64->val = 0.0;
+      }
+      break;
+    case VDATA_R32 :
+      if( !vector_is_unknown( expr->parent->expr->left->value ) ) {
+        if( !vector_is_not_zero( expr->parent->expr->left->value ) ) {
+          real32 rval = (expr->right->value->suppl.part.data_type == VDATA_UL) ? (float)vector_to_uint64( expr->right->value ) : expr->right->value->value.r32->val;
+          retval      = !DEQ( expr->value->value.r32->val, rval );
+          expr->value->value.r64->val = rval;
+        } else {
+          real32 lval = (expr->left->value->suppl.part.data_type == VDATA_UL) ? (float)vector_to_uint64( expr->left->value ) : expr->left->value->value.r32->val;
+          retval      = !DEQ( expr->value->value.r32->val, lval );
+          expr->value->value.r32->val = lval;
+        }
+      } else {
+        retval = !DEQ( expr->value->value.r32->val, 0.0 );
+        expr->value->value.r32->val = 0.0;
       }
       break;
     default :
@@ -5768,6 +5847,11 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.370  2008/10/23 04:56:32  phase1geo
+ Added diagnostics to verify the $rtoi, $realtobits and $bitstoreal system
+ functions.  Updated code to allow these diagnostics to pass.  Full regression
+ passes.
+
  Revision 1.369  2008/10/22 22:00:37  phase1geo
  Updating VCS regressions (fully pass now).  Made a few fixes to get VCS regressions
  to pass.  We are now at a known good state.  Further testing of real numbers will

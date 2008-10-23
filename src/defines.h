@@ -36,6 +36,7 @@
 #ifdef HAVE_STRING_H
 #include <string.h>
 #endif
+#include <float.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -1334,6 +1335,12 @@ typedef enum rpt_type_e {
 
 /*! Performs time increment where x is the sim_time structure to increment and y is a 64-bit value to increment to */
 #define TIME_INC(x,y)           (x).hi+=((0xffffffff-(x).lo)<(y).lo)?((y).hi+1):(y).hi; (x).lo+=(y).lo; (x).full+=(y).full;
+
+/*! Compares two float values */
+#define FEQ(x,y)           (abs(x-y) < FLT_EPSILON)
+      
+/*! Compares two double values */
+#define DEQ(x,y)           (abs(x-y) < DBL_EPSILON)
 
 /*!
  Defines boolean variables used in most functions.
@@ -3015,6 +3022,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.332  2008/10/20 13:00:25  phase1geo
+ More updates to support real numbers.  Updating regressions per recent changes.
+ Checkpointing.
+
  Revision 1.331  2008/10/17 13:50:19  phase1geo
  A few more code updates for real support.  Updating CDD version and updating
  regression files (what we can currently run).  Checkpointing.
