@@ -3107,22 +3107,19 @@ bool expression_op_func__itor(
 
   /* Check to make sure that there is exactly one parameter */
   if( (left == NULL) || (left->op != EXP_OP_SASSIGN) ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$rtoi called with incorrect number of parameters (file: %s, line: %d)", thr->funit->filename, expr->line );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$itor called with incorrect number of parameters (file: %s, line: %d)", thr->funit->filename, expr->line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     Throw 0;
   }
 
   /* Check to make sure that the parameter is a real */
-  if( left->value->suppl.part.data_type != VDATA_R64 ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$rtoi called without real parameter (file: %s, line: %d)", thr->funit->filename, expr->line );
+  if( left->value->suppl.part.data_type != VDATA_UL ) {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$itor called without non-real parameter (file: %s, line: %d)", thr->funit->filename, expr->line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     Throw 0;
   }
-
-  /* Make sure that the storage vector is a bits type */
-  assert( expr->value->suppl.part.data_type == VDATA_UL );
 
   /* Convert and store the data */
   retval = vector_from_real64( expr->value, sys_task_itor( vector_to_int( left->value ) ) );
@@ -5280,7 +5277,9 @@ bool expression_is_static_only(
     if( (EXPR_IS_STATIC( expr ) == 1) ||
         (ESUPPL_IS_LHS( expr->suppl ) == 1) ||
         ((expr->op == EXP_OP_SIG) && (expr->sig != NULL) &&
-         ((expr->sig->suppl.part.type == SSUPPL_TYPE_PARAM) || (expr->sig->suppl.part.type == SSUPPL_TYPE_ENUM))) ) {
+         ((expr->sig->suppl.part.type == SSUPPL_TYPE_PARAM) ||
+          (expr->sig->suppl.part.type == SSUPPL_TYPE_PARAM_REAL) ||
+          (expr->sig->suppl.part.type == SSUPPL_TYPE_ENUM))) ) {
       retval = TRUE;
     } else {
       retval = ( (expr->op != EXP_OP_MBIT_SEL)           &&
@@ -5848,6 +5847,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.372  2008/10/23 16:04:06  phase1geo
+ Fixing issue with real1.1 regression failure.  Full regression passes.
+
  Revision 1.371  2008/10/23 14:21:10  phase1geo
  Fixing splint errors with new real number support.
 

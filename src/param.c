@@ -348,6 +348,7 @@ static inst_parm* inst_parm_add(
   int        sig_width;       /* Width of this parameter signal */
   int        sig_lsb;         /* LSB of this parameter signal */
   int        sig_be;          /* Big endianness of this parameter signal */
+  int        sig_type;        /* Type of signal parameter to create */
   int        left_val  = 31;  /* Value of left (msb) static expression */
   int        right_val = 0;   /* Value of right (lsb) static expression */
   exp_link*  expl;            /* Pointer to current expression link */
@@ -409,8 +410,15 @@ static inst_parm* inst_parm_add(
     /* If the parameter is sized too big, panic */
     assert( (sig_width <= MAX_BIT_WIDTH) && (sig_width >= 0) );
 
+    /* Figure out what type of parameter this signal needs to be */
+    if( (value != NULL) && ((value->suppl.part.data_type == VDATA_R64) || (value->suppl.part.data_type == VDATA_R32)) ) {
+      sig_type = SSUPPL_TYPE_PARAM_REAL;
+    } else {
+      sig_type = SSUPPL_TYPE_PARAM;
+    }
+
     /* Create instance parameter signal */
-    iparm->sig = vsignal_create( name, SSUPPL_TYPE_PARAM, sig_width, 0, 0 );
+    iparm->sig = vsignal_create( name, sig_type, sig_width, 0, 0 );
     iparm->sig->pdim_num   = 1;
     iparm->sig->dim        = (dim_range*)malloc_safe( sizeof( dim_range ) * 1 );
     iparm->sig->dim[0].lsb = right_val;
@@ -421,7 +429,18 @@ static inst_parm* inst_parm_add(
     iparm->sig->value->suppl.part.is_signed = is_signed;
   
     /* Copy the contents of the specified vector value to the signal */
-    (void)vector_set_value_ulong( iparm->sig->value, value->value.ul, value->width );
+    switch( value->suppl.part.data_type ) {
+      case VDATA_UL :
+        (void)vector_set_value_ulong( iparm->sig->value, value->value.ul, value->width );
+        break;
+      case VDATA_R64 :
+        (void)vector_from_real64( iparm->sig->value, value->value.r64->val );
+        break;
+      case VDATA_R32 :
+        (void)vector_from_real64( iparm->sig->value, (double)value->value.r32->val );
+        break;
+      default :  assert( 0 );  break;
+    }
 
     iparm->mparm = mparm;
     iparm->next  = NULL;
@@ -1134,6 +1153,11 @@ void inst_parm_dealloc(
 
 /*
  $Log$
+ Revision 1.114  2008/09/11 23:06:30  phase1geo
+ Fixing issue with parameters not being given valid exclusion IDs.  Updated
+ regressions and fixed a few perl script diagnostics.  Full regressions for
+ IV and Cver now pass.
+
  Revision 1.113  2008/09/04 21:34:20  phase1geo
  Completed work to get exclude reason support to work with toggle coverage.
  Ground-work is laid for the rest of the coverage metrics.  Checkpointing.

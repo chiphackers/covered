@@ -674,9 +674,10 @@ static void rank_gather_signal_cov(
 ) { PROFILE(RANK_GATHER_SIGNAL_COV);
 
   /* Populate toggle coverage information */
-  if( (sig->suppl.part.type != SSUPPL_TYPE_PARAM) &&
-      (sig->suppl.part.type != SSUPPL_TYPE_ENUM)  &&
-      (sig->suppl.part.type != SSUPPL_TYPE_MEM)  &&
+  if( (sig->suppl.part.type != SSUPPL_TYPE_PARAM)      &&
+      (sig->suppl.part.type != SSUPPL_TYPE_PARAM_REAL) &&
+      (sig->suppl.part.type != SSUPPL_TYPE_ENUM)       &&
+      (sig->suppl.part.type != SSUPPL_TYPE_MEM)        &&
       (sig->suppl.part.mba == 0) ) {
 
     unsigned int i;
@@ -1799,6 +1800,11 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.10  2008/09/19 04:47:18  phase1geo
+ Adding several new diagnostics to regression suite to add coverage for
+ rank.c file (parsing option errors mostly).  Fixing issue with rank command
+ when an invalid option was specified (output incorrect output message).
+
  Revision 1.9  2008/09/15 04:18:03  phase1geo
  Adding rank.c to splint checker and cleaned up all splint warnings with this file.
 
@@ -1824,6 +1830,11 @@ void command_rank(
  that the GUI stuff works properly.
 
  $Log$
+ Revision 1.10  2008/09/19 04:47:18  phase1geo
+ Adding several new diagnostics to regression suite to add coverage for
+ rank.c file (parsing option errors mostly).  Fixing issue with rank command
+ when an invalid option was specified (output incorrect output message).
+
  Revision 1.9  2008/09/15 04:18:03  phase1geo
  Adding rank.c to splint checker and cleaned up all splint warnings with this file.
 

@@ -100,7 +100,7 @@ vsignal* vsignal_create(
   new_sig = (vsignal*)malloc_safe( sizeof( vsignal ) );
 
   /* Calculate the type */
-  if( type == SSUPPL_TYPE_DECL_REAL ) {
+  if( (type == SSUPPL_TYPE_DECL_REAL) || (type == SSUPPL_TYPE_PARAM_REAL) ) {
     vtype = VDATA_R64;
   } else if( type == SSUPPL_TYPE_DECL_SREAL ) {
     vtype = VDATA_R32;
@@ -274,7 +274,7 @@ void vsignal_db_write(
     }
     fprintf( file, " " );
 
-    vector_db_write( sig->value, file, ((sig->suppl.part.type == SSUPPL_TYPE_PARAM) || (sig->suppl.part.type == SSUPPL_TYPE_ENUM)), SIGNAL_IS_NET( sig ) );
+    vector_db_write( sig->value, file, ((sig->suppl.part.type == SSUPPL_TYPE_PARAM) || (sig->suppl.part.type == SSUPPL_TYPE_PARAM_REAL) || (sig->suppl.part.type == SSUPPL_TYPE_ENUM)), SIGNAL_IS_NET( sig ) );
 
     fprintf( file, "\n" );
 
@@ -783,6 +783,11 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.84  2008/10/17 23:20:51  phase1geo
+ Continuing to add support support for real values.  Making some good progress here
+ (real delays should be working now).  Updated regressions per recent changes.
+ Checkpointing.
+
  Revision 1.83  2008/10/17 07:26:49  phase1geo
  Updating regressions per recent changes and doing more work to fixing real
  value bugs (still not working yet).  Checkpointing.

@@ -1415,10 +1415,11 @@ void funit_output_dumpvars(
 
   while( sigl != NULL ) {
     if( (sigl->sig->suppl.part.assigned == 0) &&
-        (sigl->sig->suppl.part.type != SSUPPL_TYPE_PARAM)  &&
-        (sigl->sig->suppl.part.type != SSUPPL_TYPE_ENUM)   &&
-        (sigl->sig->suppl.part.type != SSUPPL_TYPE_MEM)    &&
-        (sigl->sig->suppl.part.type != SSUPPL_TYPE_GENVAR) &&
+        (sigl->sig->suppl.part.type != SSUPPL_TYPE_PARAM)      &&
+        (sigl->sig->suppl.part.type != SSUPPL_TYPE_PARAM_REAL) &&
+        (sigl->sig->suppl.part.type != SSUPPL_TYPE_ENUM)       &&
+        (sigl->sig->suppl.part.type != SSUPPL_TYPE_MEM)        &&
+        (sigl->sig->suppl.part.type != SSUPPL_TYPE_GENVAR)     &&
         (sigl->sig->suppl.part.type != SSUPPL_TYPE_EVENT) ) {
       if( first ) {
         first = FALSE;
@@ -1590,6 +1591,10 @@ void funit_dealloc(
 
 /*
  $Log$
+ Revision 1.114  2008/10/07 05:24:17  phase1geo
+ Adding -dumpvars option.  Need to resolve a few issues before this work is considered
+ complete.
+
  Revision 1.113  2008/09/22 22:15:03  phase1geo
  Initial code for supporting the merging and resolution of exclusion reasons.
  This code is completely untested at this point but does compile.  Checkpointing.

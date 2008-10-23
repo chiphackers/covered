@@ -2942,11 +2942,12 @@ void db_assign_symbol(
     if( (slink = sig_link_find( name, curr_instance->funit->sig_head )) != NULL ) {
 
       /* Only add the symbol if we are not going to generate this value ourselves */
-      if( (slink->sig->suppl.part.assigned == 0)              &&
-          (slink->sig->suppl.part.type != SSUPPL_TYPE_PARAM)  &&
-          (slink->sig->suppl.part.type != SSUPPL_TYPE_ENUM)   &&
-          (slink->sig->suppl.part.type != SSUPPL_TYPE_MEM)    &&
-          (slink->sig->suppl.part.type != SSUPPL_TYPE_GENVAR) &&
+      if( (slink->sig->suppl.part.assigned == 0)                  &&
+          (slink->sig->suppl.part.type != SSUPPL_TYPE_PARAM)      &&
+          (slink->sig->suppl.part.type != SSUPPL_TYPE_PARAM_REAL) &&
+          (slink->sig->suppl.part.type != SSUPPL_TYPE_ENUM)       &&
+          (slink->sig->suppl.part.type != SSUPPL_TYPE_MEM)        &&
+          (slink->sig->suppl.part.type != SSUPPL_TYPE_GENVAR)     &&
           (slink->sig->suppl.part.type != SSUPPL_TYPE_EVENT) ) {
 
         /* Add this signal */
@@ -3102,6 +3103,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.343  2008/10/21 05:38:41  phase1geo
+ More updates to support real values.  Added vector_from_real64 functionality.
+ Checkpointing.
+
  Revision 1.342  2008/10/20 23:20:02  phase1geo
  Adding support for vector_from_int coverage accumulation (untested at this point).
  Updating Cver regressions.  Checkpointing.
