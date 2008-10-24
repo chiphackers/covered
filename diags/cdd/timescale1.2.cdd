@@ -1,6 +1,6 @@
 5 12 101 4 *
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd timescale1.2.vcd -o timescale1.2.cdd -v timescale1.2.v -D DUMP
-3 0 $root "$root" NA 0 0 1
+8 /ptmp/covered/diags/verilog -t main -vcd timescale1.2.vcd -o timescale1.2.cdd -v timescale1.2.v -D DUMP
+3 0 $root "$root" NA 0 0 100
 3 0 main "main" timescale1.2.v 10 29 100
 2 1 14 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0
 1 a 1 12 1070004 1 0 0 0 1 17 0 1 0 1 0 0

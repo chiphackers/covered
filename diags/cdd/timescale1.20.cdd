@@ -1,6 +1,6 @@
 5 12 101 4 *
 8 /ptmp/covered/diags/verilog -t main -vcd timescale1.20.vcd -o timescale1.20.cdd -v timescale1.20.v -D DUMP
-3 0 $root "$root" NA 0 0 10
+3 0 $root "$root" NA 0 0 1000
 3 0 main "main" timescale1.20.v 11 30 10
 2 1 15 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0
 1 a 1 13 1070004 1 0 0 0 1 17 0 1 0 1 0 0
