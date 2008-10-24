@@ -9,13 +9,14 @@
 
 module main;
 
-reg a;
+reg a, b;
 
 initial begin
 	a = 1'b0;
+	b = 1'b0;
 	#(2.123_456_789_987_654);
-	$display( $time );
-	a = ($time == 212);
+	b = 1'b1;
+	a = ($time == 21);
 end
 
 initial begin

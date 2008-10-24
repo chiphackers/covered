@@ -88,7 +88,7 @@ void search_init() { PROFILE(SEARCH_INIT);
     global_funit->name     = strdup_safe( "$root" );
     global_funit->type     = FUNIT_MODULE;
     global_funit->filename = strdup_safe( "NA" );
-    global_funit->ts_unit  = 0;
+    global_funit->ts_unit  = 2;
     (void)funit_link_add( global_funit, &(db_list[curr_db]->funit_head), &(db_list[curr_db]->funit_tail) );
     curr_funit = global_funit;
 
@@ -296,6 +296,10 @@ void search_free_lists() { PROFILE(SEARCH_FREE_LISTS);
 
 /*
  $Log$
+ Revision 1.48  2008/09/04 21:34:20  phase1geo
+ Completed work to get exclude reason support to work with toggle coverage.
+ Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
+
  Revision 1.47  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

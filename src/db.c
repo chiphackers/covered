@@ -161,12 +161,12 @@ int gi_conn_id = 1;
 /*!
  Specifies the current timescale unit shift value.
 */
-static int current_timescale_unit = 0;
+static int current_timescale_unit = 2;
 
 /*!
  Specifies the global timescale precision shift value.
 */
-static int global_timescale_precision  = 0;
+static int global_timescale_precision = 2;
 
 /*!
  Specifies the state of pragma-controlled exclusion.  If the mode is a value of 0, we
@@ -3103,6 +3103,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.344  2008/10/23 20:54:52  phase1geo
+ Adding support for real parameters.  Added more real number diagnostics to
+ regression suite.
+
  Revision 1.343  2008/10/21 05:38:41  phase1geo
  More updates to support real values.  Added vector_from_real64 functionality.
  Checkpointing.
