@@ -230,9 +230,10 @@ VCSONLYDIAGS1 = afunc1           always_comb1     always_comb2     always_ff1   
                 mem3             op_assign1       param8.2         param12          param12.1 \
                 sbit_sel3.2      shortint1        signed4.1        slist3.1         slist3.3 \
                 static_afunc1    static_func1     static_func1.1   static_func2     static_func2.1 \
-                static_func2.2   static_func2.3   timescale4       timescale4.1     trireg           urandom1.2       urandom1.3 \
-                urandom_range1   urandom_range2
-# null_stmt1.4  real4
+                static_func2.2   static_func2.3   timescale4       timescale4.1     timescale4.9 \
+                timescale4.10    timescale4.11    timescale4.12    timescale4.13    timescale4.14 \
+                timescale4.16    trireg           urandom1.2       urandom1.3       urandom_range1   urandom_range2
+# null_stmt1.4  real4            timescale4.15
 VCSONLYDIAGS2 = 
 VCSONLYDIAGS3 = 
 VCSONLYDIAGS4 = 
@@ -259,7 +260,9 @@ IVVCSDIAGS1   = define3          delay3           exclude7.3       exclude10.5  
                 port2            timescale1.1     timescale1.2     timescale1.3     timescale1.4 \
                 timescale1.5     timescale1.7     timescale1.8     timescale1.10    timescale1.11 \
                 timescale1.13    timescale1.14    timescale1.19    timescale2.1     timescale4.2 \
-                timescale4.3     timescale4.4     timescale4.5     timescale4.6     urandom1 \
+                timescale4.3     timescale4.4     timescale4.5     timescale4.6     timescale4.7 \
+                timescale4.8     timescale4.17    timescale4.18    timescale4.19    timescale4.20 \
+                timescale4.21    urandom1 \
                 urandom1.1       urandom2         urandom2.1       urandom3         urandom3.1 \
                 urandom_range1.1 urandom_range1.2 urandom_range2.1 urandom_range2.2 urandom_range3
 IVVCSDIAGS2   =
