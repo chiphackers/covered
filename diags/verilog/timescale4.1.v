@@ -1,11 +1,11 @@
 /*
- Name:        timescale4.v
+ Name:        timescale4.1.v
  Author:      Trevor Williams  (phase1geo@gmail.com)
  Date:        10/24/2008
- Purpose:     Verifies that real delays work properly when timescale is 100 s / 100 s
+ Purpose:     Verifies that real delays work properly when timescale is 100 s / 10 s
 */
 
-`timescale 100 s / 100 s
+`timescale 100 s / 10 s
 
 module main;
 
@@ -20,7 +20,7 @@ end
 
 initial begin
 `ifdef DUMP
-        $dumpfile( "timescale4.vcd" );
+        $dumpfile( "timescale4.1.vcd" );
         $dumpvars( 0, main );
 `endif
         #(10);

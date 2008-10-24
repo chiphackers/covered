@@ -555,26 +555,35 @@ void vector_db_read(
             break;
           case VDATA_R64 :
             {
-              int          store_str;
-              unsigned int slen;
-              char*        stmp;
+              int store_str;
               if( sscanf( *line, "%d%n", &store_str, &chars_read ) == 1 ) {
                 *line += chars_read;
                 if( store_str == 1 ) {
                   char str[4096];
                   if( sscanf( *line, "%s%n", str, &chars_read ) == 1 ) {
+                    unsigned int slen;
+                    char*        stmp;
                     (*vec)->value.r64->str = strdup_safe( str );
+                    slen = strlen( *line );
+                    stmp = strdup_safe( *line );
+                    *line += chars_read;
+                    if( sscanf( remove_underscores( stmp ), "%lf", &((*vec)->value.r64->val)) != 1 ) {
+                      free_safe( stmp, (slen + 1) );
+                      print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+                      Throw 0;
+                    }
+                    free_safe( stmp, (slen + 1) );
+                  } else {
+                    print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+                    Throw 0;
                   }
-                }
-                slen = strlen( *line );
-                stmp = strdup_safe( *line );
-                if( sscanf( remove_underscores( stmp ), "%lf%n", &((*vec)->value.r64->val), &chars_read ) == 1 ) {
-                  *line += chars_read;
-                  free_safe( stmp, (slen + 1) );
                 } else {
-                  free_safe( stmp, (slen + 1) );
-                  print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
-                  Throw 0;
+                  if( sscanf( *line, "%lf%n", &((*vec)->value.r64->val), &chars_read ) == 1 ) {
+                    *line += chars_read;
+                  } else {
+                    print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+                    Throw 0;
+                  }
                 }
               } else {
                 print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
@@ -584,26 +593,35 @@ void vector_db_read(
             break;
           case VDATA_R32 :
             {
-              int          store_str;
-              unsigned int slen;
-              char*        stmp;
+              int store_str;
               if( sscanf( *line, "%d%n", &store_str, &chars_read ) == 1 ) {
                 *line += chars_read;
                 if( store_str == 1 ) {
                   char str[4096];
                   if( sscanf( *line, "%s%n", str, &chars_read ) == 1 ) {
+                    unsigned int slen;
+                    char*        stmp;
                     (*vec)->value.r32->str = strdup_safe( str );
+                    slen = strlen( *line );
+                    stmp = strdup_safe( *line );
+                    *line += chars_read;
+                    if( sscanf( remove_underscores( stmp ), "%f", &((*vec)->value.r32->val)) != 1 ) {
+                      free_safe( stmp, (slen + 1) );
+                      print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+                      Throw 0;
+                    }
+                    free_safe( stmp, (slen + 1) );
+                  } else {
+                    print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+                    Throw 0;
                   }
-                }
-                slen = strlen( *line );
-                stmp = strdup_safe( *line );
-                if( sscanf( remove_underscores( stmp ), "%f%n", &((*vec)->value.r32->val), &chars_read ) == 1 ) {
-                  *line += chars_read;
-                  free_safe( stmp, (slen + 1) );
                 } else {
-                  free_safe( stmp, (slen + 1) );
-                  print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
-                  Throw 0;
+                  if( sscanf( *line, "%lf%n", &((*vec)->value.r32->val), &chars_read ) == 1 ) {
+                    *line += chars_read;
+                  } else {
+                    print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
+                    Throw 0;
+                  }
                 }
               } else {
                 print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
@@ -749,18 +767,10 @@ void vector_db_merge(
           break;
         case VDATA_R64 :
           {
-            int          store_str;
-            double       value;
-            unsigned int slen;
-            char*        stmp;
-            if( sscanf( *line, "%d%n", &store_str, &chars_read ) == 1 ) {
+            int  store_str;
+            char value[64];
+            if( sscanf( *line, "%d %s%n", &store_str, value, &chars_read ) == 2 ) {
               *line += chars_read;
-              slen = strlen( *line );
-              stmp = strdup_safe( *line );
-              if( sscanf( remove_underscores( stmp ), "%lf%n", &value, &chars_read ) == 1 ) {
-                *line += chars_read;
-              }
-              free_safe( stmp, (slen + 1) );
             } else {
               print_output( "Unable to parse vector information in database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
               Throw 0;
@@ -769,18 +779,10 @@ void vector_db_merge(
           break;
         case VDATA_R32 :
           {
-            int          store_str;
-            float        value;
-            unsigned int slen;
-            char*        stmp;
-            if( sscanf( *line, "%d%n", &store_str, &chars_read ) == 1 ) {
+            int  store_str;
+            char value[64];
+            if( sscanf( *line, "%d %s%n", &store_str, value, &chars_read ) == 2 ) {
               *line += chars_read;
-              slen = strlen( *line );
-              stmp = strdup_safe( *line );
-              if( sscanf( remove_underscores( stmp ), "%f%n", &value, &chars_read ) == 1 ) {
-                *line += chars_read;
-              }
-              free_safe( stmp, (slen + 1) );
             } else {
               print_output( "Unable to parse vector information in database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
               Throw 0;
@@ -5127,6 +5129,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.177  2008/10/24 15:26:50  phase1geo
+ Working on the ability to read real numbers with underscores in them.  Still have some
+ work to do here.  Checkpointing.
+
  Revision 1.176  2008/10/23 23:00:10  phase1geo
  Working on more real number diagnostics.  Fixes for negative real number parsing
  from command line.  Also added an error message when the value specified for the
