@@ -75,14 +75,14 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 lshift5         mbit_sel1       mbit_sel2       mbit_sel3       mbit_sel3.1 \
                 mbit_sel4       mbit_sel4.1     mbit_sel4.2     mbit_sel4.3     mbit_sel7 \
                 mbit_sel9       mbit_sel9.1     mbit_sel9.2     mem1            mem2 \
-                mod1            monitor1        monitor1.1      msg1            mult1           mult2           multi_exp1 \
-                multi_exp1.1    multi_exp1.2    multi_exp1.3    multi_exp1.4    multi_exp1.5 \
-                multi_exp1.6    multi_exp1.7    multi_exp1.8    multi_exp1.9    multi_exp1.10 \
-                multi_exp1.11   multi_exp1.12   multi_exp1.13   multi_exp1.14   multi_exp1.15 \
-                multi_exp2      multi_exp2.1    multi_exp3      multi_exp4      named_block1 \
-                named_block2    named_block3    named_block4    negate1 \
-                negate2         nedge1          nested_block1   nested_block2   nested_block2.1 \
-                nested_block3   not1            null_stmt1      null_stmt1.1 \
+                mod1            monitor1        monitor1.1      msg1            mult1 \
+                mult2           multi_exp1      multi_exp1.1    multi_exp1.2    multi_exp1.3 \
+                multi_exp1.4    multi_exp1.5    multi_exp1.6    multi_exp1.7    multi_exp1.8 \
+                multi_exp1.9    multi_exp1.10   multi_exp1.11   multi_exp1.12   multi_exp1.13 \
+                multi_exp1.14   multi_exp1.15   multi_exp2      multi_exp2.1    multi_exp3 \
+                multi_exp4      named_block1    named_block2    named_block3    named_block4 \
+                negate1         negate2         nedge1          nested_block1   nested_block2 \
+                nested_block2.1 nested_block3   not1            null_stmt1      null_stmt1.1 \
                 null_stmt1.2    null_stmt1.3    null_stmt1.5    null_stmt1.6    null_stmt1.7 \
                 null_stmt1.8    null_stmt1.9    null_stmt1.10   param1          param1.1 \
                 param1.2        param1.3        param3          param3.1        param3.2 \
@@ -96,7 +96,11 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 random2.1       random3         random3.1       rassign1        rassign2 \
                 real1           real2           real2.1         real3           real3.1 \
                 real3.2         real3.3         real3.4         real3.5         real3.6 \
-                real3.7         real3.8         repeat1         repeat2         repeat3         report1 \
+                real3.7         real3.8         real5           real5.1         real5.2 \
+                real5.3         real5.4         real5.5         real5.6         real5.7 \
+                real5.8         real5.9         real5.10        real6           real6.1 \
+                real6.2         real6.3         real6.4         real6.5         real6.6 \
+                real6.7         real6.8         real6.9         repeat1         repeat2         repeat3         report1 \
                 report2         report3         report3.1       report4.2       report5 \
                 report6         report7         report7.1       report8         rshift1 \
                 rshift1.1       rshift1.2       rshift1.3       rshift2         rshift2.1 \
