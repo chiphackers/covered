@@ -1443,6 +1443,37 @@ void gen_char_string(
   
 }
 
+/*!
+ \return Returns a pointer to the modified string.
+*/
+char* remove_underscores(
+  char* str  /*!< String to remove underscore characters from */
+) { PROFILE(REMOVE_UNDERSCORES);
+
+  char*        start = NULL;
+  unsigned int i;
+  unsigned int cur;
+
+  for( i=0; i<strlen( str ); i++ ) {
+    if( str[i] != '_' ) {
+      if( start == NULL ) {
+        start = str + i;
+      } else {
+        start[cur++] = str[i];
+      }
+    }
+  }
+
+  if( start != NULL ) {
+    start[cur] = '\0';
+  }
+
+  PROFILE_END;
+
+  return( start );
+
+}
+
 #ifdef HAVE_SYS_TIME_H
 /*!
  Clears the total accumulated time in the specified timer structure.
@@ -1686,6 +1717,10 @@ void read_command_file(
 
 /*
  $Log$
+ Revision 1.107  2008/10/05 20:21:36  phase1geo
+ Adding more diagnostics to regression suite which fully passes.  Added -conservative
+ and -Wignore options to the score command.
+
  Revision 1.106  2008/09/18 23:07:16  phase1geo
  Adding diagnostics to help rank coverage (still more to go).
 

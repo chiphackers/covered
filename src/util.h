@@ -175,6 +175,11 @@ void gen_char_string(
             int   num_spaces
 );
 
+/*! \brief Removes underscores from the specified string. */
+char* remove_underscores(
+  char* str
+);
+
 #ifdef HAVE_SYS_TIME_H
 /*! \brief Clears the timer, resetting the accumulated time information and allocating timer memory, if needed */
 void timer_clear( /*@out@*/ timer** tm );
@@ -219,6 +224,11 @@ void gen_exclusion_id(
 
 /*
  $Log$
+ Revision 1.47  2008/09/16 23:15:20  phase1geo
+ Adding initial versions of utility functions to calculate the relative and
+ absolute pathnames of files.  This functionality has not been tested and has
+ not been used in the code at this time.  Checkpointing.
+
  Revision 1.46  2008/08/28 04:37:18  phase1geo
  Starting to add support for exclusion output and exclusion IDs to generated
  reports.  These changes should break regressions.  Checkpointing.

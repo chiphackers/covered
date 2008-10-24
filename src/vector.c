@@ -555,7 +555,9 @@ void vector_db_read(
             break;
           case VDATA_R64 :
             {
-              int store_str;
+              int          store_str;
+              unsigned int slen;
+              char*        stmp;
               if( sscanf( *line, "%d%n", &store_str, &chars_read ) == 1 ) {
                 *line += chars_read;
                 if( store_str == 1 ) {
@@ -564,9 +566,13 @@ void vector_db_read(
                     (*vec)->value.r64->str = strdup_safe( str );
                   }
                 }
-                if( sscanf( *line, "%lf%n", &((*vec)->value.r64->val), &chars_read ) == 1 ) {
+                slen = strlen( *line );
+                stmp = strdup_safe( *line );
+                if( sscanf( remove_underscores( stmp ), "%lf%n", &((*vec)->value.r64->val), &chars_read ) == 1 ) {
                   *line += chars_read;
+                  free_safe( stmp, (slen + 1) );
                 } else {
+                  free_safe( stmp, (slen + 1) );
                   print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
                   Throw 0;
                 }
@@ -578,7 +584,9 @@ void vector_db_read(
             break;
           case VDATA_R32 :
             {
-              int store_str;
+              int          store_str;
+              unsigned int slen;
+              char*        stmp;
               if( sscanf( *line, "%d%n", &store_str, &chars_read ) == 1 ) {
                 *line += chars_read;
                 if( store_str == 1 ) {
@@ -587,9 +595,13 @@ void vector_db_read(
                     (*vec)->value.r32->str = strdup_safe( str );
                   }
                 }
-                if( sscanf( *line, "%f%n", &((*vec)->value.r32->val), &chars_read ) == 1 ) {
+                slen = strlen( *line );
+                stmp = strdup_safe( *line );
+                if( sscanf( remove_underscores( stmp ), "%f%n", &((*vec)->value.r32->val), &chars_read ) == 1 ) {
                   *line += chars_read;
+                  free_safe( stmp, (slen + 1) );
                 } else {
+                  free_safe( stmp, (slen + 1) );
                   print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
                   Throw 0;
                 }
@@ -737,13 +749,18 @@ void vector_db_merge(
           break;
         case VDATA_R64 :
           {
-            char   str[4096];
-            double value;
-            if( sscanf( *line, "%lf%n", &value, &chars_read ) == 1 ) {
+            int          store_str;
+            double       value;
+            unsigned int slen;
+            char*        stmp;
+            if( sscanf( *line, "%d%n", &store_str, &chars_read ) == 1 ) {
               *line += chars_read;
-              if( sscanf( *line, "%s%n", str, &chars_read ) == 1 ) {
+              slen = strlen( *line );
+              stmp = strdup_safe( *line );
+              if( sscanf( remove_underscores( stmp ), "%lf%n", &value, &chars_read ) == 1 ) {
                 *line += chars_read;
               }
+              free_safe( stmp, (slen + 1) );
             } else {
               print_output( "Unable to parse vector information in database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
               Throw 0;
@@ -752,13 +769,18 @@ void vector_db_merge(
           break;
         case VDATA_R32 :
           {
-            char  str[4096];
-            float value;
-            if( sscanf( *line, "%f%n", &value, &chars_read ) == 1 ) {
+            int          store_str;
+            float        value;
+            unsigned int slen;
+            char*        stmp;
+            if( sscanf( *line, "%d%n", &store_str, &chars_read ) == 1 ) {
               *line += chars_read;
-              if( sscanf( *line, "%s%n", str, &chars_read ) == 1 ) {
+              slen = strlen( *line );
+              stmp = strdup_safe( *line );
+              if( sscanf( remove_underscores( stmp ), "%f%n", &value, &chars_read ) == 1 ) {
                 *line += chars_read;
               }
+              free_safe( stmp, (slen + 1) );
             } else {
               print_output( "Unable to parse vector information in database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
               Throw 0;
@@ -2897,90 +2919,100 @@ void vector_from_string(
 
     }
 
-  } else if( ((sscanf( *str, "%[0-9_]%[.]%[0-9_]", value, value, value ) == 3) ||
-              (sscanf( *str, "-%[0-9_]%[.]%[0-9_]", value, value, value ) == 3)) &&
-             (sscanf( *str, "%lf%n", &real, &chars_read ) == 1) ) {
-
-    *vec                         = vector_create( 64, VTYPE_VAL, VDATA_R64, TRUE );
-    (*vec)->value.r64->val       = real;
-    (*vec)->value.r64->str       = strdup_safe( *str );
-    (*vec)->suppl.part.is_signed = 1;
-    *str                         = *str + chars_read;
-
   } else {
 
-    if( sscanf( *str, "%d'%[sSdD]%[0-9]%n", &size, stype, value, &chars_read ) == 3 ) {
-      bits_per_char = 10;
-      *base         = DECIMAL;
-      *str          = *str + chars_read;
-    } else if( sscanf( *str, "%d'%[sSbB]%[01xXzZ_\?]%n", &size, stype, value, &chars_read ) == 3 ) {
-      bits_per_char = 1;
-      *base         = BINARY;
-      *str          = *str + chars_read;
-    } else if( sscanf( *str, "%d'%[sSoO]%[0-7xXzZ_\?]%n", &size, stype, value, &chars_read ) == 3 ) {
-      bits_per_char = 3;
-      *base         = OCTAL;
-      *str          = *str + chars_read;
-    } else if( sscanf( *str, "%d'%[sShH]%[0-9a-fA-FxXzZ_\?]%n", &size, stype, value, &chars_read ) == 3 ) {
-      bits_per_char = 4;
-      *base         = HEXIDECIMAL;
-      *str          = *str + chars_read;
-    } else if( sscanf( *str, "'%[sSdD]%[0-9]%n", stype, value, &chars_read ) == 2 ) {
-      bits_per_char = 10;
-      *base         = DECIMAL;
-      size          = 32;
-      *str          = *str + chars_read;
-    } else if( sscanf( *str, "'%[sSbB]%[01xXzZ_\?]%n", stype, value, &chars_read ) == 2 ) {
-      bits_per_char = 1;
-      *base         = BINARY;
-      size          = 32;
-      *str          = *str + chars_read;
-    } else if( sscanf( *str, "'%[sSoO]%[0-7xXzZ_\?]%n", stype, value, &chars_read ) == 2 ) {
-      bits_per_char = 3;
-      *base         = OCTAL;
-      size          = 32;
-      *str          = *str + chars_read;
-    } else if( sscanf( *str, "'%[sShH]%[0-9a-fA-FxXzZ_\?]%n", stype, value, &chars_read ) == 2 ) {
-      bits_per_char = 4;
-      *base         = HEXIDECIMAL;
-      size          = 32;
-      *str          = *str + chars_read;
-    } else if( sscanf( *str, "%[0-9_]%n", value, &chars_read ) == 1 ) {
-      bits_per_char = 10;
-      *base         = DECIMAL;
-      stype[0]      = 's';       
-      stype[1]      = '\0';
-      size          = 32;
-      *str          = *str + chars_read;
-    } else {
-      /* If the specified string is none of the above, return NULL */
-      bits_per_char = 0;
-    }
+    unsigned int slen = strlen( *str );
+    char*        stmp = strdup_safe( *str );
 
-    /* If we have exceeded the maximum number of bits, return a value of NULL */
-    if( (size > MAX_BIT_WIDTH) || (bits_per_char == 0) ) {
+    if( ((sscanf( *str, "%[0-9_]%[.]%[0-9_]", value, value, value ) == 3) ||
+         (sscanf( *str, "-%[0-9_]%[.]%[0-9_]", value, value, value ) == 3)) &&
+        (sscanf( remove_underscores( stmp ), "%lf%n", &real, &chars_read ) == 1) ) {
 
-      *vec  = NULL;
-      *base = 0;
+      *vec                         = vector_create( 64, VTYPE_VAL, VDATA_R64, TRUE );
+      (*vec)->value.r64->val       = real;
+      (*vec)->value.r64->str       = strdup_safe( *str );
+      (*vec)->suppl.part.is_signed = 1;
+      *str                         = *str + chars_read;
 
     } else {
 
-      /* Create vector */
-      *vec = vector_create( size, VTYPE_VAL, VDATA_UL, TRUE );
-      if( *base == DECIMAL ) {
-        (void)vector_from_int( *vec, ato32( value ) );
+      if( sscanf( *str, "%d'%[sSdD]%[0-9]%n", &size, stype, value, &chars_read ) == 3 ) {
+        bits_per_char = 10;
+        *base         = DECIMAL;
+        *str          = *str + chars_read;
+      } else if( sscanf( *str, "%d'%[sSbB]%[01xXzZ_\?]%n", &size, stype, value, &chars_read ) == 3 ) {
+        bits_per_char = 1;
+        *base         = BINARY;
+        *str          = *str + chars_read;
+      } else if( sscanf( *str, "%d'%[sSoO]%[0-7xXzZ_\?]%n", &size, stype, value, &chars_read ) == 3 ) {
+        bits_per_char = 3;
+        *base         = OCTAL;
+        *str          = *str + chars_read;
+      } else if( sscanf( *str, "%d'%[sShH]%[0-9a-fA-FxXzZ_\?]%n", &size, stype, value, &chars_read ) == 3 ) {
+        bits_per_char = 4;
+        *base         = HEXIDECIMAL;
+        *str          = *str + chars_read;
+      } else if( sscanf( *str, "'%[sSdD]%[0-9]%n", stype, value, &chars_read ) == 2 ) {
+        bits_per_char = 10;
+        *base         = DECIMAL;
+        size          = 32;
+        *str          = *str + chars_read;
+      } else if( sscanf( *str, "'%[sSbB]%[01xXzZ_\?]%n", stype, value, &chars_read ) == 2 ) {
+        bits_per_char = 1;
+        *base         = BINARY;
+        size          = 32;
+        *str          = *str + chars_read;
+      } else if( sscanf( *str, "'%[sSoO]%[0-7xXzZ_\?]%n", stype, value, &chars_read ) == 2 ) {
+        bits_per_char = 3;
+        *base         = OCTAL;
+        size          = 32;
+        *str          = *str + chars_read;
+      } else if( sscanf( *str, "'%[sShH]%[0-9a-fA-FxXzZ_\?]%n", stype, value, &chars_read ) == 2 ) {
+        bits_per_char = 4;
+        *base         = HEXIDECIMAL;
+        size          = 32;
+        *str          = *str + chars_read;
+      } else if( sscanf( *str, "%[0-9_]%n", value, &chars_read ) == 1 ) {
+        bits_per_char = 10;
+        *base         = DECIMAL;
+        stype[0]      = 's';       
+        stype[1]      = '\0';
+        size          = 32;
+        *str          = *str + chars_read;
       } else {
-        vector_set_static( *vec, value, bits_per_char ); 
+        /* If the specified string is none of the above, return NULL */
+        bits_per_char = 0;
       }
 
-      /* Set the signed bit to the appropriate value based on the signed indicator in the vector string */
-      if( (stype[0] == 's') || (stype [0] == 'S') ) {
-        (*vec)->suppl.part.is_signed = 1;
+      /* If we have exceeded the maximum number of bits, return a value of NULL */
+      if( (size > MAX_BIT_WIDTH) || (bits_per_char == 0) ) {
+
+        *vec  = NULL;
+        *base = 0;
+
       } else {
-        (*vec)->suppl.part.is_signed = 0;
+
+        /* Create vector */
+        *vec = vector_create( size, VTYPE_VAL, VDATA_UL, TRUE );
+        if( *base == DECIMAL ) {
+          (void)vector_from_int( *vec, ato32( value ) );
+        } else {
+          vector_set_static( *vec, value, bits_per_char ); 
+        }
+
+        /* Set the signed bit to the appropriate value based on the signed indicator in the vector string */
+        if( (stype[0] == 's') || (stype [0] == 'S') ) {
+          (*vec)->suppl.part.is_signed = 1;
+        } else {
+          (*vec)->suppl.part.is_signed = 0;
+        }
+
       }
 
     }
+
+    /* Deallocate memory */
+    free_safe( stmp, (slen + 1) );
 
   }
 
@@ -5095,6 +5127,11 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.176  2008/10/23 23:00:10  phase1geo
+ Working on more real number diagnostics.  Fixes for negative real number parsing
+ from command line.  Also added an error message when the value specified for the
+ -P option to the score command is an illegal value.
+
  Revision 1.175  2008/10/23 22:16:21  phase1geo
  Fixing -P support.
 
