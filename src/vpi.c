@@ -56,7 +56,6 @@ struct sym_value_s {
 char       in_db_name[1024];       /*!< Name of input CDD file */
 char       out_db_name[1024];      /*!< Name of output CDD file */
 uint64     last_time     = 0;      /*!< Last simulation time seen from simulator */
-bool       use_last_time = FALSE;  /*!< Set to TRUE if last_time has been set by the simulator */
 sym_value* sv_head       = NULL;   /*!< Pointer to head of sym_value list */
 sym_value* sv_tail       = NULL;   /*!< Pointer to tail of sym_value list */
 
@@ -195,15 +194,12 @@ PLI_INT32 covered_value_change_bin(
   }
 #endif
 
-  if( ((cb->time->low  != (PLI_INT32)(last_time & 0xffffffff)) ||
-       (cb->time->high != (PLI_INT32)((last_time >> 32) & 0xffffffff))) &&
-      use_last_time ) {
+  if( (cb->time->low  != (PLI_INT32)(last_time & 0xffffffff)) || (cb->time->high != (PLI_INT32)((last_time >> 32) & 0xffffffff)) ) {
     if( !db_do_timestep( last_time, FALSE ) ) {
       vpi_control( vpiFinish, EXIT_SUCCESS );
     }
   }
-  last_time     = ((uint64)cb->time->high << 32) | (uint64)cb->time->low;
-  use_last_time = TRUE;
+  last_time = ((uint64)cb->time->high << 32) | (uint64)cb->time->low;
   
   /* Set symbol value */
   db_set_symbol_string( cb->user_data, value.value.str );
@@ -217,15 +213,12 @@ PLI_INT32 covered_value_change_bin(
   }
 #endif
 
-  if( ((cb->time->low  != (PLI_INT32)(last_time & 0xffffffff)) ||
-       (cb->time->high != (PLI_INT32)((last_time >> 32) & 0xffffffff))) &&
-      use_last_time ) {
+  if( (cb->time->low  != (PLI_INT32)(last_time & 0xffffffff)) || (cb->time->high != (PLI_INT32)((last_time >> 32) & 0xffffffff)) ) {
     if( !db_do_timestep( last_time, FALSE ) ) {
       vpi_control( vpiFinish, EXIT_SUCCESS );
     }
   }
-  last_time     = ((uint64)cb->time->high << 32) | (uint64)cb->time->low;
-  use_last_time = TRUE;
+  last_time = ((uint64)cb->time->high << 32) | (uint64)cb->time->low;
 
   /* Set symbol value */
   db_set_symbol_string( cb->user_data, cb->value->value.str );
@@ -266,15 +259,12 @@ PLI_INT32 covered_value_change_real(
   }
 #endif
 
-  if( ((cb->time->low  != (PLI_INT32)(last_time & 0xffffffff)) ||
-       (cb->time->high != (PLI_INT32)((last_time >> 32) & 0xffffffff))) &&
-      use_last_time ) {
+  if( (cb->time->low  != (PLI_INT32)(last_time & 0xffffffff)) || (cb->time->high != (PLI_INT32)((last_time >> 32) & 0xffffffff)) ) {
     if( !db_do_timestep( last_time, FALSE ) ) {
       vpi_control( vpiFinish, EXIT_SUCCESS );
     }
   }
-  last_time     = ((uint64)cb->time->high << 32) | (uint64)cb->time->low;
-  use_last_time = TRUE;
+  last_time = ((uint64)cb->time->high << 32) | (uint64)cb->time->low;
 
   /* Set symbol value */
   snprintf( real_str, 64, "%.16f", value.value.real );
@@ -289,15 +279,12 @@ PLI_INT32 covered_value_change_real(
   }
 #endif
 
-  if( ((cb->time->low  != (PLI_INT32)(last_time & 0xffffffff)) ||
-       (cb->time->high != (PLI_INT32)((last_time >> 32) & 0xffffffff))) &&
-      use_last_time ) {
+  if( (cb->time->low  != (PLI_INT32)(last_time & 0xffffffff)) || (cb->time->high != (PLI_INT32)((last_time >> 32) & 0xffffffff)) ) {
     if( !db_do_timestep( last_time, FALSE ) ) {
       vpi_control( vpiFinish, EXIT_SUCCESS );
     }
   }
-  last_time     = ((uint64)cb->time->high << 32) | (uint64)cb->time->low;
-  use_last_time = TRUE;
+  last_time = ((uint64)cb->time->high << 32) | (uint64)cb->time->low;
 
   /* Set symbol value */
   snprintf( real_str, 64, "%.16f", cb->value->value.real );
@@ -316,9 +303,7 @@ PLI_INT32 covered_end_of_sim( p_cb_data cb ) { PROFILE(COVERED_END_OF_SIM);
 
   p_vpi_time final_time;
 
-  if( use_last_time ) {
-    (void)db_do_timestep( last_time, FALSE );
-  }
+  (void)db_do_timestep( last_time, FALSE );
 
   /* Get the final simulation time */
   final_time       = (p_vpi_time)malloc_safe( sizeof( s_vpi_time ) );
@@ -840,12 +825,11 @@ PLI_INT32 covered_sim_calltf( char* name ) {
   add_sym_values_to_sim();
 
   /* If we are Cver or VCS, perform an initial 0 timestep since this will not get called */
-#ifdef NOIV
-  if( !db_do_timestep( 0, FALSE ) ) {
-    vpi_control( vpiFinish, EXIT_SUCCESS );
-  }
-
-#endif
+//#ifdef NOIV
+//  if( !db_do_timestep( 0, FALSE ) ) {
+//    vpi_control( vpiFinish, EXIT_SUCCESS );
+//  }
+//#endif
 
   PROFILE_END;
 
