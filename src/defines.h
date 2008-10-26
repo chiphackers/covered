@@ -514,61 +514,67 @@
 */
 
 /*! This is an input port net signal */
-#define SSUPPL_TYPE_INPUT_NET     0
+#define SSUPPL_TYPE_INPUT_NET      0
 
 /*! This is an input port registered signal */
-#define SSUPPL_TYPE_INPUT_REG     1
+#define SSUPPL_TYPE_INPUT_REG      1
 
 /*! This is an output port net signal */
-#define SSUPPL_TYPE_OUTPUT_NET    2
+#define SSUPPL_TYPE_OUTPUT_NET     2
 
 /*! This is an output port registered signal */
-#define SSUPPL_TYPE_OUTPUT_REG    3
+#define SSUPPL_TYPE_OUTPUT_REG     3
 
 /*! This is an inout port net signal */
-#define SSUPPL_TYPE_INOUT_NET     4
+#define SSUPPL_TYPE_INOUT_NET      4
 
 /*! This is an inout port registered signal */
-#define SSUPPL_TYPE_INOUT_REG     5
+#define SSUPPL_TYPE_INOUT_REG      5
 
 /*! This is a declared net signal (i.e., not a port) */
-#define SSUPPL_TYPE_DECL_NET      6
+#define SSUPPL_TYPE_DECL_NET       6
 
 /*! This is a declared registered signal (i.e., not a port) */
-#define SSUPPL_TYPE_DECL_REG      7
+#define SSUPPL_TYPE_DECL_REG       7
 
 /*! This is an event */
-#define SSUPPL_TYPE_EVENT         8
+#define SSUPPL_TYPE_EVENT          8
 
 /*! This signal was implicitly created */
-#define SSUPPL_TYPE_IMPLICIT      9
+#define SSUPPL_TYPE_IMPLICIT       9
 
 /*! This signal was implicitly created (this signal was created from a positive variable multi-bit expression) */
-#define SSUPPL_TYPE_IMPLICIT_POS  10
+#define SSUPPL_TYPE_IMPLICIT_POS   10
 
 /*! This signal was implicitly created (this signal was created from a negative variable multi-bit expression) */
-#define SSUPPL_TYPE_IMPLICIT_NEG  11
+#define SSUPPL_TYPE_IMPLICIT_NEG   11
 
 /*! This signal is a parameter */
-#define SSUPPL_TYPE_PARAM         12
+#define SSUPPL_TYPE_PARAM          12
 
 /*! This signal is a genvar */
-#define SSUPPL_TYPE_GENVAR        13
+#define SSUPPL_TYPE_GENVAR         13
 
 /*! This signal is an enumerated value */
-#define SSUPPL_TYPE_ENUM          14
+#define SSUPPL_TYPE_ENUM           14
 
 /*! This signal is a memory */
-#define SSUPPL_TYPE_MEM           15
+#define SSUPPL_TYPE_MEM            15
 
 /*! This signal is a shortreal */
-#define SSUPPL_TYPE_DECL_SREAL    16
+#define SSUPPL_TYPE_DECL_SREAL     16
 
 /*! This signal is a real */
-#define SSUPPL_TYPE_DECL_REAL     17
+#define SSUPPL_TYPE_DECL_REAL      17
 
 /*! This signal is a real parameter */
-#define SSUPPL_TYPE_PARAM_REAL    18
+#define SSUPPL_TYPE_PARAM_REAL     18
+
+/*! This signal was implicitly created for a real64 value */
+#define SSUPPL_TYPE_IMPLICIT_REAL  19
+
+/*! This signal was implicitly created for a real64 value */
+#define SSUPPL_TYPE_IMPLICIT_SREAL 20 
 
 /*! @} */
 
@@ -3025,6 +3031,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.335  2008/10/23 20:54:52  phase1geo
+ Adding support for real parameters.  Added more real number diagnostics to
+ regression suite.
+
  Revision 1.334  2008/10/23 16:04:06  phase1geo
  Fixing issue with real1.1 regression failure.  Full regression passes.
 

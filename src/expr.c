@@ -4375,7 +4375,12 @@ bool expression_op_func__func_call(
   sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit, time ), ((thr == NULL) ? time : &(thr->curr_time)) );
 
   /* Then copy the function variable to this expression */
-  retval = vector_set_value_ulong( expr->value, expr->sig->value->value.ul, expr->value->width );
+  switch( expr->value->suppl.part.data_type ) {
+    case VDATA_UL  :  retval = vector_set_value_ulong( expr->value, expr->sig->value->value.ul, expr->value->width );  break;
+    case VDATA_R64 :  retval = vector_from_real64( expr->value, expr->sig->value->value.r64->val );  break;
+    case VDATA_R32 :  retval = vector_from_real64( expr->value, (double)expr->sig->value->value.r32->val );  break;
+    default        :  assert( 0 );  break;
+  }
   
   /* Deallocate the reentrant structure of the current thread (if it exists) */
   if( (thr != NULL) && (thr->ren != NULL) ) {
@@ -5848,6 +5853,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.374  2008/10/24 17:27:46  phase1geo
+ Fixing issues with removing underscores from real numbers.
+
  Revision 1.373  2008/10/23 20:54:52  phase1geo
  Adding support for real parameters.  Added more real number diagnostics to
  regression suite.

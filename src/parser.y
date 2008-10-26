@@ -546,7 +546,7 @@ description
       if( ignore_mode == 0 ) {
         Try {
           if( db_add_function_task_namedblock( ($2 ? FUNIT_AFUNCTION : FUNIT_FUNCTION), $5, @5.text, @5.first_line ) ) {
-            db_add_signal( $5, SSUPPL_TYPE_IMPLICIT, &curr_prange, NULL, curr_signed, FALSE, @5.first_line, @5.first_column, TRUE );
+            db_add_signal( $5, curr_sig_type, &curr_prange, NULL, curr_signed, FALSE, @5.first_line, @5.first_column, TRUE );
           } else {
             ignore_mode++;
           }
@@ -3794,7 +3794,7 @@ module_item
         Try {
           if( db_add_function_task_namedblock( ($3 ? FUNIT_AFUNCTION : FUNIT_FUNCTION), $6, @6.text, @6.first_line ) ) {
             generate_top_mode--;
-            db_add_signal( $6, SSUPPL_TYPE_IMPLICIT, &curr_prange, NULL, curr_signed, FALSE, @6.first_line, @6.first_column, TRUE );
+            db_add_signal( $6, curr_sig_type, &curr_prange, NULL, curr_signed, FALSE, @6.first_line, @6.first_column, TRUE );
             generate_top_mode++;
           } else {
             ignore_mode++;
@@ -6248,20 +6248,35 @@ range_or_type_opt
   | K_integer
     {
       if( ignore_mode == 0 ) {
+        curr_sig_type = SSUPPL_TYPE_IMPLICIT;
         parser_implicitly_set_curr_range( 31, 0, curr_packed );
       }
     }
   | K_real
+    {
+      if( ignore_mode == 0 ) {
+        curr_sig_type = SSUPPL_TYPE_IMPLICIT_REAL;
+        parser_implicitly_set_curr_range( 63, 0, curr_packed );
+      }
+    }
   | K_realtime
+    {
+      if( ignore_mode == 0 ) {
+        curr_sig_type = SSUPPL_TYPE_IMPLICIT_REAL;
+        parser_implicitly_set_curr_range( 63, 0, curr_packed );
+      }
+    }
   | K_time
     {
       if( ignore_mode == 0 ) {
+        curr_sig_type = SSUPPL_TYPE_IMPLICIT;
         parser_implicitly_set_curr_range( 63, 0, curr_packed );
       }
     }
   |
     {
       if( ignore_mode == 0 ) {
+        curr_sig_type = SSUPPL_TYPE_IMPLICIT;
         parser_implicitly_set_curr_range( 0, 0, curr_packed );
       }
     }

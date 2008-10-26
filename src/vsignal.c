@@ -100,12 +100,13 @@ vsignal* vsignal_create(
   new_sig = (vsignal*)malloc_safe( sizeof( vsignal ) );
 
   /* Calculate the type */
-  if( (type == SSUPPL_TYPE_DECL_REAL) || (type == SSUPPL_TYPE_PARAM_REAL) ) {
-    vtype = VDATA_R64;
-  } else if( type == SSUPPL_TYPE_DECL_SREAL ) {
-    vtype = VDATA_R32;
-  } else {
-    vtype = VDATA_UL;
+  switch( type ) {
+    case SSUPPL_TYPE_DECL_REAL      :
+    case SSUPPL_TYPE_PARAM_REAL     :
+    case SSUPPL_TYPE_IMPLICIT_REAL  :  vtype = VDATA_R64;  break;
+    case SSUPPL_TYPE_DECL_SREAL     :
+    case SSUPPL_TYPE_IMPLICIT_SREAL :  vtype = VDATA_R32;  break;
+    default                         :  vtype = VDATA_UL;   break;
   }
 
   vsignal_init( new_sig, ((name != NULL) ? strdup_safe( name ) : NULL),
@@ -161,12 +162,13 @@ void vsignal_create_vec(
     }
 
     /* Figure out the vector data type to create */
-    if( sig->suppl.part.type == SSUPPL_TYPE_DECL_REAL ) {
-      vtype = VDATA_R64;
-    } else if( sig->suppl.part.type == SSUPPL_TYPE_DECL_SREAL ) {
-      vtype = VDATA_R32;
-    } else {
-      vtype = VDATA_UL;
+    switch( sig->suppl.part.type ) {
+      case SSUPPL_TYPE_DECL_REAL      :
+      case SSUPPL_TYPE_PARAM_REAL     :
+      case SSUPPL_TYPE_IMPLICIT_REAL  :  vtype = VDATA_R64;  break;
+      case SSUPPL_TYPE_DECL_SREAL     :
+      case SSUPPL_TYPE_IMPLICIT_SREAL :  vtype = VDATA_R32;  break;
+      default                         :  vtype = VDATA_UL;   break;
     }
 
     /* Create the vector and assign it to the signal */
@@ -783,6 +785,10 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.85  2008/10/23 20:54:52  phase1geo
+ Adding support for real parameters.  Added more real number diagnostics to
+ regression suite.
+
  Revision 1.84  2008/10/17 23:20:51  phase1geo
  Continuing to add support support for real values.  Making some good progress here
  (real delays should be working now).  Updated regressions per recent changes.

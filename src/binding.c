@@ -704,6 +704,9 @@ static bool bind_task_function_namedblock(
           /* Set expression to point at signal */
           exp->sig = sigl->sig;
 
+          /* Make sure that our vector type matches that of the found signal */
+          exp->value->suppl.part.data_type = sigl->sig->value->suppl.part.data_type;
+
         }
 
         /* If this is a function or task, bind the ports as well */
@@ -719,7 +722,6 @@ static bool bind_task_function_namedblock(
                                         get_funit_type( type ), port_order, get_funit_type( type ), port_cnt, obf_file( funit_exp->filename ), exp->line );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            printf( "binding Throw A\n" );
             Throw 0;
           }
 
@@ -896,7 +898,6 @@ void bind_perform(
       free_safe( tmp_eb, sizeof( exp_bind ) );
     }
     eb_head = eb_tail = NULL;
-    printf( "binding Throw B\n" );
     Throw 0;
   }
 
@@ -935,6 +936,11 @@ void bind_dealloc() { PROFILE(BIND_DEALLOC);
 
 /* 
  $Log$
+ Revision 1.138  2008/10/17 23:20:51  phase1geo
+ Continuing to add support support for real values.  Making some good progress here
+ (real delays should be working now).  Updated regressions per recent changes.
+ Checkpointing.
+
  Revision 1.137  2008/10/16 23:11:50  phase1geo
  More work on support for real numbers.  I believe that all of the code now
  exists in vector.c to support them.  Still need to do work in expr.c.  Added
