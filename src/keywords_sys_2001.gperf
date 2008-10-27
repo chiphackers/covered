@@ -28,12 +28,25 @@
 %}
 struct keyword_sys_2001 { char *name; int type; };
 %%
-fclose,      S_allow
-fgetc,       S_ignore
-fgets,       S_ignore
-fopen,       S_ignore
-fread,       S_ignore
-fscanf,      S_ignore
+fclose,         S_allow
+ferror,         S_allow
+fflush,         S_allow
+fgetc,          S_ignore
+fgets,          S_ignore
+fopen,          S_ignore
+fread,          S_ignore
+fscanf,         S_ignore
+fseek,          S_ignore
+fsscanf,        S_ignore
+ftel,           S_ignore
+rewind,         S_ignore
+sformat,        S_ignore
+swrite,         S_allow
+swriteb,        S_allow
+swriteh,        S_allow
+swriteo,        S_allow
+ungetc,         S_allow
+value$plusargs, S_valargs
 %%
 
 int lexer_keyword_sys_2001_code(

@@ -267,6 +267,8 @@ profiler profiles[NUM_PROFILES] = {
   {"expression_op_func__bitstoshortreal", NULL, 0, 0, 0, TRUE},
   {"expression_op_func__itor", NULL, 0, 0, 0, TRUE},
   {"expression_op_func__rtoi", NULL, 0, 0, 0, TRUE},
+  {"expression_op_func__test_plusargs", NULL, 0, 0, 0, TRUE},
+  {"expression_op_func__value_plusargs", NULL, 0, 0, 0, TRUE},
   {"expression_op_func__eq", NULL, 0, 0, 0, TRUE},
   {"expression_op_func__ceq", NULL, 0, 0, 0, TRUE},
   {"expression_op_func__le", NULL, 0, 0, 0, TRUE},

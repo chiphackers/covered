@@ -138,6 +138,8 @@ extern char      score_run_path[4096];
 extern char**    score_args;
 extern int       score_arg_num;
 extern bool      warnings_suppressed;
+extern str_link* sim_plusargs_head;
+extern str_link* sim_plusargs_tail;
 
 
 extern void process_timescale( const char* txt, bool report );
@@ -233,6 +235,11 @@ static void score_usage() {
   printf( "                                     coverage consideration.  See User's Guide for more information on what type of code\n" );
   printf( "                                     can lead to coverage inaccuracies.\n" );
   printf( "      -Wignore                     Suppress the output of warnings during code parsing and simulation.\n" );
+  printf( "      -simargs <sim_args>          For VCD/LXT scoring, allows the user to specify the simulation arguments that were passed\n" );
+  printf( "                                     to the command-line when running the simulation.  This allows blocks containing the\n" );
+  printf( "                                     $test$plusargs and $value$plusargs system function calls to be included in coverage.\n" );
+  printf( "                                     If there is more than one simulation argument, surround the arguments with double\n" );
+  printf( "                                     quotation marks.\n" );
   printf( "\n" );
   printf( "      +libext+.<extension>(+.<extension>)+\n" );
   printf( "                                   Extensions of Verilog files to allow in scoring\n" );
@@ -1085,6 +1092,10 @@ static void score_parse_args(
 
       warnings_suppressed = TRUE;
 
+    } else if( strncmp( "-simargs", argv[i], 8 ) == 0 ) {
+
+      /* TBD - Populate the sim_plusargs_head/tail list with the individual plusargs specified to this option */
+
     } else {
 
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown score command option \"%s\".  See \"covered score -h\" for more information.", argv[i] );
@@ -1215,6 +1226,11 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.141  2008/10/23 23:00:09  phase1geo
+ Working on more real number diagnostics.  Fixes for negative real number parsing
+ from command line.  Also added an error message when the value specified for the
+ -P option to the score command is an illegal value.
+
  Revision 1.140  2008/10/07 15:09:57  phase1geo
  Changed -vpi_ts to -top_ts.
 

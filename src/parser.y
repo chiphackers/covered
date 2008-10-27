@@ -284,7 +284,7 @@ int yydebug = 1;
 %token K_wor K_xnor K_xor
 %token K_Shold K_Speriod K_Srecovery K_Ssetup K_Swidth K_Ssetuphold
 %token S_user S_ignore S_allow S_finish S_stop S_time S_random S_srandom S_dumpfile S_urandom S_urandom_range
-%token S_realtobits S_bitstoreal S_rtoi S_itor S_shortrealtobits S_bitstoshortreal
+%token S_realtobits S_bitstoreal S_rtoi S_itor S_shortrealtobits S_bitstoshortreal S_testargs S_valargs
 
 %token K_automatic K_cell K_use K_library K_config K_endconfig K_design K_liblist K_instance
 %token K_showcancelled K_noshowcancelled K_pulsestyle_onevent K_pulsestyle_ondetect
@@ -2241,6 +2241,36 @@ expr_primary
         Try {
           $$ = db_create_expression( NULL, $3, EXP_OP_SB2SR, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
           $$->value->suppl.part.data_type = VDATA_R32;
+        } Catch_anonymous {
+          expression_dealloc( $3, FALSE );
+          error_count++;
+          $$ = NULL;
+        }
+      } else {
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
+      }
+    }
+  | S_testargs '(' expression_systask_list ')'
+    {
+      if( ignore_mode == 0 ) {
+        Try {
+          $$ = db_create_expression( NULL, $3, EXP_OP_STESTARGS, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+        } Catch_anonymous {
+          expression_dealloc( $3, FALSE );
+          error_count++;
+          $$ = NULL;
+        }
+      } else {
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
+      }
+    }
+  | S_valargs '(' expression_systask_list ')'
+    {
+      if( ignore_mode == 0 ) {
+        Try {
+          $$ = db_create_expression( NULL, $3, EXP_OP_SVALARGS, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
         } Catch_anonymous {
           expression_dealloc( $3, FALSE );
           error_count++;

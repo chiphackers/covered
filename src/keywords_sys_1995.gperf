@@ -79,6 +79,7 @@ sreadmemh,      S_ignore
 stime,          S_ignore
 stop,           S_stop
 strobe,         S_allow
+test$plusargs   S_testargs
 time,           S_time
 timeformat,     S_allow
 write,          S_allow

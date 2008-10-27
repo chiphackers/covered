@@ -261,6 +261,8 @@ static bool expression_op_func__shortrealtobits( expression*, thread*, const sim
 static bool expression_op_func__bitstoshortreal( expression*, thread*, const sim_time* );
 static bool expression_op_func__itor( expression*, thread*, const sim_time* );
 static bool expression_op_func__rtoi( expression*, thread*, const sim_time* );
+static bool expression_op_func__test_plusargs( expression*, thread*, const sim_time* );
+static bool expression_op_func__value_plusargs( expression*, thread*, const sim_time* );
 
 static void expression_assign( expression*, expression*, int*, thread*, const sim_time*, bool eval_lhs );
 
@@ -385,8 +387,20 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",               
                                            {"SSR2B",          "$shortrealtobits", expression_op_func__shortrealtobits, {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
                                            {"SB2SR",          "$bitstoshortreal", expression_op_func__bitstoshortreal, {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
                                            {"SI2R",           "$itor",            expression_op_func__itor,            {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
-                                           {"SR2I",           "$rtoi",            expression_op_func__rtoi,            {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} }
+                                           {"SR2I",           "$rtoi",            expression_op_func__rtoi,            {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
+                                           {"STESTARGS",      "$test$plusargs",   expression_op_func__test_plusargs,   {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
+                                           {"SVALARGS",       "$value$plusargs",  expression_op_func__value_plusargs,  {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} }
  };
+
+/*!
+ Pointer to the head of the list of simulation plusargs.
+*/
+str_link* sim_plusargs_head = NULL;
+
+/*!
+ Pointer to the tail of the list of simulation plusargs.
+*/
+str_link* sim_plusargs_tail = NULL;
 
 
 /*!
@@ -3177,6 +3191,101 @@ bool expression_op_func__rtoi(
 /*!
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
+ Performs a $test$plusargs system task call.
+*/
+bool expression_op_func__test_plusargs(
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+               thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
+) { PROFILE(EXPRESSION_OP_FUNC__TEST_PLUSARGS);
+
+  bool retval = FALSE;
+
+  /* Only evaluate this expression if it has not been evaluated yet */
+  if( expr->exec_num == 0 ) {
+
+    expression* left     = expr->left;
+    uint64      u64;
+    char*       arg;
+    ulong       scratchl;
+    ulong       scratchh = 0;
+
+    /* Check to make sure that there is exactly one parameter */
+    if( (left == NULL) || (left->op != EXP_OP_SASSIGN) ) {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$test$plusargs called with incorrect number of parameters (file: %s, line: %d)", thr->funit->filename, expr->line );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      Throw 0;
+    }
+
+    /* Get argument to search for */
+    arg = vector_to_string( left->value, left->suppl.part.base, TRUE );
+
+    /* Scan the simulation argument list for matching values */
+    scratchl = (str_link_find( arg, sim_plusargs_head ) != NULL) ? 1 : 0;
+
+    /* Perform coverage and assignment */
+    retval = vector_set_coverage_and_assign_ulong( expr->value, &scratchl, &scratchh, 0, 0 );
+
+    /* Deallocate memory */
+    free_safe( arg, (strlen( arg ) + 1) );
+
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a $value$plusargs system task call.
+*/
+bool expression_op_func__value_plusargs(
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+               thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
+) { PROFILE(EXPRESSION_OP_FUNC__VALUE_PLUSARGS);
+
+  bool retval = FALSE;
+
+  /* Only evaluate this expression if it has not been evaluated yet */
+  if( expr->exec_num == 0 ) {
+
+    expression* left = expr->left;
+    uint64      u64;
+
+    /* Check to make sure that there is exactly two parameters */
+    if( (left == NULL) || (left->op != EXP_OP_PLIST) ) {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$test called with incorrect number of parameters (file: %s, line: %d)", thr->funit->filename, expr->line );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      Throw 0;
+    }
+
+    /* Check to make sure that the parameter is a real */
+    if( left->value->suppl.part.data_type != VDATA_R64 ) {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$rtoi called without real parameter (file: %s, line: %d)", thr->funit->filename, expr->line );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      Throw 0;
+    }
+
+    /* TBD */
+
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
  Performs an equality (==) comparison operation.
 */
 bool expression_op_func__eq(
@@ -5853,6 +5962,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.375  2008/10/26 04:41:28  phase1geo
+ Adding support for functions returning real and realtime values.  Added real7
+ diagnostic to verify this new support.
+
  Revision 1.374  2008/10/24 17:27:46  phase1geo
  Fixing issues with removing underscores from real numbers.
 

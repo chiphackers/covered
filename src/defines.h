@@ -880,6 +880,8 @@ typedef enum exp_op_type_e {
   EXP_OP_SB2SR,           /*!< 115:0x73.  Specifies the $bitstoshortreal system call */
   EXP_OP_SI2R,            /*!< 116:0x74.  Specifies the $itor system call */
   EXP_OP_SR2I,            /*!< 117:0x75.  Specifies the $rtoi system call */
+  EXP_OP_STESTARGS,       /*!< 118:0x76.  Specifies the $test$plusargs system call */
+  EXP_OP_SVALARGS,        /*!< 119:0x77.  Specifies the $value$plusargs system call */
   EXP_OP_NUM              /*!< The total number of defines for expression values */
 } exp_op_type;
 
@@ -3031,6 +3033,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.336  2008/10/26 04:41:28  phase1geo
+ Adding support for functions returning real and realtime values.  Added real7
+ diagnostic to verify this new support.
+
  Revision 1.335  2008/10/23 20:54:52  phase1geo
  Adding support for real parameters.  Added more real number diagnostics to
  regression suite.

@@ -1006,6 +1006,14 @@ void codegen_gen_expr(
           codegen_create_expr( code, code_depth, expr->line, "$bitstoshortreal( ", left_code, left_code_depth, expr->left, " )",
                                NULL, 0, NULL, NULL );
           break;
+        case EXP_OP_STESTARGS :
+          codegen_create_expr( code, code_depth, expr->line, "$test$plusargs( ", left_code, left_code_depth, expr->left, " )",
+                               NULL, 0, NULL, NULL );
+          break;
+        case EXP_OP_SVALARGS :
+          codegen_create_expr( code, code_depth, expr->line, "$value$plusargs( ", left_code, left_code_depth, expr->left, " )",
+                               NULL, 0, NULL, NULL );
+          break;
         default:  break;
       }
 
@@ -1031,6 +1039,10 @@ void codegen_gen_expr(
 
 /*
  $Log$
+ Revision 1.103  2008/10/18 06:14:20  phase1geo
+ Continuing to add support for real values and associated system function calls.
+ Updating regressions per these changes.  Checkpointing.
+
  Revision 1.102  2008/10/11 02:55:38  phase1geo
  Fixing bug 2158297.
 

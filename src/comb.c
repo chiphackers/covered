@@ -1245,6 +1245,8 @@ static void combination_underline_tree(
               case EXP_OP_SR2I         :  *size = l_size + 9;           strcpy( code_fmt, "       %s  "            );  break;
               case EXP_OP_SSR2B        :
               case EXP_OP_SB2SR        :  *size = l_size + 20;          strcpy( code_fmt, "                  %s  " );  break;
+              case EXP_OP_STESTARGS    :  *size = l_size + 18;          strcpy( code_fmt, "                %s  "   );  break;
+              case EXP_OP_SVALARGS     :  *size = l_size + 19;          strcpy( code_fmt, "                 %s  "  );  break;
               default              :
                 rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Unknown expression type in combination_underline_tree (%d)",
                                exp->op );
@@ -3126,6 +3128,9 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.215  2008/10/24 05:27:04  phase1geo
+ Adding several new diagnostics to verify real number support.
+
  Revision 1.214  2008/10/20 13:00:24  phase1geo
  More updates to support real numbers.  Updating regressions per recent changes.
  Checkpointing.
