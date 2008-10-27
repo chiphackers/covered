@@ -23,6 +23,7 @@
 #include <limits.h>
 
 #include "defines.h"
+#include "link.h"
 #include "profiler.h"
 
 #if ULONG_MAX > 4294967295UL
@@ -38,6 +39,16 @@
  Random seed value.
 */
 static long random_seed = 0;
+
+/*!
+ Pointer to the head of the list of simulation plusargs.
+*/
+static str_link* sim_plusargs_head = NULL;
+
+/*!
+ Pointer to the tail of the list of simulation plusargs.
+*/
+static str_link* sim_plusargs_tail = NULL;
 
 
 /*!
@@ -389,9 +400,68 @@ int sys_task_rtoi(
 
 }
 
+/*!
+ This function is called by the score command argument parser or the VPI command-line parser and
+ performs the task of scanning the command-line for plusargs, storing each value in the sim_plusargs
+ linked list.
+*/
+void sys_task_store_plusargs(
+  const char* args  /*!< Plusarg string from the score command or VPI code */
+) { PROFILE(SYS_TASK_STORE_PLUSARGS);
+
+  char         arg[4096];
+  unsigned int chars_read;
+
+  while( sscanf( args, "+%s%n", arg, &chars_read ) == 1 ) {
+    str_link_add( strdup_safe( arg ), &sim_plusargs_head, &sim_plusargs_tail );
+    args += chars_read;
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ \return Returns 1 if the specified plusarg was found; otherwise, returns 0.
+*/
+ulong sys_task_test_plusargs(
+  const char* arg  /*!< Plusarg to find */
+) { PROFILE(SYS_TASK_TEST_PLUSARG);
+
+  /* Scan the simulation argument list for matching values */
+  ulong retval = (str_link_find( arg, sim_plusargs_head ) != NULL) ? 1 : 0;
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \brief Parses command-line for value plusargs, assigns the specified vector the found value and
+        returns 1 (if found).
+*/  
+ulong sys_task_value_plusargs(
+  const char* arg,  /*!< Plusarg to find */
+  vector*     vec   /*!< Pointer to vector to populate with found value */
+) { PROFILE(SYS_TASK_VALUE_PLUSARGS);
+
+  ulong retval;
+
+  PROFILE_END;
+
+  return( retval );
+
+}
 
 /*
  $Log$
+ Revision 1.6  2008/10/16 23:11:50  phase1geo
+ More work on support for real numbers.  I believe that all of the code now
+ exists in vector.c to support them.  Still need to do work in expr.c.  Added
+ two new tests for real numbers to begin verifying their support (they both do
+ not currently pass, however).  Checkpointing.
+
  Revision 1.5  2008/10/15 22:15:19  phase1geo
  More updates to support real values.  Still a lot of work to go here.
 

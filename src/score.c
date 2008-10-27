@@ -45,6 +45,7 @@
 #include "perf.h"
 #include "score.h"
 #include "search.h"
+#include "sys_tasks.h"
 #include "info.h"
 #include "util.h"
 #include "vector.h"
@@ -1094,7 +1095,13 @@ static void score_parse_args(
 
     } else if( strncmp( "-simargs", argv[i], 8 ) == 0 ) {
 
-      /* TBD - Populate the sim_plusargs_head/tail list with the individual plusargs specified to this option */
+      if( check_option_value( argc, argv, i ) ) {
+        i++;
+        printf( "simargs: %s\n", argv[i] );
+        sys_task_store_plusargs( argv[i] );
+      } else {
+        Throw 0;
+      }
 
     } else {
 
@@ -1226,6 +1233,10 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.142  2008/10/27 05:00:32  phase1geo
+ Starting to add support for $test$plusargs and $value$plusargs system function
+ calls.  More work to do here.  Checkpointing.
+
  Revision 1.141  2008/10/23 23:00:09  phase1geo
  Working on more real number diagnostics.  Fixes for negative real number parsing
  from command line.  Also added an error message when the value specified for the

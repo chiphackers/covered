@@ -392,16 +392,6 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",               
                                            {"SVALARGS",       "$value$plusargs",  expression_op_func__value_plusargs,  {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} }
  };
 
-/*!
- Pointer to the head of the list of simulation plusargs.
-*/
-str_link* sim_plusargs_head = NULL;
-
-/*!
- Pointer to the tail of the list of simulation plusargs.
-*/
-str_link* sim_plusargs_tail = NULL;
-
 
 /*!
  Allocates the appropriate amount of memory for the temporary vectors for the
@@ -3222,7 +3212,7 @@ bool expression_op_func__test_plusargs(
     arg = vector_to_string( left->value, left->suppl.part.base, TRUE );
 
     /* Scan the simulation argument list for matching values */
-    scratchl = (str_link_find( arg, sim_plusargs_head ) != NULL) ? 1 : 0;
+    scratchl = sys_task_test_plusargs( arg );
 
     /* Perform coverage and assignment */
     retval = vector_set_coverage_and_assign_ulong( expr->value, &scratchl, &scratchh, 0, 0 );
@@ -5962,6 +5952,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.376  2008/10/27 05:00:32  phase1geo
+ Starting to add support for $test$plusargs and $value$plusargs system function
+ calls.  More work to do here.  Checkpointing.
+
  Revision 1.375  2008/10/26 04:41:28  phase1geo
  Adding support for functions returning real and realtime values.  Added real7
  diagnostic to verify this new support.
