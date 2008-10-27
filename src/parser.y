@@ -6275,6 +6275,11 @@ range
 
 range_or_type_opt
   : range      
+    {
+      if( ignore_mode == 0 ) {
+        curr_sig_type = SSUPPL_TYPE_IMPLICIT;
+      }
+    }
   | K_integer
     {
       if( ignore_mode == 0 ) {

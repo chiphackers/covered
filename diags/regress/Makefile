@@ -230,7 +230,8 @@ VCSONLYDIAGS1 = afunc1           afunc2           always_comb1     always_comb2 
                 static_func2.2   static_func2.3   static_func3     timescale4       timescale4.1 \
                 timescale4.9     timescale4.10    timescale4.11    timescale4.12    timescale4.13 \
                 timescale4.14    timescale4.16    trireg           urandom1.2       urandom1.3 \
-                urandom_range1   urandom_range2   value_plusargs1
+                urandom_range1   urandom_range2   value_plusargs1  value_plusargs2  value_plusargs3 \
+                value_plusargs4  value_plusargs5
 # null_stmt1.4  real4            timescale4.15
 VCSONLYDIAGS2 = 
 VCSONLYDIAGS3 = 

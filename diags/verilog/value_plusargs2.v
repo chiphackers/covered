@@ -1,8 +1,8 @@
 /*
- Name:        value_plusargs1.v
+ Name:        value_plusargs2.v
  Author:      Trevor Williams  (phase1geo@gmail.com)
  Date:        10/27/2008
- Purpose:     Verifies that the $value$plusargs system function call works for binary numbers.
+ Purpose:     Verifies that the $value$plusargs system function call works for octal numbers.
 */
 
 module main;
@@ -21,19 +21,19 @@ initial begin
 	y = 32'h0;
 	z = 1'b0;
 	#5;
-	if( $value$plusargs( "optionB=%b", x ) )
+	if( $value$plusargs( "optionO=%o", x ) )
           a = 1'b1;
-	if( $value$plusargs( "optionB=%b", y ) )
+	if( $value$plusargs( "optionO=%o", y ) )
 	  b = 1'b1;
-        else if( $value$plusargs( "optionb=%b", z ) )
+        else if( $value$plusargs( "optiono=%o", z ) )
           c = 1'b1;
-	if( $value$plusargs( "optionb=%b", z ) )
+	if( $value$plusargs( "optiono=%o", z ) )
 	  d = 1'b1;
 end
 
 initial begin
 `ifdef DUMP
-        $dumpfile( "value_plusargs1.vcd" );
+        $dumpfile( "value_plusargs2.vcd" );
         $dumpvars( 0, main );
 `endif
         #10;

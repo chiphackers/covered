@@ -446,15 +446,13 @@ ulong sys_task_value_plusargs(
   str_link* strl;
   char*     ptr;
 
-  printf( "In sys_task_value_plusargs, arg: %s\n", arg );
-
   /* Find the percent character in the argument string */
   ptr = strchr( arg, '%' );
   assert( ptr != NULL );
 
   /* See if the plusarg even exists on the command-line */
   strl = sim_plusargs_head;
-  while( (strl != NULL) && printf( "arg: %s, strl->str: %s, chars: %d\n", arg, strl->str, (ptr - arg) ) && (strncmp( arg, strl->str, (ptr - arg) ) != 0) ) {
+  while( (strl != NULL) && (strncmp( arg, strl->str, (ptr - arg) ) != 0) ) {
     strl = strl->next;
   }
 
@@ -472,8 +470,6 @@ ulong sys_task_value_plusargs(
       case 's' :  vector_from_string_fixed( vec, (strl->str + (ptr - arg)) );  break;
       default  :  assert( 0 );  break;
     }
-
-    printf( "HERE!  String to convert: %s, type: %c\n", (strl->str + (ptr - arg)), *(ptr + 1) );
 
     /* Specify that we have found and converted the value */
     retval = 1;
@@ -501,6 +497,10 @@ void sys_task_dealloc() { PROFILE(SYS_TASK_DEALLOC);
 
 /*
  $Log$
+ Revision 1.9  2008/10/27 21:14:02  phase1geo
+ First pass at getting the $value$plusargs system function call to work.  More
+ work to do here.  Checkpointing.
+
  Revision 1.8  2008/10/27 18:13:19  phase1geo
  Finished work to get $test$plusargs to work properly.  Added test_plusargs1
  diagnostic to regression suite to verify this functionality.

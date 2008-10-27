@@ -3268,10 +3268,12 @@ bool expression_op_func__value_plusargs(
     arg = vector_to_string( left->left->value, QSTRING, TRUE );
 
     /* Scan the simulation argument list for matching values */
-    scratchl = sys_task_value_plusargs( arg, left->right->value );
+    if( (scratchl = sys_task_value_plusargs( arg, left->right->value )) == 1 ) {
 
-    /* Assign the value to the proper signal and propagate the signal change */
-    expression_assign( left->right->right, left->right, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
+      /* Assign the value to the proper signal and propagate the signal change, if an option match occurred */
+      expression_assign( left->right->right, left->right, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
+
+    }
 
     /* Perform coverage and assignment */
     retval = vector_set_coverage_and_assign_ulong( expr->value, &scratchl, &scratchh, 0, 0 );
@@ -5966,6 +5968,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.379  2008/10/27 21:14:02  phase1geo
+ First pass at getting the $value$plusargs system function call to work.  More
+ work to do here.  Checkpointing.
+
  Revision 1.378  2008/10/27 18:13:19  phase1geo
  Finished work to get $test$plusargs to work properly.  Added test_plusargs1
  diagnostic to regression suite to verify this functionality.
