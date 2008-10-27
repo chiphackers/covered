@@ -77,8 +77,8 @@ int sys_task_rtoi(
 );
 
 /*! \brief Scans command-line for plusargs */
-void sys_task_store_plusargs(
-  const char* args
+void sys_task_store_plusarg(
+  const char* arg
 );
 
 /*! \brief Returns 1 if the specified plusarg was found; otherwise, returns 0. */
@@ -95,8 +95,14 @@ ulong sys_task_value_plusargs(
   vector*     vec
 );
 
+/*! \brief Deallocates any memory allocated within this file. */
+void sys_task_dealloc();
+
 /*
  $Log$
+ Revision 1.7  2008/10/27 13:20:55  phase1geo
+ More work on $test$plusargs and $value$plusargs support.  Checkpointing.
+
  Revision 1.6  2008/10/16 23:11:50  phase1geo
  More work on support for real numbers.  I believe that all of the code now
  exists in vector.c to support them.  Still need to do work in expr.c.  Added

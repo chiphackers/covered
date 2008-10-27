@@ -636,37 +636,39 @@ expression* expression_create(
 
       expression_create_value( new_expr, 32, data );
 
-    } else if( (op == EXP_OP_LT   )   ||
-               (op == EXP_OP_GT   )   ||
-               (op == EXP_OP_EQ   )   ||
-               (op == EXP_OP_CEQ  )   ||
-               (op == EXP_OP_LE   )   ||
-               (op == EXP_OP_GE   )   ||
-               (op == EXP_OP_NE   )   ||
-               (op == EXP_OP_CNE  )   ||
-               (op == EXP_OP_LOR  )   ||
-               (op == EXP_OP_LAND )   ||
-               (op == EXP_OP_UAND )   ||
-               (op == EXP_OP_UNOT )   ||
-               (op == EXP_OP_UOR  )   ||
-               (op == EXP_OP_UXOR )   ||
-               (op == EXP_OP_UNAND)   ||
-               (op == EXP_OP_UNOR )   ||
-               (op == EXP_OP_UNXOR)   ||
-               (op == EXP_OP_EOR)     ||
-               (op == EXP_OP_NEDGE)   ||
-               (op == EXP_OP_PEDGE)   ||
-               (op == EXP_OP_AEDGE)   ||
-               (op == EXP_OP_CASE)    ||
-               (op == EXP_OP_CASEX)   ||
-               (op == EXP_OP_CASEZ)   ||
-               (op == EXP_OP_DEFAULT) ||
-               (op == EXP_OP_REPEAT)  ||
-               (op == EXP_OP_RPT_DLY) ||
-               (op == EXP_OP_WAIT)    ||
-               (op == EXP_OP_SFINISH) ||
-               (op == EXP_OP_SSTOP)   ||
-               (op == EXP_OP_SSRANDOM) ) {
+    } else if( (op == EXP_OP_LT)        ||
+               (op == EXP_OP_GT)        ||
+               (op == EXP_OP_EQ)        ||
+               (op == EXP_OP_CEQ)       ||
+               (op == EXP_OP_LE)        ||
+               (op == EXP_OP_GE)        ||
+               (op == EXP_OP_NE)        ||
+               (op == EXP_OP_CNE)       ||
+               (op == EXP_OP_LOR)       ||
+               (op == EXP_OP_LAND)      ||
+               (op == EXP_OP_UAND)      ||
+               (op == EXP_OP_UNOT)      ||
+               (op == EXP_OP_UOR)       ||
+               (op == EXP_OP_UXOR)      ||
+               (op == EXP_OP_UNAND)     ||
+               (op == EXP_OP_UNOR)      ||
+               (op == EXP_OP_UNXOR)     ||
+               (op == EXP_OP_EOR)       ||
+               (op == EXP_OP_NEDGE)     ||
+               (op == EXP_OP_PEDGE)     ||
+               (op == EXP_OP_AEDGE)     ||
+               (op == EXP_OP_CASE)      ||
+               (op == EXP_OP_CASEX)     ||
+               (op == EXP_OP_CASEZ)     ||
+               (op == EXP_OP_DEFAULT)   ||
+               (op == EXP_OP_REPEAT)    ||
+               (op == EXP_OP_RPT_DLY)   ||
+               (op == EXP_OP_WAIT)      ||
+               (op == EXP_OP_SFINISH)   ||
+               (op == EXP_OP_SSTOP)     ||
+               (op == EXP_OP_SSRANDOM)  ||
+               (op == EXP_OP_STESTARGS) ||
+               (op == EXP_OP_SVALARGS) ) {
   
       /* If this expression will evaluate to a single bit, create vector now */
       expression_create_value( new_expr, 1, data );
@@ -934,37 +936,40 @@ void expression_resize(
         break;
 
       /* These operations should always be set to a width 1 */
-      case EXP_OP_LT      :
-      case EXP_OP_GT      :
-      case EXP_OP_EQ      :
-      case EXP_OP_CEQ     :
-      case EXP_OP_LE      :
-      case EXP_OP_GE      :
-      case EXP_OP_NE      :
-      case EXP_OP_CNE     :
-      case EXP_OP_LOR     :
-      case EXP_OP_LAND    :
-      case EXP_OP_UAND    :
-      case EXP_OP_UNOT    :
-      case EXP_OP_UOR     :
-      case EXP_OP_UXOR    :
-      case EXP_OP_UNAND   :
-      case EXP_OP_UNOR    :
-      case EXP_OP_UNXOR   :
-      case EXP_OP_EOR     :
-      case EXP_OP_CASE    :
-      case EXP_OP_CASEX   :
-      case EXP_OP_CASEZ   :
-      case EXP_OP_DEFAULT :
-      case EXP_OP_REPEAT  :
-      case EXP_OP_RPT_DLY :
-      case EXP_OP_WAIT    :
-      case EXP_OP_SFINISH :
-      case EXP_OP_SSTOP   :
-      case EXP_OP_NEDGE   :
-      case EXP_OP_PEDGE   :
-      case EXP_OP_AEDGE   :
-      case EXP_OP_PLIST   :
+      case EXP_OP_LT        :
+      case EXP_OP_GT        :
+      case EXP_OP_EQ        :
+      case EXP_OP_CEQ       :
+      case EXP_OP_LE        :
+      case EXP_OP_GE        :
+      case EXP_OP_NE        :
+      case EXP_OP_CNE       :
+      case EXP_OP_LOR       :
+      case EXP_OP_LAND      :
+      case EXP_OP_UAND      :
+      case EXP_OP_UNOT      :
+      case EXP_OP_UOR       :
+      case EXP_OP_UXOR      :
+      case EXP_OP_UNAND     :
+      case EXP_OP_UNOR      :
+      case EXP_OP_UNXOR     :
+      case EXP_OP_EOR       :
+      case EXP_OP_CASE      :
+      case EXP_OP_CASEX     :
+      case EXP_OP_CASEZ     :
+      case EXP_OP_DEFAULT   :
+      case EXP_OP_REPEAT    :
+      case EXP_OP_RPT_DLY   :
+      case EXP_OP_WAIT      :
+      case EXP_OP_SFINISH   :
+      case EXP_OP_SSTOP     :
+      case EXP_OP_NEDGE     :
+      case EXP_OP_PEDGE     :
+      case EXP_OP_AEDGE     :
+      case EXP_OP_PLIST     :
+      case EXP_OP_SSRANDOM  :
+      case EXP_OP_STESTARGS :
+      case EXP_OP_SVALARGS  : 
         if( (expr->value->width != 1) || (expr->value->value.ul == NULL) ) {
           assert( expr->value->value.ul == NULL );
           expression_create_value( expr, 1, alloc );
@@ -3209,7 +3214,7 @@ bool expression_op_func__test_plusargs(
     }
 
     /* Get argument to search for */
-    arg = vector_to_string( left->value, left->suppl.part.base, TRUE );
+    arg = vector_to_string( left->value, QSTRING, TRUE );
 
     /* Scan the simulation argument list for matching values */
     scratchl = sys_task_test_plusargs( arg );
@@ -5952,6 +5957,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.377  2008/10/27 13:20:55  phase1geo
+ More work on $test$plusargs and $value$plusargs support.  Checkpointing.
+
  Revision 1.376  2008/10/27 05:00:32  phase1geo
  Starting to add support for $test$plusargs and $value$plusargs system function
  calls.  More work to do here.  Checkpointing.

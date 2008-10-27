@@ -46,6 +46,8 @@ CHK_CODE      = 0
 endif
 endif
 
+SIM_PLUSARGS = +option1 +option2
+
 IVERILOG       = iverilog
 IVERILOG_FLAGS = -cconfig_file -y ./lib -I./include -DRUNTEST
 ifdef VPI
@@ -53,7 +55,7 @@ IVERILOG_FLAGS += -m ../../lib/covered.vpi
 else
 IVERILOG_FLAGS += -DDUMP
 endif
-IVERILOG_EXEC  = a.out
+IVERILOG_EXEC  = a.out $(SIM_PLUSARGS)
 IVERILOG_INTER = vvp
 
 VCS       = vcs
@@ -66,10 +68,10 @@ endif
 else
 VCS_FLAGS += +define+DUMP
 endif
-VCS_EXEC  = ./simv
+VCS_EXEC  = ./simv $(SIM_PLUSARGS)
 
 CVER      = cver
-CVER_FLAGS = -q +libext+.v+.vlib+ -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15
+CVER_FLAGS = -q +libext+.v+.vlib+ -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 $(SIM_PLUSARGS)
 ifdef VPI
 CVER_FLAGS += +loadvpi=../../lib/covered.cver.so:vpi_compat_bootstrap
 else
@@ -123,16 +125,16 @@ ifdef VPI
 	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
 ifdef USE_CVER
 	@if test "$(COVERED_GFLAG)" = "-D"; then \
-		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd +covered_debug; \
+		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd +covered_debug $(SIM_PLUSARGS); \
 	else \
-		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd; \
+		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd $(SIM_PLUSARGS); \
 	fi
 else
 	$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v
 	@if test "$(COVERED_GFLAG)" = "-D"; then \
-		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd +covered_debug; \
+		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd +covered_debug $(SIM_PLUSARGS); \
 	else \
-		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd; \
+		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd $(SIM_PLUSARGS); \
 	fi
 endif
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
@@ -168,16 +170,16 @@ ifdef VPI
 	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
 ifdef USE_CVER
 	@if test "$(COVERED_GFLAG)" = "-D"; then \
-		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd +covered_debug; \
+		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd +covered_debug $(SIM_PLUSARGS); \
 	else \
-		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd; \
+		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd $(SIM_PLUSARGS); \
 	fi
 else
 	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v
 	@if test "$(COVERED_GFLAG)" = "-D"; then \
-		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd +covered_debug; \
+		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd +covered_debug $(SIM_PLUSARGS); \
 	else \
-		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd; \
+		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd $(SIM_PLUSARGS); \
 	fi
 endif
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -b -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
@@ -213,16 +215,16 @@ ifdef VPI
 	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
 ifdef USE_CVER
 	@if test "$(COVERED_GFLAG)" = "-D"; then \
-		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd +covered_debug; \
+		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd +covered_debug $(SIM_PLUSARGS); \
 	else \
-		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd; \
+		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd $(SIM_PLUSARGS); \
 	fi
 else
 	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v
 	@if test "$(COVERED_GFLAG)" = "-D"; then \
-		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd +covered_debug; \
+		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd +covered_debug $(SIM_PLUSARGS); \
 	else \
-		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd; \
+		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd $(SIM_PLUSARGS); \
 	fi
 endif
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfamr -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
@@ -257,16 +259,16 @@ ifdef VPI
 	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
 ifdef USE_CVER
 	@if test "$(COVERED_GFLAG)" = "-D"; then \
-		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd +covered_debug; \
+		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd +covered_debug $(SIM_PLUSARGS); \
 	else \
-		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd; \
+		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd $(SIM_PLUSARGS); \
 	fi
 else
 	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v
 	@if test "$(COVERED_GFLAG)" = "-D"; then \
-		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd +covered_debug; \
+		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd +covered_debug $(SIM_PLUSARGS); \
 	else \
-		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd; \
+		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd $(SIM_PLUSARGS); \
 	fi
 endif
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)

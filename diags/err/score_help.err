@@ -82,11 +82,6 @@ Usage:  covered score (-h | -t <top-level_module_name> [-vcd <dumpfile> | -lxt <
                                      coverage consideration.  See User's Guide for more information on what type of code
                                      can lead to coverage inaccuracies.
       -Wignore                     Suppress the output of warnings during code parsing and simulation.
-      -simargs <sim_args>          For VCD/LXT scoring, allows the user to specify the simulation arguments that were passed
-                                     to the command-line when running the simulation.  This allows blocks containing the
-                                     $test$plusargs and $value$plusargs system function calls to be included in coverage.
-                                     If there is more than one simulation argument, surround the arguments with double
-                                     quotation marks.
 
       +libext+.<extension>(+.<extension>)+
                                    Extensions of Verilog files to allow in scoring
@@ -106,4 +101,9 @@ Usage:  covered score (-h | -t <top-level_module_name> [-vcd <dumpfile> | -lxt <
       modules beneath this module in the hierarchy will also be scored
       unless these modules are explicitly stated to not be scored using
       the -e flag.
+
+    Note:
+      Any plusargs that need to be passed to the score command can be added anywhere in the score command options.
+      Example:
+        covered score -t main -v top.v -vcd top.vcd +plusarg_option1 +plusarg_option2=13 -o top.cdd
 

@@ -35,6 +35,7 @@
 #include "obfuscate.h"
 #include "profiler.h"
 #include "symtable.h"
+#include "sys_tasks.h"
 #include "util.h"
 
 struct sym_value_s;
@@ -339,6 +340,7 @@ PLI_INT32 covered_end_of_sim( p_cb_data cb ) { PROFILE(COVERED_END_OF_SIM);
   }
   symtable_dealloc( vcd_symtab );
   sim_dealloc();
+  sys_task_dealloc();
   db_close();
   if( timestep_tab != NULL ) {
     free_safe( timestep_tab, (sizeof( symtable*) * vcd_symtab_size) );
@@ -780,6 +782,7 @@ PLI_INT32 covered_sim_calltf( char* name ) {
         profiler_set_mode( TRUE );
         profiler_set_filename( PROFILING_OUTPUT_NAME );
       }
+      sys_task_store_plusarg( info.argv[i] + 1 );
     }
   }
 

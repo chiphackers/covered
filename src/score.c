@@ -236,11 +236,6 @@ static void score_usage() {
   printf( "                                     coverage consideration.  See User's Guide for more information on what type of code\n" );
   printf( "                                     can lead to coverage inaccuracies.\n" );
   printf( "      -Wignore                     Suppress the output of warnings during code parsing and simulation.\n" );
-  printf( "      -simargs <sim_args>          For VCD/LXT scoring, allows the user to specify the simulation arguments that were passed\n" );
-  printf( "                                     to the command-line when running the simulation.  This allows blocks containing the\n" );
-  printf( "                                     $test$plusargs and $value$plusargs system function calls to be included in coverage.\n" );
-  printf( "                                     If there is more than one simulation argument, surround the arguments with double\n" );
-  printf( "                                     quotation marks.\n" );
   printf( "\n" );
   printf( "      +libext+.<extension>(+.<extension>)+\n" );
   printf( "                                   Extensions of Verilog files to allow in scoring\n" );
@@ -260,6 +255,11 @@ static void score_usage() {
   printf( "      modules beneath this module in the hierarchy will also be scored\n" );
   printf( "      unless these modules are explicitly stated to not be scored using\n" );
   printf( "      the -e flag.\n" );
+  printf( "\n" );
+  printf( "    Note:\n" );
+  printf( "      Any plusargs that need to be passed to the score command can be added anywhere in the score command options.\n" );
+  printf( "      Example:\n" );
+  printf( "        covered score -t main -v top.v -vcd top.vcd +plusarg_option1 +plusarg_option2=13 -o top.cdd\n" );
   printf( "\n" );
 
 }
@@ -1093,15 +1093,11 @@ static void score_parse_args(
 
       warnings_suppressed = TRUE;
 
-    } else if( strncmp( "-simargs", argv[i], 8 ) == 0 ) {
+    /* Any other option that is a plusarg will be added to the list of simulation plusargs */
+    } else if( strncmp( "+", argv[i], 1 ) == 0 ) {
 
-      if( check_option_value( argc, argv, i ) ) {
-        i++;
-        printf( "simargs: %s\n", argv[i] );
-        sys_task_store_plusargs( argv[i] );
-      } else {
-        Throw 0;
-      }
+      sys_task_store_plusarg( argv[i] + 1 );
+      score_add_arg( argv[i] );
 
     } else {
 
@@ -1210,6 +1206,9 @@ void command_score(
   /* Deallocate memory for defparams */
   defparam_dealloc();
 
+  /* Deallocate memory for system tasks */
+  sys_task_dealloc();
+
   /* Deallocate generation module string list */
   str_link_delete_list( gen_mod_head );
 
@@ -1233,6 +1232,9 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.143  2008/10/27 13:20:55  phase1geo
+ More work on $test$plusargs and $value$plusargs support.  Checkpointing.
+
  Revision 1.142  2008/10/27 05:00:32  phase1geo
  Starting to add support for $test$plusargs and $value$plusargs system function
  calls.  More work to do here.  Checkpointing.

@@ -402,20 +402,14 @@ int sys_task_rtoi(
 
 /*!
  This function is called by the score command argument parser or the VPI command-line parser and
- performs the task of scanning the command-line for plusargs, storing each value in the sim_plusargs
- linked list.
+ performs the task of adding plusarg options from the score command or VPI for later usage during
+ simulation.
 */
-void sys_task_store_plusargs(
-  const char* args  /*!< Plusarg string from the score command or VPI code */
+void sys_task_store_plusarg(
+  const char* arg  /*!< Plusarg from the score command or VPI code minus the initial '+' character */
 ) { PROFILE(SYS_TASK_STORE_PLUSARGS);
 
-  char         arg[4096];
-  unsigned int chars_read;
-
-  while( sscanf( args, "+%s%n", arg, &chars_read ) == 1 ) {
-    str_link_add( strdup_safe( arg ), &sim_plusargs_head, &sim_plusargs_tail );
-    args += chars_read;
-  }
+  str_link_add( strdup_safe( arg ), &sim_plusargs_head, &sim_plusargs_tail );
 
   PROFILE_END;
 
@@ -446,7 +440,7 @@ ulong sys_task_value_plusargs(
   vector*     vec   /*!< Pointer to vector to populate with found value */
 ) { PROFILE(SYS_TASK_VALUE_PLUSARGS);
 
-  ulong retval;
+  ulong retval = 0;
 
   PROFILE_END;
 
@@ -454,8 +448,24 @@ ulong sys_task_value_plusargs(
 
 }
 
+/*!
+ Deallocates all memory allocated by any of the above functions.
+*/
+void sys_task_dealloc() { PROFILE(SYS_TASK_DEALLOC);
+
+  /* Delete simulation plusarg list */
+  str_link_delete_list( sim_plusargs_head );
+
+  PROFILE_END;
+
+}
+
+
 /*
  $Log$
+ Revision 1.7  2008/10/27 13:20:55  phase1geo
+ More work on $test$plusargs and $value$plusargs support.  Checkpointing.
+
  Revision 1.6  2008/10/16 23:11:50  phase1geo
  More work on support for real numbers.  I believe that all of the code now
  exists in vector.c to support them.  Still need to do work in expr.c.  Added

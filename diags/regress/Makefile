@@ -39,31 +39,29 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 casex1.4        casex2          casez1          casez1.1        casez1.2 \
                 casez1.3        casez1.4        casez2          casez3          casez4 \
                 ceq1            cne1            compx1          compx1.1        compx1.2 \
-                compx1.3        concat1 \
-                concat2         concat3         concat4.1       concat4.2       concat5 \
-                concat6         concat7         cond1           cond2           cond3 \
-                cond3.1         cond3.2         cond3.3         delay1          delay2 \
-                define1         define1.1       define1.2       define2         define2.1 \
-                define4         define5         define6         define6.1       disable1 \
-                disable1.1      disable2        disable2.1      disable3        display1 \
-                div1 \
-                dly_assign1     endian1         endian2         endian3         event1 \
-                event1.1        exclude1        exclude2        exclude3        exclude4 \
-                exclude6        exclude6.1      exclude7        exclude7.1      exclude7.2 \
-                exclude8        exclude8.1      exclude9        exclude9.1      exclude9.2 \
-                exclude9.3      exclude9.4      exclude9.5      exclude9.6      exclude9.7 \
-                exclude9.8      exclude9.9      exclude10       exclude10.1     exclude10.2 \
-                exclude10.3     exclude10.3.1   exclude10.3.2   exclude10.3.3   exclude10.4 \
-                exclude11       exclude12       exclude12.1     exclude12.2     exclude12.3 \
-                exclude12.4     exclude12.6     exclude13       exclude14       expand1 \
-                expand2         expand3         expand4         expand4.1       expand4.2 \
-                expand4.3       expand4.4       fdisplay1       finish1 \
-                for1            for2            forever1        fork1           fork2 \
-                fsm3            fsm4            fsm4.1          fsm5            fsm5.1 \
-                fsm5.2          fsm5.3          fsm11           fstrobe1        func1 \
-                func2           func5           fwrite1         gate1 \
-                hier1           hier3.1         hier3.2         hier3.3         hier3.4 \
-                hier4           if1             ifdef1          ifdef1.2 \
+                compx1.3        concat1         concat2         concat3         concat4.1 \
+                concat4.2       concat5         concat6         concat7         cond1 \
+                cond2           cond3           cond3.1         cond3.2         cond3.3 \
+                delay1          delay2          define1         define1.1       define1.2 \
+                define2         define2.1       define4         define5         define6 \
+                define6.1       disable1        disable1.1      disable2        disable2.1 \
+                disable3        display1        div1            dly_assign1     endian1 \
+                endian2         endian3         event1          event1.1        exclude1 \
+                exclude2        exclude3        exclude4        exclude6        exclude6.1 \
+                exclude7        exclude7.1      exclude7.2      exclude8        exclude8.1 \
+                exclude9        exclude9.1      exclude9.2      exclude9.3      exclude9.4 \
+                exclude9.5      exclude9.6      exclude9.7      exclude9.8      exclude9.9 \
+                exclude10       exclude10.1     exclude10.2     exclude10.3     exclude10.3.1 \
+                exclude10.3.2   exclude10.3.3   exclude10.4     exclude11       exclude12 \
+                exclude12.1     exclude12.2     exclude12.3     exclude12.4     exclude12.6 \
+                exclude13       exclude14       expand1         expand2         expand3 \
+                expand4         expand4.1       expand4.2       expand4.3       expand4.4 \
+                fdisplay1       finish1         for1            for2            forever1 \
+                fork1           fork2           fsm3            fsm4            fsm4.1 \
+                fsm5            fsm5.1          fsm5.2          fsm5.3          fsm11 \
+                fstrobe1        func1           func2           func5           fwrite1 \
+                gate1           hier1           hier3.1         hier3.2         hier3.3 \
+                hier3.4         hier4           if1             ifdef1          ifdef1.2 \
                 ifdef2.1        ifdef2.2        ifdef2.3        ifelse1         implicit2.1 \
                 include1        include1.1      include2        initial1        instance1 \
                 instance1.1     instance1.2     instance2       instance3       instance4 \
@@ -100,30 +98,30 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 real5.3         real5.4         real5.5         real5.6         real5.7 \
                 real5.8         real5.9         real5.10        real6           real6.1 \
                 real6.2         real6.3         real6.4         real6.5         real6.6 \
-                real6.7         real6.8         real6.9         real7           repeat1         repeat2         repeat3         report1 \
-                report2         report3         report3.1       report4.2       report5 \
-                report6         report7         report7.1       report8         rshift1 \
-                rshift1.1       rshift1.2       rshift1.3       rshift2         rshift2.1 \
-                rshift2.2       rshift2.3       rshift3         rshift3.1       rshift4 \
-                rshift4.1       rshift4.2       rshift5         sbit_sel1       sbit_sel1.1 \
-                sbit_sel2       sbit_sel3       sbit_sel3.1     sbit_sel4 \
-                sbit_sel4.1     sbit_sel4.2     sbit_sel4.3     score_env1      score_ts1 \
-                signed1         signed3         signed3.1       signed3.2       signed3.3 \
-                signed3.4       signed3.5       signed3.6       signed4         signed4.2 \
-                slist1          slist1.1        slist1.2        slist1.3        slist2 \
-                slist3          slist3.2        slist4          static1         string1 \
-                string2         string2.1       strobe1         supply0         supply1         task1 \
-                task1.1         task2           task2.1         task2.2         task2.3 \
-                task3           task3.1         task4           task4.1         task6 \
-                time1           time1.1         time2           timeformat1     timescale1 \
-                timescale1.6    timescale1.9    timescale1.12   timescale1.15 \
-                timescale1.16   timescale1.17   timescale1.18   timescale2      timescale2.2 \
-                timescale2.3    timescale2.4    timescale2.5    timescale2.8    toggle \
-                toggle2         toggle2.1       toggle2.2       toggle2.3       tri \
-                tri0            tri1            triand          trigger1        trior \
-                unary2          unary3          version1        version1.1      wait1 \
-                wait1.1         wait2           wand            while1          while1.1 \
-                wor             write1
+                real6.7         real6.8         real6.9         real7           repeat1 \
+                repeat2         repeat3         report1         report2         report3 \
+                report3.1       report4.2       report5         report6         report7 \
+                report7.1       report8         rshift1         rshift1.1       rshift1.2 \
+                rshift1.3       rshift2         rshift2.1       rshift2.2       rshift2.3 \
+                rshift3         rshift3.1       rshift4         rshift4.1       rshift4.2 \
+                rshift5         sbit_sel1       sbit_sel1.1     sbit_sel2       sbit_sel3 \
+                sbit_sel3.1     sbit_sel4       sbit_sel4.1     sbit_sel4.2     sbit_sel4.3 \
+                score_env1      score_ts1       signed1         signed3         signed3.1 \
+                signed3.2       signed3.3       signed3.4       signed3.5       signed3.6 \
+                signed4         signed4.2       slist1          slist1.1        slist1.2 \
+                slist1.3        slist2          slist3          slist3.2        slist4 \
+                static1         string1         string2         string2.1       strobe1 \
+                supply0         supply1         task1           task1.1         task2 \
+                task2.1         task2.2         task2.3         task3           task3.1 \
+                task4           task4.1         task6           test_plusargs1  time1 \
+                time1.1         time2           timeformat1     timescale1      timescale1.6 \
+                timescale1.9    timescale1.12   timescale1.15   timescale1.16   timescale1.17 \
+                timescale1.18   timescale2      timescale2.2    timescale2.3    timescale2.4 \
+                timescale2.5    timescale2.8    toggle          toggle2         toggle2.1 \
+                toggle2.2       toggle2.3       tri             tri0            tri1 \
+                triand          trigger1        trior           unary2          unary3 \
+                version1        version1.1      wait1           wait1.1         wait2 \
+                wand            while1          while1.1        wor             write1
 DIAGS2        = delay1.1
 DIAGS3        = delay1.2
 DIAGS4        = delay1.3
@@ -173,24 +171,23 @@ NOSIMLIST     = gen1            gen1.1          gen1.3          gen1.4          
 NOSIMERRLIST  = comment1        enum2           err4            err4.1 \
                 expand5         for7            for7.1          func3           func3.1 \
                 func3.2         func3.3         func3.4         func3.5         func3.6 \
-                gen1.2          gen2            gen3 \
-                gen4            gen5            gen6            gen7            gen8 \
-                gen9            gen10           gen11           gen12           gen13 \
-                gen14           gen15           gen16           gen17           gen18 \
-                gen19.2         gen20.2         gen21.2         gen22.2         gen23.2 \
-                gen24.2         gen25           gen25.1         gen26           gen26.1 \
-                gen27           gen27.1         gen28           gen28.1         gen29 \
-                gen29.1         gen30           gen30.1         gen31           gen31.1 \
-                gen32           gen32.1         gen33           gen33.1         gen34 \
-                gen34.1         gen35           gen35.1         gen36           gen36.1 \
-                gen37           gen37.1         gen38           gen38.1         gen39 \
-                gen39.1         gen40           gen40.1         include_err     score_env2 \
-                score_err1.4    score_err1.5    score_err1.6    score_err1.7    score_err1.8 \
-                score_err1.9    score_err1.10   score_err1.11   score_err1.12   score_err1.13 \
-                score_err1.14   score_err1.16   score_err1.17   score_err1.18   score_err1.19 \
-                score_err1.20   score_err1.21   score_err1.22   score_err1.23   score_err1.24 \
-                score_err1.25   score_err1.26   score_err1.27   score_err1.28   score_err1.29 \
-                score_err1.30   timescale3 \
+                gen1.2          gen2            gen3            gen4            gen5 \
+                gen6            gen7            gen8            gen9            gen10 \
+                gen11           gen12           gen13           gen14           gen15 \
+                gen16           gen17           gen18           gen19.2         gen20.2 \
+                gen21.2         gen22.2         gen23.2         gen24.2         gen25 \
+                gen25.1         gen26           gen26.1         gen27           gen27.1 \
+                gen28           gen28.1         gen29           gen29.1         gen30 \
+                gen30.1         gen31           gen31.1         gen32           gen32.1 \
+                gen33           gen33.1         gen34           gen34.1         gen35 \
+                gen35.1         gen36           gen36.1         gen37           gen37.1 \
+                gen38           gen38.1         gen39           gen39.1         gen40 \
+                gen40.1         include_err     score_env2      score_err1.4    score_err1.5 \
+                score_err1.6    score_err1.7    score_err1.8    score_err1.9    score_err1.10 \
+                score_err1.11   score_err1.12   score_err1.13   score_err1.14   score_err1.16 \
+                score_err1.17   score_err1.18   score_err1.19   score_err1.20   score_err1.21 \
+                score_err1.22   score_err1.23   score_err1.24   score_err1.25   score_err1.26 \
+                score_err1.27   score_err1.28   score_err1.29   score_err1.30   timescale3 \
                 timescale3.1    timescale3.2    timescale3.3    timescale3.4    timescale3.5 \
                 timescale3.6    timescale3.7    timescale3.8    timescale3.9    timescale3.10 \
                 timescale3.11   timescale3.12   timescale3.13   timescale3.14
