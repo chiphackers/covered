@@ -49,7 +49,12 @@ static int reentrant_count_afu_bits(
     /* Count the number of signal bits in this functional unit */
     sigl = funit->sig_head;
     while( sigl != NULL ) {
-      bits += (sigl->sig->value->width * 2);
+      switch( sigl->sig->value->suppl.part.data_type ) {
+        case VDATA_UL  :  bits += (sigl->sig->value->width * 2) + 1;  break;
+        case VDATA_R64 :  bits += 64;  break;
+        case VDATA_R32 :  bits += 32;  break;
+        default        :  assert( 0 );  break;
+      }
       sigl = sigl->next;
     }
 
@@ -104,6 +109,10 @@ static void reentrant_store_data_bits(
               ren->data[curr_bit>>3] |= (((entry[VTYPE_INDEX_VAL_VALH] >> UL_MOD(i)) & 0x1) << (curr_bit & 0x7));
               curr_bit++;
             }
+            ren->data[curr_bit>>3] |= sigl->sig->value->suppl.part.set << (curr_bit & 0x7);
+            curr_bit++;
+            /* Clear the set bit */
+            sigl->sig->value->suppl.part.set = 0;
           }
           break;
         case VDATA_R64 :
@@ -237,6 +246,8 @@ static void reentrant_restore_data_bits(
               entry[VTYPE_INDEX_VAL_VALH] |= (ulong)((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << UL_MOD(i);
               curr_bit++;
             }
+            sigl->sig->value->suppl.part.set = (ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1;
+            curr_bit++;
           }
           break;
         case VDATA_R64 :
@@ -424,6 +435,10 @@ void reentrant_dealloc(
 
 /*
  $Log$
+ Revision 1.23  2008/10/20 22:29:01  phase1geo
+ Updating more regression files.  Adding reentrant support for real numbers.
+ Also fixing uninitialized memory access issue in expr.c.
+
  Revision 1.22  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

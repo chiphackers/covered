@@ -207,7 +207,7 @@ IVONLYDIAGS2  =
 IVONLYDIAGS3  = 
 IVONLYDIAGS4  = 
 
-VCSONLYDIAGS1 = afunc1           always_comb1     always_comb2     always_ff1       always_latch1 \
+VCSONLYDIAGS1 = afunc1           afunc2           always_comb1     always_comb2     always_ff1       always_latch1 \
                 always_latch2    assert1          atask1           bit1             byte1 \
                 char1            dec1             dec1.1           dec2             dec3 \
                 dec3.1           dly_assign1.1    dly_assign1.2    dly_assign1.3    dly_assign1.4 \
@@ -230,9 +230,10 @@ VCSONLYDIAGS1 = afunc1           always_comb1     always_comb2     always_ff1   
                 mem3             op_assign1       param8.2         param12          param12.1 \
                 sbit_sel3.2      shortint1        signed4.1        slist3.1         slist3.3 \
                 static_afunc1    static_func1     static_func1.1   static_func2     static_func2.1 \
-                static_func2.2   static_func2.3   timescale4       timescale4.1     timescale4.9 \
-                timescale4.10    timescale4.11    timescale4.12    timescale4.13    timescale4.14 \
-                timescale4.16    trireg           urandom1.2       urandom1.3       urandom_range1   urandom_range2
+                static_func2.2   static_func2.3   static_func3     timescale4       timescale4.1 \
+                timescale4.9     timescale4.10    timescale4.11    timescale4.12    timescale4.13 \
+                timescale4.14    timescale4.16    trireg           urandom1.2       urandom1.3 \
+                urandom_range1   urandom_range2
 # null_stmt1.4  real4            timescale4.15
 VCSONLYDIAGS2 = 
 VCSONLYDIAGS3 = 
