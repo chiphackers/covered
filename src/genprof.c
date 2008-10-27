@@ -817,6 +817,7 @@ profiler profiles[NUM_PROFILES] = {
   {"vector_from_real64", NULL, 0, 0, 0, TRUE},
   {"vector_set_static", NULL, 0, 0, 0, TRUE},
   {"vector_to_string", NULL, 0, 0, 0, TRUE},
+  {"vector_from_string_fixed", NULL, 0, 0, 0, TRUE},
   {"vector_from_string", NULL, 0, 0, 0, TRUE},
   {"vector_vcd_assign", NULL, 0, 0, 0, TRUE},
   {"vector_bitwise_and_op", NULL, 0, 0, 0, TRUE},

@@ -3249,26 +3249,35 @@ bool expression_op_func__value_plusargs(
   /* Only evaluate this expression if it has not been evaluated yet */
   if( expr->exec_num == 0 ) {
 
-    expression* left = expr->left;
+    expression* left     = expr->left;
     uint64      u64;
+    char*       arg;
+    ulong       scratchl;
+    ulong       scratchh = 0;
+    int         intval   = 0;
 
     /* Check to make sure that there is exactly two parameters */
-    if( (left == NULL) || (left->op != EXP_OP_PLIST) ) {
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$test called with incorrect number of parameters (file: %s, line: %d)", thr->funit->filename, expr->line );
+    if( (left == NULL) || (left->op != EXP_OP_PLIST) || (left->left->op != EXP_OP_SASSIGN) || (left->right->op != EXP_OP_SASSIGN) ) {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$value$plusargs called with incorrect number of parameters (file: %s, line: %d)", thr->funit->filename, expr->line );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       Throw 0;
     }
 
-    /* Check to make sure that the parameter is a real */
-    if( left->value->suppl.part.data_type != VDATA_R64 ) {
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$rtoi called without real parameter (file: %s, line: %d)", thr->funit->filename, expr->line );
-      assert( rv < USER_MSG_LENGTH );
-      print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      Throw 0;
-    }
+    /* Get the first argument string value */
+    arg = vector_to_string( left->left->value, QSTRING, TRUE );
 
-    /* TBD */
+    /* Scan the simulation argument list for matching values */
+    scratchl = sys_task_value_plusargs( arg, left->right->value );
+
+    /* Assign the value to the proper signal and propagate the signal change */
+    expression_assign( left->right->right, left->right, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
+
+    /* Perform coverage and assignment */
+    retval = vector_set_coverage_and_assign_ulong( expr->value, &scratchl, &scratchh, 0, 0 );
+
+    /* Deallocate memory */
+    free_safe( arg, (strlen( arg ) + 1) );
 
   }
 
@@ -5957,6 +5966,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.378  2008/10/27 18:13:19  phase1geo
+ Finished work to get $test$plusargs to work properly.  Added test_plusargs1
+ diagnostic to regression suite to verify this functionality.
+
  Revision 1.377  2008/10/27 13:20:55  phase1geo
  More work on $test$plusargs and $value$plusargs support.  Checkpointing.
 

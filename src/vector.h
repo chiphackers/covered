@@ -314,6 +314,12 @@ char* vector_to_string(
   bool    show_all
 );
 
+/*! \brief Converts a string to a preallocated vector. */
+void vector_from_string_fixed(
+  vector*     vec,
+  const char* str
+);
+
 /*! \brief Converts character string value into vector. */
 void vector_from_string(
             char**   str,
@@ -611,6 +617,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.70  2008/10/21 05:38:42  phase1geo
+ More updates to support real values.  Added vector_from_real64 functionality.
+ Checkpointing.
+
  Revision 1.69  2008/10/20 23:20:02  phase1geo
  Adding support for vector_from_int coverage accumulation (untested at this point).
  Updating Cver regressions.  Checkpointing.

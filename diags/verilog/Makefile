@@ -46,7 +46,7 @@ CHK_CODE      = 0
 endif
 endif
 
-SIM_PLUSARGS = +option1 +option2
+SIM_PLUSARGS = +option1 +option2 +optionB=0000000100100011010001010110011110001001101010111100110111101111
 
 IVERILOG       = iverilog
 IVERILOG_FLAGS = -cconfig_file -y ./lib -I./include -DRUNTEST

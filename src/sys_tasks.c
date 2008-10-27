@@ -21,10 +21,12 @@
 */ 
 
 #include <limits.h>
+#include <stdlib.h>
 
 #include "defines.h"
 #include "link.h"
 #include "profiler.h"
+#include "vector.h"
 
 #if ULONG_MAX > 4294967295UL
 #define UNIFORM_MAX INT_MAX
@@ -436,11 +438,47 @@ ulong sys_task_test_plusargs(
         returns 1 (if found).
 */  
 ulong sys_task_value_plusargs(
-  const char* arg,  /*!< Plusarg to find */
-  vector*     vec   /*!< Pointer to vector to populate with found value */
+  const char* arg,   /*!< Plusarg to find */
+  vector*     vec    /*!< Pointer to vector to populate with found value */
 ) { PROFILE(SYS_TASK_VALUE_PLUSARGS);
 
-  ulong retval = 0;
+  ulong     retval = 0;
+  str_link* strl;
+  char*     ptr;
+
+  printf( "In sys_task_value_plusargs, arg: %s\n", arg );
+
+  /* Find the percent character in the argument string */
+  ptr = strchr( arg, '%' );
+  assert( ptr != NULL );
+
+  /* See if the plusarg even exists on the command-line */
+  strl = sim_plusargs_head;
+  while( (strl != NULL) && printf( "arg: %s, strl->str: %s, chars: %d\n", arg, strl->str, (ptr - arg) ) && (strncmp( arg, strl->str, (ptr - arg) ) != 0) ) {
+    strl = strl->next;
+  }
+
+  /* If the argument exists on the command-line, continue */
+  if( strl != NULL ) {
+
+    switch( *(ptr + 1) ) {
+      case 'b' :  vector_from_uint64( vec, strtoull( (strl->str + (ptr - arg)), 0, 2 ) );  break;
+      case 'o' :  vector_from_uint64( vec, strtoull( (strl->str + (ptr - arg)), 0, 8 ) );  break;
+      case 'd' :  vector_from_uint64( vec, strtoull( (strl->str + (ptr - arg)), 0, 10 ) );  break;
+      case 'h' :  vector_from_uint64( vec, strtoull( (strl->str + (ptr - arg)), 0, 16 ) );  break;
+      case 'e' :
+      case 'f' :
+      case 'g' :  vector_from_real64( vec, strtod( (strl->str + (ptr - arg)), 0 ) );  break;
+      case 's' :  vector_from_string_fixed( vec, (strl->str + (ptr - arg)) );  break;
+      default  :  assert( 0 );  break;
+    }
+
+    printf( "HERE!  String to convert: %s, type: %c\n", (strl->str + (ptr - arg)), *(ptr + 1) );
+
+    /* Specify that we have found and converted the value */
+    retval = 1;
+
+  }
 
   PROFILE_END;
 
@@ -463,6 +501,10 @@ void sys_task_dealloc() { PROFILE(SYS_TASK_DEALLOC);
 
 /*
  $Log$
+ Revision 1.8  2008/10/27 18:13:19  phase1geo
+ Finished work to get $test$plusargs to work properly.  Added test_plusargs1
+ diagnostic to regression suite to verify this functionality.
+
  Revision 1.7  2008/10/27 13:20:55  phase1geo
  More work on $test$plusargs and $value$plusargs support.  Checkpointing.
 

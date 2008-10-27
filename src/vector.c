@@ -2872,6 +2872,29 @@ char* vector_to_string(
 }
 
 /*!
+ Stores the specified string into the specified vector.  If the entire string cannot fit in the vector, only store as many
+ characters as is possible.
+*/
+void vector_from_string_fixed(
+  vector*     vec,  /*!< Pointer to vector to store string value */
+  const char* str   /*!< Pointer to string value to store */
+) { PROFILE(VECTOR_FROM_STRING_FIXED);
+
+  unsigned int width = ((vec->width >> 3) < (strlen( str ) + 1)) ? (vec->width >> 3) : (strlen( str ) + 1);
+  unsigned int pos = 0;
+  int          i;
+
+  /* TBD - Not sure if I need to support both endianness values here */
+  for( i=(width-1); i>=0; i-- ) {
+    vec->value.ul[pos>>(UL_DIV_VAL-3)][VTYPE_INDEX_VAL_VALL] |= (ulong)(str[i]) << ((pos & (UL_MOD_VAL >> 3)) << 3);
+    pos++;
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  Converts a string value from the lexer into a vector structure appropriately
  sized.  If the string value size exceeds Covered's maximum bit allowance, return
  a value of NULL to indicate this to the calling function.
@@ -5133,6 +5156,11 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.179  2008/10/24 22:35:05  phase1geo
+ Adding more timescale diagnostics to verify $time functionality.  Changing decimal
+ value string converter to use vector_from_uint64 instead of vector_from_int
+ to allow greater decimal values to be used.
+
  Revision 1.178  2008/10/24 17:27:46  phase1geo
  Fixing issues with removing underscores from real numbers.
 
