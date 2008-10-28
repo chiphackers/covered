@@ -388,8 +388,8 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",               
                                            {"SB2SR",          "$bitstoshortreal", expression_op_func__bitstoshortreal, {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
                                            {"SI2R",           "$itor",            expression_op_func__itor,            {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
                                            {"SR2I",           "$rtoi",            expression_op_func__rtoi,            {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
-                                           {"STESTARGS",      "$test$plusargs",   expression_op_func__test_plusargs,   {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
-                                           {"SVALARGS",       "$value$plusargs",  expression_op_func__value_plusargs,  {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} }
+                                           {"STESTARGS",      "$test$plusargs",   expression_op_func__test_plusargs,   {0, 1, NOT_COMB,   1, 1, 0, 0, 0, 0} },
+                                           {"SVALARGS",       "$value$plusargs",  expression_op_func__value_plusargs,  {0, 1, NOT_COMB,   1, 1, 0, 0, 0, 0} }
  };
 
 
@@ -3227,6 +3227,10 @@ bool expression_op_func__test_plusargs(
 
   }
 
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
+  vector_set_unary_evals( expr->value );
+
   PROFILE_END;
 
   return( retval );
@@ -3271,7 +3275,22 @@ bool expression_op_func__value_plusargs(
     if( (scratchl = sys_task_value_plusargs( arg, left->right->value )) == 1 ) {
 
       /* Assign the value to the proper signal and propagate the signal change, if an option match occurred */
-      expression_assign( left->right->right, left->right, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
+      switch( left->right->value->suppl.part.data_type ) {
+        case VDATA_UL :
+          expression_assign( left->right->right, left->right, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), TRUE );
+          break;
+        case VDATA_R64 :
+          if( vector_from_real64( left->right->right->sig->value, left->right->value->value.r64->val ) ) {
+            vsignal_propagate( left->right->right->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
+          }
+          break;
+        case VDATA_R32 :
+          if( vector_from_real64( left->right->right->sig->value, (double)left->right->value->value.r32->val ) ) {
+            vsignal_propagate( left->right->right->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
+          }
+          break;
+        default :  assert( 0 );  break;
+      }
 
     }
 
@@ -3282,6 +3301,10 @@ bool expression_op_func__value_plusargs(
     free_safe( arg, (strlen( arg ) + 1) );
 
   }
+
+  /* Gather coverage information */
+  expression_set_tf_preclear( expr, retval );
+  vector_set_unary_evals( expr->value );
 
   PROFILE_END;
 
@@ -5968,6 +5991,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.380  2008/10/27 23:27:22  phase1geo
+ More work on testing $value$plusargs support.  Fixed a few issues related to this
+ code.  Also fixed issue with function return value type.  Checkpointing.
+
  Revision 1.379  2008/10/27 21:14:02  phase1geo
  First pass at getting the $value$plusargs system function call to work.  More
  work to do here.  Checkpointing.

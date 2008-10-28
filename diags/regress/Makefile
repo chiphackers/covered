@@ -203,35 +203,36 @@ IVONLYDIAGS1  = always5.1       assign1         assign2.8       example         
 IVONLYDIAGS2  = 
 IVONLYDIAGS3  = 
 IVONLYDIAGS4  = 
-
-VCSONLYDIAGS1 = afunc1           afunc2           always_comb1     always_comb2     always_ff1       always_latch1 \
-                always_latch2    assert1          atask1           bit1             byte1 \
-                char1            dec1             dec1.1           dec2             dec3 \
-                dec3.1           dly_assign1.1    dly_assign1.2    dly_assign1.3    dly_assign1.4 \
-                dly_assign2      dly_assign2.1    do_while1        do_while1.1      do_while2 \
-                elsif1           elsif1.1         elsif1.2         elsif1.3         elsif1.4 \
-                elsif2           elsif2.1         enum1            enum1.1          enum1.2 \
-                enum1.3          enum2.1          exclude5         exclude5.1       exclude5.2 \
-                exclude5.3       exponent1        final1           for3             for5 \
-                for5.1           for5.2           for5.3           for5.4           for5.5 \
-                for5.6           for5.8           for5.9           for5.10          for6 \
-                gate1.1          generate1.1      generate2        generate3        generate3.1 \
-                generate6        generate7        generate7.1      generate7.2      generate8.1 \
-                generate8.2      generate8.3      generate8.4      generate8.5      generate8.6 \
-                generate8.7      generate8.8      generate9        generate9.1      generate9.2 \
-                generate9.3      generate11.4     generate13       generate14       hier1.1 \
-                inc1             inc1.1           inc2             inc3             inc3.1 \
-                int1             line1            logic1           longint1         long_sig \
-                marray1          marray1.1        marray1.2        marray1.3        marray2 \
-                marray2.1        marray2.2        marray2.3        mbit_sel5.4      mbit_sel6.4 \
-                mem3             op_assign1       param8.2         param12          param12.1 \
-                sbit_sel3.2      shortint1        signed4.1        slist3.1         slist3.3 \
-                static_afunc1    static_func1     static_func1.1   static_func2     static_func2.1 \
-                static_func2.2   static_func2.3   static_func3     timescale4       timescale4.1 \
-                timescale4.9     timescale4.10    timescale4.11    timescale4.12    timescale4.13 \
-                timescale4.14    timescale4.16    trireg           urandom1.2       urandom1.3 \
-                urandom_range1   urandom_range2   value_plusargs1  value_plusargs2  value_plusargs3 \
-                value_plusargs4  value_plusargs5
+ 
+VCSONLYDIAGS1 = afunc1            afunc2            always_comb1      always_comb2      always_ff1        always_latch1 \
+                always_latch2     assert1           atask1            bit1              byte1 \
+                char1             dec1              dec1.1            dec2              dec3 \
+                dec3.1            dly_assign1.1     dly_assign1.2     dly_assign1.3     dly_assign1.4 \
+                dly_assign2       dly_assign2.1     do_while1         do_while1.1       do_while2 \
+                elsif1            elsif1.1          elsif1.2          elsif1.3          elsif1.4 \
+                elsif2            elsif2.1          enum1             enum1.1           enum1.2 \
+                enum1.3           enum2.1           exclude5          exclude5.1        exclude5.2 \
+                exclude5.3        exponent1         final1            for3              for5 \
+                for5.1            for5.2            for5.3            for5.4            for5.5 \
+                for5.6            for5.8            for5.9            for5.10           for6 \
+                gate1.1           generate1.1       generate2         generate3         generate3.1 \
+                generate6         generate7         generate7.1       generate7.2       generate8.1 \
+                generate8.2       generate8.3       generate8.4       generate8.5       generate8.6 \
+                generate8.7       generate8.8       generate9         generate9.1       generate9.2 \
+                generate9.3       generate11.4      generate13        generate14        hier1.1 \
+                inc1              inc1.1            inc2              inc3              inc3.1 \
+                int1              line1             logic1            longint1          long_sig \
+                marray1           marray1.1         marray1.2         marray1.3         marray2 \
+                marray2.1         marray2.2         marray2.3         mbit_sel5.4       mbit_sel6.4 \
+                mem3              op_assign1        param8.2          param12           param12.1 \
+                sbit_sel3.2       shortint1         signed4.1         slist3.1          slist3.3 \
+                static_afunc1     static_func1      static_func1.1    static_func2      static_func2.1 \
+                static_func2.2    static_func2.3    static_func3      timescale4        timescale4.1 \
+                timescale4.9      timescale4.10     timescale4.11     timescale4.12     timescale4.13 \
+                timescale4.14     timescale4.16     trireg            urandom1.2        urandom1.3 \
+                urandom_range1    urandom_range2    value_plusargs1   value_plusargs2   value_plusargs3 \
+                value_plusargs4   value_plusargs5   value_plusargs6   value_plusargs7   value_plusargs8 \
+                value_plusargs8.1
 # null_stmt1.4  real4            timescale4.15
 VCSONLYDIAGS2 = 
 VCSONLYDIAGS3 = 
