@@ -20,6 +20,7 @@ initial begin
           a = 1'b1;
         else if( $value$plusargs( "options=%s", y ) )
           b = 1'b1;
+	$display( "x: %s, y: %s", x, y );
 end
 
 initial begin

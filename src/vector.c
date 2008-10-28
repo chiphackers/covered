@@ -2880,7 +2880,7 @@ void vector_from_string_fixed(
   const char* str   /*!< Pointer to string value to store */
 ) { PROFILE(VECTOR_FROM_STRING_FIXED);
 
-  unsigned int width = ((vec->width >> 3) < (strlen( str ) + 1)) ? (vec->width >> 3) : (strlen( str ) + 1);
+  unsigned int width = ((vec->width >> 3) < strlen( str )) ? (vec->width >> 3) : strlen( str );
   unsigned int pos = 0;
   int          i;
 
@@ -5156,6 +5156,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.180  2008/10/27 21:14:02  phase1geo
+ First pass at getting the $value$plusargs system function call to work.  More
+ work to do here.  Checkpointing.
+
  Revision 1.179  2008/10/24 22:35:05  phase1geo
  Adding more timescale diagnostics to verify $time functionality.  Changing decimal
  value string converter to use vector_from_uint64 instead of vector_from_int
