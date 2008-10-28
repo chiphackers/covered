@@ -739,6 +739,21 @@
     </para>
   </sect1>
 
+  <sect1 id="section.score.plusargs">
+    <title>Specifying Plus Arguments When Scoring</title>
+    <para>
+      Covered supports the $test$plusargs and $value$plusargs system function calls and, as such, runtime command-line options are allowed to
+      be specified when scoring the design.  To specify plusargs to the score command, simply specify them anywhere after the score command keyword
+      just as you would specify them to a simulator.  Any plusargs specified to the score command which are not recognized for compilation purposes
+      are used for $test$plusargs and $value$plusargs comparisons,
+    </para>
+    <para>
+      Note that specifying plusargs to the score command is only necessary when the score command is given either the -vcd or -lxt options.  If
+      the VPI method of coverage scoring is used, specify the plusargs to the simulation runtime as is required.  Covered will automatically extract
+      the plusargs from the simulator runtime for its purposes.
+    </para>
+  </sect1>
+
   <sect1 id="section.score.other">
     <title>Other Notes</title>
     <para>

@@ -60,6 +60,7 @@
           <listitem><para>$time and $random system functions</para></listitem>
           <listitem><para>Real numbers</para></listitem>
           <listitem><para>Real number system tasks:  $rtoi, $itor, $realtobits, $bitstoreal</para></listitem>
+          <listitem><para>$test$plusargs system function</para></listitem>
           <listitem>
             <para>
               The following system tasks are allowed within logic blocks being considered for coverage:
@@ -96,11 +97,13 @@
           <listitem><para>Arrays of instances</para></listitem>
           <listitem><para>Generate blocks</para></listitem>
           <listitem><para>"Automatic" or reentrant tasks/recursive functions</para></listitem>
+          <listitem><para>$value$plusargs system function call</para></listitem>
           <listitem>
             <para>
               The following system tasks are allowed within logic blocks being considered for coverage:
               <para>
-                $fclose
+                $dumpports, $dumpportsall, $dumpportsoff, $dumpportson, $dumpportslimit, $dumpportsflush, $fclose, $ferror, $fflush,
+                $swrite, $swriteb, $swriteh, $swriteo, $ungetc
               </para>
             </para>
           </listitem>
