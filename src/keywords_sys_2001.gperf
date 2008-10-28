@@ -28,6 +28,12 @@
 %}
 struct keyword_sys_2001 { char *name; int type; };
 %%
+dumpports,      S_allow
+dumpportsall,   S_allow
+dumpportsoff,   S_allow
+dumpportson,    S_allow
+dumpportslimit, S_allow
+dumpportsflush, S_allow
 fclose,         S_allow
 ferror,         S_allow
 fflush,         S_allow
