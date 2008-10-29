@@ -1,6 +1,5 @@
 set dump_filetypes {
   {{VCD Dumpfiles} {.vcd}}
-  {{LXT Dumpfiles} {.lxt}}
   {{LXT2 Dumpfiles} {.lxt2}}
   {{All Files}     * }
 }
@@ -219,6 +218,8 @@ proc create_arglist_for_new_cdd {} {
       lappend args "-g [lindex $row 1]"
     } elseif {[lindex $row 0] eq "Command File"} {
       lappend args "-f [lindex $row 1]"
+    } elseif {[lindex $row 0] eq "Runtime Plusarg"} {
+      lappend args "[lindex $row 1]"
     }
   }
 
@@ -508,6 +509,9 @@ proc read_score_option_file {w fname} {
         set i [expr $i - 1]
       }
 
+    } elseif {[string index [lindex $contents $i] 0] eq "+"} {
+      .newwin.p.parse2.opts.lbf.lb insert end [list "Runtime Plusarg" [lindex $contents $i]]
+
     }
 
   }
@@ -759,6 +763,7 @@ proc handle_new_cdd_dump_states {w} {
     $w.dump.ep configure -state disabled
     $w.bf.next configure -state normal
     set_widget_state $w.dump.ts disabled
+    .newwin.p.parse2.opts.bf.ins_mb.m entryconfigure 6 -state disabled
 
   } elseif {$dump_vpi_none eq "dump"} {
 
@@ -773,6 +778,7 @@ proc handle_new_cdd_dump_states {w} {
       $w.bf.next configure -state disabled
     }
     set_widget_state $w.dump.ts disabled
+    .newwin.p.parse2.opts.bf.ins_mb.m entryconfigure 6 -state normal
 
   } elseif {$dump_vpi_none eq "vpi"} { 
 
@@ -786,6 +792,7 @@ proc handle_new_cdd_dump_states {w} {
     if {$top_ts == 1} {
       set_widget_state $w.dump.ts normal
     }
+    .newwin.p.parse2.opts.bf.ins_mb.m entryconfigure 6 -state disabled
 
   } elseif {$dump_vpi_none eq "dumpvars"} {
 
@@ -799,8 +806,11 @@ proc handle_new_cdd_dump_states {w} {
     if {$top_ts == 1} {
       set_widget_state $w.dump.ts normal
     }
+    .newwin.p.parse2.opts.bf.ins_mb.m entryconfigure 6 -state disabled
 
   }
+
+  return 1
 
 }
 
@@ -842,15 +852,15 @@ proc create_new_cdd_dump {w} {
   frame         $w.dump
   radiobutton   $w.dump.rn -text "Parse Design Only" -variable dump_vpi_none -value "none" -anchor w -command "handle_new_cdd_dump_states $w"
   radiobutton   $w.dump.rd -text "Dumpfile:"         -variable dump_vpi_none -value "dump" -anchor w -command "handle_new_cdd_dump_states $w"
-  entry         $w.dump.ed -textvariable dump_file -state disabled
+  entry         $w.dump.ed -textvariable dump_file -state disabled -validate all -vcmd "handle_new_cdd_dump_states $w"
   button        $w.dump.bd -text "Browse" -width 10 -state disabled -command {
     set dump_file [tk_getOpenFile -title "Select VCD/LXT Dumpfile" -filetypes $dump_filetypes]
   }
   radiobutton   $w.dump.rv -text "VPI Module:" -variable dump_vpi_none -value "vpi" -anchor w -command "handle_new_cdd_dump_states $w"
-  entry         $w.dump.ev -textvariable vpi_file -state disabled
+  entry         $w.dump.ev -textvariable vpi_file -state disabled -validate all -vcmd "handle_new_cdd_dump_states $w"
   tk_optionMenu $w.dump.mv simulator {Icarus Verilog} {Cver} {VCS}
   radiobutton   $w.dump.rp -text "Dumpvars Module:" -variable dump_vpi_none -value "dumpvars" -anchor w -command "handle_new_cdd_dump_states $w"
-  entry         $w.dump.ep -textvariable dumpvars_file -state disabled
+  entry         $w.dump.ep -textvariable dumpvars_file -state disabled -validate all -vcmd "handle_new_cdd_dump_states $w"
   frame         $w.dump.ts
   checkbutton   $w.dump.ts.cb -text "Set Top Module Timescale:" -anchor w -variable top_ts -state disabled -command "handle_new_cdd_dump_top_timescale $w"
   tk_optionMenu $w.dump.ts.n1 top_ts_num1   {1} {10} {100}
@@ -1218,6 +1228,24 @@ proc handle_new_cdd_parse2_cmd_file {w} {
 
 }
 
+proc handle_new_cdd_parse2_plusarg {w} {
+
+  set value [get_plusarg "" ""]
+
+  if {$value ne ""} {
+
+    set index [$w.opts.lbf.lb curselection]
+
+    if {$index eq ""} {
+      $w.opts.lbf.lb insert end [list "Runtime Plusarg" $value]
+    } else {
+      $w.opts.lbf.lb insert $index [list "Runtime Plusarg" $value]
+    }
+
+  }
+
+}
+
 proc handle_new_cdd_parse2_edit {w} {
 
   set index  [$w.opts.lbf.lb curselection]
@@ -1250,6 +1278,9 @@ proc handle_new_cdd_parse2_edit {w} {
     set old_value1 [split $value "="]
     set old_value2 [split [lindex $old_value1 1] ","]
     set value [get_fsm [lindex $old_value1 0] [lindex $old_value2 0] [lindex $old_value2 1]]
+  } elseif {$type eq "Runtime Plusarg"} {
+    set old_value [split $value "="]
+    set value [get_plusarg [lindex $old_value 0] [lindex $old_value 1]]
   }
 
   set index [$w.opts.lbf.lb curselection]
@@ -1273,7 +1304,7 @@ proc handle_new_cdd_parse2_lb {w} {
 
 proc create_new_cdd_parse2 {w} {
 
-  global tablelistopts
+  global tablelistopts dump_vpi_none
 
   frame $w
   frame $w.opts
@@ -1316,6 +1347,7 @@ proc create_new_cdd_parse2 {w} {
   $m add command -label "Include Directory..."    -command "handle_new_cdd_parse2_inc_dir $w"
   $m add command -label "Define..."               -command "handle_new_cdd_parse2_define $w"
   $m add command -label "Parameter Override..."   -command "handle_new_cdd_parse2_parm_oride $w"
+  $m add command -label "Runtime Plusarg..."      -command "handle_new_cdd_parse2_plusarg $w"
   $m add separator
   $m add command -label "FSM..."                  -command "handle_new_cdd_parse2_fsm $w"
   $m add command -label "Module Generation..."    -command "handle_new_cdd_parse2_mod_gen $w"
@@ -1820,6 +1852,112 @@ proc get_define {defname value} {
   tkwait window .defwin
 
   return $def_retval
+  
+}
+
+proc plusarg_update_state {} {
+
+  global plusarg_name plusarg_value
+
+  if {$plusarg_name ne ""} {
+    if {[.pluswin.f.b cget -relief] eq "raised"} {
+      .pluswin.bf.ok configure -state normal
+    } elseif {$plusarg_value ne ""} {
+      .pluswin.bf.ok configure -state normal
+    } else {
+      .pluswin.bf.ok configure -state disabled
+    }
+  } else {
+    .pluswin.bf.ok configure -state disabled
+  }
+
+  return 1
+
+}
+
+proc get_plusarg {plusname value} {
+
+  global plus_retval plusarg_name plusarg_value
+
+  set plus_retval   ""
+  set plusarg_name  $plusname
+  set plusarg_value $value
+
+  # Create new window
+  toplevel .pluswin
+  wm title .pluswin "Specify a command-line runtime plusarg value"
+
+  # Add selection widgets
+  frame .pluswin.f
+  label .pluswin.f.l -text "+"
+  entry .pluswin.f.e -textvariable plusarg_name -validate all
+  entry .pluswin.f.v -state disabled -textvariable plusarg_value -validate all
+  button .pluswin.f.b -text "=" -width 1 -relief raised -command {
+    if {[.pluswin.f.b cget -relief] eq "raised"} {
+      .pluswin.f.v configure -state normal
+      .pluswin.f.b configure -relief flat
+      if {$plusarg_value eq ""} {
+        .pluswin.bf.ok configure -state disabled
+      }
+    } else {
+      .pluswin.f.v delete 0 end
+      .pluswin.f.v configure -state disabled
+      .pluswin.f.b configure -relief raised
+    }
+  }
+  bind .pluswin.f.b <Return> {%W invoke}
+
+  # If a value was specified, enable the textbox and set the relief to flat on the '=' button
+  if {$value ne ""} {
+    .pluswin.f.v configure -state normal
+    .pluswin.f.b configure -relief flat
+  }
+  
+  # Pack the input widgets
+  grid rowconfigure    .pluswin.f 1 -weight 1
+  grid columnconfigure .pluswin.f 3 -weight 1
+  grid .pluswin.f.l -row 0 -column 0 -sticky news -pady 4 -padx 8
+  grid .pluswin.f.e -row 0 -column 1 -sticky news -pady 4 -padx 8
+  grid .pluswin.f.b -row 0 -column 2 -sticky news -pady 4 -padx 8
+  grid .pluswin.f.v -row 0 -column 3 -sticky news -pady 4 -padx 8
+
+  # Add button frame and widgets
+  frame .pluswin.bf
+  help_button .pluswin.bf.help chapter.gui.new section.gui.new.options2.plusarg
+  button .pluswin.bf.ok -text "OK" -width 10 -state disabled -command {
+    if {[.pluswin.f.b cget -relief] eq "raised"} {
+      set plus_retval "+$plusarg_name"
+    } else {
+       set plus_retval "+$plusarg_name=$plusarg_value"
+    }
+    destroy .pluswin
+  }
+  bind .pluswin.bf.ok <Return> {%W invoke}
+  button .pluswin.bf.cancel -text "Cancel" -width 10 -pady 4 -padx 8 -command {
+    set def_retval ""
+    destroy .pluswin
+  }
+  bind .pluswin.bf.cancel <Return> {%W invoke}
+  pack .pluswin.bf.help   -side right -pady 3
+  pack .pluswin.bf.cancel -side right -padx 3 -pady 3
+  pack .pluswin.bf.ok     -side right -padx 3 -pady 3
+
+  # Provide functionality for entries
+  .pluswin.f.e configure -vcmd { return [plusarg_update_state] }
+  .pluswin.f.v configure -vcmd { return [plusarg_update_state] }
+
+  # Pack the frames
+  pack .pluswin.f  -fill x
+  pack .pluswin.bf -fill x
+
+  # Make sure that this window is transient and sets the first focus
+  wm transient .pluswin .newwin
+  focus .pluswin.f.e
+
+  # Wait for the define window to be destroyed before returning
+  tkwait window .pluswin
+
+  return $plus_retval
   
 }
 

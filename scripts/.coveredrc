@@ -167,6 +167,6 @@ CombWindowGeometry                =
 FsmWindowGeometry                 = 
 AssertWindowGeometry              = 
 ModuleInstanceType                = Module
-ModuleInstanceTableListWidth      = 302
+ModuleInstanceTableListWidth      = 309
 ModuleInstanceTableListColumns    = 0:Instance Name:left:0:Module Name:left:0:Hit:right:0:Miss:right:0:Excluded:right:0:Total:right:0:Hit %:right:0:Index:left
 ModuleInstanceTableListInitHidden = 1:0:0:0:0:0:0
