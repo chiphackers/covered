@@ -603,7 +603,13 @@ void vsignal_display(
     printf( ", " );
   }
 
-  vector_display_value_ulong( sig->value->value.ul, sig->value->width );
+  switch( sig->value->suppl.part.data_type ) {
+    case VDATA_UL  :  vector_display_value_ulong( sig->value->value.ul, sig->value->width );  break;
+    case VDATA_R64 :  printf( "%.16lf", sig->value->value.r64->val );  break;
+    case VDATA_R32 :  printf( "%.16f", sig->value->value.r32->val );  break;
+    default        :  assert( 0 );  break;
+  }
+
   printf( "\n" );
 
 }
@@ -785,6 +791,10 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.86  2008/10/26 04:41:28  phase1geo
+ Adding support for functions returning real and realtime values.  Added real7
+ diagnostic to verify this new support.
+
  Revision 1.85  2008/10/23 20:54:52  phase1geo
  Adding support for real parameters.  Added more real number diagnostics to
  regression suite.

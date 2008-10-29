@@ -410,35 +410,64 @@ static void expression_create_tmp_vecs(
   */
   if( (EXPR_TMP_VECS( exp->op ) > 0) && (exp->elem.tvecs == NULL) ) {
  
-    ulong    hdata;
-    unsigned i;
+    switch( exp->value->suppl.part.data_type ) {
+      case VDATA_UL :
+        {
+          ulong    hdata;
+          unsigned i;
 
-    /* Calculate the width that we need to allocate */
-    switch( exp->op ) {
-      case EXP_OP_PEDGE :
-      case EXP_OP_NEDGE :  hdata = UL_SET;  width = 1;                         break;
-      case EXP_OP_AEDGE :  hdata = UL_SET;  width = exp->right->value->width;  break;
-      case EXP_OP_ADD_A :
-      case EXP_OP_SUB_A :
-      case EXP_OP_MLT_A :
-      case EXP_OP_DIV_A :
-      case EXP_OP_MOD_A :
-      case EXP_OP_AND_A :
-      case EXP_OP_OR_A  :
-      case EXP_OP_XOR_A :
-      case EXP_OP_LS_A  :
-      case EXP_OP_RS_A  :
-      case EXP_OP_ALS_A :
-      case EXP_OP_ARS_A :  hdata = 0x0;  width = exp->left->value->width;   break;
-      default           :  hdata = 0x0;                                     break;
-    }
+          /* Calculate the width that we need to allocate */
+          switch( exp->op ) {
+            case EXP_OP_PEDGE :
+            case EXP_OP_NEDGE :  hdata = UL_SET;  width = 1;                         break;
+            case EXP_OP_AEDGE :  hdata = UL_SET;  width = exp->right->value->width;  break;
+            case EXP_OP_ADD_A :
+            case EXP_OP_SUB_A :
+            case EXP_OP_MLT_A :
+            case EXP_OP_DIV_A :
+            case EXP_OP_MOD_A :
+            case EXP_OP_AND_A :
+            case EXP_OP_OR_A  :
+            case EXP_OP_XOR_A :
+            case EXP_OP_LS_A  :
+            case EXP_OP_RS_A  :
+            case EXP_OP_ALS_A :
+            case EXP_OP_ARS_A :  hdata = 0x0;  width = exp->left->value->width;   break;
+            default           :  hdata = 0x0;                                     break;
+          }
 
-    /* Allocate the memory */
-    exp->elem.tvecs = (vecblk*)malloc_safe( sizeof( vecblk ) );
-    for( i=0; i<EXPR_TMP_VECS( exp->op ); i++ ) {
-      vector* vec = vector_create( width, VTYPE_VAL, VDATA_UL, TRUE );
-      vector_init_ulong( &(exp->elem.tvecs->vec[i]), vec->value.ul, 0, hdata, TRUE, width, VTYPE_VAL );
-      free_safe( vec, sizeof( vector ) );
+          /* Allocate the memory */
+          exp->elem.tvecs = (vecblk*)malloc_safe( sizeof( vecblk ) );
+          for( i=0; i<EXPR_TMP_VECS( exp->op ); i++ ) {
+            vector* vec = vector_create( width, VTYPE_VAL, VDATA_UL, TRUE );
+            vector_init_ulong( &(exp->elem.tvecs->vec[i]), vec->value.ul, 0, hdata, TRUE, width, VTYPE_VAL );
+            free_safe( vec, sizeof( vector ) );
+          }
+        }
+        break;
+      case VDATA_R64 :
+        {
+          unsigned int i;
+          exp->elem.tvecs = (vecblk*)malloc_safe( sizeof( vecblk ) );
+          for( i=0; i<EXPR_TMP_VECS( exp->op ); i++ ) {
+            vector* vec = vector_create( 64, VTYPE_VAL, VDATA_R64, TRUE );
+            vector_init_r64( &(exp->elem.tvecs->vec[i]), vec->value.r64, 0.0, NULL, TRUE, VTYPE_VAL );
+            free_safe( vec, sizeof( vector ) );
+          }
+        }
+        break;
+      case VDATA_R32 :
+        {
+          unsigned int i;
+          exp->elem.tvecs = (vecblk*)malloc_safe( sizeof( vecblk ) );
+          for( i=0; i<EXPR_TMP_VECS( exp->op ); i++ ) {
+            vector* vec = vector_create( 32, VTYPE_VAL, VDATA_R32, TRUE );
+            vector_init_r32( &(exp->elem.tvecs->vec[i]), vec->value.r32, 0.0, NULL, TRUE, VTYPE_VAL );
+            free_safe( vec, sizeof( vector ) );
+          }
+        }
+        break;
+      default :  assert( 0 );  break;
     }
 
   }
@@ -468,6 +497,7 @@ static void expression_create_value(
 
     if( (data == TRUE) || ((exp->suppl.part.gen_expr == 1) && (width > 0)) ) {
       vector_init_r64( exp->value, (rv64*)malloc_safe( sizeof( rv64 ) ), 0.0, NULL, TRUE, VTYPE_EXP );
+      expression_create_tmp_vecs( exp, 64 );
     } else {
       vector_init_r64( exp->value, NULL, 0.0, NULL, FALSE, VTYPE_EXP );
     }
@@ -479,6 +509,7 @@ static void expression_create_value(
 
     if( (data == TRUE) || ((exp->suppl.part.gen_expr == 1) && (width > 0)) ) {
       vector_init_r32( exp->value, (rv32*)malloc_safe( sizeof( rv32 ) ), 0.0, NULL, TRUE, VTYPE_EXP );
+      expression_create_tmp_vecs( exp, 32 );
     } else {
       vector_init_r32( exp->value, NULL, 0.0, NULL, FALSE, VTYPE_EXP );
     }
@@ -1789,7 +1820,24 @@ void expression_display(
   if( expr->value->value.ul == NULL ) {
     printf( "NO DATA VECTOR" );
   } else {
-    vector_display_value_ulong( expr->value->value.ul, expr->value->width );
+    switch( expr->value->suppl.part.data_type ) {
+      case VDATA_UL  :  vector_display_value_ulong( expr->value->value.ul, expr->value->width );  break;
+      case VDATA_R64 :
+        if( expr->value->value.r64->str != NULL ) {
+          printf( "%s", expr->value->value.r64->str );
+        } else {
+          printf( "%.16lf", expr->value->value.r64->val );
+        }
+        break;
+      case VDATA_R32 :
+        if( expr->value->value.r32->str != NULL ) {
+          printf( "%s", expr->value->value.r32->str );
+        } else {
+          printf( "%.16f", expr->value->value.r32->val );
+        }
+        break;
+      default :  assert( 0 );  break;
+    }
   }
   printf( "\n" );
 
@@ -2000,7 +2048,22 @@ bool expression_op_func__multiply_a(
   expression_set_eval_NN( expr );
 
   /* Fourth, assign the new value to the left expression */
-  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
+  switch( expr->value->suppl.part.data_type ) {
+    case VDATA_UL :
+      expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
+      break;
+    case VDATA_R64 :
+      if( vector_from_real64( expr->left->sig->value, expr->value->value.r64->val ) ) {
+        vsignal_propagate( expr->left->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
+      }
+      break;
+    case VDATA_R32 :
+      if( vector_from_real64( expr->left->sig->value, (double)expr->value->value.r32->val ) ) {
+        vsignal_propagate( expr->left->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
 
   PROFILE_END;
 
@@ -2065,7 +2128,22 @@ bool expression_op_func__divide_a(
   expression_set_eval_NN( expr );
 
   /* Finally, assign the new value to the left expression */
-  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
+  switch( expr->value->suppl.part.data_type ) {
+    case VDATA_UL :
+      expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
+      break;
+    case VDATA_R64 :
+      if( vector_from_real64( expr->left->sig->value, expr->value->value.r64->val ) ) {
+        vsignal_propagate( expr->left->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
+      }
+      break;
+    case VDATA_R32 :
+      if( vector_from_real64( expr->left->sig->value, (double)expr->value->value.r32->val ) ) {
+        vsignal_propagate( expr->left->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
   
   PROFILE_END;
 
@@ -2193,7 +2271,22 @@ bool expression_op_func__add_a(
   expression_set_eval_NN( expr );
 
   /* Finally, assign the new value to the left expression */
-  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
+  switch( expr->value->suppl.part.data_type ) {
+    case VDATA_UL :
+      expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
+      break;
+    case VDATA_R64 :
+      if( vector_from_real64( expr->left->sig->value, expr->value->value.r64->val ) ) {
+        vsignal_propagate( expr->left->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
+      }
+      break;
+    case VDATA_R32 :
+      if( vector_from_real64( expr->left->sig->value, (double)expr->value->value.r32->val ) ) {
+        vsignal_propagate( expr->left->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
 
   PROFILE_END;
 
@@ -2260,7 +2353,22 @@ bool expression_op_func__sub_a(
   expression_set_eval_NN( expr );
 
   /* Finally, assign the new value to the left expression */
-  expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
+  switch( expr->value->suppl.part.data_type ) {
+    case VDATA_UL :
+      expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
+      break;
+    case VDATA_R64 :
+      if( vector_from_real64( expr->left->sig->value, expr->value->value.r64->val ) ) {
+        vsignal_propagate( expr->left->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
+      }
+      break;
+    case VDATA_R32 :
+      if( vector_from_real64( expr->left->sig->value, (double)expr->value->value.r32->val ) ) {
+        vsignal_propagate( expr->left->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
+      }
+      break;
+    default :  assert( 0 );  break;
+  }
 
   PROFILE_END;
 
@@ -4969,7 +5077,12 @@ bool expression_op_func__iinc(
   }
 
   /* Assign the left value to our value */
-  (void)vector_set_value_ulong( expr->value, expr->left->value->value.ul, expr->left->value->width );
+  switch( expr->left->value->suppl.part.data_type ) {
+    case VDATA_UL  :  (void)vector_set_value_ulong( expr->value, expr->left->value->value.ul, expr->left->value->width );  break;
+    case VDATA_R64 :  expr->value->value.r64->val = expr->left->value->value.r64->val;  break;
+    case VDATA_R32 :  expr->value->value.r32->val = expr->left->value->value.r32->val;  break;
+    default        :  assert( 0 );  break;
+  }
 
 #ifdef DEBUG_MODE
   if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -4998,7 +5111,12 @@ bool expression_op_func__pinc(
 ) { PROFILE(EXPRESSION_OP_FUNC__PINC);
 
   /* Copy the left-hand value to our expression */
-  (void)vector_set_value_ulong( expr->value, expr->left->value->value.ul, expr->left->value->width );
+  switch( expr->left->value->suppl.part.data_type ) {
+    case VDATA_UL  :  (void)vector_set_value_ulong( expr->value, expr->left->value->value.ul, expr->left->value->width );  break;
+    case VDATA_R64 :  expr->value->value.r64->val = expr->left->value->value.r64->val;  break;
+    case VDATA_R32 :  expr->value->value.r32->val = expr->left->value->value.r32->val;  break;
+    default        :  assert( 0 );  break;
+  }
 
   /* Perform increment */
   expr->elem.tvecs->index = 0;
@@ -5045,7 +5163,12 @@ bool expression_op_func__idec(
   }
 
   /* Copy the left-hand value to our expression */
-  (void)vector_set_value_ulong( expr->value, expr->left->value->value.ul, expr->left->value->width );
+  switch( expr->left->value->suppl.part.data_type ) {
+    case VDATA_UL  :  (void)vector_set_value_ulong( expr->value, expr->left->value->value.ul, expr->left->value->width );  break;
+    case VDATA_R64 :  expr->value->value.r64->val = expr->left->value->value.r64->val;  break;
+    case VDATA_R32 :  expr->value->value.r32->val = expr->left->value->value.r32->val;  break;
+    default        :  assert( 0 );  break;
+  }
 
 #ifdef DEBUG_MODE
   if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -5074,7 +5197,12 @@ bool expression_op_func__pdec(
 ) { PROFILE(EXPRESSION_OP_FUNC__PDEC);
 
   /* Copy the left-hand value to our expression */
-  (void)vector_set_value_ulong( expr->value, expr->left->value->value.ul, expr->left->value->width );
+  switch( expr->left->value->suppl.part.data_type ) {
+    case VDATA_UL  :  (void)vector_set_value_ulong( expr->value, expr->left->value->value.ul, expr->left->value->width );  break;
+    case VDATA_R64 :  expr->value->value.r64->val = expr->left->value->value.r64->val;  break;
+    case VDATA_R32 :  expr->value->value.r32->val = expr->left->value->value.r32->val;  break;
+    default        :  assert( 0 );  break;
+  }
 
   /* Perform decrement */
   expr->elem.tvecs->index = 0;
@@ -5991,6 +6119,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.381  2008/10/28 13:05:50  phase1geo
+ Regression updates for VCS runs.  Added several new diagnostics to verify the
+ $value$plusargs support.  Checkpointing.
+
  Revision 1.380  2008/10/27 23:27:22  phase1geo
  More work on testing $value$plusargs support.  Fixed a few issues related to this
  code.  Also fixed issue with function return value type.  Checkpointing.

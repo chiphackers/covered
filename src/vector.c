@@ -1334,7 +1334,7 @@ void vector_display_r64(
   rv64* value  /*!< Pointer to real64 structure from vector */
 ) {
 
-  printf( "read value: %s, stored value: %f", value->str, value->val );
+  printf( "read value: %s, stored value: %.16lf", value->str, value->val );
 
 }
 
@@ -1345,7 +1345,7 @@ void vector_display_r32(
   rv32* value  /*!< Pointer to real32 structure from vector */
 ) {
 
-  printf( "read value: %s, stored value: %f", value->str, value->val );
+  printf( "read value: %s, stored value: %.16f", value->str, value->val );
 
 }
 
@@ -5156,6 +5156,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.181  2008/10/28 23:12:56  phase1geo
+ Fixing issue with value_plusargs8 diagnostic in regression.  Updating regression
+ which now fully passes.
+
  Revision 1.180  2008/10/27 21:14:02  phase1geo
  First pass at getting the $value$plusargs system function call to work.  More
  work to do here.  Checkpointing.
