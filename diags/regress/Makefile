@@ -99,8 +99,9 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 real5.8         real5.9         real5.10        real5.11        real5.12 \
                 real5.13        real5.14        real5.15        real5.16        real6 \
                 real6.1         real6.2         real6.3         real6.4         real6.5 \
-                real6.6         real6.7         real6.8         real6.9         real7 \
-                real8           repeat1 \
+                real6.6         real6.7         real6.8         real6.9         real6.10 \
+                real6.11        real6.12        real6.13        real7           real8 \
+                repeat1 \
                 repeat2         repeat3         report1         report2         report3 \
                 report3.1       report4.2       report5         report6         report7 \
                 report7.1       report8         rshift1         rshift1.1       rshift1.2 \
