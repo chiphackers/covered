@@ -96,12 +96,9 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 real3.2         real3.3         real3.4         real3.5         real3.6 \
                 real3.7         real3.8         real5           real5.1         real5.2 \
                 real5.3         real5.4         real5.5         real5.6         real5.7 \
-                real5.8         real5.9         real5.10        real5.11        real5.12 \
-                real5.13        real5.14        real5.15        real5.16        real6 \
-                real6.1         real6.2         real6.3         real6.4         real6.5 \
-                real6.6         real6.7         real6.8         real6.9         real6.10 \
-                real6.11        real6.12        real6.13        real7           real8 \
-                repeat1 \
+                real5.8         real5.9         real5.10        real6           real6.1 \
+                real6.2         real6.3         real6.4         real6.5         real6.6 \
+                real6.7         real6.8         real6.9         real7           real8           repeat1 \
                 repeat2         repeat3         report1         report2         report3 \
                 report3.1       report4.2       report5         report6         report7 \
                 report7.1       report8         rshift1         rshift1.1       rshift1.2 \
@@ -228,6 +225,8 @@ VCSONLYDIAGS1 = afunc1            afunc2            always_comb1      always_com
                 marray1           marray1.1         marray1.2         marray1.3         marray2 \
                 marray2.1         marray2.2         marray2.3         mbit_sel5.4       mbit_sel6.4 \
                 mem3              op_assign1        param8.2          param12           param12.1 \
+                real5.11          real5.12          real5.13          real5.14          real5.15 \
+                real5.16          real6.10          real6.11          real6.12          real6.13 \
                 sbit_sel3.2       shortint1         signed4.1         slist3.1          slist3.3 \
                 static_afunc1     static_func1      static_func1.1    static_func2      static_func2.1 \
                 static_func2.2    static_func2.3    static_func3      timescale4        timescale4.1 \
