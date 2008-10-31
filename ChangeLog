@@ -1,697 +1,313 @@
-2008-10-06 15:08  phase1geo
-
-	Updating manpages.
-
-2008-10-06 00:24  phase1geo
-
-	Fixing bug 2124669.
-
-2008-10-05 23:59  phase1geo
-
-	Updating User's Guide to include -conservative and -Wignore option
-	documentation for score command.  Updated HTML documentation.
-
-2008-10-05 23:05  phase1geo
-
-	Adding support for logic block removal warning output.
-
-2008-10-05 15:21  phase1geo
-
-	Adding more diagnostics to regression suite which fully passes. 
-	Added -conservative and -Wignore options to the score command.
-
-2008-10-04 19:26  phase1geo
-
-	Adding more diagnostics to verify random system functions.  Fixed
-	some bugs in this code area.
-
-2008-10-03 23:28  phase1geo
-
-	Adding code to support $urandom, $srandom and $urandom_range. 
-	Added one test to begin verifying $urandom functionality.  The rest
-	of the system tasks need to be verified.  Checkpointing.
-
-2008-10-03 16:47  phase1geo
-
-	Checkpointing more system task work (things might be broken at the
-	moment).
-
-2008-10-03 08:14  phase1geo
-
-	Inserting placeholders for $srandom, $urandom, and $urandom_range
-	system call support.  Checkpointing.
-
-2008-10-02 23:27  phase1geo
-
-	Missing two files.
-
-2008-10-02 23:22  phase1geo
-
-	Adding support for $random and $time output in reports.  Added
-	diagnostics to verify this behavior works as expected.	Full
-	regressions pass.
-
-2008-10-02 22:13  phase1geo
-
-	Fixing problem with vector_from_int and vector_from_uint64 changes.
-	 Full regression passes again.
-
-2008-10-02 17:54  phase1geo
-
-	Attempting to fix vector_from_int and vector_from_uint64 warnings.
-
-2008-10-02 17:52  phase1geo
-
-	Adding code to random function so that we don't attempt to store
-	the new seed value into an expression.	Checkpointing.
-
-2008-10-02 16:39  phase1geo
-
-	Fixing issues with $random system task call.  Added more
-	diagnostics to verify its functionality.
-
-2008-10-02 09:54  phase1geo
-
-	Fixing parameterized $random system task calls.  This also lays the
-	foundation for how to return values from system task calls. 
-	Updating random1.1 files.  Full regression passes at this point.
-
-2008-10-02 01:46  phase1geo
-
-	Initial $random support added.	Added random1 and random1.1
-	diagnostics to regression suite.  random1.1 is currently failing. 
-	Checkpointing.
-
-2008-10-02 00:51  phase1geo
-
-	Reworking system task call parsing which will allow us to implement
-	system tasks with parameters (also will allow us to handle system
-	tasks correctly for the given generation).  Fixing bug 2127694. 
-	Fixing issue with current time in threads.  Full regressions pass.
-
-2008-10-01 01:06  phase1geo
-
-	Finishing code support needed for the $time operation.	Adding
-	several new diagnostics to regression suite to verify the newly
-	supported system task calls.  Added several new system task calls
-	to the list of "supported" task calls.
-
-2008-09-30 18:13  phase1geo
-
-	Checkpointing (TOT is broke at this point).
-
-2008-09-30 15:56  phase1geo
-
-	Updates for VCS regression testing (on 64-bit platform).
-
-2008-09-30 11:02  phase1geo
-
-	More regression updates for Cver VPI simulation.  Also cleaning up
-	some development documentation.
-
-2008-09-30 02:00  phase1geo
-
-	Completing regression updates (full regressions for IV and Cver now
-	pass).
-
-2008-09-29 23:59  phase1geo
-
-	More work on regressions for VPI mode of operation.  Checkpointing.
-
-2008-09-29 23:07  phase1geo
-
-	Fixing bug 2127674.  Updating regressions.
-
-2008-09-29 18:20  phase1geo
+2008-10-30 17:26  phase1geo
 
 	Regression updates.
 
-2008-09-29 18:04  phase1geo
+2008-10-29 23:08  phase1geo
 
-	Updating always1.
+	Adding diagnostics to verify real number support.  Full regression
+	passes.
 
-2008-09-29 18:00  phase1geo
+2008-10-29 18:16  phase1geo
 
-	Attempting to fix bug 2136474.	Also adding support for $time
-	system function call.
+	Added diagnostics to verify real-real op-and-assign functionality. 
+	Fixed bugs associated with these diagnostics.
 
-2008-09-29 10:09  phase1geo
+2008-10-29 08:49  phase1geo
 
-	Updating VCS regressions per recent changes.
+	Adding new diagnostics to verify real number support.
 
-2008-09-29 00:53  phase1geo
+2008-10-28 23:40  phase1geo
 
-	Adding support for several more system calls to parser.
+	Adding plusarg window to CDD generator wizard.
 
-2008-09-27 19:37  phase1geo
+2008-10-28 18:24  phase1geo
 
-	Updating RPM covered.spec file.
+	Updating User Guide documentation.
 
-2008-09-27 19:31  phase1geo
+2008-10-28 18:12  phase1geo
 
-	Updating wizard image.
+	Fixing issue with value_plusargs8 diagnostic in regression. 
+	Updating regression which now fully passes.
 
-2008-09-27 19:27  phase1geo
+2008-10-28 08:05  phase1geo
 
-	Updating preference images.  Add documentation for GUI merging
-	preferences pane.  Fixing bug 2133113.
+	Regression updates for VCS runs.  Added several new diagnostics to
+	verify the $value$plusargs support.  Checkpointing.
 
-2008-09-27 11:19  phase1geo
+2008-10-27 23:00  phase1geo
 
-	Updating preference window graphics.
+	Updating diagnostics and adding new system function calls for newer
+	Verilog-2001 dumping calls.
 
-2008-09-26 17:38  phase1geo
+2008-10-27 18:27  phase1geo
 
-	Added feature request 2129623.	Updated regressions for this change
-	(except for VCS regression at this point).
+	More work on testing $value$plusargs support.  Fixed a few issues
+	related to this code.  Also fixed issue with function return value
+	type.  Checkpointing.
 
-2008-09-26 08:38  phase1geo
+2008-10-27 16:14  phase1geo
 
-	Regression update for LXT.  Full regression passes for LXT.
+	First pass at getting the $value$plusargs system function call to
+	work.  More work to do here.  Checkpointing.
 
-2008-09-26 07:55  phase1geo
+2008-10-27 13:13  phase1geo
 
-	Diagnostic update.
+	Finished work to get $test$plusargs to work properly.  Added
+	test_plusargs1 diagnostic to regression suite to verify this
+	functionality.
 
-2008-09-25 17:50  phase1geo
+2008-10-27 08:20  phase1geo
 
-	Updates for VPI regression runs.  Still work to do here. 
+	More work on $test$plusargs and $value$plusargs support. 
 	Checkpointing.
 
-2008-09-25 15:59  phase1geo
+2008-10-27 00:00  phase1geo
 
-	Updates for LXT regressions (which now run cleanly).
+	Starting to add support for $test$plusargs and $value$plusargs
+	system function calls.	More work to do here.  Checkpointing.
 
-2008-09-25 00:05  phase1geo
+2008-10-26 21:14  phase1geo
 
-	Regression fixes for LXT runs.	Still not quite finished yet. 
-	Checkpointing.	Also contains fixes for bugs 2127678 and 2127687.
+	Updating regressions.  Fixed toggle coverage results for automatic
+	functions/tasks.
 
-2008-09-24 17:47  phase1geo
+2008-10-25 23:41  phase1geo
 
-	Fixing bugs 2125451 and 2127185.  Adding if1 diagnostic to verify
-	the fix for 2127185.
+	Adding support for functions returning real and realtime values. 
+	Added real7 diagnostic to verify this new support.
 
-2008-09-23 17:04  phase1geo
+2008-10-25 11:57  phase1geo
 
-	Updating manpage documentation.
+	Updating regression files.
 
-2008-09-23 16:38  phase1geo
+2008-10-25 11:26  phase1geo
 
-	Fixing segmentation fault issues with GUI and fixing exclusion
-	reason conflict resolution code.  This now works in the GUI as
-	needed.
+	Updating regression files.  Full regression passes.
 
-2008-09-23 09:28  phase1geo
+2008-10-25 08:55  phase1geo
 
-	Fixing bug 2124635.  Also fixing issue with exclusion reason
-	merging.
+	Adding missing configuration file.
 
-2008-09-23 09:02  phase1geo
+2008-10-25 08:24  phase1geo
 
-	Adding exclusion reason conflict resolution to GUI.
+	Attempting to fix VPI simulation for time 0 problems.
 
-2008-09-23 08:01  phase1geo
+2008-10-24 17:35  phase1geo
 
-	Adding "Merging" preference option frame.  The exclusion reason
-	conflict resolution options can be saved/read from the
-	configuration file but the functionality is not currently hooked up
-	when merging.
+	Adding more timescale diagnostics to verify $time functionality. 
+	Changing decimal value string converter to use vector_from_uint64
+	instead of vector_from_int to allow greater decimal values to be
+	used.
 
-2008-09-23 01:17  phase1geo
+2008-10-24 16:11  phase1geo
 
-	Fixing a few bugs in the interactive exclusion reason conflict
-	resolver.  Also adding a check for an incorrect answer and
-	re-asking.
+	Updating regression files per latest changes.
 
-2008-09-23 01:08  phase1geo
+2008-10-24 15:36  phase1geo
 
-	Removing delay3 from Cver regression (since Cver has an issue with
-	parsing this type of file).
+	Adding more diagnostics for timescale testing with the $time
+	function.  Fixing issues with timescale calculation.
 
-2008-09-23 00:48  phase1geo
+2008-10-24 12:27  phase1geo
 
-	Fixing bug 2123730 (bug 2123300 was also fixed in a previous
-	checkin).  Also adding delay3 diagnostic to verify this bug fix.
+	Fixing issues with removing underscores from real numbers.
 
-2008-09-22 22:42  phase1geo
+2008-10-24 10:26  phase1geo
 
-	Adding diagnostics to verify exclusion reason conflict resolution
-	code.
+	Working on the ability to read real numbers with underscores in
+	them.  Still have some work to do here.  Checkpointing.
 
-2008-09-22 17:15  phase1geo
+2008-10-24 09:48  phase1geo
 
-	Initial code for supporting the merging and resolution of exclusion
-	reasons.  This code is completely untested at this point but does
-	compile.  Checkpointing.
+	Fixing syntax error with timescale4.v.
 
-2008-09-22 00:05  phase1geo
+2008-10-24 08:43  phase1geo
 
-	Adding documentation in User's Guide for new -er option to the
-	merge command.
+	Adding initial timescale diagnostic to verify real delay values.
 
-2008-09-22 00:04  phase1geo
+2008-10-24 00:27  phase1geo
 
-	Adding parsing support for new -er option.
+	Adding several new diagnostics to verify real number support.
 
-2008-09-21 23:19  phase1geo
+2008-10-23 18:04  phase1geo
 
-	Fixing bug 2122019.  Also adding exclusion reason timestamp support
-	to CDD files.
+	Removing real4 diagnostic from regression runs since shortreal is
+	currently not handled by VCS.
 
-2008-09-21 08:36  phase1geo
+2008-10-23 18:00  phase1geo
 
-	Completing code to get functional unit version information into CDD
-	file and functional units.  Added new version1 and version1.1
-	diagnostics to verify that this functionality works as expected. 
-	Still need to make use of this information.
+	Working on more real number diagnostics.  Fixes for negative real
+	number parsing from command line.  Also added an error message when
+	the value specified for the -P option to the score command is an
+	illegal value.
 
-2008-09-21 08:30  phase1geo
+2008-10-23 17:16  phase1geo
 
-	Fixing diagnostic bug.
+	Fixing -P support.
 
-2008-09-21 08:29  phase1geo
+2008-10-23 15:54  phase1geo
 
-	Adding version of version1.1 for testing.
+	Adding support for real parameters.  Added more real number
+	diagnostics to regression suite.
 
-2008-09-21 08:09  phase1geo
+2008-10-23 12:40  phase1geo
 
-	Fixing compile errors.
+	Updating VCS regression (fully passes).
 
-2008-09-21 07:54  phase1geo
+2008-10-23 11:04  phase1geo
 
-	Adding version1 diagnostic to testsuite.
+	Fixing issue with real1.1 regression failure.  Full regression
+	passes.
 
-2008-09-20 01:02  phase1geo
+2008-10-23 09:29  phase1geo
 
-	Updates for new banner.
+	A few more updates for real number support.  At this time real1.1
+	fails in regression.  Checkpointing.
 
-2008-09-19 17:59  phase1geo
+2008-10-23 09:21  phase1geo
 
-	Adding initial support for module version information.	Verified
-	that the new code does not break existing regression.  Also added
-	new Covered banner.
+	Fixing splint errors with new real number support.
 
-2008-09-18 23:47  phase1geo
+2008-10-23 07:25  phase1geo
 
-	Adding several new diagnostics to regression suite to add coverage
-	for rank.c file (parsing option errors mostly).  Fixing issue with
-	rank command when an invalid option was specified (output incorrect
-	output message).
+	Fixing splint error.
 
-2008-09-18 18:07  phase1geo
+2008-10-23 00:05  phase1geo
 
-	Adding diagnostics to help rank coverage (still more to go).
-
-2008-09-18 17:26  phase1geo
-
-	Adding more diagnostics to regression to increase coverage of
-	exclude.c.
-
-2008-09-18 16:55  phase1geo
-
-	Fixing memory issues in exclude.c and adding missing exclude13.err
-	file in regressions.
-
-2008-09-18 09:18  phase1geo
-
-	Working on exclude13 diagnostic.  Not working quite yet. 
-	Checkpointing.
-
-2008-09-18 08:03  phase1geo
-
-	Updating Makefile to get Cver regression to work.
-
-2008-09-18 01:29  phase1geo
-
-	Fixing regression error.
-
-2008-09-18 01:04  phase1geo
-
-	Adding more diagnostics to regression to cover exclude.c missed
-	cases.
-
-2008-09-17 23:42  phase1geo
-
-	Adding more exclusion diagnostics to regression suite.
-
-2008-09-17 23:11  phase1geo
-
-	Adding new exclude diagnostic and updating regression.
-
-2008-09-17 10:03  phase1geo
-
-	Adding more exclude tests to regressiion suite.  Fixing memory
-	issue in parser.
-
-2008-09-17 01:16  phase1geo
-
-	Adding merge6.1 diagnostic to regression suite.
-
-2008-09-16 23:55  phase1geo
-
-	Integrating new get_absolute_path and get_relative_path functions
-	and updating regressions.  Also fixed a few coding bugs with these
-	new functions.	IV and Cver regressions fully pass at the moment.
-
-2008-09-16 18:15  phase1geo
-
-	Adding initial versions of utility functions to calculate the
-	relative and absolute pathnames of files.  This functionality has
-	not been tested and has not been used in the code at this time. 
-	Checkpointing.
-
-2008-09-16 08:00  phase1geo
-
-	Fixing some memory issues with the obfuscation functionality and
-	minore optimizations to this code.  Other insignificant updates.
-
-2008-09-15 23:51  phase1geo
-
-	Fixing file removal in checkTest regression subroutine.  Also added
-	code for regression testing that allows us to verify that reports
-	get generated correctly.  Full IV regression now passes with no
-	leftover files.
-
-2008-09-15 18:17  phase1geo
-
-	Fix for bug 2112613.
-
-2008-09-15 18:01  phase1geo
-
-	Updating regressions per latest change.
-
-2008-09-15 17:42  phase1geo
-
-	Fixing bug 2112509.
-
-2008-09-15 17:04  phase1geo
-
-	Fixing bug 2112858.  Also added new exclude10.3.1 diagnostic which
-	recreates bug 2112613 (this bug is not fixed yet, however).
-
-2008-09-15 16:51  phase1geo
-
-	Updating VCS regressions.
-
-2008-09-15 00:00  phase1geo
-
-	Documentation updates.
-
-2008-09-14 23:18  phase1geo
-
-	Adding rank.c to splint checker and cleaned up all splint warnings
-	with this file.
-
-2008-09-14 22:43  phase1geo
-
-	Cleaning up splint warnings.
-
-2008-09-13 08:04  phase1geo
-
-	Moving exclusion ID of FSM from the arc transitions to the FSM
-	itself (only one ID needed to be stored).  This improves on memory
-	usage and performance when searching for exclusions.
-
-2008-09-12 18:06  phase1geo
-
-	Fixing cdd_diff script for regression.
-
-2008-09-12 16:23  phase1geo
-
-	Updating VCS regression files.
-
-2008-09-12 08:59  phase1geo
-
-	Cleaning up Cver regressions.
-
-2008-09-11 21:46  phase1geo
-
-	Adding more tests to verify codegen.c code for coverage.
-
-2008-09-11 18:06  phase1geo
-
-	Fixing issue with parameters not being given valid exclusion IDs. 
-	Updated regressions and fixed a few perl script diagnostics.  Full
-	regressions for IV and Cver now pass.
-
-2008-09-11 15:19  phase1geo
-
-	Fixing !== operator (bug 2106313).  Adding more diagnostics to
-	regression to verify codegen code.
-
-2008-09-11 11:05  phase1geo
-
-	Adding more diagnostics to enhance code coverage in codegen.c.
-
-2008-09-11 09:29  phase1geo
-
-	Adding mem4.1 to verify more codegen code coverage cases.
-
-2008-09-10 23:51  phase1geo
-
-	Fixing bugs 2104947 and 2104924.  Adding mem4 diagnostic to verify.
-	 Also added negate2 diagnostic for coverage purposes.
-
-2008-09-10 18:17  phase1geo
-
-	Adding exclude10.5 diagnostic to regression suite.
-
-2008-09-10 18:06  phase1geo
-
-	Adding several new diagnostics for coverage testing purposes. 
-	Fixed a few bugs that surfaced when performing this testing.
-
-2008-09-10 10:52  phase1geo
-
-	Updating covered.spec for RPM builds.
-
-2008-09-09 23:28  phase1geo
-
-	More FSM documentation updates.
-
-2008-09-09 23:17  phase1geo
-
-	Updating screenshot per recent changes to this window.
-
-2008-09-09 23:04  phase1geo
-
-	Fixing bug 2095799.
-
-2008-09-09 17:42  phase1geo
-
-	Working on fix for bug 2095799.  Not working correctly at this
-	point but I'm checkpointing.
-
-2008-09-09 17:07  phase1geo
-
-	Fixing bug 2095796.
-
-2008-09-09 16:32  phase1geo
-
-	Removing unnecessary puts calls.
-
-2008-09-09 16:20  phase1geo
-
-	Fixing FSM exclusion issues.  Updated the rest of documentation for
-	the exclusion changes.
-
-2008-09-09 01:51  phase1geo
-
-	Attempting to get help working when using kfmclient for URL
-	viewing.
-
-2008-09-09 01:31  phase1geo
-
-	Setting help button in exclusion window to point to correct
-	documentation page.
-
-2008-09-09 01:30  phase1geo
-
-	FSM exclusion is functional.  Just need to update the appropriate
-	GUI elements when an FSM state transition is excluded. 
-	Checkpointing.
-
-2008-09-08 17:15  phase1geo
-
-	Regression updates and modifications for new FSM GUI output (this
-	isn't complete at this time).  Checkpointing.
-
-2008-09-08 08:44  phase1geo
-
-	Adding report options to support exclusions.  Regenerated
+	Updating User Guide to reflect new support for real numbers and
+	various real number system functions.  Regenerated HTML
 	documentation.
 
-2008-09-08 01:07  phase1geo
+2008-10-22 23:56  phase1geo
 
-	Adding documentation for exclusions.  Still a few more things to be
-	documented but this is the meat.  Regenerated documentation and
-	added figures.	Checkpointing.
+	Added diagnostics to verify the $rtoi, $realtobits and $bitstoreal
+	system functions.  Updated code to allow these diagnostics to pass.
+	 Full regression passes.
 
-2008-09-07 00:06  phase1geo
+2008-10-22 17:00  phase1geo
 
-	Fixing regression bugs.  IV and Cver regressions now run cleanly
-	again.
+	Updating VCS regressions (fully pass now).  Made a few fixes to get
+	VCS regressions to pass.  We are now at a known good state. 
+	Further testing of real numbers will proceed.
 
-2008-09-06 23:03  phase1geo
+2008-10-22 10:55  phase1geo
 
-	Fixing some recently added segmentation faults.  Fixed FSM
-	exclusion reason handling.
+	Fixing syntax error in VPI.
 
-2008-09-06 00:59  phase1geo
+2008-10-22 10:17  phase1geo
 
-	Adding assertion exclusion reason support and have most code
-	implemented for FSM exclusion reason support (still working on
-	debugging this code).  I believe that assertions, FSMs and lines
-	might suffer from the same problem...  Checkpointing.
+	Added support for real values to the VPI functionality.
 
-2008-09-05 18:18  phase1geo
+2008-10-21 17:55  phase1geo
 
-	Adding exclusion preference pane.  Also added support for exclusion
-	reason for line coverage.  Checkpointing.
+	More updates to get real values working.  IV and Cver regressions
+	work (except for VPI mode of operation).  Checkpointing.
 
-2008-09-05 07:57  phase1geo
+2008-10-21 00:38  phase1geo
 
-	Starting to work on exclusion preferences panel.  Checkpointing.
+	More updates to support real values.  Added vector_from_real64
+	functionality.	Checkpointing.
 
-2008-09-04 18:08  phase1geo
+2008-10-20 18:20  phase1geo
 
-	More work on exclusions via GUI.  Still work to go.  Checkpointing.
+	Adding support for vector_from_int coverage accumulation (untested
+	at this point).  Updating Cver regressions.  Checkpointing.
 
-2008-09-04 16:34  phase1geo
+2008-10-20 17:29  phase1geo
 
-	Completed work to get exclude reason support to work with toggle
-	coverage.  Ground-work is laid for the rest of the coverage
-	metrics.  Checkpointing.
+	Updating more regression files.  Adding reentrant support for real
+	numbers.  Also fixing uninitialized memory access issue in expr.c.
 
-2008-09-04 08:21  phase1geo
+2008-10-20 08:00  phase1geo
 
-	More script updates.
+	More updates to support real numbers.  Updating regressions per
+	recent changes.  Checkpointing.
 
-2008-09-04 07:46  phase1geo
+2008-10-18 01:14  phase1geo
 
-	More changes to exclusion window.
-
-2008-09-04 01:47  phase1geo
-
-	Fixing file issue from last checkin.
-
-2008-09-04 01:46  phase1geo
-
-	Removing unnecessary files.  More work on the exclusion reason
-	creation window.  Starting to tie this window into the framework
-	(more work to go here).  Checkpointing.
-
-2008-09-03 23:15  phase1geo
-
-	Adding -p option to exclude command.  Updating other files per this
-	change.  Checkpointing.
-
-2008-09-03 18:20  phase1geo
-
-	Adding initial start to exclude.tcl.  Lots of work to be done yet. 
+	Continuing to add support for real values and associated system
+	function calls.  Updating regressions per these changes. 
 	Checkpointing.
 
-2008-09-03 08:38  phase1geo
+2008-10-17 18:20  phase1geo
 
-	Updating report generator for new functionality.
+	Continuing to add support support for real values.  Making some
+	good progress here (real delays should be working now).  Updated
+	regressions per recent changes.  Checkpointing.
 
-2008-09-03 00:31  phase1geo
+2008-10-17 08:50  phase1geo
 
-	Adding in FSM exclusion support to exclude and report -e commands. 
-	Updating regressions per recent changes.  Checkpointing.
-
-2008-09-02 22:46  phase1geo
-
-	Updates for memory and assertion exclusion output.  Checkpointing.
-
-2008-09-02 17:41  phase1geo
-
-	Starting to work on adding exclusion reason output to report files.
-	 Added support for exclusion reasons to CDD files.  Checkpointing.
-
-2008-09-02 08:12  phase1geo
-
-	Adding code to remove all formatting characters from exclude
-	messages.  Checkpointing.
-
-2008-09-02 00:53  phase1geo
-
-	More code additions for exclude command.  Fixing a few bugs in this
-	code as well.  Checkpointing.
-
-2008-09-02 00:20  phase1geo
-
-	More updates for exclude command.  Updates to CVER regression.
-
-2008-08-29 08:01  phase1geo
-
-	Removing exclusion ID from covered coverage points.  Checkpointing.
-
-2008-08-29 00:38  phase1geo
-
-	Adding initial pass of FSM exclusion ID output.  Need to fix issues
-	with the -e option usage for all metrics, I believe (certainly for
-	FSM).  Checkpointing.
-
-2008-08-28 16:24  phase1geo
-
-	Adding support for exclusion output for assertions.  Updated
-	regressions accordingly.  Checkpointing.
-
-2008-08-28 13:51  phase1geo
-
-	Added support to output exclusion identifiers in combinational
-	logic expression verbose output.  Updated regression suite for
-	these changes.	Checkpointing.
-
-2008-08-28 11:52  phase1geo
-
-	Adding toggle and memory exclusion support in report command. 
+	A few more code updates for real support.  Updating CDD version and
+	updating regression files (what we can currently run). 
 	Checkpointing.
 
-2008-08-28 08:59  phase1geo
+2008-10-17 02:26  phase1geo
 
-	More updates to be more efficient in outputting exclusion IDs. 
-	Also added capability (or the start of) to output exclusions when
-	the -e option is specified.  Updated regressions per these changes.
-	 Checkpointing.
+	Updating regressions per recent changes and doing more work to
+	fixing real value bugs (still not working yet).  Checkpointing.
 
-2008-08-27 23:37  phase1geo
+2008-10-16 18:11  phase1geo
 
-	Starting to add support for exclusion output and exclusion IDs to
-	generated reports.  These changes should break regressions. 
+	More work on support for real numbers.	I believe that all of the
+	code now exists in vector.c to support them.  Still need to do work
+	in expr.c.  Added two new tests for real numbers to begin verifying
+	their support (they both do not currently pass, however). 
 	Checkpointing.
 
-2008-08-27 18:08  phase1geo
+2008-10-16 00:16  phase1geo
 
-	Updates for VCS regressions.
-
-2008-08-27 18:05  phase1geo
-
-	Starting to make updates for supporting command-line exclusions. 
-	Signals now have a unique ID associated with them in the CDD file. 
+	More work on real number support.  Still a work in progress. 
 	Checkpointing.
 
-2008-08-26 18:17  phase1geo
+2008-10-15 17:15  phase1geo
 
-	Updating release.in for user documentation change.
+	More updates to support real values.  Still a lot of work to go
+	here.
 
-2008-08-26 18:03  phase1geo
+2008-10-15 08:28  phase1geo
 
-	Updated the NEWS and ChangeLog files for the next development
-	release.
+	Beginning to add support for real numbers.  Things are broken in
+	regards to real numbers at the moment.	Checkpointing.
 
-2008-08-26 14:00  phase1geo
+2008-10-10 22:59  phase1geo
 
-	Completing documentation passes.
+	Fixing bug 2158626.  Also removing RASSIGN expression statements
+	from line coverage (they are always executed and therefore will
+	never be interesting from a line coverage standpoint).
 
-2008-08-26 00:42  phase1geo
+2008-10-10 21:55  phase1geo
 
-	Updating development release dates for today (release should occur
-	later today).
+	Fixing bug 2158297.
 
-2008-08-26 00:37  phase1geo
+2008-10-07 19:05  phase1geo
 
-	More documentation updates.  Checkpointing.
+	Updating new CDD type image.
+
+2008-10-07 17:31  phase1geo
+
+	Cleaning up splint warnings.  Cleaning up development
+	documentation.
+
+2008-10-07 15:19  phase1geo
+
+	Adding documentation for the new -dumpvars option.  Also added
+	support for this feature in the GUI CDD generator wizard.
+
+2008-10-07 13:37  phase1geo
+
+	Fixing bug introduced in sim.c that kept automatic tasks/functions
+	from working.  Updated regressions (VCS fully passes now).
+
+2008-10-07 10:09  phase1geo
+
+	Changed -vpi_ts to -top_ts.
+
+2008-10-07 00:26  phase1geo
+
+	Updating TODO.
+
+2008-10-07 00:24  phase1geo
+
+	Adding -dumpvars option.  Need to resolve a few issues before this
+	work is considered complete.
 

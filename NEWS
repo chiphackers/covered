@@ -1,6 +1,30 @@
 Covered-Related NEWS
 ====================
 
+    * 10/30/2008
+
+Development release covered-20081030 made.  This development release is primarily a language support release in that
+now Covered handles real numbers and has support for several built-in system task/function calls.  A few bug fixes
+have also been included along with documentation updates.  Here's the rundown of the changes:
+
+  - Fixed bug 2158297.  When initialized registers are output in a coverage report, a segmentation fault occurred.
+  - Fixed bug 2158626.  Initialized registers could report missing toggle coverage information in several instances.
+  - Removed register initialization statements from line coverage. 
+  - Added full support for real numbers (real, realtime and shortreal) as both mathematical values as well as delay values.
+  - Added support for runtime plus arguments to score command (also added the ability to specify plusargs to the New CDD
+    creation wizard in the GUI).
+  - Added functional support for the following built-in system task/function calls:  $bitstoreal, $bitstoshortreal, $rtoi,
+    $test$plusargs, $itor, $value$plusargs, $shortrealtobits, $realtobits
+  - Added the ability to allow the following built-in system task/function calls such that logic blocks containing these
+    will now be able to be considered for coverage:  $swrite, $dumpports, $ferror, $swriteb, $dumpportsall, $fflush, $swriteh,
+    $dumpportsoff, $fgetc, $swriteo, $dumpportson, $fgets, $dumpportslimit, $ungetc, $dumpportsflush
+  - Outputs an error if the value specified for the -P option to the score command is specified incorrectly.
+  - Fixed timescale issues
+  - Fixing time 0 problems for VPI mode of operation
+  - Fixed toggle coverage results for automatic functions/tasks.
+  - Updated User Guide per these changes
+  - Enhanced regression suite to verify new functionality.
+
     * 10/07/2008
 
 Development release covered-20081006 made.  This development release is both a feature and a bug fix release.  The main
