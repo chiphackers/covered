@@ -521,12 +521,13 @@ void funit_size_elements(
  returns TRUE.
 */
 void funit_db_write(
-  func_unit*  funit,       /*!< Pointer to functional unit to write to output */
-  char*       scope,       /*!< String version of functional unit scope in hierarchy */
-  FILE*       file,        /*!< Pointer to specified output file to write contents */
-  funit_inst* inst,        /*!< Pointer to the current functional unit instance */
-  bool        report_save  /*!< Specifies that we are attempting to save a CDD after modifying the database in
-                                the report command */
+  func_unit*  funit,        /*!< Pointer to functional unit to write to output */
+  char*       scope,        /*!< String version of functional unit scope in hierarchy */
+  FILE*       file,         /*!< Pointer to specified output file to write contents */
+  funit_inst* inst,         /*!< Pointer to the current functional unit instance */
+  bool        report_save,  /*!< Specifies that we are attempting to save a CDD after modifying the database in
+                                 the report command */
+  bool        ids_issued    /*!< Specifies if IDs have been issued prior to calling this function */
 ) { PROFILE(FUNIT_DB_WRITE);
 
   sig_link*       curr_sig;       /* Pointer to current functional unit sig_link element */
@@ -602,7 +603,7 @@ void funit_db_write(
     /* Now print all expressions in functional unit */
     curr_exp = funit->exp_head;
     while( curr_exp != NULL ) {
-      expression_db_write( curr_exp->exp, file, (inst != NULL) );
+      expression_db_write( curr_exp->exp, file, (inst != NULL), ids_issued );
       curr_exp = curr_exp->next;
     }
 
@@ -651,7 +652,7 @@ void funit_db_write(
       stmt_iter_reset( &curr_stmt, funit->stmt_head );
     }
     while( curr_stmt.curr != NULL ) {
-      statement_db_write( curr_stmt.curr->stmt, file, (inst != NULL) );
+      statement_db_write( curr_stmt.curr->stmt, file, ids_issued );
       stmt_iter_next( &curr_stmt );
     }
 
@@ -669,7 +670,7 @@ void funit_db_write(
     /* Now print all FSM structures in functional unit */
     curr_fsm = funit->fsm_head;
     while( curr_fsm != NULL ) {
-      fsm_db_write( curr_fsm->table, file, (inst != NULL) );
+      fsm_db_write( curr_fsm->table, file, ids_issued );
       curr_fsm = curr_fsm->next;
     }
 
@@ -1591,6 +1592,10 @@ void funit_dealloc(
 
 /*
  $Log$
+ Revision 1.115  2008/10/23 20:54:52  phase1geo
+ Adding support for real parameters.  Added more real number diagnostics to
+ regression suite.
+
  Revision 1.114  2008/10/07 05:24:17  phase1geo
  Adding -dumpvars option.  Need to resolve a few issues before this work is considered
  complete.

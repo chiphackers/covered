@@ -317,17 +317,13 @@ void statement_size_elements(
 }
     
 /*!
- \param stmt        Pointer to statement to write out value.
- \param ofile       Pointer to output file to write statement line to.
- \param parse_mode  Specifies if we are writing the CDD immediately after parsing
-
  Recursively writes the contents of the specified statement tree (and its
  associated expression trees to the specified output stream.
 */
 void statement_db_write(
-  statement* stmt,
-  FILE*      ofile,
-  bool       parse_mode
+  statement* stmt,       /*!< Pointer to statement to write out value */
+  FILE*      ofile,      /*!< Pointer to output file to write statement line to */
+  bool       ids_issued  /*!< Specifies that IDs were issued just prior to calling this function */
 ) { PROFILE(STATEMENT_DB_WRITE);
 
   assert( stmt != NULL );
@@ -335,10 +331,10 @@ void statement_db_write(
   /* Write out contents of this statement last */
   fprintf( ofile, "%d %d %x %d %d",
     DB_TYPE_STATEMENT,
-    expression_get_id( stmt->exp, parse_mode ),
+    expression_get_id( stmt->exp, ids_issued ),
     (stmt->suppl.all & 0xff),
-    ((stmt->next_true   == NULL) ? 0 : expression_get_id( stmt->next_true->exp, parse_mode )),
-    ((stmt->next_false  == NULL) ? 0 : expression_get_id( stmt->next_false->exp, parse_mode ))
+    ((stmt->next_true   == NULL) ? 0 : expression_get_id( stmt->next_true->exp, ids_issued )),
+    ((stmt->next_false  == NULL) ? 0 : expression_get_id( stmt->next_false->exp, ids_issued ))
   );
 
   fprintf( ofile, "\n" );
@@ -993,6 +989,11 @@ void statement_dealloc(
 
 /*
  $Log$
+ Revision 1.138  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.134.2.1  2008/07/10 22:43:54  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

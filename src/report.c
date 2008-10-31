@@ -920,7 +920,7 @@ void report_save_cdd(
   /* Write the instance database */
   curr_db = 1;
 
-  db_write( filename, FALSE, TRUE );
+  db_write( filename, FALSE, FALSE, TRUE );
 
   /* Restore the database */
   curr_db = 0;
@@ -1239,6 +1239,9 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.126  2008/09/22 04:19:57  phase1geo
+ Fixing bug 2122019.  Also adding exclusion reason timestamp support to CDD files.
+
  Revision 1.125  2008/09/17 04:55:46  phase1geo
  Integrating new get_absolute_path and get_relative_path functions and
  updating regressions.  Also fixed a few coding bugs with these new functions.

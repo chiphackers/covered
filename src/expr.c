@@ -1435,24 +1435,25 @@ void expression_assign_expr_ids(
  expression tree to the coverage database specified by file.
 */
 void expression_db_write(
-  expression* expr,       /*!< Pointer to expression to write to database file */
-  FILE*       file,       /*!< Pointer to database file to write to */
-  bool        parse_mode  /*!< Set to TRUE when we are writing after just parsing the design (causes ulid value to be
-                               output instead of id) */
+  expression* expr,        /*!< Pointer to expression to write to database file */
+  FILE*       file,        /*!< Pointer to database file to write to */
+  bool        parse_mode,  /*!< Set to TRUE when we are writing after just parsing the design (causes ulid value to be
+                                output instead of id) */
+  bool        ids_issued   /*!< Set to TRUE if IDs were issued prior to calling this function */
 ) { PROFILE(EXPRESSION_DB_WRITE);
 
   assert( expr != NULL );
 
   fprintf( file, "%d %d %d %x %x %x %x %d %d",
     DB_TYPE_EXPRESSION,
-    expression_get_id( expr, parse_mode ),
+    expression_get_id( expr, ids_issued ),
     expr->line,
     expr->col,
     ((((expr->op == EXP_OP_DASSIGN) || (expr->op == EXP_OP_ASSIGN)) && (expr->exec_num == 0)) ? (uint32)1 : expr->exec_num),
     expr->op,
     (expr->suppl.all & ESUPPL_MERGE_MASK),
-    ((expr->op == EXP_OP_STATIC) ? 0 : expression_get_id( expr->right, parse_mode )),
-    ((expr->op == EXP_OP_STATIC) ? 0 : expression_get_id( expr->left,  parse_mode ))
+    ((expr->op == EXP_OP_STATIC) ? 0 : expression_get_id( expr->right, ids_issued )),
+    ((expr->op == EXP_OP_STATIC) ? 0 : expression_get_id( expr->left,  ids_issued ))
   );
 
   if( ESUPPL_OWNS_VEC( expr->suppl ) ) {
@@ -1491,7 +1492,7 @@ void expression_db_write_tree(
     expression_db_write_tree( root->right, ofile );
 
     /* Now write ourselves */
-    expression_db_write( root, ofile, TRUE );
+    expression_db_write( root, ofile, TRUE, TRUE );
 
   }
 
@@ -6119,6 +6120,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.382  2008/10/29 23:16:48  phase1geo
+ Added diagnostics to verify real-real op-and-assign functionality.  Fixed
+ bugs associated with these diagnostics.
+
  Revision 1.381  2008/10/28 13:05:50  phase1geo
  Regression updates for VCS runs.  Added several new diagnostics to verify the
  $value$plusargs support.  Checkpointing.

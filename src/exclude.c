@@ -1855,7 +1855,7 @@ void command_exclude(
       rv = snprintf( user_msg, USER_MSG_LENGTH, "Writing CDD file \"%s\"", exclude_cdd );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-      db_write( exclude_cdd, FALSE, TRUE );
+      db_write( exclude_cdd, FALSE, FALSE, TRUE );
     }
 
   } Catch_anonymous {}
@@ -1874,6 +1874,9 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.48  2008/10/07 22:31:42  phase1geo
+ Cleaning up splint warnings.  Cleaning up development documentation.
+
  Revision 1.47  2008/09/23 06:17:50  phase1geo
  Fixing a few bugs in the interactive exclusion reason conflict resolver.  Also
  adding a check for an incorrect answer and re-asking.

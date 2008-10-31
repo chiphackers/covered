@@ -202,7 +202,7 @@ void parse_design(
     }
 
     /* Write contents to baseline database file. */
-    db_write( output_db, TRUE, FALSE );
+    db_write( output_db, TRUE, TRUE, FALSE );
 
   } Catch_anonymous {
     fsm_var_cleanup();
@@ -293,7 +293,7 @@ void parse_and_score_dumpfile(
     info_suppl.part.scored = 1;
 
     /* Write contents to database file */
-    db_write( db, FALSE, FALSE );
+    db_write( db, FALSE, FALSE, FALSE );
 
   } Catch_anonymous {
     sim_dealloc();
@@ -309,6 +309,10 @@ void parse_and_score_dumpfile(
 
 /*
  $Log$
+ Revision 1.73  2008/10/07 05:24:18  phase1geo
+ Adding -dumpvars option.  Need to resolve a few issues before this work is considered
+ complete.
+
  Revision 1.72  2008/09/04 21:34:20  phase1geo
  Completed work to get exclude reason support to work with toggle coverage.
  Ground-work is laid for the rest of the coverage metrics.  Checkpointing.

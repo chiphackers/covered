@@ -880,6 +880,7 @@ void instance_db_write(
   FILE*       file,        /*!< Output file to display contents to */
   char*       scope,       /*!< Scope of this functional unit */
   bool        parse_mode,  /*!< Specifies if we are parsing or scoring */
+  bool        issue_ids,   /*!< Specifies that we need to issue expression and signal IDs */
   bool        report_save  /*!< Specifies if we are saving a CDD file after modifying it with the report command */
 ) { PROFILE(INSTANCE_DB_WRITE);
 
@@ -895,7 +896,7 @@ void instance_db_write(
     curr = parse_mode ? root : NULL;
 
     /* If we are in parse mode, re-issue expression IDs (we use the ulid field since it is not used in parse mode) */
-    if( parse_mode ) {
+    if( issue_ids ) {
 
       exp_link*   expl;
       sig_link*   sigl;
@@ -930,14 +931,14 @@ void instance_db_write(
     }
 
     /* Display root functional unit */
-    funit_db_write( root->funit, scope, file, curr, report_save );
+    funit_db_write( root->funit, scope, file, curr, report_save, issue_ids );
 
     /* Display children */
     curr = root->child_head;
     while( curr != NULL ) {
       unsigned int rv = snprintf( tscope, 4096, "%s.%s", scope, curr->name );
       assert( rv < 4096 );
-      instance_db_write( curr, file, tscope, parse_mode, report_save );
+      instance_db_write( curr, file, tscope, parse_mode, issue_ids, report_save );
       curr = curr->next;
     }
 
@@ -1320,6 +1321,10 @@ void instance_dealloc(
 
 /*
  $Log$
+ Revision 1.106  2008/10/07 05:24:17  phase1geo
+ Adding -dumpvars option.  Need to resolve a few issues before this work is considered
+ complete.
+
  Revision 1.105  2008/09/24 22:47:28  phase1geo
  Fixing bugs 2125451 and 2127185.  Adding if1 diagnostic to verify the fix for
  2127185.

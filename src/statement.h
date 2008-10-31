@@ -36,7 +36,7 @@ statement* statement_create(
 void statement_size_elements( statement* stmt, func_unit* funit );
 
 /*! \brief Writes specified statement to the specified output file. */
-void statement_db_write( statement* stmt, FILE* ofile, bool parse_mode );
+void statement_db_write( statement* stmt, FILE* ofile, bool ids_issued );
 
 /*! \brief Writes specified statement tree to the specified output file. */
 void statement_db_write_tree( statement* stmt, FILE* ofile );
@@ -80,6 +80,10 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.37  2008/04/06 05:24:17  phase1geo
+ Fixing another regression memory problem.  Updated regression files
+ accordingly.  Checkpointing.
+
  Revision 1.36  2008/02/29 00:08:31  phase1geo
  Completed optimization code in simulator.  Still need to verify that code
  changes enhanced performances as desired.  Checkpointing.

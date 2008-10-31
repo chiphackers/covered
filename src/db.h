@@ -40,6 +40,7 @@ bool db_check_for_top_module();
 void db_write(
   const char* file,
   bool        parse_mode,
+  bool        issue_ids,
   bool        report_save
 );
 
@@ -223,6 +224,10 @@ bool db_do_timestep( uint64 time, bool final );
 
 /*
  $Log$
+ Revision 1.97  2008/10/07 05:24:17  phase1geo
+ Adding -dumpvars option.  Need to resolve a few issues before this work is considered
+ complete.
+
  Revision 1.96  2008/10/02 05:51:09  phase1geo
  Reworking system task call parsing which will allow us to implement system tasks with
  parameters (also will allow us to handle system tasks correctly for the given generation).

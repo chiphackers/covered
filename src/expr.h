@@ -81,7 +81,7 @@ statement* expression_get_root_statement( expression* exp );
 void expression_assign_expr_ids( expression* root, func_unit* funit );
 
 /*! \brief Writes this expression to the specified database file. */
-void expression_db_write( expression* expr, FILE* file, bool parse_mode );
+void expression_db_write( expression* expr, FILE* file, bool parse_mode, bool ids_issued );
 
 /*! \brief Writes the entire expression tree to the specified data file. */
 void expression_db_write_tree( expression* root, FILE* file );
@@ -141,6 +141,11 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.71  2008/08/18 23:07:26  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.68.2.1  2008/07/10 22:43:50  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

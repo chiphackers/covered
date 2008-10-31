@@ -312,13 +312,13 @@ static void merge_parse_args(
 }
 
 /*!
- \param argc      Number of arguments in command-line to parse.
- \param last_arg  Index of last parsed argument from list.
- \param argv      List of arguments from command-line to parse.
-
  Performs merge command functionality.
 */
-void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAND_MERGE);
+void command_merge(
+  int          argc,      /*!< Number of arguments in command-line to parse */
+  int          last_arg,  /*!< Index of last parsed argument from list */
+  const char** argv       /*!< List of arguments from command-line to parse */
+) { PROFILE(COMMAND_MERGE);
 
   int          i;     /* Loop iterator */
   unsigned int rv;    /* Return value from snprintf calls */
@@ -342,7 +342,6 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     db_read( merge_in_head->str, READ_MODE_MERGE_NO_MERGE );
-    bind_perform( TRUE, 0 );
 
     /* If the currently read CDD didn't contain any merged CDDs it is a leaf CDD so mark it as such */
     if( (db_list[curr_db]->leading_hier_num - curr_leading_hier_num) == 1 ) {
@@ -369,8 +368,10 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
       strl         = strl->next;
     }
 
+    bind_perform( TRUE, 0 );
+
     /* Write out new database to output file */
-    db_write( merged_file, FALSE, FALSE );
+    db_write( merged_file, FALSE, TRUE, FALSE );
 
     print_output( "\n***  Merging completed successfully!  ***", NORMAL, __FILE__, __LINE__ );
 
@@ -389,6 +390,10 @@ void command_merge( int argc, int last_arg, const char** argv ) { PROFILE(COMMAN
 
 /*
  $Log$
+ Revision 1.61  2008/09/22 22:15:04  phase1geo
+ Initial code for supporting the merging and resolution of exclusion reasons.
+ This code is completely untested at this point but does compile.  Checkpointing.
+
  Revision 1.60  2008/09/22 05:04:50  phase1geo
  Adding parsing support for new -er option.
 

@@ -340,6 +340,7 @@ bool db_check_for_top_module() { PROFILE(DB_CHECK_FOR_TOP_MODULE);
 void db_write(
   const char* file,        /*!< Name of database file to output contents to */
   bool        parse_mode,  /*!< Specifies if we are outputting parse data or score data */
+  bool        issue_ids,   /*!< Specifies if we need to issue/reissue expression and signal IDs */
   bool        report_save  /*!< Specifies if we are attempting to "save" a CDD file modified in the report command */
 ) { PROFILE(DB_WRITE);
 
@@ -373,7 +374,7 @@ void db_write(
         }
 
         /* Now write the instance */
-        instance_db_write( instl->inst, db_handle, instl->inst->name, parse_mode, report_save );
+        instance_db_write( instl->inst, db_handle, instl->inst->name, parse_mode, issue_ids, report_save );
 
         instl = instl->next;
 
@@ -555,7 +556,7 @@ void db_read(
               /* Finish handling last functional unit read from CDD file */
               if( curr_funit != NULL ) {
               
-                if( read_mode != READ_MODE_MERGE_INST_MERGE ) {
+                if( (read_mode != READ_MODE_MERGE_INST_MERGE) || !merge_mode ) {
 
                   inst_link* instl = db_list[curr_db]->inst_head;  /* Pointer to current instance link */
 
@@ -667,7 +668,7 @@ void db_read(
   /* If the last functional unit was being read, add it now */
   if( curr_funit != NULL ) {
 
-    if( read_mode != READ_MODE_MERGE_INST_MERGE ) {
+    if( (read_mode != READ_MODE_MERGE_INST_MERGE) || !merge_mode ) {
 
       inst_link* instl = db_list[curr_db]->inst_head;  /* Pointer to current instance link */
 
@@ -3103,6 +3104,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.345  2008/10/24 20:36:51  phase1geo
+ Adding more diagnostics for timescale testing with the $time function.  Fixing
+ issues with timescale calculation.
+
  Revision 1.344  2008/10/23 20:54:52  phase1geo
  Adding support for real parameters.  Added more real number diagnostics to
  regression suite.
