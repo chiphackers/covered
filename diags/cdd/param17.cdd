@@ -4,6 +4,6 @@
 3 0 main "main" param17.v 10 28 1
 1 a 1 12 7000a 1 0 3 0 4 17 0 f 0 1 0 0
 3 0 foo "main.f" param17.v 31 41 1
-1 SIZE 3 0 c0000 1 0 31 0 32 17 4 0 0 0 0 0
 1 a 2 37 13 1 0 3 0 4 17 f f 0 1 0 0
+1 SIZE 3 0 c0000 1 0 31 0 32 17 4 0 0 0 0 0
 3 1 main.$u0 "main.$u0" param17.v 0 26 1

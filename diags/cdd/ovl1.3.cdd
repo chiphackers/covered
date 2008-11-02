@@ -2,10 +2,10 @@
 8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd ovl1.3.vcd -o ovl1.3.cdd -v ovl1.3.v -A ovl -D OVL_COVER_DEFAULT=15 +libext+.vlib+ -y ./ovl -I ./ovl -I ./ovl/vlog95 -D DUMP
 3 0 $root "$root" NA 0 0 1
 3 0 main "main" ovl1.3.v 1 34 1
-1 width 4 0 c0000 1 0 31 0 32 17 4 0 0 0 0 0
 1 clock 1 3 6000a 1 0 0 0 1 17 1 1 0 1 1 0
 1 reset_n 2 4 7000a 1 0 0 0 1 17 0 1 0 1 0 0
 1 a 3 5 7000a 1 0 3 0 4 17 0 f 0 f f 0
+1 width 4 0 c0000 1 0 31 0 32 17 4 0 0 0 0 0
 3 0 clock_gen "main.clkgen" ovl1.3.v 37 46 1
 2 1 41 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u1
 1 clock 5 38 103000d 1 0 0 0 1 17 0 1 0 1 1 0
@@ -109,16 +109,6 @@
 2 92 112 190076 9 18 138c 82 91 1 18 0 1 1 1 1 0
 2 93 112 90014 0 1 1410 0 0 1 1 fire_cover_3
 2 94 112 90077 4 35 e 92 93
-1 severity_level 20 0 c0000 1 0 31 0 32 17 1 0 0 0 0 0
-1 width 21 0 c0000 1 0 31 0 32 17 4 0 0 0 0 0
-1 property_type 22 0 c0000 1 0 31 0 32 17 0 0 0 0 0 0
-1 msg 23 0 c0000 1 0 31 0 72 17 54494f4e 0 0 0 0 0 494f4c41 0 0 0 0 0 56 0 0 0 0 0
-1 coverage_level 24 0 c0000 1 0 31 0 32 17 f 0 0 0 0 0
-1 assert_name 25 0 c0000 1 0 31 0 152 17 5f484f54 0 0 0 0 0 5f4f4e45 0 0 0 0 0 5a45524f 0 0 0 0 0 4552545f 0 0 0 0 0 415353 0 0 0 0 0
-1 OVL_COVER_SANITY_ON 26 0 c0000 1 0 31 0 32 17 1 0 0 0 0 0
-1 OVL_COVER_BASIC_ON 27 0 c0000 1 0 31 0 32 17 2 0 0 0 0 0
-1 OVL_COVER_CORNER_ON 28 0 c0000 1 0 31 0 32 17 4 0 0 0 0 0
-1 OVL_COVER_STATISTIC_ON 29 0 c0000 1 0 31 0 32 17 8 0 0 0 0 0
 1 clk 6 14 14 1 0 0 0 1 17 1 1 0 1 1 0
 1 reset_n 7 14 19 1 0 0 0 1 17 1 1 0 1 0 0
 1 test_expr 8 15 14 1 0 3 0 4 17 f f 0 f f 0
@@ -133,6 +123,16 @@
 1 fire_cover_1 17 92 60007 1 0 0 0 1 17 1 1 0 1 1 0
 1 fire_cover_2 18 92 60015 1 0 0 0 1 17 1 1 0 1 1 0
 1 fire_cover_3 19 92 60023 1 0 0 0 1 17 1 1 0 1 1 0
+1 severity_level 20 0 c0000 1 0 31 0 32 17 1 0 0 0 0 0
+1 width 21 0 c0000 1 0 31 0 32 17 4 0 0 0 0 0
+1 property_type 22 0 c0000 1 0 31 0 32 17 0 0 0 0 0 0
+1 msg 23 0 c0000 1 0 31 0 72 17 54494f4e 0 0 0 0 0 494f4c41 0 0 0 0 0 56 0 0 0 0 0
+1 coverage_level 24 0 c0000 1 0 31 0 32 17 f 0 0 0 0 0
+1 assert_name 25 0 c0000 1 0 31 0 152 17 5f484f54 0 0 0 0 0 5f4f4e45 0 0 0 0 0 5a45524f 0 0 0 0 0 4552545f 0 0 0 0 0 415353 0 0 0 0 0
+1 OVL_COVER_SANITY_ON 26 0 c0000 1 0 31 0 32 17 1 0 0 0 0 0
+1 OVL_COVER_BASIC_ON 27 0 c0000 1 0 31 0 32 17 2 0 0 0 0 0
+1 OVL_COVER_CORNER_ON 28 0 c0000 1 0 31 0 32 17 4 0 0 0 0 0
+1 OVL_COVER_STATISTIC_ON 29 0 c0000 1 0 31 0 32 17 8 0 0 0 0 0
 4 14 1 0 0
 4 17 1 0 0
 4 29 f 29 29

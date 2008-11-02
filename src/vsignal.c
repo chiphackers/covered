@@ -43,7 +43,6 @@
 
 extern char user_msg[USER_MSG_LENGTH];
 extern bool debug_mode;
-extern int  curr_sig_id;
 
 
 /*!
@@ -301,6 +300,7 @@ void vsignal_db_read(
   char         name[256];      /* Name of current vsignal */
   vsignal*     sig;            /* Pointer to the newly created vsignal */
   vector*      vec;            /* Vector value for this vsignal */
+  int          id;             /* Signal ID */
   int          sline;          /* Declared line number */
   unsigned int pdim_num;       /* Packed dimension number */
   unsigned int udim_num;       /* Unpacked dimension number */
@@ -310,7 +310,7 @@ void vsignal_db_read(
   unsigned int i;              /* Loop iterator */
 
   /* Get name values. */
-  if( sscanf( *line, "%s %d %d %x %u %u%n", name, &curr_sig_id, &sline, &(suppl.all), &pdim_num, &udim_num, &chars_read ) == 6 ) {
+  if( sscanf( *line, "%s %d %d %x %u %u%n", name, &id, &sline, &(suppl.all), &pdim_num, &udim_num, &chars_read ) == 6 ) {
 
     *line = *line + chars_read;
 
@@ -341,7 +341,7 @@ void vsignal_db_read(
 
     /* Create new vsignal */
     sig = vsignal_create( name, suppl.part.type, vec->width, sline, suppl.part.col );
-    sig->id                    = curr_sig_id;
+    sig->id                    = id;
     sig->suppl.part.assigned   = suppl.part.assigned;
     sig->suppl.part.mba        = suppl.part.mba;
     sig->suppl.part.big_endian = suppl.part.big_endian;
@@ -791,6 +791,10 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.87  2008/10/29 23:16:49  phase1geo
+ Added diagnostics to verify real-real op-and-assign functionality.  Fixed
+ bugs associated with these diagnostics.
+
  Revision 1.86  2008/10/26 04:41:28  phase1geo
  Adding support for functions returning real and realtime values.  Added real7
  diagnostic to verify this new support.
