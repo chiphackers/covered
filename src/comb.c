@@ -2565,7 +2565,7 @@ static void combination_output_expr(
       if( expr->ulid != -1 ) {
         *any_missed = 1;
       }
-      if( EXPR_IS_MEASURABLE( expr ) == 1 ) {
+      if( (EXPR_IS_MEASURABLE( expr ) == 1) && !expression_is_static_only( expr ) ) {
         if( ESUPPL_EXCLUDED( expr->suppl ) == 0 ) {
           *any_measurable = 1;
           if( expr->ulid != -1 ) {
@@ -3128,6 +3128,14 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.216.2.1  2008/11/06 22:58:42  phase1geo
+ Fixing bug 2223054.  Updates to regressions for this issue.  IV and Cver
+ regressions now fully pass.
+
+ Revision 1.216  2008/10/27 05:00:32  phase1geo
+ Starting to add support for $test$plusargs and $value$plusargs system function
+ calls.  More work to do here.  Checkpointing.
+
  Revision 1.215  2008/10/24 05:27:04  phase1geo
  Adding several new diagnostics to verify real number support.
 

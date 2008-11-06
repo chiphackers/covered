@@ -694,7 +694,7 @@ profiler profiles[NUM_PROFILES] = {
   {"expression_op_func__stop", NULL, 0, 0, 0, TRUE},
   {"expression_operate", NULL, 0, 0, 0, TRUE},
   {"expression_operate_recursively", NULL, 0, 0, 0, TRUE},
-  {"expression_is_static_only", NULL, 0, 0, 0, TRUE},
+  {"expression_is_static_only_helper", NULL, 0, 0, 0, TRUE},
   {"expression_is_assigned", NULL, 0, 0, 0, TRUE},
   {"expression_is_bit_select", NULL, 0, 0, 0, TRUE},
   {"expression_is_last_select", NULL, 0, 0, 0, TRUE},

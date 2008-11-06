@@ -5539,9 +5539,10 @@ void expression_operate_recursively(
  Recursively iterates through specified expression tree and returns TRUE if all of
  the leaf expressions are static expressions (STATIC or parameters).
 */
-bool expression_is_static_only(
-  expression* expr  /*!< Pointer to expression to evaluate */
-) { PROFILE(EXPRESSION_IS_STATIC_ONLY);
+static bool expression_is_static_only_helper(
+            expression* expr,  /*!< Pointer to expression to evaluate */
+  /*@out@*/ bool*       one    /*!< Pointer to value that holds whether a static value of zero was found */
+) { PROFILE(EXPRESSION_IS_STATIC_ONLY_HELPER);
 
   bool retval;  /* Return value for this function */
 
@@ -5554,14 +5555,23 @@ bool expression_is_static_only(
           (expr->sig->suppl.part.type == SSUPPL_TYPE_PARAM_REAL) ||
           (expr->sig->suppl.part.type == SSUPPL_TYPE_ENUM))) ) {
       retval = TRUE;
+      if( one != NULL ) {
+        *one |= vector_is_not_zero( expr->value );
+      }
+    } else if( expr->op == EXP_OP_CONCAT ) {
+      bool curr_one   = FALSE;
+      bool all_static = expression_is_static_only_helper( expr->right, &curr_one );
+      retval        = (!curr_one && all_static) || curr_one;
+    } else if( expr->op == EXP_OP_COND ) {
+      retval = expression_is_static_only_helper( expr->right, one );
     } else {
       retval = ( (expr->op != EXP_OP_MBIT_SEL)           &&
                  (expr->op != EXP_OP_SBIT_SEL)           &&
                  (expr->op != EXP_OP_SIG)                &&
                  (expr->op != EXP_OP_FUNC_CALL)          &&
                  (EXPR_IS_OP_AND_ASSIGN( expr ) == 0)    &&
-                 expression_is_static_only( expr->left ) &&
-                 expression_is_static_only( expr->right ) );
+                 expression_is_static_only_helper( expr->left,  one ) &&
+                 expression_is_static_only_helper( expr->right, one ) );
     }
 
   } else {
@@ -5573,6 +5583,14 @@ bool expression_is_static_only(
   PROFILE_END;
 
   return( retval );
+
+}
+
+bool expression_is_static_only(
+  expression* expr  /*!< Pointer to expression to evaluate */
+) {
+
+  return( expression_is_static_only_helper( expr, NULL ) ); 
 
 }
 
@@ -6120,6 +6138,11 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.383  2008/10/31 22:01:34  phase1geo
+ Initial code changes to support merging two non-overlapping CDD files into
+ one.  This functionality seems to be working but needs regression testing to
+ verify that nothing is broken as a result.
+
  Revision 1.382  2008/10/29 23:16:48  phase1geo
  Added diagnostics to verify real-real op-and-assign functionality.  Fixed
  bugs associated with these diagnostics.
