@@ -323,7 +323,7 @@ PLI_INT32 covered_end_of_sim( p_cb_data cb ) { PROFILE(COVERED_END_OF_SIM);
 
   /* Write contents to database file */
   Try {
-    db_write( out_db_name, FALSE, FALSE );
+    db_write( out_db_name, FALSE, FALSE, FALSE );
     vpi_printf( "covered VPI: Output coverage information to %s\n", out_db_name );
   } Catch_anonymous {
     vpi_printf( "covered VPI: Unable to write database file\n" );
