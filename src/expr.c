@@ -5561,17 +5561,21 @@ static bool expression_is_static_only_helper(
     } else if( expr->op == EXP_OP_CONCAT ) {
       bool curr_one   = FALSE;
       bool all_static = expression_is_static_only_helper( expr->right, &curr_one );
-      retval        = (!curr_one && all_static) || curr_one;
+      retval          = (!curr_one && all_static) || curr_one;
     } else if( expr->op == EXP_OP_COND ) {
       retval = expression_is_static_only_helper( expr->right, one );
     } else {
-      retval = ( (expr->op != EXP_OP_MBIT_SEL)           &&
-                 (expr->op != EXP_OP_SBIT_SEL)           &&
-                 (expr->op != EXP_OP_SIG)                &&
-                 (expr->op != EXP_OP_FUNC_CALL)          &&
-                 (EXPR_IS_OP_AND_ASSIGN( expr ) == 0)    &&
-                 expression_is_static_only_helper( expr->left,  one ) &&
-                 expression_is_static_only_helper( expr->right, one ) );
+      if( (expr->op != EXP_OP_MBIT_SEL)  &&
+          (expr->op != EXP_OP_SBIT_SEL)  &&
+          (expr->op != EXP_OP_SIG)       &&
+          (expr->op != EXP_OP_FUNC_CALL) &&
+          (EXPR_IS_OP_AND_ASSIGN( expr ) == 0) ) {
+        bool lstatic = expression_is_static_only_helper( expr->left,  one );
+        bool rstatic = expression_is_static_only_helper( expr->right, one );
+        retval       = lstatic && rstatic;
+      } else {
+        retval = FALSE;
+      }
     }
 
   } else {
@@ -6138,6 +6142,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.384  2008/11/06 23:04:07  phase1geo
+ Merging branch covered-20081030-bug2223054.
+
  Revision 1.383  2008/10/31 22:01:34  phase1geo
  Initial code changes to support merging two non-overlapping CDD files into
  one.  This functionality seems to be working but needs regression testing to
