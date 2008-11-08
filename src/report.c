@@ -496,8 +496,8 @@ void report_gather_instance_stats(
     curr = curr->next;
   }
 
-  /* If this module is an OVL module, don't get coverage statistics */
-  if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit ) ) {
+  /* If this module is an OVL module or it isn't attached to a functional unit, don't get coverage statistics */
+  if( (root->funit != NULL) && ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
     /* Get coverage results for this instance */
     if( report_line ) {
@@ -1239,6 +1239,11 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.127  2008/10/31 22:01:34  phase1geo
+ Initial code changes to support merging two non-overlapping CDD files into
+ one.  This functionality seems to be working but needs regression testing to
+ verify that nothing is broken as a result.
+
  Revision 1.126  2008/09/22 04:19:57  phase1geo
  Fixing bug 2122019.  Also adding exclusion reason timestamp support to CDD files.
 

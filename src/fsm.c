@@ -704,7 +704,7 @@ static bool fsm_instance_summary(
 
   free_safe( pname, (strlen( pname ) + 1) );
 
-  if( root->stat->show && !funit_is_unnamed( root->funit ) &&
+  if( (root->funit != NULL) && root->stat->show && !funit_is_unnamed( root->funit ) &&
       ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
     miss_found |= fsm_display_instance_summary( ofile, tmpname, root->stat->state_hit, root->stat->state_total, root->stat->arc_hit, root->stat->arc_total );
@@ -1106,7 +1106,7 @@ static void fsm_instance_verbose(
 
   free_safe( pname, (strlen( pname ) + 1) );
 
-  if( !funit_is_unnamed( root->funit ) &&
+  if( (root->funit != NULL) && !funit_is_unnamed( root->funit ) &&
       ((((root->stat->state_hit < root->stat->state_total) || (root->stat->arc_hit < root->stat->arc_total)) && !report_covered) ||
          (root->stat->state_total == -1) ||
          (root->stat->arc_total   == -1) ||
@@ -1226,7 +1226,8 @@ void fsm_report(
       strcpy( tmp, "<NA>" );
     } else {
       assert( db_list[curr_db]->leading_hier_num > 0 );
-      strcpy( tmp, db_list[curr_db]->leading_hierarchies[0] );
+      // strcpy( tmp, db_list[curr_db]->leading_hierarchies[0] );
+      strcpy( tmp, "*" );
     }
 
     fprintf( ofile, "                                                               State                             Arc\n" );
@@ -1323,6 +1324,11 @@ void fsm_dealloc(
 
 /*
  $Log$
+ Revision 1.107  2008/10/31 22:01:34  phase1geo
+ Initial code changes to support merging two non-overlapping CDD files into
+ one.  This functionality seems to be working but needs regression testing to
+ verify that nothing is broken as a result.
+
  Revision 1.106  2008/09/08 22:15:17  phase1geo
  Regression updates and modifications for new FSM GUI output (this isn't complete
  at this time).  Checkpointing.

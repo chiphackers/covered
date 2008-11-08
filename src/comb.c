@@ -658,7 +658,7 @@ static bool combination_instance_summary(
 
   free_safe( pname, (strlen( pname ) + 1) );
 
-  if( root->stat->show && !funit_is_unnamed( root->funit ) &&
+  if( (root->funit != NULL) && root->stat->show && !funit_is_unnamed( root->funit ) &&
       ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
     miss_found |= combination_display_instance_summary( ofile, tmpname, root->stat->comb_hit, root->stat->comb_total );
@@ -2692,7 +2692,7 @@ static void combination_instance_verbose(
 
   free_safe( pname, (strlen( pname ) + 1) );
 
-  if( !funit_is_unnamed( root->funit ) &&
+  if( (root->funit != NULL) && !funit_is_unnamed( root->funit ) &&
       (((root->stat->comb_hit < root->stat->comb_total) && !report_covered) ||
        ((root->stat->comb_hit > 0) && report_covered) ||
        ((root->stat->comb_excluded > 0) && report_exclusions)) ) {
@@ -3078,7 +3078,8 @@ void combination_report(
       strcpy( tmp, "<NA>" );
     } else {
       assert( db_list[curr_db]->leading_hier_num > 0 );
-      strcpy( tmp, db_list[curr_db]->leading_hierarchies[0] );
+      // strcpy( tmp, db_list[curr_db]->leading_hierarchies[0] );
+      strcpy( tmp, "*" );
     }
 
     fprintf( ofile, "                                                                            Logic Combinations\n" );
@@ -3128,6 +3129,9 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.217  2008/11/06 23:04:07  phase1geo
+ Merging branch covered-20081030-bug2223054.
+
  Revision 1.216.2.1  2008/11/06 22:58:42  phase1geo
  Fixing bug 2223054.  Updates to regressions for this issue.  IV and Cver
  regressions now fully pass.

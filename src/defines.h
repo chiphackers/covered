@@ -209,73 +209,78 @@
 /*!
  Specifies that the current coverage database line describes a signal.
 */
-#define DB_TYPE_SIGNAL       1
+#define DB_TYPE_SIGNAL        1
 
 /*!
  Specifies that the current coverage database line describes an expression.
 */
-#define DB_TYPE_EXPRESSION   2
+#define DB_TYPE_EXPRESSION    2
 
 /*!
  Specifies that the current coverage database line describes a module.
 */
-#define DB_TYPE_FUNIT        3
+#define DB_TYPE_FUNIT         3
 
 /*!
  Specifies that the current coverage database line describes a statement.
 */
-#define DB_TYPE_STATEMENT    4
+#define DB_TYPE_STATEMENT     4
 
 /*!
  Specifies that the current coverage database line describes general information.
 */
-#define DB_TYPE_INFO         5
+#define DB_TYPE_INFO          5
 
 /*!
  Specifies that the current coverage database line describes a finite state machine.
 */
-#define DB_TYPE_FSM          6
+#define DB_TYPE_FSM           6
 
 /*!
  Specifies that the current coverage database line describes a race condition block.
 */
-#define DB_TYPE_RACE         7
+#define DB_TYPE_RACE          7
 
 /*!
  Specifies the arguments specified to the score command.
 */
-#define DB_TYPE_SCORE_ARGS   8
+#define DB_TYPE_SCORE_ARGS    8
 
 /*!
  Specifies that the current coverage database line describes a new struct/union
  (all signals and struct/unions below this are members of this struct/union)
 */
-#define DB_TYPE_SU_START     9
+#define DB_TYPE_SU_START      9
 
 /*!
  Specifies that the current coverage database line ends the currently populated struct/union.
 */
-#define DB_TYPE_SU_END       10
+#define DB_TYPE_SU_END        10
 
 /*!
  Specifies that the current coverage database line contains user-specified information
 */
-#define DB_TYPE_MESSAGE      11
+#define DB_TYPE_MESSAGE       11
 
 /*!
  Specifies that the current line describes a CDD file that was merged into this CDD
 */
-#define DB_TYPE_MERGED_CDD   12
+#define DB_TYPE_MERGED_CDD    12
 
 /*!
  Specifies that the current line describes an exclusion reason.
 */
-#define DB_TYPE_EXCLUDE      13
+#define DB_TYPE_EXCLUDE       13
 
 /*!
  Specifies a version ID for a functional unit (based on the associated file version).
 */
 #define DB_TYPE_FUNIT_VERSION 14
+
+/*!
+ Specifies that this is a placeholder instance (no functional unit attached).
+*/
+#define DB_TYPE_INST_ONLY     15
 
 /*! @} */
 
@@ -3033,6 +3038,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.337  2008/10/27 05:00:32  phase1geo
+ Starting to add support for $test$plusargs and $value$plusargs system function
+ calls.  More work to do here.  Checkpointing.
+
  Revision 1.336  2008/10/26 04:41:28  phase1geo
  Adding support for functions returning real and realtime values.  Added real7
  diagnostic to verify this new support.

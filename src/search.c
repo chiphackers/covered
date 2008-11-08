@@ -76,7 +76,6 @@ void search_init() { PROFILE(SEARCH_INIT);
   if( top_module == NULL ) {
     print_output( "No top module was specified with the -t option.  Please see \"covered -h\" for usage.",
                   FATAL, __FILE__, __LINE__ );
-    printf( "search Throw A\n" );
     Throw 0;
   }
 
@@ -113,12 +112,46 @@ void search_init() { PROFILE(SEARCH_INIT);
     db_list[curr_db]->leading_hier_num++;
   } else {
     scope_extract_back( top_instance, dutname, lhier );
-    (void)inst_link_add( instance_create( mod, dutname, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
     if( lhier[0] == '\0' ) {
       db_list[curr_db]->leading_hierarchies = (char**)realloc_safe( db_list[curr_db]->leading_hierarchies, (sizeof( char* ) * db_list[curr_db]->leading_hier_num), (sizeof( char* ) * (db_list[curr_db]->leading_hier_num + 1)) );
       db_list[curr_db]->leading_hierarchies[db_list[curr_db]->leading_hier_num] = strdup_safe( "*" );
       db_list[curr_db]->leading_hier_num++;
+      (void)inst_link_add( instance_create( mod, dutname, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
     } else {
+      char        tmp1[4096];
+      char        tmp2[4096];
+      char        tmp3[4096];
+      inst_link*  instl;
+      funit_inst* parent;
+      funit_inst* child;
+      (void)strcpy( tmp1, lhier );
+      scope_extract_front( tmp1, tmp2, tmp3 );
+      instl  = inst_link_add( instance_create( NULL, tmp2, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
+      parent = instl->inst;
+      while( tmp3[0] != '\0' ) {
+        (void)strcpy( tmp1, tmp3 );
+        scope_extract_front( tmp1, tmp2, tmp3 );
+        child = instance_create( NULL, tmp2, NULL );
+        child->parent = parent;
+        if( parent->child_head == NULL ) {
+          parent->child_head       = child;
+          parent->child_tail       = child;
+        } else {
+          parent->child_tail->next = child;
+          parent->child_tail       = child;
+        }
+        parent = child;
+      }
+      child = instance_create( mod, dutname, NULL );
+      child->parent = parent;
+      if( parent->child_head == NULL ) {
+        parent->child_head       = child;
+        parent->child_tail       = child;
+      } else {
+        parent->child_tail->next = child;
+        parent->child_tail       = child;
+      }
+      // (void)inst_link_add( instance_create( mod, dutname, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
       db_list[curr_db]->leading_hierarchies = (char**)realloc_safe( db_list[curr_db]->leading_hierarchies, (sizeof( char* ) * db_list[curr_db]->leading_hier_num), (sizeof( char* ) * (db_list[curr_db]->leading_hier_num + 1)) );
       db_list[curr_db]->leading_hierarchies[db_list[curr_db]->leading_hier_num] = strdup_safe( lhier );
       db_list[curr_db]->leading_hier_num++;
@@ -196,7 +229,6 @@ void search_add_file(
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "File %s does not exist", file );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    printf( "search Throw B\n" );
     Throw 0;
   }
 
@@ -223,7 +255,6 @@ void search_add_no_score_funit(
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Value of -e option (%s) is not a valid block name", funit );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    printf( "search Throw C\n" );
     Throw 0;
   }
 
@@ -255,7 +286,6 @@ void search_add_extensions(
       (void)str_link_add( strdup_safe( ext ), &extensions_head, &extensions_tail );
     } else if( *tmp == '.' ) {
       if( ext_index > 0 ) {
-        printf( "search Throw D\n" );
         Throw 0;
       }
     } else {
@@ -273,7 +303,6 @@ void search_add_extensions(
     gen_char_string( user_msg, ' ', (25 + (strlen( ext_list ) - strlen( tmp ))) );
     strcat( user_msg, "^" );
     print_output( user_msg, FATAL_WRAP, __FILE__, __LINE__ );
-    printf( "search Throw E\n" );
     Throw 0;
   }
 
@@ -296,6 +325,10 @@ void search_free_lists() { PROFILE(SEARCH_FREE_LISTS);
 
 /*
  $Log$
+ Revision 1.49  2008/10/24 20:36:51  phase1geo
+ Adding more diagnostics for timescale testing with the $time function.  Fixing
+ issues with timescale calculation.
+
  Revision 1.48  2008/09/04 21:34:20  phase1geo
  Completed work to get exclude reason support to work with toggle coverage.
  Ground-work is laid for the rest of the coverage metrics.  Checkpointing.

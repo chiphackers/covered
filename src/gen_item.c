@@ -1064,16 +1064,17 @@ void generate_resolve(
   funit_inst* root  /*!< Pointer to current instance in instance tree to resolve for */
 ) { PROFILE(GENERATE_RESOLVE);
 
-  gitem_link* curr_gi;     /* Pointer to current gitem_link element to resolve for */
   funit_inst* curr_child;  /* Pointer to current child to resolve for */
 
   if( root != NULL ) {
 
     /* Resolve ourself */
-    curr_gi = root->funit->gitem_head;
-    while( curr_gi != NULL ) {
-      gen_item_resolve( curr_gi->gi, root );
-      curr_gi = curr_gi->next;
+    if( root->funit != NULL ) {
+      gitem_link* curr_gi = root->funit->gitem_head;
+      while( curr_gi != NULL ) {
+        gen_item_resolve( curr_gi->gi, root );
+        curr_gi = curr_gi->next;
+      }
     }
 
     /* Resolve children */
@@ -1212,6 +1213,10 @@ void gen_item_dealloc(
 
 /*
  $Log$
+ Revision 1.74  2008/08/28 04:37:18  phase1geo
+ Starting to add support for exclusion output and exclusion IDs to generated
+ reports.  These changes should break regressions.  Checkpointing.
+
  Revision 1.73  2008/08/27 23:06:00  phase1geo
  Starting to make updates for supporting command-line exclusions.  Signals now
  have a unique ID associated with them in the CDD file.  Checkpointing.

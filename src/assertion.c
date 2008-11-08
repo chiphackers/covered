@@ -154,7 +154,7 @@ static bool assertion_instance_summary(
 
   free_safe( pname, (strlen( pname ) + 1) );
 
-  if( root->stat->show && !funit_is_unnamed( root->funit ) &&
+  if( (root->funit != NULL) && root->stat->show && !funit_is_unnamed( root->funit ) &&
       ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
     miss_found |= assertion_display_instance_summary( ofile, tmpname, root->stat->assert_hit, root->stat->assert_total ); 
@@ -433,7 +433,8 @@ void assertion_report(
       strcpy( tmp, "<NA>" );
     } else {
       assert( db_list[curr_db]->leading_hier_num > 0 );
-      strcpy( tmp, db_list[curr_db]->leading_hierarchies[0] );
+      // strcpy( tmp, db_list[curr_db]->leading_hierarchies[0] );
+      strcpy( tmp, "*" );
     }
 
     fprintf( ofile, "Instance                                           Hit/ Miss/Total    Percent hit\n" );
@@ -553,6 +554,10 @@ void assertion_get_coverage(
 
 /*
  $Log$
+ Revision 1.39  2008/09/10 23:06:36  phase1geo
+ Adding several new diagnostics for coverage testing purposes.  Fixed a few
+ bugs that surfaced when performing this testing.
+
  Revision 1.38  2008/09/04 21:34:19  phase1geo
  Completed work to get exclude reason support to work with toggle coverage.
  Ground-work is laid for the rest of the coverage metrics.  Checkpointing.

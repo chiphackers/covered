@@ -995,38 +995,43 @@ static void rank_gather_comp_cdd_cov(
   fsm_link*   fsml;   /* Pointer to FSM link */
   funit_inst* child;  /* Pointer to current child instance */
 
-  /* Gather coverage information from expressions */
-  if( !funit_is_unnamed( inst->funit ) ) {
-    func_iter  fi;
-    statement* stmt;
+  /* Don't gather information for placeholder instances */
+  if( inst->funit != NULL ) {
 
-    /* First, clear the comb_cntd bits in all of the expressions */
-    func_iter_init( &fi, inst->funit, TRUE, FALSE );
-    while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
-      combination_reset_counted_expr_tree( stmt->exp );
+    /* Gather coverage information from expressions */
+    if( !funit_is_unnamed( inst->funit ) ) {
+      func_iter  fi;
+      statement* stmt;
+
+      /* First, clear the comb_cntd bits in all of the expressions */
+      func_iter_init( &fi, inst->funit, TRUE, FALSE );
+      while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
+        combination_reset_counted_expr_tree( stmt->exp );
+      }
+      func_iter_dealloc( &fi );
+
+      /* Then populate the comp_cov structure, accordingly */
+      func_iter_init( &fi, inst->funit, TRUE, FALSE );
+      while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
+        rank_gather_expression_cov( stmt->exp, stmt->suppl.part.excluded, comp_cov );
+      }
+      func_iter_dealloc( &fi );
     }
-    func_iter_dealloc( &fi );
 
-    /* Then populate the comp_cov structure, accordingly */
-    func_iter_init( &fi, inst->funit, TRUE, FALSE );
-    while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
-      rank_gather_expression_cov( stmt->exp, stmt->suppl.part.excluded, comp_cov );
+    /* Gather coverage information from signals */
+    sigl = inst->funit->sig_head;
+    while( sigl != NULL ) {
+      rank_gather_signal_cov( sigl->sig, comp_cov );
+      sigl = sigl->next;
     }
-    func_iter_dealloc( &fi );
-  }
 
-  /* Gather coverage information from signals */
-  sigl = inst->funit->sig_head;
-  while( sigl != NULL ) {
-    rank_gather_signal_cov( sigl->sig, comp_cov );
-    sigl = sigl->next;
-  }
+    /* Gather coverage information from FSMs */
+    fsml = inst->funit->fsm_head;
+    while( fsml != NULL ) {
+      rank_gather_fsm_cov( fsml->table->table, comp_cov );
+      fsml = fsml->next;
+    }
 
-  /* Gather coverage information from FSMs */
-  fsml = inst->funit->fsm_head;
-  while( fsml != NULL ) {
-    rank_gather_fsm_cov( fsml->table->table, comp_cov );
-    fsml = fsml->next;
   }
 
   /* Gather coverage information from children */
@@ -1800,6 +1805,10 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.11  2008/10/23 20:54:52  phase1geo
+ Adding support for real parameters.  Added more real number diagnostics to
+ regression suite.
+
  Revision 1.10  2008/09/19 04:47:18  phase1geo
  Adding several new diagnostics to regression suite to add coverage for
  rank.c file (parsing option errors mostly).  Fixing issue with rank command
@@ -1830,6 +1839,10 @@ void command_rank(
  that the GUI stuff works properly.
 
  $Log$
+ Revision 1.11  2008/10/23 20:54:52  phase1geo
+ Adding support for real parameters.  Added more real number diagnostics to
+ regression suite.
+
  Revision 1.10  2008/09/19 04:47:18  phase1geo
  Adding several new diagnostics to regression suite to add coverage for
  rank.c file (parsing option errors mostly).  Fixing issue with rank command

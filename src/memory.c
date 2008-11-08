@@ -612,7 +612,7 @@ static bool memory_toggle_instance_summary(
 
   free_safe( pname, (strlen( pname ) + 1) );
 
-  if( root->stat->show && !funit_is_unnamed( root->funit ) &&
+  if( (root->funit != NULL) && root->stat->show && !funit_is_unnamed( root->funit ) &&
       ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
     miss_found |= memory_display_toggle_instance_summary( ofile, tmpname, root->stat->mem_tog01_hit, root->stat->mem_tog10_hit, root->stat->mem_tog_total );
@@ -710,7 +710,7 @@ static bool memory_ae_instance_summary(
 
   free_safe( pname, (strlen( pname ) + 1) );
 
-  if( root->stat->show && !funit_is_unnamed( root->funit ) &&
+  if( (root->funit != NULL) && root->stat->show && !funit_is_unnamed( root->funit ) &&
       ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
     miss_found |= memory_display_ae_instance_summary( ofile, tmpname, root->stat->mem_wr_hit, root->stat->mem_rd_hit, root->stat->mem_ae_total );
@@ -1123,7 +1123,7 @@ static void memory_instance_verbose(
 
   free_safe( pname, (strlen( pname ) + 1) );
 
-  if( !funit_is_unnamed( root->funit ) &&
+  if( (root->funit != NULL) && !funit_is_unnamed( root->funit ) &&
       ((((root->stat->mem_tog01_hit < root->stat->mem_tog_total) ||
          (root->stat->mem_tog10_hit < root->stat->mem_tog_total) ||
          (root->stat->mem_wr_hit    < root->stat->mem_ae_total)  ||
@@ -1256,7 +1256,8 @@ void memory_report(
       strcpy( tmp, "<NA>" );
     } else {
       assert( db_list[curr_db]->leading_hier_num > 0 );
-      strcpy( tmp, db_list[curr_db]->leading_hierarchies[0] );
+      // strcpy( tmp, db_list[curr_db]->leading_hierarchies[0] );
+      strcpy( tmp, "*" );
     }
 
     fprintf( ofile, "                                                           Toggle 0 -> 1                       Toggle 1 -> 0\n" );
@@ -1328,6 +1329,9 @@ void memory_report(
 
 /*
  $Log$
+ Revision 1.43  2008/09/10 04:04:48  phase1geo
+ Fixing bug 2095799.
+
  Revision 1.42  2008/09/09 22:42:50  phase1geo
  Working on fix for bug 2095799.  Not working correctly at this point but I'm
  checkpointing.

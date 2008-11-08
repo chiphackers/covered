@@ -760,6 +760,7 @@ profiler profiles[NUM_PROFILES] = {
   {"instance_resolve", NULL, 0, 0, 0, TRUE},
   {"instance_read_add", NULL, 0, 0, 0, TRUE},
   {"instance_db_write", NULL, 0, 0, 0, TRUE},
+  {"instance_only_db_read", NULL, 0, 0, 0, TRUE},
   {"instance_flatten_helper", NULL, 0, 0, 0, TRUE},
   {"instance_flatten", NULL, 0, 0, 0, TRUE},
   {"instance_remove_stmt_blks_calling_stmt", NULL, 0, 0, 0, TRUE},

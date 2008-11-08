@@ -312,7 +312,7 @@ static bool toggle_instance_summary(
 
   free_safe( pname, (strlen( pname ) + 1) );
 
-  if( root->stat->show && !funit_is_unnamed( root->funit ) &&
+  if( (root->funit != NULL) && root->stat->show && !funit_is_unnamed( root->funit ) &&
       ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
     miss_found |= toggle_display_instance_summary( ofile, tmpname, root->stat->tog01_hit, root->stat->tog10_hit, root->stat->tog_total );
@@ -573,7 +573,7 @@ static void toggle_instance_verbose(
 
   free_safe( pname, (strlen( pname ) + 1) );
 
-  if( !funit_is_unnamed( root->funit ) &&
+  if( (root->funit != NULL) && !funit_is_unnamed( root->funit ) &&
       ((!report_covered && ((root->stat->tog01_hit < root->stat->tog_total) || (root->stat->tog10_hit < root->stat->tog_total))) ||
        ( report_covered && root->stat->tog_cov_found) ||
        (report_exclusions && (root->stat->tog_excluded > 0))) ) {
@@ -696,7 +696,8 @@ void toggle_report(
       strcpy( tmp, "<NA>" );
     } else {
       assert( db_list[curr_db]->leading_hier_num > 0 );
-      strcpy( tmp, db_list[curr_db]->leading_hierarchies[0] );
+      // strcpy( tmp, db_list[curr_db]->leading_hierarchies[0] );
+      strcpy( tmp, "*" );
     }
 
     fprintf( ofile, "                                                           Toggle 0 -> 1                       Toggle 1 -> 0\n" );
@@ -745,6 +746,10 @@ void toggle_report(
 
 /*
  $Log$
+ Revision 1.89  2008/10/26 04:41:28  phase1geo
+ Adding support for functions returning real and realtime values.  Added real7
+ diagnostic to verify this new support.
+
  Revision 1.88  2008/10/23 20:54:52  phase1geo
  Adding support for real parameters.  Added more real number diagnostics to
  regression suite.

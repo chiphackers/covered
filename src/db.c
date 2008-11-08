@@ -309,7 +309,7 @@ bool db_check_for_top_module() { PROFILE(DB_CHECK_FOR_TOP_MODULE);
   inst_link* instl;           /* Pointer to current instance link being checked */
 
   instl = db_list[curr_db]->inst_head;
-  while( (instl != NULL) && (strcmp( instl->inst->funit->name, top_module ) != 0) ) {
+  while( (instl != NULL) && ((instl->inst->funit == NULL) || (strcmp( instl->inst->funit->name, top_module ) != 0)) ) {
     instl = instl->next;
   }
 
@@ -318,9 +318,7 @@ bool db_check_for_top_module() { PROFILE(DB_CHECK_FOR_TOP_MODULE);
    functional unit's signal list.
   */
   if( instl != NULL ) {
-
     retval = funit_is_top_module( instl->inst->funit );
-
   }
 
   PROFILE_END;
@@ -369,7 +367,7 @@ void db_write(
          If the file version information has not been set for this instance's functional unit and a file version
          has been specified for this functional unit's file, set it now.
         */
-        if( (instl->inst->funit->version == NULL) && ((strl = str_link_find( instl->inst->funit->filename, db_list[curr_db]->fver_head )) != NULL) ) {
+        if( (instl->inst->funit != NULL) && (instl->inst->funit->version == NULL) && ((strl = str_link_find( instl->inst->funit->filename, db_list[curr_db]->fver_head )) != NULL) ) {
           instl->inst->funit->version = strdup_safe( strl->str2 );
         }
 
@@ -551,7 +549,7 @@ void db_read(
               /* Parse rest of line for functional unit version information */
               funit_version_db_read( curr_funit, &rest_line );
 
-            } else if( type == DB_TYPE_FUNIT ) {
+            } else if( (type == DB_TYPE_FUNIT ) || (type == DB_TYPE_INST_ONLY) ) {
 
               /* Finish handling last functional unit read from CDD file */
               if( curr_funit != NULL ) {
@@ -580,37 +578,51 @@ void db_read(
 
               }
 
-              /* Reset merge mode */
-              merge_mode = FALSE;
+              if( type == DB_TYPE_INST_ONLY ) {
 
-              /* Now finish reading functional unit line */
-              funit_db_read( &tmpfunit, funit_scope, &rest_line );
-              if( (read_mode == READ_MODE_MERGE_INST_MERGE) && ((foundinst = inst_link_find_by_scope( funit_scope, db_list[curr_db]->inst_head )) != NULL) ) {
-                merge_mode = TRUE;
-                curr_funit = foundinst->funit;
-                funit_db_merge( foundinst->funit, db_handle, TRUE );
-              } else if( (read_mode == READ_MODE_REPORT_MOD_MERGE) && ((foundfunit = funit_link_find( tmpfunit.name, tmpfunit.type, db_list[curr_db]->funit_head )) != NULL) ) {
-                merge_mode = TRUE;
-                curr_funit = foundfunit->funit;
-                funit_db_merge( foundfunit->funit, db_handle, FALSE );
-              } else {
-                curr_funit             = funit_create();
-                curr_funit->name       = strdup_safe( funit_name );
-                curr_funit->type       = tmpfunit.type;
-                curr_funit->filename   = strdup_safe( funit_file );
-                curr_funit->start_line = tmpfunit.start_line;
-                curr_funit->end_line   = tmpfunit.end_line;
-                curr_funit->timescale  = tmpfunit.timescale;
-                if( tmpfunit.type != FUNIT_MODULE ) {
-                  curr_funit->parent = scope_get_parent_funit( funit_scope );
-                  parent_mod         = scope_get_parent_module( funit_scope );
-                  funit_link_add( curr_funit, &(parent_mod->tf_head), &(parent_mod->tf_tail) );
+                /* Parse rest of the line for an instance-only structure */
+                if( !merge_mode ) {
+                  instance_only_db_read( &rest_line );
                 }
-              }
+
+                /* Specify that the current functional unit does not exist */
+                curr_funit = NULL;
+
+              } else {
+
+                /* Reset merge mode */
+                merge_mode = FALSE;
+
+                /* Now finish reading functional unit line */
+                funit_db_read( &tmpfunit, funit_scope, &rest_line );
+                if( (read_mode == READ_MODE_MERGE_INST_MERGE) && ((foundinst = inst_link_find_by_scope( funit_scope, db_list[curr_db]->inst_head )) != NULL) ) {
+                  merge_mode = TRUE;
+                  curr_funit = foundinst->funit;
+                  funit_db_merge( foundinst->funit, db_handle, TRUE );
+                } else if( (read_mode == READ_MODE_REPORT_MOD_MERGE) && ((foundfunit = funit_link_find( tmpfunit.name, tmpfunit.type, db_list[curr_db]->funit_head )) != NULL) ) {
+                  merge_mode = TRUE;
+                  curr_funit = foundfunit->funit;
+                  funit_db_merge( foundfunit->funit, db_handle, FALSE );
+                } else {
+                  curr_funit             = funit_create();
+                  curr_funit->name       = strdup_safe( funit_name );
+                  curr_funit->type       = tmpfunit.type;
+                  curr_funit->filename   = strdup_safe( funit_file );
+                  curr_funit->start_line = tmpfunit.start_line;
+                  curr_funit->end_line   = tmpfunit.end_line;
+                  curr_funit->timescale  = tmpfunit.timescale;
+                  if( tmpfunit.type != FUNIT_MODULE ) {
+                    curr_funit->parent = scope_get_parent_funit( funit_scope );
+                    parent_mod         = scope_get_parent_module( funit_scope );
+                    funit_link_add( curr_funit, &(parent_mod->tf_head), &(parent_mod->tf_tail) );
+                  }
+                }
   
-              /* Set global functional unit, if it has been found */
-              if( (curr_funit != NULL) && (strncmp( curr_funit->name, "$root", 5 ) == 0) ) {
-                global_funit = curr_funit;
+                /* Set global functional unit, if it has been found */
+                if( (curr_funit != NULL) && (strncmp( curr_funit->name, "$root", 5 ) == 0) ) {
+                  global_funit = curr_funit;
+                }
+
               }
 
             } else {
@@ -2823,17 +2835,9 @@ void db_sync_curr_instance() { PROFILE(DB_SYNC_CURR_INSTANCE);
 
   if( (scope = db_gen_curr_inst_scope()) != NULL ) {
 
-    if( strcmp( db_list[curr_db]->leading_hierarchies[0], "*" ) != 0 ) {
-      scope_extract_scope( scope, db_list[curr_db]->leading_hierarchies[0], stripped_scope );
-    } else {
-      strcpy( stripped_scope, scope );
-    }
+    if( scope[0] != '\0' ) {
 
-    free_safe( scope, (strlen( scope ) + 1) );
-
-    if( stripped_scope[0] != '\0' ) {
-
-      curr_instance = inst_link_find_by_scope( stripped_scope, db_list[curr_db]->inst_head );
+      curr_instance = inst_link_find_by_scope( scope, db_list[curr_db]->inst_head );
 
       /* If we have found at least one matching instance, set the one_instance_found flag */
       if( curr_instance != NULL ) {
@@ -2841,6 +2845,8 @@ void db_sync_curr_instance() { PROFILE(DB_SYNC_CURR_INSTANCE);
       }
 
     }
+
+    free_safe( scope, (strlen( scope ) + 1) );
 
   } else {
 
@@ -2937,7 +2943,7 @@ void db_assign_symbol(
 
   assert( name != NULL );
 
-  if( curr_instance != NULL ) {
+  if( (curr_instance != NULL) && (curr_instance->funit != NULL) ) {
     
     /* Find the signal that matches the specified signal name */
     if( (slink = sig_link_find( name, curr_instance->funit->sig_head )) != NULL ) {
@@ -3104,6 +3110,11 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.346  2008/10/31 22:01:33  phase1geo
+ Initial code changes to support merging two non-overlapping CDD files into
+ one.  This functionality seems to be working but needs regression testing to
+ verify that nothing is broken as a result.
+
  Revision 1.345  2008/10/24 20:36:51  phase1geo
  Adding more diagnostics for timescale testing with the $time function.  Fixing
  issues with timescale calculation.

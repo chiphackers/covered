@@ -298,7 +298,7 @@ static bool line_instance_summary(
 
   free_safe( pname, (strlen( pname ) + 1) );
 
-  if( root->stat->show && !funit_is_unnamed( root->funit ) &&
+  if( (root->funit != NULL) && root->stat->show && !funit_is_unnamed( root->funit ) &&
       ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
     miss_found = line_display_instance_summary( ofile, tmpname, root->stat->line_hit, root->stat->line_total );
@@ -512,7 +512,7 @@ static void line_instance_verbose(
 
   free_safe( pname, (strlen( pname ) + 1) );
 
-  if( !funit_is_unnamed( root->funit ) &&
+  if( (root->funit != NULL) && !funit_is_unnamed( root->funit ) &&
       (((root->stat->line_hit < root->stat->line_total) && !report_covered) ||
        ((root->stat->line_hit > 0) && report_covered) ||
        ((root->stat->line_excluded > 0) && report_exclusions)) ) {
@@ -640,7 +640,8 @@ void line_report(
       strcpy( tmp, "<NA>" );
     } else {
       assert( db_list[curr_db]->leading_hier_num > 0 );
-      strcpy( tmp, db_list[curr_db]->leading_hierarchies[0] );
+      //strcpy( tmp, db_list[curr_db]->leading_hierarchies[0] );
+      strcpy( tmp, "*" );
     }
 
     fprintf( ofile, "Instance                                           Hit/ Miss/Total    Percent hit\n" );
@@ -687,6 +688,11 @@ void line_report(
 
 /*
  $Log$
+ Revision 1.105  2008/10/11 03:59:19  phase1geo
+ Fixing bug 2158626.  Also removing RASSIGN expression statements from line coverage
+ (they are always executed and therefore will never be interesting from a line coverage
+ standpoint).
+
  Revision 1.104  2008/09/29 23:00:27  phase1geo
  Attempting to fix bug 2136474.  Also adding support for $time system function call.
 

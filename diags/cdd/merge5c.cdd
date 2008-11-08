@@ -1,7 +1,8 @@
 5 12 101 4 main
-8 /Users/trevorw/projects/covered/diags/verilog -t ranker -i main.r -vcd merge5c.vcd -o merge5c.cdd -v merge5c.v -y lib -D DUMP
+8 /ptmp/covered/diags/verilog -t ranker -i main.r -vcd merge5c.vcd -o merge5c.cdd -v merge5c.v -y lib -D DUMP
 3 0 $root "$root" NA 0 0 1
-3 0 ranker "r" lib/ranker.v 1 22 1
+15 main
+3 0 ranker "main.r" lib/ranker.v 1 22 1
 2 1 10 a000a 2 1 100c 0 0 128 1 a
 2 2 10 a000a 5 29 100a 1 0 1 18 0 1 0 0 0 0
 2 3 12 40007 1 0 61004 0 0 3 16 0 0

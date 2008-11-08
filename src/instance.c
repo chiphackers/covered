@@ -69,18 +69,22 @@ static void instance_display_tree_helper(
 
   char         sp[4096];  /* Contains prefix for children */
   funit_inst*  curr;      /* Pointer to current child instance */
-  char*        piname;    /* Printable version of this instance */
-  char*        pfname;    /* Printable version of this instance functional unit */
   unsigned int rv;        /* Return value from snprintf calls */
 
   assert( root != NULL );
 
   /* Get printable version of this instance and functional unit name */
-  piname = scope_gen_printable( root->name );
-  pfname = scope_gen_printable( root->funit->name );
-
-  /* Display ourselves */
-  printf( "%s%s (%s)\n", prefix, piname, pfname );
+  if( root->funit != NULL ) {
+    char* piname = scope_gen_printable( root->name );
+    char* pfname = scope_gen_printable( root->funit->name );
+    printf( "%s%s (%s)\n", prefix, piname, pfname );
+    free_safe( piname, (strlen( piname ) + 1) );
+    free_safe( pfname, (strlen( pfname ) + 1) );
+  } else {
+    char* piname = scope_gen_printable( root->name );
+    printf( "%s%s ()\n", prefix, piname );
+    free_safe( piname, (strlen( piname ) + 1) );
+  }
 
   /* Calculate prefix */
   rv = snprintf( sp, 4096, "%s   ", prefix );
@@ -93,9 +97,6 @@ static void instance_display_tree_helper(
     curr = curr->next;
   }
 
-  /* Deallocate memory */
-  free_safe( piname, (strlen( piname ) + 1) );
-  free_safe( pfname, (strlen( pfname ) + 1) );
 
   PROFILE_END;
 
@@ -354,9 +355,8 @@ vsignal* instance_find_signal_by_exclusion_id(
 
   if( root != NULL ) {
 
-    assert( root->funit != NULL );
-
-    if( (root->funit->sig_head != NULL) &&
+    if( (root->funit != NULL) &&
+        (root->funit->sig_head != NULL) &&
         (root->funit->sig_head->sig->id <= id) &&
         (root->funit->sig_tail->sig->id >= id) ) {
 
@@ -884,63 +884,139 @@ void instance_db_write(
   bool        report_save  /*!< Specifies if we are saving a CDD file after modifying it with the report command */
 ) { PROFILE(INSTANCE_DB_WRITE);
 
+  bool stop_recursive = FALSE;
+
   assert( root != NULL );
 
-  if( root->funit->type != FUNIT_NO_SCORE ) {
+  if( root->funit != NULL ) {
 
-    char        tscope[4096];  /* New scope of functional unit to write */
-    funit_inst* curr;          /* Pointer to current child functional unit instance */
+    if( root->funit->type != FUNIT_NO_SCORE ) {
 
-    assert( scope != NULL );
+      funit_inst* curr = parse_mode ? root : NULL;
 
-    curr = parse_mode ? root : NULL;
+      assert( scope != NULL );
 
-    /* If we are in parse mode, re-issue expression IDs (we use the ulid field since it is not used in parse mode) */
-    if( issue_ids ) {
+      /* If we are in parse mode, re-issue expression IDs (we use the ulid field since it is not used in parse mode) */
+      if( issue_ids && (root->funit != NULL) ) {
 
-      exp_link*   expl;
-      sig_link*   sigl;
+        exp_link*   expl;
+        sig_link*   sigl;
 #ifndef VPI_ONLY
-      gitem_link* gil;
+        gitem_link* gil;
 #endif
 
-      /* First issue IDs to the expressions within the functional unit */
-      expl = root->funit->exp_head;
-      while( expl != NULL ) {
-        expl->exp->ulid = curr_expr_id;
-        curr_expr_id++;
-        expl = expl->next;
-      }
+        /* First issue IDs to the expressions within the functional unit */
+        expl = root->funit->exp_head;
+        while( expl != NULL ) {
+          expl->exp->ulid = curr_expr_id;
+          curr_expr_id++;
+          expl = expl->next;
+        }
 
-      sigl = root->funit->sig_head;
-      while( sigl != NULL ) {
-        sigl->sig->id = curr_sig_id;
-        curr_sig_id++;
-        sigl = sigl->next;
-      }
+        sigl = root->funit->sig_head;
+        while( sigl != NULL ) {
+          sigl->sig->id = curr_sig_id;
+          curr_sig_id++;
+          sigl = sigl->next;
+        }
     
 #ifndef VPI_ONLY
-      /* Then issue IDs to any generated expressions/signals */
-      gil = root->gitem_head;
-      while( gil != NULL ) {
-        gen_item_assign_ids( gil->gi, root->funit );
-        gil = gil->next;
-      }
+        /* Then issue IDs to any generated expressions/signals */
+        gil = root->gitem_head;
+        while( gil != NULL ) {
+          gen_item_assign_ids( gil->gi, root->funit );
+          gil = gil->next;
+        }
 #endif
+
+      }
+
+      /* Display root functional unit */
+      funit_db_write( root->funit, scope, file, curr, report_save, issue_ids );
+
+    } else {
+
+      stop_recursive = TRUE;
 
     }
 
-    /* Display root functional unit */
-    funit_db_write( root->funit, scope, file, curr, report_save, issue_ids );
+  } else {
+
+    fprintf( file, "%d %s\n", DB_TYPE_INST_ONLY, scope );
+
+  }
+
+  if( !stop_recursive ) {
+ 
+    char tscope[4096];
 
     /* Display children */
-    curr = root->child_head;
+    funit_inst* curr = root->child_head;
     while( curr != NULL ) {
       unsigned int rv = snprintf( tscope, 4096, "%s.%s", scope, curr->name );
       assert( rv < 4096 );
       instance_db_write( curr, file, tscope, parse_mode, issue_ids, report_save );
       curr = curr->next;
     }
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Parses an instance-only database line and adds a "placeholder" instance in the instance tree.
+*/
+void instance_only_db_read(
+  char** line  /*!< Pointer to line being read from database file */
+) { PROFILE(INSTANCE_ONLY_DB_READ);
+
+  char  scope[4096];
+  int   chars_read;
+
+  if( sscanf( *line, "%s%n", scope, &chars_read ) == 1 ) {
+
+    char*       back = strdup_safe( scope );
+    char*       rest = strdup_safe( scope );
+    funit_inst* child;
+
+    *line += chars_read;
+
+    scope_extract_back( scope, back, rest ); 
+
+    /* Create "placeholder" instance */
+    child = instance_create( NULL, back, NULL );
+
+    /* If we are the top-most instance, just add ourselves to the instance link list */
+    if( rest[0] == '\0' ) {
+      inst_link_add( child, &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
+
+    /* Otherwise, find our parent instance and attach the new instance to it */
+    } else {
+      funit_inst* parent;
+      if( (parent = inst_link_find_by_scope( rest, db_list[curr_db]->inst_head )) != NULL ) {
+        if( parent->child_head == NULL ) {
+          parent->child_head = parent->child_tail = child;
+        } else {
+          parent->child_tail->next = child;
+          parent->child_tail       = child;
+        }
+        child->parent = parent;
+      } else {
+        print_output( "Unable to find parent instance of instance-only line in database file.", FATAL, __FILE__, __LINE__ );
+        Throw 0;
+      }
+    }
+
+    /* Deallocate memory */
+    free_safe( back, (strlen( scope ) + 1) );
+    free_safe( rest, (strlen( scope ) + 1) );
+
+  } else {
+
+    print_output( "Unable to read instance-only line in database file.", FATAL, __FILE__, __LINE__ );
+    Throw 0;
 
   }
 
@@ -1321,6 +1397,11 @@ void instance_dealloc(
 
 /*
  $Log$
+ Revision 1.107  2008/10/31 22:01:34  phase1geo
+ Initial code changes to support merging two non-overlapping CDD files into
+ one.  This functionality seems to be working but needs regression testing to
+ verify that nothing is broken as a result.
+
  Revision 1.106  2008/10/07 05:24:17  phase1geo
  Adding -dumpvars option.  Need to resolve a few issues before this work is considered
  complete.
