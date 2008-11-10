@@ -160,7 +160,7 @@ ExclusionReasonConflictResolution = all
 
 # THE FOLLOWING LINES ARE FOR STORING GUI STATE INFORMATION -- DO NOT MODIFY LINES BELOW THIS COMMENT!
 
-MainWindowGeometry                = 1000x548+663+451
+MainWindowGeometry                = 1000x548+207+239
 ToggleWindowGeometry              = 366x125+50+289
 MemoryWindowGeometry              = 
 CombWindowGeometry                = 
