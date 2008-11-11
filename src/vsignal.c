@@ -456,7 +456,7 @@ void vsignal_merge(
   assert( base != NULL );
   assert( base->name != NULL );
   assert( scope_compare( base->name, other->name ) );
-  assert( base->id != other->id );
+  assert( base->id == other->id );
   assert( base->pdim_num == other->pdim_num );
   assert( base->udim_num == other->udim_num );
 
@@ -791,6 +791,10 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.88  2008/11/02 04:28:58  phase1geo
+ Updates to make initially generated CDD files have the same IDs as merged CDD files.
+ Full IV and Cver regressions pass.
+
  Revision 1.87  2008/10/29 23:16:49  phase1geo
  Added diagnostics to verify real-real op-and-assign functionality.  Fixed
  bugs associated with these diagnostics.

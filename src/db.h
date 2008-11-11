@@ -50,6 +50,9 @@ void db_read(
   int         read_mode
 );
 
+/*! \brief Merges the current instance trees */
+void db_merge_instance_trees();
+
 /*! \brief After functional units have been read, merge the contents of the functional units (used in GUI only). */
 void db_merge_funits();
 
@@ -224,6 +227,11 @@ bool db_do_timestep( uint64 time, bool final );
 
 /*
  $Log$
+ Revision 1.98  2008/10/31 22:01:33  phase1geo
+ Initial code changes to support merging two non-overlapping CDD files into
+ one.  This functionality seems to be working but needs regression testing to
+ verify that nothing is broken as a result.
+
  Revision 1.97  2008/10/07 05:24:17  phase1geo
  Adding -dumpvars option.  Need to resolve a few issues before this work is considered
  complete.

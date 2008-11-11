@@ -725,9 +725,46 @@ void db_read(
 
 }
 
+/*!
+ Iterates through the instance tree list, merging all instances into the first instance tree that
+ is not the $root instance tree.
+*/
 void db_merge_instance_trees() { PROFILE(DB_MERGE_INSTANCE_TREES);
 
+  funit_inst* base  = NULL;
+  inst_link*  instl = db_list[curr_db]->inst_head;
+  inst_link*  lastl = NULL;
+
+  while( instl != NULL ) {
+
+    inst_link* currl = instl;
+
+    /* Advance the instl pointer */
+    instl = instl->next;
+
+    /* If we are not the $root instance tree */
+    if( strcmp( currl->inst->name, "$root" ) != 0 ) {
+      if( base == NULL ) {
+        base  = currl->inst;
+        lastl = currl;
+      } else {
+        if( instance_merge_two_trees( base, currl->inst ) ) {
+          if( lastl != NULL ) {
+            lastl->next = currl->next;
+            if( currl->next == NULL ) {
+              db_list[curr_db]->inst_tail = lastl;
+            }
+          } else {
+            db_list[curr_db]->inst_head = currl->next;
+          }
+          free_safe( currl, sizeof( inst_link ) );
+        } else {
+          lastl = currl;
+        }
+      }
+    }
   
+  }
 
   PROFILE_END;
 
@@ -3120,6 +3157,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.348  2008/11/11 00:10:19  phase1geo
+ Starting to work on instance tree merging algorithm (not complete at this point).
+ Checkpointing.
+
  Revision 1.347  2008/11/08 00:09:04  phase1geo
  Checkpointing work on asymmetric merging algorithm.  Updated regressions
  per these changes.  We currently have 5 failures in the IV regression suite.

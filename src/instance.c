@@ -340,6 +340,56 @@ funit_inst* instance_find_by_funit(
 }
 
 /*!
+ Recursively searches the given instance tree, setting match_inst and matches if a matched functional unit name was found.
+*/
+static void instance_find_by_funit_name(
+            funit_inst*   root,        /*!< Pointer to root functional unit instance to search */
+            const char*   funit_name,  /*!< Name of module to find */
+  /*@out@*/ funit_inst**  match_inst,  /*!< Pointer to matched functional unit instance */
+  /*@out@*/ unsigned int* matches      /*!< Specifies the number of matched modules */
+) { PROFILE(INSTANCE_FIND_BY_FUNIT_NAME_IF_ONE_HELPER);
+
+  if( root != NULL ) {
+
+    funit_inst* child;
+
+    if( strcmp( root->funit->name, funit_name ) == 0 ) {
+      (*matches)++;
+      *match_inst = root;
+    }
+
+    child = root->child_head;
+    while( child != NULL ) {
+      instance_find_by_funit_name( child, funit_name, match_inst, matches );
+      child = child->next;
+    }
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ \return Returns a pointer to the found instance, if one exists; otherwise, returns NULL.
+*/
+static funit_inst* instance_find_by_funit_name_if_one(
+  funit_inst* root,       /*!< Pointer to root functional unit instance to search */
+  const char* funit_name  /*!< Name of module to find */
+) { PROFILE(INSTANCE_FIND_BY_FUNIT_NAME_IF_ONE);
+
+  funit_inst*  match_inst = NULL;
+  unsigned int matches    = 0;
+
+  instance_find_by_funit_name( root, funit_name, &match_inst, &matches );
+
+  PROFILE_END;
+
+  return( (matches == 1) ? match_inst : NULL );
+
+}
+
+/*!
  \return Returns the pointer to the signal that contains the same exclusion ID.
 
  Recursively searches the given instance tree to find the signal that has the same
@@ -870,7 +920,7 @@ bool instance_read_add(
 /*!
  Merges to instance trees that have the same instance root.
 */
-static void instance_merge(
+static void instance_merge_tree(
   funit_inst* root1,  /*!< Pointer to root of first instance tree to merge */
   funit_inst* root2   /*!< Pointer to root of second instance tree to merge */
 ) { PROFILE(INSTANCE_MERGE);
@@ -893,7 +943,7 @@ static void instance_merge(
       child1 = child1->next;
     }
     if( child1 != NULL ) {
-      instance_merge( child1, child2 );
+      instance_merge_tree( child1, child2 );
     } else {
       if( root1->child_head == NULL ) {
         root1->child_head = child2;
@@ -907,16 +957,25 @@ static void instance_merge(
     child2 = child2->next;
   }
 
+  /* Finally, deallocate root2 */
+  instance_dealloc_single( root2 );
+
   PROFILE_END;
 
 }
 
 /*!
+ Retrieves the leading hierarchy string and the pointer to the top-most populated instance
+ given the specified instance tree.
+
+ \note
+ This function requires that the leading_hierarchy string be previously allocated and initialized
+ to the NULL string.
 */
 static void instance_get_leading_hierarchy(
-            funit_inst*  root,
-  /*@out@*/ char*        leading_hierarchy,
-  /*@out@*/ funit_inst** top_inst
+            funit_inst*  root,               /*!< Pointer to instance tree to get information from */
+  /*@out@*/ char*        leading_hierarchy,  /*!< Leading hierarchy to first populated instance */
+  /*@out@*/ funit_inst** top_inst            /*!< Pointer to first populated instance */
 ) { PROFILE(INSTANCE_GET_LEADING_HIERARCHY);
 
   do {
@@ -933,13 +992,17 @@ static void instance_get_leading_hierarchy(
 }
 
 /*!
+ \return Returns TRUE if the second instance tree should have its link removed from the
+         instance tree list for the current database; otherwise, returns FALSE.
+
  Performs comples merges two instance trees into one instance tree.
 */
-void instance_merge_two_trees(
+bool instance_merge_two_trees(
   funit_inst* root1,  /*!< Pointer to first instance tree to merge */
   funit_inst* root2   /*!< Pointer to second instance tree to merge */
 ) { PROFILE(INSTANCE_MERGE_TWO_TREES);
 
+  bool        retval = FALSE;
   char        lhier1[4096];
   char        lhier2[4096];
   funit_inst* tinst1 = NULL;
@@ -952,14 +1015,30 @@ void instance_merge_two_trees(
   instance_get_leading_hierarchy( root1, lhier1, &tinst1 );
   instance_get_leading_hierarchy( root2, lhier2, &tinst2 );
 
-  /* If the two instances have the same leading hierarchy and the top-level modules are the same, just merge them */
-  if( (strcmp( lhier1, lhier2 ) == 0) && (strcmp( tinst1->funit->name, tinst2->funit->name ) == 0) ) {
+  /* If the top-level modules are the same, just merge them */
+  if( strcmp( tinst1->funit->name, tinst2->funit->name ) == 0 ) {
 
-    instance_merge( tinst1, tinst2 );
+    /* Perform instance tree merge */
+    instance_merge_tree( tinst1, tinst2 );
+
+    /* If the two instances have the same leading hierarchy, remove the second hierarchy altogether */
+    retval = (strcmp( lhier1, lhier2 ) == 0);
 
   } else {
 
-    
+    funit_inst* found_inst;
+
+    /* Check to see if the module pointed to by tinst1 exists within the tree of tinst2 */
+    if( (found_inst = instance_find_by_funit_name_if_one( tinst2, tinst1->funit->name )) != NULL ) {
+
+      instance_merge_tree( tinst1, found_inst );
+
+    /* Otherwise, check to see if the module pointed to by tinst2 exists within the tree of tinst1 */
+    } else if( (found_inst = instance_find_by_funit_name_if_one( tinst1, tinst2->funit->name )) != NULL ) {
+
+      instance_merge_tree( tinst2, found_inst );
+
+    }
 
   }
 
@@ -1563,6 +1642,10 @@ void instance_dealloc(
 
 /*
  $Log$
+ Revision 1.109  2008/11/11 00:10:19  phase1geo
+ Starting to work on instance tree merging algorithm (not complete at this point).
+ Checkpointing.
+
  Revision 1.108  2008/11/08 00:09:04  phase1geo
  Checkpointing work on asymmetric merging algorithm.  Updated regressions
  per these changes.  We currently have 5 failures in the IV regression suite.
