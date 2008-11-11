@@ -868,6 +868,106 @@ bool instance_read_add(
 }
 
 /*!
+ Merges to instance trees that have the same instance root.
+*/
+static void instance_merge(
+  funit_inst* root1,  /*!< Pointer to root of first instance tree to merge */
+  funit_inst* root2   /*!< Pointer to root of second instance tree to merge */
+) { PROFILE(INSTANCE_MERGE);
+
+  funit_inst* child2;
+
+  /* Don't attempt to merge the functional units if one instance is a placeholder */
+  if( (root1->funit != NULL) && (root2->funit != NULL) ) {
+
+    /* Merge the current functional unit */
+    funit_merge( root1->funit, root2->funit );
+
+  }
+
+  /* Recursively merge the child instances */
+  child2 = root2->child_head;
+  while( child2 != NULL ) {
+    funit_inst* child1 = root1->child_head;
+    while( (child1 != NULL) && (strcmp( child1->name, child2->name ) != 0) ) {
+      child1 = child1->next;
+    }
+    if( child1 != NULL ) {
+      instance_merge( child1, child2 );
+    } else {
+      if( root1->child_head == NULL ) {
+        root1->child_head = child2;
+        root1->child_tail = child2;
+      } else {
+        root1->child_tail->next = child2;
+        root1->child_tail       = child2;
+      }
+      child2->parent = root1;
+    }
+    child2 = child2->next;
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+*/
+static void instance_get_leading_hierarchy(
+            funit_inst*  root,
+  /*@out@*/ char*        leading_hierarchy,
+  /*@out@*/ funit_inst** top_inst
+) { PROFILE(INSTANCE_GET_LEADING_HIERARCHY);
+
+  do {
+
+    /* Set the outgoing variables */
+    strcat( leading_hierarchy, "." );
+    strcat( leading_hierarchy, root->name );
+    *top_inst = root;
+
+  } while( (root->funit == NULL) && ((root = root->child_head) != NULL) );
+
+  PROFILE_END;
+
+}
+
+/*!
+ Performs comples merges two instance trees into one instance tree.
+*/
+void instance_merge_two_trees(
+  funit_inst* root1,  /*!< Pointer to first instance tree to merge */
+  funit_inst* root2   /*!< Pointer to second instance tree to merge */
+) { PROFILE(INSTANCE_MERGE_TWO_TREES);
+
+  char        lhier1[4096];
+  char        lhier2[4096];
+  funit_inst* tinst1 = NULL;
+  funit_inst* tinst2 = NULL;
+
+  lhier1[0] = '\0';
+  lhier2[0] = '\0';
+
+  /* Get leading hierarchy information */
+  instance_get_leading_hierarchy( root1, lhier1, &tinst1 );
+  instance_get_leading_hierarchy( root2, lhier2, &tinst2 );
+
+  /* If the two instances have the same leading hierarchy and the top-level modules are the same, just merge them */
+  if( (strcmp( lhier1, lhier2 ) == 0) && (strcmp( tinst1->funit->name, tinst2->funit->name ) == 0) ) {
+
+    instance_merge( tinst1, tinst2 );
+
+  } else {
+
+    
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  \throws anonymous gen_item_assign_expr_ids instance_db_write funit_db_write
 
  Calls each functional unit display function in instance tree, starting with
@@ -990,11 +1090,13 @@ void instance_only_db_read(
 
     /* If we are the top-most instance, just add ourselves to the instance link list */
     if( rest[0] == '\0' ) {
+      printf( "In instance_only_db_read, rest is NULL\n" );
       inst_link_add( child, &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
 
     /* Otherwise, find our parent instance and attach the new instance to it */
     } else {
       funit_inst* parent;
+      printf( "In instance_only_db_read, rest is %s\n", rest );
       if( (parent = inst_link_find_by_scope( rest, db_list[curr_db]->inst_head )) != NULL ) {
         if( parent->child_head == NULL ) {
           parent->child_head = parent->child_tail = child;
@@ -1016,6 +1118,70 @@ void instance_only_db_read(
   } else {
 
     print_output( "Unable to read instance-only line in database file.", FATAL, __FILE__, __LINE__ );
+    Throw 0;
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Merges instance-only constructs from two CDD files.
+*/
+void instance_only_db_merge(
+  char** line  /*!< Pointer to line being read from database file */
+) { PROFILE(INSTANCE_ONLY_DB_MERGE);
+
+  char  scope[4096];
+  int   chars_read;
+
+  if( sscanf( *line, "%s%n", scope, &chars_read ) == 1 ) {
+
+    char*       back = strdup_safe( scope );
+    char*       rest = strdup_safe( scope );
+    funit_inst* child;
+
+    *line += chars_read;
+
+    scope_extract_back( scope, back, rest );
+
+    /* Create "placeholder" instance */
+    child = instance_create( NULL, back, NULL );
+
+    /* If we are the top-most instance, just add ourselves to the instance link list */
+    if( rest[0] == '\0' ) {
+
+      /* Add a new instance link if was not able to be found in the instance linked list */
+      if( inst_link_find_by_scope( scope, db_list[curr_db]->inst_head ) == NULL ) {
+        inst_link_add( child, &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
+      }
+
+    /* Otherwise, find our parent instance and attach the new instance to it */
+    } else {
+      funit_inst* parent;
+      printf( "In instance_only_db_merge, rest is %s\n", rest );
+      if( (parent = inst_link_find_by_scope( rest, db_list[curr_db]->inst_head )) != NULL ) {
+        if( parent->child_head == NULL ) {
+          parent->child_head = parent->child_tail = child;
+        } else {
+          parent->child_tail->next = child;
+          parent->child_tail       = child;
+        }
+        child->parent = parent;
+      } else {
+        print_output( "Unable to find parent instance of instance-only line in database file.", FATAL, __FILE__, __LINE__ );
+        Throw 0;
+      }
+    }
+
+    /* Deallocate memory */
+    free_safe( back, (strlen( scope ) + 1) );
+    free_safe( rest, (strlen( scope ) + 1) );
+
+  } else {
+
+    print_output( "Unable to merge instance-only line in database file.", FATAL, __FILE__, __LINE__ );
     Throw 0;
 
   }
@@ -1397,6 +1563,10 @@ void instance_dealloc(
 
 /*
  $Log$
+ Revision 1.108  2008/11/08 00:09:04  phase1geo
+ Checkpointing work on asymmetric merging algorithm.  Updated regressions
+ per these changes.  We currently have 5 failures in the IV regression suite.
+
  Revision 1.107  2008/10/31 22:01:34  phase1geo
  Initial code changes to support merging two non-overlapping CDD files into
  one.  This functionality seems to be working but needs regression testing to

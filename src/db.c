@@ -583,6 +583,8 @@ void db_read(
                 /* Parse rest of the line for an instance-only structure */
                 if( !merge_mode ) {
                   instance_only_db_read( &rest_line );
+                } else {
+                  instance_only_db_merge( &rest_line );
                 }
 
                 /* Specify that the current functional unit does not exist */
@@ -723,8 +725,16 @@ void db_read(
 
 }
 
+void db_merge_instance_trees() { PROFILE(DB_MERGE_INSTANCE_TREES);
+
+  
+
+  PROFILE_END;
+
+}
+
 /*!
- Iterates through the functional unit, merging all matching functional units.
+ Iterates through the functional unit list, merging all matching functional units.
 */
 void db_merge_funits() { PROFILE(DB_MERGE_FUNITS);
 
@@ -3110,6 +3120,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.347  2008/11/08 00:09:04  phase1geo
+ Checkpointing work on asymmetric merging algorithm.  Updated regressions
+ per these changes.  We currently have 5 failures in the IV regression suite.
+
  Revision 1.346  2008/10/31 22:01:33  phase1geo
  Initial code changes to support merging two non-overlapping CDD files into
  one.  This functionality seems to be working but needs regression testing to
