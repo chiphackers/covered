@@ -1024,6 +1024,12 @@ bool instance_merge_two_trees(
     /* If the two instances have the same leading hierarchy, remove the second hierarchy altogether */
     retval = (strcmp( lhier1, lhier2 ) == 0);
 
+  } else if( strncmp( lhier1, lhier2, strlen( lhier1 ) ) == 0 ) {
+
+    instance_find_scope( lhier2 );
+
+  } else if( strncmp( lhier1, lhier2, strlen( lhier2 ) ) == 0 ) {
+
   } else {
 
     funit_inst* found_inst;
@@ -1642,6 +1648,9 @@ void instance_dealloc(
 
 /*
  $Log$
+ Revision 1.110  2008/11/11 05:36:40  phase1geo
+ Checkpointing merge code.
+
  Revision 1.109  2008/11/11 00:10:19  phase1geo
  Starting to work on instance tree merging algorithm (not complete at this point).
  Checkpointing.
