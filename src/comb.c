@@ -647,7 +647,7 @@ static bool combination_instance_summary(
   /* Generate printable version of instance name */
   pname = scope_gen_printable( root->name );
 
-  if( db_is_unnamed_scope( pname ) ) {
+  if( db_is_unnamed_scope( pname ) || root->name_diff ) {
     strcpy( tmpname, parent );
   } else if( strcmp( parent, "*" ) == 0 ) {
     strcpy( tmpname, pname );
@@ -2681,7 +2681,7 @@ static void combination_instance_verbose(
   /* Get printable version of instance name */
   pname = scope_gen_printable( root->name );
 
-  if( db_is_unnamed_scope( pname ) ) {
+  if( db_is_unnamed_scope( pname ) || root->name_diff ) {
     strcpy( tmpname, parent );
   } else if( strcmp( parent, "*" ) == 0 ) {
     strcpy( tmpname, pname );
@@ -3063,7 +3063,6 @@ void combination_report(
 ) { PROFILE(COMBINATION_REPORT);
 
   bool       missed_found = FALSE;  /* If set to TRUE, indicates combinations were missed */
-  char       tmp[4096];             /* Temporary string value */
   inst_link* instl;                 /* Pointer to current instance link */
   int        acc_hits     = 0;      /* Accumulated number of combinations hit */
   int        acc_total    = 0;      /* Accumulated number of combinations in design */
@@ -3074,21 +3073,13 @@ void combination_report(
 
   if( report_instance ) {
 
-    if( db_list[curr_db]->leading_hiers_differ ) {
-      strcpy( tmp, "<NA>" );
-    } else {
-      assert( db_list[curr_db]->leading_hier_num > 0 );
-      // strcpy( tmp, db_list[curr_db]->leading_hierarchies[0] );
-      strcpy( tmp, "*" );
-    }
-
     fprintf( ofile, "                                                                            Logic Combinations\n" );
     fprintf( ofile, "Instance                                                              Hit/Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
     instl = db_list[curr_db]->inst_head;
     while( instl != NULL ) {
-      missed_found |= combination_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*"), &acc_hits, &acc_total );
+      missed_found |= combination_instance_summary( ofile, instl->inst, (instl->inst->name_diff ? "<NA>" : "*"), &acc_hits, &acc_total );
       instl = instl->next;
     }
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -3098,7 +3089,7 @@ void combination_report(
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       instl = db_list[curr_db]->inst_head;
       while( instl != NULL ) {
-        combination_instance_verbose( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*") );
+        combination_instance_verbose( ofile, instl->inst, (instl->inst->name_diff ? "<NA>" : "*") );
         instl = instl->next;
       }
     }
@@ -3129,6 +3120,10 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.218  2008/11/08 00:09:04  phase1geo
+ Checkpointing work on asymmetric merging algorithm.  Updated regressions
+ per these changes.  We currently have 5 failures in the IV regression suite.
+
  Revision 1.217  2008/11/06 23:04:07  phase1geo
  Merging branch covered-20081030-bug2223054.
 

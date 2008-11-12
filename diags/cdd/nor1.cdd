@@ -1,7 +1,7 @@
-5 12 101 4 *
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd nor1.vcd -o nor1.cdd -v nor1.v -D DUMP
-3 0 $root "$root" NA 0 0 1
-3 0 main "main" nor1.v 9 29 1
+5 13 101 4 *
+8 /ptmp/covered/diags/verilog -t main -vcd nor1.vcd -o nor1.cdd -v nor1.v -D DUMP
+3 0 $root "$root" 0 NA 0 0 1
+3 0 main "main" 0 nor1.v 9 29 1
 2 1 14 100010 2 1 100c 0 0 1 1 c
 2 2 14 b000b 1 1 1004 0 0 1 1 b
 2 3 14 b0010 2 b 10cc 1 2 1 18 0 1 0 1 1 0
@@ -11,4 +11,4 @@
 1 b 2 12 70005 1 0 0 0 1 17 0 1 0 0 0 0
 1 c 3 12 70008 1 0 0 0 1 17 0 1 0 1 0 0
 4 5 f 5 5
-3 1 main.$u0 "main.$u0" nor1.v 0 27 1
+3 1 main.$u0 "main.$u0" 0 nor1.v 0 27 1

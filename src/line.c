@@ -287,7 +287,7 @@ static bool line_instance_summary(
   pname = scope_gen_printable( root->name );
   
   /* Calculate instance name */
-  if( db_is_unnamed_scope( pname ) ) {
+  if( db_is_unnamed_scope( pname ) || root->name_diff ) {
     strcpy( tmpname, parent_inst );
   } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
@@ -501,7 +501,7 @@ static void line_instance_verbose(
   /* Get printable version of instance name */
   pname = scope_gen_printable( root->name );
 
-  if( db_is_unnamed_scope( pname ) ) {
+  if( db_is_unnamed_scope( pname ) || root->name_diff ) {
     strcpy( tmpname, parent_inst );
   } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
@@ -625,7 +625,6 @@ void line_report(
 ) { PROFILE(LINE_REPORT);
 
   bool       missed_found = FALSE;  /* If set to TRUE, lines were found to be missed */
-  char       tmp[4096];             /* Temporary string value */
   inst_link* instl;                 /* Pointer to current instance link */
   int        acc_hits     = 0;      /* Accumulated line hits for entire design */
   int        acc_total    = 0;      /* Accumulated line total for entire design */
@@ -636,20 +635,12 @@ void line_report(
 
   if( report_instance ) {
 
-    if( db_list[curr_db]->leading_hiers_differ ) {
-      strcpy( tmp, "<NA>" );
-    } else {
-      assert( db_list[curr_db]->leading_hier_num > 0 );
-      //strcpy( tmp, db_list[curr_db]->leading_hierarchies[0] );
-      strcpy( tmp, "*" );
-    }
-
     fprintf( ofile, "Instance                                           Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
     instl = db_list[curr_db]->inst_head;
     while( instl != NULL ) {
-      missed_found |= line_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*"), &acc_hits, &acc_total );
+      missed_found |= line_instance_summary( ofile, instl->inst, (instl->inst->name_diff ? "<NA>" : "*"), &acc_hits, &acc_total );
       instl = instl->next;
     }
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -659,7 +650,7 @@ void line_report(
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       instl = db_list[curr_db]->inst_head;
       while( instl != NULL ) {
-        line_instance_verbose( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*") );
+        line_instance_verbose( ofile, instl->inst, (instl->inst->name_diff ? "<NA>" : "*") );
         instl = instl->next;
       }
     }
@@ -688,6 +679,10 @@ void line_report(
 
 /*
  $Log$
+ Revision 1.106  2008/11/08 00:09:04  phase1geo
+ Checkpointing work on asymmetric merging algorithm.  Updated regressions
+ per these changes.  We currently have 5 failures in the IV regression suite.
+
  Revision 1.105  2008/10/11 03:59:19  phase1geo
  Fixing bug 2158626.  Also removing RASSIGN expression statements from line coverage
  (they are always executed and therefore will never be interesting from a line coverage

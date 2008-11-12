@@ -1,12 +1,12 @@
-5 12 101 5 *
+5 13 101 5 *
 8 /ptmp/covered/diags/verilog -t main -vcd timescale2.2.vcd -o timescale2.2.cdd -v timescale2.2.v -y lib -D DUMP
-3 0 $root "$root" NA 0 0 100000
-3 0 main "main" timescale2.2.v 11 24 1000
-3 0 ts_module "main.tsm" lib/ts_module.v 3 15 1000
+3 0 $root "$root" 0 NA 0 0 100000
+3 0 main "main" 0 timescale2.2.v 11 24 1000
+3 0 ts_module "main.tsm" 0 lib/ts_module.v 3 15 1000
 2 1 7 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u1
 1 a 1 5 1070004 1 0 0 0 1 17 0 1 0 1 1 0
 4 1 1 0 0
-3 1 ts_module.$u1 "main.tsm.$u1" lib/ts_module.v 0 13 1000
+3 1 ts_module.$u1 "main.tsm.$u1" 0 lib/ts_module.v 0 13 1000
 2 2 8 50008 1 0 21004 0 0 1 16 0 0
 2 3 8 10001 0 1 1410 0 0 1 1 a
 2 4 8 10008 1 37 16 2 3
@@ -25,4 +25,4 @@
 4 9 0 11 11
 4 6 0 9 0
 4 4 11 6 6
-3 1 main.$u0 "main.$u0" timescale2.2.v 0 22 1000
+3 1 main.$u0 "main.$u0" 0 timescale2.2.v 0 22 1000

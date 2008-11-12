@@ -154,7 +154,6 @@ bool scope_find_param(
                                         obf_file( curr_funit->filename ), line );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            printf( "scope Throw A\n" );
             Throw 0;
           }
  
@@ -162,7 +161,6 @@ bool scope_find_param(
 
       } Catch_anonymous {
         free_safe( scope, (strlen( name ) + 1) );
-        printf( "scope Throw B\n" );
         Throw 0;
       }
 
@@ -181,7 +179,6 @@ bool scope_find_param(
 
   } Catch_anonymous {
     free_safe( parm_name, (strlen( name ) + 1) );
-    printf( "scope Throw C\n" );
     Throw 0;
   }
 
@@ -248,7 +245,6 @@ bool scope_find_signal(
                                         obf_file( curr_funit->filename ), line );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            printf( "scope Throw D\n" );
             Throw 0;
           }
  
@@ -256,7 +252,6 @@ bool scope_find_signal(
 
       } Catch_anonymous {
         free_safe( scope, (strlen( name ) + 1) );
-        printf( "scope Throw E\n" );
         Throw 0;
       }
 
@@ -287,7 +282,6 @@ bool scope_find_signal(
 
   } Catch_anonymous {
     free_safe( sig_name, (strlen( name ) + 1) );
-    printf( "scope Throw F\n" );
     Throw 0;
   }
 
@@ -340,7 +334,6 @@ bool scope_find_task_function_namedblock(
                                 obf_funit( curr_funit->name ), obf_file( curr_funit->filename ), line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    printf( "scope Throw G\n" );
     Throw 0;
 
   }
@@ -352,15 +345,14 @@ bool scope_find_task_function_namedblock(
 }
 
 /*!
- \param scope  Scope of current functional unit to get parent functional unit for
-
  \return Returns a pointer to the parent functional unit of this functional unit.
 
  \note This function should only be called when the scope refers to a functional unit
        that is NOT a module!
 */
 func_unit* scope_get_parent_funit(
-  const char* scope
+  const funit_inst* root,  /*!< Pointer to root of instance tree to search */
+  const char*       scope  /*!< Scope of current functional unit to get parent functional unit for */
 ) { PROFILE(SCOPE_GET_PARENT_FUNIT);
 
   funit_inst* inst;     /* Pointer to functional unit instance with the specified scope */
@@ -380,7 +372,7 @@ func_unit* scope_get_parent_funit(
   assert( rest != '\0' );
 
   /* Get functional instance for the rest of the scope */
-  inst = inst_link_find_by_scope( rest, db_list[curr_db]->inst_head );
+  inst = instance_find_scope( root, rest, TRUE );
 
   assert( inst != NULL );
 
@@ -394,14 +386,13 @@ func_unit* scope_get_parent_funit(
 }
 
 /*!
- \param scope  Full hierarchical scope of functional unit to find parent module for.
-
  \return Returns pointer to module that is the parent of the specified functional unit.
 
  \note Assumes that the given scope is not that of a module itself!
 */
 func_unit* scope_get_parent_module(
-  const char* scope
+  const funit_inst* root,  /*!< Pointer to root of instance tree to search */
+  const char*       scope  /*!< Full hierarchical scope of functional unit to find parent module for */
 ) { PROFILE(SCOPE_GET_PARENT_MODULE);
 
   funit_inst* inst;        /* Pointer to functional unit instance with the specified scope */
@@ -424,7 +415,7 @@ func_unit* scope_get_parent_module(
     scope_extract_back( curr_scope, back, rest );
     assert( rest[0] != '\0' );
     strcpy( curr_scope, rest );
-    inst = inst_link_find_by_scope( curr_scope, db_list[curr_db]->inst_head );
+    inst = instance_find_scope( root, curr_scope, TRUE );
     assert( inst != NULL );
   } while( inst->funit->type != FUNIT_MODULE );
 
@@ -440,6 +431,9 @@ func_unit* scope_get_parent_module(
 
 /*
  $Log$
+ Revision 1.52  2008/04/15 20:37:11  phase1geo
+ Fixing database array support.  Full regression passes.
+
  Revision 1.51  2008/03/18 21:36:24  phase1geo
  Updates from regression runs.  Regressions still do not completely pass at
  this point.  Checkpointing.

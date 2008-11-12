@@ -1,12 +1,12 @@
-5 12 101 4 *
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd negate1.vcd -o negate1.cdd -v negate1.v -D DUMP
-3 0 $root "$root" NA 0 0 1
-3 0 main "main" negate1.v 10 33 1
+5 13 101 4 *
+8 /ptmp/covered/diags/verilog -t main -vcd negate1.vcd -o negate1.cdd -v negate1.v -D DUMP
+3 0 $root "$root" 0 NA 0 0 1
+3 0 main "main" 0 negate1.v 10 33 1
 2 1 14 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0
 1 a 1 12 107000b 1 0 39 0 40 17 0 ffffffff 0 ffffffff 0 0 0 ff 0 ff 0 0
 1 b 2 12 107000e 1 0 39 0 40 17 0 ffffffff 0 2 0 0 0 ff 0 0 0 0
 4 1 1 0 0
-3 1 main.$u0 "main.$u0" negate1.v 0 24 1
+3 1 main.$u0 "main.$u0" 0 negate1.v 0 24 1
 2 2 15 50009 1 0 61004 0 0 40 16 0 0 0 0
 2 3 15 10001 0 1 1410 0 0 40 1 a
 2 4 15 10009 1 37 16 2 3
@@ -43,4 +43,4 @@
 4 11 0 13 13
 4 7 0 11 11
 4 4 11 7 7
-3 1 main.$u1 "main.$u1" negate1.v 0 31 1
+3 1 main.$u1 "main.$u1" 0 negate1.v 0 31 1

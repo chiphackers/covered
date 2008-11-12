@@ -361,18 +361,25 @@ void db_write(
       instl = db_list[curr_db]->inst_head;
       while( instl != NULL ) {
 
-        str_link* strl;
+        /* Only output the given instance tree if it is not ignored */
+        if( !instl->ignore ) {
 
-        /*
-         If the file version information has not been set for this instance's functional unit and a file version
-         has been specified for this functional unit's file, set it now.
-        */
-        if( (instl->inst->funit != NULL) && (instl->inst->funit->version == NULL) && ((strl = str_link_find( instl->inst->funit->filename, db_list[curr_db]->fver_head )) != NULL) ) {
-          instl->inst->funit->version = strdup_safe( strl->str2 );
+          str_link* strl;
+
+          /*
+           If the file version information has not been set for this instance's functional unit and a file version
+           has been specified for this functional unit's file, set it now.
+          */
+          if( (instl->inst->funit != NULL) &&
+              (instl->inst->funit->version == NULL) &&
+              ((strl = str_link_find( instl->inst->funit->filename, db_list[curr_db]->fver_head )) != NULL) ) {
+            instl->inst->funit->version = strdup_safe( strl->str2 );
+          }
+
+          /* Now write the instance */
+          instance_db_write( instl->inst, db_handle, instl->inst->name, parse_mode, issue_ids, report_save );
+
         }
-
-        /* Now write the instance */
-        instance_db_write( instl->inst, db_handle, instl->inst->name, parse_mode, issue_ids, report_save );
 
         instl = instl->next;
 
@@ -429,6 +436,7 @@ void db_read(
   funit_inst*  foundinst;            /* Found functional unit instance */
   bool         merge_mode = FALSE;   /* If TRUE, we should currently be merging data */
   func_unit*   parent_mod;           /* Pointer to parent module of this functional unit */
+  bool         inst_name_diff;       /* Specifies the read value of the name diff for the current instance */
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
@@ -556,17 +564,13 @@ void db_read(
               
                 if( (read_mode != READ_MODE_MERGE_INST_MERGE) || !merge_mode ) {
 
-                  inst_link* instl = db_list[curr_db]->inst_head;  /* Pointer to current instance link */
-
                   /* Get the scope of the parent module */
                   scope_extract_back( funit_scope, back, parent_scope );
 
-                  /* Attempt to add it to each instance tree until a suitable one is found */
-                  while( (instl != NULL) && !instance_read_add( &(instl->inst), parent_scope, curr_funit, back ) ) {
-                    instl = instl->next;
-                  }
-                  if( instl == NULL ) {
-                    (void)inst_link_add( instance_create( curr_funit, funit_scope, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
+                  /* Attempt to add it to the last instance tree */
+                  if( (db_list[curr_db]->inst_tail == NULL) ||
+                      !instance_read_add( &(db_list[curr_db]->inst_tail->inst), parent_scope, curr_funit, back ) ) {
+                    (void)inst_link_add( instance_create( curr_funit, funit_scope, inst_name_diff, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
                   }
 
                 }
@@ -596,7 +600,7 @@ void db_read(
                 merge_mode = FALSE;
 
                 /* Now finish reading functional unit line */
-                funit_db_read( &tmpfunit, funit_scope, &rest_line );
+                funit_db_read( &tmpfunit, funit_scope, &inst_name_diff, &rest_line );
                 if( (read_mode == READ_MODE_MERGE_INST_MERGE) && ((foundinst = inst_link_find_by_scope( funit_scope, db_list[curr_db]->inst_head )) != NULL) ) {
                   merge_mode = TRUE;
                   curr_funit = foundinst->funit;
@@ -614,8 +618,8 @@ void db_read(
                   curr_funit->end_line   = tmpfunit.end_line;
                   curr_funit->timescale  = tmpfunit.timescale;
                   if( tmpfunit.type != FUNIT_MODULE ) {
-                    curr_funit->parent = scope_get_parent_funit( funit_scope );
-                    parent_mod         = scope_get_parent_module( funit_scope );
+                    curr_funit->parent = scope_get_parent_funit( db_list[curr_db]->inst_tail->inst, funit_scope );
+                    parent_mod         = scope_get_parent_module( db_list[curr_db]->inst_tail->inst, funit_scope );
                     funit_link_add( curr_funit, &(parent_mod->tf_head), &(parent_mod->tf_tail) );
                   }
                 }
@@ -684,17 +688,13 @@ void db_read(
 
     if( (read_mode != READ_MODE_MERGE_INST_MERGE) || !merge_mode ) {
 
-      inst_link* instl = db_list[curr_db]->inst_head;  /* Pointer to current instance link */
-
       /* Get the scope of the parent module */
       scope_extract_back( funit_scope, back, parent_scope );
 
-      /* Attempt to add it to each instance tree until a suitable one is found */
-      while( (instl != NULL) && !instance_read_add( &(instl->inst), parent_scope, curr_funit, back ) ) {
-        instl = instl->next;
-      }
-      if( instl == NULL ) {
-        (void)inst_link_add( instance_create( curr_funit, funit_scope, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
+      /* Attempt to add it to the last instance tree */
+      if( (db_list[curr_db]->inst_tail == NULL) ||
+          !instance_read_add( &(db_list[curr_db]->inst_tail->inst), parent_scope, curr_funit, back ) ) {
+        (void)inst_link_add( instance_create( curr_funit, funit_scope, inst_name_diff, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
       }
 
     }
@@ -733,37 +733,40 @@ void db_merge_instance_trees() { PROFILE(DB_MERGE_INSTANCE_TREES);
 
   funit_inst* base  = NULL;
   inst_link*  instl = db_list[curr_db]->inst_head;
-  inst_link*  lastl = NULL;
+  bool        done  = FALSE;
 
+  /* Merge all root trees */
+  instl = db_list[curr_db]->inst_head;
   while( instl != NULL ) {
-
-    inst_link* currl = instl;
-
-    /* Advance the instl pointer */
-    instl = instl->next;
-
-    /* If we are not the $root instance tree */
-    if( strcmp( currl->inst->name, "$root" ) != 0 ) {
+    if( strcmp( instl->inst->name, "$root" ) == 0 ) {
       if( base == NULL ) {
-        base  = currl->inst;
-        lastl = currl;
+        base        = instl->inst;
+        instl->base = TRUE;
       } else {
-        if( instance_merge_two_trees( base, currl->inst ) ) {
-          if( lastl != NULL ) {
-            lastl->next = currl->next;
-            if( currl->next == NULL ) {
-              db_list[curr_db]->inst_tail = lastl;
-            }
-          } else {
-            db_list[curr_db]->inst_head = currl->next;
-          }
-          free_safe( currl, sizeof( inst_link ) );
-        } else {
-          lastl = currl;
-        }
+        instl->ignore = instance_merge_two_trees( base, instl->inst );
       }
     }
-  
+    instl = instl->next;
+  }
+
+  /* Merge all other trees */
+  while( !done ) {
+    base  = NULL;
+    instl = db_list[curr_db]->inst_head;
+    while( instl != NULL ) {
+      if( strcmp( instl->inst->name, "$root" ) != 0 ) {
+        if( !instl->ignore && !instl->base ) {
+          if( base == NULL ) {
+            base        = instl->inst;
+            instl->base = TRUE;
+          } else {
+            instl->ignore = instance_merge_two_trees( base, instl->inst );
+          }
+        }
+      }
+      instl = instl->next;
+    }
+    done = (base == NULL);
   }
 
   PROFILE_END;
@@ -1086,7 +1089,7 @@ func_unit* db_add_instance(
 
     /* If we are currently within a generate block, create a generate item for this instance to resolve it later */
     if( generate_top_mode > 0 ) {
-      last_gi = gen_item_create_inst( instance_create( found_funit_link->funit, scope, range ) );
+      last_gi = gen_item_create_inst( instance_create( found_funit_link->funit, scope, FALSE, range ) );
       if( curr_gi_block != NULL ) {
         db_gen_item_connect( curr_gi_block, last_gi );
       } else {
@@ -1099,7 +1102,7 @@ func_unit* db_add_instance(
           instl = instl->next;
         }
         if( instl == NULL ) {
-          (void)inst_link_add( instance_create( found_funit_link->funit, scope, range ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
+          (void)inst_link_add( instance_create( found_funit_link->funit, scope, FALSE, range ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
         }
       }
     }
@@ -1113,7 +1116,7 @@ func_unit* db_add_instance(
 
     /* If we are currently within a generate block, create a generate item for this instance to resolve it later */
     if( generate_top_mode > 0 ) {
-      last_gi = gen_item_create_inst( instance_create( funit, scope, range ) );
+      last_gi = gen_item_create_inst( instance_create( funit, scope, FALSE, range ) );
       if( curr_gi_block != NULL ) {
         db_gen_item_connect( curr_gi_block, last_gi );
       } else {
@@ -1126,7 +1129,7 @@ func_unit* db_add_instance(
           instl = instl->next;
         }
         if( instl == NULL ) {
-          (void)inst_link_add( instance_create( funit, scope, range ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
+          (void)inst_link_add( instance_create( funit, scope, FALSE, range ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
         }
       }
     }
@@ -3157,6 +3160,9 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.349  2008/11/11 05:36:40  phase1geo
+ Checkpointing merge code.
+
  Revision 1.348  2008/11/11 00:10:19  phase1geo
  Starting to work on instance tree merging algorithm (not complete at this point).
  Checkpointing.

@@ -58,17 +58,22 @@ bool scope_find_task_function_namedblock(
 
 /*! \brief  Finds the parent functional unit of the functional unit with the given scope */
 func_unit* scope_get_parent_funit(
-  const char* scope
+  const funit_inst* root,
+  const char*       scope
 );
 
 /*! \brief  Finds the parent module of the functional unit with the given scope */
 func_unit* scope_get_parent_module(
-  const char* scope
+  const funit_inst* root,
+  const char*       scope
 );
 
 
 /*
  $Log$
+ Revision 1.14  2008/02/22 20:39:22  phase1geo
+ More updates for exception handling.
+
  Revision 1.13  2008/01/10 04:59:04  phase1geo
  More splint updates.  All exportlocal cases are now taken care of.
 

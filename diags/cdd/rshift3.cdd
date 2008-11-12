@@ -1,11 +1,11 @@
-5 12 101 4 *
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd rshift3.vcd -o rshift3.cdd -v rshift3.v -D DUMP
-3 0 $root "$root" NA 0 0 1
-3 0 main "main" rshift3.v 10 29 1
+5 13 101 4 *
+8 /ptmp/covered/diags/verilog -t main -vcd rshift3.vcd -o rshift3.cdd -v rshift3.v -D DUMP
+3 0 $root "$root" 0 NA 0 0 1
+3 0 main "main" 0 rshift3.v 10 29 1
 2 1 14 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0
 1 a 1 12 107000b 1 0 63 0 64 17 0 ffffffff 0 0 88888888 0 0 ffffffff 0 0 88888888 0
 4 1 1 0 0
-3 1 main.$u0 "main.$u0" rshift3.v 0 18 1
+3 1 main.$u0 "main.$u0" 0 rshift3.v 0 18 1
 2 2 15 50049 1 0 21000 0 0 64 16 aaaaaaaa 66666666 aaaaaaaa 66666666
 2 3 15 10001 0 1 1410 0 0 64 1 a
 2 4 15 10049 1 37 12 2 3
@@ -19,4 +19,4 @@
 4 11 0 0 0
 4 6 0 11 0
 4 4 11 6 6
-3 1 main.$u1 "main.$u1" rshift3.v 0 27 1
+3 1 main.$u1 "main.$u1" 0 rshift3.v 0 27 1

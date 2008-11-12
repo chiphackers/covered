@@ -1,7 +1,7 @@
-5 12 101 3 *
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd urandom2.1.vcd -o urandom2.1.cdd -v urandom2.1.v -D DUMP
-3 0 $root "$root" NA 0 0 1
-3 0 main "main" urandom2.1.v 8 31 1
+5 13 101 3 *
+8 /ptmp/covered/diags/verilog -t main -vcd urandom2.1.vcd -o urandom2.1.cdd -v urandom2.1.v -D DUMP
+3 0 $root "$root" 0 NA 0 0 1
+3 0 main "main" 0 urandom2.1.v 8 31 1
 2 1 14 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0
 1 d 1 10 107000a 1 0 31 0 32 49 0 ffffffff 0 10dce 1 0
 1 e 2 10 107000d 1 0 31 0 32 49 0 ffffffff 0 0 0 0
@@ -9,7 +9,7 @@
 1 b 4 11 107000d 1 0 7 0 8 17 0 ff 0 0 0 0
 1 c 5 12 308000a 1 0 0 0 1 17 1 1 0 0 0 0
 4 1 1 0 0
-3 1 main.$u0 "main.$u0" urandom2.1.v 0 20 1
+3 1 main.$u0 "main.$u0" 0 urandom2.1.v 0 20 1
 2 2 15 50005 1 0 1008 0 0 32 48 1 0
 2 3 15 10001 0 1 1410 0 0 32 33 d
 2 4 15 10005 1 37 1a 2 3
@@ -37,4 +37,4 @@
 4 14 0 16 16
 4 7 0 14 14
 4 4 11 7 7
-3 1 main.$u1 "main.$u1" urandom2.1.v 0 29 1
+3 1 main.$u1 "main.$u1" 0 urandom2.1.v 0 29 1

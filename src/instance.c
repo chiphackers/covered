@@ -77,12 +77,12 @@ static void instance_display_tree_helper(
   if( root->funit != NULL ) {
     char* piname = scope_gen_printable( root->name );
     char* pfname = scope_gen_printable( root->funit->name );
-    printf( "%s%s (%s)\n", prefix, piname, pfname );
+    printf( "%s%s (%s) - %p\n", prefix, piname, pfname, root );
     free_safe( piname, (strlen( piname ) + 1) );
     free_safe( pfname, (strlen( pfname ) + 1) );
   } else {
     char* piname = scope_gen_printable( root->name );
-    printf( "%s%s ()\n", prefix, piname );
+    printf( "%s%s () - %p\n", prefix, piname, root );
     free_safe( piname, (strlen( piname ) + 1) );
   }
 
@@ -125,6 +125,7 @@ void instance_display_tree(
 funit_inst* instance_create(
   func_unit*    funit,      /*!< Pointer to functional unit to store in this instance */
   char*         inst_name,  /*!< Instantiated name of this instance */
+  bool          name_diff,  /*!< Specifies if the inst_name provided is not accurate due to merging */
   vector_width* range       /*!< For arrays of instances, contains range information for this array */
 ) { PROFILE(INSTANCE_CREATE);
 
@@ -133,6 +134,7 @@ funit_inst* instance_create(
   new_inst             = (funit_inst*)malloc_safe( sizeof( funit_inst ) );
   new_inst->funit      = funit;
   new_inst->name       = strdup_safe( inst_name );
+  new_inst->name_diff  = name_diff;
   new_inst->stat       = NULL;
   new_inst->param_head = NULL;
   new_inst->param_tail = NULL;
@@ -553,7 +555,7 @@ static funit_inst* instance_add_child(
   if( new_inst == NULL ) {
 
     /* Generate new instance */
-    new_inst = instance_create( child, name, range );
+    new_inst = instance_create( child, name, FALSE, range );
 
     /* Add new instance to inst child instance list */
     if( inst->child_head == NULL ) {
@@ -697,7 +699,7 @@ bool instance_parse_add(
 
   if( *root == NULL ) {
 
-    *root = instance_create( child, inst_name, range );
+    *root = instance_create( child, inst_name, FALSE, range );
 
   } else {
 
@@ -880,7 +882,7 @@ bool instance_read_add(
 
   if( *root == NULL ) {
 
-    *root = instance_create( child, inst_name, NULL );
+    *root = instance_create( child, inst_name, FALSE, NULL );
 
   } else {
 
@@ -889,7 +891,7 @@ bool instance_read_add(
     if( (inst = instance_find_scope( *root, parent, TRUE )) != NULL ) {
 
       /* Create new instance */
-      new_inst = instance_create( child, inst_name, NULL );
+      new_inst = instance_create( child, inst_name, FALSE, NULL );
 
       if( inst->child_head == NULL ) {
         inst->child_head = new_inst;
@@ -927,12 +929,14 @@ static void instance_merge_tree(
 
   funit_inst* child2;
 
-  /* Don't attempt to merge the functional units if one instance is a placeholder */
-  if( (root1->funit != NULL) && (root2->funit != NULL) ) {
-
-    /* Merge the current functional unit */
-    funit_merge( root1->funit, root2->funit );
-
+  /* Perform functional unit merging */
+  if( root1->funit != NULL ) {
+    if( root2->funit != NULL ) {
+      funit_merge( root1->funit, root2->funit );
+    }
+  } else if( root2->funit != NULL ) {
+    root1->funit = root2->funit;
+    root2->funit = NULL;
   }
 
   /* Recursively merge the child instances */
@@ -958,7 +962,7 @@ static void instance_merge_tree(
   }
 
   /* Finally, deallocate root2 */
-  instance_dealloc_single( root2 );
+  // instance_dealloc_single( root2 );
 
   PROFILE_END;
 
@@ -992,6 +996,33 @@ static void instance_get_leading_hierarchy(
 }
 
 /*!
+ Iterates up the scope for both functional unit
+*/
+static void instance_mark_lhier_diffs(
+  funit_inst* root1,
+  funit_inst* root2
+) { PROFILE(INSTANCE_MARK_LHIER_DIFFS);
+
+  /* Move up the scope hierarchy looking for a difference in instance names */
+  while( (root1 != NULL) && (root2 != NULL) && printf( "A root1: %s, root2: %s\n", root1->name, root2->name ) && (strcmp( root1->name, root2->name ) == 0) ) {
+    root1 = root1->parent;
+    root2 = root2->parent;
+  }
+
+  /*
+   Iterate up root1 instance, setting the name_diff variable to TRUE to specify that the instance name is really
+   not accurate since its child tree with a child tree with a differen parent scope.
+  */
+  while( root1 != NULL ) {
+    root1->name_diff = TRUE;
+    root1 = root1->parent;
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  \return Returns TRUE if the second instance tree should have its link removed from the
          instance tree list for the current database; otherwise, returns FALSE.
 
@@ -1002,7 +1033,7 @@ bool instance_merge_two_trees(
   funit_inst* root2   /*!< Pointer to second instance tree to merge */
 ) { PROFILE(INSTANCE_MERGE_TWO_TREES);
 
-  bool        retval = FALSE;
+  bool        retval = TRUE;
   char        lhier1[4096];
   char        lhier2[4096];
   funit_inst* tinst1 = NULL;
@@ -1011,6 +1042,8 @@ bool instance_merge_two_trees(
   lhier1[0] = '\0';
   lhier2[0] = '\0';
 
+  printf( "root1: %s, root2: %s\n", root1->name, root2->name );
+
   /* Get leading hierarchy information */
   instance_get_leading_hierarchy( root1, lhier1, &tinst1 );
   instance_get_leading_hierarchy( root2, lhier2, &tinst2 );
@@ -1018,37 +1051,51 @@ bool instance_merge_two_trees(
   /* If the top-level modules are the same, just merge them */
   if( strcmp( tinst1->funit->name, tinst2->funit->name ) == 0 ) {
 
+    printf( "HERE A!\n" );
     /* Perform instance tree merge */
     instance_merge_tree( tinst1, tinst2 );
+    instance_mark_lhier_diffs( tinst1, tinst2 );
 
-    /* If the two instances have the same leading hierarchy, remove the second hierarchy altogether */
-    retval = (strcmp( lhier1, lhier2 ) == 0);
-
+  /* If root2 is a branch of root1, merge root2 into root1 */
   } else if( strncmp( lhier1, lhier2, strlen( lhier1 ) ) == 0 ) {
 
-    instance_find_scope( lhier2 );
+    printf( "HERE B!\n" );
+    root2 = instance_find_scope( root2, lhier2, FALSE );
+    assert( root2 != NULL );
+    instance_merge_tree( tinst1, root2 );
 
+  /* If root1 is a branch of root2, merge root2 into root1 (replacing lower branches with those from root2) */
   } else if( strncmp( lhier1, lhier2, strlen( lhier2 ) ) == 0 ) {
 
+    printf( "HERE C!\n" );
+    root1 = instance_find_scope( root1, lhier1, FALSE );
+    assert( root1 != NULL );
+    instance_merge_tree( root1, tinst2 );
+
+  /* Check to see if the module pointed to by tinst1 exists within the tree of tinst2 */
+  } else if( (root2 = instance_find_by_funit_name_if_one( tinst2, tinst1->funit->name )) != NULL ) {
+
+    printf( "HERE D!\n" );
+    instance_merge_tree( tinst1, root2 );
+    instance_mark_lhier_diffs( tinst1, root2 );
+
+  /* Check to see if the module pointed to by tinst2 exists within the tree of tinst1 */
+  } else if( (root1 = instance_find_by_funit_name_if_one( tinst1, tinst2->funit->name )) != NULL ) {
+
+    printf( "HERE E!\n" );
+    instance_merge_tree( root1, tinst2 );
+    instance_mark_lhier_diffs( root1, tinst2 );
+
+  /* Otherwise, we cannot merge the two CDD files so don't */
   } else {
 
-    funit_inst* found_inst;
-
-    /* Check to see if the module pointed to by tinst1 exists within the tree of tinst2 */
-    if( (found_inst = instance_find_by_funit_name_if_one( tinst2, tinst1->funit->name )) != NULL ) {
-
-      instance_merge_tree( tinst1, found_inst );
-
-    /* Otherwise, check to see if the module pointed to by tinst2 exists within the tree of tinst1 */
-    } else if( (found_inst = instance_find_by_funit_name_if_one( tinst1, tinst2->funit->name )) != NULL ) {
-
-      instance_merge_tree( tinst2, found_inst );
-
-    }
+    retval = FALSE;
 
   }
 
   PROFILE_END;
+
+  return( retval );
 
 }
 
@@ -1117,7 +1164,7 @@ void instance_db_write(
       }
 
       /* Display root functional unit */
-      funit_db_write( root->funit, scope, file, curr, report_save, issue_ids );
+      funit_db_write( root->funit, scope, root->name_diff, file, curr, report_save, issue_ids );
 
     } else {
 
@@ -1127,7 +1174,7 @@ void instance_db_write(
 
   } else {
 
-    fprintf( file, "%d %s\n", DB_TYPE_INST_ONLY, scope );
+    fprintf( file, "%d %s %d\n", DB_TYPE_INST_ONLY, scope, root->name_diff );
 
   }
 
@@ -1159,8 +1206,9 @@ void instance_only_db_read(
 
   char  scope[4096];
   int   chars_read;
+  bool  name_diff;
 
-  if( sscanf( *line, "%s%n", scope, &chars_read ) == 1 ) {
+  if( sscanf( *line, "%s %d%n", scope, &name_diff, &chars_read ) == 2 ) {
 
     char*       back = strdup_safe( scope );
     char*       rest = strdup_safe( scope );
@@ -1171,17 +1219,15 @@ void instance_only_db_read(
     scope_extract_back( scope, back, rest ); 
 
     /* Create "placeholder" instance */
-    child = instance_create( NULL, back, NULL );
+    child = instance_create( NULL, back, name_diff, NULL );
 
     /* If we are the top-most instance, just add ourselves to the instance link list */
     if( rest[0] == '\0' ) {
-      printf( "In instance_only_db_read, rest is NULL\n" );
       inst_link_add( child, &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
 
     /* Otherwise, find our parent instance and attach the new instance to it */
     } else {
       funit_inst* parent;
-      printf( "In instance_only_db_read, rest is %s\n", rest );
       if( (parent = inst_link_find_by_scope( rest, db_list[curr_db]->inst_head )) != NULL ) {
         if( parent->child_head == NULL ) {
           parent->child_head = parent->child_tail = child;
@@ -1218,10 +1264,11 @@ void instance_only_db_merge(
   char** line  /*!< Pointer to line being read from database file */
 ) { PROFILE(INSTANCE_ONLY_DB_MERGE);
 
-  char  scope[4096];
-  int   chars_read;
+  char scope[4096];
+  int  chars_read;
+  bool name_diff;
 
-  if( sscanf( *line, "%s%n", scope, &chars_read ) == 1 ) {
+  if( sscanf( *line, "%s %d%n", scope, &name_diff, &chars_read ) == 2 ) {
 
     char*       back = strdup_safe( scope );
     char*       rest = strdup_safe( scope );
@@ -1232,7 +1279,7 @@ void instance_only_db_merge(
     scope_extract_back( scope, back, rest );
 
     /* Create "placeholder" instance */
-    child = instance_create( NULL, back, NULL );
+    child = instance_create( NULL, back, name_diff, NULL );
 
     /* If we are the top-most instance, just add ourselves to the instance link list */
     if( rest[0] == '\0' ) {
@@ -1245,7 +1292,6 @@ void instance_only_db_merge(
     /* Otherwise, find our parent instance and attach the new instance to it */
     } else {
       funit_inst* parent;
-      printf( "In instance_only_db_merge, rest is %s\n", rest );
       if( (parent = inst_link_find_by_scope( rest, db_list[curr_db]->inst_head )) != NULL ) {
         if( parent->child_head == NULL ) {
           parent->child_head = parent->child_tail = child;
@@ -1648,6 +1694,9 @@ void instance_dealloc(
 
 /*
  $Log$
+ Revision 1.111  2008/11/11 14:28:49  phase1geo
+ Checkpointing.
+
  Revision 1.110  2008/11/11 05:36:40  phase1geo
  Checkpointing merge code.
 

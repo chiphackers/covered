@@ -52,7 +52,7 @@
  Contains the CDD version number of all CDD files that this version of Covered can write
  and read.
 */
-#define CDD_VERSION        18
+#define CDD_VERSION        19
 
 /*!
  This contains the header information specified when executing this tool.
@@ -2610,6 +2610,8 @@ struct funit_link_s {
 */
 struct inst_link_s {
   funit_inst* inst;                  /*!< Pointer to functional unit instance in list */
+  bool        ignore;                /*!< If set to TRUE, causes this instance tree to be ignored from being written/used */
+  bool        base;                  /*!< If set to TRUE, this instance tree is a registered base tree */
   inst_link*  next;                  /*!< Next functional unit instance link in list */
 };
 
@@ -2695,6 +2697,7 @@ struct case_gitem_s {
 */
 struct funit_inst_s {
   char*         name;                /*!< Instance name of this functional unit instance */
+  bool          name_diff;           /*!< If set to TRUE, means that this instance name is not accurate due to merging */
   func_unit*    funit;               /*!< Pointer to functional unit this instance represents */
   statistic*    stat;                /*!< Pointer to statistic holder */
   vector_width* range;               /*!< Used to create an array of instances */
@@ -3038,6 +3041,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.338  2008/11/08 00:09:04  phase1geo
+ Checkpointing work on asymmetric merging algorithm.  Updated regressions
+ per these changes.  We currently have 5 failures in the IV regression suite.
+
  Revision 1.337  2008/10/27 05:00:32  phase1geo
  Starting to add support for $test$plusargs and $value$plusargs system function
  calls.  More work to do here.  Checkpointing.

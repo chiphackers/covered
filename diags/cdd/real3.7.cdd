@@ -1,13 +1,13 @@
-5 12 101 4 *
+5 13 101 4 *
 8 /ptmp/covered/diags/verilog -t main -vcd real3.7.vcd -o real3.7.cdd -v real3.7.v -D DUMP
-3 0 $root "$root" NA 0 0 1
-3 0 main "main" real3.7.v 8 31 1
+3 0 $root "$root" 0 NA 0 0 1
+3 0 main "main" 0 real3.7.v 8 31 1
 2 1 14 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0
 1 a 1 10 1110008 1 0 63 0 64 53 0 -123.456000
 1 b 2 11 1070008 1 0 31 0 32 17 0 ffffffff 0 0 0 0
 1 c 3 12 1070008 1 0 0 0 1 17 0 1 0 1 0 0
 4 1 1 0 0
-3 1 main.$u0 "main.$u0" real3.7.v 0 20 1
+3 1 main.$u0 "main.$u0" 0 real3.7.v 0 20 1
 2 2 15 6000c 1 0 1004 0 0 64 20 1 123.456
 2 3 15 50005 1 4d 1004 2 0 64 54 0 -123.456000
 2 4 15 10001 0 1 1410 0 0 64 37 a
@@ -31,4 +31,4 @@
 4 11 0 13 13
 4 8 0 11 11
 4 5 11 8 8
-3 1 main.$u1 "main.$u1" real3.7.v 0 29 1
+3 1 main.$u1 "main.$u1" 0 real3.7.v 0 29 1

@@ -92,7 +92,7 @@ void search_init() { PROFILE(SEARCH_INIT);
     curr_funit = global_funit;
 
     /* Add it in the first instance tree */
-    (void)inst_link_add( instance_create( global_funit, "$root", NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
+    (void)inst_link_add( instance_create( global_funit, "$root", FALSE, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
   }
 
   /* Now create top-level module of design */
@@ -106,7 +106,7 @@ void search_init() { PROFILE(SEARCH_INIT);
   /* Initialize instance tree */
   if( top_instance == NULL ) {
     top_instance = strdup_safe( top_module );
-    (void)inst_link_add( instance_create( mod, top_instance, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
+    (void)inst_link_add( instance_create( mod, top_instance, FALSE, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
     db_list[curr_db]->leading_hierarchies = (char**)realloc_safe( db_list[curr_db]->leading_hierarchies, (sizeof( char* ) * db_list[curr_db]->leading_hier_num), (sizeof( char* ) * (db_list[curr_db]->leading_hier_num + 1)) );
     db_list[curr_db]->leading_hierarchies[db_list[curr_db]->leading_hier_num] = strdup_safe( "*" );
     db_list[curr_db]->leading_hier_num++;
@@ -116,7 +116,7 @@ void search_init() { PROFILE(SEARCH_INIT);
       db_list[curr_db]->leading_hierarchies = (char**)realloc_safe( db_list[curr_db]->leading_hierarchies, (sizeof( char* ) * db_list[curr_db]->leading_hier_num), (sizeof( char* ) * (db_list[curr_db]->leading_hier_num + 1)) );
       db_list[curr_db]->leading_hierarchies[db_list[curr_db]->leading_hier_num] = strdup_safe( "*" );
       db_list[curr_db]->leading_hier_num++;
-      (void)inst_link_add( instance_create( mod, dutname, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
+      (void)inst_link_add( instance_create( mod, dutname, FALSE, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
     } else {
       char        tmp1[4096];
       char        tmp2[4096];
@@ -126,12 +126,12 @@ void search_init() { PROFILE(SEARCH_INIT);
       funit_inst* child;
       (void)strcpy( tmp1, lhier );
       scope_extract_front( tmp1, tmp2, tmp3 );
-      instl  = inst_link_add( instance_create( NULL, tmp2, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
+      instl  = inst_link_add( instance_create( NULL, tmp2, FALSE, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
       parent = instl->inst;
       while( tmp3[0] != '\0' ) {
         (void)strcpy( tmp1, tmp3 );
         scope_extract_front( tmp1, tmp2, tmp3 );
-        child = instance_create( NULL, tmp2, NULL );
+        child = instance_create( NULL, tmp2, FALSE, NULL );
         child->parent = parent;
         if( parent->child_head == NULL ) {
           parent->child_head       = child;
@@ -142,7 +142,7 @@ void search_init() { PROFILE(SEARCH_INIT);
         }
         parent = child;
       }
-      child = instance_create( mod, dutname, NULL );
+      child = instance_create( mod, dutname, FALSE, NULL );
       child->parent = parent;
       if( parent->child_head == NULL ) {
         parent->child_head       = child;
@@ -151,7 +151,7 @@ void search_init() { PROFILE(SEARCH_INIT);
         parent->child_tail->next = child;
         parent->child_tail       = child;
       }
-      // (void)inst_link_add( instance_create( mod, dutname, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
+      // (void)inst_link_add( instance_create( mod, dutname, FALSE, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
       db_list[curr_db]->leading_hierarchies = (char**)realloc_safe( db_list[curr_db]->leading_hierarchies, (sizeof( char* ) * db_list[curr_db]->leading_hier_num), (sizeof( char* ) * (db_list[curr_db]->leading_hier_num + 1)) );
       db_list[curr_db]->leading_hierarchies[db_list[curr_db]->leading_hier_num] = strdup_safe( lhier );
       db_list[curr_db]->leading_hier_num++;
@@ -325,6 +325,10 @@ void search_free_lists() { PROFILE(SEARCH_FREE_LISTS);
 
 /*
  $Log$
+ Revision 1.50  2008/11/08 00:09:04  phase1geo
+ Checkpointing work on asymmetric merging algorithm.  Updated regressions
+ per these changes.  We currently have 5 failures in the IV regression suite.
+
  Revision 1.49  2008/10/24 20:36:51  phase1geo
  Adding more diagnostics for timescale testing with the $time function.  Fixing
  issues with timescale calculation.

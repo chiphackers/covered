@@ -1,7 +1,7 @@
-5 12 121 37 *
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd exclude7.2.vcd -o exclude7.2.cdd -v exclude7.2.v -y lib -ep -D DUMP
-3 0 $root "$root" NA 0 0 1
-3 0 main "main" exclude7.2.v 10 56 1
+5 13 121 37 *
+8 /ptmp/covered/diags/verilog -t main -vcd exclude7.2.vcd -o exclude7.2.cdd -v exclude7.2.v -y lib -ep -D DUMP
+3 0 $root "$root" 0 NA 0 0 1
+3 0 main "main" 0 exclude7.2.v 10 56 1
 2 1 51 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u1
 1 clk 1 12 107000b 1 0 0 0 1 17 0 1 0 1 1 0
 1 reset 2 13 7000b 1 0 0 0 1 17 0 1 0 0 1 0
@@ -9,7 +9,7 @@
 1 tail 4 15 7000b 1 0 0 0 1 17 0 1 0 1 1 0
 1 valid 5 16 7000b 1 0 0 0 1 17 0 1 0 1 1 0
 4 1 1 0 0
-3 0 fsma "main.fsm" lib/fsma.v 1 46 1
+3 0 fsma "main.fsm" 0 lib/fsma.v 1 46 1
 2 2 23 110015 24 1 100c 0 0 1 1 clock
 2 3 23 90015 37 27 100a 2 0 1 18 0 1 0 0 0 0
 2 4 23 36003f 4 1 100c 0 0 2 1 next_state
@@ -51,7 +51,7 @@
 4 22 26 21 0
 4 21 21 22 0
 6 24 23 1  1 4 4 2 16 0 0  2 16 1 0  2 16 2 0  2 16 3 0  2 16 1 0  2 16 0 0  2 16 3 0  2 16 2 0   8  0 0 3  0 1 3  1 2 3  1 3 2  2 2 2  2 3 2  3 0 2  3 1 3
-3 1 fsma.$u2 "main.fsm.$u2" lib/fsma.v 0 43 1
+3 1 fsma.$u2 "main.fsm.$u2" 0 lib/fsma.v 0 43 1
 2 25 38 5000e 1 32 3004 0 0 2 1 STATE_IDLE
 2 26 37 9000d d 1 300e 0 0 2 1 state
 2 27 38 0 6 2d 314e 25 26 1 18 0 1 1 1 0 0
@@ -105,8 +105,8 @@
 4 29 20 60 31
 4 69 20 0 0
 4 27 31 69 29
-3 1 main.$u0 "main.$u0" exclude7.2.v 0 49 1
-3 1 main.$u1 "main.$u1" exclude7.2.v 0 54 1
+3 1 main.$u0 "main.$u0" 0 exclude7.2.v 0 49 1
+3 1 main.$u1 "main.$u1" 0 exclude7.2.v 0 54 1
 2 70 52 e0011 1 0 21004 0 0 1 16 0 0
 2 71 52 8000a 0 1 1410 0 0 1 1 clk
 2 72 52 80011 1 37 16 70 71

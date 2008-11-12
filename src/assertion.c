@@ -144,7 +144,7 @@ static bool assertion_instance_summary(
   pname = scope_gen_printable( root->name );
 
   /* Calculate instance name */
-  if( db_is_unnamed_scope( pname ) ) {
+  if( db_is_unnamed_scope( pname ) || root->name_diff ) {
     strcpy( tmpname, parent_inst );
   } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
@@ -300,7 +300,7 @@ static void assertion_instance_verbose(
   /* Get printable version of instance name */
   pname = scope_gen_printable( root->name );
 
-  if( db_is_unnamed_scope( pname ) ) {
+  if( db_is_unnamed_scope( pname ) || root->name_diff ) {
     strcpy( tmpname, parent_inst );
   } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
@@ -418,7 +418,6 @@ void assertion_report(
 ) { PROFILE(ASSERTION_REPORT);
 
   bool       missed_found = FALSE;  /* If set to TRUE, lines were found to be missed */
-  char       tmp[4096];             /* Temporary string value */
   inst_link* instl;                 /* Pointer to current instance link */
   int        acc_hits     = 0;      /* Total number of assertions hit */
   int        acc_total    = 0;      /* Total number of assertions in design */
@@ -429,20 +428,12 @@ void assertion_report(
 
   if( report_instance ) {
 
-    if( db_list[curr_db]->leading_hiers_differ ) {
-      strcpy( tmp, "<NA>" );
-    } else {
-      assert( db_list[curr_db]->leading_hier_num > 0 );
-      // strcpy( tmp, db_list[curr_db]->leading_hierarchies[0] );
-      strcpy( tmp, "*" );
-    }
-
     fprintf( ofile, "Instance                                           Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
     instl = db_list[curr_db]->inst_head;
     while( instl != NULL ) {
-      missed_found |= assertion_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*"), &acc_hits, &acc_total );
+      missed_found |= assertion_instance_summary( ofile, instl->inst, (instl->inst->name_diff ? "<NA>" : "*"), &acc_hits, &acc_total );
       instl = instl->next;
     }
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -452,7 +443,7 @@ void assertion_report(
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       instl = db_list[curr_db]->inst_head;
       while( instl != NULL ) {
-        assertion_instance_verbose( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*") );
+        assertion_instance_verbose( ofile, instl->inst, (instl->inst->name_diff ? "<NA>" : "*") );
         instl = instl->next;
       }
 
@@ -554,6 +545,10 @@ void assertion_get_coverage(
 
 /*
  $Log$
+ Revision 1.40  2008/11/08 00:09:04  phase1geo
+ Checkpointing work on asymmetric merging algorithm.  Updated regressions
+ per these changes.  We currently have 5 failures in the IV regression suite.
+
  Revision 1.39  2008/09/10 23:06:36  phase1geo
  Adding several new diagnostics for coverage testing purposes.  Fixed a few
  bugs that surfaced when performing this testing.

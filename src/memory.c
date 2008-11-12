@@ -601,7 +601,7 @@ static bool memory_toggle_instance_summary(
 
   /* Get printable version of this instance */
   pname = scope_gen_printable( root->name );
-  if( db_is_unnamed_scope( pname ) ) {
+  if( db_is_unnamed_scope( pname ) || root->name_diff ) {
     strcpy( tmpname, parent_inst );
   } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
@@ -699,7 +699,7 @@ static bool memory_ae_instance_summary(
 
   /* Get printable version of this instance */
   pname = scope_gen_printable( root->name );
-  if( db_is_unnamed_scope( pname ) ) {
+  if( db_is_unnamed_scope( pname ) || root->name_diff ) {
     strcpy( tmpname, parent_inst );
   } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
@@ -1112,7 +1112,7 @@ static void memory_instance_verbose(
   /* Get printable version of the signal */
   pname = scope_gen_printable( root->name );
 
-  if( db_is_unnamed_scope( pname ) ) {
+  if( db_is_unnamed_scope( pname ) || root->name_diff ) {
     strcpy( tmpname, parent_inst );
   } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
@@ -1237,7 +1237,6 @@ void memory_report(
 ) { PROFILE(MEMORY_REPORT);
 
   bool       missed_found  = FALSE;  /* If set to TRUE, indicates that untoggled bits were found */
-  char       tmp[4096];              /* Temporary string value */
   inst_link* instl;                  /* Pointer to current instance link */
   int        acc_hits01    = 0;      /* Accumulated hits 0 -> 1 count */
   int        acc_hits10    = 0;      /* Accumulated hits 1 -> 0 count */
@@ -1252,21 +1251,13 @@ void memory_report(
 
   if( report_instance ) {
 
-    if( db_list[curr_db]->leading_hiers_differ ) {
-      strcpy( tmp, "<NA>" );
-    } else {
-      assert( db_list[curr_db]->leading_hier_num > 0 );
-      // strcpy( tmp, db_list[curr_db]->leading_hierarchies[0] );
-      strcpy( tmp, "*" );
-    }
-
     fprintf( ofile, "                                                           Toggle 0 -> 1                       Toggle 1 -> 0\n" );
     fprintf( ofile, "Instance                                           Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
     instl = db_list[curr_db]->inst_head;
     while( instl != NULL ) {
-      missed_found |= memory_toggle_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*"), &acc_hits01, &acc_hits10, &acc_tog_total );
+      missed_found |= memory_toggle_instance_summary( ofile, instl->inst, (instl->inst->name_diff ? "<NA>" : "*"), &acc_hits01, &acc_hits10, &acc_tog_total );
       instl = instl->next;
     }
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -1279,7 +1270,7 @@ void memory_report(
 
     instl = db_list[curr_db]->inst_head;
     while( instl != NULL ) {
-      missed_found |= memory_ae_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*"), &acc_wr_hits, &acc_rd_hits, &acc_ae_total );
+      missed_found |= memory_ae_instance_summary( ofile, instl->inst, (instl->inst->name_diff ? "<NA>" : "*"), &acc_wr_hits, &acc_rd_hits, &acc_ae_total );
       instl = instl->next;
     }
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -1289,7 +1280,7 @@ void memory_report(
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       instl = db_list[curr_db]->inst_head;
       while( instl != NULL ) {
-        memory_instance_verbose( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*") );
+        memory_instance_verbose( ofile, instl->inst, (instl->inst->name_diff ? "<NA>" : "*") );
         instl = instl->next;
       }
     }
@@ -1329,6 +1320,10 @@ void memory_report(
 
 /*
  $Log$
+ Revision 1.44  2008/11/08 00:09:04  phase1geo
+ Checkpointing work on asymmetric merging algorithm.  Updated regressions
+ per these changes.  We currently have 5 failures in the IV regression suite.
+
  Revision 1.43  2008/09/10 04:04:48  phase1geo
  Fixing bug 2095799.
 

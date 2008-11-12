@@ -523,6 +523,7 @@ void funit_size_elements(
 void funit_db_write(
   func_unit*  funit,        /*!< Pointer to functional unit to write to output */
   char*       scope,        /*!< String version of functional unit scope in hierarchy */
+  bool        name_diff,    /*!< Specifies that this instance has an inaccurate way */
   FILE*       file,         /*!< Pointer to specified output file to write contents */
   funit_inst* inst,         /*!< Pointer to the current functional unit instance */
   bool        report_save,  /*!< Specifies that we are attempting to save a CDD after modifying the database in
@@ -583,11 +584,12 @@ void funit_db_write(
     }
   
     /*@-duplicatequals -formattype@*/
-    fprintf( file, "%d %d %s \"%s\" %s %d %d %llu\n",
+    fprintf( file, "%d %d %s \"%s\" %d %s %d %d %llu\n",
       DB_TYPE_FUNIT,
       funit->type,
       modname,
       scope,
+      name_diff,
       funit->filename,
       funit->start_line,
       funit->end_line,
@@ -703,17 +705,19 @@ void funit_db_write(
  If all is successful, returns TRUE; otherwise, returns FALSE.
 */
 void funit_db_read(
-  func_unit* funit,  /*!< Pointer to functional unit to read contents into */
-  char*      scope,  /*!< Pointer to name of read functional unit scope */
-  char**     line    /*!< Pointer to current line to parse */
+            func_unit* funit,      /*!< Pointer to functional unit to read contents into */
+            char*      scope,      /*!< Pointer to name of read functional unit scope */
+  /*@out@*/ bool*      name_diff,  /*!< Will cause the name_diff value of the instance to get set to the same value */
+            char**     line        /*!< Pointer to current line to parse */
 ) { PROFILE(FUNIT_DB_READ);
 
   int  chars_read;   /* Number of characters currently read */
   int  params;       /* Number of parameters in string that were parsed */
 
   /*@-duplicatequals -formattype@*/
-  if( (params = sscanf( *line, "%d %s \"%[^\"]\" %s %d %d %llu%n", &(funit->type), funit->name, scope, funit->filename,
-                        &(funit->start_line), &(funit->end_line), &(funit->timescale), &chars_read )) == 7 ) {
+  if( (params = sscanf( *line, "%d %s \"%[^\"]\" %d %s %d %d %llu%n", 
+                        &(funit->type), funit->name, scope, name_diff, funit->filename,
+                        &(funit->start_line), &(funit->end_line), &(funit->timescale), &chars_read )) == 8 ) {
   /*@=duplicatequals =formattype@*/
 
     *line = *line + chars_read;
@@ -1573,6 +1577,10 @@ void funit_dealloc(
 
 /*
  $Log$
+ Revision 1.118  2008/11/08 00:09:04  phase1geo
+ Checkpointing work on asymmetric merging algorithm.  Updated regressions
+ per these changes.  We currently have 5 failures in the IV regression suite.
+
  Revision 1.117  2008/11/02 04:28:58  phase1geo
  Updates to make initially generated CDD files have the same IDs as merged CDD files.
  Full IV and Cver regressions pass.

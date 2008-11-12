@@ -1,7 +1,7 @@
-5 12 101 5 *
+5 13 101 5 *
 8 /ptmp/covered/diags/verilog -t main -vcd expand4.2.vcd -o expand4.2.cdd -v expand4.2.v -D DUMP
-3 0 $root "$root" NA 0 0 1
-3 0 main "main" expand4.2.v 1 23 1
+3 0 $root "$root" 0 NA 0 0 1
+3 0 main "main" 0 expand4.2.v 1 23 1
 2 1 8 100013 1 0 21004 0 0 1 16 0 0
 2 2 8 e000e 1 0 1008 0 0 32 48 1 0
 2 3 8 c000c 1 0 1008 0 0 32 48 3 0
@@ -12,4 +12,4 @@
 1 a 1 5 6000b 1 0 3 0 4 17 f f 0 0 0 0
 1 b 2 6 7000b 1 0 0 0 1 17 0 1 0 0 0 0
 4 7 f 7 7
-3 1 main.$u0 "main.$u0" expand4.2.v 0 21 1
+3 1 main.$u0 "main.$u0" 0 expand4.2.v 0 21 1

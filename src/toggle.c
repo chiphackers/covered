@@ -301,7 +301,7 @@ static bool toggle_instance_summary(
   /* Get printable version of this instance */
   pname = scope_gen_printable( root->name );
 
-  if( db_is_unnamed_scope( pname ) ) {
+  if( db_is_unnamed_scope( pname ) || root->name_diff ) {
     strcpy( tmpname, parent_inst );
   } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
@@ -562,7 +562,7 @@ static void toggle_instance_verbose(
   /* Get printable version of the signal */
   pname = scope_gen_printable( root->name );
 
-  if( db_is_unnamed_scope( pname ) ) {
+  if( db_is_unnamed_scope( pname ) || root->name_diff ) {
     strcpy( tmpname, parent_inst );
   } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
@@ -680,7 +680,6 @@ void toggle_report(
 ) { PROFILE(TOGGLE_REPORT);
 
   bool         missed_found = FALSE;  /* If set to TRUE, indicates that untoggled bits were found */
-  char         tmp[4096];             /* Temporary string value */
   inst_link*   instl;                 /* Pointer to current instance link */
   unsigned int acc_hits01   = 0;      /* Accumulated 0 -> 1 toggle hit count */
   unsigned int acc_hits10   = 0;      /* Accumulated 1 -> 0 toggle hit count */
@@ -692,21 +691,13 @@ void toggle_report(
 
   if( report_instance ) {
 
-    if( db_list[curr_db]->leading_hiers_differ ) {
-      strcpy( tmp, "<NA>" );
-    } else {
-      assert( db_list[curr_db]->leading_hier_num > 0 );
-      // strcpy( tmp, db_list[curr_db]->leading_hierarchies[0] );
-      strcpy( tmp, "*" );
-    }
-
     fprintf( ofile, "                                                           Toggle 0 -> 1                       Toggle 1 -> 0\n" );
     fprintf( ofile, "Instance                                           Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
     instl = db_list[curr_db]->inst_head;
     while( instl != NULL ) {
-      missed_found |= toggle_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*"), &acc_hits01, &acc_hits10, &acc_total );
+      missed_found |= toggle_instance_summary( ofile, instl->inst, (instl->inst->name_diff ? "<NA>" : "*"), &acc_hits01, &acc_hits10, &acc_total );
       instl = instl->next;
     }
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -716,7 +707,7 @@ void toggle_report(
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       instl = db_list[curr_db]->inst_head;
       while( instl != NULL ) {
-        toggle_instance_verbose( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*") );
+        toggle_instance_verbose( ofile, instl->inst, (instl->inst->name_diff ? "<NA>" : "*") );
         instl = instl->next;
       }
     }
@@ -746,6 +737,10 @@ void toggle_report(
 
 /*
  $Log$
+ Revision 1.90  2008/11/08 00:09:04  phase1geo
+ Checkpointing work on asymmetric merging algorithm.  Updated regressions
+ per these changes.  We currently have 5 failures in the IV regression suite.
+
  Revision 1.89  2008/10/26 04:41:28  phase1geo
  Adding support for functions returning real and realtime values.  Added real7
  diagnostic to verify this new support.

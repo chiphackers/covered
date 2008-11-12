@@ -1,7 +1,7 @@
-5 12 101 37 *
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd fsm10.2.vcd -o fsm10.2.cdd -y lib -v fsm10.2.v -F fsm=state,next_state -D DUMP
-3 0 $root "$root" NA 0 0 1
-3 0 main "main" fsm10.2.v 1 58 1
+5 13 101 37 *
+8 /ptmp/covered/diags/verilog -t main -vcd fsm10.2.vcd -o fsm10.2.cdd -y lib -v fsm10.2.v -F fsm=state,next_state -D DUMP
+3 0 $root "$root" 0 NA 0 0 1
+3 0 main "main" 0 fsm10.2.v 1 58 1
 2 1 53 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u1
 1 clk 1 3 107000b 1 0 0 0 1 17 0 1 0 1 1 0
 1 reset 2 4 7000b 1 0 0 0 1 17 0 1 0 0 1 0
@@ -12,7 +12,7 @@
 1 valid1 7 7 7000b 1 0 0 0 1 17 0 1 0 1 1 0
 1 valid2 8 7 70013 1 0 0 0 1 17 0 1 0 0 0 0
 4 1 1 0 0
-3 0 fsma "main.fsm1" lib/fsma.v 1 46 1
+3 0 fsma "main.fsm1" 0 lib/fsma.v 1 46 1
 2 2 23 110015 24 1 100c 0 0 1 1 clock
 2 3 23 90015 37 27 100a 2 0 1 18 0 1 0 0 0 0
 2 4 23 36003f 4 1 100c 0 0 2 1 next_state
@@ -54,7 +54,7 @@
 4 22 6 21 0
 4 21 1 22 0
 6 24 23 1  1 4 4 2 16 0 0  2 16 1 0  2 16 2 0  2 16 3 0  2 16 1 0  2 16 0 0  2 16 3 0  2 16 2 0   8  0 0 1  0 1 1  1 2 1  1 3 0  2 2 0  2 3 0  3 0 0  3 1 1
-3 1 fsma.$u2 "main.fsm1.$u2" lib/fsma.v 0 43 1
+3 1 fsma.$u2 "main.fsm1.$u2" 0 lib/fsma.v 0 43 1
 2 25 38 5000e 1 32 1004 0 0 2 1 STATE_IDLE
 2 26 37 9000d d 1 100e 0 0 2 1 state
 2 27 38 0 6 2d 114e 25 26 1 18 0 1 1 1 0 0
@@ -108,7 +108,7 @@
 4 29 0 60 31
 4 69 0 0 0
 4 27 11 69 29
-3 0 fsm "main.fsm2" lib/fsm.v 1 37 1
+3 0 fsm "main.fsm2" 0 lib/fsm.v 1 37 1
 2 70 23 110015 24 1 100c 0 0 1 1 clock
 2 71 23 90015 37 27 100a 70 0 1 18 0 1 0 0 0 0
 2 72 23 36003f 1 1 1004 0 0 2 1 next_state
@@ -150,7 +150,7 @@
 4 90 6 89 0
 4 89 1 90 0
 6 92 91 1  0 1 1 2 16 0 0  2 16 0 0   1  0 0 1
-3 1 fsm.$u3 "main.fsm2.$u3" lib/fsm.v 0 34 1
+3 1 fsm.$u3 "main.fsm2.$u3" 0 lib/fsm.v 0 34 1
 2 93 29 5000e 1 32 1004 0 0 2 1 STATE_IDLE
 2 94 28 9000d 5 1 1006 0 0 2 1 state
 2 95 29 0 2 2d 104e 93 94 1 18 0 1 1 1 0 0
@@ -204,8 +204,8 @@
 4 97 0 128 99
 4 137 0 0 0
 4 95 11 137 97
-3 1 main.$u0 "main.$u0" fsm10.2.v 0 51 1
-3 1 main.$u1 "main.$u1" fsm10.2.v 0 56 1
+3 1 main.$u0 "main.$u0" 0 fsm10.2.v 0 51 1
+3 1 main.$u1 "main.$u1" 0 fsm10.2.v 0 56 1
 2 138 54 7000a 1 0 21004 0 0 1 16 0 0
 2 139 54 10003 0 1 1410 0 0 1 1 clk
 2 140 54 1000a 1 37 16 138 139

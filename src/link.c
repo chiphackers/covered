@@ -389,8 +389,10 @@ inst_link* inst_link_add(
 
   tmp = (inst_link*)malloc_safe( sizeof( inst_link ) );
 
-  tmp->inst = inst;
-  tmp->next = NULL;
+  tmp->inst   = inst;
+  tmp->ignore = FALSE;
+  tmp->base   = FALSE;
+  tmp->next   = NULL;
 
   if( *head == NULL ) {
     *head = *tail = tmp;
@@ -1299,6 +1301,12 @@ void inst_link_delete_list(
 
 /*
  $Log$
+ Revision 1.83  2008/09/06 05:59:45  phase1geo
+ Adding assertion exclusion reason support and have most code implemented for
+ FSM exclusion reason support (still working on debugging this code).  I believe
+ that assertions, FSMs and lines might suffer from the same problem...
+ Checkpointing.
+
  Revision 1.82  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

@@ -1,14 +1,14 @@
-5 12 141 32 *
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd ovl1.vcd -o ovl1.cdd -v ovl1.v -A ovl -D OVL_COVER_DEFAULT=15 +libext+.vlib+ -y ./ovl -I ./ovl -I ./ovl/vlog95 -D DUMP
-3 0 $root "$root" NA 0 0 1
-3 0 main "main" ovl1.v 1 30 1
+5 13 141 32 *
+8 /ptmp/covered/diags/verilog -t main -vcd ovl1.vcd -o ovl1.cdd -v ovl1.v -A ovl -D OVL_COVER_DEFAULT=15 +libext+.vlib+ -y ./ovl -I ./ovl -I ./ovl/vlog95 -D DUMP
+3 0 $root "$root" 0 NA 0 0 1
+3 0 main "main" 0 ovl1.v 1 30 1
 2 1 25 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u1
 1 clock 1 3 107000a 1 0 0 0 1 17 0 1 0 1 1 0
 1 reset_n 2 3 70011 1 0 0 0 1 17 0 1 0 1 0 0
 1 a 3 4 7000a 1 0 3 0 4 17 0 f 0 0 0 0
 1 width 4 0 c0000 1 0 31 0 32 17 4 0 0 0 0 0
 4 1 1 0 0
-3 0 assert_zero_one_hot "main.foo" ./ovl/assert_zero_one_hot.vlib 6 35 1
+3 0 assert_zero_one_hot "main.foo" 0 ./ovl/assert_zero_one_hot.vlib 6 35 1
 2 2 8 180018 1 0 1004 0 0 32 48 0 0
 2 3 8 a0014 0 1 1410 0 0 32 33 error_count
 2 4 8 a0018 1 37 16 2 3
@@ -128,11 +128,11 @@
 4 52 f 52 52
 4 67 f 67 67
 4 84 f 84 84
-3 3 assert_zero_one_hot.ovl_cover_t "main.foo.ovl_cover_t" std_ovl_task.h 117 135 1
+3 3 assert_zero_one_hot.ovl_cover_t "main.foo.ovl_cover_t" 0 std_ovl_task.h 117 135 1
 2 85 119 20006 0 3d 5002 0 0 1 18 0 1 0 0 0 0 $u19
 1 cvr_msg 29 118 1000016 1 0 1023 0 1024 17 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0
 4 85 11 0 0
-3 1 assert_zero_one_hot.ovl_cover_t.$u19 "main.foo.ovl_cover_t.$u19" std_ovl_task.h 0 134 1
+3 1 assert_zero_one_hot.ovl_cover_t.$u19 "main.foo.ovl_cover_t.$u19" 0 std_ovl_task.h 0 134 1
 2 86 122 210021 0 0 1010 0 0 32 48 1 0
 2 87 122 13001d 0 1 1010 0 0 32 33 cover_count
 2 88 122 130021 0 6 1030 86 87 32 50 0 ffffffff 0 0 0 0
@@ -148,12 +148,12 @@
 4 96 0 0 0
 4 94 0 96 95
 4 90 11 94 94
-3 2 assert_zero_one_hot.ovl_fire_2state_f "main.foo.ovl_fire_2state_f" std_ovl_task.h 157 170 1
+3 2 assert_zero_one_hot.ovl_fire_2state_f "main.foo.ovl_fire_2state_f" 0 std_ovl_task.h 157 170 1
 2 97 160 20006 0 3d 5802 0 0 1 18 0 1 0 0 0 0 $u20
 1 ovl_fire_2state_f 30 157 9000b 1 0 0 0 1 17 1 1 0 0 0 0
 1 property_type 31 158 c 1 0 31 0 32 17 ffffffff ffffffff 0 0 0 0
 4 97 11 0 0
-3 1 assert_zero_one_hot.ovl_fire_2state_f.$u20 "main.foo.ovl_fire_2state_f.$u20" std_ovl_task.h 0 169 1
+3 1 assert_zero_one_hot.ovl_fire_2state_f.$u20 "main.foo.ovl_fire_2state_f.$u20" 0 std_ovl_task.h 0 169 1
 2 98 163 60006 0 0 1810 0 0 32 48 1 0
 2 99 162 60006 0 0 1810 0 0 32 48 0 0
 2 100 162 60006 0 31 1830 98 99 64 18 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
@@ -186,12 +186,12 @@
 4 106 0 118 108
 4 121 0 0 0
 4 102 11 121 106
-3 2 assert_zero_one_hot.ovl_fire_xcheck_f "main.foo.ovl_fire_xcheck_f" std_ovl_task.h 173 191 1
+3 2 assert_zero_one_hot.ovl_fire_xcheck_f "main.foo.ovl_fire_xcheck_f" 0 std_ovl_task.h 173 191 1
 2 122 176 20006 0 3d 5802 0 0 1 18 0 1 0 0 0 0 $u21
 1 ovl_fire_xcheck_f 32 173 9000b 1 0 0 0 1 17 1 1 0 0 0 0
 1 property_type 33 174 c 1 0 31 0 32 17 ffffffff ffffffff 0 0 0 0
 4 122 11 0 0
-3 1 assert_zero_one_hot.ovl_fire_xcheck_f.$u21 "main.foo.ovl_fire_xcheck_f.$u21" std_ovl_task.h 0 190 1
+3 1 assert_zero_one_hot.ovl_fire_xcheck_f.$u21 "main.foo.ovl_fire_xcheck_f.$u21" 0 std_ovl_task.h 0 190 1
 2 123 183 60006 0 0 1810 0 0 32 48 1 0
 2 124 182 60006 0 0 1810 0 0 32 48 0 0
 2 125 182 60006 0 31 1830 123 124 64 18 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
@@ -224,12 +224,12 @@
 4 131 0 143 133
 4 146 0 0 0
 4 127 11 146 131
-3 2 assert_zero_one_hot.ovl_fire_cover_f "main.foo.ovl_fire_cover_f" std_ovl_task.h 193 208 1
+3 2 assert_zero_one_hot.ovl_fire_cover_f "main.foo.ovl_fire_cover_f" 0 std_ovl_task.h 193 208 1
 2 147 196 20006 0 3d 5802 0 0 1 18 0 1 0 0 0 0 $u22
 1 ovl_fire_cover_f 34 193 9000b 1 0 0 0 1 17 1 1 0 0 0 0
 1 coverage_level 35 194 c 1 0 31 0 32 17 ffffffff ffffffff 0 0 0 0
 4 147 11 0 0
-3 1 assert_zero_one_hot.ovl_fire_cover_f.$u22 "main.foo.ovl_fire_cover_f.$u22" std_ovl_task.h 0 207 1
+3 1 assert_zero_one_hot.ovl_fire_cover_f.$u22 "main.foo.ovl_fire_cover_f.$u22" 0 std_ovl_task.h 0 207 1
 2 148 197 17001a 0 0 21810 0 0 1 16 0 0
 2 149 197 40013 0 1 1c10 0 0 1 1 ovl_fire_cover_f
 2 150 197 4001a 0 37 832 148 149
@@ -263,7 +263,7 @@
 4 173 0 0 0
 4 161 0 173 163
 4 150 11 161 161
-3 1 assert_zero_one_hot.$u23 "main.foo.$u23" ./vlog95/assert_zero_one_hot_logic.v 0 90 1
+3 1 assert_zero_one_hot.$u23 "main.foo.$u23" 0 ./vlog95/assert_zero_one_hot_logic.v 0 90 1
 2 174 79 16001e 1 1 1004 0 0 4 1 test_expr
 2 175 79 40011 0 1 1410 0 0 4 1 prev_test_expr
 2 176 79 4001e f 38 6 174 175
@@ -277,7 +277,7 @@
 4 182 0 0 0
 4 180 0 182 181
 4 176 11 180 180
-3 1 assert_zero_one_hot.$u23.$u24 "main.foo.$u23.$u24" ./vlog95/assert_zero_one_hot_logic.v 0 83 1
+3 1 assert_zero_one_hot.$u23.$u24 "main.foo.$u23.$u24" 0 ./vlog95/assert_zero_one_hot_logic.v 0 83 1
 2 183 81 260029 1 0 21004 0 0 1 16 0 0
 2 184 81 200024 1 32 1008 0 0 32 1 width
 2 185 81 1f002b 1 25 1104 183 184 4 18 0 f f 0 0 0
@@ -290,7 +290,7 @@
 2 192 82 6002b 5 38 6 190 191
 4 192 0 0 0
 4 187 11 192 192
-3 1 assert_zero_one_hot.$u23.$u25 "main.foo.$u23.$u25" ./vlog95/assert_zero_one_hot_logic.v 0 89 1
+3 1 assert_zero_one_hot.$u23.$u25 "main.foo.$u23.$u25" 0 ./vlog95/assert_zero_one_hot_logic.v 0 89 1
 2 193 85 1d0029 1 1 1008 0 0 1 1 zoh_test_expr
 2 194 85 a0018 1 1 1008 0 0 1 1 valid_test_expr
 2 195 85 a0029 1 18 1208 193 194 1 18 0 1 0 0 1 0
@@ -302,14 +302,14 @@
 4 199 0 0 0
 4 200 6 199 0
 4 196 11 200 199
-3 1 assert_zero_one_hot.$u23.$u25.$u26 "main.foo.$u23.$u25.$u26" ./vlog95/assert_zero_one_hot_logic.v 0 87 1
+3 1 assert_zero_one_hot.$u23.$u25.$u26 "main.foo.$u23.$u25.$u26" 0 ./vlog95/assert_zero_one_hot_logic.v 0 87 1
 2 201 86 2f0037 1 1 1004 0 0 4 1 test_expr
 2 202 86 1c002b 1 1 1004 0 0 4 1 one_hots_checked
 2 203 86 1c0037 1 9 1044 201 202 4 18 0 f 0 0 f 0
 2 204 86 80017 0 1 1410 0 0 4 1 one_hots_checked
 2 205 86 80037 a 38 6 203 204
 4 205 11 0 0
-3 1 assert_zero_one_hot.$u27 "main.foo.$u27" ./vlog95/assert_zero_one_hot_logic.v 0 108 1
+3 1 assert_zero_one_hot.$u27 "main.foo.$u27" 0 ./vlog95/assert_zero_one_hot_logic.v 0 108 1
 2 206 94 130016 1 0 21004 0 0 1 16 0 0
 2 207 94 8000e 2 1 100c 0 0 1 1 reset_n
 2 208 94 80016 2 11 114c 206 207 1 18 0 1 1 1 0 0
@@ -319,7 +319,7 @@
 4 210 0 0 0
 4 211 0 0 0
 4 209 11 211 210
-3 1 assert_zero_one_hot.$u27.$u29 "main.foo.$u27.$u29" ./vlog95/assert_zero_one_hot_logic.v 0 107 1
+3 1 assert_zero_one_hot.$u27.$u29 "main.foo.$u27.$u29" 0 ./vlog95/assert_zero_one_hot_logic.v 0 107 1
 2 212 98 a0015 1 1 1004 0 0 1 1 fire_cover_1
 2 213 98 60016 a 39 6 212 0
 2 214 101 a0015 1 1 1004 0 0 1 1 fire_cover_2
@@ -335,23 +335,23 @@
 4 215 0 219 217
 4 220 6 215 0
 4 213 11 220 215
-3 1 assert_zero_one_hot.$u27.$u29.$u30 "main.foo.$u27.$u29.$u30" ./vlog95/assert_zero_one_hot_logic.v 0 100 1
+3 1 assert_zero_one_hot.$u27.$u29.$u30 "main.foo.$u27.$u29.$u30" 0 ./vlog95/assert_zero_one_hot_logic.v 0 100 1
 2 221 99 14002d 0 0 81010 0 0 192 16 65726564 0 20636f76 0 616e6765 0 725f6368 0 5f657870 0 74657374 0
 2 222 99 14002d 0 47 20 221 0 ovl_cover_t.cvr_msg
 2 223 99 8002f 0 3b 5012 0 222 1024 18 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 ovl_cover_t
 4 223 11 0 0
-3 1 assert_zero_one_hot.$u27.$u29.$u31 "main.foo.$u27.$u29.$u31" ./vlog95/assert_zero_one_hot_logic.v 0 103 1
+3 1 assert_zero_one_hot.$u27.$u29.$u31 "main.foo.$u27.$u29.$u31" 0 ./vlog95/assert_zero_one_hot_logic.v 0 103 1
 2 224 102 140031 0 0 81010 0 0 224 16 65726564 0 20636f76 0 636b6564 0 5f636865 0 686f7473 0 6f6e655f 0 616c6c5f 0
 2 225 102 140031 0 47 20 224 0 ovl_cover_t.cvr_msg
 2 226 102 80033 0 3b 5012 0 225 1024 18 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 ovl_cover_t
 4 226 11 0 0
-3 1 assert_zero_one_hot.$u27.$u29.$u32 "main.foo.$u27.$u29.$u32" ./vlog95/assert_zero_one_hot_logic.v 0 106 1
+3 1 assert_zero_one_hot.$u27.$u29.$u32 "main.foo.$u27.$u29.$u32" 0 ./vlog95/assert_zero_one_hot_logic.v 0 106 1
 2 227 105 140030 0 0 81010 0 0 216 16 65726564 0 20636f76 0 65726f73 0 6c6c5f7a 0 70725f61 0 745f6578 0 746573 0
 2 228 105 140030 0 47 20 227 0 ovl_cover_t.cvr_msg
 2 229 105 80032 0 3b 5012 0 228 1024 18 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 ovl_cover_t
 4 229 11 0 0
-3 1 main.$u0 "main.$u0" ovl1.v 0 23 1
-3 1 main.$u1 "main.$u1" ovl1.v 0 28 1
+3 1 main.$u0 "main.$u0" 0 ovl1.v 0 23 1
+3 1 main.$u1 "main.$u1" 0 ovl1.v 0 28 1
 2 230 26 9000c 1 0 21004 0 0 1 16 0 0
 2 231 26 10005 0 1 1410 0 0 1 1 clock
 2 232 26 1000c 1 37 16 230 231

@@ -1,7 +1,7 @@
-5 12 101 33 *
-8 /Users/trevorw/projects/covered/diags/verilog -t main -vcd fsm1.2.vcd -o fsm1.2.cdd -y lib -v fsm1.2.v -F fsm=state,next_state -D DUMP
-3 0 $root "$root" NA 0 0 1
-3 0 main "main" fsm1.2.v 1 41 1
+5 13 101 33 *
+8 /ptmp/covered/diags/verilog -t main -vcd fsm1.2.vcd -o fsm1.2.cdd -y lib -v fsm1.2.v -F fsm=state,next_state -D DUMP
+3 0 $root "$root" 0 NA 0 0 1
+3 0 main "main" 0 fsm1.2.v 1 41 1
 2 1 36 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u1
 1 clk 1 3 107000b 1 0 0 0 1 17 0 1 0 1 1 0
 1 reset 2 4 7000b 1 0 0 0 1 17 0 1 0 0 1 0
@@ -9,7 +9,7 @@
 1 tail 4 6 7000b 1 0 0 0 1 17 0 1 0 0 0 0
 1 valid 5 7 7000b 1 0 0 0 1 17 0 1 0 1 0 0
 4 1 1 0 0
-3 0 fsm "main.fsm" lib/fsm.v 1 37 1
+3 0 fsm "main.fsm" 0 lib/fsm.v 1 37 1
 2 2 23 110015 20 1 100c 0 0 1 1 clock
 2 3 23 90015 31 27 100a 2 0 1 18 0 1 0 0 0 0
 2 4 23 36003f 3 1 100c 0 0 2 1 next_state
@@ -51,7 +51,7 @@
 4 22 6 21 0
 4 21 1 22 0
 6 24 23 1  0 3 3 2 16 0 0  2 16 1 0  2 16 2 0  2 16 0 0  2 16 1 0  2 16 2 0   4  0 0 1  0 1 1  1 2 1  2 2 1
-3 1 fsm.$u2 "main.fsm.$u2" lib/fsm.v 0 34 1
+3 1 fsm.$u2 "main.fsm.$u2" 0 lib/fsm.v 0 34 1
 2 25 29 5000e 1 32 1004 0 0 2 1 STATE_IDLE
 2 26 28 9000d b 1 100e 0 0 2 1 state
 2 27 29 0 5 2d 114e 25 26 1 18 0 1 1 1 0 0
@@ -105,8 +105,8 @@
 4 29 0 60 31
 4 69 0 0 0
 4 27 11 69 29
-3 1 main.$u0 "main.$u0" fsm1.2.v 0 34 1
-3 1 main.$u1 "main.$u1" fsm1.2.v 0 39 1
+3 1 main.$u0 "main.$u0" 0 fsm1.2.v 0 34 1
+3 1 main.$u1 "main.$u1" 0 fsm1.2.v 0 39 1
 2 70 37 7000a 1 0 21004 0 0 1 16 0 0
 2 71 37 10003 0 1 1410 0 0 1 1 clk
 2 72 37 1000a 1 37 16 70 71

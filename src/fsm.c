@@ -693,7 +693,7 @@ static bool fsm_instance_summary(
   /* Generate printable version of instance name */
   pname = scope_gen_printable( root->name );
 
-  if( db_is_unnamed_scope( pname ) ) {
+  if( db_is_unnamed_scope( pname ) || root->name_diff ) {
     strcpy( tmpname, parent_inst );
   } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
@@ -1095,7 +1095,7 @@ static void fsm_instance_verbose(
   /* Get printable version of instance name */
   pname = scope_gen_printable( root->name );
 
-  if( db_is_unnamed_scope( pname ) ) {
+  if( db_is_unnamed_scope( pname ) || root->name_diff ) {
     strcpy( tmpname, parent_inst );
   } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
@@ -1209,7 +1209,6 @@ void fsm_report(
 ) { PROFILE(FSM_REPORT);
 
   bool       missed_found  = FALSE;  /* If set to TRUE, FSM cases were found to be missed */
-  char       tmp[4096];              /* Temporary string value */
   inst_link* instl;                  /* Pointer to current instance link */
   int        acc_st_hits   = 0;      /* Accumulated number of states hit */
   int        acc_st_total  = 0;      /* Accumulated number of states in design */
@@ -1222,21 +1221,13 @@ void fsm_report(
 
   if( report_instance ) {
 
-    if( db_list[curr_db]->leading_hiers_differ ) {
-      strcpy( tmp, "<NA>" );
-    } else {
-      assert( db_list[curr_db]->leading_hier_num > 0 );
-      // strcpy( tmp, db_list[curr_db]->leading_hierarchies[0] );
-      strcpy( tmp, "*" );
-    }
-
     fprintf( ofile, "                                                               State                             Arc\n" );
     fprintf( ofile, "Instance                                          Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
     instl = db_list[curr_db]->inst_head;
     while( instl != NULL ) {
-      missed_found |= fsm_instance_summary( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*"), &acc_st_hits, &acc_st_total, &acc_arc_hits, &acc_arc_total );
+      missed_found |= fsm_instance_summary( ofile, instl->inst, (instl->inst->name_diff ? "<NA>" : "*"), &acc_st_hits, &acc_st_total, &acc_arc_hits, &acc_arc_total );
       instl = instl->next;
     }
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -1246,7 +1237,7 @@ void fsm_report(
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       instl = db_list[curr_db]->inst_head;
       while( instl != NULL ) {
-        fsm_instance_verbose( ofile, instl->inst, ((instl->next == NULL) ? tmp : "*") );
+        fsm_instance_verbose( ofile, instl->inst, (instl->inst->name_diff ? "<NA>" : "*") );
         instl = instl->next;
       }
     }
@@ -1324,6 +1315,10 @@ void fsm_dealloc(
 
 /*
  $Log$
+ Revision 1.108  2008/11/08 00:09:04  phase1geo
+ Checkpointing work on asymmetric merging algorithm.  Updated regressions
+ per these changes.  We currently have 5 failures in the IV regression suite.
+
  Revision 1.107  2008/10/31 22:01:34  phase1geo
  Initial code changes to support merging two non-overlapping CDD files into
  one.  This functionality seems to be working but needs regression testing to
