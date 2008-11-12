@@ -351,8 +351,8 @@ bool scope_find_task_function_namedblock(
        that is NOT a module!
 */
 func_unit* scope_get_parent_funit(
-  const funit_inst* root,  /*!< Pointer to root of instance tree to search */
-  const char*       scope  /*!< Scope of current functional unit to get parent functional unit for */
+  funit_inst* root,  /*!< Pointer to root of instance tree to search */
+  const char* scope  /*!< Scope of current functional unit to get parent functional unit for */
 ) { PROFILE(SCOPE_GET_PARENT_FUNIT);
 
   funit_inst* inst;     /* Pointer to functional unit instance with the specified scope */
@@ -391,8 +391,8 @@ func_unit* scope_get_parent_funit(
  \note Assumes that the given scope is not that of a module itself!
 */
 func_unit* scope_get_parent_module(
-  const funit_inst* root,  /*!< Pointer to root of instance tree to search */
-  const char*       scope  /*!< Full hierarchical scope of functional unit to find parent module for */
+  funit_inst* root,  /*!< Pointer to root of instance tree to search */
+  const char* scope  /*!< Full hierarchical scope of functional unit to find parent module for */
 ) { PROFILE(SCOPE_GET_PARENT_MODULE);
 
   funit_inst* inst;        /* Pointer to functional unit instance with the specified scope */
@@ -431,6 +431,10 @@ func_unit* scope_get_parent_module(
 
 /*
  $Log$
+ Revision 1.53  2008/11/12 00:07:41  phase1geo
+ More updates for complex merging algorithm.  Updating regressions per
+ these changes.  Checkpointing.
+
  Revision 1.52  2008/04/15 20:37:11  phase1geo
  Fixing database array support.  Full regression passes.
 

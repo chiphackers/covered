@@ -1586,7 +1586,7 @@ void expression_db_read(
           vector_db_read( &vec, line );
 
         } Catch_anonymous {
-          expression_dealloc( expr, FALSE );
+          expression_dealloc( expr, TRUE );
           Throw 0;
         }
 
@@ -6142,6 +6142,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.385  2008/11/07 05:56:45  phase1geo
+ Second bug fix for bug 2223054.
+
  Revision 1.384  2008/11/06 23:04:07  phase1geo
  Merging branch covered-20081030-bug2223054.
 

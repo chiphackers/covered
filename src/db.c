@@ -305,21 +305,14 @@ void db_close() { PROFILE(DB_CLOSE);
 */
 bool db_check_for_top_module() { PROFILE(DB_CHECK_FOR_TOP_MODULE);
 
-  bool       retval = FALSE;  /* Return value for this function */
-  inst_link* instl;           /* Pointer to current instance link being checked */
+  bool        retval;
+  funit_inst* top_inst;
 
-  instl = db_list[curr_db]->inst_head;
-  while( (instl != NULL) && ((instl->inst->funit == NULL) || (strcmp( instl->inst->funit->name, top_module ) != 0)) ) {
-    instl = instl->next;
-  }
+  /* Get the top-most instance */
+  instance_get_leading_hierarchy( db_list[curr_db]->inst_tail->inst, NULL, &top_inst );
 
-  /*
-   If we found the top module specified by the -t option, iterate through the
-   functional unit's signal list.
-  */
-  if( instl != NULL ) {
-    retval = funit_is_top_module( instl->inst->funit );
-  }
+  /* Check to see if the signal list is void of ports */
+  retval = funit_is_top_module( top_inst->funit );
 
   PROFILE_END;
 
@@ -601,11 +594,13 @@ void db_read(
 
                 /* Now finish reading functional unit line */
                 funit_db_read( &tmpfunit, funit_scope, &inst_name_diff, &rest_line );
-                if( (read_mode == READ_MODE_MERGE_INST_MERGE) && ((foundinst = inst_link_find_by_scope( funit_scope, db_list[curr_db]->inst_head )) != NULL) ) {
+                if( (read_mode == READ_MODE_MERGE_INST_MERGE) &&
+                    ((foundinst = inst_link_find_by_scope( funit_scope, db_list[curr_db]->inst_head )) != NULL) ) {
                   merge_mode = TRUE;
                   curr_funit = foundinst->funit;
                   funit_db_merge( foundinst->funit, db_handle, TRUE );
-                } else if( (read_mode == READ_MODE_REPORT_MOD_MERGE) && ((foundfunit = funit_link_find( tmpfunit.name, tmpfunit.type, db_list[curr_db]->funit_head )) != NULL) ) {
+                } else if( (read_mode == READ_MODE_REPORT_MOD_MERGE) &&
+                           ((foundfunit = funit_link_find( tmpfunit.name, tmpfunit.type, db_list[curr_db]->funit_head )) != NULL) ) {
                   merge_mode = TRUE;
                   curr_funit = foundfunit->funit;
                   funit_db_merge( foundfunit->funit, db_handle, FALSE );
@@ -712,6 +707,7 @@ void db_read(
   /* Display the instance trees, if we are debugging */
   if( debug_mode && (db_list != NULL) ) {
     inst_link_display( db_list[curr_db]->inst_head );
+    printf( "-----------------------------------\n" );
   }
 #endif
 
@@ -3160,6 +3156,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.350  2008/11/12 00:07:41  phase1geo
+ More updates for complex merging algorithm.  Updating regressions per
+ these changes.  Checkpointing.
+
  Revision 1.349  2008/11/11 05:36:40  phase1geo
  Checkpointing merge code.
 

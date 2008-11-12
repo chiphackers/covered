@@ -971,12 +971,13 @@ void funit_merge(
   func_unit* other   /*!< Other functional unit that will be merged */
 ) { PROFILE(FUNIT_MERGE);
 
-  exp_link* curr_base_exp;   /* Pointer to current expression in base functional unit expression list */
-  exp_link* curr_other_exp;  /* Pointer to current expression in other functional unit expression list */
-  sig_link* curr_base_sig;   /* Pointer to current signal in base functional unit signal list */
-  sig_link* curr_other_sig;  /* Pointer to current signal in other functional unit signal list */
-  fsm_link* curr_base_fsm;   /* Pointer to current FSM in base functional unit FSM list */
-  fsm_link* curr_other_fsm;  /* Pointer to current FSM in other functional unit FSM list */
+  exp_link*       curr_base_exp;   /* Pointer to current expression in base functional unit expression list */
+  exp_link*       curr_other_exp;  /* Pointer to current expression in other functional unit expression list */
+  sig_link*       curr_base_sig;   /* Pointer to current signal in base functional unit signal list */
+  sig_link*       curr_other_sig;  /* Pointer to current signal in other functional unit signal list */
+  fsm_link*       curr_base_fsm;   /* Pointer to current FSM in base functional unit FSM list */
+  fsm_link*       curr_other_fsm;  /* Pointer to current FSM in other functional unit FSM list */
+  exclude_reason* curr_other_er;
 
   assert( base != NULL );
   assert( base->name != NULL );
@@ -1003,13 +1004,20 @@ void funit_merge(
 
   /* Handle all functional unit FSMs */
   curr_base_fsm  = base->fsm_head;
-  curr_other_fsm = base->fsm_head;
+  curr_other_fsm = other->fsm_head;
   while( (curr_base_fsm != NULL) && (curr_other_fsm != NULL) ) {
     fsm_merge( curr_base_fsm->table, curr_other_fsm->table );
     curr_base_fsm  = curr_base_fsm->next;
     curr_other_fsm = curr_other_fsm->next;
   }
   assert( (curr_base_fsm == NULL) && (curr_other_fsm == NULL) );
+
+  /* Handle all functional unit exclusion reasons */
+  curr_other_er = other->er_head;
+  while( curr_other_er != NULL ) {
+    exclude_merge( base, curr_other_er );
+    curr_other_er = curr_other_er->next;
+  }
 
   PROFILE_END;
 
@@ -1577,6 +1585,10 @@ void funit_dealloc(
 
 /*
  $Log$
+ Revision 1.119  2008/11/12 00:07:41  phase1geo
+ More updates for complex merging algorithm.  Updating regressions per
+ these changes.  Checkpointing.
+
  Revision 1.118  2008/11/08 00:09:04  phase1geo
  Checkpointing work on asymmetric merging algorithm.  Updated regressions
  per these changes.  We currently have 5 failures in the IV regression suite.

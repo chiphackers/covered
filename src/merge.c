@@ -357,7 +357,6 @@ void command_merge(
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
       db_read( strl->str, READ_MODE_MERGE_NO_MERGE );
-      db_merge_instance_trees();
 
       /* If we have not merged any CDD files from this CDD, this is a leaf CDD so mark it as such */
       if( (db_list[curr_db]->leading_hier_num - curr_leading_hier_num) == 1 ) {
@@ -369,6 +368,10 @@ void command_merge(
       strl         = strl->next;
     }
 
+    /* Perform the tree merges */
+    db_merge_instance_trees();
+
+    /* Bind */
     bind_perform( TRUE, 0 );
 
     /* Write out new database to output file */
@@ -391,6 +394,9 @@ void command_merge(
 
 /*
  $Log$
+ Revision 1.63  2008/11/11 05:36:40  phase1geo
+ Checkpointing merge code.
+
  Revision 1.62  2008/10/31 22:01:34  phase1geo
  Initial code changes to support merging two non-overlapping CDD files into
  one.  This functionality seems to be working but needs regression testing to

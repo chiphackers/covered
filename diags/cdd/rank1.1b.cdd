@@ -1,8 +1,8 @@
-5 12 101 3 main
-8 /ptmp/covered/diags/verilog -t adder1 -i main.adder -vcd rank1.1b.vcd -o rank1.1b.cdd -v rank1.1b.v -y lib -D DUMP
-3 0 $root "$root" NA 0 0 1
-15 main
-3 0 adder1 "main.adder" lib/adder1.v 1 18 1
+5 13 101 3 main
+8 /ptmp/covered/diags/verilog 2 -t (adder1) 2 -i (main.adder) 2 -vcd (rank1.1b.vcd) 2 -o (rank1.1b.cdd) 2 -v (rank1.1b.v) 2 -y (lib) 2 -D (DUMP)
+3 0 $root "$root" 0 NA 0 0 1
+15 main 0
+3 0 adder1 "main.adder" 0 lib/adder1.v 1 18 1
 2 1 15 f000f 1 1 1004 0 0 1 1 b
 2 2 15 b000b 2 1 100c 0 0 1 1 a
 2 3 15 b000f 2 2 114c 1 2 1 18 0 1 1 0 1 0

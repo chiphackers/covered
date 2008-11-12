@@ -1147,29 +1147,27 @@ void exclude_merge(
   exclude_reason* er     /*!< Pointer to exclusion reason to merge */
 ) { PROFILE(EXCLUDE_MERGE);
 
-  char   type;        /* Specifies the type of exclusion this structure represents */
-  int    id;          /* ID of signal/expression/FSM */
-  int    chars_read;  /* Number of characters read from line */
-  time_t timestamp;   /* Reason timestamp */
-  char*  reason;      /* Pointer to the exclusion reason from the CDD file */
+  exclude_reason* found_er;
 
   /* If the exclusion reason does not exist in the base CDD, go ahead and add it */
-  if( (er = exclude_find_exclude_reason( type, id, base )) == NULL ) {
+  if( (found_er = exclude_find_exclude_reason( er->type, er->id, base )) == NULL ) {
 
+    exclude_reason* new_er;
+ 
     /* Allocate and initialize the exclude reason structure */
-    er            = (exclude_reason*)malloc_safe( sizeof( exclude_reason ) );
-    er->type      = type;
-    er->id        = id;
-    er->timestamp = timestamp;
-    er->reason    = strdup_safe( reason );
-    er->next      = NULL;
+    new_er            = (exclude_reason*)malloc_safe( sizeof( exclude_reason ) );
+    new_er->type      = er->type;
+    new_er->id        = er->id;
+    new_er->timestamp = er->timestamp;
+    new_er->reason    = strdup_safe( er->reason );
+    new_er->next      = NULL;
 
     /* Add the given exclude reason to the current functional unit list */
     if( base->er_head == NULL ) {
-      base->er_head = base->er_tail = er;
+      base->er_head = base->er_tail = new_er;
     } else {
-      base->er_tail->next = er;
-      base->er_tail       = er;
+      base->er_tail->next = new_er;
+      base->er_tail       = new_er;
     }
 
   /* Otherwise, if the exclusion reason does exist, check for a conflict and handle it */
@@ -1179,8 +1177,8 @@ void exclude_merge(
      If the exclusion reason string does not match the current string, resolve the conflict appropriately
      (otherwise, just use the reason in the base functional unit).
     */
-    if( strcmp( er->reason, reason ) != 0 ) {
-      exclude_resolve_reason( er, base, merge_er_value, reason, timestamp );
+    if( strcmp( found_er->reason, er->reason ) != 0 ) {
+      exclude_resolve_reason( found_er, base, merge_er_value, er->reason, er->timestamp );
     }
 
   }
@@ -1924,6 +1922,9 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.50  2008/11/12 15:05:22  phase1geo
+ More updates for new merging algorithm.  Checkpointing.
+
  Revision 1.49  2008/10/31 22:01:33  phase1geo
  Initial code changes to support merging two non-overlapping CDD files into
  one.  This functionality seems to be working but needs regression testing to

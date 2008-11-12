@@ -204,8 +204,8 @@ void instance_gen_scope(
          instance.
 */
 static bool instance_compare(
-  char*       inst_name,  /*!< Instance name to compare to this instance's name (may contain array information) */
-  funit_inst* inst        /*!< Pointer to instance to compare name against */
+  char*             inst_name,  /*!< Instance name to compare to this instance's name (may contain array information) */
+  const funit_inst* inst        /*!< Pointer to instance to compare name against */
 ) { PROFILE(INSTANCE_COMPARE);
 
   bool         retval = FALSE;  /* Return value of this function */
@@ -928,6 +928,7 @@ static void instance_merge_tree(
 ) { PROFILE(INSTANCE_MERGE);
 
   funit_inst* child2;
+  funit_inst* last2 = NULL;
 
   /* Perform functional unit merging */
   if( root1->funit != NULL ) {
@@ -948,7 +949,12 @@ static void instance_merge_tree(
     }
     if( child1 != NULL ) {
       instance_merge_tree( child1, child2 );
+      last2  = child2;
+      child2 = child2->next;
     } else {
+      funit_inst* tmp = child2->next;
+      child2->next   = NULL;
+      child2->parent = root1;
       if( root1->child_head == NULL ) {
         root1->child_head = child2;
         root1->child_tail = child2;
@@ -956,13 +962,19 @@ static void instance_merge_tree(
         root1->child_tail->next = child2;
         root1->child_tail       = child2;
       }
-      child2->parent = root1;
+      if( last2 == NULL ) {
+        root2->child_head = tmp;
+        if( tmp == NULL ) {
+          root2->child_tail = NULL;
+        }
+      } else if( tmp == NULL ) {
+        root2->child_tail = last2;
+      } else {
+        last2->next = tmp;
+      }
+      child2 = tmp;
     }
-    child2 = child2->next;
   }
-
-  /* Finally, deallocate root2 */
-  // instance_dealloc_single( root2 );
 
   PROFILE_END;
 
@@ -976,20 +988,30 @@ static void instance_merge_tree(
  This function requires that the leading_hierarchy string be previously allocated and initialized
  to the NULL string.
 */
-static void instance_get_leading_hierarchy(
-            funit_inst*  root,               /*!< Pointer to instance tree to get information from */
-  /*@out@*/ char*        leading_hierarchy,  /*!< Leading hierarchy to first populated instance */
-  /*@out@*/ funit_inst** top_inst            /*!< Pointer to first populated instance */
+void instance_get_leading_hierarchy(
+                 funit_inst*  root,               /*!< Pointer to instance tree to get information from */
+  /*@out null@*/ char*        leading_hierarchy,  /*!< Leading hierarchy to first populated instance */
+  /*@out@*/      funit_inst** top_inst            /*!< Pointer to first populated instance */
 ) { PROFILE(INSTANCE_GET_LEADING_HIERARCHY);
 
-  do {
-
-    /* Set the outgoing variables */
-    strcat( leading_hierarchy, "." );
+  if( leading_hierarchy != NULL ) {
     strcat( leading_hierarchy, root->name );
-    *top_inst = root;
+  }
 
-  } while( (root->funit == NULL) && ((root = root->child_head) != NULL) );
+  *top_inst = root;
+
+  if( root->funit == NULL ) {
+
+    do {
+      root = root->child_head;
+      if( leading_hierarchy != NULL ) {
+        strcat( leading_hierarchy, "." );
+        strcat( leading_hierarchy, root->name );
+      }
+      *top_inst = root;
+    } while( (root != NULL) && (root->funit == NULL) );
+
+  }
 
   PROFILE_END;
 
@@ -1047,7 +1069,7 @@ bool instance_merge_two_trees(
   instance_get_leading_hierarchy( root2, lhier2, &tinst2 );
 
   /* If the top-level modules are the same, just merge them */
-  if( strcmp( tinst1->funit->name, tinst2->funit->name ) == 0 ) {
+  if( (tinst1->funit != NULL) && (tinst2->funit != NULL) && (strcmp( tinst1->funit->name, tinst2->funit->name ) == 0) ) {
 
     /* Perform instance tree merge */
     instance_merge_tree( tinst1, tinst2 );
@@ -1056,14 +1078,14 @@ bool instance_merge_two_trees(
   /* If root2 is a branch of root1, merge root2 into root1 */
   } else if( strncmp( lhier1, lhier2, strlen( lhier1 ) ) == 0 ) {
 
-    root2 = instance_find_scope( root2, lhier2, FALSE );
+    root2 = instance_find_scope( root2, lhier1, FALSE );
     assert( root2 != NULL );
     instance_merge_tree( tinst1, root2 );
 
   /* If root1 is a branch of root2, merge root2 into root1 (replacing lower branches with those from root2) */
   } else if( strncmp( lhier1, lhier2, strlen( lhier2 ) ) == 0 ) {
 
-    root1 = instance_find_scope( root1, lhier1, FALSE );
+    root1 = instance_find_scope( root1, lhier2, FALSE );
     assert( root1 != NULL );
     instance_merge_tree( root1, tinst2 );
 
@@ -1221,7 +1243,7 @@ void instance_only_db_read(
     /* Otherwise, find our parent instance and attach the new instance to it */
     } else {
       funit_inst* parent;
-      if( (parent = inst_link_find_by_scope( rest, db_list[curr_db]->inst_head )) != NULL ) {
+      if( (parent = inst_link_find_by_scope( rest, db_list[curr_db]->inst_tail )) != NULL ) {
         if( parent->child_head == NULL ) {
           parent->child_head = parent->child_tail = child;
         } else {
@@ -1687,6 +1709,9 @@ void instance_dealloc(
 
 /*
  $Log$
+ Revision 1.113  2008/11/12 07:04:01  phase1geo
+ Fixing argument merging and updating regressions.  Checkpointing.
+
  Revision 1.112  2008/11/12 00:07:41  phase1geo
  More updates for complex merging algorithm.  Updating regressions per
  these changes.  Checkpointing.
