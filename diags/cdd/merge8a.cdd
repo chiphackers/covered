@@ -1,8 +1,8 @@
-5 12 101 3 main
+5 13 101 3 main
 8 /ptmp/covered/diags/verilog -t foo -i main.f -vcd merge8.vcd -o merge8a.cdd -v merge8a.v -D DUMP
-3 0 $root "$root" NA 0 0 1
-15 main
-3 0 foo "main.f" merge8a.v 30 37 1
+3 0 $root "$root" 0 NA 0 0 1
+15 main 0
+3 0 foo "main.f" 0 merge8a.v 30 37 1
 2 1 35 d000d 1 1 1008 0 0 1 1 b
 2 2 35 90009 1 1 1004 0 0 1 1 a
 2 3 35 9000d 1 9 1088 1 2 1 18 0 1 0 1 0 0
