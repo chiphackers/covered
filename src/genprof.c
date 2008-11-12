@@ -190,6 +190,7 @@ profiler profiles[NUM_PROFILES] = {
   {"exclude_db_read", NULL, 0, 0, 0, TRUE},
   {"exclude_resolve_reason", NULL, 0, 0, 0, TRUE},
   {"exclude_db_merge", NULL, 0, 0, 0, TRUE},
+  {"exclude_merge", NULL, 0, 0, 0, TRUE},
   {"exclude_find_signal", NULL, 0, 0, 0, TRUE},
   {"exclude_find_expression", NULL, 0, 0, 0, TRUE},
   {"exclude_find_fsm_arc", NULL, 0, 0, 0, TRUE},

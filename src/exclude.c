@@ -1140,6 +1140,56 @@ void exclude_db_merge(
 }
 
 /*!
+ Reads the given exclude reason structure information from the line read from the CDD file.
+*/
+void exclude_merge(
+  func_unit*      base,  /*!< Pointer to base functional unit to merge into */
+  exclude_reason* er     /*!< Pointer to exclusion reason to merge */
+) { PROFILE(EXCLUDE_MERGE);
+
+  char   type;        /* Specifies the type of exclusion this structure represents */
+  int    id;          /* ID of signal/expression/FSM */
+  int    chars_read;  /* Number of characters read from line */
+  time_t timestamp;   /* Reason timestamp */
+  char*  reason;      /* Pointer to the exclusion reason from the CDD file */
+
+  /* If the exclusion reason does not exist in the base CDD, go ahead and add it */
+  if( (er = exclude_find_exclude_reason( type, id, base )) == NULL ) {
+
+    /* Allocate and initialize the exclude reason structure */
+    er            = (exclude_reason*)malloc_safe( sizeof( exclude_reason ) );
+    er->type      = type;
+    er->id        = id;
+    er->timestamp = timestamp;
+    er->reason    = strdup_safe( reason );
+    er->next      = NULL;
+
+    /* Add the given exclude reason to the current functional unit list */
+    if( base->er_head == NULL ) {
+      base->er_head = base->er_tail = er;
+    } else {
+      base->er_tail->next = er;
+      base->er_tail       = er;
+    }
+
+  /* Otherwise, if the exclusion reason does exist, check for a conflict and handle it */
+  } else {
+
+    /*
+     If the exclusion reason string does not match the current string, resolve the conflict appropriately
+     (otherwise, just use the reason in the base functional unit).
+    */
+    if( strcmp( er->reason, reason ) != 0 ) {
+      exclude_resolve_reason( er, base, merge_er_value, reason, timestamp );
+    }
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  \return Returns pointer to found signal if it was found; otherwise, returns NULL.
 */
 vsignal* exclude_find_signal(
@@ -1874,6 +1924,11 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.49  2008/10/31 22:01:33  phase1geo
+ Initial code changes to support merging two non-overlapping CDD files into
+ one.  This functionality seems to be working but needs regression testing to
+ verify that nothing is broken as a result.
+
  Revision 1.48  2008/10/07 22:31:42  phase1geo
  Cleaning up splint warnings.  Cleaning up development documentation.
 

@@ -147,6 +147,12 @@ void exclude_db_merge(
   char**     line
 );
 
+/*! \brief Performs exclusion reason merging. */
+void exclude_merge(
+  func_unit*      base,
+  exclude_reason* er
+);
+
 /*! \brief Allows the user to exclude coverage points from reporting. */
 void command_exclude(
   int          argc,
@@ -157,6 +163,10 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.13  2008/09/22 22:15:03  phase1geo
+ Initial code for supporting the merging and resolution of exclusion reasons.
+ This code is completely untested at this point but does compile.  Checkpointing.
+
  Revision 1.12  2008/09/04 21:34:20  phase1geo
  Completed work to get exclude reason support to work with toggle coverage.
  Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
