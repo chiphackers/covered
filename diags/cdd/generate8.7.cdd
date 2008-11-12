@@ -1,8 +1,8 @@
-5 12 181 2 *
-8 /home/bryce3/trevorw/covered/diags/verilog -t main -vcd generate8.7.vcd -o generate8.7.cdd -v generate8.7.v -D DUMP
-3 0 $root "$root" NA 0 0 1
-3 0 main "main" generate8.7.v 1 42 1
+5 13 181 2 *
+8 /home/bryce3/trevorw/covered/diags/verilog 2 -t (main) 2 -vcd (generate8.7.vcd) 2 -o (generate8.7.cdd) 2 -v (generate8.7.v) 2 -D (DUMP)
+3 0 $root "$root" 0 NA 0 0 1
+3 0 main "main" 0 generate8.7.v 1 42 1
 1 A 1 0 c0000 1 0 31 0 32 17 1 0 0 0 0 0
 1 B 2 0 c0000 1 0 31 0 32 17 0 0 0 0 0 0
 1 C 3 0 c0000 1 0 31 0 32 17 1 0 0 0 0 0
-3 1 main.$u2 "main.$u2" generate8.7.v 0 40 1
+3 1 main.$u2 "main.$u2" 0 generate8.7.v 0 40 1

@@ -1,11 +1,11 @@
-5 12 181 3 *
-8 /home/bryce3/trevorw/covered/diags/verilog -t main -vcd afunc2.vcd -o afunc2.cdd -v afunc2.v -D DUMP
-3 0 $root "$root" NA 0 0 1
-3 0 main "main" afunc2.v 8 38 1
+5 13 181 3 *
+8 /home/bryce3/trevorw/covered/diags/verilog 2 -t (main) 2 -vcd (afunc2.vcd) 2 -o (afunc2.cdd) 2 -v (afunc2.v) 2 -D (DUMP)
+3 0 $root "$root" 0 NA 0 0 1
+3 0 main "main" 0 afunc2.v 8 38 1
 2 1 12 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0
 1 a 1 10 1070004 1 0 0 0 1 17 0 1 0 1 0 0
 4 1 1 0 0
-3 1 main.$u0 "main.$u0" afunc2.v 0 16 1
+3 1 main.$u0 "main.$u0" 0 afunc2.v 0 16 1
 2 2 13 50008 1 0 21004 0 0 1 16 0 0
 2 3 13 10001 0 1 1410 0 0 1 1 a
 2 4 13 10008 1 37 16 2 3
@@ -23,14 +23,14 @@
 4 15 0 0 0
 4 6 0 15 0
 4 4 11 6 6
-3 1 main.$u1 "main.$u1" afunc2.v 0 25 1
-3 5 main.div2_real "main.div2_real" afunc2.v 27 36 1
+3 1 main.$u1 "main.$u1" 0 afunc2.v 0 25 1
+3 5 main.div2_real "main.div2_real" 0 afunc2.v 27 36 1
 2 16 30 20006 6 3d 5802 0 0 1 18 0 1 0 0 0 0 $u2
 1 div2_real 2 27 1130018 1 0 63 0 64 21 0 5.000000
 1 a 3 28 100000f 1 0 63 0 64 17 ffffffffffffffff ffffffffffffffff 0 0 0 0
 1 real_a 4 29 1110007 1 0 63 0 64 53 0 0.000000
 4 16 11 0 0
-3 7 main.div2_real.$u2 "main.div2_real.$u2" afunc2.v 0 35 1
+3 7 main.div2_real.$u2 "main.div2_real.$u2" 0 afunc2.v 0 35 1
 2 17 31 100012 1 0 1808 0 0 64 20 1 0.0
 2 18 31 4000c 0 1 1c10 0 0 64 5 div2_real
 2 19 31 40012 6 37 81a 17 18
