@@ -1,0 +1,12 @@
+5 13 101 4 main
+8 /ptmp/covered/diags/verilog 2 -t (adder4) 2 -i (main.adder) 2 -vcd (merge8.2a.vcd) 2 -o (merge8.2a.cdd) 2 -v (merge8.2a.v) 2 -y (lib) 2 -e (adder1) 2 -D (DUMP)
+3 0 $root "$root" 0 NA 0 0 1
+15 main 0
+3 0 adder4 "main.adder" 0 lib/adder4.v 1 22 1
+1 a 1 8 c 1 0 3 0 4 17 f f 0 d 0 0
+1 b 2 9 c 1 0 3 0 4 17 f f 0 c 0 0
+1 c 3 10 20008 1 0 0 0 1 17 1 1 0 1 0 0
+1 z 4 11 2000f 1 0 3 0 4 17 f f 0 1 0 0
+1 c0 5 13 60009 1 0 0 0 1 17 1 1 0 0 0 0
+1 c1 6 13 6000d 1 0 0 0 1 17 1 1 0 0 0 0
+1 c2 7 13 60011 1 0 0 0 1 17 1 1 0 1 0 0

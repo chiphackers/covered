@@ -132,8 +132,9 @@ BDIAGS1       = bitwise1
 MERGE1        = merge1          merge3          merge4          merge5          merge6 \
                 merge6.1        merge7          merge7.1        merge7.2        merge7.3 \
                 merge7.4        merge7.5        merge7.6        merge7.7        merge7.8 \
-                merge8          merge8.1        fsm2            rank1           rank1.1
-MERGE3        = merge2
+                merge8          merge8.1        merge8.2        merge8.3        fsm2 \
+                rank1           rank1.1
+MERGE3        = merge2          merge8.4        merge8.5
 
 RACELIST      = race1           race1.1         race1.2         race2.1         race2.2 \
                 race2.3         race2.4         race4           race5           race5.1 \
