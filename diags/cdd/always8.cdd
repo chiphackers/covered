@@ -1,5 +1,5 @@
 5 13 101 4 *
-8 /ptmp/covered/diags/verilog -t main -vcd always8.vcd -o always8.cdd -v always8.v -D DUMP
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (always8.vcd) 2 -o (always8.cdd) 2 -v (always8.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 always8.v 1 31 1
 2 1 11 90009 2 1 1008 0 0 2 1 a

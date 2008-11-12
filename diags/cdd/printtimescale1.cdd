@@ -1,5 +1,5 @@
 5 13 101 4 *
-8 /ptmp/covered/diags/verilog -t main -vcd printtimescale1.vcd -o printtimescale1.cdd -v printtimescale1.v -D DUMP
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (printtimescale1.vcd) 2 -o (printtimescale1.cdd) 2 -v (printtimescale1.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 printtimescale1.v 9 29 1
 2 1 13 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0

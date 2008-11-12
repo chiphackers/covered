@@ -1,5 +1,5 @@
 5 13 101 3 *
-8 /ptmp/covered/diags/verilog -t main -vcd define5.vcd -o define5.cdd -v define5.v -D DUMP
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (define5.vcd) 2 -o (define5.cdd) 2 -v (define5.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 define5.v 5 23 1
 2 1 9 250025 1 1 1004 0 0 1 1 c

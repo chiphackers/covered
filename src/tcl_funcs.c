@@ -58,8 +58,8 @@ extern funit_link*  funit_head;
 extern char         user_msg[USER_MSG_LENGTH];
 extern const char*  race_msgs[RACE_TYPE_NUM];
 extern char         score_run_path[4096];
-extern char**       score_args;
-extern int          score_arg_num;
+extern str_link*    score_args_head;
+extern str_link*    score_args_tail;
 extern void         reset_pplexer( const char* filename, FILE* out );
 extern int          PPVLlex( void );
 extern str_link*    merge_in_head;
@@ -2119,18 +2119,20 @@ int tcl_func_preprocess_verilog(
   const char* argv[]  /*!< Array of arguments passed to this function */
 ) { PROFILE(TCL_FUNC_PREPROCESS_VERILOG);
 
-  int   retval = TCL_OK;  /* Return value for this function */
-  char* ppfilename;       /* Preprocessed filename to return to calling function */
-  FILE* out;              /* File handle to preprocessed file */
-  int   i;                /* Loop iterator */
+  int       retval = TCL_OK;  /* Return value for this function */
+  char*     ppfilename;       /* Preprocessed filename to return to calling function */
+  FILE*     out;              /* File handle to preprocessed file */
+  str_link* arg;
   
   /* Add all of the include and define score arguments before calling the preprocessor */
-  for( i=0; i<score_arg_num; i++ ) {
-    if( strcmp( "-D", score_args[i] ) == 0 ) {
-      score_parse_define( score_args[i+1] );
-    } else if( strcmp( "-I", score_args[i] ) == 0 ) {
-      search_add_include_path( score_args[i+1] );
+  arg = score_args_head;
+  while( arg != NULL) {
+    if( strcmp( "-D", arg->str ) == 0 ) {
+      score_parse_define( arg->str2 );
+    } else if( strcmp( "-I", arg->str ) == 0 ) {
+      search_add_include_path( arg->str2 );
     }
+    arg = arg->next;
   }
 
   /* Create temporary output filename */
@@ -2207,28 +2209,29 @@ int tcl_func_get_include_pathname(
 
   int  retval = TCL_OK;  /* Return value for this function */
   char incpath[4096];    /* Contains full included pathname */
-  int  i      = 0;       /* Loop iterator */
   
   strcpy( incpath, argv[1] );
 
   while( !file_exists( incpath ) && (retval == TCL_OK) ) {
     
     /* Find an include path from the score args */
-    while( (i < score_arg_num) && (strcmp( "-I", score_args[i] ) != 0) ) i++;
-    if( i == score_arg_num ) {
+    str_link* arg = score_args_head;
+    while( (arg != NULL) && (strcmp( "-I", arg->str ) != 0) ) {
+      arg = arg->next;
+    }
+    if( arg == NULL ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Unable to find included file \"%s\"", argv[1] );
       Tcl_AddErrorInfo( tcl, user_msg );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       retval = TCL_ERROR;
     } else {
-      i++;
 
       /* Test include score arg for absolute pathname */
-      snprintf( incpath, 4096, "%s/%s", score_args[i], argv[1] );
+      snprintf( incpath, 4096, "%s/%s", arg->str2, argv[1] );
 
       /* If the absolute pathname is not valid, try a relative pathname */
       if( !file_exists( incpath ) ) {
-        snprintf( incpath, 4096, "%s/%s/%s", score_run_path, score_args[i], argv[1] );
+        snprintf( incpath, 4096, "%s/%s/%s", score_run_path, arg->str2, argv[1] );
       }
     }
 
@@ -2255,29 +2258,30 @@ int tcl_func_get_generation(
   const char* argv[]  /*!< Array of arguments passed to this function */
 ) { PROFILE(TCL_FUNC_GET_GENERATION);
 
-  int   retval = TCL_OK;    /* Return value for this function */
-  char  generation[2];      /* Generation to use for the specified module */
-  char* funit_name;         /* Name of functional unit to find generation for */
-  int   i;                  /* Loop iterator */
-  bool  mod_found = FALSE;  /* Set to TRUE if we found a generation for this exact module */
+  int       retval = TCL_OK;    /* Return value for this function */
+  char      generation[2];      /* Generation to use for the specified module */
+  char*     funit_name;         /* Name of functional unit to find generation for */
+  bool      mod_found = FALSE;  /* Set to TRUE if we found a generation for this exact module */
+  str_link* arg;
 
   funit_name = strdup_safe( argv[1] );
   strcpy( generation, "3" );
 
   /* Search the entire command-line */
-  i = 0;
-  while( i < score_arg_num ) {
+  arg = score_args_head;
+  while( arg != NULL ) {
 
     /* Find a generation argument in the score args */
-    while( (i < score_arg_num) && (strcmp( "-g", score_args[i] ) != 0) ) i++;
+    while( (arg != NULL) && (strcmp( "-g", arg->str ) != 0) ) {
+      arg = arg->next;
+    }
 
-    if( i < score_arg_num ) {
-      i++;
-      if( (strlen( score_args[i] ) == 1) && !mod_found ) {
-        generation[0] = score_args[i][(strlen( score_args[i] ) - 1)];
-      } else if( ((strlen( score_args[i] ) - 2) == strlen( funit_name )) &&
-                 (strncmp( funit_name, score_args[i], strlen( funit_name ) ) == 0) ) {
-        generation[0] = score_args[i][(strlen( score_args[i] ) - 1)];
+    if( arg != NULL ) {
+      if( (strlen( arg->str2 ) == 1) && !mod_found ) {
+        generation[0] = arg->str2[(strlen( arg->str2 ) - 1)];
+      } else if( ((strlen( arg->str2 ) - 2) == strlen( funit_name )) &&
+                 (strncmp( funit_name, arg->str2, strlen( funit_name ) ) == 0) ) {
+        generation[0] = arg->str2[(strlen( arg->str2 ) - 1)];
         mod_found     = TRUE;
       }
     
@@ -3075,6 +3079,10 @@ void tcl_func_initialize(
 
 /*
  $Log$
+ Revision 1.91  2008/09/23 21:38:55  phase1geo
+ Fixing segmentation fault issues with GUI and fixing exclusion reason conflict
+ resolution code.  This now works in the GUI as needed.
+
  Revision 1.90  2008/09/23 14:02:02  phase1geo
  Adding exclusion reason conflict resolution to GUI.
 

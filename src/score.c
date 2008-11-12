@@ -136,8 +136,8 @@ extern isuppl    info_suppl;
 extern char*     pragma_coverage_name;
 extern char*     pragma_racecheck_name;
 extern char      score_run_path[4096];
-extern char**    score_args;
-extern int       score_arg_num;
+extern str_link* score_args_head;
+extern str_link* score_args_tail;
 extern bool      warnings_suppressed;
 extern str_link* sim_plusargs_head;
 extern str_link* sim_plusargs_tail;
@@ -489,13 +489,45 @@ void score_parse_define( const char* def ) { PROFILE(SCORE_PARSE_DEFINE);
 /*!
  Adds the specified argument to the list of score arguments that will be written to the CDD file.
 */
-static void score_add_arg(
-  const char* arg  /*!< Argument from score command */
-) { PROFILE(SCORE_ADD_ARG);
+void score_add_args(
+             const char* arg1,  /*!< First argument from score command */
+  /*@null@*/ const char* arg2   /*!< Second argument from score command */
+) { PROFILE(SCORE_ADD_ARGS);
 
-  score_args = (char**)realloc_safe( score_args, (sizeof( char* ) * score_arg_num), (sizeof( char* ) * (score_arg_num + 1)) );
-  score_args[score_arg_num] = strdup_safe( arg );
-  score_arg_num++;
+  str_link* arg    = score_args_head;
+  bool      done   = FALSE;
+  bool      nondup = ((strncmp( arg1, "-vpi", 4 ) == 0) ||
+                      (strncmp( arg1, "-lxt", 4 ) == 0) ||
+                      (strncmp( arg1, "-vcd", 4 ) == 0) ||
+                      (strncmp( arg1, "-t",   2 ) == 0) ||
+                      (strncmp( arg1, "-i",   2 ) == 0) ||
+                      (strncmp( arg1, "-o",   2 ) == 0));
+
+  while( !done ) {
+
+    /* Check to see if the specified arguments already exist */
+    while( (arg != NULL) && (strcmp( arg->str, arg1 ) != 0) ) {
+      arg = arg->next;
+    }
+
+    /* If the argument doesn't exist, just add it and be done */
+    if( arg == NULL ) {
+      arg = str_link_add( strdup_safe( arg1 ), &score_args_head, &score_args_tail );
+      if( arg2 != NULL ) {
+        arg->str2 = strdup_safe( arg2 );
+      }
+      done = TRUE;
+
+    /* If the first option exists and its either a non-duplicatible option or it already exists, be done */
+    } else if( nondup || ((arg2 != NULL) && (strcmp( arg2, arg->str2 ) == 0)) ) {
+      done = TRUE;
+
+    /* Otherwise, advance the arg pointer */
+    } else {
+      arg = arg->next;
+    }
+
+  }
 
 }
 
@@ -533,8 +565,7 @@ static void score_parse_args(
           print_output( "Only one -i option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
         } else {
           top_instance       = strdup_safe( argv[i] );
-          score_add_arg( argv[i-1] );
-          score_add_arg( argv[i] );
+          score_add_args( argv[i-1], argv[i] );
           instance_specified = TRUE;
         }
       } else {
@@ -550,8 +581,7 @@ static void score_parse_args(
         } else {
           if( file_exists( argv[i] ) || is_legal_filename( argv[i] ) ) {
             output_db = strdup_safe( argv[i] );
-            score_add_arg( argv[i-1] );
-            score_add_arg( argv[i] );
+            score_add_args( argv[i-1], argv[i] );
           } else {
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Output file \"%s\" is not writable", argv[i] );
             assert( rv < USER_MSG_LENGTH );
@@ -571,8 +601,7 @@ static void score_parse_args(
           print_output( "Only one -ts option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
         } else {
           timestep_update = ato64( argv[i] );
-          score_add_arg( argv[i-1] );
-          score_add_arg( argv[i] );
+          score_add_args( argv[i-1], argv[i] );
         }
       } else {
         Throw 0;
@@ -587,8 +616,7 @@ static void score_parse_args(
         } else {
           if( is_variable( argv[i] ) ) {
             top_module = strdup_safe( argv[i] );
-            score_add_arg( argv[i-1] );
-            score_add_arg( argv[i] );
+            score_add_args( argv[i-1], argv[i] );
           } else {
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal top-level module name specified \"%s\"", argv[i] );
             assert( rv < USER_MSG_LENGTH );
@@ -605,8 +633,7 @@ static void score_parse_args(
       if( check_option_value( argc, argv, i ) ) {
         i++;
         search_add_include_path( argv[i] );
-        score_add_arg( argv[i-1] );
-        score_add_arg( argv[i] );
+        score_add_args( argv[i-1], argv[i] );
       } else {
         Throw 0;
       }
@@ -616,8 +643,7 @@ static void score_parse_args(
       if( check_option_value( argc, argv, i ) ) {
         i++;
         search_add_directory_path( argv[i] );
-        score_add_arg( argv[i-1] );
-        score_add_arg( argv[i] );
+        score_add_args( argv[i-1], argv[i] );
       } else {
         Throw 0;
       }
@@ -627,8 +653,7 @@ static void score_parse_args(
       if( check_option_value( argc, argv, i ) ) {
         i++;
         fsm_arg_parse( argv[i] );
-        score_add_arg( argv[i-1] );
-        score_add_arg( argv[i] );
+        score_add_args( argv[i-1], argv[i] );
       } else {
         Throw 0;
       }
@@ -660,31 +685,31 @@ static void score_parse_args(
     } else if( strncmp( "-ec", argv[i], 3 ) == 0 ) {
 
       info_suppl.part.excl_assign = 1;
-      score_add_arg( argv[i] );
+      score_add_args( argv[i], NULL );
 
     } else if( strncmp( "-ea", argv[i], 3 ) == 0 ) {
 
       info_suppl.part.excl_always = 1;
-      score_add_arg( argv[i] );
+      score_add_args( argv[i], NULL );
 
     } else if( strncmp( "-ei", argv[i], 3 ) == 0 ) {
 
       info_suppl.part.excl_init = 1;
-      score_add_arg( argv[i] );
+      score_add_args( argv[i], NULL );
 
     } else if( strncmp( "-ef", argv[i], 3 ) == 0 ) {
 
       info_suppl.part.excl_final = 1;
-      score_add_arg( argv[i] );
+      score_add_args( argv[i], NULL );
 
     } else if( strncmp( "-ep", argv[i], 3 ) == 0 ) {
 
       info_suppl.part.excl_pragma = 1;
-      score_add_arg( argv[i] );
+      score_add_args( argv[i], NULL );
       if( ((i+1) < argc) && (argv[i+1][0] != '-') ) {
         i++;
         pragma_coverage_name = strdup_safe( argv[i] );
-        score_add_arg( argv[i] );
+        score_add_args( argv[i], NULL );
       } else {
         pragma_coverage_name = strdup_safe( "coverage" );
       }
@@ -694,8 +719,7 @@ static void score_parse_args(
       if( check_option_value( argc, argv, i ) ) {
         i++;
         search_add_no_score_funit( argv[i] );
-        score_add_arg( argv[i-1] );
-        score_add_arg( argv[i] );
+        score_add_args( argv[i-1], argv[i] );
       } else {
         Throw 0;
       }
@@ -709,8 +733,7 @@ static void score_parse_args(
             if( file_exists( argv[i] ) ) {
               dump_file = strdup_safe( argv[i] );
               dump_mode = DUMP_FMT_VCD;
-              score_add_arg( argv[i-1] );
-              score_add_arg( argv[i] );
+              score_add_args( argv[i-1], argv[i] );
             } else {
               unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "VCD dumpfile not found \"%s\"", argv[i] );
               assert( rv < USER_MSG_LENGTH );
@@ -747,8 +770,7 @@ static void score_parse_args(
             if( file_exists( argv[i] ) ) {
               dump_file = strdup_safe( argv[i] );
               dump_mode = DUMP_FMT_LXT;
-              score_add_arg( argv[i-1] );
-              score_add_arg( argv[i] );
+              score_add_args( argv[i-1], argv[i] );
             } else {
               unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "LXT dumpfile not found \"%s\"", argv[i] );
               assert( rv < USER_MSG_LENGTH );
@@ -788,8 +810,7 @@ static void score_parse_args(
         } else {
           process_timescale( argv[i], FALSE );
           timescale = strdup_safe( argv[i] );
-          score_add_arg( argv[i-1] );
-          score_add_arg( argv[i] );
+          score_add_args( argv[i-1], argv[i] );
         }
       } else {
         Throw 0;
@@ -806,12 +827,11 @@ static void score_parse_args(
       } else {
         if( (i < argc) && (argv[i][0] != '-') ) {
           vpi_file = strdup_safe( argv[i] );
-          score_add_arg( argv[i-1] );
-          score_add_arg( argv[i] );
+          score_add_args( argv[i-1], argv[i] );
         } else {
           vpi_file = strdup_safe( DFLT_VPI_NAME );
           i--;
-          score_add_arg( argv[i] );
+          score_add_args( argv[i], NULL );
         }
       }
 
@@ -826,12 +846,11 @@ static void score_parse_args(
       } else {
         if( (i < argc) && (argv[i][0] != '-') ) {
           dumpvars_file = strdup_safe( argv[i] );
-          score_add_arg( argv[i-1] );
-          score_add_arg( argv[i] );
+          score_add_args( argv[i-1], argv[i] );
         } else {
           dumpvars_file = strdup_safe( DFLT_DUMPVARS_NAME );
           i--;
-          score_add_arg( argv[i] );
+          score_add_args( argv[i], NULL );
         }
       }
 
@@ -840,8 +859,7 @@ static void score_parse_args(
       if( check_option_value( argc, argv, i ) ) {
         i++;
         search_add_file( argv[i] );
-        score_add_arg( argv[i-1] );
-        score_add_arg( argv[i] );
+        score_add_args( argv[i-1], argv[i] );
       } else {
         Throw 0;
       }
@@ -849,15 +867,14 @@ static void score_parse_args(
     } else if( strncmp( "+libext+", argv[i], 8 ) == 0 ) {
 
       search_add_extensions( argv[i] + 8 );
-      score_add_arg( argv[i] );
+      score_add_args( argv[i], NULL );
 
     } else if( strncmp( "-D", argv[i], 2 ) == 0 ) {
 
       if( check_option_value( argc, argv, i ) ) {
         i++;
         score_parse_define( argv[i] );
-        score_add_arg( argv[i-1] );
-        score_add_arg( argv[i] );
+        score_add_args( argv[i-1], argv[i] );
       } else {
         Throw 0;
       }
@@ -871,8 +888,7 @@ static void score_parse_args(
         } else {
           if( is_variable( argv[i] ) ) {
             ppfilename = strdup_safe( argv[i] );
-            score_add_arg( argv[i-1] );
-            score_add_arg( argv[i] );
+            score_add_args( argv[i-1], argv[i] );
           } else {
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unrecognizable filename %s specified for -p option.", argv[i] );
             assert( rv < USER_MSG_LENGTH );
@@ -901,8 +917,7 @@ static void score_parse_args(
           } else {
             vector* vec;
             int     base;
-            score_add_arg( argv[i-1] );
-            score_add_arg( argv[i] );
+            score_add_args( argv[i-1], argv[i] );
             *ptr = '\0';
             ptr++;
             vector_from_string( &ptr, FALSE, &vec, &base );
@@ -932,16 +947,13 @@ static void score_parse_args(
         } else {
           if( strcmp( argv[i], "min" ) == 0 ) {
             delay_expr_type = DELAY_EXPR_MIN;
-            score_add_arg( argv[i-1] );
-            score_add_arg( argv[i] );
+            score_add_args( argv[i-1], argv[i] );
           } else if( strcmp( argv[i], "max" ) == 0 ) {
             delay_expr_type = DELAY_EXPR_MAX;
-            score_add_arg( argv[i-1] );
-            score_add_arg( argv[i] );
+            score_add_args( argv[i-1], argv[i] );
           } else if( strcmp( argv[i], "typ" ) == 0 ) {
             delay_expr_type = DELAY_EXPR_TYP;
-            score_add_arg( argv[i-1] );
-            score_add_arg( argv[i] );
+            score_add_args( argv[i-1], argv[i] );
           } else {
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown -T value (%s).  Please specify min, max or typ.", argv[i] );
             assert( rv < USER_MSG_LENGTH );
@@ -979,12 +991,12 @@ static void score_parse_args(
           break;
           /*@=unreachable@*/
       }
-      score_add_arg( argv[i] );
+      score_add_args( argv[i], NULL );
 
     } else if( strncmp( "-S", argv[i], 2 ) == 0 ) {
 
       flag_display_sim_stats = TRUE;
-      score_add_arg( argv[i] );
+      score_add_args( argv[i], NULL );
 
     } else if( strncmp( "-A", argv[i], 2 ) == 0 ) {
 
@@ -994,8 +1006,7 @@ static void score_parse_args(
           info_suppl.part.assert_ovl = 1;
           define_macro( "OVL_VERILOG",  "1" );
           define_macro( "OVL_COVER_ON", "1" );
-          score_add_arg( argv[i-1] );
-          score_add_arg( argv[i] );
+          score_add_args( argv[i-1], argv[i] );
         } else {
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown -A value (%s).  Please specify ovl.", argv[i] );
           assert( rv < USER_MSG_LENGTH );
@@ -1041,8 +1052,7 @@ static void score_parse_args(
             Throw 0;
           }
         }
-        score_add_arg( argv[i-1] );
-        score_add_arg( argv[i] );
+        score_add_args( argv[i-1], argv[i] );
       } else {
         Throw 0;
       }
@@ -1059,11 +1069,10 @@ static void score_parse_args(
       } else {
         if( (i < argc) && (argv[i][0] != '-') ) {
           cli_read_hist_file( argv[i] );
-          score_add_arg( argv[i-1] );
-          score_add_arg( argv[i] );
+          score_add_args( argv[i-1], argv[i] );
         } else {
           i--;
-          score_add_arg( argv[i] );
+          score_add_args( argv[i], argv[i] );
         }
         flag_use_command_line_debug = TRUE;
       }
@@ -1097,7 +1106,7 @@ static void score_parse_args(
     } else if( strncmp( "+", argv[i], 1 ) == 0 ) {
 
       sys_task_store_plusarg( argv[i] + 1 );
-      score_add_arg( argv[i] );
+      score_add_args( argv[i], NULL );
 
     } else {
 
@@ -1232,6 +1241,10 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.144  2008/10/27 18:13:19  phase1geo
+ Finished work to get $test$plusargs to work properly.  Added test_plusargs1
+ diagnostic to regression suite to verify this functionality.
+
  Revision 1.143  2008/10/27 13:20:55  phase1geo
  More work on $test$plusargs and $value$plusargs support.  Checkpointing.
 

@@ -1004,7 +1004,7 @@ static void instance_mark_lhier_diffs(
 ) { PROFILE(INSTANCE_MARK_LHIER_DIFFS);
 
   /* Move up the scope hierarchy looking for a difference in instance names */
-  while( (root1 != NULL) && (root2 != NULL) && printf( "A root1: %s, root2: %s\n", root1->name, root2->name ) && (strcmp( root1->name, root2->name ) == 0) ) {
+  while( (root1 != NULL) && (root2 != NULL) && (strcmp( root1->name, root2->name ) == 0) ) {
     root1 = root1->parent;
     root2 = root2->parent;
   }
@@ -1042,8 +1042,6 @@ bool instance_merge_two_trees(
   lhier1[0] = '\0';
   lhier2[0] = '\0';
 
-  printf( "root1: %s, root2: %s\n", root1->name, root2->name );
-
   /* Get leading hierarchy information */
   instance_get_leading_hierarchy( root1, lhier1, &tinst1 );
   instance_get_leading_hierarchy( root2, lhier2, &tinst2 );
@@ -1051,7 +1049,6 @@ bool instance_merge_two_trees(
   /* If the top-level modules are the same, just merge them */
   if( strcmp( tinst1->funit->name, tinst2->funit->name ) == 0 ) {
 
-    printf( "HERE A!\n" );
     /* Perform instance tree merge */
     instance_merge_tree( tinst1, tinst2 );
     instance_mark_lhier_diffs( tinst1, tinst2 );
@@ -1059,7 +1056,6 @@ bool instance_merge_two_trees(
   /* If root2 is a branch of root1, merge root2 into root1 */
   } else if( strncmp( lhier1, lhier2, strlen( lhier1 ) ) == 0 ) {
 
-    printf( "HERE B!\n" );
     root2 = instance_find_scope( root2, lhier2, FALSE );
     assert( root2 != NULL );
     instance_merge_tree( tinst1, root2 );
@@ -1067,7 +1063,6 @@ bool instance_merge_two_trees(
   /* If root1 is a branch of root2, merge root2 into root1 (replacing lower branches with those from root2) */
   } else if( strncmp( lhier1, lhier2, strlen( lhier2 ) ) == 0 ) {
 
-    printf( "HERE C!\n" );
     root1 = instance_find_scope( root1, lhier1, FALSE );
     assert( root1 != NULL );
     instance_merge_tree( root1, tinst2 );
@@ -1075,14 +1070,12 @@ bool instance_merge_two_trees(
   /* Check to see if the module pointed to by tinst1 exists within the tree of tinst2 */
   } else if( (root2 = instance_find_by_funit_name_if_one( tinst2, tinst1->funit->name )) != NULL ) {
 
-    printf( "HERE D!\n" );
     instance_merge_tree( tinst1, root2 );
     instance_mark_lhier_diffs( tinst1, root2 );
 
   /* Check to see if the module pointed to by tinst2 exists within the tree of tinst1 */
   } else if( (root1 = instance_find_by_funit_name_if_one( tinst1, tinst2->funit->name )) != NULL ) {
 
-    printf( "HERE E!\n" );
     instance_merge_tree( root1, tinst2 );
     instance_mark_lhier_diffs( root1, tinst2 );
 
@@ -1694,6 +1687,10 @@ void instance_dealloc(
 
 /*
  $Log$
+ Revision 1.112  2008/11/12 00:07:41  phase1geo
+ More updates for complex merging algorithm.  Updating regressions per
+ these changes.  Checkpointing.
+
  Revision 1.111  2008/11/11 14:28:49  phase1geo
  Checkpointing.
 

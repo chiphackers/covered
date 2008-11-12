@@ -1,5 +1,5 @@
 5 13 101 3 *
-8 /ptmp/covered/diags/verilog -t main -vcd port2.vcd -o port2.cdd -v port2.v -D DUMP
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (port2.vcd) 2 -o (port2.cdd) 2 -v (port2.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 port2.v 1 16 1
 1 a 1 3 60005 1 0 0 0 1 17 1 1 0 0 0 0

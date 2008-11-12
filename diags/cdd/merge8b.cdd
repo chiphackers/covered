@@ -1,5 +1,5 @@
 5 13 101 3 main
-8 /ptmp/covered/diags/verilog -t bar -i main.b -vcd merge8.vcd -o merge8b.cdd -v merge8b.v -D DUMP
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (bar) 2 -i (main.b) 2 -vcd (merge8.vcd) 2 -o (merge8b.cdd) 2 -v (merge8b.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 15 main 0
 3 0 bar "main.b" 0 merge8b.v 41 47 1

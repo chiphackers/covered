@@ -33,6 +33,7 @@
 #include "defines.h"
 #include "info.h"
 #include "link.h"
+#include "score.h"
 #include "util.h"
 
 
@@ -64,14 +65,14 @@ int cdd_version = CDD_VERSION;
 char score_run_path[4096];
 
 /*!
- Array containing all of the score arguments.
+ Pointer to the head of the score arguments list.
 */
-/*@null@*/ char** score_args = NULL;
+/*@null@*/ str_link* score_args_head = NULL;
 
 /*!
- Number of valid elements in the score args array.
+ Pointer to the tail of the score arguments list.
 */
-int score_arg_num = 0;
+/*@null@*/ str_link* score_args_tail = NULL;
 
 
 /*!
@@ -104,7 +105,7 @@ void info_db_write(
   FILE* file  /*!< Pointer to file to write information to */
 ) { PROFILE(INFO_DB_WRITE);
 
-  int i;  /* Loop iterator */
+  str_link* arg;
 
   assert( db_list[curr_db]->leading_hier_num > 0 );
 
@@ -123,8 +124,14 @@ void info_db_write(
   /* Display score arguments */
   fprintf( file, "%d %s", DB_TYPE_SCORE_ARGS, score_run_path );
 
-  for( i=0; i<score_arg_num; i++ ) {
-    fprintf( file, " %s", score_args[i] );
+  arg = score_args_head;
+  while( arg != NULL ) {
+    if( arg->str2 != NULL ) {
+      fprintf( file, " 2 %s (%s)", arg->str, arg->str2 );
+    } else {
+      fprintf( file, " 1 %s", arg->str );
+    }
+    arg = arg->next;
   }
 
   fprintf( file, "\n" );
@@ -136,8 +143,8 @@ void info_db_write(
 
   /* Display the merged CDD information, if there are any */
   if( db_list[curr_db]->leading_hier_num == merge_in_num ) {
-    str_link* strl = merge_in_head;
-    i = 0;
+    str_link*    strl = merge_in_head;
+    unsigned int i    = 0;
     while( strl != NULL ) {
       if( (strcmp( strl->str, merged_file ) != 0) && (strl->suppl == 1) ) {
         fprintf( file, "%d %s %s\n", DB_TYPE_MERGED_CDD, strl->str, db_list[curr_db]->leading_hierarchies[i++] );
@@ -147,9 +154,9 @@ void info_db_write(
       strl = strl->next; 
     }
   } else { 
-    str_link* strl = merge_in_head;
+    str_link*    strl = merge_in_head;
+    unsigned int i    = 1; 
     assert( (db_list[curr_db]->leading_hier_num - 1) == merge_in_num );
-    i = 1; 
     while( strl != NULL ) {
       if( (strcmp( strl->str, merged_file ) != 0) && (strl->suppl == 1) ) {
         fprintf( file, "%d %s %s\n", DB_TYPE_MERGED_CDD, strl->str, db_list[curr_db]->leading_hierarchies[i++] );
@@ -240,17 +247,22 @@ void args_db_read(
 
   int  chars_read;  /* Number of characters scanned in from this line */
   char tmp1[4096];  /* Temporary string */
+  char tmp2[4096];  /* Temporary string */
+  int  arg_num;
 
   if( sscanf( *line, "%s%n", score_run_path, &chars_read ) == 1 ) {
 
     *line = *line + chars_read;
 
     /* Store score command-line arguments */
-    while( sscanf( *line, "%s%n", tmp1, &chars_read ) == 1 ) {
-      *line                     = *line + chars_read;
-      score_args                = (char**)realloc_safe( score_args, (sizeof( char* ) * score_arg_num), (sizeof( char* ) * (score_arg_num + 1)) );
-      score_args[score_arg_num] = strdup_safe( tmp1 );
-      score_arg_num++;
+    while( sscanf( *line, "%d%n", &arg_num, &chars_read ) == 1 ) {
+      *line = *line + chars_read;
+      if( (arg_num == 1) && (sscanf( *line, "%s%n", tmp1, &chars_read ) == 1) ) {
+        score_add_args( tmp1, NULL );
+      } else if( (arg_num == 2) && (sscanf( *line, "%s (%[^)])%n", tmp1, tmp2, &chars_read ) == 2) ) {
+        score_add_args( tmp1, tmp2 );
+      }
+      *line = *line + chars_read;
     }
 
   } else {
@@ -342,16 +354,9 @@ void merged_cdd_db_read(
 */
 void info_dealloc() { PROFILE(INFO_DEALLOC);
 
-  int i;  /* Loop iterator */
-
-  /* Free score arguments */
-  for( i=0; i<score_arg_num; i++ ) {
-    free_safe( score_args[i], (strlen( score_args[i] ) + 1) );
-  }
-  free_safe( score_args, (sizeof( char* ) * score_arg_num) );
-
-  score_args    = NULL;
-  score_arg_num = 0;
+  str_link_delete_list( score_args_head );
+  score_args_head = NULL;
+  score_args_tail = NULL;
 
   /* Free merged arguments */
   str_link_delete_list( merge_in_head );
@@ -369,6 +374,9 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
 /*
  $Log$
+ Revision 1.45  2008/09/22 04:19:56  phase1geo
+ Fixing bug 2122019.  Also adding exclusion reason timestamp support to CDD files.
+
  Revision 1.44  2008/09/17 04:55:46  phase1geo
  Integrating new get_absolute_path and get_relative_path functions and
  updating regressions.  Also fixed a few coding bugs with these new functions.

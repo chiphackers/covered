@@ -1,5 +1,5 @@
 5 13 101 5 main
-8 /ptmp/covered/diags/verilog -t foo -i main.bar1 -vcd param3.vcd -o param3.5.cdd -v param3.5.v -P main.bar1.alpha=1'b1 -D DUMP
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (foo) 2 -i (main.bar1) 2 -vcd (param3.vcd) 2 -o (param3.5.cdd) 2 -v (param3.5.v) 2 -P (main.bar1.alpha=1'b1) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 15 main 0
 3 0 foo "main.bar1" 0 param3.5.v 25 32 1

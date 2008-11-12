@@ -1,5 +1,5 @@
 5 13 101 4 *
-8 /ptmp/covered/diags/verilog -t main -vcd lshift3.vcd -o lshift3.cdd -v lshift3.v -D DUMP
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (lshift3.vcd) 2 -o (lshift3.cdd) 2 -v (lshift3.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 lshift3.v 10 29 1
 2 1 14 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0

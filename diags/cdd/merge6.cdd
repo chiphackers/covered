@@ -1,12 +1,12 @@
-5 12 101 3 main
-8 /ptmp/covered/diags/verilog -t dut_and -i main.dut -vcd merge6a.vcd -o merge6_1/merge6a.cdd -v merge6a.v -y lib -D DUMP
-12 /ptmp/covered/diags/verilog/merge6_1/merge6a.cdd main
-12 /ptmp/covered/diags/verilog/merge6_1/merge6b.cdd main
-12 /ptmp/covered/diags/verilog/merge6_2/merge6c.cdd main
-12 /ptmp/covered/diags/verilog/merge6_2/merge6d.cdd main
-3 0 $root "$root" NA 0 0 1
-15 main
-3 0 dut_and "main.dut" lib/dut_and.v 1 9 1
+5 13 101 3 main
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (dut_and) 2 -i (main.dut) 2 -vcd (merge6a.vcd) 2 -o (merge6_1/merge6a.cdd) 2 -v (merge6a.v) 2 -y (lib) 2 -D (DUMP) 2 -v (merge6b.v) 2 -v (merge6c.v) 2 -v (merge6d.v)
+12 /Users/trevorw/projects/covered/diags/verilog/merge6_1/merge6a.cdd main
+12 /Users/trevorw/projects/covered/diags/verilog/merge6_1/merge6b.cdd main
+12 /Users/trevorw/projects/covered/diags/verilog/merge6_2/merge6c.cdd main
+12 /Users/trevorw/projects/covered/diags/verilog/merge6_2/merge6d.cdd main
+3 0 $root "$root" 0 NA 0 0 1
+15 main 0
+3 0 dut_and "main.dut" 0 lib/dut_and.v 1 9 1
 2 1 7 f000f 1 1 100c 0 0 1 1 c
 2 2 7 b000b 1 1 100c 0 0 1 1 b
 2 3 7 b000f 1 8 13cc 1 2 1 18 0 1 1 1 1 0

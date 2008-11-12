@@ -1,5 +1,5 @@
 5 13 101 3 *
-8 /ptmp/covered/diags/verilog -t main -vcd hier2.vcd -o hier2.cdd -v hier2.v -D DUMP
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (hier2.vcd) 2 -o (hier2.cdd) 2 -v (hier2.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 hier2.v 1 18 1
 2 1 7 c0016 0 1 1000 0 0 1 1 a[1].b[2].c

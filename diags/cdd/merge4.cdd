@@ -1,9 +1,9 @@
-5 12 101 4 main
-8 /ptmp/covered/diags/verilog -t adder1 -i main.addA -vcd merge4a.vcd -o merge4a.cdd -v merge4a.v -y lib -D DUMP
-12 /ptmp/covered/diags/verilog/merge4b.cdd main
-3 0 $root "$root" NA 0 0 1
-15 main
-3 0 adder1 "main.addA" lib/adder1.v 1 18 1
+5 13 101 4 main
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (adder1) 2 -i (main.addA) 2 -vcd (merge4a.vcd) 2 -o (merge4a.cdd) 2 -v (merge4a.v) 2 -y (lib) 2 -D (DUMP) 2 -v (merge4b.v)
+12 /Users/trevorw/projects/covered/diags/verilog/merge4b.cdd main
+3 0 $root "$root" 0 NA 0 0 1
+15 main 0
+3 0 adder1 "main.addA" 0 lib/adder1.v 1 18 1
 2 1 15 f000f 2 1 100c 0 0 1 1 b
 2 2 15 b000b 2 1 100c 0 0 1 1 a
 2 3 15 b000f 2 2 134c 1 2 1 18 0 1 1 0 1 1

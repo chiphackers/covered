@@ -1,5 +1,5 @@
 5 13 101 37 *
-8 /ptmp/covered/diags/verilog -t main -vcd exclude10.4.vcd -v exclude10.4.v -y lib -o exclude10.4.cdd
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (exclude10.4.vcd) 2 -v (exclude10.4.v) 2 -y (lib) 2 -o (exclude10.4.cdd)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 exclude10.4.v 8 65 1
 2 1 60 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u1
@@ -55,8 +55,8 @@
 4 22 6 21 0
 4 21 1 22 0
 6 24 23 1  1 4 4 2 16 0 0  2 16 1 0  2 16 2 0  2 16 3 0  2 16 1 0  2 16 0 0  2 16 3 0  2 16 2 0   8  0 0 1  0 1 3  1 2 1  1 3 2  2 2 0  2 3 0  3 0 0  3 1 1
-13 F 2 1226441587 This state transition is not needed
-13 F 4 1226441588 This state transition is not needed
+13 F 2 1226470801 This state transition is not needed
+13 F 4 1226470801 This state transition is not needed
 3 1 fsma.$u2 "main.fsm.$u2" 0 lib/fsma.v 0 43 1
 2 25 38 5000e 1 32 1004 0 0 2 1 STATE_IDLE
 2 26 37 9000d d 1 100e 0 0 2 1 state

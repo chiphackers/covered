@@ -1,5 +1,5 @@
 5 13 101 3 *
-8 /ptmp/covered/diags/verilog -t main -vcd always11.2.vcd -o always11.2.cdd -v always11.2.v -D DUMP
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (always11.2.vcd) 2 -o (always11.2.cdd) 2 -v (always11.2.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 always11.2.v 1 22 1
 2 1 5 90009 1 1 1004 0 0 1 1 a

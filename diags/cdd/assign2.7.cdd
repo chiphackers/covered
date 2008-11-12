@@ -1,5 +1,5 @@
 5 13 101 5 *
-8 /ptmp/covered/diags/verilog -t main -vcd assign2.7.vcd -o assign2.7.cdd -v assign2.7.v -D DUMP
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (assign2.7.vcd) 2 -o (assign2.7.cdd) 2 -v (assign2.7.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 assign2.7.v 1 25 1
 2 1 5 140014 2 1 100c 0 0 1 1 b
