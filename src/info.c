@@ -76,6 +76,51 @@ char score_run_path[4096];
 
 
 /*!
+ *  Adds the specified argument to the list of score arguments that will be written to the CDD file.
+ *  */
+void score_add_args(
+             const char* arg1,  /*!< First argument from score command */
+  /*@null@*/ const char* arg2   /*!< Second argument from score command */
+) { PROFILE(SCORE_ADD_ARGS);
+
+  str_link* arg    = score_args_head;
+  bool      done   = FALSE;
+  bool      nondup = ((strncmp( arg1, "-vpi", 4 ) == 0) ||
+                      (strncmp( arg1, "-lxt", 4 ) == 0) ||
+                      (strncmp( arg1, "-vcd", 4 ) == 0) ||
+                      (strncmp( arg1, "-t",   2 ) == 0) ||
+                      (strncmp( arg1, "-i",   2 ) == 0) ||
+                      (strncmp( arg1, "-o",   2 ) == 0));
+
+  while( !done ) {
+
+    /* Check to see if the specified arguments already exist */
+    while( (arg != NULL) && (strcmp( arg->str, arg1 ) != 0) ) {
+      arg = arg->next;
+    }
+
+    /* If the argument doesn't exist, just add it and be done */
+    if( arg == NULL ) {
+      arg = str_link_add( strdup_safe( arg1 ), &score_args_head, &score_args_tail );
+      if( arg2 != NULL ) {
+        arg->str2 = strdup_safe( arg2 );
+      }
+      done = TRUE;
+
+    /* If the first option exists and its either a non-duplicatible option or it already exists, be done */
+    } else if( nondup || ((arg2 != NULL) && (strcmp( arg2, arg->str2 ) == 0)) ) {
+      done = TRUE;
+
+    /* Otherwise, advance the arg pointer */
+    } else {
+      arg = arg->next;
+    }
+
+  }
+
+}
+
+/*!
  Sets the vector element size in the global info_suppl structure based on the current machine
  unsigned long byte size.
 */
@@ -374,6 +419,9 @@ void info_dealloc() { PROFILE(INFO_DEALLOC);
 
 /*
  $Log$
+ Revision 1.46  2008/11/12 07:04:01  phase1geo
+ Fixing argument merging and updating regressions.  Checkpointing.
+
  Revision 1.45  2008/09/22 04:19:56  phase1geo
  Fixing bug 2122019.  Also adding exclusion reason timestamp support to CDD files.
 

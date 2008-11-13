@@ -30,18 +30,15 @@ void score_generate_top_dumpvars_module( const char* dumpvars_file );
 /*! \brief Parses the specified define from the command-line */
 void score_parse_define( const char* def );
 
-/*! \brief Adds the given argument(s) from the command-line to the score array such that no arguments are duplicated. */
-void score_add_args(
-             const char* arg1,
-  /*@null@*/ const char* arg2
-);
-
 /*! \brief Parses score command-line and performs score. */
 void command_score( int argc, int last_arg, const char** argv );
 
 
 /*
  $Log$
+ Revision 1.14  2008/11/12 07:04:01  phase1geo
+ Fixing argument merging and updating regressions.  Checkpointing.
+
  Revision 1.13  2008/10/07 05:24:18  phase1geo
  Adding -dumpvars option.  Need to resolve a few issues before this work is considered
  complete.

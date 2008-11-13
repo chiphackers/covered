@@ -427,7 +427,8 @@ void covered_create_value_change_cb(
 
   /* Only add the signal if it is in our database and needs to be assigned from the simulator */
 //  if( (vsigl = sig_link_find( vpi_get_str( vpiName, sig ), curr_instance->funit->sig_head )) != NULL ) {
-  if( ((vsigl = sig_link_find( vpi_get_str( vpiName, sig ), curr_instance->funit->sig_head )) != NULL) &&
+  if( (curr_instance->funit != NULL) &&
+      ((vsigl = sig_link_find( vpi_get_str( vpiName, sig ), curr_instance->funit->sig_head )) != NULL) &&
       (vsigl->sig->suppl.part.assigned == 0) ) {
 
 #ifdef DEBUG_MODE
