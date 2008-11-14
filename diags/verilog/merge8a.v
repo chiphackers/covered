@@ -9,8 +9,8 @@ module main;
 
 reg a, b;
 
-foo f( a, b );
-bar b( b );
+foo m1( a, b );
+bar m2( b );
 
 initial begin
 `ifdef DUMP
