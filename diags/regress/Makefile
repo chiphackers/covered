@@ -74,7 +74,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 lshift5         mbit_sel1       mbit_sel2       mbit_sel3       mbit_sel3.1 \
                 mbit_sel4       mbit_sel4.1     mbit_sel4.2     mbit_sel4.3     mbit_sel7 \
                 mbit_sel9       mbit_sel9.1     mbit_sel9.2     mem1            mem2 \
-                mod1            monitor1        monitor1.1      msg1            mult1 \
+                merge10         mod1            monitor1        monitor1.1      msg1            mult1 \
                 mult2           multi_exp1      multi_exp1.1    multi_exp1.2    multi_exp1.3 \
                 multi_exp1.4    multi_exp1.5    multi_exp1.6    multi_exp1.7    multi_exp1.8 \
                 multi_exp1.9    multi_exp1.10   multi_exp1.11   multi_exp1.12   multi_exp1.13 \
