@@ -7,85 +7,47 @@
 require "../verilog/regress_subs.pl";
 
 # Initialize the diagnostic environment
-&initialize( "merge10", 1, @ARGV );
+&initialize( "merge10", 0, @ARGV );
 
 # Perform diagnostic running code here
-&runScoreCommand( "-t main -vcd merge10.vcd -v merge10.v -o merge10.cdd" );
+&runCommand( "make DIAG=merge10a onemergerun" );
+&runCommand( "make DIAG=merge10b onemergerun" );
+&runCommand( "make DIAG=merge10c onemergerun" );
+&runCommand( "make DIAG=merge10d onemergerun" );
+&runCommand( "make DIAG=merge10e onemergerun" );
+&runCommand( "make DIAG=merge10f onemergerun" );
+&runCommand( "make DIAG=merge10g onemergerun" );
+&runCommand( "make DIAG=merge10h onemergerun" );
 
-# Perform the file comparison checks
-&checkTest( "merge10", 1, 1 );
+# Perform all combinations of merges
+&runMergeCommand( "-o merge10.cdd merge10a.cdd merge10b.cdd merge10c.cdd merge10d.cdd merge10e.cdd merge10f.cdd merge10g.cdd merge10h.cdd" );
+&checkTest( "merge10", 1, 0 );
+
+&runMergeCommand( "-o merge10.cdd merge10b.cdd merge10a.cdd merge10d.cdd merge10c.cdd merge10f.cdd merge10e.cdd merge10h.cdd merge10g.cdd" );
+&checkTest( "merge10", 1, 0 );
+
+&runMergeCommand( "-o merge10.cdd merge10h.cdd merge10f.cdd merge10a.cdd merge10g.cdd merge10d.cdd merge10b.cdd merge10e.cdd merge10c.cdd" );
+&checkTest( "merge10", 1, 0 );
+
+&runMergeCommand( "-o merge10.cdd merge10g.cdd merge10c.cdd merge10e.cdd merge10a.cdd merge10h.cdd merge10d.cdd merge10f.cdd merge10b.cdd" );
+&checkTest( "merge10", 1, 0 );
+
+&runMergeCommand( "-o merge10.cdd merge10f.cdd merge10d.cdd merge10g.cdd merge10e.cdd merge10b.cdd merge10h.cdd merge10c.cdd merge10a.cdd" );
+&checkTest( "merge10", 1, 0 );
+
+&runMergeCommand( "-o merge10.cdd merge10e.cdd merge10g.cdd merge10f.cdd merge10h.cdd merge10a.cdd merge10c.cdd merge10b.cdd merge10d.cdd" );
+&checkTest( "merge10", 1, 0 );
+
+&runMergeCommand( "-o merge10.cdd merge10d.cdd merge10h.cdd merge10b.cdd merge10f.cdd merge10c.cdd merge10g.cdd merge10a.cdd merge10e.cdd" );
+&checkTest( "merge10", 1, 0 );
+
+&runMergeCommand( "-o merge10.cdd merge10c.cdd merge10h.cdd merge10e.cdd merge10d.cdd merge10a.cdd merge10f.cdd merge10b.cdd merge10g.cdd" );
+&checkTest( "merge10", 1, 0 );
+
+&runMergeCommand( "-o merge10.cdd merge10g.cdd merge10b.cdd merge10a.cdd merge10c.cdd merge10d.cdd merge10e.cdd merge10f.cdd merge10h.cdd" );
+&runReportCommand( "-d v -e -m ltcfamr -o merge10.rptM merge10.cdd" );
+&runReportCommand( "-d v -e -m ltcfamr -i -o merge10.rptI merge10.cdd" );
+&checkTest( "merge10", 1, 0 );
 
 exit 0;
 
-sub doMerges {
-
-  $bits = 3;
-  for( $i=0; $i<=(8-$bits); $i++ ) {
-    $allset |= (0x1 << $i);
-  }
-  print "bits: $bits, allset: $allset\n";
-
-  $num = 0;
-
-  for( $a=0; $a<8; $a++ ) {
-    for( $b=0; $b<8; $b++ ) {
-      if( $b!=$a ) {
-        for( $c=0; $c<8; $c++ ) {
-          if( ($c!=$a) && ($c!=$b) ) {
-            for( $d=0; $d<8; $d++ ) {
-              if( ($d!=$a) && ($d!=$b) && ($d!=$c) ) {
-                for( $e=0; $e<8; $e++ ) {
-                  if( ($e!=$a) && ($e!=$b) && ($e!=$c) && ($e!=$d) ) {
-                    for( $f=0; $f<8; $f++ ) {
-                      if( ($f!=$a) && ($f!=$b) && ($f!=$c) && ($f!=$d) && ($f!=$e) ) {
-                        for( $g=0; $g<8; $g++ ) {
-                          if( ($g!=$a) && ($g!=$b) && ($g!=$c) && ($g!=$d) && ($g!=$e) && ($g!=$f) ) {
-                            for( $h=0; $h<8; $h++ ) {
-                              if( ($h!=$a) && ($h!=$b) && ($h!=$c) && ($h!=$d) && ($h!=$e) && ($h!=$f) && ($h!=$g) ) {
-                                $str[@str] = "$a$b$c$d$e$f$g$h";
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  
-  for( $k=0; $k<@str; $k++ ) {
-    # print "k: $k, set: $set[$k]\n";
-    if( $set[$k] != $allset ) {
-      for( $j=0; $j<=(8-$bits); $j++ ) {
-        if( (($set[$k] >> $j) & 0x1) == 0 ) {
-          $sstr = substr( $str[$k], $j, $bits );
-          for( $l=0; $l<@str; $l++ ) {
-            if( $l != $k ) {
-              for( $m=0; $m<=(8-$bits); $m++ ) {
-                if( ((($set[$l] >> $m) & 0x1) == 0) && (substr( $str[$l], $m, $bits ) eq $sstr) ) {
-                  $set[$l] |= (0x1 << $m);
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
-  for( $i=0; $i<@str; $i++ ) {
-    if( $set[$i] != $allset ) {
-      $new_str[@new_str] = $str[$i];
-      print "  $str[$i]\n";
-    }
-  }
-
-  print "new_str num: " . @new_str . "\n";
-
-}

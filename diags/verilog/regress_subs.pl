@@ -309,6 +309,12 @@ sub checkTest {
           if( $rm_cdd > 7 ) {
             system( "rm -f ${test}g.cdd" ) && die;
           }
+          if( $rm_cdd > 8 ) {
+            system( "rm -f ${test}h.cdd" ) && die;
+          }
+          if( $rm_cdd > 9 ) {
+            system( "rm -f ${test}i.cdd" ) && die;
+          }
         }
       } elsif( $mode == 0 ) {
         $check1 = 1;
