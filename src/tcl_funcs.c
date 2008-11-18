@@ -168,7 +168,7 @@ int tcl_func_get_instances(
 
   funit_inst* curr;     /* Pointer to current functional unit instance */
 
-  if( !funit_is_unnamed( root->funit ) &&
+  if( (root->funit != NULL) && !funit_is_unnamed( root->funit ) &&
       ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( funit_get_curr_module_safe( root->funit ) )) ) {
     gui_inst_list = (funit_inst**)realloc_safe( gui_inst_list, (sizeof( funit_inst* ) * gui_inst_index), (sizeof( funit_inst* ) * (gui_inst_index + 1)) );
     gui_inst_list[gui_inst_index] = root;
@@ -2653,7 +2653,7 @@ int tcl_func_set_comb_exclude(
       unsigned int i = gui_inst_index;
 
       /* Set the combinational logic exclusion value for the instance database */
-      exclude_set_comb_exclude( funit, expr_id, uline_id, value, ((reason != NULL) ? strdup_safe( reason ) : NULL), inst->stat );
+      exclude_set_comb_exclude( inst->funit, expr_id, uline_id, value, ((reason != NULL) ? strdup_safe( reason ) : NULL), inst->stat );
 
       /* If we are attempting to exclude the expression, check all other instances -- if they all exclude this expression, exclude the expression from the functional unit */
       if( value == 1 ) {
@@ -3079,6 +3079,9 @@ void tcl_func_initialize(
 
 /*
  $Log$
+ Revision 1.92  2008/11/12 07:04:01  phase1geo
+ Fixing argument merging and updating regressions.  Checkpointing.
+
  Revision 1.91  2008/09/23 21:38:55  phase1geo
  Fixing segmentation fault issues with GUI and fixing exclusion reason conflict
  resolution code.  This now works in the GUI as needed.
