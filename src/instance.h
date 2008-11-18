@@ -72,9 +72,6 @@ int instance_find_fsm_arc_index_by_exclusion_id(
   /*@out@*/ func_unit** found_funit
 );
 
-/*! \brief Attaches the given child instance to the given parent instance */
-void instance_attach_child( funit_inst* parent, funit_inst* child );
-
 /*! \brief Copies the given from_inst as a child of the given to_inst */
 void instance_copy( funit_inst* from_inst, funit_inst* to_inst, char* name, vector_width* range, bool resolve );
 
@@ -117,9 +114,6 @@ void instance_only_db_read( char** line );
 /*! \brief Reads in and merges an instance-only line from the database */
 void instance_only_db_merge( char** line );
 
-/*! \brief Removes all unnamed scopes in given instance tree, converging their data into the parent scopes. */
-void instance_flatten( funit_inst* root );
-
 /*! \brief Removes all statement blocks that contain expressions that call the given statement */
 void instance_remove_stmt_blks_calling_stmt( funit_inst* root, statement* stmt );
 
@@ -138,6 +132,10 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.44  2008/11/12 19:57:07  phase1geo
+ Fixing the rest of the issues from regressions in regards to the merge changes.
+ Updating regression files.  IV and Cver regressions now pass.
+
  Revision 1.43  2008/11/12 00:07:41  phase1geo
  More updates for complex merging algorithm.  Updating regressions per
  these changes.  Checkpointing.

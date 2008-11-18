@@ -130,9 +130,6 @@ void gitem_link_remove( gen_item* gi, gitem_link** head, gitem_link** tail );
 /*! \brief Searches for and removes specified functional unit link from list. */
 void funit_link_remove( func_unit* funit, funit_link** head, funit_link** tail, bool rm_funit );
 
-/*! \brief Converges the unnamed scopes into their parent instances. */
-void inst_link_flatten( inst_link* head );
-
 /*********************************************************************************/
 
 /*! \brief Deletes entire list specified by head pointer. */
@@ -167,6 +164,9 @@ void inst_link_delete_list( inst_link* head );
 
 /*
  $Log$
+ Revision 1.33  2008/01/09 05:22:22  phase1geo
+ More splint updates using the -standard option.
+
  Revision 1.32  2008/01/08 13:27:46  phase1geo
  More splint updates.
 

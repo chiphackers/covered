@@ -988,24 +988,6 @@ void funit_link_remove(
 
 }
 
-/*!
- Iterates through the given instance link list, flattening the instance trees to remove
- all unnamed scopes within it.  Only called by the report command after the CDD has been
- read into the database.
-*/
-void inst_link_flatten(
-  inst_link* head  /*!< Pointer to head of instance link list */
-) { PROFILE(INST_LINK_FLATTEN);
-
-  while( head != NULL ) {
-    instance_flatten( head->inst );
-    head = head->next;
-  }
-
-  PROFILE_END;
-
-}
-
 /**************************************************************************************/
 
 /*!
@@ -1301,6 +1283,10 @@ void inst_link_delete_list(
 
 /*
  $Log$
+ Revision 1.84  2008/11/12 00:07:41  phase1geo
+ More updates for complex merging algorithm.  Updating regressions per
+ these changes.  Checkpointing.
+
  Revision 1.83  2008/09/06 05:59:45  phase1geo
  Adding assertion exclusion reason support and have most code implemented for
  FSM exclusion reason support (still working on debugging this code).  I believe

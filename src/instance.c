@@ -628,51 +628,6 @@ void instance_copy(
 }
 
 /*!
- Searches given parent instance child list for a matching child to the specified
- child instance.  If the given child instance does not already exist in the parent's
- list of children, it is added and its parent pointer is pointed to the parent.
-
- \note
- This function creates a copy of the given child instance tree.
-*/
-void instance_attach_child(
-  funit_inst* parent,  /*!< Pointer to parent instance to attach child to */
-  funit_inst* child    /*!< Pointer to child instance tree to attach */
-) { PROFILE(INSTANCE_ATTACH_CHILD);
-
-  funit_inst* curr_inst;  /* Pointer to current instance */
-  
-  /* Check to see if this instance already exists */
-  curr_inst = parent->child_head;
-  while( (curr_inst != NULL) && (strcmp( curr_inst->name, child->name ) != 0) ) {
-    curr_inst = curr_inst->next; 
-  } 
-  
-  /* If this instance already exists, don't add it again */
-  if( curr_inst == NULL ) {
-
-    /* Create a copy of the given child instance */
-    instance_copy( child, curr_inst, child->name, child->range, FALSE );
-  
-    /* Add new instance to inst child instance list */
-    if( parent->child_head == NULL ) {
-      parent->child_head       = curr_inst;
-      parent->child_tail       = curr_inst;
-    } else {
-      parent->child_tail->next = curr_inst;
-      parent->child_tail       = curr_inst;
-    } 
-    
-    /* Point this instance's parent pointer to its parent */
-    curr_inst->parent = parent; 
-
-  }
-
-  PROFILE_END;
-
-}
-
-/*!
  \return Returns TRUE if specified instance was successfully added to the specified instance tree;
          otherwise, returns FALSE.
  
@@ -1340,132 +1295,6 @@ void instance_only_db_merge(
 }
 
 /*!
- Recursively iterates through instance tree, integrating all unnamed scopes that do
- not contain any signals into their parent modules.  This function only gets called
- during the report command.
-*/
-static void instance_flatten_helper(
-  funit_inst*  root,     /*!< Pointer to current instance root */
-  funit_link** rm_head,  /*!< Pointer to head of functional unit list to remove */
-  funit_link** rm_tail   /*!< Pointer to head of functional unit list to remove */
-) { PROFILE(INSTANCE_FLATTEN_HELPER);
-
-  funit_inst* child;                 /* Pointer to current child instance */
-  funit_inst* last_child    = NULL;  /* Pointer to the last child instance */
-  funit_inst* tmp;                   /* Temporary pointer to functional unit instance */
-  funit_inst* grandchild;            /* Pointer to current granchild instance */
-  char        back[4096];            /* Last portion of functional unit name */
-  char        rest[4096];            /* Holds the rest of the functional unit name */
-
-  if( root != NULL ) {
-
-    /* Iterate through child instances */
-    child = root->child_head;
-    while( child != NULL ) {
-
-      /* First, flatten the child instance */
-      instance_flatten_helper( child, rm_head, rm_tail );
-
-      /* Get the last portion of the child instance before this functional unit is removed */
-      scope_extract_back( child->funit->name, back, rest );
-
-      /*
-       Next, fold this child instance into this instance if it is an unnamed scope
-       that has no signals.
-      */
-      if( funit_is_unnamed( child->funit ) && (child->funit->sig_head == NULL) ) {
-
-        /* Remove this child from the child list of this instance */
-        if( child == root->child_head ) {
-          if( child == root->child_tail ) {
-            root->child_head = root->child_tail = NULL;
-          } else {
-            root->child_head = child->next;
-          }
-        } else {
-          if( child == root->child_tail ) {
-            root->child_tail = last_child;
-            root->child_tail->next = NULL;
-          } else {
-            last_child->next = child->next;
-          }
-        }
-
-        /* Add grandchildren to this parent */
-        grandchild = child->child_head;
-        if( grandchild != NULL ) {
-          while( grandchild != NULL ) {
-            grandchild->parent = root;
-            grandchild = grandchild->next;
-          }
-          if( root->child_head == NULL ) {
-            root->child_head = root->child_tail = child->child_head;
-          } else {
-            root->child_tail->next = child->child_head;
-            root->child_tail       = child->child_head;
-          }
-        }
-
-        tmp   = child;
-        child = child->next;
-
-        /* Add the current functional unit to the list of functional units to remove */
-        if( funit_link_find( tmp->funit->name, tmp->funit->type, *rm_head ) == NULL ) {
-          funit_link_add( tmp->funit, rm_head, rm_tail );
-        }
-
-        /* Deallocate child instance */
-        instance_dealloc_single( tmp );
-      
-      } else {
-
-        last_child = child;
-        child = child->next;
-
-      }
-
-    }
-
-  }
-
-  PROFILE_END;
-
-}
-
-/*!
- Recursively iterates through instance tree, integrating all unnamed scopes that do
- not contain any signals into their parent modules.  This function only gets called
- during the report command.
-*/
-void instance_flatten(
-  funit_inst* root  /*!< Pointer to current instance root */
-) { PROFILE(INSTANCE_FLATTEN);
-
-  funit_link* rm_head = NULL;  /* Pointer to head of functional unit list to remove */
-  funit_link* rm_tail = NULL;  /* Pointer to tail of functional unit list to remove */
-  func_unit*  parent_mod;      /* Pointer to parent module of list to remove */
-  funit_link* funitl;          /* Pointer to current functional unit link */
-
-  /* Flatten the hierarchy */
-  instance_flatten_helper( root, &rm_head, &rm_tail );
-
-  /* Now deallocate the list of functional units */
-  funitl = rm_head;
-  while( funitl != NULL ) {
-    funit_link_remove( funitl->funit, &(db_list[curr_db]->funit_head), &(db_list[curr_db]->funit_tail), FALSE );
-    if( funitl->funit->type != FUNIT_MODULE ) {
-      parent_mod = funit_get_curr_module( funitl->funit );
-      funit_link_remove( funitl->funit, &(parent_mod->tf_head), &(parent_mod->tf_tail), FALSE );
-    }
-    funitl = funitl->next;
-  }
-  funit_link_delete_list( &rm_head, &rm_tail, TRUE );
-
-  PROFILE_END;
-
-}
-
-/*!
  Removes all statement blocks in the design that call that specified statement.
 */
 void instance_remove_stmt_blks_calling_stmt(
@@ -1712,6 +1541,10 @@ void instance_dealloc(
 
 /*
  $Log$
+ Revision 1.118  2008/11/18 20:26:48  phase1geo
+ Adding merge11 diagnostics to regression suite.  Removing unnecessary code
+ in instance merging function.  Full regression passes.
+
  Revision 1.117  2008/11/18 14:22:46  phase1geo
  Attempting to fix merging issue found with merge10.
 
