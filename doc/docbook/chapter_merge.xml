@@ -183,29 +183,77 @@
       CDD files that could be merged together to see the overall coverage of the diagnostic runs.  While this capability
       still exists, Covered has recently been enhanced to allow more complex merging which provides some new capabilities.
     </para>
-    <para>
-      Covered's merging algorithms have now been enhanced to allow merging CDDs that are generated for different parts
-      of the same DUT.  That is to say that each instance or sub-tree in the design can be scored individually and can be
-      merged together.  This ability allows for the DUT to be split up into smaller parts, scored in parallel and then merged
-      back together to create a single CDD containing the scored results for the entire DUT.  This parallel scoring capability
-      can now be used to speed up scoring of large designs by taking advantage of multiple CPUs or CPU cores.
-    </para>
-    <para>
-      In addition to allowing for parallel scoring, this merge method allows users to gain coverage results for smaller
-      parts of the design and merge them into a single CDD containing coverage results for the entire design.  This can be
-      advantageous for those that are focused on increasing coverage for a specific portion of the design.  Scoring can be
-      done on that small part and the coverage gained can be added into an existing CDD containing coverage information for
-      the entire design.
-    </para>
-    <para>
-      Along with the capability to merge different portions of the same large design, it is also possible to merge CDDs that
-      were generated from different testbenches but have modules that are in common with each other.  This allows different
-      teams to work together to enhance coverage for shared design blocks.  It is important to note that when this type of
-      merging is being performed that the top-most covered module in the CDDs labeled <emphasis>CDD_to_merge</emphasis> exist
-      exactly once in the CDD labeled <emphasis>existing_CDD</emphasis> for instance coverage information to be reported
-      correctly.  If the module is instantiated more than once in the <emphasis>existing_CDD</emphasis>, the CDD will still
-      be merged but only the module coverage information will be correct.
-    </para>
+
+    <sect2 id="section.merge.rules.block">
+      <title>Block Merging</title>
+      <para>
+        Covered's merging algorithms have now been enhanced to allow merging CDDs that are generated for different parts
+        of the same DUT.  That is to say that each instance or sub-tree in the design can be scored individually and can be
+        merged together.  This ability allows for the DUT to be split up into smaller parts, scored in parallel and then merged
+        back together to create a single CDD containing the scored results for the entire DUT.  This parallel scoring capability
+        can now be used to speed up scoring of large designs by taking advantage of multiple CPUs or CPU cores.
+      </para>
+      <para>
+        The following is an example of a DUT (top-most module of the DUT is block A) and the generic covered calls to score and
+        create a single CDD file containing coverage for the entire design.
+      </para>
+      <para>
+        <figure id="figure.merge.rules.block">
+          <title>Example of Verilog hierarchy to be scored in parallel</title>
+          <mediaobject><imageobject><imagedata fileref="img/vhier2.png" format="PNG"/></imageobject></mediaobject>
+        </figure>
+      </para>
+      <para>
+        The following commands could be used to score the DUT comprised of blocks A-G in parallel (each score command below could
+        occur in parallel with all other score commands).
+      </para>
+      <para>
+        <programlisting>
+  covered score -t A -i MAIN.A -e B -e C -o A.cdd ...
+  covered score -t B -i MAIN.A.B -e D -e E -o B.cdd ...
+  covered score -t C -i MAIN.A.C -e F -e G -o C.cdd ...
+  covered score -t D -i MAIN.A.C.D -o D.cdd ...
+  covered score -t E -i MAIN.A.C.E -o E.cdd ...
+  covered score -t F -i MAIN.A.B.F -o F.cdd ...
+  covered score -t G -i MAIN.A.B.G -o G.cdd ...
+
+  covered merge -o total.cdd A.cdd B.cdd C.cdd D.cdd E.cdd F.cdd G.cdd
+        </programlisting>
+      </para>
+      <para>
+        In addition to allowing for parallel scoring, this merge method allows users to gain coverage results for smaller
+        parts of the design and merge them into a single CDD containing coverage results for the entire design.  This can be
+        advantageous for those that are focused on increasing coverage for a specific portion of the design.  Scoring can be
+        done on that small part and the coverage gained can be added into an existing CDD containing coverage information for
+        the entire design.
+      </para>
+      <para>
+        Using <xref linkend="figure.merge.rules.block"/> this type of merging would be performed as such:
+      </para>
+      <para>
+        <programlisting>
+  covered score -t A -i MAIN.A total.cdd   // The initial coverage file for the entire design
+
+  covered score -t C -i MAIN.A.C -o CDE.cdd ...   // Coverage obtained for modules C, D and E only
+
+  covered merge total.cdd CDE.cdd
+        </programlisting>
+      </para>
+    </sect2>
+
+    <sect2 id="section.merge.rules.module">
+      <title>Single Module Merging</title>
+      <para>
+        Along with the capability to merge different portions of the same large design, it is also possible to merge CDDs that
+        were generated from different testbenches but have modules that are in common with each other.  This allows different
+        teams to work together to enhance coverage for shared design blocks.  It is important to note that when this type of
+        merging is being performed that the top-most covered module in the CDDs labeled <emphasis>CDD_to_merge</emphasis> exist
+        exactly once in the CDD labeled <emphasis>existing_CDD</emphasis> for instance coverage information to be reported
+        correctly.  If the module is instantiated more than once in the <emphasis>existing_CDD</emphasis>, the CDD will still
+        be merged but only the module coverage information will be correct.
+      </para>
+    </sect2>
+
   </sect1>
 
 </chapter>

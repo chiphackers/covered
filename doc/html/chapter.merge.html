@@ -1,4 +1,4 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 10. The merge Command</title><link rel="stylesheet" href="covered.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.74.0"><link rel="home" href="index.html" title="Covered"><link rel="up" href="part.command.line.usage.html" title="Part III. Command-line Usage"><link rel="prev" href="chapter.score.html" title="Chapter 9. The score Command"><link rel="next" href="chapter.report.html" title="Chapter 11. The report Command"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 10. The merge Command</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter.score.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part III. Command-line Usage</th><td width="20%" align="right"> <a accesskey="n" href="chapter.report.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.merge"></a>Chapter 10. The merge Command</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.merge.html#section.merge.using">10.1. Usage</a></span></dt><dt><span class="sect1"><a href="chapter.merge.html#section.merge.options">10.2. Options</a></span></dt><dt><span class="sect1"><a href="chapter.merge.html#section.merge.rules">10.3. Merging Rules</a></span></dt></dl></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.merge.using"></a>10.1. Usage</h2></div></div></div><p>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 10. The merge Command</title><link rel="stylesheet" href="covered.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.74.0"><link rel="home" href="index.html" title="Covered"><link rel="up" href="part.command.line.usage.html" title="Part III. Command-line Usage"><link rel="prev" href="chapter.score.html" title="Chapter 9. The score Command"><link rel="next" href="chapter.report.html" title="Chapter 11. The report Command"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 10. The merge Command</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter.score.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part III. Command-line Usage</th><td width="20%" align="right"> <a accesskey="n" href="chapter.report.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.merge"></a>Chapter 10. The merge Command</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.merge.html#section.merge.using">10.1. Usage</a></span></dt><dt><span class="sect1"><a href="chapter.merge.html#section.merge.options">10.2. Options</a></span></dt><dt><span class="sect1"><a href="chapter.merge.html#section.merge.rules">10.3. Merging Rules</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.merge.html#section.merge.rules.block">Block Merging</a></span></dt><dt><span class="sect2"><a href="chapter.merge.html#section.merge.rules.module">Single Module Merging</a></span></dt></dl></dd></dl></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.merge.using"></a>10.1. Usage</h2></div></div></div><p>
       The merge command is initiated with the following call:
     </p><p>
       <code class="code">covered merge [<span class="emphasis"><em>options</em></span>] <span class="emphasis"><em>existing_CDD</em></span> <span class="emphasis"><em>CDD_to_merge</em></span>+</code>
@@ -93,24 +93,54 @@
       were the same the module.  Typically, the user would score the entire DUT in each diagnostic run, creating a set of
       CDD files that could be merged together to see the overall coverage of the diagnostic runs.  While this capability
       still exists, Covered has recently been enhanced to allow more complex merging which provides some new capabilities.
-    </p><p>
-      Covered's merging algorithms have now been enhanced to allow merging CDDs that are generated for different parts
-      of the same DUT.  That is to say that each instance or sub-tree in the design can be scored individually and can be
-      merged together.  This ability allows for the DUT to be split up into smaller parts, scored in parallel and then merged
-      back together to create a single CDD containing the scored results for the entire DUT.  This parallel scoring capability
-      can now be used to speed up scoring of large designs by taking advantage of multiple CPUs or CPU cores.
-    </p><p>
-      In addition to allowing for parallel scoring, this merge method allows users to gain coverage results for smaller
-      parts of the design and merge them into a single CDD containing coverage results for the entire design.  This can be
-      advantageous for those that are focused on increasing coverage for a specific portion of the design.  Scoring can be
-      done on that small part and the coverage gained can be added into an existing CDD containing coverage information for
-      the entire design.
-    </p><p>
-      Along with the capability to merge different portions of the same large design, it is also possible to merge CDDs that
-      were generated from different testbenches but have modules that are in common with each other.  This allows different
-      teams to work together to enhance coverage for shared design blocks.  It is important to note that when this type of
-      merging is being performed that the top-most covered module in the CDDs labeled <span class="emphasis"><em>CDD_to_merge</em></span> exist
-      exactly once in the CDD labeled <span class="emphasis"><em>existing_CDD</em></span> for instance coverage information to be reported
-      correctly.  If the module is instantiated more than once in the <span class="emphasis"><em>existing_CDD</em></span>, the CDD will still
-      be merged but only the module coverage information will be correct.
-    </p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="chapter.score.html"><img src="img/prev.gif" alt="Prev"></a> </td><td width="20%" align="center"><a accesskey="u" href="part.command.line.usage.html"><img src="img/up.gif" alt="Up"></a></td><td width="40%" align="right"> <a accesskey="n" href="chapter.report.html"><img src="img/next.gif" alt="Next"></a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 9. The score Command </td><td width="20%" align="center"><a accesskey="h" href="index.html"><img src="img/home.gif" alt="Home"></a></td><td width="40%" align="right" valign="top"> Chapter 11. The report Command</td></tr></table></div></body></html>
+    </p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.merge.rules.block"></a>Block Merging</h3></div></div></div><p>
+        Covered's merging algorithms have now been enhanced to allow merging CDDs that are generated for different parts
+        of the same DUT.  That is to say that each instance or sub-tree in the design can be scored individually and can be
+        merged together.  This ability allows for the DUT to be split up into smaller parts, scored in parallel and then merged
+        back together to create a single CDD containing the scored results for the entire DUT.  This parallel scoring capability
+        can now be used to speed up scoring of large designs by taking advantage of multiple CPUs or CPU cores.
+      </p><p>
+        The following is an example of a DUT (top-most module of the DUT is block A) and the generic covered calls to score and
+        create a single CDD file containing coverage for the entire design.
+      </p><p>
+        </p><div class="figure"><a name="figure.merge.rules.block"></a><p class="title"><b>Figure 10.1. Example of Verilog hierarchy to be scored in parallel</b></p><div class="figure-contents"><div class="mediaobject"><img src="img/vhier2.png" alt="Example of Verilog hierarchy to be scored in parallel"></div></div></div><p><br class="figure-break">
+      </p><p>
+        The following commands could be used to score the DUT comprised of blocks A-G in parallel (each score command below could
+        occur in parallel with all other score commands).
+      </p><p>
+        </p><pre class="programlisting">
+  covered score -t A -i MAIN.A -e B -e C -o A.cdd ...
+  covered score -t B -i MAIN.A.B -e D -e E -o B.cdd ...
+  covered score -t C -i MAIN.A.C -e F -e G -o C.cdd ...
+  covered score -t D -i MAIN.A.C.D -o D.cdd ...
+  covered score -t E -i MAIN.A.C.E -o E.cdd ...
+  covered score -t F -i MAIN.A.B.F -o F.cdd ...
+  covered score -t G -i MAIN.A.B.G -o G.cdd ...
+
+  covered merge -o total.cdd A.cdd B.cdd C.cdd D.cdd E.cdd F.cdd G.cdd
+        </pre><p>
+      </p><p>
+        In addition to allowing for parallel scoring, this merge method allows users to gain coverage results for smaller
+        parts of the design and merge them into a single CDD containing coverage results for the entire design.  This can be
+        advantageous for those that are focused on increasing coverage for a specific portion of the design.  Scoring can be
+        done on that small part and the coverage gained can be added into an existing CDD containing coverage information for
+        the entire design.
+      </p><p>
+        Using <a class="xref" href="chapter.merge.html#figure.merge.rules.block" title="Figure 10.1. Example of Verilog hierarchy to be scored in parallel">Figure 10.1, &#8220;Example of Verilog hierarchy to be scored in parallel&#8221;</a> this type of merging would be performed as such:
+      </p><p>
+        </p><pre class="programlisting">
+  covered score -t A -i MAIN.A total.cdd   // The initial coverage file for the entire design
+
+  covered score -t C -i MAIN.A.C -o CDE.cdd ...   // Coverage obtained for modules C, D and E only
+
+  covered merge total.cdd CDE.cdd
+        </pre><p>
+      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.merge.rules.module"></a>Single Module Merging</h3></div></div></div><p>
+        Along with the capability to merge different portions of the same large design, it is also possible to merge CDDs that
+        were generated from different testbenches but have modules that are in common with each other.  This allows different
+        teams to work together to enhance coverage for shared design blocks.  It is important to note that when this type of
+        merging is being performed that the top-most covered module in the CDDs labeled <span class="emphasis"><em>CDD_to_merge</em></span> exist
+        exactly once in the CDD labeled <span class="emphasis"><em>existing_CDD</em></span> for instance coverage information to be reported
+        correctly.  If the module is instantiated more than once in the <span class="emphasis"><em>existing_CDD</em></span>, the CDD will still
+        be merged but only the module coverage information will be correct.
+      </p></div></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="chapter.score.html"><img src="img/prev.gif" alt="Prev"></a> </td><td width="20%" align="center"><a accesskey="u" href="part.command.line.usage.html"><img src="img/up.gif" alt="Up"></a></td><td width="40%" align="right"> <a accesskey="n" href="chapter.report.html"><img src="img/next.gif" alt="Next"></a></td></tr><tr><td width="40%" align="left" valign="top">Chapter 9. The score Command </td><td width="20%" align="center"><a accesskey="h" href="index.html"><img src="img/home.gif" alt="Home"></a></td><td width="40%" align="right" valign="top"> Chapter 11. The report Command</td></tr></table></div></body></html>

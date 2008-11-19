@@ -70,6 +70,6 @@ vpi.cver.o: ../src/vpi.c
 	$(CC) @PICFLAG@ -g -DCVER -DNOIV $(DEBUGDEF) $(PROFILEDEF) -I$(CVERINC) -I.. -c -o vpi.cver.o ../src/vpi.c
 
 vpi.iv.o: ../src/vpi.c
-	$(CC) @PICFLAG@ -g $(DEBUGDEF) $(PROFILEDEF) -I$(IVDIR)/include/verilog -I.. -c -o vpi.iv.o ../src/vpi.c
+	$(CC) @PICFLAG@ -g $(DEBUGDEF) $(PROFILEDEF) -I$(IVINC) -I.. -c -o vpi.iv.o ../src/vpi.c
 
 CLEANFILES = vpi.o vpi.vcs.o vpi.cver.o covered.vcs.so covered.cver.so covered.vpi
