@@ -183,6 +183,7 @@ make clean
 /usr/local/share/covered/doc/html/img/up.gif
 /usr/local/share/covered/doc/html/img/up_button.gif
 /usr/local/share/covered/doc/html/img/vhier.png
+/usr/local/share/covered/doc/html/img/vhier2.png
 /usr/local/share/covered/doc/html/img/view_menu.gif
 /usr/local/share/covered/doc/html/img/wizard.gif
 /usr/local/share/man/man1/covered.1
