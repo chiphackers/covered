@@ -1,6 +1,32 @@
 Covered-Related NEWS
 ====================
 
+    * 11/19/2008
+
+Development release covered-20081119 made.  This development release adds support for more complex CDD merging (previously
+only CDDs with the same DUT hierarchy could be merged).  Now different (including overlapping) blocks from different
+parts of the design can be merged together as well as shared modules from different designs.  Includes a few bug fixes and
+documentation updates for the merge command.  The following is a list of the changes that went into this development release.
+
+  - Added new merge capabilities that allow two or more CDD files with different top-most scored modules to be merged
+    together.  Also added ability to merge two similar modules from different designs.
+  - Fixed bug 2223054.  Remove false positive combinational logic cases when non-zero values are within concatentations ({})
+    and conditional expressions (?:).
+  - Fixed bug 2253402.  Removed help_wrapper.tcl sourcing in Tcl/Tk scripts (this file was removed in the covered-20081030
+    development release).
+  - Fixed bug 2311710.  Segfault would occur if a combinational logic expression was excluded/included via the GUI when
+    in instance reporting mode.
+  - Updated merge command documentation to describe new merging capabilities in User's Guide.
+  - Enhanced the configuration scripts to work with new versions of Icarus Verilog (include files for IV moved to a new
+    location).  These changes should be backward compatible for older versions of IV.
+  - Added several new diagnostics to regression suite to verify new functionality.
+
+Note that CDD files generated with this version of Covered will not be backwards compatible with previous versions of
+Covered.  This development release marks the last of the feature additions that will go into the upcoming 0.7 stable release
+of Covered.  This branch is now in feature freeze and only bug fixes, regression updates and documentation changes will go
+into this branch.  You may consider this development release to be a beta version of the 0.7 stable release due to be released
+later this year.
+
     * 10/30/2008
 
 Development release covered-20081030 made.  This development release is primarily a language support release in that

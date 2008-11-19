@@ -1,3 +1,25 @@
+2008-11-19 13:42  phase1geo
+
+	Cleaning up splint warnings.
+
+2008-11-19 13:35  phase1geo
+
+	Updating TODO list.
+
+2008-11-19 12:51  phase1geo
+
+	User documentation updates.  Also enhancing the configuration
+	source files to handle the new Icarus Verilog include directory
+	structure (also backward compatible).
+
+2008-11-19 09:08  phase1geo
+
+	Adding vhier2 image to user documentation.
+
+2008-11-19 00:27  phase1geo
+
+	Updating ChangeLog.
+
 2008-11-19 00:19  phase1geo
 
 	Updates for next development release.  Updating configuration files
