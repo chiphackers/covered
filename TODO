@@ -23,7 +23,6 @@ Score command
 
    4.  Add more Verilog-2001 constructs to parser.
 	- config command
-X       - $random
 
    5.  Allow Covered to run simulation phases in parallel to increase performance.
 
@@ -47,11 +46,6 @@ IP      - enum
 Merge command
 -------------
 
-   1.  Add ability to merge two CDDs from different parts of the same design
-
-X  2.  Add -d and -ext options to allow the user to specify a directory and file extension type which Covered will
-       automatically load CDD files from to merge.
-
 
 Report command
 --------------
@@ -62,25 +56,13 @@ Report command
 Rank command
 ------------
 
-X  1.  Add -d and -ext options to allow the user to specify a directory and file extension type which Covered will
-       automatically load CDD files from to rank.
-
-X  2.  Add code to remove duplicate CDD files automatically.
-
-X  3.  Fix reports so that the longest CDD name is used for formatting purposes.
-
 
 GUI
 ---
 
-X  1.  Allow the user to create a new CDD file from the GUI (won't require a terminal to use).
-
-X  2.  Add graduated test analyzer window.
-
 
 Documentation
 -------------
-
 
 
 Miscellaneous
@@ -89,9 +71,4 @@ Miscellaneous
 IP 1.  Add regression that produces known, achievable error conditions in the code.
 
 IP 2.  Make all code splint clean.
-
-X  3.  Have parser generate dumpvars file to cause only needed signals by Covered to get dumped (performance enhancement).
-
-X  4.  Add ability to create graduated test output in GUI and reports from merged CDD files.
-
 
