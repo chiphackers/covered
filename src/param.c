@@ -891,6 +891,8 @@ static inst_parm* param_has_defparam(
   /* Make sure that the user specified at least one defparam */
   if( defparam_list != NULL ) {
 
+    unsigned int rv;
+
     /* Get scope of this instance */
     scope[0] = '\0';
     instance_gen_scope( scope, inst, FALSE );
@@ -898,13 +900,8 @@ static inst_parm* param_has_defparam(
     assert( db_list[curr_db]->leading_hier_num > 0 );
 
     /* Generate full hierarchy of this parameter */
-//    if( strcmp( db_list[curr_db]->leading_hierarchies[0], "*" ) == 0 ) {
-      unsigned int rv = snprintf( parm_scope, 4096, "%s.%s", scope, mparm->name );
-      assert( rv < 4096 );
-//    } else {
-//      unsigned int rv = snprintf( parm_scope, 4096, "%s.%s.%s", db_list[curr_db]->leading_hierarchies[0], scope, mparm->name );
-//      assert( rv < 4096 );
-//    }
+    rv = snprintf( parm_scope, 4096, "%s.%s", scope, mparm->name );
+    assert( rv < 4096 );
 
     icurr = defparam_list->param_head;
     while( (icurr != NULL) &&
@@ -1155,6 +1152,10 @@ void inst_parm_dealloc(
 
 /*
  $Log$
+ Revision 1.117  2008/11/08 00:09:04  phase1geo
+ Checkpointing work on asymmetric merging algorithm.  Updated regressions
+ per these changes.  We currently have 5 failures in the IV regression suite.
+
  Revision 1.116  2008/10/23 22:16:21  phase1geo
  Fixing -P support.
 

@@ -348,7 +348,7 @@ static void vcd_parse_sim_real(
  Reads in symbol from simulation vector line that is to be ignored 
  (unused).  Signals an error message if the line is improperly formatted.
 */
-static void vcd_parse_sim_ignore(
+/*@unused@*/ static void vcd_parse_sim_ignore(
   FILE* vcd  /*!< File handle of opened VCD file */
 ) { PROFILE(VCD_PARSE_SIM_IGNORE);
 
@@ -504,6 +504,10 @@ void vcd_parse(
 
 /*
  $Log$
+ Revision 1.43  2008/10/21 22:55:25  phase1geo
+ More updates to get real values working.  IV and Cver regressions work (except for VPI
+ mode of operation).  Checkpointing.
+
  Revision 1.42  2008/04/02 05:39:51  phase1geo
  More updates to support error memory deallocation.  Full regression still
  fails at this point.  Checkpointing.

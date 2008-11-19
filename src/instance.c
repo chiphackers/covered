@@ -1196,7 +1196,7 @@ void instance_only_db_read(
 
     /* If we are the top-most instance, just add ourselves to the instance link list */
     if( rest[0] == '\0' ) {
-      inst_link_add( child, &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
+      (void)inst_link_add( child, &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
 
     /* Otherwise, find our parent instance and attach the new instance to it */
     } else {
@@ -1259,7 +1259,7 @@ void instance_only_db_merge(
 
       /* Add a new instance link if was not able to be found in the instance linked list */
       if( inst_link_find_by_scope( scope, db_list[curr_db]->inst_head ) == NULL ) {
-        inst_link_add( child, &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
+        (void)inst_link_add( child, &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
       }
 
     /* Otherwise, find our parent instance and attach the new instance to it */
@@ -1541,6 +1541,9 @@ void instance_dealloc(
 
 /*
  $Log$
+ Revision 1.119  2008/11/18 21:11:09  phase1geo
+ Removing unnecessary functionality.
+
  Revision 1.118  2008/11/18 20:26:48  phase1geo
  Adding merge11 diagnostics to regression suite.  Removing unnecessary code
  in instance merging function.  Full regression passes.
