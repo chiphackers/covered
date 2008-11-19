@@ -99,7 +99,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 real5.3         real5.4         real5.5         real5.6         real5.7 \
                 real5.8         real5.9         real5.10        real6           real6.1 \
                 real6.2         real6.3         real6.4         real6.5         real6.6 \
-                real6.7         real6.8         real6.9         real7           real8           repeat1 \
+                real6.7         real6.8         real6.9         real7           repeat1 \
                 repeat2         repeat3         report1         report2         report3 \
                 report3.1       report4.2       report5         report6         report7 \
                 report7.1       report8         rshift1         rshift1.1       rshift1.2 \
@@ -274,8 +274,9 @@ IVVCSDIAGS2   =
 IVVCSDIAGS3   =
 IVVCSDIAGS4   =
 
-CVERVCSDIAGS1 = fmonitor1       null_stmt2      null_stmt2.1    port4           random1.2 \
-                random1.3       sbit_sel2.1     timescale1.20   timescale2.6    timescale2.7
+CVERVCSDIAGS1 = fmonitor1        null_stmt2       null_stmt2.1     port4            random1.2 \
+                random1.3        real8            sbit_sel2.1      timescale1.20    timescale2.6 \
+                timescale2.7
 CVERVCSDIAGS2 =
 CVERVCSDIAGS3 =
 CVERVCSDIAGS4 =
