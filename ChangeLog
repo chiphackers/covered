@@ -1,313 +1,190 @@
+2008-11-19 00:19  phase1geo
+
+	Updates for next development release.  Updating configuration files
+	for new locations of Icarus Verilog development releases.  Also
+	fixing syntax error in vector.c source file.
+
+2008-11-19 00:03  phase1geo
+
+	Removing real8 from IV regression (latest version doesn't seem to
+	work with this diagnostic now).
+
+2008-11-18 17:57  phase1geo
+
+	Updates to merge10 and merge11 diagnostics for running in LXT and
+	VPI modes of operation.
+
+2008-11-18 16:01  phase1geo
+
+	Updating merge documentation and regenerating all user guide
+	documentation.	Fixing issues with GUI and recent changes.  Fixing
+	bug 2311710.
+
+2008-11-18 15:11  phase1geo
+
+	Removing unnecessary functionality.
+
+2008-11-18 14:26  phase1geo
+
+	Adding merge11 diagnostics to regression suite.  Removing
+	unnecessary code in instance merging function.	Full regression
+	passes.
+
+2008-11-18 09:58  phase1geo
+
+	Adding merge10 diagnostic and updating regressions per recent
+	changes.
+
+2008-11-18 08:22  phase1geo
+
+	Attempting to fix merging issue found with merge10.
+
+2008-11-14 22:42  phase1geo
+
+	Working on the new merge10 diagnostic.	Diagnostic currently fails
+	but diagnostic seems correct at this point.  Code work to do. 
+	Checkpointing.
+
+2008-11-14 01:13  phase1geo
+
+	Checking in the beginning portions of the merge10 diagnostic.  More
+	work to do on this diag.  Checkpointing.
+
+2008-11-13 22:56  phase1geo
+
+	Fixing merge8 diagnostic issues.  Full regression now passes.
+
+2008-11-13 16:42  phase1geo
+
+	Adding new merge9 diagnostic which merges to non-overlapping trees
+	that are generated via an instance array.  Added code to instance.c
+	to fix merging hole that was made visible with this diagnostic. 
+	Full regressions pass.
+
+2008-11-13 11:28  phase1geo
+
+	Added new merging test to regression suite.
+
+2008-11-13 09:48  phase1geo
+
+	Adding more merge diagnostics to add coverage.
+
+2008-11-12 23:08  phase1geo
+
+	Fixing bug found with merge8.5 diagnostic and fixing issues with
+	VPI.  Full regressions now pass.
+
+2008-11-12 17:50  phase1geo
+
+	Adding more diagnostics to verify new merging algorithm.
+
+2008-11-12 16:01  phase1geo
+
+	Updating regression files for VCS regressions per recent changes
+	for merging.
+
+2008-11-12 13:57  phase1geo
+
+	Fixing the rest of the issues from regressions in regards to the
+	merge changes.	Updating regression files.  IV and Cver regressions
+	now pass.
+
+2008-11-12 09:05  phase1geo
+
+	More updates for new merging algorithm.  Checkpointing.
+
+2008-11-12 01:03  phase1geo
+
+	Fixing argument merging and updating regressions.  Checkpointing.
+
+2008-11-11 18:18  phase1geo
+
+	More regression updates (regressions still failing at this point). 
+	Checkpointing.
+
+2008-11-11 18:07  phase1geo
+
+	More updates for complex merging algorithm.  Updating regressions
+	per these changes.  Checkpointing.
+
+2008-11-11 08:28  phase1geo
+
+	Checkpointing.
+
+2008-11-10 23:36  phase1geo
+
+	Checkpointing merge code.
+
+2008-11-10 18:10  phase1geo
+
+	Starting to work on instance tree merging algorithm (not complete
+	at this point).  Checkpointing.
+
+2008-11-09 23:33  phase1geo
+
+	Cleaning up some unnecessary output.
+
+2008-11-09 23:31  phase1geo
+
+	Fix for bug 2253402.  Removed help_wrapper.tcl source line.
+
+2008-11-07 18:09  phase1geo
+
+	Checkpointing work on asymmetric merging algorithm.  Updated
+	regressions per these changes.	We currently have 5 failures in the
+	IV regression suite.
+
+2008-11-07 12:05  phase1geo
+
+	Regression file updates.
+
+2008-11-07 09:10  phase1geo
+
+	Adding diagnostic to verify recent bug fixes.
+
+2008-11-06 23:58  phase1geo
+
+	Updates to VPI code for db_write change.
+
+2008-11-06 23:56  phase1geo
+
+	Second bug fix for bug 2223054.
+
+2008-11-06 17:04  phase1geo
+
+	Merging branch covered-20081030-bug2223054.
+
+2008-11-06 16:58  phase1geo
+
+	Fixing bug 2223054.  Updates to regressions for this issue.  IV and
+	Cver regressions now fully pass.
+
+2008-11-02 22:42  phase1geo
+
+	Adding merge8.1 diagnostic to regression suite (this diagnostic
+	currently fails).
+
+2008-11-01 23:28  phase1geo
+
+	Updates to make initially generated CDD files have the same IDs as
+	merged CDD files.  Full IV and Cver regressions pass.
+
+2008-10-31 17:01  phase1geo
+
+	Initial code changes to support merging two non-overlapping CDD
+	files into one.  This functionality seems to be working but needs
+	regression testing to verify that nothing is broken as a result.
+
+2008-10-31 08:23  phase1geo
+
+	Adding diagnostic to verify merging seperate pieces of the same
+	design.
+
+2008-10-30 22:56  phase1geo
+
+	Updating for new development release.
+
 2008-10-30 17:26  phase1geo
 
 	Regression updates.
-
-2008-10-29 23:08  phase1geo
-
-	Adding diagnostics to verify real number support.  Full regression
-	passes.
-
-2008-10-29 18:16  phase1geo
-
-	Added diagnostics to verify real-real op-and-assign functionality. 
-	Fixed bugs associated with these diagnostics.
-
-2008-10-29 08:49  phase1geo
-
-	Adding new diagnostics to verify real number support.
-
-2008-10-28 23:40  phase1geo
-
-	Adding plusarg window to CDD generator wizard.
-
-2008-10-28 18:24  phase1geo
-
-	Updating User Guide documentation.
-
-2008-10-28 18:12  phase1geo
-
-	Fixing issue with value_plusargs8 diagnostic in regression. 
-	Updating regression which now fully passes.
-
-2008-10-28 08:05  phase1geo
-
-	Regression updates for VCS runs.  Added several new diagnostics to
-	verify the $value$plusargs support.  Checkpointing.
-
-2008-10-27 23:00  phase1geo
-
-	Updating diagnostics and adding new system function calls for newer
-	Verilog-2001 dumping calls.
-
-2008-10-27 18:27  phase1geo
-
-	More work on testing $value$plusargs support.  Fixed a few issues
-	related to this code.  Also fixed issue with function return value
-	type.  Checkpointing.
-
-2008-10-27 16:14  phase1geo
-
-	First pass at getting the $value$plusargs system function call to
-	work.  More work to do here.  Checkpointing.
-
-2008-10-27 13:13  phase1geo
-
-	Finished work to get $test$plusargs to work properly.  Added
-	test_plusargs1 diagnostic to regression suite to verify this
-	functionality.
-
-2008-10-27 08:20  phase1geo
-
-	More work on $test$plusargs and $value$plusargs support. 
-	Checkpointing.
-
-2008-10-27 00:00  phase1geo
-
-	Starting to add support for $test$plusargs and $value$plusargs
-	system function calls.	More work to do here.  Checkpointing.
-
-2008-10-26 21:14  phase1geo
-
-	Updating regressions.  Fixed toggle coverage results for automatic
-	functions/tasks.
-
-2008-10-25 23:41  phase1geo
-
-	Adding support for functions returning real and realtime values. 
-	Added real7 diagnostic to verify this new support.
-
-2008-10-25 11:57  phase1geo
-
-	Updating regression files.
-
-2008-10-25 11:26  phase1geo
-
-	Updating regression files.  Full regression passes.
-
-2008-10-25 08:55  phase1geo
-
-	Adding missing configuration file.
-
-2008-10-25 08:24  phase1geo
-
-	Attempting to fix VPI simulation for time 0 problems.
-
-2008-10-24 17:35  phase1geo
-
-	Adding more timescale diagnostics to verify $time functionality. 
-	Changing decimal value string converter to use vector_from_uint64
-	instead of vector_from_int to allow greater decimal values to be
-	used.
-
-2008-10-24 16:11  phase1geo
-
-	Updating regression files per latest changes.
-
-2008-10-24 15:36  phase1geo
-
-	Adding more diagnostics for timescale testing with the $time
-	function.  Fixing issues with timescale calculation.
-
-2008-10-24 12:27  phase1geo
-
-	Fixing issues with removing underscores from real numbers.
-
-2008-10-24 10:26  phase1geo
-
-	Working on the ability to read real numbers with underscores in
-	them.  Still have some work to do here.  Checkpointing.
-
-2008-10-24 09:48  phase1geo
-
-	Fixing syntax error with timescale4.v.
-
-2008-10-24 08:43  phase1geo
-
-	Adding initial timescale diagnostic to verify real delay values.
-
-2008-10-24 00:27  phase1geo
-
-	Adding several new diagnostics to verify real number support.
-
-2008-10-23 18:04  phase1geo
-
-	Removing real4 diagnostic from regression runs since shortreal is
-	currently not handled by VCS.
-
-2008-10-23 18:00  phase1geo
-
-	Working on more real number diagnostics.  Fixes for negative real
-	number parsing from command line.  Also added an error message when
-	the value specified for the -P option to the score command is an
-	illegal value.
-
-2008-10-23 17:16  phase1geo
-
-	Fixing -P support.
-
-2008-10-23 15:54  phase1geo
-
-	Adding support for real parameters.  Added more real number
-	diagnostics to regression suite.
-
-2008-10-23 12:40  phase1geo
-
-	Updating VCS regression (fully passes).
-
-2008-10-23 11:04  phase1geo
-
-	Fixing issue with real1.1 regression failure.  Full regression
-	passes.
-
-2008-10-23 09:29  phase1geo
-
-	A few more updates for real number support.  At this time real1.1
-	fails in regression.  Checkpointing.
-
-2008-10-23 09:21  phase1geo
-
-	Fixing splint errors with new real number support.
-
-2008-10-23 07:25  phase1geo
-
-	Fixing splint error.
-
-2008-10-23 00:05  phase1geo
-
-	Updating User Guide to reflect new support for real numbers and
-	various real number system functions.  Regenerated HTML
-	documentation.
-
-2008-10-22 23:56  phase1geo
-
-	Added diagnostics to verify the $rtoi, $realtobits and $bitstoreal
-	system functions.  Updated code to allow these diagnostics to pass.
-	 Full regression passes.
-
-2008-10-22 17:00  phase1geo
-
-	Updating VCS regressions (fully pass now).  Made a few fixes to get
-	VCS regressions to pass.  We are now at a known good state. 
-	Further testing of real numbers will proceed.
-
-2008-10-22 10:55  phase1geo
-
-	Fixing syntax error in VPI.
-
-2008-10-22 10:17  phase1geo
-
-	Added support for real values to the VPI functionality.
-
-2008-10-21 17:55  phase1geo
-
-	More updates to get real values working.  IV and Cver regressions
-	work (except for VPI mode of operation).  Checkpointing.
-
-2008-10-21 00:38  phase1geo
-
-	More updates to support real values.  Added vector_from_real64
-	functionality.	Checkpointing.
-
-2008-10-20 18:20  phase1geo
-
-	Adding support for vector_from_int coverage accumulation (untested
-	at this point).  Updating Cver regressions.  Checkpointing.
-
-2008-10-20 17:29  phase1geo
-
-	Updating more regression files.  Adding reentrant support for real
-	numbers.  Also fixing uninitialized memory access issue in expr.c.
-
-2008-10-20 08:00  phase1geo
-
-	More updates to support real numbers.  Updating regressions per
-	recent changes.  Checkpointing.
-
-2008-10-18 01:14  phase1geo
-
-	Continuing to add support for real values and associated system
-	function calls.  Updating regressions per these changes. 
-	Checkpointing.
-
-2008-10-17 18:20  phase1geo
-
-	Continuing to add support support for real values.  Making some
-	good progress here (real delays should be working now).  Updated
-	regressions per recent changes.  Checkpointing.
-
-2008-10-17 08:50  phase1geo
-
-	A few more code updates for real support.  Updating CDD version and
-	updating regression files (what we can currently run). 
-	Checkpointing.
-
-2008-10-17 02:26  phase1geo
-
-	Updating regressions per recent changes and doing more work to
-	fixing real value bugs (still not working yet).  Checkpointing.
-
-2008-10-16 18:11  phase1geo
-
-	More work on support for real numbers.	I believe that all of the
-	code now exists in vector.c to support them.  Still need to do work
-	in expr.c.  Added two new tests for real numbers to begin verifying
-	their support (they both do not currently pass, however). 
-	Checkpointing.
-
-2008-10-16 00:16  phase1geo
-
-	More work on real number support.  Still a work in progress. 
-	Checkpointing.
-
-2008-10-15 17:15  phase1geo
-
-	More updates to support real values.  Still a lot of work to go
-	here.
-
-2008-10-15 08:28  phase1geo
-
-	Beginning to add support for real numbers.  Things are broken in
-	regards to real numbers at the moment.	Checkpointing.
-
-2008-10-10 22:59  phase1geo
-
-	Fixing bug 2158626.  Also removing RASSIGN expression statements
-	from line coverage (they are always executed and therefore will
-	never be interesting from a line coverage standpoint).
-
-2008-10-10 21:55  phase1geo
-
-	Fixing bug 2158297.
-
-2008-10-07 19:05  phase1geo
-
-	Updating new CDD type image.
-
-2008-10-07 17:31  phase1geo
-
-	Cleaning up splint warnings.  Cleaning up development
-	documentation.
-
-2008-10-07 15:19  phase1geo
-
-	Adding documentation for the new -dumpvars option.  Also added
-	support for this feature in the GUI CDD generator wizard.
-
-2008-10-07 13:37  phase1geo
-
-	Fixing bug introduced in sim.c that kept automatic tasks/functions
-	from working.  Updated regressions (VCS fully passes now).
-
-2008-10-07 10:09  phase1geo
-
-	Changed -vpi_ts to -top_ts.
-
-2008-10-07 00:26  phase1geo
-
-	Updating TODO.
-
-2008-10-07 00:24  phase1geo
-
-	Adding -dumpvars option.  Need to resolve a few issues before this
-	work is considered complete.
 
