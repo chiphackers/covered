@@ -616,7 +616,7 @@ void vector_db_read(
                     Throw 0;
                   }
                 } else {
-                  if( sscanf( *line, "%lf%n", &((*vec)->value.r32->val), &chars_read ) == 1 ) {
+                  if( sscanf( *line, "%f%n", &((*vec)->value.r32->val), &chars_read ) == 1 ) {
                     *line += chars_read;
                   } else {
                     print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
@@ -5161,6 +5161,9 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.183  2008/11/11 05:36:40  phase1geo
+ Checkpointing merge code.
+
  Revision 1.182  2008/10/29 23:16:48  phase1geo
  Added diagnostics to verify real-real op-and-assign functionality.  Fixed
  bugs associated with these diagnostics.

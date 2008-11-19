@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(src/main.c)
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(covered,covered-20081030)
+AM_INIT_AUTOMAKE(covered,covered-20081119)
 
 dnl Get host information
 AC_CANONICAL_HOST
@@ -87,7 +87,7 @@ AC_ARG_WITH([iv],
 elif test "${withval}" = yes; then
   want_iv=yes
 else
-  AC_CHECK_HEADER([$withval/include/vpi_user.h],
+  AC_CHECK_HEADER([$withval/include/verilog/vpi_user.h],
     [want_iv=yes
      iv_prefix="${withval}"],AC_MSG_ERROR([Invalid base directory specified in --with-iv]))
 fi],
