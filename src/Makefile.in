@@ -56,23 +56,23 @@ am_covered_OBJECTS = arc.$(OBJEXT) assertion.$(OBJEXT) attr.$(OBJEXT) \
 	enumerate.$(OBJEXT) exclude.$(OBJEXT) expr.$(OBJEXT) \
 	fsm.$(OBJEXT) fsm_arg.$(OBJEXT) fsm_var.$(OBJEXT) \
 	func_iter.$(OBJEXT) func_unit.$(OBJEXT) genprof.$(OBJEXT) \
-	gen_item.$(OBJEXT) info.$(OBJEXT) instance.$(OBJEXT) \
-	iter.$(OBJEXT) keywords_1995.$(OBJEXT) keywords_2001.$(OBJEXT) \
-	keywords_sv.$(OBJEXT) keywords_sys_1995.$(OBJEXT) \
-	keywords_sys_2001.$(OBJEXT) keywords_sys_sv.$(OBJEXT) \
-	pplexer.$(OBJEXT) lexer.$(OBJEXT) line.$(OBJEXT) \
-	link.$(OBJEXT) lxt.$(OBJEXT) lxt2_read.$(OBJEXT) \
-	main.$(OBJEXT) memory.$(OBJEXT) merge.$(OBJEXT) \
-	obfuscate.$(OBJEXT) ovl.$(OBJEXT) param.$(OBJEXT) \
-	parse.$(OBJEXT) parser_misc.$(OBJEXT) perf.$(OBJEXT) \
-	profiler.$(OBJEXT) race.$(OBJEXT) rank.$(OBJEXT) \
-	reentrant.$(OBJEXT) report.$(OBJEXT) scope.$(OBJEXT) \
-	score.$(OBJEXT) search.$(OBJEXT) sim.$(OBJEXT) stat.$(OBJEXT) \
-	static.$(OBJEXT) static_lexer.$(OBJEXT) statement.$(OBJEXT) \
-	stmt_blk.$(OBJEXT) struct_union.$(OBJEXT) symtable.$(OBJEXT) \
-	sys_tasks.$(OBJEXT) tcl_funcs.$(OBJEXT) toggle.$(OBJEXT) \
-	tree.$(OBJEXT) util.$(OBJEXT) vcd.$(OBJEXT) vector.$(OBJEXT) \
-	vsignal.$(OBJEXT)
+	gen_item.$(OBJEXT) generator.$(OBJEXT) info.$(OBJEXT) \
+	instance.$(OBJEXT) iter.$(OBJEXT) keywords_1995.$(OBJEXT) \
+	keywords_2001.$(OBJEXT) keywords_sv.$(OBJEXT) \
+	keywords_sys_1995.$(OBJEXT) keywords_sys_2001.$(OBJEXT) \
+	keywords_sys_sv.$(OBJEXT) pplexer.$(OBJEXT) lexer.$(OBJEXT) \
+	line.$(OBJEXT) link.$(OBJEXT) lxt.$(OBJEXT) \
+	lxt2_read.$(OBJEXT) main.$(OBJEXT) memory.$(OBJEXT) \
+	merge.$(OBJEXT) obfuscate.$(OBJEXT) ovl.$(OBJEXT) \
+	param.$(OBJEXT) parse.$(OBJEXT) parser_misc.$(OBJEXT) \
+	perf.$(OBJEXT) profiler.$(OBJEXT) race.$(OBJEXT) \
+	rank.$(OBJEXT) reentrant.$(OBJEXT) report.$(OBJEXT) \
+	scope.$(OBJEXT) score.$(OBJEXT) search.$(OBJEXT) sim.$(OBJEXT) \
+	stat.$(OBJEXT) static.$(OBJEXT) static_lexer.$(OBJEXT) \
+	statement.$(OBJEXT) stmt_blk.$(OBJEXT) struct_union.$(OBJEXT) \
+	symtable.$(OBJEXT) sys_tasks.$(OBJEXT) tcl_funcs.$(OBJEXT) \
+	toggle.$(OBJEXT) tree.$(OBJEXT) util.$(OBJEXT) vcd.$(OBJEXT) \
+	vector.$(OBJEXT) vsignal.$(OBJEXT)
 covered_OBJECTS = $(am_covered_OBJECTS)
 am__DEPENDENCIES_1 =
 covered_DEPENDENCIES = $(am__DEPENDENCIES_1)
@@ -220,6 +220,7 @@ covered_SOURCES = arc.c \
 		  func_unit.c \
                   genprof.c \
                   gen_item.c \
+                  generator.c \
 		  info.c \
 		  instance.c \
  		  iter.c \
@@ -371,6 +372,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/func_iter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/func_unit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gen_item.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/generator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/genprof.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/info.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/instance.Po@am__quote@
