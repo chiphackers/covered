@@ -23,13 +23,16 @@
  \brief    Contains functions for generating verilog to simulate.
 */
 
-#include <stdio.h>
 
-#include "defines.h"
+/*! \brief Generates Verilog containing coverage instrumentation */
+void generator_output();
 
 
 /*
  $Log$
+ Revision 1.1  2008/11/25 23:53:07  phase1geo
+ Adding files for Verilog generator functions.
+
 */
 
 #endif
