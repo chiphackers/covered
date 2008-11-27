@@ -141,7 +141,7 @@ void memory_get_stats(
     func_iter fi;
     vsignal*  sig;
 
-    func_iter_init( &fi, funit, FALSE, TRUE );
+    func_iter_init( &fi, funit, FALSE, TRUE, TRUE );
    
     while( (sig = func_iter_get_next_signal( &fi )) != NULL ) {
 
@@ -421,7 +421,7 @@ void memory_get_coverage(
   exclude_reason* er;
 
   /* Find the signal in the functional unit */
-  func_iter_init( &fi, funit, FALSE, TRUE );
+  func_iter_init( &fi, funit, FALSE, TRUE, TRUE );
   while( ((sig = func_iter_get_next_signal( &fi )) != NULL) && (strcmp( sig->name, signame ) != 0) );
   func_iter_dealloc( &fi );
   assert( sig != NULL );
@@ -516,7 +516,7 @@ void memory_collect(
   unsigned int excluded  = 0;  /* Number of excluded memory coverage points */
   bool         cov_found;
 
-  func_iter_init( &fi, funit, FALSE, TRUE );
+  func_iter_init( &fi, funit, FALSE, TRUE, TRUE );
 
   while( (sig = func_iter_get_next_signal( &fi )) != NULL ) {
 
@@ -1034,7 +1034,7 @@ static void memory_display_verbose(
     case RPT_TYPE_EXCL :  fprintf( ofile, "    Memories excluded from coverage\n\n" );      break;
   }
 
-  func_iter_init( &fi, funit, FALSE, TRUE );
+  func_iter_init( &fi, funit, FALSE, TRUE, TRUE );
 
   while( (sig = func_iter_get_next_signal( &fi )) != NULL ) {
 
@@ -1320,6 +1320,10 @@ void memory_report(
 
 /*
  $Log$
+ Revision 1.45  2008/11/12 00:07:41  phase1geo
+ More updates for complex merging algorithm.  Updating regressions per
+ these changes.  Checkpointing.
+
  Revision 1.44  2008/11/08 00:09:04  phase1geo
  Checkpointing work on asymmetric merging algorithm.  Updated regressions
  per these changes.  We currently have 5 failures in the IV regression suite.

@@ -540,7 +540,7 @@ void combination_get_stats(
   if( !funit_is_unnamed( funit ) ) {
 
     /* Initialize functional unit iterator */
-    func_iter_init( &fi, funit, TRUE, FALSE );
+    func_iter_init( &fi, funit, TRUE, FALSE, TRUE );
 
     /* Traverse statements in the given functional unit */
     while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
@@ -2614,7 +2614,7 @@ static void combination_display_verbose(
   }
 
   /* Initialize functional unit iterator */
-  func_iter_init( &fi, funit, TRUE, FALSE );
+  func_iter_init( &fi, funit, TRUE, FALSE, TRUE );
 
   /* Display missed combinations */
   stmt = func_iter_get_next_statement( &fi );
@@ -2818,7 +2818,7 @@ void combination_collect(
   *exprs    = NULL;
   *excludes = NULL;
 
-  func_iter_init( &fi, funit, TRUE, FALSE );
+  func_iter_init( &fi, funit, TRUE, FALSE, TRUE );
 
   stmt = func_iter_get_next_statement( &fi );
   while( stmt != NULL ) {
@@ -3120,6 +3120,10 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.219  2008/11/12 00:07:41  phase1geo
+ More updates for complex merging algorithm.  Updating regressions per
+ these changes.  Checkpointing.
+
  Revision 1.218  2008/11/08 00:09:04  phase1geo
  Checkpointing work on asymmetric merging algorithm.  Updated regressions
  per these changes.  We currently have 5 failures in the IV regression suite.

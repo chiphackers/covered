@@ -139,8 +139,9 @@ static int func_iter_count_scopes(
  Recursively iterates through functional units, adding their statement iterators to the func_iter structure's array.
 */
 static void func_iter_add_stmt_iters(
-  func_iter* fi,    /*!< Pointer to functional unit iterator to populate */
-  func_unit* funit  /*!< Pointer to current functional unit */
+  func_iter* fi,       /*!< Pointer to functional unit iterator to populate */
+  func_unit* funit,    /*!< Pointer to current functional unit */
+  bool       use_tail  /*!< If TRUE, starts at the statement tail; otherwise, starts at the statement head */
 ) { PROFILE(FUNC_ITER_ADD_STMT_ITERS);
 
   funit_link* child;   /* Pointer to child functional unit */
@@ -154,7 +155,11 @@ static void func_iter_add_stmt_iters(
 
   /* Now allocate a new statement iterator at position 0 and point it at the current functional unit statement list */
   fi->sis[0] = (stmt_iter*)malloc_safe( sizeof( stmt_iter ) );
-  stmt_iter_reset( fi->sis[0], funit->stmt_tail );
+  if( use_tail ) {
+    stmt_iter_reset( fi->sis[0], funit->stmt_tail );
+  } else {
+    stmt_iter_reset( fi->sis[0], funit->stmt_head );
+  }
   stmt_iter_find_head( fi->sis[0], FALSE );
 
   /* Increment the si_num */
@@ -170,7 +175,7 @@ static void func_iter_add_stmt_iters(
   child = parent->tf_head;
   while( child != NULL ) {
     if( funit_is_unnamed( child->funit ) && (child->funit->parent == funit) ) {
-      func_iter_add_stmt_iters( fi, child->funit );
+      func_iter_add_stmt_iters( fi, child->funit, use_tail );
     }
     child = child->next;
   }
@@ -216,10 +221,11 @@ static void func_iter_add_sig_links(
  information.
 */
 void func_iter_init(
-  func_iter* fi,     /*!< Pointer to functional unit iterator to initializes */
-  func_unit* funit,  /*!< Pointer to main functional unit to create iterator for (must be named) */
-  bool       stmts,  /*!< Set to TRUE if we want statements to be included in the iterator */
-  bool       sigs    /*!< Set to TRUE if we want signals to be included in the iterator */
+  func_iter* fi,       /*!< Pointer to functional unit iterator to initializes */
+  func_unit* funit,    /*!< Pointer to main functional unit to create iterator for (must be named) */
+  bool       stmts,    /*!< Set to TRUE if we want statements to be included in the iterator */
+  bool       sigs,     /*!< Set to TRUE if we want signals to be included in the iterator */
+  bool       use_tail  /*!< Set to TRUE to use statement tail (in reporting mode); otherwise, use head */
 ) { PROFILE(FUNC_ITER_INIT);
 
   assert( fi != NULL );
@@ -235,7 +241,7 @@ void func_iter_init(
   if( stmts ) {
     fi->sis    = (stmt_iter**)malloc_safe( sizeof( stmt_iter* ) * fi->scopes );
     fi->si_num = 0;
-    func_iter_add_stmt_iters( fi, funit );
+    func_iter_add_stmt_iters( fi, funit, use_tail );
   }
 
   /* Add signal lists */
@@ -367,6 +373,9 @@ void func_iter_dealloc(
 
 /*
  $Log$
+ Revision 1.13  2008/08/23 20:00:29  phase1geo
+ Full fix for bug 2054686.  Also cleaned up Cver regressions.
+
  Revision 1.12  2008/08/22 20:56:35  phase1geo
  Starting to make updates for proper unnamed scope report handling (fix for bug 2054686).
  Not complete yet.  Also making updates to documentation.  Checkpointing.

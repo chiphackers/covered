@@ -203,7 +203,6 @@ void parse_design(
     }
 
     /* Generate the needed Verilog */
-    printf( "HERE!\n" );
     generator_output();
 
     /* Write contents to baseline database file. */
@@ -314,6 +313,11 @@ void parse_and_score_dumpfile(
 
 /*
  $Log$
+ Revision 1.75  2008/11/26 05:34:48  phase1geo
+ More work on Verilog generator file.  We are now able to create the needed
+ directories and output a non-instrumented version of a module to the appropriate
+ directory.  Checkpointing.
+
  Revision 1.74  2008/10/31 22:01:34  phase1geo
  Initial code changes to support merging two non-overlapping CDD files into
  one.  This functionality seems to be working but needs regression testing to

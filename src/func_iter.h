@@ -40,7 +40,7 @@ typedef struct func_iter_s {
 
 
 /*! \brief Initializes the values in the given structure */
-void func_iter_init( func_iter* fi, func_unit* funit, bool stmts, bool sigs );
+void func_iter_init( func_iter* fi, func_unit* funit, bool stmts, bool sigs, bool use_tail );
 
 /*! \brief Provides the next statement iterator in the functional unit statement iterator */
 statement* func_iter_get_next_statement( func_iter* fi );
@@ -54,6 +54,10 @@ void func_iter_dealloc( func_iter* si );
 
 /*
  $Log$
+ Revision 1.4  2008/08/22 20:56:35  phase1geo
+ Starting to make updates for proper unnamed scope report handling (fix for bug 2054686).
+ Not complete yet.  Also making updates to documentation.  Checkpointing.
+
  Revision 1.3  2008/03/17 22:02:31  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function
