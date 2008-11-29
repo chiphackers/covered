@@ -28,12 +28,12 @@
 
 
 /*!
- \param si     Pointer to statement iterator to reset.
- \param start  Specifies link to start iterating through (can be head or tail).
- 
  Initializes the specified statement iterator to begin advancing.
 */
-void stmt_iter_reset( stmt_iter* si, stmt_link* start ) { PROFILE(STMT_ITER_RESET);
+void stmt_iter_reset(
+  stmt_iter* si,    /*!< Pointer to statement iterator to reset */
+  stmt_link* start  /*!< Specifies link to start iterating through (can be head or tail) */
+) { PROFILE(STMT_ITER_RESET);
   
   si->curr = start;
   si->last = NULL;
@@ -43,12 +43,12 @@ void stmt_iter_reset( stmt_iter* si, stmt_link* start ) { PROFILE(STMT_ITER_RESE
 }
 
 /*!
- \param si    Pointer to statement iterator containing the copied information
- \param orig  Pointer to original statementer iterator being copied
-
  Copies the given statement iterator to the given iterator.
 */
-void stmt_iter_copy( stmt_iter* si, stmt_iter* orig ) { PROFILE(STMT_ITER_COPY);
+void stmt_iter_copy(
+  stmt_iter* si,   /*!< Pointer to statement iterator containing the copied information */
+  stmt_iter* orig  /*!< Pointer to original statementer iterator being copied */
+) { PROFILE(STMT_ITER_COPY);
 
   si->curr = orig->curr;
   si->last = orig->last;
@@ -58,14 +58,14 @@ void stmt_iter_copy( stmt_iter* si, stmt_iter* orig ) { PROFILE(STMT_ITER_COPY);
 }
 
 /*!
- \param si  Pointer to statement iterator to advance.
- 
  \return Returns pointer to next statement link.
  
  Advances specified statement iterator to next statement
  link in statement list.
 */
-void stmt_iter_next( stmt_iter* si ) { PROFILE(STMT_ITER_NEXT);
+void stmt_iter_next(
+  stmt_iter* si  /*!< Pointer to statement iterator to advance */
+) { PROFILE(STMT_ITER_NEXT);
   
   stmt_link* tmp;    /* Temporary holder for current statement link */
   
@@ -78,12 +78,12 @@ void stmt_iter_next( stmt_iter* si ) { PROFILE(STMT_ITER_NEXT);
 }
 
 /*!
- \param si  Pointer to statement iterator to reverse.
- 
  Reverses the direction of the iterator and changes the current pointer
  to point to the last statement before the reverse.
 */
-void stmt_iter_reverse( stmt_iter* si ) { PROFILE(STMT_ITER_REVERSE);
+void stmt_iter_reverse(
+  stmt_iter* si  /*!< Pointer to statement iterator to reverse */
+) { PROFILE(STMT_ITER_REVERSE);
   
   stmt_link* tmp;
   
@@ -96,14 +96,14 @@ void stmt_iter_reverse( stmt_iter* si ) { PROFILE(STMT_ITER_REVERSE);
 }
 
 /*!
- \param si    Pointer to statement iterator to transform.
- \param skip  Specifies if we should skip to the next statement header.
- 
  Iterates down statement list until a statement head is reached.  If a
  statement head is found, the iterator is reversed (with curr pointing to
  statement head).  Used for displaying statements in line order for reports.
 */
-void stmt_iter_find_head( stmt_iter* si, bool skip ) { PROFILE(STMT_ITER_FIND_HEAD);
+void stmt_iter_find_head(
+  stmt_iter* si,   /*!< Pointer to statement iterator to transform */
+  bool       skip  /*!< Specifies if we should skip to the next statement header */
+) { PROFILE(STMT_ITER_FIND_HEAD);
   
   while( (si->curr != NULL) && ((si->curr->stmt->suppl.part.head == 0) || skip) ) {
     if( si->curr->stmt->suppl.part.head == 1 ) {
@@ -122,15 +122,15 @@ void stmt_iter_find_head( stmt_iter* si, bool skip ) { PROFILE(STMT_ITER_FIND_HE
 }
 
 /*!
- \param si  Pointer to statement iterator to transform.
- 
  Iterates to next statement in list and compares this statement ID with
  the previous statement ID.  If the new statement ID is less than the previous
  statement ID, we need to reverse the iterator, find the second statement head
  and reverse the iterator again.  This function is used to order statements by
  line number in verbose reports.
 */
-void stmt_iter_get_next_in_order( stmt_iter* si ) { PROFILE(STMT_ITER_GET_NEXT_IN_ORDER);
+void stmt_iter_get_next_in_order(
+  stmt_iter* si  /*!< Pointer to statement iterator to transform */
+) { PROFILE(STMT_ITER_GET_NEXT_IN_ORDER);
 
   stmt_iter lsi;                  /* Points to lowest statement iterator */
   int       lowest = 0x7fffffff;  /* Line number of the lowest statement */
@@ -182,14 +182,14 @@ void stmt_iter_get_next_in_order( stmt_iter* si ) { PROFILE(STMT_ITER_GET_NEXT_I
 }
 
 /*!
- \param si    Pointer to statement iterator to search
- \param lnum  Line number to compare against
-
  Searches the given statement iterator for the statement whose line number comes just
  before the given line number.  Places curr on this statement and places last on the
  statement whose line number is either equal to or less than curr.
 */
-void stmt_iter_get_line_before( stmt_iter* si, int lnum ) { PROFILE(STMT_ITER_GET_LINE_BEFORE);
+void stmt_iter_get_line_before(
+  stmt_iter* si,   /*!< Pointer to statement iterator to search */
+  int        lnum  /*!< Line number to compare against */
+) { PROFILE(STMT_ITER_GET_LINE_BEFORE);
 
   if( si->curr != NULL ) {
 
@@ -211,6 +211,11 @@ void stmt_iter_get_line_before( stmt_iter* si, int lnum ) { PROFILE(STMT_ITER_GE
 
 /*
  $Log$
+ Revision 1.19  2008/02/25 18:22:16  phase1geo
+ Moved statement supplemental bits from root expression to statement and starting
+ to add support for race condition checking pragmas (still some work left to do
+ on this item).  Updated IV and Cver regressions per these changes.
+
  Revision 1.18  2008/01/23 20:48:03  phase1geo
  Fixing bug 1878134 and adding new diagnostics to regression suite to verify
  its behavior.  Full regressions pass.
