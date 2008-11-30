@@ -45,6 +45,22 @@ struct fname_link_s {
 };
 
 /*!
+ Pointer to current statement stack.
+*/
+static statement** stmt_stack = NULL;
+
+/*!
+ Number of statement pointers in statement stack.
+*/
+static int stmt_stack_size = 0;
+
+/*!
+ Index of statement stack top.
+*/
+static int stmt_stack_ptr = -1;
+
+
+/*!
  Populates the specified filename list with the functional unit list, sorting all functional units with the
  same filename together in the same link.
 */
@@ -169,6 +185,68 @@ static void generator_dealloc_filename_list(
   }
 
   PROFILE_END;
+
+}
+
+/*!
+ \return Returns a pointer to the next statement to execute (or NULL if there are no more statements in this functional unit).
+*/
+static statement* generator_get_next_stmt(
+  func_iter* fi  /*!< Pointer to functional unit iterator structure */
+) { PROFILE(GENERATOR_GET_NEXT_STMT);
+
+  statement* curr_stmt = NULL;
+
+  /* Get current statement from stack if it exists */
+  if( stmt_stack != NULL ) {
+    curr_stmt = stmt_stack[stmt_stack_ptr];
+  }
+
+  /* If the current statement is the last statement to traverse in the block, pop the stack */
+  if( (curr_stmt != NULL) && curr_stmt->suppl.part.stop_true && curr_stmt->suppl.part.stop_false ) {
+
+    do {
+      curr_stmt = stmt_stack[--stmt_stack_ptr];
+    } while( (stmt_stack_ptr > 0) && curr_stmt->suppl.part.stop_false );
+    curr_stmt = curr_stmt->next_false;
+
+  /* Otherwise, push to the stack */
+  } else {
+
+    /*
+     If the statement stack is unallocated or the current statement is a nested block, get the next
+     statement from the functional unit iterator.
+    */
+    if( (stmt_stack == NULL) || (curr_stmt->exp->op == EXP_OP_NB_CALL) ) {
+      if( (stmt_stack_ptr + 1) == stmt_stack_size ) {
+        stmt_stack = (statement**)realloc_safe( stmt_stack, (sizeof( statement* ) * stmt_stack_size), (sizeof( statement* ) * (stmt_stack_size + 1)) );
+        stmt_stack_size++;
+      }
+      curr_stmt = stmt_stack[++stmt_stack_ptr] = func_iter_get_next_statement( fi );
+
+    /*
+     Otherwise, if the current statement is an IF statement, traverse the TRUE path statement list.
+    */
+    } else if( curr_stmt->exp->op == EXP_OP_IF ) {
+      if( (stmt_stack_ptr + 1) == stmt_stack_size ) {
+        stmt_stack = (statement**)realloc_safe( stmt_stack, (sizeof( statement* ) * stmt_stack_size), (sizeof( statement* ) * (stmt_stack_size + 1)) );
+        stmt_stack_size++;
+      }
+      curr_stmt = stmt_stack[++stmt_stack_ptr] = curr_stmt->next_true;
+
+    /*
+     Otherwise, traverse the TRUE path.
+    */
+    } else {
+      curr_stmt = stmt_stack[stmt_stack_ptr] = curr_stmt->next_true;
+
+    }
+
+  }
+
+  PROFILE_END;
+
+  return( curr_stmt );
 
 }
 
@@ -438,6 +516,51 @@ static void generator_handle_if(
 
 }
 
+static void generator_handle_delay(
+            statement*    stmt,  
+            char*         line,
+  /*@out@*/ unsigned int* curr_char,
+  /*@out@*/ str_link**    code_head,
+  /*@out@*/ str_link**    code_tail
+) { PROFILE(GENERATOR_HANDLE_DELAY);
+
+  unsigned int orig_len;
+  char*        orig;
+  unsigned int i       = (stmt->exp->col & 0xffff);
+  unsigned int str_len = strlen( line );
+
+  /* See if delay is a single statement or if it is associated with an assignment */
+  while( (i < str_len) && ((line[i] == ' ') || (line[i] == '\t')) ) i++;
+
+  /* If it is its own statement copy everything from curr_char to this position */
+  if( i == ';' ) {
+
+    orig_len = ((i + 1) - *curr_char);
+    orig     = (char*)malloc_safe( orig_len + 1 );
+    for( i=0; i<orig_len; i++ ) {
+      orig[i] = line[(*curr_char)++];
+    }
+    orig[i] = '\0';
+
+  } else {
+
+    orig_len = (((stmt->exp->col & 0xffff) + 1) - *curr_char);
+    orig     = (char*)malloc_safe( orig_len + 2 );
+    for( i=0; i<orig_len; i++ ) {
+      orig[i] = line[(*curr_char)++];
+    }
+    orig[i++] = ';';
+    orig[i]   = '\0';
+
+  }
+
+  /* Add the string to the code list */
+  (void)str_link_add( orig, code_head, code_tail );
+
+  PROFILE_END;
+
+}
+
 /*!
  Generates the needed code for line coverage information.
 */
@@ -509,6 +632,10 @@ static void generator_handle_stmt(
       } else if( stmt->exp->op == EXP_OP_IF ) {
         generator_handle_if( stmt, line, curr_char, &code_head, &code_tail );
 
+      /* Handle delay statement */
+      } else if( stmt->exp->op == EXP_OP_DELAY ) {
+        generator_handle_delay( stmt, line, curr_char, &code_head, &code_tail );
+
       }
 
       /* If we have reached the end of a nested block, reduce the depth by one */
@@ -568,12 +695,12 @@ static void generator_handle_line(
       if( line_num == fnamel->next_funit->start_line ) {
         func_iter_init( &fi, fnamel->next_funit, TRUE, FALSE, FALSE );
         func_iter_display( &fi );
-        stmt = func_iter_get_next_statement( &fi );
+        stmt = generator_get_next_stmt( &fi );
       }
       if( (stmt != NULL) && (stmt->exp->line == line_num) ) {
         while( (stmt != NULL) && (stmt->exp->line == line_num) ) {
           generator_handle_stmt( stmt, fnamel->next_funit, line, &curr_char, ofile );
-          stmt = func_iter_get_next_statement( &fi );
+          stmt = generator_get_next_stmt( &fi );
         }
         fprintf( ofile, "%s\n", (line + curr_char) );
       } else {
@@ -698,12 +825,21 @@ void generator_output() { PROFILE(GENERATOR_OUTPUT);
 
   /* Deallocate memory from filename list */
   generator_dealloc_filename_list( fname_head );
+
+  /* Deallocate statement stack */
+  free_safe( stmt_stack, (sizeof( statement* ) * stmt_stack_size) );
+
   PROFILE_END;
 
 }
 
 /*
  $Log$
+ Revision 1.5  2008/11/29 04:27:07  phase1geo
+ More work on inlined coverage code insertion.  Net assigns and procedural assigns
+ seem to be working at a most basic level.  Currently, I have an issue that I need
+ to solve where non-head statements are being ignored.  Checkpointing.
+
  Revision 1.4  2008/11/27 00:24:44  phase1geo
  Fixing problems with previous version of generator.  Things work as expected at this point.
  Checkpointing.

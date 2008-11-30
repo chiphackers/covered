@@ -203,7 +203,7 @@ void parse_design(
     }
 
     /* Generate the needed Verilog */
-    // generator_output();
+    generator_output();
 
     /* Write contents to baseline database file. */
     db_write( output_db, TRUE, TRUE, FALSE );
@@ -313,6 +313,10 @@ void parse_and_score_dumpfile(
 
 /*
  $Log$
+ Revision 1.77  2008/11/30 04:17:07  phase1geo
+ Adding bit to save off parenthesis existence from original Verilog source.
+ Updating regression per these changes.
+
  Revision 1.76  2008/11/27 00:24:44  phase1geo
  Fixing problems with previous version of generator.  Things work as expected at this point.
  Checkpointing.
