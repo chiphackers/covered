@@ -623,12 +623,12 @@ void codegen_gen_expr(
 
     } else {
 
-      if( parent_op == expr->op ) {
-        before = NULL;
-        after  = NULL;
-      } else {
+      if( expr->suppl.part.parenthesis ) {
         before = strdup_safe( "(" );
         after  = strdup_safe( ")" );
+      } else {
+        before = NULL;
+        after  = NULL;
       }
 
       switch( expr->op ) {
@@ -1017,10 +1017,9 @@ void codegen_gen_expr(
         default:  break;
       }
 
-      if( parent_op != expr->op ) {
-        free_safe( before, (strlen( before ) + 1) );
-        free_safe( after, (strlen( after ) + 1) );
-      }
+      /* Deallocate before and after strings */
+      free_safe( before, (strlen( before ) + 1) );
+      free_safe( after, (strlen( after ) + 1) );
 
     }
 
@@ -1039,6 +1038,10 @@ void codegen_gen_expr(
 
 /*
  $Log$
+ Revision 1.104  2008/10/27 05:00:32  phase1geo
+ Starting to add support for $test$plusargs and $value$plusargs system function
+ calls.  More work to do here.  Checkpointing.
+
  Revision 1.103  2008/10/18 06:14:20  phase1geo
  Continuing to add support for real values and associated system function calls.
  Updating regressions per these changes.  Checkpointing.

@@ -404,7 +404,7 @@
  supplemental fields are ANDed with this mask and ORed together to perform the
  merge.  See esuppl_u for information on which bits are masked.
 */
-#define ESUPPL_MERGE_MASK            0x1fffff
+#define ESUPPL_MERGE_MASK            0x3fffff
 
 /*!
  Specifies the number of bits to store for a given expression for reentrant purposes.
@@ -1594,27 +1594,29 @@ union esuppl_u {
                                     the left/right subexpression has been performed.  This value should be set to 1 if
                                     a child expression needs to be re-evaluated each time the current expression is
                                     evaluated; otherwise, it should be set to 0. */
+    uint32 parenthesis    :1;  /*!< Bit 21.  Mask bit = 1.  Specifies that the expression was surrounded by parenthesis
+                                    in the original Verilog. */
  
     /* UNMASKED BITS */
-    uint32 eval_t         :1;  /*!< Bit 21.  Mask bit = 0.  Indicates that the value of the current expression is
+    uint32 eval_t         :1;  /*!< Bit 22.  Mask bit = 0.  Indicates that the value of the current expression is
                                     currently set to TRUE (temporary value). */
-    uint32 eval_f         :1;  /*!< Bit 22.  Mask bit = 0.  Indicates that the value of the current expression is
+    uint32 eval_f         :1;  /*!< Bit 23.  Mask bit = 0.  Indicates that the value of the current expression is
                                     currently set to FALSE (temporary value). */
-    uint32 comb_cntd      :1;  /*!< Bit 23.  Mask bit = 0.  Indicates that the current expression has been previously
+    uint32 comb_cntd      :1;  /*!< Bit 24.  Mask bit = 0.  Indicates that the current expression has been previously
                                     counted for combinational coverage.  Only set by report command (therefore this bit
                                     will always be a zero when written to CDD file. */
-    uint32 exp_added      :1;  /*!< Bit 24.  Mask bit = 0.  Temporary bit value used by the score command but not
+    uint32 exp_added      :1;  /*!< Bit 25.  Mask bit = 0.  Temporary bit value used by the score command but not
                                     displayed to the CDD file.  When this bit is set to a one, it indicates to the
                                     db_add_expression function that this expression and all children expressions have
                                     already been added to the functional unit expression list and should not be added again. */
-    uint32 owned          :1;  /*!< Bit 25.  Mask bit = 0.  Temporary value used by the score command to indicate
+    uint32 owned          :1;  /*!< Bit 26.  Mask bit = 0.  Temporary value used by the score command to indicate
                                     if this expression is already owned by a mod_parm structure. */
-    uint32 gen_expr       :1;  /*!< Bit 26.  Mask bit = 0.  Temporary value used by the score command to indicate
+    uint32 gen_expr       :1;  /*!< Bit 27.  Mask bit = 0.  Temporary value used by the score command to indicate
                                     that this expression is a part of a generate expression. */
-    uint32 prev_called    :1;  /*!< Bit 27.  Mask bit = 0.  Temporary value used by named block and task expression
+    uint32 prev_called    :1;  /*!< Bit 28.  Mask bit = 0.  Temporary value used by named block and task expression
                                     functions to indicate if we are in the middle of executing a named block or task
                                     expression (since these cause a context switch to occur. */
-    uint32 for_cntrl      :1;  /*!< Bit 28.  Mask bit = 0.  Temporary value used by the score command which sets to true
+    uint32 for_cntrl      :1;  /*!< Bit 29.  Mask bit = 0.  Temporary value used by the score command which sets to true
                                     if this expression exists within the control portion of a for loop. */
   } part;
 };
@@ -3041,6 +3043,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.339  2008/11/12 00:07:41  phase1geo
+ More updates for complex merging algorithm.  Updating regressions per
+ these changes.  Checkpointing.
+
  Revision 1.338  2008/11/08 00:09:04  phase1geo
  Checkpointing work on asymmetric merging algorithm.  Updated regressions
  per these changes.  We currently have 5 failures in the IV regression suite.

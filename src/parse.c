@@ -203,7 +203,7 @@ void parse_design(
     }
 
     /* Generate the needed Verilog */
-    generator_output();
+    // generator_output();
 
     /* Write contents to baseline database file. */
     db_write( output_db, TRUE, TRUE, FALSE );
@@ -313,6 +313,10 @@ void parse_and_score_dumpfile(
 
 /*
  $Log$
+ Revision 1.76  2008/11/27 00:24:44  phase1geo
+ Fixing problems with previous version of generator.  Things work as expected at this point.
+ Checkpointing.
+
  Revision 1.75  2008/11/26 05:34:48  phase1geo
  More work on Verilog generator file.  We are now able to create the needed
  directories and output a non-instrumented version of a module to the appropriate

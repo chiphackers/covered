@@ -1,7 +1,7 @@
 5 13 101 37 main
-8 /ptmp/covered/diags/verilog 2 -t (fsm) 2 -i (main.fsm) 2 -vcd (fsm2a.vcd) 2 -o (fsm2a.cdd) 2 -y (lib) 2 -v (fsm2a.v) 2 -F (fsm=state,next_state) 2 -D (DUMP) 2 -v (fsm2b.v)
-12 /ptmp/covered/diags/verilog/fsm2a.cdd main
-12 /ptmp/covered/diags/verilog/fsm2b.cdd main
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (fsm) 2 -i (main.fsm) 2 -vcd (fsm2a.vcd) 2 -o (fsm2a.cdd) 2 -y (lib) 2 -v (fsm2a.v) 2 -F (fsm=state,next_state) 2 -D (DUMP) 2 -v (fsm2b.v)
+12 /Users/trevorw/projects/covered/diags/verilog/fsm2a.cdd main
+12 /Users/trevorw/projects/covered/diags/verilog/fsm2b.cdd main
 3 0 $root "$root" 0 NA 0 0 1
 15 main 0
 3 0 fsm "main.fsm" 0 lib/fsm.v 1 37 1
@@ -61,7 +61,7 @@
 2 35 32 1f0039 1 1a 1104 33 34 2 18 0 3 3 0 0 0
 2 36 32 28002b 1 1 1004 0 0 1 1 head
 2 37 32 200024 1 1 1004 0 0 1 1 valid
-2 38 32 20002b 1 8 1044 36 37 1 18 0 1 1 1 0 0
+2 38 32 20002b 1 8 201044 36 37 1 18 0 1 1 1 0 0
 2 39 32 1f0046 1 19 1004 35 38 2 18 0 3 3 0 0 0
 2 40 32 12001b 0 1 1410 0 0 2 1 next_state
 2 41 32 120046 1 37 16 39 40
@@ -70,7 +70,7 @@
 2 44 31 1f0039 2 1a 1238 42 43 2 18 0 3 1 3 0 0
 2 45 31 28002b 2 1 101c 0 0 1 1 tail
 2 46 31 200024 1 1 1018 0 0 1 1 valid
-2 47 31 20002b 2 8 133c 45 46 1 18 0 1 0 1 1 0
+2 47 31 20002b 2 8 20133c 45 46 1 18 0 1 0 1 1 0
 2 48 31 1f0046 2 19 1038 44 47 2 18 0 3 1 3 0 0
 2 49 31 12001b 0 1 1410 0 0 2 1 next_state
 2 50 31 120046 2 37 3a 48 49
@@ -79,7 +79,7 @@
 2 53 30 1f0039 1 1a 1208 51 52 2 18 0 3 1 3 0 0
 2 54 30 28002b 1 1 101c 0 0 1 1 tail
 2 55 30 200024 1 1 1018 0 0 1 1 valid
-2 56 30 20002b 1 8 133c 54 55 1 18 0 1 0 1 1 0
+2 56 30 20002b 1 8 20133c 54 55 1 18 0 1 0 1 1 0
 2 57 30 1f0046 1 19 1038 53 56 2 18 0 3 1 3 0 0
 2 58 30 12001b 0 1 1410 0 0 2 1 next_state
 2 59 30 120046 1 37 3a 57 58
@@ -88,7 +88,7 @@
 2 62 29 1f0039 3 1a 110c 60 61 2 18 0 3 3 1 0 0
 2 63 29 28002b 3 1 100c 0 0 1 1 head
 2 64 29 200024 3 1 100c 0 0 1 1 valid
-2 65 29 20002b 3 8 124c 63 64 1 18 0 1 1 1 1 0
+2 65 29 20002b 3 8 20124c 63 64 1 18 0 1 1 1 1 0
 2 66 29 1f0046 3 19 100c 62 65 2 18 0 3 3 1 0 0
 2 67 29 12001b 0 1 1410 0 0 2 1 next_state
 2 68 29 120046 3 37 e 66 67
