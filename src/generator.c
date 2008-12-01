@@ -188,11 +188,121 @@ static void generator_dealloc_filename_list(
 
 }
 
+static void generator_add_begin(
+  statement*    stmt,
+  char**        line,
+  unsigned int* line_num,
+  unsigned int* line_size,
+  unsigned int* curr_char,
+  FILE*         ifile,
+  str_link**    code_head,
+  str_link**    code_tail
+) { PROFILE(GENERATOR_ADD_BEGIN);
+
+  unsigned int orig_len;
+  char*        orig;
+  unsigned int i;
+
+  printf( "In generator_add_begin, stmt: %s\n", expression_string( stmt->exp ) );
+
+  str_link_add( strdup_safe( (*line + *curr_char) ), code_head, code_tail );
+
+  if( *line_num < stmt->exp->line ) {
+
+    (*line_num)++;
+    while( util_readline( ifile, line, line_size ) && (*line_num < stmt->exp->line) ) {
+      str_link_add( strdup_safe( *line ), code_head, code_tail );  
+      free_safe( *line, *line_size );
+      (*line_num)++;
+    }
+
+    *curr_char = 0;
+
+  }
+
+  orig_len = ((stmt->exp->col >> 16) & 0xffff) - *curr_char;
+  orig = (char*)malloc_safe( orig_len + 8 );
+
+  for( i=0; i<orig_len; i++ ) {
+    orig[i] = (*line)[(*curr_char)++];
+  }
+  orig[i] = '\0';
+  strcat( orig, " begin " );
+  str_link_add( orig, code_head, code_tail );
+
+  PROFILE_END;
+
+}
+
+static void generator_add_end(
+  char*         line,
+  unsigned int* curr_char,
+  str_link**    code_head,
+  str_link**    code_tail
+) { PROFILE(GENERATOR_ADD_END);
+
+  unsigned int orig_len;
+  char*        orig;
+  unsigned int i;
+
+  printf( "line: %s, strlen: %d, curr_char: %d\n", line, strlen( line ), *curr_char );
+  orig_len = strlen( line ) - *curr_char;
+  orig     = (char*)malloc_safe( orig_len + 5 );
+
+  for( i=0; i<orig_len; i++ ) {
+    orig[i] = line[(*curr_char)++];
+  }
+  orig[i] = '\0';
+  strcat( orig, " end" );
+  str_link_add( orig, code_head, code_tail );
+  printf( "END\n" );  str_link_display( *code_head );
+
+  PROFILE_END;
+
+}
+
+static void generator_print_code(
+  FILE*      ofile,
+  str_link** code_head,
+  str_link** code_tail
+) { PROFILE(GENERATOR_PRINT_CODE);
+
+  str_link* curr;
+
+  curr = *code_head;
+  while( curr != NULL ) {
+    if( curr->str2 != NULL ) {
+      fprintf( ofile, "%s\n", curr->str2 );
+    }
+    curr = curr->next;
+  }
+
+  curr = *code_head;
+  while( curr != NULL ) {
+    fprintf( ofile, "%s\n", curr->str );
+    curr = curr->next;
+  }
+  str_link_delete_list( *code_head );
+
+  *code_head = *code_tail = NULL;
+
+  PROFILE_END;
+
+}
+
 /*!
  \return Returns a pointer to the next statement to execute (or NULL if there are no more statements in this functional unit).
 */
 static statement* generator_get_next_stmt(
-  func_iter* fi  /*!< Pointer to functional unit iterator structure */
+            func_iter*    fi,         /*!< Pointer to functional unit iterator structure */
+            char**        line,
+            unsigned int* line_num,
+            unsigned int* line_size,
+            unsigned int* curr_char,
+            FILE*         ifile,
+            FILE*         ofile,
+  /*@out@*/ str_link**    code_head,  /*!< Pointer to head of code list to populate */
+  /*@out@*/ str_link**    code_tail   /*!< Pointer to tail of code list to populate */
 ) { PROFILE(GENERATOR_GET_NEXT_STMT);
 
   statement* curr_stmt = NULL;
@@ -203,12 +313,30 @@ static statement* generator_get_next_stmt(
   }
 
   /* If the current statement is the last statement to traverse in the block, pop the stack */
-  if( (curr_stmt != NULL) && curr_stmt->suppl.part.stop_true && curr_stmt->suppl.part.stop_false ) {
+  if( (curr_stmt != NULL) &&
+      (curr_stmt->suppl.part.stop_true  || (curr_stmt->next_true  == NULL)) &&
+      (curr_stmt->suppl.part.stop_false || (curr_stmt->next_false == NULL)) ) {
 
-    do {
+    if( stmt_stack_ptr > 0 ) {
       curr_stmt = stmt_stack[--stmt_stack_ptr];
-    } while( (stmt_stack_ptr > 0) && curr_stmt->suppl.part.stop_false );
-    curr_stmt = curr_stmt->next_false;
+      if( curr_stmt->exp->op != EXP_OP_NB_CALL ) {
+        printf( "line_num: %u\n", *line_num );
+        generator_add_end( *line, curr_char, code_head, code_tail );
+      }
+      while( (stmt_stack_ptr > 0) && (curr_stmt->suppl.part.stop_false || (curr_stmt->next_false == NULL)) ) {
+        curr_stmt = stmt_stack[--stmt_stack_ptr];
+        if( curr_stmt->exp->op != EXP_OP_NB_CALL ) {
+          str_link_add( strdup_safe( " end" ), code_head, code_tail );
+        }
+      }
+      curr_stmt = curr_stmt->next_false;
+    } else {
+      printf( "line_num: %u\n", *line_num );
+      generator_add_end( *line, curr_char, code_head, code_tail );
+      stmt_stack_ptr--;
+      curr_stmt = NULL;
+      generator_print_code( ofile, code_head, code_tail );
+    }
 
   /* Otherwise, push to the stack */
   } else {
@@ -223,6 +351,9 @@ static statement* generator_get_next_stmt(
         stmt_stack_size++;
       }
       curr_stmt = stmt_stack[++stmt_stack_ptr] = func_iter_get_next_statement( fi );
+      if( curr_stmt->exp->op != EXP_OP_NB_CALL ) {
+        generator_add_begin( curr_stmt, line, line_num, line_size, curr_char, ifile, code_head, code_tail );
+      }
 
     /*
      Otherwise, if the current statement is an IF statement, traverse the TRUE path statement list.
@@ -233,6 +364,9 @@ static statement* generator_get_next_stmt(
         stmt_stack_size++;
       }
       curr_stmt = stmt_stack[++stmt_stack_ptr] = curr_stmt->next_true;
+      if( curr_stmt->exp->op != EXP_OP_NB_CALL ) {
+        generator_add_begin( curr_stmt, line, line_num, line_size, curr_char, ifile, code_head, code_tail );
+      }
 
     /*
      Otherwise, traverse the TRUE path.
@@ -507,11 +641,6 @@ static void generator_handle_if(
   orig[i] = '\0';
   (void)str_link_add( orig, code_head, code_tail );
 
-  /* If the true case is not a begin..end block, create one. */
-  if( stmt->next_true->exp->op != EXP_OP_NB_CALL ) {
-    (void)str_link_add( strdup_safe( " begin " ), code_head, code_tail );
-  } 
-
   PROFILE_END;
 
 }
@@ -598,76 +727,46 @@ static void generator_handle_stmt(
   func_unit*    funit,      /*!< Pointer to functional unit containing this statement */
   char*         line,       /*!< Pointer to the original Verilog line */
   unsigned int* curr_char,  /*!< Pointer to the current character position */
-  FILE*         ofile       /*!< Pointer to the file stream to write */
+  FILE*         ofile,      /*!< Pointer to the file stream to write */
+  str_link**    code_head,
+  str_link**    code_tail
 ) { PROFILE(GENERATOR_HANDLE_STMT);
-
-  static str_link*    code_head;
-  static str_link*    code_tail;
-  static unsigned int depth       = 0; 
-  bool                output_code = FALSE;
 
   /* Handle net assignments */
   if( (stmt->exp->op == EXP_OP_ASSIGN) || (stmt->exp->op == EXP_OP_DASSIGN) ) { 
-    output_code = generator_handle_net_assign( stmt, funit, line, curr_char, &code_head, &code_tail );
+    if( generator_handle_net_assign( stmt, funit, line, curr_char, code_head, code_tail ) ) {
+      generator_print_code( ofile, code_head, code_tail );
+    }
 
   /* Handle procedural statements */
   } else {
 
     /* Handle begin..end */
     if( stmt->exp->op == EXP_OP_NB_CALL ) {
-      generator_handle_nb_call( stmt, line, curr_char, &code_head, &code_tail );
-      depth++;
+      generator_handle_nb_call( stmt, line, curr_char, code_head, code_tail );
 
     /* Otherwise, we will not be switching contexts so handle the rest of the needed statements */
     } else {
 
       /* Insert code for line coverage */
-      generator_add_line_coverage( stmt->exp->id, &code_head, &code_tail );
+      generator_add_line_coverage( stmt->exp->id, code_head, code_tail );
 
       /* Handle procedural assignments */
       if( (stmt->exp->op == EXP_OP_BASSIGN) || (stmt->exp->op == EXP_OP_NASSIGN) ) {
-        generator_handle_proc_assign( stmt, funit, line, curr_char, &code_head, &code_tail );
+        generator_handle_proc_assign( stmt, funit, line, curr_char, code_head, code_tail );
 
       /* Handle if..then..else */
       } else if( stmt->exp->op == EXP_OP_IF ) {
-        generator_handle_if( stmt, line, curr_char, &code_head, &code_tail );
+        generator_handle_if( stmt, line, curr_char, code_head, code_tail );
 
       /* Handle delay statement */
       } else if( stmt->exp->op == EXP_OP_DELAY ) {
-        generator_handle_delay( stmt, line, curr_char, &code_head, &code_tail );
+        generator_handle_delay( stmt, line, curr_char, code_head, code_tail );
 
-      }
-
-      /* If we have reached the end of a nested block, reduce the depth by one */
-      if( (stmt->next_false == NULL) && (stmt->next_true == NULL) ) {
-        depth--;
-      }
-
-      /* If our depth is 0 and we have reached the last statement in this block, output the Verilog. - TBD */
-      if( depth == 0 ) {
-        output_code = TRUE;
       }
 
     }
 
-  }
-
-  /* If we need to output our code, do so now. */
-  if( output_code ) {
-    str_link* curr = code_head;
-    while( curr != NULL ) {
-      if( curr->str2 != NULL ) {
-        fprintf( ofile, "%s\n", curr->str2 );
-      }
-      curr = curr->next;
-    }
-    curr = code_head;
-    while( curr != NULL ) {
-      fprintf( ofile, "%s\n", curr->str );
-      curr = curr->next;
-    }
-    str_link_delete_list( code_head );
-    code_head = code_tail = NULL;
   }
 
   PROFILE_END;
@@ -678,12 +777,16 @@ static void generator_handle_stmt(
  Takes the current line, outputting both original Verilog and injected covered code.
 */
 static void generator_handle_line(
-  char*        line,      /*!< Current line */
-  unsigned int line_num,  /*!< Current line number */
-  fname_link*  fnamel,    /*!< Pointer to current filename link */
-  FILE*        ofile      /*!< Pointer to output file */
+  char**        line,       /*!< Current line */
+  unsigned int* line_num,   /*!< Current line number */
+  unsigned int* line_size,
+  fname_link*   fnamel,     /*!< Pointer to current filename link */
+  FILE*         ifile,      /*!< Pointer to input file */
+  FILE*         ofile       /*!< Pointer to output file */
 ) { PROFILE(GENERATOR_HANDLE_LINE);
 
+  static str_link*  code_head = NULL;
+  static str_link*  code_tail = NULL;
   static func_iter  fi;
   static statement* stmt      = NULL;
   bool              end_found;
@@ -691,22 +794,22 @@ static void generator_handle_line(
 
   do {
     end_found = FALSE;
-    if( (line_num >= fnamel->next_funit->start_line) && (line_num <= fnamel->next_funit->end_line) ) {
-      if( line_num == fnamel->next_funit->start_line ) {
+    if( (*line_num >= fnamel->next_funit->start_line) && (*line_num <= fnamel->next_funit->end_line) ) {
+      if( *line_num == fnamel->next_funit->start_line ) {
         func_iter_init( &fi, fnamel->next_funit, TRUE, FALSE, FALSE );
         func_iter_display( &fi );
-        stmt = generator_get_next_stmt( &fi );
+        stmt = generator_get_next_stmt( &fi, line, line_num, line_size, &curr_char, ifile, ofile, &code_head, &code_tail );
       }
-      if( (stmt != NULL) && (stmt->exp->line == line_num) ) {
-        while( (stmt != NULL) && (stmt->exp->line == line_num) ) {
-          generator_handle_stmt( stmt, fnamel->next_funit, line, &curr_char, ofile );
-          stmt = generator_get_next_stmt( &fi );
+      if( (stmt != NULL) && (stmt->exp->line == *line_num) ) {
+        while( (stmt != NULL) && (stmt->exp->line == *line_num) ) {
+          generator_handle_stmt( stmt, fnamel->next_funit, *line, &curr_char, ofile, &code_head, &code_tail );
+          stmt = generator_get_next_stmt( &fi, line, line_num, line_size, &curr_char, ifile, ofile, &code_head, &code_tail );
         }
         fprintf( ofile, "%s\n", (line + curr_char) );
       } else {
         fprintf( ofile, "%s\n", line );
       }
-      if( line_num == fnamel->next_funit->end_line ) {
+      if( *line_num == fnamel->next_funit->end_line ) {
         func_iter_dealloc( &fi );
         end_found = generator_set_next_funit( fnamel );
       }
@@ -748,7 +851,7 @@ static void generator_output_funits(
 
         /* Read in each line */
         while( util_readline( ifile, &line, &line_size ) ) {
-          generator_handle_line( line, line_num, head, ofile );
+          generator_handle_line( &line, &line_num, &line_size, head, ifile, ofile );
           free_safe( line, line_size );
           line_num++;
         }
@@ -835,6 +938,10 @@ void generator_output() { PROFILE(GENERATOR_OUTPUT);
 
 /*
  $Log$
+ Revision 1.6  2008/11/30 20:48:09  phase1geo
+ More work on instrumenting Verilog code.  Added statement iterator and fixed a few
+ issues with the code.  Checkpointing.
+
  Revision 1.5  2008/11/29 04:27:07  phase1geo
  More work on inlined coverage code insertion.  Net assigns and procedural assigns
  seem to be working at a most basic level.  Currently, I have an issue that I need
