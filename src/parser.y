@@ -950,16 +950,8 @@ expression
     }
   | '-' expr_primary %prec UNARY_PREC
     {
-      if( ignore_mode == 0 ) {
-        Try {
-          $$ = db_create_expression( $2, NULL, EXP_OP_NEGATE, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-          $$->value->suppl.part.is_signed = 1;
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
+      if( ($$ = parser_create_unary_exp( $2, EXP_OP_NEGATE, @1.first_line, @1.first_column, @1.last_column )) != NULL ) {
+        $$->value->suppl.part.is_signed = 1;
       }
     }
   | '~' expr_primary %prec UNARY_PREC
