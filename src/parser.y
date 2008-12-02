@@ -922,51 +922,15 @@ static_expr_primary
     }
   | S_allow
     {
-      if( ignore_mode == 0 ) {
-        static_expr* tmp;
-        tmp = (static_expr*)malloc_safe( sizeof( static_expr ) );
-        tmp->num = -1;
-        Try {
-          tmp->exp = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
-        } Catch_anonymous {
-          error_count++;
-        }
-        $$ = tmp;
-      } else {
-        $$ = NULL;
-      }
+      $$ = parser_create_syscall_se( EXP_OP_NOOP, 0, 0, 0 );
     }
   | S_random
     {
-      if( ignore_mode == 0 ) {
-        static_expr* tmp;
-        tmp = (static_expr*)malloc_safe( sizeof( static_expr ) );
-        tmp->num = -1;
-        Try {
-          tmp->exp = db_create_expression( NULL, NULL, EXP_OP_SRANDOM, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-        }
-        $$ = tmp;
-      } else {
-        $$ = NULL;
-      }
+      $$ = parser_create_syscall_se( EXP_OP_SRANDOM, @1.first_line, @1.first_column, @1.last_column );
     }
   | S_urandom
     {
-      if( ignore_mode == 0 ) {
-        static_expr* tmp;
-        tmp = (static_expr*)malloc_safe( sizeof( static_expr ) );
-        tmp->num = -1;
-        Try {
-          tmp->exp = db_create_expression( NULL, NULL, EXP_OP_SURANDOM, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-        }
-        $$ = tmp;
-      } else {
-        $$ = NULL;
-      }
+      $$ = parser_create_syscall_se( EXP_OP_SURANDOM, @1.first_line, @1.first_column, @1.last_column );
     }
   ;
 
@@ -1281,63 +1245,19 @@ expr_primary
     }
   | identifier K_INC
     {
-      if( ignore_mode == 0 ) {
-        Try {
-          expression* tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-          $$ = db_create_expression( NULL, tmp,  EXP_OP_PINC, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      $$ = parser_create_op_and_assign_exp( $1, EXP_OP_PINC, @1.first_line, @1.first_column, @1.last_column, @2.last_column );
     }
   | identifier K_DEC
     {
-      if( ignore_mode == 0 ) {
-        Try {
-          expression* tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-          $$ = db_create_expression( NULL, tmp,  EXP_OP_PDEC, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      $$ = parser_create_op_and_assign_exp( $1, EXP_OP_PDEC, @1.first_line, @1.first_column, @1.last_column, @2.last_column );
     }
   | K_INC identifier
     {
-      if( ignore_mode == 0 ) {
-        Try {
-          expression* tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), $2 );
-          $$ = db_create_expression( NULL, tmp,  EXP_OP_IINC, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
-      free_safe( $2, (strlen( $2 ) + 1) );
+      $$ = parser_create_op_and_assign_exp( $2, EXP_OP_IINC, @1.first_line, @1.first_column, @1.last_column, @2.last_column );
     }
   | K_DEC identifier
     {
-      if( ignore_mode == 0 ) {
-        Try {
-          expression* tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), $2 );
-          $$ = db_create_expression( NULL, tmp,  EXP_OP_IDEC, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
-      free_safe( $2, (strlen( $2 ) + 1) );
+      $$ = parser_create_op_and_assign_exp( $2, EXP_OP_IDEC, @1.first_line, @1.first_column, @1.last_column, @2.last_column );
     }
   | S_ignore
     {
@@ -1346,55 +1266,19 @@ expr_primary
     }
   | S_allow
     {
-      if( ignore_mode == 0 ) {
-        Try {
-          $$ = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = parser_create_syscall_exp( EXP_OP_NOOP, 0, 0, 0 );
     }
   | S_random
     {
-      if( ignore_mode == 0 ) {
-        Try {
-          $$ = db_create_expression( NULL, NULL, EXP_OP_SRANDOM, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = parser_create_syscall_exp( EXP_OP_SRANDOM, @1.first_line, @1.first_column, @1.last_column );
     }
   | S_urandom
     {
-      if( ignore_mode == 0 ) {
-        Try {
-          $$ = db_create_expression( NULL, NULL, EXP_OP_SURANDOM, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = parser_create_syscall_exp( EXP_OP_SURANDOM, @1.first_line, @1.first_column, @1.last_column );
     }
   | S_time
     {
-      if( ignore_mode == 0 ) {
-        Try {
-          $$ = db_create_expression( NULL, NULL, EXP_OP_STIME, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = parser_create_syscall_exp( EXP_OP_STIME, @1.first_line, @1.first_column, @1.last_column );
     }
   | identifier index_expr
     {
@@ -1411,75 +1295,19 @@ expr_primary
     }
   | identifier index_expr K_INC
     {
-      if( (ignore_mode == 0) && ($2 != NULL) ) {
-        db_bind_expr_tree( $2, $1 );
-        $2->line = @1.first_line;
-        $2->col  = ((@1.first_column & 0xffff) << 16) | ($2->col & 0xffff);
-        Try {
-          $$ = db_create_expression( NULL, $2, EXP_OP_PINC, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $2, FALSE );
-        $$ = NULL;
-      }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      $$ = parser_create_op_and_assign_w_dim_exp( $1, EXP_OP_PINC, $2, @1.first_line, @1.first_column, @3.last_column );
     }
   | identifier index_expr K_DEC
     {
-      if( (ignore_mode == 0) && ($2 != NULL) ) {
-        db_bind_expr_tree( $2, $1 );
-        $2->line = @1.first_line;
-        $2->col  = ((@1.first_column & 0xffff) << 16) | ($2->col & 0xffff);
-        Try {
-          $$ = db_create_expression( NULL, $2, EXP_OP_PDEC, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $2, FALSE );
-        $$ = NULL;
-      }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      $$ = parser_create_op_and_assign_w_dim_exp( $1, EXP_OP_PDEC, $2, @1.first_line, @1.first_column, @3.last_column );
     }
   | K_INC identifier index_expr
     {
-      if( (ignore_mode == 0) && ($3 != NULL) ) {
-        db_bind_expr_tree( $3, $2 );
-        $3->line = @2.first_line;
-        $3->col  = ((@2.first_column & 0xffff) << 16) | ($3->col & 0xffff);
-        Try {
-          $$ = db_create_expression( NULL, $3, EXP_OP_IINC, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
-      free_safe( $2, (strlen( $2 ) + 1) );
+      $$ = parser_create_op_and_assign_w_dim_exp( $2, EXP_OP_IINC, $3, @1.first_line, @1.first_column, @3.last_column );
     }
   | K_DEC identifier index_expr
     {
-      if( (ignore_mode == 0) && ($3 != NULL) ) {
-        db_bind_expr_tree( $3, $2 );
-        $3->line = @2.first_line;
-        $3->col  = ((@2.first_column & 0xffff) << 16) | ($3->col & 0xffff);
-        Try {
-          $$ = db_create_expression( NULL, $3, EXP_OP_IDEC, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
-      free_safe( $2, (strlen( $2 ) + 1) );
+      $$ = parser_create_op_and_assign_w_dim_exp( $2, EXP_OP_IDEC, $3, @1.first_line, @1.first_column, @3.last_column );
     }
   | identifier '(' expression_port_list ')'
     {
@@ -1503,184 +1331,57 @@ expr_primary
     }
   | S_allow '(' ignore_more expression_port_list ignore_less ')'
     {
-      if( ignore_mode == 0 ) {
-        Try {
-          $$ = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = parser_create_syscall_exp( EXP_OP_NOOP, 0, 0, 0 );
     }
   | S_random '(' expression_systask_list ')'
     {
-      if( (ignore_mode == 0) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( NULL, $3, EXP_OP_SRANDOM, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
-        } Catch_anonymous {
-          expression_dealloc( $3, FALSE );
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_syscall_w_params_exp( EXP_OP_SRANDOM, $3, @1.first_line, @1.first_column, @4.last_column );
     }
   | S_urandom '(' expression_systask_list ')'
     {
-      if( (ignore_mode == 0) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( NULL, $3, EXP_OP_SURANDOM, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
-        } Catch_anonymous {
-          expression_dealloc( $3, FALSE );
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_syscall_w_params_exp( EXP_OP_SURANDOM, $3, @1.first_line, @1.first_column, @4.last_column );
     }
   | S_urandom_range '(' expression_systask_list ')'
     {
-      if( (ignore_mode == 0) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( NULL, $3, EXP_OP_SURAND_RANGE, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
-        } Catch_anonymous {
-          expression_dealloc( $3, FALSE );
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_syscall_w_params_exp( EXP_OP_SURAND_RANGE, $3, @1.first_line, @1.first_column, @4.last_column );
     }
   | S_realtobits '(' expression_systask_list ')'
     {
-      if( (ignore_mode == 0) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( NULL, $3, EXP_OP_SR2B, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
-        } Catch_anonymous {
-          expression_dealloc( $3, FALSE );
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_syscall_w_params_exp( EXP_OP_SR2B, $3, @1.first_line, @1.first_column, @4.last_column );
     }
   | S_bitstoreal '(' expression_systask_list ')'
     {
-      if( (ignore_mode == 0) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( NULL, $3, EXP_OP_SB2R, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
-          $$->value->suppl.part.data_type = VDATA_R64;
-        } Catch_anonymous {
-          expression_dealloc( $3, FALSE );
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
+      if( ($$ = parser_create_syscall_w_params_exp( EXP_OP_SB2R, $3, @1.first_line, @1.first_column, @4.last_column )) != NULL ) {
+        $$->value->suppl.part.data_type = VDATA_R64;
       }
     }
   | S_itor '(' expression_systask_list ')'
     {
-      if( (ignore_mode == 0) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( NULL, $3, EXP_OP_SI2R, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
-          $$->value->suppl.part.data_type = VDATA_R64;
-        } Catch_anonymous {
-          expression_dealloc( $3, FALSE );
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
+      if( ($$ = parser_create_syscall_w_params_exp( EXP_OP_SI2R, $3, @1.first_line, @1.first_column, @4.last_column )) != NULL ) {
+        $$->value->suppl.part.data_type = VDATA_R64;
       }
     }
   | S_rtoi '(' expression_systask_list ')'
     {
-      if( (ignore_mode == 0) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( NULL, $3, EXP_OP_SR2I, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
-        } Catch_anonymous {
-          expression_dealloc( $3, FALSE );
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_syscall_w_params_exp( EXP_OP_SR2I, $3, @1.first_line, @1.first_column, @4.last_column );
     }
   | S_shortrealtobits '(' expression_systask_list ')'
     {
-      if( (ignore_mode == 0) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( NULL, $3, EXP_OP_SSR2B, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
-        } Catch_anonymous {
-          expression_dealloc( $3, FALSE );
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_syscall_w_params_exp( EXP_OP_SSR2B, $3, @1.first_line, @1.first_column, @4.last_column );
     }
   | S_bitstoshortreal '(' expression_systask_list ')'
     {
-      if( (ignore_mode == 0) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( NULL, $3, EXP_OP_SB2SR, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
-          $$->value->suppl.part.data_type = VDATA_R32;
-        } Catch_anonymous {
-          expression_dealloc( $3, FALSE );
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
+      if( ($$ = parser_create_syscall_w_params_exp( EXP_OP_SB2SR, $3, @1.first_line, @1.first_column, @4.last_column )) != NULL ) {
+        $$->value->suppl.part.data_type = VDATA_R32;
       }
     }
   | S_testargs '(' expression_systask_list ')'
     {
-      if( ignore_mode == 0 ) {
-        Try {
-          $$ = db_create_expression( NULL, $3, EXP_OP_STESTARGS, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
-        } Catch_anonymous {
-          expression_dealloc( $3, FALSE );
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_syscall_w_params_exp( EXP_OP_STESTARGS, $3, @1.first_line, @1.first_column, @4.last_column );
     }
   | S_valargs '(' expression_systask_list ')'
     {
-      if( ignore_mode == 0 ) {
-        Try {
-          $$ = db_create_expression( NULL, $3, EXP_OP_SVALARGS, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-        } Catch_anonymous {
-          expression_dealloc( $3, FALSE );
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_syscall_w_params_exp( EXP_OP_SVALARGS, $3, @1.first_line, @1.first_column, @4.last_column );
     }
   | '(' expression ')'
     {

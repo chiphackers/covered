@@ -458,6 +458,38 @@ static_expr* parser_create_unary_se(
 }
 
 /*!
+ \return Returns pointer to newly created static expression.
+
+ Creates a static expression system call.
+*/
+static_expr* parser_create_syscall_se(
+  exp_op_type  op,            /*!< Expression operation type */
+  unsigned int first_line,    /*!< First line of static expression */
+  unsigned int first_column,  /*!< First column of static expression */
+  unsigned int last_column    /*!< Last column of static expression */
+) { PROFILE(PARSER_CREATE_SYSCALL_SE);
+
+  static_expr* se = NULL;
+
+  if( ignore_mode == 0 ) {
+    se = (static_expr*)malloc_safe( sizeof( static_expr ) );
+    se->num = -1;
+    Try {
+      se->exp = db_create_expression( NULL, NULL, op, lhs_mode, first_line, first_column, (last_column - 1), NULL );
+    } Catch_anonymous {
+      error_count++;
+      static_expr_dealloc( se, FALSE );
+      se = NULL;
+    }
+  }
+
+  PROFILE_END;
+
+  return( se );
+
+}
+
+/*!
  \return Returns pointer to newly created expression.
 
  Creates a unary expression.
@@ -519,8 +551,139 @@ expression* parser_create_binary_exp(
 
 }
 
+/*!
+ \return Returns a pointer to the newly created expression.
+
+ Creates an expression for an op-and-assign expression.
+*/
+expression* parser_create_op_and_assign_exp(
+  char*        name,           /*!< Name of signal */
+  exp_op_type  op,             /*!< Expression operation type */
+  unsigned int first_line1,    /*!< First line of signal */
+  unsigned int first_column1,  /*!< First column of signal */
+  unsigned int last_column1,   /*!< Last column of signal */
+  unsigned int last_column2    /*!< Last column of full expression */
+) { PROFILE(PARSER_CREATE_OP_AND_ASSIGN_EXP);
+
+  expression* retval = NULL;
+
+  if( ignore_mode == 0 ) {
+    Try {
+      expression* tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, first_line1, first_column1, (last_column1 - 1), name );
+      retval = db_create_expression( NULL, tmp, op, lhs_mode, first_line1, first_column1, (last_column2 - 1), NULL );
+    } Catch_anonymous {
+      error_count++;
+    }
+  }
+  free_safe( name, (strlen( name ) + 1) );
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns a pointer to the newly created expression system call.
+
+ Creates an expression for a system call.
+*/
+expression* parser_create_syscall_exp(
+  exp_op_type  op,            /*!< Expression operation type */
+  unsigned int first_line,    /*!< First line of expression */
+  unsigned int first_column,  /*!< First column of expression */
+  unsigned int last_column    /*!< Last column of expression */
+) { PROFILE(PARSER_CREATE_SYSCALL_EXP);
+
+  expression* retval = NULL;
+
+  if( ignore_mode == 0 ) {
+    Try {
+      retval = db_create_expression( NULL, NULL, op, lhs_mode, first_line, first_column, (last_column - 1), NULL );
+    } Catch_anonymous {
+      error_count++;
+    }
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns a pointer to the newly created expression.
+
+ Creates an expression for a system call with a parameter list.
+*/
+expression* parser_create_syscall_w_params_exp(
+  exp_op_type  op,            /*!< Expression operation type */
+  expression*  plist,         /*!< Parameter list expression */
+  unsigned int first_line,    /*!< First line of expression */
+  unsigned int first_column,  /*!< First column of expression */
+  unsigned int last_column    /*!< Last column of expression */
+) { PROFILE(PARSER_CREATE_SYSCALL_W_PARAMS_EXP);
+
+  expression* retval = NULL;
+
+  if( (ignore_mode == 0) && (plist != NULL) ) {
+    Try {
+      retval = db_create_expression( NULL, plist, op, lhs_mode, first_line, first_column, (last_column - 1), NULL );
+    } Catch_anonymous {
+      expression_dealloc( plist, FALSE );
+      error_count++;
+    }
+  } else {
+    expression_dealloc( plist, FALSE );
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns a pointer to the newly created expression.
+
+ Creates an op-and-assign expression.
+*/
+expression* parser_create_op_and_assign_w_dim_exp(
+  char*        name,          /*!< Name of signal */
+  exp_op_type  op,            /*!< Expression operation type */
+  expression*  dim_exp,       /*!< Dimensional expression */
+  unsigned int first_line,    /*!< First line of expression */
+  unsigned int first_column,  /*!< First column of expression */
+  unsigned int last_column    /*!< Last column of expression */
+) { PROFILE(PARSER_CREATE_OP_AND_ASSIGN_W_DIM_EXP);
+
+  expression* retval = NULL;
+
+  if( (ignore_mode == 0) && (dim_exp != NULL) ) {
+    db_bind_expr_tree( dim_exp, name );
+    dim_exp->line = first_line;
+    dim_exp->col  = ((first_column & 0xffff) << 16) | (dim_exp->col & 0xffff);
+    Try {
+      retval = db_create_expression( NULL, dim_exp, op, lhs_mode, first_line, first_column, (last_column - 1), NULL );
+    } Catch_anonymous {
+      error_count++;
+    }
+  } else {
+    expression_dealloc( dim_exp, FALSE );
+  }
+  free_safe( name, (strlen( name ) + 1) );
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
 
 /*
  $Log$
+ Revision 1.1  2008/12/02 00:17:07  phase1geo
+ Adding missing files.
+
 */
 
