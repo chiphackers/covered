@@ -39,6 +39,7 @@
 #include "gen_item.h"
 #include "link.h"
 #include "obfuscate.h"
+#include "parser_func.h"
 #include "parser_misc.h"
 #include "profiler.h"
 #include "statement.h"
@@ -53,16 +54,19 @@ extern int    stmt_conn_id;
 extern int    gi_conn_id;
 extern isuppl info_suppl;
 extern char*  file_version;
+extern int    curr_sig_type;
 
 /* Functions from lexer */
 extern void lex_start_udp_table();
 extern void lex_end_udp_table();
 
-/*!
- If set to a value > 0, specifies that we are currently parsing code that should be ignored by
- Covered; otherwise, evaluate parsed code.
-*/
-int ignore_mode = 0;
+/* TBD - We won't be needing these later */
+extern int ignore_mode;
+extern sig_range curr_prange;
+extern sig_range curr_urange;
+extern bool curr_signed;
+extern bool lhs_mode;
+
 
 /*!
  If set to a value > 0, specifies that we are parsing a parameter expression
@@ -119,11 +123,6 @@ int  fork_depth  = -1;
 */
 int  block_depth = 0; 
 
-/*!
- If set to TRUE, specifies that we are currently parsing syntax on the left-hand-side of an
- assignment.
-*/
-bool lhs_mode    = FALSE;
 
 /*!
  Pointer to head of parameter override list.
@@ -145,22 +144,6 @@ sig_link* dummy_head    = NULL;
 */
 sig_link* dummy_tail    = NULL;
 
-/*!
- Contains the last explicitly or implicitly defined packed range information.  This is needed because lists
- of signals/parameters can be made using a previously set range.
-*/
-sig_range curr_prange;
-
-/*!
- Contains the last explicitly or implicitly defined unpacked range information.  This is needed because lists
- of signals/parameters can be made using a previously set range.
-*/
-sig_range curr_urange;
-
-/*!
- Contains the last explicitly or implicitly defines signed indication.
-*/
-bool curr_signed = FALSE;
 
 /*!
  Specifies if the current variable list is handled by Covered or not.
@@ -177,10 +160,6 @@ bool curr_mba = FALSE;
 */
 bool curr_packed = TRUE;
 
-/*!
- Specifies the current signal/port type for a variable list.
-*/
-int curr_sig_type = SSUPPL_TYPE_DECL_NET;
 
 /*!
  Pointer to head of stack structure that stores the contents of generate
@@ -366,24 +345,15 @@ main
 attribute_list_opt
   : K_PSTAR
     {
-      if( (ignore_mode == 0) && !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "Attribute syntax found in block that is specified to not allow Verilog-2001 syntax" );
-        ignore_mode++;
-      }
+      parser_check_pstar();
     }
     attribute_list K_STARP
     {
-      if( !parser_check_generation( GENERATION_2001 ) ) {
-        ignore_mode--;
-      } else if( ignore_mode == 0 ) {
-        db_parse_attribute( $3 );
-      }
+      parser_check_attribute( $3 );
     }
   | K_PSTAR
     {
-      if( (ignore_mode == 0) && !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "Attribute syntax found in block that is specified to not allow Verilog-2001 syntax" );
-      }
+      parser_check_pstar();
     }
     K_STARP
   |
@@ -392,14 +362,7 @@ attribute_list_opt
 attribute_list
   : attribute_list ',' attribute
     {
-      if( (ignore_mode == 0) && ($3 != NULL) && ($1 != NULL) ) {
-        $3->next  = $1;
-        $1->prev  = $3;
-        $3->index = $1->index + 1;
-        $$ = $3;
-      } else {
-        $$ = NULL;
-      }
+      $$ = parser_append_to_attr_list( $1, $3 );
     } 
   | attribute
     {
@@ -410,25 +373,11 @@ attribute_list
 attribute
   : IDENTIFIER
     {
-      attr_param* ap;
-      if( ignore_mode == 0 ) {
-        ap = db_create_attr_param( $1, NULL );
-        $$ = ap;
-      } else {
-        $$ = NULL;
-      }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      $$ = parser_create_attr( $1, NULL );
     }
   | IDENTIFIER '=' {attr_mode++;} expression {attr_mode--;}
     {
-      attr_param* ap;
-      if( ignore_mode == 0 ) {
-        ap = db_create_attr_param( $1, $4 );
-        $$ = ap;
-      } else {
-        $$ = NULL;
-      }
-      free_safe( $1, (strlen( $1 ) + 1) );
+      $$ = parser_create_attr( $1, $4 );
     }
   ;
 
@@ -509,70 +458,27 @@ description
     list_of_variables ';'
   | K_task automatic_opt IDENTIFIER ';'
     {
-      if( ignore_mode == 0 ) {
-        Try {
-          if( !db_add_function_task_namedblock( ($2 ? FUNIT_ATASK : FUNIT_TASK), $3, @3.text, @3.first_line ) ) {
-            ignore_mode++;
-          }
-        } Catch_anonymous {
-          error_count++;
-          ignore_mode++;
-        }
-      }
-      free_safe( $3, (strlen( $3 ) + 1) );
+      parser_create_task_decl( $2, $3, @3.text, @3.first_line );
     }
     task_item_list_opt statement_or_null
     {
-      statement* stmt = $7;
-      if( ignore_mode == 0 ) {
-        if( stmt == NULL ) {
-          stmt = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, @7.first_line, @7.first_column, (@7.last_column - 1), NULL ) );
-        }
-        stmt->suppl.part.head      = 1;
-        stmt->suppl.part.is_called = 1;
-        db_add_statement( stmt, stmt );
-      }
+      parser_create_task_body( $7, @7.first_line, @7.first_column, @7.last_column );
     }
     K_endtask
     {
-      if( ignore_mode == 0 ) {
-        db_end_function_task_namedblock( @9.first_line );
-      } else {
-        ignore_mode--;
-      }
+      parser_end_task_function( @9.first_line );
     }
   | K_function automatic_opt signed_opt range_or_type_opt IDENTIFIER ';'
     {
-      if( ignore_mode == 0 ) {
-        Try {
-          if( db_add_function_task_namedblock( ($2 ? FUNIT_AFUNCTION : FUNIT_FUNCTION), $5, @5.text, @5.first_line ) ) {
-            db_add_signal( $5, curr_sig_type, &curr_prange, NULL, curr_signed, FALSE, @5.first_line, @5.first_column, TRUE );
-          } else {
-            ignore_mode++;
-          }
-        } Catch_anonymous {
-          error_count++;
-          ignore_mode++;
-        }
-        free_safe( $5, (strlen( $5 ) + 1) );
-      }
+      parser_create_function_decl( $2, $5, @5.text, @5.first_line, @5.first_column );
     }
     function_item_list statement
     {
-      statement* stmt = $9;
-      if( (ignore_mode == 0) && (stmt != NULL) ) {
-        stmt->suppl.part.head      = 1;
-        stmt->suppl.part.is_called = 1;
-        db_add_statement( stmt, stmt );
-      }
+      parser_create_function_body( $9 );
     }
     K_endfunction
     {
-      if( ignore_mode == 0 ) {
-        db_end_function_task_namedblock( @11.first_line );
-      } else {
-        ignore_mode--;
-      }
+      parser_end_task_function( @11.first_line );
     }
   | error ';'
     {
@@ -684,89 +590,25 @@ list_of_port_declarations
   /* Handles Verilog-2001 port of type:  input wire [m:l] <list>; */
 port_declaration
   : attribute_list_opt port_type net_type_sign_range_opt IDENTIFIER
-    { PROFILE(PARSER_PORT_DECLARATION_A);
-      port_info* pi;
-      if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "Inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax" );
-        free_safe( $4, (strlen( $4 ) + 1) );
-        $$ = NULL;
-      } else {
-        if( ignore_mode == 0 ) {
-          db_add_signal( $4, curr_sig_type, &curr_prange, NULL, curr_signed, FALSE, @4.first_line, @4.first_column, TRUE );
-          pi = (port_info*)malloc_safe( sizeof( port_info ) );
-          pi->type      = curr_sig_type;
-          pi->is_signed = curr_signed;
-          pi->prange    = parser_copy_curr_range( TRUE );
-          pi->urange    = parser_copy_curr_range( FALSE );
-          free_safe( $4, (strlen( $4 ) + 1) );
-          $$ = pi;
-        } else {
-          $$ = NULL;
-        }
-      }
+    { 
+      $$ = parser_create_inline_port( $4, curr_sig_type, @4.first_line, @4.first_column );
     }
   | attribute_list_opt K_output var_type signed_opt range_opt IDENTIFIER
-    { PROFILE(PARSER_PORT_DECLARATION_B);
-      port_info* pi;
-      if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "Inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax" );
-        free_safe( $6, (strlen( $6 ) + 1) );
-        $$ = NULL;
-      } else {
-        if( ignore_mode == 0 ) {
-          db_add_signal( $6, SSUPPL_TYPE_OUTPUT_REG, &curr_prange, NULL, curr_signed, FALSE, @6.first_line, @6.first_column, TRUE );
-          pi = (port_info*)malloc_safe( sizeof( port_info ) );
-          pi->type      = SSUPPL_TYPE_OUTPUT_REG;
-          pi->is_signed = curr_signed;
-          pi->prange    = parser_copy_curr_range( TRUE );
-          pi->urange    = parser_copy_curr_range( FALSE );
-          free_safe( $6, (strlen( $6 ) + 1) );
-          $$ = pi;
-        } else {
-          $$ = NULL;
-        }
-      }
+    {
+      $$ = parser_create_inline_port( $6, SSUPPL_TYPE_OUTPUT_REG, @6.first_line, @6.first_column );
     }
   /* We just need to parse the static register assignment as this signal will get its value from the dumpfile */
   | attribute_list_opt K_output var_type signed_opt range_opt IDENTIFIER '=' ignore_more static_expr ignore_less
-    { PROFILE(PARSER_PORT_DECLARATION_C);
-      port_info* pi;
-      if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "Inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax" );
-        free_safe( $6, (strlen( $6 ) + 1) );
-        $$ = NULL;
-      } else {
-        if( ignore_mode == 0 ) {
-          db_add_signal( $6, SSUPPL_TYPE_OUTPUT_REG, &curr_prange, NULL, curr_signed, FALSE, @6.first_line, @6.first_column, TRUE );
-          pi = (port_info*)malloc_safe( sizeof( port_info ) );
-          pi->type       = SSUPPL_TYPE_OUTPUT_REG;
-          pi->is_signed  = curr_signed;
-          pi->prange     = parser_copy_curr_range( TRUE );
-          pi->urange     = parser_copy_curr_range( FALSE );
-          free_safe( $6, (strlen( $6 ) + 1) );
-          $$ = pi;
-        } else {
-          $$ = NULL;
-        }
-      }
+    {
+      $$ = parser_create_inline_port( $6, SSUPPL_TYPE_OUTPUT_REG, @6.first_line, @6.first_column );
     }
   | attribute_list_opt port_type net_type_sign_range_opt error
     {
-      if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "Inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax" );
-      } else if( ignore_mode == 0 ) {
-        VLerror( "Invalid variable list in port declaration" );
-      }
-      $$ = NULL;
+      $$ = parser_handle_inline_port_error();
     }
   | attribute_list_opt K_output var_type signed_opt range_opt error
     {
-      if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "Inline port declaration syntax found in block that is specified to not allow Verilog-2001 syntax" );
-      } else if( ignore_mode == 0 ) {
-        VLerror( "Invalid variable list in port declaration" );
-      }
-      $$ = NULL;
+      $$ = parser_handle_inline_port_error();
     }
 
   ;
@@ -823,69 +665,26 @@ port_reference_list
 number
   : DEC_NUMBER
     {
-      char* num = $1;
-      vector_from_string( &num, FALSE, &($$.vec), &($$.base) );
-      free_safe( $1, (strlen( $1 ) + 1) );
+      $$ = parser_create_simple_number( $1 );
     }
   | BASE_NUMBER
     { 
-      char* num = $1;
-      vector_from_string( &num, FALSE, &($$.vec), &($$.base) );
-      free_safe( $1, (strlen( $1 ) + 1) );
+      $$ = parser_create_simple_number( $1 );
     }
   | DEC_NUMBER BASE_NUMBER
     {
-      int          slen     = strlen( $1 ) + strlen( $2 ) + 1;
-      char*        combined = (char*)malloc_safe( slen );
-      char*        num      = combined;
-      unsigned int rv       = snprintf( num, slen, "%s%s", $1, $2 );
-      assert( rv < slen );
-      vector_from_string( &num, FALSE, &($$.vec), &($$.base) );
-      free_safe( $1, (strlen( $1 ) + 1) );
-      free_safe( $2, (strlen( $2 ) + 1) );
-      free_safe( combined, slen );
+      $$ = parser_create_complex_number( $1, $2 );
     }
   ;
 
 static_expr_port_list
   : static_expr_port_list ',' static_expr
     {
-      static_expr* tmp = $3;
-      if( ignore_mode == 0 ) {
-        if( $3 != NULL ) {
-          Try {
-            tmp = static_expr_gen_unary( $3, EXP_OP_PASSIGN, @3.first_line, @3.first_column, (@3.last_column - 1) );
-          } Catch_anonymous {
-            error_count++;
-          }
-          Try {
-            tmp = static_expr_gen( tmp, $1, EXP_OP_PLIST, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-          } Catch_anonymous {
-            error_count++;
-          }
-          $$ = tmp;
-        } else {
-          $$ = $1;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = parser_append_se_port_list( $1, $3, @1.first_line, @1.first_column, @3.first_line, @3.first_column, @3.last_column );
     }
   | static_expr
     {
-      static_expr* tmp = $1;
-      if( ignore_mode == 0 ) {
-        if( $1 != NULL ) {
-          Try {
-            tmp = static_expr_gen_unary( $1, EXP_OP_PASSIGN, @1.first_line, @1.first_column, (@1.last_column - 1) );
-          } Catch_anonymous {
-            error_count++;
-          }
-        }
-        $$ = tmp;
-      } else {
-        $$ = NULL;
-      }
+      $$ = parser_create_se_port_list( $1, @1.first_line, @1.first_column, @1.last_column );
     }
   ;
 
@@ -916,75 +715,35 @@ static_expr
     }
   | '~' static_expr_primary %prec UNARY_PREC
     {
-      Try {
-        $$ = static_expr_gen_unary( $2, EXP_OP_UINV, @1.first_line, @1.first_column, (@1.last_column - 1) );
-      } Catch_anonymous {
-        error_count++;
-        $$ = NULL;
-      }
+      $$ = parser_create_unary_se( $2, EXP_OP_UINV, @1.first_line, @1.first_column, @1.last_column );
     }
   | '&' static_expr_primary %prec UNARY_PREC
     {
-      Try {
-        $$ = static_expr_gen_unary( $2, EXP_OP_UAND, @1.first_line, @1.first_column, (@1.last_column - 1) );
-      } Catch_anonymous {
-        error_count++;
-        $$ = NULL;
-      }
+      $$ = parser_create_unary_se( $2, EXP_OP_UAND, @1.first_line, @1.first_column, @1.last_column );
     }
   | '!' static_expr_primary %prec UNARY_PREC
     {
-      Try {
-        $$ = static_expr_gen_unary( $2, EXP_OP_UNOT, @1.first_line, @1.first_column, (@1.last_column - 1) );
-      } Catch_anonymous {
-        error_count++;
-        $$ = NULL;
-      }
+      $$ = parser_create_unary_se( $2, EXP_OP_UNOT, @1.first_line, @1.first_column, @1.last_column );
     }
   | '|' static_expr_primary %prec UNARY_PREC
     {
-      Try {
-        $$ = static_expr_gen_unary( $2, EXP_OP_UOR, @1.first_line, @1.first_column, (@1.last_column - 1) );
-      } Catch_anonymous {
-        error_count++;
-        $$ = NULL;
-      }
+      $$ = parser_create_unary_se( $2, EXP_OP_UOR, @1.first_line, @1.first_column, @1.last_column );
     }
   | '^' static_expr_primary %prec UNARY_PREC
     {
-      Try {
-        $$ = static_expr_gen_unary( $2, EXP_OP_UXOR, @1.first_line, @1.first_column, (@1.last_column - 1) );
-      } Catch_anonymous {
-        error_count++;
-        $$ = NULL;
-      }
+      $$ = parser_create_unary_se( $2, EXP_OP_UXOR, @1.first_line, @1.first_column, @1.last_column );
     }
   | K_NAND static_expr_primary %prec UNARY_PREC
     {
-      Try {
-        $$ = static_expr_gen_unary( $2, EXP_OP_UNAND, @1.first_line, @1.first_column, (@1.last_column - 1) );
-      } Catch_anonymous {
-        error_count++;
-        $$ = NULL;
-      }
+      $$ = parser_create_unary_se( $2, EXP_OP_UNAND, @1.first_line, @1.first_column, @1.last_column );
     }
   | K_NOR static_expr_primary %prec UNARY_PREC
     {
-      Try {
-        $$ = static_expr_gen_unary( $2, EXP_OP_UNOR, @1.first_line, @1.first_column, (@1.last_column - 1) );
-      } Catch_anonymous {
-        error_count++;
-        $$ = NULL;
-      }
+      $$ = parser_create_unary_se( $2, EXP_OP_UNOR, @1.first_line, @1.first_column, @1.last_column );
     }
   | K_NXOR static_expr_primary %prec UNARY_PREC
     {
-      Try {
-        $$ = static_expr_gen_unary( $2, EXP_OP_UNXOR, @1.first_line, @1.first_column, (@1.last_column - 1) );
-      } Catch_anonymous {
-        error_count++;
-        $$ = NULL;
-      }
+      $$ = parser_create_unary_se( $2, EXP_OP_UNXOR, @1.first_line, @1.first_column, @1.last_column );
     }
   | static_expr '^' static_expr
     {
@@ -1241,107 +1000,35 @@ expression
     }
   | '~' expr_primary %prec UNARY_PREC
     {
-      if( (ignore_mode == 0) && ($2 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $2, NULL, EXP_OP_UINV, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = parser_create_unary_exp( $2, EXP_OP_UINV, @1.first_line, @1.first_column, @1.last_column );
     }
   | '&' expr_primary %prec UNARY_PREC
     {
-      if( (ignore_mode == 0) && ($2 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $2, NULL, EXP_OP_UAND, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = parser_create_unary_exp( $2, EXP_OP_UAND, @1.first_line, @1.first_column, @1.last_column );
     }
   | '!' expr_primary %prec UNARY_PREC
     {
-      if( (ignore_mode == 0) && ($2 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $2, NULL, EXP_OP_UNOT, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = parser_create_unary_exp( $2, EXP_OP_UNOT, @1.first_line, @1.first_column, @1.last_column );
     }
   | '|' expr_primary %prec UNARY_PREC
     {
-      if( (ignore_mode == 0) && ($2 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $2, NULL, EXP_OP_UOR, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = parser_create_unary_exp( $2, EXP_OP_UOR, @1.first_line, @1.first_column, @1.last_column );
     }
   | '^' expr_primary %prec UNARY_PREC
     {
-      if( (ignore_mode == 0) && ($2 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $2, NULL, EXP_OP_UXOR, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = parser_create_unary_exp( $2, EXP_OP_UXOR, @1.first_line, @1.first_column, @1.last_column );
     }
   | K_NAND expr_primary %prec UNARY_PREC
     {
-      if( (ignore_mode == 0) && ($2 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $2, NULL, EXP_OP_UNAND, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = parser_create_unary_exp( $2, EXP_OP_UNAND, @1.first_line, @1.first_column, @1.last_column );
     }
   | K_NOR expr_primary %prec UNARY_PREC
     {
-      if( (ignore_mode == 0) && ($2 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $2, NULL, EXP_OP_UNOR, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = parser_create_unary_exp( $2, EXP_OP_UNOR, @1.first_line, @1.first_column, @1.last_column );
     }
   | K_NXOR expr_primary %prec UNARY_PREC
     {
-      if( (ignore_mode == 0) && ($2 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $2, NULL, EXP_OP_UNXOR, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = parser_create_unary_exp( $2, EXP_OP_UNXOR, @1.first_line, @1.first_column, @1.last_column );
     }
   | '+' error %prec UNARY_PREC
     {
@@ -1385,93 +1072,27 @@ expression
     }
   | expression '^' expression
     {
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $3, $1, EXP_OP_XOR, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $1, FALSE );
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_binary_exp( $1, $3, EXP_OP_XOR, @1.first_line, @1.first_column, @3.last_column );
     }
   | expression '*' expression
     {
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $3, $1, EXP_OP_MULTIPLY, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $1, FALSE );
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_binary_exp( $1, $3, EXP_OP_MULTIPLY, @1.first_line, @1.first_column, @3.last_column );
     }
   | expression '/' expression
     {
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $3, $1, EXP_OP_DIVIDE, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $1, FALSE );
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_binary_exp( $1, $3, EXP_OP_DIVIDE, @1.first_line, @1.first_column, @3.last_column );
     }
   | expression '%' expression
     {
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $3, $1, EXP_OP_MOD, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $1, FALSE );
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_binary_exp( $1, $3, EXP_OP_MOD, @1.first_line, @1.first_column, @3.last_column );
     }
   | expression '+' expression
     {
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $3, $1, EXP_OP_ADD, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $1, FALSE );
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_binary_exp( $1, $3, EXP_OP_ADD, @1.first_line, @1.first_column, @3.last_column );
     }
   | expression '-' expression
     {
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $3, $1, EXP_OP_SUBTRACT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $1, FALSE );
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_binary_exp( $1, $3, EXP_OP_SUBTRACT, @1.first_line, @1.first_column, @3.last_column );
     }
   | expression K_POW expression
     {
@@ -1481,139 +1102,40 @@ expression
         expression_dealloc( $3, FALSE );
         $$ = NULL;
       } else {
-        if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-          Try {
-            $$ = db_create_expression( $3, $1, EXP_OP_EXPONENT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-          } Catch_anonymous {
-            error_count++;
-            $$ = NULL;
-          }
-        } else {
-          expression_dealloc( $1, FALSE );
-          expression_dealloc( $3, FALSE );
-          $$ = NULL;
-        }
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_EXPONENT, @1.first_line, @1.first_column, @3.last_column );
       }
     }
   | expression '&' expression
     {
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $3, $1, EXP_OP_AND, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $1, FALSE );
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_binary_exp( $1, $3, EXP_OP_AND, @1.first_line, @1.first_column, @3.last_column );
     }
   | expression '|' expression
     {
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $3, $1, EXP_OP_OR, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $1, FALSE );
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_binary_exp( $1, $3, EXP_OP_OR, @1.first_line, @1.first_column, @3.last_column );
     }
   | expression K_NAND expression
     {
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $3, $1, EXP_OP_NAND, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $1, FALSE );
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_binary_exp( $1, $3, EXP_OP_NAND, @1.first_line, @1.first_column, @3.last_column );
     }
   | expression K_NOR expression
     {
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $3, $1, EXP_OP_NOR, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $1, FALSE );
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_binary_exp( $1, $3, EXP_OP_NOR, @1.first_line, @1.first_column, @3.last_column );
     }
   | expression K_NXOR expression
     {
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $3, $1, EXP_OP_NXOR, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $1, FALSE );
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_binary_exp( $1, $3, EXP_OP_NXOR, @1.first_line, @1.first_column, @3.last_column );
     }
   | expression '<' expression
     {
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $3, $1, EXP_OP_LT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $1, FALSE );
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_binary_exp( $1, $3, EXP_OP_LT, @1.first_line, @1.first_column, @3.last_column );
     }
   | expression '>' expression
     {
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $3, $1, EXP_OP_GT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $1, FALSE );
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_binary_exp( $1, $3, EXP_OP_GT, @1.first_line, @1.first_column, @3.last_column );
     }
   | expression K_LS expression
     {
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $3, $1, EXP_OP_LSHIFT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $1, FALSE );
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_binary_exp( $1, $3, EXP_OP_LSHIFT, @1.first_line, @1.first_column, @3.last_column );
     }
   | expression K_LSS expression
     {
@@ -1623,34 +1145,12 @@ expression
         expression_dealloc( $3, FALSE );
         $$ = NULL;
       } else {
-        if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-          Try {
-            $$ = db_create_expression( $3, $1, EXP_OP_ALSHIFT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-          } Catch_anonymous {
-            error_count++;
-            $$ = NULL;
-          }
-        } else {
-          expression_dealloc( $1, FALSE );
-          expression_dealloc( $3, FALSE );
-          $$ = NULL;
-        }
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_ALSHIFT, @1.first_line, @1.first_column, @3.last_column );
       }
     }
   | expression K_RS expression
     {
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $3, $1, EXP_OP_RSHIFT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $1, FALSE );
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_binary_exp( $1, $3, EXP_OP_RSHIFT, @1.first_line, @1.first_column, @3.last_column );
     }
   | expression K_RSS expression
     {
@@ -1660,139 +1160,40 @@ expression
         expression_dealloc( $3, FALSE );
         $$ = NULL;
       } else {
-        if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-          Try {
-            $$ = db_create_expression( $3, $1, EXP_OP_ARSHIFT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-          } Catch_anonymous {
-            error_count++;
-            $$ = NULL;
-          }
-        } else {
-          expression_dealloc( $1, FALSE );
-          expression_dealloc( $3, FALSE );
-          $$ = NULL;
-        }
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_ARSHIFT, @1.first_line, @1.first_column, @3.last_column );
       }
     }
   | expression K_EQ expression
     {
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $3, $1, EXP_OP_EQ, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $1, FALSE );
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_binary_exp( $1, $3, EXP_OP_EQ, @1.first_line, @1.first_column, @3.last_column );
     }
   | expression K_CEQ expression
     {
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $3, $1, EXP_OP_CEQ, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $1, FALSE );
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_binary_exp( $1, $3, EXP_OP_CEQ, @1.first_line, @1.first_column, @3.last_column );
     }
   | expression K_LE expression
     {
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $3, $1, EXP_OP_LE, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $1, FALSE );
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_binary_exp( $1, $3, EXP_OP_LE, @1.first_line, @1.first_column, @3.last_column );
     }
   | expression K_GE expression
     {
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $3, $1, EXP_OP_GE, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $1, FALSE );
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_binary_exp( $1, $3, EXP_OP_GE, @1.first_line, @1.first_column, @3.last_column );
     }
   | expression K_NE expression
     {
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $3, $1, EXP_OP_NE, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $1, FALSE );
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_binary_exp( $1, $3, EXP_OP_NE, @1.first_line, @1.first_column, @3.last_column );
     }
   | expression K_CNE expression
     {
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $3, $1, EXP_OP_CNE, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $1, FALSE );
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_binary_exp( $1, $3, EXP_OP_CNE, @1.first_line, @1.first_column, @3.last_column );
     }
   | expression K_LOR expression
     {
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $3, $1, EXP_OP_LOR, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $1, FALSE );
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_binary_exp( $1, $3, EXP_OP_LOR, @1.first_line, @1.first_column, @3.last_column );
     }
   | expression K_LAND expression
     {
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        Try {
-          $$ = db_create_expression( $3, $1, EXP_OP_LAND, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-        } Catch_anonymous {
-          error_count++;
-          $$ = NULL;
-        }
-      } else {
-        expression_dealloc( $1, FALSE );
-        expression_dealloc( $3, FALSE );
-        $$ = NULL;
-      }
+      $$ = parser_create_binary_exp( $1, $3, EXP_OP_LAND, @1.first_line, @1.first_column, @3.last_column );
     }
   | expression '?' expression ':' expression
     {

@@ -42,6 +42,7 @@ covered_SOURCES = arc.c \
                   ovl.c \
 		  param.c \
 		  parse.c \
+                  parser_func.c \
 		  parser_misc.c \
 		  perf.c \
                   profiler.c \

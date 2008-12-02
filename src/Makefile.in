@@ -64,15 +64,16 @@ am_covered_OBJECTS = arc.$(OBJEXT) assertion.$(OBJEXT) attr.$(OBJEXT) \
 	line.$(OBJEXT) link.$(OBJEXT) lxt.$(OBJEXT) \
 	lxt2_read.$(OBJEXT) main.$(OBJEXT) memory.$(OBJEXT) \
 	merge.$(OBJEXT) obfuscate.$(OBJEXT) ovl.$(OBJEXT) \
-	param.$(OBJEXT) parse.$(OBJEXT) parser_misc.$(OBJEXT) \
-	perf.$(OBJEXT) profiler.$(OBJEXT) race.$(OBJEXT) \
-	rank.$(OBJEXT) reentrant.$(OBJEXT) report.$(OBJEXT) \
-	scope.$(OBJEXT) score.$(OBJEXT) search.$(OBJEXT) sim.$(OBJEXT) \
-	stat.$(OBJEXT) static.$(OBJEXT) static_lexer.$(OBJEXT) \
-	statement.$(OBJEXT) stmt_blk.$(OBJEXT) struct_union.$(OBJEXT) \
-	symtable.$(OBJEXT) sys_tasks.$(OBJEXT) tcl_funcs.$(OBJEXT) \
-	toggle.$(OBJEXT) tree.$(OBJEXT) util.$(OBJEXT) vcd.$(OBJEXT) \
-	vector.$(OBJEXT) vsignal.$(OBJEXT)
+	param.$(OBJEXT) parse.$(OBJEXT) parser_func.$(OBJEXT) \
+	parser_misc.$(OBJEXT) perf.$(OBJEXT) profiler.$(OBJEXT) \
+	race.$(OBJEXT) rank.$(OBJEXT) reentrant.$(OBJEXT) \
+	report.$(OBJEXT) scope.$(OBJEXT) score.$(OBJEXT) \
+	search.$(OBJEXT) sim.$(OBJEXT) stat.$(OBJEXT) static.$(OBJEXT) \
+	static_lexer.$(OBJEXT) statement.$(OBJEXT) stmt_blk.$(OBJEXT) \
+	struct_union.$(OBJEXT) symtable.$(OBJEXT) sys_tasks.$(OBJEXT) \
+	tcl_funcs.$(OBJEXT) toggle.$(OBJEXT) tree.$(OBJEXT) \
+	util.$(OBJEXT) vcd.$(OBJEXT) vector.$(OBJEXT) \
+	vsignal.$(OBJEXT)
 covered_OBJECTS = $(am_covered_OBJECTS)
 am__DEPENDENCIES_1 =
 covered_DEPENDENCIES = $(am__DEPENDENCIES_1)
@@ -243,6 +244,7 @@ covered_SOURCES = arc.c \
                   ovl.c \
 		  param.c \
 		  parse.c \
+                  parser_func.c \
 		  parser_misc.c \
 		  perf.c \
                   profiler.c \
@@ -396,6 +398,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/param.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parse.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parser.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parser_func.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parser_misc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/perf.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pplexer.Po@am__quote@
