@@ -622,7 +622,6 @@ static void do_include() { PROFILE(DO_INCLUDE);
       free_safe( standby->path, (strlen( standby->path ) + 1) );
       free_safe( standby, sizeof( struct include_stack_t ) );
       standby = 0;
-      printf( "pplexer Throw A\n" );
       Throw 0;
     }
 
@@ -727,7 +726,6 @@ void reset_pplexer(
 
   if( isp->file == 0 ) {
     perror( isp->path );
-    printf( "pplexer Throw B\n" );
     free_safe( isp->path, (strlen( isp->path ) + 1) );
     free_safe( isp, sizeof( struct include_stack_t ) );
     Throw 0;

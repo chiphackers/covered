@@ -27,18 +27,19 @@
 #include <assert.h>
 #include <ctype.h>
 
+#include "db.h"
 #include "defines.h"
-#include "vsignal.h"
+#include "gen_item.h"
+#include "generator.h"
+#include "keywords.h"
+#include "link.h"
+#include "obfuscate.h"
 #include "parser_misc.h"
 #include "parser.h"
-#include "util.h"
-#include "link.h"
-#include "vector.h"
-#include "keywords.h"
 #include "tree.h"
-#include "gen_item.h"
-#include "obfuscate.h"
-#include "db.h"
+#include "util.h"
+#include "vsignal.h"
+#include "vector.h"
 
 #define yylval VLlval
 #define YYDEBUG 1
@@ -64,6 +65,7 @@ extern sig_range    curr_urange;
 extern gen_item*    last_gi;
 extern isuppl       info_suppl;
 extern bool         flag_conservative;
+extern bool         parse_mode;
 
 /*!
  Contains state before entering exclusive block.
@@ -150,503 +152,984 @@ WSPACE [ \t\b\f]+
 
   /* Whitespace -- we ignore this */
 [ \t\b\f\r]   {
-	yylloc.last_column += strlen( yytext );
+  yylloc.last_column += strlen( yytext );
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
  }
 
   /* Newline character - blank line -- we ignore these */
 \n {
-	yylloc.first_line += 1;
-	yylloc.last_column = 0;
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_line += 1;
+  yylloc.last_column = 0;
  }
 
   /* Handle line directives */
 ^"#line"[ ]+\"[^\"]*\"[ ]+[0-9]+.* {
-	yylloc.first_column = yylloc.last_column;
-	yylloc.last_column += strlen( yytext );
-	line_directive();
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += strlen( yytext );
+  line_directive();
  }
 
 ^"`line"[ ]+[0-9]+[ ]+\"[^\"]*\".* {
-	yylloc.first_column = yylloc.last_column;
-	yylloc.last_column += strlen( yytext );
-	line_directive2();
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += strlen( yytext );
+  line_directive2();
  }
 
   /* Single-line comment -- we ignore this information */
 "//"          {
-	yylloc.first_column = yylloc.last_column;
-	yylloc.last_column += strlen( yytext );
-	state_enter         = YY_START;
-	BEGIN( LCOMMENT );
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += strlen( yytext );
+  state_enter         = YY_START;
+  BEGIN( LCOMMENT );
  }
 <LCOMMENT>.   {
-	yylloc.last_column += 1;
-	yymore();
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += 1;
+  yymore();
  }
 <LCOMMENT>\n  {
-        check_for_pragma( yytext );
-	BEGIN( state_enter );
-	yylloc.first_line += 1;
-	yylloc.last_column = 0;
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  check_for_pragma( yytext );
+  BEGIN( state_enter );
+  yylloc.first_line += 1;
+  yylloc.last_column = 0;
  }
 
   /* Multi-line comment */
 "/*"           {
-	state_enter         = YY_START;
-	BEGIN( CCOMMENT );
-	yylloc.first_column = yylloc.last_column;
-	yylloc.last_column += 2;
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  state_enter         = YY_START;
+  BEGIN( CCOMMENT );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
  }
 <CCOMMENT>.    {
-	yylloc.last_column += 1;
-	yymore();
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += 1;
+  yymore();
  }
 <CCOMMENT>\n   {
-	yylloc.first_line += 1;
-	yylloc.last_column = 0;
-	yymore();
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_line += 1;
+  yylloc.last_column = 0;
+  yymore();
  }
 <CCOMMENT>"*/" {
-	yylloc.last_column += 2;
-        check_for_pragma( yytext );
-	BEGIN( state_enter );
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += 2;
+  check_for_pragma( yytext );
+  BEGIN( state_enter );
  }
 
   /* Multi-character symbols */
-<PARSE>"(*"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_PSTAR;   }
-<PARSE>"*)"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_STARP;   }
-<PARSE>"<<"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_LS;      }
-<PARSE>"<<<"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_LSS;     }
-<PARSE>">>"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_RS;      }
-<PARSE>">>>"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_RSS;     }
-<PARSE>"<="   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_LE;      }
-<PARSE>">="   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_GE;      }
-<PARSE>"=="   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_EQ;      }
-<PARSE>"!="   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_NE;      }
-<PARSE>"==="  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_CEQ;     }
-<PARSE>"!=="  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_CNE;     }
-<PARSE>"=?="  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_PEQ;     }
-<PARSE>"!?="  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_PNE;     }
-<PARSE>"||"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_LOR;     }
-<PARSE>"&&"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_LAND;    }
-<PARSE>"&&&"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_TAND;    }
-<PARSE>"~|"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_NOR;     }
-<PARSE>"~^"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_NXOR;    }
-<PARSE>"^~"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_NXOR;    }
-<PARSE>"~&"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_NAND;    }
-<PARSE>"->"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_TRIGGER; }
-<PARSE>"+:"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_PO_POS;  }
-<PARSE>"-:"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_PO_NEG;  }
-<PARSE>"=>"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_EG;      }
-<PARSE>"*>"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_SG;      }
-<PARSE>".*"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_PS;      }
-<PARSE>"##"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_PP;      }
-<PARSE>"+="   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_ADD_A;   }
-<PARSE>"-="   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_SUB_A;   }
-<PARSE>"*="   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_MLT_A;   }
-<PARSE>"/="   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_DIV_A;   }
-<PARSE>"%="   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_MOD_A;   }
-<PARSE>"&="   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_AND_A;   }
-<PARSE>"|="   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_OR_A;    }
-<PARSE>"^="   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_XOR_A;   }
-<PARSE>"<<="  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_LS_A;    }
-<PARSE>">>="  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_RS_A;    }
-<PARSE>"<<<=" { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 4;  return K_ALS_A;   }
-<PARSE>">>>=" { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 4;  return K_ARS_A;   }
-<PARSE>"++"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_INC;     }
-<PARSE>"--"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_DEC;     }
-<PARSE>"**"   { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_POW;     }
+<PARSE>"(*"   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_PSTAR;
+ }
+
+<PARSE>"*)"   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_STARP;
+ }
+
+<PARSE>"<<"   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_LS;
+ }
+
+<PARSE>"<<<"  {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 3;
+  return K_LSS;
+ }
+
+<PARSE>">>"   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_RS;
+ }
+
+<PARSE>">>>"  {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 3;
+  return K_RSS;
+ }
+
+<PARSE>"<="   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_LE;
+ }
+
+<PARSE>">="   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_GE;
+ }
+
+<PARSE>"=="   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_EQ;
+ }
+
+<PARSE>"!="   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_NE;
+ }
+
+<PARSE>"==="  {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 3;
+  return K_CEQ;
+ }
+
+<PARSE>"!=="  {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 3;
+  return K_CNE;
+ }
+
+<PARSE>"=?="  {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 3;
+  return K_PEQ;
+ }
+
+<PARSE>"!?="  {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 3;
+  return K_PNE;
+ }
+
+<PARSE>"||"   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_LOR;
+ }
+
+<PARSE>"&&"   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_LAND;
+ }
+
+<PARSE>"&&&"  {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 3;
+  return K_TAND;
+ }
+
+<PARSE>"~|"   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_NOR;
+ }
+
+<PARSE>"~^"   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_NXOR;
+ }
+
+<PARSE>"^~"   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_NXOR;
+ }
+
+<PARSE>"~&"   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_NAND;
+ }
+
+<PARSE>"->"   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_TRIGGER;
+ }
+
+<PARSE>"+:"   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_PO_POS;
+ }
+
+<PARSE>"-:"   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_PO_NEG;
+ }
+
+<PARSE>"=>"   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_EG;
+ }
+
+<PARSE>"*>"   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_SG;
+ }
+
+<PARSE>".*"   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_PS;
+ }
+
+<PARSE>"##"   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_PP;
+ }
+
+<PARSE>"+="   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_ADD_A;
+ }
+
+<PARSE>"-="   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_SUB_A;
+ }
+
+<PARSE>"*="   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_MLT_A;
+ }
+
+<PARSE>"/="   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_DIV_A;
+ }
+
+<PARSE>"%="   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_MOD_A;
+ }
+
+<PARSE>"&="   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_AND_A;
+ }
+
+<PARSE>"|="   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_OR_A;
+ }
+
+<PARSE>"^="   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_XOR_A;
+ }
+
+<PARSE>"<<="  {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 3;
+  return K_LS_A;
+ }
+
+<PARSE>">>="  {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 3;
+  return K_RS_A;
+ }
+
+<PARSE>"<<<=" {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 4;
+  return K_ALS_A;
+ }
+
+<PARSE>">>>=" {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 4;
+  return K_ARS_A;
+ }
+
+<PARSE>"++"   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_INC;
+ }
+
+<PARSE>"--"   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_DEC;
+ }
+
+<PARSE>"**"   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 2;
+  return K_POW;
+ }
 
   /* Properly handle all cases of (*) and convert it to a simple '*' */
-<PARSE>"("{WSPACE}*"*"{WSPACE}*")" { yylloc.first_column = yylloc.last_column;  yylloc.last_column += strlen( yytext );  return '*'; }
+<PARSE>"("{WSPACE}*"*"{WSPACE}*")" {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += strlen( yytext );
+  return '*';
+ }
 
   /* Single character symbols */
 <PARSE>[}{;:\[\],()#=.@&!?<>%|^~+*/-] {
-	yylloc.first_column = yylloc.last_column;
-	yylloc.last_column += 1;
-        if( (yytext[0] == ';') || (yytext[0] == ',') ) {
-          curr_prange.clear = TRUE;
-          curr_urange.clear = TRUE;
-        }
-	return yytext[0];
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 1;
+  if( (yytext[0] == ';') || (yytext[0] == ',') ) {
+    curr_prange.clear = TRUE;
+    curr_urange.clear = TRUE;
+  }
+  return yytext[0];
  }
 
   /* C-style strings */
 <PARSE>\"            {
-	yylloc.first_column = yylloc.last_column;
-	yylloc.last_column += 1;
-        state_enter         = YY_START;
-	BEGIN( CSTRING );
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += 1;
+  state_enter         = YY_START;
+  BEGIN( CSTRING );
  }
 <CSTRING>\\\" {
-	yylloc.last_column += 2;
-	yymore();
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += 2;
+  yymore();
  }
 <CSTRING>\n   {
-	yylloc.last_column = 0;
-	BEGIN( state_enter );
-        yylloc.first_line += 1;
-        return 0;
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column = 0;
+  BEGIN( state_enter );
+  yylloc.first_line += 1;
+  return 0;
  }
 <CSTRING>\"   { PROFILE(LEXER_CSTRING_A);
-	int   str_len = strlen( yytext );
-        char* tmpstr;
-	yylloc.last_column += 1;
-	BEGIN( state_enter );
-        tmpstr = strdup_safe( yytext );
-        tmpstr[ str_len - 1 ] = '\0';
-        vector_from_string( &tmpstr, TRUE, &(yylval.num.vec), &(yylval.num.base) );
-        free_safe( tmpstr, (str_len + 1) );
-        return STRING;
+  int   str_len = strlen( yytext );
+  char* tmpstr;
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += 1;
+  BEGIN( state_enter );
+  tmpstr = strdup_safe( yytext );
+  tmpstr[ str_len - 1 ] = '\0';
+  vector_from_string( &tmpstr, TRUE, &(yylval.num.vec), &(yylval.num.base) );
+  free_safe( tmpstr, (str_len + 1) );
+  return STRING;
  }
 <CSTRING>.    {
-	yylloc.last_column += 1;
-	yymore();
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += 1;
+  yymore();
  }
 
   /* Ignore modules that are not needed by the parser. */
 <IGNORE_MODULE>endmodule    {
-	yylloc.first_column = yylloc.last_column;
-	yylloc.last_column += strlen( yytext );
-	if( file_prev_parsed ) {
-          BEGIN( IGNORE_GLOBALS );
-        } else {
-  	  BEGIN( PARSE );
- 	}
-        return I_endmodule;
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += strlen( yytext );
+  if( file_prev_parsed ) {
+    BEGIN( IGNORE_GLOBALS );
+  } else {
+    BEGIN( PARSE );
+  }
+  return I_endmodule;
  }
 <IGNORE_MODULE>endprimitive {
-	yylloc.first_column = yylloc.last_column;
-	yylloc.last_column += strlen( yytext );
-	if( file_prev_parsed ) {
-	  BEGIN( IGNORE_GLOBALS );
-	} else {
-	  BEGIN( PARSE );
-	}
-        return( K_endprimitive );
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += strlen( yytext );
+  if( file_prev_parsed ) {
+    BEGIN( IGNORE_GLOBALS );
+  } else {
+    BEGIN( PARSE );
+  }
+  return( K_endprimitive );
  }
 <IGNORE_MODULE>. {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
  }
 
   /* Used when we have previously parsed a file and want to ignore all global variables (SystemVerilog mode only) */
 <IGNORE_GLOBALS>module {
-	yyless( 0 );
-	BEGIN( PARSE );
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yyless( 0 );
+  BEGIN( PARSE );
  }
 <IGNORE_GLOBALS>primitive {
-	yyless( 0 );
-	BEGIN( PARSE );
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yyless( 0 );
+  BEGIN( PARSE );
  }
 
   /* Ignore assertion syntax */
 <IGNORE_ASSERT>; {
-	yylloc.first_column = yylloc.last_column;
-	yylloc.last_column += strlen( yytext );
-	BEGIN( PARSE );
-	return ';';
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += strlen( yytext );
+  BEGIN( PARSE );
+  return ';';
  }
 <IGNORE_ASSERT>. {
-	yylloc.last_column += 1;
-        yymore();
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += 1;
+  yymore();
  }
 
   /* Ignore property syntax */
 <IGNORE_PROPERTY>endproperty {
-        yylloc.first_column = yylloc.last_column;
-        yylloc.last_column += strlen( yytext );
-        BEGIN( PARSE );
-        return K_endproperty;
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += strlen( yytext );
+  BEGIN( PARSE );
+  return K_endproperty;
  }
 <IGNORE_PROPERTY>. {
-        yylloc.last_column += 1;
-        yymore();
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += 1;
+  yymore();
  }
 
   /* Ignore sequence syntax */
 <IGNORE_SEQUENCE>endsequence {
-        yylloc.first_column = yylloc.last_column;
-        yylloc.last_column += strlen( yytext );
-        BEGIN( PARSE );
-        return K_endsequence;
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += strlen( yytext );
+  BEGIN( PARSE );
+  return K_endsequence;
  }
 <IGNORE_SEQUENCE>. {
-        yylloc.last_column += 1;
-        yymore();
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += 1;
+  yymore();
  }
 
   /* Ignore program syntax */
 <IGNORE_PROGRAM>endprogram {
-        yylloc.first_column = yylloc.last_column;
-        yylloc.last_column += strlen( yytext );
-        BEGIN( PARSE );
-        return K_endprogram;
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += strlen( yytext );
+  BEGIN( PARSE );
+  return K_endprogram;
  }
 <IGNORE_PROGRAM>. {
-        yylloc.last_column += 1;
-        yymore();
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += 1;
+  yymore();
  }
 
   /* Entries for user defined primitive tables -- not currently supported */
-<UDPTABLE>\(\?0\)    { yylloc.last_column += strlen( yytext );  return '_';       }
-<UDPTABLE>\(\?1\)    { yylloc.last_column += strlen( yytext );  return '+';       }
-<UDPTABLE>\(\?[xX]\) { yylloc.last_column += strlen( yytext );  return '%';       }
-<UDPTABLE>\(\?\?\)   { yylloc.last_column += strlen( yytext );  return '*';       }
-<UDPTABLE>\(01\)     { yylloc.last_column += strlen( yytext );  return 'r';       }
-<UDPTABLE>\(0[xX]\)  { yylloc.last_column += strlen( yytext );  return 'Q';       }
-<UDPTABLE>\(0\?\)    { yylloc.last_column += strlen( yytext );  return 'P';       }
-<UDPTABLE>\(10\)     { yylloc.last_column += strlen( yytext );  return 'f';       }
-<UDPTABLE>\(1[xX]\)  { yylloc.last_column += strlen( yytext );  return 'M';       }
-<UDPTABLE>\(1\?\)    { yylloc.last_column += strlen( yytext );  return 'N';       }
-<UDPTABLE>\([xX]0\)  { yylloc.last_column += strlen( yytext );  return 'F';       }
-<UDPTABLE>\([xX]1\)  { yylloc.last_column += strlen( yytext );  return 'R';       }
-<UDPTABLE>\([xX]\?\) { yylloc.last_column += strlen( yytext );  return 'B';       }
-<UDPTABLE>[bB]       { yylloc.last_column += strlen( yytext );  return 'b';       }
-<UDPTABLE>[lL]       { yylloc.last_column += strlen( yytext );  return 'l';       }
-<UDPTABLE>[hH]       { yylloc.last_column += strlen( yytext );  return 'h';       }
-<UDPTABLE>[fF]       { yylloc.last_column += strlen( yytext );  return 'f';       }
-<UDPTABLE>[rR]       { yylloc.last_column += strlen( yytext );  return 'r';       }
-<UDPTABLE>[xX]       { yylloc.last_column += strlen( yytext );  return 'x';       }
-<UDPTABLE>[nN]       { yylloc.last_column += strlen( yytext );  return 'n';       }
-<UDPTABLE>[pP]       { yylloc.last_column += strlen( yytext );  return 'p';       }
-<UDPTABLE>[zZ]       { yylloc.last_column += strlen( yytext );  return 'z';       }
-<UDPTABLE>[01\?\*\-] { yylloc.last_column += strlen( yytext );  return yytext[0]; }
+<UDPTABLE>\(\?0\)    {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return '_';
+ }
+<UDPTABLE>\(\?1\)    {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return '+';
+ }
+<UDPTABLE>\(\?[xX]\) {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return '%';
+ }
+<UDPTABLE>\(\?\?\)   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return '*';
+ }
+<UDPTABLE>\(01\)     {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return 'r';
+ }
+<UDPTABLE>\(0[xX]\)  {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return 'Q';
+ }
+<UDPTABLE>\(0\?\)    {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return 'P';
+ }
+<UDPTABLE>\(10\)     {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return 'f';
+ }
+<UDPTABLE>\(1[xX]\)  {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return 'M';
+ }
+<UDPTABLE>\(1\?\)    {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return 'N';
+ }
+<UDPTABLE>\([xX]0\)  {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return 'F';
+ }
+<UDPTABLE>\([xX]1\)  {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return 'R';
+ }
+<UDPTABLE>\([xX]\?\) {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return 'B';
+ }
+<UDPTABLE>[bB]       {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return 'b';
+ }
+<UDPTABLE>[lL]       {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return 'l';
+ }
+<UDPTABLE>[hH]       {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return 'h';
+ }
+<UDPTABLE>[fF]       {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return 'f';
+ }
+<UDPTABLE>[rR]       {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return 'r';
+ }
+<UDPTABLE>[xX]       {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return 'x';
+ }
+<UDPTABLE>[nN]       {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return 'n';
+ }
+<UDPTABLE>[pP]       {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return 'p';
+ }
+<UDPTABLE>[zZ]       {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return 'z';
+ }
+<UDPTABLE>[01\?\*\-] {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return yytext[0];
+ }
 
   /* Entries for time units */
-<TIMEUNIT>step { yylloc.last_column += strlen( yytext );  return K_TU_STEP; }
-<TIMEUNIT>s    { yylloc.last_column += strlen( yytext );  return K_TU_S; }
-<TIMEUNIT>ms   { yylloc.last_column += strlen( yytext );  return K_TU_MS; }
-<TIMEUNIT>us   { yylloc.last_column += strlen( yytext );  return K_TU_US; }
-<TIMEUNIT>ns   { yylloc.last_column += strlen( yytext );  return K_TU_NS; }
-<TIMEUNIT>ps   { yylloc.last_column += strlen( yytext );  return K_TU_PS; }
-<TIMEUNIT>fs   { yylloc.last_column += strlen( yytext );  return K_TU_FS; }
+<TIMEUNIT>step {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return K_TU_STEP;
+ }
+<TIMEUNIT>s    {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return K_TU_S;
+ }
+<TIMEUNIT>ms   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return K_TU_MS;
+ }
+<TIMEUNIT>us   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return K_TU_US;
+ }
+<TIMEUNIT>ns   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return K_TU_NS;
+ }
+<TIMEUNIT>ps   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return K_TU_PS;
+ }
+<TIMEUNIT>fs   {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return K_TU_FS;
+ }
 
   /* Library options */
-<LIBOPTIONS>-incdir { yylloc.last_column += strlen( yytext );  return K_INCDIR; }
+<LIBOPTIONS>-incdir {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return K_INCDIR;
+ }
 
   /* Import/Export options */
-<IMEXPORT>\"DPI\" { yylloc.last_column += strlen( yytext );  return K_DPI; }
+<IMEXPORT>\"DPI\" {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += strlen( yytext );
+  return K_DPI;
+ }
 
   /* Keyword and signal identifiers */
 <PARSE>[a-zA-Z_][a-zA-Z0-9$_]*(\[[^]]*\]\.[a-zA-Z_][a-zA-Z0-9$_]*)* { PROFILE(LEXER_KEYWORD_A);
-     str_link* foundmod;
-     int       rc   = lexer_keyword_1995_code( yytext, yyleng );
-     if( (rc == IDENTIFIER) && parser_check_generation( GENERATION_2001 ) ) {
-       rc = lexer_keyword_2001_code( yytext, yyleng );
-     }
-     if( (rc == IDENTIFIER) && parser_check_generation( GENERATION_SV ) ) {
-       rc = lexer_keyword_sv_code( yytext, yyleng );
-       if( (rc == IDENTIFIER) && (ignore_mode == 0) ) {
-         if( (yylval.typdef = db_find_typedef( yytext )) != NULL ) {
-           rc = TYPEDEF_IDENTIFIER;
-         }
-       }
-     }
-     yylloc.first_column = yylloc.last_column;
-     yylloc.last_column += strlen( yytext );
-     if( rc == IDENTIFIER ) {
-       if( (generate_mode == 0) && ((last_gi == NULL) || (last_gi->suppl.part.type != GI_TYPE_INST)) && (strchr( yytext, '.' ) != NULL) ) {
-         yylval.text = gen_item_calc_signal_name( yytext, curr_funit, yylloc.first_line, TRUE );
-       } else {
-         yylval.text = strdup_safe( yytext );
-         // printf( "yylval.text: %s (%p)\n", yylval.text, yylval.text );
-       }
-       // printf( "Allocated IDENTIFIER %p  %s, line %d\n", yylval.text, yylval.text, yylloc.first_line );
-       if( strncmp( yylval.text, "PATHPULSE$", 10) == 0 ) {
-         rc = PATHPULSE_IDENTIFIER;
-       }
-       if( (last_keyword == K_module) || (last_keyword == K_primitive) ) {
-         if( (foundmod = str_link_find( yytext, modlist_head )) == NULL ) {
-           free_safe( yylval.text, (strlen( yylval.text ) + 1) );
-           BEGIN( IGNORE_MODULE );
-           (void)tree_add( yytext, yylloc.text, FALSE, &found_modules );
-           rc = IGNORE;
-         } else {
-           if( (filelist_curr != filelist_head) && (error_count == 0) ) {
-             /* The module has been found, recirculate filelist */
-             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Parsing file '%s'", obf_file( yylloc.text ) );
-             assert( rv < USER_MSG_LENGTH );
-             print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-             filelist_curr = filelist_head;
-           }
-           last_keyword = 0;
-         }
-       }
-     } else if( (rc == K_endmodule) || (rc == K_endprimitive) ) {
-       if( file_prev_parsed ) {
-         BEGIN( IGNORE_GLOBALS );
-       }
-     } else if( rc == K_assert ) {
-       BEGIN( IGNORE_ASSERT );
-     } else if( rc == K_property ) {
-       BEGIN( IGNORE_PROPERTY );
-     } else if( rc == K_sequence ) {
-       BEGIN( IGNORE_SEQUENCE );
-     } else if( rc == K_program ) {
-       BEGIN( IGNORE_PROGRAM );
-     } else if( rc != TYPEDEF_IDENTIFIER ) {
-       last_keyword = rc;
-       yylval.text = '\0';
-     }
-     return( rc );
+  str_link* foundmod;
+  int       rc   = lexer_keyword_1995_code( yytext, yyleng );
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  if( (rc == IDENTIFIER) && parser_check_generation( GENERATION_2001 ) ) {
+    rc = lexer_keyword_2001_code( yytext, yyleng );
+  }
+  if( (rc == IDENTIFIER) && parser_check_generation( GENERATION_SV ) ) {
+    rc = lexer_keyword_sv_code( yytext, yyleng );
+    if( (rc == IDENTIFIER) && (ignore_mode == 0) ) {
+      if( (yylval.typdef = db_find_typedef( yytext )) != NULL ) {
+        rc = TYPEDEF_IDENTIFIER;
+      }
+    }
+  }
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += strlen( yytext );
+  if( rc == IDENTIFIER ) {
+    if( (generate_mode == 0) && ((last_gi == NULL) || (last_gi->suppl.part.type != GI_TYPE_INST)) && (strchr( yytext, '.' ) != NULL) ) {
+      yylval.text = gen_item_calc_signal_name( yytext, curr_funit, yylloc.first_line, TRUE );
+    } else {
+      yylval.text = strdup_safe( yytext );
+      // printf( "yylval.text: %s (%p)\n", yylval.text, yylval.text );
+    }
+    // printf( "Allocated IDENTIFIER %p  %s, line %d\n", yylval.text, yylval.text, yylloc.first_line );
+    if( strncmp( yylval.text, "PATHPULSE$", 10) == 0 ) {
+      rc = PATHPULSE_IDENTIFIER;
+    }
+    if( (last_keyword == K_module) || (last_keyword == K_primitive) ) {
+      if( (foundmod = str_link_find( yytext, modlist_head )) == NULL ) {
+        free_safe( yylval.text, (strlen( yylval.text ) + 1) );
+        BEGIN( IGNORE_MODULE );
+        (void)tree_add( yytext, yylloc.text, FALSE, &found_modules );
+        rc = IGNORE;
+      } else {
+        if( (filelist_curr != filelist_head) && (error_count == 0) ) {
+          /* The module has been found, recirculate filelist */
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Parsing file '%s'", obf_file( yylloc.text ) );
+          assert( rv < USER_MSG_LENGTH );
+          print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+          filelist_curr = filelist_head;
+        }
+        last_keyword = 0;
+      }
+    }
+  } else if( (rc == K_endmodule) || (rc == K_endprimitive) ) {
+    if( file_prev_parsed ) {
+      BEGIN( IGNORE_GLOBALS );
+    }
+  } else if( rc == K_assert ) {
+    BEGIN( IGNORE_ASSERT );
+  } else if( rc == K_property ) {
+    BEGIN( IGNORE_PROPERTY );
+  } else if( rc == K_sequence ) {
+    BEGIN( IGNORE_SEQUENCE );
+  } else if( rc == K_program ) {
+    BEGIN( IGNORE_PROGRAM );
+  } else if( rc != TYPEDEF_IDENTIFIER ) {
+    last_keyword = rc;
+    yylval.text = '\0';
+  }
+  return( rc );
  }
 
   /* Signal names starting with a '\' character */
 <PARSE>\\[^ \t\b\f\r\n]+  { PROFILE(LEXER_ESCAPED_NAME);
-     yylloc.first_column = yylloc.last_column;
-     yylloc.last_column += strlen( yytext );
-     {
-       unsigned int rv;
-       unsigned int slen = strlen( yytext ) + 2;
-       yylval.text = (char*)malloc_safe( slen );
-       rv = snprintf( yylval.text, slen, "%s ", yytext );
-       assert( rv < slen );
-     }
-     return IDENTIFIER; 
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += strlen( yytext );
+  {
+    unsigned int rv;
+    unsigned int slen = strlen( yytext ) + 2;
+    yylval.text = (char*)malloc_safe( slen );
+    rv = snprintf( yylval.text, slen, "%s ", yytext );
+    assert( rv < slen );
+  }
+  return IDENTIFIER; 
  }
 
   /* System call lines -- we ignore this information */
 <PARSE>\$([a-zA-Z0-9$_]+)   { PROFILE(LEXER_SYSTEM_CALL);
-     int rc = lexer_keyword_sys_1995_code( (yytext + 1), (yyleng - 1) );
-     if( (rc == S_user) && parser_check_generation( GENERATION_2001 ) ) {
-       rc = lexer_keyword_sys_2001_code( (yytext + 1), (yyleng - 1) );
-     }
-     if( (rc == S_user) && parser_check_generation( GENERATION_SV ) ) {
-       rc = lexer_keyword_sys_sv_code( (yytext + 1), (yyleng - 1) );
-       if( rc == S_user ) {  /* User PLI calls are ignored for now */
-         rc = S_ignore;
-       }
-     }
-     /* If we are running in conservative mode, change $random, $urandom and $urandom_range to ignored lies */
-     if( flag_conservative && ((rc == S_random) || (rc == S_urandom) || (rc == S_urandom_range)) ) {
-       rc = S_ignore;
-     }
-     yylloc.first_column = yylloc.last_column;
-     yylloc.last_column += strlen( yytext );
-     return( rc ); 
+  int rc = lexer_keyword_sys_1995_code( (yytext + 1), (yyleng - 1) );
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  if( (rc == S_user) && parser_check_generation( GENERATION_2001 ) ) {
+    rc = lexer_keyword_sys_2001_code( (yytext + 1), (yyleng - 1) );
+  }
+  if( (rc == S_user) && parser_check_generation( GENERATION_SV ) ) {
+    rc = lexer_keyword_sys_sv_code( (yytext + 1), (yyleng - 1) );
+    if( rc == S_user ) {  /* User PLI calls are ignored for now */
+      rc = S_ignore;
+    }
+  }
+  /* If we are running in conservative mode, change $random, $urandom and $urandom_range to ignored lies */
+  if( flag_conservative && ((rc == S_random) || (rc == S_urandom) || (rc == S_urandom_range)) ) {
+    rc = S_ignore;
+  }
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += strlen( yytext );
+  return( rc ); 
  }
 
   /* Unsized decimal number */
 <PARSE>[0-9][0-9_]* {
-     yylloc.first_column = yylloc.last_column;
-     yylloc.last_column += strlen( yytext );
-     yylval.text = strdup_safe( yytext );
-     return DEC_NUMBER;
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += strlen( yytext );
+  yylval.text = strdup_safe( yytext );
+  return DEC_NUMBER;
  }
 
   /* Decimal number */
 <PARSE>\'[sS]?[dD][ \t]*[0-9][0-9_]* {
-     yylloc.first_column = yylloc.last_column;
-     yylloc.last_column += strlen( yytext );
-     yylval.text = strdup_safe( yytext );
-     return BASE_NUMBER;
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += strlen( yytext );
+  yylval.text = strdup_safe( yytext );
+  return BASE_NUMBER;
  }
 
   /* Binary number */
 <PARSE>\'[sS]?[bB][ \t]*[0-1xzXZ_\?]+ {
-     yylloc.first_column = yylloc.last_column;
-     yylloc.last_column += strlen( yytext );
-     yylval.text = strdup_safe( yytext );
-     return BASE_NUMBER;
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += strlen( yytext );
+  yylval.text = strdup_safe( yytext );
+  return BASE_NUMBER;
  }
 
   /* Octal number */
 <PARSE>\'[sS]?[oO][ \t]*[0-7xzXZ_\?]+ {
-     yylloc.first_column = yylloc.last_column;
-     yylloc.last_column += strlen( yytext );
-     yylval.text = strdup_safe( yytext );
- //    vector_from_string( &yytext, FALSE, &(yylval.num.vec), &(yylval.num.base) );
-     return BASE_NUMBER;
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += strlen( yytext );
+  yylval.text = strdup_safe( yytext );
+  return BASE_NUMBER;
  }
 
   /* Hexidecimal number - Size indicated */
 <PARSE>\'[sS]?[hH][ \t]*[0-9a-fA-FxzXZ_\?]+ {
-     yylloc.first_column = yylloc.last_column;
-     yylloc.last_column += strlen( yytext );
-     yylval.text = strdup_safe( yytext );
-//     vector_from_string( &yytext, FALSE, &(yylval.num.vec), &(yylval.num.base) );
-     return BASE_NUMBER;
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += strlen( yytext );
+  yylval.text = strdup_safe( yytext );
+  return BASE_NUMBER;
  }
 
   /* Real numbers */
 <PARSE>[0-9][0-9_]*\.[0-9][0-9_]*([Ee][+-]?[0-9][0-9_]*)? { 
-     double       rtime;
-     unsigned int slen = strlen( yytext );
-     char*        stmp = strdup_safe( yytext );
-     yylloc.first_column = yylloc.last_column;
-     yylloc.last_column += strlen( yytext );
-     yylval.realtime = (vector*)malloc_safe( sizeof( vector ) );
-     if( sscanf( remove_underscores( stmp ), "%lf", &rtime ) == 1 ) {
-       vector_init_r64( yylval.realtime, (rv64*)malloc_safe( sizeof( rv64 ) ), rtime, yytext, TRUE, VTYPE_VAL );
-     } else {
-       assert( 0 );
-     }
-     free_safe( stmp, (slen + 1) );
-     return REALTIME;
+  double       rtime;
+  unsigned int slen = strlen( yytext );
+  char*        stmp = strdup_safe( yytext );
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += strlen( yytext );
+  yylval.realtime = (vector*)malloc_safe( sizeof( vector ) );
+  if( sscanf( remove_underscores( stmp ), "%lf", &rtime ) == 1 ) {
+    vector_init_r64( yylval.realtime, (rv64*)malloc_safe( sizeof( rv64 ) ), rtime, yytext, TRUE, VTYPE_VAL );
+  } else {
+    assert( 0 );
+  }
+  free_safe( stmp, (slen + 1) );
+  return REALTIME;
  }
 
   /* Real numbers */
 <PARSE>[0-9][0-9_]*[Ee][+-]?[0-9][0-9_]* { 
-     double       rtime;
-     unsigned int slen = strlen( yytext );
-     char*        stmp = strdup_safe( yytext );
-     yylloc.first_column = yylloc.last_column;
-     yylloc.last_column += strlen( yytext );
-     yylval.realtime = (vector*)malloc_safe( sizeof( vector ) );
-     if( sscanf( remove_underscores( stmp ), "%lf", &rtime ) == 1 ) {
-       vector_init_r64( yylval.realtime, (rv64*)malloc_safe( sizeof( rv64 ) ), rtime, yytext, TRUE, VTYPE_VAL );
-     } else {
-       assert( 0 );
-     }
-     free_safe( stmp, (slen + 1) );
-     return REALTIME;
+  double       rtime;
+  unsigned int slen = strlen( yytext );
+  char*        stmp = strdup_safe( yytext );
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += strlen( yytext );
+  yylval.realtime = (vector*)malloc_safe( sizeof( vector ) );
+  if( sscanf( remove_underscores( stmp ), "%lf", &rtime ) == 1 ) {
+    vector_init_r64( yylval.realtime, (rv64*)malloc_safe( sizeof( rv64 ) ), rtime, yytext, TRUE, VTYPE_VAL );
+  } else {
+    assert( 0 );
+  }
+  free_safe( stmp, (slen + 1) );
+  return REALTIME;
  }
 
   /* Timescale directive */
 ^{WSPACE}?`timescale {
-	yylloc.first_column = yylloc.last_column;
-	yylloc.last_column += strlen( yytext );
-        state_enter         = YY_START;
-	BEGIN( PPTIMESCALE );
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += strlen( yytext );
+  state_enter         = YY_START;
+  BEGIN( PPTIMESCALE );
  }
 <PPTIMESCALE>.      {
-        yylloc.first_column = yylloc.last_column;
-        yylloc.last_column += strlen( yytext );
-        yymore();
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.first_column = yylloc.last_column;
+  yylloc.last_column += strlen( yytext );
+  yymore();
  }
 <PPTIMESCALE>\n      {
-     process_timescale( yytext, TRUE );
-     yylloc.first_line += 1;
-     BEGIN( state_enter );
-     yylloc.last_column = 0;
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  process_timescale( yytext, TRUE );
+  yylloc.first_line += 1;
+  BEGIN( state_enter );
+  yylloc.last_column = 0;
  }
 
   /* Miscellaneous directives -- we ignore this information */
-^{WSPACE}?`celldefine{WSPACE}?.*             { yylloc.last_column = strlen( yytext ); }
-^{WSPACE}?`default_nettype{WSPACE}?.*        { yylloc.last_column = strlen( yytext ); }
-^{WSPACE}?`delay_mode_distributed{WSPACE}?.* { yylloc.last_column = strlen( yytext ); }
-^{WSPACE}?`delay_mode_unit{WSPACE}?.*        { yylloc.last_column = strlen( yytext ); }
-^{WSPACE}?`delay_mode_path{WSPACE}?.*        { yylloc.last_column = strlen( yytext ); }
-^{WSPACE}?`disable_portfaults{WSPACE}?.*     { yylloc.last_column = strlen( yytext ); }
-^{WSPACE}?`enable_portfaults{WSPACE}?.*      { yylloc.last_column = strlen( yytext ); }
-^{WSPACE}?`endcelldefine{WSPACE}?.*          { yylloc.last_column = strlen( yytext ); }
-^{WSPACE}?`endprotect{WSPACE}?.*             { yylloc.last_column = strlen( yytext ); }
-^{WSPACE}?`nosuppress_faults{WSPACE}?.*      { yylloc.last_column = strlen( yytext ); }
-^{WSPACE}?`nounconnected_drive{WSPACE}?.*    { yylloc.last_column = strlen( yytext ); }
-^{WSPACE}?`protect{WSPACE}?.*                { yylloc.last_column = strlen( yytext ); }
-^{WSPACE}?`resetall{WSPACE}?.*               { yylloc.last_column = strlen( yytext ); }
-^{WSPACE}?`suppress_faults{WSPACE}?.*        { yylloc.last_column = strlen( yytext ); }
-^{WSPACE}?`unconnected_drive{WSPACE}?.*      { yylloc.last_column = strlen( yytext ); }
-^{WSPACE}?`uselib{WSPACE}?.*                 { yylloc.last_column = strlen( yytext ); }
+^{WSPACE}?`celldefine{WSPACE}?.* {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column = strlen( yytext );
+ }
+^{WSPACE}?`default_nettype{WSPACE}?.* {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column = strlen( yytext );
+ }
+^{WSPACE}?`delay_mode_distributed{WSPACE}?.* {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column = strlen( yytext );
+ }
+^{WSPACE}?`delay_mode_unit{WSPACE}?.*        {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column = strlen( yytext );
+ }
+^{WSPACE}?`delay_mode_path{WSPACE}?.*        {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column = strlen( yytext );
+ }
+^{WSPACE}?`disable_portfaults{WSPACE}?.*     {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column = strlen( yytext );
+ }
+^{WSPACE}?`enable_portfaults{WSPACE}?.*      {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column = strlen( yytext );
+ }
+^{WSPACE}?`endcelldefine{WSPACE}?.*          {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column = strlen( yytext );
+ }
+^{WSPACE}?`endprotect{WSPACE}?.*             {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column = strlen( yytext );
+ }
+^{WSPACE}?`nosuppress_faults{WSPACE}?.*      {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column = strlen( yytext );
+ }
+^{WSPACE}?`nounconnected_drive{WSPACE}?.*    {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column = strlen( yytext );
+ }
+^{WSPACE}?`protect{WSPACE}?.*                {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column = strlen( yytext );
+ }
+^{WSPACE}?`resetall{WSPACE}?.*               {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column = strlen( yytext );
+ }
+^{WSPACE}?`suppress_faults{WSPACE}?.*        {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column = strlen( yytext );
+ }
+^{WSPACE}?`unconnected_drive{WSPACE}?.*      {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column = strlen( yytext );
+ }
+^{WSPACE}?`uselib{WSPACE}?.*                 {
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column = strlen( yytext );
+ }
 
   /* Handle lines with errors */
 <ERROR_LINE>.* {
-	yy_pop_state();
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yy_pop_state();
  }
 
   /* Handle any characters in ignored space */
 <IGNORE_GLOBALS,IGNORE_MODULE,IGNORE_ASSERT,IGNORE_PROPERTY,IGNORE_SEQUENCE>. {
-	yylloc.last_column += 1;
-	yymore();
+  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  yylloc.last_column += 1;
+  yymore();
  }
 
   /* Final catchall. something got lost or mishandled. */
@@ -835,7 +1318,6 @@ void process_timescale_token(
       if( report ) {
         VLerror( "Illegal timescale directive specified" );
       }
-      printf( "lexer Throw C\n" );
       Throw 0;
     }
   }
@@ -924,116 +1406,126 @@ void process_timescale(
 */
 static int yywrap() { PROFILE(LEXER_YYWRAP);
 
-  str_link*    curr;
-  str_link*    tmpm;
-  char*        fname = NULL;
-  FILE*        out;
-  tnode*       node;
-  unsigned int rv;
+  int retval = 0;
 
-  /* Close input file */
-  if( yyin != 0 ) {
-    rv = fclose( yyin );
-    assert( rv == 0 );
-  }
+  /* Only wrap if we are in the initial parsing mode */
+  if( parse_mode ) {
 
-  /* Clear the file version information (if found) */
-  free_safe( file_version, (strlen( file_version ) + 1) );
-  file_version = NULL;
+    str_link*    curr;
+    str_link*    tmpm;
+    char*        fname = NULL;
+    FILE*        out;
+    tnode*       node;
+    unsigned int rv;
+
+    /* Close input file */
+    if( yyin != 0 ) {
+      rv = fclose( yyin );
+      assert( rv == 0 );
+    }
+
+    /* Clear the file version information (if found) */
+    free_safe( file_version, (strlen( file_version ) + 1) );
+    file_version = NULL;
   
-  /* Delete the current buffer */
-  yy_delete_buffer( YY_CURRENT_BUFFER );
+    /* Delete the current buffer */
+    yy_delete_buffer( YY_CURRENT_BUFFER );
   
-  /*
-   If we have no more modules to find in our module list, then remove the
-   temporary preprocessor file, deallocate the found_modules tree and
-   stop parsing.
-  */
-  if( modlist_head == NULL ) {
-    rv = unlink( ppfilename );
-    assert( rv == 0 );
-    tree_dealloc( found_modules );
-    return( 1 );
-  }
+    /*
+     If we have no more modules to find in our module list, then remove the
+     temporary preprocessor file, deallocate the found_modules tree and
+     stop parsing.
+    */
+    if( modlist_head == NULL ) {
+      rv = unlink( ppfilename );
+      assert( rv == 0 );
+      tree_dealloc( found_modules );
+      return( 1 );
+    }
     
-  /* If there was an error found during parsing, stop now */
-  if( error_count > 0 ) {
-    return( 1 );
-  }
+    /* If there was an error found during parsing, stop now */
+    if( error_count > 0 ) {
+      return( 1 );
+    }
 
-  curr = filelist_curr;
-  tmpm = modlist_head;
+    curr = filelist_curr;
+    tmpm = modlist_head;
 
-  while( (tmpm != NULL) && (fname == NULL) ) {
-    if( (node = tree_find( tmpm->str, found_modules )) != NULL ) {
-      fname = node->value;
-      file_prev_parsed = TRUE;
-    } else {
-      if( (curr = get_next_vfile( curr, tmpm->str )) == NULL ) {
-        tmpm = tmpm->next;
-        curr = filelist_curr;
+    while( (tmpm != NULL) && (fname == NULL) ) {
+      if( (node = tree_find( tmpm->str, found_modules )) != NULL ) {
+        fname = node->value;
+        file_prev_parsed = TRUE;
       } else {
-        fname            = curr->str;
-        file_prev_parsed = curr->suppl2;
+        if( (curr = get_next_vfile( curr, tmpm->str )) == NULL ) {
+          tmpm = tmpm->next;
+          curr = filelist_curr;
+        } else {
+          fname            = curr->str;
+          file_prev_parsed = curr->suppl2;
+        }
       }
     }
-  }
 
-  /* If the rest of the modules could not be found, display them to the user */
-  if( (modlist_head != NULL) && (tmpm == NULL) ) {
-    print_output( "Unable to find the following modules:", FATAL, __FILE__, __LINE__ );
-    curr = modlist_head;
-    while( curr != NULL ) {
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "%s", obf_funit( curr->str ) );
-      assert( rv < USER_MSG_LENGTH );
-      print_output( user_msg, FATAL_WRAP, __FILE__, __LINE__ );
-      curr = curr->next;
+    /* If the rest of the modules could not be found, display them to the user */
+    if( (modlist_head != NULL) && (tmpm == NULL) ) {
+      print_output( "Unable to find the following modules:", FATAL, __FILE__, __LINE__ );
+      curr = modlist_head;
+      while( curr != NULL ) {
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "%s", obf_funit( curr->str ) );
+        assert( rv < USER_MSG_LENGTH );
+        print_output( user_msg, FATAL_WRAP, __FILE__, __LINE__ );
+        curr = curr->next;
+      }
+      rv = unlink( ppfilename );
+      assert( rv == 0 );
+      tree_dealloc( found_modules );
+      Throw 0;
     }
-    rv = unlink( ppfilename );
-    assert( rv == 0 );
-    tree_dealloc( found_modules );
-    Throw 0;
-  }
   
-  /* Create temporary output filename */
-  out = fopen( ppfilename, "w" );
-  assert( out != NULL );
+    /* Create temporary output filename */
+    out = fopen( ppfilename, "w" );
+    assert( out != NULL );
   
-  Try {
+    Try {
+  
+      /* Now run the preprocessor on this file first */
+      reset_pplexer( fname, out );
+      (void)PPVLlex();
 
-    /* Now run the preprocessor on this file first */
-    reset_pplexer( fname, out );
-    (void)PPVLlex();
-
-  } Catch_anonymous {
+    } Catch_anonymous {
+      rv = fclose( out );
+      assert( rv == 0 );
+      Throw 0;
+    }
+  
     rv = fclose( out );
     assert( rv == 0 );
-    printf( "lexer Throw H\n" );
-    Throw 0;
-  }
-  
-  rv = fclose( out );
-  assert( rv == 0 );
 
-  yyin = fopen( ppfilename, "r" );
-  yyrestart( yyin );
+    yyin = fopen( ppfilename, "r" );
+    yyrestart( yyin );
   
-  yylloc.first_line  = 1;
-  yylloc.last_column = 0;
-  yylloc.text        = fname;
+    yylloc.first_line  = 1;
+    yylloc.last_column = 0;
+    yylloc.text        = fname;
   
-  filelist_curr = curr->next;
+    filelist_curr = curr->next;
 
-  /* If the current file was previously parsed, set the start state to IGNORE_GLOBALS */
-  if( file_prev_parsed ) {
-    BEGIN( IGNORE_GLOBALS );
+    /* If the current file was previously parsed, set the start state to IGNORE_GLOBALS */
+    if( file_prev_parsed ) {
+      BEGIN( IGNORE_GLOBALS );
+    } else {
+      BEGIN( PARSE );
+    }
+
   } else {
-    BEGIN( PARSE );
+
+    retval = 1;
+  
   }
 
   PROFILE_END;
   
-  return( 0 );
+  return( retval );
 
 }
 
@@ -1050,9 +1542,11 @@ void reset_lexer(
   str_link*    curr = file_list_head;
   unsigned int rv;
 
+  /* Set the current mode to parse */
+  parse_mode = TRUE;
+
   if( (curr = get_next_vfile( curr, modlist_head->str )) == NULL ) {
     print_output( "No verilog files specified", FATAL, __FILE__, __LINE__ );
-    printf( "lexer Throw I\n" );
     Throw 0;
   }
 
@@ -1071,7 +1565,6 @@ void reset_lexer(
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open temporary file %s for writing", ppfilename );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    printf( "lexer Throw J\n" );
     Throw 0;
   }
   
@@ -1084,7 +1577,6 @@ void reset_lexer(
   } Catch_anonymous {
     rv = fclose( out );
     assert( rv == 0 );
-    printf( "lexer Throw K\n" );
     Throw 0;
   }
   
@@ -1111,6 +1603,71 @@ void reset_lexer(
   PROFILE_END;
 
 }
+
+/*!
+ This function initializes the whole process. The first file is
+ opened, and the lexer is initialized.  The include stack is cleared
+ and ready to go.
+*/
+void reset_lexer_for_generation(
+  char*       in_fname,  /*!< Name of file to read */
+  const char* out_dir    /*!< Output directory name */
+) { PROFILE(RESET_LEXER_FOR_GENERATION);
+
+  FILE*        out;
+  unsigned int rv;
+  unsigned int slen;
+  char*        ofname;
+
+  /* Set the current mode to parse */
+  parse_mode = FALSE;
+
+  /* Create temporary output filename */
+  slen   = strlen( out_dir ) + 11;
+  ofname = (char*)malloc_safe( slen );
+  rv     = snprintf( ofname, slen, "%s/tmpXXXXXX", out_dir );
+  assert( rv < slen );
+  assert( mkstemp( ofname ) != 0 );
+  if( (out = fopen( ofname, "w" )) == NULL ) {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open temporary file %s for writing", ofname );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    Throw 0;
+  }
+  
+  Try {
+
+    /* Now run the preprocessor on this file first */
+    reset_pplexer( in_fname, out );
+    (void)PPVLlex();
+
+  } Catch_anonymous {
+    rv = fclose( out );
+    assert( rv == 0 );
+    Throw 0;
+  }
+  
+  rv = fclose( out );
+  assert( rv == 0 );
+
+  /* Clear the exclude_mode */
+  exclude_mode = 0;
+
+  yyin = fopen( ofname, "r" );
+  free_safe( ofname, slen );
+  yyrestart( yyin );
+
+  yylloc.text        = in_fname;
+  yylloc.first_line  = 1;
+  yylloc.last_column = 0;
+  
+  /* Set start state to allow parsing */
+  BEGIN( PARSE );
+
+  PROFILE_END;
+
+}
+
 
 /*!
  Checks the comment for pragma information in the given comment block and takes

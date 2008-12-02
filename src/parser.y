@@ -69,6 +69,11 @@ extern bool lhs_mode;
 
 
 /*!
+ Specifies whether we are running to parse (TRUE) or to generate inline coverage code (FALSE).
+*/
+bool parse_mode = TRUE;
+
+/*!
  If set to a value > 0, specifies that we are parsing a parameter expression
 */
 int param_mode = 0;
@@ -345,15 +350,21 @@ main
 attribute_list_opt
   : K_PSTAR
     {
-      parser_check_pstar();
+      if( parse_mode ) {
+        parser_check_pstar();
+      }
     }
     attribute_list K_STARP
     {
-      parser_check_attribute( $3 );
+      if( parse_mode ) {
+        parser_check_attribute( $3 );
+      }
     }
   | K_PSTAR
     {
-      parser_check_pstar();
+      if( parse_mode ) {
+        parser_check_pstar();
+      }
     }
     K_STARP
   |
@@ -362,22 +373,38 @@ attribute_list_opt
 attribute_list
   : attribute_list ',' attribute
     {
-      $$ = parser_append_to_attr_list( $1, $3 );
+      if( parse_mode ) {
+        $$ = parser_append_to_attr_list( $1, $3 );
+      } else {
+        $$ = NULL;
+      }
     } 
   | attribute
     {
-      $$ = $1;
+      if( parse_mode ) {
+        $$ = $1;
+      } else {
+        $$ = NULL;
+      }
     }
   ;
 
 attribute
   : IDENTIFIER
     {
-      $$ = parser_create_attr( $1, NULL );
+      if( parse_mode ) {
+        $$ = parser_create_attr( $1, NULL );
+      } else {
+        $$ = NULL;
+      }
     }
   | IDENTIFIER '=' {attr_mode++;} expression {attr_mode--;}
     {
-      $$ = parser_create_attr( $1, $4 );
+      if( parse_mode ) {
+        $$ = parser_create_attr( $1, $4 );
+      } else {
+        $$ = NULL;
+      }
     }
   ;
 
@@ -400,10 +427,12 @@ description
   | net_type signed_opt range_opt net_decl_assigns ';'
   | net_type drive_strength
     {
-      if( (ignore_mode == 0) && ($1 == 1) ) {
-        parser_implicitly_set_curr_range( 0, 0, TRUE );
+      if( parse_mode ) {
+        if( (ignore_mode == 0) && ($1 == 1) ) {
+          parser_implicitly_set_curr_range( 0, 0, TRUE );
+        }
+        curr_signed = FALSE;
       }
-      curr_signed = FALSE;
     }
     net_decl_assigns ';'
   | K_trireg charge_strength_opt range_opt delay3_opt
@@ -416,49 +445,69 @@ description
     list_of_variables ';'
   | gatetype gate_instance_list ';'
     {
-      str_link_delete_list( $2 );
+      if( parse_mode ) {
+        str_link_delete_list( $2 );
+      }
     }
   | gatetype delay3 gate_instance_list ';'
     {
-      str_link_delete_list( $3 );
+      if( parse_mode ) {
+        str_link_delete_list( $3 );
+      }
     }
   | gatetype drive_strength gate_instance_list ';'
     {
-      str_link_delete_list( $3 );
+      if( parse_mode ) {
+        str_link_delete_list( $3 );
+      }
     }
   | gatetype drive_strength delay3 gate_instance_list ';'
     {
-      str_link_delete_list( $4 );
+      if( parse_mode ) {
+        str_link_delete_list( $4 );
+      }
     }
   | K_pullup gate_instance_list ';'
     {
-      str_link_delete_list( $2 );
+      if( parse_mode ) {
+        str_link_delete_list( $2 );
+      }
     }
   | K_pulldown gate_instance_list ';'
     {
-      str_link_delete_list( $2 );
+      if( parse_mode ) {
+        str_link_delete_list( $2 );
+      }
     }
   | K_pullup '(' dr_strength1 ')' gate_instance_list ';'
     {
-      str_link_delete_list( $5 );
+      if( parse_mode ) {
+        str_link_delete_list( $5 );
+      }
     }
   | K_pulldown '(' dr_strength0 ')' gate_instance_list ';'
     {
-      str_link_delete_list( $5 );
+      if( parse_mode ) {
+        str_link_delete_list( $5 );
+      }
     }
   | block_item_decl
   | K_event
     {
-      curr_mba      = TRUE;
-      curr_signed   = FALSE;
-      curr_sig_type = SSUPPL_TYPE_EVENT;
-      curr_handled  = TRUE;
-      parser_implicitly_set_curr_range( 0, 0, TRUE );
+      if( parse_mode ) {
+        curr_mba      = TRUE;
+        curr_signed   = FALSE;
+        curr_sig_type = SSUPPL_TYPE_EVENT;
+        curr_handled  = TRUE;
+        parser_implicitly_set_curr_range( 0, 0, TRUE );
+      }
     }
     list_of_variables ';'
   | K_task automatic_opt IDENTIFIER ';'
     {
-      parser_create_task_decl( $2, $3, @3.text, @3.first_line );
+      if( parse_mode ) {
+        parser_create_task_decl( $2, $3, @3.text, @3.first_line );
+      }
     }
     task_item_list_opt statement_or_null
     {
@@ -466,11 +515,15 @@ description
     }
     K_endtask
     {
-      parser_end_task_function( @9.first_line );
+      if( parse_mode ) {
+        parser_end_task_function( @9.first_line );
+      }
     }
   | K_function automatic_opt signed_opt range_or_type_opt IDENTIFIER ';'
     {
-      parser_create_function_decl( $2, $5, @5.text, @5.first_line, @5.first_column );
+      if( parse_mode ) {
+        parser_create_function_decl( $2, $5, @5.text, @5.first_line, @5.first_column );
+      }
     }
     function_item_list statement
     {
@@ -478,7 +531,9 @@ description
     }
     K_endfunction
     {
-      parser_end_task_function( @11.first_line );
+      if( parse_mode ) {
+        parser_end_task_function( @11.first_line );
+      }
     }
   | error ';'
     {
@@ -490,26 +545,31 @@ description
     }
   | enumeration list_of_names ';'
     {
-      str_link* strl = $2;
-      while( strl != NULL ) {
-        db_add_signal( strl->str, SSUPPL_TYPE_DECL_REG, &curr_prange, NULL, curr_signed, FALSE, strl->suppl, strl->suppl2, TRUE );
-        strl = strl->next;
+      if( parse_mode ) {
+        str_link* strl = $2;
+        while( strl != NULL ) {
+          db_add_signal( strl->str, SSUPPL_TYPE_DECL_REG, &curr_prange, NULL, curr_signed, FALSE, strl->suppl, strl->suppl2, TRUE );
+          strl = strl->next;
+        }
+        str_link_delete_list( $2 );
       }
-      str_link_delete_list( $2 );
     }
   ;
 
 module
   : attribute_list_opt module_start IDENTIFIER 
     {
-      db_add_module( $3, @2.text, @2.first_line );
+      if( parse_mode ) {
+        db_add_module( $3, @2.text, @2.first_line );
+      }
       free_safe( $3, (strlen( $3 ) + 1) );
     }
     module_parameter_port_list_opt
-    module_port_list_opt ';'
-    module_item_list_opt K_endmodule
+    module_port_list_opt ';' module_item_list_opt K_endmodule
     {
-      db_end_module( @9.first_line );
+      if( parse_mode ) {
+        db_end_module( @9.first_line );
+      }
     }
   | attribute_list_opt K_module IGNORE I_endmodule
   | attribute_list_opt K_macromodule IGNORE I_endmodule
@@ -523,15 +583,19 @@ module_start
 module_parameter_port_list_opt
   : '#'
     {
-      if( !parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "Pre-module parameter declaration syntax found in block that is specified to not allow Verilog-2001 syntax" );
-        ignore_mode++;
+      if( parse_mode ) {
+        if( !parser_check_generation( GENERATION_2001 ) ) {
+          VLerror( "Pre-module parameter declaration syntax found in block that is specified to not allow Verilog-2001 syntax" );
+          ignore_mode++;
+        }
       }
     }
     '(' module_parameter_port_list ')'
     {
-      if( !parser_check_generation( GENERATION_2001 ) ) {
-        ignore_mode--;
+      if( parse_mode ) {
+        if( !parser_check_generation( GENERATION_2001 ) ) {
+          ignore_mode--;
+        }
       }
     }
   |
@@ -553,10 +617,12 @@ module_port_list_opt
   : '(' list_of_ports ')'
   | '(' list_of_port_declarations ')'
     {
-      if( $2 != NULL ) {
-        parser_dealloc_sig_range( $2->prange, TRUE );
-        parser_dealloc_sig_range( $2->urange, TRUE );
-        free_safe( $2, sizeof( port_info ) );
+      if( parse_mode ) {
+        if( $2 != NULL ) {
+          parser_dealloc_sig_range( $2->prange, TRUE );
+          parser_dealloc_sig_range( $2->urange, TRUE );
+          free_safe( $2, sizeof( port_info ) );
+        }
       }
     }
   |
@@ -570,20 +636,28 @@ list_of_port_declarations
     }
   | list_of_port_declarations ',' port_declaration
     {
-      if( $1 != NULL ) {
-        parser_dealloc_sig_range( $1->prange, TRUE );
-        parser_dealloc_sig_range( $1->urange, TRUE );
-        free_safe( $1, sizeof( port_info ) );
+      if( parse_mode ) {
+        if( $1 != NULL ) {
+          parser_dealloc_sig_range( $1->prange, TRUE );
+          parser_dealloc_sig_range( $1->urange, TRUE );
+          free_safe( $1, sizeof( port_info ) );
+        }
+        $$ = $3;
+      } else {
+        $$ = NULL;
       }
-      $$ = $3;
     }
   | list_of_port_declarations ',' IDENTIFIER
     {
-      if( $1 != NULL ) {
-        db_add_signal( $3, $1->type, $1->prange, $1->urange, curr_signed, curr_mba, @3.first_line, @3.first_column, TRUE );
+      if( parse_mode ) {
+        if( $1 != NULL ) {
+          db_add_signal( $3, $1->type, $1->prange, $1->urange, curr_signed, curr_mba, @3.first_line, @3.first_column, TRUE );
+        }
+        free_safe( $3, (strlen( $3 ) + 1) );
+        $$ = $1;
+      } else {
+        $$ = NULL;
       }
-      free_safe( $3, (strlen( $3 ) + 1) );
-      $$ = $1;
     }
   ;
 
@@ -591,24 +665,44 @@ list_of_port_declarations
 port_declaration
   : attribute_list_opt port_type net_type_sign_range_opt IDENTIFIER
     { 
-      $$ = parser_create_inline_port( $4, curr_sig_type, @4.first_line, @4.first_column );
+      if( parse_mode ) {
+        $$ = parser_create_inline_port( $4, curr_sig_type, @4.first_line, @4.first_column );
+      } else {
+        $$ = NULL;
+      }
     }
   | attribute_list_opt K_output var_type signed_opt range_opt IDENTIFIER
     {
-      $$ = parser_create_inline_port( $6, SSUPPL_TYPE_OUTPUT_REG, @6.first_line, @6.first_column );
+      if( parse_mode ) {
+        $$ = parser_create_inline_port( $6, SSUPPL_TYPE_OUTPUT_REG, @6.first_line, @6.first_column );
+      } else {
+        $$ = NULL;
+      }
     }
   /* We just need to parse the static register assignment as this signal will get its value from the dumpfile */
   | attribute_list_opt K_output var_type signed_opt range_opt IDENTIFIER '=' ignore_more static_expr ignore_less
     {
-      $$ = parser_create_inline_port( $6, SSUPPL_TYPE_OUTPUT_REG, @6.first_line, @6.first_column );
+      if( parse_mode ) {
+        $$ = parser_create_inline_port( $6, SSUPPL_TYPE_OUTPUT_REG, @6.first_line, @6.first_column );
+      } else {
+        $$ = NULL;
+      }
     }
   | attribute_list_opt port_type net_type_sign_range_opt error
     {
-      $$ = parser_handle_inline_port_error();
+      if( parse_mode ) {
+        $$ = parser_handle_inline_port_error();
+      } else {
+        $$ = NULL;
+      }
     }
   | attribute_list_opt K_output var_type signed_opt range_opt error
     {
-      $$ = parser_handle_inline_port_error();
+      if( parse_mode ) {
+        $$ = parser_handle_inline_port_error();
+      } else {
+        $$ = NULL;
+      }
     }
 
   ;
