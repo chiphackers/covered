@@ -33,9 +33,16 @@ void generator_hold_code(
   unsigned int line_num
 );
 
+/*! \brief Outputs all held code to the output file. */
+void generator_flush_held_code();
+
 
 /*
  $Log$
+ Revision 1.3  2008/12/02 23:43:21  phase1geo
+ Reimplementing inlined code generation code.  Added this code to Verilog lexer and parser.
+ More work to do here.  Checkpointing.
+
  Revision 1.2  2008/11/26 05:34:48  phase1geo
  More work on Verilog generator file.  We are now able to create the needed
  directories and output a non-instrumented version of a module to the appropriate

@@ -315,7 +315,7 @@ int yydebug = 1;
 %type <gitem>     generate_item generate_item_list generate_item_list_opt
 %type <case_stmt> case_items case_item
 %type <case_gi>   generate_case_items generate_case_item
-%type <optype>    static_unary_op static_binary_op unary_op binary_op syscall_wo_parms_op syscall_w_parms_op syscall_w_parms_op_64 syscall_w_parms_op_32
+%type <optype>    static_unary_op unary_op syscall_wo_parms_op syscall_w_parms_op syscall_w_parms_op_64 syscall_w_parms_op_32
 %type <optype>    pre_op_and_assign_op post_op_and_assign_op op_and_assign_op
 
 %token K_TAND
@@ -810,27 +810,6 @@ static_unary_op
   | K_NXOR { $$ = EXP_OP_UNXOR; }
   ;
 
-static_binary_op
-  : '^'    { $$ = EXP_OP_XOR;      }
-  | '*'    { $$ = EXP_OP_MULTIPLY; }
-  | '/'    { $$ = EXP_OP_DIVIDE;   }
-  | '%'    { $$ = EXP_OP_MOD;      }
-  | '+'    { $$ = EXP_OP_ADD;      }
-  | '-'    { $$ = EXP_OP_SUBTRACT; }
-  | '&'    { $$ = EXP_OP_AND;      }
-  | '|'    { $$ = EXP_OP_OR;       }
-  | K_NOR  { $$ = EXP_OP_NOR;      }
-  | K_NAND { $$ = EXP_OP_NAND;     }
-  | K_NXOR { $$ = EXP_OP_NXOR;     }
-  | K_LS   { $$ = EXP_OP_LSHIFT;   }
-  | K_RS   { $$ = EXP_OP_RSHIFT;   }
-  | K_GE   { $$ = EXP_OP_GE;       }
-  | K_LE   { $$ = EXP_OP_LE;       }
-  | K_EQ   { $$ = EXP_OP_EQ;       }
-  | '>'    { $$ = EXP_OP_GT;       }
-  | '<'    { $$ = EXP_OP_LT;       }
-  ;
-
 static_expr
   : static_expr_primary
     {
@@ -876,10 +855,146 @@ static_expr
         $$ = NULL;
       }
     }
-  | static_expr static_binary_op static_expr
+  | static_expr '^' static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, $2, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_XOR, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | static_expr '*' static_expr
+    {
+      if( parse_mode ) {
+        $$ = static_expr_gen( $3, $1, EXP_OP_MULTIPLY, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | static_expr '/' static_expr
+    {
+      if( parse_mode ) {
+        $$ = static_expr_gen( $3, $1, EXP_OP_DIVIDE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | static_expr '%' static_expr
+    {
+      if( parse_mode ) {
+        $$ = static_expr_gen( $3, $1, EXP_OP_MOD, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | static_expr '+' static_expr
+    {
+      if( parse_mode ) {
+        $$ = static_expr_gen( $3, $1, EXP_OP_ADD, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | static_expr '-' static_expr
+    {
+      if( parse_mode ) {
+        $$ = static_expr_gen( $3, $1, EXP_OP_SUBTRACT, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | static_expr '&' static_expr
+    {
+      if( parse_mode ) {
+        $$ = static_expr_gen( $3, $1, EXP_OP_AND, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | static_expr '|' static_expr
+    {
+      if( parse_mode ) {
+        $$ = static_expr_gen( $3, $1, EXP_OP_OR, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | static_expr K_NOR static_expr
+    {
+      if( parse_mode ) {
+        $$ = static_expr_gen( $3, $1, EXP_OP_NOR, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | static_expr K_NAND static_expr
+    {
+      if( parse_mode ) {
+        $$ = static_expr_gen( $3, $1, EXP_OP_NAND, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | static_expr K_NXOR static_expr
+    {
+      if( parse_mode ) {
+        $$ = static_expr_gen( $3, $1, EXP_OP_NXOR, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | static_expr K_LS static_expr
+    {
+      if( parse_mode ) {
+        $$ = static_expr_gen( $3, $1, EXP_OP_LSHIFT, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | static_expr K_RS static_expr
+    {
+      if( parse_mode ) {
+        $$ = static_expr_gen( $3, $1, EXP_OP_RSHIFT, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | static_expr K_GE static_expr
+    {
+      if( parse_mode ) {
+        $$ = static_expr_gen( $3, $1, EXP_OP_GE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | static_expr K_LE static_expr
+    {
+      if( parse_mode ) {
+        $$ = static_expr_gen( $3, $1, EXP_OP_LE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | static_expr K_EQ static_expr
+    {
+      if( parse_mode ) {
+        $$ = static_expr_gen( $3, $1, EXP_OP_EQ, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | static_expr '>' static_expr
+    {
+      if( parse_mode ) {
+        $$ = static_expr_gen( $3, $1, EXP_OP_GT, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | static_expr '<' static_expr
+    {
+      if( parse_mode ) {
+        $$ = static_expr_gen( $3, $1, EXP_OP_LT, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1054,32 +1169,6 @@ unary_op
   | K_NXOR  { $$ = EXP_OP_UNXOR;  }
   ;
 
-binary_op
-  : '^'     { $$ = EXP_OP_XOR;      }
-  | '*'     { $$ = EXP_OP_MULTIPLY; }
-  | '/'     { $$ = EXP_OP_DIVIDE;   }
-  | '%'     { $$ = EXP_OP_MOD;      }
-  | '+'     { $$ = EXP_OP_ADD;      }
-  | '-'     { $$ = EXP_OP_SUBTRACT; }
-  | '&'     { $$ = EXP_OP_AND;      }
-  | '|'     { $$ = EXP_OP_OR;       }
-  | K_NAND  { $$ = EXP_OP_NAND;     }
-  | K_NOR   { $$ = EXP_OP_NOR;      }
-  | K_NXOR  { $$ = EXP_OP_NXOR;     }
-  | '<'     { $$ = EXP_OP_LT;       }
-  | '>'     { $$ = EXP_OP_GT;       }
-  | K_LS    { $$ = EXP_OP_LSHIFT;   }
-  | K_RS    { $$ = EXP_OP_RSHIFT;   }
-  | K_EQ    { $$ = EXP_OP_EQ;       }
-  | K_CEQ   { $$ = EXP_OP_CEQ;      }
-  | K_LE    { $$ = EXP_OP_LE;       }
-  | K_GE    { $$ = EXP_OP_GE;       }
-  | K_NE    { $$ = EXP_OP_NE;       }
-  | K_CNE   { $$ = EXP_OP_CNE;      }
-  | K_LOR   { $$ = EXP_OP_LOR;      }
-  | K_LAND  { $$ = EXP_OP_LAND;     }
-  ;
-
 expression
   : expr_primary
     {
@@ -1156,10 +1245,186 @@ expression
     {
       VLerror( "Operand of reduction ~^ is not a primary expression" );
     }
-  | expression binary_op expression
+  | expression '^' expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, $2, @1.first_line, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_XOR, @1.first_line, @1.first_column, @3.last_column );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | expression '*' expression
+    {
+      if( parse_mode ) {
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_MULTIPLY, @1.first_line, @1.first_column, @3.last_column );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | expression '/' expression
+    {
+      if( parse_mode ) {
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_DIVIDE, @1.first_line, @1.first_column, @3.last_column );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | expression '%' expression
+    {
+      if( parse_mode ) {
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_MOD, @1.first_line, @1.first_column, @3.last_column );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | expression '+' expression
+    {
+      if( parse_mode ) {
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_ADD, @1.first_line, @1.first_column, @3.last_column );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | expression '-' expression
+    {
+      if( parse_mode ) {
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_SUBTRACT, @1.first_line, @1.first_column, @3.last_column );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | expression '&' expression
+    {
+      if( parse_mode ) {
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_AND, @1.first_line, @1.first_column, @3.last_column );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | expression '|' expression
+    {
+      if( parse_mode ) {
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_OR, @1.first_line, @1.first_column, @3.last_column );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | expression K_NAND expression
+    {
+      if( parse_mode ) {
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_NAND, @1.first_line, @1.first_column, @3.last_column );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | expression K_NOR expression
+    {
+      if( parse_mode ) {
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_NOR, @1.first_line, @1.first_column, @3.last_column );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | expression K_NXOR expression
+    {
+      if( parse_mode ) {
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_NXOR, @1.first_line, @1.first_column, @3.last_column );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | expression '<' expression
+    {
+      if( parse_mode ) {
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LT, @1.first_line, @1.first_column, @3.last_column );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | expression '>' expression
+    {
+      if( parse_mode ) {
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_GT, @1.first_line, @1.first_column, @3.last_column );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | expression K_LS expression
+    {
+      if( parse_mode ) {
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LSHIFT, @1.first_line, @1.first_column, @3.last_column );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | expression K_RS expression
+    {
+      if( parse_mode ) {
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_RSHIFT, @1.first_line, @1.first_column, @3.last_column );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | expression K_EQ expression
+    {
+      if( parse_mode ) {
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_EQ, @1.first_line, @1.first_column, @3.last_column );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | expression K_CEQ expression
+    {
+      if( parse_mode ) {
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_CEQ, @1.first_line, @1.first_column, @3.last_column );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | expression K_LE expression
+    {
+      if( parse_mode ) {
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LE, @1.first_line, @1.first_column, @3.last_column );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | expression K_GE expression
+    {
+      if( parse_mode ) {
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_GE, @1.first_line, @1.first_column, @3.last_column );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | expression K_NE expression
+    {
+      if( parse_mode ) {
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_NE, @1.first_line, @1.first_column, @3.last_column );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | expression K_CNE expression
+    {
+      if( parse_mode ) {
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_CNE, @1.first_line, @1.first_column, @3.last_column );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | expression K_LOR expression
+    {
+      if( parse_mode ) {
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LOR, @1.first_line, @1.first_column, @3.last_column );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | expression K_LAND expression
+    {
+      if( parse_mode ) {
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LAND, @1.first_line, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -5691,10 +5956,10 @@ delay_value_simple
         } else {
           $$ = NULL;
         }
+        free_safe( $1, (strlen( $1 ) + 1) );
       } else {
         $$ = NULL;
       }
-      free_safe( $1, (strlen( $1 ) + 1) );
     }
   | REALTIME
     {

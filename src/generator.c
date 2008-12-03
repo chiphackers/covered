@@ -57,6 +57,26 @@ struct fname_link_s {
 */
 FILE* curr_ofile = NULL;
 
+/*!
+ Temporary holding buffer for code to be output.
+*/
+char hold_buffer[4096];
+
+/*!
+ Pointer to beginning of the last string added to the hold_buffer.
+*/
+char* last_entry = NULL;
+
+/*!
+ Pointer to head of hold buffer list.
+*/
+str_link* hold_head = NULL;
+
+/*!
+ Pointer to tail of hold buffer list.
+*/
+str_link* hold_tail = NULL;
+
 
 /*!
  Populates the specified filename list with the functional unit list, sorting all functional units with the
@@ -206,15 +226,23 @@ static void generator_output_funits(
     /* Populate the modlist list */
     funitl = head->head;
     while( funitl != NULL ) {
-      str_link_add( funitl->funit->name, &modlist_head, &modlist_tail );
+      str_link_add( strdup_safe( funitl->funit->name ), &modlist_head, &modlist_tail );
       funitl = funitl->next;
     }
 
     /* Open the output file for writing */
     if( (curr_ofile = fopen( filename, "w" )) != NULL ) {
 
+      /* Parse the original code and output inline coverage code */
       reset_lexer_for_generation( head->filename, "covered/verilog" );
       VLparse();
+
+      /* Flush the hold buffer */
+      generator_flush_held_code();
+
+      /* Close the output file */
+      rv = fclose( curr_ofile );
+      assert( rv == 0 );
 
     } else {
 
@@ -241,9 +269,9 @@ static void generator_output_funits(
 */
 void generator_output() { PROFILE(GENERATOR_OUTPUT);
 
-  fname_link* fname_head;  /* Pointer to head of filename linked list */
-  fname_link* fname_tail;  /* Pointer to tail of filename linked list */
-  fname_link* fnamel;      /* Pointer to current filename link */
+  fname_link* fname_head = NULL;  /* Pointer to head of filename linked list */
+  fname_link* fname_tail = NULL;  /* Pointer to tail of filename linked list */
+  fname_link* fnamel;             /* Pointer to current filename link */
 
   /* Create the initial "covered" directory - TBD - this should be done prior to this function call */
   if( !directory_exists( "covered" ) ) {
@@ -266,6 +294,9 @@ void generator_output() { PROFILE(GENERATOR_OUTPUT);
     print_output( "Unable to create \"covered/verilog\" directory", FATAL, __FILE__, __LINE__ );
     Throw 0;
   }
+
+  /* Initialize the hold_buffer array */
+  hold_buffer[0] = '\0';
 
   /* Create the filename list from the functional unit list */
   generator_create_filename_list( db_list[curr_db]->funit_head, &fname_head, &fname_tail );
@@ -290,9 +321,26 @@ void generator_hold_code(
   unsigned int line_num  /*!< Line number that this string exists on */
 ) { PROFILE(GENERATOR_HOLD_CODE);
  
-  printf( "str: %s\n", str );
+  static unsigned int last_line = 0;
 
-  /* TBD */
+  /* I don't believe that a line will ever exceed 4K chars */
+  assert( strlen( str ) < 4095 );
+
+  /*
+   If the new string is on a new line, move the hold buffer to the hold list and copy the new
+   string to the hold buffer.
+  */
+  if( line_num > last_line ) {
+    str_link_add( strdup_safe( hold_buffer ), &hold_head, &hold_tail );
+    strcpy( hold_buffer, str );
+    last_line = line_num;
+
+  /* Otherwise, add the new string to the hold buffer */
+  } else {
+    assert( (strlen( hold_buffer ) + strlen( str )) < 4095 );
+    strcat( hold_buffer, str );
+
+  }
 
   PROFILE_END;
 
@@ -303,7 +351,21 @@ void generator_hold_code(
 */
 void generator_flush_held_code() { PROFILE(GENERATOR_FLUSH_HELD_CODE);
 
-  /* TBD */
+  str_link* strl = hold_head;
+
+  /* Output the hold buffer list to the output file */
+  while( strl != NULL ) {
+    fprintf( curr_ofile, "%s", strl->str );
+    strl = strl->next;
+  }
+  str_link_delete_list( hold_head );
+  hold_head = hold_tail = NULL;
+
+  /* If the hold buffer is not empty, output it as well */
+  if( strlen( hold_buffer ) > 0 ) {
+    fprintf( curr_ofile, "%s", hold_buffer );
+    hold_buffer[0] = '\0';
+  }
 
   PROFILE_END;
 
@@ -313,6 +375,11 @@ void generator_flush_held_code() { PROFILE(GENERATOR_FLUSH_HELD_CODE);
 
 /*
  $Log$
+ Revision 1.9  2008/12/03 07:27:01  phase1geo
+ Made initial pass through the parser to add parse_mode.  Things are quite broken
+ in regression at this point and we have conflicts in the resultant parser.
+ Checkpointing.
+
  Revision 1.8  2008/12/02 23:43:21  phase1geo
  Reimplementing inlined code generation code.  Added this code to Verilog lexer and parser.
  More work to do here.  Checkpointing.

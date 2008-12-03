@@ -192,8 +192,11 @@ WSPACE [ \t\b\f]+
   yymore();
  }
 <LCOMMENT>\n  {
-  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
-  check_for_pragma( yytext );
+  if( parse_mode ) {
+    check_for_pragma( yytext );
+  } else {
+    generator_hold_code( yytext, yylloc.first_line );
+  }
   BEGIN( state_enter );
   yylloc.first_line += 1;
   yylloc.last_column = 0;
@@ -219,9 +222,12 @@ WSPACE [ \t\b\f]+
   yymore();
  }
 <CCOMMENT>"*/" {
-  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  if( parse_mode ) {
+    check_for_pragma( yytext );
+  } else {
+    generator_hold_code( yytext, yylloc.first_line );
+  }
   yylloc.last_column += 2;
-  check_for_pragma( yytext );
   BEGIN( state_enter );
  }
 
@@ -556,7 +562,6 @@ WSPACE [ \t\b\f]+
   BEGIN( CSTRING );
  }
 <CSTRING>\\\" {
-  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
   yylloc.last_column += 2;
   yymore();
  }
@@ -568,19 +573,21 @@ WSPACE [ \t\b\f]+
   return 0;
  }
 <CSTRING>\"   { PROFILE(LEXER_CSTRING_A);
-  int   str_len = strlen( yytext );
-  char* tmpstr;
-  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  if( parse_mode ) {
+    int   str_len = strlen( yytext );
+    char* tmpstr;
+    tmpstr = strdup_safe( yytext );
+    tmpstr[ str_len - 1 ] = '\0';
+    vector_from_string( &tmpstr, TRUE, &(yylval.num.vec), &(yylval.num.base) );
+    free_safe( tmpstr, (str_len + 1) );
+  } else {
+    generator_hold_code( yytext, yylloc.first_line );
+  }
   yylloc.last_column += 1;
   BEGIN( state_enter );
-  tmpstr = strdup_safe( yytext );
-  tmpstr[ str_len - 1 ] = '\0';
-  vector_from_string( &tmpstr, TRUE, &(yylval.num.vec), &(yylval.num.base) );
-  free_safe( tmpstr, (str_len + 1) );
   return STRING;
  }
 <CSTRING>.    {
-  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
   yylloc.last_column += 1;
   yymore();
  }
@@ -881,15 +888,17 @@ WSPACE [ \t\b\f]+
       if( (foundmod = str_link_find( yytext, modlist_head )) == NULL ) {
         free_safe( yylval.text, (strlen( yylval.text ) + 1) );
         BEGIN( IGNORE_MODULE );
-        (void)tree_add( yytext, yylloc.text, FALSE, &found_modules );
+        if( parse_mode ) (void)tree_add( yytext, yylloc.text, FALSE, &found_modules );
         rc = IGNORE;
       } else {
-        if( (filelist_curr != filelist_head) && (error_count == 0) ) {
-          /* The module has been found, recirculate filelist */
-          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Parsing file '%s'", obf_file( yylloc.text ) );
-          assert( rv < USER_MSG_LENGTH );
-          print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-          filelist_curr = filelist_head;
+        if( parse_mode ) {
+          if( (filelist_curr != filelist_head) && (error_count == 0) ) {
+            /* The module has been found, recirculate filelist */
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Parsing file '%s'", obf_file( yylloc.text ) );
+            assert( rv < USER_MSG_LENGTH );
+            print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+            filelist_curr = filelist_head;
+          }
         }
         last_keyword = 0;
       }
@@ -952,82 +961,103 @@ WSPACE [ \t\b\f]+
 
   /* Unsized decimal number */
 <PARSE>[0-9][0-9_]* {
-  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  if( parse_mode ) {
+    yylval.text = strdup_safe( yytext );
+  } else {
+    generator_hold_code( yytext, yylloc.first_line );
+  }
   yylloc.first_column = yylloc.last_column;
   yylloc.last_column += strlen( yytext );
-  yylval.text = strdup_safe( yytext );
   return DEC_NUMBER;
  }
 
   /* Decimal number */
 <PARSE>\'[sS]?[dD][ \t]*[0-9][0-9_]* {
-  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  if( parse_mode ) {
+    yylval.text = strdup_safe( yytext );
+  } else {
+    generator_hold_code( yytext, yylloc.first_line );
+  }
   yylloc.first_column = yylloc.last_column;
   yylloc.last_column += strlen( yytext );
-  yylval.text = strdup_safe( yytext );
   return BASE_NUMBER;
  }
 
   /* Binary number */
 <PARSE>\'[sS]?[bB][ \t]*[0-1xzXZ_\?]+ {
-  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  if( parse_mode ) {
+    yylval.text = strdup_safe( yytext );
+  } else {
+    generator_hold_code( yytext, yylloc.first_line );
+  }
   yylloc.first_column = yylloc.last_column;
   yylloc.last_column += strlen( yytext );
-  yylval.text = strdup_safe( yytext );
   return BASE_NUMBER;
  }
 
   /* Octal number */
 <PARSE>\'[sS]?[oO][ \t]*[0-7xzXZ_\?]+ {
-  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  if( parse_mode ) {
+    yylval.text = strdup_safe( yytext );
+  } else {
+    generator_hold_code( yytext, yylloc.first_line );
+  }
   yylloc.first_column = yylloc.last_column;
   yylloc.last_column += strlen( yytext );
-  yylval.text = strdup_safe( yytext );
   return BASE_NUMBER;
  }
 
   /* Hexidecimal number - Size indicated */
 <PARSE>\'[sS]?[hH][ \t]*[0-9a-fA-FxzXZ_\?]+ {
-  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  if( parse_mode ) {
+    yylval.text = strdup_safe( yytext );
+  } else {
+    generator_hold_code( yytext, yylloc.first_line );
+  }
   yylloc.first_column = yylloc.last_column;
   yylloc.last_column += strlen( yytext );
-  yylval.text = strdup_safe( yytext );
   return BASE_NUMBER;
  }
 
   /* Real numbers */
 <PARSE>[0-9][0-9_]*\.[0-9][0-9_]*([Ee][+-]?[0-9][0-9_]*)? { 
-  double       rtime;
-  unsigned int slen = strlen( yytext );
-  char*        stmp = strdup_safe( yytext );
-  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  if( parse_mode ) {
+    double       rtime;
+    unsigned int slen = strlen( yytext );
+    char*        stmp = strdup_safe( yytext );
+    yylval.realtime = (vector*)malloc_safe( sizeof( vector ) );
+    if( sscanf( remove_underscores( stmp ), "%lf", &rtime ) == 1 ) {
+      vector_init_r64( yylval.realtime, (rv64*)malloc_safe( sizeof( rv64 ) ), rtime, yytext, TRUE, VTYPE_VAL );
+    } else {
+      assert( 0 );
+    }
+    free_safe( stmp, (slen + 1) );
+  } else {
+    generator_hold_code( yytext, yylloc.first_line );
+  }
   yylloc.first_column = yylloc.last_column;
   yylloc.last_column += strlen( yytext );
-  yylval.realtime = (vector*)malloc_safe( sizeof( vector ) );
-  if( sscanf( remove_underscores( stmp ), "%lf", &rtime ) == 1 ) {
-    vector_init_r64( yylval.realtime, (rv64*)malloc_safe( sizeof( rv64 ) ), rtime, yytext, TRUE, VTYPE_VAL );
-  } else {
-    assert( 0 );
-  }
-  free_safe( stmp, (slen + 1) );
   return REALTIME;
  }
 
   /* Real numbers */
 <PARSE>[0-9][0-9_]*[Ee][+-]?[0-9][0-9_]* { 
-  double       rtime;
-  unsigned int slen = strlen( yytext );
-  char*        stmp = strdup_safe( yytext );
-  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
+  if( parse_mode ) {
+    double       rtime;
+    unsigned int slen = strlen( yytext );
+    char*        stmp = strdup_safe( yytext );
+    yylval.realtime = (vector*)malloc_safe( sizeof( vector ) );
+    if( sscanf( remove_underscores( stmp ), "%lf", &rtime ) == 1 ) {
+      vector_init_r64( yylval.realtime, (rv64*)malloc_safe( sizeof( rv64 ) ), rtime, yytext, TRUE, VTYPE_VAL );
+    } else {
+      assert( 0 );
+    }
+    free_safe( stmp, (slen + 1) );
+  } else {
+    generator_hold_code( yytext, yylloc.first_line );
+  }
   yylloc.first_column = yylloc.last_column;
   yylloc.last_column += strlen( yytext );
-  yylval.realtime = (vector*)malloc_safe( sizeof( vector ) );
-  if( sscanf( remove_underscores( stmp ), "%lf", &rtime ) == 1 ) {
-    vector_init_r64( yylval.realtime, (rv64*)malloc_safe( sizeof( rv64 ) ), rtime, yytext, TRUE, VTYPE_VAL );
-  } else {
-    assert( 0 );
-  }
-  free_safe( stmp, (slen + 1) );
   return REALTIME;
  }
 
@@ -1046,8 +1076,11 @@ WSPACE [ \t\b\f]+
   yymore();
  }
 <PPTIMESCALE>\n      {
-  if( !parse_mode ) generator_hold_code( yytext, yylloc.first_line );
-  process_timescale( yytext, TRUE );
+  if( parse_mode ) {
+    process_timescale( yytext, TRUE );
+  } else {
+    generator_hold_code( yytext, yylloc.first_line );
+  }
   yylloc.first_line += 1;
   BEGIN( state_enter );
   yylloc.last_column = 0;
