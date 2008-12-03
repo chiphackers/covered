@@ -38,6 +38,8 @@ extern int VLparse();
 extern db**         db_list;
 extern unsigned int curr_db;
 extern char         user_msg[USER_MSG_LENGTH];
+extern str_link*    modlist_head;
+extern str_link*    modlist_tail;
 
 
 struct fname_link_s;
@@ -195,9 +197,18 @@ static void generator_output_funits(
 
     char         filename[4096];
     unsigned int rv;
+    funit_link*  funitl;
 
+    /* Create the output file pathname */
     rv = snprintf( filename, 4096, "covered/verilog/%s", get_basename( head->filename ) );
     assert( rv < 4096 );
+
+    /* Populate the modlist list */
+    funitl = head->head;
+    while( funitl != NULL ) {
+      str_link_add( funitl->funit->name, &modlist_head, &modlist_tail );
+      funitl = funitl->next;
+    }
 
     /* Open the output file for writing */
     if( (curr_ofile = fopen( filename, "w" )) != NULL ) {
@@ -212,6 +223,10 @@ static void generator_output_funits(
       Throw 0;
 
     }
+
+    /* Reset the modlist list */
+    str_link_delete_list( modlist_head );
+    modlist_head = modlist_tail = NULL;
 
     head = head->next;
 
@@ -298,6 +313,10 @@ void generator_flush_held_code() { PROFILE(GENERATOR_FLUSH_HELD_CODE);
 
 /*
  $Log$
+ Revision 1.8  2008/12/02 23:43:21  phase1geo
+ Reimplementing inlined code generation code.  Added this code to Verilog lexer and parser.
+ More work to do here.  Checkpointing.
+
  Revision 1.7  2008/12/01 06:02:55  phase1geo
  More updates to get begin/end code injection to work.  This is still not fully working
  at this point.  Checkpointing.

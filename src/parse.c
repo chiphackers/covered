@@ -189,10 +189,13 @@ void parse_design(
     } else {
 
       print_output( "No Verilog input files specified", FATAL, __FILE__, __LINE__ );
-      printf( "parse Throw F\n" );
       Throw 0;
 
     }
+
+    /* Deallocate module list */
+    str_link_delete_list( modlist_head );
+    modlist_head = modlist_tail = NULL;
 
     /* Output the dumpvars module, if specified. */
     if( dumpvars_file != NULL ) {
@@ -202,7 +205,7 @@ void parse_design(
       score_generate_top_dumpvars_module( dumpvars_file );
     }
 
-    /* Generate the needed Verilog */
+    /* Generate the needed Verilog - TBD - This needs to be optional */
     generator_output();
 
     /* Write contents to baseline database file. */
@@ -313,6 +316,10 @@ void parse_and_score_dumpfile(
 
 /*
  $Log$
+ Revision 1.80  2008/12/02 23:43:21  phase1geo
+ Reimplementing inlined code generation code.  Added this code to Verilog lexer and parser.
+ More work to do here.  Checkpointing.
+
  Revision 1.79  2008/12/02 00:12:57  phase1geo
  Working on removing code from parser.y (to clean it up and make more easily extensible) and
  moving it to parser_func.c.  Checkpointing.

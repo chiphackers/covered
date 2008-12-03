@@ -274,11 +274,6 @@ void db_close() { PROFILE(DB_CLOSE);
   /* Deallocate database information */
   info_dealloc();
 
-  /* Deallocate the needed module list */
-  str_link_delete_list( modlist_head );
-  modlist_head = NULL;
-  modlist_tail = NULL;
-    
   /* Free memory associated with current instance scope */
   assert( curr_inst_scope_size == 0 );
 
@@ -3156,6 +3151,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.351  2008/11/12 19:57:07  phase1geo
+ Fixing the rest of the issues from regressions in regards to the merge changes.
+ Updating regression files.  IV and Cver regressions now pass.
+
  Revision 1.350  2008/11/12 00:07:41  phase1geo
  More updates for complex merging algorithm.  Updating regressions per
  these changes.  Checkpointing.
