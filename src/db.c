@@ -881,6 +881,25 @@ void db_set_timescale(
 }
 
 /*!
+ Searches for the module with the given name and sets the current functional unit pointer
+ to it.
+*/
+void db_find_and_set_curr_funit(
+  const char* modname  /*!< Module name to find */
+) { PROFILE(DB_FIND_AND_SET_CURR_FUNIT);
+
+  funit_link* funitl = funit_link_find( modname, FUNIT_MODULE, db_list[curr_db]->funit_head );
+
+  assert( funitl != NULL );
+
+  /* Set current functional unit pointer */
+  curr_funit = funitl->funit;
+
+  PROFILE_END;
+
+}
+
+/*!
  \return Returns a pointer to the current functional unit.
 
  This function returns a pointer to the current functional unit being parsed.
@@ -3151,6 +3170,11 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.352  2008/12/03 07:27:01  phase1geo
+ Made initial pass through the parser to add parse_mode.  Things are quite broken
+ in regression at this point and we have conflicts in the resultant parser.
+ Checkpointing.
+
  Revision 1.351  2008/11/12 19:57:07  phase1geo
  Fixing the rest of the issues from regressions in regards to the merge changes.
  Updating regression files.  IV and Cver regressions now pass.

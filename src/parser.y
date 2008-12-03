@@ -564,6 +564,8 @@ module
     {
       if( parse_mode ) {
         db_add_module( $3, @2.text, @2.first_line );
+      } else {
+        db_find_and_set_curr_funit( $3 );
       }
       free_safe( $3, (strlen( $3 ) + 1) );
     }
@@ -3110,10 +3112,14 @@ module_item
       }
     }
   | attribute_list_opt
-    K_initial statement
+    K_initial
+    {
+      generator_add_to_hold_code( " begin" );
+    }
+    statement
     {
       if( parse_mode ) {
-        statement* stmt = $3;
+        statement* stmt = $4;
         if( stmt != NULL ) {
           if( (info_suppl.part.excl_init == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
             stmt->suppl.part.head = 1;
@@ -3123,7 +3129,8 @@ module_item
           }
         }
       } else {
-        /* TBD - Add this statement block */
+        generator_add_to_hold_code( " end" );
+        generator_flush_hold_code();
       }
     }
   | attribute_list_opt
@@ -4013,18 +4020,30 @@ passign
 statement
   : K_assign { ignore_mode++; } lavalue '=' expression ';' { ignore_mode--; }
     {
+      if( !parse_mode ) {
+        generator_flush_work_code();
+      }
       $$ = NULL;
     }
   | K_deassign { ignore_mode++; } lavalue ';' { ignore_mode--; }
     {
+      if( !parse_mode ) {
+        generator_flush_work_code();
+      }
       $$ = NULL;
     }
   | K_force { ignore_mode++; } lavalue '=' expression ';' { ignore_mode--; }
     {
+      if( !parse_mode ) {
+        generator_flush_work_code();
+      }
       $$ = NULL;
     }
   | K_release { ignore_mode++; } lavalue ';' { ignore_mode--; }
     {
+      if( !parse_mode ) {
+        generator_flush_work_code();
+      }
       $$ = NULL;
     }
   | K_begin inc_block_depth begin_end_block dec_block_depth K_end
@@ -4088,6 +4107,7 @@ statement
           $$ = NULL;
         }
       } else {
+        generator_flush_work_code();
         $$ = NULL;  /* TBD - Need to do something here */
       }
     }
@@ -4102,14 +4122,15 @@ statement
             error_count++;
           }
           $$ = db_create_statement( exp );
-          free_safe( $2, (strlen( $2 ) + 1) );
         } else {
-          free_safe( $2, (strlen( $2 ) + 1) );
           $$ = NULL;
         } 
       } else {
-        $$ = NULL;  /* TBD - Need to do something here */
+        generator_insert_line_cov( @1.first_line, @1.first_column );
+        generator_flush_work_code();
+        $$ = NULL;
       }
+      free_safe( $2, (strlen( $2 ) + 1) );
     }
   | K_TRIGGER IDENTIFIER ';'
     {
@@ -4126,7 +4147,9 @@ statement
           $$ = NULL;
         }
       } else {
-        $$ = NULL;  /* TBD */
+        generator_insert_line_cov( @1.first_line, @1.first_column );
+        generator_flush_work_code();
+        $$ = NULL;
       }
       free_safe( $2, (strlen( $2 ) + 1) );
     }
@@ -4548,25 +4571,34 @@ statement
         $$ = NULL;  /* TBD */
       }
     }
-  | delay1 inc_block_depth statement_or_null dec_block_depth
+  | delay1
+    {
+      if( !parse_mode ) {
+        generator_add_to_work_code( ";" );
+        generator_insert_line_cov( @1.first_line, @1.first_column );
+        generator_flush_work_code();
+      }
+    }
+    inc_block_depth statement_or_null dec_block_depth
     {
       if( parse_mode ) {
         statement* stmt;
         if( (ignore_mode == 0) && ($1 != NULL) ) {
           stmt = db_create_statement( $1 );
-          if( $3 != NULL ) {
-            if( !db_statement_connect( stmt, $3 ) ) {
+          if( $4 != NULL ) {
+            if( !db_statement_connect( stmt, $4 ) ) {
               db_remove_statement( stmt );
-              db_remove_statement( $3 );
+              db_remove_statement( $4 );
               stmt = NULL;
             }
           }
           $$ = stmt;
         } else {
-          db_remove_statement( $3 );
+          db_remove_statement( $4 );
           $$ = NULL;
         }
       } else {
+        generator_flush_work_code();
         $$ = NULL;  /* TBD */
       }
     }
@@ -4635,6 +4667,8 @@ statement
       if( parse_mode ) {
         $$ = $1;
       } else {
+        generator_insert_line_cov( @1.first_line, @1.first_column );
+        generator_flush_work_code();
         $$ = NULL;  /* TBD */
       }
     }
@@ -4835,11 +4869,15 @@ statement
           $$ = NULL;
         }
       } else {
+        generator_flush_work_code();
         $$ = NULL;  /* TBD */
       }
     }
   | S_ignore '(' ignore_more expression_systask_list ignore_less ')' ';'
     {
+      if( !parse_mode ) {
+        generator_flush_work_code();
+      }
       $$ = NULL;
     }
   | S_allow '(' ignore_more expression_systask_list ignore_less ')' ';'
@@ -4856,7 +4894,8 @@ statement
           $$ = NULL;
         }
       } else {
-        $$ = NULL;  /* TBD */
+        generator_flush_work_code();
+        $$ = NULL;
       }
     }
   | S_finish '(' ignore_more expression_systask_list ignore_less ')' ';'
@@ -4873,7 +4912,8 @@ statement
           $$ = NULL;
         }
       } else {
-        $$ = NULL;  /* TBD */
+        generator_flush_work_code();
+        $$ = NULL;
       }
     }
   | S_stop '(' ignore_more expression_systask_list ignore_less ')' ';'
@@ -4890,7 +4930,8 @@ statement
           $$ = NULL;
         }
       } else {
-        $$ = NULL;  /* TBD */
+        generator_flush_work_code();
+        $$ = NULL;
       }
     }
   | S_srandom '(' expression_systask_list ')' ';'
@@ -4909,14 +4950,15 @@ statement
           $$ = NULL;
         }
       } else {
-        $$ = NULL;  /* TBD */
+        generator_flush_work_code();
+        $$ = NULL;
       }
     }
   | S_ignore ';'
     {
       $$ = NULL;
       if( !parse_mode ) {
-        /* TBD */
+        generator_flush_work_code();
       }
     }
   | S_allow ';'
@@ -4933,7 +4975,8 @@ statement
           $$ = NULL;
         }
       } else {
-        $$ = NULL;  /* TBD */
+        generator_flush_work_code();
+        $$ = NULL;
       }
     }
   | S_finish ';'
@@ -4950,7 +4993,8 @@ statement
           $$ = NULL;
         }
       } else {
-        $$ = NULL;  /* TBD */
+        generator_flush_work_code();
+        $$ = NULL;
       }
     }
   | S_stop ';'

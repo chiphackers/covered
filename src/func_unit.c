@@ -194,7 +194,7 @@ func_unit* funit_get_curr_function(
          one exists; otherwise, returns NULL.
 */
 func_unit* funit_get_curr_task(
-  func_unit* funit  /*!< Functional unit that may be nested in a function */
+  func_unit* funit  /*!< Functional unit that may be nested in a task */
 ) { PROFILE(FUNIT_GET_CURR_TASK);
 
   assert( funit != NULL );
@@ -1585,6 +1585,10 @@ void funit_dealloc(
 
 /*
  $Log$
+ Revision 1.120  2008/11/12 19:57:07  phase1geo
+ Fixing the rest of the issues from regressions in regards to the merge changes.
+ Updating regression files.  IV and Cver regressions now pass.
+
  Revision 1.119  2008/11/12 00:07:41  phase1geo
  More updates for complex merging algorithm.  Updating regressions per
  these changes.  Checkpointing.

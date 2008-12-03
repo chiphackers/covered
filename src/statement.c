@@ -893,6 +893,52 @@ statement* statement_find_statement(
 }
 
 /*!
+ \return Returns a pointer to the found statement or returns NULL if it was not found.
+*/
+statement* statement_find_statement_by_position(
+  statement*   curr,         /*!< Pointer to current statement in statement block being evaluated */
+  unsigned int first_line,   /*!< First line number of statement to find */
+  unsigned int first_column  /*!< First column of statement to find */
+) { PROFILE(STATEMENT_FIND_STATEMENT_BY_POSITION);
+
+  statement* found = NULL;  /* Pointer to found statement */
+
+  if( curr != NULL ) {
+
+    if( (curr->exp->line == first_line) && (((curr->exp->col >> 16) & 0xffff) == first_column) ) {
+
+      found = curr;
+
+    } else {
+
+      /* If both true and false paths lead to same item, just traverse the true path */
+      if( curr->next_true == curr->next_false ) {
+
+        if( curr->suppl.part.stop_true == 0 ) {
+          found = statement_find_statement_by_position( curr->next_true, first_line, first_column );
+        }
+
+      /* Otherwise, traverse both true and false paths */
+      } else if( (curr->suppl.part.stop_true == 0) &&
+                 ((found = statement_find_statement_by_position( curr->next_true, first_line, first_column )) == NULL) ) {
+
+        if( curr->suppl.part.stop_false == 0 ) {
+          found = statement_find_statement_by_position( curr->next_false, first_line, first_column );
+        }
+
+      }
+
+    }
+
+  }
+
+  PROFILE_END;
+
+  return( found );
+
+}
+
+/*!
  \return Returns TRUE if the given statement contains the given expression; otherwise, returns FALSE.
 */
 bool statement_contains_expr_calling_stmt(
@@ -989,6 +1035,11 @@ void statement_dealloc(
 
 /*
  $Log$
+ Revision 1.139  2008/10/31 22:01:34  phase1geo
+ Initial code changes to support merging two non-overlapping CDD files into
+ one.  This functionality seems to be working but needs regression testing to
+ verify that nothing is broken as a result.
+
  Revision 1.138  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

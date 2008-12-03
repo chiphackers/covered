@@ -60,12 +60,22 @@ FILE* curr_ofile = NULL;
 /*!
  Temporary holding buffer for code to be output.
 */
-char hold_buffer[4096];
+char work_buffer[4096];
 
 /*!
- Pointer to beginning of the last string added to the hold_buffer.
+ Pointer to head of hold buffer list.
 */
-char* last_entry = NULL;
+str_link* work_head = NULL;
+
+/*!
+ Pointer to tail of hold buffer list.
+*/
+str_link* work_tail = NULL;
+
+/*!
+ Temporary holding buffer for code to be output.
+*/
+char hold_buffer[4096];
 
 /*!
  Pointer to head of hold buffer list.
@@ -76,6 +86,16 @@ str_link* hold_head = NULL;
  Pointer to tail of hold buffer list.
 */
 str_link* hold_tail = NULL;
+
+/*!
+ Pointer to head of register string list.
+*/
+str_link* reg_head = NULL;
+
+/*!
+ Pointer to tail of register string list.
+*/
+str_link* reg_tail = NULL;
 
 
 /*!
@@ -237,8 +257,9 @@ static void generator_output_funits(
       reset_lexer_for_generation( head->filename, "covered/verilog" );
       VLparse();
 
-      /* Flush the hold buffer */
-      generator_flush_held_code();
+      /* Flush the work and hold buffers */
+      generator_flush_work_code();
+      generator_flush_hold_code();
 
       /* Close the output file */
       rv = fclose( curr_ofile );
@@ -295,7 +316,8 @@ void generator_output() { PROFILE(GENERATOR_OUTPUT);
     Throw 0;
   }
 
-  /* Initialize the hold_buffer array */
+  /* Initialize the work_buffer and hold_buffer arrays */
+  work_buffer[0] = '\0';
   hold_buffer[0] = '\0';
 
   /* Create the filename list from the functional unit list */
@@ -312,34 +334,94 @@ void generator_output() { PROFILE(GENERATOR_OUTPUT);
 }
 
 /*!
+ Adds the given string to the working code buffer.
+*/
+void generator_add_to_work_code(
+  const char*  str  /*!< String to write */
+) { PROFILE(GENERATOR_ADD_TO_WORK_CODE);
+
+  static bool semi_just_seen = FALSE;
+  bool        add            = TRUE;
+
+  /* Make sure that we remove back-to-back semicolons */
+  if( strcmp( str, ";" ) == 0 ) {
+    if( semi_just_seen ) {
+      add = FALSE;
+    }
+    semi_just_seen = TRUE;
+  } else {
+    semi_just_seen = FALSE;
+  }
+
+  if( add ) {
+
+    /* I don't believe that a line will ever exceed 4K chars */
+    assert( (strlen( work_buffer ) + strlen( str )) < 4095 );
+    strcat( work_buffer, str );
+
+    /* If we have hit a newline, add the working buffer to the working list and clear the working buffer */
+    if( strcmp( str, "\n" ) == 0 ) {
+      str_link_add( strdup_safe( work_buffer ), &work_head, &work_tail );
+      work_buffer[0] = '\0';
+    }
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Flushes the current working code to the holding code buffers.
+*/
+void generator_flush_work_code() { PROFILE(GENERATOR_FLUSH_WORK_CODE);
+
+  /* If the hold_buffer is not empty, move it to the hold list */
+  if( strlen( hold_buffer ) > 0 ) {
+    str_link_add( strdup_safe( hold_buffer ), &hold_head, &hold_tail );
+  }
+
+  /* If the working list is not empty, append it to the holding code */
+  if( work_head != NULL ) {
+
+    /* Move the working code lists to the holding code lists */
+    if( hold_head == NULL ) {
+      hold_head = work_head;
+    } else {
+      hold_tail->next = work_head;
+    }
+    hold_tail = work_tail;
+    work_head = work_tail = NULL;
+
+  }
+
+  /* Copy the working buffer to the holding buffer */
+  strcpy( hold_buffer, work_buffer );
+
+  /* Clear the work buffer */
+  work_buffer[0] = '\0';
+
+  PROFILE_END;
+
+}
+
+/*!
  Adds the given code string to the "immediate" code generator.  This code can be output to the file
  immediately if there is no code in the sig_list and exp_list arrays.  If it cannot be output immediately,
  the code is added to the exp_list array.
 */
-void generator_hold_code(
-  const char*  str,      /*!< String to write */
-  unsigned int line_num  /*!< Line number that this string exists on */
-) { PROFILE(GENERATOR_HOLD_CODE);
+void generator_add_to_hold_code(
+  const char*  str  /*!< String to write */
+) { PROFILE(GENERATOR_ADD_TO_HOLD_CODE);
  
-  static unsigned int last_line = 0;
-
   /* I don't believe that a line will ever exceed 4K chars */
-  assert( strlen( str ) < 4095 );
+  assert( (strlen( hold_buffer ) + strlen( str )) < 4095 );
+  strcat( hold_buffer, str );
 
-  /*
-   If the new string is on a new line, move the hold buffer to the hold list and copy the new
-   string to the hold buffer.
-  */
-  if( line_num > last_line ) {
+  /* If we have hit a newline, add it to the hold list and clear the hold buffer */
+  if( strcmp( str, "\n" ) == 0 ) {
     str_link_add( strdup_safe( hold_buffer ), &hold_head, &hold_tail );
-    strcpy( hold_buffer, str );
-    last_line = line_num;
-
-  /* Otherwise, add the new string to the hold buffer */
-  } else {
-    assert( (strlen( hold_buffer ) + strlen( str )) < 4095 );
-    strcat( hold_buffer, str );
-
+    hold_buffer[0] = '\0';
   }
 
   PROFILE_END;
@@ -349,11 +431,21 @@ void generator_hold_code(
 /*!
  Outputs all held code to the output file.
 */
-void generator_flush_held_code() { PROFILE(GENERATOR_FLUSH_HELD_CODE);
+void generator_flush_hold_code() { PROFILE(GENERATOR_FLUSH_HOLD_CODE);
 
   str_link* strl = hold_head;
 
+  /* Output the register buffer if it exists */
+  strl = reg_head;
+  while( strl != NULL ) {
+    fprintf( curr_ofile, "%s\n", strl->str );
+    strl = strl->next;
+  }
+  str_link_delete_list( reg_head );
+  reg_head = reg_tail = NULL;
+
   /* Output the hold buffer list to the output file */
+  strl = hold_head;
   while( strl != NULL ) {
     fprintf( curr_ofile, "%s", strl->str );
     strl = strl->next;
@@ -371,10 +463,65 @@ void generator_flush_held_code() { PROFILE(GENERATOR_FLUSH_HELD_CODE);
 
 }
 
+/*!
+ Inserts line coverage information in string queues.
+*/
+void generator_insert_line_cov(
+  unsigned int first_line,   /*!< Line to create line coverage for */
+  unsigned int first_column  /*!< First column of statement */
+) { PROFILE(GENERATOR_INSERT_LINE_COV);
+
+  char         str[256];
+  unsigned int rv;
+  str_link*    tmp_head = NULL;
+  str_link*    tmp_tail = NULL;
+
+  /* Create the register */
+  rv = snprintf( str, 256, "reg covered$l%d_%d = 1'b0;", first_line, first_column );
+  assert( rv < 256 );
+  str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
+
+  /* Prepend the line coverage assignment to the working buffer */
+  rv = snprintf( str, 256, " covered$l%d_%d = 1'b1;", first_line, first_column );
+  assert( rv < 256 );
+  str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
+  if( work_head == NULL ) {
+    work_head = work_tail = tmp_head;
+  } else {
+    tmp_tail->next = work_head;
+    work_head      = tmp_head;
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Insert combinational logic coverage code for the given expression (by file position).
+*/
+void generator_insert_comb_cov(
+  unsigned int first_line,   /*!< First line of expression to generate for */
+  unsigned int first_column  /*!< First column of expression to generate for */
+) { PROFILE(GENERATOR_INSERT_COMB_COV);
+
+  expression* exp;
+
+  /* First, find the expression with the given position */
+  exp = FOOBAR;
+
+  /* Generate the combinational logic type */
+
+  PROFILE_END;
+
+}
 
 
 /*
  $Log$
+ Revision 1.10  2008/12/03 17:15:10  phase1geo
+ Code to output coverage file is now working from an end-to-end perspective.  Checkpointing.
+ We are now ready to start injecting actual coverage information into this file.
+
  Revision 1.9  2008/12/03 07:27:01  phase1geo
  Made initial pass through the parser to add parse_mode.  Things are quite broken
  in regression at this point and we have conflicts in the resultant parser.

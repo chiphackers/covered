@@ -27,18 +27,41 @@
 /*! \brief Generates Verilog containing coverage instrumentation */
 void generator_output();
 
-/*! \brief Adds the given string to the immediate code output list */
-void generator_hold_code(
-  const char*  str,
-  unsigned int line_num
+/*! \brief Adds the given string to the work code buffers */
+void generator_add_to_work_code(
+  const char*  str
+);
+
+/*! \brief Flushes the working code to the hold code */
+void generator_flush_work_code();
+
+/*! \brief Adds the given string to the hold code buffers */
+void generator_add_to_hold_code(
+  const char*  str
 );
 
 /*! \brief Outputs all held code to the output file. */
-void generator_flush_held_code();
+void generator_flush_hold_code();
+
+/*! \brief Inserts line coverage information. */
+void generator_insert_line_cov(
+  unsigned int first_line,
+  unsigned int first_column
+);
+
+/*! \brief Inserts combinational logic coverage information. */
+void generator_insert_comb_cov(
+  unsigned int first_line,   /*!< First line of expression to generate for */
+  unsigned int first_column  /*!< First column of expression to generate for */
+);
 
 
 /*
  $Log$
+ Revision 1.4  2008/12/03 17:15:11  phase1geo
+ Code to output coverage file is now working from an end-to-end perspective.  Checkpointing.
+ We are now ready to start injecting actual coverage information into this file.
+
  Revision 1.3  2008/12/02 23:43:21  phase1geo
  Reimplementing inlined code generation code.  Added this code to Verilog lexer and parser.
  More work to do here.  Checkpointing.

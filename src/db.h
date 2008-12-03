@@ -62,6 +62,11 @@ uint64 db_scale_to_precision( uint64 value, func_unit* funit );
 /*! \brief Sets the global timescale unit and precision variables. */
 void db_set_timescale( int unit, int precision );
 
+/*! \brief Searches for and sets the current functional unit. */
+void db_find_and_set_curr_funit(
+  const char* modname
+);
+
 /*! \brief Returns a pointer to the current functional unit. */
 func_unit* db_get_curr_funit();
 
@@ -227,6 +232,9 @@ bool db_do_timestep( uint64 time, bool final );
 
 /*
  $Log$
+ Revision 1.99  2008/11/11 05:36:40  phase1geo
+ Checkpointing merge code.
+
  Revision 1.98  2008/10/31 22:01:33  phase1geo
  Initial code changes to support merging two non-overlapping CDD files into
  one.  This functionality seems to be working but needs regression testing to
