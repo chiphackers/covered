@@ -44,7 +44,7 @@ void func_iter_display(
   if( fi->sis != NULL ) {
     for( i=0; i<fi->si_num; i++ ) {
       if( fi->sis[i] != NULL ) {
-        printf( "  Stmt: %s\n", expression_string( fi->sis[i]->curr->stmt->exp ) );
+        stmt_link_display( fi->sis[i]->curr );
       }
     }
   }
@@ -158,6 +158,8 @@ static void func_iter_add_stmt_iters(
 
   /* Now allocate a new statement iterator at position 0 and point it at the current functional unit statement list */
   fi->sis[0] = (stmt_iter*)malloc_safe( sizeof( stmt_iter ) );
+
+  /* Clear the added bits in the statements */
   if( use_tail ) {
     stmt_iter_reset( fi->sis[0], funit->stmt_tail );
   } else {
@@ -376,6 +378,11 @@ void func_iter_dealloc(
 
 /*
  $Log$
+ Revision 1.15  2008/11/29 04:27:07  phase1geo
+ More work on inlined coverage code insertion.  Net assigns and procedural assigns
+ seem to be working at a most basic level.  Currently, I have an issue that I need
+ to solve where non-head statements are being ignored.  Checkpointing.
+
  Revision 1.14  2008/11/27 00:24:44  phase1geo
  Fixing problems with previous version of generator.  Things work as expected at this point.
  Checkpointing.

@@ -3626,6 +3626,7 @@ passign
           $$ = NULL;
         }
       } else {
+        generator_insert_comb_cov( FALSE, TRUE, @1.first_line, @1.first_column );
         $$ = NULL;
       }
     }
@@ -3653,6 +3654,7 @@ passign
           $$ = NULL;
         }
       } else {
+        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
         $$ = NULL;
       }
     }
@@ -3680,6 +3682,7 @@ passign
           $$ = NULL;
         }
       } else {
+        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
         $$ = NULL;
       }
     }
@@ -3707,6 +3710,7 @@ passign
           $$ = NULL;
         }
       } else {
+        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
         $$ = NULL;
       }
     }
@@ -3734,6 +3738,7 @@ passign
           $$ = NULL;
         }
       } else {
+        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
         $$ = NULL;
       }
     }
@@ -3761,6 +3766,7 @@ passign
           $$ = NULL;
         }
       } else {
+        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
         $$ = NULL;
       }
     }
@@ -3788,6 +3794,7 @@ passign
           $$ = NULL;
         }
       } else {
+        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
         $$ = NULL;
       }
     }
@@ -3815,6 +3822,7 @@ passign
           $$ = NULL;
         }
       } else {
+        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
         $$ = NULL;
       }
     }
@@ -3844,6 +3852,7 @@ passign
           $$ = NULL;
         }
       } else {
+        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
         $$ = NULL;
       }
     }
@@ -3873,6 +3882,7 @@ passign
           $$ = NULL;
         }
       } else {
+        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
         $$ = NULL;
       }
     }
@@ -3902,6 +3912,7 @@ passign
           $$ = NULL;
         }
       } else {
+        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
         $$ = NULL;
       }
     }
@@ -3931,6 +3942,7 @@ passign
           $$ = NULL;
         }
       } else {
+        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
         $$ = NULL;
       }
     }
@@ -3960,6 +3972,7 @@ passign
           $$ = NULL;
         }
       } else {
+        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
         $$ = NULL;
       }
     }
@@ -3986,6 +3999,7 @@ passign
           $$ = NULL;
         }
       } else {
+        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
         $$ = NULL;
       }
     }
@@ -4012,6 +4026,7 @@ passign
           $$ = NULL;
         }
       } else {
+        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
         $$ = NULL;
       }
     }

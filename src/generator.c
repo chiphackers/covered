@@ -20,6 +20,7 @@
 #include <stdlib.h>
 
 #include "codegen.h"
+#include "db.h"
 #include "defines.h"
 #include "expr.h"
 #include "func_iter.h"
@@ -35,11 +36,12 @@ extern void reset_lexer_for_generation(
 );
 extern int VLparse();
 
-extern db**         db_list;
-extern unsigned int curr_db;
-extern char         user_msg[USER_MSG_LENGTH];
-extern str_link*    modlist_head;
-extern str_link*    modlist_tail;
+extern db**           db_list;
+extern unsigned int   curr_db;
+extern char           user_msg[USER_MSG_LENGTH];
+extern str_link*      modlist_head;
+extern str_link*      modlist_tail;
+extern const exp_info exp_op_info[EXP_OP_NUM];
 
 
 struct fname_link_s;
@@ -96,6 +98,11 @@ str_link* reg_head = NULL;
  Pointer to tail of register string list.
 */
 str_link* reg_tail = NULL;
+
+/*!
+ Maximum expression depth to generate coverage code for.
+*/
+unsigned int max_exp_depth = 1;
 
 
 /*!
@@ -496,20 +503,225 @@ void generator_insert_line_cov(
 
 }
 
+static void generator_insert_event_comb_cov(
+  expression* exp  /*!< Pointer to expression to output */
+) { PROFILE(GENERATOR_INSERT_EVENT_COMB_COV);
+
+  PROFILE_END;
+
+}
+
+static void generator_insert_unary_comb_cov(
+  expression*  exp,    /*!< Pointer to expression to output */
+  unsigned int depth,  /*!< Current expression depth */
+  bool         net     /*!< Set to TRUE if this expression is a net */
+) { PROFILE(GENERATOR_INSERT_UNARY_COMB_COV);
+
+  PROFILE_END;
+
+}
+
+/*!
+ Inserts AND-style combinational logic coverage code.
+*/
+static void generator_insert_and_comb_cov(
+  expression*  exp,    /*!< Pointer to expression to output */
+  unsigned int depth,  /*!< Current expression depth */
+  bool         net     /*!< Set to TRUE if this expression is a net */
+) { PROFILE(GENERATOR_INSERT_AND_COMB_COV);
+
+  char         prefix[16];
+  char         sig[80];
+  char         sigl[80];
+  char         sigr[80];
+  char         str[4096];
+  unsigned int rv;
+  str_link*    tmp_head = NULL;
+  str_link*    tmp_tail = NULL;
+
+  /* Create signal */
+  rv = snprintf( sig,  80, "covered$e%d_%u", exp->line, ((exp->col >> 16) & 0xffff) );
+  assert( rv < 80 );
+  rv = snprintf( sigl, 80, "covered$%c%d_%u", (((depth + ((exp->op != exp->left->op) ? 1 : 0)) < max_exp_depth) ? 'e' : 'x'),
+                 exp->left->line, ((exp->left->col >> 16) & 0xffff) );
+  assert( rv < 80 );
+  rv = snprintf( sigr, 80, "covered$%c%d_%u", (((depth + ((exp->op != exp->right->op) ? 1 : 0)) < max_exp_depth) ? 'e' : 'x'),
+                 exp->right->line, ((exp->right->col >> 16) & 0xffff) );
+  assert( rv < 80 );
+
+  /* Create prefix */
+  if( net ) {
+    strcpy( prefix, "wire [2:0] " );
+  } else {
+    rv = snprintf( str, 4096, "reg [2:0] %s;", sig );
+    assert( rv < 4096 );
+    str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
+  }
+
+  /* Prepend the coverage assignment to the working buffer */
+  rv = snprintf( str, 4096, "%s%s = {~%s[0],~%s[0],(%s[0] %s %s[0])};",
+                 prefix, sig, sigl, sigr, sigl, exp_op_info[exp->op].op_str, sigr );
+  assert( rv < 4096 );
+  str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
+  if( work_head == NULL ) {
+    work_head = work_tail = tmp_head;
+  } else {
+    tmp_tail->next = work_head;
+    work_head      = tmp_head;
+  }
+
+  PROFILE_END;
+
+}
+
+static void generator_insert_or_comb_cov(
+  expression*  exp,    /*!< Pointer to expression to output */
+  unsigned int depth,  /*!< Current expression depth */
+  bool         net     /*!< If set to TRUE generate code for a net */
+) { PROFILE(GENERATOR_INSERT_OR_COMB_COV);
+
+  PROFILE_END;
+
+}
+
+static void generator_insert_other_comb_cov(
+  expression*  exp,    /*!< Pointer to expression to output */
+  unsigned int depth,  /*!< Current expression depth */
+  bool         net     /*!< If set to TRUE generate code for a net */
+) { PROFILE(GENERATOR_INSERT_OTHER_COMB_COV);
+
+  PROFILE_END;
+
+}
+
+/*!
+ Recursively inserts the combinational logic coverage code for the given expression tree.
+*/
+static void generator_insert_comb_cov_helper(
+  expression*  exp,        /*!< Pointer to expression tree to operate on */
+  func_unit*   funit,      /*!< Pointer to current functional unit */
+  exp_op_type  parent_op,  /*!< Parent expression operation (originally should be set to the same operation as exp) */
+  int          depth,      /*!< Current expression depth (originally set to 0) */
+  bool         net         /*!< If set to TRUE generate code for a net */
+) { PROFILE(GENERATOR_INSERT_COMB_COV_HELPER);
+
+  printf( "HERE!\n" );
+
+  if( exp != NULL ) {
+
+    printf( "depth: %d, max_exp_depth: %d\n", depth, max_exp_depth );
+
+    /* Only continue to traverse tree if we are within our depth limit */
+    if( depth < max_exp_depth ) {
+
+      int child_depth = (depth + ((exp->op != parent_op) ? 1 : 0));
+
+      printf( "exp: %s\n", expression_string( exp ) );
+
+      /* Generate children expression trees */
+      generator_insert_comb_cov_helper( exp->left,  funit, exp->op, child_depth, net );
+      generator_insert_comb_cov_helper( exp->right, funit, exp->op, child_depth, net );
+
+      /* Generate event combinational logic type */
+      if( exp_op_info[exp->op].suppl.is_event ) {
+        generator_insert_event_comb_cov( exp );
+
+      /* Generate unary combinational logic type */
+      } else if( exp_op_info[exp->op].suppl.is_unary ) {
+        generator_insert_unary_comb_cov( exp, depth, net );
+
+      /* Otherwise, generate binary combinational logic type */
+      } else {
+        switch( exp_op_info[exp->op].suppl.is_comb ) {
+          case AND_COMB   :  generator_insert_and_comb_cov( exp, depth, net );    break;
+          case OR_COMB    :  generator_insert_or_comb_cov( exp, depth, net );     break;
+          case OTHER_COMB :  generator_insert_other_comb_cov( exp, depth, net );  break;
+          default         :  break;
+        }
+
+      }
+
+    } else {
+
+      char         str[4096];
+      char         prefix[8];
+      char**       code;
+      unsigned int code_depth;
+      unsigned int i;
+      str_link*    tmp_head = NULL;
+      str_link*    tmp_tail = NULL;
+      unsigned int rv;
+
+      /* Generate code */
+      codegen_gen_expr( exp, parent_op, &code, &code_depth, funit ); 
+
+      printf( "code_depth: %u\n", code_depth );
+
+      if( net ) {
+        strcpy( prefix, "wire " );
+      } else {
+        prefix[0] = '\0';
+        rv = snprintf( str, 4096, "reg covered$x%d_%u;", exp->line, ((exp->col >> 16) & 0xffff) );
+        assert( rv < 4096 );
+        str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
+      }
+
+      rv = snprintf( str, 4096, "%scovered$x%d_%u = %s%c", prefix, exp->line, ((exp->col >> 16) & 0xffff), code[0], ((code_depth == 1) ? ';' : '\0') );
+      assert( rv < 4096 );
+      str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
+
+      for( i=1; i<code_depth; i++ ) {
+        str_link_add( code[i], &tmp_head, &tmp_tail );
+      }
+      free_safe( code, (sizeof( char* ) * code_depth) );
+
+      /* Prepend code string */
+      if( work_head == NULL ) {
+        work_head = work_tail = tmp_head;
+      } else {
+        tmp_tail->next = work_head;
+        work_head      = tmp_head;
+      }
+
+    }
+
+  }
+
+  PROFILE_END;
+
+}
+
 /*!
  Insert combinational logic coverage code for the given expression (by file position).
 */
 void generator_insert_comb_cov(
+  bool         net,          /*!< If set to TRUE, generate code for a net; otherwise, generate code for a variable */
+  bool         use_right,    /*!< If set to TRUE, use right-hand expression */
   unsigned int first_line,   /*!< First line of expression to generate for */
   unsigned int first_column  /*!< First column of expression to generate for */
 ) { PROFILE(GENERATOR_INSERT_COMB_COV);
 
-  expression* exp;
+  func_iter  fi;
+  statement* stmt;
+  func_unit* funit = db_get_curr_funit();
+
+  printf( "funit: %s, first_line: %u, first_column: %u\n", funit->name, first_line, first_column );
 
   /* First, find the expression with the given position */
-  exp = FOOBAR;
+  func_iter_init( &fi, db_get_curr_funit(), TRUE, FALSE, FALSE );
+  func_iter_display( &fi );
 
-  /* Generate the combinational logic type */
+  /* Find the expression with the given position */
+  while( ((stmt = func_iter_get_next_statement( &fi )) != NULL) && ((stmt->exp->line != first_line) || (((stmt->exp->col >> 16) & 0xffff) != first_column)) );
+
+  /* Deallocate the functional unit iterator */
+  func_iter_dealloc( &fi );
+
+  /* Generate combinational coverage */
+  if( stmt != NULL ) {
+    printf( "EXPRESSION: %s\n", expression_string( stmt->exp ) );
+    generator_insert_comb_cov_helper( (use_right ? stmt->exp->right : stmt->exp), db_get_curr_funit(), stmt->exp->op, 0, net );
+  }
 
   PROFILE_END;
 
@@ -518,6 +730,10 @@ void generator_insert_comb_cov(
 
 /*
  $Log$
+ Revision 1.11  2008/12/03 23:29:07  phase1geo
+ Finished getting line coverage insertion working.  Starting to work on combinational logic
+ coverage.  Checkpointing.
+
  Revision 1.10  2008/12/03 17:15:10  phase1geo
  Code to output coverage file is now working from an end-to-end perspective.  Checkpointing.
  We are now ready to start injecting actual coverage information into this file.

@@ -51,13 +51,19 @@ void generator_insert_line_cov(
 
 /*! \brief Inserts combinational logic coverage information. */
 void generator_insert_comb_cov(
-  unsigned int first_line,   /*!< First line of expression to generate for */
-  unsigned int first_column  /*!< First column of expression to generate for */
+  bool         net,
+  bool         use_right,
+  unsigned int first_line,
+  unsigned int first_column
 );
 
 
 /*
  $Log$
+ Revision 1.5  2008/12/03 23:29:07  phase1geo
+ Finished getting line coverage insertion working.  Starting to work on combinational logic
+ coverage.  Checkpointing.
+
  Revision 1.4  2008/12/03 17:15:11  phase1geo
  Code to output coverage file is now working from an end-to-end perspective.  Checkpointing.
  We are now ready to start injecting actual coverage information into this file.
