@@ -566,6 +566,7 @@ module
         db_add_module( $3, @2.text, @2.first_line );
       } else {
         db_find_and_set_curr_funit( $3 );
+        generator_init_funit( db_get_curr_funit() );
       }
       free_safe( $3, (strlen( $3 ) + 1) );
     }

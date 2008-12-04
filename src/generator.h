@@ -27,6 +27,11 @@
 /*! \brief Generates Verilog containing coverage instrumentation */
 void generator_output();
 
+/*! \brief Initializes and resets the functional unit iterator. */
+void generator_init_funit(
+  func_unit* funit  /*!< Pointer to current functional unit */
+);
+
 /*! \brief Adds the given string to the work code buffers */
 void generator_add_to_work_code(
   const char*  str
@@ -60,6 +65,11 @@ void generator_insert_comb_cov(
 
 /*
  $Log$
+ Revision 1.6  2008/12/04 07:14:39  phase1geo
+ Doing more work on the code generator to handle combination logic output.
+ Still more coding and debugging work to do here.  Need to clear the added
+ bit in the statement lists to get current code working correctly.  Checkpointing.
+
  Revision 1.5  2008/12/03 23:29:07  phase1geo
  Finished getting line coverage insertion working.  Starting to work on combinational logic
  coverage.  Checkpointing.

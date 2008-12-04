@@ -263,6 +263,28 @@ void func_iter_init(
 }
 
 /*!
+ Clears the added bits of all statements in the statement link array.
+*/
+void func_iter_reset(
+  func_iter* fi  /*!< Pointer to functional unit to reset */
+) { PROFILE(FUNC_ITER_RESET);
+
+  unsigned int i;
+  stmt_iter    si;
+
+  for( i=0; i<fi->si_num; i++ ) {
+    stmt_iter_reset( &si, fi->sis[i]->curr );
+    while( si.curr != NULL ) {
+      si.curr->stmt->suppl.part.added = 0;
+      stmt_iter_next( &si );
+    }
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  \return Returns pointer to next statement in line order (or NULL if there are no more
          statements in the given functional unit)
 */
@@ -360,6 +382,8 @@ void func_iter_dealloc(
       /* Deallocate array of statement iterators */
       free_safe( fi->sis, (sizeof( stmt_iter* ) * fi->scopes) );
 
+      fi->sis = NULL;
+
     }
 
     /* Deallocate signal array */
@@ -367,6 +391,8 @@ void func_iter_dealloc(
 
       /* Deallocate array of signals */
       free_safe( fi->sigs, (sizeof( sig_link* ) * fi->scopes) );
+
+      fi->sigs = NULL;
 
     }
 
@@ -378,6 +404,11 @@ void func_iter_dealloc(
 
 /*
  $Log$
+ Revision 1.16  2008/12/04 07:14:38  phase1geo
+ Doing more work on the code generator to handle combination logic output.
+ Still more coding and debugging work to do here.  Need to clear the added
+ bit in the statement lists to get current code working correctly.  Checkpointing.
+
  Revision 1.15  2008/11/29 04:27:07  phase1geo
  More work on inlined coverage code insertion.  Net assigns and procedural assigns
  seem to be working at a most basic level.  Currently, I have an issue that I need

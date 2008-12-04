@@ -104,6 +104,11 @@ str_link* reg_tail = NULL;
 */
 unsigned int max_exp_depth = 1;
 
+/*!
+ Iterator for current functional unit.
+*/
+static func_iter fiter;
+
 
 /*!
  Populates the specified filename list with the functional unit list, sorting all functional units with the
@@ -327,6 +332,10 @@ void generator_output() { PROFILE(GENERATOR_OUTPUT);
   work_buffer[0] = '\0';
   hold_buffer[0] = '\0';
 
+  /* Initialize the functional unit iter */
+  fiter.sis  = NULL;
+  fiter.sigs = NULL;
+
   /* Create the filename list from the functional unit list */
   generator_create_filename_list( db_list[curr_db]->funit_head, &fname_head, &fname_tail );
 
@@ -335,6 +344,29 @@ void generator_output() { PROFILE(GENERATOR_OUTPUT);
 
   /* Deallocate memory from filename list */
   generator_dealloc_filename_list( fname_head );
+
+  /* Deallocate the functional unit iterator */
+  func_iter_dealloc( &fiter );
+
+  PROFILE_END;
+
+}
+
+/*!
+ Initializes and resets the functional unit iterator.
+*/
+void generator_init_funit(
+  func_unit* funit  /*!< Pointer to current functional unit */
+) { PROFILE(GENERATOR_INIT_FUNIT);
+
+  /* Deallocate the functional unit iterator */
+  func_iter_dealloc( &fiter );
+
+  /* Initializes the functional unit iterator */
+  func_iter_init( &fiter, funit, TRUE, FALSE, FALSE );
+
+  /* Reset the structure */
+  func_iter_reset( &fiter );
 
   PROFILE_END;
 
@@ -655,8 +687,6 @@ static void generator_insert_comb_cov_helper(
       /* Generate code */
       codegen_gen_expr( exp, parent_op, &code, &code_depth, funit ); 
 
-      printf( "code_depth: %u\n", code_depth );
-
       if( net ) {
         strcpy( prefix, "wire " );
       } else {
@@ -669,6 +699,7 @@ static void generator_insert_comb_cov_helper(
       rv = snprintf( str, 4096, "%scovered$x%d_%u = %s%c", prefix, exp->line, ((exp->col >> 16) & 0xffff), code[0], ((code_depth == 1) ? ';' : '\0') );
       assert( rv < 4096 );
       str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
+      free_safe( code[0], (strlen( code[0] ) + 1) );
 
       for( i=1; i<code_depth; i++ ) {
         str_link_add( code[i], &tmp_head, &tmp_tail );
@@ -701,25 +732,13 @@ void generator_insert_comb_cov(
   unsigned int first_column  /*!< First column of expression to generate for */
 ) { PROFILE(GENERATOR_INSERT_COMB_COV);
 
-  func_iter  fi;
   statement* stmt;
-  func_unit* funit = db_get_curr_funit();
-
-  printf( "funit: %s, first_line: %u, first_column: %u\n", funit->name, first_line, first_column );
-
-  /* First, find the expression with the given position */
-  func_iter_init( &fi, db_get_curr_funit(), TRUE, FALSE, FALSE );
-  func_iter_display( &fi );
 
   /* Find the expression with the given position */
-  while( ((stmt = func_iter_get_next_statement( &fi )) != NULL) && ((stmt->exp->line != first_line) || (((stmt->exp->col >> 16) & 0xffff) != first_column)) );
-
-  /* Deallocate the functional unit iterator */
-  func_iter_dealloc( &fi );
+  while( ((stmt = func_iter_get_next_statement( &fiter )) != NULL) && ((stmt->exp->line != first_line) || (((stmt->exp->col >> 16) & 0xffff) != first_column)) );
 
   /* Generate combinational coverage */
   if( stmt != NULL ) {
-    printf( "EXPRESSION: %s\n", expression_string( stmt->exp ) );
     generator_insert_comb_cov_helper( (use_right ? stmt->exp->right : stmt->exp), db_get_curr_funit(), stmt->exp->op, 0, net );
   }
 
@@ -730,6 +749,11 @@ void generator_insert_comb_cov(
 
 /*
  $Log$
+ Revision 1.12  2008/12/04 07:14:39  phase1geo
+ Doing more work on the code generator to handle combination logic output.
+ Still more coding and debugging work to do here.  Need to clear the added
+ bit in the statement lists to get current code working correctly.  Checkpointing.
+
  Revision 1.11  2008/12/03 23:29:07  phase1geo
  Finished getting line coverage insertion working.  Starting to work on combinational logic
  coverage.  Checkpointing.
