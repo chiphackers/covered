@@ -4832,7 +4832,10 @@ statement
           $$ = NULL;
         }
       } else {
-        $$ = NULL;  /* TBD */
+        generator_insert_comb_cov( FALSE, TRUE, @1.first_line, @1.first_column );
+        generator_insert_line_cov( @1.first_line, @1.first_column );
+        generator_flush_work_code();
+        $$ = NULL;
       }
     }
   | lpvalue '=' delay1 expression ';'
