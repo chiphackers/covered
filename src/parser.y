@@ -418,16 +418,45 @@ source_file
 
 description
   : module
+    {
+      if( !parse_mode ) {
+        generator_flush_all();
+      }
+    }
   | udp_primitive
+    {
+      if( !parse_mode ) {
+        generator_flush_all();
+      }
+    }
   | KK_attribute '(' IDENTIFIER ',' STRING ',' STRING ')'
     {
       free_safe( $3, (strlen( $3 ) + 1) );
       vector_dealloc( $5.vec );
       vector_dealloc( $7.vec );
+      if( !parse_mode ) {
+        generator_flush_all();
+      }
     }
   | typedef_decl
+    {
+      if( !parse_mode ) {
+        generator_flush_all();
+      }
+    }
   | net_type signed_opt range_opt list_of_variables ';'
-  | net_type signed_opt range_opt net_decl_assigns ';'
+    {
+      if( !parse_mode ) {
+        generator_flush_all();
+      }
+    }
+  | net_type signed_opt range_opt
+    net_decl_assigns ';'
+    {
+      if( !parse_mode ) {
+        generator_flush_all();
+      }
+    }
   | net_type drive_strength
     {
       if( parse_mode ) {
@@ -438,6 +467,11 @@ description
       }
     }
     net_decl_assigns ';'
+    {
+      if( !parse_mode ) {
+        generator_flush_all();
+      }
+    }
   | K_trireg charge_strength_opt range_opt delay3_opt
     {
       curr_mba      = FALSE;
@@ -446,55 +480,81 @@ description
       curr_sig_type = SSUPPL_TYPE_DECL_REG;
     }
     list_of_variables ';'
+    {
+      if( !parse_mode ) {
+        generator_flush_all();
+      }
+    }
   | gatetype gate_instance_list ';'
     {
       if( parse_mode ) {
         str_link_delete_list( $2 );
+      } else {
+        generator_flush_all();
       }
     }
   | gatetype delay3 gate_instance_list ';'
     {
       if( parse_mode ) {
         str_link_delete_list( $3 );
+      } else {
+        generator_flush_all();
       }
     }
   | gatetype drive_strength gate_instance_list ';'
     {
       if( parse_mode ) {
         str_link_delete_list( $3 );
+      } else {
+        generator_flush_all();
       }
     }
   | gatetype drive_strength delay3 gate_instance_list ';'
     {
       if( parse_mode ) {
         str_link_delete_list( $4 );
+      } else {
+        generator_flush_all();
       }
     }
   | K_pullup gate_instance_list ';'
     {
       if( parse_mode ) {
         str_link_delete_list( $2 );
+      } else {
+        generator_flush_all();
       }
     }
   | K_pulldown gate_instance_list ';'
     {
       if( parse_mode ) {
         str_link_delete_list( $2 );
+      } else {
+        generator_flush_all();
       }
     }
   | K_pullup '(' dr_strength1 ')' gate_instance_list ';'
     {
       if( parse_mode ) {
         str_link_delete_list( $5 );
+      } else {
+        generator_flush_all();
       }
     }
   | K_pulldown '(' dr_strength0 ')' gate_instance_list ';'
     {
       if( parse_mode ) {
         str_link_delete_list( $5 );
+      } else {
+        generator_flush_all();
       }
     }
   | block_item_decl
+    {
+      if( !parse_mode ) {
+        generator_flush_all();
+      }
+    }
   | K_event
     {
       if( parse_mode ) {
@@ -506,6 +566,11 @@ description
       }
     }
     list_of_variables ';'
+    {
+      if( !parse_mode ) {
+        generator_flush_all();
+      }
+    }
   | K_task automatic_opt IDENTIFIER ';'
     {
       if( parse_mode ) {
@@ -520,6 +585,8 @@ description
     {
       if( parse_mode ) {
         parser_end_task_function( @9.first_line );
+      } else {
+        generator_flush_all();
       }
     }
   | K_function automatic_opt signed_opt range_or_type_opt IDENTIFIER ';'
@@ -536,6 +603,8 @@ description
     {
       if( parse_mode ) {
         parser_end_task_function( @11.first_line );
+      } else {
+        generator_flush_all();
       }
     }
   | error ';'
@@ -555,6 +624,8 @@ description
           strl = strl->next;
         }
         str_link_delete_list( $2 );
+      } else {
+        generator_flush_all();
       }
     }
   ;
@@ -565,16 +636,22 @@ module
       if( parse_mode ) {
         db_add_module( $3, @2.text, @2.first_line );
       } else {
-        db_find_and_set_curr_funit( $3 );
+        db_find_and_set_curr_funit( $3, FUNIT_MODULE );
         generator_init_funit( db_get_curr_funit() );
       }
       free_safe( $3, (strlen( $3 ) + 1) );
     }
     module_parameter_port_list_opt
-    module_port_list_opt ';' module_item_list_opt K_endmodule
+    module_port_list_opt ';'
+    {
+      if( !parse_mode ) {
+        generator_flush_all();
+      }
+    }
+    module_item_list_opt K_endmodule
     {
       if( parse_mode ) {
-        db_end_module( @9.first_line );
+        db_end_module( @10.first_line );
       }
     }
   | attribute_list_opt K_module IGNORE I_endmodule
@@ -2015,6 +2092,7 @@ begin_end_id
           $$ = NULL;
         }
       } else {
+        generator_flush_work_code();
         free_safe( $2, (strlen( $2 ) + 1) );
         $$ = NULL;
       }
@@ -2726,7 +2804,17 @@ module_item_list_opt
 
 module_item_list
   : module_item_list module_item
+    {
+      if( !parse_mode ) {
+        generator_flush_all();
+      }
+    }
   | module_item
+    {
+      if( !parse_mode ) {
+        generator_flush_all();
+      }
+    }
   ;
 
 module_item
@@ -2970,7 +3058,7 @@ module_item
     K_assign drive_strength_opt { ignore_mode++; } delay3_opt { ignore_mode--; } assign_list ';'
     {
       if( !parse_mode ) {
-        /* TBD - Need to add coverage injection here */
+//        generator_insert_comb_cov();
       }
     }
   | attribute_list_opt
@@ -6093,6 +6181,8 @@ assign
           expression_dealloc( $1, FALSE );
           expression_dealloc( $3, FALSE );
         }
+      } else {
+        generator_insert_comb_cov( TRUE, TRUE, @1.first_line, @1.first_column );
       }
     }
   ;
@@ -6498,6 +6588,8 @@ net_decl_assign
         } else {
           expression_dealloc( $3, FALSE );
         }
+      } else {
+        generator_insert_comb_cov( TRUE, TRUE, @1.first_line, @1.first_column );
       }
       free_safe( $1, (strlen( $1 ) + 1) );
     }
@@ -6532,6 +6624,8 @@ net_decl_assign
           expression_dealloc( $4, FALSE );
         }
         expression_dealloc( $1, FALSE );
+      } else {
+        generator_insert_comb_cov( TRUE, TRUE, @1.first_line, @1.first_column );
       }
       free_safe( $2, (sizeof( $2 ) + 1) );
     }

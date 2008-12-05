@@ -75,6 +75,7 @@ static void func_iter_sort(
   assert( fi->si_num > 0 );
 
   tmp = fi->sis[0];
+  stmt_link_display( tmp->curr );
 
   /*
    If the statement iterator at the top of the list is NULL, shift all valid statement iterators
@@ -111,7 +112,8 @@ static void func_iter_sort(
          within a named functional unit.
 */
 static int func_iter_count_scopes(
-  func_unit* funit  /*!< Pointer to current functional unit being examined */
+  func_unit* funit,   /*!< Pointer to current functional unit being examined */
+  bool       inc_all  /*!< If set to TRUE, counts all scopes (even named scopes) */
 ) { PROFILE(FUNC_ITER_COUNT_STMT_ITERS);
 
   int         count = 1;  /* Number of statement iterators within this functional unit */
@@ -126,8 +128,8 @@ static int func_iter_count_scopes(
   /* Iterate through children functional units, counting all of the unnamed scopes */
   child = parent->tf_head;
   while( child != NULL ) {
-    if( funit_is_unnamed( child->funit ) && (child->funit->parent == funit) ) {
-      count += func_iter_count_scopes( child->funit );
+    if( (inc_all || funit_is_unnamed( child->funit )) && (child->funit->parent == funit) ) {
+      count += func_iter_count_scopes( child->funit, inc_all );
     }
     child = child->next;
   }
@@ -142,9 +144,10 @@ static int func_iter_count_scopes(
  Recursively iterates through functional units, adding their statement iterators to the func_iter structure's array.
 */
 static void func_iter_add_stmt_iters(
-  func_iter* fi,       /*!< Pointer to functional unit iterator to populate */
-  func_unit* funit,    /*!< Pointer to current functional unit */
-  bool       use_tail  /*!< If TRUE, starts at the statement tail; otherwise, starts at the statement head */
+  func_iter* fi,        /*!< Pointer to functional unit iterator to populate */
+  func_unit* funit,     /*!< Pointer to current functional unit */
+  bool       use_tail,  /*!< If TRUE, starts at the statement tail; otherwise, starts at the statement head */
+  bool       inc_all    /*!< If TRUE, uses all statements in the functional unit (even in named scopes) */
 ) { PROFILE(FUNC_ITER_ADD_STMT_ITERS);
 
   funit_link* child;   /* Pointer to child functional unit */
@@ -179,8 +182,8 @@ static void func_iter_add_stmt_iters(
   /* Now traverse down all of the child functional units doing the same */
   child = parent->tf_head;
   while( child != NULL ) {
-    if( funit_is_unnamed( child->funit ) && (child->funit->parent == funit) ) {
-      func_iter_add_stmt_iters( fi, child->funit, use_tail );
+    if( (inc_all || funit_is_unnamed( child->funit )) && (child->funit->parent == funit) ) {
+      func_iter_add_stmt_iters( fi, child->funit, use_tail, inc_all );
     }
     child = child->next;
   }
@@ -193,8 +196,9 @@ static void func_iter_add_stmt_iters(
  Recursively iterates through the functional units, adding their signal link pointers to the func_iter structure's array.
 */
 static void func_iter_add_sig_links(
-  func_iter* fi,    /*!< Pointer to functional unit iterator to populate */
-  func_unit* funit  /*!< Pointer to current functional unit */
+  func_iter* fi,      /*!< Pointer to functional unit iterator to populate */
+  func_unit* funit,   /*!< Pointer to current functional unit */
+  bool       inc_all  /*!< If set to TRUE, includes all scopes */
 ) { PROFILE(FUNC_ITER_ADD_SIG_LINKS);
 
   funit_link* child;   /* Pointer to child functional unit */
@@ -210,8 +214,8 @@ static void func_iter_add_sig_links(
   /* Now traverse down all of the child functional units doing the same */
   child = parent->tf_head;
   while( child != NULL ) {
-    if( funit_is_unnamed( child->funit ) && (child->funit->parent == funit) ) {
-      func_iter_add_sig_links( fi, child->funit );
+    if( (inc_all || funit_is_unnamed( child->funit )) && (child->funit->parent == funit) ) {
+      func_iter_add_sig_links( fi, child->funit, inc_all );
     }
     child = child->next;
   }
@@ -226,18 +230,19 @@ static void func_iter_add_sig_links(
  information.
 */
 void func_iter_init(
-  func_iter* fi,       /*!< Pointer to functional unit iterator to initializes */
-  func_unit* funit,    /*!< Pointer to main functional unit to create iterator for (must be named) */
-  bool       stmts,    /*!< Set to TRUE if we want statements to be included in the iterator */
-  bool       sigs,     /*!< Set to TRUE if we want signals to be included in the iterator */
-  bool       use_tail  /*!< Set to TRUE to use statement tail (in reporting mode); otherwise, use head */
+  func_iter* fi,        /*!< Pointer to functional unit iterator to initializes */
+  func_unit* funit,     /*!< Pointer to main functional unit to create iterator for (must be named) */
+  bool       stmts,     /*!< Set to TRUE if we want statements to be included in the iterator */
+  bool       sigs,      /*!< Set to TRUE if we want signals to be included in the iterator */
+  bool       use_tail,  /*!< Set to TRUE to use statement tail (in reporting mode); otherwise, use head */
+  bool       inc_all    /*!< Set to TRUE to use all statements/signals including those in named scopes */
 ) { PROFILE(FUNC_ITER_INIT);
 
   assert( fi != NULL );
   assert( funit != NULL );
 
   /* Count the number of scopes that are within the functional unit iterator */
-  fi->scopes  = func_iter_count_scopes( funit );
+  fi->scopes  = func_iter_count_scopes( funit, inc_all );
   fi->sis     = NULL;
   fi->sigs    = NULL;
   fi->sig_num = 0;
@@ -246,14 +251,14 @@ void func_iter_init(
   if( stmts ) {
     fi->sis    = (stmt_iter**)malloc_safe( sizeof( stmt_iter* ) * fi->scopes );
     fi->si_num = 0;
-    func_iter_add_stmt_iters( fi, funit, use_tail );
+    func_iter_add_stmt_iters( fi, funit, use_tail, inc_all );
   }
 
   /* Add signal lists */
   if( sigs ) {
     fi->sigs      = (sig_link**)malloc_safe( sizeof( sig_link* ) * fi->scopes );
     fi->sig_num   = 0;
-    func_iter_add_sig_links( fi, funit );
+    func_iter_add_sig_links( fi, funit, inc_all );
     fi->sig_num   = 0;
     fi->curr_sigl = fi->sigs[0];
   }
@@ -404,6 +409,9 @@ void func_iter_dealloc(
 
 /*
  $Log$
+ Revision 1.17  2008/12/04 14:19:50  phase1geo
+ Fixing bug in code generator.  Checkpointing.
+
  Revision 1.16  2008/12/04 07:14:38  phase1geo
  Doing more work on the code generator to handle combination logic output.
  Still more coding and debugging work to do here.  Need to clear the added

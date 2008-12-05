@@ -1004,14 +1004,14 @@ static void rank_gather_comp_cdd_cov(
       statement* stmt;
 
       /* First, clear the comb_cntd bits in all of the expressions */
-      func_iter_init( &fi, inst->funit, TRUE, FALSE, TRUE );
+      func_iter_init( &fi, inst->funit, TRUE, FALSE, TRUE, FALSE );
       while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
         combination_reset_counted_expr_tree( stmt->exp );
       }
       func_iter_dealloc( &fi );
 
       /* Then populate the comp_cov structure, accordingly */
-      func_iter_init( &fi, inst->funit, TRUE, FALSE, TRUE );
+      func_iter_init( &fi, inst->funit, TRUE, FALSE, TRUE, FALSE );
       while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
         rank_gather_expression_cov( stmt->exp, stmt->suppl.part.excluded, comp_cov );
       }
@@ -1805,6 +1805,10 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.13  2008/11/27 00:24:44  phase1geo
+ Fixing problems with previous version of generator.  Things work as expected at this point.
+ Checkpointing.
+
  Revision 1.12  2008/11/08 00:09:04  phase1geo
  Checkpointing work on asymmetric merging algorithm.  Updated regressions
  per these changes.  We currently have 5 failures in the IV regression suite.
@@ -1843,6 +1847,10 @@ void command_rank(
  that the GUI stuff works properly.
 
  $Log$
+ Revision 1.13  2008/11/27 00:24:44  phase1geo
+ Fixing problems with previous version of generator.  Things work as expected at this point.
+ Checkpointing.
+
  Revision 1.12  2008/11/08 00:09:04  phase1geo
  Checkpointing work on asymmetric merging algorithm.  Updated regressions
  per these changes.  We currently have 5 failures in the IV regression suite.

@@ -64,7 +64,8 @@ void db_set_timescale( int unit, int precision );
 
 /*! \brief Searches for and sets the current functional unit. */
 void db_find_and_set_curr_funit(
-  const char* modname
+  const char* name,
+  int         type
 );
 
 /*! \brief Returns a pointer to the current functional unit. */
@@ -232,6 +233,10 @@ bool db_do_timestep( uint64 time, bool final );
 
 /*
  $Log$
+ Revision 1.100  2008/12/03 23:29:07  phase1geo
+ Finished getting line coverage insertion working.  Starting to work on combinational logic
+ coverage.  Checkpointing.
+
  Revision 1.99  2008/11/11 05:36:40  phase1geo
  Checkpointing merge code.
 

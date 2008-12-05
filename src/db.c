@@ -885,10 +885,11 @@ void db_set_timescale(
  to it.
 */
 void db_find_and_set_curr_funit(
-  const char* modname  /*!< Module name to find */
+  const char* name,  /*!< Scope name to find */
+  int         type   /*!< Scope type to find */
 ) { PROFILE(DB_FIND_AND_SET_CURR_FUNIT);
 
-  funit_link* funitl = funit_link_find( modname, FUNIT_MODULE, db_list[curr_db]->funit_head );
+  funit_link* funitl = funit_link_find( name, type, db_list[curr_db]->funit_head );
 
   assert( funitl != NULL );
 
@@ -3170,6 +3171,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.353  2008/12/03 23:29:07  phase1geo
+ Finished getting line coverage insertion working.  Starting to work on combinational logic
+ coverage.  Checkpointing.
+
  Revision 1.352  2008/12/03 07:27:01  phase1geo
  Made initial pass through the parser to add parse_mode.  Things are quite broken
  in regression at this point and we have conflicts in the resultant parser.

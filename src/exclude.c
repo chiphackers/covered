@@ -351,7 +351,7 @@ bool exclude_is_line_excluded(
   func_iter  fi;    /* Functional unit iterator */
   statement* stmt;  /* Pointer to current statement */
 
-  func_iter_init( &fi, funit, TRUE, FALSE, TRUE );
+  func_iter_init( &fi, funit, TRUE, FALSE, TRUE, FALSE );
   while( ((stmt = func_iter_get_next_statement( &fi )) != NULL) && (stmt->exp->line != line) );
   func_iter_dealloc( &fi );
 
@@ -377,7 +377,7 @@ void exclude_set_line_exclude(
   func_iter  fi;    /* Functional unit iterator */
   statement* stmt;  /* Pointer to current statement */
 
-  func_iter_init( &fi, funit, TRUE, FALSE, TRUE );
+  func_iter_init( &fi, funit, TRUE, FALSE, TRUE, FALSE );
 
   do {
     while( ((stmt = func_iter_get_next_statement( &fi )) != NULL) && (stmt->exp->line != line) );
@@ -414,7 +414,7 @@ bool exclude_is_toggle_excluded(
   func_iter fi;   /* Functional unit iterator */
   vsignal*  sig;  /* Pointer to current signal */
 
-  func_iter_init( &fi, funit, FALSE, TRUE, TRUE );
+  func_iter_init( &fi, funit, FALSE, TRUE, TRUE, FALSE );
   while( ((sig = func_iter_get_next_signal( &fi )) != NULL) && (strcmp( sig->name, sig_name ) != 0) );
   func_iter_dealloc( &fi );
 
@@ -442,7 +442,7 @@ void exclude_set_toggle_exclude(
   vsignal*  sig;  /* Pointer to current signal */
 
   /* Find the signal that matches the given signal name, if it exists */
-  func_iter_init( &fi, funit, FALSE, TRUE, TRUE );
+  func_iter_init( &fi, funit, FALSE, TRUE, TRUE, FALSE );
   while( ((sig = func_iter_get_next_signal( &fi )) != NULL) && (strcmp( sig->name, sig_name ) != 0) );
   func_iter_dealloc( &fi );
 
@@ -481,7 +481,7 @@ bool exclude_is_comb_excluded(
   expression* subexp;  /* Pointer to found expression */
 
   /* Find the matching root expression */
-  func_iter_init( &fi, funit, TRUE, FALSE, TRUE );
+  func_iter_init( &fi, funit, TRUE, FALSE, TRUE, FALSE );
   while( ((stmt = func_iter_get_next_statement( &fi )) != NULL) && (stmt->exp->id != expr_id) );
   func_iter_dealloc( &fi );
 
@@ -513,7 +513,7 @@ void exclude_set_comb_exclude(
   statement* stmt;  /* Pointer to current statement */
 
   /* Find the root expression */
-  func_iter_init( &fi, funit, TRUE, FALSE, TRUE );
+  func_iter_init( &fi, funit, TRUE, FALSE, TRUE, FALSE );
   while( ((stmt = func_iter_get_next_statement( &fi )) != NULL) && (stmt->exp->id != expr_id) );
   func_iter_dealloc( &fi );
 
@@ -675,7 +675,7 @@ bool exclude_is_assert_excluded(
     assert( curr_child != NULL );
 
     /* Initialize the functional unit iterator */
-    func_iter_init( &fi, curr_child->funit, TRUE, FALSE, TRUE );
+    func_iter_init( &fi, curr_child->funit, TRUE, FALSE, TRUE, FALSE );
 
     while( ((stmt = func_iter_get_next_statement( &fi )) != NULL) && (stmt->exp->id != expr_id) );
 
@@ -723,7 +723,7 @@ void exclude_set_assert_exclude(
     assert( curr_child != NULL );
 
     /* Initialize the functional unit iterator */
-    func_iter_init( &fi, curr_child->funit, TRUE, FALSE, TRUE );
+    func_iter_init( &fi, curr_child->funit, TRUE, FALSE, TRUE, FALSE );
 
     while( ((stmt = func_iter_get_next_statement( &fi )) != NULL) && (stmt->exp->id != expr_id) );
 
@@ -1922,6 +1922,10 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.52  2008/11/27 00:24:44  phase1geo
+ Fixing problems with previous version of generator.  Things work as expected at this point.
+ Checkpointing.
+
  Revision 1.51  2008/11/12 19:57:07  phase1geo
  Fixing the rest of the issues from regressions in regards to the merge changes.
  Updating regression files.  IV and Cver regressions now pass.

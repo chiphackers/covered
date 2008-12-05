@@ -207,7 +207,7 @@ void ovl_get_funit_stats(
       if( (curr_child->funit->type == FUNIT_MODULE) && ovl_is_assertion_module( curr_child->funit ) ) {
 
         /* Initialize the functional unit iterator */
-        func_iter_init( &fi, curr_child->funit, TRUE, FALSE, TRUE );
+        func_iter_init( &fi, curr_child->funit, TRUE, FALSE, TRUE, FALSE );
 
         while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
 
@@ -317,7 +317,7 @@ void ovl_display_verbose(
     if( (curr_child->funit->type == FUNIT_MODULE) && ovl_is_assertion_module( curr_child->funit ) ) {
 
       /* Initialize the functional unit iterator */
-      func_iter_init( &fi, curr_child->funit, TRUE, FALSE, TRUE );
+      func_iter_init( &fi, curr_child->funit, TRUE, FALSE, TRUE, FALSE );
 
       while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
 
@@ -414,7 +414,7 @@ void ovl_collect(
       hit   = 0;
 
       /* Initialize the functional unit iterator */
-      func_iter_init( &fi, curr_child->funit, TRUE, FALSE, TRUE );
+      func_iter_init( &fi, curr_child->funit, TRUE, FALSE, TRUE, FALSE );
 
       while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
 
@@ -503,7 +503,7 @@ void ovl_get_coverage(
   assert( rv < str_size );
 
   /* Initialize the functional unit iterator */
-  func_iter_init( &fi, curr_child->funit, TRUE, FALSE, TRUE );
+  func_iter_init( &fi, curr_child->funit, TRUE, FALSE, TRUE, FALSE );
 
   /* Gather all missed coverage points */
   while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
@@ -542,6 +542,10 @@ void ovl_get_coverage(
 
 /*
  $Log$
+ Revision 1.39  2008/11/27 00:24:44  phase1geo
+ Fixing problems with previous version of generator.  Things work as expected at this point.
+ Checkpointing.
+
  Revision 1.38  2008/09/15 03:43:49  phase1geo
  Cleaning up splint warnings.
 

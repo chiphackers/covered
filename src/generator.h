@@ -48,6 +48,9 @@ void generator_add_to_hold_code(
 /*! \brief Outputs all held code to the output file. */
 void generator_flush_hold_code();
 
+/*! \brief Flushes the working and holding code buffers. */
+void generator_flush_all();
+
 /*! \brief Inserts line coverage information. */
 void generator_insert_line_cov(
   unsigned int first_line,
@@ -65,6 +68,9 @@ void generator_insert_comb_cov(
 
 /*
  $Log$
+ Revision 1.7  2008/12/04 14:19:50  phase1geo
+ Fixing bug in code generator.  Checkpointing.
+
  Revision 1.6  2008/12/04 07:14:39  phase1geo
  Doing more work on the code generator to handle combination logic output.
  Still more coding and debugging work to do here.  Need to clear the added
