@@ -256,6 +256,7 @@ profiler profiles[NUM_PROFILES] = {
   {"combination_get_expression", NULL, 0, 0, 0, TRUE},
   {"combination_get_coverage", NULL, 0, 0, 0, TRUE},
   {"combination_report", NULL, 0, 0, 0, TRUE},
+  {"vcd_calc_index", NULL, 0, 0, 0, TRUE},
   {"vcd_parse_def_ignore", NULL, 0, 0, 0, TRUE},
   {"vcd_parse_def_var", NULL, 0, 0, 0, TRUE},
   {"vcd_parse_def_scope", NULL, 0, 0, 0, TRUE},

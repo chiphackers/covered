@@ -63,8 +63,8 @@
 
  \par
  The tree structure itself consists of nodes, one node per VCD symbol (with the exception
- of the root node -- this will be explained later) and each node contains an array of 256
- pointers to other nodes.  Having an array of 256 pointers allows us to use the name of the
+ of the root node -- this will be explained later) and each node contains an array of 94
+ pointers to other nodes.  Having an array of 94 pointers allows us to use the name of the
  VCD symbol as the lookup index into the table.  Because VCD symbols are allowed to use any
  combination of printable ASCII characters, the length of a VCD symbol (even for a large
  design) is usually between 1-4 characters.  This means that finding the information for any
@@ -214,10 +214,10 @@ symtable* symtable_create() { PROFILE(SYMTABLE_CREATE);
   int       i;       /* Loop iterator */
 
   symtab           = (symtable*)malloc_safe( sizeof( symtable ) );
-  symtab->sig_head = NULL;
-  symtab->sig_tail = NULL;
+  symtab->obj_head = NULL;
+  symtab->obj_tail = NULL;
   symtab->value    = NULL;
-  for( i=0; i<256; i++ ) {
+  for( i=0; i<94; i++ ) {
     symtab->table[i] = NULL;
   }
 
@@ -228,15 +228,11 @@ symtable* symtable_create() { PROFILE(SYMTABLE_CREATE);
 }
 
 /*!
- Using the symbol as a unique ID, creates a new symtable element for specified information
- and places it into the binary tree.
+ \return Returns a pointer to the symtable to use for the new entry.
 */
-void symtable_add(
-  const char* sym,  /*!< VCD symbol for the specified signal */
-  vsignal*    sig,  /*!< Pointer to signal corresponding to the specified symbol */
-  int         msb,  /*!< Most significant bit of variable to set */
-  int         lsb   /*!< Least significant bit of variable to set */
-) { PROFILE(SYMTABLE_ADD);
+static symtable* symtable_get_table(
+  const char* sym  /*!< Symbol to use as a lookup mechanism into the table */
+) { PROFILE(SYMTABLE_GET_TABLE);
 
   symtable*   curr;  /* Pointer to current symtable entry */
   const char* ptr;   /* Pointer to current character in sym */
@@ -249,18 +245,78 @@ void symtable_add(
   ptr  = sym;
 
   while( *ptr != '\0' ) {
-    if( curr->table[(int)*ptr] == NULL ) {
-      curr->table[(int)*ptr] = symtable_create();
+    if( curr->table[(int)*ptr - 33] == NULL ) {
+      curr->table[(int)*ptr - 33] = symtable_create();
     }
-    curr = curr->table[(int)*ptr];
+    curr = curr->table[(int)*ptr - 33];
     ptr++;
   }
 
-  if( curr->sig_head == NULL ) {
+  PROFILE_END;
+
+  return( curr );
+
+}
+
+/*!
+ Using the symbol as a unique ID, creates a new symtable element for specified information
+ and places it into the binary tree.
+*/
+void symtable_add_signal(
+  const char* sym,  /*!< VCD symbol for the specified signal */
+  vsignal*    sig,  /*!< Pointer to signal corresponding to the specified symbol */
+  int         msb,  /*!< Most significant bit of variable to set */
+  int         lsb   /*!< Least significant bit of variable to set */
+) { PROFILE(SYMTABLE_ADD);
+
+  symtable* curr;  /* Pointer to current symtable entry */
+
+  /* Get a table entry */
+  curr = symtable_get_table( sym );
+
+  if( curr->obj_head == NULL ) {
     symtable_init( curr, msb, lsb );
   }
 
   symtable_add_sym_sig( curr, sig, msb, lsb );
+
+  /* 
+   Finally increment the number of entries in the root table structure.
+  */
+  vcd_symtab_size++;
+
+  PROFILE_END;
+
+}
+
+/*!
+ Using the symbol as a unique ID, creates a new symtable element for specified information
+ and places it into the binary tree.
+*/
+void symtable_add_expression(
+  const char* sym,  /*!< VCD symbol for the specified signal */
+  expression* exp,  /*!< Pointer to signal corresponding to the specified symbol */
+  char        type  /*!< Specifies the type of action to perform on the given expression */
+) { PROFILE(SYMTABLE_ADD);
+
+  symtable* curr;  /* Pointer to current symtable entry */
+  int       msb;   /* Most significan bit of vector that will be stored */
+
+  /* Get a table entry */
+  curr = symtable_get_table( sym );
+
+  /* Calculate the MSB */
+  if( type == 'l' ) {
+    msb = 0;
+  } else if( type == 'e' ) {
+    // TBD
+  }
+
+  if( curr->obj_head == NULL ) {
+    symtable_init( curr, msb, 0 );
+  }
+
+  // symtable_add_sym_sig( curr, sig, msb, lsb );
 
   /* 
    Finally increment the number of entries in the root table structure.
@@ -291,7 +347,7 @@ void symtable_set_value(
   ptr  = sym;
 
   while( (curr != NULL) && (*ptr != '\0') ) {
-    curr = curr->table[(int)*ptr];
+    curr = curr->table[(int)(*ptr) - 33];
     ptr++;
   }
 
@@ -361,7 +417,7 @@ void symtable_dealloc(
 
   if( symtab != NULL ) {
 
-    for( i=0; i<256; i++ ) {
+    for( i=0; i<94; i++ ) {
       symtable_dealloc( symtab->table[i] );
     }
 
@@ -387,6 +443,11 @@ void symtable_dealloc(
 
 /*
  $Log$
+ Revision 1.39  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.36.4.1  2008/07/10 22:43:55  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

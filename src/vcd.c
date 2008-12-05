@@ -55,6 +55,28 @@ bool one_instance_found = FALSE;
 
 
 /*!
+ \return Returns a 32-bit value containing the index into the symbol array based off of the
+         VCD symbol.
+*/
+int vcd_calc_index(
+  char* sym
+) { PROFILE(VCD_CALC_INDEX);
+
+  int slen  = strlen( sym );
+  int i;
+  int index = 0;
+
+  for( i=0; i<slen; i++ ) {
+    index = (index * 94) + ((int)sym[i] - 33);
+  }
+
+  PROFILE_END;
+
+  return( index );
+
+}
+
+/*!
  Parses specified file until $end keyword is seen, ignoring all text inbetween.
 */
 static void vcd_parse_def_ignore(
@@ -504,6 +526,9 @@ void vcd_parse(
 
 /*
  $Log$
+ Revision 1.44  2008/11/19 19:42:10  phase1geo
+ Cleaning up splint warnings.
+
  Revision 1.43  2008/10/21 22:55:25  phase1geo
  More updates to get real values working.  IV and Cver regressions work (except for VPI
  mode of operation).  Checkpointing.

@@ -2983,13 +2983,11 @@ void db_vcd_upscope() { PROFILE(DB_VCD_UPSCOPE);
  Creates a new entry in the symbol table for the specified signal and symbol.
 */
 void db_assign_symbol(
-  const char* name,    /*!< Name of signal to set value to */
-  const char* symbol,  /*!< Symbol value of signal used in VCD dumpfile */
+  const char* name,    /*!< Name of signal/expression to set value to */
+  const char* symbol,  /*!< Symbol of the associated signal/expression symbol */
   int         msb,     /*!< Most significant bit of symbol to set */
   int         lsb      /*!< Least significant bit of symbol to set */
 ) { PROFILE(DB_ASSIGN_SYMBOL);
-
-  sig_link* slink;  /* Pointer to signal containing this symbol */
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
@@ -3006,20 +3004,50 @@ void db_assign_symbol(
 
   if( (curr_instance != NULL) && (curr_instance->funit != NULL) ) {
     
-    /* Find the signal that matches the specified signal name */
-    if( (slink = sig_link_find( name, curr_instance->funit->sig_head )) != NULL ) {
+    if( info_suppl.inlined && (strncmp( name, "\\covered$", 9 ) == 0) ) {
 
-      /* Only add the symbol if we are not going to generate this value ourselves */
-      if( (slink->sig->suppl.part.assigned == 0)                  &&
-          (slink->sig->suppl.part.type != SSUPPL_TYPE_PARAM)      &&
-          (slink->sig->suppl.part.type != SSUPPL_TYPE_PARAM_REAL) &&
-          (slink->sig->suppl.part.type != SSUPPL_TYPE_ENUM)       &&
-          (slink->sig->suppl.part.type != SSUPPL_TYPE_MEM)        &&
-          (slink->sig->suppl.part.type != SSUPPL_TYPE_GENVAR)     &&
-          (slink->sig->suppl.part.type != SSUPPL_TYPE_EVENT) ) {
+      char type = name[9];
 
-        /* Add this signal */
-        symtable_add( symbol, slink->sig, msb, lsb );
+      /* If the type is an x (temporary register) or a y (temporary wire), don't continue on */
+      if( (type != 'x') && (type != 'y') ) {
+
+        int          line;
+        int          col;
+        unsigned int rv = sscanf( (name + 10), "%d_%x", &line, &col );
+        assert( rv == 2 );
+
+        /* Find the expression that matches the positional information */
+        expl = curr_instance->funit->exp_head;
+        while( (expl != NULL) && ((expl->exp->line != line) || (expl->exp->col != col)) ) {
+          expl = expl->next;
+        }
+        assert( expl != NULL );
+
+        /* Add the expression to the symtable */
+        symtable_add_expression( symbol, expl->exp, type );
+
+      }
+        
+    } else {
+
+      sig_link* slink;
+
+      /* Find the signal that matches the specified signal name */
+      if( (slink = sig_link_find( name, curr_instance->funit->sig_head )) != NULL ) {
+
+        /* Only add the symbol if we are not going to generate this value ourselves */
+        if( (slink->sig->suppl.part.assigned == 0)                  &&
+            (slink->sig->suppl.part.type != SSUPPL_TYPE_PARAM)      &&
+            (slink->sig->suppl.part.type != SSUPPL_TYPE_PARAM_REAL) &&
+            (slink->sig->suppl.part.type != SSUPPL_TYPE_ENUM)       &&
+            (slink->sig->suppl.part.type != SSUPPL_TYPE_MEM)        &&
+            (slink->sig->suppl.part.type != SSUPPL_TYPE_GENVAR)     &&
+            (slink->sig->suppl.part.type != SSUPPL_TYPE_EVENT) ) {
+
+          /* Add this signal */
+          symtable_add_signal( symbol, slink->sig, msb, lsb );
+
+        }
 
       }
 
@@ -3171,6 +3199,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.354  2008/12/05 00:22:41  phase1geo
+ More work completed on code coverage generator.  Currently working on bug in
+ statement finder.  Checkpointing.
+
  Revision 1.353  2008/12/03 23:29:07  phase1geo
  Finished getting line coverage insertion working.  Starting to work on combinational logic
  coverage.  Checkpointing.

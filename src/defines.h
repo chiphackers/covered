@@ -1693,6 +1693,7 @@ union isuppl_u {
     uint32 excl_pragma : 1;    /*!< Specifies if code encapsulated in coverage pragmas should be excluded from coverage */
     uint32 assert_ovl  : 1;    /*!< Specifies that OVL assertions should be included for coverage */
     uint32 vec_ul_size : 2;    /*!< Specifies the bit size of a vector element (0=8 bits, 1=16-bits, 2=32-bits, 3=64-bits) */
+    uint32 inlined     : 1;    /*!< Specifies if this CDD is used with an inlined code coverage method */
   } part;
 };
 
@@ -2624,7 +2625,11 @@ struct inst_link_s {
  three key pieces of information in a list-style data structure.
 */
 struct sym_sig_s {
-  vsignal* sig;                      /*!< Pointer to signal that this symtable entry refers to */
+  union {
+    vsignal*    sig;                 /*!< Pointer to signal that this symtable entry refers to */
+    expression* exp;                 /*!< Pointer to expression that this symtable entry refers to */
+  } obj;
+  int      obj_type;                 /*!< Specifies if the stored object is a signal or an expression */
   int      msb;                      /*!< Most significant bit of value to set */
   int      lsb;                      /*!< Least significant bit of value to set */
   sym_sig* next;                     /*!< Pointer to next sym_sig link in list */
@@ -2634,11 +2639,11 @@ struct sym_sig_s {
  Stores symbol name of signal along with pointer to signal itself into a lookup table
 */
 struct symtable_s {
-  sym_sig*     sig_head;             /*!< Pointer to head of sym_sig list */
-  sym_sig*     sig_tail;             /*!< Pointer to tail of sym_sig list */
+  sym_sig*     obj_head;             /*!< Pointer to head of sym_sig list */
+  sym_sig*     obj_tail;             /*!< Pointer to tail of sym_sig list */
   char*        value;                /*!< String representation of last current value */
   unsigned int size;                 /*!< Number of bytes allowed storage for value */
-  symtable*    table[256];           /*!< Array of symbol tables for next level */
+  symtable*    table[94];            /*!< Array of symbol tables for next level (only enough for printable characters) */
 };
 
 /*!
@@ -3043,6 +3048,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.340  2008/11/30 04:17:07  phase1geo
+ Adding bit to save off parenthesis existence from original Verilog source.
+ Updating regression per these changes.
+
  Revision 1.339  2008/11/12 00:07:41  phase1geo
  More updates for complex merging algorithm.  Updating regressions per
  these changes.  Checkpointing.
