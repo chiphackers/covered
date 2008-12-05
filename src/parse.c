@@ -206,7 +206,7 @@ void parse_design(
     }
 
     /* Generate the needed Verilog - TBD - This needs to be optional */
-    generator_output();
+    // generator_output();
 
     /* Write contents to baseline database file. */
     db_write( output_db, TRUE, TRUE, FALSE );
@@ -316,6 +316,11 @@ void parse_and_score_dumpfile(
 
 /*
  $Log$
+ Revision 1.81  2008/12/03 07:27:01  phase1geo
+ Made initial pass through the parser to add parse_mode.  Things are quite broken
+ in regression at this point and we have conflicts in the resultant parser.
+ Checkpointing.
+
  Revision 1.80  2008/12/02 23:43:21  phase1geo
  Reimplementing inlined code generation code.  Added this code to Verilog lexer and parser.
  More work to do here.  Checkpointing.

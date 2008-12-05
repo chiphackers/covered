@@ -3075,7 +3075,7 @@ module_item
           }
         }
       } else {
-        /* TBD - Need to cause this statement block to be output */
+        generator_flush_hold_code();
       }
     }
   | attribute_list_opt
@@ -3121,7 +3121,7 @@ module_item
           }
         }
       } else {
-        /* TBD - Need to add code injection here (output block) */
+        generator_flush_hold_code();
       }
     }
   | attribute_list_opt
@@ -3167,7 +3167,7 @@ module_item
           }
         }
       } else {
-        /* TBD - Add this statement block */
+        generator_flush_hold_code();
       }
     }
   | attribute_list_opt
@@ -3197,18 +3197,14 @@ module_item
           }
         }
       } else {
-        /* TBD - Add this statement block */
+        generator_flush_hold_code();
       }
     }
   | attribute_list_opt
-    K_initial
-    {
-      generator_add_to_hold_code( " begin" );
-    }
-    statement
+    K_initial statement
     {
       if( parse_mode ) {
-        statement* stmt = $4;
+        statement* stmt = $3;
         if( stmt != NULL ) {
           if( (info_suppl.part.excl_init == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
             stmt->suppl.part.head = 1;
@@ -3218,7 +3214,6 @@ module_item
           }
         }
       } else {
-        generator_add_to_hold_code( " end" );
         generator_flush_hold_code();
       }
     }
@@ -3237,7 +3232,7 @@ module_item
           }
         }
       } else {
-        /* TBD - Add this statement block */
+        generator_flush_hold_code();
       }
     }
   | attribute_list_opt
@@ -3285,6 +3280,8 @@ module_item
         } else {
           ignore_mode--;
         }
+      } else {
+        generator_flush_hold_code();
       }
     }
   | attribute_list_opt
@@ -3333,6 +3330,8 @@ module_item
         } else {
           ignore_mode--;
         }
+      } else {
+        generator_flush_hold_code();
       }
     }
   | K_generate
@@ -4182,7 +4181,8 @@ statement
           }
         }
       } else {
-        $$ = NULL;  /* TBD - Need to do something here? */
+        generator_flush_hold_code();
+        $$ = NULL;
       }
     }
   | K_fork inc_fork_depth fork_statement K_join
@@ -4512,10 +4512,12 @@ statement
           $$ = NULL;
         }
       } else {
+        generator_insert_line_cov( @2.first_line, @2.first_column );
+        generator_flush_work_code();
         $$ = NULL;  /* TBD */
       }
     }
-  | cond_specifier_opt K_if '(' expression ')' inc_block_depth statement_or_null dec_block_depth K_else statement_or_null
+  | cond_specifier_opt K_if '(' expression ')' inc_block_depth statement_or_null dec_block_depth K_else inc_block_depth statement_or_null dec_block_depth
     {
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($4 != NULL) ) {
@@ -4527,14 +4529,16 @@ statement
           }
           if( ($$ = db_create_statement( tmp )) != NULL ) {
             db_connect_statement_true( $$, $7 );
-            db_connect_statement_false( $$, $10 );
+            db_connect_statement_false( $$, $11 );
           }
         } else {
           db_remove_statement( $7 );
-          db_remove_statement( $10 );
+          db_remove_statement( $11 );
           $$ = NULL;
         }
       } else {
+        generator_insert_line_cov( @2.first_line, @2.first_column );
+        generator_flush_work_code();
         $$ = NULL;  /* TBD */
       }
     }
@@ -7715,6 +7719,8 @@ inc_block_depth
     {
       if( parse_mode ) {
         block_depth++;
+      } else {
+        generator_add_to_hold_code( " begin" );
       }
     }
   ;
@@ -7724,6 +7730,9 @@ dec_block_depth
     {
       if( parse_mode ) {
         block_depth--;
+      } else {
+        generator_flush_work_code();
+        generator_add_to_hold_code( " end" );
       }
     }
   ;

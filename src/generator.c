@@ -112,7 +112,7 @@ bool generator_line = TRUE;
 /*!
  Specifies that we should perform combinational logic coverage code insertion.
 */
-bool generator_comb = FALSE;
+bool generator_comb = TRUE;
 
 /*!
  Iterator for current functional unit.
@@ -373,7 +373,6 @@ void generator_init_funit(
 
   /* Initializes the functional unit iterator */
   func_iter_init( &fiter, funit, TRUE, FALSE, FALSE, TRUE );
-  func_iter_display( &fiter );
 
   /* Reset the structure */
   func_iter_reset( &fiter );
@@ -536,22 +535,13 @@ static statement* generator_find_statement(
 
   static statement* stmt = NULL;
 
-  printf( "In generator_find_statement, line: %u, col: %u\n", first_line, first_column );
-  func_iter_display( &fiter );
-  if( stmt != NULL ) {
-    printf( "stmt: %s [%d]\n", expression_string( stmt->exp ), ((stmt->exp->col >> 16) & 0xffff) );
-  }
-
   if( (stmt == NULL) || (stmt->exp->line != first_line) || (((stmt->exp->col >> 16) & 0xffff) != first_column) ) {
 
     /* Attempt to find the expression with the given position */
     while( ((stmt = func_iter_get_next_statement( &fiter )) != NULL) &&
-           printf( "Searching statement (%s %d)\n", expression_string( stmt->exp ), ((stmt->exp->col >> 16) & 0xffff) ) &&
            ((stmt->exp->line != first_line) || (((stmt->exp->col >> 16) & 0xffff) != first_column)) );
 
   }
-
-  func_iter_display( &fiter );
 
   return( stmt );
 
@@ -630,6 +620,7 @@ static void generator_insert_unary_comb_cov(
   if( net ) {
     strcpy( prefix, "wire " );
   } else {
+    prefix[0] = '\0';
     rv = snprintf( str, 4096, "reg %s;", sig );
     assert( rv < 4096 );
     str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
@@ -695,6 +686,7 @@ static void generator_insert_and_comb_cov(
   if( net ) {
     strcpy( prefix, "wire [2:0] " );
   } else {
+    prefix[0] = '\0';
     rv = snprintf( str, 4096, "reg [2:0] %s;", sig );
     assert( rv < 4096 );
     str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
@@ -761,6 +753,7 @@ static void generator_insert_or_comb_cov(
   if( net ) {
     strcpy( prefix, "wire [2:0] " );
   } else {
+    prefix[0] = '\0';
     rv = snprintf( str, 4096, "reg [2:0] %s;", sig );
     assert( rv < 4096 );
     str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
@@ -827,6 +820,7 @@ static void generator_insert_other_comb_cov(
   if( net ) {
     strcpy( prefix, "wire [3:0] " );
   } else {
+    prefix[0] = '\0';
     rv = snprintf( str, 4096, "reg [3:0] %s;", sig );
     assert( rv < 4096 );
     str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
@@ -987,6 +981,10 @@ void generator_insert_comb_cov(
 
 /*
  $Log$
+ Revision 1.14  2008/12/05 00:22:41  phase1geo
+ More work completed on code coverage generator.  Currently working on bug in
+ statement finder.  Checkpointing.
+
  Revision 1.13  2008/12/04 14:19:50  phase1geo
  Fixing bug in code generator.  Checkpointing.
 

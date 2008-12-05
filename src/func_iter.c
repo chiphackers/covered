@@ -75,7 +75,6 @@ static void func_iter_sort(
   assert( fi->si_num > 0 );
 
   tmp = fi->sis[0];
-  stmt_link_display( tmp->curr );
 
   /*
    If the statement iterator at the top of the list is NULL, shift all valid statement iterators
@@ -95,7 +94,8 @@ static void func_iter_sort(
     i = 0;
     while( (i < (fi->si_num - 1)) &&
            ((tmp->curr->stmt->exp->line > fi->sis[i+1]->curr->stmt->exp->line) ||
-            ((tmp->curr->stmt->exp->col & 0xffff) > (fi->sis[i+1]->curr->stmt->exp->col & 0xffff))) ) {
+            ((tmp->curr->stmt->exp->line == fi->sis[i+1]->curr->stmt->exp->line) &&
+             ((tmp->curr->stmt->exp->col & 0xffff) > (fi->sis[i+1]->curr->stmt->exp->col & 0xffff)))) ) {
       fi->sis[i] = fi->sis[i+1];
       i++;
     }
@@ -409,6 +409,10 @@ void func_iter_dealloc(
 
 /*
  $Log$
+ Revision 1.18  2008/12/05 00:22:41  phase1geo
+ More work completed on code coverage generator.  Currently working on bug in
+ statement finder.  Checkpointing.
+
  Revision 1.17  2008/12/04 14:19:50  phase1geo
  Fixing bug in code generator.  Checkpointing.
 
