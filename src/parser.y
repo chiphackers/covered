@@ -3062,10 +3062,10 @@ module_item
       }
     }
   | attribute_list_opt
-    K_always statement
+    K_always inc_block_depth statement dec_block_depth
     {
       if( parse_mode ) {
-        statement* stmt = $3;
+        statement* stmt = $4;
         if( stmt != NULL ) {
           if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
             stmt->suppl.part.head = 1;
@@ -3086,6 +3086,9 @@ module_item
           VLerror( "always_comb syntax found in block that is specified to not allow SystemVerilog syntax" );
           ignore_mode++;
         }
+      } else {
+        generator_flush_work_code();
+        generator_add_to_hold_code( " begin" );
       }
     }
     statement
@@ -3121,6 +3124,8 @@ module_item
           }
         }
       } else {
+        generator_flush_work_code();
+        generator_add_to_hold_code( " end" );
         generator_flush_hold_code();
       }
     }
@@ -3132,6 +3137,9 @@ module_item
           VLerror( "always_latch syntax found in block that is specified to not allow SystemVerilog syntax" );
           ignore_mode++;
         }
+      } else {
+        generator_flush_work_code();
+        generator_add_to_hold_code( " begin" );
       }
     }
     statement
@@ -3167,6 +3175,8 @@ module_item
           }
         }
       } else {
+        generator_flush_work_code();
+        generator_add_to_hold_code( " end" );
         generator_flush_hold_code();
       }
     }
@@ -3178,6 +3188,9 @@ module_item
           VLerror( "always_ff syntax found in block that is specified to not allow SystemVerilog syntax" );
           ignore_mode++;
         }
+      } else {
+        generator_flush_work_code();
+        generator_add_to_hold_code( " begin" );
       }
     }
     statement
@@ -3197,14 +3210,16 @@ module_item
           }
         }
       } else {
+        generator_flush_work_code();
+        generator_add_to_hold_code( " end" );
         generator_flush_hold_code();
       }
     }
   | attribute_list_opt
-    K_initial statement
+    K_initial inc_block_depth statement dec_block_depth
     {
       if( parse_mode ) {
-        statement* stmt = $3;
+        statement* stmt = $4;
         if( stmt != NULL ) {
           if( (info_suppl.part.excl_init == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
             stmt->suppl.part.head = 1;
@@ -3218,10 +3233,10 @@ module_item
       }
     }
   | attribute_list_opt
-    K_final statement
+    K_final inc_block_depth statement dec_block_depth
     {
       if( parse_mode ) {
-        statement* stmt = $3;
+        statement* stmt = $4;
         if( stmt != NULL ) {
           if( (info_suppl.part.excl_final == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
             stmt->suppl.part.head  = 1;
@@ -4687,30 +4702,7 @@ statement
         generator_flush_work_code();
       }
     }
-    inc_block_depth statement_or_null dec_block_depth
-    {
-      if( parse_mode ) {
-        statement* stmt;
-        if( (ignore_mode == 0) && ($1 != NULL) ) {
-          stmt = db_create_statement( $1 );
-          if( $4 != NULL ) {
-            if( !db_statement_connect( stmt, $4 ) ) {
-              db_remove_statement( stmt );
-              db_remove_statement( $4 );
-              stmt = NULL;
-            }
-          }
-          $$ = stmt;
-        } else {
-          db_remove_statement( $4 );
-          $$ = NULL;
-        }
-      } else {
-        generator_flush_work_code();
-        $$ = NULL;  /* TBD */
-      }
-    }
-  | event_control inc_block_depth statement_or_null dec_block_depth
+    statement_or_null
     {
       if( parse_mode ) {
         statement* stmt;
@@ -4729,10 +4721,50 @@ statement
           $$ = NULL;
         }
       } else {
+        generator_flush_work_code();
+        $$ = NULL;  /* TBD */
+      }
+    }
+  | event_control
+    {
+      if( !parse_mode ) {
+        generator_add_to_work_code( ";" );
+        generator_insert_line_cov( @1.first_line, @1.first_column );
+        generator_flush_work_code();
+      }
+    }
+    statement_or_null
+    {
+      if( parse_mode ) {
+        statement* stmt;
+        if( (ignore_mode == 0) && ($1 != NULL) ) {
+          stmt = db_create_statement( $1 );
+          if( $3 != NULL ) {
+            if( !db_statement_connect( stmt, $3 ) ) {
+              db_remove_statement( stmt );
+              db_remove_statement( $3 );
+              stmt = NULL;
+            }
+          }
+          $$ = stmt;
+        } else {
+          db_remove_statement( $3 );
+          $$ = NULL;
+        }
+      } else {
+        generator_flush_work_code();
         $$ = NULL;
       }
     }
-  | '@' '*' inc_block_depth statement_or_null dec_block_depth
+  | '@' '*'
+    {
+      if( !parse_mode ) {
+        generator_add_to_work_code( ";" );
+        generator_insert_line_cov( @1.first_line, @1.first_column );
+        generator_flush_work_code();
+      }
+    }
+    statement_or_null
     {
       if( parse_mode ) {
         expression* expr;
@@ -4767,7 +4799,8 @@ statement
           }
         }
       } else {
-        $$ = NULL;  /* TBD */
+        generator_flush_work_code();
+        $$ = NULL;
       }
     }
   | passign ';'
@@ -7720,6 +7753,7 @@ inc_block_depth
       if( parse_mode ) {
         block_depth++;
       } else {
+        generator_flush_work_code();
         generator_add_to_hold_code( " begin" );
       }
     }

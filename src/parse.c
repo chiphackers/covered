@@ -206,7 +206,7 @@ void parse_design(
     }
 
     /* Generate the needed Verilog - TBD - This needs to be optional */
-    // generator_output();
+    generator_output();
 
     /* Write contents to baseline database file. */
     db_write( output_db, TRUE, TRUE, FALSE );
@@ -319,6 +319,9 @@ void parse_and_score_dumpfile(
 
 /*
  $Log$
+ Revision 1.83  2008/12/05 04:55:50  phase1geo
+ Fixing memory deallocation in parse.c.  Checkpointing.
+
  Revision 1.82  2008/12/05 04:39:14  phase1geo
  Checkpointing.  Updating regressions.
 

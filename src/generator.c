@@ -373,6 +373,7 @@ void generator_init_funit(
 
   /* Initializes the functional unit iterator */
   func_iter_init( &fiter, funit, TRUE, FALSE, FALSE, TRUE );
+  // func_iter_display( &fiter );
 
   /* Reset the structure */
   func_iter_reset( &fiter );
@@ -535,6 +536,8 @@ static statement* generator_find_statement(
 
   static statement* stmt = NULL;
 
+  // printf( "Searching for statement, line: %u, col: %u...  ", first_line, first_column );
+
   if( (stmt == NULL) || (stmt->exp->line != first_line) || (((stmt->exp->col >> 16) & 0xffff) != first_column) ) {
 
     /* Attempt to find the expression with the given position */
@@ -542,6 +545,12 @@ static statement* generator_find_statement(
            ((stmt->exp->line != first_line) || (((stmt->exp->col >> 16) & 0xffff) != first_column)) );
 
   }
+
+  // if( stmt != NULL ) {
+  //   printf( "Found!\n" );
+  // } else {
+  //   printf( "Not Found!\n" );
+  // }
 
   return( stmt );
 
@@ -981,6 +990,9 @@ void generator_insert_comb_cov(
 
 /*
  $Log$
+ Revision 1.15  2008/12/05 04:39:14  phase1geo
+ Checkpointing.  Updating regressions.
+
  Revision 1.14  2008/12/05 00:22:41  phase1geo
  More work completed on code coverage generator.  Currently working on bug in
  statement finder.  Checkpointing.
