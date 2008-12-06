@@ -1794,6 +1794,7 @@ struct func_unit_s;
 struct funit_link_s;
 struct inst_link_s;
 struct sym_sig_s;
+struct sym_exp_s;
 struct symtable_s;
 struct static_expr_s;
 struct vector_width_s;
@@ -1985,6 +1986,11 @@ typedef struct inst_link_s inst_link;
  Renaming symbol signal structure for convenience.
 */
 typedef struct sym_sig_s sym_sig;
+
+/*!
+ Renaming symbol expression structure for convenience.
+*/
+typedef struct sym_exp_s sym_exp;
 
 /*!
  Renaming symbol table structure for convenience.
@@ -2625,22 +2631,29 @@ struct inst_link_s {
  three key pieces of information in a list-style data structure.
 */
 struct sym_sig_s {
-  union {
-    vsignal*    sig;                 /*!< Pointer to signal that this symtable entry refers to */
-    expression* exp;                 /*!< Pointer to expression that this symtable entry refers to */
-  } obj;
-  int      obj_type;                 /*!< Specifies if the stored object is a signal or an expression */
+  vsignal* sig;                      /*!< Pointer to signal */
   int      msb;                      /*!< Most significant bit of value to set */
   int      lsb;                      /*!< Least significant bit of value to set */
-  sym_sig* next;                     /*!< Pointer to next sym_sig link in list */
+  sym_sig* next;                     /*!< Pointer to next signal */
+};
+
+/*!
+ For an expression, the type of coverage action to perform must accompany the pointer to the expression.
+*/
+struct sym_exp_s {
+  expression* exp;                   /*!< Pointer to expression pertaining to this entry */
+  char        action;                /*!< Specifies the action to perform to the expression (line=0, logic=1) */
 };
 
 /*!
  Stores symbol name of signal along with pointer to signal itself into a lookup table
 */
 struct symtable_s {
-  sym_sig*     obj_head;             /*!< Pointer to head of sym_sig list */
-  sym_sig*     obj_tail;             /*!< Pointer to tail of sym_sig list */
+  union {
+    sym_sig*   sig;                  /*!< Pointer to signal symtable entry stack */
+    sym_exp*   exp;                  /*!< Pointer to expression symtabl entry */
+  } entry;
+  char         entry_type;           /*!< Specifies if this entry represents a signal (0) or expression (1) */
   char*        value;                /*!< String representation of last current value */
   unsigned int size;                 /*!< Number of bytes allowed storage for value */
   symtable*    table[94];            /*!< Array of symbol tables for next level (only enough for printable characters) */
@@ -3048,6 +3061,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.341  2008/12/05 23:05:37  phase1geo
+ Working on VCD reading side of the inlined coverage handler.  Things don't
+ compile at this point and are in limbo.  Checkpointing.
+
  Revision 1.340  2008/11/30 04:17:07  phase1geo
  Adding bit to save off parenthesis existence from original Verilog source.
  Updating regression per these changes.

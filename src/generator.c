@@ -665,9 +665,9 @@ static void generator_insert_unary_comb_cov(
 }
 
 /*!
- Inserts AND-style combinational logic coverage code.
+ Inserts AND/OR/OTHER-style combinational logic coverage code.
 */
-static void generator_insert_and_comb_cov(
+static void generator_insert_comb_comb_cov(
   expression*  exp,    /*!< Pointer to expression to output */
   unsigned int depth,  /*!< Current expression depth */
   bool         net     /*!< Set to TRUE if this expression is a net */
@@ -694,154 +694,19 @@ static void generator_insert_and_comb_cov(
 
   /* Create prefix */
   if( net ) {
-    strcpy( prefix, "wire [2:0] " );
+    strcpy( prefix, "wire [1:0] " );
   } else {
     prefix[0] = '\0';
-    rv = snprintf( str, 4096, "reg [2:0] %s;", sig );
+    rv = snprintf( str, 4096, "reg [1:0] %s;", sig );
     assert( rv < 4096 );
     str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
   }
 
   /* Prepend the coverage assignment to the working buffer */
-  rv = snprintf( str, 4096, "%s%s = {~%s[0],~%s[0],(%s[0] %s %s[0])};",
-                 prefix, sig, sigl, sigr, sigl, exp_op_info[exp->op].op_str, sigr );
+  rv = snprintf( str, 4096, "%s%s = {%s,%s};", prefix, sig, sigl, sigr );
   assert( rv < 4096 );
   str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
 
-  /* If this is a net, prepend to the register list */
-  if( net ) {
-    if( reg_head == NULL ) {
-      reg_head = reg_tail = tmp_head;
-    } else {
-      tmp_tail->next = reg_head;
-      reg_head       = tmp_head;
-    }
-
-  /* Otherwise, prepend to the working list */
-  } else {
-    if( work_head == NULL ) {
-      work_head = work_tail = tmp_head;
-    } else {
-      tmp_tail->next = work_head;
-      work_head      = tmp_head;
-    }
-  }
-
-  PROFILE_END;
-
-}
-
-/*!
- Inserts OR style combinational logic coverage code.
-*/
-static void generator_insert_or_comb_cov(
-  expression*  exp,    /*!< Pointer to expression to output */
-  unsigned int depth,  /*!< Current expression depth */
-  bool         net     /*!< If set to TRUE generate code for a net */
-) { PROFILE(GENERATOR_INSERT_OR_COMB_COV);
-
-  char         prefix[16];
-  char         sig[80];
-  char         sigl[80];
-  char         sigr[80];
-  char         str[4096];
-  unsigned int rv;
-  str_link*    tmp_head = NULL;
-  str_link*    tmp_tail = NULL;
-  
-  /* Create signal */  
-  rv = snprintf( sig,  80, "covered$e%d_%x", exp->line, exp->col );
-  assert( rv < 80 );
-  rv = snprintf( sigl, 80, "covered$%c%d_%x", (((depth + ((exp->op != exp->left->op) ? 1 : 0)) < generator_max_exp_depth) ? 'e' : (net ? 'y' : 'x')),
-                 exp->left->line, exp->left->col );
-  assert( rv < 80 );
-  rv = snprintf( sigr, 80, "covered$%c%d_%x", (((depth + ((exp->op != exp->right->op) ? 1 : 0)) < generator_max_exp_depth) ? 'e' : (net ? 'y' : 'x')),
-                 exp->right->line, exp->right->col );
-  assert( rv < 80 );
-  
-  /* Create prefix */
-  if( net ) {
-    strcpy( prefix, "wire [2:0] " );
-  } else {
-    prefix[0] = '\0';
-    rv = snprintf( str, 4096, "reg [2:0] %s;", sig );
-    assert( rv < 4096 );
-    str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
-  }
-  
-  /* Prepend the coverage assignment to the working buffer */
-  rv = snprintf( str, 4096, "%s%s = {%s[0],%s[0],(%s[0] %s %s[0])};",
-                 prefix, sig, sigl, sigr, sigl, exp_op_info[exp->op].op_str, sigr );
-  assert( rv < 4096 );
-  str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
-  
-  /* If this is a net, prepend to the register list */
-  if( net ) {
-    if( reg_head == NULL ) {
-      reg_head = reg_tail = tmp_head;
-    } else {
-      tmp_tail->next = reg_head;
-      reg_head       = tmp_head;
-    }
-
-  /* Otherwise, prepend to the working list */
-  } else {
-    if( work_head == NULL ) {
-      work_head = work_tail = tmp_head;
-    } else {
-      tmp_tail->next = work_head;
-      work_head      = tmp_head;
-    }
-  }
-
-  PROFILE_END;
-
-}
-
-/*!
- Inserts OTHER style combinational logic coverage code.
-*/
-static void generator_insert_other_comb_cov(
-  expression*  exp,    /*!< Pointer to expression to output */
-  unsigned int depth,  /*!< Current expression depth */
-  bool         net     /*!< If set to TRUE generate code for a net */
-) { PROFILE(GENERATOR_INSERT_OTHER_COMB_COV);
-
-  char         prefix[16];
-  char         sig[80];
-  char         sigl[80];
-  char         sigr[80];
-  char         str[4096];
-  unsigned int rv;
-  str_link*    tmp_head = NULL;
-  str_link*    tmp_tail = NULL;
-  
-  /* Create signal */  
-  rv = snprintf( sig,  80, "covered$e%d_%x", exp->line, exp->col );
-  assert( rv < 80 );
-  rv = snprintf( sigl, 80, "covered$%c%d_%x", (((depth + ((exp->op != exp->left->op) ? 1 : 0)) < generator_max_exp_depth) ? 'e' : (net ? 'y' : 'x')),
-                 exp->left->line, exp->left->col );
-  assert( rv < 80 );
-  rv = snprintf( sigr, 80, "covered$%c%d_%x", (((depth + ((exp->op != exp->right->op) ? 1 : 0)) < generator_max_exp_depth) ? 'e' : (net ? 'y' : 'x')),
-                 exp->right->line, exp->right->col );
-  assert( rv < 80 );
-  
-  /* Create prefix */
-  if( net ) {
-    strcpy( prefix, "wire [3:0] " );
-  } else {
-    prefix[0] = '\0';
-    rv = snprintf( str, 4096, "reg [3:0] %s;", sig );
-    assert( rv < 4096 );
-    str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
-  }
-  
-  /* Prepend the coverage assignment to the working buffer */
-  rv = snprintf( str, 4096, "%s%s = {(%s[0] & %s[0]),(%s[0] & ~%s[0]),(~%s[0] & %s[0]),(~%s[0] & ~%s[0])};",
-                 prefix, sig, sigl, sigr, sigl, sigr, sigl, sigr, sigl, sigr);
-  assert( rv < 4096 );
-  str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
-  
   /* If this is a net, prepend to the register list */
   if( net ) {
     if( reg_head == NULL ) {
@@ -892,13 +757,8 @@ static void generator_insert_comb_cov_helper(
         generator_insert_unary_comb_cov( exp, depth, net );
 
       /* Otherwise, generate binary combinational logic type */
-      } else {
-        switch( exp_op_info[exp->op].suppl.is_comb ) {
-          case AND_COMB   :  generator_insert_and_comb_cov( exp, depth, net );    break;
-          case OR_COMB    :  generator_insert_or_comb_cov( exp, depth, net );     break;
-          case OTHER_COMB :  generator_insert_other_comb_cov( exp, depth, net );  break;
-          default         :  break;
-        }
+      } else if( exp_op_info[exp->op].suppl.is_comb != NOT_COMB ) {
+        generator_insert_comb_comb_cov( exp, depth, net );
 
       }
 
@@ -991,6 +851,10 @@ void generator_insert_comb_cov(
 
 /*
  $Log$
+ Revision 1.17  2008/12/05 06:11:56  phase1geo
+ Fixing always block handling and generator_find_statement functionality.
+ Improving statement link display output.
+
  Revision 1.16  2008/12/05 05:48:30  phase1geo
  More work on code coverage insertion.  Checkpointing.
 

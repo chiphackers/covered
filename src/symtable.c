@@ -122,6 +122,10 @@
 #include "link.h"
 #include "sim.h"
 
+
+extern const exp_info exp_op_info[EXP_OP_NUM];
+
+
 /*!
  Pointer to the VCD symbol table.  Please see the file description for how this
  structure is used.
@@ -148,11 +152,6 @@ static int postsim_size = 0;
 
 
 /*!
- \param symtab  Pointer to symbol table entry to initialize.
- \param sig     Pointer to signal that will be stored in the symtable list.
- \param msb     Most-significant bit of symbol entry.
- \param lsb     Least-significant bit of symbol entry.
-
  Creates and adds the specified symtable signal structure to the sym_sig
  list for the specified symtab.
 */
@@ -172,13 +171,39 @@ static void symtable_add_sym_sig(
   new_ss->lsb  = lsb;
   new_ss->next = NULL;
 
-  /* Add new structure to symtable list */
-  if( symtab->sig_head == NULL ) {
-    symtab->sig_head = symtab->sig_tail = new_ss;
-  } else {
-    symtab->sig_tail->next = new_ss;
-    symtab->sig_tail       = new_ss;
+  /* Add new structure to head of symtable list */
+  if( symtab->entry.sig != NULL ) {
+    new_ss->next = symtab->entry.sig;
   }
+
+  /* Populate symtab entry */
+  symtab->entry.sig  = new_ss;
+  symtab->entry_type = 0;
+
+  PROFILE_END;
+
+}
+
+/*!
+ Creates and adds the specified symtable expression structure to the sym_exp
+ list for the specified symtab.
+*/
+static void symtable_add_sym_exp(
+  symtable*   symtab,  /*!< Pointer to symbol table entry to initialize */
+  expression* exp,     /*!< Pointer to expression that will be stored in symtable list */
+  char        action   /*!< Action to perform when expression is assigned */
+) { PROFILE(SYMTABLE_ADD_SYM_EXP);
+
+  sym_exp* new_se;  /* Pointer to newly created sym_exp structure */
+
+  /* Create new sym_exp structure */
+  new_se         = (sym_exp*)malloc_safe( sizeof( sym_exp ) );
+  new_se->exp    = exp;
+  new_se->action = action;
+
+  /* Populate symtab entry */
+  symtab->entry.exp  = new_se;
+  symtab->entry_type = 1;
 
   PROFILE_END;
 
@@ -213,10 +238,9 @@ symtable* symtable_create() { PROFILE(SYMTABLE_CREATE);
   symtable* symtab;  /* Pointer to new symtable entry */
   int       i;       /* Loop iterator */
 
-  symtab           = (symtable*)malloc_safe( sizeof( symtable ) );
-  symtab->obj_head = NULL;
-  symtab->obj_tail = NULL;
-  symtab->value    = NULL;
+  symtab            = (symtable*)malloc_safe( sizeof( symtable ) );
+  symtab->entry.sig = NULL;
+  symtab->value     = NULL;
   for( i=0; i<94; i++ ) {
     symtab->table[i] = NULL;
   }
@@ -239,7 +263,6 @@ static symtable* symtable_get_table(
 
   assert( vcd_symtab != NULL );
   assert( sym[0]     != '\0' );
-  assert( sig->value != NULL );
 
   curr = vcd_symtab;
   ptr  = sym;
@@ -267,14 +290,14 @@ void symtable_add_signal(
   vsignal*    sig,  /*!< Pointer to signal corresponding to the specified symbol */
   int         msb,  /*!< Most significant bit of variable to set */
   int         lsb   /*!< Least significant bit of variable to set */
-) { PROFILE(SYMTABLE_ADD);
+) { PROFILE(SYMTABLE_ADD_SIGNAL);
 
   symtable* curr;  /* Pointer to current symtable entry */
 
   /* Get a table entry */
   curr = symtable_get_table( sym );
 
-  if( curr->obj_head == NULL ) {
+  if( curr->entry.sig == NULL ) {
     symtable_init( curr, msb, lsb );
   }
 
@@ -294,10 +317,10 @@ void symtable_add_signal(
  and places it into the binary tree.
 */
 void symtable_add_expression(
-  const char* sym,  /*!< VCD symbol for the specified signal */
-  expression* exp,  /*!< Pointer to signal corresponding to the specified symbol */
-  char        type  /*!< Specifies the type of action to perform on the given expression */
-) { PROFILE(SYMTABLE_ADD);
+  const char* sym,    /*!< VCD symbol for the specified signal */
+  expression* exp,    /*!< Pointer to signal corresponding to the specified symbol */
+  char        action  /*!< Specifies the type of action to perform on the given expression */
+) { PROFILE(SYMTABLE_ADD_EXPRESSION);
 
   symtable* curr;  /* Pointer to current symtable entry */
   int       msb;   /* Most significan bit of vector that will be stored */
@@ -306,17 +329,19 @@ void symtable_add_expression(
   curr = symtable_get_table( sym );
 
   /* Calculate the MSB */
-  if( type == 'l' ) {
+  if( (action == 'l') || exp_op_info[exp->op].suppl.is_event || exp_op_info[exp->op].suppl.is_unary ) {
     msb = 0;
-  } else if( type == 'e' ) {
-    // TBD
+  } else if( exp_op_info[exp->op].suppl.is_comb == OTHER_COMB ) {
+    msb = 3;
+  } else {
+    msb = 2;
   }
 
-  if( curr->obj_head == NULL ) {
+  if( curr->entry.exp == NULL ) {
     symtable_init( curr, msb, 0 );
   }
 
-  // symtable_add_sym_sig( curr, sig, msb, lsb );
+  symtable_add_sym_exp( curr, exp, action );
 
   /* 
    Finally increment the number of entries in the root table structure.
@@ -391,10 +416,14 @@ void symtable_assign(
 
   for( i=0; i<postsim_size; i++ ) {
     curr = timestep_tab[i];
-    sig = curr->sig_head;
-    while( sig != NULL ) {
-      vsignal_vcd_assign( sig->sig, curr->value, sig->msb, sig->lsb, time );
-      sig = sig->next;
+    if( curr->entry_type == 0 ) {
+      sig = curr->entry.sig;
+      while( sig != NULL ) {
+        vsignal_vcd_assign( sig->sig, curr->value, sig->msb, sig->lsb, time );
+        sig = sig->next;
+      }
+    } else {
+      expression_vcd_assign( curr->entry.exp->exp, curr->entry.exp->action, curr->value );
     }
     curr->value[0] = '\0';
   }
@@ -411,11 +440,9 @@ void symtable_dealloc(
   symtable* symtab  /*!< Pointer to root of symtable to clear */
 ) { PROFILE(SYMTABLE_DEALLOC);
 
-  sym_sig* curr;  /* Pointer to current sym_sig in list */
-  sym_sig* tmp;   /* Temporary pointer to sym_sig */
-  int      i;     /* Loop iterator */
-
   if( symtab != NULL ) {
+
+    int i;
 
     for( i=0; i<94; i++ ) {
       symtable_dealloc( symtab->table[i] );
@@ -425,12 +452,23 @@ void symtable_dealloc(
       free_safe( symtab->value, symtab->size );
     }
 
-    /* Remove sym_sig list */
-    curr = symtab->sig_head;
-    while( curr != NULL ) {
-      tmp = curr->next;
-      free_safe( curr, sizeof( sym_sig ) );
-      curr = tmp;
+    if( symtab->entry_type == 0 ) {
+
+      sym_sig* curr;
+      sym_sig* tmp;
+
+      /* Remove sym_sig list */
+      curr = symtab->entry.sig;
+      while( curr != NULL ) {
+        tmp = curr->next;
+        free_safe( curr, sizeof( sym_sig ) );
+        curr = tmp;
+      }
+
+    } else {
+
+      free_safe( symtab->entry.exp, sizeof( sym_exp ) );
+
     }
 
     free_safe( symtab, sizeof( symtable ) );
@@ -443,6 +481,10 @@ void symtable_dealloc(
 
 /*
  $Log$
+ Revision 1.40  2008/12/05 23:05:38  phase1geo
+ Working on VCD reading side of the inlined coverage handler.  Things don't
+ compile at this point and are in limbo.  Checkpointing.
+
  Revision 1.39  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

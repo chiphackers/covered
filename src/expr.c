@@ -5534,6 +5534,60 @@ void expression_operate_recursively(
 }
 
 /*!
+ Assigns data from a dumpfile to the given expression's coverage bits according to the
+ given action and the expression itself.
+*/
+void expression_vcd_assign(
+  expression* expr,    /*!< Pointer to expression to assign */
+  char        action,  /*!< Specifies action to perform for an expression */
+  const char* value    /*!< Coverage data from dumpfile to assign */
+) { PROFILE(EXPRESSION_VCD_ASSIGN);
+
+  if( action == 'l' ) {
+
+    /* If we have seen a value of 1, increment the exec_num to indicate that the line has been hit */
+    if( value[0] == '1' ) {
+      expr->exec_num++;
+    }
+
+  } else if( action == 'e' ) {
+
+    if( exp_op_info[expr->op].suppl.is_event ) {
+      if( value[0] == '1' ) {
+        expr->suppl.part.true = TRUE;
+      }
+
+    } else if( exp_op_info[expr->op].suppl.is_unary ) {
+      if( value[0] == '0' ) {
+        expr->suppl.part.true  = TRUE;
+      } else if( value[0] == '1' ) {
+        expr->suppl.part.false = FALSE;
+      }
+             
+    } else if( exp_op_info[expr->op].suppl.is_comb != NOT_COMB ) {
+      if( value[1] == '0' ) {
+        if( value[0] == '0' ) {
+          expr->suppl.part.eval_00 = TRUE;
+        } else if( value[0] == '1' ) {
+          expr->suppl.part.eval_01 = TRUE;
+        }
+      } else if( value[1] == '1' ) {
+        if( value[0] == '0' ) {
+          expr->suppl.part.eval_10 = TRUE;
+        } else if( value[0] == '1' ) {
+          expr->suppl.part.eval_11 = TRUE;
+        }
+      }
+
+    }
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  \return Returns TRUE if expression contains only static expressions; otherwise, returns FALSE.
  
  Recursively iterates through specified expression tree and returns TRUE if all of
@@ -6142,6 +6196,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.386  2008/11/12 19:57:07  phase1geo
+ Fixing the rest of the issues from regressions in regards to the merge changes.
+ Updating regression files.  IV and Cver regressions now pass.
+
  Revision 1.385  2008/11/07 05:56:45  phase1geo
  Second bug fix for bug 2223054.
 

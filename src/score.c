@@ -1075,6 +1075,9 @@ static void score_parse_args(
 
   }
 
+  /* TBD - We need to figure out the right way to set this bit */
+  // info_suppl.part.inlined = 1;
+
   /* If the -A option was not specified, add all OVL modules to list of no-score modules */
   ovl_add_assertions_to_no_score_list( info_suppl.part.assert_ovl );
     
@@ -1195,6 +1198,10 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.146  2008/11/13 05:08:36  phase1geo
+ Fixing bug found with merge8.5 diagnostic and fixing issues with VPI.  Full
+ regressions now pass.
+
  Revision 1.145  2008/11/12 07:04:01  phase1geo
  Fixing argument merging and updating regressions.  Checkpointing.
 
