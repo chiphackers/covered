@@ -565,21 +565,31 @@ void generator_insert_line_cov(
   unsigned int first_column  /*!< First column of statement */
 ) { PROFILE(GENERATOR_INSERT_LINE_COV);
 
-  if( generator_line && (generator_find_statement( first_line, first_column ) != NULL) ) {
+  statement* stmt;
 
-    char         str[256];
+  if( generator_line && ((stmt = generator_find_statement( first_line, first_column )) != NULL) ) {
+
+    char         str[4096];
+    char         sig[4096];
     unsigned int rv;
     str_link*    tmp_head = NULL;
     str_link*    tmp_tail = NULL;
 
+    if( stmt->funit->type == FUNIT_MODULE ) {
+      rv = snprintf( sig, 4096, " \\covered$l%d_%d ", first_line, first_column );
+    } else {
+      rv = snprintf( sig, 4096, " \\covered$l%d_%d$%s ", first_line, first_column, stmt->funit->name );
+    }
+    assert( rv < 4096 );
+
     /* Create the register */
-    rv = snprintf( str, 256, "reg covered$l%d_%d = 1'b0;", first_line, first_column );
-    assert( rv < 256 );
+    rv = snprintf( str, 4096, "reg %s = 1'b0;", sig );
+    assert( rv < 4096 );
     str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
 
     /* Prepend the line coverage assignment to the working buffer */
-    rv = snprintf( str, 256, " covered$l%d_%d = 1'b1;", first_line, first_column );
-    assert( rv < 256 );
+    rv = snprintf( str, 4096, " %s = 1'b1;", sig );
+    assert( rv < 4096 );
     str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
     if( work_head == NULL ) {
       work_head = work_tail = tmp_head;
@@ -595,7 +605,8 @@ void generator_insert_line_cov(
 }
 
 static void generator_insert_event_comb_cov(
-  expression* exp  /*!< Pointer to expression to output */
+  expression* exp,   /*!< Pointer to expression to output */
+  func_unit*  funit  /*!< Pointer to functional unit containing the expression */
 ) { PROFILE(GENERATOR_INSERT_EVENT_COMB_COV);
 
   PROFILE_END;
@@ -607,6 +618,7 @@ static void generator_insert_event_comb_cov(
 */
 static void generator_insert_unary_comb_cov(
   expression*  exp,    /*!< Pointer to expression to output */
+  func_unit*   funit,  /*!< Pointer to functional unit containing this expression */
   unsigned int depth,  /*!< Current expression depth */
   bool         net     /*!< Set to TRUE if this expression is a net */
 ) { PROFILE(GENERATOR_INSERT_UNARY_COMB_COV);
@@ -620,11 +632,19 @@ static void generator_insert_unary_comb_cov(
   str_link*    tmp_tail = NULL;
 
   /* Create signal */
-  rv = snprintf( sig,  80, "covered$e%d_%x", exp->line, exp->col );
-  assert( rv < 80 );
-  rv = snprintf( sigr, 80, "covered$%c%d_%x", (((depth + ((exp->op != exp->right->op) ? 1 : 0)) < generator_max_exp_depth) ? 'e' : (net ? 'y' : 'x')),
-                 exp->right->line, exp->right->col );
-  assert( rv < 80 );
+  if( net || (funit->type == FUNIT_MODULE) ) {
+    rv = snprintf( sig,  80, " \\covered$%c%d_%x ", (net ? 'e' : 'E'), exp->line, exp->col );
+    assert( rv < 80 );
+    rv = snprintf( sigr, 80, " \\covered$%c%d_%x ", (((depth + ((exp->op != exp->right->op) ? 1 : 0)) < generator_max_exp_depth) ? (net ? 'e' : 'E') : (net ? 'y' : 'x')),
+                   exp->right->line, exp->right->col );
+    assert( rv < 80 );
+  } else {
+    rv = snprintf( sig,  80, " \\covered$E%d_%x$%s ", exp->line, exp->col, funit->name );
+    assert( rv < 80 );
+    rv = snprintf( sigr, 80, " \\covered$%c%d_%x$%s ", (((depth + ((exp->op != exp->right->op) ? 1 : 0)) < generator_max_exp_depth) ? 'E' : 'x'),
+                   exp->right->line, exp->right->col, funit->name );
+    assert( rv < 80 );
+  }
 
   /* Create prefix */
   if( net ) {
@@ -669,6 +689,7 @@ static void generator_insert_unary_comb_cov(
 */
 static void generator_insert_comb_comb_cov(
   expression*  exp,    /*!< Pointer to expression to output */
+  func_unit*   funit,  /*!< Pointer to functional unit containing this expression */
   unsigned int depth,  /*!< Current expression depth */
   bool         net     /*!< Set to TRUE if this expression is a net */
 ) { PROFILE(GENERATOR_INSERT_AND_COMB_COV);
@@ -683,14 +704,25 @@ static void generator_insert_comb_comb_cov(
   str_link*    tmp_tail = NULL;
 
   /* Create signal */
-  rv = snprintf( sig,  80, "covered$e%d_%x", exp->line, exp->col );
-  assert( rv < 80 );
-  rv = snprintf( sigl, 80, "covered$%c%d_%x", (((depth + ((exp->op != exp->left->op) ? 1 : 0)) < generator_max_exp_depth) ? 'e' : (net ? 'y' : 'x')),
-                 exp->left->line, exp->left->col );
-  assert( rv < 80 );
-  rv = snprintf( sigr, 80, "covered$%c%d_%x", (((depth + ((exp->op != exp->right->op) ? 1 : 0)) < generator_max_exp_depth) ? 'e' : (net ? 'y' : 'x')),
-                 exp->right->line, exp->right->col );
-  assert( rv < 80 );
+  if( net || (funit->type == FUNIT_MODULE) ) {
+    rv = snprintf( sig,  80, " \\covered$%c%d_%x ", (net ? 'e' : 'E'), exp->line, exp->col );
+    assert( rv < 80 );
+    rv = snprintf( sigl, 80, " \\covered$%c%d_%x ", (((depth + ((exp->op != exp->left->op) ? 1 : 0)) < generator_max_exp_depth) ? (net ? 'e' : 'E') : (net ? 'y' : 'x')),
+                   exp->left->line, exp->left->col );
+    assert( rv < 80 );
+    rv = snprintf( sigr, 80, " \\covered$%c%d_%x ", (((depth + ((exp->op != exp->right->op) ? 1 : 0)) < generator_max_exp_depth) ? (net ? 'e' : 'E') : (net ? 'y' : 'x')),
+                   exp->right->line, exp->right->col );
+    assert( rv < 80 );
+  } else {
+    rv = snprintf( sig,  80, " \\covered$E%d_%x$%s ", exp->line, exp->col, funit->name );
+    assert( rv < 80 );
+    rv = snprintf( sigl, 80, " \\covered$%c%d_%x$%s ", (((depth + ((exp->op != exp->left->op) ? 1 : 0)) < generator_max_exp_depth) ? 'E' : 'x'),
+                   exp->left->line, exp->left->col, funit->name );
+    assert( rv < 80 );
+    rv = snprintf( sigr, 80, " \\covered$%c%d_%x$%s ", (((depth + ((exp->op != exp->right->op) ? 1 : 0)) < generator_max_exp_depth) ? 'E' : 'x'),
+                   exp->right->line, exp->right->col, funit->name );
+    assert( rv < 80 );
+  }
 
   /* Create prefix */
   if( net ) {
@@ -748,17 +780,19 @@ static void generator_insert_comb_cov_helper(
 
       int child_depth = (depth + ((exp->op != parent_op) ? 1 : 0));
 
+      printf( "curr_funit: %s\n", funit );
+
       /* Generate event combinational logic type */
       if( exp_op_info[exp->op].suppl.is_event ) {
-        generator_insert_event_comb_cov( exp );
+        generator_insert_event_comb_cov( exp, funit );
 
       /* Generate unary combinational logic type */
       } else if( exp_op_info[exp->op].suppl.is_unary ) {
-        generator_insert_unary_comb_cov( exp, depth, net );
+        generator_insert_unary_comb_cov( exp, funit, depth, net );
 
       /* Otherwise, generate binary combinational logic type */
       } else if( exp_op_info[exp->op].suppl.is_comb != NOT_COMB ) {
-        generator_insert_comb_comb_cov( exp, depth, net );
+        generator_insert_comb_comb_cov( exp, funit, depth, net );
 
       }
 
@@ -769,6 +803,7 @@ static void generator_insert_comb_cov_helper(
     } else {
 
       char         str[4096];
+      char         sig[4096];
       char         prefix[8];
       char**       code;
       unsigned int code_depth;
@@ -780,16 +815,23 @@ static void generator_insert_comb_cov_helper(
       /* Generate code */
       codegen_gen_expr( exp, parent_op, &code, &code_depth, funit ); 
 
+      if( net || (funit->type == FUNIT_MODULE) ) {
+        rv = snprintf( sig, 4096, " \\covered$%c%d_%x ", (net ? 'y' : 'x'), exp->line, exp->col );
+      } else {
+        rv = snprintf( sig, 4096, " \\covered$x%d_%x$%s ", exp->line, exp->col, funit->name );
+      }
+      assert( rv < 4096 );
+
       if( net ) {
         strcpy( prefix, "wire " );
       } else {
         prefix[0] = '\0';
-        rv = snprintf( str, 4096, "reg covered$x%d_%x;", exp->line, exp->col );
+        rv = snprintf( str, 4096, "reg %s;", sig );
         assert( rv < 4096 );
         str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
       }
 
-      rv = snprintf( str, 4096, "%scovered$%c%d_%x = |(%s)%c", prefix, (net ? 'y' : 'x'), exp->line, exp->col, code[0], ((code_depth == 1) ? ';' : '\0') );
+      rv = snprintf( str, 4096, "%s%s = |(%s)%c", prefix, sig, code[0], ((code_depth == 1) ? ';' : '\0') );
       assert( rv < 4096 );
       str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
       free_safe( code[0], (strlen( code[0] ) + 1) );
@@ -840,7 +882,7 @@ void generator_insert_comb_cov(
   if( generator_comb && ((stmt = generator_find_statement( first_line, first_column )) != NULL) ) {
 
     /* Generate combinational coverage */
-    generator_insert_comb_cov_helper( (use_right ? stmt->exp->right : stmt->exp), db_get_curr_funit(), stmt->exp->op, 0, net );
+    generator_insert_comb_cov_helper( (use_right ? stmt->exp->right : stmt->exp), stmt->funit, stmt->exp->op, 0, net );
 
   }
 
@@ -851,6 +893,10 @@ void generator_insert_comb_cov(
 
 /*
  $Log$
+ Revision 1.18  2008/12/06 06:35:19  phase1geo
+ Adding first crack at handling coverage-related information from dumpfile.
+ This code is untested.
+
  Revision 1.17  2008/12/05 06:11:56  phase1geo
  Fixing always block handling and generator_find_statement functionality.
  Improving statement link display output.

@@ -6720,6 +6720,8 @@ event_control
     }
   | '@' '(' event_expression_list ')'
     {
+      @$.first_line   = @3.first_line;
+      @$.first_column = @3.first_column;
       $$ = $3;
     }
   | '@' '(' error ')'

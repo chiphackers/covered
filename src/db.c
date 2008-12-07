@@ -3011,17 +3011,86 @@ void db_assign_symbol(
       /* If the type is an x (temporary register) or a y (temporary wire), don't continue on */
       if( (type != 'x') && (type != 'y') ) {
 
-        int       line;
-        int       col;
-        exp_link* expl;
-        unsigned int rv = sscanf( (name + 10), "%d_%x", &line, &col );
-        assert( rv == 2 );
+        func_unit* mod = funit_get_curr_module( curr_instance->funit );
+        exp_link*  expl;
 
-        /* Find the expression that matches the positional information */
-        expl = curr_instance->funit->exp_head;
-        while( (expl != NULL) && ((expl->exp->line != line) || (expl->exp->col != col)) ) {
-          expl = expl->next;
+        /* Handle line coverage */
+        if( type == 'l' ) {
+      
+          int          line;
+          int          col;
+          unsigned int rv;
+          char         scope[4096];
+          funit_link*  curr_tf;
+
+          /* Extract the line, first column and funit scope information from name */
+          if( sscanf( (name + 10), "%d_%d$%s", &line, &col, scope ) == 3 ) {
+
+            /* Search for the matching functional unit */
+            curr_tf = mod->tf_head;
+            while( (curr_tf != NULL) && (strcmp( curr_tf->funit->name, scope ) != 0) ) {
+              curr_tf = curr_tf->next;
+            }
+            assert( curr_tf != NULL );
+
+            /* Search the matching expression */
+            expl = curr_tf->funit->exp_head;
+            while( (expl != NULL) && ((expl->exp->line != line) || (((expl->exp->col >> 16) & 0xffff) != col)) ) {
+              expl = expl->next;
+            }
+
+          } else {
+
+            rv = sscanf( (name + 10), "%d_%d", &line, &col );
+            assert( rv == 2 );
+
+            /* Search the matching expression */
+            expl = mod->exp_head;
+            while( (expl != NULL) && ((expl->exp->line != line) || (((expl->exp->col >> 16) & 0xffff) != col)) ) {
+              expl = expl->next;
+            }
+
+          }
+
+        } else {
+
+          int          line;
+          int          col;
+          unsigned int rv;
+          char         scope[4096];
+          funit_link*  curr_tf;
+
+          /* Extract the line and column (and possibly instance) information */
+          if( sscanf( (name + 10), "%d_%x$%s", &line, &col, scope ) == 3 ) {
+
+            /* Search for the matching functional unit */
+            curr_tf = mod->tf_head;
+            while( (curr_tf != NULL) && (strcmp( curr_tf->funit->name, scope ) != 0) ) {
+              curr_tf = curr_tf->next;
+            }
+            assert( curr_tf != NULL );
+
+            /* Search the matching expression */
+            expl = curr_tf->funit->exp_head;
+            while( (expl != NULL) && ((expl->exp->line != line) || (expl->exp->col != col)) ) {
+              expl = expl->next;
+            }
+
+          } else {
+
+            rv = sscanf( (name + 10), "%d_%x", &line, &col );
+            assert( rv == 2 );
+          
+            /* Find the expression that matches the positional information */
+            expl = mod->exp_head;
+            while( (expl != NULL) && ((expl->exp->line != line) || (expl->exp->col != col)) ) {
+              expl = expl->next;
+            }
+
+          }
+
         }
+
         assert( expl != NULL );
 
         /* Add the expression to the symtable */
@@ -3205,6 +3274,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.356  2008/12/06 06:35:19  phase1geo
+ Adding first crack at handling coverage-related information from dumpfile.
+ This code is untested.
+
  Revision 1.355  2008/12/05 23:05:37  phase1geo
  Working on VCD reading side of the inlined coverage handler.  Things don't
  compile at this point and are in limbo.  Checkpointing.

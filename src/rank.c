@@ -804,20 +804,20 @@ static void rank_gather_comb_cov(
           if( exp_op_info[exp->op].suppl.is_comb == AND_COMB ) {
             index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
             rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)ESUPPL_WAS_FALSE( exp->left->suppl ) << UL_MOD(index);
+            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)(exp->suppl.part.eval_00 | exp->suppl.part.eval_01) << UL_MOD(index);
             index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
             rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)ESUPPL_WAS_FALSE( exp->right->suppl ) << UL_MOD(index);
+            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)(exp->suppl.part.eval_00 | exp->suppl.part.eval_10) << UL_MOD(index);
             index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
             rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
             comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)exp->suppl.part.eval_11 << UL_MOD(index);
           } else if( exp_op_info[exp->op].suppl.is_comb == OR_COMB ) {
             index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
             rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)ESUPPL_WAS_TRUE( exp->left->suppl ) << UL_MOD(index);
+            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)(exp->suppl.part.eval_11 | exp->suppl.part.eval_10) << UL_MOD(index);
             index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
             rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
-            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)ESUPPL_WAS_TRUE( exp->right->suppl ) << UL_MOD(index);
+            comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)(exp->suppl.part.eval_11 | exp->suppl.part.eval_01) << UL_MOD(index);
             index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
             rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
             comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)exp->suppl.part.eval_00 << UL_MOD(index);
@@ -1805,6 +1805,10 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.14  2008/12/05 00:22:41  phase1geo
+ More work completed on code coverage generator.  Currently working on bug in
+ statement finder.  Checkpointing.
+
  Revision 1.13  2008/11/27 00:24:44  phase1geo
  Fixing problems with previous version of generator.  Things work as expected at this point.
  Checkpointing.
@@ -1847,6 +1851,10 @@ void command_rank(
  that the GUI stuff works properly.
 
  $Log$
+ Revision 1.14  2008/12/05 00:22:41  phase1geo
+ More work completed on code coverage generator.  Currently working on bug in
+ statement finder.  Checkpointing.
+
  Revision 1.13  2008/11/27 00:24:44  phase1geo
  Fixing problems with previous version of generator.  Things work as expected at this point.
  Checkpointing.
