@@ -1,5 +1,5 @@
 5 13 101 3 main3
-8 /ptmp/covered/diags/verilog 2 -t (dut_and) 2 -i (main3.dut) 2 -vcd (merge2c.vcd) 2 -o (merge2c.cdd) 2 -v (merge2c.v) 2 -y (./lib) 2 -D (DUMP)
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (dut_and) 2 -i (main3.dut) 2 -vcd (merge2c.vcd) 2 -o (merge2c.cdd) 2 -v (merge2c.v) 2 -y (./lib) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 15 main3 0
 3 0 dut_and "main3.dut" 0 ./lib/dut_and.v 1 9 1

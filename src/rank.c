@@ -821,7 +821,7 @@ static void rank_gather_comb_cov(
             index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
             rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
             comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)exp->suppl.part.eval_00 << UL_MOD(index);
-          } else {
+          } else if( exp_op_info[exp->op].suppl.is_comb == OTHER_COMB ) {
             index = comp_cov->cps_index[CP_TYPE_LOGIC]++;
             rank_check_index( CP_TYPE_LOGIC, index, __LINE__ );
             comp_cov->cps[CP_TYPE_LOGIC][UL_DIV(index)] |= (ulong)exp->suppl.part.eval_00 << UL_MOD(index);
@@ -1805,6 +1805,13 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.15  2008/12/07 07:20:08  phase1geo
+ Checkpointing work.  I have an end-to-end run now working with test.v in
+ the testsuite.  The results are not accurate at this point but it's progress.
+ I have updated the regression suite per these changes (minor), added an "-inline"
+ option to the score command to control this behavior.  IV regressions have one
+ failing diagnostic at this point.
+
  Revision 1.14  2008/12/05 00:22:41  phase1geo
  More work completed on code coverage generator.  Currently working on bug in
  statement finder.  Checkpointing.
@@ -1851,6 +1858,13 @@ void command_rank(
  that the GUI stuff works properly.
 
  $Log$
+ Revision 1.15  2008/12/07 07:20:08  phase1geo
+ Checkpointing work.  I have an end-to-end run now working with test.v in
+ the testsuite.  The results are not accurate at this point but it's progress.
+ I have updated the regression suite per these changes (minor), added an "-inline"
+ option to the score command to control this behavior.  IV regressions have one
+ failing diagnostic at this point.
+
  Revision 1.14  2008/12/05 00:22:41  phase1geo
  More work completed on code coverage generator.  Currently working on bug in
  statement finder.  Checkpointing.

@@ -1,5 +1,5 @@
 5 13 101 4 main.mlevel.l1
-8 /ptmp/covered/diags/verilog 2 -t (level2a) 2 -i (main.mlevel.l1.l2a) 2 -vcd (merge8.4b.vcd) 2 -o (merge8.4b.cdd) 2 -v (merge8.4b.v) 2 -y (lib) 2 -D (DUMP)
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (level2a) 2 -i (main.mlevel.l1.l2a) 2 -vcd (merge8.4b.vcd) 2 -o (merge8.4b.cdd) 2 -v (merge8.4b.v) 2 -y (lib) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 15 main 0
 15 main.mlevel 0
@@ -7,7 +7,7 @@
 3 0 level2a "main.mlevel.l1.l2a" 0 lib/level2a.v 1 14 1
 2 1 12 f000f 1 1 1008 0 0 1 1 e
 2 2 12 b000b 2 1 100c 0 0 1 1 d
-2 3 12 b000f 2 9 1288 1 2 1 18 0 1 1 1 0 0
+2 3 12 b000f 2 9 1188 1 2 1 18 0 1 1 1 0 0
 2 4 12 70007 0 1 1410 0 0 1 1 c
 2 5 12 7000f 2 35 a 3 4
 1 a 1 2 e 1 0 0 0 1 17 1 1 0 1 0 0
@@ -19,7 +19,7 @@
 3 0 level3a "main.mlevel.l1.l2a.l3a" 0 lib/level3a.v 1 8 1
 2 6 6 130013 1 0 1008 0 0 32 48 1 0
 2 7 6 f000f 1 0 1004 0 0 32 48 0 0
-2 8 6 b000f 3 1a 108c 6 7 32 18 0 ffffffff ffffffff 1 0 0
+2 8 6 b000f 3 1a 100c 6 7 32 18 0 ffffffff ffffffff 1 0 0
 2 9 6 b000b 2 1 100c 0 0 1 1 a
 2 10 6 b0013 3 19 100c 8 9 1 18 0 1 1 1 0 0
 2 11 6 70007 0 1 1410 0 0 1 1 b

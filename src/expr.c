@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2008 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -1912,11 +1912,51 @@ inline static void expression_set_tf(
 }
 
 /*!
+ Sets the eval_0x/x0/11 supplemental bits as necessary.  This function should be
+ called by expression_op_func__* functions that are NOT events and have both the left
+ and right expression children present.
+*/
+inline static void expression_set_and_eval_NN(
+  expression* expr  /*!< Pointer to expression to set 00/01/10/11 supplemental bits */
+) {
+
+  uint32 lf = ESUPPL_IS_FALSE( expr->left->suppl  );
+  uint32 lt = ESUPPL_IS_TRUE(  expr->left->suppl  );
+  uint32 rf = ESUPPL_IS_FALSE( expr->right->suppl );
+  uint32 rt = ESUPPL_IS_TRUE(  expr->right->suppl );
+
+  expr->suppl.part.eval_01 |= lf;
+  expr->suppl.part.eval_10 |= rf;
+  expr->suppl.part.eval_11 |= lt & rt;
+
+}
+
+/*!
+ Sets the eval_00/x1/1x supplemental bits as necessary.  This function should be
+ called by expression_op_func__* functions that are NOT events and have both the left
+ and right expression children present.
+*/
+inline static void expression_set_or_eval_NN(
+  expression* expr  /*!< Pointer to expression to set 00/01/10/11 supplemental bits */
+) {
+
+  uint32 lf = ESUPPL_IS_FALSE( expr->left->suppl  );
+  uint32 lt = ESUPPL_IS_TRUE(  expr->left->suppl  );
+  uint32 rf = ESUPPL_IS_FALSE( expr->right->suppl );
+  uint32 rt = ESUPPL_IS_TRUE(  expr->right->suppl );
+
+  expr->suppl.part.eval_00 |= lf & rf;
+  expr->suppl.part.eval_01 |= rt;
+  expr->suppl.part.eval_10 |= lt;
+
+}
+
+/*!
  Sets the eval_00/01/10/11 supplemental bits as necessary.  This function should be
  called by expression_op_func__* functions that are NOT events and have both the left
  and right expression children present.
 */
-inline static void expression_set_eval_NN(
+inline static void expression_set_other_eval_NN(
   expression* expr  /*!< Pointer to expression to set 00/01/10/11 supplemental bits */
 ) {
 
@@ -1949,7 +1989,7 @@ bool expression_op_func__xor(
   /* Gather other coverage stats */
   expression_set_tf_preclear( expr, retval );
   vector_set_other_comb_evals( expr->value, expr->left->value, expr->right->value );
-  expression_set_eval_NN( expr );
+  expression_set_other_eval_NN( expr );
 
   PROFILE_END;
 
@@ -1983,7 +2023,7 @@ bool expression_op_func__xor_a(
 
   expression_set_tf_preclear( expr, retval );
   vector_set_other_comb_evals( expr->value, expr->left->value, expr->right->value );
-  expression_set_eval_NN( expr );
+  expression_set_other_eval_NN( expr );
 
   /* Fourth, assign the new value to the left expression */
   expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
@@ -2011,7 +2051,6 @@ bool expression_op_func__multiply(
   /* Gather other coverage stats */
   expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
-  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
@@ -2046,7 +2085,6 @@ bool expression_op_func__multiply_a(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
-  expression_set_eval_NN( expr );
 
   /* Fourth, assign the new value to the left expression */
   switch( expr->value->suppl.part.data_type ) {
@@ -2091,7 +2129,6 @@ bool expression_op_func__divide(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
-  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
@@ -2126,7 +2163,6 @@ bool expression_op_func__divide_a(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
-  expression_set_eval_NN( expr );
 
   /* Finally, assign the new value to the left expression */
   switch( expr->value->suppl.part.data_type ) {
@@ -2171,7 +2207,6 @@ bool expression_op_func__mod(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
-  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
@@ -2206,7 +2241,6 @@ bool expression_op_func__mod_a(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
-  expression_set_eval_NN( expr );
 
   /* Finally, assign the new value to the left expression */
   expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
@@ -2234,7 +2268,7 @@ bool expression_op_func__add(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_other_comb_evals( expr->value, expr->left->value, expr->right->value );
-  expression_set_eval_NN( expr );
+  expression_set_other_eval_NN( expr );
 
   PROFILE_END;
 
@@ -2269,7 +2303,7 @@ bool expression_op_func__add_a(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_other_comb_evals( expr->value, expr->left->value, expr->right->value );
-  expression_set_eval_NN( expr );
+  expression_set_other_eval_NN( expr );
 
   /* Finally, assign the new value to the left expression */
   switch( expr->value->suppl.part.data_type ) {
@@ -2315,7 +2349,7 @@ bool expression_op_func__subtract(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_other_comb_evals( expr->value, expr->left->value, expr->right->value );
-  expression_set_eval_NN( expr );
+  expression_set_other_eval_NN( expr );
 
   PROFILE_END;
 
@@ -2351,7 +2385,7 @@ bool expression_op_func__sub_a(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_other_comb_evals( expr->value, expr->left->value, expr->right->value );
-  expression_set_eval_NN( expr );
+  expression_set_other_eval_NN( expr );
 
   /* Finally, assign the new value to the left expression */
   switch( expr->value->suppl.part.data_type ) {
@@ -2394,7 +2428,7 @@ bool expression_op_func__and(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_and_comb_evals( expr->value, expr->left->value, expr->right->value );
-  expression_set_eval_NN( expr );
+  expression_set_and_eval_NN( expr );
 
   PROFILE_END;
 
@@ -2429,7 +2463,7 @@ bool expression_op_func__and_a(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_and_comb_evals( expr->value, expr->left->value, expr->right->value );
-  expression_set_eval_NN( expr );
+  expression_set_and_eval_NN( expr );
 
   /* Finally, assign the new value to the left expression */
   expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
@@ -2457,7 +2491,7 @@ bool expression_op_func__or(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_or_comb_evals( expr->value, expr->left->value, expr->right->value );
-  expression_set_eval_NN( expr );
+  expression_set_or_eval_NN( expr );
 
   PROFILE_END;
 
@@ -2492,7 +2526,7 @@ bool expression_op_func__or_a(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_or_comb_evals( expr->value, expr->left->value, expr->right->value );
-  expression_set_eval_NN( expr );
+  expression_set_or_eval_NN( expr );
 
   /* Finally, assign the new value to the left expression */
   expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
@@ -2520,7 +2554,7 @@ bool expression_op_func__nand(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_and_comb_evals( expr->value, expr->left->value, expr->right->value );
-  expression_set_eval_NN( expr );
+  expression_set_and_eval_NN( expr );
 
   PROFILE_END;
 
@@ -2545,7 +2579,7 @@ bool expression_op_func__nor(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_or_comb_evals( expr->value, expr->left->value, expr->right->value );
-  expression_set_eval_NN( expr );
+  expression_set_or_eval_NN( expr );
 
   PROFILE_END;
 
@@ -2570,7 +2604,7 @@ bool expression_op_func__nxor(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_other_comb_evals( expr->value, expr->left->value, expr->right->value );
-  expression_set_eval_NN( expr );
+  expression_set_other_eval_NN( expr );
 
   PROFILE_END;
 
@@ -2595,7 +2629,6 @@ bool expression_op_func__lt(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
-  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
@@ -2620,7 +2653,6 @@ bool expression_op_func__gt(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
-  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
@@ -2645,7 +2677,6 @@ bool expression_op_func__lshift(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
-  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
@@ -2680,7 +2711,6 @@ bool expression_op_func__lshift_a(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
-  expression_set_eval_NN( expr ); 
 
   /* Finally, assign the new value to the left expression */
   expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
@@ -2708,7 +2738,6 @@ bool expression_op_func__rshift(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
-  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
@@ -2743,7 +2772,6 @@ bool expression_op_func__rshift_a(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
-  expression_set_eval_NN( expr );
 
   /* Finally, assign the new value to the left expression */
   expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
@@ -2771,7 +2799,6 @@ bool expression_op_func__arshift(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
-  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
@@ -2806,7 +2833,6 @@ bool expression_op_func__arshift_a(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
-  expression_set_eval_NN( expr );
 
   /* Finally, assign the new value to the left expression */
   expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE );
@@ -3438,7 +3464,6 @@ bool expression_op_func__eq(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
-  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
@@ -3463,7 +3488,6 @@ bool expression_op_func__ceq(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
-  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
@@ -3488,7 +3512,6 @@ bool expression_op_func__le(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
-  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
@@ -3513,7 +3536,6 @@ bool expression_op_func__ge(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
-  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
@@ -3538,7 +3560,6 @@ bool expression_op_func__ne(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
-  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
@@ -3563,7 +3584,6 @@ bool expression_op_func__cne(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
-  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
@@ -3588,7 +3608,7 @@ bool expression_op_func__lor(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_or_comb_evals( expr->value, expr->left->value, expr->right->value );
-  expression_set_eval_NN( expr );
+  expression_set_or_eval_NN( expr );
 
   PROFILE_END;
 
@@ -3613,7 +3633,7 @@ bool expression_op_func__land(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_and_comb_evals( expr->value, expr->left->value, expr->right->value );
-  expression_set_eval_NN( expr );
+  expression_set_and_eval_NN( expr );
 
   PROFILE_END;
 
@@ -3725,7 +3745,6 @@ bool expression_op_func__cond_sel(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
-  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
@@ -4099,7 +4118,6 @@ bool expression_op_func__mbit(
 
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
-  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
@@ -4124,7 +4142,6 @@ bool expression_op_func__expand(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
-  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
@@ -4149,7 +4166,6 @@ bool expression_op_func__list(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
-  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
@@ -4463,7 +4479,6 @@ bool expression_op_func__case(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
-  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
@@ -4488,7 +4503,6 @@ bool expression_op_func__casex(
   /* Gather coverage inforamtion */
   expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
-  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
@@ -4513,7 +4527,6 @@ bool expression_op_func__casez(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
-  expression_set_eval_NN( expr );
 
   PROFILE_END;
 
@@ -5553,31 +5566,27 @@ void expression_vcd_assign(
   } else if( action == 'e' ) {
 
     if( exp_op_info[expr->op].suppl.is_event ) {
-      if( value[0] == '1' ) {
-        expr->suppl.part.true = TRUE;
-      }
+      expr->suppl.part.true |= (value[0] == '1');
 
     } else if( exp_op_info[expr->op].suppl.is_unary ) {
-      if( value[0] == '0' ) {
-        expr->suppl.part.true  = TRUE;
-      } else if( value[0] == '1' ) {
-        expr->suppl.part.false = FALSE;
-      }
+      expr->suppl.part.true  |= (value[0] == '1');
+      expr->suppl.part.false |= (value[0] == '0');
              
-    } else if( exp_op_info[expr->op].suppl.is_comb != NOT_COMB ) {
-      if( value[1] == '0' ) {
-        if( value[0] == '0' ) {
-          expr->suppl.part.eval_00 = TRUE;
-        } else if( value[0] == '1' ) {
-          expr->suppl.part.eval_01 = TRUE;
-        }
-      } else if( value[1] == '1' ) {
-        if( value[0] == '0' ) {
-          expr->suppl.part.eval_10 = TRUE;
-        } else if( value[0] == '1' ) {
-          expr->suppl.part.eval_11 = TRUE;
-        }
-      }
+    } else if( exp_op_info[expr->op].suppl.is_comb == AND_COMB ) {
+      expr->suppl.part.eval_10 |= (value[0] == '0');
+      expr->suppl.part.eval_01 |= (value[1] == '0');
+      expr->suppl.part.eval_11 |= (value[1] == '1') && (value[0] == '1');
+
+    } else if( exp_op_info[expr->op].suppl.is_comb == OR_COMB ) {
+      expr->suppl.part.eval_01 |= (value[0] == '1');
+      expr->suppl.part.eval_10 |= (value[1] == '1');
+      expr->suppl.part.eval_00 |= (value[1] == '0') && (value[0] == '0');
+
+    } else if( exp_op_info[expr->op].suppl.is_comb == OTHER_COMB ) {
+      expr->suppl.part.eval_00 |= (value[1] == '0') && (value[0] == '0');
+      expr->suppl.part.eval_01 |= (value[1] == '0') && (value[0] == '1');
+      expr->suppl.part.eval_10 |= (value[1] == '1') && (value[0] == '0');
+      expr->suppl.part.eval_11 |= (value[1] == '1') && (value[0] == '1');
 
     }
 
@@ -6196,6 +6205,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.387  2008/12/06 06:35:19  phase1geo
+ Adding first crack at handling coverage-related information from dumpfile.
+ This code is untested.
+
  Revision 1.386  2008/11/12 19:57:07  phase1geo
  Fixing the rest of the issues from regressions in regards to the merge changes.
  Updating regression files.  IV and Cver regressions now pass.
