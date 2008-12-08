@@ -122,7 +122,7 @@ diagrun:
 	@echo Running $(DIAG)
 	@./convert_cfg $(CFG_CMD) $(DIAG).cfg
 ifdef VPI
-	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
+	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP -inline $(CHECKMEM)
 ifdef USE_CVER
 	@if test "$(COVERED_GFLAG)" = "-D"; then \
 		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd +covered_debug $(SIM_PLUSARGS); \
@@ -144,7 +144,7 @@ else
 ifndef USE_CVER
 	@$(VERILOG_CMD)
 endif
-	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
+	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP -inline $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
 endif

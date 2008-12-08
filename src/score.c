@@ -513,6 +513,10 @@ static void score_parse_args(
       score_usage();
       Throw 0;
 
+    } else if( strncmp( "-inline", argv[i], 7 ) == 0 ) {
+
+      info_suppl.part.inlined = 1;
+
     } else if( strncmp( "-i", argv[i], 2 ) == 0 ) {
 
       if( check_option_value( argc, argv, i ) ) {
@@ -1058,10 +1062,6 @@ static void score_parse_args(
 
       warnings_suppressed = TRUE;
 
-    } else if( strncmp( "-inline", argv[i], 7 ) == 0 ) {
-
-      info_suppl.part.inlined = 1;
-
     /* Any other option that is a plusarg will be added to the list of simulation plusargs */
     } else if( strncmp( "+", argv[i], 1 ) == 0 ) {
 
@@ -1204,6 +1204,13 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.148  2008/12/07 07:20:08  phase1geo
+ Checkpointing work.  I have an end-to-end run now working with test.v in
+ the testsuite.  The results are not accurate at this point but it's progress.
+ I have updated the regression suite per these changes (minor), added an "-inline"
+ option to the score command to control this behavior.  IV regressions have one
+ failing diagnostic at this point.
+
  Revision 1.147  2008/12/06 06:35:20  phase1geo
  Adding first crack at handling coverage-related information from dumpfile.
  This code is untested.
