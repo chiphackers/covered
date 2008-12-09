@@ -419,6 +419,8 @@ sub convertCfg {
   open( OFILE, ">${file}" ) || die "Can't open ${file} for writing!\n";
   open( IFILE, "../regress/${file}" ) || die "Can't open ../regress/${file} for reading!\n";
 
+  print "In convertCfg, dumponly: ${dumponly}, type: ${type}\n";
+
   while( $line = <IFILE> ) {
     if( $dumponly == 1 ) {
       $tmpline = "";

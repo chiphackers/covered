@@ -46,12 +46,6 @@ CHK_CODE      = 0
 endif
 endif
 
-ifdef INLINE
-TOP           = $(shell if test -f covered/verilog/$(DIAG).v; then echo $(DIAG).v; else echo covered/verilog/$(DIAG).v; fi)
-else
-TOP           = $(DIAG).v
-endif
-
 SIM_PLUSARGS = +option1 +option2 +optionB=0000000100100011010001010110011110001001101010111100110111101111 +optionO=0123456776543210012345 +optionD=81985529216486895 +optionH=0123456789abcdef +optionE=123.456 +optionF=123.456 +optionG=123.456 +optionS1=\"Small +optionS2=small.dog
 
 IVERILOG       = iverilog
@@ -155,7 +149,7 @@ ifdef INLINE
 	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
 	@./convert_cfg $(CFG_CMD) 1 $(DIAG).cfg
 endif
-	@$(VERILOG) $(VERILOG_FLAGS) $(TOP)
+	$(VERILOG) $(VERILOG_FLAGS) $(TOP)
 ifndef USE_CVER
 	@$(VERILOG_CMD)
 endif
@@ -169,7 +163,11 @@ endif
 $(DIAGLIST): check-ovl
 	@if test ! -f $@.done; then \
 		if test ! -f ../regress/$@.pl; then \
-			$(MAKE) DIAG=$@ diagrun; \
+			if test -f covered/verilog/$@.v; then \
+				$(MAKE) DIAG=$@ TOP=covered/verilog/$@.v diagrun; \
+			else \
+				$(MAKE) DIAG=$@ TOP=$@.v diagrun; \
+			fi; \
 		else \
 			perl ../regress/$@.pl $(MAKEFLAGS); \
 		fi; \
