@@ -413,15 +413,28 @@ sub checkTest {
 # Converts a configuration file for the current dump type.
 sub convertCfg {
 
-  my( $type, $file ) = @_;
+  my( $type, $dumponly, $file ) = @_;
+  my( $tmpline ) = "";
 
   open( OFILE, ">${file}" ) || die "Can't open ${file} for writing!\n";
   open( IFILE, "../regress/${file}" ) || die "Can't open ../regress/${file} for reading!\n";
 
   while( $line = <IFILE> ) {
+    if( $dumponly == 1 ) {
+      $tmpline = "";
+      if( $line =~ /(-vcd\s+\w+\s+)/ ) {
+        $tmpline = $1;
+      }
+      if( $line =~ /(-(o|cdd)\s+\w+\s+)/ ) {
+        $tmpline .= $1;
+      }
+      $line = $tmpline;
+    }
     $line =~ s/\-vcd/\-$type/g;
-    if( $type eq "vpi" ) {
+    if( ($type eq "vpi") || ($type eq "inline -vpi") ) {
       $line =~ s/[0-9a-zA-Z_\.]+\.(vcd|dump)/covered_vpi.v/g;
+    } elsif( $type eq "inline" ) {
+      $line =~ s/[0-9a-zA-Z_\.]+\.(vcd|dump)//g;
     }
     print OFILE $line;
   }

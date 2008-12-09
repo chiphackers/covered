@@ -763,6 +763,93 @@ static void generator_insert_comb_comb_cov(
 }
 
 /*!
+ Generates temporary subexpression for the given expression (not recursively)
+*/
+static void generator_insert_subexp(
+  expression* exp,    /*!< Pointer to the current expression */
+  func_unit*  funit,  /*!< Pointer to the functional unit that exp exists in */
+  int         depth,  /*!< Current subexpression depth */
+  bool        net     /*!< If TRUE, specifies that we are generating for a net */
+) { PROFILE(GENERATOR_INSERT_SUBEXP);
+
+  char**       left_str        = NULL;
+  unsigned int left_str_depth  = 0;
+  char**       right_str       = NULL;
+  unsigned int right_str_depth = 0;
+  unsigned int rv;
+  unsigned int i;
+
+  /* Generate left string */
+  if( exp->left != NULL ) {
+    if( ((exp->op != exp->left->op) ? (depth + 1) : depth) < generator_max_exp_depth ) {
+      char num_str[50];
+      unsigned int line_len;
+      unsigned int col_len;
+      rv = snprintf( num_str, 50, "%d", exp->left->line );  assert( rv < 50 );  line_len = strlen( num_str );
+      rv = snprintf( num_str, 50, "%x", exp->left->col );   assert( rv < 50 );  col_len  = strlen( num_str );
+      left_str       = (char**)malloc_safe( sizeof( char* ) );
+      left_str_depth = 1;
+      if( net || (funit->type == FUNIT_MODULE) ) {
+        unsigned int slen = 10 + 1 + line_len + 1 + col_len + 2;
+        left_str[0] = (char*)malloc_safe( slen );
+        rv = snprintf( left_str[0], slen, " \\covered$%c%d_%x ", (net ? 'y' : 'x'), exp->left->line, exp->left->col );
+        assert( rv < slen );
+      } else {
+        unsigned int slen = 10 + 1 + line_len + 1 + col_len + 1 + strlen( funit->name ) + 2;
+        left_str[0] = (char*)malloc_safe( slen );
+        rv = snprintf( left_str[0], slen, " \\covered$%c%d_%x$%s ", (net ? 'y' : 'x'), exp->left->line, exp->left->col, funit->name );
+        assert( rv < slen );
+      }
+    } else {
+      codegen_gen_expr( exp->left, exp->op, &left_str, &left_str_depth, funit );
+    }
+  }
+
+  /* Generate right string */
+  if( exp->right != NULL ) {
+    if( ((exp->op != exp->right->op) ? (depth + 1) : depth) < generator_max_exp_depth ) {
+      char num_str[50];   
+      unsigned int line_len;
+      unsigned int col_len;
+      rv = snprintf( num_str, 50, "%d", exp->right->line );  assert( rv < 50 );  line_len = strlen( num_str );
+      rv = snprintf( num_str, 50, "%x", exp->right->col );   assert( rv < 50 );  col_len  = strlen( num_str );
+      right_str       = (char**)malloc_safe( sizeof( char* ) );
+      right_str_depth = 1;
+      if( net || (funit->type == FUNIT_MODULE) ) {
+        unsigned int slen = 10 + 1 + line_len + 1 + col_len + 2;
+        right_str[0] = (char*)malloc_safe( slen );
+        rv = snprintf( right_str[0], slen, " \\covered$%c%d_%x ", (net ? 'y' : 'x'), exp->right->line, exp->right->col );
+        assert( rv < slen );
+      } else {
+        unsigned int slen = 10 + 1 + line_len + 1 + col_len + 1 + strlen( funit->name ) + 2;
+        right_str[0] = (char*)malloc_safe( slen );
+        rv = snprintf( right_str[0], slen, " \\covered$%c%d_%x$%s ", (net ? 'y' : 'x'), exp->right->line, exp->right->col, funit->name );
+        assert( rv < slen );
+      }
+    } else {
+      codegen_gen_expr( exp->right, exp->op, &right_str, &right_str_depth, funit );
+    }
+  }
+
+  /* TBD - Create output expression and add it to the working list */
+
+  /* Deallocate left string */
+  for( i=0; i<left_str_depth; i++ ) {
+    free_safe( left_str[i], (strlen( left_str[i] ) + 1) );
+  }
+  free_safe( left_str, (sizeof( char* ) * left_str_depth) );
+
+  /* Deallocate right string */
+  for( i=0; i<right_str_depth; i++ ) {
+    free_safe( right_str[i], (strlen( right_str[i] ) + 1) );
+  }
+  free_safe( right_str, (sizeof( char* ) * right_str_depth) );
+
+  PROFILE_END;
+
+}
+
+/*!
  Recursively inserts the combinational logic coverage code for the given expression tree.
 */
 static void generator_insert_comb_cov_helper(
@@ -780,7 +867,8 @@ static void generator_insert_comb_cov_helper(
 
       int child_depth = (depth + ((exp->op != parent_op) ? 1 : 0));
 
-      printf( "curr_funit: %s\n", funit );
+      /* Create temporary subexpression calculations */
+      generator_insert_subexp( exp, funit, depth, net );
 
       /* Generate event combinational logic type */
       if( exp_op_info[exp->op].suppl.is_event ) {
@@ -882,7 +970,7 @@ void generator_insert_comb_cov(
   if( generator_comb && ((stmt = generator_find_statement( first_line, first_column )) != NULL) ) {
 
     /* Generate combinational coverage */
-    generator_insert_comb_cov_helper( (use_right ? stmt->exp->right : stmt->exp), stmt->funit, stmt->exp->op, 0, net );
+    generator_insert_comb_cov_helper( (use_right ? stmt->exp->right : stmt->exp), stmt->funit, (use_right ? stmt->exp->right->op : stmt->exp->op), 0, net );
 
   }
 
@@ -893,6 +981,13 @@ void generator_insert_comb_cov(
 
 /*
  $Log$
+ Revision 1.19  2008/12/07 07:20:08  phase1geo
+ Checkpointing work.  I have an end-to-end run now working with test.v in
+ the testsuite.  The results are not accurate at this point but it's progress.
+ I have updated the regression suite per these changes (minor), added an "-inline"
+ option to the score command to control this behavior.  IV regressions have one
+ failing diagnostic at this point.
+
  Revision 1.18  2008/12/06 06:35:19  phase1geo
  Adding first crack at handling coverage-related information from dumpfile.
  This code is untested.

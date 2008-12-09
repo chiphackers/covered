@@ -46,6 +46,12 @@ CHK_CODE      = 0
 endif
 endif
 
+ifdef INLINE
+TOP           = $(shell if test -f covered/verilog/$(DIAG).v; then echo $(DIAG).v; else echo covered/verilog/$(DIAG).v; fi)
+else
+TOP           = $(DIAG).v
+endif
+
 SIM_PLUSARGS = +option1 +option2 +optionB=0000000100100011010001010110011110001001101010111100110111101111 +optionO=0123456776543210012345 +optionD=81985529216486895 +optionH=0123456789abcdef +optionE=123.456 +optionF=123.456 +optionG=123.456 +optionS1=\"Small +optionS2=small.dog
 
 IVERILOG       = iverilog
@@ -120,17 +126,21 @@ check-ovl:
 
 diagrun:
 	@echo Running $(DIAG)
-	@./convert_cfg $(CFG_CMD) $(DIAG).cfg
 ifdef VPI
-	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP -inline $(CHECKMEM)
+ifdef INLINE
+	@./convert_cfg "inline -vpi" 0 $(DIAG).cfg
+else
+	@./convert_cfg vpi 0 $(DIAG).cfg
+endif
+	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
 ifdef USE_CVER
 	@if test "$(COVERED_GFLAG)" = "-D"; then \
-		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd +covered_debug $(SIM_PLUSARGS); \
+		$(VERILOG) $(VERILOG_FLAGS) $(TOP) covered_vpi.v +covered_cdd=$(DIAG).cdd +covered_debug $(SIM_PLUSARGS); \
 	else \
-		$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v +covered_cdd=$(DIAG).cdd $(SIM_PLUSARGS); \
+		$(VERILOG) $(VERILOG_FLAGS) $(TOP) covered_vpi.v +covered_cdd=$(DIAG).cdd $(SIM_PLUSARGS); \
 	fi
 else
-	$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v covered_vpi.v
+	$(VERILOG) $(VERILOG_FLAGS) $(TOP) covered_vpi.v
 	@if test "$(COVERED_GFLAG)" = "-D"; then \
 		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd +covered_debug $(SIM_PLUSARGS); \
 	else \
@@ -140,11 +150,16 @@ endif
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
 else
-	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
+ifdef INLINE
+	@./convert_cfg inline 0 $(DIAG).cfg
+	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
+	@./convert_cfg $(CFG_CMD) 1 $(DIAG).cfg
+endif
+	@$(VERILOG) $(VERILOG_FLAGS) $(TOP)
 ifndef USE_CVER
 	@$(VERILOG_CMD)
 endif
-	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP -inline $(CHECKMEM)
+	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
 endif
@@ -165,7 +180,7 @@ $(DIAGLIST): check-ovl
 
 diag2run:
 	@echo Running $(DIAG)
-	@./convert_cfg $(CFG_CMD) $(DIAG).cfg
+	@./convert_cfg $(CFG_CMD) 0 $(DIAG).cfg
 ifdef VPI
 	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
 ifdef USE_CVER
@@ -210,7 +225,7 @@ $(DIAG2LIST): check-ovl
 
 racerun:
 	@echo Running $(DIAG)
-	@./convert_cfg $(CFG_CMD) $(DIAG).cfg
+	@./convert_cfg $(CFG_CMD) 0 $(DIAG).cfg
 ifdef VPI
 	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
 ifdef USE_CVER
@@ -254,7 +269,7 @@ $(RACELIST):
 	fi
 
 onemergerun:
-	@./convert_cfg $(CFG_CMD) $(DIAG).cfg
+	@./convert_cfg $(CFG_CMD) 0 $(DIAG).cfg
 ifdef VPI
 	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
 ifdef USE_CVER
@@ -330,7 +345,7 @@ $(MERGE3LIST):
 errscorerun:
 ifndef VPI
 	@echo Running $(DIAG) -- should see an error message
-	@./convert_cfg $(CFG_CMD) $(DIAG).cfg
+	@./convert_cfg $(CFG_CMD) 0 $(DIAG).cfg
 	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
 ifndef USE_CVER
 	@$(VERILOG_CMD)
@@ -355,7 +370,7 @@ $(ERRSCORELIST):
 
 oneerrmergerun:
 ifndef VPI
-	@./convert_cfg $(CFG_CMD) $(DIAG).cfg
+	@./convert_cfg $(CFG_CMD) 0 $(DIAG).cfg
 	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
 ifndef USE_CVER
 	@$(VERILOG_CMD)
@@ -392,7 +407,7 @@ ifndef VPI
 ifndef USE_CVER
 	@$(VERILOG_CMD)
 endif
-	@./convert_cfg $(CFG_CMD) $(DIAG).cfg
+	@./convert_cfg $(CFG_CMD) 0 $(DIAG).cfg
 	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -d v -e $(DIAG).cdd 2> $(DIAG).err $(CHECKMEM)
 	@rm -f $(DIAG).cfg
@@ -429,7 +444,7 @@ ifndef VPI
 ifndef USE_CVER
 	@$(VERILOG_CMD)
 endif
-	@./convert_cfg $(CFG_CMD) $(DIAG).cfg
+	@./convert_cfg $(CFG_CMD) 0 $(DIAG).cfg
 	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) exclude -p $(DIAG).cdd 2> $(DIAG).err $(CHECKMEM)
 	@rm -f $(DIAG).cfg
@@ -452,7 +467,7 @@ $(ERREXCLUDELIST):
 $(NOSIMLIST):
 	@if test ! -f $@.done; then \
 		echo Running $@; \
-		./convert_cfg $(CFG_CMD) $@.cfg; \
+		./convert_cfg $(CFG_CMD) 0 $@.cfg; \
 		$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $@.cfg 2> $@.err $(CHECKMEM); \
 		rm -f $@.cfg $@.cdd; \
 		cat $@.err; \
@@ -465,7 +480,7 @@ $(NOSIMLIST):
 $(NOSIMERRLIST):
 	@if test ! -f $@.done; then \
 		echo Running $@ -- should see an error message; \
-		./convert_cfg $(CFG_CMD) $@.cfg; \
+		./convert_cfg $(CFG_CMD) 0 $@.cfg; \
 		$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $@.cfg 2> $@.err $(CHECKMEM); \
 		rm -f $@.cfg $@.cdd; \
 		cat $@.err; \
