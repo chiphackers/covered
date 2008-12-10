@@ -4245,7 +4245,7 @@ statement
           $$ = NULL;
         } 
       } else {
-        generator_insert_line_cov( @1.first_line, @1.first_column );
+        generator_insert_line_cov( @1.first_line, @1.first_column, (@2.last_column - 1) );
         generator_flush_work_code();
         $$ = NULL;
       }
@@ -4266,7 +4266,7 @@ statement
           $$ = NULL;
         }
       } else {
-        generator_insert_line_cov( @1.first_line, @1.first_column );
+        generator_insert_line_cov( @1.first_line, @1.first_column, (@2.last_column - 1) );
         generator_flush_work_code();
         $$ = NULL;
       }
@@ -4527,7 +4527,7 @@ statement
           $$ = NULL;
         }
       } else {
-        generator_insert_line_cov( @2.first_line, @2.first_column );
+        generator_insert_line_cov( @2.first_line, @2.first_column, (@5.last_column - 1) );
         generator_flush_work_code();
         $$ = NULL;  /* TBD */
       }
@@ -4552,7 +4552,7 @@ statement
           $$ = NULL;
         }
       } else {
-        generator_insert_line_cov( @2.first_line, @2.first_column );
+        generator_insert_line_cov( @2.first_line, @2.first_column, (@2.last_column - 1) );
         generator_flush_work_code();
         $$ = NULL;  /* TBD */
       }
@@ -4698,7 +4698,7 @@ statement
     {
       if( !parse_mode ) {
         generator_add_to_work_code( ";" );
-        generator_insert_line_cov( @1.first_line, @1.first_column );
+        generator_insert_line_cov( @1.first_line, @1.first_column, (@1.last_column - 1) );
         generator_flush_work_code();
       }
     }
@@ -4729,7 +4729,7 @@ statement
     {
       if( !parse_mode ) {
         generator_add_to_work_code( ";" );
-        generator_insert_line_cov( @1.first_line, @1.first_column );
+        generator_insert_line_cov( @1.first_line, @1.first_column, (@1.last_column - 1) );
         generator_flush_work_code();
       }
     }
@@ -4760,7 +4760,7 @@ statement
     {
       if( !parse_mode ) {
         generator_add_to_work_code( ";" );
-        generator_insert_line_cov( @1.first_line, @1.first_column );
+        generator_insert_line_cov( @1.first_line, @1.first_column, (@1.last_column - 1) );
         generator_flush_work_code();
       }
     }
@@ -4808,7 +4808,7 @@ statement
       if( parse_mode ) {
         $$ = $1;
       } else {
-        generator_insert_line_cov( @1.first_line, @1.first_column );
+        generator_insert_line_cov( @1.first_line, @1.first_column, (@1.last_column - 1) );
         generator_flush_work_code();
         $$ = NULL;  /* TBD */
       }
@@ -4833,7 +4833,7 @@ statement
         }
       } else {
         generator_insert_comb_cov( FALSE, TRUE, @1.first_line, @1.first_column );
-        generator_insert_line_cov( @1.first_line, @1.first_column );
+        generator_insert_line_cov( @1.first_line, @1.first_column, (@3.last_column) );
         generator_flush_work_code();
         $$ = NULL;
       }
@@ -6722,6 +6722,7 @@ event_control
     {
       @$.first_line   = @3.first_line;
       @$.first_column = @3.first_column;
+      @$.last_column  = @3.last_column;
       $$ = $3;
     }
   | '@' '(' error ')'

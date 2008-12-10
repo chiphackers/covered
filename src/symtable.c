@@ -268,10 +268,10 @@ static symtable* symtable_get_table(
   ptr  = sym;
 
   while( *ptr != '\0' ) {
-    if( curr->table[(int)*ptr - 33] == NULL ) {
-      curr->table[(int)*ptr - 33] = symtable_create();
+    if( curr->table[(int)(*ptr) - 33] == NULL ) {
+      curr->table[(int)(*ptr) - 33] = symtable_create();
     }
-    curr = curr->table[(int)*ptr - 33];
+    curr = curr->table[(int)(*ptr) - 33];
     ptr++;
   }
 
@@ -481,6 +481,10 @@ void symtable_dealloc(
 
 /*
  $Log$
+ Revision 1.41  2008/12/06 06:35:20  phase1geo
+ Adding first crack at handling coverage-related information from dumpfile.
+ This code is untested.
+
  Revision 1.40  2008/12/05 23:05:38  phase1geo
  Working on VCD reading side of the inlined coverage handler.  Things don't
  compile at this point and are in limbo.  Checkpointing.

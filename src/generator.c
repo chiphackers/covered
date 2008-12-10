@@ -552,8 +552,9 @@ static statement* generator_find_statement(
  Inserts line coverage information in string queues.
 */
 void generator_insert_line_cov(
-  unsigned int first_line,   /*!< Line to create line coverage for */
-  unsigned int first_column  /*!< First column of statement */
+  unsigned int first_line,    /*!< Line to create line coverage for */
+  unsigned int first_column,  /*!< First column of statement */
+  unsigned int last_column    /*!< Last column of statement */
 ) { PROFILE(GENERATOR_INSERT_LINE_COV);
 
   statement* stmt;
@@ -567,9 +568,9 @@ void generator_insert_line_cov(
     str_link*    tmp_tail = NULL;
 
     if( stmt->funit->type == FUNIT_MODULE ) {
-      rv = snprintf( sig, 4096, " \\covered$l%d_%d ", first_line, first_column );
+      rv = snprintf( sig, 4096, " \\covered$l%d_%x ", first_line, (((first_column & 0xffff) << 16) | (last_column & 0xffff)) );
     } else {
-      rv = snprintf( sig, 4096, " \\covered$l%d_%d$%s ", first_line, first_column, stmt->funit->name );
+      rv = snprintf( sig, 4096, " \\covered$l%d_%x$%s ", first_line, (((first_column & 0xffff) << 16) | (last_column & 0xffff)), stmt->funit->name );
     }
     assert( rv < 4096 );
 
@@ -622,55 +623,50 @@ static void generator_insert_unary_comb_cov(
   str_link*    tmp_head = NULL;
   str_link*    tmp_tail = NULL;
 
-  if( exp->right != NULL ) {
+  /* Create signal */
+  if( net || (funit->type == FUNIT_MODULE) ) {
+    rv = snprintf( sig,  80, " \\covered$%c%d_%x ", (net ? 'e' : 'E'), exp->line, exp->col );
+    assert( rv < 80 );
+    rv = snprintf( sigr, 80, " \\covered$%c%d_%x ", (net ? 'y' : 'x'), exp->line, exp->col );
+    assert( rv < 80 );
+  } else {
+    rv = snprintf( sig,  80, " \\covered$E%d_%x$%s ", exp->line, exp->col, funit->name );
+    assert( rv < 80 );
+    rv = snprintf( sigr, 80, " \\covered$x%d_%x$%s ", exp->line, exp->col, funit->name );
+    assert( rv < 80 );
+  }
 
-    /* Create signal */
-    if( net || (funit->type == FUNIT_MODULE) ) {
-      rv = snprintf( sig,  80, " \\covered$%c%d_%x ", (net ? 'e' : 'E'), exp->line, exp->col );
-      assert( rv < 80 );
-      rv = snprintf( sigr, 80, " \\covered$%c%d_%x ", (((depth + ((exp->op != exp->right->op) ? 1 : 0)) < generator_max_exp_depth) ? (net ? 'e' : 'E') : (net ? 'y' : 'x')),
-                     exp->right->line, exp->right->col );
-      assert( rv < 80 );
-    } else {
-      rv = snprintf( sig,  80, " \\covered$E%d_%x$%s ", exp->line, exp->col, funit->name );
-      assert( rv < 80 );
-      rv = snprintf( sigr, 80, " \\covered$%c%d_%x$%s ", (((depth + ((exp->op != exp->right->op) ? 1 : 0)) < generator_max_exp_depth) ? 'E' : 'x'),
-                     exp->right->line, exp->right->col, funit->name );
-      assert( rv < 80 );
-    }
-
-    /* Create prefix */
-    if( net ) {
-      strcpy( prefix, "wire " );
-    } else {
-      prefix[0] = '\0';
-      rv = snprintf( str, 4096, "reg %s;", sig );
-      assert( rv < 4096 );
-      str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
-    }
-
-    /* Prepend the coverage assignment to the working buffer */
-    rv = snprintf( str, 4096, "%s%s = %s%s;", prefix, sig, exp_op_info[exp->op].op_str, sigr );
+  /* Create prefix */
+  if( net ) {
+    strcpy( prefix, "wire " );
+  } else {
+    prefix[0] = '\0';
+    rv = snprintf( str, 4096, "reg %s;", sig );
     assert( rv < 4096 );
-    str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
+    str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
+  }
 
-    /* If this is a net, prepend to the register list */
-    if( net ) {
-      if( reg_head == NULL ) {
-        reg_head = reg_tail = tmp_head;
-      } else {
-        tmp_tail->next = reg_head;
-        reg_head       = tmp_head;
-      }
+  /* Prepend the coverage assignment to the working buffer */
+  rv = snprintf( str, 4096, "%s%s = |(%s);", prefix, sig, sigr );
+  assert( rv < 4096 );
+  str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
 
-    /* Otherwise, prepend to the working list */
+  /* If this is a net, prepend to the register list */
+  if( net ) {
+    if( reg_head == NULL ) {
+      reg_head = reg_tail = tmp_head;
     } else {
-      if( work_head == NULL ) {
-        work_head = work_tail = tmp_head;
-      } else {
-        tmp_tail->next = work_head;
-        work_head      = tmp_head;
-      }
+      tmp_tail->next = reg_head;
+      reg_head       = tmp_head;
+    }
+
+  /* Otherwise, prepend to the working list */
+  } else {
+    if( work_head == NULL ) {
+      work_head = work_tail = tmp_head;
+    } else {
+      tmp_tail->next = work_head;
+      work_head      = tmp_head;
     }
 
   }
@@ -757,14 +753,220 @@ static void generator_insert_comb_comb_cov(
 
 }
 
-static void generator_create_rhs(
+static void generator_gen_msb(
   expression* exp,
   func_unit*  funit,
-  bool        net,
-  char**      code
+  char**      msb
+) { PROFILE(GENERATOR_GEN_MSB);
+
+  if( exp != NULL ) {
+
+    char*        lexp;
+    char*        rexp;
+    unsigned int rv;
+
+    switch( exp->op ) {
+      case static_expr_primary :
+        break;
+      case EXP_OP_NEGATE :
+        generator_gen_msb( exp->right, funit, rexp );
+        *msb = rexp;
+        break;
+      case EXP_OP_UINV  :
+      case EXP_OP_UNOT  :
+      case EXP_OP_UAND  :
+      case EXP_OP_UOR   :
+      case EXP_OP_UXOR  :
+      case EXP_OP_UNAND :
+      case EXP_OP_UNOR  :
+      case EXP_OP_UNXOR :
+        *msb = (char*)malloc_safe( 2 );
+        strcpy( "1" );
+        break;
+      case EXP_OP_MULTIPLY :
+        generator_gen_msb( exp->left,  funit, lexp );
+        generator_gen_msb( exp->right, funit, rexp );
+        free_safe( lexp, (strlen( lexp ) + 1) );
+        free_safe( rexp, (strlen( rexp ) + 1) );
+        break;
+      case EXP_OP_XOR      :
+  | static_expr '^' static_expr
+    {
+      if( parse_mode ) {
+        $$ = static_expr_gen( $3, $1, EXP_OP_XOR, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | static_expr '*' static_expr
+    {
+      if( parse_mode ) {
+        $$ = static_expr_gen( $3, $1, EXP_OP_MULTIPLY, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+      } else {
+        $$ = NULL;
+      }
+
+      case EXP_OP_MULTIPLY :
+      case EXP_OP_LIST     :
+        generator_gen_msb( exp->left,  funit,  lexp );
+        generator_gen_msb( exp->right, funit, rexp );
+        {
+          unsigned int slen = strlen( lexp ) + strlen( rexp ) + 4;
+          *msb = (char*)malloc_safe( slen );
+          rv   = snprintf( *msb, slen, "(%s+%s)", lexp, rexp );
+          assert( rv < slen );
+        }
+        free_safe( lexp, (strlen( lexp ) + 1) );
+        free_safe( rexp, (strlen( rexp ) + 1) );
+        break;
+      case EXP_OP_CONCAT :
+        generator_gen_msb( exp->right, funit, rexp );
+        *msb = rexp;
+        break;
+      case EXP_OP_EXPAND :
+        generator_gen_msb( exp->right, funit, rexp );
+        {
+          char         tmp[50];
+          unsigned int slen;
+          rv = snprintf( tmp, 50, "%d", vector_to_int( exp->left->value ) );
+          assert( rv < 50 );
+          slen = strlen( tmp ) + strlen( rexp ) + 4;
+          *msb = (char*)malloc_safe( slen );
+          rv = snprintf( *msb, slen, "(%s*%s)", tmp, rexp );
+          assert( rv < slen );
+        }
+        free_safe( rexp, (sizeof( rexp ) + 1) );
+        break;
+      case EXP_OP_STIME :
+      case EXP_OP_SR2B  :
+      case EXP_OP_SR2I  :
+        *msb = (char*)malloc_safe( 3 );
+        strcpy( *msb, "64" );
+        break;
+      case EXP_OP_SSR2B :
+        *msb = (char*)malloc_safe( 3 );
+        strcpy( *msb, "32" );
+        break;
+      case EXP_OP_LT :
+      case EXP_OP_GT :
+      case EXP_OP_EQ :
+      case EXP_OP_CEQ :
+      case EXP_OP_LE :
+      case EXP_OP_GE :
+      case EXP_OP_NE :
+      case EXP_OP_CNE :
+      case EXP_OP_LOR :
+      case EXP_OP_LAND :
+      case EXP_OP_UAND :
+      case EXP_OP_UNOT :
+
+    } else if( (op == EXP_OP_LT)        ||
+               (op == EXP_OP_GT)        ||
+               (op == EXP_OP_EQ)        ||
+               (op == EXP_OP_CEQ)       ||
+               (op == EXP_OP_LE)        ||
+               (op == EXP_OP_GE)        ||
+               (op == EXP_OP_NE)        || 
+               (op == EXP_OP_CNE)       ||
+               (op == EXP_OP_LOR)       ||
+               (op == EXP_OP_LAND)      ||
+               (op == EXP_OP_UAND)      ||
+               (op == EXP_OP_UNOT)      || 
+               (op == EXP_OP_UOR)       || 
+               (op == EXP_OP_UXOR)      ||
+               (op == EXP_OP_UNAND)     ||
+               (op == EXP_OP_UNOR)      ||
+               (op == EXP_OP_UNXOR)     ||
+               (op == EXP_OP_EOR)       ||
+               (op == EXP_OP_NEDGE)     ||
+               (op == EXP_OP_PEDGE)     ||
+               (op == EXP_OP_AEDGE)     ||
+               (op == EXP_OP_CASE)      ||
+               (op == EXP_OP_CASEX)     ||
+               (op == EXP_OP_CASEZ)     ||
+               (op == EXP_OP_DEFAULT)   ||
+               (op == EXP_OP_REPEAT)    ||
+               (op == EXP_OP_RPT_DLY)   ||
+               (op == EXP_OP_WAIT)      ||
+               (op == EXP_OP_SFINISH)   ||
+               (op == EXP_OP_SSTOP)     ||
+               (op == EXP_OP_SSRANDOM)  || 
+               (op == EXP_OP_STESTARGS) ||
+               (op == EXP_OP_SVALARGS) ) {
+
+      /* If this expression will evaluate to a single bit, create vector now */
+      expression_create_value( new_expr, 1, data );
+
+    } else {
+
+      /* If both right and left values have their width values set. */
+      if( (rwidth > 0) && (lwidth > 0) &&
+          (op != EXP_OP_MBIT_SEL)       &&
+          (op != EXP_OP_MBIT_POS)       &&
+          (op != EXP_OP_MBIT_NEG)       &&
+          (op != EXP_OP_PARAM_MBIT)     &&
+          (op != EXP_OP_PARAM_MBIT_POS) &&
+          (op != EXP_OP_PARAM_MBIT_NEG) ) {
+
+        if( rwidth >= lwidth ) {
+          /* Check to make sure that nothing has gone drastically wrong */
+          expression_create_value( new_expr, rwidth, data );
+        } else {
+          /* Check to make sure that nothing has gone drastically wrong */
+          expression_create_value( new_expr, lwidth, data );
+        }     
+
+      } else {
+
+        expression_create_value( new_expr, 0, FALSE );
+
+      }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Generates the strings needed for the left-hand-side of the temporary expression.
+*/
+static void generator_create_lhs(
+  expression* exp,    /*!< Pointer to subexpression to create LHS string for */
+  func_unit*  funit,  /*!< Functional unit containing the expression */
+  bool        net,    /*!< If set to TRUE, generate code for a net; otherwise, generate for a register */
+  char**      code    /*!< Pointer to string to populate */
 ) { PROFILE(GENERATOR_CREATE_RHS);
 
-  /* TBD */
+  unsigned int rv;
+  char         name[4096];
+  char         tmp[4096];
+
+  /* Generate signal name */
+  if( net || (funit->type == FUNIT_MODULE) ) {
+    rv = snprintf( name, 4096, " \\covered$x%d_%x ", exp->line, exp->col );
+  } else {
+    rv = snprintf( name, 4096, " \\covered$x%d_%x$%s ", exp->line, exp->col, funit->name );
+  }
+  assert( rv < 4096 );
+
+  if( net ) {
+
+    /* TBD - Create sized wire string */
+    rv = snprintf( tmp, 4096, "wire [%s:0] %s", "0", name );
+    assert( rv < 4096 );
+
+    *code = strdup_safe( tmp );
+
+  } else {
+
+    /* TBD - Create sized register string */
+    rv = snprintf( tmp, 4096, "reg [%s:0] %s;\n", "31", name );
+    assert( rv < 4096 );
+    str_link_add( strdup_safe( tmp ), &reg_head, &reg_tail );
+
+    /* Set the name to the value of code */
+    *code = strdup_safe( name );
+
+  }
 
   PROFILE_END;
 
@@ -822,15 +1024,15 @@ static char* generator_create_subexp(
  Concatenates the given string values and appends them to the working code buffer.
 */
 static void generator_concat_code(
-  char*        rhs,
-  char*        before,
-  char**       lstr,
-  unsigned int lstr_depth,
-  char*        middle,
-  char**       rstr,
-  unsigned int rstr_depth,
-  char*        after,
-  bool         net
+             char*        lhs,         /*!< LHS string */
+  /*@null@*/ char*        before,      /*!< Optional string that precedes the left subexpression string array */
+  /*@null@*/ char**       lstr,        /*!< String array from left subexpression */
+             unsigned int lstr_depth,  /*!< Number of valid elements in the lstr array */
+  /*@null@*/ char*        middle,      /*!< Optional string that is placed in-between the left and right subexpression array strings */
+  /*@null@*/ char**       rstr,        /*!< String array from right subexpression */
+             unsigned int rstr_depth,  /*!< Number of valid elements in the rstr array */
+  /*@null@*/ char*        after,       /*!< Optional string that is placed after the right subpexression string array */
+             bool         net          /*!< If TRUE, specifies that this subexpression exists in net logic */
 ) { PROFILE(GENERATOR_CONCAT_CODE);
 
   str_link*    tmp_head = NULL;
@@ -840,7 +1042,7 @@ static void generator_concat_code(
   unsigned int rv;
 
   /* Prepend the coverage assignment to the working buffer */
-  rv = snprintf( str, 4096, "%s = ", rhs );
+  rv = snprintf( str, 4096, "%s = ", lhs );
   assert( rv < 4096 );
   if( before != NULL ) {
     if( (strlen( str ) + strlen( before )) < 4095 ) {
@@ -894,10 +1096,10 @@ static void generator_concat_code(
   if( (strlen( str ) + 1) < 4095 ) {
     strcat( str, ";" );
   } else {
-    str_link_add( str, &tmp_head, &tmp_tail );
+    str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
     strcpy( str, ";" );
   }
-  str_link_add( str, &tmp_head, &tmp_tail );
+  str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
       
   /* If this is a net, prepend to the register list */
   if( net ) {
@@ -988,7 +1190,7 @@ static void generator_insert_subexp(
   bool        net     /*!< If TRUE, specifies that we are generating for a net */
 ) { PROFILE(GENERATOR_INSERT_SUBEXP);
 
-  char*        rhs_str = NULL;
+  char*        lhs_str = NULL;
   char**       left_str;
   unsigned int left_str_depth;
   char**       right_str;
@@ -996,18 +1198,18 @@ static void generator_insert_subexp(
   unsigned int rv;
   unsigned int i;
 
-  /* Create RHS portion of assignment */
-  generator_create_rhs( exp, funit, net, &rhs_str );
+  /* Create LHS portion of assignment */
+  generator_create_lhs( exp, funit, net, &lhs_str );
 
   /* Generate left and right subexpression code string */
   generator_create_subexp( exp->left,  exp->op, funit, depth, net, &left_str,  &left_str_depth );
   generator_create_subexp( exp->right, exp->op, funit, depth, net, &right_str, &right_str_depth );
 
   /* Create output expression and add it to the working list */
-  generator_create_exp( exp, rhs_str, left_str, left_str_depth, right_str, right_str_depth, net );
+  generator_create_exp( exp, lhs_str, left_str, left_str_depth, right_str, right_str_depth, net );
 
   /* Deallocate right-hand-side expression string */
-  free_safe( rhs_str, (strlen( rhs_str ) + 1) );
+  free_safe( lhs_str, (strlen( lhs_str ) + 1) );
 
   /* Deallocate left string */
   for( i=0; i<left_str_depth; i++ ) {
@@ -1033,12 +1235,11 @@ static void generator_insert_comb_cov_helper(
   func_unit*   funit,      /*!< Pointer to current functional unit */
   exp_op_type  parent_op,  /*!< Parent expression operation (originally should be set to the same operation as exp) */
   int          depth,      /*!< Current expression depth (originally set to 0) */
-  bool         net         /*!< If set to TRUE generate code for a net */
+  bool         net,        /*!< If set to TRUE generate code for a net */
+  bool         root        /*!< Set to TRUE only for the "root" expression in the tree */
 ) { PROFILE(GENERATOR_INSERT_COMB_COV_HELPER);
 
   if( exp != NULL ) {
-
-    printf( "In generator_insert_comb_cov_helper, expr: %s\n", expression_string( exp ) );
 
     /* Only continue to traverse tree if we are within our depth limit */
     if( (depth < generator_max_exp_depth) && (EXPR_IS_MEASURABLE( exp ) == 1) && !expression_is_static_only( exp ) ) {
@@ -1063,10 +1264,11 @@ static void generator_insert_comb_cov_helper(
       generator_insert_subexp( exp, funit, depth, net );
 
       /* Generate children expression trees */
-      generator_insert_comb_cov_helper( exp->left,  funit, exp->op, child_depth, net );
-      generator_insert_comb_cov_helper( exp->right, funit, exp->op, child_depth, net );
+      generator_insert_comb_cov_helper( exp->left,  funit, exp->op, child_depth, net, FALSE );
+      generator_insert_comb_cov_helper( exp->right, funit, exp->op, child_depth, net, FALSE );
 
-    } else {
+#ifdef OBSOLETE
+    } else if( !root ) {
 
       char         str[4096];
       char         sig[4096];
@@ -1123,6 +1325,7 @@ static void generator_insert_comb_cov_helper(
           work_head      = tmp_head;
         }
       }
+#endif
 
     }
 
@@ -1148,7 +1351,7 @@ void generator_insert_comb_cov(
   if( generator_comb && ((stmt = generator_find_statement( first_line, first_column )) != NULL) ) {
 
     /* Generate combinational coverage */
-    generator_insert_comb_cov_helper( (use_right ? stmt->exp->right : stmt->exp), stmt->funit, (use_right ? stmt->exp->right->op : stmt->exp->op), 0, net );
+    generator_insert_comb_cov_helper( (use_right ? stmt->exp->right : stmt->exp), stmt->funit, (use_right ? stmt->exp->right->op : stmt->exp->op), 0, net, TRUE );
 
   }
 
@@ -1159,6 +1362,10 @@ void generator_insert_comb_cov(
 
 /*
  $Log$
+ Revision 1.21  2008/12/09 06:17:24  phase1geo
+ More work on inline code generator.  Also working on verilog/Makefile for regression
+ runs.  Checkpointing.
+
  Revision 1.20  2008/12/09 00:20:14  phase1geo
  More work on code generator.  Also made first changes to verilog Makefile for
  regression testing (more work to do here).

@@ -193,7 +193,6 @@ WSPACE [ \t\b\f]+
   BEGIN( LCOMMENT );
  }
 <LCOMMENT>.   {
-  if( !parse_mode ) generator_add_to_work_code( yytext );
   yylloc.last_column += 1;
   yymore();
  }
@@ -217,12 +216,10 @@ WSPACE [ \t\b\f]+
   yylloc.last_column += 2;
  }
 <CCOMMENT>.    {
-  if( !parse_mode ) generator_add_to_work_code( yytext );
   yylloc.last_column += 1;
   yymore();
  }
 <CCOMMENT>\n   {
-  if( !parse_mode ) generator_add_to_work_code( yytext );
   yylloc.first_line += 1;
   yylloc.last_column = 0;
   yymore();

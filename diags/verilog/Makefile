@@ -45,6 +45,10 @@ DUMP_FMT      = -vcd
 CHK_CODE      = 0
 endif
 endif
+ifdef INLINE
+CHK_CODE      = 5
+TOPDIR        = covered/verilog/
+endif
 
 SIM_PLUSARGS = +option1 +option2 +optionB=0000000100100011010001010110011110001001101010111100110111101111 +optionO=0123456776543210012345 +optionD=81985529216486895 +optionH=0123456789abcdef +optionE=123.456 +optionF=123.456 +optionG=123.456 +optionS1=\"Small +optionS2=small.dog
 
@@ -148,6 +152,8 @@ ifdef INLINE
 	@./convert_cfg inline 0 $(DIAG).cfg
 	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
 	@./convert_cfg $(CFG_CMD) 1 $(DIAG).cfg
+else
+	@./convert_cfg $(CFG_CMD) 0 $(DIAG).cfg
 endif
 	$(VERILOG) $(VERILOG_FLAGS) $(TOP)
 ifndef USE_CVER
@@ -163,11 +169,7 @@ endif
 $(DIAGLIST): check-ovl
 	@if test ! -f $@.done; then \
 		if test ! -f ../regress/$@.pl; then \
-			if test -f covered/verilog/$@.v; then \
-				$(MAKE) DIAG=$@ TOP=covered/verilog/$@.v diagrun; \
-			else \
-				$(MAKE) DIAG=$@ TOP=$@.v diagrun; \
-			fi; \
+			$(MAKE) DIAG=$@ TOP=$(TOPDIR)$@.v diagrun; \
 		else \
 			perl ../regress/$@.pl $(MAKEFLAGS); \
 		fi; \
@@ -506,6 +508,7 @@ reset:  clobber
 clobber:  clean
 	@rm -f *.rpt* *.cdd *.err regress.output regress.failed
 	@rm -f $(VG_LOG_PREFIX).*
+	@rm -rf covered
 
 clean:
 	@rm -f $(LOGFILE)

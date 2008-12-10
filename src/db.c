@@ -3024,7 +3024,7 @@ void db_assign_symbol(
           funit_link*  curr_tf;
 
           /* Extract the line, first column and funit scope information from name */
-          if( sscanf( (name + 10), "%d_%d$%s", &line, &col, scope ) == 3 ) {
+          if( sscanf( (name + 10), "%d_%x$%s", &line, &col, scope ) == 3 ) {
 
             /* Search for the matching functional unit */
             curr_tf = mod->tf_head;
@@ -3035,18 +3035,18 @@ void db_assign_symbol(
 
             /* Search the matching expression */
             expl = curr_tf->funit->exp_head;
-            while( (expl != NULL) && ((expl->exp->line != line) || (((expl->exp->col >> 16) & 0xffff) != col)) ) {
+            while( (expl != NULL) && ((expl->exp->line != line) || (expl->exp->col != col) || !ESUPPL_IS_ROOT( expl->exp->suppl )) ) {
               expl = expl->next;
             }
 
           } else {
 
-            rv = sscanf( (name + 10), "%d_%d", &line, &col );
+            rv = sscanf( (name + 10), "%d_%x", &line, &col );
             assert( rv == 2 );
 
             /* Search the matching expression */
             expl = mod->exp_head;
-            while( (expl != NULL) && ((expl->exp->line != line) || (((expl->exp->col >> 16) & 0xffff) != col)) ) {
+            while( (expl != NULL) && ((expl->exp->line != line) || (expl->exp->col != col) || !ESUPPL_IS_ROOT( expl->exp->suppl )) ) {
               expl = expl->next;
             }
 
@@ -3106,7 +3106,7 @@ void db_assign_symbol(
       if( (slink = sig_link_find( name, curr_instance->funit->sig_head )) != NULL ) {
 
         /* Only add the symbol if we are not going to generate this value ourselves */
-        if( (slink->sig->suppl.part.assigned == 0)                  &&
+        if( ((slink->sig->suppl.part.assigned == 0) || info_suppl.part.inlined) &&
             (slink->sig->suppl.part.type != SSUPPL_TYPE_PARAM)      &&
             (slink->sig->suppl.part.type != SSUPPL_TYPE_PARAM_REAL) &&
             (slink->sig->suppl.part.type != SSUPPL_TYPE_ENUM)       &&
@@ -3274,6 +3274,13 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.357  2008/12/07 07:20:08  phase1geo
+ Checkpointing work.  I have an end-to-end run now working with test.v in
+ the testsuite.  The results are not accurate at this point but it's progress.
+ I have updated the regression suite per these changes (minor), added an "-inline"
+ option to the score command to control this behavior.  IV regressions have one
+ failing diagnostic at this point.
+
  Revision 1.356  2008/12/06 06:35:19  phase1geo
  Adding first crack at handling coverage-related information from dumpfile.
  This code is untested.

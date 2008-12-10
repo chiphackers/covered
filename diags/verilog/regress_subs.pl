@@ -424,13 +424,16 @@ sub convertCfg {
   while( $line = <IFILE> ) {
     if( $dumponly == 1 ) {
       $tmpline = "";
-      if( $line =~ /(-vcd\s+\w+\s+)/ ) {
+      print "Old line: ${line}\n";
+      if( $line =~ /(-vcd\s+[a-zA-Z0-9_\.]+\s+)/ ) {
         $tmpline = $1;
+        print "Found -vcd option: ${tmpline}\n";
       }
-      if( $line =~ /(-(o|cdd)\s+\w+\s+)/ ) {
+      if( $line =~ /(-(o|cdd)\s+[a-zA-Z0-9_\.]+\s+)/ ) {
         $tmpline .= $1;
       }
       $line = $tmpline;
+      print "New line: ${line}\n";
     }
     $line =~ s/\-vcd/\-$type/g;
     if( ($type eq "vpi") || ($type eq "inline -vpi") ) {

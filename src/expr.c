@@ -5556,6 +5556,8 @@ void expression_vcd_assign(
   const char* value    /*!< Coverage data from dumpfile to assign */
 ) { PROFILE(EXPRESSION_VCD_ASSIGN);
 
+  printf( "In expression_vcd_assign, expr: %s, action: %c, value: %s\n", expression_string( expr ), action, value );
+
   if( action == 'l' ) {
 
     /* If we have seen a value of 1, increment the exec_num to indicate that the line has been hit */
@@ -5563,7 +5565,7 @@ void expression_vcd_assign(
       expr->exec_num++;
     }
 
-  } else if( action == 'e' ) {
+  } else if( (action == 'e') || (action == 'E') ) {
 
     if( exp_op_info[expr->op].suppl.is_event ) {
       expr->suppl.part.true |= (value[0] == '1');
@@ -6205,6 +6207,11 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.388  2008/12/08 06:43:45  phase1geo
+ Fixing issues with broken regression.  Updated regression per these changes (some
+ code reduction was performed as well).  IV and Cver regressions now pass.
+ Checkpointing.
+
  Revision 1.387  2008/12/06 06:35:19  phase1geo
  Adding first crack at handling coverage-related information from dumpfile.
  This code is untested.

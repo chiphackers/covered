@@ -41,8 +41,9 @@
 #include "vsignal.h"
 
 
-extern char user_msg[USER_MSG_LENGTH];
-extern bool debug_mode;
+extern char   user_msg[USER_MSG_LENGTH];
+extern bool   debug_mode;
+extern isuppl info_suppl;
 
 
 /*!
@@ -551,7 +552,7 @@ void vsignal_vcd_assign(
   }
 
   /* Don't go through the hassle of updating expressions if value hasn't changed */
-  if( vec_changed ) {
+  if( vec_changed && !info_suppl.part.inlined ) {
 
     /* Propagate signal changes to rest of design */
     vsignal_propagate( sig, time );
@@ -794,6 +795,10 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.90  2008/11/12 19:57:07  phase1geo
+ Fixing the rest of the issues from regressions in regards to the merge changes.
+ Updating regression files.  IV and Cver regressions now pass.
+
  Revision 1.89  2008/11/11 05:36:40  phase1geo
  Checkpointing merge code.
 
