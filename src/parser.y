@@ -4527,6 +4527,8 @@ statement
           $$ = NULL;
         }
       } else {
+        printf( "Attemping to perform combination coverage for IF (A)\n" );
+        generator_insert_comb_cov( FALSE, TRUE, @2.first_line, @2.first_column );
         generator_insert_line_cov( @2.first_line, @2.first_column, (@5.last_column - 1) );
         generator_flush_work_code();
         $$ = NULL;  /* TBD */
@@ -4552,6 +4554,8 @@ statement
           $$ = NULL;
         }
       } else {
+        printf( "Attemping to perform combination coverage for IF (B)\n" );
+        generator_insert_comb_cov( FALSE, TRUE, @2.first_line, @2.first_column );
         generator_insert_line_cov( @2.first_line, @2.first_column, (@2.last_column - 1) );
         generator_flush_work_code();
         $$ = NULL;  /* TBD */
@@ -4833,7 +4837,7 @@ statement
         }
       } else {
         generator_insert_comb_cov( FALSE, TRUE, @1.first_line, @1.first_column );
-        generator_insert_line_cov( @1.first_line, @1.first_column, (@3.last_column) );
+        generator_insert_line_cov( @1.first_line, @1.first_column, (@3.last_column - 1) );
         generator_flush_work_code();
         $$ = NULL;
       }
