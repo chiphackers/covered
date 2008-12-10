@@ -54,6 +54,25 @@ struct fname_link_s {
   fname_link* next;        /*!< Pointer to next filename list */
 };
 
+struct expf_link_s;
+typedef struct expf_link_s expf_link;
+struct expf_link_s {
+  expression* exp;         /*!< Pointer to expression */
+  func_unit*  funit;       /*!< Pointer to functional unit */
+  expf_link*  next;        /*!< Pointer to next expression/functional unit structure in list */
+};
+
+struct event_link_s;
+typedef struct event_link_s event_link;
+struct event_link_s {
+  char*       name;        /*!< Name of the event */
+  func_unit*  funit;       /*!< Pointer to functional unit containing this event expression */
+  expf_link*  expf_head;   /*!< Pointer to the head of the event expression list */
+  expf_link*  expf_tail;   /*!< Pointer to the tail of the event expression list */
+  event_link* next;        /*!< Pointer to the next event in this list */
+};
+
+
 /*!
  Pointer to the current output file.
 */
@@ -100,9 +119,19 @@ str_link* reg_head = NULL;
 str_link* reg_tail = NULL;
 
 /*!
+ Pointer to head of event list.
+*/
+event_link* event_head = NULL;
+
+/*!
+ Pointer to tail of event list.
+*/
+event_link* event_tail = NULL;
+
+/*!
  Maximum expression depth to generate coverage code for (from command-line).
 */
-unsigned int generator_max_exp_depth = 1;
+unsigned int generator_max_exp_depth = 0xffffffff;
 
 /*!
  Specifies that we should perform line coverage code insertion.
@@ -513,6 +542,83 @@ void generator_flush_hold_code() { PROFILE(GENERATOR_FLUSH_HOLD_CODE);
 }
 
 /*!
+ Outputs the contents of the given event link to the Verilog code.
+*/
+static void generator_flush_event_comb(
+  event_link* eventl  /*!< Pointer to event link to output */
+) { PROFILE(GENERATOR_FLUSH_EVENT_COMB);
+
+  expf_link* expfl      = eventl->expf_head;
+  expf_link* tmpefl;
+  bool       end_needed = FALSE;
+
+  while( expfl != NULL ) {
+    if( expfl->funit->type == FUNIT_MODULE ) {
+      fprintf( curr_ofile, "reg \\covered$E%d_%x ;\n", expfl->exp->line, expfl->exp->col );
+    } else {
+      fprintf( curr_ofile, "reg \\covered$E%d_%x$%s ;\n", expfl->exp->line, expfl->exp->col, expfl->funit->name );
+    }
+    expfl = expfl->next;
+  }
+
+  if( eventl->name[0] == '@' ) {
+    fprintf( curr_ofile, "always %s", eventl->name );
+  } else {
+    fprintf( curr_ofile, "always @(%s)", eventl->name );
+  }
+  if( (eventl->expf_head != NULL) && (eventl->expf_head->next != NULL) ) {
+    fprintf( curr_ofile, " begin\n" );
+    end_needed = TRUE;
+  }
+
+  /* Output the event assignments */
+  expfl = eventl->expf_head;
+  while( expfl != NULL ) {
+    tmpefl = expfl;
+    expfl  = expfl->next;
+    if( tmpefl->funit->type == FUNIT_MODULE ) {
+      fprintf( curr_ofile, "  \\covered$E%d_%x = 1'b1;\n", tmpefl->exp->line, tmpefl->exp->col );
+    } else {
+      fprintf( curr_ofile, "  \\covered$E%d_%x$%s = 1'b1;\n", tmpefl->exp->line, tmpefl->exp->col, tmpefl->funit->name );
+    }
+    free_safe( tmpefl, sizeof( expf_link ) );
+  }
+
+  if( end_needed ) {
+    fprintf( curr_ofile, "end\n" );
+  }
+
+  fprintf( curr_ofile, "\n" );
+
+  /* Deallocate the rest of the event link */
+  free_safe( eventl->name, (strlen( eventl->name ) + 1) );
+  free_safe( eventl, sizeof( event_link ) );
+
+  PROFILE_END;
+
+}
+
+/*!
+ This function should only be called just prior to an endmodule token.  It flushes the current contents of the
+ event list to the module for the purposes of handling combinational logic event types.
+*/
+void generator_flush_event_combs() { PROFILE(GENERATOR_FLUSH_EVENT_COMBS);
+
+  event_link* eventl = event_head;
+  event_link* tmpl;
+
+  while( eventl != NULL ) {
+    tmpl   = eventl;
+    eventl = eventl->next;
+    generator_flush_event_comb( tmpl );
+  }
+
+  PROFILE_END;
+
+}
+
+
+/*!
  Shortcut for calling generator_flush_work_code() followed by generator_flush_hold_code().
 */
 void generator_flush_all() { PROFILE(GENERATOR_FLUSH_ALL);
@@ -547,7 +653,7 @@ static statement* generator_find_statement(
 
   }
 
-  if( stmt != NULL ) {
+  if( (stmt != NULL) && (stmt->exp->line == first_line) && (((stmt->exp->col >> 16) & 0xffff) == first_column) ) {
     printf( "  FOUND!\n" );
   } else {
     printf( "  NOT FOUND!\n" );
@@ -607,10 +713,70 @@ void generator_insert_line_cov(
 
 }
 
+/*!
+ Handles the insertion of event-type combinational logic code.
+*/
 static void generator_insert_event_comb_cov(
   expression* exp,   /*!< Pointer to expression to output */
   func_unit*  funit  /*!< Pointer to functional unit containing the expression */
 ) { PROFILE(GENERATOR_INSERT_EVENT_COMB_COV);
+
+  char**       code       = NULL;
+  unsigned int code_depth = 0;
+  char*        event_str;
+  unsigned int i;
+  event_link*  eventl;
+
+  /* Create the event string */
+  codegen_gen_expr( exp, exp->op, &code, &code_depth, funit );
+
+  /* Change the event array into a single string */
+  event_str = code[0];
+  for( i=1; i<code_depth; i++ ) {
+    event_str = (char*)realloc_safe( event_str, (strlen( event_str ) + 1), (strlen( event_str ) + strlen( code[i] ) + 1) );
+    strcat( event_str, code[i] );
+    free_safe( code[i], (strlen( code[i] ) + 1) );
+  }
+  free_safe( code, (sizeof( char* ) * code_depth) );
+
+  /* Search through event list to see if this event has already been added */
+  eventl = event_head;
+  while( (eventl != NULL) && (strcmp( eventl->name, event_str ) != 0) ) {
+    eventl = eventl->next;
+  }
+
+  /* Add the expression to the event list if a matching event link is found */
+  if( eventl != NULL ) {
+    expf_link* expfl = (expf_link*)malloc_safe( sizeof( expf_link ) );
+    expfl->exp       = exp;
+    expfl->funit     = funit;
+    expfl->next      = NULL;
+    if( eventl->expf_head == NULL ) {
+      eventl->expf_head = eventl->expf_tail = NULL;
+    } else {
+      eventl->expf_tail->next = expfl;
+      eventl->expf_tail       = expfl;
+    }
+    free_safe( event_str, (strlen( event_str ) + 1) );
+
+  /* Otherwise, allocate and initialize a new event link and add it to the list */
+  } else {
+    expf_link* expfl  = (expf_link*)malloc_safe( sizeof( expf_link ) );
+    expfl->exp        = exp;
+    expfl->funit      = funit;
+    expfl->next       = NULL;
+    eventl            = (event_link*)malloc_safe( sizeof( event_link ) );
+    eventl->name      = event_str;
+    eventl->expf_head = expfl;
+    eventl->expf_tail = expfl;
+    eventl->next      = NULL;
+    if( event_head == NULL ) {
+      event_head = event_tail = eventl;
+    } else {
+      event_tail->next = eventl;
+      event_tail       = eventl;
+    }
+  }
 
   PROFILE_END;
 
@@ -780,8 +946,13 @@ static void generator_gen_msb(
     unsigned int rv;
 
     switch( exp->op ) {
-      case EXP_OP_STATIC   :  /* TBD */
-        *msb = strdup_safe( "32" );
+      case EXP_OP_STATIC :
+        {
+          char tmp[50];
+          rv = snprintf( tmp, 50, "%d", exp->value->width );
+          assert( rv < 50 );
+          *msb = strdup_safe( tmp );
+        }
         break;
       case EXP_OP_LIST     :
       case EXP_OP_MULTIPLY :
@@ -1258,6 +1429,8 @@ static void generator_insert_comb_cov_helper(
 
   if( exp != NULL ) {
 
+    printf( "In generator_insert_comb_cov_helper, expr: %s\n", expression_string( exp ) );
+
     /* Only continue to traverse tree if we are within our depth limit */
     if( (depth < generator_max_exp_depth) && (EXPR_IS_MEASURABLE( exp ) == 1) && !expression_is_static_only( exp ) ) {
 
@@ -1320,6 +1493,10 @@ void generator_insert_comb_cov(
 
 /*
  $Log$
+ Revision 1.23  2008/12/10 06:25:38  phase1geo
+ More work on LHS signal sizing (not complete yet but almost).  Fixed several issues
+ found with regression runs.  Still working on always1.v failures.  Checkpointing.
+
  Revision 1.22  2008/12/10 00:19:23  phase1geo
  Fixing issues with aedge1 diagnostic (still need to handle events but this will
  be worked on a later time).  Working on sizing temporary subexpression LHS signals.

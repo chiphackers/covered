@@ -883,6 +883,11 @@ WSPACE [ \t\b\f]+
         generator_flush_hold_code();
         generator_add_to_hold_code( yytext );
       } else {
+        if( rc == K_endmodule ) {
+          generator_flush_work_code();
+          generator_flush_hold_code();
+          generator_flush_event_combs();
+        }
         generator_add_to_work_code( yytext );
       }
     }

@@ -235,6 +235,7 @@ int yydebug = 1;
   case_gitem*     case_gi;
   typedef_item*   typdef;
   func_unit*      funit;
+  stmt_pair       stmtpair;
 };
 
 %token <text>     IDENTIFIER
@@ -317,6 +318,7 @@ int yydebug = 1;
 %type <case_gi>   generate_case_items generate_case_item
 %type <optype>    static_unary_op unary_op syscall_wo_parms_op syscall_w_parms_op syscall_w_parms_op_64 syscall_w_parms_op_32
 %type <optype>    pre_op_and_assign_op post_op_and_assign_op op_and_assign_op
+%type <stmtpair>  if_body
 
 %token K_TAND
 %right '?' ':'
@@ -4135,6 +4137,19 @@ passign
     }
   ;
 
+if_body
+  : inc_block_depth statement_or_null dec_block_depth %prec less_than_K_else
+    {
+      $$.stmt1 = $2;
+      $$.stmt2 = NULL;
+    }
+  | inc_block_depth statement_or_null dec_block_depth K_else inc_block_depth statement_or_null dec_block_depth
+    {
+      $$.stmt1 = $2;
+      $$.stmt2 = $6;
+    }
+  ;
+
 statement
   : K_assign { ignore_mode++; } lavalue '=' expression ';' { ignore_mode--; }
     {
@@ -4509,32 +4524,16 @@ statement
       VLerror( "Illegal casez expression" );
       $$ = NULL;
     }
-  | cond_specifier_opt K_if '(' expression ')' inc_block_depth statement_or_null dec_block_depth %prec less_than_K_else
+  | cond_specifier_opt K_if '(' expression ')'
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($4 != NULL) ) {
-          expression* tmp = NULL;
-          Try {
-            tmp = db_create_expression( $4, NULL, EXP_OP_IF, FALSE, @2.first_line, @2.first_column, (@5.last_column - 1), NULL );
-          } Catch_anonymous {
-            error_count++;
-          }
-          if( ($$ = db_create_statement( tmp )) != NULL ) {
-            db_connect_statement_true( $$, $7 );
-          }
-        } else {
-          db_remove_statement( $7 );
-          $$ = NULL;
-        }
-      } else {
+      if( !parse_mode ) {
         printf( "Attemping to perform combination coverage for IF (A)\n" );
         generator_insert_comb_cov( FALSE, TRUE, @2.first_line, @2.first_column );
         generator_insert_line_cov( @2.first_line, @2.first_column, (@5.last_column - 1) );
         generator_flush_work_code();
-        $$ = NULL;  /* TBD */
       }
     }
-  | cond_specifier_opt K_if '(' expression ')' inc_block_depth statement_or_null dec_block_depth K_else inc_block_depth statement_or_null dec_block_depth
+    if_body
     {
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($4 != NULL) ) {
@@ -4545,20 +4544,18 @@ statement
             error_count++;
           }
           if( ($$ = db_create_statement( tmp )) != NULL ) {
-            db_connect_statement_true( $$, $7 );
-            db_connect_statement_false( $$, $11 );
+            db_connect_statement_true( $$, $7.stmt1 );
+            if( $7.stmt2 != NULL ) {
+              db_connect_statement_false( $$, $7.stmt2 );
+            }
           }
         } else {
-          db_remove_statement( $7 );
-          db_remove_statement( $11 );
+          db_remove_statement( $7.stmt1 );
+          db_remove_statement( $7.stmt2 );
           $$ = NULL;
         }
       } else {
-        printf( "Attemping to perform combination coverage for IF (B)\n" );
-        generator_insert_comb_cov( FALSE, TRUE, @2.first_line, @2.first_column );
-        generator_insert_line_cov( @2.first_line, @2.first_column, (@2.last_column - 1) );
-        generator_flush_work_code();
-        $$ = NULL;  /* TBD */
+        $$ = NULL;
       }
     }
   | cond_specifier_opt K_if '(' error ')' { ignore_mode++; } if_statement_error { ignore_mode--; }
@@ -6718,6 +6715,7 @@ event_control
           $$ = NULL;
         }
       } else {
+        generator_insert_comb_cov( FALSE, TRUE, @1.first_line, @1.first_column );
         $$ = NULL;
       }
       free_safe( $2, (strlen( $2 ) + 1) );
@@ -6728,6 +6726,9 @@ event_control
       @$.first_column = @3.first_column;
       @$.last_column  = @3.last_column;
       $$ = $3;
+      if( !parse_mode ) {
+        generator_insert_comb_cov( FALSE, TRUE, @3.first_line, @3.first_column );
+      }
     }
   | '@' '(' error ')'
     {

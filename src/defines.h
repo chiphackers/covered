@@ -1833,6 +1833,7 @@ struct db_s;
 struct sim_time_s;
 struct comp_cdd_cov_s;
 struct exclude_reason_s;
+struct stmt_pair_s;
 
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION TYPEDEFS  */
@@ -2163,6 +2164,11 @@ typedef struct comp_cdd_cov_s comp_cdd_cov;
  Renaming exclude_reason_s structure for convenience.
 */
 typedef struct exclude_reason_s exclude_reason;
+
+/*!
+ Renaming stmt_pair_s structure for convenience.
+*/
+typedef struct stmt_pair_s stmt_pair;
 
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION DEFINITIONS  */
@@ -3053,6 +3059,14 @@ struct exclude_reason_s {
 };
 
 /*!
+ Structure that contains a pair of statements (used for IF statement handling in parser).
+*/
+struct stmt_pair_s {
+  statement* stmt1;                     /*!< Pointer to first statement */
+  statement* stmt2;                     /*!< Pointer to second statement */
+};
+
+/*!
  This will define the exception type that gets thrown (Covered does not care about this value)
 */
 define_exception_type(int);
@@ -3061,6 +3075,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.342  2008/12/06 06:35:19  phase1geo
+ Adding first crack at handling coverage-related information from dumpfile.
+ This code is untested.
+
  Revision 1.341  2008/12/05 23:05:37  phase1geo
  Working on VCD reading side of the inlined coverage handler.  Things don't
  compile at this point and are in limbo.  Checkpointing.
