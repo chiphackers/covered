@@ -402,7 +402,7 @@ void generator_init_funit(
 
   /* Initializes the functional unit iterator */
   func_iter_init( &fiter, funit, TRUE, FALSE, FALSE, TRUE );
-  func_iter_display( &fiter );
+  // func_iter_display( &fiter );
 
   /* Reset the structure */
   func_iter_reset( &fiter );
@@ -642,22 +642,22 @@ static statement* generator_find_statement(
 
   static statement* stmt = NULL;
 
-  printf( "In generator_find_statement, line: %d, column: %d\n", first_line, first_column );
+//  printf( "In generator_find_statement, line: %d, column: %d\n", first_line, first_column );
 
   if( (stmt == NULL) || (stmt->exp->line < first_line) || ((stmt->exp->line == first_line) && (((stmt->exp->col >> 16) & 0xffff) < first_column)) ) {
 
     /* Attempt to find the expression with the given position */
     while( ((stmt = func_iter_get_next_statement( &fiter )) != NULL) &&
-           printf( "  statement %s %d\n", expression_string( stmt->exp ), ((stmt->exp->col >> 16) & 0xffff) ) &&
+//           printf( "  statement %s %d\n", expression_string( stmt->exp ), ((stmt->exp->col >> 16) & 0xffff) ) &&
            ((stmt->exp->line < first_line) || ((stmt->exp->line == first_line) && (((stmt->exp->col >> 16) & 0xffff) < first_column))) );
 
   }
 
-  if( (stmt != NULL) && (stmt->exp->line == first_line) && (((stmt->exp->col >> 16) & 0xffff) == first_column) ) {
-    printf( "  FOUND!\n" );
-  } else {
-    printf( "  NOT FOUND!\n" );
-  }
+//  if( (stmt != NULL) && (stmt->exp->line == first_line) && (((stmt->exp->col >> 16) & 0xffff) == first_column) ) {
+//    printf( "  FOUND!\n" );
+//  } else {
+//    printf( "  NOT FOUND!\n" );
+//  }
 
   PROFILE_END;
 
@@ -692,7 +692,7 @@ void generator_insert_line_cov(
     assert( rv < 4096 );
 
     /* Create the register */
-    rv = snprintf( str, 4096, "reg %s = 1'b0;", sig );
+    rv = snprintf( str, 4096, "reg %s;", sig );
     assert( rv < 4096 );
     str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
 
@@ -721,61 +721,96 @@ static void generator_insert_event_comb_cov(
   func_unit*  funit  /*!< Pointer to functional unit containing the expression */
 ) { PROFILE(GENERATOR_INSERT_EVENT_COMB_COV);
 
-  char**       code       = NULL;
-  unsigned int code_depth = 0;
-  char*        event_str;
-  unsigned int i;
-  event_link*  eventl;
+  /*
+   If the expression is a root of an expression tree and it is a single event, just insert the event coverage code
+   immediately.
+  */
+  if( (ESUPPL_IS_ROOT( exp->suppl ) == 1) && ((exp->op == EXP_OP_PEDGE) || (exp->op == EXP_OP_NEDGE) || (exp->op == EXP_OP_AEDGE)) ) {
 
-  /* Create the event string */
-  codegen_gen_expr( exp, exp->op, &code, &code_depth, funit );
+    char         str[4096];
+    char         name[4096];
+    unsigned int rv;
 
-  /* Change the event array into a single string */
-  event_str = code[0];
-  for( i=1; i<code_depth; i++ ) {
-    event_str = (char*)realloc_safe( event_str, (strlen( event_str ) + 1), (strlen( event_str ) + strlen( code[i] ) + 1) );
-    strcat( event_str, code[i] );
-    free_safe( code[i], (strlen( code[i] ) + 1) );
-  }
-  free_safe( code, (sizeof( char* ) * code_depth) );
-
-  /* Search through event list to see if this event has already been added */
-  eventl = event_head;
-  while( (eventl != NULL) && (strcmp( eventl->name, event_str ) != 0) ) {
-    eventl = eventl->next;
-  }
-
-  /* Add the expression to the event list if a matching event link is found */
-  if( eventl != NULL ) {
-    expf_link* expfl = (expf_link*)malloc_safe( sizeof( expf_link ) );
-    expfl->exp       = exp;
-    expfl->funit     = funit;
-    expfl->next      = NULL;
-    if( eventl->expf_head == NULL ) {
-      eventl->expf_head = eventl->expf_tail = NULL;
+    /* Create signal name */
+    if( funit->type == FUNIT_MODULE ) {
+      rv = snprintf( name, 4096, " \\covered$E%d_%x ", exp->line, exp->col );
     } else {
-      eventl->expf_tail->next = expfl;
-      eventl->expf_tail       = expfl;
+      rv = snprintf( name, 4096, " \\covered$E%d_%x$%s ", exp->line, exp->col, funit->name );
     }
-    free_safe( event_str, (strlen( event_str ) + 1) );
+    assert( rv < 4096 );
 
-  /* Otherwise, allocate and initialize a new event link and add it to the list */
+    /* Create register */
+    rv = snprintf( str, 4096, "reg %s;", name );
+    assert( rv < 4096 );
+    str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
+
+    /* Create assignment and append it to the working code list */
+    rv = snprintf( str, 4096, "%s = 1'b1;", name );
+    assert( rv < 4096 );
+    str_link_add( strdup_safe( str ), &work_head, &work_tail );
+
+  /*
+   Otherwise, we will store off the information to inject it at the end of the module.
+  */
   } else {
-    expf_link* expfl  = (expf_link*)malloc_safe( sizeof( expf_link ) );
-    expfl->exp        = exp;
-    expfl->funit      = funit;
-    expfl->next       = NULL;
-    eventl            = (event_link*)malloc_safe( sizeof( event_link ) );
-    eventl->name      = event_str;
-    eventl->expf_head = expfl;
-    eventl->expf_tail = expfl;
-    eventl->next      = NULL;
-    if( event_head == NULL ) {
-      event_head = event_tail = eventl;
-    } else {
-      event_tail->next = eventl;
-      event_tail       = eventl;
+
+    char**       code       = NULL;
+    unsigned int code_depth = 0;
+    char*        event_str;
+    unsigned int i;
+    event_link*  eventl;
+
+    /* Create the event string */
+    codegen_gen_expr( exp, exp->op, &code, &code_depth, funit );
+
+    /* Change the event array into a single string */
+    event_str = code[0];
+    for( i=1; i<code_depth; i++ ) {
+      event_str = (char*)realloc_safe( event_str, (strlen( event_str ) + 1), (strlen( event_str ) + strlen( code[i] ) + 1) );
+      strcat( event_str, code[i] );
+      free_safe( code[i], (strlen( code[i] ) + 1) );
     }
+    free_safe( code, (sizeof( char* ) * code_depth) );
+
+    /* Search through event list to see if this event has already been added */
+    eventl = event_head;
+    while( (eventl != NULL) && (strcmp( eventl->name, event_str ) != 0) ) {
+      eventl = eventl->next;
+    }
+
+    /* Add the expression to the event list if a matching event link is found */
+    if( eventl != NULL ) {
+      expf_link* expfl = (expf_link*)malloc_safe( sizeof( expf_link ) );
+      expfl->exp       = exp;
+      expfl->funit     = funit;
+      expfl->next      = NULL;
+      if( eventl->expf_head == NULL ) {
+        eventl->expf_head = eventl->expf_tail = NULL;
+      } else {
+        eventl->expf_tail->next = expfl;
+        eventl->expf_tail       = expfl;
+      }
+      free_safe( event_str, (strlen( event_str ) + 1) );
+
+    /* Otherwise, allocate and initialize a new event link and add it to the list */
+    } else {
+      expf_link* expfl  = (expf_link*)malloc_safe( sizeof( expf_link ) );
+      expfl->exp        = exp;
+      expfl->funit      = funit;
+      expfl->next       = NULL;
+      eventl            = (event_link*)malloc_safe( sizeof( event_link ) );
+      eventl->name      = event_str;
+      eventl->expf_head = expfl;
+      eventl->expf_tail = expfl;
+      eventl->next      = NULL;
+      if( event_head == NULL ) {
+        event_head = event_tail = eventl;
+      } else {
+        event_tail->next = eventl;
+        event_tail       = eventl;
+      }
+    }
+
   }
 
   PROFILE_END;
@@ -875,19 +910,23 @@ static void generator_insert_comb_comb_cov(
   if( net || (funit->type == FUNIT_MODULE) ) {
     rv = snprintf( sig,  80, " \\covered$%c%d_%x ", (net ? 'e' : 'E'), exp->line, exp->col );
     assert( rv < 80 );
-    rv = snprintf( sigl, 80, " \\covered$%c%d_%x ", (((depth + ((exp->op != exp->left->op) ? 1 : 0)) < generator_max_exp_depth) ? (net ? 'e' : 'E') : (net ? 'y' : 'x')),
+    rv = snprintf( sigl, 80, " \\covered$%c%d_%x ",
+                   ((((depth + ((exp->op != exp->left->op) ? 1 : 0)) < generator_max_exp_depth) && EXPR_IS_MEASURABLE( exp->left ) && !expression_is_static_only( exp->left )) ? (net ? 'e' : 'E') : (net ? 'y' : 'x')),
                    exp->left->line, exp->left->col );
     assert( rv < 80 );
-    rv = snprintf( sigr, 80, " \\covered$%c%d_%x ", (((depth + ((exp->op != exp->right->op) ? 1 : 0)) < generator_max_exp_depth) ? (net ? 'e' : 'E') : (net ? 'y' : 'x')),
+    rv = snprintf( sigr, 80, " \\covered$%c%d_%x ",
+                   ((((depth + ((exp->op != exp->right->op) ? 1 : 0)) < generator_max_exp_depth) && EXPR_IS_MEASURABLE( exp->right ) && !expression_is_static_only( exp->right )) ? (net ? 'e' : 'E') : (net ? 'y' : 'x')),
                    exp->right->line, exp->right->col );
     assert( rv < 80 );
   } else {
     rv = snprintf( sig,  80, " \\covered$E%d_%x$%s ", exp->line, exp->col, funit->name );
     assert( rv < 80 );
-    rv = snprintf( sigl, 80, " \\covered$%c%d_%x$%s ", (((depth + ((exp->op != exp->left->op) ? 1 : 0)) < generator_max_exp_depth) ? 'E' : 'x'),
+    rv = snprintf( sigl, 80, " \\covered$%c%d_%x$%s ",
+                   ((((depth + ((exp->op != exp->left->op) ? 1 : 0)) < generator_max_exp_depth) && EXPR_IS_MEASURABLE( exp->left ) && !expression_is_static_only( exp->left )) ? 'E' : 'x'),
                    exp->left->line, exp->left->col, funit->name );
     assert( rv < 80 );
-    rv = snprintf( sigr, 80, " \\covered$%c%d_%x$%s ", (((depth + ((exp->op != exp->right->op) ? 1 : 0)) < generator_max_exp_depth) ? 'E' : 'x'),
+    rv = snprintf( sigr, 80, " \\covered$%c%d_%x$%s ",
+                   ((((depth + ((exp->op != exp->right->op) ? 1 : 0)) < generator_max_exp_depth) && EXPR_IS_MEASURABLE( exp->right ) && !expression_is_static_only( exp->right )) ? 'E' : 'x'),
                    exp->right->line, exp->right->col, funit->name );
     assert( rv < 80 );
   }
@@ -1179,7 +1218,7 @@ static char* generator_create_subexp(
 
   /* Generate left string */
   if( exp != NULL ) {
-    if( ((exp->op != parent_op) ? (depth + 1) : depth) < generator_max_exp_depth ) {
+    if( (((exp->op != parent_op) ? (depth + 1) : depth) < generator_max_exp_depth) && EXPR_IS_MEASURABLE( exp ) && !expression_is_static_only( exp ) ) {
       char num_str[50];
       unsigned int line_len;
       unsigned int col_len;
@@ -1199,6 +1238,7 @@ static char* generator_create_subexp(
         assert( rv < slen );
       }
     } else {
+//      printf( "-------- Generating code only for expr %s --------\n", expression_string( exp ) );
       codegen_gen_expr( exp, exp->op, code, code_depth, funit );
     }
   }
@@ -1429,17 +1469,16 @@ static void generator_insert_comb_cov_helper(
 
   if( exp != NULL ) {
 
-    printf( "In generator_insert_comb_cov_helper, expr: %s\n", expression_string( exp ) );
+    int child_depth = (depth + ((exp->op != parent_op) ? 1 : 0));
+
+//    printf( "In generator_insert_comb_cov_helper, expr: %s\n", expression_string( exp ) );
 
     /* Only continue to traverse tree if we are within our depth limit */
     if( (depth < generator_max_exp_depth) && (EXPR_IS_MEASURABLE( exp ) == 1) && !expression_is_static_only( exp ) ) {
 
-      int child_depth = (depth + ((exp->op != parent_op) ? 1 : 0));
-
       /* Generate event combinational logic type */
       if( EXPR_IS_EVENT( exp ) ) {
         generator_insert_event_comb_cov( exp, funit );
-        generator_insert_subexp( exp, funit, depth, net );
 
       /* Generate unary combinational logic type */
       } else if( EXPR_IS_UNARY( exp ) ) {
@@ -1454,11 +1493,11 @@ static void generator_insert_comb_cov_helper(
 
       }
 
-      /* Generate children expression trees */
-      generator_insert_comb_cov_helper( exp->left,  funit, exp->op, child_depth, net, FALSE );
-      generator_insert_comb_cov_helper( exp->right, funit, exp->op, child_depth, net, FALSE );
-
     }
+
+    /* Generate children expression trees */
+    generator_insert_comb_cov_helper( exp->left,  funit, exp->op, child_depth, net, FALSE );
+    generator_insert_comb_cov_helper( exp->right, funit, exp->op, child_depth, net, FALSE );
 
   }
 
@@ -1493,6 +1532,11 @@ void generator_insert_comb_cov(
 
 /*
  $Log$
+ Revision 1.24  2008/12/10 23:37:02  phase1geo
+ Working on handling event combinational logic cases.  This does not fully work
+ at this point.  Fixed issues with combinational logic generation for IF statements.
+ Checkpointing.
+
  Revision 1.23  2008/12/10 06:25:38  phase1geo
  More work on LHS signal sizing (not complete yet but almost).  Fixed several issues
  found with regression runs.  Still working on always1.v failures.  Checkpointing.

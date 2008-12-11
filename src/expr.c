@@ -5556,7 +5556,7 @@ void expression_vcd_assign(
   const char* value    /*!< Coverage data from dumpfile to assign */
 ) { PROFILE(EXPRESSION_VCD_ASSIGN);
 
-  printf( "In expression_vcd_assign, expr: %s, action: %c, value: %s\n", expression_string( expr ), action, value );
+//  printf( "In expression_vcd_assign, expr: %s, action: %c, value: %s\n", expression_string( expr ), action, value );
 
   if( action == 'l' ) {
 
@@ -6207,6 +6207,11 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.389  2008/12/10 00:19:23  phase1geo
+ Fixing issues with aedge1 diagnostic (still need to handle events but this will
+ be worked on a later time).  Working on sizing temporary subexpression LHS signals.
+ This is not complete and does not compile at this time.  Checkpointing.
+
  Revision 1.388  2008/12/08 06:43:45  phase1geo
  Fixing issues with broken regression.  Updated regression per these changes (some
  code reduction was performed as well).  IV and Cver regressions now pass.

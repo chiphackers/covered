@@ -4527,7 +4527,6 @@ statement
   | cond_specifier_opt K_if '(' expression ')'
     {
       if( !parse_mode ) {
-        printf( "Attemping to perform combination coverage for IF (A)\n" );
         generator_insert_comb_cov( FALSE, TRUE, @2.first_line, @2.first_column );
         generator_insert_line_cov( @2.first_line, @2.first_column, (@5.last_column - 1) );
         generator_flush_work_code();
@@ -4732,6 +4731,8 @@ statement
         generator_add_to_work_code( ";" );
         generator_insert_line_cov( @1.first_line, @1.first_column, (@1.last_column - 1) );
         generator_flush_work_code();
+        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
+        generator_flush_work_code();
       }
     }
     statement_or_null
@@ -4762,6 +4763,8 @@ statement
       if( !parse_mode ) {
         generator_add_to_work_code( ";" );
         generator_insert_line_cov( @1.first_line, @1.first_column, (@1.last_column - 1) );
+        generator_flush_work_code();
+        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
         generator_flush_work_code();
       }
     }
@@ -6715,7 +6718,6 @@ event_control
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( FALSE, TRUE, @1.first_line, @1.first_column );
         $$ = NULL;
       }
       free_safe( $2, (strlen( $2 ) + 1) );
@@ -6726,9 +6728,6 @@ event_control
       @$.first_column = @3.first_column;
       @$.last_column  = @3.last_column;
       $$ = $3;
-      if( !parse_mode ) {
-        generator_insert_comb_cov( FALSE, TRUE, @3.first_line, @3.first_column );
-      }
     }
   | '@' '(' error ')'
     {
