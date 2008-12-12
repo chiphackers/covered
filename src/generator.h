@@ -24,6 +24,19 @@
 */
 
 
+/*! Shortcut for the generator_flush_hold_code1 function call */
+#define generator_flush_hold_code generator_flush_hold_code1( __FILE__, __LINE__ )
+
+/*! Shortcut for the generator_flush_work_code1 function call */
+#define generator_flush_work_code generator_flush_work_code1( __FILE__, __LINE__ )
+
+/*! Shortcut for the generator_flush_all1 function call */
+#define generator_flush_all generator_flush_all1( __FILE__, __LINE__ )
+
+/*! Shortcut for the generator_flush_event_combs1 function call */
+#define generator_flush_event_combs generator_flush_event_combs1( __FILE__, __LINE__ )
+
+
 /*! \brief Outputs the current state of the code generator to standard output for debugging purposes. */
 void generator_display();
 
@@ -41,21 +54,33 @@ void generator_add_to_work_code(
 );
 
 /*! \brief Flushes the working code to the hold code */
-void generator_flush_work_code();
+void generator_flush_work_code1(
+  const char*  file,
+  unsigned int line
+);
 
 /*! \brief Adds the given string to the hold code buffers */
 void generator_add_to_hold_code(
-  const char*  str
+  const char* str
 );
 
 /*! \brief Outputs all held code to the output file. */
-void generator_flush_hold_code();
+void generator_flush_hold_code1(
+  const char*  file,
+  unsigned int line
+);
 
 /*! \brief Outputs all of the event code to the output file. */
-void generator_flush_event_combs();
+void generator_flush_event_combs1(
+  const char*  file,
+  unsigned int line
+);
 
 /*! \brief Flushes the working and holding code buffers. */
-void generator_flush_all();
+void generator_flush_all1(
+  const char*  file,
+  unsigned int line
+);
 
 /*! \brief Inserts line coverage information. */
 void generator_insert_line_cov(
@@ -75,6 +100,9 @@ void generator_insert_comb_cov(
 
 /*
  $Log$
+ Revision 1.11  2008/12/12 00:17:30  phase1geo
+ Fixing some bugs, creating some new ones...  Checkpointing.
+
  Revision 1.10  2008/12/10 23:37:02  phase1geo
  Working on handling event combinational logic cases.  This does not fully work
  at this point.  Fixed issues with combinational logic generation for IF statements.

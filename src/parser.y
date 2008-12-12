@@ -37,6 +37,7 @@
 #include "expr.h"
 #include "func_unit.h"
 #include "gen_item.h"
+#include "generator.h"
 #include "link.h"
 #include "obfuscate.h"
 #include "parser_func.h"
@@ -422,13 +423,13 @@ description
   : module
     {
       if( !parse_mode ) {
-        generator_flush_all();
+        generator_flush_all;
       }
     }
   | udp_primitive
     {
       if( !parse_mode ) {
-        generator_flush_all();
+        generator_flush_all;
       }
     }
   | KK_attribute '(' IDENTIFIER ',' STRING ',' STRING ')'
@@ -437,26 +438,26 @@ description
       vector_dealloc( $5.vec );
       vector_dealloc( $7.vec );
       if( !parse_mode ) {
-        generator_flush_all();
+        generator_flush_all;
       }
     }
   | typedef_decl
     {
       if( !parse_mode ) {
-        generator_flush_all();
+        generator_flush_all;
       }
     }
   | net_type signed_opt range_opt list_of_variables ';'
     {
       if( !parse_mode ) {
-        generator_flush_all();
+        generator_flush_all;
       }
     }
   | net_type signed_opt range_opt
     net_decl_assigns ';'
     {
       if( !parse_mode ) {
-        generator_flush_all();
+        generator_flush_all;
       }
     }
   | net_type drive_strength
@@ -471,7 +472,7 @@ description
     net_decl_assigns ';'
     {
       if( !parse_mode ) {
-        generator_flush_all();
+        generator_flush_all;
       }
     }
   | K_trireg charge_strength_opt range_opt delay3_opt
@@ -484,7 +485,7 @@ description
     list_of_variables ';'
     {
       if( !parse_mode ) {
-        generator_flush_all();
+        generator_flush_all;
       }
     }
   | gatetype gate_instance_list ';'
@@ -492,7 +493,7 @@ description
       if( parse_mode ) {
         str_link_delete_list( $2 );
       } else {
-        generator_flush_all();
+        generator_flush_all;
       }
     }
   | gatetype delay3 gate_instance_list ';'
@@ -500,7 +501,7 @@ description
       if( parse_mode ) {
         str_link_delete_list( $3 );
       } else {
-        generator_flush_all();
+        generator_flush_all;
       }
     }
   | gatetype drive_strength gate_instance_list ';'
@@ -508,7 +509,7 @@ description
       if( parse_mode ) {
         str_link_delete_list( $3 );
       } else {
-        generator_flush_all();
+        generator_flush_all;
       }
     }
   | gatetype drive_strength delay3 gate_instance_list ';'
@@ -516,7 +517,7 @@ description
       if( parse_mode ) {
         str_link_delete_list( $4 );
       } else {
-        generator_flush_all();
+        generator_flush_all;
       }
     }
   | K_pullup gate_instance_list ';'
@@ -524,7 +525,7 @@ description
       if( parse_mode ) {
         str_link_delete_list( $2 );
       } else {
-        generator_flush_all();
+        generator_flush_all;
       }
     }
   | K_pulldown gate_instance_list ';'
@@ -532,7 +533,7 @@ description
       if( parse_mode ) {
         str_link_delete_list( $2 );
       } else {
-        generator_flush_all();
+        generator_flush_all;
       }
     }
   | K_pullup '(' dr_strength1 ')' gate_instance_list ';'
@@ -540,7 +541,7 @@ description
       if( parse_mode ) {
         str_link_delete_list( $5 );
       } else {
-        generator_flush_all();
+        generator_flush_all;
       }
     }
   | K_pulldown '(' dr_strength0 ')' gate_instance_list ';'
@@ -548,13 +549,13 @@ description
       if( parse_mode ) {
         str_link_delete_list( $5 );
       } else {
-        generator_flush_all();
+        generator_flush_all;
       }
     }
   | block_item_decl
     {
       if( !parse_mode ) {
-        generator_flush_all();
+        generator_flush_all;
       }
     }
   | K_event
@@ -570,13 +571,15 @@ description
     list_of_variables ';'
     {
       if( !parse_mode ) {
-        generator_flush_all();
+        generator_flush_all;
       }
     }
   | K_task automatic_opt IDENTIFIER ';'
     {
       if( parse_mode ) {
         parser_create_task_decl( $2, $3, @3.text, @3.first_line );
+      } else {
+        free_safe( $3, (strlen( $3 ) + 1) );
       }
     }
     task_item_list_opt statement_or_null
@@ -588,13 +591,15 @@ description
       if( parse_mode ) {
         parser_end_task_function( @9.first_line );
       } else {
-        generator_flush_all();
+        generator_flush_all;
       }
     }
   | K_function automatic_opt signed_opt range_or_type_opt IDENTIFIER ';'
     {
       if( parse_mode ) {
         parser_create_function_decl( $2, $5, @5.text, @5.first_line, @5.first_column );
+      } else {
+        free_safe( $5, (strlen( $5 ) + 1) );
       }
     }
     function_item_list statement
@@ -606,7 +611,7 @@ description
       if( parse_mode ) {
         parser_end_task_function( @11.first_line );
       } else {
-        generator_flush_all();
+        generator_flush_all;
       }
     }
   | error ';'
@@ -627,7 +632,7 @@ description
         }
         str_link_delete_list( $2 );
       } else {
-        generator_flush_all();
+        generator_flush_all;
       }
     }
   ;
@@ -647,7 +652,7 @@ module
     module_port_list_opt ';'
     {
       if( !parse_mode ) {
-        generator_flush_all();
+        generator_flush_all;
       }
     }
     module_item_list_opt K_endmodule
@@ -2094,7 +2099,7 @@ begin_end_id
           $$ = NULL;
         }
       } else {
-        printf( "1 " );  generator_flush_work_code();
+        generator_flush_work_code;
         free_safe( $2, (strlen( $2 ) + 1) );
         $$ = NULL;
       }
@@ -2658,7 +2663,7 @@ generate_item
         $$ = NULL;
       }
     }
-  | K_case inc_gen_expr_mode '(' static_expr ')' inc_block_depth generate_case_items dec_block_depth dec_gen_expr_mode K_endcase
+  | K_case inc_gen_expr_mode '(' static_expr ')' inc_block_depth_only generate_case_items dec_block_depth_only dec_gen_expr_mode K_endcase
     { 
       if( parse_mode ) {
         expression* expr      = NULL;
@@ -2808,13 +2813,13 @@ module_item_list
   : module_item_list module_item
     {
       if( !parse_mode ) {
-        generator_flush_all();
+        generator_flush_all;
       }
     }
   | module_item
     {
       if( !parse_mode ) {
-        generator_flush_all();
+        generator_flush_all;
       }
     }
   ;
@@ -3077,7 +3082,7 @@ module_item
           }
         }
       } else {
-        generator_flush_hold_code();
+        generator_flush_hold_code;
       }
     }
   | attribute_list_opt
@@ -3089,7 +3094,7 @@ module_item
           ignore_mode++;
         }
       } else {
-        printf( "2 " );  generator_flush_work_code();
+        generator_flush_work_code;
         generator_add_to_hold_code( " begin" );
       }
     }
@@ -3126,9 +3131,9 @@ module_item
           }
         }
       } else {
-        printf( "3 " );  generator_flush_work_code();
+        generator_flush_work_code;
         generator_add_to_hold_code( " end " );
-        generator_flush_hold_code();
+        generator_flush_hold_code;
       }
     }
   | attribute_list_opt
@@ -3140,7 +3145,7 @@ module_item
           ignore_mode++;
         }
       } else {
-        printf( "4 " );  generator_flush_work_code();
+        generator_flush_work_code;
         generator_add_to_hold_code( " begin" );
       }
     }
@@ -3177,9 +3182,9 @@ module_item
           }
         }
       } else {
-        printf( "5 " );  generator_flush_work_code();
+        generator_flush_work_code;
         generator_add_to_hold_code( " end " );
-        generator_flush_hold_code();
+        generator_flush_hold_code;
       }
     }
   | attribute_list_opt
@@ -3191,7 +3196,7 @@ module_item
           ignore_mode++;
         }
       } else {
-        printf( "6 " );  generator_flush_work_code();
+        generator_flush_work_code;
         generator_add_to_hold_code( " begin" );
       }
     }
@@ -3212,9 +3217,9 @@ module_item
           }
         }
       } else {
-        printf( "7 " );  generator_flush_work_code();
+        generator_flush_work_code;
         generator_add_to_hold_code( " end " );
-        generator_flush_hold_code();
+        generator_flush_hold_code;
       }
     }
   | attribute_list_opt
@@ -3231,7 +3236,7 @@ module_item
           }
         }
       } else {
-        generator_flush_hold_code();
+        generator_flush_hold_code;
       }
     }
   | attribute_list_opt
@@ -3249,7 +3254,7 @@ module_item
           }
         }
       } else {
-        generator_flush_hold_code();
+        generator_flush_hold_code;
       }
     }
   | attribute_list_opt
@@ -3270,9 +3275,9 @@ module_item
             ignore_mode++;
           }
         }
-        free_safe( $4, (strlen( $4 ) + 1) );
         generate_top_mode--;
       }
+      free_safe( $4, (strlen( $4 ) + 1) );
     }
     task_item_list_opt statement_or_null
     {
@@ -3298,7 +3303,7 @@ module_item
           ignore_mode--;
         }
       } else {
-        generator_flush_hold_code();
+        generator_flush_hold_code;
       }
     }
   | attribute_list_opt
@@ -3324,8 +3329,8 @@ module_item
           }
         }
         generate_top_mode--;
-        free_safe( $6, (strlen( $6 ) + 1) );
       }
+      free_safe( $6, (strlen( $6 ) + 1) );
     }
     function_item_list statement
     {
@@ -3348,7 +3353,7 @@ module_item
           ignore_mode--;
         }
       } else {
-        generator_flush_hold_code();
+        generator_flush_hold_code;
       }
     }
   | K_generate
@@ -4154,28 +4159,28 @@ statement
   : K_assign { ignore_mode++; } lavalue '=' expression ';' { ignore_mode--; }
     {
       if( !parse_mode ) {
-        printf( "8 " );  generator_flush_work_code();
+        generator_flush_work_code;
       }
       $$ = NULL;
     }
   | K_deassign { ignore_mode++; } lavalue ';' { ignore_mode--; }
     {
       if( !parse_mode ) {
-        printf( "9 " );  generator_flush_work_code();
+        generator_flush_work_code;
       }
       $$ = NULL;
     }
   | K_force { ignore_mode++; } lavalue '=' expression ';' { ignore_mode--; }
     {
       if( !parse_mode ) {
-        printf( "10 " );  generator_flush_work_code();
+        generator_flush_work_code;
       }
       $$ = NULL;
     }
   | K_release { ignore_mode++; } lavalue ';' { ignore_mode--; }
     {
       if( !parse_mode ) {
-        printf( "11 " );  generator_flush_work_code();
+        generator_flush_work_code;
       }
       $$ = NULL;
     }
@@ -4211,7 +4216,7 @@ statement
           }
         }
       } else {
-        generator_flush_hold_code();
+        generator_flush_work_code;
         $$ = NULL;
       }
     }
@@ -4241,8 +4246,8 @@ statement
           $$ = NULL;
         }
       } else {
-        printf( "12 " );  generator_flush_work_code();
-        $$ = NULL;  /* TBD - Need to do something here */
+        generator_flush_work_code;
+        $$ = NULL;
       }
     }
   | K_disable identifier ';'
@@ -4261,7 +4266,7 @@ statement
         } 
       } else {
         generator_insert_line_cov( @1.first_line, @1.first_column, (@2.last_column - 1) );
-        printf( "13 " );  generator_flush_work_code();
+        generator_flush_work_code;
         $$ = NULL;
       }
       free_safe( $2, (strlen( $2 ) + 1) );
@@ -4282,7 +4287,7 @@ statement
         }
       } else {
         generator_insert_line_cov( @1.first_line, @1.first_column, (@2.last_column - 1) );
-        printf( "14 " );  generator_flush_work_code();
+        generator_flush_work_code;
         $$ = NULL;
       }
       free_safe( $2, (strlen( $2 ) + 1) );
@@ -4347,7 +4352,7 @@ statement
         $$ = NULL;  /* TBD */
       }
     }
-  | cond_specifier_opt K_case '(' expression ')' inc_block_depth case_items dec_block_depth K_endcase
+  | cond_specifier_opt K_case '(' expression ')' inc_block_depth_only case_items dec_block_depth_only K_endcase
     {
       if( parse_mode ) {
         expression*     expr      = NULL;
@@ -4393,10 +4398,11 @@ statement
           $$ = NULL;
         }
       } else {
-        $$ = NULL;  /* TBD */
+        generator_flush_work_code;
+        $$ = NULL;
       }
     }
-  | cond_specifier_opt K_casex '(' expression ')' inc_block_depth case_items dec_block_depth K_endcase
+  | cond_specifier_opt K_casex '(' expression ')' inc_block_depth_only case_items dec_block_depth_only K_endcase
     {
       if( parse_mode ) {
         expression*     expr      = NULL;
@@ -4445,7 +4451,7 @@ statement
         $$ = NULL;  /* TBD */
       }
     }
-  | cond_specifier_opt K_casez '(' expression ')' inc_block_depth case_items dec_block_depth K_endcase
+  | cond_specifier_opt K_casez '(' expression ')' inc_block_depth_only case_items dec_block_depth_only K_endcase
     {
       if( parse_mode ) {
         expression*     expr      = NULL;
@@ -4494,7 +4500,7 @@ statement
         $$ = NULL;  /* TBD */
       }
     }
-  | cond_specifier_opt K_case '(' expression ')' inc_block_depth error dec_block_depth K_endcase
+  | cond_specifier_opt K_case '(' expression ')' inc_block_depth_only error dec_block_depth_only K_endcase
     {
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
@@ -4504,7 +4510,7 @@ statement
       VLerror( "Illegal case expression" );
       $$ = NULL;
     }
-  | cond_specifier_opt K_casex '(' expression ')' inc_block_depth error dec_block_depth K_endcase
+  | cond_specifier_opt K_casex '(' expression ')' inc_block_depth_only error dec_block_depth_only K_endcase
     {
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
@@ -4514,7 +4520,7 @@ statement
       VLerror( "Illegal casex expression" );
       $$ = NULL;
     }
-  | cond_specifier_opt K_casez '(' expression ')' inc_block_depth error dec_block_depth K_endcase
+  | cond_specifier_opt K_casez '(' expression ')' inc_block_depth_only error dec_block_depth_only K_endcase
     {
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
@@ -4529,7 +4535,6 @@ statement
       if( !parse_mode ) {
         generator_insert_comb_cov( FALSE, TRUE, @2.first_line, @2.first_column );
         generator_insert_line_cov( @2.first_line, @2.first_column, (@5.last_column - 1) );
-        //printf( "15 " );  generator_flush_work_code();
       }
     }
     if_body
@@ -4699,7 +4704,7 @@ statement
       if( !parse_mode ) {
         generator_add_to_work_code( ";" );
         generator_insert_line_cov( @1.first_line, @1.first_column, (@1.last_column - 1) );
-        printf( "16 " );  generator_flush_work_code();
+        generator_flush_work_code;
       }
     }
     statement_or_null
@@ -4721,8 +4726,8 @@ statement
           $$ = NULL;
         }
       } else {
-        printf( "17 " );  generator_flush_work_code();
-        $$ = NULL;  /* TBD */
+        generator_flush_work_code;
+        $$ = NULL;
       }
     }
   | event_control
@@ -4730,9 +4735,9 @@ statement
       if( !parse_mode ) {
         generator_add_to_work_code( ";" );
         generator_insert_line_cov( @1.first_line, @1.first_column, (@1.last_column - 1) );
-        printf( "18 " );  generator_flush_work_code();
+        generator_flush_work_code;
         generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
-        printf( "19 " );  generator_flush_work_code();
+        generator_flush_work_code;
       }
     }
     statement_or_null
@@ -4754,7 +4759,6 @@ statement
           $$ = NULL;
         }
       } else {
-        // printf( "20 " );  generator_flush_work_code();
         $$ = NULL;
       }
     }
@@ -4763,9 +4767,9 @@ statement
       if( !parse_mode ) {
         generator_add_to_work_code( ";" );
         generator_insert_line_cov( @1.first_line, @1.first_column, (@1.last_column - 1) );
-        printf( "21 " );  generator_flush_work_code();
+        generator_flush_work_code;
         generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
-        printf( "22 " );  generator_flush_work_code();
+        generator_flush_work_code;
       }
     }
     statement_or_null
@@ -4803,7 +4807,7 @@ statement
           }
         }
       } else {
-        printf( "23 " );  generator_flush_work_code();
+        generator_flush_work_code;
         $$ = NULL;
       }
     }
@@ -4813,7 +4817,7 @@ statement
         $$ = $1;
       } else {
         generator_insert_line_cov( @1.first_line, @1.first_column, (@1.last_column - 1) );
-        printf( "24 " );  generator_flush_work_code();
+        generator_flush_work_code;
         $$ = NULL;  /* TBD */
       }
     }
@@ -4838,7 +4842,7 @@ statement
       } else {
         generator_insert_comb_cov( FALSE, TRUE, @1.first_line, @1.first_column );
         generator_insert_line_cov( @1.first_line, @1.first_column, (@3.last_column - 1) );
-        printf( "25 " );  generator_flush_work_code();
+        generator_flush_work_code;
         $$ = NULL;
       }
     }
@@ -5017,14 +5021,14 @@ statement
           $$ = NULL;
         }
       } else {
-        printf( "26 " );  generator_flush_work_code();
+        generator_flush_work_code;
         $$ = NULL;  /* TBD */
       }
     }
   | S_ignore '(' ignore_more expression_systask_list ignore_less ')' ';'
     {
       if( !parse_mode ) {
-        printf( "27 " );  generator_flush_work_code();
+        generator_flush_work_code;
       }
       $$ = NULL;
     }
@@ -5042,7 +5046,7 @@ statement
           $$ = NULL;
         }
       } else {
-        printf( "28 " );  generator_flush_work_code();
+        generator_flush_work_code;
         $$ = NULL;
       }
     }
@@ -5060,7 +5064,7 @@ statement
           $$ = NULL;
         }
       } else {
-        printf( "29 " );  generator_flush_work_code();
+        generator_flush_work_code;
         $$ = NULL;
       }
     }
@@ -5078,7 +5082,7 @@ statement
           $$ = NULL;
         }
       } else {
-        printf( "30 " );  generator_flush_work_code();
+        generator_flush_work_code;
         $$ = NULL;
       }
     }
@@ -5098,7 +5102,7 @@ statement
           $$ = NULL;
         }
       } else {
-        printf( "31 " );  generator_flush_work_code();
+        generator_flush_work_code;
         $$ = NULL;
       }
     }
@@ -5106,7 +5110,7 @@ statement
     {
       $$ = NULL;
       if( !parse_mode ) {
-        printf( "32 " );  generator_flush_work_code();
+        generator_flush_work_code;
       }
     }
   | S_allow ';'
@@ -5123,7 +5127,7 @@ statement
           $$ = NULL;
         }
       } else {
-        printf( "33 " );  generator_flush_work_code();
+        generator_flush_work_code;
         $$ = NULL;
       }
     }
@@ -5141,7 +5145,7 @@ statement
           $$ = NULL;
         }
       } else {
-        printf( "34 " );  generator_flush_work_code();
+        generator_flush_work_code;
         $$ = NULL;
       }
     }
@@ -5173,14 +5177,13 @@ statement
             error_count++;
             $$ = NULL;
           }
-          free_safe( $1, (strlen( $1 ) + 1) );
         } else {
-          free_safe( $1, (strlen( $1 ) + 1) );
           $$ = NULL;
         }
       } else {
         $$ = NULL;  /* TBD */
       }
+      free_safe( $1, (strlen( $1 ) + 1) );
     }
   | identifier ';'
     {
@@ -5193,14 +5196,13 @@ statement
             error_count++;
             $$ = NULL;
           }
-          free_safe( $1, (strlen( $1 ) + 1) );
         } else {
-          free_safe( $1, (strlen( $1 ) + 1) );
           $$ = NULL;
         }
       } else {
         $$ = NULL;  /* TBD */
       }
+      free_safe( $1, (strlen( $1 ) + 1) );
     }
    /* Immediate SystemVerilog assertions are parsed but not performed -- we will not exclude a block that contains one */
   | K_assert ';'
@@ -5811,7 +5813,14 @@ block_item_decl
   ;	
 
 case_item
-  : expression_list ':' statement_or_null
+  : expression_list ':'
+    {
+      if( !parse_mode ) {
+        generator_add_to_work_code( " begin" );
+        generator_flush_work_code;
+      }
+    }
+    statement_or_null
     { PROFILE(PARSER_CASE_ITEM_A);
       if( parse_mode ) {
         case_statement* cstmt;
@@ -5819,17 +5828,25 @@ case_item
           cstmt = (case_statement*)malloc_safe( sizeof( case_statement ) );
           cstmt->prev = NULL;
           cstmt->expr = $1;
-          cstmt->stmt = $3;
+          cstmt->stmt = $4;
           cstmt->line = @1.first_line;
           $$ = cstmt;
         } else {
           $$ = NULL;
         }
       } else {
-        $$ = NULL;  /* TBD */
+        generator_add_to_work_code( " end " );
+        $$ = NULL;
       }
     }
-  | K_default ':' statement_or_null
+  | K_default ':'
+    {
+      if( !parse_mode ) {
+        generator_add_to_work_code( " begin" );
+        generator_flush_work_code;
+      }
+    }
+    statement_or_null
     { PROFILE(PARSER_CASE_ITEM_B);
       if( parse_mode ) {
         case_statement* cstmt;
@@ -5837,17 +5854,25 @@ case_item
           cstmt = (case_statement*)malloc_safe( sizeof( case_statement ) );
           cstmt->prev = NULL;
           cstmt->expr = NULL;
-          cstmt->stmt = $3;
+          cstmt->stmt = $4;
           cstmt->line = @1.first_line;
           $$ = cstmt;
         } else {
           $$ = NULL;
         }
       } else {
-        $$ = NULL;  /* TBD */
+        generator_add_to_work_code( " end " );
+        $$ = NULL;
       }
     }
-  | K_default statement_or_null
+  | K_default 
+    {
+      if( !parse_mode ) {
+        generator_add_to_work_code( " begin" );
+        generator_flush_work_code;
+      }
+    }
+    statement_or_null
     { PROFILE(PARSER_CASE_ITEM_C);
       if( parse_mode ) {
         case_statement* cstmt;
@@ -5855,14 +5880,15 @@ case_item
           cstmt = (case_statement*)malloc_safe( sizeof( case_statement ) );
           cstmt->prev = NULL;
           cstmt->expr = NULL;
-          cstmt->stmt = $2;
+          cstmt->stmt = $3;
           cstmt->line = @1.first_line;
           $$ = cstmt;
         } else {
           $$ = NULL;
         }
       } else {
-        $$ = NULL;  /* TBD */
+        generator_add_to_work_code( " end " );
+        $$ = NULL;
       }
     }
   | error { ignore_mode++; } ':' statement_or_null { ignore_mode--; }
@@ -7763,7 +7789,7 @@ inc_block_depth
       if( parse_mode ) {
         block_depth++;
       } else {
-        printf( "35 " );  generator_flush_work_code();
+        generator_flush_work_code;
         generator_add_to_hold_code( " begin" );
       }
     }
@@ -7776,8 +7802,25 @@ dec_block_depth
         block_depth--;
       } else {
         generator_add_to_hold_code( " end " );
-        generator_display();
-        // printf( "36 " );  generator_flush_work_code();
+        // generator_display();
+      }
+    }
+  ;
+
+inc_block_depth_only
+  :
+    {
+      if( parse_mode ) {
+        block_depth++;
+      }
+    }
+  ;
+
+dec_block_depth_only
+  :
+    {
+      if( parse_mode ) {
+        block_depth--;
       }
     }
   ;
