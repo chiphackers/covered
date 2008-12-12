@@ -39,12 +39,17 @@ void func_iter_display(
 
   int i;  /* Loop iterator */
 
-  printf( "Functional unit iterator (scopes: %u):\n", fi->scopes );
+  printf( "Functional unit iterator (scopes: %u, si_num: %u):\n", fi->scopes, fi->si_num );
 
   if( fi->sis != NULL ) {
     for( i=0; i<fi->si_num; i++ ) {
       if( fi->sis[i] != NULL ) {
-        stmt_link_display( fi->sis[i]->curr );
+        stmt_iter si;
+        stmt_iter_copy( &si, fi->sis[i] );
+        stmt_iter_reverse( &si );
+        while( si.curr != NULL ) stmt_iter_next( &si );
+        stmt_iter_reverse( &si );
+        stmt_link_display( si.curr );
       }
     }
   }
@@ -278,10 +283,18 @@ void func_iter_reset(
   stmt_iter    si;
 
   for( i=0; i<fi->si_num; i++ ) {
-    stmt_iter_reset( &si, fi->sis[i]->curr );
+    stmt_iter_copy( &si, fi->sis[i] );
     while( si.curr != NULL ) {
       si.curr->stmt->suppl.part.added = 0;
       stmt_iter_next( &si );
+    }
+    stmt_iter_copy( &si, fi->sis[i] );
+    stmt_iter_reverse( &si );
+    if( si.curr != NULL ) {
+      while( si.curr != NULL ) {
+        si.curr->stmt->suppl.part.added = 0;
+        stmt_iter_next( &si );
+      }
     }
   }
 
@@ -409,6 +422,9 @@ void func_iter_dealloc(
 
 /*
  $Log$
+ Revision 1.19  2008/12/05 04:39:14  phase1geo
+ Checkpointing.  Updating regressions.
+
  Revision 1.18  2008/12/05 00:22:41  phase1geo
  More work completed on code coverage generator.  Currently working on bug in
  statement finder.  Checkpointing.

@@ -879,13 +879,13 @@ WSPACE [ \t\b\f]+
     /* Clear the current hold buffer before working on a new statement block */
     if( (rc != K_begin) && (rc != K_end) ) {
       if( (rc == K_initial) || (rc == K_always) || (rc == K_always_latch) || (rc == K_always_comb) || (rc == K_always_ff) || (rc == K_final) ) {
-        generator_flush_work_code();
-        generator_flush_hold_code();
-        generator_add_to_hold_code( yytext );
+        generator_flush_all();
+        // generator_add_to_hold_code( yytext );
+        generator_add_to_work_code( yytext );
+        printf( "A " );  generator_display();
       } else {
         if( rc == K_endmodule ) {
-          generator_flush_work_code();
-          generator_flush_hold_code();
+          generator_flush_all();
           generator_flush_event_combs();
         }
         generator_add_to_work_code( yytext );

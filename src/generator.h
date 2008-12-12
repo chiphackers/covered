@@ -24,6 +24,9 @@
 */
 
 
+/*! \brief Outputs the current state of the code generator to standard output for debugging purposes. */
+void generator_display();
+
 /*! \brief Generates Verilog containing coverage instrumentation */
 void generator_output();
 
@@ -72,6 +75,11 @@ void generator_insert_comb_cov(
 
 /*
  $Log$
+ Revision 1.10  2008/12/10 23:37:02  phase1geo
+ Working on handling event combinational logic cases.  This does not fully work
+ at this point.  Fixed issues with combinational logic generation for IF statements.
+ Checkpointing.
+
  Revision 1.9  2008/12/10 00:19:23  phase1geo
  Fixing issues with aedge1 diagnostic (still need to handle events but this will
  be worked on a later time).  Working on sizing temporary subexpression LHS signals.

@@ -150,6 +150,40 @@ static func_iter fiter;
 
 
 /*!
+ Outputs the current state of the code lists to standard output (for debugging purposes only).
+*/
+void generator_display() { PROFILE(GENERATOR_DISPLAY);
+
+  str_link* strl;
+
+  printf( "Register code list:\n" );
+  strl = reg_head;
+  while( strl != NULL ) {
+    printf( "    %s\n", strl->str );
+    strl = strl->next;
+  }
+
+  printf( "Holding code list:\n" );
+  strl = hold_head;
+  while( strl != NULL ) {
+    printf( "    %s\n", strl->str );
+    strl = strl->next;
+  }
+  printf( "Holding buffer:\n  %s\n", hold_buffer );
+
+  printf( "Working code list:\n" );
+  strl = work_head;
+  while( strl != NULL ) {
+    printf( "    %s\n", strl->str );
+    strl = strl->next;
+  }
+  printf( "Working buffer:\n  %s\n", work_buffer );
+
+  PROFILE_END;
+
+}
+
+/*!
  Populates the specified filename list with the functional unit list, sorting all functional units with the
  same filename together in the same link.
 */
@@ -402,7 +436,6 @@ void generator_init_funit(
 
   /* Initializes the functional unit iterator */
   func_iter_init( &fiter, funit, TRUE, FALSE, FALSE, TRUE );
-  // func_iter_display( &fiter );
 
   /* Reset the structure */
   func_iter_reset( &fiter );
@@ -427,7 +460,7 @@ void generator_add_to_work_code(
       add = FALSE;
     }
     semi_just_seen = TRUE;
-  } else {
+  } else if( (str[0] != ' ') && (str[0] != '\n') && (str[0] != '\t') && (str[0] != '\r') && (str[0] != '\b') ) {
     semi_just_seen = FALSE;
   }
 
@@ -453,6 +486,8 @@ void generator_add_to_work_code(
  Flushes the current working code to the holding code buffers.
 */
 void generator_flush_work_code() { PROFILE(GENERATOR_FLUSH_WORK_CODE);
+
+  printf( "Called generator_flush_work_code!\n" );
 
   /* If the hold_buffer is not empty, move it to the hold list */
   if( strlen( hold_buffer ) > 0 ) {
@@ -654,7 +689,7 @@ static statement* generator_find_statement(
   }
 
 //  if( (stmt != NULL) && (stmt->exp->line == first_line) && (((stmt->exp->col >> 16) & 0xffff) == first_column) ) {
-//    printf( "  FOUND!\n" );
+//    printf( "  FOUND (%s %x)!\n", expression_string( stmt->exp ), ((stmt->exp->col >> 16) & 0xffff) );
 //  } else {
 //    printf( "  NOT FOUND!\n" );
 //  }
@@ -1171,7 +1206,7 @@ static void generator_create_lhs(
 
   if( net ) {
 
-    /* TBD - Create sized wire string */
+    /* Create sized wire string */
     rv = snprintf( tmp, 4096, "wire [(%s-1):0] %s", ((msb != NULL) ? msb : "1"), name );
     assert( rv < 4096 );
 
@@ -1179,7 +1214,7 @@ static void generator_create_lhs(
 
   } else {
 
-    /* TBD - Create sized register string */
+    /* Create sized register string */
     rv = snprintf( tmp, 4096, "reg [(%s-1):0] %s;", ((msb != NULL) ? msb : "1"), name );
     assert( rv < 4096 );
     str_link_add( strdup_safe( tmp ), &reg_head, &reg_tail );
@@ -1517,6 +1552,8 @@ void generator_insert_comb_cov(
 
   statement* stmt;
 
+//  printf( "Calling generator_insert_comb_cov, first_line: %u, first_column: %u\n", first_line, first_column );
+
   /* Insert combinational logic code coverage if it is specified on the command-line to do so and the statement exists */
   if( generator_comb && ((stmt = generator_find_statement( first_line, first_column )) != NULL) ) {
 
@@ -1532,6 +1569,9 @@ void generator_insert_comb_cov(
 
 /*
  $Log$
+ Revision 1.25  2008/12/11 05:53:32  phase1geo
+ Fixing some bugs in the combinational logic code coverage generator.  Checkpointing.
+
  Revision 1.24  2008/12/10 23:37:02  phase1geo
  Working on handling event combinational logic cases.  This does not fully work
  at this point.  Fixed issues with combinational logic generation for IF statements.
