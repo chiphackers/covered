@@ -5556,8 +5556,6 @@ void expression_vcd_assign(
   const char* value    /*!< Coverage data from dumpfile to assign */
 ) { PROFILE(EXPRESSION_VCD_ASSIGN);
 
-//  printf( "In expression_vcd_assign, expr: %s, action: %c, value: %s\n", expression_string( expr ), action, value );
-
   if( action == 'l' ) {
 
     /* If we have seen a value of 1, increment the exec_num to indicate that the line has been hit */
@@ -5581,8 +5579,6 @@ void expression_vcd_assign(
       uint32 lf = (value[1] != '\0') ? (value[0] == '0') : 1;
       uint32 rt = (value[1] != '\0') ? (value[1] == '1') : (value[0] == '1');
       uint32 rf = (value[1] != '\0') ? (value[1] == '0') : (value[0] == '0');
-
-      printf( "value: %s, (value[1] != '\\0'): %d, lt: %d, lf: %d, rt: %d, rf: %d\n", value, (value[1] != '\0'), lt, lf, rt, rf );
 
       if( exp_op_info[expr->op].suppl.is_comb == AND_COMB ) {
         expr->suppl.part.eval_10 |= rf;
@@ -6219,6 +6215,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.391  2008/12/13 00:17:28  phase1geo
+ Fixing more regression bugs.  Updated some original tests to make them comparable to the inlined method output.
+ Checkpointing.
+
  Revision 1.390  2008/12/11 05:53:32  phase1geo
  Fixing some bugs in the combinational logic code coverage generator.  Checkpointing.
 

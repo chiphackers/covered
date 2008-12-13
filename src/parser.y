@@ -1171,10 +1171,10 @@ static_expr_primary
         } else {
           $$ = NULL;
         }
-        free_safe( $1, (strlen( $1 ) + 1) );
       } else {
         $$ = NULL;
       }
+      free_safe( $1, (strlen( $1 ) + 1) );
     }
   | '(' static_expr ')'
     {

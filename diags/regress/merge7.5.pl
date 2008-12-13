@@ -51,7 +51,7 @@ sub run {
 
   # If we are using the VPI, run the score command and add the needed pieces to the simulation runs
   if( $USE_VPI == 1 ) {
-    &convertCfg( "vpi", "${bname}.cfg" );
+    &convertCfg( "vpi", 0, "${bname}.cfg" );
     &runScoreCommand( "-f ${bname}.cfg" );
     $vpi_args = "+covered_cdd=${bname}.cdd";
     if( $COVERED_GFLAGS eq "-D" ) {
@@ -87,9 +87,9 @@ sub run {
     
     # Convert configuration file
     if( $DUMPTYPE eq "VCD" ) {
-      &convertCfg( "vcd", "${bname}.cfg" );
+      &convertCfg( "vcd", 0, "${bname}.cfg" );
     } elsif( $DUMPTYPE eq "LXT" ) {
-      &convertCfg( "lxt", "${bname}.cfg" );
+      &convertCfg( "lxt", 0, "${bname}.cfg" );
     }
     
     # Score CDD file

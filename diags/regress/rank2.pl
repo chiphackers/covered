@@ -58,9 +58,9 @@ sub run {
 
   # Convert configuration file
   if( $DUMPTYPE eq "VCD" ) {
-    &convertCfg( "vcd", "${bname}.cfg" );
+    &convertCfg( "vcd", 0, "${bname}.cfg" );
   } elsif( $DUMPTYPE eq "LXT" ) {
-    &convertCfg( "lxt", "${bname}.cfg" );
+    &convertCfg( "lxt", 0, "${bname}.cfg" );
   } else {
     die "Illegal DUMPTYPE value (${DUMPTYPE})\n";
   }

@@ -163,9 +163,9 @@ static bool combination_does_multi_exp_need_ul(
 
     /* Decide if our expression requires that this sequence gets underlined */
     if( and_op ) {
-      ul = (exp->suppl.part.eval_11 == 0) || (ESUPPL_WAS_FALSE( exp->left->suppl ) == 0) || (ESUPPL_WAS_FALSE( exp->right->suppl ) == 0);
+      ul = (exp->suppl.part.eval_11 == 0) || (exp->suppl.part.eval_01 == 0) || (exp->suppl.part.eval_10 == 0);
     } else {
-      ul = (exp->suppl.part.eval_00 == 0) || (ESUPPL_WAS_TRUE( exp->left->suppl )  == 0) || (ESUPPL_WAS_TRUE( exp->right->suppl )  == 0);
+      ul = (exp->suppl.part.eval_00 == 0) || (exp->suppl.part.eval_10 == 0) || (exp->suppl.part.eval_01 == 0);
     }
 
     /* If we did not require underlining, check our left child */
@@ -221,9 +221,9 @@ static void combination_multi_expr_calc(
         (*excludes)++;
       } else {
         if( and_op ) {
-          *hit += ESUPPL_WAS_FALSE( exp->left->suppl );
+          *hit += exp->suppl.part.eval_01;
         } else {
-          *hit += ESUPPL_WAS_TRUE( exp->left->suppl );
+          *hit += exp->suppl.part.eval_10;
         }
       }
       if( (exp->left->ulid == -1) && ul ) { 
@@ -241,9 +241,9 @@ static void combination_multi_expr_calc(
         (*excludes)++;
       } else {
         if( and_op ) {
-          *hit += ESUPPL_WAS_FALSE( exp->right->suppl );
+          *hit += exp->suppl.part.eval_10;
         } else {
-          *hit += ESUPPL_WAS_TRUE( exp->right->suppl );
+          *hit += exp->suppl.part.eval_01;
         }
       }
       if( (exp->right->ulid == -1) && ul ) {
@@ -377,8 +377,8 @@ void combination_get_tree_stats(
                     num_hit = vector_get_eval_abc_count( exp->value );
                   } else {
                     tot_num = 3;
-                    num_hit = (exp->suppl.part.eval_00 | exp->suppl.part.eval_01) +
-                              (exp->suppl.part.eval_00 | exp->suppl.part.eval_10) +
+                    num_hit = exp->suppl.part.eval_01 +
+                              exp->suppl.part.eval_10 +
                               exp->suppl.part.eval_11;
                   }
                 } else if( exp_op_info[exp->op].suppl.is_comb == OR_COMB ) {
@@ -387,8 +387,8 @@ void combination_get_tree_stats(
                     num_hit = vector_get_eval_abc_count( exp->value );
                   } else {
                     tot_num = 3;
-                    num_hit = (exp->suppl.part.eval_11 | exp->suppl.part.eval_10) +
-                              (exp->suppl.part.eval_11 | exp->suppl.part.eval_01) +
+                    num_hit = exp->suppl.part.eval_10 +
+                              exp->suppl.part.eval_01 +
                               exp->suppl.part.eval_00;
                   }
                 } else {
@@ -1784,8 +1784,8 @@ static void combination_two_vars(
     } else {
       lines = 1;
       total = 3;
-      hit   = (exp->suppl.part.eval_00 | exp->suppl.part.eval_01) +
-              (exp->suppl.part.eval_00 | exp->suppl.part.eval_10) +
+      hit   = exp->suppl.part.eval_01 +
+              exp->suppl.part.eval_10 +
               exp->suppl.part.eval_11;
     }
   } else if( exp_op_info[exp->op].suppl.is_comb == OR_COMB ) {
@@ -1796,8 +1796,8 @@ static void combination_two_vars(
     } else {
       lines = 1;
       total = 3;
-      hit   = (exp->suppl.part.eval_11 | exp->suppl.part.eval_10) +
-              (exp->suppl.part.eval_11 | exp->suppl.part.eval_01) +
+      hit   = exp->suppl.part.eval_10 +
+              exp->suppl.part.eval_01 +
               exp->suppl.part.eval_00;
     }
   } else {
@@ -1868,9 +1868,9 @@ static void combination_two_vars(
         length = 28 + strlen( spaces );
         (*info)[4] = (char*)malloc_safe( length );
         rv = snprintf( (*info)[4], length, "%s          All | %c    %c    %c", spaces,
-                       ((exp->suppl.part.eval_00 | exp->suppl.part.eval_01) ? ' ' : '*'),
-                       ((exp->suppl.part.eval_00 | exp->suppl.part.eval_10) ? ' ' : '*'),
-                       ((exp->suppl.part.eval_11 > 0) ? ' ' : '*') );
+                       (exp->suppl.part.eval_01 ? ' ' : '*'),
+                       (exp->suppl.part.eval_10 ? ' ' : '*'),
+                       (exp->suppl.part.eval_11 ? ' ' : '*') );
         assert( rv < length );
         for( i=0; i<exp->value->width; i++ ) {
           (*info)[i+6] = (char*)malloc_safe( length );
@@ -1890,9 +1890,9 @@ static void combination_two_vars(
         length = 21 + strlen( spaces );
         (*info)[4] = (char*)malloc_safe( length );
         rv = snprintf( (*info)[4], length, "%s         %c    %c    %c", spaces,
-                       ((exp->suppl.part.eval_00 | exp->suppl.part.eval_01) ? ' ' : '*'),
-                       ((exp->suppl.part.eval_00 | exp->suppl.part.eval_10) ? ' ' : '*'),
-                       ((exp->suppl.part.eval_11 > 0) ? ' ' : '*') );
+                       (exp->suppl.part.eval_01 ? ' ' : '*'),
+                       (exp->suppl.part.eval_10 ? ' ' : '*'),
+                       (exp->suppl.part.eval_11 ? ' ' : '*') );
         assert( rv < length );
 
       }
@@ -1911,9 +1911,9 @@ static void combination_two_vars(
         length = 28 + strlen( spaces );
         (*info)[4] = (char*)malloc_safe( length );
         rv = snprintf( (*info)[4], length, "%s          All | %c    %c    %c", spaces,
-                       ((exp->suppl.part.eval_11 | exp->suppl.part.eval_10) ? ' ' : '*'),
-                       ((exp->suppl.part.eval_11 | exp->suppl.part.eval_01) ? ' ' : '*'),
-                       ((exp->suppl.part.eval_00 > 0) ? ' ' : '*') );
+                       (exp->suppl.part.eval_10 ? ' ' : '*'),
+                       (exp->suppl.part.eval_01 ? ' ' : '*'),
+                       (exp->suppl.part.eval_00 ? ' ' : '*') );
         assert( rv < length );
         for( i=0; i<exp->value->width; i++ ) {
           (*info)[i+6] = (char*)malloc_safe( length );
@@ -1933,9 +1933,9 @@ static void combination_two_vars(
         length = 21 + strlen( spaces );
         (*info)[4] = (char*)malloc_safe( length );
         rv = snprintf( (*info)[4], length, "%s         %c    %c    %c", spaces,
-                       ((exp->suppl.part.eval_11 | exp->suppl.part.eval_10) ? ' ' : '*'),
-                       ((exp->suppl.part.eval_11 | exp->suppl.part.eval_01) ? ' ' : '*'),
-                       ((exp->suppl.part.eval_00 > 0) ? ' ' : '*') );
+                       (exp->suppl.part.eval_10 ? ' ' : '*'),
+                       (exp->suppl.part.eval_01 ? ' ' : '*'),
+                       (exp->suppl.part.eval_00 ? ' ' : '*') );
         assert( rv < length );
 
       }
@@ -1954,10 +1954,10 @@ static void combination_two_vars(
         length = 33 + strlen( spaces );
         (*info)[4] = (char*)malloc_safe( length );
         rv = snprintf( (*info)[4], length, "%s          All | %c    %c    %c    %c", spaces,
-                       ((exp->suppl.part.eval_00 == 1) ? ' ' : '*'),
-                       ((exp->suppl.part.eval_01 == 1) ? ' ' : '*'),
-                       ((exp->suppl.part.eval_10 == 1) ? ' ' : '*'),
-                       ((exp->suppl.part.eval_11 == 1) ? ' ' : '*') );
+                       (exp->suppl.part.eval_00 ? ' ' : '*'),
+                       (exp->suppl.part.eval_01 ? ' ' : '*'),
+                       (exp->suppl.part.eval_10 ? ' ' : '*'),
+                       (exp->suppl.part.eval_11 ? ' ' : '*') );
         assert( rv < length );
         for( i=0; i<exp->value->width; i++ ) {
           (*info)[i+6] = (char*)malloc_safe( length );
@@ -1978,10 +1978,10 @@ static void combination_two_vars(
         length = 26 + strlen( spaces );
         (*info)[4] = (char*)malloc_safe( length );
         rv = snprintf( (*info)[4], length, "%s         %c    %c    %c    %c", spaces,
-                       ((exp->suppl.part.eval_00 == 1) ? ' ' : '*'),
-                       ((exp->suppl.part.eval_01 == 1) ? ' ' : '*'),
-                       ((exp->suppl.part.eval_10 == 1) ? ' ' : '*'),
-                       ((exp->suppl.part.eval_11 == 1) ? ' ' : '*') );
+                       (exp->suppl.part.eval_00 ? ' ' : '*'),
+                       (exp->suppl.part.eval_01 ? ' ' : '*'),
+                       (exp->suppl.part.eval_10 ? ' ' : '*'),
+                       (exp->suppl.part.eval_11 ? ' ' : '*') );
         assert( rv < length );
 
       }
@@ -2049,10 +2049,10 @@ static void combination_multi_var_exprs(
       }
       curr_id_str[i] = '\0';
       if( and_op ) {
-        rv = snprintf( left_line3, (curr_id_str_len + 4), " %c%s  ", ((ESUPPL_WAS_FALSE( exp->left->suppl ) == 1) ? ' ' : '*'), curr_id_str );
+        rv = snprintf( left_line3, (curr_id_str_len + 4), " %c%s  ", (exp->suppl.part.eval_01 ? ' ' : '*'), curr_id_str );
         assert( rv < (curr_id_str_len + 4) );
       } else {
-        rv = snprintf( left_line3, (curr_id_str_len + 4), " %c%s  ", ((ESUPPL_WAS_TRUE( exp->left->suppl )  == 1) ? ' ' : '*'), curr_id_str );
+        rv = snprintf( left_line3, (curr_id_str_len + 4), " %c%s  ", (exp->suppl.part.eval_10 ? ' ' : '*'), curr_id_str );
         assert( rv < (curr_id_str_len + 4) );
       }
 
@@ -2090,10 +2090,10 @@ static void combination_multi_var_exprs(
       }
       curr_id_str[i] = '\0';
       if( and_op ) {
-        rv = snprintf( right_line3, (curr_id_str_len + 4), " %c%s  ", ((ESUPPL_WAS_FALSE( exp->right->suppl ) == 1) ? ' ' : '*'), curr_id_str );
+        rv = snprintf( right_line3, (curr_id_str_len + 4), " %c%s  ", (exp->suppl.part.eval_10 ? ' ' : '*'), curr_id_str );
         assert( rv < (curr_id_str_len + 4) );
       } else {
-        rv = snprintf( right_line3, (curr_id_str_len + 4), " %c%s  ", ((ESUPPL_WAS_TRUE( exp->right->suppl )  == 1) ? ' ' : '*'), curr_id_str );
+        rv = snprintf( right_line3, (curr_id_str_len + 4), " %c%s  ", (exp->suppl.part.eval_01 ? ' ' : '*'), curr_id_str );
         assert( rv < (curr_id_str_len + 4) );
       }
 
@@ -2151,14 +2151,14 @@ static void combination_multi_var_exprs(
         assert( rv < slen1 );
         rv = snprintf( *line2, slen2, "%s==1==",  left_line2 );
         assert( rv < slen2 );
-        rv = snprintf( *line3, slen3, "%s  %c  ", left_line3, ((exp->suppl.part.eval_11 == 1) ? ' ' : '*') );
+        rv = snprintf( *line3, slen3, "%s  %c  ", left_line3, (exp->suppl.part.eval_11 ? ' ' : '*') );
         assert( rv < slen3 );
       } else {
         rv = snprintf( *line1, slen1, "%s All",   left_line1 );
         assert( rv < slen1 );
         rv = snprintf( *line2, slen2, "%s==0==",  left_line2 );
         assert( rv < slen2 );
-        rv = snprintf( *line3, slen3, "%s  %c  ", left_line3, ((exp->suppl.part.eval_00 == 1) ? ' ' : '*') );
+        rv = snprintf( *line3, slen3, "%s  %c  ", left_line3, (exp->suppl.part.eval_00 ? ' ' : '*') );
         assert( rv < slen3 );
       }
       free_safe( left_line1, (strlen( left_line1 ) + 1) );
@@ -3124,6 +3124,13 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.222  2008/12/07 07:20:08  phase1geo
+ Checkpointing work.  I have an end-to-end run now working with test.v in
+ the testsuite.  The results are not accurate at this point but it's progress.
+ I have updated the regression suite per these changes (minor), added an "-inline"
+ option to the score command to control this behavior.  IV regressions have one
+ failing diagnostic at this point.
+
  Revision 1.221  2008/12/05 00:22:41  phase1geo
  More work completed on code coverage generator.  Currently working on bug in
  statement finder.  Checkpointing.
