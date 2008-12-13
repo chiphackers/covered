@@ -831,16 +831,7 @@ static void generator_insert_event_comb_cov(
     event_link*  eventl;
 
     /* Create the event string */
-    codegen_gen_expr( exp, exp->op, &code, &code_depth, funit );
-
-    /* Change the event array into a single string */
-    event_str = code[0];
-    for( i=1; i<code_depth; i++ ) {
-      event_str = (char*)realloc_safe( event_str, (strlen( event_str ) + 1), (strlen( event_str ) + strlen( code[i] ) + 1) );
-      strcat( event_str, code[i] );
-      free_safe( code[i], (strlen( code[i] ) + 1) );
-    }
-    free_safe( code, (sizeof( char* ) * code_depth) );
+    event_str = codegen_gen_expr_one_line( exp, funit );
 
     /* Search through event list to see if this event has already been added */
     eventl = event_head;
@@ -909,12 +900,12 @@ static void generator_insert_unary_comb_cov(
   if( net || (funit->type == FUNIT_MODULE) ) {
     rv = snprintf( sig,  80, " \\covered$%c%d_%x ", (net ? 'e' : 'E'), exp->line, exp->col );
     assert( rv < 80 );
-    rv = snprintf( sigr, 80, " \\covered$%c%d_%x ", (net ? 'y' : 'x'), exp->line, exp->col );
+    rv = snprintf( sigr, 80, " \\covered$%c%d_%x ", (net ? 'x' : 'X'), exp->line, exp->col );
     assert( rv < 80 );
   } else {
     rv = snprintf( sig,  80, " \\covered$E%d_%x$%s ", exp->line, exp->col, funit->name );
     assert( rv < 80 );
-    rv = snprintf( sigr, 80, " \\covered$x%d_%x$%s ", exp->line, exp->col, funit->name );
+    rv = snprintf( sigr, 80, " \\covered$X%d_%x$%s ", exp->line, exp->col, funit->name );
     assert( rv < 80 );
   }
 
@@ -981,22 +972,22 @@ static void generator_insert_comb_comb_cov(
     rv = snprintf( sig,  80, " \\covered$%c%d_%x ", (net ? 'e' : 'E'), exp->line, exp->col );
     assert( rv < 80 );
     rv = snprintf( sigl, 80, " \\covered$%c%d_%x ",
-                   ((((depth + ((exp->op != exp->left->op) ? 1 : 0)) < generator_max_exp_depth) && EXPR_IS_MEASURABLE( exp->left ) && !expression_is_static_only( exp->left )) ? (net ? 'e' : 'E') : (net ? 'y' : 'x')),
+                   ((((depth + ((exp->op != exp->left->op) ? 1 : 0)) < generator_max_exp_depth) && EXPR_IS_MEASURABLE( exp->left ) && !expression_is_static_only( exp->left )) ? (net ? 'e' : 'E') : (net ? 'x' : 'X')),
                    exp->left->line, exp->left->col );
     assert( rv < 80 );
     rv = snprintf( sigr, 80, " \\covered$%c%d_%x ",
-                   ((((depth + ((exp->op != exp->right->op) ? 1 : 0)) < generator_max_exp_depth) && EXPR_IS_MEASURABLE( exp->right ) && !expression_is_static_only( exp->right )) ? (net ? 'e' : 'E') : (net ? 'y' : 'x')),
+                   ((((depth + ((exp->op != exp->right->op) ? 1 : 0)) < generator_max_exp_depth) && EXPR_IS_MEASURABLE( exp->right ) && !expression_is_static_only( exp->right )) ? (net ? 'e' : 'E') : (net ? 'x' : 'X')),
                    exp->right->line, exp->right->col );
     assert( rv < 80 );
   } else {
     rv = snprintf( sig,  80, " \\covered$E%d_%x$%s ", exp->line, exp->col, funit->name );
     assert( rv < 80 );
     rv = snprintf( sigl, 80, " \\covered$%c%d_%x$%s ",
-                   ((((depth + ((exp->op != exp->left->op) ? 1 : 0)) < generator_max_exp_depth) && EXPR_IS_MEASURABLE( exp->left ) && !expression_is_static_only( exp->left )) ? 'E' : 'x'),
+                   ((((depth + ((exp->op != exp->left->op) ? 1 : 0)) < generator_max_exp_depth) && EXPR_IS_MEASURABLE( exp->left ) && !expression_is_static_only( exp->left )) ? 'E' : 'X'),
                    exp->left->line, exp->left->col, funit->name );
     assert( rv < 80 );
     rv = snprintf( sigr, 80, " \\covered$%c%d_%x$%s ",
-                   ((((depth + ((exp->op != exp->right->op) ? 1 : 0)) < generator_max_exp_depth) && EXPR_IS_MEASURABLE( exp->right ) && !expression_is_static_only( exp->right )) ? 'E' : 'x'),
+                   ((((depth + ((exp->op != exp->right->op) ? 1 : 0)) < generator_max_exp_depth) && EXPR_IS_MEASURABLE( exp->right ) && !expression_is_static_only( exp->right )) ? 'E' : 'X'),
                    exp->right->line, exp->right->col, funit->name );
     assert( rv < 80 );
   }
@@ -1042,11 +1033,12 @@ static void generator_insert_comb_comb_cov(
 /*!
  Generates MSB string to use for sizing subexpression values.
 */
-static void generator_gen_msb(
-  expression* exp,    /*!< Pointer to subexpression to generate MSB value for */
-  func_unit*  funit,  /*!< Pointer to functional unit containing this subexpression */
-  char**      msb     /*!< String version of MSB */
+static char* generator_gen_msb(
+  expression* exp,   /*!< Pointer to subexpression to generate MSB value for */
+  func_unit*  funit  /*!< Pointer to functional unit containing this subexpression */
 ) { PROFILE(GENERATOR_GEN_MSB);
+
+  char* msb = NULL;
 
   if( exp != NULL ) {
 
@@ -1060,17 +1052,17 @@ static void generator_gen_msb(
           char tmp[50];
           rv = snprintf( tmp, 50, "%d", exp->value->width );
           assert( rv < 50 );
-          *msb = strdup_safe( tmp );
+          msb = strdup_safe( tmp );
         }
         break;
       case EXP_OP_LIST     :
       case EXP_OP_MULTIPLY :
-        generator_gen_msb( exp->left,  funit, &lexp );
-        generator_gen_msb( exp->right, funit, &rexp );
+        lexp = generator_gen_msb( exp->left,  funit );
+        rexp = generator_gen_msb( exp->right, funit );
         {
           unsigned int slen = strlen( lexp ) + strlen( rexp ) + 4;
-          *msb = (char*)malloc_safe( slen );
-          rv   = snprintf( *msb, slen, "(%s+%s)", lexp, rexp );
+          msb = (char*)malloc_safe( slen );
+          rv  = snprintf( msb, slen, "(%s+%s)", lexp, rexp );
           assert( rv < slen );
         }
         free_safe( lexp, (strlen( lexp ) + 1) );
@@ -1082,39 +1074,33 @@ static void generator_gen_msb(
       case EXP_OP_MBIT_NEG       :
       case EXP_OP_PARAM_MBIT_POS :
       case EXP_OP_PARAM_MBIT_NEG :
-        generator_gen_msb( exp->right, funit, &rexp );
-        *msb = rexp;
+        msb = codegen_gen_expr_one_line( exp->right, funit );
         break;
       case EXP_OP_LSHIFT  :
       case EXP_OP_RSHIFT  :
       case EXP_OP_ALSHIFT :
       case EXP_OP_ARSHIFT :
-        generator_gen_msb( exp->left, funit, &lexp );
-        *msb = lexp;
+        msb = generator_gen_msb( exp->left, funit );
         break;
       case EXP_OP_EXPAND :
-        generator_gen_msb( exp->right, funit, &rexp );
+        lexp = codegen_gen_expr_one_line( exp->left, funit );
+        rexp = generator_gen_msb( exp->right, funit );
         {
-          char         tmp[50];
-          unsigned int slen;
-          rv = snprintf( tmp, 50, "%d", vector_to_int( exp->left->value ) );
-          assert( rv < 50 );
-          slen = strlen( tmp ) + strlen( rexp ) + 4;
-          *msb = (char*)malloc_safe( slen );
-          rv = snprintf( *msb, slen, "(%s*%s)", tmp, rexp );
+          unsigned int slen = strlen( lexp ) + strlen( rexp ) + 4;
+          msb = (char*)malloc_safe( slen );
+          rv  = snprintf( msb, slen, "(%s*%s)", lexp, rexp );
           assert( rv < slen );
         }
+        free_safe( lexp, (sizeof( rexp ) + 1) );
         free_safe( rexp, (sizeof( rexp ) + 1) );
         break;
       case EXP_OP_STIME :
       case EXP_OP_SR2B  :
       case EXP_OP_SR2I  :
-        *msb = (char*)malloc_safe( 3 );
-        strcpy( *msb, "64" );
+        msb = strdup_safe( "64" );
         break;
       case EXP_OP_SSR2B :
-        *msb = (char*)malloc_safe( 3 );
-        strcpy( *msb, "32" );
+        msb = strdup_safe( "32" );
         break;
       case EXP_OP_LT        :
       case EXP_OP_GT        :
@@ -1151,16 +1137,16 @@ static void generator_gen_msb(
       case EXP_OP_SVALARGS  :
       case EXP_OP_SBIT_SEL  :
       case EXP_OP_PARAM_SBIT :
-        *msb = strdup_safe( "1" );
+        msb = strdup_safe( "1" );
         break;
       case EXP_OP_MBIT_SEL   :
       case EXP_OP_PARAM_MBIT :
-        generator_gen_msb( exp->left,  funit, &lexp );
-        generator_gen_msb( exp->right, funit, &rexp );
+        lexp = codegen_gen_expr_one_line( exp->left,  funit );
+        rexp = codegen_gen_expr_one_line( exp->right, funit );
         {
-          unsigned int slen = (strlen( lexp ) * 3) + (strlen( rexp ) * 3) + 13;
-          *msb = (char*)malloc_safe( slen );
-          rv   = snprintf( *msb, slen, "((%s>%s)?(%s-%s):(%s-%s)", lexp, rexp, lexp, rexp, rexp, lexp );
+          unsigned int slen = (strlen( lexp ) * 3) + (strlen( rexp ) * 3) + 18;
+          msb = (char*)malloc_safe( slen );
+          rv  = snprintf( msb, slen, "(((%s>%s)?(%s-%s):(%s-%s))+1)", lexp, rexp, lexp, rexp, rexp, lexp );
           assert( rv < slen );
         }
         free_safe( lexp, (strlen( lexp ) + 1) );
@@ -1170,39 +1156,39 @@ static void generator_gen_msb(
       case EXP_OP_PARAM     :
       case EXP_OP_FUNC_CALL :
         if( (exp->sig->suppl.part.type == SSUPPL_TYPE_GENVAR) || (exp->sig->suppl.part.type == SSUPPL_TYPE_DECL_SREAL) ) {
-          *msb = strdup_safe( "32" );
+          msb = strdup_safe( "32" );
         } else if( exp->sig->suppl.part.type == SSUPPL_TYPE_DECL_REAL ) {
-          *msb = strdup_safe( "64" );
+          msb = strdup_safe( "64" );
 //        } else if( !exp->sig->suppl.part.implicit_size ) {
         } else {
           char tmp[50];
           rv = snprintf( tmp, 50, "%d", exp->sig->value->width );
           assert( rv < 50 );
-          *msb = strdup_safe( tmp );
+          msb = strdup_safe( tmp );
 //        } else {
 //          /* TBD - We need to look at the signal size expression... */
 //          *msb = strdup_safe( "???" );
         }
         break;
       default :
-        generator_gen_msb( exp->left,  funit, &lexp );
-        generator_gen_msb( exp->right, funit, &rexp );
+        lexp = generator_gen_msb( exp->left,  funit );
+        rexp = generator_gen_msb( exp->right, funit );
         if( lexp != NULL ) {
           if( rexp != NULL ) {
             unsigned int slen = (strlen( lexp ) * 2) + (strlen( rexp ) * 2) + 8;
-            *msb = (char*)malloc_safe( slen );
-            rv   = snprintf( *msb, slen, "((%s>%s)?%s:%s)", lexp, rexp, lexp, rexp );
+            msb = (char*)malloc_safe( slen );
+            rv   = snprintf( msb, slen, "((%s>%s)?%s:%s)", lexp, rexp, lexp, rexp );
             assert( rv < slen );
             free_safe( lexp, (strlen( lexp ) + 1) );
             free_safe( rexp, (strlen( rexp ) + 1) );
           } else {
-            *msb = lexp;
+            msb = lexp;
           }
         } else {
           if( rexp != NULL ) {
-            *msb = rexp;
+            msb = rexp;
           } else {
-            *msb = NULL;
+            msb = NULL;
           }
         }
         break;
@@ -1212,33 +1198,35 @@ static void generator_gen_msb(
 
   PROFILE_END;
 
+  return( msb );
+
 }
 
 /*!
  Generates the strings needed for the left-hand-side of the temporary expression.
 */
-static void generator_create_lhs(
+static char* generator_create_lhs(
   expression* exp,    /*!< Pointer to subexpression to create LHS string for */
   func_unit*  funit,  /*!< Functional unit containing the expression */
-  bool        net,    /*!< If set to TRUE, generate code for a net; otherwise, generate for a register */
-  char**      code    /*!< Pointer to string to populate */
+  bool        net     /*!< If set to TRUE, generate code for a net; otherwise, generate for a register */
 ) { PROFILE(GENERATOR_CREATE_RHS);
 
   unsigned int rv;
   char         name[4096];
   char         tmp[4096];
   char*        msb;
+  char*        code;
 
   /* Generate signal name */
   if( net || (funit->type == FUNIT_MODULE) ) {
-    rv = snprintf( name, 4096, " \\covered$x%d_%x ", exp->line, exp->col );
+    rv = snprintf( name, 4096, " \\covered$%c%d_%x ", (net ? 'x' : 'X'), exp->line, exp->col );
   } else {
-    rv = snprintf( name, 4096, " \\covered$x%d_%x$%s ", exp->line, exp->col, funit->name );
+    rv = snprintf( name, 4096, " \\covered$X%d_%x$%s ", exp->line, exp->col, funit->name );
   }
   assert( rv < 4096 );
 
   /* Generate MSB string */
-  generator_gen_msb( exp, funit, &msb );
+  msb = generator_gen_msb( exp, funit );
 
   if( net ) {
 
@@ -1246,7 +1234,7 @@ static void generator_create_lhs(
     rv = snprintf( tmp, 4096, "wire [(%s-1):0] %s", ((msb != NULL) ? msb : "1"), name );
     assert( rv < 4096 );
 
-    *code = strdup_safe( tmp );
+    code = strdup_safe( tmp );
 
   } else {
 
@@ -1256,7 +1244,7 @@ static void generator_create_lhs(
     str_link_add( strdup_safe( tmp ), &reg_head, &reg_tail );
 
     /* Set the name to the value of code */
-    *code = strdup_safe( name );
+    code = strdup_safe( name );
 
   }
 
@@ -1265,27 +1253,24 @@ static void generator_create_lhs(
 
   PROFILE_END;
 
+  return( code );
+
 }
 
 /*!
  Creates the proper subexpression code string and stores it into the code array.
 */
 static char* generator_create_subexp(
-            expression*   exp,        /*!< Pointer to subexpression to generate code array for */
-            exp_op_type   parent_op,  /*!< Operation of parent */
-            func_unit*    funit,      /*!< Pointer to functional unit that contains the given expression */
-            unsigned int  depth,      /*!< Current subexpression depth */
-            bool          net,        /*!< Set to TRUE if subexpression is a net */
-  /*@out@*/ char***       code,       /*!< Pointer to string array with stored code */
-  /*@out@*/ unsigned int* code_depth  /*!< Pointer to value containing the number of elements in the code array */
+  expression*   exp,        /*!< Pointer to subexpression to generate code array for */
+  exp_op_type   parent_op,  /*!< Operation of parent */
+  func_unit*    funit,      /*!< Pointer to functional unit that contains the given expression */
+  unsigned int  depth,      /*!< Current subexpression depth */
+  bool          net         /*!< Set to TRUE if subexpression is a net */
 ) { PROFILE(GENERATOR_CREATE_SUBEXP);
 
   unsigned int rv;
   unsigned int i;
-
-  /* Initialize the code array */
-  *code       = NULL;
-  *code_depth = 0;
+  char*        code = NULL;
 
   /* Generate left string */
   if( exp != NULL ) {
@@ -1295,23 +1280,23 @@ static char* generator_create_subexp(
       unsigned int col_len;
       rv = snprintf( num_str, 50, "%d", exp->line );  assert( rv < 50 );  line_len = strlen( num_str );
       rv = snprintf( num_str, 50, "%x", exp->col );   assert( rv < 50 );  col_len  = strlen( num_str );
-      *code       = (char**)malloc_safe( sizeof( char* ) );
-      *code_depth = 1;
       if( net || (funit->type == FUNIT_MODULE) ) {
         unsigned int slen = 10 + 1 + line_len + 1 + col_len + 2;
-        (*code)[0] = (char*)malloc_safe( slen );
-        rv = snprintf( (*code)[0], slen, " \\covered$%c%d_%x ", (net ? 'y' : 'x'), exp->line, exp->col );
+        code = (char*)malloc_safe( slen );
+        rv   = snprintf( code, slen, " \\covered$%c%d_%x ", (net ? 'x' : 'X'), exp->line, exp->col );
         assert( rv < slen );
       } else {
         unsigned int slen = 10 + 1 + line_len + 1 + col_len + 1 + strlen( funit->name ) + 2;
-        (*code)[0] = (char*)malloc_safe( slen );
-        rv = snprintf( (*code)[0], slen, " \\covered$%c%d_%x$%s ", (net ? 'y' : 'x'), exp->line, exp->col, funit->name );
+        code = (char*)malloc_safe( slen );
+        rv   = snprintf( code, slen, " \\covered$%c%d_%x$%s ", (net ? 'x' : 'X'), exp->line, exp->col, funit->name );
         assert( rv < slen );
       }
     } else {
-      codegen_gen_expr( exp, exp->op, code, code_depth, funit );
+      code = codegen_gen_expr_one_line( exp, funit );
     }
   }
+
+  return( code );
 
 }
 
@@ -1319,15 +1304,13 @@ static char* generator_create_subexp(
  Concatenates the given string values and appends them to the working code buffer.
 */
 static void generator_concat_code(
-             char*        lhs,         /*!< LHS string */
-  /*@null@*/ char*        before,      /*!< Optional string that precedes the left subexpression string array */
-  /*@null@*/ char**       lstr,        /*!< String array from left subexpression */
-             unsigned int lstr_depth,  /*!< Number of valid elements in the lstr array */
-  /*@null@*/ char*        middle,      /*!< Optional string that is placed in-between the left and right subexpression array strings */
-  /*@null@*/ char**       rstr,        /*!< String array from right subexpression */
-             unsigned int rstr_depth,  /*!< Number of valid elements in the rstr array */
-  /*@null@*/ char*        after,       /*!< Optional string that is placed after the right subpexression string array */
-             bool         net          /*!< If TRUE, specifies that this subexpression exists in net logic */
+             char* lhs,     /*!< LHS string */
+  /*@null@*/ char* before,  /*!< Optional string that precedes the left subexpression string array */
+  /*@null@*/ char* lstr,    /*!< String array from left subexpression */
+  /*@null@*/ char* middle,  /*!< Optional string that is placed in-between the left and right subexpression array strings */
+  /*@null@*/ char* rstr,    /*!< String array from right subexpression */
+  /*@null@*/ char* after,   /*!< Optional string that is placed after the right subpexression string array */
+             bool  net      /*!< If TRUE, specifies that this subexpression exists in net logic */
 ) { PROFILE(GENERATOR_CONCAT_CODE);
 
   str_link*    tmp_head = NULL;
@@ -1347,18 +1330,17 @@ static void generator_concat_code(
       strcpy( str, before );
     }
   }
-  if( lstr_depth > 0 ) {
-    if( (strlen( str ) + strlen( lstr[0] )) < 4095 ) {
-      strcat( str, lstr[0] );
+  if( lstr != NULL ) {
+    if( (strlen( str ) + strlen( lstr )) < 4095 ) {
+      strcat( str, lstr );
     } else {
       str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
-      strcpy( str, lstr[0] );
-    }
-    if( lstr_depth > 1 ) {
-      str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
-    }
-    for( i=1; i<lstr_depth; i++ ) {
-      str_link_add( strdup_safe( lstr[i] ), &tmp_head, &tmp_tail );
+      if( strlen( lstr ) < 4095 ) {
+        strcpy( str, lstr );
+      } else {
+        str_link_add( strdup_safe( lstr ), &tmp_head, &tmp_tail );
+        str[0] = '\0';
+      }
     }
   }
   if( middle != NULL ) {
@@ -1369,15 +1351,17 @@ static void generator_concat_code(
       strcpy( str, middle );
     }
   }
-  if( rstr_depth > 0 ) {
-    if( ((strlen( str ) + strlen( rstr[0] )) < 4095) && (lstr_depth == 1) && (rstr_depth == 1) ) {
-      strcat( str, rstr[0] );
+  if( rstr != NULL ) {
+    if( (strlen( str ) + strlen( rstr )) < 4095 ) {
+      strcat( str, rstr );
     } else {
       str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
-      for( i=0; i<(rstr_depth-1); i++ ) {
-        str_link_add( strdup_safe( rstr[i] ), &tmp_head, &tmp_tail );
+      if( strlen( rstr ) < 4095 ) {
+        strcpy( str, lstr );
+      } else {
+        str_link_add( strdup_safe( rstr ), &tmp_head, &tmp_tail );
+        str[0] = '\0';
       }
-      strcpy( str, rstr[i] );
     }
   }
   if( after != NULL ) {
@@ -1423,55 +1407,53 @@ static void generator_concat_code(
  Generates the combinational logic temporary expression string for the given expression.
 */
 static void generator_create_exp(
-  expression*  exp,         /*!< Pointer to the expression to generation the expression for */
-  char*        lhs,         /*!< String for left-hand-side of temporary expression */
-  char**       lstr,        /*!< String array for left side of RHS expression */
-  unsigned int lstr_depth,  /*!< Number of elements in the lstr array */
-  char**       rstr,        /*!< String array for right side of RHS expression */
-  unsigned int rstr_depth,  /*!< Number of elements in the rstr array */
-  bool         net          /*!< Set to TRUE if we are generating for a net; set to FALSE for a register */
+  expression* exp,   /*!< Pointer to the expression to generation the expression for */
+  char*       lhs,   /*!< String for left-hand-side of temporary expression */
+  char*       lstr,  /*!< String for left side of RHS expression */
+  char*       rstr,  /*!< String for right side of RHS expression */
+  bool        net    /*!< Set to TRUE if we are generating for a net; set to FALSE for a register */
 ) { PROFILE(GENERATOR_CREATE_EXP);
 
   switch( exp->op ) {
-    case EXP_OP_XOR        :  generator_concat_code( lhs, NULL, lstr, lstr_depth, " ^ ", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_MULTIPLY   :  generator_concat_code( lhs, NULL, lstr, lstr_depth, " * ", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_DIVIDE     :  generator_concat_code( lhs, NULL, lstr, lstr_depth, " / ", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_MOD        :  generator_concat_code( lhs, NULL, lstr, lstr_depth, " % ", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_ADD        :  generator_concat_code( lhs, NULL, lstr, lstr_depth, " + ", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_SUBTRACT   :  generator_concat_code( lhs, NULL, lstr, lstr_depth, " - ", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_AND        :  generator_concat_code( lhs, NULL, lstr, lstr_depth, " & ", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_OR         :  generator_concat_code( lhs, NULL, lstr, lstr_depth, " | ", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_NAND       :  generator_concat_code( lhs, NULL, lstr, lstr_depth, " ~& ", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_NOR        :  generator_concat_code( lhs, NULL, lstr, lstr_depth, " ~| ", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_NXOR       :  generator_concat_code( lhs, NULL, lstr, lstr_depth, " ~^ ", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_LT         :  generator_concat_code( lhs, NULL, lstr, lstr_depth, " < ", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_GT         :  generator_concat_code( lhs, NULL, lstr, lstr_depth, " > ", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_LSHIFT     :  generator_concat_code( lhs, NULL, lstr, lstr_depth, " << ", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_RSHIFT     :  generator_concat_code( lhs, NULL, lstr, lstr_depth, " >> ", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_EQ         :  generator_concat_code( lhs, NULL, lstr, lstr_depth, " == ", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_CEQ        :  generator_concat_code( lhs, NULL, lstr, lstr_depth, " === ", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_LE         :  generator_concat_code( lhs, NULL, lstr, lstr_depth, " <= ", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_GE         :  generator_concat_code( lhs, NULL, lstr, lstr_depth, " >= ", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_NE         :  generator_concat_code( lhs, NULL, lstr, lstr_depth, " != ", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_CNE        :  generator_concat_code( lhs, NULL, lstr, lstr_depth, " !== ", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_LOR        :  generator_concat_code( lhs, NULL, lstr, lstr_depth, " || ", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_LAND       :  generator_concat_code( lhs, NULL, lstr, lstr_depth, " && ", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_UINV       :  generator_concat_code( lhs, NULL, NULL, 0, "~", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_UAND       :  generator_concat_code( lhs, NULL, NULL, 0, "&", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_UNOT       :  generator_concat_code( lhs, NULL, NULL, 0, "!", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_UOR        :  generator_concat_code( lhs, NULL, NULL, 0, "|", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_UXOR       :  generator_concat_code( lhs, NULL, NULL, 0, "^", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_UNAND      :  generator_concat_code( lhs, NULL, NULL, 0, "~&", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_UNOR       :  generator_concat_code( lhs, NULL, NULL, 0, "~|", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_UNXOR      :  generator_concat_code( lhs, NULL, NULL, 0, "~^", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_ALSHIFT    :  generator_concat_code( lhs, NULL, lstr, lstr_depth, " <<< ", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_ARSHIFT    :  generator_concat_code( lhs, NULL, lstr, lstr_depth, " >>> ", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_EXPONENT   :  generator_concat_code( lhs, NULL, lstr, lstr_depth, " ** ", rstr, rstr_depth, NULL, net );  break;
-    case EXP_OP_NEGATE     :  generator_concat_code( lhs, NULL, NULL, 0, "-", rstr, rstr_depth, NULL, net );  break;
+    case EXP_OP_XOR        :  generator_concat_code( lhs, NULL, lstr, " ^ ", rstr, NULL, net );  break;
+    case EXP_OP_MULTIPLY   :  generator_concat_code( lhs, NULL, lstr, " * ", rstr, NULL, net );  break;
+    case EXP_OP_DIVIDE     :  generator_concat_code( lhs, NULL, lstr, " / ", rstr, NULL, net );  break;
+    case EXP_OP_MOD        :  generator_concat_code( lhs, NULL, lstr, " % ", rstr, NULL, net );  break;
+    case EXP_OP_ADD        :  generator_concat_code( lhs, NULL, lstr, " + ", rstr, NULL, net );  break;
+    case EXP_OP_SUBTRACT   :  generator_concat_code( lhs, NULL, lstr, " - ", rstr, NULL, net );  break;
+    case EXP_OP_AND        :  generator_concat_code( lhs, NULL, lstr, " & ", rstr, NULL, net );  break;
+    case EXP_OP_OR         :  generator_concat_code( lhs, NULL, lstr, " | ", rstr, NULL, net );  break;
+    case EXP_OP_NAND       :  generator_concat_code( lhs, NULL, lstr, " ~& ", rstr, NULL, net );  break;
+    case EXP_OP_NOR        :  generator_concat_code( lhs, NULL, lstr, " ~| ", rstr, NULL, net );  break;
+    case EXP_OP_NXOR       :  generator_concat_code( lhs, NULL, lstr, " ~^ ", rstr, NULL, net );  break;
+    case EXP_OP_LT         :  generator_concat_code( lhs, NULL, lstr, " < ", rstr, NULL, net );  break;
+    case EXP_OP_GT         :  generator_concat_code( lhs, NULL, lstr, " > ", rstr, NULL, net );  break;
+    case EXP_OP_LSHIFT     :  generator_concat_code( lhs, NULL, lstr, " << ", rstr, NULL, net );  break;
+    case EXP_OP_RSHIFT     :  generator_concat_code( lhs, NULL, lstr, " >> ", rstr, NULL, net );  break;
+    case EXP_OP_EQ         :  generator_concat_code( lhs, NULL, lstr, " == ", rstr, NULL, net );  break;
+    case EXP_OP_CEQ        :  generator_concat_code( lhs, NULL, lstr, " === ", rstr, NULL, net );  break;
+    case EXP_OP_LE         :  generator_concat_code( lhs, NULL, lstr, " <= ", rstr, NULL, net );  break;
+    case EXP_OP_GE         :  generator_concat_code( lhs, NULL, lstr, " >= ", rstr, NULL, net );  break;
+    case EXP_OP_NE         :  generator_concat_code( lhs, NULL, lstr, " != ", rstr, NULL, net );  break;
+    case EXP_OP_CNE        :  generator_concat_code( lhs, NULL, lstr, " !== ", rstr, NULL, net );  break;
+    case EXP_OP_LOR        :  generator_concat_code( lhs, NULL, lstr, " || ", rstr, NULL, net );  break;
+    case EXP_OP_LAND       :  generator_concat_code( lhs, NULL, lstr, " && ", rstr, NULL, net );  break;
+    case EXP_OP_UINV       :  generator_concat_code( lhs, NULL, NULL, "~", rstr, NULL, net );  break;
+    case EXP_OP_UAND       :  generator_concat_code( lhs, NULL, NULL, "&", rstr, NULL, net );  break;
+    case EXP_OP_UNOT       :  generator_concat_code( lhs, NULL, NULL, "!", rstr, NULL, net );  break;
+    case EXP_OP_UOR        :  generator_concat_code( lhs, NULL, NULL, "|", rstr, NULL, net );  break;
+    case EXP_OP_UXOR       :  generator_concat_code( lhs, NULL, NULL, "^", rstr, NULL, net );  break;
+    case EXP_OP_UNAND      :  generator_concat_code( lhs, NULL, NULL, "~&", rstr, NULL, net );  break;
+    case EXP_OP_UNOR       :  generator_concat_code( lhs, NULL, NULL, "~|", rstr, NULL, net );  break;
+    case EXP_OP_UNXOR      :  generator_concat_code( lhs, NULL, NULL, "~^", rstr, NULL, net );  break;
+    case EXP_OP_ALSHIFT    :  generator_concat_code( lhs, NULL, lstr, " <<< ", rstr, NULL, net );  break;
+    case EXP_OP_ARSHIFT    :  generator_concat_code( lhs, NULL, lstr, " >>> ", rstr, NULL, net );  break;
+    case EXP_OP_EXPONENT   :  generator_concat_code( lhs, NULL, lstr, " ** ", rstr, NULL, net );  break;
+    case EXP_OP_NEGATE     :  generator_concat_code( lhs, NULL, NULL, "-", rstr, NULL, net );  break;
     // case EXP_OP_COND       :
     // case EXP_OP_COND_SEL   :
     case EXP_OP_SIG        :
-    case EXP_OP_PARAM      :  generator_concat_code( lhs, exp->sig->name, NULL, 0, NULL, NULL, 0, NULL, net );  break;
+    case EXP_OP_PARAM      :  generator_concat_code( lhs, exp->sig->name, NULL, NULL, NULL, NULL, net );  break;
     case EXP_OP_SBIT_SEL   :
     case EXP_OP_PARAM_SBIT :
       {
@@ -1479,7 +1461,7 @@ static void generator_create_exp(
         char*        str  = (char*)malloc_safe( slen );
         unsigned int rv   = snprintf( str, slen, "%s[", exp->sig->name );
         assert( rv < slen );
-        generator_concat_code( lhs, str, lstr, lstr_depth, "]", NULL, 0, NULL, net );
+        generator_concat_code( lhs, str, lstr, "]", NULL, NULL, net );
         free_safe( str, slen );
       }
       break;
@@ -1490,7 +1472,7 @@ static void generator_create_exp(
         char*        str  = (char*)malloc_safe( slen );
         unsigned int rv   = snprintf( str, slen, "%s[", exp->sig->name );
         assert( rv < slen );
-        generator_concat_code( lhs, str, lstr, lstr_depth, ":", rstr, rstr_depth, "]", net );
+        generator_concat_code( lhs, str, lstr, ":", rstr, "]", net );
         free_safe( str, slen );
       }
       break;
@@ -1513,37 +1495,25 @@ static void generator_insert_subexp(
 ) { PROFILE(GENERATOR_INSERT_SUBEXP);
 
   char*        lhs_str = NULL;
-  char**       left_str;
-  unsigned int left_str_depth;
-  char**       right_str;
-  unsigned int right_str_depth;
+  char*        lstr;
+  char*        rstr;
   unsigned int rv;
   unsigned int i;
 
   /* Create LHS portion of assignment */
-  generator_create_lhs( exp, funit, net, &lhs_str );
+  lhs_str = generator_create_lhs( exp, funit, net );
 
   /* Generate left and right subexpression code string */
-  generator_create_subexp( exp->left,  exp->op, funit, depth, net, &left_str,  &left_str_depth );
-  generator_create_subexp( exp->right, exp->op, funit, depth, net, &right_str, &right_str_depth );
+  lstr = generator_create_subexp( exp->left,  exp->op, funit, depth, net );
+  rstr = generator_create_subexp( exp->right, exp->op, funit, depth, net );
 
   /* Create output expression and add it to the working list */
-  generator_create_exp( exp, lhs_str, left_str, left_str_depth, right_str, right_str_depth, net );
+  generator_create_exp( exp, lhs_str, lstr, rstr, net );
 
-  /* Deallocate right-hand-side expression string */
+  /* Deallocate strings */
   free_safe( lhs_str, (strlen( lhs_str ) + 1) );
-
-  /* Deallocate left string */
-  for( i=0; i<left_str_depth; i++ ) {
-    free_safe( left_str[i], (strlen( left_str[i] ) + 1) );
-  }
-  free_safe( left_str, (sizeof( char* ) * left_str_depth) );
-
-  /* Deallocate right string */
-  for( i=0; i<right_str_depth; i++ ) {
-    free_safe( right_str[i], (strlen( right_str[i] ) + 1) );
-  }
-  free_safe( right_str, (sizeof( char* ) * right_str_depth) );
+  free_safe( lstr, (strlen( lstr ) + 1) );
+  free_safe( rstr, (strlen( rstr ) + 1) );
 
   PROFILE_END;
 
@@ -1632,6 +1602,11 @@ void generator_insert_comb_cov(
 
 /*
  $Log$
+ Revision 1.27  2008/12/12 05:57:50  phase1geo
+ Checkpointing work on code coverage injection.  We are making decent progress in
+ getting regressions back to a working state.  Lots to go, but good progress at
+ this point.
+
  Revision 1.26  2008/12/12 00:17:30  phase1geo
  Fixing some bugs, creating some new ones...  Checkpointing.
 

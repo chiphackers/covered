@@ -3004,12 +3004,13 @@ void db_assign_symbol(
 
   if( (curr_instance != NULL) && (curr_instance->funit != NULL) ) {
     
-    if( info_suppl.part.inlined && (strncmp( name, "\\covered$", 9 ) == 0) ) {
+    if( info_suppl.part.inlined && ((strncmp( name, "\\covered$", 9 ) == 0) || (strncmp( name, "covered$", 8 ) == 0)) ) {
 
-      char type = name[9];
+      unsigned int index = (name[0] == '\\') ? 9 : 8;
+      char         type  = name[index];
 
       /* If the type is an x (temporary register) or a y (temporary wire), don't continue on */
-      if( (type != 'x') && (type != 'y') ) {
+      if( (type != 'x') && (type != 'X') ) {
 
         func_unit*  mod = funit_get_curr_module( curr_instance->funit );
         expression* exp;
@@ -3025,7 +3026,7 @@ void db_assign_symbol(
           exp_link*    expl;
 
           /* Extract the line, first column and funit scope information from name */
-          if( sscanf( (name + 10), "%d_%x$%s", &line, &col, scope ) == 3 ) {
+          if( sscanf( (name + (index + 1)), "%d_%x$%s", &line, &col, scope ) == 3 ) {
 
             /* Search for the matching functional unit */
             curr_tf = mod->tf_head;
@@ -3042,7 +3043,7 @@ void db_assign_symbol(
 
           } else {
 
-            rv = sscanf( (name + 10), "%d_%x", &line, &col );
+            rv = sscanf( (name + (index + 1)), "%d_%x", &line, &col );
             assert( rv == 2 );
 
             /* Search the matching expression */
@@ -3066,7 +3067,7 @@ void db_assign_symbol(
           exp_link*    expl;
 
           /* Extract the line and column (and possibly instance) information */
-          if( sscanf( (name + 10), "%d_%x$%s", &line, &col, scope ) == 3 ) {
+          if( sscanf( (name + (index + 1)), "%d_%x$%s", &line, &col, scope ) == 3 ) {
 
             /* Search for the matching functional unit */
             curr_tf = mod->tf_head;
@@ -3083,7 +3084,7 @@ void db_assign_symbol(
 
           } else {
 
-            rv = sscanf( (name + 10), "%d_%x", &line, &col );
+            rv = sscanf( (name + (index + 1)), "%d_%x", &line, &col );
             assert( rv == 2 );
           
             /* Find the expression that matches the positional information */
@@ -3285,6 +3286,9 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.359  2008/12/11 05:53:32  phase1geo
+ Fixing some bugs in the combinational logic code coverage generator.  Checkpointing.
+
  Revision 1.358  2008/12/10 00:19:23  phase1geo
  Fixing issues with aedge1 diagnostic (still need to handle events but this will
  be worked on a later time).  Working on sizing temporary subexpression LHS signals.

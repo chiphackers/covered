@@ -5,6 +5,7 @@ reg [31:0] a, b;
 initial begin
 	a    = 1;
         b    = 0;
+	#5;
 	b[a] = 1;
 end
 

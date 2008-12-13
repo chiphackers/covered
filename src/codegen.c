@@ -1035,9 +1035,54 @@ void codegen_gen_expr(
 
 }
 
+/*!
+ \return Returns generated expression string from the given expression.
+
+ Wrapper function around the codegen_gen_expr function that emits one line for the entire expression.
+*/
+char* codegen_gen_expr_one_line(
+  expression* expr,  /*!< Pointer to the expression to generate code for */
+  func_unit*  funit  /*!< Pointer to functional unit containing expr */
+) { PROFILE(CODEGEN_GEN_EXPR_ONE_LINE);
+
+  bool         orig_flag_use_line_width = flag_use_line_width;
+  int          orig_line_width          = line_width;
+  char**       code_array;
+  unsigned int code_depth;
+  char*        code_str;
+
+  /* Set the line width to the maximum value */
+  flag_use_line_width = TRUE;
+  line_width          = 0x7fffffff;
+
+  /* Generate the code */
+  codegen_gen_expr( expr, expr->op, &code_array, &code_depth, funit );
+
+  /* The number of elements in the code_array array should only be one */
+  assert( code_depth == 1 );
+
+  /* Save the line for returning purposes */
+  code_str = code_array[0];
+
+  /* Deallocate the string array */
+  free_safe( code_array, (sizeof( char* ) * code_depth) );
+
+  /* Restore the original values of flag_use_line_width and line_width */
+  flag_use_line_width = orig_flag_use_line_width;
+  line_width          = orig_line_width;
+
+  PROFILE_END;
+ 
+  return( code_str );
+
+}
 
 /*
  $Log$
+ Revision 1.105  2008/11/30 04:17:07  phase1geo
+ Adding bit to save off parenthesis existence from original Verilog source.
+ Updating regression per these changes.
+
  Revision 1.104  2008/10/27 05:00:32  phase1geo
  Starting to add support for $test$plusargs and $value$plusargs system function
  calls.  More work to do here.  Checkpointing.
