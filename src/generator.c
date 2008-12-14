@@ -1450,6 +1450,9 @@ static void generator_create_exp(
     case EXP_OP_ARSHIFT    :  generator_concat_code( lhs, NULL, lstr, " >>> ", rstr, NULL, net );  break;
     case EXP_OP_EXPONENT   :  generator_concat_code( lhs, NULL, lstr, " ** ", rstr, NULL, net );  break;
     case EXP_OP_NEGATE     :  generator_concat_code( lhs, NULL, NULL, "-", rstr, NULL, net );  break;
+    case EXP_OP_CASE       :  generator_concat_code( lhs, NULL, lstr, " == ", rstr, NULL, net );  break;
+    case EXP_OP_CASEX      :  generator_concat_code( lhs, NULL, lstr, " === ", rstr, NULL, net );  break;
+    case EXP_OP_CASEZ      :  generator_concat_code( lhs, NULL, lstr, " === ", rstr, NULL, net );  break;  /* TBD */
     // case EXP_OP_COND       :
     // case EXP_OP_COND_SEL   :
     case EXP_OP_SIG        :
@@ -1599,9 +1602,47 @@ void generator_insert_comb_cov(
 
 }
 
+/*!
+ Handles combinational logic for an entire case block (and its case items -- not the case item logic blocks).
+*/
+void generator_insert_case_comb_cov(
+  unsigned int first_line,   /*!< First line number of first statement in case block */
+  unsigned int first_column  /*!< First column of first statement in case block */
+) { PROFILE(GENERATOR_INSERT_CASE_COMB_COV);
+
+  statement* stmt;
+
+  /* Insert combinational logic code coverage if it is specified on the command-line to do so and the statement exists */
+  if( generator_comb && ((stmt = generator_find_statement( first_line, first_column )) != NULL) ) {
+
+    /* Generate covered for the current case item */
+    generator_insert_comb_cov_helper( stmt->exp, stmt->funit, stmt->exp->op, 0, FALSE, TRUE );
+
+    /* If the current statement is a case item type, handle it; otherwise, we are done */
+    while( !stmt->suppl.part.stop_false &&
+           ((stmt->next_false->exp->op == EXP_OP_CASE) || (stmt->next_false->exp->op == EXP_OP_CASEX) || (stmt->next_false->exp->op == EXP_OP_CASEZ)) ) {
+
+      /* Move statement to next false statement */
+      stmt = stmt->next_false;
+
+      /* Generate covered for the current case item */
+      generator_insert_comb_cov_helper( stmt->exp, stmt->funit, stmt->exp->op, 0, FALSE, TRUE );
+
+    }
+
+  }
+
+  PROFILE_END;
+
+}
+
 
 /*
  $Log$
+ Revision 1.28  2008/12/13 00:17:28  phase1geo
+ Fixing more regression bugs.  Updated some original tests to make them comparable to the inlined method output.
+ Checkpointing.
+
  Revision 1.27  2008/12/12 05:57:50  phase1geo
  Checkpointing work on code coverage injection.  We are making decent progress in
  getting regressions back to a working state.  Lots to go, but good progress at

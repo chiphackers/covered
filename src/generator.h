@@ -97,9 +97,20 @@ void generator_insert_comb_cov(
   unsigned int first_column
 );
 
+/*! \brief Inserts code for handling combinational logic coverage for case blocks.
+void generator_insert_case_comb_cov(
+  unsigned int first_line,
+  unsigned int first_column
+);
+
 
 /*
  $Log$
+ Revision 1.12  2008/12/12 05:57:50  phase1geo
+ Checkpointing work on code coverage injection.  We are making decent progress in
+ getting regressions back to a working state.  Lots to go, but good progress at
+ this point.
+
  Revision 1.11  2008/12/12 00:17:30  phase1geo
  Fixing some bugs, creating some new ones...  Checkpointing.
 

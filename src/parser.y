@@ -2678,9 +2678,9 @@ generate_item
           while( c_stmt != NULL ) {
             Try {
               if( c_stmt->expr != NULL ) {
-                expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASE, lhs_mode, c_stmt->line, 0, 0, NULL );
+                expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASE, lhs_mode, c_stmt->line, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
               } else {
-                expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, 0, 0, NULL );
+                expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
               }
             } Catch_anonymous {
               error_count++;
@@ -4365,9 +4365,9 @@ statement
           while( c_stmt != NULL ) {
             Try {
               if( c_stmt->expr != NULL ) {
-                expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASE, lhs_mode, c_stmt->line, 0, 0, NULL );
+                expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASE, lhs_mode, c_stmt->line, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
               } else {
-                expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, 0, 0, NULL );
+                expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
               }
             } Catch_anonymous {
               error_count++;
@@ -4415,9 +4415,9 @@ statement
           while( c_stmt != NULL ) {
             Try {
               if( c_stmt->expr != NULL ) {
-                expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASEX, lhs_mode, c_stmt->line, 0, 0, NULL );
+                expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASEX, lhs_mode, c_stmt->line, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
               } else {
-                expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, 0, 0, NULL );
+                expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
               }
             } Catch_anonymous {
               error_count++;
@@ -4464,9 +4464,9 @@ statement
           while( c_stmt != NULL ) {
             Try {
               if( c_stmt->expr != NULL ) {
-                expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASEZ, lhs_mode, c_stmt->line, 0, 0, NULL );
+                expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASEZ, lhs_mode, c_stmt->line, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
               } else {
-                expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, 0, 0, NULL );
+                expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
               }
             } Catch_anonymous {
               error_count++;
@@ -5818,6 +5818,7 @@ case_item
       if( !parse_mode ) {
         generator_add_to_work_code( " begin" );
         generator_flush_work_code;
+        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
       }
     }
     statement_or_null
@@ -5830,6 +5831,8 @@ case_item
           cstmt->expr = $1;
           cstmt->stmt = $4;
           cstmt->line = @1.first_line;
+          cstmt->fcol = @1.first_column;
+          cstmt->lcol = @1.last_column;
           $$ = cstmt;
         } else {
           $$ = NULL;
@@ -5856,6 +5859,8 @@ case_item
           cstmt->expr = NULL;
           cstmt->stmt = $4;
           cstmt->line = @1.first_line;
+          cstmt->fcol = @1.first_column;
+          cstmt->lcol = @1.last_column;
           $$ = cstmt;
         } else {
           $$ = NULL;
@@ -5882,6 +5887,8 @@ case_item
           cstmt->expr = NULL;
           cstmt->stmt = $3;
           cstmt->line = @1.first_line;
+          cstmt->fcol = @1.first_column;
+          cstmt->lcol = @1.last_column;
           $$ = cstmt;
         } else {
           $$ = NULL;

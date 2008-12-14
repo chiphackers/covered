@@ -2704,6 +2704,8 @@ struct case_stmt_s {
   expression*     expr;              /*!< Pointer to case equality expression */
   statement*      stmt;              /*!< Pointer to first statement in case statement */
   int             line;              /*!< Line number of case statement */
+  int             fcol;              /*!< First column of case statement */
+  int             lcol;              /*!< Last column of case statement */
   case_statement* prev;              /*!< Pointer to previous case statement in list */
 };
 
@@ -2715,6 +2717,8 @@ struct case_gitem_s {
   expression*     expr;              /*!< Pointer to case equality expression */
   gen_item*       gi;                /*!< Pointer to first generate item in case generate item */
   int             line;              /*!< Line number of case generate item */
+  int             fcol;              /*!< First column of case generate item */
+  int             lcol;              /*!< Last column of case generate item */
   case_gitem*     prev;              /*!< Pointer to previous case generate item in list */
 };
 
@@ -3075,6 +3079,11 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.343  2008/12/10 23:37:02  phase1geo
+ Working on handling event combinational logic cases.  This does not fully work
+ at this point.  Fixed issues with combinational logic generation for IF statements.
+ Checkpointing.
+
  Revision 1.342  2008/12/06 06:35:19  phase1geo
  Adding first crack at handling coverage-related information from dumpfile.
  This code is untested.
