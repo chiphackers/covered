@@ -21,7 +21,7 @@
 4 7 21 0 0
 4 8 21 0 0
 3 1 foo_module.$u2 "main.f.$u2" 0 lib/foo_module.v 0 13 1
-2 9 12 10009 1 3b 7002 0 0 1 18 0 1 0 0 0 0 foo_task
+2 9 12 10008 1 3b 7002 0 0 1 18 0 1 0 0 0 0 foo_task
 4 9 31 0 0
 3 1 foo_module.foo_named_block "main.f.foo_named_block" 0 lib/foo_module.v 15 17 1
 2 10 16 9000c 1 0 23008 0 0 1 16 1 0

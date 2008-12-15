@@ -736,6 +736,42 @@ static statement* generator_find_statement(
 }
 
 /*!
+ \return Returns a pointer to the found statement (or if no statement was found, returns NULL).
+
+ Searches the current functional unit for a statement that contains the case expression matches the
+ given positional information.
+*/
+static statement* generator_find_case_statement(
+  unsigned int first_line,   /*!< First line of case expression to find */
+  unsigned int first_column  /*!< First column of case expression to find */
+) { PROFILE(GENERATOR_FIND_CASE_STATEMENT);
+
+  static statement* stmt = NULL;
+
+//  printf( "In generator_find_statement, line: %d, column: %d\n", first_line, first_column );
+
+  if( (stmt == NULL) || (stmt->exp->left->line < first_line) || ((stmt->exp->left->line == first_line) && (((stmt->exp->left->col >> 16) & 0xffff) < first_column)) ) {
+
+    /* Attempt to find the expression with the given position */
+    while( ((stmt = func_iter_get_next_statement( &fiter )) != NULL) && (stmt->exp->left != NULL) &&
+//           printf( "  statement %s %d\n", expression_string( stmt->exp ), ((stmt->exp->left->col >> 16) & 0xffff) ) &&
+           ((stmt->exp->left->line < first_line) || ((stmt->exp->left->line == first_line) && (((stmt->exp->left->col >> 16) & 0xffff) < first_column))) );
+
+  }
+
+//  if( (stmt != NULL) && (stmt->exp->left->line == first_line) && (((stmt->exp->left->col >> 16) & 0xffff) == first_column) ) {
+//    printf( "  FOUND (%s %x)!\n", expression_string( stmt->exp ), ((stmt->exp->col >> 16) & 0xffff) );
+//  } else {
+//    printf( "  NOT FOUND!\n" );
+//  }
+
+  PROFILE_END;
+
+  return( ((stmt == NULL) || (stmt->exp->left == NULL) || (stmt->exp->left->line != first_line) || (((stmt->exp->left->col >> 16) & 0xffff) != first_column)) ? NULL : stmt );
+
+}
+
+/*!
  Inserts line coverage information in string queues.
 */
 void generator_insert_line_cov(
@@ -795,7 +831,7 @@ static void generator_insert_event_comb_cov(
    If the expression is a root of an expression tree and it is a single event, just insert the event coverage code
    immediately.
   */
-  if( (ESUPPL_IS_ROOT( exp->suppl ) == 1) && ((exp->op == EXP_OP_PEDGE) || (exp->op == EXP_OP_NEDGE) || (exp->op == EXP_OP_AEDGE)) ) {
+  if( (ESUPPL_IS_ROOT( exp->suppl ) == 1) && (exp->op != EXP_OP_EOR) ) {
 
     char         str[4096];
     char         name[4096];
@@ -954,7 +990,6 @@ static void generator_insert_unary_comb_cov(
 static void generator_insert_comb_comb_cov(
   expression*  exp,    /*!< Pointer to expression to output */
   func_unit*   funit,  /*!< Pointer to functional unit containing this expression */
-  unsigned int depth,  /*!< Current expression depth */
   bool         net     /*!< Set to TRUE if this expression is a net */
 ) { PROFILE(GENERATOR_INSERT_AND_COMB_COV);
 
@@ -971,24 +1006,16 @@ static void generator_insert_comb_comb_cov(
   if( net || (funit->type == FUNIT_MODULE) ) {
     rv = snprintf( sig,  80, " \\covered$%c%d_%x ", (net ? 'e' : 'E'), exp->line, exp->col );
     assert( rv < 80 );
-    rv = snprintf( sigl, 80, " \\covered$%c%d_%x ",
-                   ((((depth + ((exp->op != exp->left->op) ? 1 : 0)) < generator_max_exp_depth) && EXPR_IS_MEASURABLE( exp->left ) && !expression_is_static_only( exp->left )) ? (net ? 'e' : 'E') : (net ? 'x' : 'X')),
-                   exp->left->line, exp->left->col );
+    rv = snprintf( sigl, 80, " \\covered$%c%d_%x ", (net ? 'x' : 'X'), exp->left->line, exp->left->col );
     assert( rv < 80 );
-    rv = snprintf( sigr, 80, " \\covered$%c%d_%x ",
-                   ((((depth + ((exp->op != exp->right->op) ? 1 : 0)) < generator_max_exp_depth) && EXPR_IS_MEASURABLE( exp->right ) && !expression_is_static_only( exp->right )) ? (net ? 'e' : 'E') : (net ? 'x' : 'X')),
-                   exp->right->line, exp->right->col );
+    rv = snprintf( sigr, 80, " \\covered$%c%d_%x ", (net ? 'x' : 'X'), exp->right->line, exp->right->col );
     assert( rv < 80 );
   } else {
     rv = snprintf( sig,  80, " \\covered$E%d_%x$%s ", exp->line, exp->col, funit->name );
     assert( rv < 80 );
-    rv = snprintf( sigl, 80, " \\covered$%c%d_%x$%s ",
-                   ((((depth + ((exp->op != exp->left->op) ? 1 : 0)) < generator_max_exp_depth) && EXPR_IS_MEASURABLE( exp->left ) && !expression_is_static_only( exp->left )) ? 'E' : 'X'),
-                   exp->left->line, exp->left->col, funit->name );
+    rv = snprintf( sigl, 80, " \\covered$X%d_%x$%s ", exp->left->line, exp->left->col, funit->name );
     assert( rv < 80 );
-    rv = snprintf( sigr, 80, " \\covered$%c%d_%x$%s ",
-                   ((((depth + ((exp->op != exp->right->op) ? 1 : 0)) < generator_max_exp_depth) && EXPR_IS_MEASURABLE( exp->right ) && !expression_is_static_only( exp->right )) ? 'E' : 'X'),
-                   exp->right->line, exp->right->col, funit->name );
+    rv = snprintf( sigr, 80, " \\covered$X%d_%x$%s ", exp->right->line, exp->right->col, funit->name );
     assert( rv < 80 );
   }
 
@@ -1068,8 +1095,10 @@ static char* generator_gen_msb(
         free_safe( lexp, (strlen( lexp ) + 1) );
         free_safe( rexp, (strlen( rexp ) + 1) );
         break;
-      case EXP_OP_NEGATE         :
       case EXP_OP_CONCAT         :
+        msb = generator_gen_msb( exp->right, funit );
+        break;
+      case EXP_OP_NEGATE         :
       case EXP_OP_MBIT_POS       :
       case EXP_OP_MBIT_NEG       :
       case EXP_OP_PARAM_MBIT_POS :
@@ -1091,8 +1120,8 @@ static char* generator_gen_msb(
           rv  = snprintf( msb, slen, "(%s*%s)", lexp, rexp );
           assert( rv < slen );
         }
-        free_safe( lexp, (sizeof( rexp ) + 1) );
-        free_safe( rexp, (sizeof( rexp ) + 1) );
+        free_safe( lexp, (strlen( lexp ) + 1) );
+        free_safe( rexp, (strlen( rexp ) + 1) );
         break;
       case EXP_OP_STIME :
       case EXP_OP_SR2B  :
@@ -1453,8 +1482,11 @@ static void generator_create_exp(
     case EXP_OP_CASE       :  generator_concat_code( lhs, NULL, lstr, " == ", rstr, NULL, net );  break;
     case EXP_OP_CASEX      :  generator_concat_code( lhs, NULL, lstr, " === ", rstr, NULL, net );  break;
     case EXP_OP_CASEZ      :  generator_concat_code( lhs, NULL, lstr, " === ", rstr, NULL, net );  break;  /* TBD */
-    // case EXP_OP_COND       :
-    // case EXP_OP_COND_SEL   :
+    case EXP_OP_CONCAT     :  generator_concat_code( lhs, NULL, NULL, "{", rstr, "}", net );  break;
+    case EXP_OP_EXPAND     :  generator_concat_code( lhs, "{", lstr, "{", rstr, "}}", net );  break;
+    case EXP_OP_LIST       :  generator_concat_code( lhs, NULL, lstr, ",", rstr, NULL, net );  break;
+    case EXP_OP_COND       :  generator_concat_code( lhs, NULL, lstr, " ? ", rstr, NULL, net );  break;
+    case EXP_OP_COND_SEL   :  generator_concat_code( lhs, NULL, lstr, " : ", rstr, NULL, net );  break;
     case EXP_OP_SIG        :
     case EXP_OP_PARAM      :  generator_concat_code( lhs, exp->sig->name, NULL, NULL, NULL, NULL, net );  break;
     case EXP_OP_SBIT_SEL   :
@@ -1554,12 +1586,15 @@ static void generator_insert_comb_cov_helper(
 
       /* Otherwise, generate binary combinational logic type */
       } else if( EXPR_IS_COMB( exp ) ) {
-        generator_insert_comb_comb_cov( exp, funit, depth, net );
+        generator_insert_comb_comb_cov( exp, funit, net );
         if( (exp->left != NULL) && ((child_depth >= generator_max_exp_depth) || !EXPR_IS_MEASURABLE( exp->left ) || expression_is_static_only( exp->left )) ) {
           generator_insert_subexp( exp->left,  funit, depth, net );
         }
         if( (exp->right != NULL) && ((child_depth >= generator_max_exp_depth) || !EXPR_IS_MEASURABLE( exp->right ) || expression_is_static_only( exp->right )) ) {
           generator_insert_subexp( exp->right, funit, depth, net );
+        }
+        if( !root ) {
+          generator_insert_subexp( exp, funit, depth, net );
         }
 
       }
@@ -1613,8 +1648,11 @@ void generator_insert_case_comb_cov(
   statement* stmt;
 
   /* Insert combinational logic code coverage if it is specified on the command-line to do so and the statement exists */
-  if( generator_comb && ((stmt = generator_find_statement( first_line, first_column )) != NULL) ) {
+  if( generator_comb && ((stmt = generator_find_case_statement( first_line, first_column )) != NULL) ) {
 
+    generator_insert_comb_cov_helper( stmt->exp->left, stmt->funit, stmt->exp->left->op, 0, FALSE, TRUE );
+
+#ifdef FUTURE_ENHANCEMENT
     /* Generate covered for the current case item */
     generator_insert_comb_cov_helper( stmt->exp, stmt->funit, stmt->exp->op, 0, FALSE, TRUE );
 
@@ -1629,6 +1667,7 @@ void generator_insert_case_comb_cov(
       generator_insert_comb_cov_helper( stmt->exp, stmt->funit, stmt->exp->op, 0, FALSE, TRUE );
 
     }
+#endif
 
   }
 
@@ -1639,6 +1678,11 @@ void generator_insert_case_comb_cov(
 
 /*
  $Log$
+ Revision 1.29  2008/12/14 06:56:02  phase1geo
+ Making some code modifications to set the stage for supporting case statements
+ with the new inlined code coverage methodology.  Updating regressions per this
+ change (IV and Cver fully pass).
+
  Revision 1.28  2008/12/13 00:17:28  phase1geo
  Fixing more regression bugs.  Updated some original tests to make them comparable to the inlined method output.
  Checkpointing.

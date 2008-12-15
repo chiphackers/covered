@@ -12,7 +12,7 @@
 4 1 1 0 0
 4 2 1 0 0
 3 1 foo_module.$u1 "main.bar.$u1" 0 ./lib/foo_module.v 0 13 1
-2 3 12 10009 1 3b 5002 0 0 1 18 0 1 0 0 0 0 foo_task
+2 3 12 10008 1 3b 5002 0 0 1 18 0 1 0 0 0 0 foo_task
 4 3 11 0 0
 3 1 foo_module.foo_named_block "main.bar.foo_named_block" 0 ./lib/foo_module.v 15 17 1
 2 4 16 9000c 1 0 21008 0 0 1 16 1 0

@@ -16,7 +16,7 @@
 4 5 f 5 5
 4 6 1 0 0
 3 1 foo_module.$u1 "main.bar.$u1" 0 ./lib/foo_module.v 0 13 1
-2 7 12 10009 1 3b 5002 0 0 1 18 0 1 0 0 0 0 foo_task
+2 7 12 10008 1 3b 5002 0 0 1 18 0 1 0 0 0 0 foo_task
 4 7 11 0 0
 3 2 foo_module.foo_func "main.bar.foo_func" 0 ./lib/foo_module.v 19 24 1
 2 8 21 20006 1 3d 5802 0 0 1 18 0 1 0 0 0 0 $u2

@@ -469,6 +469,7 @@ profiler profiles[NUM_PROFILES] = {
   {"generator_flush_event_combs1", NULL, 0, 0, 0, TRUE},
   {"generator_flush_all1", NULL, 0, 0, 0, TRUE},
   {"generator_find_statement", NULL, 0, 0, 0, TRUE},
+  {"generator_find_case_statement", NULL, 0, 0, 0, TRUE},
   {"generator_insert_line_cov", NULL, 0, 0, 0, TRUE},
   {"generator_insert_event_comb_cov", NULL, 0, 0, 0, TRUE},
   {"generator_insert_unary_comb_cov", NULL, 0, 0, 0, TRUE},

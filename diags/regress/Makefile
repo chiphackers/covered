@@ -288,65 +288,70 @@ endif
 
 # List of diagnostics that should not be run if we are using LXT dumpfiles (because they don't output any value changes after time 0)
 ifdef LXT
-NOLXTDIAGS   := add1            always7         always7.1       always11.2      ashift1 \
-                ashift2         bassign2        bassign3        case5           casex2 \
-                casez3          concat6         define5         disable1        disable2.1 \
-                exclude1        exclude9.7      exclude9.8      exclude9.9      finish1 \
-                for1            fsm11           func5           generate2.1     generate5.1 \
-                generate8       generate10      generate10.1    generate10.2    hier1           hier2 \
-                hier4           localparam1     localparam1.1   localparam1.2   localparam1.3 \
-                localparam2     localparam3     long_exp1       long_exp2       long_exp3 \
-                mbit_sel3       mbit_sel3.1     mbit_sel4       mbit_sel4.1     mbit_sel4.2 \
-                mbit_sel4.3     mem1            mem2            merge1          merge2 \
-                merge5          merge6          merge6.1        merge7          merge7.1 \
-                merge7.2        merge7.3        merge7.4        merge7.5        merge7.6 \
-                merge7.7        merge7.8        multi_exp1      multi_exp1.1    multi_exp1.2 \
-                multi_exp1.3    multi_exp1.4 \
-                multi_exp1.5    multi_exp1.6    multi_exp1.7    multi_exp1.8    multi_exp3 \
-                named_block2    nested_block1   nested_block2   nested_block2.1 param4 \
-                param6          param6.1        param7          param8          param8.1 \
-                param9          param9.1        param9.2        param10         param10.1 \
-                param10.2       param10.3       param10.4       param10.5       param13 \
-                param13.1       param14         param16         port1           port2 \
-                port3           race1           race1.1         race1.2         rassign1 \
-                real1           repeat1         sbit_sel1.1     sbit_sel2.1     score_err1.14 \
-                score_err1.15   score_err1.16   signed1 \
-                signed3         signed4         signed4.2       slist2          static1 \
-                static2         static2.1       static2.2       task3.1         timescale1.16 \
-                timescale1.17   timescale1.18   timescale1.19   timescale2.8    trigger1 \
-                unary1          wait1           wait1.1
+NOLXTDIAGS    := add1            always7         always7.1       always11.2      ashift1 \
+                 ashift2         bassign2        bassign3        case5           casex2 \
+                 casez3          concat6         define5         disable1        disable2.1 \
+                 exclude1        exclude9.7      exclude9.8      exclude9.9      finish1 \
+                 for1            fsm11           func5           generate2.1     generate5.1 \
+                 generate8       generate10      generate10.1    generate10.2    hier1           hier2 \
+                 hier4           localparam1     localparam1.1   localparam1.2   localparam1.3 \
+                 localparam2     localparam3     long_exp1       long_exp2       long_exp3 \
+                 mbit_sel3       mbit_sel3.1     mbit_sel4       mbit_sel4.1     mbit_sel4.2 \
+                 mbit_sel4.3     mem1            mem2            merge1          merge2 \
+                 merge5          merge6          merge6.1        merge7          merge7.1 \
+                 merge7.2        merge7.3        merge7.4        merge7.5        merge7.6 \
+                 merge7.7        merge7.8        multi_exp1      multi_exp1.1    multi_exp1.2 \
+                 multi_exp1.3    multi_exp1.4 \
+                 multi_exp1.5    multi_exp1.6    multi_exp1.7    multi_exp1.8    multi_exp3 \
+                 named_block2    nested_block1   nested_block2   nested_block2.1 param4 \
+                 param6          param6.1        param7          param8          param8.1 \
+                 param9          param9.1        param9.2        param10         param10.1 \
+                 param10.2       param10.3       param10.4       param10.5       param13 \
+                 param13.1       param14         param16         port1           port2 \
+                 port3           race1           race1.1         race1.2         rassign1 \
+                 real1           repeat1         sbit_sel1.1     sbit_sel2.1     score_err1.14 \
+                 score_err1.15   score_err1.16   signed1 \
+                 signed3         signed4         signed4.2       slist2          static1 \
+                 static2         static2.1       static2.2       task3.1         timescale1.16 \
+                 timescale1.17   timescale1.18   timescale1.19   timescale2.8    trigger1 \
+                 unary1          wait1           wait1.1
 endif
 
 # List of diagnostics that should not be run if we are using VPI
 ifdef VPI
-NOVPIDIAGS   := err5.2          err5.3          err5.4          score_err1.14   score_err1.16
+NOVPIDIAGS    := err5.2          err5.3          err5.4          score_err1.14   score_err1.16
+endif
+
+# List of diagnostics that should not be run if we are running in inlined mode
+ifdef INLINE
+NOINLINEDIAGS := case5           casex2          casez3
 endif
                  
 # Remove filtered diagnostics
-DIAGS1       := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS), $(DIAGS1))
-DIAGS2       := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS), $(DIAGS2))
-DIAGS3       := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS), $(DIAGS3))
-DIAGS4       := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS), $(DIAGS4))
-IVONLYDIAGS1 := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS), $(IVONLYDIAGS1))
-IVONLYDIAGS2 := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS), $(IVONLYDIAGS2))
-IVONLYDIAGS3 := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS), $(IVONLYDIAGS3))
-IVONLYDIAGS4 := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS), $(IVONLYDIAGS4))
-IVVCSDIAGS1  := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS), $(IVVCSDIAGS1))
-IVVCSDIAGS2  := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS), $(IVVCSDIAGS2))
-IVVCSDIAGS3  := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS), $(IVVCSDIAGS3))
-IVVCSDIAGS4  := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS), $(IVVCSDIAGS4))
-IVCVERDIAGS1 := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS), $(IVCVERDIAGS1))
-IVCVERDIAGS2 := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS), $(IVCVERDIAGS2))
-IVCVERDIAGS3 := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS), $(IVCVERDIAGS3))
-IVCVERDIAGS4 := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS), $(IVCVERDIAGS4))
-MERGE1       := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS), $(MERGE1))
-MERGE3       := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS), $(MERGE3))
-RACELIST     := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS), $(RACELIST))
-ERRSCORE     := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS), $(ERRSCORE))
-ERRMERGE     := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS), $(ERRMERGE))
-ERRRANK      := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS), $(ERRRANK))
-NOSIMLIST    := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS), $(NOSIMLIST))
-NOSIMERRLIST := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS), $(NOSIMERRLIST))
+DIAGS1        := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(DIAGS1))
+DIAGS2        := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(DIAGS2))
+DIAGS3        := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(DIAGS3))
+DIAGS4        := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(DIAGS4))
+IVONLYDIAGS1  := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(IVONLYDIAGS1))
+IVONLYDIAGS2  := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(IVONLYDIAGS2))
+IVONLYDIAGS3  := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(IVONLYDIAGS3))
+IVONLYDIAGS4  := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(IVONLYDIAGS4))
+IVVCSDIAGS1   := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(IVVCSDIAGS1))
+IVVCSDIAGS2   := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(IVVCSDIAGS2))
+IVVCSDIAGS3   := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(IVVCSDIAGS3))
+IVVCSDIAGS4   := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(IVVCSDIAGS4))
+IVCVERDIAGS1  := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(IVCVERDIAGS1))
+IVCVERDIAGS2  := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(IVCVERDIAGS2))
+IVCVERDIAGS3  := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(IVCVERDIAGS3))
+IVCVERDIAGS4  := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(IVCVERDIAGS4))
+MERGE1        := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(MERGE1))
+MERGE3        := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(MERGE3))
+RACELIST      := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(RACELIST))
+ERRSCORE      := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(ERRSCORE))
+ERRMERGE      := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(ERRMERGE))
+ERRRANK       := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(ERRRANK))
+NOSIMLIST     := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(NOSIMLIST))
+NOSIMERRLIST  := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(NOSIMERRLIST))
 
 iverilog:
 	@cd ../verilog; \

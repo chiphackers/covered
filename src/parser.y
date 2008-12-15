@@ -315,7 +315,7 @@ int yydebug = 1;
 %type <attr_parm> attribute attribute_list
 %type <portinfo>  port_declaration list_of_port_declarations
 %type <gitem>     generate_item generate_item_list generate_item_list_opt
-%type <case_stmt> case_items case_item
+%type <case_stmt> case_items case_item case_body
 %type <case_gi>   generate_case_items generate_case_item
 %type <optype>    static_unary_op unary_op syscall_wo_parms_op syscall_w_parms_op syscall_w_parms_op_64 syscall_w_parms_op_32
 %type <optype>    pre_op_and_assign_op post_op_and_assign_op op_and_assign_op
@@ -401,6 +401,7 @@ attribute
       if( parse_mode ) {
         $$ = parser_create_attr( $1, NULL );
       } else {
+        free_safe( $1, (strlen( $1 ) + 1) );
         $$ = NULL;
       }
     }
@@ -409,6 +410,7 @@ attribute
       if( parse_mode ) {
         $$ = parser_create_attr( $1, $4 );
       } else {
+        free_safe( $1, (strlen( $1 ) + 1) );
         $$ = NULL;
       }
     }
@@ -3055,11 +3057,9 @@ module_item
           str_link_delete_list( tmp );
           param_oride_head = NULL;
           param_oride_tail = NULL;
-          free_safe( $2, (strlen( $2 ) + 1) );
-        } else {
-          free_safe( $2, (strlen( $2 ) + 1) );
         }
       }
+      free_safe( $2, (strlen( $2 ) + 1) );
     }
   | attribute_list_opt
     K_assign drive_strength_opt { ignore_mode++; } delay3_opt { ignore_mode--; } assign_list ';'
@@ -4352,7 +4352,13 @@ statement
         $$ = NULL;  /* TBD */
       }
     }
-  | cond_specifier_opt K_case '(' expression ')' inc_block_depth_only case_items dec_block_depth_only K_endcase
+  | cond_specifier_opt K_case '(' expression ')'
+    {
+      if( !parse_mode ) {
+        generator_insert_case_comb_cov( @4.first_line, @4.first_column );
+      }
+    }
+    case_body K_endcase
     {
       if( parse_mode ) {
         expression*     expr      = NULL;
@@ -4362,30 +4368,36 @@ statement
         case_statement* c_stmt    = $7;
         case_statement* tc_stmt;
         if( (ignore_mode == 0) && ($4 != NULL) ) {
-          while( c_stmt != NULL ) {
-            Try {
-              if( c_stmt->expr != NULL ) {
-                expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASE, lhs_mode, c_stmt->line, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
-              } else {
-                expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
+          if( c_stmt == NULL ) {
+            VLerror( "Illegal case expression" );
+            expression_dealloc( c_expr, FALSE );
+            $$ = NULL;
+          } else {
+            while( c_stmt != NULL ) {
+              Try {
+                if( c_stmt->expr != NULL ) {
+                  expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASE, lhs_mode, c_stmt->line, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
+                } else {
+                  expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
+                }
+              } Catch_anonymous {
+                error_count++;
               }
-            } Catch_anonymous {
-              error_count++;
+              stmt = db_create_statement( expr );
+              db_connect_statement_true( stmt, c_stmt->stmt );
+              db_connect_statement_false( stmt, last_stmt );
+              if( stmt != NULL ) {
+                last_stmt = stmt;
+              }
+              tc_stmt   = c_stmt;
+              c_stmt    = c_stmt->prev;
+              free_safe( tc_stmt, sizeof( case_statement ) );
             }
-            stmt = db_create_statement( expr );
-            db_connect_statement_true( stmt, c_stmt->stmt );
-            db_connect_statement_false( stmt, last_stmt );
             if( stmt != NULL ) {
-              last_stmt = stmt;
+              stmt->exp->suppl.part.owned = 1;
             }
-            tc_stmt   = c_stmt;
-            c_stmt    = c_stmt->prev;
-            free_safe( tc_stmt, sizeof( case_statement ) );
+            $$ = stmt;
           }
-          if( stmt != NULL ) {
-            stmt->exp->suppl.part.owned = 1;
-          }
-          $$ = stmt;
         } else {
           expression_dealloc( $4, FALSE );
           while( c_stmt != NULL ) {
@@ -4402,7 +4414,13 @@ statement
         $$ = NULL;
       }
     }
-  | cond_specifier_opt K_casex '(' expression ')' inc_block_depth_only case_items dec_block_depth_only K_endcase
+  | cond_specifier_opt K_casex '(' expression ')'
+    {
+      if( !parse_mode ) {
+        generator_insert_case_comb_cov( @4.first_line, @4.first_column );
+      }
+    }
+    case_body K_endcase
     {
       if( parse_mode ) {
         expression*     expr      = NULL;
@@ -4412,30 +4430,36 @@ statement
         case_statement* c_stmt    = $7;
         case_statement* tc_stmt;
         if( (ignore_mode == 0) && ($4 != NULL) ) {
-          while( c_stmt != NULL ) {
-            Try {
-              if( c_stmt->expr != NULL ) {
-                expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASEX, lhs_mode, c_stmt->line, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
-              } else {
-                expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
+          if( c_stmt == NULL ) {
+            VLerror( "Illegal casex expression" );
+            expression_dealloc( c_expr, FALSE );
+            $$ = NULL;
+          } else {
+            while( c_stmt != NULL ) {
+              Try {
+                if( c_stmt->expr != NULL ) {
+                  expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASEX, lhs_mode, c_stmt->line, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
+                } else {
+                  expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
+                }
+              } Catch_anonymous {
+                error_count++;
               }
-            } Catch_anonymous {
-              error_count++;
+              stmt = db_create_statement( expr );
+              db_connect_statement_true( stmt, c_stmt->stmt );
+              db_connect_statement_false( stmt, last_stmt );
+              if( stmt != NULL ) {
+                last_stmt = stmt;
+              }
+              tc_stmt   = c_stmt;
+              c_stmt    = c_stmt->prev;
+              free_safe( tc_stmt, sizeof( case_statement ) );
             }
-            stmt = db_create_statement( expr );
-            db_connect_statement_true( stmt, c_stmt->stmt );
-            db_connect_statement_false( stmt, last_stmt );
             if( stmt != NULL ) {
-              last_stmt = stmt;
+              stmt->exp->suppl.part.owned = 1;
             }
-            tc_stmt   = c_stmt;
-            c_stmt    = c_stmt->prev;
-            free_safe( tc_stmt, sizeof( case_statement ) );
+            $$ = stmt;
           }
-          if( stmt != NULL ) {
-            stmt->exp->suppl.part.owned = 1;
-          }
-          $$ = stmt;
         } else {
           expression_dealloc( $4, FALSE );
           while( c_stmt != NULL ) {
@@ -4448,10 +4472,17 @@ statement
           $$ = NULL;
         }
       } else {
-        $$ = NULL;  /* TBD */
+        generator_flush_work_code;
+        $$ = NULL;
       }
     }
-  | cond_specifier_opt K_casez '(' expression ')' inc_block_depth_only case_items dec_block_depth_only K_endcase
+  | cond_specifier_opt K_casez '(' expression ')'
+    {
+      if( !parse_mode ) {
+        generator_insert_case_comb_cov( @4.first_line, @4.first_column );
+      }
+    }
+    case_body K_endcase
     {
       if( parse_mode ) {
         expression*     expr      = NULL;
@@ -4461,30 +4492,36 @@ statement
         case_statement* c_stmt    = $7;
         case_statement* tc_stmt;
         if( (ignore_mode == 0) && ($4 != NULL) ) {
-          while( c_stmt != NULL ) {
-            Try {
-              if( c_stmt->expr != NULL ) {
-                expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASEZ, lhs_mode, c_stmt->line, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
-              } else {
-                expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
+          if( c_stmt == NULL ) {
+            VLerror( "Illegal casez expression" );
+            expression_dealloc( c_expr, FALSE );
+            $$ = NULL;
+          } else {
+            while( c_stmt != NULL ) {
+              Try {
+                if( c_stmt->expr != NULL ) {
+                  expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASEZ, lhs_mode, c_stmt->line, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
+                } else {
+                  expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
+                }
+              } Catch_anonymous {
+                error_count++;
               }
-            } Catch_anonymous {
-              error_count++;
+              stmt = db_create_statement( expr );
+              db_connect_statement_true( stmt, c_stmt->stmt );
+              db_connect_statement_false( stmt, last_stmt );
+              if( stmt != NULL ) {
+                last_stmt = stmt;
+              }
+              tc_stmt   = c_stmt;
+              c_stmt    = c_stmt->prev;
+              free_safe( tc_stmt, sizeof( case_statement ) );
             }
-            stmt = db_create_statement( expr );
-            db_connect_statement_true( stmt, c_stmt->stmt );
-            db_connect_statement_false( stmt, last_stmt );
             if( stmt != NULL ) {
-              last_stmt = stmt;
+              stmt->exp->suppl.part.owned = 1;
             }
-            tc_stmt   = c_stmt;
-            c_stmt    = c_stmt->prev;
-            free_safe( tc_stmt, sizeof( case_statement ) );
+            $$ = stmt;
           }
-          if( stmt != NULL ) {
-            stmt->exp->suppl.part.owned = 1;
-          }
-          $$ = stmt;
         } else {
           expression_dealloc( $4, FALSE );
           while( c_stmt != NULL ) {
@@ -4497,38 +4534,9 @@ statement
           $$ = NULL;
         }
       } else {
-        $$ = NULL;  /* TBD */
+        generator_flush_work_code;
+        $$ = NULL;
       }
-    }
-  | cond_specifier_opt K_case '(' expression ')' inc_block_depth_only error dec_block_depth_only K_endcase
-    {
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          expression_dealloc( $4, FALSE );
-        }
-      }
-      VLerror( "Illegal case expression" );
-      $$ = NULL;
-    }
-  | cond_specifier_opt K_casex '(' expression ')' inc_block_depth_only error dec_block_depth_only K_endcase
-    {
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          expression_dealloc( $4, FALSE );
-        }
-      }
-      VLerror( "Illegal casex expression" );
-      $$ = NULL;
-    }
-  | cond_specifier_opt K_casez '(' expression ')' inc_block_depth_only error dec_block_depth_only K_endcase
-    {
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          expression_dealloc( $4, FALSE );
-        }
-      }
-      VLerror( "Illegal casez expression" );
-      $$ = NULL;
     }
   | cond_specifier_opt K_if '(' expression ')'
     {
@@ -4765,8 +4773,8 @@ statement
   | '@' '*'
     {
       if( !parse_mode ) {
-        generator_add_to_work_code( ";" );
-        generator_insert_line_cov( @1.first_line, @1.first_column, (@1.last_column - 1) );
+        generator_add_to_work_code( " begin" );
+        generator_insert_line_cov( @1.first_line, @1.first_column, (@2.last_column - 1) );
         generator_flush_work_code;
         generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
         generator_flush_work_code;
@@ -4807,6 +4815,7 @@ statement
           }
         }
       } else {
+        generator_add_to_work_code( " end " );
         generator_flush_work_code;
         $$ = NULL;
       }
@@ -5091,7 +5100,7 @@ statement
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($3 != NULL) ) {
           Try {
-            $$ = db_create_statement( db_create_expression( NULL, $3, EXP_OP_SSRANDOM, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL ) );
+            $$ = db_create_statement( db_create_expression( NULL, $3, EXP_OP_SSRANDOM, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL ) );
           } Catch_anonymous {
             expression_dealloc( $3, FALSE );
             error_count++;
@@ -5171,7 +5180,7 @@ statement
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
           Try {
-            expression* exp = db_create_expression( NULL, $3, EXP_OP_TASK_CALL, FALSE, @1.first_line, @1.first_column, (@5.last_column - 1), $1 );
+            expression* exp = db_create_expression( NULL, $3, EXP_OP_TASK_CALL, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), $1 );
             $$ = db_create_statement( exp );
           } Catch_anonymous {
             error_count++;
@@ -5181,6 +5190,8 @@ statement
           $$ = NULL;
         }
       } else {
+        generator_insert_line_cov( @1.first_line, @1.first_column, (@4.last_column - 1) );
+        generator_flush_work_code;
         $$ = NULL;  /* TBD */
       }
       free_safe( $1, (strlen( $1 ) + 1) );
@@ -5190,7 +5201,7 @@ statement
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL) ) {
           Try {
-            expression* exp = db_create_expression( NULL, NULL, EXP_OP_TASK_CALL, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), $1 );
+            expression* exp = db_create_expression( NULL, NULL, EXP_OP_TASK_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
             $$ = db_create_statement( exp );
           } Catch_anonymous {
             error_count++;
@@ -5200,7 +5211,9 @@ statement
           $$ = NULL;
         }
       } else {
-        $$ = NULL;  /* TBD */
+        generator_insert_line_cov( @1.first_line, @1.first_column, (@1.last_column - 1) );
+        generator_flush_work_code;
+        $$ = NULL;
       }
       free_safe( $1, (strlen( $1 ) + 1) );
     }
@@ -5818,7 +5831,6 @@ case_item
       if( !parse_mode ) {
         generator_add_to_work_code( " begin" );
         generator_flush_work_code;
-        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
       }
     }
     statement_or_null
@@ -5927,6 +5939,17 @@ case_items
       } else {
         $$ = NULL;  /* TBD */
       }
+    }
+  ;
+
+case_body
+  : inc_block_depth_only case_items dec_block_depth_only
+    {
+      $$ = $2;
+    }
+  | inc_block_depth_only error dec_block_depth_only
+    {
+      $$ = NULL;
     }
   ;
 
@@ -7022,6 +7045,9 @@ gate_instance
           free_safe( $1, (strlen( $1 ) + 1) );
           $$ = NULL;
         }
+      } else {
+        free_safe( $1, (strlen( $1 ) + 1) );
+        $$ = NULL;
       }
     }
   | IDENTIFIER range '(' ignore_more expression_list ignore_less ')'
@@ -7048,6 +7074,7 @@ gate_instance
           $$ = NULL;
         }
       } else {
+        free_safe( $1, (strlen( $1 ) + 1) );
         $$ = NULL;
       }
     }
@@ -7067,6 +7094,7 @@ gate_instance
           $$ = NULL;
         }
       } else {
+        free_safe( $1, (strlen( $1 ) + 1) );
         $$ = NULL;
       }
     }
@@ -7094,6 +7122,7 @@ gate_instance
           $$ = NULL;
         }
       } else {
+        free_safe( $1, (strlen( $1 ) + 1) );
         $$ = NULL;
       }
     }
