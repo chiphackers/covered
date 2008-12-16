@@ -713,7 +713,6 @@ static void race_check_race_count() { PROFILE(RACE_CHECK_RACE_COUNT);
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "%d race conditions were detected.  Exiting score command.", races_found );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    printf( "race Throw A\n" );
     Throw 0;
 
   }
@@ -872,7 +871,6 @@ void race_db_read(
     if( curr_mod == NULL ) {
 
       print_output( "Internal error:  race condition in database written before its functional unit", FATAL, __FILE__, __LINE__ );
-      printf( "race Throw B\n" );
       Throw 0;
 
     } else {
@@ -893,7 +891,6 @@ void race_db_read(
   } else {
 
     print_output( "Unable to parse race condition line in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
-    printf( "race Throw C\n" );
     Throw 0;
 
   }
@@ -1109,6 +1106,11 @@ void race_blk_delete_list(
 
 /*
  $Log$
+ Revision 1.85  2008/08/18 23:07:28  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.81.2.3  2008/08/07 20:51:04  phase1geo
  Fixing memory allocation/deallocation issues with GUI.  Also fixing some issues with FSM
  table output and exclusion.  Checkpointing.

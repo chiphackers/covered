@@ -38,7 +38,7 @@ Instance                                           Hit/ Miss/Total    Percent hi
   Accumulated                                        6/    0/    6      100%             4/    2/    6       67%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Module: depth1, File: instance1.v, Instance: main.inst0
+    Module: depth1, File: instance1.1.v, Instance: main.inst0
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -48,7 +48,7 @@ Instance                                           Hit/ Miss/Total    Percent hi
       ......................... 1->0: 1'h0 ...
 
 
-    Module: depth2, File: instance1.v, Instance: main.inst0.inst1
+    Module: depth2, File: instance1.1.v, Instance: main.inst0.inst1
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 

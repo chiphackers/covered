@@ -5558,8 +5558,6 @@ void expression_vcd_assign(
 
   if( action == 'l' ) {
 
-    printf( "Examining line coverage for expr: %s, value: %c\n", expression_string( expr ), value[0] );
-
     /* If we have seen a value of 1, increment the exec_num to indicate that the line has been hit */
     if( value[0] == '1' ) {
       expr->exec_num++;
@@ -6217,6 +6215,12 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.393  2008/12/16 00:18:08  phase1geo
+ Checkpointing work on for2 diagnostic.  Adding initial support for fork..join
+ blocks -- more work to do here.  Starting to add support for FOR loop control
+ logic although I'm thinking that I may want to pull this coverage support from
+ the current coverage handling structures.
+
  Revision 1.392  2008/12/13 07:04:13  phase1geo
  Fixing more regression bugs and updating regression per recent changes.
  Checkpointing.

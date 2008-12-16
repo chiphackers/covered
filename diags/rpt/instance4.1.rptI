@@ -38,7 +38,7 @@ Instance                                           Hit/ Miss/Total    Percent hi
   Accumulated                                        5/    1/    6       83%             2/    4/    6       33%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Module: foobar, File: instance4.v, Instance: main.foo
+    Module: foobar, File: instance4.1.v, Instance: main.foo
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -50,7 +50,7 @@ Instance                                           Hit/ Miss/Total    Percent hi
       ......................... 1->0: 1'h0 ...
 
 
-    Module: fooman, File: instance4.v, Instance: main.foo.foo
+    Module: fooman, File: instance4.1.v, Instance: main.foo.foo
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -99,7 +99,7 @@ Instance                                                              Hit/Miss/T
   Accumulated                                                           5/   1/   6       83%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Module: fooman, File: instance4.v, Instance: main.foo.foo
+    Module: fooman, File: instance4.1.v, Instance: main.foo.foo
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 

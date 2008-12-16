@@ -501,17 +501,21 @@ void generator_add_to_work_code(
   const char* str  /*!< String to write */
 ) { PROFILE(GENERATOR_ADD_TO_WORK_CODE);
 
-  static bool semi_just_seen = FALSE;
-  bool        add            = TRUE;
+  static bool semi_just_seen  = FALSE;
+  static bool begin_just_seen = FALSE;
+  bool        add             = TRUE;
 
   /* Make sure that we remove back-to-back semicolons */
   if( strcmp( str, ";" ) == 0 ) {
-    if( semi_just_seen ) {
+    if( semi_just_seen || begin_just_seen ) {
       add = FALSE;
     }
     semi_just_seen = TRUE;
+  } else if( strcmp( str, " begin" ) == 0 ) {
+    begin_just_seen = TRUE;
   } else if( (str[0] != ' ') && (str[0] != '\n') && (str[0] != '\t') && (str[0] != '\r') && (str[0] != '\b') ) {
-    semi_just_seen = FALSE;
+    semi_just_seen  = FALSE;
+    begin_just_seen = FALSE;
   }
 
   if( add ) {
@@ -1539,6 +1543,16 @@ static void generator_create_exp(
     case EXP_OP_COND_SEL   :  generator_concat_code( lhs, NULL, lstr, " : ", rstr, NULL, net );  break;
     case EXP_OP_SIG        :
     case EXP_OP_PARAM      :  generator_concat_code( lhs, exp->sig->name, NULL, NULL, NULL, NULL, net );  break;
+    case EXP_OP_FUNC_CALL  :
+      {
+        unsigned int slen = strlen( exp->sig->name ) + 2;
+        char*        str  = (char*)malloc_safe( slen );
+        unsigned int rv   = snprintf( str, slen, "%s(", exp->sig->name );
+        assert( rv < slen );
+        generator_concat_code( lhs, str, lstr, ")", NULL, NULL, net );
+        free_safe( str, slen );
+      }
+      break;
     case EXP_OP_SBIT_SEL   :
     case EXP_OP_PARAM_SBIT :
       {
@@ -1728,6 +1742,12 @@ void generator_insert_case_comb_cov(
 
 /*
  $Log$
+ Revision 1.31  2008/12/16 00:18:08  phase1geo
+ Checkpointing work on for2 diagnostic.  Adding initial support for fork..join
+ blocks -- more work to do here.  Starting to add support for FOR loop control
+ logic although I'm thinking that I may want to pull this coverage support from
+ the current coverage handling structures.
+
  Revision 1.30  2008/12/15 06:48:52  phase1geo
  More updates to code generator for regressions.  Checkpointing.  Updates to
  regressions per these changes.
