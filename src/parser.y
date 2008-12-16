@@ -3678,6 +3678,7 @@ expression_assignment_list
           $$ = NULL;
         }
       } else {
+        generator_insert_line_cov( @2.first_line, @2.first_column, (@4.last_column - 1), FALSE );
         $$ = NULL;
       }
       free_safe( $2, (strlen( $2 ) + 1) );
@@ -4159,6 +4160,10 @@ statement
   : K_assign { ignore_mode++; } lavalue '=' expression ';' { ignore_mode--; }
     {
       if( !parse_mode ) {
+        if( (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
+          generator_prepend_to_work_code( " begin " );
+          generator_add_to_work_code( " end " );
+        }
         generator_flush_work_code;
       }
       $$ = NULL;
@@ -4166,6 +4171,10 @@ statement
   | K_deassign { ignore_mode++; } lavalue ';' { ignore_mode--; }
     {
       if( !parse_mode ) {
+        if( (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
+          generator_prepend_to_work_code( " begin " );
+          generator_add_to_work_code( " end " );
+        }
         generator_flush_work_code;
       }
       $$ = NULL;
@@ -4173,6 +4182,10 @@ statement
   | K_force { ignore_mode++; } lavalue '=' expression ';' { ignore_mode--; }
     {
       if( !parse_mode ) {
+        if( (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
+          generator_prepend_to_work_code( " begin " );
+          generator_add_to_work_code( " end " );
+        }
         generator_flush_work_code;
       }
       $$ = NULL;
@@ -4180,6 +4193,10 @@ statement
   | K_release { ignore_mode++; } lavalue ';' { ignore_mode--; }
     {
       if( !parse_mode ) {
+        if( (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
+          generator_prepend_to_work_code( " begin " );
+          generator_add_to_work_code( " end " );
+        }
         generator_flush_work_code;
       }
       $$ = NULL;
@@ -4220,7 +4237,13 @@ statement
         $$ = NULL;
       }
     }
-  | K_fork inc_fork_depth fork_statement K_join
+  | K_fork
+    {
+      if( !parse_mode ) {
+        generator_flush_work_code;
+      }
+    }
+    inc_fork_depth fork_statement K_join
     { PROFILE(PARSER_STATEMENT_FORK_A);
       if( parse_mode ) {
         expression* exp;
@@ -4228,11 +4251,11 @@ statement
         char        back[4096];
         char        rest[4096];
         if( ignore_mode == 0 ) {
-          db_end_function_task_namedblock( @4.first_line );
-          if( $3 != NULL ) {
-            scope_extract_back( $3->name, back, rest );
+          db_end_function_task_namedblock( @5.first_line );
+          if( $4 != NULL ) {
+            scope_extract_back( $4->name, back, rest );
             exp  = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-            exp->elem.funit      = $3;
+            exp->elem.funit      = $4;
             exp->suppl.part.type = ETYPE_FUNIT;
             exp->name            = strdup_safe( back );
             stmt = db_create_statement( exp );
@@ -4265,7 +4288,7 @@ statement
           $$ = NULL;
         } 
       } else {
-        generator_insert_line_cov( @1.first_line, @1.first_column, (@2.last_column - 1) );
+        generator_insert_line_cov( @1.first_line, @1.first_column, (@2.last_column - 1), TRUE );
         generator_flush_work_code;
         $$ = NULL;
       }
@@ -4286,7 +4309,7 @@ statement
           $$ = NULL;
         }
       } else {
-        generator_insert_line_cov( @1.first_line, @1.first_column, (@2.last_column - 1) );
+        generator_insert_line_cov( @1.first_line, @1.first_column, (@2.last_column - 1), TRUE );
         generator_flush_work_code;
         $$ = NULL;
       }
@@ -4542,7 +4565,7 @@ statement
     {
       if( !parse_mode ) {
         generator_insert_comb_cov( FALSE, TRUE, @2.first_line, @2.first_column );
-        generator_insert_line_cov( @2.first_line, @2.first_column, (@5.last_column - 1) );
+        generator_insert_line_cov( @2.first_line, @2.first_column, (@5.last_column - 1), TRUE );
       }
     }
     if_body
@@ -4575,20 +4598,27 @@ statement
       VLerror( "Illegal conditional if expression" );
       $$ = NULL;
     }
-  | K_for inc_for_depth '(' for_initialization ';' expression ';' passign ')' statement dec_for_depth
+  | K_for inc_for_depth '(' flush_work for_initialization ';' expression ';' passign ')'
+    {
+      if( !parse_mode ) {
+        generator_add_to_work_code( " begin" );
+        generator_flush_work_code;
+      }
+    }
+    statement dec_for_depth
     { PROFILE(PARSER_STATEMENT_FOR_A);
       if( parse_mode ) {
         expression* exp;
         statement*  stmt;
-        statement*  stmt1 = $4;
+        statement*  stmt1 = $5;
         statement*  stmt2;
-        statement*  stmt3 = $8;
-        statement*  stmt4 = $10;
+        statement*  stmt3 = $9;
+        statement*  stmt4 = $12;
         char        back[4096];
         char        rest[4096];
-        if( (ignore_mode == 0) && ($4 != NULL) && ($6 != NULL) && ($8 != NULL) && ($10 != NULL) ) {
+        if( (ignore_mode == 0) && ($5 != NULL) && ($7 != NULL) && ($9 != NULL) && ($12 != NULL) ) {
           block_depth++;
-          stmt2 = db_create_statement( $6 );
+          stmt2 = db_create_statement( $7 );
           assert( db_statement_connect( stmt1, stmt2 ) );
           db_connect_statement_true( stmt2, stmt4 );
           assert( db_statement_connect( stmt4, stmt3 ) );
@@ -4601,12 +4631,12 @@ statement
           db_add_statement( stmt1, stmt1 );
         } else {
           db_remove_statement( stmt1 );
-          expression_dealloc( $6, FALSE );
+          expression_dealloc( $7, FALSE );
           db_remove_statement( stmt3 );
           db_remove_statement( stmt4 );
           stmt1 = NULL;
         }
-        db_end_function_task_namedblock( @11.first_line );
+        db_end_function_task_namedblock( @13.first_line );
         if( (stmt1 != NULL) && ($2 != NULL) ) {
           scope_extract_back( $2->name, back, rest );
           exp = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
@@ -4619,34 +4649,36 @@ statement
           $$ = NULL;
         }
       } else {
-        $$ = NULL;  /* TBD */
+        generator_add_to_work_code( " end " );
+        generator_flush_work_code;
+        $$ = NULL;
       }
     }
-  | K_for inc_for_depth '(' for_initialization ';' expression ';' error ')' statement dec_for_depth
+  | K_for inc_for_depth '(' flush_work for_initialization ';' expression ';' error ')' statement dec_for_depth
     {
       if( parse_mode ) {
-        db_remove_statement( $4 );
-        expression_dealloc( $6, FALSE );
-        db_remove_statement( $10 );
-        db_end_function_task_namedblock( @11.first_line );
-      }
-      $$ = NULL;
-    }
-  | K_for inc_for_depth '(' for_initialization ';' error ';' passign ')' statement dec_for_depth
-    {
-      if( parse_mode ) {
-        db_remove_statement( $4 );
-        db_remove_statement( $8 );
-        db_remove_statement( $10 );
-        db_end_function_task_namedblock( @11.first_line );
+        db_remove_statement( $5 );
+        expression_dealloc( $7, FALSE );
+        db_remove_statement( $11 );
+        db_end_function_task_namedblock( @12.first_line );
       }
       $$ = NULL;
     }
-  | K_for inc_for_depth '(' error ')' statement dec_for_depth
+  | K_for inc_for_depth '(' flush_work for_initialization ';' error ';' passign ')' statement dec_for_depth
     {
       if( parse_mode ) {
-        db_remove_statement( $6 );
-        db_end_function_task_namedblock( @7.first_line );
+        db_remove_statement( $5 );
+        db_remove_statement( $9 );
+        db_remove_statement( $11 );
+        db_end_function_task_namedblock( @12.first_line );
+      }
+      $$ = NULL;
+    }
+  | K_for inc_for_depth '(' flush_work error ')' statement dec_for_depth
+    {
+      if( parse_mode ) {
+        db_remove_statement( $7 );
+        db_end_function_task_namedblock( @8.first_line );
       }
       $$ = NULL;
     }
@@ -4711,7 +4743,7 @@ statement
     {
       if( !parse_mode ) {
         generator_add_to_work_code( ";" );
-        generator_insert_line_cov( @1.first_line, @1.first_column, (@1.last_column - 1) );
+        generator_insert_line_cov( @1.first_line, @1.first_column, (@1.last_column - 1), TRUE );
         generator_flush_work_code;
       }
     }
@@ -4742,7 +4774,10 @@ statement
     {
       if( !parse_mode ) {
         generator_add_to_work_code( ";" );
-        generator_insert_line_cov( @1.first_line, @1.first_column, (@1.last_column - 1) );
+        generator_insert_line_cov( @1.first_line, @1.first_column, (@1.last_column - 1), TRUE );
+        if( (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
+          generator_prepend_to_work_code( " begin " );
+        }
         generator_flush_work_code;
         generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
         generator_flush_work_code;
@@ -4767,6 +4802,9 @@ statement
           $$ = NULL;
         }
       } else {
+        if( (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
+          generator_add_to_work_code( " end " );
+        }
         $$ = NULL;
       }
     }
@@ -4774,7 +4812,7 @@ statement
     {
       if( !parse_mode ) {
         generator_add_to_work_code( " begin" );
-        generator_insert_line_cov( @1.first_line, @1.first_column, (@2.last_column - 1) );
+        generator_insert_line_cov( @1.first_line, @1.first_column, (@2.last_column - 1), TRUE );
         generator_flush_work_code;
         generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
         generator_flush_work_code;
@@ -4825,7 +4863,7 @@ statement
       if( parse_mode ) {
         $$ = $1;
       } else {
-        generator_insert_line_cov( @1.first_line, @1.first_column, (@1.last_column - 1) );
+        generator_insert_line_cov( @1.first_line, @1.first_column, (@1.last_column - 1), TRUE );
         generator_flush_work_code;
         $$ = NULL;  /* TBD */
       }
@@ -4850,7 +4888,7 @@ statement
         }
       } else {
         generator_insert_comb_cov( FALSE, TRUE, @1.first_line, @1.first_column );
-        generator_insert_line_cov( @1.first_line, @1.first_column, (@3.last_column - 1) );
+        generator_insert_line_cov( @1.first_line, @1.first_column, (@3.last_column - 1), TRUE );
         generator_flush_work_code;
         $$ = NULL;
       }
@@ -5190,7 +5228,7 @@ statement
           $$ = NULL;
         }
       } else {
-        generator_insert_line_cov( @1.first_line, @1.first_column, (@4.last_column - 1) );
+        generator_insert_line_cov( @1.first_line, @1.first_column, (@4.last_column - 1), TRUE );
         generator_flush_work_code;
         $$ = NULL;  /* TBD */
       }
@@ -5211,7 +5249,7 @@ statement
           $$ = NULL;
         }
       } else {
-        generator_insert_line_cov( @1.first_line, @1.first_column, (@1.last_column - 1) );
+        generator_insert_line_cov( @1.first_line, @1.first_column, (@1.last_column - 1), TRUE );
         generator_flush_work_code;
         $$ = NULL;
       }
@@ -7801,30 +7839,25 @@ end_lhs
 inc_fork_depth
   :
     {
-      if( parse_mode ) {
-        fork_depth++;
-        fork_block_depth = (int*)realloc_safe( fork_block_depth, (sizeof( int ) * fork_depth), ((fork_depth + 1) * sizeof( int )) );
-        fork_block_depth[fork_depth] = block_depth;
-      }
+      fork_depth++;
+      fork_block_depth = (int*)realloc_safe( fork_block_depth, (sizeof( int ) * fork_depth), ((fork_depth + 1) * sizeof( int )) );
+      fork_block_depth[fork_depth] = block_depth;
     }
   ;
 
 dec_fork_depth
   :
     {
-      if( parse_mode ) {
-        fork_depth--;
-        fork_block_depth = (int*)realloc_safe( fork_block_depth, (sizeof( int ) * (fork_depth + 2)), ((fork_depth + 1) * sizeof( int )) );
-      }
+      fork_depth--;
+      fork_block_depth = (int*)realloc_safe( fork_block_depth, (sizeof( int ) * (fork_depth + 2)), ((fork_depth + 1) * sizeof( int )) );
     }
   ;
 
 inc_block_depth
   :
     {
-      if( parse_mode ) {
-        block_depth++;
-      } else {
+      block_depth++;
+      if( !parse_mode ) {
         generator_flush_work_code;
         generator_add_to_hold_code( " begin" );
       }
@@ -7834,11 +7867,9 @@ inc_block_depth
 dec_block_depth
   :
     {
-      if( parse_mode ) {
-        block_depth--;
-      } else {
+      block_depth--;
+      if( !parse_mode ) {
         generator_add_to_hold_code( " end " );
-        // generator_display();
       }
     }
   ;
@@ -7846,18 +7877,14 @@ dec_block_depth
 inc_block_depth_only
   :
     {
-      if( parse_mode ) {
-        block_depth++;
-      }
+      block_depth++;
     }
   ;
 
 dec_block_depth_only
   :
     {
-      if( parse_mode ) {
-        block_depth--;
-      }
+      block_depth--;
     }
   ;
 
@@ -7910,6 +7937,15 @@ dec_gen_expr_mode
     {
       if( parse_mode ) {
         generate_expr_mode--;
+      }
+    }
+  ;
+
+flush_work
+  :
+    {
+      if( !parse_mode ) {
+        generator_flush_work_code;
       }
     }
   ;

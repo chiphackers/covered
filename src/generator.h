@@ -48,6 +48,13 @@ void generator_init_funit(
   func_unit* funit  /*!< Pointer to current functional unit */
 );
 
+/*!
+ Prepends the given string to the working code list/buffer.
+*/
+void generator_prepend_to_work_code(
+  const char* str
+);
+
 /*! \brief Adds the given string to the work code buffers */
 void generator_add_to_work_code(
   const char*  str
@@ -86,7 +93,8 @@ void generator_flush_all1(
 void generator_insert_line_cov(
   unsigned int first_line,
   unsigned int first_column,
-  unsigned int last_column
+  unsigned int last_column,
+  bool         semicolon
 );
 
 /*! \brief Inserts combinational logic coverage information. */
@@ -106,6 +114,11 @@ void generator_insert_case_comb_cov(
 
 /*
  $Log$
+ Revision 1.13  2008/12/14 06:56:02  phase1geo
+ Making some code modifications to set the stage for supporting case statements
+ with the new inlined code coverage methodology.  Updating regressions per this
+ change (IV and Cver fully pass).
+
  Revision 1.12  2008/12/12 05:57:50  phase1geo
  Checkpointing work on code coverage injection.  We are making decent progress in
  getting regressions back to a working state.  Lots to go, but good progress at

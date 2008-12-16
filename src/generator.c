@@ -446,10 +446,59 @@ void generator_init_funit(
 }
 
 /*!
+ Prepends the given string to the working code list/buffer.  This function is used by the parser
+ to add code prior to the current working buffer without updating the holding buffer.
+*/
+void generator_prepend_to_work_code(
+  const char* str  /*!< String to write */
+) { PROFILE(GENERATOR_PREPEND_TO_WORK_CODE);
+
+  char         tmpstr[4096];
+  unsigned int rv;
+
+  /* If the work list is empty, prepend to the work buffer */
+  if( work_head == NULL ) {
+
+    if( (strlen( work_buffer ) + strlen( str )) < 4095 ) {
+      strcpy( tmpstr, work_buffer );
+      rv = snprintf( work_buffer, 4096, "%s %s", str, tmpstr );
+      assert( rv < 4096 );
+    } else {
+      str_link_add( strdup_safe( str ), &work_head, &work_tail );
+    }
+
+  /* Otherwise, prepend the string to the head string of the work list */
+  } else {
+
+    if( (strlen( work_head->str ) + strlen( str )) < 4095 ) {
+      strcpy( tmpstr, work_head->str );
+      rv = snprintf( tmpstr, 4096, "%s %s", str, work_head->str );
+      assert( rv < 4096 );
+      free_safe( work_head->str, (strlen( work_head->str ) + 1) );
+      work_head->str = strdup_safe( tmpstr );
+    } else {
+      str_link* tmp_head = NULL;
+      str_link* tmp_tail = NULL;
+      str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
+      if( work_head == NULL ) {
+        work_head = work_tail = tmp_head;
+      } else {
+        tmp_tail->next = work_head;
+        work_head      = tmp_head;
+      }
+    }
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  Adds the given string to the working code buffer.
 */
 void generator_add_to_work_code(
-  const char*  str  /*!< String to write */
+  const char* str  /*!< String to write */
 ) { PROFILE(GENERATOR_ADD_TO_WORK_CODE);
 
   static bool semi_just_seen = FALSE;
@@ -719,7 +768,7 @@ static statement* generator_find_statement(
     /* Attempt to find the expression with the given position */
     while( ((stmt = func_iter_get_next_statement( &fiter )) != NULL) &&
 //           printf( "  statement %s %d\n", expression_string( stmt->exp ), ((stmt->exp->col >> 16) & 0xffff) ) &&
-           ((stmt->exp->line < first_line) || ((stmt->exp->line == first_line) && (((stmt->exp->col >> 16) & 0xffff) < first_column))) );
+           ((stmt->exp->line < first_line) || ((stmt->exp->line == first_line) && (((stmt->exp->col >> 16) & 0xffff) < first_column)) || (stmt->exp->op == EXP_OP_FORK)) );
 
   }
 
@@ -731,7 +780,7 @@ static statement* generator_find_statement(
 
   PROFILE_END;
 
-  return( ((stmt == NULL) || (stmt->exp->line != first_line) || (((stmt->exp->col >> 16) & 0xffff) != first_column)) ? NULL : stmt );
+  return( ((stmt == NULL) || (stmt->exp->line != first_line) || (((stmt->exp->col >> 16) & 0xffff) != first_column) || (stmt->exp->op == EXP_OP_FORK)) ? NULL : stmt );
 
 }
 
@@ -777,7 +826,8 @@ static statement* generator_find_case_statement(
 void generator_insert_line_cov(
   unsigned int first_line,    /*!< Line to create line coverage for */
   unsigned int first_column,  /*!< First column of statement */
-  unsigned int last_column    /*!< Last column of statement */
+  unsigned int last_column,   /*!< Last column of statement */
+  bool         semicolon      /*!< Set to TRUE to create a semicolon after the line assignment; otherwise, adds a comma */
 ) { PROFILE(GENERATOR_INSERT_LINE_COV);
 
   statement* stmt;
@@ -803,7 +853,7 @@ void generator_insert_line_cov(
     str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
 
     /* Prepend the line coverage assignment to the working buffer */
-    rv = snprintf( str, 4096, " %s = 1'b1;", sig );
+    rv = snprintf( str, 4096, " %s = 1'b1%c", sig, (semicolon ? ';' : ',') );
     assert( rv < 4096 );
     str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
     if( work_head == NULL ) {
@@ -1678,6 +1728,10 @@ void generator_insert_case_comb_cov(
 
 /*
  $Log$
+ Revision 1.30  2008/12/15 06:48:52  phase1geo
+ More updates to code generator for regressions.  Checkpointing.  Updates to
+ regressions per these changes.
+
  Revision 1.29  2008/12/14 06:56:02  phase1geo
  Making some code modifications to set the stage for supporting case statements
  with the new inlined code coverage methodology.  Updating regressions per this

@@ -5558,6 +5558,8 @@ void expression_vcd_assign(
 
   if( action == 'l' ) {
 
+    printf( "Examining line coverage for expr: %s, value: %c\n", expression_string( expr ), value[0] );
+
     /* If we have seen a value of 1, increment the exec_num to indicate that the line has been hit */
     if( value[0] == '1' ) {
       expr->exec_num++;
@@ -6215,6 +6217,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.392  2008/12/13 07:04:13  phase1geo
+ Fixing more regression bugs and updating regression per recent changes.
+ Checkpointing.
+
  Revision 1.391  2008/12/13 00:17:28  phase1geo
  Fixing more regression bugs.  Updated some original tests to make them comparable to the inlined method output.
  Checkpointing.

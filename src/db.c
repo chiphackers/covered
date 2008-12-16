@@ -2459,6 +2459,9 @@ void db_add_statement(
       /* Set ADDED bit of this statement */
       stmt->suppl.part.added = 1;
 
+      /* Make sure that the current statement is pointing to the current functional unit */
+      stmt->funit = curr_funit;
+
       /* Finally, add the statement to the functional unit statement list */
       stmt_link_add_tail( stmt, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
 
@@ -3037,7 +3040,9 @@ void db_assign_symbol(
 
             /* Search the matching expression */
             expl = curr_tf->funit->exp_head;
-            while( (expl != NULL) && ((expl->exp->line != line) || (expl->exp->col != col) || !ESUPPL_IS_ROOT( expl->exp->suppl )) ) {
+            while( (expl != NULL) &&
+              printf( "EXAMINING expr: %s\n", expression_string( expl->exp ) ) &&
+              ((expl->exp->line != line) || (expl->exp->col != col) || !ESUPPL_IS_ROOT( expl->exp->suppl ) || (expl->exp->op == EXP_OP_FORK)) ) {
               expl = expl->next;
             }
 
@@ -3048,7 +3053,7 @@ void db_assign_symbol(
 
             /* Search the matching expression */
             expl = mod->exp_head;
-            while( (expl != NULL) && ((expl->exp->line != line) || (expl->exp->col != col) || !ESUPPL_IS_ROOT( expl->exp->suppl )) ) {
+            while( (expl != NULL) && ((expl->exp->line != line) || (expl->exp->col != col) || !ESUPPL_IS_ROOT( expl->exp->suppl ) || (expl->exp->op == EXP_OP_FORK)) ) {
               expl = expl->next;
             }
 
@@ -3078,7 +3083,7 @@ void db_assign_symbol(
 
             /* Search the matching expression */
             expl = curr_tf->funit->exp_head;
-            while( (expl != NULL) && ((expl->exp->line != line) || (expl->exp->col != col)) ) {
+            while( (expl != NULL) && ((expl->exp->line != line) || (expl->exp->col != col) || (expl->exp->op == EXP_OP_FORK)) ) {
               expl = expl->next;
             }
 
@@ -3089,7 +3094,7 @@ void db_assign_symbol(
           
             /* Find the expression that matches the positional information */
             expl = mod->exp_head;
-            while( (expl != NULL) && ((expl->exp->line != line) || (expl->exp->col != col)) ) {
+            while( (expl != NULL) && ((expl->exp->line != line) || (expl->exp->col != col) || (expl->exp->op == EXP_OP_FORK)) ) {
               expl = expl->next;
             }
 
@@ -3286,6 +3291,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.360  2008/12/13 00:17:28  phase1geo
+ Fixing more regression bugs.  Updated some original tests to make them comparable to the inlined method output.
+ Checkpointing.
+
  Revision 1.359  2008/12/11 05:53:32  phase1geo
  Fixing some bugs in the combinational logic code coverage generator.  Checkpointing.
 
