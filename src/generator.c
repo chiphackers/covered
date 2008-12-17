@@ -836,7 +836,8 @@ static statement* generator_find_case_statement(
 
   printf( "In generator_find_case_statement, line: %d, column: %d\n", first_line, first_column );
 
-  if( (stmt == NULL) || (stmt->exp->left->line < first_line) || ((stmt->exp->left->line == first_line) && (((stmt->exp->left->col >> 16) & 0xffff) < first_column)) ) {
+  if( (stmt == NULL) || (stmt->exp->left == NULL) || (stmt->exp->left->line < first_line) ||
+      ((stmt->exp->left->line == first_line) && (((stmt->exp->left->col >> 16) & 0xffff) < first_column)) ) {
 
     /* Attempt to find the expression with the given position */
     while( ((stmt = func_iter_get_next_statement( &fiter )) != NULL) && (stmt->exp->left != NULL) &&
@@ -845,7 +846,7 @@ static statement* generator_find_case_statement(
 
   }
 
-  if( (stmt != NULL) && (stmt->exp->left->line == first_line) && (((stmt->exp->left->col >> 16) & 0xffff) == first_column) ) {
+  if( (stmt != NULL) && (stmt->exp->left != NULL) && (stmt->exp->left->line == first_line) && (((stmt->exp->left->col >> 16) & 0xffff) == first_column) ) {
     printf( "  FOUND (%s %x)!\n", expression_string( stmt->exp ), ((stmt->exp->col >> 16) & 0xffff) );
   } else {
     printf( "  NOT FOUND!\n" );
@@ -1787,6 +1788,10 @@ void generator_insert_case_comb_cov(
 
 /*
  $Log$
+ Revision 1.33  2008/12/17 00:02:57  phase1geo
+ More work on inlined coverage code.  Making good progress through the regression
+ suite.  Checkpointing.
+
  Revision 1.32  2008/12/16 04:56:39  phase1geo
  More updates for inlined code generation feature.  Updates to regression per
  these changes.  Checkpointing.

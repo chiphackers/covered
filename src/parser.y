@@ -2379,6 +2379,7 @@ generate_passign
           $$ = NULL;
         }
       } else {
+        free_safe( $1, (strlen( $1 ) + 1) );
         $$ = NULL;
       }
     }
@@ -3380,6 +3381,8 @@ module_item
             VLerror( "Found generate keyword inside of a generate block" );
           }
         }
+      } else {
+        generate_mode = 1;
       }
     }
     generate_item_list_opt
@@ -3393,6 +3396,8 @@ module_item
         } else {
           db_add_gen_item_block( $3 );
         }
+      } else {
+        generate_mode = 0;
       }
     }
   | K_genvar
