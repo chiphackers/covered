@@ -1,5 +1,5 @@
 5 13 101 3 *
-8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (task6.vcd) 2 -o (task6.cdd) 2 -v (task6.v) 2 -D (DUMP)
+8 /ptmp/covered/diags/verilog 2 -t (main) 2 -vcd (task6.vcd) 2 -o (task6.cdd) 2 -v (task6.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 task6.v 8 41 1
 2 1 12 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0
@@ -7,7 +7,7 @@
 1 b 2 10 1070007 1 0 0 0 1 17 0 1 0 0 0 0
 1 c 3 10 107000a 1 0 0 0 1 17 0 1 0 0 0 0
 4 1 1 0 0
-3 1 main.$u0 "main.$u0" 0 task6.v 0 17 1
+3 1 main.$u0 "main.$u0" 0 task6.v 12 17 1
 2 2 13 50008 1 0 21008 0 0 1 16 1 0
 2 3 13 10001 0 1 1410 0 0 1 1 a
 2 4 13 10008 1 37 1a 2 3
@@ -30,7 +30,7 @@
 4 10 0 19 19
 4 7 0 10 10
 4 4 11 7 7
-3 1 main.$u1 "main.$u1" 0 task6.v 0 27 1
+3 1 main.$u1 "main.$u1" 0 task6.v 20 27 1
 3 3 main.foo_task "main.foo_task" 0 task6.v 29 39 1
 2 20 36 20006 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u2
 1 a 4 30 1000008 1 0 0 0 1 17 1 1 0 0 0 0
@@ -38,7 +38,7 @@
 1 c 6 32 1000008 1 0 0 0 1 17 1 1 0 0 0 0
 1 d 7 34 1070006 1 0 0 0 1 17 0 1 0 0 0 0
 4 20 11 0 0
-3 1 main.foo_task.$u2 "main.foo_task.$u2" 0 task6.v 0 38 1
+3 1 main.foo_task.$u2 "main.foo_task.$u2" 0 task6.v 36 38 1
 2 21 37 120012 1 1 1004 0 0 1 1 c
 2 22 37 d000d 1 1 1008 0 0 1 1 b
 2 23 37 90009 1 1 1008 0 0 1 1 a

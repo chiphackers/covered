@@ -1,5 +1,5 @@
 5 13 101 5 *
-8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (generate10.2.vcd) 2 -o (generate10.2.cdd) 2 -v (generate10.2.v) 2 -D (DUMP)
+8 /ptmp/covered/diags/verilog 2 -t (main) 2 -vcd (generate10.2.vcd) 2 -o (generate10.2.cdd) 2 -v (generate10.2.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 generate10.2.v 1 29 1
 2 1 17 d0011 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u1
@@ -7,8 +7,8 @@
 1 b 2 15 1070009 1 0 0 0 1 17 0 1 0 0 0 0
 1 c 3 16 1070009 1 0 0 0 1 17 0 1 0 0 0 0
 4 1 1 0 0
-3 1 main.$u0 "main.$u0" 0 generate10.2.v 0 13 1
-3 1 main.$u1 "main.$u1" 0 generate10.2.v 0 25 1
+3 1 main.$u0 "main.$u0" 0 generate10.2.v 6 13 1
+3 1 main.$u1 "main.$u1" 0 generate10.2.v 17 25 1
 2 2 18 110014 1 0 21004 0 0 1 16 0 0
 2 3 18 d000d 0 1 1410 0 0 1 1 a
 2 4 18 d0014 1 37 16 2 3

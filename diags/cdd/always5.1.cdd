@@ -1,5 +1,5 @@
 5 13 101 36 *
-8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (always5.1.vcd) 2 -o (always5.1.cdd) 2 -v (always5.1.v) 2 -D (DUMP)
+8 /ptmp/covered/diags/verilog 2 -t (main) 2 -vcd (always5.1.vcd) 2 -o (always5.1.cdd) 2 -v (always5.1.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 always5.1.v 1 34 1
 2 1 6 1f001f 14 1 100c 0 0 1 1 c
@@ -22,8 +22,8 @@
 4 12 6 8 8
 4 8 1 12 0
 4 13 1 0 0
-3 1 main.$u0 "main.$u0" 0 always5.1.v 0 27 1
-3 1 main.$u6 "main.$u6" 0 always5.1.v 0 32 1
+3 1 main.$u0 "main.$u0" 0 always5.1.v 8 27 1
+3 1 main.$u6 "main.$u6" 0 always5.1.v 29 32 1
 2 14 30 9000b 1 0 1008 0 0 32 48 64 0
 2 15 30 8000b 2 2c 900a 14 0 32 18 0 ffffffff 0 0 0 0
 2 16 0 0 1 5a 1002 0 0 1 18 0 1 0 0 0 0

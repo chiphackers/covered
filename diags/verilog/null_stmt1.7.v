@@ -14,6 +14,7 @@ reg a, b;
 initial begin
 	a = 1'b0;
 	wait( b == 1'b0 );
+	#5;
 	a = 1'b1;
 end
 

@@ -5564,39 +5564,35 @@ void expression_vcd_assign(
     }
 
   } else if( (action == 'e') || (action == 'E') ) {
+    expr->suppl.part.true |= (value[0] == '1');
 
-    if( exp_op_info[expr->op].suppl.is_event ) {
-      expr->suppl.part.true |= (value[0] == '1');
-
-    } else if( exp_op_info[expr->op].suppl.is_unary ) {
-      expr->suppl.part.true  |= (value[0] == '1');
-      expr->suppl.part.false |= (value[0] == '0');
+  } else if( (action == 'u') || (action == 'U') ) {
+    expr->suppl.part.true  |= (value[0] == '1');
+    expr->suppl.part.false |= (value[0] == '0');
              
-    } else {
+  } else if( (action == 'c') || (action == 'C') ) {
 
-      /* Since we need to sign-extend values, calculate the lt, lf, rt and rf values */
-      uint32 lt = (value[1] != '\0') ? (value[0] == '1') : 0;
-      uint32 lf = (value[1] != '\0') ? (value[0] == '0') : 1;
-      uint32 rt = (value[1] != '\0') ? (value[1] == '1') : (value[0] == '1');
-      uint32 rf = (value[1] != '\0') ? (value[1] == '0') : (value[0] == '0');
+    /* Since we need to sign-extend values, calculate the lt, lf, rt and rf values */
+    uint32 lt = (value[1] != '\0') ? (value[0] == '1') : 0;
+    uint32 lf = (value[1] != '\0') ? (value[0] == '0') : 1;
+    uint32 rt = (value[1] != '\0') ? (value[1] == '1') : (value[0] == '1');
+    uint32 rf = (value[1] != '\0') ? (value[1] == '0') : (value[0] == '0');
 
-      if( exp_op_info[expr->op].suppl.is_comb == AND_COMB ) {
-        expr->suppl.part.eval_10 |= rf;
-        expr->suppl.part.eval_01 |= lf;
-        expr->suppl.part.eval_11 |= (lt & rt);
+    if( exp_op_info[expr->op].suppl.is_comb == AND_COMB ) {
+      expr->suppl.part.eval_10 |= rf;
+      expr->suppl.part.eval_01 |= lf;
+      expr->suppl.part.eval_11 |= (lt & rt);
 
-      } else if( exp_op_info[expr->op].suppl.is_comb == OR_COMB ) {
-        expr->suppl.part.eval_01 |= rt;
-        expr->suppl.part.eval_10 |= lt;
-        expr->suppl.part.eval_00 |= (lf & rf);
+    } else if( exp_op_info[expr->op].suppl.is_comb == OR_COMB ) {
+      expr->suppl.part.eval_01 |= rt;
+      expr->suppl.part.eval_10 |= lt;
+      expr->suppl.part.eval_00 |= (lf & rf);
 
-      } else if( exp_op_info[expr->op].suppl.is_comb == OTHER_COMB ) {
-        expr->suppl.part.eval_00 |= (lf & rf);
-        expr->suppl.part.eval_01 |= (lf & rt);
-        expr->suppl.part.eval_10 |= (lt & rf);
-        expr->suppl.part.eval_11 |= (lt & rt);
-
-      }
+    } else if( exp_op_info[expr->op].suppl.is_comb == OTHER_COMB ) {
+      expr->suppl.part.eval_00 |= (lf & rf);
+      expr->suppl.part.eval_01 |= (lf & rt);
+      expr->suppl.part.eval_10 |= (lt & rf);
+      expr->suppl.part.eval_11 |= (lt & rt);
 
     }
 
@@ -6215,6 +6211,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.394  2008/12/16 04:56:39  phase1geo
+ More updates for inlined code generation feature.  Updates to regression per
+ these changes.  Checkpointing.
+
  Revision 1.393  2008/12/16 00:18:08  phase1geo
  Checkpointing work on for2 diagnostic.  Adding initial support for fork..join
  blocks -- more work to do here.  Starting to add support for FOR loop control

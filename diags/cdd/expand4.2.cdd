@@ -1,5 +1,5 @@
 5 13 101 5 *
-8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (expand4.2.vcd) 2 -o (expand4.2.cdd) 2 -v (expand4.2.v) 2 -D (DUMP)
+8 /ptmp/covered/diags/verilog 2 -t (main) 2 -vcd (expand4.2.vcd) 2 -o (expand4.2.cdd) 2 -v (expand4.2.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 expand4.2.v 1 23 1
 2 1 8 100013 1 0 21004 0 0 1 16 0 0
@@ -12,4 +12,4 @@
 1 a 1 5 6000b 1 0 3 0 4 17 f f 0 0 0 0
 1 b 2 6 7000b 1 0 0 0 1 17 0 1 0 0 0 0
 4 7 f 7 7
-3 1 main.$u0 "main.$u0" 0 expand4.2.v 0 21 1
+3 1 main.$u0 "main.$u0" 0 expand4.2.v 10 21 1

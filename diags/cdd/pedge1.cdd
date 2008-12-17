@@ -1,5 +1,5 @@
 5 13 101 3 *
-8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (pedge1.vcd) 2 -o (pedge1.cdd) 2 -v (pedge1.v) 2 -D (DUMP)
+8 /ptmp/covered/diags/verilog 2 -t (main) 2 -vcd (pedge1.vcd) 2 -o (pedge1.cdd) 2 -v (pedge1.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 pedge1.v 8 28 1
 2 1 12 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0
@@ -18,9 +18,9 @@
 4 1 1 0 0
 4 9 6 6 6
 4 6 1 9 0
-3 1 main.$u0 "main.$u0" 0 pedge1.v 0 14 1
+3 1 main.$u0 "main.$u0" 0 pedge1.v 12 14 1
 2 10 13 50008 1 0 21004 0 0 1 16 0 0
 2 11 13 10001 0 1 1410 0 0 1 1 d
 2 12 13 10008 1 37 16 10 11
 4 12 11 0 0
-3 1 main.$u1 "main.$u1" 0 pedge1.v 0 26 1
+3 1 main.$u1 "main.$u1" 0 pedge1.v 19 26 1

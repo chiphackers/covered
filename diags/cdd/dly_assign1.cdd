@@ -1,5 +1,5 @@
 5 13 101 6 *
-8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (dly_assign1.vcd) 2 -o (dly_assign1.cdd) 2 -v (dly_assign1.v) 2 -D (DUMP)
+8 /ptmp/covered/diags/verilog 2 -t (main) 2 -vcd (dly_assign1.vcd) 2 -o (dly_assign1.cdd) 2 -v (dly_assign1.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 dly_assign1.v 1 27 1
 2 1 5 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0
@@ -9,7 +9,7 @@
 1 c 3 3 107000a 1 0 0 0 1 17 0 1 0 0 0 0
 4 1 1 0 0
 4 2 1 0 0
-3 1 main.$u0 "main.$u0" 0 dly_assign1.v 0 10 1
+3 1 main.$u0 "main.$u0" 0 dly_assign1.v 5 10 1
 2 3 6 20002 1 0 1008 0 0 32 48 1 0
 2 4 6 10002 2 2c 900a 3 0 32 18 0 ffffffff 0 0 0 0
 2 5 7 c000f 1 0 21004 0 0 1 16 0 0
@@ -30,7 +30,7 @@
 4 15 0 18 0
 4 7 0 15 15
 4 4 11 7 0
-3 1 main.$u1 "main.$u1" 0 dly_assign1.v 0 16 1
+3 1 main.$u1 "main.$u1" 0 dly_assign1.v 12 16 1
 2 19 13 50008 1 0 21008 0 0 1 16 1 0
 2 20 13 10001 0 1 1410 0 0 1 1 b
 2 21 13 10008 1 37 1a 19 20
@@ -42,4 +42,4 @@
 4 26 0 0 0
 4 23 0 26 0
 4 21 11 23 23
-3 1 main.$u2 "main.$u2" 0 dly_assign1.v 0 25 1
+3 1 main.$u2 "main.$u2" 0 dly_assign1.v 18 25 1

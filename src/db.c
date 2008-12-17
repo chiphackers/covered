@@ -3021,15 +3021,17 @@ void db_assign_symbol(
         /* Handle line coverage */
         if( type == 'l' ) {
       
-          int          line;
+          int          fline;
+          int          lline;
           int          col;
           unsigned int rv;
           char         scope[4096];
           funit_link*  curr_tf;
           exp_link*    expl;
+          expression*  last_exp;
 
           /* Extract the line, first column and funit scope information from name */
-          if( sscanf( (name + (index + 1)), "%d_%x$%s", &line, &col, scope ) == 3 ) {
+          if( sscanf( (name + (index + 1)), "%d_%d_%x$%s", &fline, &lline, &col, scope ) == 4 ) {
 
             /* Search for the matching functional unit */
             curr_tf = mod->tf_head;
@@ -3041,18 +3043,21 @@ void db_assign_symbol(
             /* Search the matching expression */
             expl = curr_tf->funit->exp_head;
             while( (expl != NULL) &&
-              ((expl->exp->line != line) || (expl->exp->col != col) || !ESUPPL_IS_ROOT( expl->exp->suppl ) || (expl->exp->op == EXP_OP_FORK)) ) {
+                   ((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) &&
+                   ((expl->exp->line != fline) || (expl->exp->col != col) || (last_exp->line != lline) || !ESUPPL_IS_ROOT( expl->exp->suppl ) || (expl->exp->op == EXP_OP_FORK)) ) {
               expl = expl->next;
             }
 
           } else {
 
-            rv = sscanf( (name + (index + 1)), "%d_%x", &line, &col );
-            assert( rv == 2 );
+            rv = sscanf( (name + (index + 1)), "%d_%d_%x", &fline, &lline, &col );
+            assert( rv == 3 );
 
             /* Search the matching expression */
             expl = mod->exp_head;
-            while( (expl != NULL) && ((expl->exp->line != line) || (expl->exp->col != col) || !ESUPPL_IS_ROOT( expl->exp->suppl ) || (expl->exp->op == EXP_OP_FORK)) ) {
+            while( (expl != NULL) &&
+                   ((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) &&
+                   ((expl->exp->line != fline) || (expl->exp->col != col) || (last_exp->line != lline) || !ESUPPL_IS_ROOT( expl->exp->suppl ) || (expl->exp->op == EXP_OP_FORK)) ) {
               expl = expl->next;
             }
 
@@ -3063,15 +3068,17 @@ void db_assign_symbol(
 
         } else {
 
-          int          line;
+          int          fline;
+          int          lline;
           int          col;
           unsigned int rv;
           char         scope[4096];
           funit_link*  curr_tf;
           exp_link*    expl;
+          expression*  last_exp;
 
           /* Extract the line and column (and possibly instance) information */
-          if( sscanf( (name + (index + 1)), "%d_%x$%s", &line, &col, scope ) == 3 ) {
+          if( sscanf( (name + (index + 1)), "%d_%d_%x$%s", &fline, &lline, &col, scope ) == 4 ) {
 
             /* Search for the matching functional unit */
             curr_tf = mod->tf_head;
@@ -3082,18 +3089,22 @@ void db_assign_symbol(
 
             /* Search the matching expression */
             expl = curr_tf->funit->exp_head;
-            while( (expl != NULL) && ((expl->exp->line != line) || (expl->exp->col != col) || (expl->exp->op == EXP_OP_FORK)) ) {
+            while( (expl != NULL) &&
+                   ((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) &&
+                   ((expl->exp->line != fline) || (expl->exp->col != col) || (last_exp->line != lline) || (expl->exp->op == EXP_OP_FORK)) ) {
               expl = expl->next;
             }
 
           } else {
 
-            rv = sscanf( (name + (index + 1)), "%d_%x", &line, &col );
-            assert( rv == 2 );
+            rv = sscanf( (name + (index + 1)), "%d_%d_%x", &fline, &lline, &col );
+            assert( rv == 3 );
           
             /* Find the expression that matches the positional information */
             expl = mod->exp_head;
-            while( (expl != NULL) && ((expl->exp->line != line) || (expl->exp->col != col) || (expl->exp->op == EXP_OP_FORK)) ) {
+            while( (expl != NULL) &&
+                   ((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) &&
+                   ((expl->exp->line != fline) || (expl->exp->col != col) || (last_exp->line != lline) || (expl->exp->op == EXP_OP_FORK)) ) {
               expl = expl->next;
             }
 
@@ -3290,6 +3301,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.362  2008/12/16 04:56:39  phase1geo
+ More updates for inlined code generation feature.  Updates to regression per
+ these changes.  Checkpointing.
+
  Revision 1.361  2008/12/16 00:18:08  phase1geo
  Checkpointing work on for2 diagnostic.  Adding initial support for fork..join
  blocks -- more work to do here.  Starting to add support for FOR loop control

@@ -1,5 +1,5 @@
 5 13 121 3 *
-8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (exclude9.9.vcd) 2 -o (exclude9.9.cdd) 2 -v (exclude9.9.v) 1 -ep 2 -D (DUMP)
+8 /ptmp/covered/diags/verilog 2 -t (main) 2 -vcd (exclude9.9.vcd) 2 -o (exclude9.9.cdd) 2 -v (exclude9.9.v) 1 -ep 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 exclude9.9.v 11 39 1
 2 1 0 0 1 1 1004 0 0 2 1 a
@@ -27,11 +27,11 @@
 4 16 6 3 3
 4 6 0 16 8
 4 3 1 6 0
-3 1 main.$u0 "main.$u0" 0 exclude9.9.v 0 25 1
+3 1 main.$u0 "main.$u0" 0 exclude9.9.v 22 25 1
 2 17 23 c000f 0 0 23010 0 0 1 16 0 1
 2 18 23 80008 0 1 3410 0 0 1 1 b
 2 19 23 8000f 0 37 2032 17 18
 2 20 0 0 0 4e 3002 0 0 1 18 0 1 0 0 0 0
 4 20 20 0 0
 4 19 31 20 20
-3 1 main.$u1 "main.$u1" 0 exclude9.9.v 0 37 1
+3 1 main.$u1 "main.$u1" 0 exclude9.9.v 29 37 1

@@ -498,24 +498,52 @@ void generator_prepend_to_work_code(
  Adds the given string to the working code buffer.
 */
 void generator_add_to_work_code(
-  const char* str  /*!< String to write */
+  const char* str,       /*!< String to write */
+  bool        from_code  /*!< Specifies if the string came from the code directly */
 ) { PROFILE(GENERATOR_ADD_TO_WORK_CODE);
 
-  static bool semi_just_seen  = FALSE;
-  static bool begin_just_seen = FALSE;
-  bool        add             = TRUE;
+  static bool semi_from_code_just_seen  = FALSE;
+  static bool semi_inject_just_seen     = FALSE;
+  static bool begin_from_code_just_seen = FALSE;
+  static bool begin_inject_just_seen    = FALSE;
+  static bool default_just_seen         = FALSE;
+  bool        add                       = TRUE;
 
   /* Make sure that we remove back-to-back semicolons */
   if( strcmp( str, ";" ) == 0 ) {
-    if( semi_just_seen || begin_just_seen ) {
+    if( ((semi_from_code_just_seen || begin_from_code_just_seen) && !from_code) ||
+        ((semi_inject_just_seen || begin_inject_just_seen || default_just_seen) && from_code) ) {
       add = FALSE;
     }
-    semi_just_seen = TRUE;
+    if( from_code ) {
+      semi_from_code_just_seen  = TRUE;
+      semi_inject_just_seen     = FALSE;
+    } else {
+      semi_inject_just_seen     = TRUE;
+      semi_from_code_just_seen  = FALSE;
+    }
+    begin_from_code_just_seen = FALSE;
+    begin_inject_just_seen    = FALSE;
+    default_just_seen        = FALSE;
   } else if( strcmp( str, " begin" ) == 0 ) {
-    begin_just_seen = TRUE;
+    if( from_code ) {
+      begin_from_code_just_seen = TRUE;
+      begin_inject_just_seen    = FALSE;
+    } else {
+      begin_inject_just_seen    = TRUE;
+      begin_from_code_just_seen = FALSE;
+    }
+    semi_from_code_just_seen = FALSE;
+    semi_inject_just_seen    = FALSE;
+    default_just_seen        = FALSE;
+  } else if( strcmp( str, "default" ) == 0 ) {
+    default_just_seen = TRUE;
   } else if( (str[0] != ' ') && (str[0] != '\n') && (str[0] != '\t') && (str[0] != '\r') && (str[0] != '\b') ) {
-    semi_just_seen  = FALSE;
-    begin_just_seen = FALSE;
+    semi_from_code_just_seen  = FALSE;
+    semi_inject_just_seen     = FALSE;
+    begin_from_code_just_seen = FALSE;
+    begin_inject_just_seen    = FALSE;
+    default_just_seen         = FALSE;
   }
 
   if( add ) {
@@ -657,15 +685,17 @@ static void generator_flush_event_comb(
   event_link* eventl  /*!< Pointer to event link to output */
 ) { PROFILE(GENERATOR_FLUSH_EVENT_COMB);
 
-  expf_link* expfl      = eventl->expf_head;
-  expf_link* tmpefl;
-  bool       end_needed = FALSE;
+  expf_link*  expfl      = eventl->expf_head;
+  expf_link*  tmpefl;
+  bool        end_needed = FALSE;
+  expression* exp;
 
   while( expfl != NULL ) {
+    exp = expression_get_last_line_expr( expfl->exp );
     if( expfl->funit->type == FUNIT_MODULE ) {
-      fprintf( curr_ofile, "reg \\covered$E%d_%x ;\n", expfl->exp->line, expfl->exp->col );
+      fprintf( curr_ofile, "reg \\covered$E%d_%d_%x ;\n", expfl->exp->line, exp->line, expfl->exp->col );
     } else {
-      fprintf( curr_ofile, "reg \\covered$E%d_%x$%s ;\n", expfl->exp->line, expfl->exp->col, expfl->funit->name );
+      fprintf( curr_ofile, "reg \\covered$E%d_%d_%x$%s ;\n", expfl->exp->line, exp->line, expfl->exp->col, expfl->funit->name );
     }
     expfl = expfl->next;
   }
@@ -685,10 +715,11 @@ static void generator_flush_event_comb(
   while( expfl != NULL ) {
     tmpefl = expfl;
     expfl  = expfl->next;
+    exp    = expression_get_last_line_expr( tmpefl->exp );
     if( tmpefl->funit->type == FUNIT_MODULE ) {
-      fprintf( curr_ofile, "  \\covered$E%d_%x = 1'b1;\n", tmpefl->exp->line, tmpefl->exp->col );
+      fprintf( curr_ofile, "  \\covered$E%d_%d_%x = 1'b1;\n", tmpefl->exp->line, exp->line, tmpefl->exp->col );
     } else {
-      fprintf( curr_ofile, "  \\covered$E%d_%x$%s = 1'b1;\n", tmpefl->exp->line, tmpefl->exp->col, tmpefl->funit->name );
+      fprintf( curr_ofile, "  \\covered$E%d_%d_%x$%s = 1'b1;\n", tmpefl->exp->line, exp->line, tmpefl->exp->col, tmpefl->funit->name );
     }
     free_safe( tmpefl, sizeof( expf_link ) );
   }
@@ -732,6 +763,8 @@ void generator_flush_event_combs1(
     eventl = eventl->next;
     generator_flush_event_comb( tmpl );
   }
+
+  event_head = event_tail = NULL;
 
   PROFILE_END;
 
@@ -801,22 +834,22 @@ static statement* generator_find_case_statement(
 
   static statement* stmt = NULL;
 
-//  printf( "In generator_find_statement, line: %d, column: %d\n", first_line, first_column );
+  printf( "In generator_find_case_statement, line: %d, column: %d\n", first_line, first_column );
 
   if( (stmt == NULL) || (stmt->exp->left->line < first_line) || ((stmt->exp->left->line == first_line) && (((stmt->exp->left->col >> 16) & 0xffff) < first_column)) ) {
 
     /* Attempt to find the expression with the given position */
     while( ((stmt = func_iter_get_next_statement( &fiter )) != NULL) && (stmt->exp->left != NULL) &&
-//           printf( "  statement %s %d\n", expression_string( stmt->exp ), ((stmt->exp->left->col >> 16) & 0xffff) ) &&
+           printf( "  statement %s %d\n", expression_string( stmt->exp ), ((stmt->exp->left->col >> 16) & 0xffff) ) &&
            ((stmt->exp->left->line < first_line) || ((stmt->exp->left->line == first_line) && (((stmt->exp->left->col >> 16) & 0xffff) < first_column))) );
 
   }
 
-//  if( (stmt != NULL) && (stmt->exp->left->line == first_line) && (((stmt->exp->left->col >> 16) & 0xffff) == first_column) ) {
-//    printf( "  FOUND (%s %x)!\n", expression_string( stmt->exp ), ((stmt->exp->col >> 16) & 0xffff) );
-//  } else {
-//    printf( "  NOT FOUND!\n" );
-//  }
+  if( (stmt != NULL) && (stmt->exp->left->line == first_line) && (((stmt->exp->left->col >> 16) & 0xffff) == first_column) ) {
+    printf( "  FOUND (%s %x)!\n", expression_string( stmt->exp ), ((stmt->exp->col >> 16) & 0xffff) );
+  } else {
+    printf( "  NOT FOUND!\n" );
+  }
 
   PROFILE_END;
 
@@ -828,7 +861,8 @@ static statement* generator_find_case_statement(
  Inserts line coverage information in string queues.
 */
 void generator_insert_line_cov(
-  unsigned int first_line,    /*!< Line to create line coverage for */
+  unsigned int first_line,    /*!< First line to create line coverage for */
+  unsigned int last_line,     /*!< Last line to create line coverage for */
   unsigned int first_column,  /*!< First column of statement */
   unsigned int last_column,   /*!< Last column of statement */
   bool         semicolon      /*!< Set to TRUE to create a semicolon after the line assignment; otherwise, adds a comma */
@@ -845,9 +879,9 @@ void generator_insert_line_cov(
     str_link*    tmp_tail = NULL;
 
     if( stmt->funit->type == FUNIT_MODULE ) {
-      rv = snprintf( sig, 4096, " \\covered$l%d_%x ", first_line, (((first_column & 0xffff) << 16) | (last_column & 0xffff)) );
+      rv = snprintf( sig, 4096, " \\covered$l%d_%d_%x ", first_line, last_line, (((first_column & 0xffff) << 16) | (last_column & 0xffff)) );
     } else {
-      rv = snprintf( sig, 4096, " \\covered$l%d_%x$%s ", first_line, (((first_column & 0xffff) << 16) | (last_column & 0xffff)), stmt->funit->name );
+      rv = snprintf( sig, 4096, " \\covered$l%d_%d_%x$%s ", first_line, last_line, (((first_column & 0xffff) << 16) | (last_column & 0xffff)), stmt->funit->name );
     }
     assert( rv < 4096 );
 
@@ -890,12 +924,13 @@ static void generator_insert_event_comb_cov(
     char         str[4096];
     char         name[4096];
     unsigned int rv;
+    expression*  last_exp = expression_get_last_line_expr( exp );
 
     /* Create signal name */
     if( funit->type == FUNIT_MODULE ) {
-      rv = snprintf( name, 4096, " \\covered$E%d_%x ", exp->line, exp->col );
+      rv = snprintf( name, 4096, " \\covered$E%d_%d_%x ", exp->line, last_exp->line, exp->col );
     } else {
-      rv = snprintf( name, 4096, " \\covered$E%d_%x$%s ", exp->line, exp->col, funit->name );
+      rv = snprintf( name, 4096, " \\covered$E%d_%d_%x$%s ", exp->line, last_exp->line, exp->col, funit->name );
     }
     assert( rv < 4096 );
 
@@ -985,17 +1020,18 @@ static void generator_insert_unary_comb_cov(
   unsigned int rv;
   str_link*    tmp_head = NULL;
   str_link*    tmp_tail = NULL;
+  expression*  last_exp = expression_get_last_line_expr( exp );
 
   /* Create signal */
   if( net || (funit->type == FUNIT_MODULE) ) {
-    rv = snprintf( sig,  80, " \\covered$%c%d_%x ", (net ? 'e' : 'E'), exp->line, exp->col );
+    rv = snprintf( sig,  80, " \\covered$%c%d_%d_%x ", (net ? 'u' : 'U'), exp->line, last_exp->line, exp->col );
     assert( rv < 80 );
-    rv = snprintf( sigr, 80, " \\covered$%c%d_%x ", (net ? 'x' : 'X'), exp->line, exp->col );
+    rv = snprintf( sigr, 80, " \\covered$%c%d_%d_%x ", (net ? 'x' : 'X'), exp->line, last_exp->line, exp->col );
     assert( rv < 80 );
   } else {
-    rv = snprintf( sig,  80, " \\covered$E%d_%x$%s ", exp->line, exp->col, funit->name );
+    rv = snprintf( sig,  80, " \\covered$E%d_%d_%x$%s ", exp->line, last_exp->line, exp->col, funit->name );
     assert( rv < 80 );
-    rv = snprintf( sigr, 80, " \\covered$X%d_%x$%s ", exp->line, exp->col, funit->name );
+    rv = snprintf( sigr, 80, " \\covered$X%d_%d_%x$%s ", exp->line, last_exp->line, exp->col, funit->name );
     assert( rv < 80 );
   }
 
@@ -1053,23 +1089,25 @@ static void generator_insert_comb_comb_cov(
   char         sigr[80];
   char         str[4096];
   unsigned int rv;
-  str_link*    tmp_head = NULL;
-  str_link*    tmp_tail = NULL;
+  str_link*    tmp_head  = NULL;
+  str_link*    tmp_tail  = NULL;
+  expression*  last_exp  = expression_get_last_line_expr( exp );
+  expression*  last_lexp = expression_get_last_line_expr( exp->left );
 
   /* Create signal */
   if( net || (funit->type == FUNIT_MODULE) ) {
-    rv = snprintf( sig,  80, " \\covered$%c%d_%x ", (net ? 'e' : 'E'), exp->line, exp->col );
+    rv = snprintf( sig,  80, " \\covered$%c%d_%d_%x ", (net ? 'c' : 'C'), exp->line, last_exp->line, exp->col );
     assert( rv < 80 );
-    rv = snprintf( sigl, 80, " \\covered$%c%d_%x ", (net ? 'x' : 'X'), exp->left->line, exp->left->col );
+    rv = snprintf( sigl, 80, " \\covered$%c%d_%d_%x ", (net ? 'x' : 'X'), exp->left->line, last_lexp->line, exp->left->col );
     assert( rv < 80 );
-    rv = snprintf( sigr, 80, " \\covered$%c%d_%x ", (net ? 'x' : 'X'), exp->right->line, exp->right->col );
+    rv = snprintf( sigr, 80, " \\covered$%c%d_%d_%x ", (net ? 'x' : 'X'), exp->right->line, last_exp->line, exp->right->col );
     assert( rv < 80 );
   } else {
-    rv = snprintf( sig,  80, " \\covered$E%d_%x$%s ", exp->line, exp->col, funit->name );
+    rv = snprintf( sig,  80, " \\covered$E%d_%d_%x$%s ", exp->line, last_exp->line, exp->col, funit->name );
     assert( rv < 80 );
-    rv = snprintf( sigl, 80, " \\covered$X%d_%x$%s ", exp->left->line, exp->left->col, funit->name );
+    rv = snprintf( sigl, 80, " \\covered$X%d_%d_%x$%s ", exp->left->line, last_lexp->line, exp->left->col, funit->name );
     assert( rv < 80 );
-    rv = snprintf( sigr, 80, " \\covered$X%d_%x$%s ", exp->right->line, exp->right->col, funit->name );
+    rv = snprintf( sigr, 80, " \\covered$X%d_%d_%x$%s ", exp->right->line, last_exp->line, exp->right->col, funit->name );
     assert( rv < 80 );
   }
 
@@ -1084,7 +1122,7 @@ static void generator_insert_comb_comb_cov(
   }
 
   /* Prepend the coverage assignment to the working buffer */
-  rv = snprintf( str, 4096, "%s%s = {%s,%s};", prefix, sig, sigl, sigr );
+  rv = snprintf( str, 4096, "%s%s = {|(%s),|(%s)};", prefix, sig, sigl, sigr );
   assert( rv < 4096 );
   str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
 
@@ -1150,9 +1188,9 @@ static char* generator_gen_msb(
         free_safe( rexp, (strlen( rexp ) + 1) );
         break;
       case EXP_OP_CONCAT         :
+      case EXP_OP_NEGATE         :
         msb = generator_gen_msb( exp->right, funit );
         break;
-      case EXP_OP_NEGATE         :
       case EXP_OP_MBIT_POS       :
       case EXP_OP_MBIT_NEG       :
       case EXP_OP_PARAM_MBIT_POS :
@@ -1299,12 +1337,13 @@ static char* generator_create_lhs(
   char         tmp[4096];
   char*        msb;
   char*        code;
+  expression*  last_exp = expression_get_last_line_expr( exp );
 
   /* Generate signal name */
   if( net || (funit->type == FUNIT_MODULE) ) {
-    rv = snprintf( name, 4096, " \\covered$%c%d_%x ", (net ? 'x' : 'X'), exp->line, exp->col );
+    rv = snprintf( name, 4096, " \\covered$%c%d_%d_%x ", (net ? 'x' : 'X'), exp->line, last_exp->line, exp->col );
   } else {
-    rv = snprintf( name, 4096, " \\covered$X%d_%x$%s ", exp->line, exp->col, funit->name );
+    rv = snprintf( name, 4096, " \\covered$X%d_%d_%x$%s ", exp->line, last_exp->line, exp->col, funit->name );
   }
   assert( rv < 4096 );
 
@@ -1357,21 +1396,27 @@ static char* generator_create_subexp(
 
   /* Generate left string */
   if( exp != NULL ) {
+
     if( (((exp->op != parent_op) ? (depth + 1) : depth) < generator_max_exp_depth) && EXPR_IS_MEASURABLE( exp ) && !expression_is_static_only( exp ) ) {
-      char num_str[50];
-      unsigned int line_len;
+
+      char         num_str[50];
+      unsigned int fline_len;
+      unsigned int lline_len;
       unsigned int col_len;
-      rv = snprintf( num_str, 50, "%d", exp->line );  assert( rv < 50 );  line_len = strlen( num_str );
-      rv = snprintf( num_str, 50, "%x", exp->col );   assert( rv < 50 );  col_len  = strlen( num_str );
+      expression*  last_exp = expression_get_last_line_expr( exp );
+
+      rv = snprintf( num_str, 50, "%d", exp->line );       assert( rv < 50 );  fline_len = strlen( num_str );
+      rv = snprintf( num_str, 50, "%d", last_exp->line );  assert( rv < 50 );  lline_len = strlen( num_str );
+      rv = snprintf( num_str, 50, "%x", exp->col );        assert( rv < 50 );  col_len   = strlen( num_str );
       if( net || (funit->type == FUNIT_MODULE) ) {
-        unsigned int slen = 10 + 1 + line_len + 1 + col_len + 2;
+        unsigned int slen = 10 + 1 + fline_len + 1 + lline_len + 1 + col_len + 2;
         code = (char*)malloc_safe( slen );
-        rv   = snprintf( code, slen, " \\covered$%c%d_%x ", (net ? 'x' : 'X'), exp->line, exp->col );
+        rv   = snprintf( code, slen, " \\covered$%c%d_%d_%x ", (net ? 'x' : 'X'), exp->line, last_exp->line, exp->col );
         assert( rv < slen );
       } else {
-        unsigned int slen = 10 + 1 + line_len + 1 + col_len + 1 + strlen( funit->name ) + 2;
+        unsigned int slen = 10 + 1 + fline_len + 1 + lline_len + 1 + col_len + 1 + strlen( funit->name ) + 2;
         code = (char*)malloc_safe( slen );
-        rv   = snprintf( code, slen, " \\covered$%c%d_%x$%s ", (net ? 'x' : 'X'), exp->line, exp->col, funit->name );
+        rv   = snprintf( code, slen, " \\covered$%c%d_%d_%x$%s ", (net ? 'x' : 'X'), exp->line, last_exp->line, exp->col, funit->name );
         assert( rv < slen );
       }
     } else {
@@ -1634,7 +1679,7 @@ static void generator_insert_comb_cov_helper(
 
     int child_depth = (depth + ((exp->op != parent_op) ? 1 : 0));
 
-//    printf( "In generator_insert_comb_cov_helper, expr: %s\n", expression_string( exp ) );
+    // printf( "In generator_insert_comb_cov_helper, expr: %s\n", expression_string( exp ) );
 
     /* Only continue to traverse tree if we are within our depth limit */
     if( (depth < generator_max_exp_depth) && (EXPR_IS_MEASURABLE( exp ) == 1) && !expression_is_static_only( exp ) ) {
@@ -1642,11 +1687,6 @@ static void generator_insert_comb_cov_helper(
       /* Generate event combinational logic type */
       if( EXPR_IS_EVENT( exp ) ) {
         generator_insert_event_comb_cov( exp, funit );
-
-      /* Generate unary combinational logic type */
-      } else if( EXPR_IS_UNARY( exp ) ) {
-        generator_insert_unary_comb_cov( exp, funit, depth, net );
-        generator_insert_subexp( exp, funit, depth, net );
 
       /* Otherwise, generate binary combinational logic type */
       } else if( EXPR_IS_COMB( exp ) ) {
@@ -1660,6 +1700,11 @@ static void generator_insert_comb_cov_helper(
         if( !root ) {
           generator_insert_subexp( exp, funit, depth, net );
         }
+
+      /* Generate unary combinational logic type */
+      } else {
+        generator_insert_unary_comb_cov( exp, funit, depth, net );
+        generator_insert_subexp( exp, funit, depth, net );
 
       }
 
@@ -1742,6 +1787,10 @@ void generator_insert_case_comb_cov(
 
 /*
  $Log$
+ Revision 1.32  2008/12/16 04:56:39  phase1geo
+ More updates for inlined code generation feature.  Updates to regression per
+ these changes.  Checkpointing.
+
  Revision 1.31  2008/12/16 00:18:08  phase1geo
  Checkpointing work on for2 diagnostic.  Adding initial support for fork..join
  blocks -- more work to do here.  Starting to add support for FOR loop control

@@ -14,6 +14,7 @@ reg a, b;
 initial begin
 	a = 1'b0;
 	@(posedge b);
+	#5;
 	a = 1'b1;
 end
 
@@ -25,7 +26,7 @@ initial begin
 	b = 1'b0;
 	#5;
 	b = 1'b1;
-        #10;
+        #20;
         $finish;
 end
 

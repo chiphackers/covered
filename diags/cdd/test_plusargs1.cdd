@@ -1,5 +1,5 @@
 5 13 101 4 *
-8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (test_plusargs1.vcd) 2 -o (test_plusargs1.cdd) 2 -v (test_plusargs1.v) 1 +option1 1 +option2 2 -D (DUMP)
+8 /ptmp/covered/diags/verilog 2 -t (main) 2 -vcd (test_plusargs1.vcd) 2 -o (test_plusargs1.cdd) 2 -v (test_plusargs1.v) 1 +option1 1 +option2 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 test_plusargs1.v 8 38 1
 2 1 12 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0
@@ -8,7 +8,7 @@
 1 c 3 10 107000a 1 0 0 0 1 17 0 1 0 0 0 0
 1 d 4 10 107000d 1 0 0 0 1 17 0 1 0 0 0 0
 4 1 1 0 0
-3 1 main.$u0 "main.$u0" 0 test_plusargs1.v 0 27 1
+3 1 main.$u0 "main.$u0" 0 test_plusargs1.v 12 27 1
 2 2 13 50008 1 0 21004 0 0 1 16 0 0
 2 3 13 10001 0 1 1410 0 0 1 1 a
 2 4 13 10008 1 37 16 2 3
@@ -53,7 +53,7 @@
 4 10 0 13 13
 4 7 0 10 10
 4 4 11 7 7
-3 1 main.$u0.$u1 "main.$u0.$u1" 0 test_plusargs1.v 0 26 1
+3 1 main.$u0.$u1 "main.$u0.$u1" 0 test_plusargs1.v 22 26 1
 2 35 23 e0011 0 0 21010 0 0 1 16 1 0
 2 36 23 a000a 0 1 1410 0 0 1 1 c
 2 37 23 a0011 0 37 32 35 36
@@ -67,4 +67,4 @@
 4 44 0 0 0
 4 41 0 44 0
 4 37 11 41 41
-3 1 main.$u2 "main.$u2" 0 test_plusargs1.v 0 36 1
+3 1 main.$u2 "main.$u2" 0 test_plusargs1.v 29 36 1
