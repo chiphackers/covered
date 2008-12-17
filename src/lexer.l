@@ -647,7 +647,6 @@ WSPACE [ \t\b\f]+
   return ';';
  }
 <IGNORE_ASSERT>. {
-  if( !parse_mode ) generator_add_to_work_code( yytext, TRUE );
   yylloc.last_column += 1;
   yymore();
  }
@@ -661,7 +660,6 @@ WSPACE [ \t\b\f]+
   return K_endproperty;
  }
 <IGNORE_PROPERTY>. {
-  if( !parse_mode ) generator_add_to_work_code( yytext, TRUE );
   yylloc.last_column += 1;
   yymore();
  }
@@ -675,7 +673,6 @@ WSPACE [ \t\b\f]+
   return K_endsequence;
  }
 <IGNORE_SEQUENCE>. {
-  if( !parse_mode ) generator_add_to_work_code( yytext, TRUE );
   yylloc.last_column += 1;
   yymore();
  }
@@ -689,7 +686,6 @@ WSPACE [ \t\b\f]+
   return K_endprogram;
  }
 <IGNORE_PROGRAM>. {
-  if( !parse_mode ) generator_add_to_work_code( yytext, TRUE );
   yylloc.last_column += 1;
   yymore();
  }
@@ -1182,7 +1178,6 @@ WSPACE [ \t\b\f]+
 
   /* Handle any characters in ignored space */
 <IGNORE_GLOBALS,IGNORE_MODULE,IGNORE_ASSERT,IGNORE_PROPERTY,IGNORE_SEQUENCE>. {
-  if( !parse_mode ) generator_add_to_work_code( yytext, TRUE );
   yylloc.last_column += 1;
   yymore();
  }

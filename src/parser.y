@@ -4736,7 +4736,7 @@ statement
       }
       $$ = NULL;
     }
-  | K_do inc_block_depth statement dec_block_depth K_while '(' expression ')' ';'
+  | K_do inc_block_depth statement dec_block_depth_flush K_while '(' expression ')' ';'
     {
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($3 != NULL) && ($7 != NULL) ) {
@@ -4759,7 +4759,11 @@ statement
           $$ = NULL;
         }
       } else {
-        $$ = NULL;  /* TBD */
+        generator_prepend_to_work_code( " end " );
+        generator_insert_line_cov( @5.first_line, @8.last_line, @5.first_column, (@8.last_column - 1), TRUE );
+        generator_insert_comb_cov( FALSE, TRUE, @5.first_line, @5.first_column );
+        generator_flush_work_code;
+        $$ = NULL;
       }
     }
   | delay1
@@ -7950,6 +7954,16 @@ dec_block_depth_only
   :
     {
       block_depth--;
+    }
+  ;
+
+dec_block_depth_flush
+  :
+    {
+      block_depth--;
+      if( !parse_mode ) {
+        generator_flush_work_code;
+      }
     }
   ;
 

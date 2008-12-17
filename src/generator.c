@@ -1030,7 +1030,7 @@ static void generator_insert_unary_comb_cov(
     rv = snprintf( sigr, 80, " \\covered$%c%d_%d_%x ", (net ? 'x' : 'X'), exp->line, last_exp->line, exp->col );
     assert( rv < 80 );
   } else {
-    rv = snprintf( sig,  80, " \\covered$E%d_%d_%x$%s ", exp->line, last_exp->line, exp->col, funit->name );
+    rv = snprintf( sig,  80, " \\covered$U%d_%d_%x$%s ", exp->line, last_exp->line, exp->col, funit->name );
     assert( rv < 80 );
     rv = snprintf( sigr, 80, " \\covered$X%d_%d_%x$%s ", exp->line, last_exp->line, exp->col, funit->name );
     assert( rv < 80 );
@@ -1104,7 +1104,7 @@ static void generator_insert_comb_comb_cov(
     rv = snprintf( sigr, 80, " \\covered$%c%d_%d_%x ", (net ? 'x' : 'X'), exp->right->line, last_exp->line, exp->right->col );
     assert( rv < 80 );
   } else {
-    rv = snprintf( sig,  80, " \\covered$E%d_%d_%x$%s ", exp->line, last_exp->line, exp->col, funit->name );
+    rv = snprintf( sig,  80, " \\covered$C%d_%d_%x$%s ", exp->line, last_exp->line, exp->col, funit->name );
     assert( rv < 80 );
     rv = snprintf( sigl, 80, " \\covered$X%d_%d_%x$%s ", exp->left->line, last_lexp->line, exp->left->col, funit->name );
     assert( rv < 80 );
@@ -1792,6 +1792,9 @@ void generator_insert_case_comb_cov(
 
 /*
  $Log$
+ Revision 1.35  2008/12/17 18:17:18  phase1geo
+ Checkpointing inlined code coverage work.
+
  Revision 1.34  2008/12/17 15:23:02  phase1geo
  More updates for inlined code coverage.  Updating regressions per these changes.
  Checkpointing.
