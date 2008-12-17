@@ -628,12 +628,10 @@ WSPACE [ \t\b\f]+
 
   /* Used when we have previously parsed a file and want to ignore all global variables (SystemVerilog mode only) */
 <IGNORE_GLOBALS>module {
-  if( !parse_mode ) generator_add_to_work_code( yytext, TRUE );
   yyless( 0 );
   BEGIN( PARSE );
  }
 <IGNORE_GLOBALS>primitive {
-  if( !parse_mode ) generator_add_to_work_code( yytext, TRUE );
   yyless( 0 );
   BEGIN( PARSE );
  }
@@ -878,8 +876,8 @@ WSPACE [ \t\b\f]+
   if( !parse_mode ) {
     /* Clear the current hold buffer before working on a new statement block */
     if( (rc != K_begin) && (rc != K_end) ) {
-      if( (rc == K_initial) || (rc == K_always) || (rc == K_always_latch) || (rc == K_always_comb) ||
-          (rc == K_always_ff) || (rc == K_final) || (rc == K_task) || (rc == K_function) ) {
+      if( (rc == K_initial)   || (rc == K_always) || (rc == K_always_latch) || (rc == K_always_comb) ||
+          (rc == K_always_ff) || (rc == K_final)  || (rc == K_task)         || (rc == K_function) ) {
         generator_flush_all;
         generator_add_to_work_code( yytext, TRUE );
       } else {
