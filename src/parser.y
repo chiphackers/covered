@@ -7670,6 +7670,7 @@ list_of_names
           $$ = NULL;
         }
       } else {
+        free_safe( $1, (strlen( $1 ) + 1) );
         $$ = NULL;
       }
     }
@@ -7693,6 +7694,7 @@ list_of_names
           $$ = NULL;
         }
       } else {
+        free_safe( $3, (strlen( $3 ) + 1) );
         $$ = NULL;
       }
     }

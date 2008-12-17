@@ -4,8 +4,10 @@ integer a, i;
 
 initial begin
         a = 0;
-	for( i=0; i<32; i=i+1 )
+	for( i=0; i<32; i=i+1 ) begin
+	  #1;
           a++;
+	end
 end
 
 initial begin
@@ -13,7 +15,7 @@ initial begin
         $dumpfile( "inc2.vcd" );
         $dumpvars( 0, main );
 `endif
-        #10;
+        #100;
         $finish;
 end
 

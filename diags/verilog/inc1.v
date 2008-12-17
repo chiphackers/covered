@@ -4,7 +4,9 @@ reg a;
 
 initial begin
 	a = 1'b0;
+	#2;	
 	a++;
+	#2;	
 	a++;
 end
 
