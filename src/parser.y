@@ -2540,13 +2540,20 @@ generate_item
         generate_expr_mode++;
       }
     }
-    '(' generate_passign ';' static_expr ';' generate_passign ')' K_begin ':' IDENTIFIER
+    '(' generate_passign ';' static_expr ';' generate_passign ')'
+    {
+      if( !parse_mode ) {
+        generator_add_to_work_code( " begin", FALSE );
+        generator_flush_work_code;
+      }
+    }
+    K_begin ':' IDENTIFIER
     {
       if( parse_mode ) {
         generate_for_mode++;
         if( ignore_mode == 0 ) {
           Try {
-            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $12, @12.text, @12.first_line ) ) {
+            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $13, @13.text, @13.first_line ) ) {
               ignore_mode++;
             } else {
               gen_item* gi = db_get_curr_gen_block();
@@ -2562,7 +2569,7 @@ generate_item
         }
         generate_expr_mode--;
       }
-      free_safe( $12, (strlen( $12 ) + 1) );
+      free_safe( $13, (strlen( $13 ) + 1) );
     }
     generate_item_list_opt K_end
     {
@@ -2571,13 +2578,13 @@ generate_item
         gen_item*   gi2;
         gen_item*   gi3;
         if( ignore_mode == 0 ) {
-          db_end_function_task_namedblock( @15.first_line );
+          db_end_function_task_namedblock( @16.first_line );
         } else {
           ignore_mode--;
         }
         generate_for_mode--;
         generate_expr_mode++;
-        if( (ignore_mode == 0) && ($4 != NULL) && ($6 != NULL) && ($8 != NULL) && ($14 != NULL) ) {
+        if( (ignore_mode == 0) && ($4 != NULL) && ($6 != NULL) && ($8 != NULL) && ($15 != NULL) ) {
           block_depth++;
           /* Create first statement */
           db_add_expression( $4 );
@@ -2590,7 +2597,7 @@ generate_item
           /* Connect next_true of gi2 to the new scope */
           db_gen_item_connect_true( gi2, save_gi_tail->gi );
           /* Connect the generate block to the new scope */
-          db_gen_item_connect_true( save_gi_tail->gi, $14 );
+          db_gen_item_connect_true( save_gi_tail->gi, $15 );
           /* Create third statement and attach it to the generate block */
           db_add_expression( $8 );
           gi3 = db_get_curr_gen_block();
@@ -2609,6 +2616,8 @@ generate_item
         }
         generate_expr_mode--;
       } else {
+        generator_add_to_work_code( " end ", FALSE );
+        generator_flush_work_code;
         $$ = NULL;
       }
     }
@@ -2639,12 +2648,12 @@ generate_item
         $$ = NULL;
       }
     }
-  | K_if inc_gen_expr_mode '(' static_expr ')' dec_gen_expr_mode inc_block_depth generate_item dec_block_depth K_else generate_item
+  | K_if inc_gen_expr_mode '(' static_expr ')' dec_gen_expr_mode inc_block_depth generate_item dec_block_depth K_else inc_block_depth generate_item dec_block_depth
     {
       if( parse_mode ) {
         expression* expr;
         gen_item*   gi1;
-        if( (ignore_mode == 0) && ($4 != NULL) && ($8 != NULL) && ($11 != NULL) ) {
+        if( (ignore_mode == 0) && ($4 != NULL) && ($8 != NULL) && ($12 != NULL) ) {
           generate_expr_mode++;
           expr = db_create_expr_from_static( $4, @4.first_line, @4.first_column, (@4.last_column - 1) );
           Try {
@@ -2655,14 +2664,14 @@ generate_item
           db_add_expression( expr );
           gi1 = db_get_curr_gen_block();
           db_gen_item_connect_true( gi1, $8 );
-          db_gen_item_connect_false( gi1, $11 );
+          db_gen_item_connect_false( gi1, $12 );
           generate_expr_mode--;
           $$ = gi1;
         } else {
           static_expr_dealloc( $4, TRUE );
           gen_item_dealloc( db_get_curr_gen_block(), TRUE );
           gen_item_dealloc( $8, TRUE );
-          gen_item_dealloc( $11, TRUE );
+          gen_item_dealloc( $12, TRUE );
           $$ = NULL;
         }
       } else {
@@ -4926,7 +4935,10 @@ statement
           $$ = NULL;
         }
       } else {
-        $$ = NULL;  /* TBD */
+        generator_insert_comb_cov( FALSE, TRUE, @1.first_line, @1.first_column );
+        generator_insert_line_cov( @1.first_line, @4.last_line, @1.first_column, (@4.last_column - 1), TRUE );
+        generator_flush_work_code;
+        $$ = NULL;
       }
     }
     /* We don't handle the non-blocking assignments ourselves, so we can just ignore the delay here */
@@ -4951,7 +4963,10 @@ statement
           $$ = NULL;
         }
       } else {
-        $$ = NULL;  /* TBD */
+        generator_insert_comb_cov( FALSE, TRUE, @1.first_line, @1.first_column );
+        generator_insert_line_cov( @1.first_line, @4.last_line, @1.first_column, (@4.last_column - 1), TRUE );
+        generator_flush_work_code;
+        $$ = NULL;
       }
     }
   | lpvalue '=' event_control expression ';'
@@ -4973,7 +4988,10 @@ statement
           $$ = NULL;
         }
       } else {
-        $$ = NULL;  /* TBD */
+        generator_insert_comb_cov( FALSE, TRUE, @1.first_line, @1.first_column );
+        generator_insert_line_cov( @1.first_line, @4.last_line, @1.first_column, (@4.last_column - 1), TRUE );
+        generator_flush_work_code;
+        $$ = NULL;
       }
     }
     /* We don't handle the non-blocking assignments ourselves, so we can just ignore the delay here */
@@ -4998,7 +5016,10 @@ statement
           $$ = NULL;
         }
       } else {
-        $$ = NULL;  /* TBD */
+        generator_insert_comb_cov( FALSE, TRUE, @1.first_line, @1.first_column );
+        generator_insert_line_cov( @1.first_line, @4.last_line, @1.first_column, (@4.last_column - 1), TRUE );
+        generator_flush_work_code;
+        $$ = NULL;
       }
     }
   | lpvalue '=' K_repeat '(' expression ')' event_control expression ';'
@@ -5029,7 +5050,10 @@ statement
           $$ = NULL;
         }
       } else {
-        $$ = NULL;  /* TBD */
+        generator_insert_comb_cov( FALSE, TRUE, @1.first_line, @1.first_column );
+        generator_insert_line_cov( @1.first_line, @8.last_line, @1.first_column, (@8.last_column - 1), TRUE );
+        generator_flush_work_code;
+        $$ = NULL;
       }
     }
     /* We don't handle the non-blocking assignments ourselves, so we can just ignore the delay here */
@@ -5056,6 +5080,9 @@ statement
           $$ = NULL;
         }
       } else {
+        generator_insert_comb_cov( FALSE, TRUE, @1.first_line, @1.first_column );
+        generator_insert_line_cov( @1.first_line, @8.last_line, @1.first_column, (@8.last_column - 1), TRUE );
+        generator_flush_work_code;
         $$ = NULL;  /* TBD */
       }
     }

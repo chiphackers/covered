@@ -834,23 +834,23 @@ static statement* generator_find_case_statement(
 
   static statement* stmt = NULL;
 
-  printf( "In generator_find_case_statement, line: %d, column: %d\n", first_line, first_column );
+//  printf( "In generator_find_case_statement, line: %d, column: %d\n", first_line, first_column );
 
   if( (stmt == NULL) || (stmt->exp->left == NULL) || (stmt->exp->left->line < first_line) ||
       ((stmt->exp->left->line == first_line) && (((stmt->exp->left->col >> 16) & 0xffff) < first_column)) ) {
 
     /* Attempt to find the expression with the given position */
     while( ((stmt = func_iter_get_next_statement( &fiter )) != NULL) && (stmt->exp->left != NULL) &&
-           printf( "  statement %s %d\n", expression_string( stmt->exp ), ((stmt->exp->left->col >> 16) & 0xffff) ) &&
+//           printf( "  statement %s %d\n", expression_string( stmt->exp ), ((stmt->exp->left->col >> 16) & 0xffff) ) &&
            ((stmt->exp->left->line < first_line) || ((stmt->exp->left->line == first_line) && (((stmt->exp->left->col >> 16) & 0xffff) < first_column))) );
 
   }
 
-  if( (stmt != NULL) && (stmt->exp->left != NULL) && (stmt->exp->left->line == first_line) && (((stmt->exp->left->col >> 16) & 0xffff) == first_column) ) {
-    printf( "  FOUND (%s %x)!\n", expression_string( stmt->exp ), ((stmt->exp->col >> 16) & 0xffff) );
-  } else {
-    printf( "  NOT FOUND!\n" );
-  }
+//  if( (stmt != NULL) && (stmt->exp->left != NULL) && (stmt->exp->left->line == first_line) && (((stmt->exp->left->col >> 16) & 0xffff) == first_column) ) {
+//    printf( "  FOUND (%s %x)!\n", expression_string( stmt->exp ), ((stmt->exp->col >> 16) & 0xffff) );
+//  } else {
+//    printf( "  NOT FOUND!\n" );
+//  }
 
   PROFILE_END;
 
@@ -1420,9 +1420,13 @@ static char* generator_create_subexp(
         rv   = snprintf( code, slen, " \\covered$%c%d_%d_%x$%s ", (net ? 'x' : 'X'), exp->line, last_exp->line, exp->col, funit->name );
         assert( rv < slen );
       }
+
     } else {
+
       code = codegen_gen_expr_one_line( exp, funit );
+
     }
+
   }
 
   return( code );
@@ -1588,12 +1592,12 @@ static void generator_create_exp(
     case EXP_OP_COND       :  generator_concat_code( lhs, NULL, lstr, " ? ", rstr, NULL, net );  break;
     case EXP_OP_COND_SEL   :  generator_concat_code( lhs, NULL, lstr, " : ", rstr, NULL, net );  break;
     case EXP_OP_SIG        :
-    case EXP_OP_PARAM      :  generator_concat_code( lhs, exp->sig->name, NULL, NULL, NULL, NULL, net );  break;
+    case EXP_OP_PARAM      :  generator_concat_code( lhs, exp->name, NULL, NULL, NULL, NULL, net );  break;
     case EXP_OP_FUNC_CALL  :
       {
-        unsigned int slen = strlen( exp->sig->name ) + 2;
+        unsigned int slen = strlen( exp->name ) + 2;
         char*        str  = (char*)malloc_safe( slen );
-        unsigned int rv   = snprintf( str, slen, "%s(", exp->sig->name );
+        unsigned int rv   = snprintf( str, slen, "%s(", exp->name );
         assert( rv < slen );
         generator_concat_code( lhs, str, lstr, ")", NULL, NULL, net );
         free_safe( str, slen );
@@ -1602,9 +1606,9 @@ static void generator_create_exp(
     case EXP_OP_SBIT_SEL   :
     case EXP_OP_PARAM_SBIT :
       {
-        unsigned int slen = strlen( exp->sig->name ) + 2;
+        unsigned int slen = strlen( exp->name ) + 2;
         char*        str  = (char*)malloc_safe( slen );
-        unsigned int rv   = snprintf( str, slen, "%s[", exp->sig->name );
+        unsigned int rv   = snprintf( str, slen, "%s[", exp->name );
         assert( rv < slen );
         generator_concat_code( lhs, str, lstr, "]", NULL, NULL, net );
         free_safe( str, slen );
@@ -1613,9 +1617,9 @@ static void generator_create_exp(
     case EXP_OP_MBIT_SEL   :
     case EXP_OP_PARAM_MBIT :
       {
-        unsigned int slen = strlen( exp->sig->name ) + 2;
+        unsigned int slen = strlen( exp->name ) + 2;
         char*        str  = (char*)malloc_safe( slen );
-        unsigned int rv   = snprintf( str, slen, "%s[", exp->sig->name );
+        unsigned int rv   = snprintf( str, slen, "%s[", exp->name );
         assert( rv < slen );
         generator_concat_code( lhs, str, lstr, ":", rstr, "]", net );
         free_safe( str, slen );
@@ -1788,6 +1792,10 @@ void generator_insert_case_comb_cov(
 
 /*
  $Log$
+ Revision 1.34  2008/12/17 15:23:02  phase1geo
+ More updates for inlined code coverage.  Updating regressions per these changes.
+ Checkpointing.
+
  Revision 1.33  2008/12/17 00:02:57  phase1geo
  More work on inlined coverage code.  Making good progress through the regression
  suite.  Checkpointing.

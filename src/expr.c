@@ -5556,6 +5556,8 @@ void expression_vcd_assign(
   const char* value    /*!< Coverage data from dumpfile to assign */
 ) { PROFILE(EXPRESSION_VCD_ASSIGN);
 
+  printf( "IN expression_vcd_assign, expr: %s, action: %c, value: %c\n", expression_string( expr ), action, value[0] );
+
   if( action == 'l' ) {
 
     /* If we have seen a value of 1, increment the exec_num to indicate that the line has been hit */
@@ -6211,6 +6213,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.395  2008/12/17 00:02:57  phase1geo
+ More work on inlined coverage code.  Making good progress through the regression
+ suite.  Checkpointing.
+
  Revision 1.394  2008/12/16 04:56:39  phase1geo
  More updates for inlined code generation feature.  Updates to regression per
  these changes.  Checkpointing.

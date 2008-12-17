@@ -881,7 +881,7 @@ WSPACE [ \t\b\f]+
   yylloc.last_column += strlen( yytext );
   if( !parse_mode ) {
     /* Clear the current hold buffer before working on a new statement block */
-    if( ((rc != K_begin) && (rc != K_end)) || (generate_mode == 1) ) {
+    if( (rc != K_begin) && (rc != K_end) ) {
       if( (rc == K_initial) || (rc == K_always) || (rc == K_always_latch) || (rc == K_always_comb) ||
           (rc == K_always_ff) || (rc == K_final) || (rc == K_task) || (rc == K_function) ) {
         generator_flush_all;
