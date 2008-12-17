@@ -1616,13 +1616,13 @@ syscall_w_parms_op_32
   ;
 
 pre_op_and_assign_op
-  : K_INC             { $$ = EXP_OP_PINC; }
-  | K_DEC             { $$ = EXP_OP_PDEC; }
+  : K_INC             { $$ = EXP_OP_IINC; }
+  | K_DEC             { $$ = EXP_OP_IDEC; }
   ;
 
 post_op_and_assign_op
-  : K_INC             { $$ = EXP_OP_IINC; }
-  | K_DEC             { $$ = EXP_OP_IDEC; }
+  : K_INC             { $$ = EXP_OP_PINC; }
+  | K_DEC             { $$ = EXP_OP_PDEC; }
   ;
 
 expr_primary

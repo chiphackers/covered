@@ -9,7 +9,7 @@
 
 module main;
 
-reg [39:0] a;
+reg signed [39:0] a;
 reg [31:0] b;
 
 initial begin

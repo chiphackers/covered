@@ -392,7 +392,7 @@ sub checkTest {
       $passed++;
 
       # Remove VCD file
-      system( "rm -f *.vcd" ) && die;
+      # system( "rm -f *.vcd" ) && die;
  
       # Create the done file
       system( "touch ${test}.done" ) && die;
