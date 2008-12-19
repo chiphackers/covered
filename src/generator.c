@@ -685,10 +685,10 @@ static void generator_flush_event_comb(
   event_link* eventl  /*!< Pointer to event link to output */
 ) { PROFILE(GENERATOR_FLUSH_EVENT_COMB);
 
-  expf_link*  expfl      = eventl->expf_head;
+  expf_link*  expfl = eventl->expf_head;
   expf_link*  tmpefl;
-  bool        end_needed = FALSE;
   expression* exp;
+  bool        begin_end_needed = FALSE;
 
   while( expfl != NULL ) {
     exp = expression_get_last_line_expr( expfl->exp );
@@ -700,14 +700,18 @@ static void generator_flush_event_comb(
     expfl = expfl->next;
   }
 
+  /* If we have more than one event to assign, we need a begin..end block output */
+  if( eventl->expf_head != eventl->expf_tail ) {
+    begin_end_needed = TRUE;
+  }
+
   if( eventl->name[0] == '@' ) {
     fprintf( curr_ofile, "always %s", eventl->name );
   } else {
-    fprintf( curr_ofile, "always @(%s)", eventl->name );
+    fprintf( curr_ofile, "initial @(%s)", eventl->name );
   }
-  if( (eventl->expf_head != NULL) && (eventl->expf_head->next != NULL) ) {
-    fprintf( curr_ofile, " begin\n" );
-    end_needed = TRUE;
+  if( begin_end_needed ) {
+    fprintf( curr_ofile, " begin" );
   }
 
   /* Output the event assignments */
@@ -724,7 +728,7 @@ static void generator_flush_event_comb(
     free_safe( tmpefl, sizeof( expf_link ) );
   }
 
-  if( end_needed ) {
+  if( begin_end_needed ) {
     fprintf( curr_ofile, "end\n" );
   }
 
@@ -955,6 +959,14 @@ static void generator_insert_event_comb_cov(
     char*        event_str;
     unsigned int i;
     event_link*  eventl;
+
+    /* Create signal name */
+    if( funit->type == FUNIT_MODULE ) {
+      rv = snprintf( name, 4096, " \\covered$z%d_%d_%x ", exp->line, last_exp->line, exp->col );
+    } else {
+      rv = snprintf( name, 4096, " \\covered$z%d_%d_%x$%s ", exp->line, last_exp->line, exp->col, funit->name );
+    }
+    assert( rv < 4096 );
 
     /* Create the event string */
     event_str = codegen_gen_expr_one_line( exp, funit );
@@ -1792,6 +1804,10 @@ void generator_insert_case_comb_cov(
 
 /*
  $Log$
+ Revision 1.36  2008/12/17 22:31:31  phase1geo
+ Fixing unary and combination expression coverage bug.  Adding support for do..while.
+ Checkpointing.
+
  Revision 1.35  2008/12/17 18:17:18  phase1geo
  Checkpointing inlined code coverage work.
 

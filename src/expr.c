@@ -5574,7 +5574,7 @@ void expression_vcd_assign(
 
     /* Since we need to sign-extend values, calculate the lt, lf, rt and rf values */
     uint32 lt = (value[1] != '\0') ? (value[0] == '1') : 0;
-    uint32 lf = (value[1] != '\0') ? (value[0] == '0') : 1;
+    uint32 lf = (value[1] != '\0') ? (value[0] == '0') : ((value[0] == '0') || (value[0] == '1'));
     uint32 rt = (value[1] != '\0') ? (value[1] == '1') : (value[0] == '1');
     uint32 rf = (value[1] != '\0') ? (value[1] == '0') : (value[0] == '0');
 
@@ -6211,6 +6211,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.397  2008/12/17 22:53:35  phase1geo
+ More bug fixes for regressions.  Checkpointing.
+
  Revision 1.396  2008/12/17 18:17:18  phase1geo
  Checkpointing inlined code coverage work.
 
