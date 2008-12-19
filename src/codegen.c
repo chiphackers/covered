@@ -61,6 +61,12 @@ extern const exp_info exp_op_info[EXP_OP_NUM];
 
 
 /*!
+ Set this value to TRUE to cause signal names to be used as is.
+*/
+bool use_actual_names = FALSE;
+
+
+/*!
  Generates multi-line expression code strings from current, left, and right expressions.
 */
 static void codegen_create_expr_helper(
@@ -397,7 +403,11 @@ void codegen_gen_expr(
 
     } else if( (expr->op == EXP_OP_SIG) || (expr->op == EXP_OP_PARAM) ) {
 
-      tmpstr = scope_gen_printable( expr->name );
+      if( use_actual_names ) {
+        tmpstr = strdup_safe( obf_sig( expr->name ) );
+      } else {
+        tmpstr = scope_gen_printable( expr->name );
+      }
 
       switch( strlen( tmpstr ) ) {
         case 0 :  assert( strlen( tmpstr ) > 0 );  break;
@@ -434,7 +444,11 @@ void codegen_gen_expr(
         assert( rv < 2 );
       } else {
         unsigned int slen;
-        pname  = scope_gen_printable( expr->name );
+        if( use_actual_names ) {
+          pname = strdup_safe( obf_sig( expr->name ) ); 
+        } else {
+          pname = scope_gen_printable( expr->name );
+        }
         slen   = strlen( pname ) + 2;
         tmpstr = (char*)malloc_safe( slen );
         rv = snprintf( tmpstr, slen, "%s[", pname );
@@ -457,7 +471,11 @@ void codegen_gen_expr(
         assert( rv < 2 );
       } else {
         unsigned int slen;
-        pname  = scope_gen_printable( expr->name );
+        if( use_actual_names ) {
+          pname = strdup_safe( obf_sig( expr->name ) );
+        } else {
+          pname = scope_gen_printable( expr->name );
+        }
         slen   = strlen( pname ) + 2;
         tmpstr = (char*)malloc_safe( slen );
         rv = snprintf( tmpstr, slen, "%s[", pname );
@@ -487,7 +505,11 @@ void codegen_gen_expr(
         assert( rv < 2 );
       } else {
         unsigned int slen;
-        pname  = scope_gen_printable( expr->name );
+        if( use_actual_names ) {
+          pname = strdup_safe( obf_sig( expr->name ) );
+        } else {
+          pname = scope_gen_printable( expr->name );
+        } 
         slen   = strlen( pname ) + 2;
         tmpstr = (char*)malloc_safe( slen );
         rv = snprintf( tmpstr, slen, "%s[", pname );
@@ -510,7 +532,11 @@ void codegen_gen_expr(
         assert( rv < 2 );
       } else {
         unsigned int slen;
-        pname  = scope_gen_printable( expr->name );
+        if( use_actual_names ) {
+          pname = strdup_safe( obf_sig( expr->name ) );
+        } else {
+          pname = scope_gen_printable( expr->name );
+        }
         slen   = strlen( pname ) + 2;
         tmpstr = (char*)malloc_safe( slen );
         rv = snprintf( tmpstr, slen, "%s[", pname );
@@ -530,7 +556,11 @@ void codegen_gen_expr(
       tfunit = expr->elem.funit;
       after = (char*)malloc_safe( strlen( tfunit->name ) + 1 );
       scope_extract_back( tfunit->name, after, user_msg );
-      pname = scope_gen_printable( after );
+      if( use_actual_names ) {
+        pname = strdup_safe( obf_sig( after ) );
+      } else {
+        pname = scope_gen_printable( after );
+      }
       if( (expr->op == EXP_OP_TASK_CALL) && (expr->left == NULL) ) {
         *code       = (char**)malloc_safe( sizeof( char* ) );
         (*code)[0]  = strdup_safe( pname );
@@ -550,7 +580,11 @@ void codegen_gen_expr(
     } else if( expr->op == EXP_OP_TRIGGER ) {
       unsigned int slen;
       assert( expr->sig != NULL );
-      pname  = scope_gen_printable( expr->name );
+      if( use_actual_names ) {
+        pname = strdup_safe( obf_sig( expr->name ) );
+      } else {
+        pname = scope_gen_printable( expr->name );
+      }
       slen   = strlen( pname ) + 3;
       tmpstr = (char*)malloc_safe( slen );
       rv = snprintf( tmpstr, slen, "->%s", pname );
@@ -566,7 +600,11 @@ void codegen_gen_expr(
     } else if( expr->op == EXP_OP_DISABLE ) {
       unsigned int slen;
       assert( expr->elem.funit != NULL );
-      pname  = scope_gen_printable( expr->name );
+      if( use_actual_names ) {
+        pname = strdup_safe( obf_sig( expr->name ) );
+      } else {
+        pname = scope_gen_printable( expr->name );
+      }
       slen   = strlen( pname ) + 9;
       tmpstr = (char*)malloc_safe( slen );
       rv = snprintf( tmpstr, slen, "disable %s", pname );
@@ -1047,6 +1085,7 @@ char* codegen_gen_expr_one_line(
 
   bool         orig_flag_use_line_width = flag_use_line_width;
   int          orig_line_width          = line_width;
+  bool         orig_use_actual_names    = use_actual_names;
   char**       code_array;
   unsigned int code_depth;
   char*        code_str;
@@ -1054,6 +1093,7 @@ char* codegen_gen_expr_one_line(
   /* Set the line width to the maximum value */
   flag_use_line_width = TRUE;
   line_width          = 0x7fffffff;
+  use_actual_names    = TRUE;
 
   /* Generate the code */
   codegen_gen_expr( expr, expr->op, &code_array, &code_depth, funit );
@@ -1070,6 +1110,7 @@ char* codegen_gen_expr_one_line(
   /* Restore the original values of flag_use_line_width and line_width */
   flag_use_line_width = orig_flag_use_line_width;
   line_width          = orig_line_width;
+  use_actual_names    = orig_use_actual_names;
 
   PROFILE_END;
  
@@ -1079,6 +1120,10 @@ char* codegen_gen_expr_one_line(
 
 /*
  $Log$
+ Revision 1.106  2008/12/13 00:17:28  phase1geo
+ Fixing more regression bugs.  Updated some original tests to make them comparable to the inlined method output.
+ Checkpointing.
+
  Revision 1.105  2008/11/30 04:17:07  phase1geo
  Adding bit to save off parenthesis existence from original Verilog source.
  Updating regression per these changes.

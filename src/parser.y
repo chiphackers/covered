@@ -3071,6 +3071,8 @@ module_item
           param_oride_head = NULL;
           param_oride_tail = NULL;
         }
+      } else {
+        generator_flush_work_code;
       }
       free_safe( $2, (strlen( $2 ) + 1) );
     }
@@ -3109,6 +3111,8 @@ module_item
       } else {
         generator_add_to_work_code( " begin", FALSE );
         generator_flush_work_code;
+        generator_insert_comb_cov( FALSE, FALSE, @2.first_line, @2.first_column );
+        generator_insert_line_cov( @2.first_line, @2.last_line, @2.first_column, (@2.last_column - 1), TRUE );
       }
     }
     statement
@@ -3159,6 +3163,8 @@ module_item
       } else {
         generator_add_to_work_code( " begin", FALSE );
         generator_flush_work_code;
+        generator_insert_comb_cov( FALSE, FALSE, @2.first_line, @2.first_column );
+        generator_insert_line_cov( @2.first_line, @2.last_line, @2.first_column, (@2.last_column - 1), TRUE );
       }
     }
     statement
@@ -3209,6 +3215,8 @@ module_item
       } else {
         generator_add_to_work_code( " begin", FALSE );
         generator_flush_work_code;
+        generator_insert_comb_cov( FALSE, FALSE, @2.first_line, @2.first_column );
+        generator_insert_line_cov( @2.first_line, @2.last_line, @2.first_column, (@2.last_column - 1), TRUE );
       }
     }
     statement
@@ -3313,7 +3321,7 @@ module_item
           ignore_mode--;
         }
       } else {
-        generator_flush_hold_code;
+        generator_flush_all;
       }
     }
   | attribute_list_opt
@@ -3373,7 +3381,7 @@ module_item
           ignore_mode--;
         }
       } else {
-        generator_flush_hold_code;
+        generator_flush_all;
       }
     }
   | K_generate
