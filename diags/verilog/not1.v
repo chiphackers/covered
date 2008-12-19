@@ -17,6 +17,7 @@ initial begin
 	a = 40'h0;
         b = 1'b0;
         c = 1'b0;
+	#5;
 	if( !a )
 	  b = 1'b1;
 	#5;

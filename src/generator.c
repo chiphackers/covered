@@ -709,7 +709,7 @@ static void generator_flush_event_comb(
   if( eventl->name[0] == '@' ) {
     fprintf( curr_ofile, "always %s", eventl->name );
   } else {
-    fprintf( curr_ofile, "initial @(%s)", eventl->name );
+    fprintf( curr_ofile, "always @(%s)", eventl->name );
   }
   if( begin_end_needed ) {
     fprintf( curr_ofile, " begin" );
@@ -1639,6 +1639,28 @@ static void generator_create_exp(
         free_safe( str, slen );
       }
       break;
+    case EXP_OP_MBIT_POS       :
+    case EXP_OP_PARAM_MBIT_POS :
+      {
+        unsigned int slen = strlen( exp->name ) + 2;
+        char*        str  = (char*)malloc_safe( slen );
+        unsigned int rv   = snprintf( str, slen, "%s[", exp->name );
+        assert( rv < slen );
+        generator_concat_code( lhs, str, lstr, "+:", rstr, "]", net );
+        free_safe( str, slen );
+      }
+      break;
+    case EXP_OP_MBIT_NEG       :
+    case EXP_OP_PARAM_MBIT_NEG :
+      { 
+        unsigned int slen = strlen( exp->name ) + 2;
+        char*        str  = (char*)malloc_safe( slen );
+        unsigned int rv   = snprintf( str, slen, "%s[", exp->name );
+        assert( rv < slen );
+        generator_concat_code( lhs, str, lstr, "-:", rstr, "]", net );
+        free_safe( str, slen );
+      }
+      break;
     default :
       break;
   }
@@ -1808,6 +1830,9 @@ void generator_insert_case_comb_cov(
 
 /*
  $Log$
+ Revision 1.38  2008/12/19 06:55:07  phase1geo
+ A few code fixes.  Checkpointing.
+
  Revision 1.37  2008/12/19 00:05:12  phase1geo
  IV regression updates.  Checkpointing.
 

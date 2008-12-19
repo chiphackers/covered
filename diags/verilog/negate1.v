@@ -14,6 +14,7 @@ reg [39:0] a, b;
 initial begin
 	a = 40'h0;
 	b = 40'h1;
+	#5;
         a = -b;
 	#5;
         b[1] = 1'b1;

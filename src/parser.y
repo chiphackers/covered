@@ -5095,10 +5095,17 @@ statement
         generator_insert_comb_cov( FALSE, TRUE, @1.first_line, @1.first_column );
         generator_insert_line_cov( @1.first_line, @8.last_line, @1.first_column, (@8.last_column - 1), TRUE );
         generator_flush_work_code;
-        $$ = NULL;  /* TBD */
+        $$ = NULL;
       }
     }
-  | K_wait '(' expression ')' inc_block_depth statement_or_null dec_block_depth
+  | K_wait '(' expression ')'
+    {
+      if( !parse_mode ) {
+        generator_insert_comb_cov( FALSE, TRUE, @1.first_line, @1.first_column );
+        generator_insert_line_cov( @1.first_line, @4.last_line, @1.first_column, (@4.last_column - 1), TRUE );
+      }
+    }
+    inc_block_depth statement_or_null dec_block_depth
     {
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($3 != NULL) ) {
@@ -5109,20 +5116,20 @@ statement
             error_count++;
           }
           $$ = db_create_statement( exp );
-          if( $6 != NULL ) {
-            if( !db_statement_connect( $$, $6 ) ) {
+          if( $7 != NULL ) {
+            if( !db_statement_connect( $$, $7 ) ) {
               db_remove_statement( $$ );
-              db_remove_statement( $6 );
+              db_remove_statement( $7 );
               $$ = NULL;
             }
           }
         } else {
-          db_remove_statement( $6 );
+          db_remove_statement( $7 );
           $$ = NULL;
         }
       } else {
         generator_flush_work_code;
-        $$ = NULL;  /* TBD */
+        $$ = NULL;
       }
     }
   | S_ignore '(' ignore_more expression_systask_list ignore_less ')' ';'
