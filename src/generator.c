@@ -437,6 +437,7 @@ void generator_init_funit(
 
   /* Initializes the functional unit iterator */
   func_iter_init( &fiter, funit, TRUE, FALSE, FALSE, TRUE );
+//  func_iter_display( &fiter );
 
   /* Reset the structure */
   func_iter_reset( &fiter );
@@ -920,16 +921,17 @@ static void generator_insert_event_comb_cov(
   func_unit*  funit  /*!< Pointer to functional unit containing the expression */
 ) { PROFILE(GENERATOR_INSERT_EVENT_COMB_COV);
 
+  char         name[4096];
+  unsigned int rv;
+
   /*
    If the expression is a root of an expression tree and it is a single event, just insert the event coverage code
    immediately.
   */
   if( (ESUPPL_IS_ROOT( exp->suppl ) == 1) && (exp->op != EXP_OP_EOR) ) {
 
-    char         str[4096];
-    char         name[4096];
-    unsigned int rv;
-    expression*  last_exp = expression_get_last_line_expr( exp );
+    char        str[4096];
+    expression* last_exp = expression_get_last_line_expr( exp );
 
     /* Create signal name */
     if( funit->type == FUNIT_MODULE ) {
@@ -962,9 +964,9 @@ static void generator_insert_event_comb_cov(
 
     /* Create signal name */
     if( funit->type == FUNIT_MODULE ) {
-      rv = snprintf( name, 4096, " \\covered$z%d_%d_%x ", exp->line, last_exp->line, exp->col );
+      rv = snprintf( name, 4096, " \\covered$z%d_%x ", exp->line, exp->col );
     } else {
-      rv = snprintf( name, 4096, " \\covered$z%d_%d_%x$%s ", exp->line, last_exp->line, exp->col, funit->name );
+      rv = snprintf( name, 4096, " \\covered$z%d_%x$%s ", exp->line, exp->col, funit->name );
     }
     assert( rv < 4096 );
 
@@ -1754,6 +1756,8 @@ void generator_insert_comb_cov(
   /* Insert combinational logic code coverage if it is specified on the command-line to do so and the statement exists */
   if( generator_comb && ((stmt = generator_find_statement( first_line, first_column )) != NULL) ) {
 
+//    printf( "Found statement: %s\n", expression_string( use_right ? stmt->exp->right : stmt->exp ) );
+
     /* Generate combinational coverage */
     generator_insert_comb_cov_helper( (use_right ? stmt->exp->right : stmt->exp), stmt->funit, (use_right ? stmt->exp->right->op : stmt->exp->op), 0, net, TRUE );
 
@@ -1804,6 +1808,9 @@ void generator_insert_case_comb_cov(
 
 /*
  $Log$
+ Revision 1.37  2008/12/19 00:05:12  phase1geo
+ IV regression updates.  Checkpointing.
+
  Revision 1.36  2008/12/17 22:31:31  phase1geo
  Fixing unary and combination expression coverage bug.  Adding support for do..while.
  Checkpointing.
