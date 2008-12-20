@@ -4371,10 +4371,17 @@ statement
         $$ = NULL;  /* TBD */
       }
     }
-  | K_repeat '(' expression ')' inc_block_depth statement dec_block_depth
+  | K_repeat '(' expression ')'
+    {
+      if( !parse_mode ) {
+        generator_insert_line_cov( @1.first_line, @4.last_line, @1.first_column, (@4.last_column - 1), TRUE );
+        generator_flush_work_code;
+      }
+    }
+    inc_block_depth statement dec_block_depth
     {
       if( parse_mode ) {
-        if( (ignore_mode == 0) && ($3 != NULL) && ($6 != NULL) ) {
+        if( (ignore_mode == 0) && ($3 != NULL) && ($7 != NULL) ) {
           vector*     vec  = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
           expression* expr = NULL;
           statement*  stmt;
@@ -4393,13 +4400,13 @@ statement
             error_count++;
           }
           stmt = db_create_statement( expr );
-          db_connect_statement_true( stmt, $6 );
+          db_connect_statement_true( stmt, $7 );
           stmt->conn_id = stmt_conn_id;   /* This will cause the STOP bit to be set for all statements connecting to stmt */
-          assert( db_statement_connect( $6, stmt ) );
+          assert( db_statement_connect( $7, stmt ) );
           $$ = stmt;
         } else {
           expression_dealloc( $3, FALSE );
-          db_remove_statement( $6 );
+          db_remove_statement( $7 );
           $$ = NULL;
         }
       } else {
