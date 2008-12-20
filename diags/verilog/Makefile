@@ -53,7 +53,7 @@ endif
 SIM_PLUSARGS = +option1 +option2 +optionB=0000000100100011010001010110011110001001101010111100110111101111 +optionO=0123456776543210012345 +optionD=81985529216486895 +optionH=0123456789abcdef +optionE=123.456 +optionF=123.456 +optionG=123.456 +optionS1=\"Small +optionS2=small.dog
 
 IVERILOG       = iverilog
-IVERILOG_FLAGS = -cconfig_file -y ./lib -I./include -DRUNTEST
+IVERILOG_FLAGS = -cconfig_file -y ./covered/verilog -y ./lib -I./include -DRUNTEST
 ifdef VPI
 IVERILOG_FLAGS += -m ../../lib/covered.vpi
 else
@@ -63,7 +63,7 @@ IVERILOG_EXEC  = a.out $(SIM_PLUSARGS)
 IVERILOG_INTER = vvp
 
 VCS       = vcs
-VCS_FLAGS = +libext+.v+.vlib+ -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 +v2k -sverilog -ntb_opts dtm -PP +vcs+lic+wait
+VCS_FLAGS = +libext+.v+.vlib+ -y ./covered/verilog -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 +v2k -sverilog -ntb_opts dtm -PP +vcs+lic+wait
 ifdef VPI
 VCS_FLAGS += +vpi -load ../../lib/covered.vcs.so:covered_register
 ifeq ($(PROCESSOR),x86_64)
@@ -75,7 +75,7 @@ endif
 VCS_EXEC  = ./simv $(SIM_PLUSARGS)
 
 CVER      = cver
-CVER_FLAGS = -q +libext+.v+.vlib+ -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 $(SIM_PLUSARGS)
+CVER_FLAGS = -q +libext+.v+.vlib+ -y ./covered/verilog -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 $(SIM_PLUSARGS)
 ifdef VPI
 CVER_FLAGS += +loadvpi=../../lib/covered.cver.so:vpi_compat_bootstrap
 else

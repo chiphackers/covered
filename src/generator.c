@@ -149,6 +149,11 @@ bool generator_comb = TRUE;
 */
 static func_iter fiter;
 
+/*!
+ Pointer to current statement (needs to be set to NULL at the beginning of each module).
+*/
+static statement* curr_stmt;
+
 
 /*!
  Outputs the current state of the code lists to standard output (for debugging purposes only).
@@ -438,6 +443,9 @@ void generator_init_funit(
   /* Initializes the functional unit iterator */
   func_iter_init( &fiter, funit, TRUE, FALSE, FALSE, TRUE );
 //  func_iter_display( &fiter );
+
+  /* Clear the current statement pointer */
+  curr_stmt = NULL;
 
   /* Reset the structure */
   func_iter_reset( &fiter );
@@ -801,28 +809,30 @@ static statement* generator_find_statement(
   unsigned int first_column  /*!< First column of statement to find */
 ) { PROFILE(GENERATOR_FIND_STATEMENT);
 
-  static statement* stmt = NULL;
-
 //  printf( "In generator_find_statement, line: %d, column: %d\n", first_line, first_column );
 
-  if( (stmt == NULL) || (stmt->exp->line < first_line) || ((stmt->exp->line == first_line) && (((stmt->exp->col >> 16) & 0xffff) < first_column)) ) {
+  if( (curr_stmt == NULL) || (curr_stmt->exp->line < first_line) ||
+      ((curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) < first_column)) ) {
 
     /* Attempt to find the expression with the given position */
-    while( ((stmt = func_iter_get_next_statement( &fiter )) != NULL) &&
-//           printf( "  statement %s %d\n", expression_string( stmt->exp ), ((stmt->exp->col >> 16) & 0xffff) ) &&
-           ((stmt->exp->line < first_line) || ((stmt->exp->line == first_line) && (((stmt->exp->col >> 16) & 0xffff) < first_column)) || (stmt->exp->op == EXP_OP_FORK)) );
+    while( ((curr_stmt = func_iter_get_next_statement( &fiter )) != NULL) &&
+//           printf( "  statement %s %d\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff) ) &&
+           ((curr_stmt->exp->line < first_line) || 
+            ((curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) < first_column)) ||
+            (curr_stmt->exp->op == EXP_OP_FORK)) );
 
   }
 
-//  if( (stmt != NULL) && (stmt->exp->line == first_line) && (((stmt->exp->col >> 16) & 0xffff) == first_column) ) {
-//    printf( "  FOUND (%s %x)!\n", expression_string( stmt->exp ), ((stmt->exp->col >> 16) & 0xffff) );
+//  if( (curr_stmt != NULL) && (curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) == first_column) ) {
+//    printf( "  FOUND (%s %x)!\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff) );
 //  } else {
 //    printf( "  NOT FOUND!\n" );
 //  }
 
   PROFILE_END;
 
-  return( ((stmt == NULL) || (stmt->exp->line != first_line) || (((stmt->exp->col >> 16) & 0xffff) != first_column) || (stmt->exp->op == EXP_OP_FORK)) ? NULL : stmt );
+  return( ((curr_stmt == NULL) || (curr_stmt->exp->line != first_line) ||
+          (((curr_stmt->exp->col >> 16) & 0xffff) != first_column) || (curr_stmt->exp->op == EXP_OP_FORK)) ? NULL : curr_stmt );
 
 }
 
@@ -837,29 +847,30 @@ static statement* generator_find_case_statement(
   unsigned int first_column  /*!< First column of case expression to find */
 ) { PROFILE(GENERATOR_FIND_CASE_STATEMENT);
 
-  static statement* stmt = NULL;
-
 //  printf( "In generator_find_case_statement, line: %d, column: %d\n", first_line, first_column );
 
-  if( (stmt == NULL) || (stmt->exp->left == NULL) || (stmt->exp->left->line < first_line) ||
-      ((stmt->exp->left->line == first_line) && (((stmt->exp->left->col >> 16) & 0xffff) < first_column)) ) {
+  if( (curr_stmt == NULL) || (curr_stmt->exp->left == NULL) || (curr_stmt->exp->left->line < first_line) ||
+      ((curr_stmt->exp->left->line == first_line) && (((curr_stmt->exp->left->col >> 16) & 0xffff) < first_column)) ) {
 
     /* Attempt to find the expression with the given position */
-    while( ((stmt = func_iter_get_next_statement( &fiter )) != NULL) && (stmt->exp->left != NULL) &&
-//           printf( "  statement %s %d\n", expression_string( stmt->exp ), ((stmt->exp->left->col >> 16) & 0xffff) ) &&
-           ((stmt->exp->left->line < first_line) || ((stmt->exp->left->line == first_line) && (((stmt->exp->left->col >> 16) & 0xffff) < first_column))) );
+    while( ((curr_stmt = func_iter_get_next_statement( &fiter )) != NULL) && (curr_stmt->exp->left != NULL) &&
+//           printf( "  statement %s %d\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->left->col >> 16) & 0xffff) ) &&
+           ((curr_stmt->exp->left->line < first_line) ||
+            ((curr_stmt->exp->left->line == first_line) && (((curr_stmt->exp->left->col >> 16) & 0xffff) < first_column))) );
 
   }
 
-//  if( (stmt != NULL) && (stmt->exp->left != NULL) && (stmt->exp->left->line == first_line) && (((stmt->exp->left->col >> 16) & 0xffff) == first_column) ) {
-//    printf( "  FOUND (%s %x)!\n", expression_string( stmt->exp ), ((stmt->exp->col >> 16) & 0xffff) );
+//  if( (curr_stmt != NULL) && (curr_stmt->exp->left != NULL) && (curr_stmt->exp->left->line == first_line) &&
+//      (((curr_stmt->exp->left->col >> 16) & 0xffff) == first_column) ) {
+//    printf( "  FOUND (%s %x)!\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff) );
 //  } else {
 //    printf( "  NOT FOUND!\n" );
 //  }
 
   PROFILE_END;
 
-  return( ((stmt == NULL) || (stmt->exp->left == NULL) || (stmt->exp->left->line != first_line) || (((stmt->exp->left->col >> 16) & 0xffff) != first_column)) ? NULL : stmt );
+  return( ((curr_stmt == NULL) || (curr_stmt->exp->left == NULL) || (curr_stmt->exp->left->line != first_line) ||
+          (((curr_stmt->exp->left->col >> 16) & 0xffff) != first_column)) ? NULL : curr_stmt );
 
 }
 
@@ -1830,6 +1841,10 @@ void generator_insert_case_comb_cov(
 
 /*
  $Log$
+ Revision 1.40  2008/12/20 06:04:25  phase1geo
+ IV regression fixes for inlined code coverage (around 117 tests are still
+ failing at this point).  Checkpointing.
+
  Revision 1.39  2008/12/19 19:07:01  phase1geo
  More regression updates.
 
