@@ -294,14 +294,6 @@ bool scope_find_signal(
 }
 
 /*!
- \param name         Name of functional unit to find based on scope information
- \param type         Type of functional unit to find
- \param curr_funit   Pointer to the functional unit which needs to bind to this functional unit
- \param found_funit  Pointer to found functional unit within the design.
- \param line         Line number where functional unit is being used (for error output purposes only).
- \param must_find    Set to TRUE if the scope MUST be found.
- \param rm_unnamed   Set to TRUE if unnamed scopes should be ignored
-
  \return Returns TRUE if the functional unit was found in the design; otherwise, returns FALSE.
 
  \throws anonymous Throw
@@ -311,13 +303,13 @@ bool scope_find_signal(
  returns FALSE to the calling function.
 */
 bool scope_find_task_function_namedblock(
-  const char* name,
-  int         type,
-  func_unit*  curr_funit,
-  func_unit** found_funit,
-  int         line,
-  bool        must_find,
-  bool        rm_unnamed
+  const char* name,         /*!< Name of functional unit to find based on scope information */
+  int         type,         /*!< Type of functional unit to find */
+  func_unit*  curr_funit,   /*!< Pointer to the functional unit which needs to bind to this functional unit */
+  func_unit** found_funit,  /*!< Pointer to found functional unit within the design */
+  int         line,         /*!< Line number where functional unit is being used (for error output purposes only) */
+  bool        must_find,    /*!< Set to TRUE if the scope MUST be found */
+  bool        rm_unnamed    /*!< Set to TRUE if unnamed scopes should be ignored */
 ) { PROFILE(SCOPE_FIND_TASK_FUNCTION_NAMEDBLOCK);
 
   assert( (type == FUNIT_FUNCTION)  || (type == FUNIT_TASK)  || (type == FUNIT_NAMED_BLOCK) ||
@@ -431,6 +423,10 @@ func_unit* scope_get_parent_module(
 
 /*
  $Log$
+ Revision 1.54  2008/11/12 19:57:07  phase1geo
+ Fixing the rest of the issues from regressions in regards to the merge changes.
+ Updating regression files.  IV and Cver regressions now pass.
+
  Revision 1.53  2008/11/12 00:07:41  phase1geo
  More updates for complex merging algorithm.  Updating regressions per
  these changes.  Checkpointing.

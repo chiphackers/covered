@@ -5,7 +5,7 @@ reg a;
 initial begin
         a = 1'b0;
 	repeat( 2 )
-          a = ~a;
+          #2 a = ~a;
 end
 
 initial begin
