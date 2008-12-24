@@ -208,11 +208,11 @@ static void fsm_var_bind_expr(
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       Throw 0;
     }
+    expr->name = strdup_safe( sig_name );
   } else {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to find FSM-specified module (%s) in design", obf_funit( funit_name ) ); 
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    printf( "fsm_var Throw B\n" );
     Throw 0;
   }
 
@@ -435,7 +435,6 @@ void fsm_var_bind() { PROFILE(FSM_VAR_BIND);
       free_safe( curr, sizeof( fv_bind ) );
       curr = tmp;
     }
-    printf( "fsm_var Throw C\n" );
     Throw 0;
   }
 
@@ -577,6 +576,11 @@ void fsm_var_cleanup() { PROFILE(FSM_VAR_CLEANUP);
 
 /*
  $Log$
+ Revision 1.51  2008/08/18 23:07:26  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.47.4.1  2008/07/10 22:43:51  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

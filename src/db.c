@@ -3066,6 +3066,26 @@ void db_assign_symbol(
           assert( expl != NULL );
           exp = expl->exp;
 
+          /* Add the expression to the symtable */
+          symtable_add_expression( symbol, exp, type );
+
+        } else if( type == 'F' ) {
+
+          fsm_link*    fsml;
+          unsigned int id;
+          unsigned int rv = sscanf( (name + (index + 1)), "%d", &id );
+          assert( rv == 1 );
+
+          /* Find the matching FSM table */
+          fsml = mod->fsm_head;
+          while( (fsml != NULL) && (fsml->table->from_state->id != id ) ) {
+            fsml = fsml->next;
+          }
+          assert( fsml != NULL );
+
+          /* Add the FSM table to the symtable */
+          symtable_add_fsm( symbol, fsml->table, msb, lsb );
+
         } else {
 
           int          fline;
@@ -3118,10 +3138,10 @@ void db_assign_symbol(
             exp = exp->parent->expr;
           }
 
-        }
+          /* Add the expression to the symtable */
+          symtable_add_expression( symbol, exp, type );
 
-        /* Add the expression to the symtable */
-        symtable_add_expression( symbol, exp, type );
+        }
 
       }
         
@@ -3301,6 +3321,9 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.365  2008/12/17 22:53:35  phase1geo
+ More bug fixes for regressions.  Checkpointing.
+
  Revision 1.364  2008/12/17 18:17:18  phase1geo
  Checkpointing inlined code coverage work.
 

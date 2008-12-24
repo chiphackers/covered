@@ -116,11 +116,12 @@
 #include <assert.h>
 
 #include "defines.h"
+#include "fsm.h"
+#include "link.h"
+#include "sim.h"
 #include "symtable.h"
 #include "util.h"
 #include "vsignal.h"
-#include "link.h"
-#include "sim.h"
 
 
 extern const exp_info exp_op_info[EXP_OP_NUM];
@@ -204,6 +205,22 @@ static void symtable_add_sym_exp(
   /* Populate symtab entry */
   symtab->entry.exp  = new_se;
   symtab->entry_type = 1;
+
+  PROFILE_END;
+
+}
+
+/*!
+ Adds the specified symtable FSM table structure to the specified symtable entry.
+*/
+static void symtable_add_sym_fsm(
+  symtable*   symtab,  /*!< Pointer to symbol table entry to initialize */
+  fsm*        table    /*!< Pointer to FSM table that will be stored in symtable list */
+) { PROFILE(SYMTABLE_ADD_SYM_FSM);
+
+  /* Populate symtab entry */
+  symtab->entry.table = table;
+  symtab->entry_type  = 2;
 
   PROFILE_END;
 
@@ -353,6 +370,37 @@ void symtable_add_expression(
 }
 
 /*!
+ Using the symobl as a unique ID, creates a new symtable element for specified information
+ and places it into the lookup tree.
+*/
+void symtable_add_fsm(
+  const char* sym,    /*!< VCD symbol for the specified signal */
+  fsm*        table,  /*!< Pointer to FSM table to set */
+  int         msb,    /*!< Most-significant bit position to set */
+  int         lsb     /*!< Least-significant bit position to set */
+) { PROFILE(SYMTABLE_ADD_FSM);
+
+  symtable* curr;  /* Pointer to current symtable entry */
+
+  /* Get a table entry */
+  curr = symtable_get_table( sym );
+
+  if( curr->entry.table == NULL ) {
+    symtable_init( curr, msb, lsb );
+  }
+
+  symtable_add_sym_fsm( curr, table );
+
+  /*
+   Finally increment the number of entries in the root table structure.
+  */
+  vcd_symtab_size++;
+
+  PROFILE_END;
+
+}
+
+/*!
  Performs a binary search of the specified tree to find all matching symtable entries.
  When the signal is found, the specified value is assigned to the symtable entry.
 */
@@ -422,8 +470,10 @@ void symtable_assign(
         vsignal_vcd_assign( sig->sig, curr->value, sig->msb, sig->lsb, time );
         sig = sig->next;
       }
-    } else {
+    } else if( curr->entry_type == 1 ) {
       expression_vcd_assign( curr->entry.exp->exp, curr->entry.exp->action, curr->value );
+    } else {
+      fsm_vcd_assign( curr->entry.table, curr->value );
     }
     curr->value[0] = '\0';
   }
@@ -465,7 +515,7 @@ void symtable_dealloc(
         curr = tmp;
       }
 
-    } else {
+    } else if( symtab->entry_type == 1 ) {
 
       free_safe( symtab->entry.exp, sizeof( sym_exp ) );
 
@@ -481,6 +531,11 @@ void symtable_dealloc(
 
 /*
  $Log$
+ Revision 1.42  2008/12/10 00:19:23  phase1geo
+ Fixing issues with aedge1 diagnostic (still need to handle events but this will
+ be worked on a later time).  Working on sizing temporary subexpression LHS signals.
+ This is not complete and does not compile at this time.  Checkpointing.
+
  Revision 1.41  2008/12/06 06:35:20  phase1geo
  Adding first crack at handling coverage-related information from dumpfile.
  This code is untested.

@@ -35,6 +35,14 @@ void symtable_add_signal( const char* sym, vsignal* sig, int msb, int lsb );
 /*! \brief Adds the given expression to the symtable for the purposes as specified by type. */
 void symtable_add_expression( const char* sym, expression* exp, char type );
 
+/*! \brief Adds the given FSM to the symtable */
+void symtable_add_fsm(
+  const char* sym,
+  fsm*        table,
+  int         msb,
+  int         lsb
+);
+
 /*! \brief Sets all matching symtable entries to specified value */
 void symtable_set_value( const char* sym, const char* value );
 
@@ -47,6 +55,10 @@ void symtable_dealloc( symtable* symtab );
 
 /*
  $Log$
+ Revision 1.22  2008/12/05 23:05:38  phase1geo
+ Working on VCD reading side of the inlined coverage handler.  Things don't
+ compile at this point and are in limbo.  Checkpointing.
+
  Revision 1.21  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

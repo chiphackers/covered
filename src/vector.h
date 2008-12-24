@@ -336,6 +336,15 @@ bool vector_vcd_assign(
   int         lsb
 );
 
+/*! \brief Assigns specified VCD value to specified vectors. */
+bool vector_vcd_assign2(
+  vector* vec1,
+  vector* vec2,
+  char*   value,
+  int     msb,
+  int     lsb
+);
+
 /*! \brief Counts toggle01 and toggle10 information from specifed vector. */
 void vector_toggle_count(
             vector*       vec,
@@ -617,6 +626,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.71  2008/10/27 21:14:02  phase1geo
+ First pass at getting the $value$plusargs system function call to work.  More
+ work to do here.  Checkpointing.
+
  Revision 1.70  2008/10/21 05:38:42  phase1geo
  More updates to support real values.  Added vector_from_real64 functionality.
  Checkpointing.

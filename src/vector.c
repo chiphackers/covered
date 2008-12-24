@@ -3151,6 +3151,49 @@ bool vector_vcd_assign(
 }
 
 /*!
+ \return Returns TRUE if the value has changed from the previous value.
+
+ Assigns the given vectors the value from the VCD file (bit-extended as necessary).
+*/
+bool vector_vcd_assign2(
+  vector* vec1,   /*!< Vector to fill which occupies the low-order bits */
+  vector* vec2,   /*!< Vector to fill which occupies the high-order bits */
+  char*   value,  /*!< VCD value (in string form) */
+  int     msb,    /*!< Most-significant bit from VCD file */
+  int     lsb     /*!< Least-significant bit from VCD file */
+) { PROFILE(VECTOR_VCD_ASSIGN2);
+
+  bool         retval     = FALSE;
+  unsigned int value_size = strlen( value );
+
+  /* If the value string is greater than the low-order vector, split the string and perform two individual VCD assigns */
+  if( value_size > vec1->width ) {
+
+    char* ptr = value + (value_size - vec1->width);
+
+    retval |= vector_vcd_assign( vec1, ptr, (vec1->width - 1), 0 );
+    *ptr = '\0';
+    retval |= vector_vcd_assign( vec2, value, (vec2->width - 1), 0 );
+
+  /* Otherwise, assign the low-order vector as normal and assign the high-order vector with only the first character of the value string */
+  } else {
+
+    retval |= vector_vcd_assign( vec1, value, (vec1->width - 1), 0 );
+    if( value[0] == '1' ) {
+      value[0] = '0';
+    }
+    value[1] = '\0';
+    retval |= vector_vcd_assign( vec2, value, (vec2->width - 1), 0 );
+
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
  \return Returns TRUE if assigned value differs from original vector value; otherwise,
          returns FALSE.
 
@@ -5161,6 +5204,11 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.184  2008/11/19 06:19:17  phase1geo
+ Updates for next development release.  Updating configuration files for new
+ locations of Icarus Verilog development releases.  Also fixing syntax error
+ in vector.c source file.
+
  Revision 1.183  2008/11/11 05:36:40  phase1geo
  Checkpointing merge code.
 

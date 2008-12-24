@@ -4720,10 +4720,18 @@ statement
       }
       $$ = NULL;
     }
-  | K_while '(' expression ')' inc_block_depth statement dec_block_depth
+  | K_while '(' expression ')'
+    {
+      if( !parse_mode ) {
+        generator_insert_line_cov( @1.first_line, @4.last_line, @1.first_column, (@4.last_column - 1), TRUE );
+        generator_insert_comb_cov( FALSE, TRUE, @1.first_line, @1.first_column );
+        generator_flush_work_code;
+      }
+    }
+    inc_block_depth statement dec_block_depth
     {
       if( parse_mode ) {
-        if( (ignore_mode == 0) && ($3 != NULL) && ($6 != NULL) ) {
+        if( (ignore_mode == 0) && ($3 != NULL) && ($7 != NULL) ) {
           expression* expr = NULL;
           Try {
             expr = db_create_expression( $3, NULL, EXP_OP_WHILE, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
@@ -4731,17 +4739,18 @@ statement
             error_count++;
           }
           if( ($$ = db_create_statement( expr )) != NULL ) {
-            db_connect_statement_true( $$, $6 );
+            db_connect_statement_true( $$, $7 );
             $$->conn_id = stmt_conn_id;   /* This will cause the STOP bit to be set for all statements connecting to stmt */
-            assert( db_statement_connect( $6, $$ ) );
+            assert( db_statement_connect( $7, $$ ) );
           }
         } else {
           expression_dealloc( $3, FALSE );
-          db_remove_statement( $6 );
+          db_remove_statement( $7 );
           $$ = NULL;
         }
       } else {
-        $$ = NULL;  /* TBD */
+        generator_flush_work_code;
+        $$ = NULL;
       }
     }
   | K_while '(' error ')' inc_block_depth statement dec_block_depth
@@ -5108,7 +5117,8 @@ statement
   | K_wait '(' expression ')'
     {
       if( !parse_mode ) {
-        generator_insert_comb_cov( FALSE, TRUE, @1.first_line, @1.first_column );
+        generator_flush_work_code;
+        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
         generator_insert_line_cov( @1.first_line, @4.last_line, @1.first_column, (@4.last_column - 1), TRUE );
       }
     }

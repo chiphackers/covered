@@ -43,6 +43,7 @@ extern str_link*      modlist_head;
 extern str_link*      modlist_tail;
 extern const exp_info exp_op_info[EXP_OP_NUM];
 extern bool           debug_mode;
+extern func_unit*     curr_funit;
 
 
 struct fname_link_s;
@@ -442,7 +443,6 @@ void generator_init_funit(
 
   /* Initializes the functional unit iterator */
   func_iter_init( &fiter, funit, TRUE, FALSE, FALSE, TRUE );
-//  func_iter_display( &fiter );
 
   /* Clear the current statement pointer */
   curr_stmt = NULL;
@@ -1838,9 +1838,54 @@ void generator_insert_case_comb_cov(
 
 }
 
+/*!
+ Inserts FSM coverage at the end of the module for the current module.
+*/
+void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
+
+  fsm_link* fsml = curr_funit->fsm_head;
+
+  while( fsml != NULL ) {
+
+    if( fsml->table->from_state->id == fsml->table->to_state->id ) {
+
+      char* msb = generator_gen_msb( fsml->table->from_state, curr_funit );
+      char* exp = codegen_gen_expr_one_line( fsml->table->from_state, curr_funit );
+      fprintf( curr_ofile, "wire [(%s-1):0] \\covered$F%d = %s;\n", ((msb != NULL) ? msb : "1"), fsml->table->from_state->ulid, exp );
+      free_safe( msb, (strlen( msb ) + 1) );
+      free_safe( exp, (strlen( exp ) + 1) );
+
+    } else {
+
+      char* fmsb = generator_gen_msb( fsml->table->from_state, curr_funit );
+      char* fexp = codegen_gen_expr_one_line( fsml->table->from_state, curr_funit );
+      char* tmsb = generator_gen_msb( fsml->table->to_state, curr_funit );
+      char* texp = codegen_gen_expr_one_line( fsml->table->to_state, curr_funit );
+      fprintf( curr_ofile, "wire [((%s+%s)-1):0] \\covered$F%d = {%s,%s};\n",
+               ((fmsb != NULL) ? fmsb : "1"), ((tmsb != NULL) ? tmsb : "1"), fsml->table->from_state->ulid, fexp, texp );
+      free_safe( fmsb, (strlen( fmsb ) + 1) );
+      free_safe( fexp, (strlen( fexp ) + 1) );
+      free_safe( tmsb, (strlen( tmsb ) + 1) );
+      free_safe( texp, (strlen( texp ) + 1) );
+
+    }  
+
+    fsml = fsml->next;
+
+  }
+
+  PROFILE_END;
+
+}
+
 
 /*
  $Log$
+ Revision 1.41  2008/12/20 06:35:26  phase1geo
+ Fixing more IV regression bugs and adding regression Makefile support for finding
+ library files in the covered/verilog directory.  About 104 diagnostics are now
+ failing.  Checkpointing.
+
  Revision 1.40  2008/12/20 06:04:25  phase1geo
  IV regression fixes for inlined code coverage (around 117 tests are still
  failing at this point).  Checkpointing.

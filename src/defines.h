@@ -2657,9 +2657,10 @@ struct sym_exp_s {
 struct symtable_s {
   union {
     sym_sig*   sig;                  /*!< Pointer to signal symtable entry stack */
-    sym_exp*   exp;                  /*!< Pointer to expression symtabl entry */
+    sym_exp*   exp;                  /*!< Pointer to expression symtable entry */
+    fsm*       table;                /*!< Pointer to FSM table symtable entry */
   } entry;
-  char         entry_type;           /*!< Specifies if this entry represents a signal (0) or expression (1) */
+  char         entry_type;           /*!< Specifies if this entry represents a signal (0), expression (1) or fsm (2) */
   char*        value;                /*!< String representation of last current value */
   unsigned int size;                 /*!< Number of bytes allowed storage for value */
   symtable*    table[94];            /*!< Array of symbol tables for next level (only enough for printable characters) */
@@ -3079,6 +3080,11 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.344  2008/12/14 06:56:02  phase1geo
+ Making some code modifications to set the stage for supporting case statements
+ with the new inlined code coverage methodology.  Updating regressions per this
+ change (IV and Cver fully pass).
+
  Revision 1.343  2008/12/10 23:37:02  phase1geo
  Working on handling event combinational logic cases.  This does not fully work
  at this point.  Fixed issues with combinational logic generation for IF statements.

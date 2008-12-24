@@ -201,15 +201,15 @@ void fsm_db_write(
 } 
 
 /*!
- \param line   Pointer to current line being read from the CDD file.
- \param funit  Pointer to current functional unit.
-
  \throws anonymous expression_create Throw Throw Throw Throw arc_db_read
 
  Reads in contents of FSM line from CDD file and stores newly created
  FSM into the specified functional unit.
 */
-void fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
+void fsm_db_read(
+  /*@out@*/ char**     line,  /*!< Pointer to current line being read from the CDD file */
+            func_unit* funit  /*!< Pointer to current functional unit */
+) { PROFILE(FSM_DB_READ);
 
   int        iexp_id;        /* Input expression ID */
   int        oexp_id;        /* Output expression ID */
@@ -226,7 +226,6 @@ void fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
     if( funit == NULL ) {
 
       print_output( "Internal error:  FSM in database written before its functional unit", FATAL, __FILE__, __LINE__ );
-      printf( "fsm Throw A\n" );
       Throw 0;
 
     } else {
@@ -246,7 +245,6 @@ void fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
             table->from_state = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, iexp_id, 0, 0, 0, FALSE );
           } Catch_anonymous {
             fsm_dealloc( table );
-            printf( "fsm Throw B\n" );
             Throw 0;
           }
           vector_dealloc( table->from_state->value );
@@ -279,7 +277,6 @@ void fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to find state variable expressions (%d, %d) for current FSM", iexp_id, oexp_id );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        printf( "fsm Throw D\n" );
         Throw 0;
 
       }
@@ -298,9 +295,6 @@ void fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
 }
 
 /*!
- \param base  Pointer to FSM structure to merge data into.
- \param line  Pointer to read in line from CDD file to merge.
-
  \throws anonymous arc_db_merge Throw
 
  Parses specified line for FSM information and performs merge of the base
@@ -310,8 +304,8 @@ void fsm_db_read( char** line, func_unit* funit ) { PROFILE(FSM_DB_READ);
  on the FSM's tables.
 */
 void fsm_db_merge(
-  fsm*   base,
-  char** line
+  fsm*   base,  /*!< Pointer to FSM structure to merge data into */
+  char** line   /*!< Pointer to read in line from CDD file to merge */
 ) { PROFILE(FSM_DB_MERGE);
 
   int iid;         /* Input state variable expression ID */
@@ -336,7 +330,6 @@ void fsm_db_merge(
   } else {
 
     print_output( "Database being merged is not compatible with the original database.", FATAL, __FILE__, __LINE__ );
-    printf( "fsm Throw F\n" );
     Throw 0;
 
   }
@@ -396,6 +389,33 @@ void fsm_table_set(
       vector_copy( expr->value, expr->table->from_state->value );
     }
 
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Assigns the given value to the FSM structure and evaluates it for coverage information.
+*/
+void fsm_vcd_assign(
+  fsm*  table,  /*!< Pointer to the FSM table to set */
+  char* value   /*!< String version of value to set to the FSM table */
+) { PROFILE(FSM_VCD_ASSIGN);
+
+  /* Assign the string value to the given state vectors */
+  if( table->from_state->id == table->to_state->id ) {
+    vector_vcd_assign( table->to_state->value, value, (table->to_state->value->width - 1), 0 );
+  } else {
+    vector_vcd_assign2( table->to_state->value, table->from_state->value, value, ((table->from_state->value->width + table->to_state->value->width) - 1), 0 );
+  }
+
+  /* Add the states and state transition */
+  arc_add( table->table, table->from_state->value, table->to_state->value, 1, table->exclude );
+
+  /* If from_state was not specified, we need to copy the current contents of to_state to from_state */
+  if( table->from_state->id == table->to_state->id ) {
+    vector_copy( table->to_state->value, table->from_state->value );
   }
 
   PROFILE_END;
@@ -1315,6 +1335,10 @@ void fsm_dealloc(
 
 /*
  $Log$
+ Revision 1.109  2008/11/12 00:07:41  phase1geo
+ More updates for complex merging algorithm.  Updating regressions per
+ these changes.  Checkpointing.
+
  Revision 1.108  2008/11/08 00:09:04  phase1geo
  Checkpointing work on asymmetric merging algorithm.  Updated regressions
  per these changes.  We currently have 5 failures in the IV regression suite.
