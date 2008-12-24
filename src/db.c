@@ -3073,13 +3073,15 @@ void db_assign_symbol(
 
           fsm_link*    fsml;
           unsigned int id;
-          unsigned int rv = sscanf( (name + (index + 1)), "%d", &id );
+          unsigned int count = 1;
+          unsigned int rv    = sscanf( (name + (index + 1)), "%d", &id );
           assert( rv == 1 );
 
           /* Find the matching FSM table */
           fsml = mod->fsm_head;
-          while( (fsml != NULL) && (fsml->table->from_state->id != id ) ) {
+          while( (fsml != NULL) && (count != id ) ) {
             fsml = fsml->next;
+            count++;
           }
           assert( fsml != NULL );
 
@@ -3321,6 +3323,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.366  2008/12/24 21:19:01  phase1geo
+ Initial work at getting FSM coverage put in (this looks to be working correctly
+ to this point).  Updated regressions per fixes.  Checkpointing.
+
  Revision 1.365  2008/12/17 22:53:35  phase1geo
  More bug fixes for regressions.  Checkpointing.
 

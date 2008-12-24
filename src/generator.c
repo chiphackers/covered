@@ -1843,7 +1843,8 @@ void generator_insert_case_comb_cov(
 */
 void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
 
-  fsm_link* fsml = curr_funit->fsm_head;
+  fsm_link*    fsml = curr_funit->fsm_head;
+  unsigned int id   = 1;
 
   while( fsml != NULL ) {
 
@@ -1851,7 +1852,7 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
 
       char* msb = generator_gen_msb( fsml->table->from_state, curr_funit );
       char* exp = codegen_gen_expr_one_line( fsml->table->from_state, curr_funit );
-      fprintf( curr_ofile, "wire [(%s-1):0] \\covered$F%d = %s;\n", ((msb != NULL) ? msb : "1"), fsml->table->from_state->ulid, exp );
+      fprintf( curr_ofile, "wire [(%s-1):0] \\covered$F%d = %s;\n", ((msb != NULL) ? msb : "1"), id, exp );
       free_safe( msb, (strlen( msb ) + 1) );
       free_safe( exp, (strlen( exp ) + 1) );
 
@@ -1862,7 +1863,7 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
       char* tmsb = generator_gen_msb( fsml->table->to_state, curr_funit );
       char* texp = codegen_gen_expr_one_line( fsml->table->to_state, curr_funit );
       fprintf( curr_ofile, "wire [((%s+%s)-1):0] \\covered$F%d = {%s,%s};\n",
-               ((fmsb != NULL) ? fmsb : "1"), ((tmsb != NULL) ? tmsb : "1"), fsml->table->from_state->ulid, fexp, texp );
+               ((fmsb != NULL) ? fmsb : "1"), ((tmsb != NULL) ? tmsb : "1"), id, fexp, texp );
       free_safe( fmsb, (strlen( fmsb ) + 1) );
       free_safe( fexp, (strlen( fexp ) + 1) );
       free_safe( tmsb, (strlen( tmsb ) + 1) );
@@ -1871,6 +1872,7 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
     }  
 
     fsml = fsml->next;
+    id++;
 
   }
 
@@ -1881,6 +1883,10 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
 
 /*
  $Log$
+ Revision 1.42  2008/12/24 21:19:01  phase1geo
+ Initial work at getting FSM coverage put in (this looks to be working correctly
+ to this point).  Updated regressions per fixes.  Checkpointing.
+
  Revision 1.41  2008/12/20 06:35:26  phase1geo
  Fixing more IV regression bugs and adding regression Makefile support for finding
  library files in the covered/verilog directory.  About 104 diagnostics are now
