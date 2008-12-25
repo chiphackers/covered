@@ -29,6 +29,7 @@ end
 
 initial begin
         c = 0;
+	#5;
         c = bar;
 end
 

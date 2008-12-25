@@ -6,6 +6,7 @@ foo bar();
 
 initial begin
 	a = 1'b0;
+	#5;
 	a = bar.b;
 end
 

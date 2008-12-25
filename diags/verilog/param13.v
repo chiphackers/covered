@@ -6,6 +6,7 @@ reg a;
 
 initial begin : bar
 	a = 1'b0;
+	#5;
 	a = foo;
 end
 
