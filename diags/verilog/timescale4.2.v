@@ -16,6 +16,7 @@ initial begin
 	b = 1'b0;
 	#(2.123_456_789_987_654);
 	b = 1'b1;
+	$display( $time );
 	a = ($time == 212);
 end
 

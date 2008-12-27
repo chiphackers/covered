@@ -52,7 +52,7 @@
  Contains the CDD version number of all CDD files that this version of Covered can write
  and read.
 */
-#define CDD_VERSION        19
+#define CDD_VERSION        20
 
 /*!
  This contains the header information specified when executing this tool.
@@ -404,7 +404,7 @@
  supplemental fields are ANDed with this mask and ORed together to perform the
  merge.  See esuppl_u for information on which bits are masked.
 */
-#define ESUPPL_MERGE_MASK            0x3fffff
+#define ESUPPL_MERGE_MASK            0xffffff
 
 /*!
  Specifies the number of bits to store for a given expression for reentrant purposes.
@@ -1556,68 +1556,69 @@ union esuppl_u {
   struct {
  
     /* MASKED BITS */
-    uint32 swapped        :1;  /*!< Bit 0.  Mask bit = 1.  Indicates that the children of this expression have been
+    uint32 swapped        :1;  /*!< Bit 0.  Indicates that the children of this expression have been
                                     swapped.  The swapping of the positions is performed by the score command (for
                                     multi-bit selects) and this bit indicates to the report code to swap them back
                                     when displaying them in. */
-    uint32 root           :1;  /*!< Bit 1.  Mask bit = 1.  Indicates that this expression is a root expression.
+    uint32 root           :1;  /*!< Bit 1.  Indicates that this expression is a root expression.
                                     Traversing to the parent pointer will take you to a statement type. */
-    uint32 false          :1;  /*!< Bit 2.  Mask bit = 1.  Indicates that this expression has evaluated to a value
+    uint32 false          :1;  /*!< Bit 2.  Indicates that this expression has evaluated to a value
                                     of FALSE during the lifetime of the simulation. */
-    uint32 true           :1;  /*!< Bit 3.  Mask bit = 1.  Indicates that this expression has evaluated to a value
+    uint32 true           :1;  /*!< Bit 3.  Indicates that this expression has evaluated to a value
                                     of TRUE during the lifetime of the simulation. */
-    uint32 left_changed   :1;  /*!< Bit 4.  Mask bit = 1.  Indicates that this expression has its left child
+    uint32 left_changed   :1;  /*!< Bit 4.  Indicates that this expression has its left child
                                     expression in a changed state during this timestamp. */
-    uint32 right_changed  :1;  /*!< Bit 5.  Mask bit = 1.  Indicates that this expression has its right child
+    uint32 right_changed  :1;  /*!< Bit 5.  Indicates that this expression has its right child
                                     expression in a changed state during this timestamp. */
-    uint32 eval_00        :1;  /*!< Bit 6.  Mask bit = 1.  Indicates that the value of the left child expression
+    uint32 eval_00        :1;  /*!< Bit 6.  Indicates that the value of the left child expression
                                     evaluated to FALSE and the right child expression evaluated to FALSE. */
-    uint32 eval_01        :1;  /*!< Bit 7.  Mask bit = 1.  Indicates that the value of the left child expression
+    uint32 eval_01        :1;  /*!< Bit 7.  Indicates that the value of the left child expression
                                     evaluated to FALSE and the right child expression evaluated to TRUE. */
-    uint32 eval_10        :1;  /*!< Bit 8.  Mask bit = 1.  Indicates that the value of the left child expression
+    uint32 eval_10        :1;  /*!< Bit 8.  Indicates that the value of the left child expression
                                     evaluated to TRUE and the right child expression evaluated to FALSE. */
-    uint32 eval_11        :1;  /*!< Bit 9.  Mask bit = 1.  Indicates that the value of the left child expression
+    uint32 eval_11        :1;  /*!< Bit 9.  Indicates that the value of the left child expression
                                     evaluated to TRUE and the right child expression evaluated to TRUE. */
-    uint32 lhs            :1;  /*!< Bit 10.  Mask bit = 1.  Indicates that this expression exists on the left-hand
+    uint32 lhs            :1;  /*!< Bit 10.  Indicates that this expression exists on the left-hand
                                     side of an assignment operation. */
-    uint32 in_func        :1;  /*!< Bit 11.  Mask bit = 1.  Indicates that this expression exists in a function */
-    uint32 owns_vec       :1;  /*!< Bit 12.  Mask bit = 1.  Indicates that this expression either owns its vector
+    uint32 in_func        :1;  /*!< Bit 11.  Indicates that this expression exists in a function */
+    uint32 owns_vec       :1;  /*!< Bit 12.  Indicates that this expression either owns its vector
                                     structure or shares it with someone else. */
-    uint32 excluded       :1;  /*!< Bit 13.  Mask bit = 1.  Indicates that this expression should be excluded from
+    uint32 excluded       :1;  /*!< Bit 13.  Indicates that this expression should be excluded from
                                     coverage results.  If a parent expression has been excluded, all children expressions
                                     within its tree are also considered excluded (even if their excluded bits are not
                                     set. */
-    uint32 type           :3;  /*!< Bits 16:14.  Mask bit = 1.  Indicates how the pointer element should be treated as */
-    uint32 base           :3;  /*!< Bits 19:17.  Mask bit = 1.  When the expression op is a STATIC, specifies the base
+    uint32 type           :3;  /*!< Bits 16:14.  Indicates how the pointer element should be treated as */
+    uint32 base           :3;  /*!< Bits 19:17.  When the expression op is a STATIC, specifies the base
                                     type of the value (DECIMAL, HEXIDECIMAL, OCTAL, BINARY, QSTRING). */
-    uint32 clear_changed  :1;  /*!< Bit 20.  Mask bit = 1.  Specifies the value of the left/right changed bits after
+    uint32 clear_changed  :1;  /*!< Bit 20.  Specifies the value of the left/right changed bits after
                                     the left/right subexpression has been performed.  This value should be set to 1 if
                                     a child expression needs to be re-evaluated each time the current expression is
                                     evaluated; otherwise, it should be set to 0. */
-    uint32 parenthesis    :1;  /*!< Bit 21.  Mask bit = 1.  Specifies that the expression was surrounded by parenthesis
+    uint32 parenthesis    :1;  /*!< Bit 21.  Specifies that the expression was surrounded by parenthesis
                                     in the original Verilog. */
+    uint32 for_cntrl      :2;  /*!< Bit 23:22.  Specifies whether this expression represents a control within a FOR loop
+                                    and, if so, what part of the FOR loop this expression represents.  0=Not within a for
+                                    loop, 1=FOR loop initializer, 2=FOR loop condition, 3=FOR loop iterator. */
  
     /* UNMASKED BITS */
-    uint32 eval_t         :1;  /*!< Bit 22.  Mask bit = 0.  Indicates that the value of the current expression is
+    uint32 eval_t         :1;  /*!< Bit 24.  Indicates that the value of the current expression is
                                     currently set to TRUE (temporary value). */
-    uint32 eval_f         :1;  /*!< Bit 23.  Mask bit = 0.  Indicates that the value of the current expression is
+    uint32 eval_f         :1;  /*!< Bit 25.  Indicates that the value of the current expression is
                                     currently set to FALSE (temporary value). */
-    uint32 comb_cntd      :1;  /*!< Bit 24.  Mask bit = 0.  Indicates that the current expression has been previously
+    uint32 comb_cntd      :1;  /*!< Bit 26.  Indicates that the current expression has been previously
                                     counted for combinational coverage.  Only set by report command (therefore this bit
                                     will always be a zero when written to CDD file. */
-    uint32 exp_added      :1;  /*!< Bit 25.  Mask bit = 0.  Temporary bit value used by the score command but not
+    uint32 exp_added      :1;  /*!< Bit 27.  Temporary bit value used by the score command but not
                                     displayed to the CDD file.  When this bit is set to a one, it indicates to the
                                     db_add_expression function that this expression and all children expressions have
                                     already been added to the functional unit expression list and should not be added again. */
-    uint32 owned          :1;  /*!< Bit 26.  Mask bit = 0.  Temporary value used by the score command to indicate
+    uint32 owned          :1;  /*!< Bit 28.  Temporary value used by the score command to indicate
                                     if this expression is already owned by a mod_parm structure. */
-    uint32 gen_expr       :1;  /*!< Bit 27.  Mask bit = 0.  Temporary value used by the score command to indicate
+    uint32 gen_expr       :1;  /*!< Bit 29.  Temporary value used by the score command to indicate
                                     that this expression is a part of a generate expression. */
-    uint32 prev_called    :1;  /*!< Bit 28.  Mask bit = 0.  Temporary value used by named block and task expression
+    uint32 prev_called    :1;  /*!< Bit 30.  Temporary value used by named block and task expression
                                     functions to indicate if we are in the middle of executing a named block or task
                                     expression (since these cause a context switch to occur. */
-    uint32 for_cntrl      :1;  /*!< Bit 29.  Mask bit = 0.  Temporary value used by the score command which sets to true
-                                    if this expression exists within the control portion of a for loop. */
   } part;
 };
 
@@ -3080,6 +3081,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.345  2008/12/24 21:19:01  phase1geo
+ Initial work at getting FSM coverage put in (this looks to be working correctly
+ to this point).  Updated regressions per fixes.  Checkpointing.
+
  Revision 1.344  2008/12/14 06:56:02  phase1geo
  Making some code modifications to set the stage for supporting case statements
  with the new inlined code coverage methodology.  Updating regressions per this

@@ -14,6 +14,7 @@ reg [31:0] a, b;
 initial begin
 	a = 0;
 	b = 1;
+	#5;
 	a[b+1] = 1'b1;
 end
 

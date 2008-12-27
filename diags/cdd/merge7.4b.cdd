@@ -1,4 +1,4 @@
-5 13 101 3 main
+5 14 101 3 main
 8 /Users/trevorw/projects/covered/diags/verilog 2 -t (dut_and) 2 -i (main.dut) 2 -vcd (merge7.4b.vcd) 2 -o (merge7.4b.cdd) 2 -v (merge7.4b.v) 2 -y (lib) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 15 main 0
@@ -12,4 +12,4 @@
 1 b 2 4 8 1 0 0 0 1 17 1 1 0 0 0 0
 1 c 3 5 8 1 0 0 0 1 17 1 1 0 0 0 0
 4 5 f 5 5
-13 T 1 1228717441 I dont like the variable a
+13 T 1 1230406997 I dont like the variable a

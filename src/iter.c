@@ -132,8 +132,9 @@ void stmt_iter_get_next_in_order(
   stmt_iter* si  /*!< Pointer to statement iterator to transform */
 ) { PROFILE(STMT_ITER_GET_NEXT_IN_ORDER);
 
-  stmt_iter lsi;                  /* Points to lowest statement iterator */
-  int       lowest = 0x7fffffff;  /* Line number of the lowest statement */
+  stmt_iter lsi;                    /* Points to lowest statement iterator */
+  int       low_line = 0x7fffffff;  /* Line number of the lowest statement */
+  int       low_col  = 0x7fffffff;  /* Column number of the lowest statement */
 
   /* If the current statement is not a head, go back to the head */
   if( si->curr->stmt->suppl.part.head == 0 ) {
@@ -152,8 +153,10 @@ void stmt_iter_get_next_in_order(
   while( (si->curr != NULL) && (si->curr->stmt->suppl.part.head == 0) ) {
     if( (si->curr->stmt->suppl.part.added == 0) &&
         (si->curr->stmt->exp->line != 0) &&
-        (si->curr->stmt->exp->line < lowest) ) {
-      lowest   = si->curr->stmt->exp->line;
+        ((si->curr->stmt->exp->line < low_line) ||
+         ((si->curr->stmt->exp->line == low_line) && (((si->curr->stmt->exp->col >> 16) & 0xffff) < low_col))) ) {
+      low_line = si->curr->stmt->exp->line;
+      low_col  = ((si->curr->stmt->exp->col >> 16) & 0xffff);
       lsi.curr = si->curr;
       lsi.last = si->last;
     }
@@ -211,6 +214,11 @@ void stmt_iter_get_line_before(
 
 /*
  $Log$
+ Revision 1.20  2008/11/29 04:27:07  phase1geo
+ More work on inlined coverage code insertion.  Net assigns and procedural assigns
+ seem to be working at a most basic level.  Currently, I have an issue that I need
+ to solve where non-head statements are being ignored.  Checkpointing.
+
  Revision 1.19  2008/02/25 18:22:16  phase1geo
  Moved statement supplemental bits from root expression to statement and starting
  to add support for race condition checking pragmas (still some work left to do

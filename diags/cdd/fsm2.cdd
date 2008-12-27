@@ -1,7 +1,7 @@
-5 13 101 37 main
-8 /ptmp/covered/diags/verilog 2 -t (fsm) 2 -i (main.fsm) 2 -vcd (fsm2a.vcd) 2 -o (fsm2a.cdd) 2 -y (lib) 2 -v (fsm2a.v) 2 -F (fsm=state,next_state) 2 -D (DUMP) 2 -v (fsm2b.v)
-12 /ptmp/covered/diags/verilog/fsm2a.cdd main
-12 /ptmp/covered/diags/verilog/fsm2b.cdd main
+5 14 101 37 main
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (fsm) 2 -i (main.fsm) 2 -vcd (fsm2a.vcd) 2 -o (fsm2a.cdd) 2 -y (lib) 2 -v (fsm2a.v) 2 -F (fsm=state,next_state) 2 -D (DUMP) 2 -v (fsm2b.v)
+12 /Users/trevorw/projects/covered/diags/verilog/fsm2a.cdd main
+12 /Users/trevorw/projects/covered/diags/verilog/fsm2b.cdd main
 3 0 $root "$root" 0 NA 0 0 1
 15 main 0
 3 0 fsm "main.fsm" 0 lib/fsm.v 1 37 1

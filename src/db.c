@@ -2010,11 +2010,6 @@ expression* db_create_expression(
     expr->suppl.part.excluded = 1;
   }
 
-  /* If this expression is in the for control, set its bit */
-  if( for_mode > 0 ) {
-    expr->suppl.part.for_cntrl = 1;
-  }
-
   /*
    If this is some kind of assignment expression operator, set the our expression vector to that of
    the right expression.
@@ -3323,6 +3318,9 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.367  2008/12/24 21:48:15  phase1geo
+ Fixing issue with naming of FSM register.
+
  Revision 1.366  2008/12/24 21:19:01  phase1geo
  Initial work at getting FSM coverage put in (this looks to be working correctly
  to this point).  Updated regressions per fixes.  Checkpointing.

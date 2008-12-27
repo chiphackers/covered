@@ -14,6 +14,7 @@ reg [31:0] a, b;
 initial begin
 	a = 0;
 	b = 2;
+	#5;
 	a[foo(b)] = 1'b1;
 end
 

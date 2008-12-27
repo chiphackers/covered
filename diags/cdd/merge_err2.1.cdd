@@ -1,4 +1,4 @@
-5 13 101 3 main_a
+5 14 101 3 main_a
 8 /Users/trevorw/projects/covered/diags/verilog 2 -t (adder1) 2 -i (main_a.a) 2 -v (merge_err2.1a.v) 2 -y (lib) 2 -D (DUMP) 2 -o (merge_err2.1.cdd) 2 -vcd (merge_err2.1a.vcd) 2 -v (merge_err2.1b.v) 2 -v (merge_err2.1c.v)
 12 /Users/trevorw/projects/covered/diags/verilog/merge_err2.1c.cdd main_a
 12 /Users/trevorw/projects/covered/diags/verilog/merge_err2.1b.cdd main_b

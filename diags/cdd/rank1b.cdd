@@ -1,4 +1,4 @@
-5 13 101 3 main
+5 14 101 3 main
 8 /Users/trevorw/projects/covered/diags/verilog 2 -t (adder1) 2 -i (main.adder) 2 -vcd (rank1b.vcd) 2 -o (rank1b.cdd) 2 -v (rank1b.v) 2 -y (lib) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 15 main 0

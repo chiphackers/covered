@@ -14,6 +14,7 @@ event     c;
 initial begin
 	d = 1;
         e = 32'hff;
+	#1;
 	a = ($random( d ) & e);
 	@(c);
 	b = ($random( d ) & e);

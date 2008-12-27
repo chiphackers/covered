@@ -90,8 +90,20 @@ void generator_flush_all1(
   unsigned int line
 );
 
+/*! \brief Searches for the statement with matching line and column information. */
+statement* generator_find_statement(
+  unsigned int first_line,
+  unsigned int first_column
+);
+
+/*! \brief Inserts line coverage for the given statement. */
+void generator_insert_line_cov_with_stmt(
+  statement* stmt,
+  bool       semicolon
+);
+
 /*! \brief Inserts line coverage information. */
-void generator_insert_line_cov(
+statement* generator_insert_line_cov(
   unsigned int first_line,
   unsigned int last_line,
   unsigned int first_column,
@@ -100,7 +112,7 @@ void generator_insert_line_cov(
 );
 
 /*! \brief Inserts combinational logic coverage information. */
-void generator_insert_comb_cov(
+statement* generator_insert_comb_cov(
   unsigned int first_line,
   unsigned int first_column,
   bool         net,
@@ -109,7 +121,14 @@ void generator_insert_comb_cov(
 );
 
 /*! \brief Inserts combinational logic coverage information from the current top of the statement stack. */
-void generator_insert_comb_cov_from_stmt_stack();
+statement* generator_insert_comb_cov_from_stmt_stack();
+
+/*! \brief Inserts combinational logic coverage for the given statement. */
+void generator_insert_comb_cov_with_stmt(
+  statement* stmt,
+  bool       use_right,
+  bool       reg_needed
+);
 
 /*! \brief Inserts code for handling combinational logic coverage for case blocks. */
 void generator_insert_case_comb_cov(
@@ -123,6 +142,11 @@ void generator_insert_fsm_cov();
 
 /*
  $Log$
+ Revision 1.18  2008/12/27 04:47:47  phase1geo
+ Updating regressions.  Added code to support while loops; however, the new code does
+ not support FOR loops as I was hoping so I might end up reverting these changes somewhat
+ in the end.  Checkpointing.
+
  Revision 1.17  2008/12/24 21:19:01  phase1geo
  Initial work at getting FSM coverage put in (this looks to be working correctly
  to this point).  Updated regressions per fixes.  Checkpointing.

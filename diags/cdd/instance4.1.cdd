@@ -1,4 +1,4 @@
-5 13 101 5 main
+5 14 101 5 main
 8 /Users/trevorw/projects/covered/diags/verilog 2 -t (foobar) 2 -i (main.foo) 2 -vcd (instance4.vcd) 2 -o (instance4.1.cdd) 2 -v (instance4.1.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 15 main 0

@@ -110,7 +110,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 score_env1      score_ts1       signed1         signed3         signed3.1 \
                 signed3.2       signed3.3       signed3.4       signed3.5       signed3.6 \
                 signed4         signed4.2       slist1          slist1.1        slist1.2 \
-                slist1.3        slist2          slist3          slist3.2        slist4 \
+                slist1.3        slist2          slist3          slist3.2 \
                 static1         string1         string2         string2.1       strobe1 \
                 supply0         supply1         task1           task1.1         task2 \
                 task2.1         task2.2         task2.3         task3           task3.1 \
@@ -123,6 +123,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 triand          trigger1        trior           unary2          unary3 \
                 version1        version1.1      wait1           wait1.1         wait2 \
                 wand            while1          while1.1        wor             write1
+# slist4
 DIAGS2        = delay1.1
 DIAGS3        = delay1.2
 DIAGS4        = delay1.3
@@ -283,7 +284,7 @@ CVERVCSDIAGS4 =
 
 # List of diagnostics that should not be run if we are using VCD dumpfiles
 ifdef VCD
-NOVCDDIAGS   := 
+NOVCDDIAGS   :=  
 endif
 
 # List of diagnostics that should not be run if we are using LXT dumpfiles (because they don't output any value changes after time 0)

@@ -12,8 +12,8 @@ integer i, a, b;
 initial begin
         b = 1;
         for( i=0; i<4; i=i+1 ) begin
-          a = $random( b );
           #5;
+          a = $random( b );
 	end
 end
 

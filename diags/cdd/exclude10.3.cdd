@@ -1,5 +1,5 @@
-5 13 101 4 *
-8 /ptmp/covered/diags/verilog 2 -t (main) 2 -vcd (exclude10.3.vcd) 2 -v (exclude10.3.v) 2 -o (exclude10.3.cdd)
+5 14 101 4 *
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (exclude10.3.vcd) 2 -v (exclude10.3.v) 2 -o (exclude10.3.cdd)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 exclude10.3.v 8 30 1
 2 1 13 f000f 2 1 100c 0 0 1 1 e
@@ -27,8 +27,8 @@
 4 10 f 10 10
 4 15 f 15 15
 4 16 1 0 0
-13 E 3 1229455565 This logic is not needed
-13 E 13 1229455565 This logic is also not needed
+13 E 3 1230406884 This logic is not needed
+13 E 13 1230406884 This logic is also not needed
 3 1 main.$u0 "main.$u0" 0 exclude10.3.v 17 28 1
 2 17 22 50008 1 0 21004 0 0 1 16 0 0
 2 18 22 10001 0 1 1410 0 0 1 1 d

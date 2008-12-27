@@ -811,7 +811,7 @@ void generator_flush_all1(
 
  Searches the current functional unit for a statement that matches the given positional information.
 */
-static statement* generator_find_statement(
+statement* generator_find_statement(
   unsigned int first_line,   /*!< First line of statement to find */
   unsigned int first_column  /*!< First column of statement to find */
 ) { PROFILE(GENERATOR_FIND_STATEMENT);
@@ -820,6 +820,8 @@ static statement* generator_find_statement(
 
   if( (curr_stmt == NULL) || (curr_stmt->exp->line < first_line) ||
       ((curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) < first_column)) ) {
+
+//    func_iter_display( &fiter );
 
     /* Attempt to find the expression with the given position */
     while( ((curr_stmt = func_iter_get_next_statement( &fiter )) != NULL) &&
@@ -830,7 +832,7 @@ static statement* generator_find_statement(
 
   }
 
-//  if( (curr_stmt != NULL) && (curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) == first_column) ) {
+//  if( (curr_stmt != NULL) && (curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) == first_column) && (curr_stmt->exp->op != EXP_OP_FORK) ) {
 //    printf( "  FOUND (%s %x)!\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff) );
 //  } else {
 //    printf( "  NOT FOUND!\n" );
@@ -882,20 +884,16 @@ static statement* generator_find_case_statement(
 }
 
 /*!
- Inserts line coverage information in string queues.
+ Inserts line coverage information for the given statement.
 */
-void generator_insert_line_cov(
-  unsigned int first_line,    /*!< First line to create line coverage for */
-  unsigned int last_line,     /*!< Last line to create line coverage for */
-  unsigned int first_column,  /*!< First column of statement */
-  unsigned int last_column,   /*!< Last column of statement */
-  bool         semicolon      /*!< Set to TRUE to create a semicolon after the line assignment; otherwise, adds a comma */
-) { PROFILE(GENERATOR_INSERT_LINE_COV);
+void generator_insert_line_cov_with_stmt(
+  statement* stmt,      /*!< Pointer to statement to generate line coverage for */
+  bool       semicolon  /*!< Specifies if a semicolon (TRUE) or a comma (FALSE) should be appended to the created line */
+) { PROFILE(GENERATOR_INSERT_LINE_COV_WITH_STMT);
 
-  statement* stmt;
+  if( generator_line && (stmt != NULL) ) {
 
-  if( generator_line && ((stmt = generator_find_statement( first_line, first_column )) != NULL) ) {
-
+    expression*  last_exp = expression_get_last_line_expr( stmt->exp );
     char         str[4096];
     char         sig[4096];
     unsigned int rv;
@@ -903,9 +901,9 @@ void generator_insert_line_cov(
     str_link*    tmp_tail = NULL;
 
     if( stmt->funit->type == FUNIT_MODULE ) {
-      rv = snprintf( sig, 4096, " \\covered$l%d_%d_%x ", first_line, last_line, (((first_column & 0xffff) << 16) | (last_column & 0xffff)) );
+      rv = snprintf( sig, 4096, " \\covered$l%d_%d_%x ", stmt->exp->line, last_exp->line, stmt->exp->col );
     } else {
-      rv = snprintf( sig, 4096, " \\covered$l%d_%d_%x$%s ", first_line, last_line, (((first_column & 0xffff) << 16) | (last_column & 0xffff)), stmt->funit->name );
+      rv = snprintf( sig, 4096, " \\covered$l%d_%d_%x$%s ", stmt->exp->line, last_exp->line, stmt->exp->col, stmt->funit->name );
     }
     assert( rv < 4096 );
 
@@ -928,6 +926,33 @@ void generator_insert_line_cov(
   }
 
   PROFILE_END;
+
+}
+
+/*!
+ \return Returns a pointer to the statement inserted (or NULL if no statement was inserted).
+
+ Inserts line coverage information in string queues.
+*/
+statement* generator_insert_line_cov(
+  unsigned int first_line,    /*!< First line to create line coverage for */
+  unsigned int last_line,     /*!< Last line to create line coverage for */
+  unsigned int first_column,  /*!< First column of statement */
+  unsigned int last_column,   /*!< Last column of statement */
+  bool         semicolon      /*!< Set to TRUE to create a semicolon after the line assignment; otherwise, adds a comma */
+) { PROFILE(GENERATOR_INSERT_LINE_COV);
+
+  statement* stmt = NULL;
+
+  if( generator_line && ((stmt = generator_find_statement( first_line, first_column )) != NULL) ) {
+
+    generator_insert_line_cov_with_stmt( stmt, semicolon );
+
+  }
+
+  PROFILE_END;
+
+  return( stmt );
 
 }
 
@@ -1792,9 +1817,11 @@ static void generator_insert_comb_cov_helper(
 }
 
 /*!
+ \return Returns a pointer to the statement inserted (or NULL if no statement was inserted).
+
  Insert combinational logic coverage code for the given expression (by file position).
 */
-void generator_insert_comb_cov(
+statement* generator_insert_comb_cov(
   unsigned int first_line,    /*!< First line of expression to generate for */
   unsigned int first_column,  /*!< First column of expression to generate for */
   bool         net,           /*!< If set to TRUE, generate code for a net; otherwise, generate code for a variable */
@@ -1802,14 +1829,14 @@ void generator_insert_comb_cov(
   bool         save_stmt      /*!< If set to TRUE, saves the found statement to the statement stack */
 ) { PROFILE(GENERATOR_INSERT_COMB_COV);
 
-  statement* stmt;
+  statement* stmt = NULL;
 
-  printf( "Calling generator_insert_comb_cov, first_line: %u, first_column: %u\n", first_line, first_column );
+//  printf( "Calling generator_insert_comb_cov, first_line: %u, first_column: %u\n", first_line, first_column );
 
   /* Insert combinational logic code coverage if it is specified on the command-line to do so and the statement exists */
   if( generator_comb && ((stmt = generator_find_statement( first_line, first_column )) != NULL) ) {
 
-    printf( "Found statement: %s\n", expression_string( use_right ? stmt->exp->right : stmt->exp ) );
+//    printf( "Found statement: %s\n", expression_string( use_right ? stmt->exp->right : stmt->exp ) );
 
     /* Generate combinational coverage */
     generator_insert_comb_cov_helper( (use_right ? stmt->exp->right : stmt->exp), stmt->funit, (use_right ? stmt->exp->right->op : stmt->exp->op), 0, net, TRUE, TRUE );
@@ -1833,12 +1860,18 @@ void generator_insert_comb_cov(
 
   PROFILE_END;
 
+  return( stmt );
+
 }
 
 /*!
+ \return Returns a pointer to the inserted statement (or NULL if no statement was inserted).
+
  Inserts combinational coverage information from statement stack (and pop stack).
 */
-void generator_insert_comb_cov_from_stmt_stack() { PROFILE(GENERATOR_INSERT_COMB_COV_FROM_STMT_STACK);
+statement* generator_insert_comb_cov_from_stmt_stack() { PROFILE(GENERATOR_INSERT_COMB_COV_FROM_STMT_STACK);
+
+  statement* stmt = NULL;
 
   if( generator_comb ) {
 
@@ -1847,15 +1880,40 @@ void generator_insert_comb_cov_from_stmt_stack() { PROFILE(GENERATOR_INSERT_COMB
 
     assert( stmt_stack != NULL );
 
-    sll = stmt_stack;
-    exp = stmt_stack->next_true ? stmt_stack->stmt->exp->right : stmt_stack->stmt->exp;
+    stmt = stmt_stack->stmt;
+    sll  = stmt_stack;
+    exp  = stmt_stack->next_true ? stmt->exp->right : stmt->exp;
 
     /* Generate combinational coverage information */
-    generator_insert_comb_cov_helper( exp, stmt_stack->stmt->funit, exp->op, 0, FALSE, TRUE, FALSE );
+    generator_insert_comb_cov_helper( exp, stmt->funit, exp->op, 0, FALSE, TRUE, FALSE );
 
     /* Now pop the statement stack */
     stmt_stack = sll->next;
     free_safe( sll, sizeof( stmt_loop_link ) );
+
+  }
+
+  PROFILE_END;
+
+  return( stmt );
+
+}
+
+/*!
+ Inserts combinational coverage information for the given statement.
+*/
+void generator_insert_comb_cov_with_stmt(
+  statement* stmt,       /*!< Pointer to statement to generate combinational logic coverage for */
+  bool       use_right,  /*!< Specifies if the right expression should be used in the statement */
+  bool       reg_needed  /*!< If TRUE, instantiate necessary registers */
+) { PROFILE(GENERATOR_INSERT_COMB_COV_WITH_STMT);
+
+  if( generator_comb && (stmt != NULL) ) {
+
+    expression* exp = use_right ? stmt->exp->right : stmt->exp;
+
+    /* Insert combinational coverage */
+    generator_insert_comb_cov_helper( exp, stmt->funit, exp->op, 0, FALSE, TRUE, reg_needed );
 
   }
 
@@ -1946,6 +2004,11 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
 
 /*
  $Log$
+ Revision 1.44  2008/12/27 04:47:47  phase1geo
+ Updating regressions.  Added code to support while loops; however, the new code does
+ not support FOR loops as I was hoping so I might end up reverting these changes somewhat
+ in the end.  Checkpointing.
+
  Revision 1.43  2008/12/24 21:48:15  phase1geo
  Fixing issue with naming of FSM register.
 
