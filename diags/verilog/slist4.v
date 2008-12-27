@@ -8,6 +8,7 @@ always @*
 always @*
   begin
    b = 1'b0;
+   #1;
    b = a;
   end
 

@@ -484,6 +484,7 @@ profiler profiles[NUM_PROFILES] = {
   {"generator_insert_subexp", NULL, 0, 0, 0, TRUE},
   {"generator_insert_comb_cov_helper", NULL, 0, 0, 0, TRUE},
   {"generator_insert_comb_cov", NULL, 0, 0, 0, TRUE},
+  {"generator_insert_comb_cov_from_stmt_stack", NULL, 0, 0, 0, TRUE},
   {"generator_insert_case_comb_cov", NULL, 0, 0, 0, TRUE},
   {"generator_insert_fsm_covs", NULL, 0, 0, 0, TRUE},
   {"score_add_args", NULL, 0, 0, 0, FALSE},

@@ -305,7 +305,7 @@ int yydebug = 1;
 %type <expr>      event_control event_expression_list event_expression
 %type <expr>      delay_value delay_value_simple
 %type <expr>      delay1 delay3 delay3_opt
-%type <expr>      generate_passign index_expr single_index_expr
+%type <expr>      generate_passign index_expr single_index_expr for_condition
 %type <state>     statement statement_list statement_or_null 
 %type <state>     if_statement_error
 %type <state>     passign for_initialization
@@ -3111,7 +3111,7 @@ module_item
       } else {
         generator_add_to_work_code( " begin", FALSE );
         generator_flush_work_code;
-        generator_insert_comb_cov( FALSE, FALSE, @2.first_line, @2.first_column );
+        generator_insert_comb_cov( @2.first_line, @2.first_column, FALSE, FALSE, FALSE );
         generator_insert_line_cov( @2.first_line, @2.last_line, @2.first_column, (@2.last_column - 1), TRUE );
       }
     }
@@ -3163,7 +3163,7 @@ module_item
       } else {
         generator_add_to_work_code( " begin", FALSE );
         generator_flush_work_code;
-        generator_insert_comb_cov( FALSE, FALSE, @2.first_line, @2.first_column );
+        generator_insert_comb_cov( @2.first_line, @2.first_column, FALSE, FALSE, FALSE );
         generator_insert_line_cov( @2.first_line, @2.last_line, @2.first_column, (@2.last_column - 1), TRUE );
       }
     }
@@ -3215,7 +3215,7 @@ module_item
       } else {
         generator_add_to_work_code( " begin", FALSE );
         generator_flush_work_code;
-        generator_insert_comb_cov( FALSE, FALSE, @2.first_line, @2.first_column );
+        generator_insert_comb_cov( @2.first_line, @2.first_column, FALSE, FALSE, FALSE );
         generator_insert_line_cov( @2.first_line, @2.last_line, @2.first_column, (@2.last_column - 1), TRUE );
       }
     }
@@ -3541,6 +3541,16 @@ for_initialization
     }
   ;
 
+for_condition
+  : expression
+    {
+      if( !parse_mode ) {
+        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, TRUE );
+      }
+      $$ = $1;
+    }
+  ;
+
   /* TBD - In the SystemVerilog BNF, there are more options available for this rule -- but we don't current support them */
 data_type
   : integer_vector_type signed_opt range_opt
@@ -3768,7 +3778,7 @@ passign
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( FALSE, TRUE, @1.first_line, @1.first_column );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, TRUE, FALSE );
         $$ = NULL;
       }
     }
@@ -3796,7 +3806,7 @@ passign
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
         $$ = NULL;
       }
     }
@@ -3824,7 +3834,7 @@ passign
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
         $$ = NULL;
       }
     }
@@ -3852,7 +3862,7 @@ passign
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
         $$ = NULL;
       }
     }
@@ -3880,7 +3890,7 @@ passign
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
         $$ = NULL;
       }
     }
@@ -3908,7 +3918,7 @@ passign
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
         $$ = NULL;
       }
     }
@@ -3936,7 +3946,7 @@ passign
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
         $$ = NULL;
       }
     }
@@ -3964,7 +3974,7 @@ passign
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
         $$ = NULL;
       }
     }
@@ -3994,7 +4004,7 @@ passign
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
         $$ = NULL;
       }
     }
@@ -4024,7 +4034,7 @@ passign
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
         $$ = NULL;
       }
     }
@@ -4054,7 +4064,7 @@ passign
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
         $$ = NULL;
       }
     }
@@ -4084,7 +4094,7 @@ passign
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
         $$ = NULL;
       }
     }
@@ -4114,7 +4124,7 @@ passign
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
         $$ = NULL;
       }
     }
@@ -4141,7 +4151,7 @@ passign
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
         $$ = NULL;
       }
     }
@@ -4168,7 +4178,7 @@ passign
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
         $$ = NULL;
       }
     }
@@ -4602,7 +4612,7 @@ statement
   | cond_specifier_opt K_if '(' expression ')'
     {
       if( !parse_mode ) {
-        generator_insert_comb_cov( FALSE, TRUE, @2.first_line, @2.first_column );
+        generator_insert_comb_cov( @2.first_line, @2.first_column, FALSE, TRUE, FALSE );
         generator_insert_line_cov( @2.first_line, @5.last_line, @2.first_column, (@5.last_column - 1), TRUE );
       }
     }
@@ -4636,8 +4646,9 @@ statement
       VLerror( "Illegal conditional if expression" );
       $$ = NULL;
     }
-  | K_for inc_for_depth '(' for_initialization ';' expression ';' passign ')'
+  | K_for inc_for_depth '(' for_initialization ';' for_condition ';' passign ')'
     {
+      for_mode--;
       if( !parse_mode ) {
         generator_add_to_work_code( " begin", FALSE );
         generator_flush_work_code;
@@ -4689,10 +4700,12 @@ statement
       } else {
         generator_add_to_work_code( " end ", FALSE );
         generator_flush_work_code;
+        generator_insert_comb_cov_from_stmt_stack();
+        generator_flush_work_code;
         $$ = NULL;
       }
     }
-  | K_for inc_for_depth '(' for_initialization ';' expression ';' error ')' statement dec_for_depth
+  | K_for inc_for_depth '(' for_initialization ';' for_condition ';' error ')' statement dec_for_depth
     {
       if( parse_mode ) {
         db_remove_statement( $4 );
@@ -4724,11 +4737,18 @@ statement
     {
       if( !parse_mode ) {
         generator_insert_line_cov( @1.first_line, @4.last_line, @1.first_column, (@4.last_column - 1), TRUE );
-        generator_insert_comb_cov( FALSE, TRUE, @1.first_line, @1.first_column );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, TRUE, TRUE );
         generator_flush_work_code;
       }
     }
-    inc_block_depth statement dec_block_depth
+    inc_block_depth statement
+    {
+      if( !parse_mode ) {
+        generator_insert_comb_cov_from_stmt_stack();
+        generator_flush_work_code;
+      }
+    }
+    dec_block_depth
     {
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($3 != NULL) && ($7 != NULL) ) {
@@ -4785,7 +4805,7 @@ statement
       } else {
         generator_prepend_to_work_code( " end " );
         generator_insert_line_cov( @5.first_line, @8.last_line, @5.first_column, (@8.last_column - 1), TRUE );
-        generator_insert_comb_cov( FALSE, TRUE, @5.first_line, @5.first_column );
+        generator_insert_comb_cov( @5.first_line, @5.first_column, FALSE, TRUE, FALSE );
         generator_flush_work_code;
         $$ = NULL;
       }
@@ -4830,7 +4850,7 @@ statement
           generator_prepend_to_work_code( " begin " );
         }
         generator_flush_work_code;
-        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
         generator_flush_work_code;
       }
     }
@@ -4865,7 +4885,7 @@ statement
         generator_add_to_work_code( " begin", FALSE );
         generator_insert_line_cov( @1.first_line, @2.last_line, @1.first_column, (@2.last_column - 1), TRUE );
         generator_flush_work_code;
-        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
         generator_flush_work_code;
       }
     }
@@ -4938,7 +4958,7 @@ statement
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( FALSE, TRUE, @1.first_line, @1.first_column );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, TRUE, FALSE );
         generator_insert_line_cov( @1.first_line, @3.last_line, @1.first_column, (@3.last_column - 1), TRUE );
         generator_flush_work_code;
         $$ = NULL;
@@ -4963,7 +4983,7 @@ statement
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( FALSE, TRUE, @1.first_line, @1.first_column );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, TRUE, FALSE );
         generator_insert_line_cov( @1.first_line, @4.last_line, @1.first_column, (@4.last_column - 1), TRUE );
         generator_flush_work_code;
         $$ = NULL;
@@ -4991,7 +5011,7 @@ statement
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( FALSE, TRUE, @1.first_line, @1.first_column );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, TRUE, FALSE );
         generator_insert_line_cov( @1.first_line, @4.last_line, @1.first_column, (@4.last_column - 1), TRUE );
         generator_flush_work_code;
         $$ = NULL;
@@ -5016,7 +5036,7 @@ statement
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( FALSE, TRUE, @1.first_line, @1.first_column );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, TRUE, FALSE );
         generator_insert_line_cov( @1.first_line, @4.last_line, @1.first_column, (@4.last_column - 1), TRUE );
         generator_flush_work_code;
         $$ = NULL;
@@ -5044,7 +5064,7 @@ statement
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( FALSE, TRUE, @1.first_line, @1.first_column );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, TRUE, FALSE );
         generator_insert_line_cov( @1.first_line, @4.last_line, @1.first_column, (@4.last_column - 1), TRUE );
         generator_flush_work_code;
         $$ = NULL;
@@ -5078,7 +5098,7 @@ statement
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( FALSE, TRUE, @1.first_line, @1.first_column );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, TRUE, FALSE );
         generator_insert_line_cov( @1.first_line, @8.last_line, @1.first_column, (@8.last_column - 1), TRUE );
         generator_flush_work_code;
         $$ = NULL;
@@ -5108,7 +5128,7 @@ statement
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( FALSE, TRUE, @1.first_line, @1.first_column );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, TRUE, FALSE );
         generator_insert_line_cov( @1.first_line, @8.last_line, @1.first_column, (@8.last_column - 1), TRUE );
         generator_flush_work_code;
         $$ = NULL;
@@ -5118,7 +5138,7 @@ statement
     {
       if( !parse_mode ) {
         generator_flush_work_code;
-        generator_insert_comb_cov( FALSE, FALSE, @1.first_line, @1.first_column );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
         generator_insert_line_cov( @1.first_line, @4.last_line, @1.first_column, (@4.last_column - 1), TRUE );
       }
     }
@@ -6407,7 +6427,7 @@ assign
           expression_dealloc( $3, FALSE );
         }
       } else {
-        generator_insert_comb_cov( TRUE, TRUE, @1.first_line, @1.first_column );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, TRUE, TRUE, FALSE );
       }
     }
   ;
@@ -6814,7 +6834,7 @@ net_decl_assign
           expression_dealloc( $3, FALSE );
         }
       } else {
-        generator_insert_comb_cov( TRUE, TRUE, @1.first_line, @1.first_column );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, TRUE, TRUE, FALSE );
       }
       free_safe( $1, (strlen( $1 ) + 1) );
     }
@@ -6850,7 +6870,7 @@ net_decl_assign
         }
         expression_dealloc( $1, FALSE );
       } else {
-        generator_insert_comb_cov( TRUE, TRUE, @1.first_line, @1.first_column );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, TRUE, TRUE, FALSE );
       }
       free_safe( $2, (sizeof( $2 ) + 1) );
     }
@@ -8004,6 +8024,7 @@ dec_block_depth_flush
 inc_for_depth
   :
     {
+      for_mode++;
       if( parse_mode ) {
         char* scope      = NULL;
         func_unit* funit = db_get_curr_funit();
@@ -8018,7 +8039,6 @@ inc_for_depth
           free_safe( scope, (strlen( scope ) + 1) );
         }
         block_depth++;
-        for_mode++;
         $$ = db_get_curr_funit();
       } else {
         $$ = NULL;
@@ -8029,10 +8049,7 @@ inc_for_depth
 dec_for_depth
   :
     {
-      if( parse_mode ) {
-        block_depth--;
-        for_mode--;
-      }
+      block_depth--;
     }
   ;
 
