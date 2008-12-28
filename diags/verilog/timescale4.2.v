@@ -11,13 +11,14 @@ module main;
 
 reg a, b;
 
+inner foo( b );
+
 initial begin
 	a = 1'b0;
 	b = 1'b0;
 	#(2.123_456_789_987_654);
 	b = 1'b1;
-	$display( $time );
-	a = ($time == 212);
+	a = ($time == 2);
 end
 
 initial begin
@@ -27,6 +28,22 @@ initial begin
 `endif
         #(10);
         $finish;
+end
+
+endmodule
+
+`timescale 1 s / 1 s
+
+module inner(
+  input b
+);
+
+reg a;
+
+initial begin
+	a = 1'b0;
+	@(posedge b);
+	a = ($time == 212);
 end
 
 endmodule
