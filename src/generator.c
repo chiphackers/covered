@@ -950,7 +950,7 @@ statement* generator_insert_line_cov(
 /*!
  Handles the insertion of event-type combinational logic code.
 */
-static void generator_insert_event_comb_cov(
+void generator_insert_event_comb_cov(
   expression* exp,        /*!< Pointer to expression to output */
   func_unit*  funit,      /*!< Pointer to functional unit containing the expression */
   bool        reg_needed  /*!< If set to TRUE, instantiates needed registers */
@@ -1995,6 +1995,10 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
 
 /*
  $Log$
+ Revision 1.46  2008/12/28 04:14:54  phase1geo
+ Fixing support for case statement combinational coverage.  Updating regressions.
+ We are now down to 41 failures in regression.  Checkpointing.
+
  Revision 1.45  2008/12/27 21:05:55  phase1geo
  Updating CDD version and regressions per this change.  Checkpointing.
 

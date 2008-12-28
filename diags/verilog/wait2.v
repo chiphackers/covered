@@ -12,8 +12,9 @@ module main;
 reg a, b;
 
 initial begin
-	a = 1'b0;
 	b = 1'b0;
+	a = 1'b0;
+	#5;
 	wait( b == 1'b0 ) b = 1'b1;
 	a = 1'b1;
 end

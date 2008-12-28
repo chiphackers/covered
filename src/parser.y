@@ -5223,12 +5223,18 @@ statement
   | K_wait '(' expression ')'
     {
       if( !parse_mode ) {
-        generator_flush_work_code;
-        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
+        statement* stmt = generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, TRUE, FALSE );
         generator_insert_line_cov( @1.first_line, @4.last_line, @1.first_column, (@4.last_column - 1), TRUE );
+        generator_flush_work_code;
+        generator_add_to_work_code( " begin", FALSE );
+        generator_flush_work_code;
+        generator_insert_event_comb_cov( stmt->exp, stmt->funit, TRUE );
+        generator_insert_comb_cov_with_stmt( stmt, TRUE, FALSE );
+        generator_flush_work_code;
       }
+      block_depth++;
     }
-    inc_block_depth statement_or_null dec_block_depth
+    statement_or_null dec_block_depth
     {
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($3 != NULL) ) {
@@ -5239,15 +5245,15 @@ statement
             error_count++;
           }
           $$ = db_create_statement( exp );
-          if( $7 != NULL ) {
-            if( !db_statement_connect( $$, $7 ) ) {
+          if( $6 != NULL ) {
+            if( !db_statement_connect( $$, $6 ) ) {
               db_remove_statement( $$ );
-              db_remove_statement( $7 );
+              db_remove_statement( $6 );
               $$ = NULL;
             }
           }
         } else {
-          db_remove_statement( $7 );
+          db_remove_statement( $6 );
           $$ = NULL;
         }
       } else {

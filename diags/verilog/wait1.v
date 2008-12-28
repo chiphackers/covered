@@ -3,6 +3,7 @@ module main;
 reg a, b;
 
 initial begin
+	#5;
         b = 1'b0;
 	wait( a == 1'b1 );
         b = 1'b1;
