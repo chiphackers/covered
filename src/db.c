@@ -832,7 +832,7 @@ char* db_create_unnamed_scope() { PROFILE(DB_CREATE_UNNAMED_SCOPE);
   static int   unique_id = 0;
   char         tmpname[30];
   char*        name;
-  unsigned int rv        = snprintf( tmpname, 30, "$u%d", unique_id );
+  unsigned int rv        = snprintf( tmpname, 30, "u$%d", unique_id );
 
   assert( rv < 30 );
   
@@ -852,7 +852,7 @@ bool db_is_unnamed_scope(
   char* scope  /*!< Name to check */
 ) { PROFILE(DB_IS_UNNAMED_SCOPE);
 
-  bool is_unnamed = (scope != NULL) && (scope[0] == '$') && (scope[1] == 'u');
+  bool is_unnamed = (scope != NULL) && (scope[0] == 'u') && (scope[1] == '$');
 
   PROFILE_END;
 
@@ -3318,6 +3318,9 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.368  2008/12/27 21:05:55  phase1geo
+ Updating CDD version and regressions per this change.  Checkpointing.
+
  Revision 1.367  2008/12/24 21:48:15  phase1geo
  Fixing issue with naming of FSM register.
 

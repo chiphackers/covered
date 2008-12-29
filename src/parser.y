@@ -179,6 +179,11 @@ gitem_link* save_gi_head = NULL;
 */
 gitem_link* save_gi_tail = NULL;
 
+/*!
+ Generate block index.
+*/
+int generate_block_index = 0;
+
 #define YYERROR_VERBOSE 1
 
 /* Uncomment these lines to turn debugging on */
@@ -2489,10 +2494,44 @@ generate_item
         $$ = NULL;
       }
     }
-  | K_begin generate_item_list_opt K_end
+  | K_begin
+    {
+      char* name = db_create_unnamed_scope();
+      if( parse_mode ) {
+        if( ignore_mode == 0 ) {
+          Try {
+            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, name, @1.text, @1.first_line ) ) {
+              ignore_mode++;
+            } else {
+              gen_item* gi = db_get_curr_gen_block();
+              assert( gi != NULL );
+              gitem_link_add( gi, &save_gi_head, &save_gi_tail );
+            }
+          } Catch_anonymous {
+            error_count++;
+            ignore_mode++;
+          }
+        }
+      } else {
+        char str[50];
+        unsigned int rv = snprintf( str, 50, ": %s", name );
+        assert( rv < 50 );
+        generator_prepend_to_work_code( str );
+        printf( "---------------------------------------------------------------------\n" );
+      }
+      free_safe( name, (strlen( name ) + 1) );
+    }
+    generate_item_list_opt K_end
     {
       if( parse_mode ) {
-        $$ = $2;
+        if( ignore_mode == 0 ) {
+          db_end_function_task_namedblock( @4.first_line );
+        } else {
+          ignore_mode--;
+        }
+        db_gen_item_connect_true( save_gi_tail->gi, $3 );
+        $$ = save_gi_tail->gi;
+        gitem_link_remove( save_gi_tail->gi, &save_gi_head, &save_gi_tail );
       } else {
         $$ = NULL;
       }
@@ -2623,6 +2662,7 @@ generate_item
     }
   | K_if inc_gen_expr_mode '(' static_expr ')' dec_gen_expr_mode inc_block_depth generate_item dec_block_depth %prec less_than_K_else
     {
+      printf( "=============================================================\n" );
       if( parse_mode ) {
         expression* expr;
         gen_item*   gi1;

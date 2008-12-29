@@ -146,6 +146,16 @@ bool generator_line = TRUE;
 bool generator_comb = TRUE;
 
 /*!
+ Specifies that we should perform FSM coverage code insertion.
+*/
+bool generator_fsm = TRUE;
+
+/*!
+ Specifies that we should perform memory coverage code insertion.
+*/
+bool generator_mem = TRUE;
+
+/*!
  Iterator for current functional unit.
 */
 static func_iter fiter;
@@ -1955,38 +1965,97 @@ void generator_insert_case_comb_cov(
 */
 void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
 
-  fsm_link*    fsml = curr_funit->fsm_head;
-  unsigned int id   = 1;
+  if( generator_fsm ) {
 
-  while( fsml != NULL ) {
+    fsm_link*    fsml = curr_funit->fsm_head;
+    unsigned int id   = 1;
 
-    if( fsml->table->from_state->id == fsml->table->to_state->id ) {
+    while( fsml != NULL ) {
 
-      char* msb = generator_gen_msb( fsml->table->from_state, curr_funit );
-      char* exp = codegen_gen_expr_one_line( fsml->table->from_state, curr_funit );
-      fprintf( curr_ofile, "wire [(%s-1):0] \\covered$F%d = %s;\n", ((msb != NULL) ? msb : "1"), id, exp );
-      free_safe( msb, (strlen( msb ) + 1) );
-      free_safe( exp, (strlen( exp ) + 1) );
+      if( fsml->table->from_state->id == fsml->table->to_state->id ) {
+
+        char* msb = generator_gen_msb( fsml->table->from_state, curr_funit );
+        char* exp = codegen_gen_expr_one_line( fsml->table->from_state, curr_funit );
+        fprintf( curr_ofile, "wire [(%s-1):0] \\covered$F%d = %s;\n", ((msb != NULL) ? msb : "1"), id, exp );
+        free_safe( msb, (strlen( msb ) + 1) );
+        free_safe( exp, (strlen( exp ) + 1) );
+
+      } else {
+
+        char* fmsb = generator_gen_msb( fsml->table->from_state, curr_funit );
+        char* fexp = codegen_gen_expr_one_line( fsml->table->from_state, curr_funit );
+        char* tmsb = generator_gen_msb( fsml->table->to_state, curr_funit );
+        char* texp = codegen_gen_expr_one_line( fsml->table->to_state, curr_funit );
+        fprintf( curr_ofile, "wire [((%s+%s)-1):0] \\covered$F%d = {%s,%s};\n",
+                 ((fmsb != NULL) ? fmsb : "1"), ((tmsb != NULL) ? tmsb : "1"), id, fexp, texp );
+        free_safe( fmsb, (strlen( fmsb ) + 1) );
+        free_safe( fexp, (strlen( fexp ) + 1) );
+        free_safe( tmsb, (strlen( tmsb ) + 1) );
+        free_safe( texp, (strlen( texp ) + 1) );
+
+      }
+
+      fsml = fsml->next;
+      id++;
+
+    }
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Inserts memory coverage for the given expression.
+*/
+void generator_insert_mem_cov(
+  expression* exp,   /*!< Pointer to expression accessing memory signal */
+  bool        net,   /*!< If TRUE, creates the signal name for a net; otherwise, creates the signal name for a register */
+  bool        write  /*!< If TRUE, creates write logic; otherwise, creates read logic */
+) { PROFILE(GENERATOR_INSERT_MEM_COV);
+
+#ifdef NOT_FINISHED
+  if( generator_mem ) {
+
+    char         name[4096];
+    char         str[4096];
+    unsigned int rv;
+    str_link*    tmp_head = NULL;
+    str_link*    tmp_tail = NULL;
+
+    if( write ) {
+
+      /* Create name */
+      rv = snprintf( name, 4096, " \\covered$%c%d_%d$%s ", (net ? "w" : "W"), ((exp->line, exp->col >> 16) & 0xffff), exp->name );
+      assert( rv < 4096 );
+
+      /* Create the register */
+      rv = snprintf( str, 4096, "reg %s;", sig );
+      assert( rv < 4096 );
+      str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
 
     } else {
 
-      char* fmsb = generator_gen_msb( fsml->table->from_state, curr_funit );
-      char* fexp = codegen_gen_expr_one_line( fsml->table->from_state, curr_funit );
-      char* tmsb = generator_gen_msb( fsml->table->to_state, curr_funit );
-      char* texp = codegen_gen_expr_one_line( fsml->table->to_state, curr_funit );
-      fprintf( curr_ofile, "wire [((%s+%s)-1):0] \\covered$F%d = {%s,%s};\n",
-               ((fmsb != NULL) ? fmsb : "1"), ((tmsb != NULL) ? tmsb : "1"), id, fexp, texp );
-      free_safe( fmsb, (strlen( fmsb ) + 1) );
-      free_safe( fexp, (strlen( fexp ) + 1) );
-      free_safe( tmsb, (strlen( tmsb ) + 1) );
-      free_safe( texp, (strlen( texp ) + 1) );
+      /* Create name */
+      rv = snprintf( name, 4096, " \\covered$%c%d_%d$%s ", (net ? "r" : "R"), ((exp->line, exp->col >> 16) & 0xffff), exp->name );
+      assert( rv < 4096 );
 
-    }  
+    }
 
-    fsml = fsml->next;
-    id++;
+    /* Prepend the line coverage assignment to the working buffer */
+    rv = snprintf( str, 4096, " %s = 1'b1;", name );
+    assert( rv < 4096 );
+    str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
+    if( work_head == NULL ) {
+      work_head = work_tail = tmp_head;
+    } else {
+      tmp_tail->next = work_head;
+      work_head      = tmp_head;
+    }
 
   }
+#endif
 
   PROFILE_END;
 
@@ -1995,6 +2064,10 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
 
 /*
  $Log$
+ Revision 1.47  2008/12/28 19:39:17  phase1geo
+ Fixing the handling of wait statements.  Updated regressions as necessary.
+ Checkpointing.
+
  Revision 1.46  2008/12/28 04:14:54  phase1geo
  Fixing support for case statement combinational coverage.  Updating regressions.
  We are now down to 41 failures in regression.  Checkpointing.

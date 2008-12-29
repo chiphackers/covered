@@ -2,11 +2,11 @@
 8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (task3.vcd) 2 -o (task3.cdd) 2 -v (task3.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 task3.v 1 33 1
-2 1 3 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0
-2 2 8 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u1
+2 1 3 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 u$0
+2 2 8 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 u$1
 4 1 1 0 0
 4 2 1 0 0
-3 1 main.$u0 "main.$u0" 0 task3.v 3 6 1
+3 1 main.u$0 "main.u$0" 0 task3.v 3 6 1
 2 3 4 20002 1 0 1008 0 0 32 48 5 0
 2 4 4 10002 2 2c 900a 3 0 32 18 0 ffffffff 0 0 0 0
 2 5 5 c000f 1 0 21004 0 0 1 16 0 0
@@ -14,7 +14,7 @@
 2 7 5 10011 1 3b 5002 0 6 1 18 0 1 0 0 0 0 call_task
 4 7 0 0 0
 4 4 11 7 0
-3 1 main.$u1 "main.$u1" 0 task3.v 8 11 1
+3 1 main.u$1 "main.u$1" 0 task3.v 8 11 1
 2 8 9 20003 1 0 1008 0 0 32 48 a 0
 2 9 9 10003 2 2c 900a 8 0 32 18 0 ffffffff 0 0 0 0
 2 10 10 c000f 1 0 21008 0 0 1 16 1 0
@@ -22,12 +22,12 @@
 2 12 10 10011 1 3b 5002 0 11 1 18 0 1 0 0 0 0 call_task
 4 12 0 0 0
 4 9 11 12 0
-3 1 main.$u2 "main.$u2" 0 task3.v 13 20 1
+3 1 main.u$2 "main.u$2" 0 task3.v 13 20 1
 3 3 main.call_task "main.call_task" 0 task3.v 22 31 1
-2 13 26 4 2 3d 5002 0 0 1 18 0 1 0 0 0 0 $u3
+2 13 26 4 2 3d 5002 0 0 1 18 0 1 0 0 0 0 u$3
 1 a 1 24 1000006 1 0 0 0 1 17 1 1 0 1 0 0
 4 13 11 0 0
-3 1 main.call_task.$u3 "main.call_task.$u3" 0 task3.v 26 29 1
+3 1 main.call_task.u$3 "main.call_task.u$3" 0 task3.v 26 29 1
 2 14 27 20004 1 0 1008 0 0 32 48 64 0
 2 15 27 10004 4 2c 900a 14 0 32 18 0 ffffffff 0 0 0 0
 2 16 0 0 2 4e 1002 0 0 1 18 0 1 0 0 0 0
