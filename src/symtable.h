@@ -35,6 +35,14 @@ void symtable_add_signal( const char* sym, vsignal* sig, int msb, int lsb );
 /*! \brief Adds the given expression to the symtable for the purposes as specified by type. */
 void symtable_add_expression( const char* sym, expression* exp, char type );
 
+/*! \brief Adds the given expression to the symtable for the purposes of memory coverage. */
+void symtable_add_memory(
+  const char* sym,
+  expression* exp,
+  char        action,
+  int         msb
+);
+
 /*! \brief Adds the given FSM to the symtable */
 void symtable_add_fsm(
   const char* sym,
@@ -55,6 +63,10 @@ void symtable_dealloc( symtable* symtab );
 
 /*
  $Log$
+ Revision 1.23  2008/12/24 21:19:02  phase1geo
+ Initial work at getting FSM coverage put in (this looks to be working correctly
+ to this point).  Updated regressions per fixes.  Checkpointing.
+
  Revision 1.22  2008/12/05 23:05:38  phase1geo
  Working on VCD reading side of the inlined coverage handler.  Things don't
  compile at this point and are in limbo.  Checkpointing.

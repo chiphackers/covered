@@ -14,7 +14,7 @@ integer   i;
 initial begin
 	a = 1'b0;
 	for( i=0; i<4; i=i+1 )
-          mem[i] = i;
+          #1 mem[i] = i;
 	$display( "mem[1][0]: %d, mem[2][0]: %d", mem[1][0], mem[2][0] );
 	a = mem[1][0] | mem[2][0];
 end

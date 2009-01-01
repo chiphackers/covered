@@ -1902,6 +1902,22 @@ bool vector_set_value_ulong(
 }
 
 /*!
+ Sets the memory read bit of the given vector.
+*/
+void vector_set_mem_rd_ulong(
+  vector* vec,  /*!< Pointer to vector that will set the memory read */
+  int     lsb   /*!< LSB offset */
+) { PROFILE(VECTOR_SET_MEM_RD);
+
+  if( vec->suppl.part.type == VTYPE_MEM ) {
+    vec->value.ul[UL_DIV(lsb)][VTYPE_INDEX_MEM_RD] |= ((ulong)1 << UL_MOD(lsb));
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  \return Returns TRUE if stored data differed from original data; otherwise, returns FALSE.
 
  Used for single- and multi-bit part selection.  Bits are pulled from the source vector via the
@@ -1927,8 +1943,8 @@ bool vector_part_select_pull(
         vector_rshift_ulong( src, vall, valh, lsb, msb );
 
         /* If the src vector is of type MEM, set the MEM_RD bit in the source's supplemental field */
-        if( set_mem_rd && (src->suppl.part.type == VTYPE_MEM) ) {
-          src->value.ul[UL_DIV(lsb)][VTYPE_INDEX_MEM_RD] |= ((ulong)1 << UL_MOD(lsb));
+        if( set_mem_rd ) {
+          vector_set_mem_rd_ulong( src, lsb );
         }
 
         retval = vector_set_coverage_and_assign_ulong( tgt, vall, valh, 0, (tgt->width - 1) );
@@ -5204,6 +5220,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.185  2008/12/24 21:19:02  phase1geo
+ Initial work at getting FSM coverage put in (this looks to be working correctly
+ to this point).  Updated regressions per fixes.  Checkpointing.
+
  Revision 1.184  2008/11/19 06:19:17  phase1geo
  Updates for next development release.  Updating configuration files for new
  locations of Icarus Verilog development releases.  Also fixing syntax error

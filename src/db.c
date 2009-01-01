@@ -3083,9 +3083,55 @@ void db_assign_symbol(
           /* Add the FSM table to the symtable */
           symtable_add_fsm( symbol, fsml->table, msb, lsb );
 
-        } else if( (type == 'w') || (type == 'W') ) {
+        } else if( (type == 'w') || (type == 'W') || (type == 'r') || (type == 'R') ) {
 
-          printf( "Handling memory TBD\n" );
+          int          fline;
+          int          lline;
+          int          col;
+          unsigned int rv;
+          char         scope[4096];
+          char         mname[4096];
+          funit_link*  curr_tf;
+          exp_link*    expl;
+          expression*  last_exp;
+
+          if( sscanf( (name + (index + 1)), "%d_%d_%x$%[^$]$%s", &fline, &lline, &col, mname, scope ) == 5 ) {
+
+            /* Search for the matching functional unit */
+            curr_tf = mod->tf_head;
+            while( (curr_tf != NULL) && (strcmp( curr_tf->funit->name, scope ) != 0) ) {
+              curr_tf = curr_tf->next;
+            }
+            assert( curr_tf != NULL );
+
+            /* Search the matching expression */
+            expl = curr_tf->funit->exp_head;
+            while( (expl != NULL) &&
+                   ((expl->exp->line != fline) || (expl->exp->col != col) ||
+                    (((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) && (last_exp->line != lline))) ) {
+              expl = expl->next;
+            }
+
+          } else {
+
+            unsigned int rv = sscanf( (name + (index + 1)), "%d_%d_%x$%s", &fline, &lline, &col, mname );
+            assert( rv == 4 );
+
+            /* Search the matching expression */
+            expl = mod->exp_head;
+            while( (expl != NULL) && 
+                   ((expl->exp->line != fline) || (expl->exp->col != col) ||
+                    (((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) && (last_exp->line != lline))) ) {
+              expl = expl->next;
+            }
+
+          }
+
+          assert( expl != NULL );
+          exp = expl->exp;
+
+          /* Add the expression to the symtable */
+          symtable_add_memory( symbol, exp, type, msb );
 
         } else {
 
@@ -3322,6 +3368,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.370  2009/01/01 00:19:40  phase1geo
+ Adding memory coverage insertion code.  Still need to add memory coverage handling
+ code during runtime.  Checkpointing.
+
  Revision 1.369  2008/12/29 05:40:09  phase1geo
  Regression updates.  Starting to add memory coverage (not even close to being
  finished at this point).  Checkpointing.

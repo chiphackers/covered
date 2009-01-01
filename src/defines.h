@@ -1796,6 +1796,7 @@ struct funit_link_s;
 struct inst_link_s;
 struct sym_sig_s;
 struct sym_exp_s;
+struct sym_mem_s;
 struct symtable_s;
 struct static_expr_s;
 struct vector_width_s;
@@ -1993,6 +1994,11 @@ typedef struct sym_sig_s sym_sig;
  Renaming symbol expression structure for convenience.
 */
 typedef struct sym_exp_s sym_exp;
+
+/*!
+ Renaming symbol memory structure for convenience.
+*/
+typedef struct sym_mem_s sym_mem;
 
 /*!
  Renaming symbol table structure for convenience.
@@ -3081,6 +3087,9 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.346  2008/12/27 21:05:55  phase1geo
+ Updating CDD version and regressions per this change.  Checkpointing.
+
  Revision 1.345  2008/12/24 21:19:01  phase1geo
  Initial work at getting FSM coverage put in (this looks to be working correctly
  to this point).  Updated regressions per fixes.  Checkpointing.

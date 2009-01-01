@@ -5596,6 +5596,24 @@ void expression_vcd_assign(
 
     }
 
+  } else if( (action == 'r') || (action == 'R') ) {
+
+    uint64 intval;
+
+    convert_str_to_uint64( value, (expr->elem.dim->dim_width - 1), 0, &intval );
+    vector_set_mem_rd_ulong( expr->sig->value, (intval * expr->elem.dim->dim_width) );
+
+  } else if( (action == 'w') || (action == 'W') ) {
+
+    uint64 intval;
+ 
+    convert_str_to_uint64( value, (expr->elem.dim->dim_width - 1), 0, &intval );
+
+    printf( "A intval: %llu\n", intval );
+    intval *= expr->elem.dim->dim_width;
+    printf( "B intval: %llu\n", intval );
+    vector_vcd_assign( expr->sig->value, (value + expr->elem.dim->dim_width), ((expr->elem.dim->dim_width - 1) + intval), intval );
+
   }
 
   PROFILE_END;
@@ -6211,6 +6229,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.399  2008/12/28 06:47:59  phase1geo
+ Updating regressions per bug fix.
+
  Revision 1.398  2008/12/19 00:05:12  phase1geo
  IV regression updates.  Checkpointing.
 

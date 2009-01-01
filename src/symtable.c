@@ -370,6 +370,37 @@ void symtable_add_expression(
 }
 
 /*!
+ Using the symbol as a unique ID, creates a new symtable element for specified information and
+ places it into the binary tree.
+*/
+void symtable_add_memory(
+  const char* sym,     /*!< VCD symbol for the specified signal */
+  expression* exp,     /*!< Pointer to signal corresponding to the specified symbol */
+  char        action,  /*!< Specifies the type of action to perform on the given expression */
+  int         msb      /*!< MSB of signal from dumpfile */
+) { PROFILE(SYMTABLE_ADD_MEMORY);
+
+  symtable* curr;  /* Pointer to current symtable entry */
+
+  /* Get a table entry */
+  curr = symtable_get_table( sym );
+
+  if( curr->entry.exp == NULL ) {
+    symtable_init( curr, msb, 0 );
+  }
+
+  symtable_add_sym_exp( curr, exp, action );
+
+  /*
+   Finally increment the number of entries in the root table structure.
+  */
+  vcd_symtab_size++;
+
+  PROFILE_END;
+
+}
+
+/*!
  Using the symobl as a unique ID, creates a new symtable element for specified information
  and places it into the lookup tree.
 */
@@ -531,6 +562,10 @@ void symtable_dealloc(
 
 /*
  $Log$
+ Revision 1.43  2008/12/24 21:19:02  phase1geo
+ Initial work at getting FSM coverage put in (this looks to be working correctly
+ to this point).  Updated regressions per fixes.  Checkpointing.
+
  Revision 1.42  2008/12/10 00:19:23  phase1geo
  Fixing issues with aedge1 diagnostic (still need to handle events but this will
  be worked on a later time).  Working on sizing temporary subexpression LHS signals.

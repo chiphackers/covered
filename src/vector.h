@@ -202,6 +202,12 @@ bool vector_set_value_ulong(
   unsigned int width
 );
 
+/*! \brief Sets the memory read bit of the given vector. */
+void vector_set_mem_rd_ulong(
+  vector* vec,
+  int     lsb
+);
+
 /*! \brief Sets specified target vector to bit range of source vector. */
 bool vector_part_select_pull(
   vector* tgt,
@@ -626,6 +632,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.72  2008/12/24 21:19:02  phase1geo
+ Initial work at getting FSM coverage put in (this looks to be working correctly
+ to this point).  Updated regressions per fixes.  Checkpointing.
+
  Revision 1.71  2008/10/27 21:14:02  phase1geo
  First pass at getting the $value$plusargs system function call to work.  More
  work to do here.  Checkpointing.

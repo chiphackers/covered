@@ -1713,11 +1713,48 @@ void read_command_file(
         
   }
 
+  PROFILE_END;
+
+}
+
+/*!
+ \return Returns TRUE if the given string is a legal, non-X/Z value.
+
+ Converts a VCD string value to a legal unsigned 64-bit integer value.
+*/
+bool convert_str_to_uint64(
+  const char* str,   /*!< String version of value */
+  int         msb,   /*!< MSB offset */
+  int         lsb,   /*!< LSB offset */
+  uint64*     value  /*!< 64-bit unsigned integer value */
+) { PROFILE(CONVERT_STR_TO_UINT64);
+
+  bool        legal   = TRUE;
+  const char* str_lsb = (str + (strlen( str ) - 1));
+  const char* ptr     = str_lsb - lsb;
+  int         i       = 0;
+
+  *value = 0;
+
+  while( (ptr >= (char*)(str_lsb - msb)) && legal && (i < 64) ) {
+    *value |= (*ptr == '1') ? ((uint64)1 << UL_MOD(i)) : 0;
+    legal   = (*ptr == 'x') || (*ptr == 'z');
+    ptr--;
+    i++;
+  } 
+
+  PROFILE_END;
+
+  return( legal );
+
 }
 
 
 /*
  $Log$
+ Revision 1.109  2008/10/24 17:27:46  phase1geo
+ Fixing issues with removing underscores from real numbers.
+
  Revision 1.108  2008/10/24 15:26:50  phase1geo
  Working on the ability to read real numbers with underscores in them.  Still have some
  work to do here.  Checkpointing.
