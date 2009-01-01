@@ -3008,7 +3008,7 @@ void db_assign_symbol(
       char         type  = name[index];
 
       /* If the type is an x (temporary register) or a y (temporary wire), don't continue on */
-      if( (type != 'x') && (type != 'X') ) {
+      if( (type != 'x') && (type != 'X') && (type != 'i') && (type != 'I') ) {
 
         func_unit*  mod = funit_get_curr_module( curr_instance->funit );
         expression* exp;
@@ -3082,6 +3082,10 @@ void db_assign_symbol(
 
           /* Add the FSM table to the symtable */
           symtable_add_fsm( symbol, fsml->table, msb, lsb );
+
+        } else if( (type == 'w') || (type == 'W') ) {
+
+          printf( "Handling memory TBD\n" );
 
         } else {
 
@@ -3318,6 +3322,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.369  2008/12/29 05:40:09  phase1geo
+ Regression updates.  Starting to add memory coverage (not even close to being
+ finished at this point).  Checkpointing.
+
  Revision 1.368  2008/12/27 21:05:55  phase1geo
  Updating CDD version and regressions per this change.  Checkpointing.
 

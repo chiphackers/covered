@@ -1818,6 +1818,195 @@ static void generator_insert_comb_cov_helper(
 }
 
 /*!
+ Inserts memory coverage for the given expression.
+*/
+static void generator_insert_mem_cov(
+  expression* exp,    /*!< Pointer to expression accessing memory signal */
+  func_unit*  funit,  /*!< Pointer to functional unit containing the given expression */
+  bool        net,    /*!< If TRUE, creates the signal name for a net; otherwise, creates the signal name for a register */
+  bool        write   /*!< If TRUE, creates write logic; otherwise, creates read logic */
+) { PROFILE(GENERATOR_INSERT_MEM_COV);
+
+  char         name[4096];
+  char         range[4096];
+  unsigned int rv;
+  char*        idxstr   = codegen_gen_expr_one_line( exp->left, funit );
+  char*        value;
+  char*        str;
+
+  /* Now insert the code to store the index and memory */
+  if( write ) {
+
+    char*        msb;
+    char*        memstr;
+    unsigned int vlen;
+    char         num[50];
+    char         iname[4096];
+    str_link*    tmp_head = NULL;
+    str_link*    tmp_tail = NULL;
+
+    /* First, create the wire/register to hold the index */
+    rv = snprintf( iname, 4096, " \\covered$%c%d_%d$%s ", (net ? 'i' : 'I'), exp->line, ((exp->col >> 16) & 0xffff), exp->name );
+    assert( rv < 4096 );
+
+    /* Figure out the size of the dimensional width */
+    rv = snprintf( num, 50, "%d", (exp->elem.dim->dim_width - 1) );
+    assert( rv < 50 );
+
+    if( net ) {
+
+      unsigned int slen = 6 + strlen( num ) + 4 + strlen( name ) + 3 + strlen( idxstr ) + 2;
+
+      str = (char*)malloc_safe( slen );
+      rv  = snprintf( str, slen, "wire [%s:0] %s = %s;", num, iname, idxstr );
+      assert( rv < slen );
+
+    } else {
+
+      unsigned int slen = 5 + strlen( num ) + 4 + strlen( iname ) + 2;
+
+      str = (char*)malloc_safe( slen );
+      rv  = snprintf( str, slen, "reg [%s:0] %s;", num, iname );
+      assert( rv < slen );
+      str_link_add( str, &reg_head, &reg_tail );
+
+      slen = 1 + strlen( iname ) + 3 + strlen( idxstr ) + 2;
+      str  = (char*)malloc_safe( slen );
+      rv   = snprintf( str, slen, " %s = %s;", iname, idxstr );
+      assert( rv < slen );
+
+    }
+
+    /* Prepend the index */
+    str_link_add( str, &tmp_head, &tmp_tail );
+    if( work_head == NULL ) {
+      work_head = work_tail = tmp_head;
+    } else {
+      tmp_tail->next = work_head;
+      work_head      = tmp_head;
+    }
+
+    /* Create name */
+    rv = snprintf( name, 4096, " \\covered$%c%d_%d$%s ", (net ? 'w' : 'W'), exp->line, ((exp->col >> 16) & 0xffff), exp->name );
+    assert( rv < 4096 );
+
+    /* Generate msb */
+    msb = generator_gen_msb( exp, funit );
+
+    /* Create the range information for the write */
+    rv = snprintf( range, 4096, "[((%s+%d)-1):0]", msb, exp->elem.dim->dim_width );
+    assert( rv < 4096 );
+
+    /* Create the value to assign */
+    memstr = codegen_gen_expr_one_line( exp, funit );
+    vlen   = 1 + strlen( memstr ) + 1 + strlen( iname ) + 2;
+    value  = (char*)malloc_safe( vlen );
+    rv = snprintf( value, vlen, "{%s,%s}", memstr, iname );
+    assert( rv < vlen );
+
+    /* Deallocate temporary strings */
+    free_safe( msb, (strlen( msb ) + 1) );
+    free_safe( memstr, (strlen( memstr ) + 1) );
+
+  } else {
+
+    /* Create name */
+    rv = snprintf( name, 4096, " \\covered$%c%d_%d$%s ", (net ? 'r' : 'R'), exp->line, ((exp->col >> 16) & 0xffff), exp->name );
+    assert( rv < 4096 );
+
+    /* Create the range information for the read */
+    rv = snprintf( range, 4096, "[%d:0]", (exp->elem.dim->dim_width - 1) );
+    assert( rv < 4096 );
+
+    /* Create the value to assign */
+    value  = idxstr;
+    idxstr = NULL;
+
+  }
+
+  /* Create the assignment string for a net */
+  if( net ) {
+
+    unsigned int slen = 4 + 1 + strlen( range ) + 1 + strlen( name ) + 3 + strlen( value ) + 2;
+
+    str = (char*)malloc_safe( slen );
+    rv  = snprintf( str, slen, "wire %s %s = %s;", range, name, value );
+    assert( rv < slen );
+
+  /* Otherwise, create the assignment string for a register and create the register */
+  } else {
+
+    unsigned int slen = 3 + 1 + strlen( range ) + 1 + strlen( name ) + 2;
+
+    str = (char*)malloc_safe( slen );
+    rv  = snprintf( str, slen, "reg %s %s;", range, name );
+    assert( rv < slen );
+
+    /* Add the register to the register list */
+    str_link_add( str, &reg_head, &reg_tail );
+
+    /* Now create the assignment string */
+    slen = 1 + strlen( name ) + 3 + strlen( value ) + 2;
+    str  = (char*)malloc_safe( slen );
+    rv   = snprintf( str, slen, " %s = %s;", name, value );
+    assert( rv < slen );
+
+  }
+
+  /* Append the line coverage assignment to the working buffer */
+  generator_add_to_work_code( str, FALSE );
+
+  /* Deallocate temporary memory */
+  free_safe( idxstr, (strlen( idxstr ) + 1) );
+  free_safe( value,  (strlen( value )  + 1) );
+  free_safe( str,    (strlen( str )    + 1) );
+
+  PROFILE_END;
+
+}
+
+/*!
+ Traverses the specified expression tree searching for memory accesses.  If any are found, the appropriate
+ coverage code is inserted into the output buffers.
+*/
+static void generator_insert_mem_cov_helper(
+  expression* exp,          /*!< Pointer to current expression */
+  func_unit*  funit,        /*!< Pointer to functional unit containing the expression */
+  bool        net,          /*!< Specifies if the code generator should produce code for a net or a register */
+  bool        treat_as_rhs  /*!< If TRUE, treats any memory access as a memory read regardless of position (by default, set to FALSE) */
+) { PROFILE(GENERATOR_INSERT_MEM_COV_HELPER);
+
+  if( exp != NULL ) {
+
+    /* If the expression is on the right-hand-side, it is a read */
+    if( ((exp->suppl.part.lhs == 0) || treat_as_rhs) && (exp->sig != NULL) && (exp->sig->suppl.part.type == SSUPPL_TYPE_MEM) ) {
+
+      printf( "Found RHS (read) memory reference: %s\n", expression_string( exp ) );
+      // generator_insert_mem_cov( exp, funit, net, FALSE );
+
+    } else if( (exp->suppl.part.lhs == 1) && (exp->sig != NULL) && (exp->sig->suppl.part.type == SSUPPL_TYPE_MEM) ) {
+
+      printf( "Found LHS (write) memory reference: %s\n", expression_string( exp ) );
+      generator_insert_mem_cov( exp, funit, net, TRUE );
+
+      /* Traverse children to see if a memory read is used as an index */
+      generator_insert_mem_cov_helper( exp->left,  funit, net, TRUE );
+      generator_insert_mem_cov_helper( exp->right, funit, net, TRUE );
+
+    } else {
+
+      generator_insert_mem_cov_helper( exp->left,  funit, net, treat_as_rhs );
+      generator_insert_mem_cov_helper( exp->right, funit, net, treat_as_rhs );
+
+    }
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  \return Returns a pointer to the statement inserted (or NULL if no statement was inserted).
 
  Insert combinational logic coverage code for the given expression (by file position).
@@ -1832,15 +2021,18 @@ statement* generator_insert_comb_cov(
 
   statement* stmt = NULL;
 
-//  printf( "Calling generator_insert_comb_cov, first_line: %u, first_column: %u\n", first_line, first_column );
-
   /* Insert combinational logic code coverage if it is specified on the command-line to do so and the statement exists */
-  if( generator_comb && ((stmt = generator_find_statement( first_line, first_column )) != NULL) ) {
-
-//    printf( "Found statement: %s\n", expression_string( use_right ? stmt->exp->right : stmt->exp ) );
+  if( (generator_comb || generator_mem) && ((stmt = generator_find_statement( first_line, first_column )) != NULL) ) {
 
     /* Generate combinational coverage */
-    generator_insert_comb_cov_helper( (use_right ? stmt->exp->right : stmt->exp), stmt->funit, (use_right ? stmt->exp->right->op : stmt->exp->op), 0, net, TRUE, TRUE );
+    if( generator_comb ) {
+      generator_insert_comb_cov_helper( (use_right ? stmt->exp->right : stmt->exp), stmt->funit, (use_right ? stmt->exp->right->op : stmt->exp->op), 0, net, TRUE, TRUE );
+    }
+
+    /* Generate memory coverage */
+    if( generator_mem ) {
+      generator_insert_mem_cov_helper( stmt->exp, stmt->funit, net, FALSE );
+    }
 
   }
 
@@ -2006,64 +2198,13 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
 
 }
 
-/*!
- Inserts memory coverage for the given expression.
-*/
-void generator_insert_mem_cov(
-  expression* exp,   /*!< Pointer to expression accessing memory signal */
-  bool        net,   /*!< If TRUE, creates the signal name for a net; otherwise, creates the signal name for a register */
-  bool        write  /*!< If TRUE, creates write logic; otherwise, creates read logic */
-) { PROFILE(GENERATOR_INSERT_MEM_COV);
-
-#ifdef NOT_FINISHED
-  if( generator_mem ) {
-
-    char         name[4096];
-    char         str[4096];
-    unsigned int rv;
-    str_link*    tmp_head = NULL;
-    str_link*    tmp_tail = NULL;
-
-    if( write ) {
-
-      /* Create name */
-      rv = snprintf( name, 4096, " \\covered$%c%d_%d$%s ", (net ? "w" : "W"), ((exp->line, exp->col >> 16) & 0xffff), exp->name );
-      assert( rv < 4096 );
-
-      /* Create the register */
-      rv = snprintf( str, 4096, "reg %s;", sig );
-      assert( rv < 4096 );
-      str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
-
-    } else {
-
-      /* Create name */
-      rv = snprintf( name, 4096, " \\covered$%c%d_%d$%s ", (net ? "r" : "R"), ((exp->line, exp->col >> 16) & 0xffff), exp->name );
-      assert( rv < 4096 );
-
-    }
-
-    /* Prepend the line coverage assignment to the working buffer */
-    rv = snprintf( str, 4096, " %s = 1'b1;", name );
-    assert( rv < 4096 );
-    str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
-    if( work_head == NULL ) {
-      work_head = work_tail = tmp_head;
-    } else {
-      tmp_tail->next = work_head;
-      work_head      = tmp_head;
-    }
-
-  }
-#endif
-
-  PROFILE_END;
-
-}
-
 
 /*
  $Log$
+ Revision 1.48  2008/12/29 05:40:09  phase1geo
+ Regression updates.  Starting to add memory coverage (not even close to being
+ finished at this point).  Checkpointing.
+
  Revision 1.47  2008/12/28 19:39:17  phase1geo
  Fixing the handling of wait statements.  Updated regressions as necessary.
  Checkpointing.
