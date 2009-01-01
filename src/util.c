@@ -1732,15 +1732,15 @@ bool convert_str_to_uint64(
   bool        legal   = TRUE;
   const char* str_lsb = (str + (strlen( str ) - 1));
   const char* ptr     = str_lsb - lsb;
-  int         i       = 0;
+  uint64      i       = 1;
 
   *value = 0;
 
-  while( (ptr >= (char*)(str_lsb - msb)) && legal && (i < 64) ) {
-    *value |= (*ptr == '1') ? ((uint64)1 << UL_MOD(i)) : 0;
-    legal   = (*ptr == 'x') || (*ptr == 'z');
+  while( (ptr >= (char*)(str_lsb - msb)) && legal && (i > 0) ) {
+    *value |= (*ptr == '1') ? i : 0;
+    legal   = (*ptr != 'x') && (*ptr != 'z');
     ptr--;
-    i++;
+    i <<= 1;
   } 
 
   PROFILE_END;
@@ -1752,6 +1752,10 @@ bool convert_str_to_uint64(
 
 /*
  $Log$
+ Revision 1.110  2009/01/01 07:24:44  phase1geo
+ Checkpointing work on memory coverage.  Simple testing now works but still need
+ to do some debugging here.
+
  Revision 1.109  2008/10/24 17:27:46  phase1geo
  Fixing issues with removing underscores from real numbers.
 

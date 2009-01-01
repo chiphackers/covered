@@ -14,7 +14,7 @@ integer   i;
 initial begin
 	a = 2'b00;
 	for( i=0; i<8; i=i+1 )
-          mem[i] = i;
+          #1 mem[i] = i;
 	a = mem[2][2:1] & mem[6][1+:2] & mem[7][2-:2];
 end
 
