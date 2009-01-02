@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006-2008 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -1818,6 +1818,54 @@ static void generator_insert_comb_cov_helper(
 }
 
 /*!
+ Generates a memory index value for a given memory expression.
+*/
+static char* generator_gen_mem_index(
+  expression* exp,     /*!< Pointer to expression accessign memory signal */
+  func_unit*  funit,   /*!< Pointer to functional unit containing exp */
+  bool        is_dim0  /*!< Set to TRUE if the current expression is dimension 0 */
+) { PROFILE(GENERATOR_GEN_MEM_INDEX);
+
+  char*        index = codegen_gen_expr_one_line( exp->left, funit );
+  char*        str;
+  char         num[50];
+  unsigned int slen;
+  unsigned int rv;
+
+  printf( "In generator_gen_mem_index, exp: %s\n", expression_string( exp ) );
+
+  rv = snprintf( num, 50, "%d", exp->elem.dim->dim_width );
+  assert( rv < 50 );
+
+  slen = 1 + strlen( index ) + 3 + strlen( num ) + 2;
+  str  = (char*)malloc_safe( slen );
+  rv   = snprintf( str, slen, "(%s * %s)", index, num );
+  assert( rv < slen );
+
+  if( !exp->elem.dim->last ) {
+
+    char* tmpstr = str;
+    char* rest   = generator_gen_mem_index( (is_dim0 ? exp->parent->expr->right : exp->parent->expr->parent->expr->right), funit, FALSE );
+
+    slen = strlen( tmpstr ) + 3 + strlen( rest ) + 1;
+    str  = (char*)malloc_safe( slen );
+    rv   = snprintf( str, slen, "%s + %s", tmpstr, rest );
+    assert( rv < slen ); 
+
+    free_safe( rest,   (strlen( rest )   + 1) );
+    free_safe( tmpstr, (strlen( tmpstr ) + 1) );
+
+  }
+
+  free_safe( index, (strlen( index ) + 1) );
+
+  PROFILE_END;
+
+  return( str );
+
+}
+
+/*!
  Inserts memory coverage for the given expression.
 */
 static void generator_insert_mem_cov(
@@ -1830,7 +1878,7 @@ static void generator_insert_mem_cov(
   char         name[4096];
   char         range[4096];
   unsigned int rv;
-  char*        idxstr   = codegen_gen_expr_one_line( exp->left, funit );
+  char*        idxstr   = generator_gen_mem_index( exp, funit, TRUE );
   char*        value;
   char*        str;
   expression*  last_exp = expression_get_last_line_expr( exp );
@@ -1921,9 +1969,9 @@ static void generator_insert_mem_cov(
 
     /* Create name */
     if( net || (funit->type == FUNIT_MODULE) ) {
-      rv = snprintf( name, 4096, " \\covered$%c%d_%d$%s ", (net ? 'r' : 'R'), exp->line, last_exp->line, exp->col, exp->name );
+      rv = snprintf( name, 4096, " \\covered$%c%d_%d_%x$%s ", (net ? 'r' : 'R'), exp->line, last_exp->line, exp->col, exp->name );
     } else {
-      rv = snprintf( name, 4096, " \\covered$%c%d_%d$%s$%s ", (net ? 'r' : 'R'), exp->line, last_exp->line, exp->col, exp->name, funit->name );
+      rv = snprintf( name, 4096, " \\covered$%c%d_%d_%x$%s$%s ", (net ? 'r' : 'R'), exp->line, last_exp->line, exp->col, exp->name, funit->name );
     }
     assert( rv < 4096 );
 
@@ -1979,6 +2027,41 @@ static void generator_insert_mem_cov(
 }
 
 /*!
+ \return Returns TRUE if the memory was handled in this call to the function; otherwise, returns FALSE.
+*/
+static bool generator_insert_mem_cov_helper2(
+  expression* exp,
+  func_unit*  funit,
+  bool        net,
+  bool        treat_as_rhs
+) { PROFILE(GENERATOR_INSERT_MEM_COV_HELPER2);
+
+  bool retval = FALSE;
+
+  if( exp != NULL ) {
+
+    if( (exp->right != NULL) && (exp->right->op != EXP_OP_DIM) ) {
+      if( exp->right->elem.dim->set_mem_rd ) {
+        generator_insert_mem_cov( exp->right, funit, net, ((exp->suppl.part.lhs == 1) && !treat_as_rhs) );
+        retval = TRUE;
+      } else if( (exp->left != NULL) && (exp->left->op != EXP_OP_DIM) && exp->left->elem.dim->set_mem_rd ) {
+        generator_insert_mem_cov( exp->left,  funit, net, ((exp->suppl.part.lhs == 1) && !treat_as_rhs) );
+        retval = TRUE;
+      }
+    } else if( (exp->left != NULL) && exp->left->elem.dim->set_mem_rd && !generator_insert_mem_cov_helper2( exp->right, funit, net, treat_as_rhs ) ) {
+      generator_insert_mem_cov( exp->left, funit, net, ((exp->suppl.part.lhs == 1) && !treat_as_rhs) );
+      retval = TRUE;
+    }
+
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
  Traverses the specified expression tree searching for memory accesses.  If any are found, the appropriate
  coverage code is inserted into the output buffers.
 */
@@ -1991,26 +2074,11 @@ static void generator_insert_mem_cov_helper(
 
   if( exp != NULL ) {
 
-    /* If the expression is on the right-hand-side, it is a read */
-    if( ((exp->suppl.part.lhs == 0) || treat_as_rhs) && (exp->sig != NULL) && (exp->sig->suppl.part.type == SSUPPL_TYPE_MEM) ) {
-
-      printf( "Found RHS (read) memory reference: %s\n", expression_string( exp ) );
-      // generator_insert_mem_cov( exp, funit, net, FALSE );
-
-    } else if( (exp->suppl.part.lhs == 1) && (exp->sig != NULL) && (exp->sig->suppl.part.type == SSUPPL_TYPE_MEM) ) {
-
-      printf( "Found LHS (write) memory reference: %s\n", expression_string( exp ) );
-      generator_insert_mem_cov( exp, funit, net, TRUE );
-
-      /* Traverse children to see if a memory read is used as an index */
-      generator_insert_mem_cov_helper( exp->left,  funit, net, TRUE );
-      generator_insert_mem_cov_helper( exp->right, funit, net, TRUE );
-
+    if( (exp->op == EXP_OP_DIM) || ((exp->sig != NULL) && (exp->sig->suppl.part.type == SSUPPL_TYPE_MEM)) ) {
+      generator_insert_mem_cov_helper2( exp, funit, net, treat_as_rhs );
     } else {
-
       generator_insert_mem_cov_helper( exp->left,  funit, net, treat_as_rhs );
       generator_insert_mem_cov_helper( exp->right, funit, net, treat_as_rhs );
-
     }
 
   }
@@ -2214,6 +2282,10 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
 
 /*
  $Log$
+ Revision 1.50  2009/01/01 07:24:44  phase1geo
+ Checkpointing work on memory coverage.  Simple testing now works but still need
+ to do some debugging here.
+
  Revision 1.49  2009/01/01 00:19:40  phase1geo
  Adding memory coverage insertion code.  Still need to add memory coverage handling
  code during runtime.  Checkpointing.

@@ -619,8 +619,6 @@ void vsignal_display(
 }
 
 /*!
- \param str  String version of vsignal.
-
  \return Returns pointer to newly created vsignal structure, or returns
          NULL is specified string does not properly describe a vsignal.
 
@@ -629,7 +627,7 @@ void vsignal_display(
  multi-bit select vsignal.
 */
 vsignal* vsignal_from_string(
-  char** str
+  /*@out@*/ char** str  /*!< String version of vsignal */
 ) { PROFILE(VSIGNAL_FROM_STRING);
 
   vsignal* sig;             /* Pointer to newly created vsignal */
@@ -697,14 +695,11 @@ vsignal* vsignal_from_string(
 }
 
 /*!
- \param expr  Pointer to expression to get width for
- \param sig   Pointer to signal to get width for
-
  \return Returns width of the given expression that is bound to the given signal.
 */
 int vsignal_calc_width_for_expr(
-  expression* expr,
-  vsignal*    sig
+  expression* expr,  /*!< Pointer to expression to get width for */
+  vsignal*    sig    /*!< Pointer to signal to get width for */
 ) { PROFILE(VSIGNAL_CALC_WIDTH_FOR_EXPR);
 
   int          exp_dim;    /* Expression dimension number */
@@ -750,13 +745,11 @@ int vsignal_calc_lsb_for_expr(
 }
 
 /*!
- \param sig  Pointer to vsignal to deallocate.
-
  Deallocates all malloc'ed memory back to the heap for the specified
  vsignal.
 */
 void vsignal_dealloc(
-  /*@only@*/ vsignal* sig
+  /*@only@*/ vsignal* sig  /*!< Pointer to vsignal to deallocate */
 ) { PROFILE(VSIGNAL_DEALLOC);
 
   exp_link* curr_expl;  /* Pointer to current expression link to set to NULL */
@@ -795,6 +788,11 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.91  2008/12/10 00:19:23  phase1geo
+ Fixing issues with aedge1 diagnostic (still need to handle events but this will
+ be worked on a later time).  Working on sizing temporary subexpression LHS signals.
+ This is not complete and does not compile at this time.  Checkpointing.
+
  Revision 1.90  2008/11/12 19:57:07  phase1geo
  Fixing the rest of the issues from regressions in regards to the merge changes.
  Updating regression files.  IV and Cver regressions now pass.
