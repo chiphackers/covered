@@ -34,6 +34,13 @@ mod_parm* mod_parm_find(
   mod_parm* parm
 );
 
+/*! \brief Generates a string version of given signal if it exists */
+char* mod_parm_gen_size_code(
+  vsignal*     sig,
+  unsigned int dimension,
+  func_unit*   mod
+);
+
 /*! \brief Creates new module parameter and adds it to the specified list. */
 mod_parm* mod_parm_add(
   char*        scope,
@@ -82,6 +89,9 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive );
 
 /*
  $Log$
+ Revision 1.32  2008/03/11 22:06:48  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.31  2008/01/16 23:10:31  phase1geo
  More splint updates.  Code is now warning/error free with current version
  of run_splint.  Still have regression issues to debug.

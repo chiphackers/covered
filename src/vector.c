@@ -1902,15 +1902,25 @@ bool vector_set_value_ulong(
 }
 
 /*!
- Sets the memory read bit of the given vector.
+ Sets the memory read bits of the given vector for the given bit range.
 */
 void vector_set_mem_rd_ulong(
   vector* vec,  /*!< Pointer to vector that will set the memory read */
+  int     msb,  /*!< MSB offset */
   int     lsb   /*!< LSB offset */
 ) { PROFILE(VECTOR_SET_MEM_RD);
 
   if( vec->suppl.part.type == VTYPE_MEM ) {
-    vec->value.ul[UL_DIV(lsb)][VTYPE_INDEX_MEM_RD] |= ((ulong)1 << UL_MOD(lsb));
+    if( UL_DIV(msb) == UL_DIV(lsb) ) {
+      vec->value.ul[UL_DIV(lsb)][VTYPE_INDEX_MEM_RD] |= UL_HMASK(msb) & UL_LMASK(lsb);
+    } else {
+      int i;
+      vec->value.ul[UL_DIV(lsb)][VTYPE_INDEX_MEM_RD] |= UL_LMASK(lsb);
+      for( i=(UL_DIV(lsb) + 1); i<UL_DIV(msb); i++ ) {
+        vec->value.ul[UL_DIV(msb)][VTYPE_INDEX_MEM_RD] = UL_SET;
+      }
+      vec->value.ul[UL_DIV(msb)][VTYPE_INDEX_MEM_RD] |= UL_HMASK(msb);
+    } 
   }
 
   PROFILE_END;
@@ -1944,7 +1954,7 @@ bool vector_part_select_pull(
 
         /* If the src vector is of type MEM, set the MEM_RD bit in the source's supplemental field */
         if( set_mem_rd ) {
-          vector_set_mem_rd_ulong( src, lsb );
+          vector_set_mem_rd_ulong( src, msb, lsb );
         }
 
         retval = vector_set_coverage_and_assign_ulong( tgt, vall, valh, 0, (tgt->width - 1) );
@@ -5220,6 +5230,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.186  2009/01/01 07:24:44  phase1geo
+ Checkpointing work on memory coverage.  Simple testing now works but still need
+ to do some debugging here.
+
  Revision 1.185  2008/12/24 21:19:02  phase1geo
  Initial work at getting FSM coverage put in (this looks to be working correctly
  to this point).  Updated regressions per fixes.  Checkpointing.

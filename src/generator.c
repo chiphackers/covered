@@ -24,8 +24,10 @@
 #include "defines.h"
 #include "expr.h"
 #include "func_iter.h"
+#include "func_unit.h"
 #include "generator.h"
 #include "link.h"
+#include "param.h"
 #include "profiler.h"
 #include "util.h"
 
@@ -1322,9 +1324,15 @@ static char* generator_gen_msb(
       case EXP_OP_SSRANDOM  :
       case EXP_OP_STESTARGS :
       case EXP_OP_SVALARGS  :
-      case EXP_OP_SBIT_SEL  :
       case EXP_OP_PARAM_SBIT :
         msb = strdup_safe( "1" );
+        break;
+      case EXP_OP_SBIT_SEL  :
+        if( exp->sig->suppl.part.type == SSUPPL_TYPE_MEM ) {
+          msb = mod_parm_gen_size_code( exp->sig, expression_get_curr_dimension( exp ), funit_get_curr_module( funit ) );
+        } else {
+          msb = strdup_safe( "1" );
+        }
         break;
       case EXP_OP_MBIT_SEL   :
       case EXP_OP_PARAM_MBIT :
@@ -1826,13 +1834,48 @@ static char* generator_gen_mem_index(
   bool        is_dim0  /*!< Set to TRUE if the current expression is dimension 0 */
 ) { PROFILE(GENERATOR_GEN_MEM_INDEX);
 
-  char*        index = codegen_gen_expr_one_line( exp->left, funit );
+  char*        index;  //  = codegen_gen_expr_one_line( exp->left, funit );
   char*        str;
   char         num[50];
   unsigned int slen;
   unsigned int rv;
 
-  printf( "In generator_gen_mem_index, exp: %s\n", expression_string( exp ) );
+  /* Calculate the index value */
+  switch( exp->op ) {
+    case EXP_OP_SBIT_SEL :
+      index = codegen_gen_expr_one_line( exp->left, funit );
+      break;
+    case EXP_OP_MBIT_SEL :
+      {
+        char* lstr = codegen_gen_expr_one_line( exp->left,  funit );
+        char* rstr = codegen_gen_expr_one_line( exp->right, funit );
+        slen  = (strlen( lstr ) * 3) + (strlen( rstr ) * 3) + 18;
+        index = (char*)malloc_safe( slen );
+        rv    = snprintf( index, slen, "(((%s>%s)?(%s-%s):(%s-%s))+1)", lstr, rstr, lstr, rstr, rstr, lstr );
+        assert( rv < slen );
+        free_safe( lstr, (strlen( lstr ) + 1) );
+        free_safe( rstr, (strlen( rstr ) + 1) );
+      }
+      break;
+    case EXP_OP_MBIT_POS :
+      index = codegen_gen_expr_one_line( exp->left, funit );
+      break;
+    case EXP_OP_MBIT_NEG :
+      {
+        char* lstr = codegen_gen_expr_one_line( exp->left,  funit );
+        char* rstr = codegen_gen_expr_one_line( exp->right, funit );
+        slen  = 2 + strlen( lstr ) + 1 + strlen( rstr ) + 5;
+        index = (char*)malloc_safe( slen );
+        rv    = snprintf( index, slen, "((%s-%s)+1)", lstr, rstr );
+        assert( rv < slen );
+        free_safe( lstr, (strlen( lstr ) + 1) );
+        free_safe( rstr, (strlen( rstr ) + 1) );
+      }
+      break;
+    default :
+      assert( 0 );
+      break;
+  }
 
   rv = snprintf( num, 50, "%d", exp->elem.dim->dim_width );
   assert( rv < 50 );
@@ -1882,6 +1925,11 @@ static void generator_insert_mem_cov(
   char*        value;
   char*        str;
   expression*  last_exp = expression_get_last_line_expr( exp );
+  char         num[50];
+
+  /* Figure out the size to store the number of dimensions */
+  rv = snprintf( num, 50, "%d", (calc_num_bits_to_store( exp->sig->value->width ) - 1) );
+  assert( rv < 50 );
 
   /* Now insert the code to store the index and memory */
   if( write ) {
@@ -1889,7 +1937,6 @@ static void generator_insert_mem_cov(
     char*        msb;
     char*        memstr;
     unsigned int vlen;
-    char         num[50];
     char         iname[4096];
     str_link*    tmp_head = NULL;
     str_link*    tmp_tail = NULL;
@@ -1901,10 +1948,6 @@ static void generator_insert_mem_cov(
       rv = snprintf( iname, 4096, " \\covered$%c%d_%d_%x$%s$%s ", (net ? 'i' : 'I'), exp->line, last_exp->line, exp->col, exp->name, funit->name );
     }
     assert( rv < 4096 );
-
-    /* Figure out the size of the dimensional width */
-    rv = snprintf( num, 50, "%d", (exp->elem.dim->dim_width - 1) );
-    assert( rv < 50 );
 
     if( net ) {
 
@@ -1976,7 +2019,7 @@ static void generator_insert_mem_cov(
     assert( rv < 4096 );
 
     /* Create the range information for the read */
-    rv = snprintf( range, 4096, "[%d:0]", (exp->elem.dim->dim_width - 1) );
+    rv = snprintf( range, 4096, "[%s:0]", num );
     assert( rv < 4096 );
 
     /* Create the value to assign */
@@ -2027,41 +2070,6 @@ static void generator_insert_mem_cov(
 }
 
 /*!
- \return Returns TRUE if the memory was handled in this call to the function; otherwise, returns FALSE.
-*/
-static bool generator_insert_mem_cov_helper2(
-  expression* exp,
-  func_unit*  funit,
-  bool        net,
-  bool        treat_as_rhs
-) { PROFILE(GENERATOR_INSERT_MEM_COV_HELPER2);
-
-  bool retval = FALSE;
-
-  if( exp != NULL ) {
-
-    if( (exp->left != NULL) && (exp->left->op != EXP_OP_DIM) ) {
-      if( !exp->left->elem.dim->set_mem_rd ) {
-        generator_insert_mem_cov( exp->left, funit, net, ((exp->suppl.part.lhs == 1) && !treat_as_rhs) );
-        retval = TRUE;
-      } else if( (exp->right != NULL) && (exp->right->op != EXP_OP_DIM) && !exp->right->elem.dim->set_mem_rd ) {
-        generator_insert_mem_cov( exp->right, funit, net, ((exp->suppl.part.lhs == 1) && !treat_as_rhs) );
-        retval = TRUE;
-      }
-    } else if( (exp->right != NULL) && !exp->right->elem.dim->set_mem_rd && !generator_insert_mem_cov_helper2( exp->left, funit, net, treat_as_rhs ) ) {
-      generator_insert_mem_cov( exp->right, funit, net, ((exp->suppl.part.lhs == 1) && !treat_as_rhs) );
-      retval = TRUE;
-    }
-
-  }
-
-  PROFILE_END;
-
-  return( retval );
-
-}
-
-/*!
  Traverses the specified expression tree searching for memory accesses.  If any are found, the appropriate
  coverage code is inserted into the output buffers.
 */
@@ -2074,14 +2082,12 @@ static void generator_insert_mem_cov_helper(
 
   if( exp != NULL ) {
 
-    if( exp->op == EXP_OP_DIM ) {
-      generator_insert_mem_cov_helper2( exp, funit, net, treat_as_rhs );
-    } else if( (exp->sig != NULL) && (exp->sig->suppl.part.type == SSUPPL_TYPE_MEM) ) {
+    if( (exp->sig != NULL) && (exp->sig->suppl.part.type == SSUPPL_TYPE_MEM) && (expression_get_curr_dimension( exp ) == 0) ) {
       generator_insert_mem_cov( exp, funit, net, ((exp->suppl.part.lhs == 1) && !treat_as_rhs) );
-    } else {
-      generator_insert_mem_cov_helper( exp->left,  funit, net, treat_as_rhs );
-      generator_insert_mem_cov_helper( exp->right, funit, net, treat_as_rhs );
     }
+
+    generator_insert_mem_cov_helper( exp->left,  funit, net, treat_as_rhs );
+    generator_insert_mem_cov_helper( exp->right, funit, net, treat_as_rhs );
 
   }
 
@@ -2284,6 +2290,9 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
 
 /*
  $Log$
+ Revision 1.52  2009/01/03 03:49:56  phase1geo
+ Checkpointing memory coverage work.
+
  Revision 1.51  2009/01/02 06:00:26  phase1geo
  More updates for memory coverage (this is still not working however).  Currently
  segfaults.  Checkpointing.

@@ -64,6 +64,7 @@
 #endif
 #include <assert.h>
 
+#include "codegen.h"
 #include "defines.h"
 #include "expr.h"
 #include "func_unit.h"
@@ -140,6 +141,95 @@ static void mod_parm_find_expr_and_remove(
   }
 
   PROFILE_END;
+
+}
+
+/*!
+ \return Returns a string version of the size (width) of the specified signal if it is found; otherwise, return
+         a NULL value.
+*/
+char* mod_parm_gen_size_code(
+  vsignal*     sig,        /*!< Specifies the name of the signal that we are searching for */
+  unsigned int dimension,  /*!< Specifies the dimension that we are searching for */
+  func_unit*   mod         /*!< Pointer to module containing signal */
+) { PROFILE(MOD_PARM_GEN_SIZE_CODE);
+
+  char*        code    = NULL;
+  char*        lsb_str = NULL;
+  char*        msb_str = NULL;
+  unsigned int rv;
+  mod_parm*    mparm   = mod->param_head;
+
+  /* First, find the matching LSB module parameter */
+  while( (mparm != NULL) && ((mparm->sig != sig) || (mparm->suppl.part.dimension != dimension)) ) {
+    mparm = mparm->next;
+  }
+  if( mparm != NULL ) {
+
+    if( mparm->suppl.part.type == PARAM_TYPE_SIG_LSB ) {
+      lsb_str = codegen_gen_expr_one_line( mparm->expr, mod );
+    } else {
+      msb_str = codegen_gen_expr_one_line( mparm->expr, mod );
+    }
+
+    /* Second, find the matching MSB module parameter */
+    mparm = mparm->next;
+    while( (mparm != NULL) && ((mparm->sig != sig) || (mparm->suppl.part.dimension != dimension)) ) {
+      mparm = mparm->next;
+    }
+    if( mparm != NULL ) {
+      if( mparm->suppl.part.type == PARAM_TYPE_SIG_LSB ) {
+        lsb_str = codegen_gen_expr_one_line( mparm->expr, mod );
+      } else {
+        msb_str = codegen_gen_expr_one_line( mparm->expr, mod );
+      }
+    }
+
+  }
+
+  if( (lsb_str == NULL) && (msb_str == NULL) ) {
+
+    char num[50];
+    int  msb = sig->dim[dimension].msb;
+    int  lsb = sig->dim[dimension].lsb;
+
+    rv = snprintf( num, 50, "%d", (((msb > lsb) ? (msb - lsb) : (lsb - msb)) + 1) );
+    assert( rv < 50 );
+    code = strdup_safe( num );
+
+  } else {
+
+    unsigned int slen;
+
+    if( lsb_str == NULL ) {
+      char num[50];
+      rv = snprintf( num, 50, "%d", sig->dim[dimension].lsb );
+      assert( rv < 50 );
+      lsb_str = strdup_safe( num );
+    }
+
+    if( msb_str == NULL ) {
+      char num[50];
+      rv = snprintf( num, 50, "%d", sig->dim[dimension].msb );
+      assert( rv < 50 );
+      msb_str = strdup_safe( num );
+    }
+
+    /* Generate code string */
+    slen = (strlen( msb_str ) * 3) + (strlen( lsb_str ) * 3) + 18;
+    code = (char*)malloc_safe( slen );
+    rv   = snprintf( code, slen, "(((%s>%s)?(%s-%s):(%s-%s))+1)", msb_str, lsb_str, msb_str, lsb_str, lsb_str, msb_str );
+    assert( rv < slen );
+
+    /* Deallocate temporary strings */
+    free_safe( lsb_str, (strlen( lsb_str ) + 1) );
+    free_safe( msb_str, (strlen( msb_str ) + 1) );
+
+  }
+
+  PROFILE_END;
+
+  return( code );
 
 }
 
@@ -1152,6 +1242,9 @@ void inst_parm_dealloc(
 
 /*
  $Log$
+ Revision 1.118  2008/11/19 19:42:10  phase1geo
+ Cleaning up splint warnings.
+
  Revision 1.117  2008/11/08 00:09:04  phase1geo
  Checkpointing work on asymmetric merging algorithm.  Updated regressions
  per these changes.  We currently have 5 failures in the IV regression suite.

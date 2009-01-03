@@ -794,9 +794,8 @@ void expression_set_value(
       exp->elem.dim->dim_lsb = sig->dim[edim].msb;
       exp->elem.dim->dim_be  = TRUE;
     }
-    exp->elem.dim->dim_width  = exp_width;
-    exp->elem.dim->set_mem_rd = (sig->value->suppl.part.type == VTYPE_MEM) && ((edim + 1) >= sig->udim_num);
-    exp->elem.dim->last       = expression_is_last_select( exp );
+    exp->elem.dim->dim_width = exp_width;
+    exp->elem.dim->last      = expression_is_last_select( exp );
 
     /* Set the expression width */
     switch( exp->op ) {
@@ -4047,7 +4046,7 @@ bool expression_op_func__sbit(
     if( curr_lsb == -1 ) {
       retval = vector_set_to_x( expr->value );
     } else {
-      retval = vector_part_select_pull( expr->value, expr->sig->value, curr_lsb, ((curr_lsb + expr->value->width) - 1), dim->set_mem_rd );
+      retval = vector_part_select_pull( expr->value, expr->sig->value, curr_lsb, ((curr_lsb + expr->value->width) - 1), TRUE );
     }
   } else {
     retval = (dim->curr_lsb != curr_lsb);
@@ -4107,7 +4106,7 @@ bool expression_op_func__mbit(
     if( curr_lsb == -1 ) {
       retval = vector_set_to_x( expr->value );
     } else {
-      retval = vector_part_select_pull( expr->value, expr->sig->value, curr_lsb, ((curr_lsb + expr->value->width) - 1), dim->set_mem_rd );
+      retval = vector_part_select_pull( expr->value, expr->sig->value, curr_lsb, ((curr_lsb + expr->value->width) - 1), TRUE );
     }
   } else {
     retval = (curr_lsb != dim->curr_lsb);
@@ -4957,7 +4956,7 @@ bool expression_op_func__mbit_pos(
     if( curr_lsb == -1 ) {
       retval = vector_set_to_x( expr->value );
     } else {
-      retval = vector_part_select_pull( expr->value, expr->sig->value, curr_lsb, ((curr_lsb + vector_to_int( expr->right->value )) - 1), dim->set_mem_rd );
+      retval = vector_part_select_pull( expr->value, expr->sig->value, curr_lsb, ((curr_lsb + vector_to_int( expr->right->value )) - 1), TRUE );
     }
   } else {
     retval = (dim->curr_lsb != curr_lsb);
@@ -5025,7 +5024,7 @@ bool expression_op_func__mbit_neg(
     if( curr_lsb == -1 ) {
       retval = vector_set_to_x( expr->value );
     } else { 
-      retval = vector_part_select_pull( expr->value, expr->sig->value, curr_lsb, ((curr_lsb + vector_to_int( expr->right->value )) - 1), dim->set_mem_rd );
+      retval = vector_part_select_pull( expr->value, expr->sig->value, curr_lsb, ((curr_lsb + vector_to_int( expr->right->value )) - 1), TRUE );
     } 
   } else {
     retval = (dim->curr_lsb != curr_lsb);
@@ -5600,17 +5599,19 @@ void expression_vcd_assign(
 
     uint64 intval;
 
-    convert_str_to_uint64( value, (expr->elem.dim->dim_width - 1), 0, &intval );
-    vector_set_mem_rd_ulong( expr->sig->value, (intval * expr->elem.dim->dim_width) );
+    if( convert_str_to_uint64( value, (calc_num_bits_to_store( expr->sig->value->width ) - 1), 0, &intval ) ) {
+      printf( "R exp: %s, width: %d, value: %s, intval: %llu, msb: %d, lsb: %d\n", expression_string( expr ), expr->value->width, value, intval, (int)((expr->value->width - 1) + intval), (int)intval );
+      vector_set_mem_rd_ulong( expr->sig->value, ((expr->value->width - 1) + intval), intval );
+    }
 
   } else if( (action == 'w') || (action == 'W') ) {
 
     uint64 intval;
 
-    convert_str_to_uint64( value, (expr->elem.dim->dim_width - 1), 0, &intval );
-
-    intval *= expr->elem.dim->dim_width;
-    vector_vcd_assign( expr->sig->value, (value + expr->elem.dim->dim_width), ((expr->elem.dim->dim_width - 1) + intval), intval );
+    if( convert_str_to_uint64( value, (calc_num_bits_to_store( expr->sig->value->width ) - 1), 0, &intval ) ) {
+      printf( "W value: %s, msb: %d, lsb: %d\n", value, (int)((expr->value->width - 1) + intval), (int)intval );
+      vector_vcd_assign( expr->sig->value, (value + expr->elem.dim->dim_width), ((expr->value->width - 1) + intval), intval );
+    }
 
   }
 
@@ -6227,6 +6228,10 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.402  2009/01/02 06:00:26  phase1geo
+ More updates for memory coverage (this is still not working however).  Currently
+ segfaults.  Checkpointing.
+
  Revision 1.401  2009/01/01 07:53:32  phase1geo
  Fixing bug in conversion function.  Checkpointing.
 

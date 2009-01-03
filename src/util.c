@@ -1749,9 +1749,29 @@ bool convert_str_to_uint64(
 
 }
 
+/*!
+ \return Returns the number of bits that are required to store the number of values represented.
+*/
+int calc_num_bits_to_store(
+  int values  /*!< Number of values that need to be stored */
+) { PROFILE(CALC_NUM_BITS_TO_STORE);
+
+  int bits = 1;
+
+  while( (1 << bits) < values ) bits++;
+
+  PROFILE_END;
+
+  return( bits );
+
+}
+
 
 /*
  $Log$
+ Revision 1.111  2009/01/01 07:53:32  phase1geo
+ Fixing bug in conversion function.  Checkpointing.
+
  Revision 1.110  2009/01/01 07:24:44  phase1geo
  Checkpointing work on memory coverage.  Simple testing now works but still need
  to do some debugging here.
