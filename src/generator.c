@@ -1669,6 +1669,7 @@ static void generator_create_exp(
     case EXP_OP_COND_SEL   :  generator_concat_code( lhs, NULL, lstr, " : ", rstr, NULL, net );  break;
     case EXP_OP_SIG        :
     case EXP_OP_PARAM      :  generator_concat_code( lhs, exp->name, NULL, NULL, NULL, NULL, net );  break;
+    case EXP_OP_DIM        :  generator_concat_code( lhs, NULL, lstr, NULL, rstr, NULL, net );  break;
     case EXP_OP_FUNC_CALL  :
       {
         unsigned int slen = strlen( exp->name ) + 2;
@@ -1783,8 +1784,6 @@ static void generator_insert_comb_cov_helper(
   if( exp != NULL ) {
 
     int child_depth = (depth + ((exp->op != parent_op) ? 1 : 0));
-
-    // printf( "In generator_insert_comb_cov_helper, expr: %s\n", expression_string( exp ) );
 
     /* Only continue to traverse tree if we are within our depth limit */
     if( (depth < generator_max_exp_depth) && (EXPR_IS_MEASURABLE( exp ) == 1) && !expression_is_static_only( exp ) ) {
@@ -2291,6 +2290,10 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
 
 /*
  $Log$
+ Revision 1.54  2009/01/03 20:41:14  phase1geo
+ Fixing lastest issue with memory coverage.  Need to fix a combinational logic
+ coverage issue next.  Checkpointing.
+
  Revision 1.53  2009/01/03 08:03:53  phase1geo
  Adding more code to support memory coverage.  Added to code to handle parameterized
  signal sizing.  Updated regressions.  Checkpointing.
