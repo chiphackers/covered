@@ -1829,12 +1829,12 @@ static void generator_insert_comb_cov_helper(
  Generates a memory index value for a given memory expression.
 */
 static char* generator_gen_mem_index(
-  expression* exp,     /*!< Pointer to expression accessign memory signal */
-  func_unit*  funit,   /*!< Pointer to functional unit containing exp */
-  bool        is_dim0  /*!< Set to TRUE if the current expression is dimension 0 */
+  expression* exp,       /*!< Pointer to expression accessign memory signal */
+  func_unit*  funit,     /*!< Pointer to functional unit containing exp */
+  int         dimension  /*!< Current memory dimension (should be initially set to expression_get_curr_dimension( exp ) */
 ) { PROFILE(GENERATOR_GEN_MEM_INDEX);
 
-  char*        index;  //  = codegen_gen_expr_one_line( exp->left, funit );
+  char*        index;
   char*        str;
   char         num[50];
   unsigned int slen;
@@ -1849,9 +1849,9 @@ static char* generator_gen_mem_index(
       {
         char* lstr = codegen_gen_expr_one_line( exp->left,  funit );
         char* rstr = codegen_gen_expr_one_line( exp->right, funit );
-        slen  = (strlen( lstr ) * 3) + (strlen( rstr ) * 3) + 18;
+        slen  = (strlen( lstr ) * 3) + (strlen( rstr ) * 3) + 14;
         index = (char*)malloc_safe( slen );
-        rv    = snprintf( index, slen, "(((%s>%s)?(%s-%s):(%s-%s))+1)", lstr, rstr, lstr, rstr, rstr, lstr );
+        rv    = snprintf( index, slen, "((%s>%s)?(%s-%s):(%s-%s))", lstr, rstr, lstr, rstr, rstr, lstr );
         assert( rv < slen );
         free_safe( lstr, (strlen( lstr ) + 1) );
         free_safe( rstr, (strlen( rstr ) + 1) );
@@ -1885,10 +1885,10 @@ static char* generator_gen_mem_index(
   rv   = snprintf( str, slen, "(%s * %s)", index, num );
   assert( rv < slen );
 
-  if( !exp->elem.dim->last ) {
+  if( dimension != 0 ) {
 
     char* tmpstr = str;
-    char* rest   = generator_gen_mem_index( (is_dim0 ? exp->parent->expr->right : exp->parent->expr->parent->expr->right), funit, FALSE );
+    char* rest   = generator_gen_mem_index( ((dimension == 1) ? exp->parent->expr->left : exp->parent->expr->left->right), funit, (dimension - 1) );
 
     slen = strlen( tmpstr ) + 3 + strlen( rest ) + 1;
     str  = (char*)malloc_safe( slen );
@@ -1900,6 +1900,7 @@ static char* generator_gen_mem_index(
 
   }
 
+  /* Deallocate memory */
   free_safe( index, (strlen( index ) + 1) );
 
   PROFILE_END;
@@ -1921,7 +1922,7 @@ static void generator_insert_mem_cov(
   char         name[4096];
   char         range[4096];
   unsigned int rv;
-  char*        idxstr   = generator_gen_mem_index( exp, funit, TRUE );
+  char*        idxstr   = generator_gen_mem_index( exp, funit, expression_get_curr_dimension( exp ) );
   char*        value;
   char*        str;
   expression*  last_exp = expression_get_last_line_expr( exp );
@@ -2082,7 +2083,7 @@ static void generator_insert_mem_cov_helper(
 
   if( exp != NULL ) {
 
-    if( (exp->sig != NULL) && (exp->sig->suppl.part.type == SSUPPL_TYPE_MEM) && (expression_get_curr_dimension( exp ) == 0) ) {
+    if( (exp->sig != NULL) && (exp->sig->suppl.part.type == SSUPPL_TYPE_MEM) && exp->elem.dim->last ) {
       generator_insert_mem_cov( exp, funit, net, ((exp->suppl.part.lhs == 1) && !treat_as_rhs) );
     }
 
@@ -2290,6 +2291,10 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
 
 /*
  $Log$
+ Revision 1.53  2009/01/03 08:03:53  phase1geo
+ Adding more code to support memory coverage.  Added to code to handle parameterized
+ signal sizing.  Updated regressions.  Checkpointing.
+
  Revision 1.52  2009/01/03 03:49:56  phase1geo
  Checkpointing memory coverage work.
 
