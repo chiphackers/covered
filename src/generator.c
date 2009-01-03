@@ -2040,16 +2040,16 @@ static bool generator_insert_mem_cov_helper2(
 
   if( exp != NULL ) {
 
-    if( (exp->right != NULL) && (exp->right->op != EXP_OP_DIM) ) {
-      if( exp->right->elem.dim->set_mem_rd ) {
+    if( (exp->left != NULL) && (exp->left->op != EXP_OP_DIM) ) {
+      if( !exp->left->elem.dim->set_mem_rd ) {
+        generator_insert_mem_cov( exp->left, funit, net, ((exp->suppl.part.lhs == 1) && !treat_as_rhs) );
+        retval = TRUE;
+      } else if( (exp->right != NULL) && (exp->right->op != EXP_OP_DIM) && !exp->right->elem.dim->set_mem_rd ) {
         generator_insert_mem_cov( exp->right, funit, net, ((exp->suppl.part.lhs == 1) && !treat_as_rhs) );
         retval = TRUE;
-      } else if( (exp->left != NULL) && (exp->left->op != EXP_OP_DIM) && exp->left->elem.dim->set_mem_rd ) {
-        generator_insert_mem_cov( exp->left,  funit, net, ((exp->suppl.part.lhs == 1) && !treat_as_rhs) );
-        retval = TRUE;
       }
-    } else if( (exp->left != NULL) && exp->left->elem.dim->set_mem_rd && !generator_insert_mem_cov_helper2( exp->right, funit, net, treat_as_rhs ) ) {
-      generator_insert_mem_cov( exp->left, funit, net, ((exp->suppl.part.lhs == 1) && !treat_as_rhs) );
+    } else if( (exp->right != NULL) && !exp->right->elem.dim->set_mem_rd && !generator_insert_mem_cov_helper2( exp->left, funit, net, treat_as_rhs ) ) {
+      generator_insert_mem_cov( exp->right, funit, net, ((exp->suppl.part.lhs == 1) && !treat_as_rhs) );
       retval = TRUE;
     }
 
@@ -2074,8 +2074,10 @@ static void generator_insert_mem_cov_helper(
 
   if( exp != NULL ) {
 
-    if( (exp->op == EXP_OP_DIM) || ((exp->sig != NULL) && (exp->sig->suppl.part.type == SSUPPL_TYPE_MEM)) ) {
+    if( exp->op == EXP_OP_DIM ) {
       generator_insert_mem_cov_helper2( exp, funit, net, treat_as_rhs );
+    } else if( (exp->sig != NULL) && (exp->sig->suppl.part.type == SSUPPL_TYPE_MEM) ) {
+      generator_insert_mem_cov( exp, funit, net, ((exp->suppl.part.lhs == 1) && !treat_as_rhs) );
     } else {
       generator_insert_mem_cov_helper( exp->left,  funit, net, treat_as_rhs );
       generator_insert_mem_cov_helper( exp->right, funit, net, treat_as_rhs );
@@ -2282,6 +2284,10 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
 
 /*
  $Log$
+ Revision 1.51  2009/01/02 06:00:26  phase1geo
+ More updates for memory coverage (this is still not working however).  Currently
+ segfaults.  Checkpointing.
+
  Revision 1.50  2009/01/01 07:24:44  phase1geo
  Checkpointing work on memory coverage.  Simple testing now works but still need
  to do some debugging here.
