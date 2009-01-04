@@ -58,24 +58,6 @@ struct fname_link_s {
   fname_link* next;        /*!< Pointer to next filename list */
 };
 
-struct expf_link_s;
-typedef struct expf_link_s expf_link;
-struct expf_link_s {
-  expression* exp;         /*!< Pointer to expression */
-  func_unit*  funit;       /*!< Pointer to functional unit */
-  expf_link*  next;        /*!< Pointer to next expression/functional unit structure in list */
-};
-
-struct event_link_s;
-typedef struct event_link_s event_link;
-struct event_link_s {
-  char*       name;        /*!< Name of the event */
-  func_unit*  funit;       /*!< Pointer to functional unit containing this event expression */
-  expf_link*  expf_head;   /*!< Pointer to the head of the event expression list */
-  expf_link*  expf_tail;   /*!< Pointer to the tail of the event expression list */
-  event_link* next;        /*!< Pointer to the next event in this list */
-};
-
 
 /*!
  Pointer to the current output file.
@@ -123,16 +105,6 @@ str_link* reg_head = NULL;
 str_link* reg_tail = NULL;
 
 /*!
- Pointer to head of event list.
-*/
-event_link* event_head = NULL;
-
-/*!
- Pointer to tail of event list.
-*/
-event_link* event_tail = NULL;
-
-/*!
  Maximum expression depth to generate coverage code for (from command-line).
 */
 unsigned int generator_max_exp_depth = 0xffffffff;
@@ -174,6 +146,11 @@ static statement* curr_stmt;
 */
 static stmt_loop_link* stmt_stack = NULL;
 
+
+static char* generator_gen_size(
+  expression* exp,
+  func_unit*  funit
+);
 
 /*!
  Outputs the current state of the code lists to standard output (for debugging purposes only).
@@ -707,103 +684,6 @@ void generator_flush_hold_code1(
 }
 
 /*!
- Outputs the contents of the given event link to the Verilog code.
-*/
-static void generator_flush_event_comb(
-  event_link* eventl  /*!< Pointer to event link to output */
-) { PROFILE(GENERATOR_FLUSH_EVENT_COMB);
-
-  expf_link*  expfl = eventl->expf_head;
-  expf_link*  tmpefl;
-  expression* exp;
-  bool        begin_end_needed = FALSE;
-
-  while( expfl != NULL ) {
-    exp = expression_get_last_line_expr( expfl->exp );
-    if( expfl->funit->type == FUNIT_MODULE ) {
-      fprintf( curr_ofile, "reg \\covered$E%d_%d_%x ;\n", expfl->exp->line, exp->line, expfl->exp->col );
-    } else {
-      fprintf( curr_ofile, "reg \\covered$E%d_%d_%x$%s ;\n", expfl->exp->line, exp->line, expfl->exp->col, expfl->funit->name );
-    }
-    expfl = expfl->next;
-  }
-
-  /* If we have more than one event to assign, we need a begin..end block output */
-  if( eventl->expf_head != eventl->expf_tail ) {
-    begin_end_needed = TRUE;
-  }
-
-  if( eventl->name[0] == '@' ) {
-    fprintf( curr_ofile, "always %s", eventl->name );
-  } else {
-    fprintf( curr_ofile, "always @(%s)", eventl->name );
-  }
-  if( begin_end_needed ) {
-    fprintf( curr_ofile, " begin" );
-  }
-
-  /* Output the event assignments */
-  expfl = eventl->expf_head;
-  while( expfl != NULL ) {
-    tmpefl = expfl;
-    expfl  = expfl->next;
-    exp    = expression_get_last_line_expr( tmpefl->exp );
-    if( tmpefl->funit->type == FUNIT_MODULE ) {
-      fprintf( curr_ofile, "  \\covered$E%d_%d_%x = 1'b1;\n", tmpefl->exp->line, exp->line, tmpefl->exp->col );
-    } else {
-      fprintf( curr_ofile, "  \\covered$E%d_%d_%x$%s = 1'b1;\n", tmpefl->exp->line, exp->line, tmpefl->exp->col, tmpefl->funit->name );
-    }
-    free_safe( tmpefl, sizeof( expf_link ) );
-  }
-
-  if( begin_end_needed ) {
-    fprintf( curr_ofile, "end\n" );
-  }
-
-  fprintf( curr_ofile, "\n" );
-
-  /* Deallocate the rest of the event link */
-  free_safe( eventl->name, (strlen( eventl->name ) + 1) );
-  free_safe( eventl, sizeof( event_link ) );
-
-  PROFILE_END;
-
-}
-
-/*!
- This function should only be called just prior to an endmodule token.  It flushes the current contents of the
- event list to the module for the purposes of handling combinational logic event types.
-*/
-void generator_flush_event_combs1(
-  const char*  file,  /*!< Filename where function is called */
-  unsigned int line   /*!< Line number where function is called */
-) { PROFILE(GENERATOR_FLUSH_EVENT_COMBS1);
-
-  event_link* eventl = event_head;
-  event_link* tmpl;
-
-#ifdef DEBUG_MODE
-  if( debug_mode ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Flushing event code (file: %s, line: %u)", file, line );
-    assert( rv < USER_MSG_LENGTH );
-    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-  }
-#endif
-
-  while( eventl != NULL ) {
-    tmpl   = eventl;
-    eventl = eventl->next;
-    generator_flush_event_comb( tmpl );
-  }
-
-  event_head = event_tail = NULL;
-
-  PROFILE_END;
-
-}
-
-
-/*!
  Shortcut for calling generator_flush_work_code() followed by generator_flush_hold_code().
 */
 void generator_flush_all1(
@@ -904,9 +784,9 @@ void generator_insert_line_cov_with_stmt(
     str_link*    tmp_tail = NULL;
 
     if( stmt->funit->type == FUNIT_MODULE ) {
-      rv = snprintf( sig, 4096, " \\covered$l%d_%d_%x ", stmt->exp->line, last_exp->line, stmt->exp->col );
+      rv = snprintf( sig, 4096, " \\covered$L%d_%d_%x ", stmt->exp->line, last_exp->line, stmt->exp->col );
     } else {
-      rv = snprintf( sig, 4096, " \\covered$l%d_%d_%x$%s ", stmt->exp->line, last_exp->line, stmt->exp->col, stmt->funit->name );
+      rv = snprintf( sig, 4096, " \\covered$L%d_%d_%x$%s ", stmt->exp->line, last_exp->line, stmt->exp->col, stmt->funit->name );
     }
     assert( rv < 4096 );
 
@@ -969,97 +849,119 @@ void generator_insert_event_comb_cov(
 ) { PROFILE(GENERATOR_INSERT_EVENT_COMB_COV);
 
   char         name[4096];
+  char         str[4096];
   unsigned int rv;
+  expression*  last_exp = expression_get_last_line_expr( exp );
+  expression*  root_exp = exp;
+
+  /* Find the root event of this expression tree */
+  while( (ESUPPL_IS_ROOT( root_exp->suppl ) == 0) && (EXPR_IS_EVENT( root_exp->parent->expr ) == 1) ) {
+    root_exp = root_exp->parent->expr;
+  }
+
+  /* Create signal name */
+  if( funit->type == FUNIT_MODULE ) {
+    rv = snprintf( name, 4096, " \\covered$E%d_%d_%x ", exp->line, last_exp->line, exp->col );
+  } else {
+    rv = snprintf( name, 4096, " \\covered$E%d_%d_%x$%s ", exp->line, last_exp->line, exp->col, funit->name );
+  }
+  assert( rv < 4096 );
+
+  /* Create register */
+  if( reg_needed ) {
+    rv = snprintf( str, 4096, "reg %s;", name );
+    assert( rv < 4096 );
+    str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
+  }
 
   /*
    If the expression is a root of an expression tree and it is a single event, just insert the event coverage code
    immediately.
   */
-  if( (ESUPPL_IS_ROOT( exp->suppl ) == 1) && (exp->op != EXP_OP_EOR) ) {
+  if( exp == root_exp ) {
 
-    char        str[4096];
     expression* last_exp = expression_get_last_line_expr( exp );
-
-    /* Create signal name */
-    if( funit->type == FUNIT_MODULE ) {
-      rv = snprintf( name, 4096, " \\covered$E%d_%d_%x ", exp->line, last_exp->line, exp->col );
-    } else {
-      rv = snprintf( name, 4096, " \\covered$E%d_%d_%x$%s ", exp->line, last_exp->line, exp->col, funit->name );
-    }
-    assert( rv < 4096 );
-
-    /* Create register */
-    if( reg_needed ) {
-      rv = snprintf( str, 4096, "reg %s;", name );
-      assert( rv < 4096 );
-      str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
-    }
 
     /* Create assignment and append it to the working code list */
     rv = snprintf( str, 4096, "%s = 1'b1;", name );
     assert( rv < 4096 );
-    str_link_add( strdup_safe( str ), &work_head, &work_tail );
+    generator_add_to_work_code( str, FALSE );
 
   /*
    Otherwise, we will store off the information to inject it at the end of the module.
   */
   } else {
 
-    char**       code       = NULL;
-    unsigned int code_depth = 0;
-    char*        event_str;
-    unsigned int i;
-    event_link*  eventl;
+    char*       event_str = codegen_gen_expr_one_line( exp->right, funit );
+    expression* last_exp  = expression_get_last_line_expr( exp );
+    char        tname[4096];
 
-    /* Create signal name */
+    /* Create signal name for root expression */
     if( funit->type == FUNIT_MODULE ) {
-      rv = snprintf( name, 4096, " \\covered$z%d_%x ", exp->line, exp->col );
+      rv = snprintf( tname, 4096, " \\covered$X%d_%d_%x ", exp->line, last_exp->line, exp->col );
     } else {
-      rv = snprintf( name, 4096, " \\covered$z%d_%x$%s ", exp->line, exp->col, funit->name );
+      rv = snprintf( tname, 4096, " \\covered$X%d_%d_%x$%s ", exp->line, last_exp->line, exp->col, funit->name );
     }
     assert( rv < 4096 );
 
-    /* Create the event string */
-    event_str = codegen_gen_expr_one_line( exp, funit );
+    /* Handle the event */
+    switch( exp->op ) {
+      case EXP_OP_PEDGE :
+        {
+          if( reg_needed ) {
+            rv = snprintf( str, 4096, "reg %s;", tname );
+            assert( rv < 4096 );
+            str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
+          }
+          rv = snprintf( str, 4096, " %s = %s;", tname, event_str );
+          assert( rv < 4096 );
+          generator_prepend_to_work_code( str );
+          rv = snprintf( str, 4096, " %s = (%s!==1'b1) & (%s===1'b1);", name, tname, event_str );
+          assert( rv < 4096 );
+          generator_add_to_work_code( str, FALSE );
+        }
+        break;
 
-    /* Search through event list to see if this event has already been added */
-    eventl = event_head;
-    while( (eventl != NULL) && (strcmp( eventl->name, event_str ) != 0) ) {
-      eventl = eventl->next;
+      case EXP_OP_NEDGE :
+        {
+          if( reg_needed ) {
+            rv = snprintf( str, 4096, "reg %s;", tname );
+            assert( rv < 4096 );
+            str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
+          }
+          rv = snprintf( str, 4096, " %s = %s;", tname, event_str );
+          assert( rv < 4096 );
+          generator_prepend_to_work_code( str );
+          rv = snprintf( str, 4096, " %s = (%s!==1'b0) & (%s===1'b0);", name, tname, event_str );
+          assert( rv < 4096 );
+          generator_add_to_work_code( str, FALSE );
+        }
+        break;
+
+      case EXP_OP_AEDGE :
+        {
+          if( reg_needed ) {
+            char* size = generator_gen_size( exp->right, funit );
+            rv = snprintf( str, 4096, "reg [(%s-1):0] %s;", size, tname );
+            assert( rv < 4096 );
+            str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
+            free_safe( size, (strlen( size ) + 1) );
+          }
+          rv = snprintf( str, 4096, " %s = %s;", tname, event_str );
+          assert( rv < 4096 );
+          generator_prepend_to_work_code( str );
+          rv = snprintf( str, 4096, " %s = (%s!==%s);", name, tname, event_str );
+          assert( rv < 4096 );
+          generator_add_to_work_code( str, FALSE );
+        }
+        break;
+
+      default :
+        break;
     }
 
-    /* Add the expression to the event list if a matching event link is found */
-    if( eventl != NULL ) {
-      expf_link* expfl = (expf_link*)malloc_safe( sizeof( expf_link ) );
-      expfl->exp       = exp;
-      expfl->funit     = funit;
-      expfl->next      = NULL;
-      if( eventl->expf_head == NULL ) {
-        eventl->expf_head = eventl->expf_tail = NULL;
-      } else {
-        eventl->expf_tail->next = expfl;
-        eventl->expf_tail       = expfl;
-      }
-      free_safe( event_str, (strlen( event_str ) + 1) );
-
-    /* Otherwise, allocate and initialize a new event link and add it to the list */
-    } else {
-      expf_link* expfl  = (expf_link*)malloc_safe( sizeof( expf_link ) );
-      expfl->exp        = exp;
-      expfl->funit      = funit;
-      expfl->next       = NULL;
-      eventl            = (event_link*)malloc_safe( sizeof( event_link ) );
-      eventl->name      = event_str;
-      eventl->expf_head = expfl;
-      eventl->expf_tail = expfl;
-      eventl->next      = NULL;
-      if( event_head == NULL ) {
-        event_head = event_tail = eventl;
-      } else {
-        event_tail->next = eventl;
-        event_tail       = eventl;
-      }
-    }
+    /* Deallocate memory */
+    free_safe( event_str, (strlen( event_str ) + 1) );
 
   }
 
@@ -1220,12 +1122,12 @@ static void generator_insert_comb_comb_cov(
 /*!
  Generates MSB string to use for sizing subexpression values.
 */
-static char* generator_gen_msb(
+static char* generator_gen_size(
   expression* exp,   /*!< Pointer to subexpression to generate MSB value for */
   func_unit*  funit  /*!< Pointer to functional unit containing this subexpression */
 ) { PROFILE(GENERATOR_GEN_MSB);
 
-  char* msb = NULL;
+  char* size = NULL;
 
   if( exp != NULL ) {
 
@@ -1239,17 +1141,17 @@ static char* generator_gen_msb(
           char tmp[50];
           rv = snprintf( tmp, 50, "%d", exp->value->width );
           assert( rv < 50 );
-          msb = strdup_safe( tmp );
+          size = strdup_safe( tmp );
         }
         break;
       case EXP_OP_LIST     :
       case EXP_OP_MULTIPLY :
-        lexp = generator_gen_msb( exp->left,  funit );
-        rexp = generator_gen_msb( exp->right, funit );
+        lexp = generator_gen_size( exp->left,  funit );
+        rexp = generator_gen_size( exp->right, funit );
         {
           unsigned int slen = strlen( lexp ) + strlen( rexp ) + 4;
-          msb = (char*)malloc_safe( slen );
-          rv  = snprintf( msb, slen, "(%s+%s)", lexp, rexp );
+          size = (char*)malloc_safe( slen );
+          rv  = snprintf( size, slen, "(%s+%s)", lexp, rexp );
           assert( rv < slen );
         }
         free_safe( lexp, (strlen( lexp ) + 1) );
@@ -1257,27 +1159,27 @@ static char* generator_gen_msb(
         break;
       case EXP_OP_CONCAT         :
       case EXP_OP_NEGATE         :
-        msb = generator_gen_msb( exp->right, funit );
+        size = generator_gen_size( exp->right, funit );
         break;
       case EXP_OP_MBIT_POS       :
       case EXP_OP_MBIT_NEG       :
       case EXP_OP_PARAM_MBIT_POS :
       case EXP_OP_PARAM_MBIT_NEG :
-        msb = codegen_gen_expr_one_line( exp->right, funit );
+        size = codegen_gen_expr_one_line( exp->right, funit );
         break;
       case EXP_OP_LSHIFT  :
       case EXP_OP_RSHIFT  :
       case EXP_OP_ALSHIFT :
       case EXP_OP_ARSHIFT :
-        msb = generator_gen_msb( exp->left, funit );
+        size = generator_gen_size( exp->left, funit );
         break;
       case EXP_OP_EXPAND :
         lexp = codegen_gen_expr_one_line( exp->left, funit );
-        rexp = generator_gen_msb( exp->right, funit );
+        rexp = generator_gen_size( exp->right, funit );
         {
           unsigned int slen = strlen( lexp ) + strlen( rexp ) + 4;
-          msb = (char*)malloc_safe( slen );
-          rv  = snprintf( msb, slen, "(%s*%s)", lexp, rexp );
+          size = (char*)malloc_safe( slen );
+          rv  = snprintf( size, slen, "(%s*%s)", lexp, rexp );
           assert( rv < slen );
         }
         free_safe( lexp, (strlen( lexp ) + 1) );
@@ -1286,10 +1188,10 @@ static char* generator_gen_msb(
       case EXP_OP_STIME :
       case EXP_OP_SR2B  :
       case EXP_OP_SR2I  :
-        msb = strdup_safe( "64" );
+        size = strdup_safe( "64" );
         break;
       case EXP_OP_SSR2B :
-        msb = strdup_safe( "32" );
+        size = strdup_safe( "32" );
         break;
       case EXP_OP_LT        :
       case EXP_OP_GT        :
@@ -1325,13 +1227,13 @@ static char* generator_gen_msb(
       case EXP_OP_STESTARGS :
       case EXP_OP_SVALARGS  :
       case EXP_OP_PARAM_SBIT :
-        msb = strdup_safe( "1" );
+        size = strdup_safe( "1" );
         break;
       case EXP_OP_SBIT_SEL  :
         if( exp->sig->suppl.part.type == SSUPPL_TYPE_MEM ) {
-          msb = mod_parm_gen_size_code( exp->sig, expression_get_curr_dimension( exp ), funit_get_curr_module( funit ) );
+          size = mod_parm_gen_size_code( exp->sig, expression_get_curr_dimension( exp ), funit_get_curr_module( funit ) );
         } else {
-          msb = strdup_safe( "1" );
+          size = strdup_safe( "1" );
         }
         break;
       case EXP_OP_MBIT_SEL   :
@@ -1340,8 +1242,8 @@ static char* generator_gen_msb(
         rexp = codegen_gen_expr_one_line( exp->right, funit );
         {
           unsigned int slen = (strlen( lexp ) * 3) + (strlen( rexp ) * 3) + 18;
-          msb = (char*)malloc_safe( slen );
-          rv  = snprintf( msb, slen, "(((%s>%s)?(%s-%s):(%s-%s))+1)", lexp, rexp, lexp, rexp, rexp, lexp );
+          size = (char*)malloc_safe( slen );
+          rv  = snprintf( size, slen, "(((%s>%s)?(%s-%s):(%s-%s))+1)", lexp, rexp, lexp, rexp, rexp, lexp );
           assert( rv < slen );
         }
         free_safe( lexp, (strlen( lexp ) + 1) );
@@ -1351,49 +1253,42 @@ static char* generator_gen_msb(
       case EXP_OP_PARAM     :
       case EXP_OP_FUNC_CALL :
         if( (exp->sig->suppl.part.type == SSUPPL_TYPE_GENVAR) || (exp->sig->suppl.part.type == SSUPPL_TYPE_DECL_SREAL) ) {
-          msb = strdup_safe( "32" );
+          size = strdup_safe( "32" );
         } else if( exp->sig->suppl.part.type == SSUPPL_TYPE_DECL_REAL ) {
-          msb = strdup_safe( "64" );
-//        } else if( !exp->sig->suppl.part.implicit_size ) {
+          size = strdup_safe( "64" );
         } else {
-          char tmp[50];
-          rv = snprintf( tmp, 50, "%d", exp->sig->value->width );
-          assert( rv < 50 );
-          msb = strdup_safe( tmp );
-//        } else {
-//          /* TBD - We need to look at the signal size expression... */
-//          *msb = strdup_safe( "???" );
+          size = mod_parm_gen_size_code( exp->sig, expression_get_curr_dimension( exp ), funit_get_curr_module( funit ) );
         }
         break;
       default :
-        lexp = generator_gen_msb( exp->left,  funit );
-        rexp = generator_gen_msb( exp->right, funit );
+        lexp = generator_gen_size( exp->left,  funit );
+        rexp = generator_gen_size( exp->right, funit );
         if( lexp != NULL ) {
           if( rexp != NULL ) {
             unsigned int slen = (strlen( lexp ) * 2) + (strlen( rexp ) * 2) + 8;
-            msb = (char*)malloc_safe( slen );
-            rv   = snprintf( msb, slen, "((%s>%s)?%s:%s)", lexp, rexp, lexp, rexp );
+            size = (char*)malloc_safe( slen );
+            rv   = snprintf( size, slen, "((%s>%s)?%s:%s)", lexp, rexp, lexp, rexp );
             assert( rv < slen );
             free_safe( lexp, (strlen( lexp ) + 1) );
             free_safe( rexp, (strlen( rexp ) + 1) );
           } else {
-            msb = lexp;
+            size = lexp;
           }
         } else {
           if( rexp != NULL ) {
-            msb = rexp;
+            size = rexp;
           } else {
-            msb = NULL;
+            size = NULL;
           }
         }
         break;
     }
 
-  }
+  } 
 
   PROFILE_END;
 
-  return( msb );
+  return( size );
 
 }
 
@@ -1410,7 +1305,7 @@ static char* generator_create_lhs(
   unsigned int rv;
   char         name[4096];
   char         tmp[4096];
-  char*        msb;
+  char*        size;
   char*        code;
   expression*  last_exp = expression_get_last_line_expr( exp );
 
@@ -1423,12 +1318,12 @@ static char* generator_create_lhs(
   assert( rv < 4096 );
 
   /* Generate MSB string */
-  msb = generator_gen_msb( exp, funit );
+  size = generator_gen_size( exp, funit );
 
   if( net ) {
 
     /* Create sized wire string */
-    rv = snprintf( tmp, 4096, "wire [(%s-1):0] %s", ((msb != NULL) ? msb : "1"), name );
+    rv = snprintf( tmp, 4096, "wire [(%s-1):0] %s", ((size != NULL) ? size : "1"), name );
     assert( rv < 4096 );
 
     code = strdup_safe( tmp );
@@ -1437,7 +1332,7 @@ static char* generator_create_lhs(
 
     /* Create sized register string */
     if( reg_needed ) {
-      rv = snprintf( tmp, 4096, "reg [(%s-1):0] %s;", ((msb != NULL) ? msb : "1"), name );
+      rv = snprintf( tmp, 4096, "reg [(%s-1):0] %s;", ((size != NULL) ? size : "1"), name );
       assert( rv < 4096 );
       str_link_add( strdup_safe( tmp ), &reg_head, &reg_tail );
     }
@@ -1448,7 +1343,7 @@ static char* generator_create_lhs(
   }
 
   /* Deallocate memory */
-  free_safe( msb, (strlen( msb ) + 1) );
+  free_safe( size, (strlen( size ) + 1) );
 
   PROFILE_END;
 
@@ -1934,7 +1829,7 @@ static void generator_insert_mem_cov(
   /* Now insert the code to store the index and memory */
   if( write ) {
 
-    char*        msb;
+    char*        size;
     char*        memstr;
     unsigned int vlen;
     char         iname[4096];
@@ -1990,11 +1885,11 @@ static void generator_insert_mem_cov(
     }
     assert( rv < 4096 );
 
-    /* Generate msb */
-    msb = generator_gen_msb( exp, funit );
+    /* Generate size */
+    size = generator_gen_size( exp, funit );
 
     /* Create the range information for the write */
-    rv = snprintf( range, 4096, "[(%s+%d):0]", msb, exp->elem.dim->dim_width );
+    rv = snprintf( range, 4096, "[(%s+%d):0]", size, exp->elem.dim->dim_width );
     assert( rv < 4096 );
 
     /* Create the value to assign */
@@ -2005,7 +1900,7 @@ static void generator_insert_mem_cov(
     assert( rv < vlen );
 
     /* Deallocate temporary strings */
-    free_safe( msb, (strlen( msb ) + 1) );
+    free_safe( size, (strlen( size ) + 1) );
     free_safe( memstr, (strlen( memstr ) + 1) );
 
   } else {
@@ -2255,23 +2150,23 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
 
       if( fsml->table->from_state->id == fsml->table->to_state->id ) {
 
-        char* msb = generator_gen_msb( fsml->table->from_state, curr_funit );
-        char* exp = codegen_gen_expr_one_line( fsml->table->from_state, curr_funit );
-        fprintf( curr_ofile, "wire [(%s-1):0] \\covered$F%d = %s;\n", ((msb != NULL) ? msb : "1"), id, exp );
-        free_safe( msb, (strlen( msb ) + 1) );
+        char* size = generator_gen_size( fsml->table->from_state, curr_funit );
+        char* exp  = codegen_gen_expr_one_line( fsml->table->from_state, curr_funit );
+        fprintf( curr_ofile, "wire [(%s-1):0] \\covered$F%d = %s;\n", ((size != NULL) ? size : "1"), id, exp );
+        free_safe( size, (strlen( size ) + 1) );
         free_safe( exp, (strlen( exp ) + 1) );
 
       } else {
 
-        char* fmsb = generator_gen_msb( fsml->table->from_state, curr_funit );
-        char* fexp = codegen_gen_expr_one_line( fsml->table->from_state, curr_funit );
-        char* tmsb = generator_gen_msb( fsml->table->to_state, curr_funit );
-        char* texp = codegen_gen_expr_one_line( fsml->table->to_state, curr_funit );
+        char* fsize = generator_gen_size( fsml->table->from_state, curr_funit );
+        char* fexp  = codegen_gen_expr_one_line( fsml->table->from_state, curr_funit );
+        char* tsize = generator_gen_size( fsml->table->to_state, curr_funit );
+        char* texp  = codegen_gen_expr_one_line( fsml->table->to_state, curr_funit );
         fprintf( curr_ofile, "wire [((%s+%s)-1):0] \\covered$F%d = {%s,%s};\n",
-                 ((fmsb != NULL) ? fmsb : "1"), ((tmsb != NULL) ? tmsb : "1"), id, fexp, texp );
-        free_safe( fmsb, (strlen( fmsb ) + 1) );
+                 ((fsize != NULL) ? fsize : "1"), ((tsize != NULL) ? tsize : "1"), id, fexp, texp );
+        free_safe( fsize, (strlen( fsize ) + 1) );
         free_safe( fexp, (strlen( fexp ) + 1) );
-        free_safe( tmsb, (strlen( tmsb ) + 1) );
+        free_safe( tsize, (strlen( tsize ) + 1) );
         free_safe( texp, (strlen( texp ) + 1) );
 
       }
@@ -2290,6 +2185,10 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
 
 /*
  $Log$
+ Revision 1.55  2009/01/03 21:21:25  phase1geo
+ Fixing combinational logic coverage issue with dimension operators.  Update
+ to regressions.  Checkpointing (30 diagnostics failing in IV regression).
+
  Revision 1.54  2009/01/03 20:41:14  phase1geo
  Fixing lastest issue with memory coverage.  Need to fix a combinational logic
  coverage issue next.  Checkpointing.

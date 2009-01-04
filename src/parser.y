@@ -4975,7 +4975,7 @@ statement
         if( (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
           generator_prepend_to_work_code( " begin " );
         }
-        generator_flush_work_code;
+        // generator_flush_work_code;
         generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
         generator_flush_work_code;
       }

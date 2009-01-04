@@ -883,7 +883,6 @@ WSPACE [ \t\b\f]+
       } else {
         if( rc == K_endmodule ) {
           generator_flush_all;
-          generator_flush_event_combs;
           generator_insert_fsm_covs();
         }
         generator_add_to_work_code( yytext, TRUE );

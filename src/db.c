@@ -3008,13 +3008,13 @@ void db_assign_symbol(
       char         type  = name[index];
 
       /* If the type is an x (temporary register) or a y (temporary wire), don't continue on */
-      if( (type != 'x') && (type != 'X') && (type != 'i') && (type != 'I') ) {
+      if( (type != 'x') && (type != 'X') && (type != 'i') && (type != 'I') && (type != 'Z') ) {
 
         func_unit*  mod = funit_get_curr_module( curr_instance->funit );
         expression* exp;
 
         /* Handle line coverage */
-        if( type == 'l' ) {
+        if( type == 'L' ) {
       
           int          fline;
           int          lline;
@@ -3368,6 +3368,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.371  2009/01/01 07:24:43  phase1geo
+ Checkpointing work on memory coverage.  Simple testing now works but still need
+ to do some debugging here.
+
  Revision 1.370  2009/01/01 00:19:40  phase1geo
  Adding memory coverage insertion code.  Still need to add memory coverage handling
  code during runtime.  Checkpointing.
