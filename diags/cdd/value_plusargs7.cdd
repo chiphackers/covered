@@ -1,14 +1,14 @@
-5 13 181 3 *
+5 14 181 3 *
 8 /home/bryce3/trevorw/covered/diags/verilog 2 -t (main) 2 -vcd (value_plusargs7.vcd) 2 -o (value_plusargs7.cdd) 2 -v (value_plusargs7.v) 1 +optionG=123.456 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 value_plusargs7.v 8 46 1
-2 1 13 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0
+2 1 13 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 u$0
 1 a 1 10 1070005 1 0 0 0 1 17 0 1 0 1 0 0
 1 b 2 10 1070008 1 0 0 0 1 17 0 1 0 0 0 0
 1 x 3 11 110005 1 0 63 0 64 53 0 123.456000
 1 y 4 11 110008 1 0 63 0 64 53 0 0.000000
 4 1 1 0 0
-3 1 main.$u0 "main.$u0" 0 value_plusargs7.v 13 21 1
+3 1 main.u$0 "main.u$0" 0 value_plusargs7.v 13 21 1
 2 2 14 50008 1 0 21004 0 0 1 16 0 0
 2 3 14 10001 0 1 1410 0 0 1 1 a
 2 4 14 10008 1 37 16 2 3
@@ -74,16 +74,16 @@
 4 9 0 31 0
 4 7 0 9 9
 4 4 11 7 7
-3 1 main.$u1 "main.$u1" 0 value_plusargs7.v 23 30 1
+3 1 main.u$1 "main.u$1" 0 value_plusargs7.v 23 30 1
 3 2 main.fabs "main.fabs" 0 value_plusargs7.v 32 44 1
-2 60 36 20006 1 3d 5802 0 0 1 18 0 1 0 0 0 0 $u2
+2 60 36 20006 1 3d 5802 0 0 1 18 0 1 0 0 0 0 u$2
 1 fabs 5 32 1090010 1 0 63 0 64 17 ffffffffffffffff ffffffffffffffff 0 0 0 0
 1 a 6 33 100000f 1 0 63 0 64 17 ffffffffffffffff ffffffffffffffff 0 0 0 0
 1 b 7 34 100000f 1 0 63 0 64 17 ffffffffffffffff ffffffffffffffff 0 0 0 0
 1 x 8 35 1110007 1 0 63 0 64 53 0 123.456000
 1 y 9 35 111000a 1 0 63 0 64 53 0 123.456000
 4 60 11 0 0
-3 1 main.fabs.$u2 "main.fabs.$u2" 0 value_plusargs7.v 36 43 1
+3 1 main.fabs.u$2 "main.fabs.u$2" 0 value_plusargs7.v 36 43 1
 2 61 37 150015 1 1 1808 0 0 64 1 a
 2 62 37 150015 1 6c 1800 61 0 64 18 0 ffffffffffffffff 0 0 0 0
 2 63 37 80017 1 71 1800 0 62 64 22 0 123.456000

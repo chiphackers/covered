@@ -4508,6 +4508,7 @@ statement
   | K_repeat '(' expression ')'
     {
       if( !parse_mode ) {
+        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
         generator_insert_line_cov( @1.first_line, @4.last_line, @1.first_column, (@4.last_column - 1), TRUE );
         generator_flush_work_code;
       }

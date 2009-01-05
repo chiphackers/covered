@@ -1,11 +1,11 @@
-5 13 181 2 *
+5 14 181 2 *
 8 /home/bryce3/trevorw/covered/diags/verilog 2 -t (main) 2 -vcd (marray1.1.vcd) 2 -o (marray1.1.cdd) 2 -v (marray1.1.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 marray1.1.v 1 22 1
-2 1 5 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0
+2 1 5 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 u$0
 1 a 1 3 107000f 2 0 2 0 3 0 12 17 0 fff 0 d0 fde 0
 4 1 1 0 0
-3 1 main.$u0 "main.$u0" 0 marray1.1.v 5 11 1
+3 1 main.u$0 "main.u$0" 0 marray1.1.v 5 11 1
 2 2 6 d0013 1 0 61008 0 0 12 16 fff 0
 2 3 6 10001 0 1 1410 0 0 12 1 a
 2 4 6 10013 1 37 1a 2 3
@@ -38,4 +38,4 @@
 4 13 0 20 20
 4 8 0 13 13
 4 4 11 8 8
-3 1 main.$u1 "main.$u1" 0 marray1.1.v 13 20 1
+3 1 main.u$1 "main.u$1" 0 marray1.1.v 13 20 1
