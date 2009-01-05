@@ -161,7 +161,7 @@ char* mod_parm_gen_size_code(
   mod_parm*    mparm   = mod->param_head;
 
   /* First, find the matching LSB module parameter */
-  while( (mparm != NULL) && printf( "type: %d, dimension: %d (%d)\n", mparm->suppl.part.type, mparm->suppl.part.dimension, dimension ) && ((mparm->sig != sig) || (mparm->suppl.part.dimension != dimension)) ) {
+  while( (mparm != NULL) && ((mparm->sig != sig) || (mparm->suppl.part.dimension != dimension)) ) {
     mparm = mparm->next;
   }
 
@@ -1244,6 +1244,9 @@ void inst_parm_dealloc(
 
 /*
  $Log$
+ Revision 1.120  2009/01/05 20:15:26  phase1geo
+ Fixing issue with memory coverage.  Checkpointing (20 diags fail currently).
+
  Revision 1.119  2009/01/03 08:03:53  phase1geo
  Adding more code to support memory coverage.  Added to code to handle parameterized
  signal sizing.  Updated regressions.  Checkpointing.

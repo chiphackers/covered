@@ -13,8 +13,8 @@ $OUTPUT = "merge_err1.output";
 # Create a temporary file with read-only permissions
 system( "touch $OUTPUT; chmod 400 $OUTPUT" ) && die;
 
-system( "make DIAG=merge_err1a TOP=merge_err1a.v diagrun" ) && die;
-system( "make DIAG=merge_err1b TOP=merge_err1b.v diagrun" ) && die;
+system( "make DIAG=merge_err1a TOP=${TOPDIR}merge_err1a.v diagrun" ) && die;
+system( "make DIAG=merge_err1b TOP=${TOPDIR}merge_err1b.v diagrun" ) && die;
 &runMergeCommand( "-o $OUTPUT merge_err1a.cdd merge_err1b.cdd 2> merge_err1.err" );
 system( "cat merge_err1.err" ) && die;
 

@@ -3097,14 +3097,16 @@ bool vector_vcd_assign(
   const char* ptr;             /* Pointer to current character under evaluation */
   int         i;               /* Loop iterator */
 
+  /* Make adjust ment to MSB if necessary */
+  msb = (msb > 0) ? msb : -msb;
+
   assert( vec != NULL );
   assert( value != NULL );
-  assert( (msb < 0) || ((unsigned int)msb <= vec->width) );
+  assert( msb <= vec->width );
 
   /* Set pointer to LSB */
   ptr = (value + strlen( value )) - 1;
-  i   = (lsb > 0) ? lsb : 0;
-  msb = (lsb > 0) ? msb : msb;
+  i   = lsb;
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL :
@@ -5230,6 +5232,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.187  2009/01/03 08:03:53  phase1geo
+ Adding more code to support memory coverage.  Added to code to handle parameterized
+ signal sizing.  Updated regressions.  Checkpointing.
+
  Revision 1.186  2009/01/01 07:24:44  phase1geo
  Checkpointing work on memory coverage.  Simple testing now works but still need
  to do some debugging here.

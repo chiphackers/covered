@@ -315,7 +315,11 @@ void symtable_add_signal(
   curr = symtable_get_table( sym );
 
   if( curr->entry.sig == NULL ) {
-    symtable_init( curr, msb, lsb );
+    if( msb < lsb ) {
+      symtable_init( curr, lsb, msb );
+    } else {
+      symtable_init( curr, msb, lsb );
+    }
   }
 
   symtable_add_sym_sig( curr, sig, msb, lsb );
@@ -562,6 +566,10 @@ void symtable_dealloc(
 
 /*
  $Log$
+ Revision 1.44  2009/01/01 07:24:44  phase1geo
+ Checkpointing work on memory coverage.  Simple testing now works but still need
+ to do some debugging here.
+
  Revision 1.43  2008/12/24 21:19:02  phase1geo
  Initial work at getting FSM coverage put in (this looks to be working correctly
  to this point).  Updated regressions per fixes.  Checkpointing.

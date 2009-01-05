@@ -44,6 +44,12 @@ $DUMPTYPE = "VCD";
 # Specifies if the VPI mode of operation should be used for this simulation (0, 1)
 $USE_VPI = 0;
 
+# Specifies whether we should generate inlined code coverage (1) or not (0).
+$INLINE = 0;
+
+# Specifies the top-level directory to find the top file(s).
+$TOPDIR = "";
+
 # Specifies the relative pathname to the directory containing CDD files to
 # compare against.
 $CDD_DIR = "../cdd";
@@ -63,6 +69,7 @@ $RPT_OUTPUT = "regress.output";
 # Specifies the name of the file containing all failed regression runs in the
 # Verilog directory.
 $FAIL_OUTPUT = "regress.failed";
+
 
 
 ######################
@@ -115,6 +122,9 @@ sub initialize {
       } elsif( $varname eq "VPI" ) {
         $USE_VPI  = 1;
         $DUMPTYPE = "VPI";
+      } elsif( $varname eq "INLINE" ) {
+        $INLINE = 1;
+        $TOPDIR = "covered/verilog/";
       }
 
     }
