@@ -2662,7 +2662,6 @@ generate_item
     }
   | K_if inc_gen_expr_mode '(' static_expr ')' dec_gen_expr_mode inc_block_depth generate_item dec_block_depth %prec less_than_K_else
     {
-      printf( "=============================================================\n" );
       if( parse_mode ) {
         expression* expr;
         gen_item*   gi1;
@@ -5458,8 +5457,9 @@ statement
         }
       } else {
         generator_insert_line_cov( @1.first_line, @4.last_line, @1.first_column, (@4.last_column - 1), TRUE );
+        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
         generator_flush_work_code;
-        $$ = NULL;  /* TBD */
+        $$ = NULL;
       }
       free_safe( $1, (strlen( $1 ) + 1) );
     }

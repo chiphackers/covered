@@ -270,8 +270,10 @@ funit_inst* instance_find_scope(
   /* First extract the front scope */
   scope_extract_front( scope, front, rest );
 
+  // printf( "front: %s, rest: %s, unnamed: %d\n", front, rest, funit_is_unnamed( root->funit ) );
+
   /* Skip this instance and move onto the children if we are an unnamed scope that does not contain signals */
-  if( !rm_unnamed && db_is_unnamed_scope( root->name ) && !funit_is_unnamed( root->funit ) ) {
+  if( rm_unnamed && !db_is_unnamed_scope( front ) && funit_is_unnamed( root->funit ) ) {
     child = root->child_head;
     while( (child != NULL) && ((inst = instance_find_scope( child, scope, rm_unnamed )) == NULL) ) {
       child = child->next;
@@ -843,7 +845,7 @@ bool instance_read_add(
 
     assert( parent != NULL );
   
-    if( (inst = instance_find_scope( *root, parent, TRUE )) != NULL ) {
+    if( (inst = instance_find_scope( *root, parent, FALSE )) != NULL ) {
 
       /* Create new instance */
       new_inst = instance_create( child, inst_name, FALSE, NULL );
@@ -1201,7 +1203,7 @@ void instance_only_db_read(
     /* Otherwise, find our parent instance and attach the new instance to it */
     } else {
       funit_inst* parent;
-      if( (parent = inst_link_find_by_scope( rest, db_list[curr_db]->inst_tail )) != NULL ) {
+      if( (parent = inst_link_find_by_scope( rest, db_list[curr_db]->inst_tail, FALSE )) != NULL ) {
         if( parent->child_head == NULL ) {
           parent->child_head = parent->child_tail = child;
         } else {
@@ -1258,14 +1260,14 @@ void instance_only_db_merge(
     if( rest[0] == '\0' ) {
 
       /* Add a new instance link if was not able to be found in the instance linked list */
-      if( inst_link_find_by_scope( scope, db_list[curr_db]->inst_head ) == NULL ) {
+      if( inst_link_find_by_scope( scope, db_list[curr_db]->inst_head, FALSE ) == NULL ) {
         (void)inst_link_add( child, &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
       }
 
     /* Otherwise, find our parent instance and attach the new instance to it */
     } else {
       funit_inst* parent;
-      if( (parent = inst_link_find_by_scope( rest, db_list[curr_db]->inst_head )) != NULL ) {
+      if( (parent = inst_link_find_by_scope( rest, db_list[curr_db]->inst_head, FALSE )) != NULL ) {
         if( parent->child_head == NULL ) {
           parent->child_head = parent->child_tail = child;
         } else {
@@ -1541,6 +1543,9 @@ void instance_dealloc(
 
 /*
  $Log$
+ Revision 1.120  2008/11/19 19:42:10  phase1geo
+ Cleaning up splint warnings.
+
  Revision 1.119  2008/11/18 21:11:09  phase1geo
  Removing unnecessary functionality.
 

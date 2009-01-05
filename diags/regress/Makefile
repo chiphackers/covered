@@ -116,14 +116,14 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 task2.1         task2.2         task2.3         task3           task3.1 \
                 task4           task4.1         task6           test_plusargs1  time1 \
                 time1.1         time2           timeformat1     timescale1      timescale1.6 \
-                timescale1.9    timescale1.12   timescale1.15   timescale1.16   timescale1.17 \
-                timescale1.18   timescale2      timescale2.2    timescale2.3    timescale2.4 \
-                timescale2.5    timescale2.8    toggle          toggle2         toggle2.1 \
+                timescale1.9    timescale1.12   timescale1.15 \
+                timescale2      timescale2.2    timescale2.3    timescale2.4 \
+                toggle          toggle2         toggle2.1 \
                 toggle2.2       toggle2.3       tri             tri0            tri1 \
                 triand          trigger1        trior           unary2          unary3 \
                 version1        version1.1      wait1           wait1.1         wait2 \
                 wand            while1          while1.1        wor             write1
-# slist4
+# timescale1.16   timescale1.17   timescale1.18   timescale2.5   timescale2.8
 DIAGS2        = delay1.1
 DIAGS3        = delay1.2
 DIAGS4        = delay1.3
@@ -276,8 +276,9 @@ IVVCSDIAGS3   =
 IVVCSDIAGS4   =
 
 CVERVCSDIAGS1 = fmonitor1        null_stmt2       null_stmt2.1     port4            random1.2 \
-                random1.3        real8            sbit_sel2.1      timescale1.20    timescale2.6 \
-                timescale2.7
+                random1.3        real8            sbit_sel2.1      timescale1.16    timescale1.17 \
+                timescale1.18    timescale1.20    timescale2.5     timescale2.6     timescale2.7 \
+                timescale2.8
 CVERVCSDIAGS2 =
 CVERVCSDIAGS3 =
 CVERVCSDIAGS4 =

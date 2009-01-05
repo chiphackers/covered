@@ -26,7 +26,7 @@ reg b;
 
 initial begin
 	b = 1'b1;
-	#20;
+	#5;
 	b = ~a;
 end
 

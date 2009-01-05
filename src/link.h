@@ -109,7 +109,7 @@ void inst_link_display( inst_link* head );
 #endif
 
 /*! \brief Finds specified functional unit instance in given inst_link list. */
-/*@null@*/ funit_inst* inst_link_find_by_scope( char* scope, inst_link* head );
+/*@null@*/ funit_inst* inst_link_find_by_scope( char* scope, inst_link* head, bool rm_unnamed );
 
 /*! \brief Finds specified functional unit instance in given inst_link list. */
 /*@null@*/ funit_inst* inst_link_find_by_funit( const func_unit* funit, inst_link* head, int* ignore );
@@ -164,6 +164,9 @@ void inst_link_delete_list( inst_link* head );
 
 /*
  $Log$
+ Revision 1.34  2008/11/18 21:11:09  phase1geo
+ Removing unnecessary functionality.
+
  Revision 1.33  2008/01/09 05:22:22  phase1geo
  More splint updates using the -standard option.
 

@@ -2,10 +2,10 @@
 8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (timescale1.20.vcd) 2 -o (timescale1.20.cdd) 2 -v (timescale1.20.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1000
 3 0 main "main" 0 timescale1.20.v 11 30 10
-2 1 15 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 $u0
+2 1 15 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 u$0
 1 a 1 13 1070004 1 0 0 0 1 17 0 1 0 1 0 0
 4 1 1 0 0
-3 1 main.$u0 "main.$u0" 0 timescale1.20.v 15 19 10
+3 1 main.u$0 "main.u$0" 0 timescale1.20.v 15 19 10
 2 2 16 50008 1 0 21004 0 0 1 16 0 0
 2 3 16 10001 0 1 1410 0 0 1 1 a
 2 4 16 10008 1 37 16 2 3
@@ -17,4 +17,4 @@
 4 9 0 0 0
 4 6 0 9 0
 4 4 11 6 6
-3 1 main.$u1 "main.$u1" 0 timescale1.20.v 21 28 10
+3 1 main.u$1 "main.u$1" 0 timescale1.20.v 21 28 10

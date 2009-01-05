@@ -590,7 +590,7 @@ void db_read(
                 /* Now finish reading functional unit line */
                 funit_db_read( &tmpfunit, funit_scope, &inst_name_diff, &rest_line );
                 if( (read_mode == READ_MODE_MERGE_INST_MERGE) &&
-                    ((foundinst = inst_link_find_by_scope( funit_scope, db_list[curr_db]->inst_head )) != NULL) ) {
+                    ((foundinst = inst_link_find_by_scope( funit_scope, db_list[curr_db]->inst_head, FALSE )) != NULL) ) {
                   merge_mode = TRUE;
                   curr_funit = foundinst->funit;
                   funit_db_merge( foundinst->funit, db_handle, TRUE );
@@ -2896,7 +2896,7 @@ void db_sync_curr_instance() { PROFILE(DB_SYNC_CURR_INSTANCE);
 
     if( scope[0] != '\0' ) {
 
-      curr_instance = inst_link_find_by_scope( scope, db_list[curr_db]->inst_head );
+      curr_instance = inst_link_find_by_scope( scope, db_list[curr_db]->inst_head, TRUE );
 
       /* If we have found at least one matching instance, set the one_instance_found flag */
       if( curr_instance != NULL ) {
@@ -3368,6 +3368,9 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.372  2009/01/04 20:11:19  phase1geo
+ Completed initial work on event handling.
+
  Revision 1.371  2009/01/01 07:24:43  phase1geo
  Checkpointing work on memory coverage.  Simple testing now works but still need
  to do some debugging here.

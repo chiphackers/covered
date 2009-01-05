@@ -743,15 +743,16 @@ gitem_link* gitem_link_find(
  generate item could not be matched, the value of NULL is returned.
 */
 funit_inst* inst_link_find_by_scope(
-  char*      scope,  /*!< Hierarchical scope to search for */
-  inst_link* head    /*!< Pointer to head of inst_link list to search */
+  char*      scope,      /*!< Hierarchical scope to search for */
+  inst_link* head,       /*!< Pointer to head of inst_link list to search */
+  bool       rm_unnamed  /*!< If TRUE, removes any unnamed scopes in the design from being compared */
 ) { PROFILE(INST_LINK_FIND_BY_SCOPE);
 
   inst_link*  curr;         /* Pointer to current inst_link */
   funit_inst* inst = NULL;  /* Pointer to found instance */
 
   curr = head;
-  while( (curr != NULL) && ((inst = instance_find_scope( curr->inst, scope, TRUE )) == NULL) ) {
+  while( (curr != NULL) && ((inst = instance_find_scope( curr->inst, scope, rm_unnamed )) == NULL) ) {
     curr = curr->next;
   }
 
@@ -1285,6 +1286,10 @@ void inst_link_delete_list(
 
 /*
  $Log$
+ Revision 1.87  2008/12/05 06:11:56  phase1geo
+ Fixing always block handling and generator_find_statement functionality.
+ Improving statement link display output.
+
  Revision 1.86  2008/12/05 00:22:41  phase1geo
  More work completed on code coverage generator.  Currently working on bug in
  statement finder.  Checkpointing.
