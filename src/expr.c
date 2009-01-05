@@ -5599,8 +5599,7 @@ void expression_vcd_assign(
 
     uint64 intval;
 
-    if( convert_str_to_uint64( value, (calc_num_bits_to_store( expr->sig->value->width ) - 1), 0, &intval ) ) {
-      printf( "R exp: %s, width: %d, value: %s, intval: %llu, msb: %d, lsb: %d\n", expression_string( expr ), expr->value->width, value, intval, (int)((expr->value->width - 1) + intval), (int)intval );
+    if( convert_str_to_uint64( value, 31, 0, &intval ) ) {
       vector_set_mem_rd_ulong( expr->sig->value, ((expr->value->width - 1) + intval), intval );
     }
 
@@ -5608,8 +5607,7 @@ void expression_vcd_assign(
 
     uint64 intval;
 
-    if( convert_str_to_uint64( value, (calc_num_bits_to_store( expr->sig->value->width ) - 1), 0, &intval ) ) {
-      printf( "W value: %s, msb: %d, lsb: %d\n", value, (int)((expr->value->width - 1) + intval), (int)intval );
+    if( convert_str_to_uint64( value, 31, 0, &intval ) ) {
       vector_vcd_assign( expr->sig->value, (value + expr->elem.dim->dim_width), ((expr->value->width - 1) + intval), intval );
     }
 
@@ -6228,6 +6226,9 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.404  2009/01/04 20:11:19  phase1geo
+ Completed initial work on event handling.
+
  Revision 1.403  2009/01/03 08:03:52  phase1geo
  Adding more code to support memory coverage.  Added to code to handle parameterized
  signal sizing.  Updated regressions.  Checkpointing.

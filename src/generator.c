@@ -1231,7 +1231,7 @@ static char* generator_gen_size(
         break;
       case EXP_OP_SBIT_SEL  :
         if( exp->sig->suppl.part.type == SSUPPL_TYPE_MEM ) {
-          size = mod_parm_gen_size_code( exp->sig, expression_get_curr_dimension( exp ), funit_get_curr_module( funit ) );
+          size = mod_parm_gen_size_code( exp->sig, (expression_get_curr_dimension( exp ) + 1), funit_get_curr_module( funit ) );
         } else {
           size = strdup_safe( "1" );
         }
@@ -1730,7 +1730,7 @@ static char* generator_gen_mem_index(
 
   char*        index;
   char*        str;
-  char         num[50];
+  char*        num;
   unsigned int slen;
   unsigned int rv;
 
@@ -1771,13 +1771,36 @@ static char* generator_gen_mem_index(
       break;
   }
 
-  rv = snprintf( num, 50, "%d", exp->elem.dim->dim_width );
-  assert( rv < 50 );
+  /* Get the dimensional width for the current expression */
+  num = mod_parm_gen_size_code( exp->sig, dimension, funit_get_curr_module( funit ) );
 
-  slen = 1 + strlen( index ) + 3 + strlen( num ) + 2;
+  /* If the current dimension is big endian, recalculate the index value */
+  if( exp->elem.dim->dim_be ) {
+    char* tmp_index = index;
+    slen  = 2 + strlen( num ) + 4 + strlen( index ) + 2;
+    index = (char*)malloc_safe( slen );
+    rv    = snprintf( index, slen, "((%s-1)-%s)", num, tmp_index );
+    assert( rv < slen );
+    free_safe( tmp_index, (strlen( tmp_index ) + 1) );
+  }
+
+  /* Deallocate memory */
+  free_safe( num, (strlen( num ) + 1) );
+
+  /* Get the next dimensional width for the current expression */
+  if( (dimension + 1) >= (exp->sig->udim_num + exp->sig->pdim_num) ) {
+    num = strdup_safe( "1" );
+  } else {
+    num = mod_parm_gen_size_code( exp->sig, (dimension + 1), funit_get_curr_module( funit ) );
+  }
+
+  slen = 1 + strlen( index ) + 1 + strlen( num ) + 2;
   str  = (char*)malloc_safe( slen );
-  rv   = snprintf( str, slen, "(%s * %s)", index, num );
+  rv   = snprintf( str, slen, "(%s*%s)", index, num );
   assert( rv < slen );
+
+  /* Deallocate memory */
+  free_safe( num, (strlen( num ) + 1) );
 
   if( dimension != 0 ) {
 
@@ -1804,6 +1827,36 @@ static char* generator_gen_mem_index(
 }
 
 /*!
+ \return Returns the string form of the overall size of the given memory.
+*/
+static char* generator_gen_mem_size(
+  vsignal*   sig,  /*!< Pointer to signal to generate memory size information for */
+  func_unit* mod   /*!< Pointer to module containing the given signal parameter sizers (module that signal exists in) */
+) { PROFILE(GENERATOR_GEN_MEM_SIZE);
+
+  unsigned int i;
+  char*        curr_size;
+  char*        size = NULL;
+  unsigned int slen = 0;
+  unsigned int rv;
+
+  for( i=0; i<(sig->udim_num + sig->pdim_num); i++ ) {
+    char* tmpsize = size;
+    curr_size = mod_parm_gen_size_code( sig, i, mod );
+    slen     += strlen( curr_size ) + 2;
+    size      = (char*)malloc_safe( slen );
+    rv        = snprintf( size, slen, "%s*%s", tmpsize, curr_size );
+    free_safe( curr_size, (strlen( curr_size ) + 1) );
+    free_safe( tmpsize,   (strlen( tmpsize ) + 1) );
+  }
+
+  PROFILE_END;
+
+  return( size );
+
+}
+
+/*!
  Inserts memory coverage for the given expression.
 */
 static void generator_insert_mem_cov(
@@ -1823,8 +1876,7 @@ static void generator_insert_mem_cov(
   char         num[50];
 
   /* Figure out the size to store the number of dimensions */
-  rv = snprintf( num, 50, "%d", (calc_num_bits_to_store( exp->sig->value->width ) - 1) );
-  assert( rv < 50 );
+  strcpy( num, "32" );
 
   /* Now insert the code to store the index and memory */
   if( write ) {
@@ -1846,18 +1898,18 @@ static void generator_insert_mem_cov(
 
     if( net ) {
 
-      unsigned int slen = 6 + strlen( num ) + 4 + strlen( name ) + 3 + strlen( idxstr ) + 2;
+      unsigned int slen = 7 + strlen( num ) + 7 + strlen( name ) + 3 + strlen( idxstr ) + 2;
 
       str = (char*)malloc_safe( slen );
-      rv  = snprintf( str, slen, "wire [%s:0] %s = %s;", num, iname, idxstr );
+      rv  = snprintf( str, slen, "wire [(%s-1):0] %s = %s;", num, iname, idxstr );
       assert( rv < slen );
 
     } else {
 
-      unsigned int slen = 5 + strlen( num ) + 4 + strlen( iname ) + 2;
+      unsigned int slen = 6 + strlen( num ) + 7 + strlen( iname ) + 2;
 
       str = (char*)malloc_safe( slen );
-      rv  = snprintf( str, slen, "reg [%s:0] %s;", num, iname );
+      rv  = snprintf( str, slen, "reg [(%s-1):0] %s;", num, iname );
       assert( rv < slen );
       str_link_add( str, &reg_head, &reg_tail );
 
@@ -1886,10 +1938,11 @@ static void generator_insert_mem_cov(
     assert( rv < 4096 );
 
     /* Generate size */
+    printf( "W size exp: %s\n", expression_string( exp ) );
     size = generator_gen_size( exp, funit );
 
     /* Create the range information for the write */
-    rv = snprintf( range, 4096, "[(%s+%d):0]", size, exp->elem.dim->dim_width );
+    rv = snprintf( range, 4096, "[(%s+(%s-1)):0]", size, num );
     assert( rv < 4096 );
 
     /* Create the value to assign */
@@ -1914,7 +1967,7 @@ static void generator_insert_mem_cov(
     assert( rv < 4096 );
 
     /* Create the range information for the read */
-    rv = snprintf( range, 4096, "[%s:0]", num );
+    rv = snprintf( range, 4096, "[(%s-1):0]", num );
     assert( rv < 4096 );
 
     /* Create the value to assign */
@@ -2185,6 +2238,9 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
 
 /*
  $Log$
+ Revision 1.56  2009/01/04 20:11:19  phase1geo
+ Completed initial work on event handling.
+
  Revision 1.55  2009/01/03 21:21:25  phase1geo
  Fixing combinational logic coverage issue with dimension operators.  Update
  to regressions.  Checkpointing (30 diagnostics failing in IV regression).

@@ -161,11 +161,13 @@ char* mod_parm_gen_size_code(
   mod_parm*    mparm   = mod->param_head;
 
   /* First, find the matching LSB module parameter */
-  while( (mparm != NULL) && ((mparm->sig != sig) || (mparm->suppl.part.dimension != dimension)) ) {
+  while( (mparm != NULL) && printf( "type: %d, dimension: %d (%d)\n", mparm->suppl.part.type, mparm->suppl.part.dimension, dimension ) && ((mparm->sig != sig) || (mparm->suppl.part.dimension != dimension)) ) {
     mparm = mparm->next;
   }
+
   if( mparm != NULL ) {
 
+    printf( "HERE!!\n" );
     if( mparm->suppl.part.type == PARAM_TYPE_SIG_LSB ) {
       lsb_str = codegen_gen_expr_one_line( mparm->expr, mod );
     } else {
@@ -1242,6 +1244,10 @@ void inst_parm_dealloc(
 
 /*
  $Log$
+ Revision 1.119  2009/01/03 08:03:53  phase1geo
+ Adding more code to support memory coverage.  Added to code to handle parameterized
+ signal sizing.  Updated regressions.  Checkpointing.
+
  Revision 1.118  2008/11/19 19:42:10  phase1geo
  Cleaning up splint warnings.
 
