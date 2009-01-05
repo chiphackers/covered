@@ -167,7 +167,6 @@ char* mod_parm_gen_size_code(
 
   if( mparm != NULL ) {
 
-    printf( "HERE!!\n" );
     if( mparm->suppl.part.type == PARAM_TYPE_SIG_LSB ) {
       lsb_str = codegen_gen_expr_one_line( mparm->expr, mod );
     } else {
@@ -1244,6 +1243,11 @@ void inst_parm_dealloc(
 
 /*
  $Log$
+ Revision 1.121  2009/01/05 23:46:33  phase1geo
+ Fixing endianness issue (bug exists in SourceForge).  Removed unnecessary
+ output.  Updating merge_err1 diagnostic.  17 failures currently exist in IV
+ regression.  Checkpointing.
+
  Revision 1.120  2009/01/05 20:15:26  phase1geo
  Fixing issue with memory coverage.  Checkpointing (20 diags fail currently).
 
