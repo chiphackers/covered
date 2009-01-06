@@ -246,7 +246,6 @@ void generator_replace(
   if( replace_first.word_ptr != NULL ) {
 
     /* Go to starting line */
-    printf( "first_line: %u, replace_first_line: %u\n", first_line, replace_first_line );
     while( first_line > replace_first_line ) {
       replace_first.list_ptr = replace_first.list_ptr->next;
       if( replace_first.list_ptr == NULL ) {
@@ -2510,6 +2509,11 @@ void generator_handle_event_trigger(
 
 /*
  $Log$
+ Revision 1.60  2009/01/06 23:11:00  phase1geo
+ Completed and debugged new generator_replace functionality.  Fixed issue with
+ event coverage handling.  Added new event2 diagnostic to verify the event
+ coverage handling.  Checkpointing.
+
  Revision 1.59  2009/01/06 14:35:18  phase1geo
  Starting work on generator_replace functionality.  Not quite complete yet
  but I need to checkpoint.
