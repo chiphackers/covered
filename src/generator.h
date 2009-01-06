@@ -33,6 +33,12 @@
 /*! Shortcut for the generator_flush_all1 function call */
 #define generator_flush_all generator_flush_all1( __FILE__, __LINE__ )
 
+/*! Shortcut for the generator_add_to_work_code function for code coming from Covered */
+#define generator_add_cov_to_work_code(x) generator_add_to_work_code(x, 0, 0, FALSE)
+
+/*! Shortcut for the generator_add_to_work_code function for code coming from original file */
+#define generator_add_orig_to_work_code(x, y, z) generator_add_to_work_code(x, y, z, TRUE)
+
 
 /*! \brief Outputs the current state of the code generator to standard output for debugging purposes. */
 void generator_display();
@@ -55,6 +61,8 @@ void generator_prepend_to_work_code(
 /*! \brief Adds the given string to the work code buffers */
 void generator_add_to_work_code(
   const char*  str,
+  unsigned int first_line,
+  unsigned int first_column,
   bool         from_code
 );
 
@@ -140,6 +148,9 @@ void generator_insert_fsm_cov();
 
 /*
  $Log$
+ Revision 1.22  2009/01/04 20:11:19  phase1geo
+ Completed initial work on event handling.
+
  Revision 1.21  2009/01/02 06:00:26  phase1geo
  More updates for memory coverage (this is still not working however).  Currently
  segfaults.  Checkpointing.

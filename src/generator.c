@@ -58,6 +58,13 @@ struct fname_link_s {
   fname_link* next;        /*!< Pointer to next filename list */
 };
 
+struct replace_info_s;
+typedef struct replace_info_s replace_info;
+struct replace_info_s {
+  char*     word_ptr;
+  str_link* list_ptr;
+};
+
 
 /*!
  Pointer to the current output file.
@@ -146,6 +153,26 @@ static statement* curr_stmt;
 */
 static stmt_loop_link* stmt_stack = NULL;
 
+/*!
+ Stores replacement string information for the first character of the potential replacement string.
+*/
+static replace_info replace_first;
+
+/*!
+ Stores replacement string information for the last character of the potential replacement string.
+*/
+static replace_info replace_last;
+
+/*!
+ If replace_ptr is not set to NULL, this value contains the first line of the replacement string.
+*/
+static unsigned int replace_first_line;
+
+/*!
+ If replace_ptr is not set to NULL, this value contains the first column of the replacement string.
+*/
+static unsigned int replace_first_col;
+
 
 static char* generator_gen_size(
   expression* exp,
@@ -181,6 +208,23 @@ void generator_display() { PROFILE(GENERATOR_DISPLAY);
     strl = strl->next;
   }
   printf( "Working buffer:\n  %s\n", work_buffer );
+
+  PROFILE_END;
+
+}
+
+/*!
+ Clears the first and last replace information pointers.
+*/
+static void generator_clear_replace_ptrs() { PROFILE(GENERATOR_CLEAR_REPLACE_PTRS);
+
+  /* Clear the first pointers */
+  replace_first.word_ptr = NULL;
+  replace_first.list_ptr = NULL;
+
+  /* Clear the last pointers */
+  replace_last.word_ptr = NULL;
+  replace_last.list_ptr = NULL;
 
   PROFILE_END;
 
@@ -446,6 +490,9 @@ void generator_init_funit(
   /* Reset the structure */
   func_iter_reset( &fiter );
 
+  /* Reset the replacement string information */
+  generator_clear_replace_ptrs();
+
   PROFILE_END;
 
 }
@@ -503,8 +550,10 @@ void generator_prepend_to_work_code(
  Adds the given string to the working code buffer.
 */
 void generator_add_to_work_code(
-  const char* str,       /*!< String to write */
-  bool        from_code  /*!< Specifies if the string came from the code directly */
+  const char*  str,           /*!< String to write */
+  unsigned int first_line,    /*!< First line of string from file */
+  unsigned int first_column,  /*!< First column of string from file */
+  bool         from_code      /*!< Specifies if the string came from the code directly */
 ) { PROFILE(GENERATOR_ADD_TO_WORK_CODE);
 
   static bool semi_from_code_just_seen  = FALSE;
@@ -553,14 +602,45 @@ void generator_add_to_work_code(
 
   if( add ) {
 
+    long replace_offset = strlen( work_buffer );
+
     /* I don't believe that a line will ever exceed 4K chars */
     assert( (strlen( work_buffer ) + strlen( str )) < 4095 );
     strcat( work_buffer, str );
 
     /* If we have hit a newline, add the working buffer to the working list and clear the working buffer */
     if( strcmp( str, "\n" ) == 0 ) {
-      str_link_add( strdup_safe( work_buffer ), &work_head, &work_tail );
+      str_link* tmp_tail = work_tail;
+      str_link* strl     = str_link_add( strdup_safe( work_buffer ), &work_head, &work_tail );
+      if( from_code ) {
+        if( replace_first.word_ptr == NULL ) {
+          replace_first.word_ptr = strl->str + replace_offset;
+          replace_first.list_ptr = strl;
+          replace_first_line     = first_line;
+          replace_first_col      = first_column;
+        }
+      } else {
+        if( replace_last.word_ptr == NULL ) {
+          if( replace_offset == 0 ) {
+            replace_last.list_ptr = tmp_tail;
+            replace_last.word_ptr = tmp_tail->str + (strlen( tmp_tail->str ) - 1);
+          } else {
+            replace_last.list_ptr = strl;
+            replace_last.word_ptr = strl->str + (replace_offset - 1);
+          }
+        }
+      }
       work_buffer[0] = '\0';
+    } else {
+      if( from_code ) {
+        replace_first.word_ptr = work_buffer + replace_offset;
+        replace_first_line     = first_line;
+        replace_first_col      = first_column;
+      } else {
+        if( replace_last.word_ptr == NULL ) {
+          replace_last.word_ptr = work_buffer + (replace_offset - 1);
+        }
+      }
     }
 
   }
@@ -609,6 +689,9 @@ void generator_flush_work_code1(
 
   /* Clear the work buffer */
   work_buffer[0] = '\0';
+
+  /* Clear replacement pointers */
+  generator_clear_replace_ptrs();
 
   PROFILE_END;
 
@@ -885,7 +968,7 @@ void generator_insert_event_comb_cov(
     /* Create assignment and append it to the working code list */
     rv = snprintf( str, 4096, "%s = 1'b1;", name );
     assert( rv < 4096 );
-    generator_add_to_work_code( str, FALSE );
+    generator_add_cov_to_work_code( str );
 
   /*
    Otherwise, we will store off the information to inject it at the end of the module.
@@ -918,7 +1001,7 @@ void generator_insert_event_comb_cov(
           generator_prepend_to_work_code( str );
           rv = snprintf( str, 4096, " %s = (%s!==1'b1) & (%s===1'b1);", name, tname, event_str );
           assert( rv < 4096 );
-          generator_add_to_work_code( str, FALSE );
+          generator_add_cov_to_work_code( str );
         }
         break;
 
@@ -934,7 +1017,7 @@ void generator_insert_event_comb_cov(
           generator_prepend_to_work_code( str );
           rv = snprintf( str, 4096, " %s = (%s!==1'b0) & (%s===1'b0);", name, tname, event_str );
           assert( rv < 4096 );
-          generator_add_to_work_code( str, FALSE );
+          generator_add_cov_to_work_code( str );
         }
         break;
 
@@ -952,7 +1035,7 @@ void generator_insert_event_comb_cov(
           generator_prepend_to_work_code( str );
           rv = snprintf( str, 4096, " %s = (%s!==%s);", name, tname, event_str );
           assert( rv < 4096 );
-          generator_add_to_work_code( str, FALSE );
+          generator_add_cov_to_work_code( str );
         }
         break;
 
@@ -2006,7 +2089,7 @@ static void generator_insert_mem_cov(
   }
 
   /* Append the line coverage assignment to the working buffer */
-  generator_add_to_work_code( str, FALSE );
+  generator_add_cov_to_work_code( str );
 
   /* Deallocate temporary memory */
   free_safe( idxstr, (strlen( idxstr ) + 1) );
@@ -2238,6 +2321,9 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
 
 /*
  $Log$
+ Revision 1.57  2009/01/05 20:15:26  phase1geo
+ Fixing issue with memory coverage.  Checkpointing (20 diags fail currently).
+
  Revision 1.56  2009/01/04 20:11:19  phase1geo
  Completed initial work on event handling.
 
