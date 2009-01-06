@@ -195,7 +195,7 @@ void lxt_parse(
               db_assign_symbol( netname, vcdid( newindx ), 0, 0 );
             }
           } else {
-            db_assign_symbol( netname, vcdid( newindx ), ((g->lsb > g->msb) ? g->lsb : g->msb), ((g->lsb > g->msb) ? g->msb : g->lsb) );
+            db_assign_symbol( netname, vcdid( newindx ), g->msb, g->lsb );
           }
 
         }
@@ -271,6 +271,10 @@ void lxt_parse(
 
 /*
  $Log$
+ Revision 1.30  2008/10/21 22:55:25  phase1geo
+ More updates to get real values working.  IV and Cver regressions work (except for VPI
+ mode of operation).  Checkpointing.
+
  Revision 1.29  2008/09/25 05:05:18  phase1geo
  Regression fixes for LXT runs.  Still not quite finished yet.
  Checkpointing.  Also contains fixes for bugs 2127678 and 2127687.
