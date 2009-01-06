@@ -24,6 +24,8 @@
 */
 
 
+#include "defines.h"
+
 /*! Shortcut for the generator_flush_hold_code1 function call */
 #define generator_flush_hold_code generator_flush_hold_code1( __FILE__, __LINE__ )
 
@@ -154,9 +156,28 @@ void generator_insert_case_comb_cov(
 /*! \brief Inserts FSM coverage code into module */
 void generator_insert_fsm_cov();
 
+/*! \brief Changes event type to reg type if we are performing combinational logic coverage. */
+void generator_handle_event_type(
+  unsigned int first_line,
+  unsigned int first_column
+);
+
+/*! \brief Converts an event trigger statement to a register inversion statement. */
+void generator_handle_event_trigger( 
+  const char*  identifier,
+  unsigned int first_line,
+  unsigned int first_column,
+  unsigned int last_line,
+  unsigned int last_column
+);
+
 
 /*
  $Log$
+ Revision 1.24  2009/01/06 14:35:18  phase1geo
+ Starting work on generator_replace functionality.  Not quite complete yet
+ but I need to checkpoint.
+
  Revision 1.23  2009/01/06 06:59:22  phase1geo
  Adding initial support for string replacement.  More work to do here.
  Checkpointing.

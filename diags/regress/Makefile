@@ -47,7 +47,8 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 define2         define2.1       define4         define5         define6 \
                 define6.1       disable1        disable1.1      disable2        disable2.1 \
                 disable3        display1        div1            dly_assign1     endian1 \
-                endian2         endian3         endian4         event1          event1.1        exclude1 \
+                endian2         endian3         endian4         event1          event1.1 \
+                event2          exclude1 \
                 exclude2        exclude3        exclude4        exclude6        exclude6.1 \
                 exclude7        exclude7.1      exclude7.2      exclude8        exclude8.1 \
                 exclude9        exclude9.1      exclude9.2      exclude9.3      exclude9.4 \

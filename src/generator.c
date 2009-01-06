@@ -216,7 +216,7 @@ void generator_display() { PROFILE(GENERATOR_DISPLAY);
 /*!
  Clears the first and last replace information pointers.
 */
-static void generator_clear_replace_ptrs() { PROFILE(GENERATOR_CLEAR_REPLACE_PTRS);
+void generator_clear_replace_ptrs() { PROFILE(GENERATOR_CLEAR_REPLACE_PTRS);
 
   /* Clear the first pointers */
   replace_first.word_ptr = NULL;
@@ -246,28 +246,70 @@ void generator_replace(
   if( replace_first.word_ptr != NULL ) {
 
     /* Go to starting line */
-    while( first_line < replace_first_line ) {
+    printf( "first_line: %u, replace_first_line: %u\n", first_line, replace_first_line );
+    while( first_line > replace_first_line ) {
       replace_first.list_ptr = replace_first.list_ptr->next;
-      replace_first.word_ptr = replace_first.list_ptr->str;
-      replace_first_col      = 0;
+      if( replace_first.list_ptr == NULL ) {
+        assert( first_line == (replace_first_line + 1) );
+        replace_first.word_ptr = work_buffer;
+      } else {
+        replace_first.word_ptr = replace_first.list_ptr->str;
+      }
+      replace_first_col = 0;
       replace_first_line++;
     }
 
     /* Remove original code */
     if( first_line == last_line ) {
 
+      /* If the line exists in the work buffer, replace the working buffer */
       if( replace_first.list_ptr == NULL ) {
-        /* TBD */
+
+        char keep_end[4096];
+        strcpy( keep_end, (replace_first.word_ptr + (last_column - replace_first_col) + 1) );
+
+        /* Chop the working buffer */
+        *(replace_first.word_ptr + (first_column - replace_first_col)) = '\0';
+
+        /* Append the new string */
+        if( (strlen( work_buffer ) + strlen( str )) < 4095 ) {
+          strcat( work_buffer, str );
+        } else {
+          str_link_add( strdup_safe( work_buffer ), &work_head, &work_tail );
+          strcpy( work_buffer, str );
+        }
+
+        /* Now append the end of the working buffer */
+        if( (strlen( work_buffer ) + strlen( keep_end )) < 4095 ) {
+          strcat( work_buffer, keep_end );
+        } else {
+          str_link_add( strdup_safe( work_buffer ), &work_head, &work_tail );
+          strcpy( work_buffer, keep_end );
+        }
+
+      /* Otherwise, the line exists in the working list, so replace it there */
       } else {
-        unsigned int keep_begin_len = (first_column - replace_first_col);
-        char*        keep_begin_str = (char*)malloc_safe( keep_begin_len + strlen( str ) + 1 );
-        char*        keep_end_str   = strdup_safe( replace_first.word_ptr + (replace_first_col + last_column) );
-        /* TBD */
+
+        unsigned int keep_begin_len = (replace_first.word_ptr + (first_column - replace_first_col)) - replace_first.list_ptr->str;
+        char*        keep_begin_str = (char*)malloc_safe( keep_begin_len + 1 );
+        char*        keep_end_str   = strdup_safe( replace_first.word_ptr + (last_column - replace_first_col) + 1 );
+
+        strncpy( keep_begin_str, replace_first.list_ptr->str, keep_begin_len );
+        keep_begin_str[keep_begin_len] = '\0';
+        free_safe( replace_first.list_ptr->str, (strlen( replace_first.list_ptr->str ) + 1) );
+        replace_first.list_ptr->str = (char*)malloc_safe( keep_begin_len + strlen( str ) + strlen( keep_end_str ) + 1 );
+        strcpy( replace_first.list_ptr->str, keep_begin_str );
+        strcat( replace_first.list_ptr->str, str );
+        strcat( replace_first.list_ptr->str, keep_end_str );
+
+        free_safe( keep_begin_str, (strlen( keep_begin_str ) + 1) );
+        free_safe( keep_end_str,   (strlen( keep_end_str ) + 1) );
+
       }
     
     } else {
 
-      unsigned int keep_len       = (first_column - replace_first_col);
+      unsigned int keep_len       = (replace_first.word_ptr + (first_column - replace_first_col)) - replace_first.list_ptr->str;
       char*        keep_str       = (char*)malloc_safe( keep_len + strlen( str ) + 1 );
       str_link*    first_list_ptr = replace_first.list_ptr; 
 
@@ -276,6 +318,7 @@ void generator_replace(
        the current line with the new string.
       */
       strncpy( keep_str, replace_first.list_ptr->str, keep_len );
+      keep_str[keep_len] = '\0';
       strcat( keep_str, str );
       free_safe( replace_first.list_ptr->str, (strlen( replace_first.list_ptr->str ) + 1) );
       replace_first.list_ptr->str = keep_str;
@@ -294,23 +337,23 @@ void generator_replace(
       first_list_ptr->next = replace_first.list_ptr;
 
       /* Remove the last line portion from the buffer if the last line is there */
-      if( replace_first.list_ptr = NULL ) {
+      if( replace_first.list_ptr == NULL ) {
         char tmp_buffer[4096];
-        strcpy( tmp_buffer, (work_buffer + last_column) );
+        strcpy( tmp_buffer, (work_buffer + last_column + 1) );
         strcpy( work_buffer, tmp_buffer );
         replace_first.word_ptr = work_buffer;
         replace_first_col      = last_column + 1;
 
       /* Otherwise, remove the last line portion from the list */
       } else {
-        char* tmp_str = strdup_safe( replace_first.list_ptr->str + last_column );
+        char* tmp_str = strdup_safe( replace_first.list_ptr->str + last_column + 1 );
         free_safe( replace_first.list_ptr->str, (strlen( replace_first.list_ptr->str ) + 1) );
         replace_first.list_ptr->str = tmp_str;
         replace_first.word_ptr      = tmp_str;
         replace_first_col           = last_column + 1;
 
       }
-      
+
     }
 
   }
@@ -701,6 +744,17 @@ void generator_add_to_work_code(
     if( strcmp( str, "\n" ) == 0 ) {
       str_link* tmp_tail = work_tail;
       str_link* strl     = str_link_add( strdup_safe( work_buffer ), &work_head, &work_tail );
+
+      /*
+       If the current word pointer is pointing at the buffer, we need to adjust it to point at the associated
+       character in the new work list entry.
+      */
+      if( (replace_first.word_ptr != NULL) && (replace_first.list_ptr == NULL) ) {
+        replace_first.word_ptr = strl->str + (replace_first.word_ptr - work_buffer); 
+        replace_first.list_ptr = strl;
+      }
+
+      /* Set the replace_first or replace_last strucutures if they have not been setup previously */
       if( from_code ) {
         if( replace_first.word_ptr == NULL ) {
           replace_first.word_ptr = strl->str + replace_offset;
@@ -709,7 +763,7 @@ void generator_add_to_work_code(
           replace_first_col      = first_column;
         }
       } else {
-        if( replace_last.word_ptr == NULL ) {
+        if( (replace_first.word_ptr != NULL) && (replace_last.word_ptr == NULL) ) {
           if( replace_offset == 0 ) {
             replace_last.list_ptr = tmp_tail;
             replace_last.word_ptr = tmp_tail->str + (strlen( tmp_tail->str ) - 1);
@@ -722,11 +776,13 @@ void generator_add_to_work_code(
       work_buffer[0] = '\0';
     } else {
       if( from_code ) {
-        replace_first.word_ptr = work_buffer + replace_offset;
-        replace_first_line     = first_line;
-        replace_first_col      = first_column;
+        if( replace_first.word_ptr == NULL ) {
+          replace_first.word_ptr = work_buffer + replace_offset;
+          replace_first_line     = first_line;
+          replace_first_col      = first_column;
+        }
       } else {
-        if( replace_last.word_ptr == NULL ) {
+        if( (replace_first.word_ptr != NULL) && (replace_last.word_ptr == NULL) ) {
           replace_last.word_ptr = work_buffer + (replace_offset - 1);
         }
       }
@@ -2110,7 +2166,6 @@ static void generator_insert_mem_cov(
     assert( rv < 4096 );
 
     /* Generate size */
-    printf( "W size exp: %s\n", expression_string( exp ) );
     size = generator_gen_size( exp, funit );
 
     /* Create the range information for the write */
@@ -2407,9 +2462,58 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
 
 }
 
+/*!
+ Replaces "event" types with "reg" types when performing combinational logic coverage.  This behavior
+ is needed because events are impossible to discern coverage from when multiple events are used within a wait
+ statement.
+*/
+void generator_handle_event_type( 
+  unsigned int first_line,   /*!< First line of "event" type specifier */
+  unsigned int first_column  /*!< First column of "event" type specifier */
+) { PROFILE(GENERATOR_HANDLE_EVENT_TYPE);
+
+  if( generator_comb ) {
+    generator_replace( "reg", first_line, first_column, first_line, (first_column + 4) );
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Transforms the event trigger to a register inversion (converts X to 0 if the identifier has not been initialized).
+ This behavior is needed because events are impossible to discern coverage from when multiple events are used within a wait
+ statement.
+*/
+void generator_handle_event_trigger(
+  const char*  identifier,    /*!< Name of trigger identifier */
+  unsigned int first_line,    /*!< First line of the '->' specifier */
+  unsigned int first_column,  /*!< First column of the '->' specifier */
+  unsigned int last_line,     /*!< Last line which contains the trigger identifier (not including the semicolon) */
+  unsigned int last_column    /*!< Last column which contains the trigger identifier (not including the semicolon) */
+) { PROFILE(GENERATOR_HANDLE_EVENT_TRIGGER);
+
+  if( generator_comb ) {
+
+    char         str[4096];
+    unsigned int rv = snprintf( str, 4096, "%s = (%s === 1'bx) ? 1'b0 : ~%s", identifier, identifier, identifier ); 
+   
+    /* Perform the replacement */
+    generator_replace( str, first_line, first_column, last_line, last_column );
+
+  }
+
+  PROFILE_END;
+
+}
+
 
 /*
  $Log$
+ Revision 1.59  2009/01/06 14:35:18  phase1geo
+ Starting work on generator_replace functionality.  Not quite complete yet
+ but I need to checkpoint.
+
  Revision 1.58  2009/01/06 06:59:22  phase1geo
  Adding initial support for string replacement.  More work to do here.
  Checkpointing.

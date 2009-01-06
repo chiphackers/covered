@@ -573,6 +573,8 @@ description
         curr_sig_type = SSUPPL_TYPE_EVENT;
         curr_handled  = TRUE;
         parser_implicitly_set_curr_range( 0, 0, TRUE );
+      } else {
+        generator_handle_event_type( @1.first_line, @1.first_column );
       }
     }
     list_of_variables ';'
@@ -3078,6 +3080,8 @@ module_item
         curr_sig_type = SSUPPL_TYPE_EVENT;
         curr_handled  = TRUE;
         parser_implicitly_set_curr_range( 0, 0, TRUE );
+      } else {
+        generator_handle_event_type( @2.first_line, @2.first_column );
       }
     }
     list_of_variables ';'
@@ -3610,6 +3614,8 @@ data_type
         curr_sig_type = SSUPPL_TYPE_EVENT;
         curr_handled  = TRUE;
         parser_implicitly_set_curr_range( 0, 0, TRUE );
+      } else {
+        generator_handle_event_type( @1.first_line, @1.first_column );
       }
     }
   ;
@@ -4474,6 +4480,7 @@ statement
           $$ = NULL;
         }
       } else {
+        generator_handle_event_trigger( $2, @1.first_line, @1.first_column, @2.last_line, (@2.last_column - 1) );
         generator_insert_line_cov( @1.first_line, @2.last_line, @1.first_column, (@2.last_column - 1), TRUE );
         generator_flush_work_code;
         $$ = NULL;
