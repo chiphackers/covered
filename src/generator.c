@@ -231,6 +231,95 @@ static void generator_clear_replace_ptrs() { PROFILE(GENERATOR_CLEAR_REPLACE_PTR
 }
 
 /*!
+ Replaces a portion (as specified by the line and column inputs) of the currently
+ marked code segment (marking occurs automatically) with the given string.
+*/
+void generator_replace(
+  const char*  str,           /*!< String to replace the original */
+  unsigned int first_line,    /*!< Line number of start of code to replace */
+  unsigned int first_column,  /*!< Column number of start of code to replace */
+  unsigned int last_line,     /*!< Line number of end of code to replace */
+  unsigned int last_column    /*!< Column number of end of code to replace */
+) { PROFILE(GENERATOR_REPLACE);
+
+  /* We can only perform the replacement if something has been previously marked for replacement */
+  if( replace_first.word_ptr != NULL ) {
+
+    /* Go to starting line */
+    while( first_line < replace_first_line ) {
+      replace_first.list_ptr = replace_first.list_ptr->next;
+      replace_first.word_ptr = replace_first.list_ptr->str;
+      replace_first_col      = 0;
+      replace_first_line++;
+    }
+
+    /* Remove original code */
+    if( first_line == last_line ) {
+
+      if( replace_first.list_ptr == NULL ) {
+        /* TBD */
+      } else {
+        unsigned int keep_begin_len = (first_column - replace_first_col);
+        char*        keep_begin_str = (char*)malloc_safe( keep_begin_len + strlen( str ) + 1 );
+        char*        keep_end_str   = strdup_safe( replace_first.word_ptr + (replace_first_col + last_column) );
+        /* TBD */
+      }
+    
+    } else {
+
+      unsigned int keep_len       = (first_column - replace_first_col);
+      char*        keep_str       = (char*)malloc_safe( keep_len + strlen( str ) + 1 );
+      str_link*    first_list_ptr = replace_first.list_ptr; 
+
+      /*
+       First, let's concat the kept code on the current line with the new code and replace
+       the current line with the new string.
+      */
+      strncpy( keep_str, replace_first.list_ptr->str, keep_len );
+      strcat( keep_str, str );
+      free_safe( replace_first.list_ptr->str, (strlen( replace_first.list_ptr->str ) + 1) );
+      replace_first.list_ptr->str = keep_str;
+
+      /* Now remove the rest of the replaced code and adjust the replacement pointers as needed */
+      first_list_ptr         = replace_first.list_ptr;
+      replace_first.list_ptr = replace_first.list_ptr->next;
+      replace_first_line++;
+      while( replace_first_line < last_line ) {
+        str_link* next = replace_first.list_ptr->next;
+        free_safe( replace_first.list_ptr->str, (strlen( replace_first.list_ptr->str ) + 1) );
+        free_safe( replace_first.list_ptr, sizeof( str_link ) );
+        replace_first.list_ptr = next;
+        replace_first_line++;
+      }
+      first_list_ptr->next = replace_first.list_ptr;
+
+      /* Remove the last line portion from the buffer if the last line is there */
+      if( replace_first.list_ptr = NULL ) {
+        char tmp_buffer[4096];
+        strcpy( tmp_buffer, (work_buffer + last_column) );
+        strcpy( work_buffer, tmp_buffer );
+        replace_first.word_ptr = work_buffer;
+        replace_first_col      = last_column + 1;
+
+      /* Otherwise, remove the last line portion from the list */
+      } else {
+        char* tmp_str = strdup_safe( replace_first.list_ptr->str + last_column );
+        free_safe( replace_first.list_ptr->str, (strlen( replace_first.list_ptr->str ) + 1) );
+        replace_first.list_ptr->str = tmp_str;
+        replace_first.word_ptr      = tmp_str;
+        replace_first_col           = last_column + 1;
+
+      }
+      
+    }
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  Populates the specified filename list with the functional unit list, sorting all functional units with the
  same filename together in the same link.
 */
@@ -2321,6 +2410,10 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
 
 /*
  $Log$
+ Revision 1.58  2009/01/06 06:59:22  phase1geo
+ Adding initial support for string replacement.  More work to do here.
+ Checkpointing.
+
  Revision 1.57  2009/01/05 20:15:26  phase1geo
  Fixing issue with memory coverage.  Checkpointing (20 diags fail currently).
 

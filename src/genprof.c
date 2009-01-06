@@ -457,6 +457,7 @@ profiler profiles[NUM_PROFILES] = {
   {"gen_item_dealloc", NULL, 0, 0, 0, TRUE},
   {"generator_display", NULL, 0, 0, 0, TRUE},
   {"generator_clear_replace_ptrs", NULL, 0, 0, 0, TRUE},
+  {"generator_replace", NULL, 0, 0, 0, TRUE},
   {"generator_sort_funit_by_filename", NULL, 0, 0, 0, TRUE},
   {"generator_set_next_funit", NULL, 0, 0, 0, TRUE},
   {"generator_dealloc_fname_list", NULL, 0, 0, 0, TRUE},

@@ -43,6 +43,15 @@
 /*! \brief Outputs the current state of the code generator to standard output for debugging purposes. */
 void generator_display();
 
+/*! \brief Replaces original code with the specified code string. */
+void generator_replace(
+  const char*  str,
+  unsigned int first_line,
+  unsigned int first_column,
+  unsigned int last_line,
+  unsigned int last_column
+);
+
 /*! \brief Generates Verilog containing coverage instrumentation */
 void generator_output();
 
@@ -148,6 +157,10 @@ void generator_insert_fsm_cov();
 
 /*
  $Log$
+ Revision 1.23  2009/01/06 06:59:22  phase1geo
+ Adding initial support for string replacement.  More work to do here.
+ Checkpointing.
+
  Revision 1.22  2009/01/04 20:11:19  phase1geo
  Completed initial work on event handling.
 
