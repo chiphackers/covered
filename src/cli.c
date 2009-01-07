@@ -252,7 +252,7 @@ static void cli_display_current_stmt() {
   assert( curr->curr != NULL );
 
   /* Generate the logic */
-  codegen_gen_expr( curr->curr->exp, curr->curr->exp->op, &code, &code_depth, curr->funit );
+  codegen_gen_expr( curr->curr->exp, curr->funit, &code, &code_depth );
 
   /* Output the full expression */
   for( i=0; i<code_depth; i++ ) {
@@ -359,7 +359,7 @@ static bool cli_display_expression(
     assert( expl->exp != NULL );
 
     /* Output the expression */
-    codegen_gen_expr( expl->exp, expl->exp->op, &code, &code_depth, funit );
+    codegen_gen_expr( expl->exp, funit, &code, &code_depth );
     assert( code_depth > 0 );
     for( i=0; i<code_depth; i++ ) {
       printf( "    %s\n", code[i] );
@@ -894,6 +894,11 @@ void cli_read_hist_file( const char* fname ) {
 
 /*
  $Log$
+ Revision 1.28  2008/08/18 23:07:25  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.24.4.1  2008/07/10 22:43:49  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

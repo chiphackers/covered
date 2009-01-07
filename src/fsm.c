@@ -630,10 +630,10 @@ void fsm_get_coverage(
   arc_get_transitions( hit_from_arcs,   hit_to_arcs,   &tmp_ids,  &tmp,     &tmp_reasons, hit_arc_num,   curr_fsm->table->table, funit, TRUE, FALSE );
 
   /* Get input state code */
-  codegen_gen_expr( curr_fsm->table->from_state, curr_fsm->table->from_state->op, input_state, input_size, NULL );
+  codegen_gen_expr( curr_fsm->table->from_state, NULL, input_state, input_size );
 
   /* Get output state code */
-  codegen_gen_expr( curr_fsm->table->to_state, curr_fsm->table->to_state->op, output_state, output_size, NULL );
+  codegen_gen_expr( curr_fsm->table->to_state, NULL, output_state, output_size );
 
   /* Deallocate unused state information */
   if( *hit_arc_num > 0 ) {
@@ -1059,15 +1059,15 @@ static void fsm_display_verbose(
     bool found_exclusion;
 
     if( head->table->from_state->id == head->table->to_state->id ) {
-      codegen_gen_expr( head->table->to_state, head->table->to_state->op, &ocode, &ocode_depth, NULL );
+      codegen_gen_expr( head->table->to_state, NULL, &ocode, &ocode_depth );
       fprintf( ofile, "      FSM input/output state (%s)\n\n", ocode[0] );
       for( i=0; i<ocode_depth; i++ ) {
         free_safe( ocode[i], (strlen( ocode[i] ) + 1) );
       }
       free_safe( ocode, (sizeof( char* ) * ocode_depth) );
     } else {
-      codegen_gen_expr( head->table->from_state, head->table->from_state->op, &icode, &icode_depth, NULL );
-      codegen_gen_expr( head->table->to_state,   head->table->to_state->op,   &ocode, &ocode_depth, NULL );
+      codegen_gen_expr( head->table->from_state, NULL, &icode, &icode_depth );
+      codegen_gen_expr( head->table->to_state,   NULL, &ocode, &ocode_depth );
       fprintf( ofile, "      FSM input state (%s), output state (%s)\n\n", icode[0], ocode[0] );
       for( i=0; i<icode_depth; i++ ) {
         free_safe( icode[i], (strlen( icode[i] ) + 1) );
@@ -1335,6 +1335,10 @@ void fsm_dealloc(
 
 /*
  $Log$
+ Revision 1.110  2008/12/24 21:19:01  phase1geo
+ Initial work at getting FSM coverage put in (this looks to be working correctly
+ to this point).  Updated regressions per fixes.  Checkpointing.
+
  Revision 1.109  2008/11/12 00:07:41  phase1geo
  More updates for complex merging algorithm.  Updating regressions per
  these changes.  Checkpointing.

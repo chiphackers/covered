@@ -168,9 +168,9 @@ char* mod_parm_gen_size_code(
   if( mparm != NULL ) {
 
     if( mparm->suppl.part.type == PARAM_TYPE_SIG_LSB ) {
-      lsb_str = codegen_gen_expr_one_line( mparm->expr, mod );
+      lsb_str = codegen_gen_expr_one_line( mparm->expr, mod, FALSE, 0 );
     } else {
-      msb_str = codegen_gen_expr_one_line( mparm->expr, mod );
+      msb_str = codegen_gen_expr_one_line( mparm->expr, mod, FALSE, 0 );
     }
 
     /* Second, find the matching MSB module parameter */
@@ -180,9 +180,9 @@ char* mod_parm_gen_size_code(
     }
     if( mparm != NULL ) {
       if( mparm->suppl.part.type == PARAM_TYPE_SIG_LSB ) {
-        lsb_str = codegen_gen_expr_one_line( mparm->expr, mod );
+        lsb_str = codegen_gen_expr_one_line( mparm->expr, mod, FALSE, 0 );
       } else {
-        msb_str = codegen_gen_expr_one_line( mparm->expr, mod );
+        msb_str = codegen_gen_expr_one_line( mparm->expr, mod, FALSE, 0 );
       }
     }
 
@@ -1243,6 +1243,9 @@ void inst_parm_dealloc(
 
 /*
  $Log$
+ Revision 1.122  2009/01/05 23:48:00  phase1geo
+ Removing unnecessary output.
+
  Revision 1.121  2009/01/05 23:46:33  phase1geo
  Fixing endianness issue (bug exists in SourceForge).  Removed unnecessary
  output.  Updating merge_err1 diagnostic.  17 failures currently exist in IV
