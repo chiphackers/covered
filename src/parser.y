@@ -4830,7 +4830,7 @@ statement
         }
       } else {
         generator_insert_line_cov_with_stmt( $8, TRUE );
-        generator_insert_comb_cov_with_stmt( $8, TRUE, TRUE );
+        generator_insert_comb_cov_with_stmt( $8, FALSE, TRUE );
         generator_add_cov_to_work_code( " end " );
         generator_flush_work_code;
         generator_insert_comb_cov_with_stmt( $6, FALSE, FALSE );
