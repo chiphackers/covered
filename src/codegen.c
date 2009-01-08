@@ -1098,7 +1098,9 @@ void codegen_gen_expr(
   /*@out@*/ unsigned int* code_depth  /*!< Pointer to number of strings contained in code array */
 ) { PROFILE(CODEGEN_GEN_EXPR);
 
-  codegen_gen_expr1( expr, expr->op, code, code_depth, funit, FALSE, 0 ); 
+  if( expr != NULL ) {
+    codegen_gen_expr1( expr, expr->op, code, code_depth, funit, FALSE, 0 ); 
+  }
 
   PROFILE_END;
 
@@ -1118,34 +1120,39 @@ char* codegen_gen_expr_one_line(
   unsigned int exp_depth    /*!< Depth of the current expression (only necessary when inline_exp is set to TRUE) */
 ) { PROFILE(CODEGEN_GEN_EXPR_ONE_LINE);
 
-  bool         orig_flag_use_line_width = flag_use_line_width;
-  int          orig_line_width          = line_width;
-  bool         orig_use_actual_names    = use_actual_names;
-  char**       code_array;
-  unsigned int code_depth;
-  char*        code_str;
+  char* code_str = NULL;
 
-  /* Set the line width to the maximum value */
-  flag_use_line_width = TRUE;
-  line_width          = 0x7fffffff;
-  use_actual_names    = TRUE;
+  if( expr != NULL ) {
 
-  /* Generate the code */
-  codegen_gen_expr1( expr, expr->op, &code_array, &code_depth, funit, inline_exp, 0 );
+    bool         orig_flag_use_line_width = flag_use_line_width;
+    int          orig_line_width          = line_width;
+    bool         orig_use_actual_names    = use_actual_names;
+    char**       code_array;
+    unsigned int code_depth;
 
-  /* The number of elements in the code_array array should only be one */
-  assert( code_depth == 1 );
+    /* Set the line width to the maximum value */
+    flag_use_line_width = TRUE;
+    line_width          = 0x7fffffff;
+    use_actual_names    = TRUE;
 
-  /* Save the line for returning purposes */
-  code_str = code_array[0];
+    /* Generate the code */
+    codegen_gen_expr1( expr, expr->op, &code_array, &code_depth, funit, inline_exp, 0 );
 
-  /* Deallocate the string array */
-  free_safe( code_array, (sizeof( char* ) * code_depth) );
+    /* The number of elements in the code_array array should only be one */
+    assert( code_depth == 1 );
 
-  /* Restore the original values of flag_use_line_width and line_width */
-  flag_use_line_width = orig_flag_use_line_width;
-  line_width          = orig_line_width;
-  use_actual_names    = orig_use_actual_names;
+    /* Save the line for returning purposes */
+    code_str = code_array[0];
+
+    /* Deallocate the string array */
+    free_safe( code_array, (sizeof( char* ) * code_depth) );
+
+    /* Restore the original values of flag_use_line_width and line_width */
+    flag_use_line_width = orig_flag_use_line_width;
+    line_width          = orig_line_width;
+    use_actual_names    = orig_use_actual_names;
+
+  }
 
   PROFILE_END;
  
@@ -1155,6 +1162,9 @@ char* codegen_gen_expr_one_line(
 
 /*
  $Log$
+ Revision 1.108  2009/01/07 23:40:46  phase1geo
+ Updates to support intermediate expression substitution.  Not done yet.  Checkpointing.
+
  Revision 1.107  2008/12/19 00:04:38  phase1geo
  VCS regression updates.  Checkpointing.
 

@@ -112,6 +112,16 @@ str_link* reg_head = NULL;
 str_link* reg_tail = NULL;
 
 /*!
+ Pointer to head of list for combinational coverage lines.
+*/
+str_link* comb_head = NULL;
+
+/*!
+ Pointer to tail of list for combinational coverage lines.
+*/
+str_link* comb_tail = NULL;
+
+/*!
  Maximum expression depth to generate coverage code for (from command-line).
 */
 unsigned int generator_max_exp_depth = 0xffffffff;
@@ -362,23 +372,79 @@ void generator_replace(
 }
 
 /*!
+ \return Returns TRUE if the specified expression is one that requires a substitution.
+*/
+bool generator_expr_needs_to_be_substituted(
+  expression* exp  /*!< Pointer to expression to evaluate */
+) { PROFILE(GENERATOR_EXPR_NEEDS_TO_BE_SUBSTITUTED);
+
+  bool retval = (exp->op == EXP_OP_SRANDOM) || (exp->op == EXP_OP_SURANDOM) || (exp->op == EXP_OP_SURAND_RANGE);
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns TRUE if the specified expression uses the right expression as the top expression; otherwise, the current
+         expression is the top expression.
+*/
+static bool generator_expr_uses_right(
+  expression* exp  /*!< Pointer to expression to examine */
+) { PROFILE(GENERATOR_EXPR_USES_RIGHT);
+
+  exp_op_type op     = exp->op;
+  bool        retval = (op == EXP_OP_BASSIGN)    || (op == EXP_OP_IF)   || (op == EXP_OP_WHILE)  || (op == EXP_OP_NASSIGN) ||
+                       (op == EXP_OP_DLY_ASSIGN) || (op == EXP_OP_WAIT) || (op == EXP_OP_ASSIGN) || (op == EXP_OP_DASSIGN);
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns TRUE if the specified expression is a top-level expression.
+*/
+static bool generator_expr_is_top(
+  expression* exp  /*!< Pointer to expression to examine */
+) { PROFILE(GENERATOR_IS_TOP_EXPR);
+
+  bool retval = (ESUPPL_IS_ROOT( exp->suppl ) == 1) ? !generator_expr_uses_right( exp ) :
+                ((ESUPPL_IS_ROOT( exp->parent->expr->suppl ) == 1) && generator_expr_uses_right( exp->parent->expr ) && (exp == exp->parent->expr->right));
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns TRUE if the given expression requires coverage output to be generated.
+*/
+static bool generator_expr_cov_needed(
+  expression*  exp,   /*!< Pointer to expression to evaluate */
+  unsigned int depth  /*!< Expression depth of the given expression */
+) { PROFILE(GENERATOR_EXPR_COV_NEEDED);
+
+  bool retval = (depth < generator_max_exp_depth) && (EXPR_IS_MEASURABLE( exp ) == 1) && !expression_is_static_only( exp );
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
  \return Returns TRUE if the current expression needs to be substituted with an expression name.
 */
 bool generator_expr_name_needed(
   expression*  exp,   /*!< Pointer to expression to evaluate */
   unsigned int depth  /*!< Expression depth of the given expression */
-) { PROFILE(GENERATOR_EXPR_NAME_NEEDED);
+) {
 
-  /* We need to output the expression name if the expression is going to be calculated or if it is a system function call */
-  bool retval = (generator_comb &&
-                 ((depth < generator_max_exp_depth) &&
-                  EXPR_IS_MEASURABLE( exp ) &&
-                  !expression_is_static_only( exp )) ||
-                 ((exp->op == EXP_OP_SRANDOM) || (exp->op == EXP_OP_SURANDOM) || (exp->op == EXP_OP_SURAND_RANGE)));
-
-  PROFILE_END;
-
-  return( retval );
+  return( exp->suppl.part.comb_cntd == 1 );
 
 }
 
@@ -1258,21 +1324,19 @@ static void generator_insert_unary_comb_cov(
 ) { PROFILE(GENERATOR_INSERT_UNARY_COMB_COV);
 
   char         prefix[16];
-  char         sig[80];
+  char         sig[4096];
   char*        sigr;
   char         str[4096];
   unsigned int rv;
-  str_link*    tmp_head = NULL;
-  str_link*    tmp_tail = NULL;
   expression*  last_exp = expression_get_last_line_expr( exp );
 
   /* Create signal */
   if( net || (funit->type == FUNIT_MODULE) ) {
-    rv = snprintf( sig,  80, " \\covered$%c%d_%d_%x ", (net ? 'u' : 'U'), exp->line, last_exp->line, exp->col );
-    assert( rv < 80 );
+    rv = snprintf( sig,  4096, " \\covered$%c%d_%d_%x ", (net ? 'u' : 'U'), exp->line, last_exp->line, exp->col );
+    assert( rv < 4096 );
   } else {
-    rv = snprintf( sig,  80, " \\covered$U%d_%d_%x$%s ", exp->line, last_exp->line, exp->col, funit->name );
-    assert( rv < 80 );
+    rv = snprintf( sig,  4096, " \\covered$U%d_%d_%x$%s ", exp->line, last_exp->line, exp->col, funit->name );
+    assert( rv < 4096 );
   }
 
   /* Create right signal name */
@@ -1293,27 +1357,7 @@ static void generator_insert_unary_comb_cov(
   /* Prepend the coverage assignment to the working buffer */
   rv = snprintf( str, 4096, "%s%s = (%s > 0);", prefix, sig, sigr );
   assert( rv < 4096 );
-  str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
-
-  /* If this is a net, prepend to the register list */
-  if( net ) {
-    if( reg_head == NULL ) {
-      reg_head = reg_tail = tmp_head;
-    } else {
-      tmp_tail->next = reg_head;
-      reg_head       = tmp_head;
-    }
-
-  /* Otherwise, prepend to the working list */
-  } else {
-    if( work_head == NULL ) {
-      work_head = work_tail = tmp_head;
-    } else {
-      tmp_tail->next = work_head;
-      work_head      = tmp_head;
-    }
-
-  }
+  str_link_add( strdup_safe( str ), &comb_head, &comb_tail );
 
   /* Deallocate temporary memory */
   free_safe( sigr, (strlen( sigr ) + 1) );
@@ -1367,26 +1411,7 @@ static void generator_insert_comb_comb_cov(
   /* Prepend the coverage assignment to the working buffer */
   rv = snprintf( str, 4096, "%s%s = {(%s > 0),(%s > 0)};", prefix, sig, sigl, sigr );
   assert( rv < 4096 );
-  str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
-
-  /* If this is a net, prepend to the register list */
-  if( net ) {
-    if( reg_head == NULL ) {
-      reg_head = reg_tail = tmp_head;
-    } else {
-      tmp_tail->next = reg_head;
-      reg_head       = tmp_head;
-    }
-
-  /* Otherwise, prepend to the working list */
-  } else {
-    if( work_head == NULL ) {
-      work_head = work_tail = tmp_head;
-    } else {
-      tmp_tail->next = work_head;
-      work_head      = tmp_head;
-    }
-  }
+  str_link_add( strdup_safe( str ), &comb_head, &comb_tail );
 
   /* Deallocate memory */
   free_safe( sigl, (strlen( sigl ) + 1) );
@@ -1467,7 +1492,10 @@ static char* generator_gen_size(
       case EXP_OP_SR2I  :
         size = strdup_safe( "64" );
         break;
-      case EXP_OP_SSR2B :
+      case EXP_OP_SSR2B        :
+      case EXP_OP_SRANDOM      :
+      case EXP_OP_SURANDOM     :
+      case EXP_OP_SURAND_RANGE :
         size = strdup_safe( "32" );
         break;
       case EXP_OP_LT        :
@@ -1615,45 +1643,6 @@ static char* generator_create_lhs(
   free_safe( size, (strlen( size ) + 1) );
 
   PROFILE_END;
-
-  return( code );
-
-}
-
-/*!
- Creates the proper subexpression code string and stores it into the code array.
-*/
-static char* generator_create_subexp(
-  expression*   exp,        /*!< Pointer to subexpression to generate code array for */
-  exp_op_type   parent_op,  /*!< Operation of parent */
-  func_unit*    funit,      /*!< Pointer to functional unit that contains the given expression */
-  unsigned int  depth,      /*!< Current subexpression depth */
-  bool          net         /*!< Set to TRUE if subexpression is a net */
-) { PROFILE(GENERATOR_CREATE_SUBEXP);
-
-  unsigned int rv;
-  unsigned int i;
-  char*        code = NULL;
-
-  /* TBD - I believe that this can be reduced! */
-
-  /* Generate left string */
-  if( exp != NULL ) {
-
-    /* Calculate the current expression depth */
-    depth += ((exp->op != parent_op) ? 1 : 0);
-
-    if( (depth < generator_max_exp_depth) && EXPR_IS_MEASURABLE( exp ) && !expression_is_static_only( exp ) ) {
-
-      code = generator_create_expr_name( exp );
-
-    } else {
-
-      code = codegen_gen_expr_one_line( exp, funit, TRUE, depth );
-
-    }
-
-  }
 
   return( code );
 
@@ -1893,26 +1882,92 @@ static void generator_insert_subexp(
   bool        reg_needed  /*!< If TRUE, instantiates needed registers */
 ) { PROFILE(GENERATOR_INSERT_SUBEXP);
 
-  char*        lhs_str = NULL;
-  char*        lstr;
-  char*        rstr;
+  char*        lhs_str  = NULL;
+  char*        val_str;
   unsigned int rv;
   unsigned int i;
+  str_link*    tmp_head = NULL;
+  str_link*    tmp_tail = NULL;
 
   /* Create LHS portion of assignment */
   lhs_str = generator_create_lhs( exp, funit, net, reg_needed );
 
-  /* Generate left and right subexpression code string */
-  lstr = generator_create_subexp( exp->left,  exp->op, funit, depth, net );
-  rstr = generator_create_subexp( exp->right, exp->op, funit, depth, net );
+  /* Generate value string */
+  val_str = codegen_gen_expr_one_line( exp, funit, !generator_expr_needs_to_be_substituted( exp ), depth );
 
-  /* Create output expression and add it to the working list */
-  generator_create_exp( exp, lhs_str, lstr, rstr, net );
+  /* If this expression needs to be substituted, do it with the lhs_str value */
+  if( generator_expr_needs_to_be_substituted( exp ) ) {
+    expression* last_exp = expression_get_last_line_expr( exp );
+    generator_replace( lhs_str, exp->line, ((exp->col >> 16) & 0xffff), last_exp->line, (last_exp->col & 0xffff) );
+  }
 
-  /* Deallocate strings */
-  free_safe( lhs_str, (strlen( lhs_str ) + 1) );
-  free_safe( lstr, (strlen( lstr ) + 1) );
-  free_safe( rstr, (strlen( rstr ) + 1) );
+  /* Prepend the strings to the register/working code */
+  str_link_add( lhs_str,              &comb_head, &comb_tail );
+  str_link_add( strdup_safe( " = " ), &comb_head, &comb_tail );
+  str_link_add( val_str,              &comb_head, &comb_tail );
+  str_link_add( strdup_safe( ";" ),   &comb_head, &comb_tail );
+
+  /* Specify that this expression has an intermediate value assigned to it */
+  exp->suppl.part.comb_cntd = 1;
+
+  PROFILE_END;
+
+}
+
+/*!
+ Recursively inserts the combinational logic coverage code for the given expression tree.
+*/
+static void generator_insert_comb_cov_helper2(
+  expression*  exp,        /*!< Pointer to expression tree to operate on */
+  func_unit*   funit,      /*!< Pointer to current functional unit */
+  exp_op_type  parent_op,  /*!< Parent expression operation (originally should be set to the same operation as exp) */
+  int          depth,      /*!< Current expression depth (originally set to 0) */
+  bool         net,        /*!< If set to TRUE generate code for a net */
+  bool         root,       /*!< Set to TRUE only for the "root" expression in the tree */
+  bool         reg_needed  /*!< If set to TRUE, registers are created as needed; otherwise, they are omitted */
+) { PROFILE(GENERATOR_INSERT_COMB_COV_HELPER2);
+
+  if( exp != NULL ) {
+
+    int child_depth = (depth + ((exp->op != parent_op) ? 1 : 0));
+
+    /* Generate children expression trees (depth first search) */
+    generator_insert_comb_cov_helper2( exp->left,  funit, exp->op, child_depth, net, FALSE, reg_needed );
+    generator_insert_comb_cov_helper2( exp->right, funit, exp->op, child_depth, net, FALSE, reg_needed );
+
+    /* Generate event combinational logic type */
+    if( EXPR_IS_EVENT( exp ) ) {
+      if( generator_expr_cov_needed( exp, depth ) ) {
+        generator_insert_event_comb_cov( exp, funit, reg_needed );
+      }
+
+    /* Otherwise, generate binary combinational logic type */
+    } else if( EXPR_IS_COMB( exp ) ) {
+      if( (exp->left != NULL) && (!generator_expr_cov_needed( exp->left, child_depth ) || generator_expr_needs_to_be_substituted( exp->left )) ) {
+        generator_insert_subexp( exp->left,  funit, depth, net, reg_needed );
+      }
+      if( (exp->right != NULL) && (!generator_expr_cov_needed( exp->right, child_depth ) || generator_expr_needs_to_be_substituted( exp->right )) ) {
+        generator_insert_subexp( exp->right, funit, depth, net, reg_needed );
+      }
+      if( !root && (generator_expr_cov_needed( exp, depth ) || generator_expr_needs_to_be_substituted( exp )) ) {
+        generator_insert_subexp( exp, funit, depth, net, reg_needed );
+      }
+      if( generator_expr_cov_needed( exp, depth ) ) {
+        generator_insert_comb_comb_cov( exp, funit, net, reg_needed );
+      }
+
+    /* Generate unary combinational logic type */
+    } else {
+      if( generator_expr_cov_needed( exp, depth ) || generator_expr_needs_to_be_substituted( exp ) ) {
+        generator_insert_subexp( exp, funit, depth, net, reg_needed );
+      }
+      if( generator_expr_cov_needed( exp, depth ) ) {
+        generator_insert_unary_comb_cov( exp, funit, depth, net, reg_needed );
+      }
+
+    }
+
+  }
 
   PROFILE_END;
 
@@ -1931,46 +1986,35 @@ static void generator_insert_comb_cov_helper(
   bool         reg_needed  /*!< If set to TRUE, registers are created as needed; otherwise, they are omitted */
 ) { PROFILE(GENERATOR_INSERT_COMB_COV_HELPER);
 
-  if( exp != NULL ) {
+  /* Generate the code */
+  generator_insert_comb_cov_helper2( exp, funit, parent_op, depth, net, root, reg_needed );
 
-    int child_depth = (depth + ((exp->op != parent_op) ? 1 : 0));
+  /* Output the generated code */
+  if( comb_head != NULL ) {
 
-    /* Only continue to traverse tree if we are within our depth limit */
-    if( (depth < generator_max_exp_depth) && (EXPR_IS_MEASURABLE( exp ) == 1) && !expression_is_static_only( exp ) ) {
-
-      /* Generate event combinational logic type */
-      if( EXPR_IS_EVENT( exp ) ) {
-        generator_insert_event_comb_cov( exp, funit, reg_needed );
-
-      /* Otherwise, generate binary combinational logic type */
-      } else if( EXPR_IS_COMB( exp ) ) {
-        generator_insert_comb_comb_cov( exp, funit, net, reg_needed );
-        if( (exp->left != NULL) && ((child_depth >= generator_max_exp_depth) || !EXPR_IS_MEASURABLE( exp->left ) || expression_is_static_only( exp->left )) ) {
-          generator_insert_subexp( exp->left,  funit, depth, net, reg_needed );
-        }
-        if( (exp->right != NULL) && ((child_depth >= generator_max_exp_depth) || !EXPR_IS_MEASURABLE( exp->right ) || expression_is_static_only( exp->right )) ) {
-          generator_insert_subexp( exp->right, funit, depth, net, reg_needed );
-        }
-        if( !root ) {
-          generator_insert_subexp( exp, funit, depth, net, reg_needed );
-        }
-
-      /* Generate unary combinational logic type */
+    /* If this is a net, prepend to the register list */
+    if( net ) {
+      if( reg_head == NULL ) {
+        reg_head = reg_tail = comb_head;
       } else {
-        generator_insert_unary_comb_cov( exp, funit, depth, net, reg_needed );
-        generator_insert_subexp( exp, funit, depth, net, reg_needed );
-
+        comb_tail->next = reg_head;
+        reg_head        = comb_head;
       }
 
+    /* Otherwise, prepend to the working list */
+    } else {
+      if( work_head == NULL ) {
+        work_head = work_tail = comb_head;
+      } else {
+        comb_tail->next = work_head;
+        work_head       = comb_head;
+      }
     }
 
-    /* Generate children expression trees */
-    generator_insert_comb_cov_helper( exp->left,  funit, exp->op, child_depth, net, FALSE, reg_needed );
-    generator_insert_comb_cov_helper( exp->right, funit, exp->op, child_depth, net, FALSE, reg_needed );
+    /* Clear the comb head/tail pointers for reuse */
+    comb_head = comb_tail = NULL;
 
   }
-
-  PROFILE_END;
 
 }
 
@@ -2537,6 +2581,9 @@ void generator_handle_event_trigger(
 
 /*
  $Log$
+ Revision 1.62  2009/01/07 23:40:46  phase1geo
+ Updates to support intermediate expression substitution.  Not done yet.  Checkpointing.
+
  Revision 1.61  2009/01/06 23:51:56  phase1geo
  Cleaning up unnecessary output.
 
