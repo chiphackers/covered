@@ -2135,9 +2135,9 @@ static char* generator_gen_mem_index(
     char* tmpstr = str;
     char* rest   = generator_gen_mem_index( ((dimension == 1) ? exp->parent->expr->left : exp->parent->expr->left->right), funit, (dimension - 1) );
 
-    slen = strlen( tmpstr ) + 3 + strlen( rest ) + 1;
+    slen = strlen( tmpstr ) + 1 + strlen( rest ) + 1;
     str  = (char*)malloc_safe( slen );
-    rv   = snprintf( str, slen, "%s + %s", tmpstr, rest );
+    rv   = snprintf( str, slen, "%s+%s", tmpstr, rest );
     assert( rv < slen ); 
 
     free_safe( rest,   (strlen( rest )   + 1) );
@@ -2610,6 +2610,9 @@ void generator_handle_event_trigger(
 
 /*
  $Log$
+ Revision 1.65  2009/01/08 16:13:59  phase1geo
+ Completing work on substitution support.  Updated regressions.
+
  Revision 1.64  2009/01/08 14:12:34  phase1geo
  Fixing some issues from last checkin.  Still a few more issues to iron out but
  this is close.  Checkpointing.

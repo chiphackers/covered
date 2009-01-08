@@ -2486,6 +2486,25 @@ generate_item_list
     }
   ;
 
+start_gen_block
+  :
+    {
+      if( !parse_mode ) {
+        generator_add_cov_to_work_code( " begin" );
+        generator_flush_work_code;
+      }
+    }
+  ;
+
+end_gen_block
+  :
+    {
+      if( !parse_mode ) {
+        generator_add_to_hold_code( " end " );
+      }
+    }
+  ;
+
   /* Similar to module_item but is more restrictive */
 generate_item
   : module_item
@@ -2496,7 +2515,7 @@ generate_item
         $$ = NULL;
       }
     }
-  | K_begin
+  | K_begin start_gen_block
     {
       char* name = db_create_unnamed_scope();
       if( parse_mode ) {
@@ -2516,35 +2535,34 @@ generate_item
         }
       } else {
         char str[50];
-        unsigned int rv = snprintf( str, 50, ": %s", name );
+        unsigned int rv = snprintf( str, 50, " : %s", name );
         assert( rv < 50 );
         generator_prepend_to_work_code( str );
-        printf( "---------------------------------------------------------------------\n" );
       }
       free_safe( name, (strlen( name ) + 1) );
     }
-    generate_item_list_opt K_end
+    generate_item_list_opt end_gen_block K_end
     {
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
-          db_end_function_task_namedblock( @4.first_line );
+          db_end_function_task_namedblock( @6.first_line );
         } else {
           ignore_mode--;
         }
-        db_gen_item_connect_true( save_gi_tail->gi, $3 );
+        db_gen_item_connect_true( save_gi_tail->gi, $4 );
         $$ = save_gi_tail->gi;
         gitem_link_remove( save_gi_tail->gi, &save_gi_head, &save_gi_tail );
       } else {
         $$ = NULL;
       }
     }
-  | K_begin ':' IDENTIFIER
+  | K_begin start_gen_block ':' IDENTIFIER
     {
       if( parse_mode ) {
         generate_expr_mode++;
         if( ignore_mode == 0 ) {
           Try {
-            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $3, @3.text, @3.first_line ) ) {
+            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $4, @4.text, @4.first_line ) ) {
               ignore_mode++;
             } else {
               gen_item* gi = db_get_curr_gen_block();
@@ -2558,17 +2576,17 @@ generate_item
         }
         generate_expr_mode--;
       }
-      free_safe( $3, (strlen( $3 ) + 1) );
+      free_safe( $4, (strlen( $4 ) + 1) );
     }
-    generate_item_list_opt K_end
+    generate_item_list_opt end_gen_block K_end
     {
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
-          db_end_function_task_namedblock( @6.first_line );
+          db_end_function_task_namedblock( @8.first_line );
         } else {
           ignore_mode--;
         }
-        db_gen_item_connect_true( save_gi_tail->gi, $5 );
+        db_gen_item_connect_true( save_gi_tail->gi, $6 );
         $$ = save_gi_tail->gi;
         gitem_link_remove( save_gi_tail->gi, &save_gi_head, &save_gi_tail );
       } else {
@@ -2582,13 +2600,7 @@ generate_item
       }
     }
     '(' generate_passign ';' static_expr ';' generate_passign ')'
-    {
-      if( !parse_mode ) {
-        generator_add_cov_to_work_code( " begin" );
-        generator_flush_work_code;
-      }
-    }
-    K_begin ':' IDENTIFIER
+    K_begin start_gen_block ':' IDENTIFIER
     {
       if( parse_mode ) {
         generate_for_mode++;
@@ -2612,14 +2624,14 @@ generate_item
       }
       free_safe( $13, (strlen( $13 ) + 1) );
     }
-    generate_item_list_opt K_end
+    generate_item_list_opt end_gen_block K_end
     {
       if( parse_mode ) {
         gen_item*   gi1;
         gen_item*   gi2;
         gen_item*   gi3;
         if( ignore_mode == 0 ) {
-          db_end_function_task_namedblock( @16.first_line );
+          db_end_function_task_namedblock( @17.first_line );
         } else {
           ignore_mode--;
         }
@@ -2657,8 +2669,6 @@ generate_item
         }
         generate_expr_mode--;
       } else {
-        generator_add_cov_to_work_code( " end " );
-        generator_flush_work_code;
         $$ = NULL;
       }
     }
