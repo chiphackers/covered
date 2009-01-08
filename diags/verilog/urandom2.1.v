@@ -14,6 +14,7 @@ event     c;
 initial begin
 	d = 1;
         e = 32'hff;
+	#1;
 	a = ($urandom( d ) & e);
 	@(c);
 	b = ($urandom( d ) & e);

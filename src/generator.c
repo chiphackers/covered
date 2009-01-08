@@ -449,6 +449,30 @@ bool generator_expr_name_needed(
 }
 
 /*!
+ Recursively clears the comb_cntd bits in the given expression tree for all expressions that do not require
+ substitution.
+*/
+void generator_clear_comb_cntd(
+  expression* exp  /*!< Pointer to expression to clear */
+) { PROFILE(GENERATOR_CLEAR_COMB_CNTD);
+
+  if( exp != NULL ) {
+
+    generator_clear_comb_cntd( exp->left );
+    generator_clear_comb_cntd( exp->right );
+
+    /* Only clear the comb_cntd bit if it does not require substitution */
+    if( !generator_expr_needs_to_be_substituted( exp ) ) {
+      exp->suppl.part.comb_cntd = 0;
+    }
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  \return Returns the name of the given expression in a string form that represents the physical attributes
          of the given expression for the purposes of lookup.  Each name is guaranteed to be unique.  The
          returned string is allocated and must be deallocated by the calling function.
@@ -1875,12 +1899,11 @@ static void generator_create_exp(
  Generates temporary subexpression for the given expression (not recursively)
 */
 static void generator_insert_subexp(
-  expression* exp,          /*!< Pointer to the current expression */
-  func_unit*  funit,        /*!< Pointer to the functional unit that exp exists in */
-  int         depth,        /*!< Current subexpression depth */
-  bool        net,          /*!< If TRUE, specifies that we are generating for a net */
-  bool        reg_needed,   /*!< If TRUE, instantiates needed registers */
-  bool        within_event  /*!< If TRUE, does not perform substitutions */
+  expression* exp,        /*!< Pointer to the current expression */
+  func_unit*  funit,      /*!< Pointer to the functional unit that exp exists in */
+  int         depth,      /*!< Current subexpression depth */
+  bool        net,        /*!< If TRUE, specifies that we are generating for a net */
+  bool        reg_needed  /*!< If TRUE, instantiates needed registers */
 ) { PROFILE(GENERATOR_INSERT_SUBEXP);
 
   char*        lhs_str  = NULL;
@@ -1909,7 +1932,7 @@ static void generator_insert_subexp(
   str_link_add( strdup_safe( ";" ),   &comb_head, &comb_tail );
 
   /* Specify that this expression has an intermediate value assigned to it */
-  exp->suppl.part.comb_cntd = !within_event;
+  exp->suppl.part.comb_cntd = 1;
 
   PROFILE_END;
 
@@ -1919,14 +1942,13 @@ static void generator_insert_subexp(
  Recursively inserts the combinational logic coverage code for the given expression tree.
 */
 static void generator_insert_comb_cov_helper2(
-  expression*  exp,          /*!< Pointer to expression tree to operate on */
-  func_unit*   funit,        /*!< Pointer to current functional unit */
-  exp_op_type  parent_op,    /*!< Parent expression operation (originally should be set to the same operation as exp) */
-  int          depth,        /*!< Current expression depth (originally set to 0) */
-  bool         net,          /*!< If set to TRUE generate code for a net */
-  bool         root,         /*!< Set to TRUE only for the "root" expression in the tree */
-  bool         reg_needed,   /*!< If set to TRUE, registers are created as needed; otherwise, they are omitted */
-  bool         within_event  /*!< If set to TRUE, indicates that we are currently within an event (no substitutions are allowed) */
+  expression*  exp,        /*!< Pointer to expression tree to operate on */
+  func_unit*   funit,      /*!< Pointer to current functional unit */
+  exp_op_type  parent_op,  /*!< Parent expression operation (originally should be set to the same operation as exp) */
+  int          depth,      /*!< Current expression depth (originally set to 0) */
+  bool         net,        /*!< If set to TRUE generate code for a net */
+  bool         root,       /*!< Set to TRUE only for the "root" expression in the tree */
+  bool         reg_needed  /*!< If set to TRUE, registers are created as needed; otherwise, they are omitted */
 ) { PROFILE(GENERATOR_INSERT_COMB_COV_HELPER2);
 
   if( exp != NULL ) {
@@ -1934,8 +1956,8 @@ static void generator_insert_comb_cov_helper2(
     int child_depth = (depth + ((exp->op != parent_op) ? 1 : 0));
 
     /* Generate children expression trees (depth first search) */
-    generator_insert_comb_cov_helper2( exp->left,  funit, exp->op, child_depth, net, FALSE, reg_needed, (within_event || EXPR_IS_EVENT( exp )) );
-    generator_insert_comb_cov_helper2( exp->right, funit, exp->op, child_depth, net, FALSE, reg_needed, (within_event || EXPR_IS_EVENT( exp )) );
+    generator_insert_comb_cov_helper2( exp->left,  funit, exp->op, child_depth, net, FALSE, reg_needed );
+    generator_insert_comb_cov_helper2( exp->right, funit, exp->op, child_depth, net, FALSE, reg_needed );
 
     /* Generate event combinational logic type */
     if( EXPR_IS_EVENT( exp ) ) {
@@ -1946,13 +1968,13 @@ static void generator_insert_comb_cov_helper2(
     /* Otherwise, generate binary combinational logic type */
     } else if( EXPR_IS_COMB( exp ) ) {
       if( (exp->left != NULL) && (!generator_expr_cov_needed( exp->left, child_depth ) || generator_expr_needs_to_be_substituted( exp->left )) ) {
-        generator_insert_subexp( exp->left,  funit, depth, net, reg_needed, within_event );
+        generator_insert_subexp( exp->left,  funit, depth, net, reg_needed );
       }
       if( (exp->right != NULL) && (!generator_expr_cov_needed( exp->right, child_depth ) || generator_expr_needs_to_be_substituted( exp->right )) ) {
-        generator_insert_subexp( exp->right, funit, depth, net, reg_needed, within_event );
+        generator_insert_subexp( exp->right, funit, depth, net, reg_needed );
       }
       if( !root && (generator_expr_cov_needed( exp, depth ) || generator_expr_needs_to_be_substituted( exp )) ) {
-        generator_insert_subexp( exp, funit, depth, net, reg_needed, within_event );
+        generator_insert_subexp( exp, funit, depth, net, reg_needed );
       }
       if( generator_expr_cov_needed( exp, depth ) ) {
         generator_insert_comb_comb_cov( exp, funit, net, reg_needed );
@@ -1961,7 +1983,7 @@ static void generator_insert_comb_cov_helper2(
     /* Generate unary combinational logic type */
     } else {
       if( generator_expr_cov_needed( exp, depth ) || generator_expr_needs_to_be_substituted( exp ) ) {
-        generator_insert_subexp( exp, funit, depth, net, reg_needed, within_event );
+        generator_insert_subexp( exp, funit, depth, net, reg_needed );
       }
       if( generator_expr_cov_needed( exp, depth ) ) {
         generator_insert_unary_comb_cov( exp, funit, depth, net, reg_needed );
@@ -1979,18 +2001,17 @@ static void generator_insert_comb_cov_helper2(
  Recursively inserts the combinational logic coverage code for the given expression tree.
 */
 static void generator_insert_comb_cov_helper(
-  expression*  exp,          /*!< Pointer to expression tree to operate on */
-  func_unit*   funit,        /*!< Pointer to current functional unit */
-  exp_op_type  parent_op,    /*!< Parent expression operation (originally should be set to the same operation as exp) */
-  int          depth,        /*!< Current expression depth (originally set to 0) */
-  bool         net,          /*!< If set to TRUE generate code for a net */
-  bool         root,         /*!< Set to TRUE only for the "root" expression in the tree */
-  bool         reg_needed,   /*!< If set to TRUE, registers are created as needed; otherwise, they are omitted */
-  bool         within_event  /*!< If set to TRUE, don't do substitutions */
+  expression*  exp,        /*!< Pointer to expression tree to operate on */
+  func_unit*   funit,      /*!< Pointer to current functional unit */
+  exp_op_type  parent_op,  /*!< Parent expression operation (originally should be set to the same operation as exp) */
+  int          depth,      /*!< Current expression depth (originally set to 0) */
+  bool         net,        /*!< If set to TRUE generate code for a net */
+  bool         root,       /*!< Set to TRUE only for the "root" expression in the tree */
+  bool         reg_needed  /*!< If set to TRUE, registers are created as needed; otherwise, they are omitted */
 ) { PROFILE(GENERATOR_INSERT_COMB_COV_HELPER);
 
   /* Generate the code */
-  generator_insert_comb_cov_helper2( exp, funit, parent_op, depth, net, root, reg_needed, within_event );
+  generator_insert_comb_cov_helper2( exp, funit, parent_op, depth, net, root, reg_needed );
 
   /* Output the generated code */
   if( comb_head != NULL ) {
@@ -2020,6 +2041,9 @@ static void generator_insert_comb_cov_helper(
     comb_head = comb_tail = NULL;
 
   }
+
+  /* Clear the comb_cntd bits in the expression tree */
+  generator_clear_comb_cntd( exp );
 
 }
 
@@ -2366,7 +2390,7 @@ statement* generator_insert_comb_cov(
 
     /* Generate combinational coverage */
     if( generator_comb ) {
-      generator_insert_comb_cov_helper( (use_right ? stmt->exp->right : stmt->exp), stmt->funit, (use_right ? stmt->exp->right->op : stmt->exp->op), 0, net, TRUE, TRUE, EXPR_IS_EVENT( stmt->exp ) );
+      generator_insert_comb_cov_helper( (use_right ? stmt->exp->right : stmt->exp), stmt->funit, (use_right ? stmt->exp->right->op : stmt->exp->op), 0, net, TRUE, TRUE );
     }
 
     /* Generate memory coverage */
@@ -2418,7 +2442,7 @@ statement* generator_insert_comb_cov_from_stmt_stack() { PROFILE(GENERATOR_INSER
     exp  = stmt_stack->next_true ? stmt->exp->right : stmt->exp;
 
     /* Generate combinational coverage information */
-    generator_insert_comb_cov_helper( exp, stmt->funit, exp->op, 0, FALSE, TRUE, FALSE, EXPR_IS_EVENT( exp ) );
+    generator_insert_comb_cov_helper( exp, stmt->funit, exp->op, 0, FALSE, TRUE, FALSE );
 
     /* Now pop the statement stack */
     stmt_stack = sll->next;
@@ -2436,10 +2460,9 @@ statement* generator_insert_comb_cov_from_stmt_stack() { PROFILE(GENERATOR_INSER
  Inserts combinational coverage information for the given statement.
 */
 void generator_insert_comb_cov_with_stmt(
-  statement* stmt,                /*!< Pointer to statement to generate combinational logic coverage for */
-  bool       use_right,           /*!< Specifies if the right expression should be used in the statement */
-  bool       reg_needed,          /*!< If TRUE, instantiate necessary registers */
-  bool       allow_substitutions  /*!< If TRUE, allows substitutions to occur */
+  statement* stmt,       /*!< Pointer to statement to generate combinational logic coverage for */
+  bool       use_right,  /*!< Specifies if the right expression should be used in the statement */
+  bool       reg_needed  /*!< If TRUE, instantiate necessary registers */
 ) { PROFILE(GENERATOR_INSERT_COMB_COV_WITH_STMT);
 
   if( generator_comb && (stmt != NULL) ) {
@@ -2447,7 +2470,7 @@ void generator_insert_comb_cov_with_stmt(
     expression* exp = use_right ? stmt->exp->right : stmt->exp;
 
     /* Insert combinational coverage */
-    generator_insert_comb_cov_helper( exp, stmt->funit, exp->op, 0, FALSE, TRUE, reg_needed, !allow_substitutions );
+    generator_insert_comb_cov_helper( exp, stmt->funit, exp->op, 0, FALSE, TRUE, reg_needed );
 
   }
 
@@ -2468,11 +2491,11 @@ void generator_insert_case_comb_cov(
   /* Insert combinational logic code coverage if it is specified on the command-line to do so and the statement exists */
   if( generator_comb && ((stmt = generator_find_case_statement( first_line, first_column )) != NULL) ) {
 
-    generator_insert_comb_cov_helper( stmt->exp->left, stmt->funit, stmt->exp->left->op, 0, FALSE, TRUE, TRUE, EXPR_IS_EVENT( stmt->exp ) );
+    generator_insert_comb_cov_helper( stmt->exp->left, stmt->funit, stmt->exp->left->op, 0, FALSE, TRUE, TRUE );
 
 #ifdef FUTURE_ENHANCEMENT
     /* Generate covered for the current case item */
-    generator_insert_comb_cov_helper( stmt->exp, stmt->funit, stmt->exp->op, 0, FALSE, TRUE, TRUE, EXPR_IS_EVENT( stmt->exp ) );
+    generator_insert_comb_cov_helper( stmt->exp, stmt->funit, stmt->exp->op, 0, FALSE, TRUE, TRUE );
 
     /* If the current statement is a case item type, handle it; otherwise, we are done */
     while( !stmt->suppl.part.stop_false &&
@@ -2482,7 +2505,7 @@ void generator_insert_case_comb_cov(
       stmt = stmt->next_false;
 
       /* Generate covered for the current case item */
-      generator_insert_comb_cov_helper( stmt->exp, stmt->funit, stmt->exp->op, 0, FALSE, TRUE, TRUE, EXPR_IS_EVENT( stmt->exp ) );
+      generator_insert_comb_cov_helper( stmt->exp, stmt->funit, stmt->exp->op, 0, FALSE, TRUE, TRUE );
 
     }
 #endif
@@ -2587,6 +2610,10 @@ void generator_handle_event_trigger(
 
 /*
  $Log$
+ Revision 1.64  2009/01/08 14:12:34  phase1geo
+ Fixing some issues from last checkin.  Still a few more issues to iron out but
+ this is close.  Checkpointing.
+
  Revision 1.63  2009/01/08 08:00:21  phase1geo
  Closest thing to working code for code substitution.  Not quite finished yet
  but close.  Checkpointing.

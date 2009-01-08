@@ -4784,7 +4784,7 @@ statement
       if( !parse_mode ) {
         generator_add_cov_to_work_code( " begin" );
         generator_flush_work_code;
-        generator_insert_comb_cov_with_stmt( $6, FALSE, TRUE, TRUE );
+        generator_insert_comb_cov_with_stmt( $6, FALSE, TRUE );
       }
     }
     statement dec_for_depth
@@ -4830,10 +4830,10 @@ statement
         }
       } else {
         generator_insert_line_cov_with_stmt( $8, TRUE );
-        generator_insert_comb_cov_with_stmt( $8, FALSE, TRUE, TRUE );
+        generator_insert_comb_cov_with_stmt( $8, FALSE, TRUE );
         generator_add_cov_to_work_code( " end " );
         generator_flush_work_code;
-        generator_insert_comb_cov_with_stmt( $6, FALSE, FALSE, FALSE );
+        generator_insert_comb_cov_with_stmt( $6, FALSE, FALSE );
         generator_flush_work_code;
         $$ = NULL;
       }
@@ -5276,7 +5276,7 @@ statement
         generator_add_cov_to_work_code( " begin" );
         generator_flush_work_code;
         generator_insert_event_comb_cov( stmt->exp, stmt->funit, TRUE );
-        generator_insert_comb_cov_with_stmt( stmt, TRUE, FALSE, FALSE );
+        generator_insert_comb_cov_with_stmt( stmt, TRUE, FALSE );
         generator_flush_work_code;
       }
       block_depth++;

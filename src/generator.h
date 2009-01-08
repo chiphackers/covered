@@ -155,8 +155,7 @@ statement* generator_insert_comb_cov_from_stmt_stack();
 void generator_insert_comb_cov_with_stmt(
   statement* stmt,
   bool       use_right,
-  bool       reg_needed,
-  bool       allow_substitutions
+  bool       reg_needed
 );
 
 /*! \brief Inserts code for handling combinational logic coverage for case blocks. */
@@ -186,6 +185,10 @@ void generator_handle_event_trigger(
 
 /*
  $Log$
+ Revision 1.27  2009/01/08 14:12:34  phase1geo
+ Fixing some issues from last checkin.  Still a few more issues to iron out but
+ this is close.  Checkpointing.
+
  Revision 1.26  2009/01/07 23:40:46  phase1geo
  Updates to support intermediate expression substitution.  Not done yet.  Checkpointing.
 
