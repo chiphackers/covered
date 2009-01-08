@@ -8,15 +8,18 @@ initial begin
 `ifdef FOO
 `ifdef ZERO2ONE
 	a = 1'b0;
+	#1;
 	a = 1'b1;
 `elsif ONE2ZERO
 	a = 1'b1;
+	#1;
 	a = 1'b0;
 `else
 	$display( "Hello world" );
 `endif
 `endif
 	b = 1'b0;
+	#1;
 	b = 1'b1;
 end
 

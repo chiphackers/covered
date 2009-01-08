@@ -13,6 +13,7 @@ initial begin : foo
 	i = 0;
 	#5;
 	for( int i=0; i<4; i++ ) begin : for1
+	  #1;
 	  a = i;
         end
 	i = a;

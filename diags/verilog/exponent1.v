@@ -7,6 +7,7 @@ initial begin
 	c = 3;
 	#1;
 	a = b ** c;
+	#1;
 	a = a ** c;
 end
 

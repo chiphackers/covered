@@ -168,9 +168,9 @@ char* mod_parm_gen_size_code(
   if( mparm != NULL ) {
 
     if( mparm->suppl.part.type == PARAM_TYPE_SIG_LSB ) {
-      lsb_str = codegen_gen_expr_one_line( mparm->expr, mod, FALSE, 0 );
+      lsb_str = codegen_gen_expr_one_line( mparm->expr, mod, FALSE );
     } else {
-      msb_str = codegen_gen_expr_one_line( mparm->expr, mod, FALSE, 0 );
+      msb_str = codegen_gen_expr_one_line( mparm->expr, mod, FALSE );
     }
 
     /* Second, find the matching MSB module parameter */
@@ -180,9 +180,9 @@ char* mod_parm_gen_size_code(
     }
     if( mparm != NULL ) {
       if( mparm->suppl.part.type == PARAM_TYPE_SIG_LSB ) {
-        lsb_str = codegen_gen_expr_one_line( mparm->expr, mod, FALSE, 0 );
+        lsb_str = codegen_gen_expr_one_line( mparm->expr, mod, FALSE );
       } else {
-        msb_str = codegen_gen_expr_one_line( mparm->expr, mod, FALSE, 0 );
+        msb_str = codegen_gen_expr_one_line( mparm->expr, mod, FALSE );
       }
     }
 
@@ -1243,6 +1243,9 @@ void inst_parm_dealloc(
 
 /*
  $Log$
+ Revision 1.123  2009/01/07 23:40:46  phase1geo
+ Updates to support intermediate expression substitution.  Not done yet.  Checkpointing.
+
  Revision 1.122  2009/01/05 23:48:00  phase1geo
  Removing unnecessary output.
 

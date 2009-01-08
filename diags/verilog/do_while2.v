@@ -7,7 +7,7 @@ always @(b)
   begin
    a = b;
    do
-     a = a + 1;
+     #1 a = a + 1;
    while( a < (b + 10) );
   end
 
@@ -16,11 +16,11 @@ initial begin
         $dumpfile( "do_while2.vcd" );
         $dumpvars( 0, main );
 `endif
-	#10;
+	#1000;
 	b = 0;
-	#10;
+	#1000;
 	b = 100;
-	#10;
+	#1000;
         $finish;
 end
 

@@ -56,8 +56,7 @@ void generator_replace(
 
 /*! \brief Returns TRUE if the current expression will be calculated via an intermediate assignment. */
 bool generator_expr_name_needed(
-  expression*  exp,   /*!< Pointer to expression to evaluate */
-  unsigned int depth  /*!< Expression depth of the given expression */
+  expression* exp
 );
 
 /*! \brief Creates an inlined expression name (guanteed to be unique for a given expression) */
@@ -70,7 +69,7 @@ void generator_output();
 
 /*! \brief Initializes and resets the functional unit iterator. */
 void generator_init_funit(
-  func_unit* funit  /*!< Pointer to current functional unit */
+  func_unit* funit
 );
 
 /*!
@@ -185,6 +184,9 @@ void generator_handle_event_trigger(
 
 /*
  $Log$
+ Revision 1.28  2009/01/08 16:13:59  phase1geo
+ Completing work on substitution support.  Updated regressions.
+
  Revision 1.27  2009/01/08 14:12:34  phase1geo
  Fixing some issues from last checkin.  Still a few more issues to iron out but
  this is close.  Checkpointing.

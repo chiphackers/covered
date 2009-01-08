@@ -23,7 +23,7 @@ initial begin
         $dumpfile( "do_while1.1.vcd" );
         $dumpvars( 0, main );
 `endif
-        #20;
+        #21;
         $finish;
 end
 

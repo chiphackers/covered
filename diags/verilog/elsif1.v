@@ -7,9 +7,11 @@ reg a;
 initial begin
 `ifdef ZERO2ONE
 	a = 1'b0;
+	#1;
 	a = 1'b1;
 `elsif ONE2ZERO
 	a = 1'b1;
+	#1;
 	a = 1'b0;
 `else
 	a = 1'b0;

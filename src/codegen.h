@@ -38,13 +38,15 @@ void codegen_gen_expr(
 char* codegen_gen_expr_one_line(
   expression*  expr,
   func_unit*   funit,
-  bool         inline_exp,
-  unsigned int exp_depth
+  bool         inline_exp
 );
 
 
 /*
  $Log$
+ Revision 1.15  2009/01/07 23:40:46  phase1geo
+ Updates to support intermediate expression substitution.  Not done yet.  Checkpointing.
+
  Revision 1.14  2008/12/13 00:17:28  phase1geo
  Fixing more regression bugs.  Updated some original tests to make them comparable to the inlined method output.
  Checkpointing.

@@ -1,6 +1,6 @@
 module main;
 
-reg  b, d, e;
+reg  b, d, e = 0;
 wire c;
 
 wire a = b & c;
@@ -16,7 +16,6 @@ end
 always @(posedge b) d <= ~a;
 
 final begin
-      e = 1'b0;
       e = 1'b1;
 end
 

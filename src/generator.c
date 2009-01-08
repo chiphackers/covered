@@ -378,41 +378,9 @@ bool generator_expr_needs_to_be_substituted(
   expression* exp  /*!< Pointer to expression to evaluate */
 ) { PROFILE(GENERATOR_EXPR_NEEDS_TO_BE_SUBSTITUTED);
 
-  bool retval = (exp->op == EXP_OP_SRANDOM) || (exp->op == EXP_OP_SURANDOM) || (exp->op == EXP_OP_SURAND_RANGE);
-
-  PROFILE_END;
-
-  return( retval );
-
-}
-
-/*!
- \return Returns TRUE if the specified expression uses the right expression as the top expression; otherwise, the current
-         expression is the top expression.
-*/
-static bool generator_expr_uses_right(
-  expression* exp  /*!< Pointer to expression to examine */
-) { PROFILE(GENERATOR_EXPR_USES_RIGHT);
-
-  exp_op_type op     = exp->op;
-  bool        retval = (op == EXP_OP_BASSIGN)    || (op == EXP_OP_IF)   || (op == EXP_OP_WHILE)  || (op == EXP_OP_NASSIGN) ||
-                       (op == EXP_OP_DLY_ASSIGN) || (op == EXP_OP_WAIT) || (op == EXP_OP_ASSIGN) || (op == EXP_OP_DASSIGN);
-
-  PROFILE_END;
-
-  return( retval );
-
-}
-
-/*!
- \return Returns TRUE if the specified expression is a top-level expression.
-*/
-static bool generator_expr_is_top(
-  expression* exp  /*!< Pointer to expression to examine */
-) { PROFILE(GENERATOR_IS_TOP_EXPR);
-
-  bool retval = (ESUPPL_IS_ROOT( exp->suppl ) == 1) ? !generator_expr_uses_right( exp ) :
-                ((ESUPPL_IS_ROOT( exp->parent->expr->suppl ) == 1) && generator_expr_uses_right( exp->parent->expr ) && (exp == exp->parent->expr->right));
+  bool retval = (exp->op == EXP_OP_SRANDOM)      ||
+                (exp->op == EXP_OP_SURANDOM)     ||
+                (exp->op == EXP_OP_SURAND_RANGE);
 
   PROFILE_END;
 
@@ -440,8 +408,7 @@ static bool generator_expr_cov_needed(
  \return Returns TRUE if the current expression needs to be substituted with an expression name.
 */
 bool generator_expr_name_needed(
-  expression*  exp,   /*!< Pointer to expression to evaluate */
-  unsigned int depth  /*!< Expression depth of the given expression */
+  expression* exp  /*!< Pointer to expression to evaluate */
 ) {
 
   return( exp->suppl.part.comb_cntd == 1 );
@@ -478,12 +445,12 @@ void generator_clear_comb_cntd(
          returned string is allocated and must be deallocated by the calling function.
 */
 char* generator_create_expr_name(
-  expression* exp  /*!< Pointer to expression */
+  expression*  exp  /*!< Pointer to expression */
 ) { PROFILE(GENERATOR_CREATE_EXPR_NAME);
 
+  char*        name;
   unsigned int slen;
   unsigned int rv;
-  char*        name;
   expression*  last_exp = expression_get_last_line_expr( exp );
   char         op[30];
   char         fline[30];
@@ -1268,7 +1235,7 @@ void generator_insert_event_comb_cov(
   } else {
 
     char* tname     = generator_create_expr_name( exp );
-    char* event_str = codegen_gen_expr_one_line( exp->right, funit, FALSE, 0 );
+    char* event_str = codegen_gen_expr_one_line( exp->right, funit, FALSE );
 
     /* Handle the event */
     switch( exp->op ) {
@@ -1342,7 +1309,6 @@ void generator_insert_event_comb_cov(
 static void generator_insert_unary_comb_cov(
   expression*  exp,        /*!< Pointer to expression to output */
   func_unit*   funit,      /*!< Pointer to functional unit containing this expression */
-  unsigned int depth,      /*!< Current expression depth */
   bool         net,        /*!< Set to TRUE if this expression is a net */
   bool         reg_needed  /*!< If TRUE, instantiates needed registers */
 ) { PROFILE(GENERATOR_INSERT_UNARY_COMB_COV);
@@ -1491,7 +1457,7 @@ static char* generator_gen_size(
       case EXP_OP_MBIT_NEG       :
       case EXP_OP_PARAM_MBIT_POS :
       case EXP_OP_PARAM_MBIT_NEG :
-        size = codegen_gen_expr_one_line( exp->right, funit, FALSE, 0 );
+        size = codegen_gen_expr_one_line( exp->right, funit, FALSE );
         break;
       case EXP_OP_LSHIFT  :
       case EXP_OP_RSHIFT  :
@@ -1500,7 +1466,7 @@ static char* generator_gen_size(
         size = generator_gen_size( exp->left, funit );
         break;
       case EXP_OP_EXPAND :
-        lexp = codegen_gen_expr_one_line( exp->left, funit, FALSE, 0 );
+        lexp = codegen_gen_expr_one_line( exp->left, funit, FALSE );
         rexp = generator_gen_size( exp->right, funit );
         {
           unsigned int slen = strlen( lexp ) + strlen( rexp ) + 4;
@@ -1567,8 +1533,8 @@ static char* generator_gen_size(
         break;
       case EXP_OP_MBIT_SEL   :
       case EXP_OP_PARAM_MBIT :
-        lexp = codegen_gen_expr_one_line( exp->left,  funit, FALSE, 0 );
-        rexp = codegen_gen_expr_one_line( exp->right, funit, FALSE, 0 );
+        lexp = codegen_gen_expr_one_line( exp->left,  funit, FALSE );
+        rexp = codegen_gen_expr_one_line( exp->right, funit, FALSE );
         {
           unsigned int slen = (strlen( lexp ) * 3) + (strlen( rexp ) * 3) + 18;
           size = (char*)malloc_safe( slen );
@@ -1632,7 +1598,7 @@ static char* generator_create_lhs(
 ) { PROFILE(GENERATOR_CREATE_RHS);
 
   unsigned int rv;
-  char*        name     = generator_create_expr_name( exp );
+  char*        name = generator_create_expr_name( exp );
   char         tmp[4096];
   char*        size;
   char*        code;
@@ -1901,13 +1867,14 @@ static void generator_create_exp(
 static void generator_insert_subexp(
   expression* exp,        /*!< Pointer to the current expression */
   func_unit*  funit,      /*!< Pointer to the functional unit that exp exists in */
-  int         depth,      /*!< Current subexpression depth */
   bool        net,        /*!< If TRUE, specifies that we are generating for a net */
   bool        reg_needed  /*!< If TRUE, instantiates needed registers */
 ) { PROFILE(GENERATOR_INSERT_SUBEXP);
 
   char*        lhs_str  = NULL;
   char*        val_str;
+  char*        str;
+  unsigned int slen;
   unsigned int rv;
   unsigned int i;
   str_link*    tmp_head = NULL;
@@ -1917,7 +1884,7 @@ static void generator_insert_subexp(
   lhs_str = generator_create_lhs( exp, funit, net, reg_needed );
 
   /* Generate value string */
-  val_str = codegen_gen_expr_one_line( exp, funit, !generator_expr_needs_to_be_substituted( exp ), depth );
+  val_str = codegen_gen_expr_one_line( exp, funit, !generator_expr_needs_to_be_substituted( exp ) );
 
   /* If this expression needs to be substituted, do it with the lhs_str value */
   if( generator_expr_needs_to_be_substituted( exp ) ) {
@@ -1925,11 +1892,18 @@ static void generator_insert_subexp(
     generator_replace( lhs_str, exp->line, ((exp->col >> 16) & 0xffff), last_exp->line, (last_exp->col & 0xffff) );
   }
 
-  /* Prepend the strings to the register/working code */
-  str_link_add( lhs_str,              &comb_head, &comb_tail );
-  str_link_add( strdup_safe( " = " ), &comb_head, &comb_tail );
-  str_link_add( val_str,              &comb_head, &comb_tail );
-  str_link_add( strdup_safe( ";" ),   &comb_head, &comb_tail );
+  /* Create expression string */
+  slen = strlen( lhs_str ) + 3 + strlen( val_str ) + 2;
+  str  = (char*)malloc_safe( slen );
+  rv   = snprintf( str, slen, "%s = %s;", lhs_str, val_str );
+  assert( rv < slen );
+
+  /* Prepend the string to the register/working code */
+  str_link_add( str, &comb_head, &comb_tail );
+
+  /* Deallocate memory */
+  free_safe( lhs_str, (strlen( lhs_str ) + 1) );
+  free_safe( val_str, (strlen( val_str ) + 1) );
 
   /* Specify that this expression has an intermediate value assigned to it */
   exp->suppl.part.comb_cntd = 1;
@@ -1964,17 +1938,20 @@ static void generator_insert_comb_cov_helper2(
       if( generator_expr_cov_needed( exp, depth ) ) {
         generator_insert_event_comb_cov( exp, funit, reg_needed );
       }
+      if( generator_expr_needs_to_be_substituted( exp ) ) {
+        generator_insert_subexp( exp, funit, net, reg_needed );
+      }
 
     /* Otherwise, generate binary combinational logic type */
     } else if( EXPR_IS_COMB( exp ) ) {
       if( (exp->left != NULL) && (!generator_expr_cov_needed( exp->left, child_depth ) || generator_expr_needs_to_be_substituted( exp->left )) ) {
-        generator_insert_subexp( exp->left,  funit, depth, net, reg_needed );
+        generator_insert_subexp( exp->left,  funit, net, reg_needed );
       }
       if( (exp->right != NULL) && (!generator_expr_cov_needed( exp->right, child_depth ) || generator_expr_needs_to_be_substituted( exp->right )) ) {
-        generator_insert_subexp( exp->right, funit, depth, net, reg_needed );
+        generator_insert_subexp( exp->right, funit, net, reg_needed );
       }
       if( !root && (generator_expr_cov_needed( exp, depth ) || generator_expr_needs_to_be_substituted( exp )) ) {
-        generator_insert_subexp( exp, funit, depth, net, reg_needed );
+        generator_insert_subexp( exp, funit, net, reg_needed );
       }
       if( generator_expr_cov_needed( exp, depth ) ) {
         generator_insert_comb_comb_cov( exp, funit, net, reg_needed );
@@ -1983,10 +1960,10 @@ static void generator_insert_comb_cov_helper2(
     /* Generate unary combinational logic type */
     } else {
       if( generator_expr_cov_needed( exp, depth ) || generator_expr_needs_to_be_substituted( exp ) ) {
-        generator_insert_subexp( exp, funit, depth, net, reg_needed );
+        generator_insert_subexp( exp, funit, net, reg_needed );
       }
       if( generator_expr_cov_needed( exp, depth ) ) {
-        generator_insert_unary_comb_cov( exp, funit, depth, net, reg_needed );
+        generator_insert_unary_comb_cov( exp, funit, net, reg_needed );
       }
 
     }
@@ -2065,12 +2042,12 @@ static char* generator_gen_mem_index(
   /* Calculate the index value */
   switch( exp->op ) {
     case EXP_OP_SBIT_SEL :
-      index = codegen_gen_expr_one_line( exp->left, funit, FALSE, 0 );
+      index = codegen_gen_expr_one_line( exp->left, funit, FALSE );
       break;
     case EXP_OP_MBIT_SEL :
       {
-        char* lstr = codegen_gen_expr_one_line( exp->left,  funit, FALSE, 0 );
-        char* rstr = codegen_gen_expr_one_line( exp->right, funit, FALSE, 0 );
+        char* lstr = codegen_gen_expr_one_line( exp->left,  funit, FALSE );
+        char* rstr = codegen_gen_expr_one_line( exp->right, funit, FALSE );
         slen  = (strlen( lstr ) * 3) + (strlen( rstr ) * 3) + 14;
         index = (char*)malloc_safe( slen );
         rv    = snprintf( index, slen, "((%s>%s)?(%s-%s):(%s-%s))", lstr, rstr, lstr, rstr, rstr, lstr );
@@ -2080,12 +2057,12 @@ static char* generator_gen_mem_index(
       }
       break;
     case EXP_OP_MBIT_POS :
-      index = codegen_gen_expr_one_line( exp->left, funit, FALSE, 0 );
+      index = codegen_gen_expr_one_line( exp->left, funit, FALSE );
       break;
     case EXP_OP_MBIT_NEG :
       {
-        char* lstr = codegen_gen_expr_one_line( exp->left,  funit, FALSE, 0 );
-        char* rstr = codegen_gen_expr_one_line( exp->right, funit, FALSE, 0 );
+        char* lstr = codegen_gen_expr_one_line( exp->left,  funit, FALSE );
+        char* rstr = codegen_gen_expr_one_line( exp->right, funit, FALSE );
         slen  = 2 + strlen( lstr ) + 1 + strlen( rstr ) + 5;
         index = (char*)malloc_safe( slen );
         rv    = snprintf( index, slen, "((%s-%s)+1)", lstr, rstr );
@@ -2273,7 +2250,7 @@ static void generator_insert_mem_cov(
     assert( rv < 4096 );
 
     /* Create the value to assign */
-    memstr = codegen_gen_expr_one_line( exp, funit, FALSE, 0 );
+    memstr = codegen_gen_expr_one_line( exp, funit, FALSE );
     vlen   = 1 + strlen( memstr ) + 1 + strlen( iname ) + 2;
     value  = (char*)malloc_safe( vlen );
     rv = snprintf( value, vlen, "{%s,%s}", memstr, iname );
@@ -2531,7 +2508,7 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
       if( fsml->table->from_state->id == fsml->table->to_state->id ) {
 
         char* size = generator_gen_size( fsml->table->from_state, curr_funit );
-        char* exp  = codegen_gen_expr_one_line( fsml->table->from_state, curr_funit, FALSE, 0 );
+        char* exp  = codegen_gen_expr_one_line( fsml->table->from_state, curr_funit, FALSE );
         fprintf( curr_ofile, "wire [(%s-1):0] \\covered$F%d = %s;\n", ((size != NULL) ? size : "1"), id, exp );
         free_safe( size, (strlen( size ) + 1) );
         free_safe( exp, (strlen( exp ) + 1) );
@@ -2539,9 +2516,9 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
       } else {
 
         char* fsize = generator_gen_size( fsml->table->from_state, curr_funit );
-        char* fexp  = codegen_gen_expr_one_line( fsml->table->from_state, curr_funit, FALSE, 0 );
+        char* fexp  = codegen_gen_expr_one_line( fsml->table->from_state, curr_funit, FALSE );
         char* tsize = generator_gen_size( fsml->table->to_state, curr_funit );
-        char* texp  = codegen_gen_expr_one_line( fsml->table->to_state, curr_funit, FALSE, 0 );
+        char* texp  = codegen_gen_expr_one_line( fsml->table->to_state, curr_funit, FALSE );
         fprintf( curr_ofile, "wire [((%s+%s)-1):0] \\covered$F%d = {%s,%s};\n",
                  ((fsize != NULL) ? fsize : "1"), ((tsize != NULL) ? tsize : "1"), id, fexp, texp );
         free_safe( fsize, (strlen( fsize ) + 1) );
@@ -2610,6 +2587,9 @@ void generator_handle_event_trigger(
 
 /*
  $Log$
+ Revision 1.66  2009/01/08 16:21:57  phase1geo
+ Working on support for generate blocks.  Checkpointing.
+
  Revision 1.65  2009/01/08 16:13:59  phase1geo
  Completing work on substitution support.  Updated regressions.
 
