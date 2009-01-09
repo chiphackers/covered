@@ -1836,6 +1836,7 @@ struct sim_time_s;
 struct comp_cdd_cov_s;
 struct exclude_reason_s;
 struct stmt_pair_s;
+struct gitem_pair_s;
 
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION TYPEDEFS  */
@@ -2176,6 +2177,11 @@ typedef struct exclude_reason_s exclude_reason;
  Renaming stmt_pair_s structure for convenience.
 */
 typedef struct stmt_pair_s stmt_pair;
+
+/*!
+ Renaming gitem_pair_s structure for convenience.
+*/
+typedef struct gitem_pair_s gitem_pair;
 
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION DEFINITIONS  */
@@ -3078,6 +3084,14 @@ struct stmt_pair_s {
 };
 
 /*!
+ Structure that contains a pair of generate items (used for generate IF statement handling in parser).
+*/
+struct gitem_pair_s {
+  gen_item* gitem1;                     /*!< Pointer to first generate item */
+  gen_item* gitem2;                     /*!< Pointer to second generate item */
+};
+
+/*!
  This will define the exception type that gets thrown (Covered does not care about this value)
 */
 define_exception_type(int);
@@ -3086,6 +3100,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.348  2009/01/03 08:03:52  phase1geo
+ Adding more code to support memory coverage.  Added to code to handle parameterized
+ signal sizing.  Updated regressions.  Checkpointing.
+
  Revision 1.347  2009/01/01 07:24:43  phase1geo
  Checkpointing work on memory coverage.  Simple testing now works but still need
  to do some debugging here.

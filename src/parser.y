@@ -242,6 +242,7 @@ int yydebug = 1;
   typedef_item*   typdef;
   func_unit*      funit;
   stmt_pair       stmtpair;
+  gitem_pair      gitempair;
 };
 
 %token <text>     IDENTIFIER
@@ -325,6 +326,7 @@ int yydebug = 1;
 %type <optype>    static_unary_op unary_op syscall_wo_parms_op syscall_w_parms_op syscall_w_parms_op_64 syscall_w_parms_op_32
 %type <optype>    pre_op_and_assign_op post_op_and_assign_op op_and_assign_op
 %type <stmtpair>  if_body
+%type <gitempair> gen_if_body
 
 %token K_TAND
 %right '?' ':'
@@ -2505,6 +2507,19 @@ end_gen_block
     }
   ;
 
+gen_if_body
+  : dec_gen_expr_mode inc_block_depth generate_item dec_block_depth K_else inc_block_depth generate_item dec_block_depth
+    {
+      $$.gitem1 = $3;
+      $$.gitem2 = $7;
+    }
+  | dec_gen_expr_mode inc_block_depth generate_item dec_block_depth %prec less_than_K_else
+    {
+      $$.gitem1 = $3;
+      $$.gitem2 = NULL;
+    }
+  ;
+
   /* Similar to module_item but is more restrictive */
 generate_item
   : module_item
@@ -2672,7 +2687,7 @@ generate_item
         $$ = NULL;
       }
     }
-  | K_if inc_gen_expr_mode '(' static_expr ')' dec_gen_expr_mode inc_block_depth generate_item dec_block_depth %prec less_than_K_else
+  | K_if inc_gen_expr_mode '(' static_expr ')' gen_if_body  // dec_gen_expr_mode inc_gen_block_depth generate_item dec_block_depth %prec less_than_K_else
     {
       if( parse_mode ) {
         expression* expr;
@@ -2699,7 +2714,7 @@ generate_item
         $$ = NULL;
       }
     }
-  | K_if inc_gen_expr_mode '(' static_expr ')' dec_gen_expr_mode inc_block_depth generate_item dec_block_depth K_else inc_block_depth generate_item dec_block_depth
+  | K_if inc_gen_expr_mode '(' static_expr ')' gen_if_body   // dec_gen_expr_mode inc_gen_block_depth generate_item dec_block_depth K_else inc_block_depth generate_item dec_block_depth
     {
       if( parse_mode ) {
         expression* expr;
@@ -8134,6 +8149,40 @@ inc_block_depth
         generator_add_cov_to_work_code( " begin" );
         generator_flush_work_code;
       }
+    }
+  ;
+
+inc_gen_block_depth
+  :
+    {
+      char* name = db_create_unnamed_scope();
+      if( parse_mode ) {
+        if( ignore_mode == 0 ) {
+          Try {
+            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, name, NULL, 0 ) ) {
+              ignore_mode++;
+            } else {
+              gen_item* gi = db_get_curr_gen_block();
+              assert( gi != NULL );
+              gitem_link_add( gi, &save_gi_head, &save_gi_tail );
+            }
+          } Catch_anonymous {
+            error_count++;
+            ignore_mode++;
+          }
+        }
+      } else {
+        unsigned int slen = 3 + strlen( name ) + 1;
+        char*        str  = (char*)malloc_safe( slen );
+        unsigned int rv   = snprintf( str, slen, " : %s", name );
+        block_depth++;
+        generator_add_cov_to_work_code( " begin" );
+        generator_add_cov_to_work_code( str );
+        generator_flush_work_code;
+        free_safe( str, (strlen( str ) + 1) );
+      }
+      free_safe( name, (strlen( name ) + 1) );
+      block_depth++;
     }
   ;
 
