@@ -2,7 +2,7 @@
 #define __INFO_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -53,6 +53,10 @@ void info_dealloc();
 
 /*
  $Log$
+ Revision 1.12  2008/11/13 05:08:36  phase1geo
+ Fixing bug found with merge8.5 diagnostic and fixing issues with VPI.  Full
+ regressions now pass.
+
  Revision 1.11  2008/09/04 21:34:20  phase1geo
  Completed work to get exclude reason support to work with toggle coverage.
  Ground-work is laid for the rest of the coverage metrics.  Checkpointing.

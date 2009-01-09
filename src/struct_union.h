@@ -2,7 +2,7 @@
 #define __STRUCT_UNION_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -53,6 +53,10 @@ void struct_union_dealloc_list( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.4  2008/01/16 23:10:34  phase1geo
+ More splint updates.  Code is now warning/error free with current version
+ of run_splint.  Still have regression issues to debug.
+
  Revision 1.3  2007/11/20 05:29:00  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

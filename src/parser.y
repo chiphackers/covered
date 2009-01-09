@@ -1,7 +1,7 @@
 
 %{
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -320,7 +320,7 @@ int yydebug = 1;
 %type <funit>     begin_end_block fork_statement inc_for_depth
 %type <attr_parm> attribute attribute_list
 %type <portinfo>  port_declaration list_of_port_declarations
-%type <gitem>     generate_item generate_item_list generate_item_list_opt dec_gen_block_depth
+%type <gitem>     generate_item generate_item_list generate_item_list_opt
 %type <case_stmt> case_items case_item case_body
 %type <case_gi>   generate_case_items generate_case_item
 %type <optype>    static_unary_op unary_op syscall_wo_parms_op syscall_w_parms_op syscall_w_parms_op_64 syscall_w_parms_op_32
@@ -2508,25 +2508,25 @@ end_gen_block
   ;
 
 gen_if_body
-  : inc_gen_block_depth generate_item dec_gen_block_depth K_else inc_gen_block_depth generate_item dec_gen_block_depth
+  : inc_block_depth_only generate_item dec_block_depth_only K_else inc_block_depth_only generate_item dec_block_depth_only
     {
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
-          db_gen_item_connect_true( $3, $2 );
-          db_gen_item_connect_true( $7, $6 );
-          $$.gitem1 = $3;
-          $$.gitem2 = $7;
+          // db_gen_item_connect_true( $3, $2 );
+          // db_gen_item_connect_true( $7, $6 );
+          $$.gitem1 = $2;
+          $$.gitem2 = $6;
         }
       } else {
         $$.gitem1 = NULL;
       }
     }
-  | inc_gen_block_depth generate_item dec_gen_block_depth %prec less_than_K_else
+  | inc_block_depth_only generate_item dec_block_depth_only %prec less_than_K_else
     {
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
-          db_gen_item_connect_true( $3, $2 );
-          $$.gitem1 = $3;
+          // db_gen_item_connect_true( $3, $2 );
+          $$.gitem1 = $2;
           $$.gitem2 = NULL;
         }
       } else {
@@ -2891,13 +2891,21 @@ module_item_list
   : module_item_list module_item
     {
       if( !parse_mode ) {
-        generator_flush_all;
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
       }
     }
   | module_item
     {
       if( !parse_mode ) {
-        generator_flush_all;
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
       }
     }
   ;
@@ -3162,7 +3170,8 @@ module_item
           }
         }
       } else {
-        generator_flush_hold_code;
+        generator_flush_work_code;
+        // generator_flush_hold_code;
       }
     }
   | attribute_list_opt
@@ -3214,7 +3223,8 @@ module_item
         }
       } else {
         generator_add_cov_to_work_code( " end " );
-        generator_flush_all;
+        generator_flush_work_code;
+        // generator_flush_all;
       }
     }
   | attribute_list_opt
@@ -3266,7 +3276,8 @@ module_item
         }
       } else {
         generator_add_cov_to_work_code( " end " );
-        generator_flush_all;
+        generator_flush_work_code;
+        // generator_flush_all;
       }
     }
   | attribute_list_opt
@@ -3302,7 +3313,8 @@ module_item
         }
       } else {
         generator_add_cov_to_work_code( " end " );
-        generator_flush_all;
+        generator_flush_work_code;
+        // generator_flush_all;
       }
     }
   | attribute_list_opt
@@ -3319,7 +3331,8 @@ module_item
           }
         }
       } else {
-        generator_flush_hold_code;
+        generator_flush_work_code;
+      //  generator_flush_all;
       }
     }
   | attribute_list_opt
@@ -3337,7 +3350,8 @@ module_item
           }
         }
       } else {
-        generator_flush_hold_code;
+        // generator_flush_hold_code;
+        generator_flush_work_code;
       }
     }
   | attribute_list_opt
@@ -3386,7 +3400,8 @@ module_item
           ignore_mode--;
         }
       } else {
-        generator_flush_all;
+        generator_flush_work_code;
+        //generator_flush_all;
       }
     }
   | attribute_list_opt
@@ -3446,7 +3461,8 @@ module_item
           ignore_mode--;
         }
       } else {
-        generator_flush_all;
+        generator_flush_work_code;
+        // generator_flush_all;
       }
     }
   | K_generate
@@ -3464,6 +3480,8 @@ module_item
           }
         }
       } else {
+        generator_flush_work_code;
+        // generator_flush_all;
         generate_mode = 1;
       }
     }
@@ -8155,61 +8173,6 @@ dec_block_depth
       block_depth--;
       if( !parse_mode ) {
         generator_add_to_hold_code( " end " );
-      }
-    }
-  ;
-
-inc_gen_block_depth
-  :
-    {
-      char* name = db_create_unnamed_scope();
-      if( parse_mode ) {
-        generate_expr_mode++;
-        if( ignore_mode == 0 ) {
-          Try {
-            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, name, db_get_curr_funit()->filename, 0 ) ) {
-              ignore_mode++;
-            } else {
-              gen_item* gi = db_get_curr_gen_block();
-              assert( gi != NULL );
-              gitem_link_add( gi, &save_gi_head, &save_gi_tail );
-            }
-          } Catch_anonymous {
-            error_count++;
-            ignore_mode++;
-          }
-        }
-        generate_expr_mode--;
-      } else {
-        unsigned int slen = 3 + strlen( name ) + 1;
-        char*        str  = (char*)malloc_safe( slen );
-        unsigned int rv   = snprintf( str, slen, " : %s", name );
-        block_depth++;
-        generator_add_cov_to_work_code( " begin" );
-        generator_add_cov_to_work_code( str );
-        generator_flush_work_code;
-        free_safe( str, (strlen( str ) + 1) );
-      }
-      free_safe( name, (strlen( name ) + 1) );
-      block_depth++;
-    }
-  ;
-
-dec_gen_block_depth
-  : 
-    {
-      block_depth--;
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          db_end_function_task_namedblock( 0 );
-        } else {
-          ignore_mode--;
-        }
-        $$ = save_gi_tail->gi;
-        gitem_link_remove( save_gi_tail->gi, &save_gi_head, &save_gi_tail );
-      } else {
-        generator_add_to_hold_code( " end " );
-        $$ = NULL;
       }
     }
   ;

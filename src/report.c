@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -1236,6 +1236,9 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.129  2008/11/10 05:33:16  phase1geo
+ Cleaning up some unnecessary output.
+
  Revision 1.128  2008/11/08 00:09:04  phase1geo
  Checkpointing work on asymmetric merging algorithm.  Updated regressions
  per these changes.  We currently have 5 failures in the IV regression suite.

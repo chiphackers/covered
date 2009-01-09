@@ -2,7 +2,7 @@
 #define __COVERED_ATTR_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -42,6 +42,10 @@ void attribute_dealloc( attr_param* ap );
 
 /*
  $Log$
+ Revision 1.9  2008/02/01 06:37:07  phase1geo
+ Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
+ using pragma excludes (this code is not fully working yet).  More to be done.
+
  Revision 1.8  2007/11/20 05:28:57  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

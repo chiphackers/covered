@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -423,6 +423,9 @@ func_unit* scope_get_parent_module(
 
 /*
  $Log$
+ Revision 1.56  2009/01/05 06:21:22  phase1geo
+ Fixing more regression bugs with inlined coverage regressions.  Checkpointing.
+
  Revision 1.55  2008/12/20 07:32:27  phase1geo
  More IV regression cleanup as well as some documentation cleanup.  Checkpointing.
 

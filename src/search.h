@@ -2,7 +2,7 @@
 #define __SEARCH_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -51,6 +51,10 @@ void search_free_lists();
 
 /*
  $Log$
+ Revision 1.10  2008/02/09 19:32:45  phase1geo
+ Completed first round of modifications for using exception handler.  Regression
+ passes with these changes.  Updated regressions per these changes.
+
  Revision 1.9  2008/01/09 05:22:22  phase1geo
  More splint updates using the -standard option.
 

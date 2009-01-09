@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -115,6 +115,10 @@ void obfuscate_dealloc() { PROFILE(OBFUSCATE_DEALLOC);
 
 /*
  $Log$
+ Revision 1.16  2008/09/16 13:00:17  phase1geo
+ Fixing some memory issues with the obfuscation functionality and minore
+ optimizations to this code.  Other insignificant updates.
+
  Revision 1.15  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

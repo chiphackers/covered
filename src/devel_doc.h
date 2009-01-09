@@ -2,7 +2,7 @@
 #define __DEVEL_DOC_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -1283,6 +1283,9 @@
 
 /*
  $Log$
+ Revision 1.14  2008/01/31 04:23:15  phase1geo
+ More updates to development documentation.
+
  Revision 1.13  2008/01/30 17:08:21  phase1geo
  Updates to development documentation.
 

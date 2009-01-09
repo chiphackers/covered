@@ -922,6 +922,7 @@ void generator_flush_work_code1(
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Flushing work code (file: %s, line: %u)", file, line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+//    generator_display();
   }
 #endif
 
@@ -995,8 +996,11 @@ void generator_flush_hold_code1(
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Flushing hold code (file: %s, line: %u)", file, line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+//    generator_display();
   }
 #endif
+
+  fprintf( curr_ofile, "\n" );
 
   /* Output the register buffer if it exists */
   strl = reg_head;
@@ -1051,27 +1055,27 @@ statement* generator_find_statement(
   unsigned int first_column  /*!< First column of statement to find */
 ) { PROFILE(GENERATOR_FIND_STATEMENT);
 
-//  printf( "In generator_find_statement, line: %d, column: %d\n", first_line, first_column );
+  printf( "In generator_find_statement, line: %d, column: %d\n", first_line, first_column );
 
   if( (curr_stmt == NULL) || (curr_stmt->exp->line < first_line) ||
       ((curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) < first_column)) ) {
 
-//    func_iter_display( &fiter );
+    func_iter_display( &fiter );
 
     /* Attempt to find the expression with the given position */
     while( ((curr_stmt = func_iter_get_next_statement( &fiter )) != NULL) &&
-//           printf( "  statement %s %d\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff) ) &&
+           printf( "  statement %s %d\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff) ) &&
            ((curr_stmt->exp->line < first_line) || 
             ((curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) < first_column)) ||
             (curr_stmt->exp->op == EXP_OP_FORK)) );
 
   }
 
-//  if( (curr_stmt != NULL) && (curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) == first_column) && (curr_stmt->exp->op != EXP_OP_FORK) ) {
-//    printf( "  FOUND (%s %x)!\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff) );
-//  } else {
-//    printf( "  NOT FOUND!\n" );
-//  }
+  if( (curr_stmt != NULL) && (curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) == first_column) && (curr_stmt->exp->op != EXP_OP_FORK) ) {
+    printf( "  FOUND (%s %x)!\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff) );
+  } else {
+    printf( "  NOT FOUND!\n" );
+  }
 
   PROFILE_END;
 
@@ -2587,6 +2591,9 @@ void generator_handle_event_trigger(
 
 /*
  $Log$
+ Revision 1.69  2009/01/09 06:06:25  phase1geo
+ Another fix and removing unnecessary output.  Checkpointing.
+
  Revision 1.68  2009/01/09 05:53:39  phase1geo
  More work on generate handling.  Still not working but Verilog output looks correct
  for IF generate statements now.  Checkpointing.

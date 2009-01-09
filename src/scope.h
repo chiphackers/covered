@@ -2,7 +2,7 @@
 #define __SCOPE_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -71,6 +71,10 @@ func_unit* scope_get_parent_module(
 
 /*
  $Log$
+ Revision 1.16  2008/11/12 19:57:07  phase1geo
+ Fixing the rest of the issues from regressions in regards to the merge changes.
+ Updating regression files.  IV and Cver regressions now pass.
+
  Revision 1.15  2008/11/12 00:07:41  phase1geo
  More updates for complex merging algorithm.  Updating regressions per
  these changes.  Checkpointing.

@@ -2,7 +2,7 @@
 #define __EXCLUDE_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -163,6 +163,9 @@ void command_exclude(
 
 /*
  $Log$
+ Revision 1.14  2008/11/12 15:05:22  phase1geo
+ More updates for new merging algorithm.  Checkpointing.
+
  Revision 1.13  2008/09/22 22:15:03  phase1geo
  Initial code for supporting the merging and resolution of exclusion reasons.
  This code is completely untested at this point but does compile.  Checkpointing.

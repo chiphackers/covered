@@ -2,7 +2,7 @@
 #define __BINDING_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -54,6 +54,9 @@ void bind_dealloc();
 
 /* 
  $Log$
+ Revision 1.31  2008/01/10 04:59:03  phase1geo
+ More splint updates.  All exportlocal cases are now taken care of.
+
  Revision 1.30  2007/11/20 05:28:57  phase1geo
  Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
 

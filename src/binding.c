@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -936,6 +936,10 @@ void bind_dealloc() { PROFILE(BIND_DEALLOC);
 
 /* 
  $Log$
+ Revision 1.139  2008/10/26 04:41:28  phase1geo
+ Adding support for functions returning real and realtime values.  Added real7
+ diagnostic to verify this new support.
+
  Revision 1.138  2008/10/17 23:20:51  phase1geo
  Continuing to add support support for real values.  Making some good progress here
  (real delays should be working now).  Updated regressions per recent changes.

@@ -2,7 +2,7 @@
 #define __PARSE_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -42,6 +42,9 @@ void parse_and_score_dumpfile(
 
 /*
  $Log$
+ Revision 1.11  2008/03/11 22:06:48  phase1geo
+ Finishing first round of exception handling code.
+
  Revision 1.10  2008/01/16 23:10:31  phase1geo
  More splint updates.  Code is now warning/error free with current version
  of run_splint.  Still have regression issues to debug.

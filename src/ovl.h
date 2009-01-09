@@ -2,7 +2,7 @@
 #define __OVL_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -71,6 +71,9 @@ void ovl_get_coverage(
 
 /*
  $Log$
+ Revision 1.19  2008/09/03 03:46:37  phase1geo
+ Updates for memory and assertion exclusion output.  Checkpointing.
+
  Revision 1.18  2008/08/28 21:24:15  phase1geo
  Adding support for exclusion output for assertions.  Updated regressions accordingly.
  Checkpointing.

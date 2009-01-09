@@ -1,7 +1,7 @@
 #ifdef DEBUG_MODE
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -894,6 +894,9 @@ void cli_read_hist_file( const char* fname ) {
 
 /*
  $Log$
+ Revision 1.29  2009/01/07 23:40:46  phase1geo
+ Updates to support intermediate expression substitution.  Not done yet.  Checkpointing.
+
  Revision 1.28  2008/08/18 23:07:25  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

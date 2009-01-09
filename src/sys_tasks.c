@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006-2008 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -497,6 +497,10 @@ void sys_task_dealloc() { PROFILE(SYS_TASK_DEALLOC);
 
 /*
  $Log$
+ Revision 1.10  2008/10/27 23:27:22  phase1geo
+ More work on testing $value$plusargs support.  Fixed a few issues related to this
+ code.  Also fixed issue with function return value type.  Checkpointing.
+
  Revision 1.9  2008/10/27 21:14:02  phase1geo
  First pass at getting the $value$plusargs system function call to work.  More
  work to do here.  Checkpointing.

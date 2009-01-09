@@ -2,7 +2,7 @@
 #define __FSM_VAR_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -50,6 +50,10 @@ void fsm_var_cleanup();
 
 /*
  $Log$
+ Revision 1.11  2008/04/01 23:08:21  phase1geo
+ More updates for error diagnostic cleanup.  Full regression still not
+ passing (but is getting close).
+
  Revision 1.10  2008/02/01 06:37:08  phase1geo
  Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
  using pragma excludes (this code is not fully working yet).  More to be done.

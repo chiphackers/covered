@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -1769,6 +1769,10 @@ int calc_num_bits_to_store(
 
 /*
  $Log$
+ Revision 1.112  2009/01/03 08:03:53  phase1geo
+ Adding more code to support memory coverage.  Added to code to handle parameterized
+ signal sizing.  Updated regressions.  Checkpointing.
+
  Revision 1.111  2009/01/01 07:53:32  phase1geo
  Fixing bug in conversion function.  Checkpointing.
 

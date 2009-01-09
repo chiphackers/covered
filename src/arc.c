@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -895,6 +895,10 @@ void arc_dealloc(
 
 /*
  $Log$
+ Revision 1.71  2008/09/22 22:15:01  phase1geo
+ Initial code for supporting the merging and resolution of exclusion reasons.
+ This code is completely untested at this point but does compile.  Checkpointing.
+
  Revision 1.70  2008/09/13 13:04:47  phase1geo
  Moving exclusion ID of FSM from the arc transitions to the FSM itself (only one
  ID needed to be stored).  This improves on memory usage and performance when

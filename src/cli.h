@@ -2,7 +2,7 @@
 #define __CLI_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -35,6 +35,9 @@ void cli_read_hist_file( const char* fname );
 
 /*
  $Log$
+ Revision 1.7  2008/02/27 05:26:51  phase1geo
+ Adding support for $finish and $stop.
+
  Revision 1.6  2008/02/09 19:32:44  phase1geo
  Completed first round of modifications for using exception handler.  Regression
  passes with these changes.  Updated regressions per these changes.

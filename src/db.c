@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -3370,6 +3370,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.374  2009/01/09 05:53:38  phase1geo
+ More work on generate handling.  Still not working but Verilog output looks correct
+ for IF generate statements now.  Checkpointing.
+
  Revision 1.373  2009/01/05 06:21:22  phase1geo
  Fixing more regression bugs with inlined coverage regressions.  Checkpointing.
 

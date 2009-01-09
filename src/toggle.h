@@ -2,7 +2,7 @@
 #define __TOGGLE_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -83,6 +83,10 @@ void toggle_report(
 
 /*
  $Log$
+ Revision 1.23  2008/09/04 21:34:20  phase1geo
+ Completed work to get exclude reason support to work with toggle coverage.
+ Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
+
  Revision 1.22  2008/08/23 20:00:30  phase1geo
  Full fix for bug 2054686.  Also cleaned up Cver regressions.
 

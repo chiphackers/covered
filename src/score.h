@@ -2,7 +2,7 @@
 #define __SCORE_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -36,6 +36,10 @@ void command_score( int argc, int last_arg, const char** argv );
 
 /*
  $Log$
+ Revision 1.15  2008/11/13 05:08:36  phase1geo
+ Fixing bug found with merge8.5 diagnostic and fixing issues with VPI.  Full
+ regressions now pass.
+
  Revision 1.14  2008/11/12 07:04:01  phase1geo
  Fixing argument merging and updating regressions.  Checkpointing.
 

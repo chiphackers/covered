@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -3124,6 +3124,9 @@ void combination_report(
 
 /*
  $Log$
+ Revision 1.224  2009/01/07 23:40:46  phase1geo
+ Updates to support intermediate expression substitution.  Not done yet.  Checkpointing.
+
  Revision 1.223  2008/12/13 07:04:12  phase1geo
  Fixing more regression bugs and updating regression per recent changes.
  Checkpointing.

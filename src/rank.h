@@ -2,7 +2,7 @@
 #define __RANK_H__
 
 /*
- Copyright (c) 2008 Trevor Williams
+ Copyright (c) 2008-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -30,6 +30,9 @@ void command_rank( int argc, int last_arg, const char** argv );
 
 /*
  $Log$
+ Revision 1.2  2008/07/29 06:34:22  phase1geo
+ Merging in contents of development branch to the main development trunk.
+
  Revision 1.1.4.1  2008/07/10 22:43:54  phase1geo
  Merging in rank-devel-branch into this branch.  Added -f options for all commands
  to allow files containing command-line arguments to be added.  A few error diagnostics

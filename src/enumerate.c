@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -203,6 +203,10 @@ void enumerate_dealloc_list(
 
 /*
  $Log$
+ Revision 1.23  2008/10/21 05:38:41  phase1geo
+ More updates to support real values.  Added vector_from_real64 functionality.
+ Checkpointing.
+
  Revision 1.22  2008/10/20 23:20:02  phase1geo
  Adding support for vector_from_int coverage accumulation (untested at this point).
  Updating Cver regressions.  Checkpointing.

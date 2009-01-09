@@ -2,7 +2,7 @@
 #define __FUNC_ITER_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -66,6 +66,10 @@ void func_iter_dealloc( func_iter* si );
 
 /*
  $Log$
+ Revision 1.7  2008/12/05 00:22:41  phase1geo
+ More work completed on code coverage generator.  Currently working on bug in
+ statement finder.  Checkpointing.
+
  Revision 1.6  2008/12/04 14:19:50  phase1geo
  Fixing bug in code generator.  Checkpointing.
 

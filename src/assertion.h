@@ -2,7 +2,7 @@
 #define __ASSERTION_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -79,6 +79,11 @@ void assertion_get_coverage(
 
 /*
  $Log$
+ Revision 1.16  2008/08/18 23:07:25  phase1geo
+ Integrating changes from development release branch to main development trunk.
+ Regression passes.  Still need to update documentation directories and verify
+ that the GUI stuff works properly.
+
  Revision 1.13.4.3  2008/08/07 06:39:10  phase1geo
  Adding "Excluded" column to the summary listbox.
 

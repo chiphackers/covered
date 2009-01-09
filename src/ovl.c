@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -542,6 +542,10 @@ void ovl_get_coverage(
 
 /*
  $Log$
+ Revision 1.40  2008/12/05 00:22:41  phase1geo
+ More work completed on code coverage generator.  Currently working on bug in
+ statement finder.  Checkpointing.
+
  Revision 1.39  2008/11/27 00:24:44  phase1geo
  Fixing problems with previous version of generator.  Things work as expected at this point.
  Checkpointing.

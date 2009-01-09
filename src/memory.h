@@ -2,7 +2,7 @@
 #define __MEMORY_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -100,6 +100,9 @@ void memory_report(
 
 /*
  $Log$
+ Revision 1.16  2008/09/04 23:08:06  phase1geo
+ More work on exclusions via GUI.  Still work to go.  Checkpointing.
+
  Revision 1.15  2008/09/03 03:46:37  phase1geo
  Updates for memory and assertion exclusion output.  Checkpointing.
 

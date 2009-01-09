@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -3079,6 +3079,10 @@ void tcl_func_initialize(
 
 /*
  $Log$
+ Revision 1.93  2008/11/18 22:01:46  phase1geo
+ Updating merge documentation and regenerating all user guide documentation.
+ Fixing issues with GUI and recent changes.  Fixing bug 2311710.
+
  Revision 1.92  2008/11/12 07:04:01  phase1geo
  Fixing argument merging and updating regressions.  Checkpointing.
 

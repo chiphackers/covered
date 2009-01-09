@@ -2,7 +2,7 @@
 #define __DB_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -233,6 +233,10 @@ bool db_do_timestep( uint64 time, bool final );
 
 /*
  $Log$
+ Revision 1.101  2008/12/05 00:22:41  phase1geo
+ More work completed on code coverage generator.  Currently working on bug in
+ statement finder.  Checkpointing.
+
  Revision 1.100  2008/12/03 23:29:07  phase1geo
  Finished getting line coverage insertion working.  Starting to work on combinational logic
  coverage.  Checkpointing.

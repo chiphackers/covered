@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -435,6 +435,9 @@ void reentrant_dealloc(
 
 /*
  $Log$
+ Revision 1.24  2008/10/27 02:14:28  phase1geo
+ Updating regressions.  Fixed toggle coverage results for automatic functions/tasks.
+
  Revision 1.23  2008/10/20 22:29:01  phase1geo
  Updating more regression files.  Adding reentrant support for real numbers.
  Also fixing uninitialized memory access issue in expr.c.

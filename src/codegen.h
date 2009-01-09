@@ -2,7 +2,7 @@
 #define __CODEGEN_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -44,6 +44,10 @@ char* codegen_gen_expr_one_line(
 
 /*
  $Log$
+ Revision 1.16  2009/01/08 23:44:08  phase1geo
+ Updating VCS regressions.  Fixing issues in regards to PDEC, PINC, IINC and IDEC
+ operations.  Checkpointing.
+
  Revision 1.15  2009/01/07 23:40:46  phase1geo
  Updates to support intermediate expression substitution.  Not done yet.  Checkpointing.
 

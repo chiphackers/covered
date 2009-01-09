@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -1335,6 +1335,9 @@ void fsm_dealloc(
 
 /*
  $Log$
+ Revision 1.111  2009/01/07 23:40:46  phase1geo
+ Updates to support intermediate expression substitution.  Not done yet.  Checkpointing.
+
  Revision 1.110  2008/12/24 21:19:01  phase1geo
  Initial work at getting FSM coverage put in (this looks to be working correctly
  to this point).  Updated regressions per fixes.  Checkpointing.

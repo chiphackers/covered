@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -422,6 +422,9 @@ void func_iter_dealloc(
 
 /*
  $Log$
+ Revision 1.20  2008/12/12 00:17:30  phase1geo
+ Fixing some bugs, creating some new ones...  Checkpointing.
+
  Revision 1.19  2008/12/05 04:39:14  phase1geo
  Checkpointing.  Updating regressions.
 

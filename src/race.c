@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -1106,6 +1106,10 @@ void race_blk_delete_list(
 
 /*
  $Log$
+ Revision 1.86  2008/12/16 04:56:39  phase1geo
+ More updates for inlined code generation feature.  Updates to regression per
+ these changes.  Checkpointing.
+
  Revision 1.85  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

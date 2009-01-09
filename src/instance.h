@@ -2,7 +2,7 @@
 #define __INSTANCE_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -132,6 +132,9 @@ void instance_dealloc( funit_inst* root, char* scope );
 
 /*
  $Log$
+ Revision 1.45  2008/11/18 21:11:09  phase1geo
+ Removing unnecessary functionality.
+
  Revision 1.44  2008/11/12 19:57:07  phase1geo
  Fixing the rest of the issues from regressions in regards to the merge changes.
  Updating regression files.  IV and Cver regressions now pass.

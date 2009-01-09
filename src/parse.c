@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -321,6 +321,10 @@ void parse_and_score_dumpfile(
 
 /*
  $Log$
+ Revision 1.86  2008/12/24 21:19:01  phase1geo
+ Initial work at getting FSM coverage put in (this looks to be working correctly
+ to this point).  Updated regressions per fixes.  Checkpointing.
+
  Revision 1.85  2008/12/06 06:35:20  phase1geo
  Adding first crack at handling coverage-related information from dumpfile.
  This code is untested.

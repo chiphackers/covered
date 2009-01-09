@@ -2,7 +2,7 @@
 #define __REPORT_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -72,6 +72,9 @@ void report_output_exclusion_reason(
 
 /*
  $Log$
+ Revision 1.21  2008/09/15 03:43:49  phase1geo
+ Cleaning up splint warnings.
+
  Revision 1.20  2008/09/04 04:15:10  phase1geo
  Adding -p option to exclude command.  Updating other files per this change.
  Checkpointing.

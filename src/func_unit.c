@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -1589,6 +1589,9 @@ void funit_dealloc(
 
 /*
  $Log$
+ Revision 1.122  2009/01/05 06:21:22  phase1geo
+ Fixing more regression bugs with inlined coverage regressions.  Checkpointing.
+
  Revision 1.121  2008/12/03 23:29:07  phase1geo
  Finished getting line coverage insertion working.  Starting to work on combinational logic
  coverage.  Checkpointing.

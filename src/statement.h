@@ -2,7 +2,7 @@
 #define __STATEMENT_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -87,6 +87,10 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.39  2008/12/03 23:29:07  phase1geo
+ Finished getting line coverage insertion working.  Starting to work on combinational logic
+ coverage.  Checkpointing.
+
  Revision 1.38  2008/10/31 22:01:34  phase1geo
  Initial code changes to support merging two non-overlapping CDD files into
  one.  This functionality seems to be working but needs regression testing to

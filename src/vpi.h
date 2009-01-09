@@ -2,7 +2,7 @@
 #define __VPI_H__
 
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -28,6 +28,9 @@ void vpi_print_output( const char* msg );
 
 /*
  $Log$
+ Revision 1.4  2007/11/20 05:29:00  phase1geo
+ Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
+
  Revision 1.3  2007/09/14 21:22:46  phase1geo
  Fixing compile issues.
 

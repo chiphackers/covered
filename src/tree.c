@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -296,6 +296,10 @@ void tree_dealloc(
 
 /*
  $Log$
+ Revision 1.10  2008/09/16 13:00:17  phase1geo
+ Fixing some memory issues with the obfuscation functionality and minore
+ optimizations to this code.  Other insignificant updates.
+
  Revision 1.9  2008/03/17 22:02:32  phase1geo
  Adding new check_mem script and adding output to perform memory checking during
  regression runs.  Completed work on free_safe and added realloc_safe function

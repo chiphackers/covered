@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -1204,6 +1204,9 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.149  2008/12/08 06:48:32  phase1geo
+ Moving -inline score option to appropriate place.  Checkpointing.
+
  Revision 1.148  2008/12/07 07:20:08  phase1geo
  Checkpointing work.  I have an end-to-end run now working with test.v in
  the testsuite.  The results are not accurate at this point but it's progress.

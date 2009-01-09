@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -147,6 +147,9 @@ void stmt_blk_specify_removal_reason(
 
 /*
  $Log$
+ Revision 1.19  2008/10/07 22:31:42  phase1geo
+ Cleaning up splint warnings.  Cleaning up development documentation.
+
  Revision 1.18  2008/10/06 22:21:25  phase1geo
  Fixing compile warning with stmt_blk.c.
 

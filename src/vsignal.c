@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -788,6 +788,10 @@ void vsignal_dealloc(
 
 /*
  $Log$
+ Revision 1.92  2009/01/02 06:00:26  phase1geo
+ More updates for memory coverage (this is still not working however).  Currently
+ segfaults.  Checkpointing.
+
  Revision 1.91  2008/12/10 00:19:23  phase1geo
  Fixing issues with aedge1 diagnostic (still need to handle events but this will
  be worked on a later time).  Working on sizing temporary subexpression LHS signals.

@@ -1,6 +1,6 @@
 %{
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -878,7 +878,7 @@ WSPACE [ \t\b\f]+
     if( (rc != K_begin) && (rc != K_end) ) {
       if( (rc == K_initial)   || (rc == K_always) || (rc == K_always_latch) || (rc == K_always_comb) ||
           (rc == K_always_ff) || (rc == K_final)  || (rc == K_task)         || (rc == K_function) ) {
-        generator_flush_all;
+        // generator_flush_all;
         generator_add_orig_to_work_code( yytext, yylloc.first_line, yylloc.first_column );
       } else {
         if( rc == K_endmodule ) {

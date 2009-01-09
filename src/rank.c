@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2006 Trevor Williams
+ Copyright (c) 2006-2009 Trevor Williams
 
  This program is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by the Free Software
@@ -1805,6 +1805,11 @@ void command_rank(
 
 /*
  $Log$
+ Revision 1.16  2008/12/08 06:43:45  phase1geo
+ Fixing issues with broken regression.  Updated regression per these changes (some
+ code reduction was performed as well).  IV and Cver regressions now pass.
+ Checkpointing.
+
  Revision 1.15  2008/12/07 07:20:08  phase1geo
  Checkpointing work.  I have an end-to-end run now working with test.v in
  the testsuite.  The results are not accurate at this point but it's progress.
@@ -1858,6 +1863,11 @@ void command_rank(
  that the GUI stuff works properly.
 
  $Log$
+ Revision 1.16  2008/12/08 06:43:45  phase1geo
+ Fixing issues with broken regression.  Updated regression per these changes (some
+ code reduction was performed as well).  IV and Cver regressions now pass.
+ Checkpointing.
+
  Revision 1.15  2008/12/07 07:20:08  phase1geo
  Checkpointing work.  I have an end-to-end run now working with test.v in
  the testsuite.  The results are not accurate at this point but it's progress.
