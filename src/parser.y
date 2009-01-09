@@ -320,7 +320,7 @@ int yydebug = 1;
 %type <funit>     begin_end_block fork_statement inc_for_depth
 %type <attr_parm> attribute attribute_list
 %type <portinfo>  port_declaration list_of_port_declarations
-%type <gitem>     generate_item generate_item_list generate_item_list_opt
+%type <gitem>     generate_item generate_item_list generate_item_list_opt dec_gen_block_depth
 %type <case_stmt> case_items case_item case_body
 %type <case_gi>   generate_case_items generate_case_item
 %type <optype>    static_unary_op unary_op syscall_wo_parms_op syscall_w_parms_op syscall_w_parms_op_64 syscall_w_parms_op_32
@@ -2508,15 +2508,30 @@ end_gen_block
   ;
 
 gen_if_body
-  : dec_gen_expr_mode inc_block_depth generate_item dec_block_depth K_else inc_block_depth generate_item dec_block_depth
+  : inc_gen_block_depth generate_item dec_gen_block_depth K_else inc_gen_block_depth generate_item dec_gen_block_depth
     {
-      $$.gitem1 = $3;
-      $$.gitem2 = $7;
+      if( parse_mode ) {
+        if( ignore_mode == 0 ) {
+          db_gen_item_connect_true( $3, $2 );
+          db_gen_item_connect_true( $7, $6 );
+          $$.gitem1 = $3;
+          $$.gitem2 = $7;
+        }
+      } else {
+        $$.gitem1 = NULL;
+      }
     }
-  | dec_gen_expr_mode inc_block_depth generate_item dec_block_depth %prec less_than_K_else
+  | inc_gen_block_depth generate_item dec_gen_block_depth %prec less_than_K_else
     {
-      $$.gitem1 = $3;
-      $$.gitem2 = NULL;
+      if( parse_mode ) {
+        if( ignore_mode == 0 ) {
+          db_gen_item_connect_true( $3, $2 );
+          $$.gitem1 = $3;
+          $$.gitem2 = NULL;
+        }
+      } else {
+        $$.gitem1 = NULL;
+      }
     }
   ;
 
@@ -2534,6 +2549,7 @@ generate_item
     {
       char* name = db_create_unnamed_scope();
       if( parse_mode ) {
+        generate_expr_mode++;
         if( ignore_mode == 0 ) {
           Try {
             if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, name, @1.text, @1.first_line ) ) {
@@ -2548,6 +2564,7 @@ generate_item
             ignore_mode++;
           }
         }
+        generate_expr_mode--;
       } else {
         char str[50];
         unsigned int rv = snprintf( str, 50, " : %s", name );
@@ -2687,12 +2704,12 @@ generate_item
         $$ = NULL;
       }
     }
-  | K_if inc_gen_expr_mode '(' static_expr ')' gen_if_body  // dec_gen_expr_mode inc_gen_block_depth generate_item dec_block_depth %prec less_than_K_else
+  | K_if inc_gen_expr_mode '(' static_expr ')' dec_gen_expr_mode gen_if_body
     {
       if( parse_mode ) {
         expression* expr;
         gen_item*   gi1;
-        if( (ignore_mode == 0) && ($4 != NULL) && ($8 != NULL) ) {
+        if( (ignore_mode == 0) && ($4 != NULL) && ($7.gitem1 != NULL) ) {
           generate_expr_mode++;
           expr = db_create_expr_from_static( $4, @4.first_line, @4.first_column, (@4.last_column - 1) );
           Try {
@@ -2702,42 +2719,16 @@ generate_item
           }
           db_add_expression( expr );
           gi1 = db_get_curr_gen_block();
-          db_gen_item_connect_true( gi1, $8 );
-          generate_expr_mode--;
-          $$ = gi1;
-        } else {
-          static_expr_dealloc( $4, TRUE );
-          /* TBD - Deallocate generate block */
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
-    }
-  | K_if inc_gen_expr_mode '(' static_expr ')' gen_if_body   // dec_gen_expr_mode inc_gen_block_depth generate_item dec_block_depth K_else inc_block_depth generate_item dec_block_depth
-    {
-      if( parse_mode ) {
-        expression* expr;
-        gen_item*   gi1;
-        if( (ignore_mode == 0) && ($4 != NULL) && ($8 != NULL) && ($12 != NULL) ) {
-          generate_expr_mode++;
-          expr = db_create_expr_from_static( $4, @4.first_line, @4.first_column, (@4.last_column - 1) );
-          Try {
-            expr = db_create_expression( expr, NULL, EXP_OP_IF, FALSE, @1.first_line, @1.first_column, (@5.last_column - 1), NULL );
-          } Catch_anonymous {
-            error_count++;
+          db_gen_item_connect_true( gi1, $7.gitem1 );
+          if( $7.gitem2 != NULL ) {
+            db_gen_item_connect_false( gi1, $7.gitem2 );
           }
-          db_add_expression( expr );
-          gi1 = db_get_curr_gen_block();
-          db_gen_item_connect_true( gi1, $8 );
-          db_gen_item_connect_false( gi1, $12 );
           generate_expr_mode--;
           $$ = gi1;
         } else {
           static_expr_dealloc( $4, TRUE );
-          gen_item_dealloc( db_get_curr_gen_block(), TRUE );
-          gen_item_dealloc( $8, TRUE );
-          gen_item_dealloc( $12, TRUE );
+          gen_item_dealloc( $7.gitem1, TRUE );
+          gen_item_dealloc( $7.gitem2, TRUE );
           $$ = NULL;
         }
       } else {
@@ -8152,14 +8143,25 @@ inc_block_depth
     }
   ;
 
+dec_block_depth
+  :
+    {
+      block_depth--;
+      if( !parse_mode ) {
+        generator_add_to_hold_code( " end " );
+      }
+    }
+  ;
+
 inc_gen_block_depth
   :
     {
       char* name = db_create_unnamed_scope();
       if( parse_mode ) {
+        generate_expr_mode++;
         if( ignore_mode == 0 ) {
           Try {
-            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, name, NULL, 0 ) ) {
+            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, name, db_get_curr_funit()->filename, 0 ) ) {
               ignore_mode++;
             } else {
               gen_item* gi = db_get_curr_gen_block();
@@ -8171,6 +8173,7 @@ inc_gen_block_depth
             ignore_mode++;
           }
         }
+        generate_expr_mode--;
       } else {
         unsigned int slen = 3 + strlen( name ) + 1;
         char*        str  = (char*)malloc_safe( slen );
@@ -8186,12 +8189,21 @@ inc_gen_block_depth
     }
   ;
 
-dec_block_depth
-  :
+dec_gen_block_depth
+  : 
     {
       block_depth--;
-      if( !parse_mode ) {
+      if( parse_mode ) {
+        if( ignore_mode == 0 ) {
+          db_end_function_task_namedblock( 0 );
+        } else {
+          ignore_mode--;
+        }
+        $$ = save_gi_tail->gi;
+        gitem_link_remove( save_gi_tail->gi, &save_gi_head, &save_gi_tail );
+      } else {
         generator_add_to_hold_code( " end " );
+        $$ = NULL;
       }
     }
   ;

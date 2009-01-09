@@ -1879,7 +1879,9 @@ gen_item* db_get_curr_gen_block() { PROFILE(DB_GET_CURR_GEN_BLOCK);
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    print_output( "In db_get_curr_gen_block", DEBUG, __FILE__, __LINE__ );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_get_curr_gen_block (%p)", block );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
 #endif
 
@@ -2173,8 +2175,8 @@ void db_add_expression(
 
 #ifdef DEBUG_MODE
     if( debug_mode ) {
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_expression, id: %d, op: %s, line: %d", 
-                                  root->id, expression_string_op( root->op ), root->line );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_expression, id: %d, op: %s, line: %d, gen_top_mode: %d, gen_expr: %d", 
+                                  root->id, expression_string_op( root->op ), root->line, generate_top_mode, root->suppl.part.gen_expr );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
     }
@@ -3368,6 +3370,9 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.373  2009/01/05 06:21:22  phase1geo
+ Fixing more regression bugs with inlined coverage regressions.  Checkpointing.
+
  Revision 1.372  2009/01/04 20:11:19  phase1geo
  Completed initial work on event handling.
 

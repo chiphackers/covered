@@ -1051,27 +1051,27 @@ statement* generator_find_statement(
   unsigned int first_column  /*!< First column of statement to find */
 ) { PROFILE(GENERATOR_FIND_STATEMENT);
 
-//  printf( "In generator_find_statement, line: %d, column: %d\n", first_line, first_column );
+  printf( "In generator_find_statement, line: %d, column: %d\n", first_line, first_column );
 
   if( (curr_stmt == NULL) || (curr_stmt->exp->line < first_line) ||
       ((curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) < first_column)) ) {
 
-//    func_iter_display( &fiter );
+    func_iter_display( &fiter );
 
     /* Attempt to find the expression with the given position */
     while( ((curr_stmt = func_iter_get_next_statement( &fiter )) != NULL) &&
-//           printf( "  statement %s %d\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff) ) &&
+           printf( "  statement %s %d\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff) ) &&
            ((curr_stmt->exp->line < first_line) || 
             ((curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) < first_column)) ||
             (curr_stmt->exp->op == EXP_OP_FORK)) );
 
   }
 
-//  if( (curr_stmt != NULL) && (curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) == first_column) && (curr_stmt->exp->op != EXP_OP_FORK) ) {
-//    printf( "  FOUND (%s %x)!\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff) );
-//  } else {
-//    printf( "  NOT FOUND!\n" );
-//  }
+  if( (curr_stmt != NULL) && (curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) == first_column) && (curr_stmt->exp->op != EXP_OP_FORK) ) {
+    printf( "  FOUND (%s %x)!\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff) );
+  } else {
+    printf( "  NOT FOUND!\n" );
+  }
 
   PROFILE_END;
 
@@ -2587,6 +2587,10 @@ void generator_handle_event_trigger(
 
 /*
  $Log$
+ Revision 1.67  2009/01/08 23:44:08  phase1geo
+ Updating VCS regressions.  Fixing issues in regards to PDEC, PINC, IINC and IDEC
+ operations.  Checkpointing.
+
  Revision 1.66  2009/01/08 16:21:57  phase1geo
  Working on support for generate blocks.  Checkpointing.
 
