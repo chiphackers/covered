@@ -2542,6 +2542,7 @@ generate_item
       if( parse_mode ) {
         $$ = db_get_curr_gen_block();
       } else {
+        generator_flush_work_code;
         $$ = NULL;
       }
     }
@@ -2585,6 +2586,7 @@ generate_item
         $$ = save_gi_tail->gi;
         gitem_link_remove( save_gi_tail->gi, &save_gi_head, &save_gi_tail );
       } else {
+        generator_flush_work_code;
         $$ = NULL;
       }
     }
@@ -2622,6 +2624,7 @@ generate_item
         $$ = save_gi_tail->gi;
         gitem_link_remove( save_gi_tail->gi, &save_gi_head, &save_gi_tail );
       } else {
+        generator_flush_work_code;
         $$ = NULL;
       }
     }
@@ -2701,6 +2704,7 @@ generate_item
         }
         generate_expr_mode--;
       } else {
+        generator_flush_work_code;
         $$ = NULL;
       }
     }
@@ -2732,6 +2736,7 @@ generate_item
           $$ = NULL;
         }
       } else {
+        generator_flush_work_code;
         $$ = NULL;
       }
     }
@@ -2787,6 +2792,7 @@ generate_item
           $$ = NULL;
         }
       } else {
+        generator_flush_work_code;
         $$ = NULL;
       }
     }
