@@ -26,6 +26,7 @@
 #include "func_iter.h"
 #include "func_unit.h"
 #include "generator.h"
+#include "gen_item.h"
 #include "link.h"
 #include "param.h"
 #include "profiler.h"
@@ -46,6 +47,7 @@ extern str_link*      modlist_tail;
 extern const exp_info exp_op_info[EXP_OP_NUM];
 extern bool           debug_mode;
 extern func_unit*     curr_funit;
+extern int            generate_mode;
 
 
 struct fname_link_s;
@@ -1060,14 +1062,22 @@ statement* generator_find_statement(
   if( (curr_stmt == NULL) || (curr_stmt->exp->line < first_line) ||
       ((curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) < first_column)) ) {
 
-    func_iter_display( &fiter );
+    if( generate_mode > 0 ) {
 
-    /* Attempt to find the expression with the given position */
-    while( ((curr_stmt = func_iter_get_next_statement( &fiter )) != NULL) &&
-           printf( "  statement %s %d\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff) ) &&
-           ((curr_stmt->exp->line < first_line) || 
-            ((curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) < first_column)) ||
-            (curr_stmt->exp->op == EXP_OP_FORK)) );
+      generate_find_stmt_by_position( curr_funit, first_line, first_column );
+
+    } else {
+
+      func_iter_display( &fiter );
+
+      /* Attempt to find the expression with the given position */
+      while( ((curr_stmt = func_iter_get_next_statement( &fiter )) != NULL) &&
+             printf( "  statement %s %d\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff) ) &&
+             ((curr_stmt->exp->line < first_line) || 
+              ((curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) < first_column)) ||
+              (curr_stmt->exp->op == EXP_OP_FORK)) );
+
+    }
 
   }
 
@@ -1098,11 +1108,19 @@ static statement* generator_find_case_statement(
   if( (curr_stmt == NULL) || (curr_stmt->exp->left == NULL) || (curr_stmt->exp->left->line < first_line) ||
       ((curr_stmt->exp->left->line == first_line) && (((curr_stmt->exp->left->col >> 16) & 0xffff) < first_column)) ) {
 
-    /* Attempt to find the expression with the given position */
-    while( ((curr_stmt = func_iter_get_next_statement( &fiter )) != NULL) && 
-           ((curr_stmt->exp->left == NULL) ||
-            (curr_stmt->exp->left->line < first_line) ||
-            ((curr_stmt->exp->left->line == first_line) && (((curr_stmt->exp->left->col >> 16) & 0xffff) < first_column))) );
+    if( generate_mode > 0 ) {
+
+      generate_find_stmt_by_position( curr_funit, first_line, first_column );
+
+    } else {
+
+      /* Attempt to find the expression with the given position */
+      while( ((curr_stmt = func_iter_get_next_statement( &fiter )) != NULL) && 
+             ((curr_stmt->exp->left == NULL) ||
+              (curr_stmt->exp->left->line < first_line) ||
+              ((curr_stmt->exp->left->line == first_line) && (((curr_stmt->exp->left->col >> 16) & 0xffff) < first_column))) );
+
+    }
 
   }
 
@@ -2591,6 +2609,10 @@ void generator_handle_event_trigger(
 
 /*
  $Log$
+ Revision 1.70  2009/01/09 21:25:00  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.69  2009/01/09 06:06:25  phase1geo
  Another fix and removing unnecessary output.  Checkpointing.
 

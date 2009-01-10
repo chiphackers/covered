@@ -130,6 +130,8 @@ static int func_iter_count_scopes(
   /* Get parent module */
   parent = funit_get_curr_module( funit );
 
+  printf( "FUNC_ITER scope: %s\n", funit->name );
+
   /* Iterate through children functional units, counting all of the unnamed scopes */
   child = parent->tf_head;
   while( child != NULL ) {
@@ -422,6 +424,10 @@ void func_iter_dealloc(
 
 /*
  $Log$
+ Revision 1.21  2009/01/09 21:25:00  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.20  2008/12/12 00:17:30  phase1geo
  Fixing some bugs, creating some new ones...  Checkpointing.
 
