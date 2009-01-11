@@ -1062,21 +1062,21 @@ statement* generator_find_statement(
   if( (curr_stmt == NULL) || (curr_stmt->exp->line < first_line) ||
       ((curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) < first_column)) ) {
 
-    if( generate_mode > 0 ) {
+    func_iter_display( &fiter );
 
-      generate_find_stmt_by_position( curr_funit, first_line, first_column );
+    /* Attempt to find the expression with the given position */
+    while( ((curr_stmt = func_iter_get_next_statement( &fiter )) != NULL) &&
+           printf( "  statement %s %d\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff) ) &&
+           ((curr_stmt->exp->line < first_line) || 
+            ((curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) < first_column)) ||
+            (curr_stmt->exp->op == EXP_OP_FORK)) );
 
-    } else {
-
-      func_iter_display( &fiter );
-
-      /* Attempt to find the expression with the given position */
-      while( ((curr_stmt = func_iter_get_next_statement( &fiter )) != NULL) &&
-             printf( "  statement %s %d\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff) ) &&
-             ((curr_stmt->exp->line < first_line) || 
-              ((curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) < first_column)) ||
-              (curr_stmt->exp->op == EXP_OP_FORK)) );
-
+    /* If we couldn't find it in the func_iter, look for it in the generate list */
+    if( curr_stmt == NULL ) {
+      statement* gen_stmt = generate_find_stmt_by_position( curr_funit, first_line, first_column );
+      if( gen_stmt != NULL ) {
+        curr_stmt = gen_stmt;
+      }
     }
 
   }
@@ -2609,6 +2609,10 @@ void generator_handle_event_trigger(
 
 /*
  $Log$
+ Revision 1.71  2009/01/10 00:24:10  phase1geo
+ More work on support for generate blocks (the new changes don't quite work yet).
+ Checkpointing.
+
  Revision 1.70  2009/01/09 21:25:00  phase1geo
  More generate block fixes.  Updated all copyright information source code files
  for the year 2009.  Checkpointing.

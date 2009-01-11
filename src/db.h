@@ -71,6 +71,12 @@ void db_find_and_set_curr_funit(
 /*! \brief Returns a pointer to the current functional unit. */
 func_unit* db_get_curr_funit();
 
+/*! \brief Returns a pointer to the functional unit that begins at the specified file position. */
+func_unit* db_get_tfn_by_position(
+  unsigned int first_line,
+  unsigned int first_column
+);
+
 /*! \brief Calculates and returns the size of the exclusion ID string */
 unsigned int db_get_exclusion_id_size();
 
@@ -99,10 +105,21 @@ void db_output_dumpvars( FILE* vfile );
 func_unit* db_add_instance( char* scope, char* name, int type, vector_width* range );
 
 /*! \brief Adds specified module to module list.  Called by parser. */
-void db_add_module( char* name, char* file, int start_line );
+void db_add_module(
+  char*        name,
+  char*        file,
+  unsigned int start_line,
+  unsigned int start_col
+);
 
 /*! \brief Adds specified task/function to functional unit list.  Called by parser. */
-bool db_add_function_task_namedblock( int type, char* name, char* file, int start_line );
+bool db_add_function_task_namedblock(
+  int   type,
+  char* name,
+  char* file,
+  int   start_line,
+  int   start_column
+);
 
 /*! \brief Performs actions necessary when the end of a function/task/named-block is seen.  Called by parser. */
 void db_end_function_task_namedblock( int end_line );
@@ -233,6 +250,10 @@ bool db_do_timestep( uint64 time, bool final );
 
 /*
  $Log$
+ Revision 1.102  2009/01/09 21:25:00  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.101  2008/12/05 00:22:41  phase1geo
  More work completed on code coverage generator.  Currently working on bug in
  statement finder.  Checkpointing.

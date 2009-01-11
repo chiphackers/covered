@@ -143,15 +143,16 @@ attr_param* parser_create_attr(
  Creates a task declaration (scope).
 */
 void parser_create_task_decl(
-  bool         automatic,  /*!< If set to TRUE, specifies that this task is an automatic task */
-  char*        name,       /*!< Name of task */
-  char*        filename,   /*!< Name of file that contains this task */
-  unsigned int first_line  /*!< Line number of first line of task */
+  bool         automatic,    /*!< If set to TRUE, specifies that this task is an automatic task */
+  char*        name,         /*!< Name of task */
+  char*        filename,     /*!< Name of file that contains this task */
+  unsigned int first_line,   /*!< Starting line number of first line of task */
+  unsigned int first_column  /*!< Starting column number of first line of task */
 ) { PROFILE(PARSER_CREATE_TASK_DECL);
 
   if( ignore_mode == 0 ) {
     Try {
-      if( !db_add_function_task_namedblock( (automatic ? FUNIT_ATASK : FUNIT_TASK), name, filename, first_line ) ) {
+      if( !db_add_function_task_namedblock( (automatic ? FUNIT_ATASK : FUNIT_TASK), name, filename, first_line, first_column ) ) {
         ignore_mode++;
       }
     } Catch_anonymous {
@@ -202,7 +203,7 @@ void parser_create_function_decl(
 
   if( ignore_mode == 0 ) {
     Try {
-      if( db_add_function_task_namedblock( (automatic ? FUNIT_AFUNCTION : FUNIT_FUNCTION), name, filename, first_line ) ) {
+      if( db_add_function_task_namedblock( (automatic ? FUNIT_AFUNCTION : FUNIT_FUNCTION), name, filename, first_line, first_column ) ) {
         db_add_signal( name, curr_sig_type, &curr_prange, NULL, curr_signed, FALSE, first_line, first_column, TRUE );
       } else {
         ignore_mode++;
@@ -682,6 +683,10 @@ expression* parser_create_op_and_assign_w_dim_exp(
 
 /*
  $Log$
+ Revision 1.3  2009/01/09 21:25:01  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.2  2008/12/02 06:14:09  phase1geo
  More changes to parser.y to move its code to parser_func.c for cleanup purposes.
  Regression still passes.  Checkpointing.

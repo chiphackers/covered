@@ -51,7 +51,8 @@ void parser_create_task_decl(
   bool         automatic,
   char*        name,
   char*        filename,
-  unsigned int first_line
+  unsigned int first_line,
+  unsigned int first_column
 );
 
 /*! \brief Creates the body of the current task. */
@@ -198,6 +199,10 @@ expression* parser_create_op_and_assign_w_dim_exp(
 
 /*
  $Log$
+ Revision 1.3  2009/01/09 21:25:01  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.2  2008/12/02 06:14:09  phase1geo
  More changes to parser.y to move its code to parser_func.c for cleanup purposes.
  Regression still passes.  Checkpointing.

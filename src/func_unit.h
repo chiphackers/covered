@@ -46,6 +46,13 @@ func_unit* funit_get_curr_task( func_unit* funit );
 /*! \brief Returns the number of input, output and inout ports in the specified functional unit */
 int funit_get_port_count( func_unit* funit );
 
+/*! \brief Returns the child functional unit by file position. */
+func_unit* funit_find_by_position(
+  func_unit*   parent,
+  unsigned int first_line,
+  unsigned int first_column
+);
+
 /*! \brief Finds specified module parameter given the current functional unit and its scope */
 mod_parm* funit_find_param( char* name, func_unit* funit );
 
@@ -156,6 +163,10 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.42  2009/01/09 21:25:00  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.41  2008/11/12 00:07:41  phase1geo
  More updates for complex merging algorithm.  Updating regressions per
  these changes.  Checkpointing.

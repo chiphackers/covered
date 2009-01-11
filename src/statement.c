@@ -905,11 +905,13 @@ statement* statement_find_statement_by_position(
 
   if( curr != NULL ) {
 
-    printf( "In statement_find_statement_by_position, stmt: %s %d\n", expression_string( curr->exp ), ((curr->exp->col >> 16) & 0xffff) );
-
     if( (curr->exp->line == first_line) && (((curr->exp->col >> 16) & 0xffff) == first_column) ) {
 
       found = curr;
+
+    } else if( (curr->exp->op == EXP_OP_NB_CALL) || (curr->exp->op == EXP_OP_FORK) ) {
+
+      found = statement_find_statement_by_position( curr->exp->elem.funit->first_stmt, first_line, first_column );
 
     } else {
 
@@ -1037,6 +1039,10 @@ void statement_dealloc(
 
 /*
  $Log$
+ Revision 1.142  2009/01/10 00:24:10  phase1geo
+ More work on support for generate blocks (the new changes don't quite work yet).
+ Checkpointing.
+
  Revision 1.141  2009/01/09 21:25:01  phase1geo
  More generate block fixes.  Updated all copyright information source code files
  for the year 2009.  Checkpointing.

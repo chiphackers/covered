@@ -588,7 +588,7 @@ description
   | K_task automatic_opt IDENTIFIER ';'
     {
       if( parse_mode ) {
-        parser_create_task_decl( $2, $3, @3.text, @3.first_line );
+        parser_create_task_decl( $2, $3, @3.text, @3.first_line, @3.first_column );
       } else {
         free_safe( $3, (strlen( $3 ) + 1) );
       }
@@ -652,7 +652,7 @@ module
   : attribute_list_opt module_start IDENTIFIER 
     {
       if( parse_mode ) {
-        db_add_module( $3, @2.text, @2.first_line );
+        db_add_module( $3, @2.text, @2.first_line, @2.first_column );
       } else {
         db_find_and_set_curr_funit( $3, FUNIT_MODULE );
         generator_init_funit( db_get_curr_funit() );
@@ -2120,10 +2120,12 @@ begin_end_id
     }
   |
     {
+      char* scope = db_create_unnamed_scope();
       if( parse_mode ) {
-        $$ = db_create_unnamed_scope();
+        $$ = scope;
       } else {
         $$ = NULL;
+        free_safe( scope, (strlen( scope ) + 1) );
       }
     }
   ;
@@ -2223,7 +2225,7 @@ udp_primitive
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
           /* We will treat primitives like regular modules */
-          db_add_module( $2, @1.text, @1.first_line );
+          db_add_module( $2, @1.text, @1.first_line, @1.first_column );
           db_end_module( @10.first_line );
         }
       }
@@ -2548,12 +2550,12 @@ generate_item
     }
   | K_begin start_gen_block
     {
-      char* name = db_create_unnamed_scope();
       if( parse_mode ) {
         generate_expr_mode++;
         if( ignore_mode == 0 ) {
+          char* name = db_create_unnamed_scope();
           Try {
-            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, name, @1.text, @1.first_line ) ) {
+            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, name, @1.text, @1.first_line, @1.first_column ) ) {
               ignore_mode++;
             } else {
               gen_item* gi = db_get_curr_gen_block();
@@ -2564,15 +2566,25 @@ generate_item
             error_count++;
             ignore_mode++;
           }
+          free_safe( name, (strlen( name ) + 1) );
         }
         generate_expr_mode--;
       } else {
-        char str[50];
-        unsigned int rv = snprintf( str, 50, " : %s", name );
+        char         str[50];
+        char*        back;
+        char*        rest;
+        unsigned int rv;
+        func_unit*   funit = db_get_tfn_by_position( @1.first_line, @1.first_column );
+        assert( funit != NULL );
+        back = strdup_safe( funit->name );
+        rest = strdup_safe( funit->name );
+        scope_extract_back( funit->name, back, rest );
+        rv = snprintf( str, 50, " : %s", back );
         assert( rv < 50 );
         generator_prepend_to_work_code( str );
+        free_safe( back, (strlen( funit->name ) + 1) );
+        free_safe( rest, (strlen( funit->name ) + 1) );
       }
-      free_safe( name, (strlen( name ) + 1) );
     }
     generate_item_list_opt end_gen_block K_end
     {
@@ -2596,7 +2608,7 @@ generate_item
         generate_expr_mode++;
         if( ignore_mode == 0 ) {
           Try {
-            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $4, @4.text, @4.first_line ) ) {
+            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $4, @4.text, @4.first_line, @4.first_column ) ) {
               ignore_mode++;
             } else {
               gen_item* gi = db_get_curr_gen_block();
@@ -2641,7 +2653,7 @@ generate_item
         generate_for_mode++;
         if( ignore_mode == 0 ) {
           Try {
-            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $13, @13.text, @13.first_line ) ) {
+            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $13, @13.text, @13.first_line, @13.first_column ) ) {
               ignore_mode++;
             } else {
               gen_item* gi = db_get_curr_gen_block();
@@ -3364,7 +3376,7 @@ module_item
         }
         if( ignore_mode == 0 ) {
           Try {
-            if( !db_add_function_task_namedblock( ($3 ? FUNIT_ATASK : FUNIT_TASK), $4, @4.text, @4.first_line ) ) {
+            if( !db_add_function_task_namedblock( ($3 ? FUNIT_ATASK : FUNIT_TASK), $4, @4.text, @4.first_line, @4.first_column ) ) {
               ignore_mode++;
             }
           } Catch_anonymous {
@@ -3414,7 +3426,7 @@ module_item
         }
         if( ignore_mode == 0 ) {
           Try {
-            if( db_add_function_task_namedblock( ($3 ? FUNIT_AFUNCTION : FUNIT_FUNCTION), $6, @6.text, @6.first_line ) ) {
+            if( db_add_function_task_namedblock( ($3 ? FUNIT_AFUNCTION : FUNIT_FUNCTION), $6, @6.text, @6.first_line, @6.first_column ) ) {
               generate_top_mode--;
               db_add_signal( $6, curr_sig_type, &curr_prange, NULL, curr_signed, FALSE, @6.first_line, @6.first_column, TRUE );
               generate_top_mode++;
@@ -5580,7 +5592,7 @@ fork_statement
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL) ) {
           Try {
-            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $1, @1.text, @1.first_line ) ) {
+            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $1, @1.text, @1.first_line, @1.first_column ) ) {
               ignore_mode++;
             }
           } Catch_anonymous {
@@ -5646,7 +5658,7 @@ begin_end_block
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL) ) {
           Try {
-            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $1, @1.text, @1.first_line ) ) {
+            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $1, @1.text, @1.first_line, @1.first_column ) ) {
               ignore_mode++;
             }
           } Catch_anonymous {
@@ -8205,24 +8217,23 @@ inc_for_depth
   :
     {
       for_mode++;
+      char* scope = db_create_unnamed_scope();
       if( parse_mode ) {
-        char* scope      = NULL;
         func_unit* funit = db_get_curr_funit();
         if( ignore_mode == 0 ) {
-          scope = db_create_unnamed_scope();
           Try {
-            assert( db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, scope, funit->filename, 0 ) );
+            assert( db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, scope, funit->filename, 0, 0 ) );
           } Catch_anonymous {
             error_count++;
             ignore_mode++;
           }
-          free_safe( scope, (strlen( scope ) + 1) );
         }
         block_depth++;
         $$ = db_get_curr_funit();
       } else {
         $$ = NULL;
       }
+      free_safe( scope, (strlen( scope ) + 1) );
     }
   ;
 

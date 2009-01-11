@@ -1163,27 +1163,25 @@ static statement* generate_find_stmt_by_position_helper(
 
   if( gi != NULL ) {
 
-    switch( gi->suppl.part.type ) {
-      case GI_TYPE_EXPR :
-      case GI_TYPE_TFN :
-        stmt = generate_find_stmt_by_position_helper( gi->next_true, first_line, first_col );
-        if( stmt == NULL ) {
-          stmt = generate_find_stmt_by_position_helper( gi->next_false, first_line, first_col );
+    printf( "In generate_find_stmt_by_position_helper, " ); gen_item_display( gi );
+
+    if( (gi->suppl.part.type == GI_TYPE_STMT) && (gi->elem.stmt->exp->line <= first_line) ) {
+      stmt = statement_find_statement_by_position( gi->elem.stmt, first_line, first_col );
+    }
+
+    if( stmt == NULL ) {
+      if( gi->next_true == gi->next_false ) {
+        if( gi->suppl.part.stop_true == 0 ) {
+          stmt = generate_find_stmt_by_position_helper( gi->next_true, first_line, first_col );
         }
-        break;
-      case GI_TYPE_SIG :
-      case GI_TYPE_INST :
-      case GI_TYPE_BIND :
-        stmt = generate_find_stmt_by_position_helper( gi->next_true, first_line, first_col );
-        break;
-      case GI_TYPE_STMT :
-        if( gi->elem.stmt->exp->line <= first_line ) {
-          if( (stmt = statement_find_statement_by_position( gi->elem.stmt, first_line, first_col )) == NULL ) {
-            generate_find_stmt_by_position_helper( gi->next_true, first_line, first_col );
+      } else {
+        if( gi->suppl.part.stop_true == 0 ) {
+          stmt = generate_find_stmt_by_position_helper( gi->next_true, first_line, first_col );
+          if( (stmt == NULL) && (gi->suppl.part.stop_false == 0) ) {
+            stmt = generate_find_stmt_by_position_helper( gi->next_false, first_line, first_col );
           }
         }
-        break;
-      default : assert( 0 );  break;
+      }
     }
 
   }
@@ -1206,8 +1204,8 @@ statement* generate_find_stmt_by_position(
   unsigned int first_col    /*!< First column of statement to search for */
 ) { PROFILE(GENERATE_FIND_STMT_BY_POSITION)
 
-  gitem_link* gil = funit->gitem_head;
-  statement*  stmt;
+  gitem_link* gil  = funit->gitem_head;
+  statement*  stmt = NULL;
 
   while( (gil != NULL) && ((stmt = generate_find_stmt_by_position_helper( gil->gi, first_line, first_col )) == NULL) ) {
     gil = gil->next;
@@ -1216,6 +1214,73 @@ statement* generate_find_stmt_by_position(
   PROFILE_END;
 
   return( stmt );
+
+}
+
+/*!
+ \return Returns pointer to found statement.  If no statement was found, returns NULL.
+*/
+static func_unit* generate_find_tfn_by_position_helper(
+  gen_item*    gi,          /*!< Pointer to current generate item to examine */
+  unsigned int first_line,  /*!< First line of statement to search for */
+  unsigned int first_col    /*!< First column of statement to search for */
+) { PROFILE(GENERATE_FIND_TFN_BY_POSITION_HELPER);
+
+  func_unit* funit = NULL;
+
+  if( gi != NULL ) {
+
+    if( (gi->suppl.part.type == GI_TYPE_TFN) &&
+        (gi->elem.inst->funit->start_line == first_line) &&
+        (gi->elem.inst->funit->start_col  == first_col) ) {
+      funit = gi->elem.inst->funit;
+    }
+
+    if( funit == NULL ) {
+      if( gi->next_true == gi->next_false ) {
+        if( gi->suppl.part.stop_true == 0 ) {
+          funit = generate_find_tfn_by_position_helper( gi->next_true, first_line, first_col );
+        }
+      } else {
+        if( gi->suppl.part.stop_true == 0 ) {
+          funit = generate_find_tfn_by_position_helper( gi->next_true, first_line, first_col );
+          if( (funit == NULL) && (gi->suppl.part.stop_false == 0) ) {
+            funit = generate_find_tfn_by_position_helper( gi->next_false, first_line, first_col );
+          }
+        }
+      }
+    }
+
+  }
+
+  PROFILE_END;
+
+  return( funit );
+
+}
+
+/*!
+ \return Returns pointer to found functional unit
+
+ Searches the generate block of the given functional unit (module) for a task/function/namedblock that matches the
+ given file positional information.  If none is found, returns NULL.
+*/
+func_unit* generate_find_tfn_by_position(
+  func_unit*   funit,       /*!< Pointer to module that contains the generate item block */
+  unsigned int first_line,  /*!< First line of statement to search for */
+  unsigned int first_col    /*!< First column of statement to search for */
+) { PROFILE(GENERATE_FIND_TFN_BY_POSITION)
+
+  gitem_link* gil = funit->gitem_head;
+  func_unit*  tfn = NULL;
+
+  while( (gil != NULL) && ((tfn = generate_find_tfn_by_position_helper( gil->gi, first_line, first_col )) == NULL) ) {
+    gil = gil->next;
+  }
+
+  PROFILE_END;
+
+  return( tfn );
 
 }
 
@@ -1280,6 +1345,10 @@ void gen_item_dealloc(
 
 /*
  $Log$
+ Revision 1.77  2009/01/10 00:24:10  phase1geo
+ More work on support for generate blocks (the new changes don't quite work yet).
+ Checkpointing.
+
  Revision 1.76  2009/01/09 21:25:00  phase1geo
  More generate block fixes.  Updated all copyright information source code files
  for the year 2009.  Checkpointing.

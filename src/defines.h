@@ -2585,8 +2585,9 @@ struct func_unit_s {
   char*           name;              /*!< Functional unit name */
   char*           filename;          /*!< File name where functional unit exists */
   char*           version;           /*!< Version information for functional unit (if one exists) */
-  int             start_line;        /*!< Starting line number of functional unit in its file */
-  int             end_line;          /*!< Ending line number of functional unit in its file */
+  unsigned int    start_line;        /*!< Starting line number of functional unit in its file */
+  unsigned int    end_line;          /*!< Ending line number of functional unit in its file */
+  unsigned int    start_col;         /*!< Starting column number of function unit (column of first character of module, task, function or begin keyword) */
   int             ts_unit;           /*!< Timescale unit value */
   uint64          timescale;         /*!< Timescale for this functional unit contents */
   statistic*      stat;              /*!< Pointer to functional unit coverage statistics structure */
@@ -3100,6 +3101,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.350  2009/01/09 21:25:00  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.349  2009/01/09 00:19:14  phase1geo
  Updates for generate handling (IP).  Checkpointing.
 

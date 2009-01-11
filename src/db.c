@@ -914,6 +914,39 @@ func_unit* db_get_curr_funit() { PROFILE(DB_GET_CURR_FUNIT);
 }
 
 /*!
+ \return Returns a pointer to the functional unit that begins at the specified position.
+*/
+func_unit* db_get_tfn_by_position(
+  unsigned int first_line,   /*!< First line of the functional unit to find */
+  unsigned int first_column  /*!< First column of the functional unit to find */
+) { PROFILE(DB_GET_FUNIT_BY_POSITION);
+
+  funit_link* funitl = NULL;
+  func_unit*  funit;
+
+  printf( "In db_get_tfn_by_position, first_line: %u, first_column: %u\n", first_line, first_column );
+
+  funitl = curr_funit->tf_head;
+  while( (funitl != NULL) &&
+         printf( "funitl name: %s, start_line: %u, first_line: %u\n", funitl->funit->name, funitl->funit->start_line, funitl->funit->start_col ) &&
+         ((funitl->funit->start_line != first_line) || (funitl->funit->start_col != first_column)) ) {
+    funitl = funitl->next;
+  }
+
+  /* If we didn't find the functional unit in the current functional unit, look at its generate TFNs */
+  if( funitl == NULL ) {
+    funit = generate_find_tfn_by_position( curr_funit, first_line, first_column );
+  } else {
+    funit = funitl->funit;
+  }
+
+  PROFILE_END;
+
+  return( funit );
+
+}
+
+/*!
  \return Returns the size needed to allocate for an entire exclusion ID.
 */
 unsigned int db_get_exclusion_id_size() { PROFILE(DB_GET_EXCLUSION_ID_SIZE);
@@ -1164,17 +1197,18 @@ func_unit* db_add_instance(
  at the head of the modlist linked-list structure.
 */
 void db_add_module(
-  char* name,       /*!< Name of module being added to tree */
-  char* file,       /*!< Filename that module is a part of */
-  int   start_line  /*!< Starting line number of this module in the file */
+  char*        name,        /*!< Name of module being added to tree */
+  char*        file,        /*!< Filename that module is a part of */
+  unsigned int start_line,  /*!< Starting line number of this module in the file */
+  unsigned int start_col    /*!< Starting column number of this module in the file */
 ) { PROFILE(DB_ADD_MODULE);
 
   funit_link* modl;  /* Pointer to found tree node */
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_module, module: %s, file: %s, start_line: %d",
-                                obf_funit( name ), obf_file( file ), start_line );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_module, module: %s, file: %s, start_line: %d, start_col: %d",
+                                obf_funit( name ), obf_file( file ), start_line, start_col );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
@@ -1187,6 +1221,7 @@ void db_add_module(
   curr_funit             = modl->funit;
   curr_funit->filename   = strdup_safe( file );
   curr_funit->start_line = start_line;
+  curr_funit->start_col  = start_col;
   curr_funit->ts_unit    = current_timescale_unit;
 
   PROFILE_END;
@@ -1229,10 +1264,11 @@ void db_end_module(
  pointer to point to this new functional unit.
 */
 bool db_add_function_task_namedblock(
-  int   type,       /*!< Specifies type of functional unit being added (function, task or named_block) */
-  char* name,       /*!< Name of functional unit */
-  char* file,       /*!< File containing the specified functional unit */
-  int   start_line  /*!< Starting line number of functional unit */
+  int   type,         /*!< Specifies type of functional unit being added (function, task or named_block) */
+  char* name,         /*!< Name of functional unit */
+  char* file,         /*!< File containing the specified functional unit */
+  int   start_line,   /*!< Starting line number of functional unit */
+  int   start_column  /*!< Starting line column of functional unit */
 ) { PROFILE(DB_ADD_FUNCTION_TASK_NAMEDBLOCK);
 
   func_unit* tf = NULL;  /* Pointer to created functional unit */
@@ -1285,6 +1321,7 @@ bool db_add_function_task_namedblock(
       curr_funit             = tf;
       curr_funit->filename   = strdup_safe( file );
       curr_funit->start_line = start_line;
+      curr_funit->start_col  = start_column;
       curr_funit->ts_unit    = current_timescale_unit;
     
     }
@@ -2308,7 +2345,7 @@ statement* db_parallelize_statement(
 
     /* Create unnamed scope */
     scope = db_create_unnamed_scope();
-    if( db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, scope, curr_funit->filename, stmt->exp->line ) ) {
+    if( db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, scope, curr_funit->filename, stmt->exp->line, ((stmt->exp->col >> 16) & 0xffff) ) ) {
 
       /* Create a thread block for this statement block */
       stmt->suppl.part.head      = 1;
@@ -3370,6 +3407,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.375  2009/01/09 21:25:00  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.374  2009/01/09 05:53:38  phase1geo
  More work on generate handling.  Still not working but Verilog output looks correct
  for IF generate statements now.  Checkpointing.
