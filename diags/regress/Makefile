@@ -257,7 +257,7 @@ IVCVERDIAGS4  =
 
 IVVCSDIAGS1   = define3          delay3           exclude7.3       exclude10.5      exclude12.5 \
                 generate2.1      generate4        generate4.1      generate5        generate5.1 \
-                generate5.2      generate5.3      generate8        generate10       generate10.1 \
+                generate5.2      generate5.3      generate8        generate8.9      generate10       generate10.1 \
                 generate10.2     generate11       generate11.1     generate11.2     generate11.3 \
                 hier3            localparam1      localparam1.1    localparam1.2    localparam1.3 \
                 localparam2      localparam3      mbit_sel5        mbit_sel5.1      mbit_sel5.2 \

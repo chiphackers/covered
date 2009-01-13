@@ -838,9 +838,10 @@ void gen_item_db_write_expr_tree(
  \return Returns TRUE if the connection was successful; otherwise, returns FALSE.
 */
 bool gen_item_connect(
-  gen_item* gi1,     /*!< Pointer to generate item block to connect to gi2 */
-  gen_item* gi2,     /*!< Pointer to generate item to connect to gi1 */
-  int       conn_id  /*!< Connection ID */
+  gen_item* gi1,          /*!< Pointer to generate item block to connect to gi2 */
+  gen_item* gi2,          /*!< Pointer to generate item to connect to gi1 */
+  int       conn_id,      /*!< Connection ID */
+  bool      stop_on_null  /*!< Sets stop bit(s) if a NULL next_true/next_false pointer is found */
 ) { PROFILE(GEN_ITEM_CONNECT);
 
   bool retval = FALSE;  /* Return value for this function */
@@ -855,7 +856,7 @@ bool gen_item_connect(
     if( gi1->next_true == NULL ) {
       gi1->next_true  = gi2;
       gi1->next_false = gi2;
-      if( gi1->next_true->suppl.part.conn_id == conn_id ) {
+      if( (gi1->next_true->suppl.part.conn_id == conn_id) || stop_on_null ) {
         gi1->suppl.part.stop_true  = 1;
         gi1->suppl.part.stop_false = 1;
       }
@@ -866,7 +867,7 @@ bool gen_item_connect(
 
     /* If the TRUE path leads to a loop/merge, stop traversing */
     } else if( gi1->next_true != gi2 ) {
-      retval |= gen_item_connect( gi1->next_true, gi2, conn_id );
+      retval |= gen_item_connect( gi1->next_true, gi2, conn_id, stop_on_null );
     }
 
   } else {
@@ -874,7 +875,7 @@ bool gen_item_connect(
     /* Traverse FALSE path */
     if( gi1->next_false == NULL ) {
       gi1->next_false = gi2;
-      if( gi1->next_false->suppl.part.conn_id == conn_id ) {
+      if( (gi1->next_false->suppl.part.conn_id == conn_id) || stop_on_null ) {
         gi1->suppl.part.stop_false = 1;
       } else {
         gi1->next_false->suppl.part.conn_id = conn_id;
@@ -883,20 +884,20 @@ bool gen_item_connect(
     } else if( gi1->next_false->suppl.part.conn_id == conn_id ) {
       gi1->suppl.part.stop_false = 1;
     } else if( gi1->next_false != gi2 ) {
-      retval |= gen_item_connect( gi1->next_false, gi2, conn_id );
+      retval |= gen_item_connect( gi1->next_false, gi2, conn_id, stop_on_null );
     }
 
     /* Traverse TRUE path */
     if( gi1->next_true == NULL ) {
       gi1->next_true = gi2;
-      if( gi1->next_true->suppl.part.conn_id == conn_id ) {
+      if( (gi1->next_true->suppl.part.conn_id == conn_id) || stop_on_null ) {
         gi1->suppl.part.stop_true = 1;
       }
       retval = TRUE;
     } else if( gi1->next_true->suppl.part.conn_id == conn_id ) {
       gi1->suppl.part.stop_true = 1;
-    } else if( (gi1->next_true != gi2) && ((gi1->suppl.part.type != GI_TYPE_TFN) || (gi1->varname == NULL)) ) {
-      retval |= gen_item_connect( gi1->next_true, gi2, conn_id );
+    } else if( (gi1->next_true != gi2) && (gi1->suppl.part.type != GI_TYPE_TFN) && (gi1->varname == NULL) ) {
+      retval |= gen_item_connect( gi1->next_true, gi2, conn_id, TRUE );
     }
 
   }
@@ -1345,6 +1346,10 @@ void gen_item_dealloc(
 
 /*
  $Log$
+ Revision 1.78  2009/01/11 19:59:35  phase1geo
+ More fixes for support of generate statements.  Getting close but not quite
+ there yet.  Checkpointing.
+
  Revision 1.77  2009/01/10 00:24:10  phase1geo
  More work on support for generate blocks (the new changes don't quite work yet).
  Checkpointing.
