@@ -54,6 +54,12 @@ void generator_replace(
   unsigned int last_column
 );
 
+/*! \brief Allocates and initializes a new structure for the purposes of coverage register insertion. */
+void generator_push_reg_insert();
+
+/*! \brief Pops the head of the register insertion stack. */
+void generator_pop_reg_insert();
+
 /*! \brief Returns TRUE if the current expression will be calculated via an intermediate assignment. */
 bool generator_expr_name_needed(
   expression* exp
@@ -184,6 +190,10 @@ void generator_handle_event_trigger(
 
 /*
  $Log$
+ Revision 1.29  2009/01/08 23:44:08  phase1geo
+ Updating VCS regressions.  Fixing issues in regards to PDEC, PINC, IINC and IDEC
+ operations.  Checkpointing.
+
  Revision 1.28  2009/01/08 16:13:59  phase1geo
  Completing work on substitution support.  Updated regressions.
 

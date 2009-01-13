@@ -328,7 +328,8 @@ endif
 # List of diagnostics that should not be run if we are running in inlined mode
 ifdef INLINE
 NOINLINEDIAGS := case5           casex2          casez3          exclude5.1      exclude5.3 \
-                 param10.1
+                 param10.1 \
+                 generate11      generate8.9     generate11.1    generate11.2    generate11.3
 endif
                  
 # Remove filtered diagnostics

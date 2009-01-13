@@ -664,12 +664,15 @@ module
     {
       if( !parse_mode ) {
         generator_flush_all;
+        generator_push_reg_insert();
       }
     }
     module_item_list_opt K_endmodule
     {
       if( parse_mode ) {
         db_end_module( @10.first_line );
+      } else {
+        generator_pop_reg_insert();
       }
     }
   | attribute_list_opt K_module IGNORE I_endmodule
@@ -2621,6 +2624,9 @@ generate_item
           }
         }
         generate_expr_mode--;
+      } else {
+        generator_flush_work_code;
+        generator_push_reg_insert();
       }
       free_safe( $4, (strlen( $4 ) + 1) );
     }
@@ -2636,6 +2642,7 @@ generate_item
         $$ = save_gi_tail->gi;
         gitem_link_remove( save_gi_tail->gi, &save_gi_head, &save_gi_tail );
       } else {
+        generator_pop_reg_insert();
         generator_flush_work_code;
         $$ = NULL;
       }
@@ -2668,6 +2675,9 @@ generate_item
           }
         }
         generate_expr_mode--;
+      } else {
+        generator_flush_work_code;
+        generator_push_reg_insert();
       }
       free_safe( $13, (strlen( $13 ) + 1) );
     }
@@ -2716,6 +2726,7 @@ generate_item
         }
         generate_expr_mode--;
       } else {
+        generator_pop_reg_insert();
         generator_flush_work_code;
         $$ = NULL;
       }

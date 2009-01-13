@@ -67,6 +67,13 @@ struct replace_info_s {
   str_link* list_ptr;
 };
 
+struct reg_insert_s;
+typedef struct reg_insert_s reg_insert;
+struct reg_insert_s {
+  str_link*   ptr;         /*!< Pointer to string link to insert register information after */
+  reg_insert* next;        /*!< Pointer to the next reg_insert structure in the stack */
+};
+
 
 /*!
  Pointer to the current output file.
@@ -104,14 +111,9 @@ str_link* hold_head = NULL;
 str_link* hold_tail = NULL;
 
 /*!
- Pointer to head of register string list.
+ Pointer to the top of the register insertion stack.
 */
-str_link* reg_head = NULL;
-
-/*!
- Pointer to tail of register string list.
-*/
-str_link* reg_tail = NULL;
+reg_insert* reg_top = NULL;
 
 /*!
  Pointer to head of list for combinational coverage lines.
@@ -198,14 +200,7 @@ void generator_display() { PROFILE(GENERATOR_DISPLAY);
 
   str_link* strl;
 
-  printf( "Register code list:\n" );
-  strl = reg_head;
-  while( strl != NULL ) {
-    printf( "    %s\n", strl->str );
-    strl = strl->next;
-  }
-
-  printf( "Holding code list:\n" );
+  printf( "Holding code list (%p %p):\n", hold_head, hold_tail );
   strl = hold_head;
   while( strl != NULL ) {
     printf( "    %s\n", strl->str );
@@ -213,7 +208,7 @@ void generator_display() { PROFILE(GENERATOR_DISPLAY);
   }
   printf( "Holding buffer:\n  %s\n", hold_buffer );
 
-  printf( "Working code list:\n" );
+  printf( "Working code list (%p %p):\n", work_head, work_tail );
   strl = work_head;
   while( strl != NULL ) {
     printf( "    %s\n", strl->str );
@@ -368,6 +363,103 @@ void generator_replace(
     }
 
   }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Allocates and initializes a new structure for the purposes of coverage register insertion.
+ Called by parser. 
+*/
+void generator_push_reg_insert() { PROFILE(GENERATOR_PUSH_REG_INSERT);
+
+  reg_insert* ri;
+
+  /* Make sure that the hold buffer is added to the hold list */
+  if( hold_buffer[0] != '\0' ) {
+    strcat( hold_buffer, "\n" );
+    str_link_add( strdup_safe( hold_buffer ), &hold_head, &hold_tail );
+    hold_buffer[0] = '\0';
+  }
+
+  /* Allocate and initialize the new register insertion structure */
+  ri       = (reg_insert*)malloc_safe( sizeof( reg_insert ) );
+  ri->ptr  = hold_tail;
+  ri->next = reg_top;
+
+  /* Point the register stack top to the newly created register insert structure */
+  reg_top = ri;
+
+  printf( "PUSHING register insert %p\n", ri );
+
+  PROFILE_END;
+
+}
+
+/*!
+ Pops the head of the register insertion stack.  Called by parser.
+*/
+void generator_pop_reg_insert() { PROFILE(GENERATOR_POP_REG_INSERT);
+
+  reg_insert* ri;
+
+  printf( "POPPING register insert %p\n", reg_top );
+
+  /* Save pointer to the top reg_insert structure and adjust reg_top */
+  ri      = reg_top;
+  reg_top = ri->next;
+
+  /* Deallocate the reg_insert structure */
+  free_safe( ri, sizeof( reg_insert ) );
+
+}
+
+/*!
+ \return Returns TRUE if the reg_top stack contains exactly one element.
+*/
+static bool generator_is_reg_top_one_deep() { PROFILE(GENERATOR_IS_BASE_REG_INSERT);
+
+  bool retval = (reg_top != NULL) && (reg_top->next == NULL);
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ Inserts the given register instantiation string into the appropriate spot in the hold buffer.
+*/
+static void generator_insert_reg(
+  const char* str  /*!< Register instantiation string to insert */
+) { PROFILE(GENERATOR_INSERT_REG);
+
+  str_link* tmp_head = NULL;
+  str_link* tmp_tail = NULL;
+
+  assert( reg_top != NULL );
+
+  /* Create string link */
+  str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
+
+  /* Insert it at the insertion point */
+  if( reg_top->ptr == NULL ) {
+    tmp_head->next = hold_head;
+    if( hold_head == NULL ) {
+      hold_head = hold_tail = tmp_head;
+    } else {
+      hold_head = tmp_head;
+    }
+  } else {
+    tmp_head->next     = reg_top->ptr->next;
+    reg_top->ptr->next = tmp_head;
+    if( hold_tail == reg_top->ptr ) {
+      hold_tail = tmp_head;
+    }
+  }
+ 
+//  generator_display();
 
   PROFILE_END;
 
@@ -993,6 +1085,9 @@ void generator_flush_hold_code1(
 
   str_link* strl = hold_head;
 
+  /* We shouldn't ever by flushing the hold code if the reg_top is more than one entry deep */
+  assert( (reg_top == NULL) || (reg_top != NULL) && (reg_top->next == NULL) );
+
 #ifdef DEBUG_MODE
   if( debug_mode ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Flushing hold code (file: %s, line: %u)", file, line );
@@ -1003,15 +1098,6 @@ void generator_flush_hold_code1(
 #endif
 
   fprintf( curr_ofile, "\n" );
-
-  /* Output the register buffer if it exists */
-  strl = reg_head;
-  while( strl != NULL ) {
-    fprintf( curr_ofile, "%s\n", strl->str );
-    strl = strl->next;
-  }
-  str_link_delete_list( reg_head );
-  reg_head = reg_tail = NULL;
 
   /* Output the hold buffer list to the output file */
   strl = hold_head;
@@ -1026,6 +1112,11 @@ void generator_flush_hold_code1(
   if( strlen( hold_buffer ) > 0 ) {
     fprintf( curr_ofile, "%s", hold_buffer );
     hold_buffer[0] = '\0';
+  }
+
+  /* Reset the register insertion pointer (no need to push/pop) */
+  if( reg_top != NULL ) {
+    reg_top->ptr = NULL;
   }
 
   PROFILE_END;
@@ -1057,16 +1148,16 @@ statement* generator_find_statement(
   unsigned int first_column  /*!< First column of statement to find */
 ) { PROFILE(GENERATOR_FIND_STATEMENT);
 
-  printf( "In generator_find_statement, line: %d, column: %d\n", first_line, first_column );
+//  printf( "In generator_find_statement, line: %d, column: %d\n", first_line, first_column );
 
   if( (curr_stmt == NULL) || (curr_stmt->exp->line < first_line) ||
       ((curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) < first_column)) ) {
 
-    func_iter_display( &fiter );
+//    func_iter_display( &fiter );
 
     /* Attempt to find the expression with the given position */
     while( ((curr_stmt = func_iter_get_next_statement( &fiter )) != NULL) &&
-           printf( "  statement %s %d\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff) ) &&
+//           printf( "  statement %s %d\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff) ) &&
            ((curr_stmt->exp->line < first_line) || 
             ((curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) < first_column)) ||
             (curr_stmt->exp->op == EXP_OP_FORK)) );
@@ -1081,11 +1172,11 @@ statement* generator_find_statement(
 
   }
 
-  if( (curr_stmt != NULL) && (curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) == first_column) && (curr_stmt->exp->op != EXP_OP_FORK) ) {
-    printf( "  FOUND (%s %x)!\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff) );
-  } else {
-    printf( "  NOT FOUND!\n" );
-  }
+//  if( (curr_stmt != NULL) && (curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) == first_column) && (curr_stmt->exp->op != EXP_OP_FORK) ) {
+//    printf( "  FOUND (%s %x)!\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff) );
+//  } else {
+//    printf( "  NOT FOUND!\n" );
+//  }
 
   PROFILE_END;
 
@@ -1148,7 +1239,7 @@ void generator_insert_line_cov_with_stmt(
     str_link*    tmp_head = NULL;
     str_link*    tmp_tail = NULL;
 
-    if( stmt->funit->type == FUNIT_MODULE ) {
+    if( (stmt->funit->type == FUNIT_MODULE) || !generator_is_reg_top_one_deep() ) {
       rv = snprintf( sig, 4096, " \\covered$L%d_%d_%x ", stmt->exp->line, last_exp->line, stmt->exp->col );
     } else {
       rv = snprintf( sig, 4096, " \\covered$L%d_%d_%x$%s ", stmt->exp->line, last_exp->line, stmt->exp->col, stmt->funit->name );
@@ -1156,9 +1247,9 @@ void generator_insert_line_cov_with_stmt(
     assert( rv < 4096 );
 
     /* Create the register */
-    rv = snprintf( str, 4096, "reg %s;", sig );
+    rv = snprintf( str, 4096, "reg %s;\n", sig );
     assert( rv < 4096 );
-    str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
+    generator_insert_reg( str );
 
     /* Prepend the line coverage assignment to the working buffer */
     rv = snprintf( str, 4096, " %s = 1'b1%c", sig, (semicolon ? ';' : ',') );
@@ -1225,7 +1316,7 @@ void generator_insert_event_comb_cov(
   }
 
   /* Create signal name */
-  if( funit->type == FUNIT_MODULE ) {
+  if( (funit->type == FUNIT_MODULE) || !generator_is_reg_top_one_deep() ) {
     rv = snprintf( name, 4096, " \\covered$E%d_%d_%x ", exp->line, last_exp->line, exp->col );
   } else {
     rv = snprintf( name, 4096, " \\covered$E%d_%d_%x$%s ", exp->line, last_exp->line, exp->col, funit->name );
@@ -1234,9 +1325,9 @@ void generator_insert_event_comb_cov(
 
   /* Create register */
   if( reg_needed ) {
-    rv = snprintf( str, 4096, "reg %s;", name );
+    rv = snprintf( str, 4096, "reg %s;\n", name );
     assert( rv < 4096 );
-    str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
+    generator_insert_reg( str );
   }
 
   /*
@@ -1264,9 +1355,9 @@ void generator_insert_event_comb_cov(
       case EXP_OP_PEDGE :
         {
           if( reg_needed ) {
-            rv = snprintf( str, 4096, "reg %s;", tname );
+            rv = snprintf( str, 4096, "reg %s;\n", tname );
             assert( rv < 4096 );
-            str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
+            generator_insert_reg( str );
           }
           rv = snprintf( str, 4096, " %s = %s;", tname, event_str );
           assert( rv < 4096 );
@@ -1280,9 +1371,9 @@ void generator_insert_event_comb_cov(
       case EXP_OP_NEDGE :
         {
           if( reg_needed ) {
-            rv = snprintf( str, 4096, "reg %s;", tname );
+            rv = snprintf( str, 4096, "reg %s;\n", tname );
             assert( rv < 4096 );
-            str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
+            generator_insert_reg( str );
           }
           rv = snprintf( str, 4096, " %s = %s;", tname, event_str );
           assert( rv < 4096 );
@@ -1297,9 +1388,9 @@ void generator_insert_event_comb_cov(
         {
           if( reg_needed ) {
             char* size = generator_gen_size( exp->right, funit );
-            rv = snprintf( str, 4096, "reg [(%s-1):0] %s;", size, tname );
+            rv = snprintf( str, 4096, "reg [(%s-1):0] %s;\n", size, tname );
             assert( rv < 4096 );
-            str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
+            generator_insert_reg( str );
             free_safe( size, (strlen( size ) + 1) );
           }
           rv = snprintf( str, 4096, " %s = %s;", tname, event_str );
@@ -1343,7 +1434,7 @@ static void generator_insert_unary_comb_cov(
   expression*  last_exp = expression_get_last_line_expr( exp );
 
   /* Create signal */
-  if( net || (funit->type == FUNIT_MODULE) ) {
+  if( net || (funit->type == FUNIT_MODULE) || !generator_is_reg_top_one_deep() ) {
     rv = snprintf( sig,  4096, " \\covered$%c%d_%d_%x ", (net ? 'u' : 'U'), exp->line, last_exp->line, exp->col );
     assert( rv < 4096 );
   } else {
@@ -1360,9 +1451,9 @@ static void generator_insert_unary_comb_cov(
   } else {
     prefix[0] = '\0';
     if( reg_needed ) {
-      rv = snprintf( str, 4096, "reg %s;", sig );
+      rv = snprintf( str, 4096, "reg %s;\n", sig );
       assert( rv < 4096 );
-      str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
+      generator_insert_reg( str );
     }
   }
 
@@ -1399,7 +1490,7 @@ static void generator_insert_comb_comb_cov(
   expression*  last_exp = expression_get_last_line_expr( exp );
 
   /* Create signal */
-  if( net || (funit->type == FUNIT_MODULE) ) {
+  if( net || (funit->type == FUNIT_MODULE) || !generator_is_reg_top_one_deep() ) {
     rv = snprintf( sig, 4096, " \\covered$%c%d_%d_%x ", (net ? 'c' : 'C'), exp->line, last_exp->line, exp->col );
   } else {
     rv = snprintf( sig, 4096, " \\covered$C%d_%d_%x$%s ", exp->line, last_exp->line, exp->col, funit->name );
@@ -1415,9 +1506,9 @@ static void generator_insert_comb_comb_cov(
     strcpy( prefix, "wire [1:0] " );
   } else if( reg_needed ) {
     prefix[0] = '\0';
-    rv = snprintf( str, 4096, "reg [1:0] %s;", sig );
+    rv = snprintf( str, 4096, "reg [1:0] %s;\n", sig );
     assert( rv < 4096 );
-    str_link_add( strdup_safe( str ), &reg_head, &reg_tail );
+    generator_insert_reg( str );
   }
 
   /* Prepend the coverage assignment to the working buffer */
@@ -1640,9 +1731,9 @@ static char* generator_create_lhs(
 
     /* Create sized register string */
     if( reg_needed ) {
-      rv = snprintf( tmp, 4096, "reg [(%s-1):0] %s;", ((size != NULL) ? size : "1"), name );
+      rv = snprintf( tmp, 4096, "reg [(%s-1):0] %s;\n", ((size != NULL) ? size : "1"), name );
       assert( rv < 4096 );
-      str_link_add( strdup_safe( tmp ), &reg_head, &reg_tail );
+      generator_insert_reg( tmp );
     }
 
     /* Set the name to the value of code */
@@ -1740,23 +1831,12 @@ static void generator_concat_code(
   }
   str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
       
-  /* If this is a net, prepend to the register list */
-  if( net ) {
-    if( reg_head == NULL ) {
-      reg_head = reg_tail = tmp_head;
-    } else {
-      tmp_tail->next = reg_head;
-      reg_head       = tmp_head;
-    }
-
-  /* Otherwise, prepend to the working list */
+  /* Prepend to the working list */
+  if( work_head == NULL ) {
+    work_head = work_tail = tmp_head;
   } else {
-    if( work_head == NULL ) {
-      work_head = work_tail = tmp_head;
-    } else {
-      tmp_tail->next = work_head;
-      work_head      = tmp_head;
-    }
+    tmp_tail->next = work_head;
+    work_head      = tmp_head;
   }
 
   PROFILE_END;
@@ -2015,25 +2095,13 @@ static void generator_insert_comb_cov_helper(
   /* Output the generated code */
   if( comb_head != NULL ) {
 
-    /* If this is a net, prepend to the register list */
-    if( net ) {
-      if( reg_head == NULL ) {
-        reg_head = comb_head;
-        reg_tail = comb_tail;
-      } else {
-        comb_tail->next = reg_head;
-        reg_head        = comb_head;
-      }
-
-    /* Otherwise, prepend to the working list */
+    /* Prepend to the working list */
+    if( work_head == NULL ) {
+      work_head = comb_head;
+      work_tail = comb_tail;
     } else {
-      if( work_head == NULL ) {
-        work_head = comb_head;
-        work_tail = comb_tail;
-      } else {
-        comb_tail->next = work_head;
-        work_head       = comb_head;
-      }
+      comb_tail->next = work_head;
+      work_head       = comb_head;
     }
 
     /* Clear the comb head/tail pointers for reuse */
@@ -2216,7 +2284,7 @@ static void generator_insert_mem_cov(
     str_link*    tmp_tail = NULL;
 
     /* First, create the wire/register to hold the index */
-    if( net || (funit->type == FUNIT_MODULE) ) {
+    if( net || (funit->type == FUNIT_MODULE) || !generator_is_reg_top_one_deep() ) {
       rv = snprintf( iname, 4096, " \\covered$%c%d_%d_%x$%s ", (net ? 'i' : 'I'), exp->line, last_exp->line, exp->col, exp->name );
     } else {
       rv = snprintf( iname, 4096, " \\covered$%c%d_%d_%x$%s$%s ", (net ? 'i' : 'I'), exp->line, last_exp->line, exp->col, exp->name, funit->name );
@@ -2233,12 +2301,13 @@ static void generator_insert_mem_cov(
 
     } else {
 
-      unsigned int slen = 6 + strlen( num ) + 7 + strlen( iname ) + 2;
+      unsigned int slen = 6 + strlen( num ) + 7 + strlen( iname ) + 3;
 
       str = (char*)malloc_safe( slen );
-      rv  = snprintf( str, slen, "reg [(%s-1):0] %s;", num, iname );
+      rv  = snprintf( str, slen, "reg [(%s-1):0] %s;\n", num, iname );
       assert( rv < slen );
-      str_link_add( str, &reg_head, &reg_tail );
+      generator_insert_reg( str );
+      free_safe( str, (strlen( str ) + 1) );
 
       slen = 1 + strlen( iname ) + 3 + strlen( idxstr ) + 2;
       str  = (char*)malloc_safe( slen );
@@ -2257,7 +2326,7 @@ static void generator_insert_mem_cov(
     }
 
     /* Create name */
-    if( net || (funit->type == FUNIT_MODULE) ) {
+    if( net || (funit->type == FUNIT_MODULE) || !generator_is_reg_top_one_deep() ) {
       rv = snprintf( name, 4096, " \\covered$%c%d_%d_%x$%s ", (net ? 'w' : 'W'), exp->line, last_exp->line, exp->col, exp->name );
     } else {
       rv = snprintf( name, 4096, " \\covered$%c%d_%d_%x$%s$%s ", (net ? 'w' : 'W'), exp->line, last_exp->line, exp->col, exp->name, funit->name );
@@ -2285,7 +2354,7 @@ static void generator_insert_mem_cov(
   } else {
 
     /* Create name */
-    if( net || (funit->type == FUNIT_MODULE) ) {
+    if( net || (funit->type == FUNIT_MODULE) || !generator_is_reg_top_one_deep() ) {
       rv = snprintf( name, 4096, " \\covered$%c%d_%d_%x$%s ", (net ? 'r' : 'R'), exp->line, last_exp->line, exp->col, exp->name );
     } else {
       rv = snprintf( name, 4096, " \\covered$%c%d_%d_%x$%s$%s ", (net ? 'r' : 'R'), exp->line, last_exp->line, exp->col, exp->name, funit->name );
@@ -2314,14 +2383,15 @@ static void generator_insert_mem_cov(
   /* Otherwise, create the assignment string for a register and create the register */
   } else {
 
-    unsigned int slen = 3 + 1 + strlen( range ) + 1 + strlen( name ) + 2;
+    unsigned int slen = 3 + 1 + strlen( range ) + 1 + strlen( name ) + 3;
 
     str = (char*)malloc_safe( slen );
-    rv  = snprintf( str, slen, "reg %s %s;", range, name );
+    rv  = snprintf( str, slen, "reg %s %s;\n", range, name );
     assert( rv < slen );
 
     /* Add the register to the register list */
-    str_link_add( str, &reg_head, &reg_tail );
+    generator_insert_reg( str );
+    free_safe( str, (strlen( str ) + 1) );
 
     /* Now create the assignment string */
     slen = 1 + strlen( name ) + 3 + strlen( value ) + 2;
@@ -2609,6 +2679,10 @@ void generator_handle_event_trigger(
 
 /*
  $Log$
+ Revision 1.72  2009/01/11 19:59:35  phase1geo
+ More fixes for support of generate statements.  Getting close but not quite
+ there yet.  Checkpointing.
+
  Revision 1.71  2009/01/10 00:24:10  phase1geo
  More work on support for generate blocks (the new changes don't quite work yet).
  Checkpointing.
