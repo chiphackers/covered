@@ -226,6 +226,28 @@ void generator_display() { PROFILE(GENERATOR_DISPLAY);
 }
 
 /*!
+ \return Returns allocated string containing the difference in scope between the current functional unit
+         and the specified child functional unit.
+*/
+static char* generator_get_relative_scope(
+  func_unit* child  /*!< Pointer to child functional unit */
+) { PROFILE(GENERATOR_GET_RELATIVE_SCOPE);
+
+  char* back = strdup_safe( child->name );
+  char* relative_scope;
+
+  scope_extract_scope( child->name, funit_top->funit->name, back );
+  relative_scope = strdup_safe( back );
+
+  free_safe( back, (strlen( child->name ) + 1) );
+
+  PROFILE_END;
+
+  return( relative_scope );
+
+}
+
+/*!
  Clears the first and last replace information pointers.
 */
 void generator_clear_replace_ptrs() { PROFILE(GENERATOR_CLEAR_REPLACE_PTRS);
@@ -857,9 +879,6 @@ void generator_init_funit(
   func_unit* funit  /*!< Pointer to current functional unit */
 ) { PROFILE(GENERATOR_INIT_FUNIT);
 
-  /* Add the functional unit to the top of the stack */
-  generator_push_funit( funit );
-
   /* Deallocate the functional unit iterator */
   func_iter_dealloc( &fiter );
 
@@ -1279,13 +1298,15 @@ void generator_insert_line_cov_with_stmt(
     unsigned int rv;
     str_link*    tmp_head = NULL;
     str_link*    tmp_tail = NULL;
+    char*        scope    = generator_get_relative_scope( stmt->funit ); 
 
-    if( (stmt->funit->type == FUNIT_MODULE) || !generator_is_reg_top_one_deep() ) {
+    if( scope[0] == '\0' ) {
       rv = snprintf( sig, 4096, " \\covered$L%d_%d_%x ", stmt->exp->line, last_exp->line, stmt->exp->col );
     } else {
-      rv = snprintf( sig, 4096, " \\covered$L%d_%d_%x$%s ", stmt->exp->line, last_exp->line, stmt->exp->col, stmt->funit->name );
+      rv = snprintf( sig, 4096, " \\covered$L%d_%d_%x$%s ", stmt->exp->line, last_exp->line, stmt->exp->col, scope );
     }
     assert( rv < 4096 );
+    free_safe( scope, (strlen( scope ) + 1) );
 
     /* Create the register */
     rv = snprintf( str, 4096, "reg %s;\n", sig );
@@ -1350,6 +1371,7 @@ void generator_insert_event_comb_cov(
   unsigned int rv;
   expression*  last_exp = expression_get_last_line_expr( exp );
   expression*  root_exp = exp;
+  char*        scope    = generator_get_relative_scope( funit );
 
   /* Find the root event of this expression tree */
   while( (ESUPPL_IS_ROOT( root_exp->suppl ) == 0) && (EXPR_IS_EVENT( root_exp->parent->expr ) == 1) ) {
@@ -1357,12 +1379,13 @@ void generator_insert_event_comb_cov(
   }
 
   /* Create signal name */
-  if( (funit->type == FUNIT_MODULE) || !generator_is_reg_top_one_deep() ) {
+  if( scope[0] == '\0' ) {
     rv = snprintf( name, 4096, " \\covered$E%d_%d_%x ", exp->line, last_exp->line, exp->col );
   } else {
-    rv = snprintf( name, 4096, " \\covered$E%d_%d_%x$%s ", exp->line, last_exp->line, exp->col, funit->name );
+    rv = snprintf( name, 4096, " \\covered$E%d_%d_%x$%s ", exp->line, last_exp->line, exp->col, scope );
   }
   assert( rv < 4096 );
+  free_safe( scope, (strlen( scope ) + 1) );
 
   /* Create register */
   if( reg_needed ) {
@@ -1473,15 +1496,16 @@ static void generator_insert_unary_comb_cov(
   char         str[4096];
   unsigned int rv;
   expression*  last_exp = expression_get_last_line_expr( exp );
+  char*        scope    = generator_get_relative_scope( funit );
 
   /* Create signal */
-  if( net || (funit->type == FUNIT_MODULE) || !generator_is_reg_top_one_deep() ) {
+  if( scope[0] == '\0' ) {
     rv = snprintf( sig,  4096, " \\covered$%c%d_%d_%x ", (net ? 'u' : 'U'), exp->line, last_exp->line, exp->col );
-    assert( rv < 4096 );
   } else {
-    rv = snprintf( sig,  4096, " \\covered$U%d_%d_%x$%s ", exp->line, last_exp->line, exp->col, funit->name );
-    assert( rv < 4096 );
+    rv = snprintf( sig,  4096, " \\covered$U%d_%d_%x$%s ", exp->line, last_exp->line, exp->col, scope );
   }
+  assert( rv < 4096 );
+  free_safe( scope, (strlen( scope ) + 1) );
 
   /* Create right signal name */
   sigr = generator_create_expr_name( exp );
@@ -1529,14 +1553,16 @@ static void generator_insert_comb_comb_cov(
   str_link*    tmp_head = NULL;
   str_link*    tmp_tail = NULL;
   expression*  last_exp = expression_get_last_line_expr( exp );
+  char*        scope    = generator_get_relative_scope( funit );
 
   /* Create signal */
-  if( net || (funit->type == FUNIT_MODULE) || !generator_is_reg_top_one_deep() ) {
+  if( scope[0] == '\0' ) {
     rv = snprintf( sig, 4096, " \\covered$%c%d_%d_%x ", (net ? 'c' : 'C'), exp->line, last_exp->line, exp->col );
   } else {
-    rv = snprintf( sig, 4096, " \\covered$C%d_%d_%x$%s ", exp->line, last_exp->line, exp->col, funit->name );
+    rv = snprintf( sig, 4096, " \\covered$C%d_%d_%x$%s ", exp->line, last_exp->line, exp->col, scope );
   }
   assert( rv < 4096 );
+  free_safe( scope, (strlen( scope ) + 1) );
 
   /* Create left and right expression names */
   sigl = generator_create_expr_name( exp->left );
@@ -2310,6 +2336,7 @@ static void generator_insert_mem_cov(
   char*        str;
   expression*  last_exp = expression_get_last_line_expr( exp );
   char         num[50];
+  char*        scope    = generator_get_relative_scope( funit );
 
   /* Figure out the size to store the number of dimensions */
   strcpy( num, "32" );
@@ -2325,10 +2352,10 @@ static void generator_insert_mem_cov(
     str_link*    tmp_tail = NULL;
 
     /* First, create the wire/register to hold the index */
-    if( net || (funit->type == FUNIT_MODULE) || !generator_is_reg_top_one_deep() ) {
+    if( scope[0] == '\0' ) {
       rv = snprintf( iname, 4096, " \\covered$%c%d_%d_%x$%s ", (net ? 'i' : 'I'), exp->line, last_exp->line, exp->col, exp->name );
     } else {
-      rv = snprintf( iname, 4096, " \\covered$%c%d_%d_%x$%s$%s ", (net ? 'i' : 'I'), exp->line, last_exp->line, exp->col, exp->name, funit->name );
+      rv = snprintf( iname, 4096, " \\covered$%c%d_%d_%x$%s$%s ", (net ? 'i' : 'I'), exp->line, last_exp->line, exp->col, exp->name, scope );
     }
     assert( rv < 4096 );
 
@@ -2367,10 +2394,10 @@ static void generator_insert_mem_cov(
     }
 
     /* Create name */
-    if( net || (funit->type == FUNIT_MODULE) || !generator_is_reg_top_one_deep() ) {
+    if( scope[0] == '\0' ) {
       rv = snprintf( name, 4096, " \\covered$%c%d_%d_%x$%s ", (net ? 'w' : 'W'), exp->line, last_exp->line, exp->col, exp->name );
     } else {
-      rv = snprintf( name, 4096, " \\covered$%c%d_%d_%x$%s$%s ", (net ? 'w' : 'W'), exp->line, last_exp->line, exp->col, exp->name, funit->name );
+      rv = snprintf( name, 4096, " \\covered$%c%d_%d_%x$%s$%s ", (net ? 'w' : 'W'), exp->line, last_exp->line, exp->col, exp->name, scope );
     }
     assert( rv < 4096 );
 
@@ -2395,10 +2422,10 @@ static void generator_insert_mem_cov(
   } else {
 
     /* Create name */
-    if( net || (funit->type == FUNIT_MODULE) || !generator_is_reg_top_one_deep() ) {
+    if( scope[0] == '\0' ) {
       rv = snprintf( name, 4096, " \\covered$%c%d_%d_%x$%s ", (net ? 'r' : 'R'), exp->line, last_exp->line, exp->col, exp->name );
     } else {
-      rv = snprintf( name, 4096, " \\covered$%c%d_%d_%x$%s$%s ", (net ? 'r' : 'R'), exp->line, last_exp->line, exp->col, exp->name, funit->name );
+      rv = snprintf( name, 4096, " \\covered$%c%d_%d_%x$%s$%s ", (net ? 'r' : 'R'), exp->line, last_exp->line, exp->col, exp->name, scope );
     }
     assert( rv < 4096 );
 
@@ -2449,6 +2476,7 @@ static void generator_insert_mem_cov(
   free_safe( idxstr, (strlen( idxstr ) + 1) );
   free_safe( value,  (strlen( value )  + 1) );
   free_safe( str,    (strlen( str )    + 1) );
+  free_safe( scope, (strlen( scope ) + 1) );
 
   PROFILE_END;
 
@@ -2720,6 +2748,10 @@ void generator_handle_event_trigger(
 
 /*
  $Log$
+ Revision 1.74  2009/01/14 14:57:33  phase1geo
+ Initial addition of the functional unit stack for inlined coverage code.
+ Checkpointing.
+
  Revision 1.73  2009/01/13 23:37:31  phase1geo
  Adding support for register insertion when generating inlined coverage code.
  Still have one more issue to resolve before generate blocks work.  Checkpointing.

@@ -656,6 +656,7 @@ module
       } else {
         db_find_and_set_curr_funit( $3, FUNIT_MODULE );
         generator_init_funit( db_get_curr_funit() );
+        generator_push_funit( db_get_curr_funit() );
       }
       free_safe( $3, (strlen( $3 ) + 1) );
     }
@@ -673,6 +674,7 @@ module
         db_end_module( @10.first_line );
       } else {
         generator_pop_reg_insert();
+        generator_pop_funit();
       }
     }
   | attribute_list_opt K_module IGNORE I_endmodule
@@ -2576,15 +2578,16 @@ generate_item
         unsigned int rv;
         func_unit*   funit = db_get_tfn_by_position( @1.first_line, @1.first_column );
         assert( funit != NULL );
-        generator_push_funit( funit );
         back = strdup_safe( funit->name );
         rest = strdup_safe( funit->name );
         scope_extract_back( funit->name, back, rest );
         rv = snprintf( str, 50, " : %s", back );
         assert( rv < 50 );
-        generator_prepend_to_work_code( str );
+        generator_add_to_hold_code( str );
         free_safe( back, (strlen( funit->name ) + 1) );
         free_safe( rest, (strlen( funit->name ) + 1) );
+        generator_push_funit( funit );
+        generator_push_reg_insert();
       }
     }
     generate_item_list_opt end_gen_block K_end
@@ -2599,6 +2602,8 @@ generate_item
         $$ = save_gi_tail->gi;
         gitem_link_remove( save_gi_tail->gi, &save_gi_head, &save_gi_tail );
       } else {
+        generator_pop_funit();
+        generator_pop_reg_insert();
         generator_flush_work_code;
         $$ = NULL;
       }
@@ -2643,6 +2648,7 @@ generate_item
         $$ = save_gi_tail->gi;
         gitem_link_remove( save_gi_tail->gi, &save_gi_head, &save_gi_tail );
       } else {
+        generator_pop_funit();
         generator_pop_reg_insert();
         generator_flush_work_code;
         $$ = NULL;
@@ -2730,6 +2736,7 @@ generate_item
         }
         generate_expr_mode--;
       } else {
+        generator_pop_funit();
         generator_pop_reg_insert();
         generator_flush_work_code;
         $$ = NULL;
@@ -3452,10 +3459,10 @@ module_item
             error_count++;
             ignore_mode++;
           }
+        } else {
+          generator_flush_work_code;
         }
         generate_top_mode--;
-      } else {
-        generator_flush_all;
       }
       free_safe( $6, (strlen( $6 ) + 1) );
     }
@@ -7523,13 +7530,13 @@ function_item_list
   : function_item
     {
       if( !parse_mode ) {
-        generator_flush_all;
+        generator_flush_work_code;
       }
     }
   | function_item_list function_item
     {
       if( !parse_mode ) {
-        generator_flush_all;
+        generator_flush_work_code;
       }
     }
   ;

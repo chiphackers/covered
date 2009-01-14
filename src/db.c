@@ -3046,7 +3046,6 @@ void db_assign_symbol(
       /* If the type is an x (temporary register) or a y (temporary wire), don't continue on */
       if( (type != 'x') && (type != 'X') && (type != 'i') && (type != 'I') && (type != 'Z') ) {
 
-        func_unit*  mod = funit_get_curr_module( curr_instance->funit );
         expression* exp;
 
         /* Handle line coverage */
@@ -3057,41 +3056,34 @@ void db_assign_symbol(
           int          col;
           unsigned int rv;
           char         scope[4096];
-          funit_link*  curr_tf;
           exp_link*    expl;
           expression*  last_exp;
+          funit_inst*  inst = curr_instance;
 
           /* Extract the line, first column and funit scope information from name */
           if( sscanf( (name + (index + 1)), "%d_%d_%x$%s", &fline, &lline, &col, scope ) == 4 ) {
 
-            /* Search for the matching functional unit */
-            curr_tf = mod->tf_head;
-            while( (curr_tf != NULL) && (strcmp( curr_tf->funit->name, scope ) != 0) ) {
-              curr_tf = curr_tf->next;
-            }
-            assert( curr_tf != NULL );
+            char tscope[4096];
 
-            /* Search the matching expression */
-            expl = curr_tf->funit->exp_head;
-            while( (expl != NULL) &&
-                   ((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) &&
-                   ((expl->exp->line != fline) || (expl->exp->col != col) || (last_exp->line != lline) || !ESUPPL_IS_ROOT( expl->exp->suppl ) || (expl->exp->op == EXP_OP_FORK)) ) {
-              expl = expl->next;
-            }
+            /* Get the relative instance that contains the expression */
+            rv   = snprintf( tscope, 4096, "%s.%s", curr_instance->name, scope );
+            assert( rv < 4096 );
+            inst = instance_find_scope( curr_instance, tscope, FALSE );
+            assert( inst != NULL );
 
           } else {
 
             rv = sscanf( (name + (index + 1)), "%d_%d_%x", &fline, &lline, &col );
             assert( rv == 3 );
 
-            /* Search the matching expression */
-            expl = mod->exp_head;
-            while( (expl != NULL) &&
-                   ((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) &&
-                   ((expl->exp->line != fline) || (expl->exp->col != col) || (last_exp->line != lline) || !ESUPPL_IS_ROOT( expl->exp->suppl ) || (expl->exp->op == EXP_OP_FORK)) ) {
-              expl = expl->next;
-            }
+          }
 
+          /* Search the matching expression */
+          expl = inst->funit->exp_head;
+          while( (expl != NULL) &&
+                 ((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) &&
+                 ((expl->exp->line != fline) || (expl->exp->col != col) || (last_exp->line != lline) || !ESUPPL_IS_ROOT( expl->exp->suppl ) || (expl->exp->op == EXP_OP_FORK)) ) {
+            expl = expl->next;
           }
 
           assert( expl != NULL );
@@ -3109,7 +3101,7 @@ void db_assign_symbol(
           assert( rv == 1 );
 
           /* Find the matching FSM table */
-          fsml = mod->fsm_head;
+          fsml = curr_instance->funit->fsm_head;
           while( (fsml != NULL) && (count != id ) ) {
             fsml = fsml->next;
             count++;
@@ -3127,40 +3119,33 @@ void db_assign_symbol(
           unsigned int rv;
           char         scope[4096];
           char         mname[4096];
-          funit_link*  curr_tf;
           exp_link*    expl;
           expression*  last_exp;
+          funit_inst*  inst = curr_instance;
 
           if( sscanf( (name + (index + 1)), "%d_%d_%x$%[^$]$%s", &fline, &lline, &col, mname, scope ) == 5 ) {
 
-            /* Search for the matching functional unit */
-            curr_tf = mod->tf_head;
-            while( (curr_tf != NULL) && (strcmp( curr_tf->funit->name, scope ) != 0) ) {
-              curr_tf = curr_tf->next;
-            }
-            assert( curr_tf != NULL );
+            char        tscope[4096];
 
-            /* Search the matching expression */
-            expl = curr_tf->funit->exp_head;
-            while( (expl != NULL) &&
-                   ((expl->exp->line != fline) || (expl->exp->col != col) ||
-                    (((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) && (last_exp->line != lline))) ) {
-              expl = expl->next;
-            }
+            /* Get the relative instance that contains the expression */
+            rv   = snprintf( tscope, 4096, "%s.%s", curr_instance->name, scope );
+            assert( rv < 4096 );
+            inst = instance_find_scope( curr_instance, tscope, FALSE );
+            assert( inst != NULL );
 
           } else {
 
             unsigned int rv = sscanf( (name + (index + 1)), "%d_%d_%x$%s", &fline, &lline, &col, mname );
             assert( rv == 4 );
 
-            /* Search the matching expression */
-            expl = mod->exp_head;
-            while( (expl != NULL) && 
-                   ((expl->exp->line != fline) || (expl->exp->col != col) ||
-                    (((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) && (last_exp->line != lline))) ) {
-              expl = expl->next;
-            }
+          }
 
+          /* Search the matching expression */
+          expl = inst->funit->exp_head;
+          while( (expl != NULL) && 
+                 ((expl->exp->line != fline) || (expl->exp->col != col) ||
+                  (((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) && (last_exp->line != lline))) ) {
+            expl = expl->next;
           }
 
           assert( expl != NULL );
@@ -3176,41 +3161,34 @@ void db_assign_symbol(
           int          col;
           unsigned int rv;
           char         scope[4096];
-          funit_link*  curr_tf;
           exp_link*    expl;
           expression*  last_exp;
+          funit_inst*  inst = curr_instance;
 
           /* Extract the line and column (and possibly instance) information */
           if( sscanf( (name + (index + 1)), "%d_%d_%x$%s", &fline, &lline, &col, scope ) == 4 ) {
 
-            /* Search for the matching functional unit */
-            curr_tf = mod->tf_head;
-            while( (curr_tf != NULL) && (strcmp( curr_tf->funit->name, scope ) != 0) ) {
-              curr_tf = curr_tf->next;
-            }
-            assert( curr_tf != NULL );
+            char tscope[4096];
 
-            /* Search the matching expression */
-            expl = curr_tf->funit->exp_head;
-            while( (expl != NULL) &&
-                   ((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) &&
-                   ((expl->exp->line != fline) || (expl->exp->col != col) || (last_exp->line != lline) || (expl->exp->op == EXP_OP_FORK)) ) {
-              expl = expl->next;
-            }
+            /* Get the relative instance that contains the expression */
+            rv   = snprintf( tscope, 4096, "%s.%s", curr_instance->name, scope );
+            assert( rv < 4096 );
+            inst = instance_find_scope( curr_instance, tscope, FALSE );
+            assert( inst != NULL );
 
           } else {
 
             rv = sscanf( (name + (index + 1)), "%d_%d_%x", &fline, &lline, &col );
             assert( rv == 3 );
           
-            /* Find the expression that matches the positional information */
-            expl = mod->exp_head;
-            while( (expl != NULL) &&
-                   ((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) &&
-                   ((expl->exp->line != fline) || (expl->exp->col != col) || (last_exp->line != lline) || (expl->exp->op == EXP_OP_FORK)) ) {
-              expl = expl->next;
-            }
+          }
 
+          /* Search the matching expression */
+          expl = inst->funit->exp_head;
+          while( (expl != NULL) &&
+                 ((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) &&
+                 ((expl->exp->line != fline) || (expl->exp->col != col) || (last_exp->line != lline) || (expl->exp->op == EXP_OP_FORK)) ) {
+            expl = expl->next;
           }
 
           assert( expl != NULL );
@@ -3404,6 +3382,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.378  2009/01/14 14:57:33  phase1geo
+ Initial addition of the functional unit stack for inlined coverage code.
+ Checkpointing.
+
  Revision 1.377  2009/01/13 07:07:04  phase1geo
  Applying bug fix for bug 2502095.  Also sync'ing in new generate8.9 and updating
  it for the development branch.

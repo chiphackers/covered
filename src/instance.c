@@ -270,8 +270,6 @@ funit_inst* instance_find_scope(
   /* First extract the front scope */
   scope_extract_front( scope, front, rest );
 
-  // printf( "front: %s, rest: %s, unnamed: %d\n", front, rest, funit_is_unnamed( root->funit ) );
-
   /* Skip this instance and move onto the children if we are an unnamed scope that does not contain signals */
   if( rm_unnamed && !db_is_unnamed_scope( front ) && funit_is_unnamed( root->funit ) ) {
     child = root->child_head;
@@ -1543,6 +1541,10 @@ void instance_dealloc(
 
 /*
  $Log$
+ Revision 1.122  2009/01/09 21:25:00  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.121  2009/01/05 06:21:22  phase1geo
  Fixing more regression bugs with inlined coverage regressions.  Checkpointing.
 

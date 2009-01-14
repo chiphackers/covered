@@ -11,6 +11,7 @@ generate
     begin : V
       initial begin
               U[0].x = 2'b0;
+              #(i);
               U[0].x = i;
       end
     end
