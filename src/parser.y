@@ -2517,8 +2517,6 @@ gen_if_body
     {
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
-          // db_gen_item_connect_true( $3, $2 );
-          // db_gen_item_connect_true( $7, $6 );
           $$.gitem1 = $2;
           $$.gitem2 = $6;
         }
@@ -2530,7 +2528,6 @@ gen_if_body
     {
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
-          // db_gen_item_connect_true( $3, $2 );
           $$.gitem1 = $2;
           $$.gitem2 = NULL;
         }
@@ -2579,6 +2576,7 @@ generate_item
         unsigned int rv;
         func_unit*   funit = db_get_tfn_by_position( @1.first_line, @1.first_column );
         assert( funit != NULL );
+        generator_push_funit( funit );
         back = strdup_safe( funit->name );
         rest = strdup_safe( funit->name );
         scope_extract_back( funit->name, back, rest );
@@ -2625,6 +2623,9 @@ generate_item
         }
         generate_expr_mode--;
       } else {
+        func_unit* funit = db_get_tfn_by_position( @4.first_line, @4.first_column );
+        assert( funit != NULL );
+        generator_push_funit( funit );
         generator_flush_work_code;
         generator_push_reg_insert();
       }
@@ -2676,6 +2677,9 @@ generate_item
         }
         generate_expr_mode--;
       } else {
+        func_unit* funit = db_get_tfn_by_position( @13.first_line, @13.first_column );
+        assert( funit != NULL );
+        generator_push_funit( funit );
         generator_flush_work_code;
         generator_push_reg_insert();
       }

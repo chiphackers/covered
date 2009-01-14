@@ -76,6 +76,11 @@ struct reg_insert_s {
 
 
 /*!
+ Pointer to functional unit stack.
+*/
+funit_link* funit_top = NULL;
+
+/*!
  Pointer to the current output file.
 */
 FILE* curr_ofile = NULL;
@@ -391,8 +396,6 @@ void generator_push_reg_insert() { PROFILE(GENERATOR_PUSH_REG_INSERT);
   /* Point the register stack top to the newly created register insert structure */
   reg_top = ri;
 
-  printf( "PUSHING register insert %p\n", ri );
-
   PROFILE_END;
 
 }
@@ -403,8 +406,6 @@ void generator_push_reg_insert() { PROFILE(GENERATOR_PUSH_REG_INSERT);
 void generator_pop_reg_insert() { PROFILE(GENERATOR_POP_REG_INSERT);
 
   reg_insert* ri;
-
-  printf( "POPPING register insert %p\n", reg_top );
 
   /* Save pointer to the top reg_insert structure and adjust reg_top */
   ri      = reg_top;
@@ -459,11 +460,48 @@ static void generator_insert_reg(
     }
   }
  
-//  generator_display();
+  PROFILE_END;
+
+}
+
+/*!
+ Pushes the given functional unit to the top of the functional unit stack.
+*/
+void generator_push_funit(
+  func_unit* funit  /*!< Pointer to the functional unit to push onto the stack */
+) { PROFILE(GENERATOR_PUSH_FUNIT);
+
+  funit_link* tmp_head = NULL;
+  funit_link* tmp_tail = NULL;
+
+  /* Create a functional unit link */
+  funit_link_add( funit, &tmp_head, &tmp_tail );
+
+  /* Set the new functional unit link to the top of the stack */
+  tmp_head->next = funit_top;
+  funit_top      = tmp_head;
 
   PROFILE_END;
 
 }
+
+/*!
+ Pops the top of the functional unit stack and deallocates it.
+*/
+void generator_pop_funit() { PROFILE(GENERATOR_POP_FUNIT);
+
+  funit_link* tmp = funit_top;
+
+  assert( tmp != NULL );
+
+  funit_top = funit_top->next;
+
+  free_safe( tmp, sizeof( funit_link ) );
+
+  PROFILE_END;
+
+}
+  
 
 /*!
  \return Returns TRUE if the specified expression is one that requires a substitution.
@@ -818,6 +856,9 @@ void generator_output() { PROFILE(GENERATOR_OUTPUT);
 void generator_init_funit(
   func_unit* funit  /*!< Pointer to current functional unit */
 ) { PROFILE(GENERATOR_INIT_FUNIT);
+
+  /* Add the functional unit to the top of the stack */
+  generator_push_funit( funit );
 
   /* Deallocate the functional unit iterator */
   func_iter_dealloc( &fiter );
@@ -2679,6 +2720,10 @@ void generator_handle_event_trigger(
 
 /*
  $Log$
+ Revision 1.73  2009/01/13 23:37:31  phase1geo
+ Adding support for register insertion when generating inlined coverage code.
+ Still have one more issue to resolve before generate blocks work.  Checkpointing.
+
  Revision 1.72  2009/01/11 19:59:35  phase1geo
  More fixes for support of generate statements.  Getting close but not quite
  there yet.  Checkpointing.

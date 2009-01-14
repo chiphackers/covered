@@ -924,11 +924,8 @@ func_unit* db_get_tfn_by_position(
   funit_link* funitl = NULL;
   func_unit*  funit;
 
-  printf( "In db_get_tfn_by_position, first_line: %u, first_column: %u\n", first_line, first_column );
-
   funitl = curr_funit->tf_head;
   while( (funitl != NULL) &&
-         printf( "funitl name: %s, start_line: %u, first_line: %u\n", funitl->funit->name, funitl->funit->start_line, funitl->funit->start_col ) &&
          ((funitl->funit->start_line != first_line) || (funitl->funit->start_col != first_column)) ) {
     funitl = funitl->next;
   }
@@ -3407,6 +3404,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.377  2009/01/13 07:07:04  phase1geo
+ Applying bug fix for bug 2502095.  Also sync'ing in new generate8.9 and updating
+ it for the development branch.
+
  Revision 1.376  2009/01/11 19:59:35  phase1geo
  More fixes for support of generate statements.  Getting close but not quite
  there yet.  Checkpointing.

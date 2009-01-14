@@ -60,6 +60,14 @@ void generator_push_reg_insert();
 /*! \brief Pops the head of the register insertion stack. */
 void generator_pop_reg_insert();
 
+/*! \brief Pushes the given functional unit onto the functional unit stack. */
+void generator_push_funit(
+  func_unit* funit
+);
+
+/*! \brief Pops the top of the functional unit stack and deallocates it. */
+void generator_pop_funit();
+
 /*! \brief Returns TRUE if the current expression will be calculated via an intermediate assignment. */
 bool generator_expr_name_needed(
   expression* exp
@@ -190,6 +198,10 @@ void generator_handle_event_trigger(
 
 /*
  $Log$
+ Revision 1.30  2009/01/13 23:37:31  phase1geo
+ Adding support for register insertion when generating inlined coverage code.
+ Still have one more issue to resolve before generate blocks work.  Checkpointing.
+
  Revision 1.29  2009/01/08 23:44:08  phase1geo
  Updating VCS regressions.  Fixing issues in regards to PDEC, PINC, IINC and IDEC
  operations.  Checkpointing.
