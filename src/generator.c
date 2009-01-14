@@ -28,6 +28,7 @@
 #include "generator.h"
 #include "gen_item.h"
 #include "link.h"
+#include "ovl.h"
 #include "param.h"
 #include "profiler.h"
 #include "util.h"
@@ -154,6 +155,16 @@ bool generator_fsm = TRUE;
  Specifies that we should perform memory coverage code insertion.
 */
 bool generator_mem = TRUE;
+
+/*!
+ Specifies that we should perform assertion coverage code insertion.
+*/
+bool generator_assert = TRUE;
+
+/*!
+ Specifies that we should handle the current functional unit as an assertion.
+*/
+bool handle_funit_as_assert = FALSE;
 
 /*!
  Iterator for current functional unit.
@@ -776,6 +787,11 @@ static void generator_output_funits(
     rv = snprintf( filename, 4096, "covered/verilog/%s", get_basename( head->filename ) );
     assert( rv < 4096 );
 
+    /* Output the name to standard output */
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "Generating inlined coverage file \"%s\"", filename );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+
     /* Populate the modlist list */
     funitl = head->head;
     while( funitl != NULL ) {
@@ -893,6 +909,9 @@ void generator_init_funit(
 
   /* Reset the replacement string information */
   generator_clear_replace_ptrs();
+
+  /* Calculate if we need to handle this functional unit as an assertion or not */
+  handle_funit_as_assert = generator_assert && ovl_is_assertion_module( funit );
 
   PROFILE_END;
 
@@ -1208,16 +1227,16 @@ statement* generator_find_statement(
   unsigned int first_column  /*!< First column of statement to find */
 ) { PROFILE(GENERATOR_FIND_STATEMENT);
 
-//  printf( "In generator_find_statement, line: %d, column: %d\n", first_line, first_column );
+  printf( "In generator_find_statement, line: %d, column: %d\n", first_line, first_column );
 
   if( (curr_stmt == NULL) || (curr_stmt->exp->line < first_line) ||
       ((curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) < first_column)) ) {
 
-//    func_iter_display( &fiter );
+    func_iter_display( &fiter );
 
     /* Attempt to find the expression with the given position */
     while( ((curr_stmt = func_iter_get_next_statement( &fiter )) != NULL) &&
-//           printf( "  statement %s %d\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff) ) &&
+           printf( "  statement %s %d\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff) ) &&
            ((curr_stmt->exp->line < first_line) || 
             ((curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) < first_column)) ||
             (curr_stmt->exp->op == EXP_OP_FORK)) );
@@ -1232,11 +1251,11 @@ statement* generator_find_statement(
 
   }
 
-//  if( (curr_stmt != NULL) && (curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) == first_column) && (curr_stmt->exp->op != EXP_OP_FORK) ) {
-//    printf( "  FOUND (%s %x)!\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff) );
-//  } else {
-//    printf( "  NOT FOUND!\n" );
-//  }
+  if( (curr_stmt != NULL) && (curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) == first_column) && (curr_stmt->exp->op != EXP_OP_FORK) ) {
+    printf( "  FOUND (%s %x)!\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff) );
+  } else {
+    printf( "  NOT FOUND!\n" );
+  }
 
   PROFILE_END;
 
@@ -1290,7 +1309,7 @@ void generator_insert_line_cov_with_stmt(
   bool       semicolon  /*!< Specifies if a semicolon (TRUE) or a comma (FALSE) should be appended to the created line */
 ) { PROFILE(GENERATOR_INSERT_LINE_COV_WITH_STMT);
 
-  if( generator_line && (stmt != NULL) ) {
+  if( (stmt != NULL) && ((generator_line && !handle_funit_as_assert) || (handle_funit_as_assert && ovl_is_coverage_point( stmt->exp ))) ) {
 
     expression*  last_exp = expression_get_last_line_expr( stmt->exp );
     char         str[4096];
@@ -1345,7 +1364,8 @@ statement* generator_insert_line_cov(
 
   statement* stmt = NULL;
 
-  if( generator_line && ((stmt = generator_find_statement( first_line, first_column )) != NULL) ) {
+  if( ((stmt = generator_find_statement( first_line, first_column )) != NULL) &&
+      ((generator_line && !handle_funit_as_assert) || (handle_funit_as_assert && ovl_is_coverage_point( stmt->exp ))) ) {
 
     generator_insert_line_cov_with_stmt( stmt, semicolon );
 
@@ -2524,7 +2544,7 @@ statement* generator_insert_comb_cov(
   statement* stmt = NULL;
 
   /* Insert combinational logic code coverage if it is specified on the command-line to do so and the statement exists */
-  if( (generator_comb || generator_mem) && ((stmt = generator_find_statement( first_line, first_column )) != NULL) ) {
+  if( (generator_comb || generator_mem) && !handle_funit_as_assert && ((stmt = generator_find_statement( first_line, first_column )) != NULL) ) {
 
     /* Generate combinational coverage */
     if( generator_comb ) {
@@ -2568,7 +2588,7 @@ statement* generator_insert_comb_cov_from_stmt_stack() { PROFILE(GENERATOR_INSER
 
   statement* stmt = NULL;
 
-  if( generator_comb ) {
+  if( generator_comb && !handle_funit_as_assert ) {
 
     stmt_loop_link* sll;
     expression*     exp;
@@ -2603,7 +2623,7 @@ void generator_insert_comb_cov_with_stmt(
   bool       reg_needed  /*!< If TRUE, instantiate necessary registers */
 ) { PROFILE(GENERATOR_INSERT_COMB_COV_WITH_STMT);
 
-  if( generator_comb && (stmt != NULL) ) {
+  if( generator_comb && !handle_funit_as_assert && (stmt != NULL) ) {
 
     expression* exp = use_right ? stmt->exp->right : stmt->exp;
 
@@ -2627,7 +2647,7 @@ void generator_insert_case_comb_cov(
   statement* stmt;
 
   /* Insert combinational logic code coverage if it is specified on the command-line to do so and the statement exists */
-  if( generator_comb && ((stmt = generator_find_case_statement( first_line, first_column )) != NULL) ) {
+  if( generator_comb && !handle_funit_as_assert && ((stmt = generator_find_case_statement( first_line, first_column )) != NULL) ) {
 
     generator_insert_comb_cov_helper( stmt->exp->left, stmt->funit, stmt->exp->left->op, 0, FALSE, TRUE, TRUE );
 
@@ -2659,7 +2679,7 @@ void generator_insert_case_comb_cov(
 */
 void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
 
-  if( generator_fsm ) {
+  if( generator_fsm && !handle_funit_as_assert ) {
 
     fsm_link*    fsml = curr_funit->fsm_head;
     unsigned int id   = 1;
@@ -2710,7 +2730,7 @@ void generator_handle_event_type(
   unsigned int first_column  /*!< First column of "event" type specifier */
 ) { PROFILE(GENERATOR_HANDLE_EVENT_TYPE);
 
-  if( generator_comb ) {
+  if( generator_comb && !handle_funit_as_assert ) {
     generator_replace( "reg", first_line, first_column, first_line, (first_column + 4) );
   }
 
@@ -2731,7 +2751,7 @@ void generator_handle_event_trigger(
   unsigned int last_column    /*!< Last column which contains the trigger identifier (not including the semicolon) */
 ) { PROFILE(GENERATOR_HANDLE_EVENT_TRIGGER);
 
-  if( generator_comb ) {
+  if( generator_comb && !handle_funit_as_assert ) {
 
     char         str[4096];
     unsigned int rv = snprintf( str, 4096, "%s = (%s === 1'bx) ? 1'b0 : ~%s", identifier, identifier, identifier ); 
@@ -2748,6 +2768,9 @@ void generator_handle_event_trigger(
 
 /*
  $Log$
+ Revision 1.75  2009/01/14 21:01:35  phase1geo
+ Fixing last remaining issues with generate blocks.  Checkpointing.
+
  Revision 1.74  2009/01/14 14:57:33  phase1geo
  Initial addition of the functional unit stack for inlined coverage code.
  Checkpointing.
