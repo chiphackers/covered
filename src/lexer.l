@@ -165,7 +165,8 @@ WSPACE [ \t\b\f]+
   /* Newline character - blank line -- we ignore these */
 \n {
   if( !parse_mode ) generator_add_orig_to_work_code( yytext, yylloc.first_line, yylloc.first_column );
-  yylloc.first_line += 1;
+  yylloc.first_line++;
+  yylloc.ppline++;
   yylloc.last_line += 1;
   yylloc.last_column = 0;
  }
@@ -204,7 +205,8 @@ WSPACE [ \t\b\f]+
     generator_add_orig_to_work_code( yytext, yylloc.first_line, yylloc.first_column );
   }
   BEGIN( state_enter );
-  yylloc.first_line += 1;
+  yylloc.first_line++;
+  yylloc.ppline++;
   yylloc.last_line += 1;
   yylloc.last_column = 0;
  }
@@ -222,7 +224,8 @@ WSPACE [ \t\b\f]+
   yymore();
  }
 <CCOMMENT>\n   {
-  yylloc.first_line += 1;
+  yylloc.first_line++;
+  yylloc.ppline++;
   yylloc.last_line += 1;
   yylloc.last_column = 0;
   yymore();
@@ -575,7 +578,8 @@ WSPACE [ \t\b\f]+
   if( !parse_mode ) generator_add_orig_to_work_code( yytext, yylloc.first_line, yylloc.first_column );
   yylloc.last_column = 0;
   BEGIN( state_enter );
-  yylloc.first_line += 1;
+  yylloc.first_line++;
+  yylloc.ppline++;
   yylloc.last_line += 1;
   return 0;
  }
@@ -1096,7 +1100,8 @@ WSPACE [ \t\b\f]+
   } else {
     generator_add_orig_to_work_code( yytext, yylloc.first_line, yylloc.first_column );
   }
-  yylloc.first_line += 1;
+  yylloc.first_line++;
+  yylloc.ppline++;
   yylloc.last_line += 1;
   BEGIN( state_enter );
   yylloc.last_column = 0;
@@ -1555,6 +1560,7 @@ static int yywrap() { PROFILE(LEXER_YYWRAP);
     yyrestart( yyin );
   
     yylloc.first_line  = 1;
+    yylloc.ppline      = 1;
     yylloc.last_line   = 1;
     yylloc.last_column = 0;
     yylloc.text        = fname;
@@ -1642,6 +1648,7 @@ void reset_lexer(
 
   yylloc.text        = curr->str;
   yylloc.first_line  = 1;
+  yylloc.ppline      = 1;
   yylloc.last_line   = 1;
   yylloc.last_column = 0;
   
@@ -1711,6 +1718,7 @@ void reset_lexer_for_generation(
 
   yylloc.text        = in_fname;
   yylloc.first_line  = 1;
+  yylloc.ppline      = 1;
   yylloc.last_line   = 1;
   yylloc.last_column = 0;
   

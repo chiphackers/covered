@@ -2367,7 +2367,7 @@ statement* db_parallelize_statement(
     Try {
 
       /* Create FORK statement and add the expression */
-      stmt = db_create_statement( exp );
+      stmt = db_create_statement( exp, stmt->ppline );
 
     } Catch_anonymous {
       expression_dealloc( exp, FALSE );
@@ -2395,7 +2395,8 @@ statement* db_parallelize_statement(
  module's statement list.
 */
 statement* db_create_statement(
-  expression* exp  /*!< Pointer to associated "root" expression */
+  expression*  exp,    /*!< Pointer to associated "root" expression */
+  unsigned int ppline  /*!< Preprocessed file line */
 ) { PROFILE(DB_CREATE_STATEMENT);
 
   statement* stmt = NULL;  /* Pointer to newly created statement */
@@ -2412,7 +2413,7 @@ statement* db_create_statement(
 #endif
 
     /* Create the given statement */
-    stmt = statement_create( exp, curr_funit );
+    stmt = statement_create( exp, curr_funit, ppline );
 
     /* If we are in the exclude mode, exclude this statement */
     if( exclude_mode > 0 ) {
@@ -3382,6 +3383,9 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.379  2009/01/14 21:01:34  phase1geo
+ Fixing last remaining issues with generate blocks.  Checkpointing.
+
  Revision 1.378  2009/01/14 14:57:33  phase1geo
  Initial addition of the functional unit stack for inlined coverage code.
  Checkpointing.

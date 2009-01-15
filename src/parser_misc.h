@@ -31,11 +31,12 @@
  YYLTYPE compels the lexor to use this type and not something other.
 */
 struct vlltype {
-  unsigned first_line;
-  unsigned first_column;
-  unsigned last_line;
-  unsigned last_column;
-  char*    text;
+  unsigned int first_line;
+  unsigned int first_column;
+  unsigned int last_line;
+  unsigned int last_column;
+  char*        text;
+  unsigned int ppline;
 };
 
 #define YYLTYPE struct vlltype
@@ -78,6 +79,10 @@ bool parser_check_generation( unsigned int gen );
 
 /*
  $Log$
+ Revision 1.17  2009/01/09 21:25:01  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.16  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

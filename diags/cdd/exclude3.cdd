@@ -13,22 +13,22 @@
 1 foo_a 2 5 60005 1 0 0 0 1 17 1 1 0 0 0 0
 1 foo_b 3 6 70005 1 0 0 0 1 17 0 1 0 1 0 0
 1 foo_d 4 7 1070005 1 0 0 0 1 17 0 1 0 0 0 0
-4 5 f 5 5
-4 6 1 0 0
+4 5 f 5 5 9
+4 6 1 0 0 15
 3 1 foo_module.foo_named_block "main.bar.foo_named_block" 0 ./lib/foo_module.v 15 17 1
 2 7 16 9000c 1 0 21008 0 0 1 16 1 0
 2 8 16 10005 0 1 1410 0 0 1 1 foo_d
 2 9 16 1000c 1 37 1a 7 8
-4 9 11 0 0
+4 9 11 0 0 16
 3 2 foo_module.foo_func "main.bar.foo_func" 0 ./lib/foo_module.v 19 24 1
 2 10 21 20006 1 3d 5802 0 0 1 18 0 1 0 0 0 0 u$2
 1 foo_func 5 19 1090009 1 0 0 0 1 17 1 1 0 0 0 0
 1 a 6 20 1000008 1 0 0 0 1 17 1 1 0 0 0 0
-4 10 11 0 0
+4 10 11 0 0 21
 3 1 foo_module.foo_func.u$2 "main.bar.foo_func.u$2" 0 ./lib/foo_module.v 21 23 1
 2 11 22 100010 1 1 1804 0 0 1 1 a
 2 12 22 f000f 1 1b 1808 11 0 1 18 0 1 0 1 0 0
 2 13 22 4000b 0 1 1c10 0 0 1 1 foo_func
 2 14 22 40010 1 37 81a 12 13
-4 14 11 0 0
+4 14 11 0 0 22
 3 1 main.u$0 "main.u$0" 0 exclude3.v 5 12 1

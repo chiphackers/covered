@@ -98,8 +98,8 @@ static void func_iter_sort(
 
     i = 0;
     while( (i < (fi->si_num - 1)) &&
-           ((tmp->curr->stmt->exp->line > fi->sis[i+1]->curr->stmt->exp->line) ||
-            ((tmp->curr->stmt->exp->line == fi->sis[i+1]->curr->stmt->exp->line) &&
+           ((tmp->curr->stmt->ppline > fi->sis[i+1]->curr->stmt->ppline) ||
+            ((tmp->curr->stmt->ppline == fi->sis[i+1]->curr->stmt->ppline) &&
              ((tmp->curr->stmt->exp->col & 0xffff) > (fi->sis[i+1]->curr->stmt->exp->col & 0xffff)))) ) {
       fi->sis[i] = fi->sis[i+1];
       i++;
@@ -422,6 +422,10 @@ void func_iter_dealloc(
 
 /*
  $Log$
+ Revision 1.23  2009/01/11 19:59:35  phase1geo
+ More fixes for support of generate statements.  Getting close but not quite
+ there yet.  Checkpointing.
+
  Revision 1.22  2009/01/10 00:24:10  phase1geo
  More work on support for generate blocks (the new changes don't quite work yet).
  Checkpointing.

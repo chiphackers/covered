@@ -218,7 +218,7 @@ static expression* fsm_arg_parse_state(
 
   /* Create statement for top-level expression, this statement will work like a continuous assignment */
   if( !error ) {
-    stmt = statement_create( expl, NULL );
+    stmt = statement_create( expl, NULL, 0 );
     stmt->suppl.part.head       = 1;
     stmt->suppl.part.stop_true  = 1;
     stmt->suppl.part.stop_false = 1;
@@ -727,6 +727,10 @@ void fsm_arg_parse_attr(
 
 /*
  $Log$
+ Revision 1.60  2009/01/09 21:25:00  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.59  2008/12/24 21:19:01  phase1geo
  Initial work at getting FSM coverage put in (this looks to be working correctly
  to this point).  Updated regressions per fixes.  Checkpointing.

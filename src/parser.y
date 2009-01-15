@@ -207,6 +207,7 @@ int yydebug = 1;
           (Current).last_line    = YYRHSLOC(Rhs, N).last_line;          \
           (Current).last_column  = YYRHSLOC(Rhs, N).last_column;        \
           (Current).text         = YYRHSLOC(Rhs, 1).text;               \
+          (Current).ppline       = YYRHSLOC(Rhs, 1).ppline;             \
         }                                                               \
       else                                                              \
         {                                                               \
@@ -215,6 +216,7 @@ int yydebug = 1;
           (Current).first_column = (Current).last_column =              \
             YYRHSLOC(Rhs, 0).last_column;                               \
           (Current).text         = YYRHSLOC(Rhs, 0).text;               \
+          (Current).ppline       = YYRHSLOC(Rhs, 0).ppline;             \
         }                                                               \
     while (0)
 
@@ -576,7 +578,7 @@ description
         curr_handled  = TRUE;
         parser_implicitly_set_curr_range( 0, 0, TRUE );
       } else {
-        generator_handle_event_type( @1.first_line, @1.first_column );
+        generator_handle_event_type( @1.ppline, @1.first_column );
       }
     }
     list_of_variables ';'
@@ -595,7 +597,7 @@ description
     }
     task_item_list_opt statement_or_null
     {
-      parser_create_task_body( $7, @7.first_line, @7.first_column, @7.last_column );
+      parser_create_task_body( $7, @7.first_line, @7.first_column, @7.last_column, @7.ppline );
     }
     K_endtask
     {
@@ -3145,7 +3147,7 @@ module_item
         curr_handled  = TRUE;
         parser_implicitly_set_curr_range( 0, 0, TRUE );
       } else {
-        generator_handle_event_type( @2.first_line, @2.first_column );
+        generator_handle_event_type( @2.ppline, @2.first_column );
       }
     }
     list_of_variables ';'
@@ -3219,8 +3221,8 @@ module_item
       } else {
         generator_add_cov_to_work_code( " begin" );
         generator_flush_work_code;
-        generator_insert_comb_cov( @2.first_line, @2.first_column, FALSE, FALSE, FALSE );
-        generator_insert_line_cov( @2.first_line, @2.last_line, @2.first_column, (@2.last_column - 1), TRUE );
+        generator_insert_comb_cov( @2.ppline, @2.first_column, FALSE, FALSE, FALSE );
+        generator_insert_line_cov( @2.ppline, ((@2.last_line - @2.first_line) + @2.ppline), @2.first_column, (@2.last_column - 1), TRUE );
       }
     }
     statement
@@ -3240,7 +3242,7 @@ module_item
               } Catch_anonymous {
                 error_count++;
               }
-              stmt = db_create_statement( slist );
+              stmt = db_create_statement( slist, @2.ppline );
               if( !db_statement_connect( stmt, $4 ) ) {
                 db_remove_statement( stmt );
                 db_remove_statement( $4 );
@@ -3272,8 +3274,8 @@ module_item
       } else {
         generator_add_cov_to_work_code( " begin" );
         generator_flush_work_code;
-        generator_insert_comb_cov( @2.first_line, @2.first_column, FALSE, FALSE, FALSE );
-        generator_insert_line_cov( @2.first_line, @2.last_line, @2.first_column, (@2.last_column - 1), TRUE );
+        generator_insert_comb_cov( @2.ppline, @2.first_column, FALSE, FALSE, FALSE );
+        generator_insert_line_cov( @2.ppline, ((@2.last_line - @2.first_line) + @2.ppline), @2.first_column, (@2.last_column - 1), TRUE );
       }
     }
     statement
@@ -3293,7 +3295,7 @@ module_item
               } Catch_anonymous {
                 error_count++;
               }
-              stmt  = db_create_statement( slist );
+              stmt  = db_create_statement( slist, @2.ppline );
               if( !db_statement_connect( stmt, $4 ) ) {
                 db_remove_statement( stmt );
                 db_remove_statement( $4 );
@@ -3325,8 +3327,8 @@ module_item
       } else {
         generator_add_cov_to_work_code( " begin" );
         generator_flush_work_code;
-        generator_insert_comb_cov( @2.first_line, @2.first_column, FALSE, FALSE, FALSE );
-        generator_insert_line_cov( @2.first_line, @2.last_line, @2.first_column, (@2.last_column - 1), TRUE );
+        generator_insert_comb_cov( @2.ppline, @2.first_column, FALSE, FALSE, FALSE );
+        generator_insert_line_cov( @2.ppline, ((@2.last_line - @2.first_line) + @2.ppline), @2.first_column, (@2.last_column - 1), TRUE );
       }
     }
     statement
@@ -3416,7 +3418,7 @@ module_item
         statement* stmt = $8;
         if( ignore_mode == 0 ) {
           if( stmt == NULL ) {
-            stmt = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, @8.first_line, @8.first_column, (@8.last_column - 1), NULL ) );
+            stmt = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, @8.first_line, @8.first_column, (@8.last_column - 1), NULL ), @8.ppline );
           }
           stmt->suppl.part.head      = 1;
           stmt->suppl.part.is_called = 1;
@@ -3664,12 +3666,12 @@ for_condition
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL) ) {
           $1->suppl.part.for_cntrl = 2;
-          $$ = db_create_statement( $1 );
+          $$ = db_create_statement( $1, @1.ppline );
         } else {
           $$ = NULL;
         }
       } else {
-        $$ = generator_insert_line_cov( @1.first_line, @1.last_line, @1.first_column, (@1.last_column - 1), TRUE );
+        $$ = generator_insert_line_cov( @1.ppline, ((@1.last_line - @1.first_line) + @1.ppline), @1.first_column, (@1.last_column - 1), TRUE );
       }
     }
   ;
@@ -3689,7 +3691,7 @@ data_type
         curr_handled  = TRUE;
         parser_implicitly_set_curr_range( 0, 0, TRUE );
       } else {
-        generator_handle_event_type( @1.first_line, @1.first_column );
+        generator_handle_event_type( @1.ppline, @1.first_column );
       }
     }
   ;
@@ -3839,14 +3841,14 @@ expression_assignment_list
           } Catch_anonymous {
             error_count++;
           }
-          stmt = db_create_statement( tmp );
+          stmt = db_create_statement( tmp, @2.ppline );
           $$ = stmt;
         } else {
           expression_dealloc( $4, FALSE );
           $$ = NULL;
         }
       } else {
-        generator_insert_line_cov( @2.first_line, @4.last_line, @2.first_column, (@4.last_column - 1), TRUE );
+        generator_insert_line_cov( @2.ppline, ((@4.last_line - @2.first_line) + @2.ppline), @2.first_column, (@4.last_column - 1), TRUE );
         $$ = NULL;
       }
       free_safe( $2, (strlen( $2 ) + 1) );
@@ -3873,7 +3875,7 @@ expression_assignment_list
           } Catch_anonymous {
             error_count++;
           }
-          stmt = db_create_statement( tmp );
+          stmt = db_create_statement( tmp, @4.ppline );
           if( !db_statement_connect( $1, stmt ) ) {
             db_remove_statement( stmt );
           }
@@ -3882,7 +3884,7 @@ expression_assignment_list
         }
         $$ = $1;
       } else {
-        generator_insert_line_cov( @4.first_line, @6.last_line, @4.first_column, (@6.last_column - 1), TRUE );
+        generator_insert_line_cov( @4.ppline, ((@6.last_line - @4.first_line) + @4.ppline), @4.first_column, (@6.last_column - 1), TRUE );
         $$ = NULL;
       }
       free_safe( $4, (strlen( $4 ) + 1) );
@@ -3897,7 +3899,7 @@ passign
           Try {
             expression* tmp = db_create_expression( $3, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
             tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
-            $$ = db_create_statement( tmp );
+            $$ = db_create_statement( tmp, @1.ppline );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -3909,10 +3911,10 @@ passign
         }
       } else {
         if( for_mode == 0 ) {
-          generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, TRUE, FALSE );
+          generator_insert_comb_cov( @1.ppline, @1.first_column, FALSE, TRUE, FALSE );
           $$ = NULL;
         } else {
-          $$ = generator_find_statement( @1.first_line, @1.first_column );
+          $$ = generator_find_statement( @1.ppline, @1.first_column );
         }
       }
     }
@@ -3933,7 +3935,7 @@ passign
             } Catch_anonymous {
               error_count++;
             }
-            $$ = db_create_statement( tmp );
+            $$ = db_create_statement( tmp, @1.ppline );
           }
         } else {
           expression_dealloc( $1, FALSE );
@@ -3942,10 +3944,10 @@ passign
         }
       } else {
         if( for_mode == 0 ) {
-          generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
+          generator_insert_comb_cov( @1.ppline, @1.first_column, FALSE, FALSE, FALSE );
           $$ = NULL;
         } else {
-          $$ = generator_find_statement( @1.first_line, @1.first_column );
+          $$ = generator_find_statement( @1.ppline, @1.first_column );
         }
       }
     }
@@ -3966,7 +3968,7 @@ passign
             } Catch_anonymous {
               error_count++;
             }
-            $$ = db_create_statement( tmp );
+            $$ = db_create_statement( tmp, @1.ppline );
           }
         } else {
           expression_dealloc( $1, FALSE );
@@ -3975,10 +3977,10 @@ passign
         }
       } else {
         if( for_mode == 0 ) {
-          generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
+          generator_insert_comb_cov( @1.ppline, @1.first_column, FALSE, FALSE, FALSE );
           $$ = NULL;
         } else {
-          $$ = generator_find_statement( @1.first_line, @1.first_column );
+          $$ = generator_find_statement( @1.ppline, @1.first_column );
         }
       }
     }
@@ -3999,7 +4001,7 @@ passign
             } Catch_anonymous {
               error_count++;
             }
-            $$ = db_create_statement( tmp );
+            $$ = db_create_statement( tmp, @1.ppline );
           }
         } else {
           expression_dealloc( $1, FALSE );
@@ -4008,10 +4010,10 @@ passign
         }
       } else {
         if( for_mode == 0 ) {
-          generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
+          generator_insert_comb_cov( @1.ppline, @1.first_column, FALSE, FALSE, FALSE );
           $$ = NULL;
         } else {
-          $$ = generator_find_statement( @1.first_line, @1.first_column );
+          $$ = generator_find_statement( @1.ppline, @1.first_column );
         }
       }
     }
@@ -4032,7 +4034,7 @@ passign
             } Catch_anonymous {
               error_count++;
             }
-            $$ = db_create_statement( tmp );
+            $$ = db_create_statement( tmp, @1.ppline );
           }
         } else {
           expression_dealloc( $1, FALSE );
@@ -4041,10 +4043,10 @@ passign
         }
       } else {
         if( for_mode == 0 ) {
-          generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
+          generator_insert_comb_cov( @1.ppline, @1.first_column, FALSE, FALSE, FALSE );
           $$ = NULL;
         } else {
-          $$ = generator_find_statement( @1.first_line, @1.first_column );
+          $$ = generator_find_statement( @1.ppline, @1.first_column );
         }
       }
     }
@@ -4065,7 +4067,7 @@ passign
             } Catch_anonymous {
               error_count++;
             }
-            $$ = db_create_statement( tmp );
+            $$ = db_create_statement( tmp, @1.ppline );
           }
         } else {
           expression_dealloc( $1, FALSE );
@@ -4074,10 +4076,10 @@ passign
         }
       } else {
         if( for_mode == 0 ) {
-          generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
+          generator_insert_comb_cov( @1.ppline, @1.first_column, FALSE, FALSE, FALSE );
           $$ = NULL;
         } else {
-          $$ = generator_find_statement( @1.first_line, @1.first_column );
+          $$ = generator_find_statement( @1.ppline, @1.first_column );
         }
       }
     }
@@ -4098,7 +4100,7 @@ passign
             } Catch_anonymous {
               error_count++;
             }
-            $$ = db_create_statement( tmp );
+            $$ = db_create_statement( tmp, @1.ppline );
           }
         } else {
           expression_dealloc( $1, FALSE );
@@ -4107,10 +4109,10 @@ passign
         }
       } else {
         if( for_mode == 0 ) {
-          generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
+          generator_insert_comb_cov( @1.ppline, @1.first_column, FALSE, FALSE, FALSE );
           $$ = NULL;
         } else {
-          $$ = generator_find_statement( @1.first_line, @1.first_column );
+          $$ = generator_find_statement( @1.ppline, @1.first_column );
         }
       }
     }
@@ -4131,7 +4133,7 @@ passign
             } Catch_anonymous {
               error_count++;
             }
-            $$ = db_create_statement( tmp );
+            $$ = db_create_statement( tmp, @1.ppline );
           }
         } else {
           expression_dealloc( $1, FALSE );
@@ -4140,10 +4142,10 @@ passign
         }
       } else {
         if( for_mode == 0 ) {
-          generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
+          generator_insert_comb_cov( @1.ppline, @1.first_column, FALSE, FALSE, FALSE );
           $$ = NULL;
         } else {
-          $$ = generator_find_statement( @1.first_line, @1.first_column );
+          $$ = generator_find_statement( @1.ppline, @1.first_column );
         }
       }
     }
@@ -4166,7 +4168,7 @@ passign
               expression_dealloc( $3, FALSE );
               error_count++;
             }
-            $$ = db_create_statement( tmp );
+            $$ = db_create_statement( tmp, @1.ppline );
           }
         } else {
           expression_dealloc( $1, FALSE );
@@ -4175,10 +4177,10 @@ passign
         }
       } else {
         if( for_mode == 0 ) {
-          generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
+          generator_insert_comb_cov( @1.ppline, @1.first_column, FALSE, FALSE, FALSE );
           $$ = NULL;
         } else {
-          $$ = generator_find_statement( @1.first_line, @1.first_column );
+          $$ = generator_find_statement( @1.ppline, @1.first_column );
         }
       }
     }
@@ -4201,7 +4203,7 @@ passign
               expression_dealloc( $3, FALSE );
               error_count++;
             }
-            $$ = db_create_statement( tmp );
+            $$ = db_create_statement( tmp, @1.ppline );
           }
         } else {
           expression_dealloc( $1, FALSE );
@@ -4210,10 +4212,10 @@ passign
         }
       } else {
         if( for_mode == 0 ) {
-          generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
+          generator_insert_comb_cov( @1.ppline, @1.first_column, FALSE, FALSE, FALSE );
           $$ = NULL;
         } else {
-          $$ = generator_find_statement( @1.first_line, @1.first_column );
+          $$ = generator_find_statement( @1.ppline, @1.first_column );
         }
       }
     }
@@ -4236,7 +4238,7 @@ passign
               expression_dealloc( $3, FALSE );
               error_count++;
             }
-            $$ = db_create_statement( tmp );
+            $$ = db_create_statement( tmp, @1.ppline );
           }
         } else {
           expression_dealloc( $1, FALSE );
@@ -4245,10 +4247,10 @@ passign
         }
       } else {
         if( for_mode == 0 ) {
-          generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
+          generator_insert_comb_cov( @1.ppline, @1.first_column, FALSE, FALSE, FALSE );
           $$ = NULL;
         } else {
-          $$ = generator_find_statement( @1.first_line, @1.first_column );
+          $$ = generator_find_statement( @1.ppline, @1.first_column );
         }
       }
     }
@@ -4271,7 +4273,7 @@ passign
               expression_dealloc( $3, FALSE );
               error_count++;
             }
-            $$ = db_create_statement( tmp );
+            $$ = db_create_statement( tmp, @1.ppline );
           }
         } else {
           expression_dealloc( $1, FALSE );
@@ -4280,10 +4282,10 @@ passign
         }
       } else {
         if( for_mode == 0 ) {
-          generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
+          generator_insert_comb_cov( @1.ppline, @1.first_column, FALSE, FALSE, FALSE );
           $$ = NULL;
         } else {
-          $$ = generator_find_statement( @1.first_line, @1.first_column );
+          $$ = generator_find_statement( @1.ppline, @1.first_column );
         }
       }
     }
@@ -4306,7 +4308,7 @@ passign
               expression_dealloc( $3, FALSE );
               error_count++;
             }
-            $$ = db_create_statement( tmp );
+            $$ = db_create_statement( tmp, @1.ppline );
           }
         } else {
           expression_dealloc( $1, FALSE );
@@ -4315,10 +4317,10 @@ passign
         }
       } else {
         if( for_mode == 0 ) {
-          generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
+          generator_insert_comb_cov( @1.ppline, @1.first_column, FALSE, FALSE, FALSE );
           $$ = NULL;
         } else {
-          $$ = generator_find_statement( @1.first_line, @1.first_column );
+          $$ = generator_find_statement( @1.ppline, @1.first_column );
         }
       }
     }
@@ -4339,7 +4341,7 @@ passign
               expression_dealloc( $1, FALSE );
               error_count++;
             }
-            $$ = db_create_statement( tmp );
+            $$ = db_create_statement( tmp, @1.ppline );
           }
         } else {
           expression_dealloc( $1, FALSE );
@@ -4347,10 +4349,10 @@ passign
         }
       } else {
         if( for_mode == 0 ) {
-          generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
+          generator_insert_comb_cov( @1.ppline, @1.first_column, FALSE, FALSE, FALSE );
           $$ = NULL;
         } else {
-          $$ = generator_find_statement( @1.first_line, @1.first_column );
+          $$ = generator_find_statement( @1.ppline, @1.first_column );
         }
       }
     }
@@ -4371,7 +4373,7 @@ passign
               expression_dealloc( $1, FALSE );
               error_count++;
             }
-            $$ = db_create_statement( tmp );
+            $$ = db_create_statement( tmp, @1.ppline );
           }
         } else {
           expression_dealloc( $1, FALSE );
@@ -4379,10 +4381,10 @@ passign
         }
       } else {
         if( for_mode == 0 ) {
-          generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
+          generator_insert_comb_cov( @1.ppline, @1.first_column, FALSE, FALSE, FALSE );
           $$ = NULL;
         } else {
-          $$ = generator_find_statement( @1.first_line, @1.first_column );
+          $$ = generator_find_statement( @1.ppline, @1.first_column );
         }
       }
     }
@@ -4461,7 +4463,7 @@ statement
             exp->elem.funit      = $3;
             exp->suppl.part.type = ETYPE_FUNIT;
             exp->name            = strdup_safe( back );
-            stmt = db_create_statement( exp );
+            stmt = db_create_statement( exp, @1.ppline );
             $$   = stmt;
           } else {
             $$ = NULL;
@@ -4473,7 +4475,7 @@ statement
           if( ignore_mode == 0 ) {
             /* If there is no body to the begin..end block, replace the block with a NOOP */
             exp  = db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-            stmt = db_create_statement( exp );
+            stmt = db_create_statement( exp, @1.ppline );
             $$   = stmt;
           }
         }
@@ -4503,7 +4505,7 @@ statement
             exp->elem.funit      = $4;
             exp->suppl.part.type = ETYPE_FUNIT;
             exp->name            = strdup_safe( back );
-            stmt = db_create_statement( exp );
+            stmt = db_create_statement( exp, @1.ppline );
             $$   = stmt;
           } else {
             ignore_mode--;
@@ -4528,12 +4530,12 @@ statement
           } Catch_anonymous {
             error_count++;
           }
-          $$ = db_create_statement( exp );
+          $$ = db_create_statement( exp, @1.ppline );
         } else {
           $$ = NULL;
         } 
       } else {
-        generator_insert_line_cov( @1.first_line, @2.last_line, @1.first_column, (@2.last_column - 1), TRUE );
+        generator_insert_line_cov( @1.ppline, ((@2.last_line - @1.first_line) + @1.ppline), @1.first_column, (@2.last_column - 1), TRUE );
         generator_flush_work_code;
         $$ = NULL;
       }
@@ -4549,13 +4551,13 @@ statement
           } Catch_anonymous {
             error_count++;
           }
-          $$ = db_create_statement( exp );
+          $$ = db_create_statement( exp, @1.ppline );
         } else {
           $$ = NULL;
         }
       } else {
-        generator_handle_event_trigger( $2, @1.first_line, @1.first_column, @2.last_line, (@2.last_column - 1) );
-        generator_insert_line_cov( @1.first_line, @2.last_line, @1.first_column, (@2.last_column - 1), TRUE );
+        generator_handle_event_trigger( $2, @1.ppline, @1.first_column, ((@2.last_line - @1.first_line) + @1.ppline), (@2.last_column - 1) );
+        generator_insert_line_cov( @1.ppline, ((@2.last_line - @1.first_line) + @1.ppline), @1.first_column, (@2.last_column - 1), TRUE );
         generator_flush_work_code;
         $$ = NULL;
       }
@@ -4572,7 +4574,7 @@ statement
           } Catch_anonymous {
             error_count++;
           }
-          stmt = db_create_statement( expr );
+          stmt = db_create_statement( expr, @1.ppline );
           if( db_statement_connect( $3, $3 ) ) {
             db_connect_statement_false( stmt, $3 );
             $$ = stmt;
@@ -4589,8 +4591,8 @@ statement
   | K_repeat '(' expression ')'
     {
       if( !parse_mode ) {
-        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
-        generator_insert_line_cov( @1.first_line, @4.last_line, @1.first_column, (@4.last_column - 1), TRUE );
+        generator_insert_comb_cov( @1.ppline, @1.first_column, FALSE, FALSE, FALSE );
+        generator_insert_line_cov( @1.ppline, ((@4.last_line - @1.first_line) + @1.ppline), @1.first_column, (@4.last_column - 1), TRUE );
         generator_flush_work_code;
       }
     }
@@ -4615,7 +4617,7 @@ statement
           } Catch_anonymous {
             error_count++;
           }
-          stmt = db_create_statement( expr );
+          stmt = db_create_statement( expr, @1.ppline );
           db_connect_statement_true( stmt, $7 );
           stmt->conn_id = stmt_conn_id;   /* This will cause the STOP bit to be set for all statements connecting to stmt */
           assert( db_statement_connect( $7, stmt ) );
@@ -4632,7 +4634,7 @@ statement
   | cond_specifier_opt K_case '(' expression ')'
     {
       if( !parse_mode ) {
-        generator_insert_case_comb_cov( @4.first_line, @4.first_column );
+        generator_insert_case_comb_cov( @4.ppline, @4.first_column );
       }
     }
     case_body K_endcase
@@ -4660,7 +4662,7 @@ statement
               } Catch_anonymous {
                 error_count++;
               }
-              stmt = db_create_statement( expr );
+              stmt = db_create_statement( expr, c_stmt->ppline );
               db_connect_statement_true( stmt, c_stmt->stmt );
               db_connect_statement_false( stmt, last_stmt );
               if( stmt != NULL ) {
@@ -4694,7 +4696,7 @@ statement
   | cond_specifier_opt K_casex '(' expression ')'
     {
       if( !parse_mode ) {
-        generator_insert_case_comb_cov( @4.first_line, @4.first_column );
+        generator_insert_case_comb_cov( @4.ppline, @4.first_column );
       }
     }
     case_body K_endcase
@@ -4722,7 +4724,7 @@ statement
               } Catch_anonymous {
                 error_count++;
               }
-              stmt = db_create_statement( expr );
+              stmt = db_create_statement( expr, c_stmt->ppline );
               db_connect_statement_true( stmt, c_stmt->stmt );
               db_connect_statement_false( stmt, last_stmt );
               if( stmt != NULL ) {
@@ -4756,7 +4758,7 @@ statement
   | cond_specifier_opt K_casez '(' expression ')'
     {
       if( !parse_mode ) {
-        generator_insert_case_comb_cov( @4.first_line, @4.first_column );
+        generator_insert_case_comb_cov( @4.ppline, @4.first_column );
       }
     }
     case_body K_endcase
@@ -4784,7 +4786,7 @@ statement
               } Catch_anonymous {
                 error_count++;
               }
-              stmt = db_create_statement( expr );
+              stmt = db_create_statement( expr, c_stmt->ppline );
               db_connect_statement_true( stmt, c_stmt->stmt );
               db_connect_statement_false( stmt, last_stmt );
               if( stmt != NULL ) {
@@ -4818,8 +4820,8 @@ statement
   | cond_specifier_opt K_if '(' expression ')'
     {
       if( !parse_mode ) {
-        generator_insert_comb_cov( @2.first_line, @2.first_column, FALSE, TRUE, FALSE );
-        generator_insert_line_cov( @2.first_line, @5.last_line, @2.first_column, (@5.last_column - 1), TRUE );
+        generator_insert_comb_cov( @2.ppline, @2.first_column, FALSE, TRUE, FALSE );
+        generator_insert_line_cov( @2.ppline, ((@5.last_line - @2.first_line) + @2.ppline), @2.first_column, (@5.last_column - 1), TRUE );
       }
     }
     if_body
@@ -4832,7 +4834,7 @@ statement
           } Catch_anonymous {
             error_count++;
           }
-          if( ($$ = db_create_statement( tmp )) != NULL ) {
+          if( ($$ = db_create_statement( tmp, @2.ppline )) != NULL ) {
             db_connect_statement_true( $$, $7.stmt1 );
             if( $7.stmt2 != NULL ) {
               db_connect_statement_false( $$, $7.stmt2 );
@@ -4897,7 +4899,7 @@ statement
           exp->elem.funit      = $2;
           exp->suppl.part.type = ETYPE_FUNIT;
           exp->name            = strdup_safe( back );
-          stmt = db_create_statement( exp );
+          stmt = db_create_statement( exp, @1.ppline );
           $$ = stmt;
         } else {
           $$ = NULL;
@@ -4943,8 +4945,8 @@ statement
   | K_while '(' expression ')'
     {
       if( !parse_mode ) {
-        generator_insert_line_cov( @1.first_line, @4.last_line, @1.first_column, (@4.last_column - 1), TRUE );
-        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, TRUE, TRUE );
+        generator_insert_line_cov( @1.ppline, ((@4.last_line - @1.first_line) + @1.ppline), @1.first_column, (@4.last_column - 1), TRUE );
+        generator_insert_comb_cov( @1.ppline, @1.first_column, FALSE, TRUE, TRUE );
         generator_flush_work_code;
       }
     }
@@ -4965,7 +4967,7 @@ statement
           } Catch_anonymous {
             error_count++;
           }
-          if( ($$ = db_create_statement( expr )) != NULL ) {
+          if( ($$ = db_create_statement( expr, @1.ppline )) != NULL ) {
             db_connect_statement_true( $$, $7 );
             $$->conn_id = stmt_conn_id;   /* This will cause the STOP bit to be set for all statements connecting to stmt */
             assert( db_statement_connect( $7, $$ ) );
@@ -4998,7 +5000,7 @@ statement
           } Catch_anonymous {
             error_count++;
           }
-          if( (stmt = db_create_statement( expr )) != NULL ) {
+          if( (stmt = db_create_statement( expr, @5.ppline )) != NULL ) {
             assert( db_statement_connect( $3, stmt ) );
             db_connect_statement_true( stmt, $3 );
             stmt->suppl.part.stop_true = 1;  /* Set STOP bit for the TRUE path */
@@ -5011,8 +5013,8 @@ statement
         }
       } else {
         generator_prepend_to_work_code( " end " );
-        generator_insert_line_cov( @5.first_line, @8.last_line, @5.first_column, (@8.last_column - 1), TRUE );
-        generator_insert_comb_cov( @5.first_line, @5.first_column, FALSE, TRUE, FALSE );
+        generator_insert_line_cov( @5.ppline, ((@8.last_line - @5.first_line) + @5.ppline), @5.first_column, (@8.last_column - 1), TRUE );
+        generator_insert_comb_cov( @5.ppline, @5.first_column, FALSE, TRUE, FALSE );
         generator_flush_work_code;
         $$ = NULL;
       }
@@ -5021,7 +5023,7 @@ statement
     {
       if( !parse_mode ) {
         generator_add_cov_to_work_code( ";" );
-        generator_insert_line_cov( @1.first_line, @1.last_line, @1.first_column, (@1.last_column - 1), TRUE );
+        generator_insert_line_cov( @1.ppline, ((@1.last_line - @1.first_line) + @1.ppline), @1.first_column, (@1.last_column - 1), TRUE );
         generator_flush_work_code;
       }
     }
@@ -5030,7 +5032,7 @@ statement
       if( parse_mode ) {
         statement* stmt;
         if( (ignore_mode == 0) && ($1 != NULL) ) {
-          stmt = db_create_statement( $1 );
+          stmt = db_create_statement( $1, @1.ppline );
           if( $3 != NULL ) {
             if( !db_statement_connect( stmt, $3 ) ) {
               db_remove_statement( stmt );
@@ -5052,12 +5054,11 @@ statement
     {
       if( !parse_mode ) {
         generator_add_cov_to_work_code( ";" );
-        generator_insert_line_cov( @1.first_line, @1.last_line, @1.first_column, (@1.last_column - 1), TRUE );
+        generator_insert_line_cov( @1.ppline, ((@1.last_line - @1.first_line) + @1.ppline), @1.first_column, (@1.last_column - 1), TRUE );
         if( (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
           generator_prepend_to_work_code( " begin " );
         }
-        // generator_flush_work_code;
-        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
+        generator_insert_comb_cov( @1.ppline, @1.first_column, FALSE, FALSE, FALSE );
         generator_flush_work_code;
       }
     }
@@ -5066,7 +5067,7 @@ statement
       if( parse_mode ) {
         statement* stmt;
         if( (ignore_mode == 0) && ($1 != NULL) ) {
-          stmt = db_create_statement( $1 );
+          stmt = db_create_statement( $1, @1.ppline );
           if( $3 != NULL ) {
             if( !db_statement_connect( stmt, $3 ) ) {
               db_remove_statement( stmt );
@@ -5090,9 +5091,9 @@ statement
     {
       if( !parse_mode ) {
         generator_add_cov_to_work_code( " begin" );
-        generator_insert_line_cov( @1.first_line, @2.last_line, @1.first_column, (@2.last_column - 1), TRUE );
+        generator_insert_line_cov( @1.ppline, ((@2.last_line - @1.first_line) + @1.ppline), @1.first_column, (@2.last_column - 1), TRUE );
         generator_flush_work_code;
-        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
+        generator_insert_comb_cov( @1.ppline, @1.first_column, FALSE, FALSE, FALSE );
         generator_flush_work_code;
       }
     }
@@ -5117,7 +5118,7 @@ statement
               } Catch_anonymous {
                 error_count++;
               }
-              stmt = db_create_statement( expr );
+              stmt = db_create_statement( expr, @1.ppline );
               if( !db_statement_connect( stmt, $4 ) ) {
                 db_remove_statement( stmt );
                 db_remove_statement( $4 );
@@ -5141,9 +5142,9 @@ statement
       if( parse_mode ) {
         $$ = $1;
       } else {
-        generator_insert_line_cov( @1.first_line, @1.last_line, @1.first_column, (@1.last_column - 1), TRUE );
+        generator_insert_line_cov( @1.ppline, ((@1.last_line - @1.first_line) + @1.ppline), @1.first_column, (@1.last_column - 1), TRUE );
         generator_flush_work_code;
-        $$ = NULL;  /* TBD */
+        $$ = NULL;
       }
     }
   | lpvalue K_LE expression ';'
@@ -5152,7 +5153,7 @@ statement
         if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
           Try {
             expression* tmp = db_create_expression( $3, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-            $$ = db_create_statement( tmp );
+            $$ = db_create_statement( tmp, @1.ppline );
           } Catch_anonymous {
             expression_dealloc( $1, FALSE );
             expression_dealloc( $3, FALSE );
@@ -5165,8 +5166,8 @@ statement
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, TRUE, FALSE );
-        generator_insert_line_cov( @1.first_line, @3.last_line, @1.first_column, (@3.last_column - 1), TRUE );
+        generator_insert_comb_cov( @1.ppline, @1.first_column, FALSE, TRUE, FALSE );
+        generator_insert_line_cov( @1.ppline, ((@3.last_line - @1.first_line) + @1.ppline), @1.first_column, (@3.last_column - 1), TRUE );
         generator_flush_work_code;
         $$ = NULL;
       }
@@ -5178,7 +5179,7 @@ statement
           Try {
             expression* tmp = db_create_expression( $4, $3, EXP_OP_DLY_OP, FALSE, @3.first_line, @3.first_column, (@4.last_column - 1), NULL );
             tmp = db_create_expression( tmp, $1, EXP_OP_DLY_ASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
-            $$  = db_create_statement( tmp );
+            $$  = db_create_statement( tmp, @1.ppline );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -5190,8 +5191,8 @@ statement
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, TRUE, FALSE );
-        generator_insert_line_cov( @1.first_line, @4.last_line, @1.first_column, (@4.last_column - 1), TRUE );
+        generator_insert_comb_cov( @1.ppline, @1.first_column, FALSE, TRUE, FALSE );
+        generator_insert_line_cov( @1.ppline, ((@4.last_line - @1.first_line) + @1.ppline), @1.first_column, (@4.last_column - 1), TRUE );
         generator_flush_work_code;
         $$ = NULL;
       }
@@ -5203,7 +5204,7 @@ statement
         if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($4 != NULL) ) {
           Try {
             expression* tmp = db_create_expression( $4, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
-            $$ = db_create_statement( tmp );
+            $$ = db_create_statement( tmp, @1.ppline );
           } Catch_anonymous {
             expression_dealloc( $1, FALSE );
             expression_dealloc( $4, FALSE );
@@ -5218,8 +5219,8 @@ statement
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, TRUE, FALSE );
-        generator_insert_line_cov( @1.first_line, @4.last_line, @1.first_column, (@4.last_column - 1), TRUE );
+        generator_insert_comb_cov( @1.ppline, @1.first_column, FALSE, TRUE, FALSE );
+        generator_insert_line_cov( @1.ppline, ((@4.last_line - @1.first_line) + @1.ppline), @1.first_column, (@4.last_column - 1), TRUE );
         generator_flush_work_code;
         $$ = NULL;
       }
@@ -5231,7 +5232,7 @@ statement
           Try {
             expression* tmp = db_create_expression( $4, $3, EXP_OP_DLY_OP, FALSE, @3.first_line, @3.first_column, (@4.last_column - 1), NULL );
             tmp = db_create_expression( tmp, $1, EXP_OP_DLY_ASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
-            $$ = db_create_statement( tmp );
+            $$ = db_create_statement( tmp, @1.ppline );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -5243,8 +5244,8 @@ statement
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, TRUE, FALSE );
-        generator_insert_line_cov( @1.first_line, @4.last_line, @1.first_column, (@4.last_column - 1), TRUE );
+        generator_insert_comb_cov( @1.ppline, @1.first_column, FALSE, TRUE, FALSE );
+        generator_insert_line_cov( @1.ppline, ((@4.last_line - @1.first_line) + @1.ppline), @1.first_column, (@4.last_column - 1), TRUE );
         generator_flush_work_code;
         $$ = NULL;
       }
@@ -5256,7 +5257,7 @@ statement
         if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($4 != NULL) ) {
           Try {
             expression* tmp = db_create_expression( $4, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
-            $$ = db_create_statement( tmp );
+            $$ = db_create_statement( tmp, @1.ppline );
           } Catch_anonymous {
             expression_dealloc( $1, FALSE );
             expression_dealloc( $4, FALSE );
@@ -5271,8 +5272,8 @@ statement
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, TRUE, FALSE );
-        generator_insert_line_cov( @1.first_line, @4.last_line, @1.first_column, (@4.last_column - 1), TRUE );
+        generator_insert_comb_cov( @1.ppline, @1.first_column, FALSE, TRUE, FALSE );
+        generator_insert_line_cov( @1.ppline, ((@4.last_line - @1.first_line) + @1.ppline), @1.first_column, (@4.last_column - 1), TRUE );
         generator_flush_work_code;
         $$ = NULL;
       }
@@ -5292,7 +5293,7 @@ statement
             tmp = db_create_expression( $7, tmp, EXP_OP_RPT_DLY, FALSE, @3.first_line, @3.first_column, (@7.last_column - 1), NULL );
             tmp = db_create_expression( $8, tmp, EXP_OP_DLY_OP, FALSE, @3.first_line, @3.first_column, (@8.last_column - 1), NULL );
             tmp = db_create_expression( tmp, $1, EXP_OP_DLY_ASSIGN, FALSE, @1.first_line, @1.first_column, (@8.last_column - 1), NULL );
-            $$ = db_create_statement( tmp );
+            $$ = db_create_statement( tmp, @1.ppline );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -5305,8 +5306,8 @@ statement
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, TRUE, FALSE );
-        generator_insert_line_cov( @1.first_line, @8.last_line, @1.first_column, (@8.last_column - 1), TRUE );
+        generator_insert_comb_cov( @1.ppline, @1.first_column, FALSE, TRUE, FALSE );
+        generator_insert_line_cov( @1.ppline, ((@8.last_line - @1.first_line) + @1.ppline), @1.first_column, (@8.last_column - 1), TRUE );
         generator_flush_work_code;
         $$ = NULL;
       }
@@ -5318,7 +5319,7 @@ statement
         if( (ignore_mode == 0) && ($1 != NULL) && ($8 != NULL) ) {
           Try {
             expression* tmp = db_create_expression( $8, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@8.last_column - 1), NULL );
-            $$ = db_create_statement( tmp );
+            $$ = db_create_statement( tmp, @1.ppline );
           } Catch_anonymous {
             expression_dealloc( $1, FALSE );
             expression_dealloc( $8, FALSE );
@@ -5335,8 +5336,8 @@ statement
           $$ = NULL;
         }
       } else {
-        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, TRUE, FALSE );
-        generator_insert_line_cov( @1.first_line, @8.last_line, @1.first_column, (@8.last_column - 1), TRUE );
+        generator_insert_comb_cov( @1.ppline, @1.first_column, FALSE, TRUE, FALSE );
+        generator_insert_line_cov( @1.ppline, ((@8.last_line - @1.first_line) + @1.ppline), @1.first_column, (@8.last_column - 1), TRUE );
         generator_flush_work_code;
         $$ = NULL;
       }
@@ -5344,8 +5345,8 @@ statement
   | K_wait '(' expression ')'
     {
       if( !parse_mode ) {
-        statement* stmt = generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, TRUE, FALSE );
-        generator_insert_line_cov( @1.first_line, @4.last_line, @1.first_column, (@4.last_column - 1), TRUE );
+        statement* stmt = generator_insert_comb_cov( @1.ppline, @1.first_column, FALSE, TRUE, FALSE );
+        generator_insert_line_cov( @1.ppline, ((@4.last_line - @1.first_line) + @1.ppline), @1.first_column, (@4.last_column - 1), TRUE );
         generator_flush_work_code;
         generator_add_cov_to_work_code( " begin" );
         generator_flush_work_code;
@@ -5365,7 +5366,7 @@ statement
           } Catch_anonymous {
             error_count++;
           }
-          $$ = db_create_statement( exp );
+          $$ = db_create_statement( exp, @1.ppline );
           if( $6 != NULL ) {
             if( !db_statement_connect( $$, $6 ) ) {
               db_remove_statement( $$ );
@@ -5394,7 +5395,7 @@ statement
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
           Try {
-            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, 0, 0, 0, NULL ) );
+            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, 0, 0, 0, NULL ), @1.ppline );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -5412,7 +5413,7 @@ statement
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
           Try {
-            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_SFINISH, FALSE, 0, 0, 0, NULL ) );
+            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_SFINISH, FALSE, 0, 0, 0, NULL ), @1.ppline );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -5430,7 +5431,7 @@ statement
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
           Try {
-            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_SSTOP, FALSE, 0, 0, 0, NULL ) );
+            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_SSTOP, FALSE, 0, 0, 0, NULL ), @1.ppline );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -5448,7 +5449,7 @@ statement
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($3 != NULL) ) {
           Try {
-            $$ = db_create_statement( db_create_expression( NULL, $3, EXP_OP_SSRANDOM, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL ) );
+            $$ = db_create_statement( db_create_expression( NULL, $3, EXP_OP_SSRANDOM, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL ), @1.ppline );
           } Catch_anonymous {
             expression_dealloc( $3, FALSE );
             error_count++;
@@ -5475,7 +5476,7 @@ statement
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
           Try {
-            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, 0, 0, 0, NULL ) );
+            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, 0, 0, 0, NULL ), @1.ppline );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -5493,7 +5494,7 @@ statement
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
           Try {
-            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_SFINISH, FALSE, 0, 0, 0, NULL ) );
+            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_SFINISH, FALSE, 0, 0, 0, NULL ), @1.ppline );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -5511,7 +5512,7 @@ statement
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
           Try {
-            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_SSTOP, FALSE, 0, 0, 0, NULL ) );
+            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_SSTOP, FALSE, 0, 0, 0, NULL ), @1.ppline );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -5529,7 +5530,7 @@ statement
         if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
           Try {
             expression* exp = db_create_expression( NULL, $3, EXP_OP_TASK_CALL, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), $1 );
-            $$ = db_create_statement( exp );
+            $$ = db_create_statement( exp, @1.ppline );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -5538,8 +5539,8 @@ statement
           $$ = NULL;
         }
       } else {
-        generator_insert_line_cov( @1.first_line, @4.last_line, @1.first_column, (@4.last_column - 1), TRUE );
-        generator_insert_comb_cov( @1.first_line, @1.first_column, FALSE, FALSE, FALSE );
+        generator_insert_line_cov( @1.ppline, ((@4.last_line - @1.first_line) + @1.ppline), @1.first_column, (@4.last_column - 1), TRUE );
+        generator_insert_comb_cov( @1.ppline, @1.first_column, FALSE, FALSE, FALSE );
         generator_flush_work_code;
         $$ = NULL;
       }
@@ -5551,7 +5552,7 @@ statement
         if( (ignore_mode == 0) && ($1 != NULL) ) {
           Try {
             expression* exp = db_create_expression( NULL, NULL, EXP_OP_TASK_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-            $$ = db_create_statement( exp );
+            $$ = db_create_statement( exp, @1.ppline );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -5560,7 +5561,7 @@ statement
           $$ = NULL;
         }
       } else {
-        generator_insert_line_cov( @1.first_line, @1.last_line, @1.first_column, (@1.last_column - 1), TRUE );
+        generator_insert_line_cov( @1.ppline, ((@1.last_line - @1.first_line) + @1.ppline), @1.first_column, (@1.last_column - 1), TRUE );
         generator_flush_work_code;
         $$ = NULL;
       }
@@ -5574,7 +5575,7 @@ statement
         statement*  stmt;
         if( ignore_mode == 0 ) {
           exp  = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
-          stmt = db_create_statement( exp );
+          stmt = db_create_statement( exp, @1.ppline );
           $$   = stmt;
         }
       } else {
@@ -5588,7 +5589,7 @@ statement
         if( ignore_mode == 0 ) {
           Try {
             expression* exp = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
-            $$ = db_create_statement( exp );
+            $$ = db_create_statement( exp, @1.ppline );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -5642,7 +5643,7 @@ fork_statement
             } Catch_anonymous {
               error_count++;
             }
-            if( ((stmt = db_create_statement( expr )) != NULL) && db_statement_connect( $4, stmt ) ) {
+            if( ((stmt = db_create_statement( expr, @4.ppline )) != NULL) && db_statement_connect( $4, stmt ) ) {
               stmt = $4;
               stmt->suppl.part.head      = 1;
               stmt->suppl.part.is_called = 1;
@@ -5781,7 +5782,7 @@ statement_list
           if( $1 == NULL ) {
             $$ = NULL;
           } else {
-            statement* stmt = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, @2.first_line, @2.first_column, (@2.last_column - 1), NULL ) );
+            statement* stmt = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, @2.first_line, @2.first_column, (@2.last_column - 1), NULL ), @2.ppline );
             if( !db_statement_connect( $1, stmt ) ) {
               db_remove_statement( stmt );
             }
@@ -5796,7 +5797,7 @@ statement_list
   | ';'
     {
       if( parse_mode ) {
-        $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL ) );
+        $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL ), @1.ppline );
       } else {
         $$ = NULL;  /* TBD */
       }
@@ -6198,12 +6199,13 @@ case_item
         case_statement* cstmt;
         if( ignore_mode == 0 ) {
           cstmt = (case_statement*)malloc_safe( sizeof( case_statement ) );
-          cstmt->prev = NULL;
-          cstmt->expr = $1;
-          cstmt->stmt = $4;
-          cstmt->line = @1.first_line;
-          cstmt->fcol = @1.first_column;
-          cstmt->lcol = @1.last_column;
+          cstmt->prev   = NULL;
+          cstmt->expr   = $1;
+          cstmt->stmt   = $4;
+          cstmt->line   = @1.first_line;
+          cstmt->ppline = @1.ppline;
+          cstmt->fcol   = @1.first_column;
+          cstmt->lcol   = @1.last_column;
           $$ = cstmt;
         } else {
           $$ = NULL;
@@ -6226,12 +6228,13 @@ case_item
         case_statement* cstmt;
         if( ignore_mode == 0 ) {
           cstmt = (case_statement*)malloc_safe( sizeof( case_statement ) );
-          cstmt->prev = NULL;
-          cstmt->expr = NULL;
-          cstmt->stmt = $4;
-          cstmt->line = @1.first_line;
-          cstmt->fcol = @1.first_column;
-          cstmt->lcol = @1.last_column;
+          cstmt->prev   = NULL;
+          cstmt->expr   = NULL;
+          cstmt->stmt   = $4;
+          cstmt->line   = @1.first_line;
+          cstmt->ppline = @1.ppline;
+          cstmt->fcol   = @1.first_column;
+          cstmt->lcol   = @1.last_column;
           $$ = cstmt;
         } else {
           $$ = NULL;
@@ -6254,12 +6257,13 @@ case_item
         case_statement* cstmt;
         if( ignore_mode == 0 ) {
           cstmt = (case_statement*)malloc_safe( sizeof( case_statement ) );
-          cstmt->prev = NULL;
-          cstmt->expr = NULL;
-          cstmt->stmt = $3;
-          cstmt->line = @1.first_line;
-          cstmt->fcol = @1.first_column;
-          cstmt->lcol = @1.last_column;
+          cstmt->prev   = NULL;
+          cstmt->expr   = NULL;
+          cstmt->stmt   = $3;
+          cstmt->line   = @1.first_line;
+          cstmt->ppline = @1.ppline;
+          cstmt->fcol   = @1.first_column;
+          cstmt->lcol   = @1.last_column;
           $$ = cstmt;
         } else {
           $$ = NULL;
@@ -6626,7 +6630,7 @@ assign
           } Catch_anonymous {
             error_count++;
           }
-          if( (stmt = db_create_statement( tmp )) != NULL ) {
+          if( (stmt = db_create_statement( tmp, @1.ppline )) != NULL ) {
             stmt->suppl.part.head       = 1;
             stmt->suppl.part.stop_true  = 1;
             stmt->suppl.part.stop_false = 1;
@@ -6641,7 +6645,7 @@ assign
           expression_dealloc( $3, FALSE );
         }
       } else {
-        generator_insert_comb_cov( @1.first_line, @1.first_column, TRUE, TRUE, FALSE );
+        generator_insert_comb_cov( @1.ppline, @1.first_column, TRUE, TRUE, FALSE );
       }
     }
   ;
@@ -6766,7 +6770,7 @@ register_variable
               } Catch_anonymous {
                 error_count++;
               }
-              if( (stmt = db_create_statement( exp )) != NULL ) {
+              if( (stmt = db_create_statement( exp, @1.ppline )) != NULL ) {
                 stmt->suppl.part.head       = 1;
                 stmt->suppl.part.stop_true  = 1;
                 stmt->suppl.part.stop_false = 1;
@@ -7031,7 +7035,7 @@ net_decl_assign
             } Catch_anonymous {
               error_count++;
             }
-            if( (stmt = db_create_statement( tmp )) != NULL ) {
+            if( (stmt = db_create_statement( tmp, @1.ppline )) != NULL ) {
               stmt->suppl.part.head       = 1;
               stmt->suppl.part.stop_true  = 1;
               stmt->suppl.part.stop_false = 1;
@@ -7048,7 +7052,7 @@ net_decl_assign
           expression_dealloc( $3, FALSE );
         }
       } else {
-        generator_insert_comb_cov( @1.first_line, @1.first_column, TRUE, TRUE, FALSE );
+        generator_insert_comb_cov( @1.ppline, @1.first_column, TRUE, TRUE, FALSE );
       }
       free_safe( $1, (strlen( $1 ) + 1) );
     }
@@ -7066,7 +7070,7 @@ net_decl_assign
             } Catch_anonymous {
               error_count++;
             }
-            if( (stmt = db_create_statement( tmp )) != NULL ) {
+            if( (stmt = db_create_statement( tmp, @2.ppline )) != NULL ) {
               stmt->suppl.part.head       = 1;
               stmt->suppl.part.stop_true  = 1;
               stmt->suppl.part.stop_false = 1;
@@ -7084,7 +7088,7 @@ net_decl_assign
         }
         expression_dealloc( $1, FALSE );
       } else {
-        generator_insert_comb_cov( @1.first_line, @1.first_column, TRUE, TRUE, FALSE );
+        generator_insert_comb_cov( @1.ppline, @1.first_column, TRUE, TRUE, FALSE );
       }
       free_safe( $2, (sizeof( $2 ) + 1) );
     }

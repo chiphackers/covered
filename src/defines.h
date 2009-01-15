@@ -2434,6 +2434,7 @@ struct statement_s {
                                           already been added to the functional unit statement list and should not be added again. */
     } part;
   } suppl;                           /*!< Supplemental bits for statements */
+  unsigned int ppline;               /*!< First line from the preprocessor file */
 };
 
 /*!
@@ -2717,7 +2718,8 @@ struct exp_bind_s {
 struct case_stmt_s {
   expression*     expr;              /*!< Pointer to case equality expression */
   statement*      stmt;              /*!< Pointer to first statement in case statement */
-  int             line;              /*!< Line number of case statement */
+  unsigned int    line;              /*!< Line number of case statement */
+  unsigned int    ppline;            /*!< Line number from preprocessed file of case statement */
   int             fcol;              /*!< First column of case statement */
   int             lcol;              /*!< Last column of case statement */
   case_statement* prev;              /*!< Pointer to previous case statement in list */
@@ -3101,6 +3103,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.351  2009/01/11 19:59:35  phase1geo
+ More fixes for support of generate statements.  Getting close but not quite
+ there yet.  Checkpointing.
+
  Revision 1.350  2009/01/09 21:25:00  phase1geo
  More generate block fixes.  Updated all copyright information source code files
  for the year 2009.  Checkpointing.

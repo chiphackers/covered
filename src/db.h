@@ -188,7 +188,7 @@ expression* db_create_sensitivity_list( statement* stmt );
 statement* db_parallelize_statement( statement* stmt );
 
 /*! \brief Creates new statement expression from specified information.  Called by parser. */
-statement* db_create_statement( expression* exp );
+statement* db_create_statement( expression* exp, unsigned int ppline );
 
 /*! \brief Adds specified statement to current functional unit's statement list.  Called by parser. */
 void db_add_statement( statement* stmt, statement* start );
@@ -250,6 +250,10 @@ bool db_do_timestep( uint64 time, bool final );
 
 /*
  $Log$
+ Revision 1.103  2009/01/11 19:59:35  phase1geo
+ More fixes for support of generate statements.  Getting close but not quite
+ there yet.  Checkpointing.
+
  Revision 1.102  2009/01/09 21:25:00  phase1geo
  More generate block fixes.  Updated all copyright information source code files
  for the year 2009.  Checkpointing.

@@ -174,12 +174,13 @@ void parser_create_task_body(
   statement*   stmt,          /*!< Statement (list) containing task body */
   unsigned int first_line,    /*!< First line of statement (list) */
   unsigned int first_column,  /*!< First column of current statement (list) */
-  unsigned int last_column    /*!< Last column of current statement (list) */
+  unsigned int last_column,   /*!< Last column of current statement (list) */
+  unsigned int ppline         /*!< Line from preprocessed file */
 ) { PROFILE(PARSER_CREATE_TASK_BODY);
 
   if( ignore_mode == 0 ) {
     if( stmt == NULL ) {
-      stmt = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, first_line, first_column, (last_column - 1), NULL ) );
+      stmt = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, first_line, first_column, (last_column - 1), NULL ), ppline );
     }
     stmt->suppl.part.head      = 1;
     stmt->suppl.part.is_called = 1;
@@ -683,6 +684,10 @@ expression* parser_create_op_and_assign_w_dim_exp(
 
 /*
  $Log$
+ Revision 1.4  2009/01/11 19:59:36  phase1geo
+ More fixes for support of generate statements.  Getting close but not quite
+ there yet.  Checkpointing.
+
  Revision 1.3  2009/01/09 21:25:01  phase1geo
  More generate block fixes.  Updated all copyright information source code files
  for the year 2009.  Checkpointing.

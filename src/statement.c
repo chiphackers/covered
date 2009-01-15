@@ -133,8 +133,9 @@ static stmt_loop_link* stmt_loop_tail = NULL;
  specified parameter information.
 */
 statement* statement_create(
-  expression* exp,   /*!< Pointer to root expression of expression tree for this statement */
-  func_unit*  funit  /*!< Pointer to functional unit that this statement exists in */
+  expression*  exp,    /*!< Pointer to root expression of expression tree for this statement */
+  func_unit*   funit,  /*!< Pointer to functional unit that this statement exists in */
+  unsigned int ppline  /*!< Line from preprocessed file */
 ) { PROFILE(STATEMENT_CREATE);
 
   statement* stmt;  /* Pointer to newly created statement */
@@ -147,6 +148,7 @@ statement* statement_create(
   stmt->conn_id           = 0;
   stmt->suppl.all         = 0;
   stmt->funit             = funit;
+  stmt->ppline            = ppline;
 
   PROFILE_END;
 
@@ -329,12 +331,13 @@ void statement_db_write(
   assert( stmt != NULL );
 
   /* Write out contents of this statement last */
-  fprintf( ofile, "%d %d %x %d %d",
+  fprintf( ofile, "%d %d %x %d %d %u",
     DB_TYPE_STATEMENT,
     expression_get_id( stmt->exp, ids_issued ),
     (stmt->suppl.all & 0xff),
     ((stmt->next_true   == NULL) ? 0 : expression_get_id( stmt->next_true->exp, ids_issued )),
-    ((stmt->next_false  == NULL) ? 0 : expression_get_id( stmt->next_false->exp, ids_issued ))
+    ((stmt->next_false  == NULL) ? 0 : expression_get_id( stmt->next_false->exp, ids_issued )),
+    stmt->ppline
   );
 
   fprintf( ofile, "\n" );
@@ -427,23 +430,23 @@ void statement_db_read(
   int        read_mode
 ) { PROFILE(STATEMENT_DB_READ);
 
-  int        id;             /* ID of root expression that is associated with this statement */
-  int        true_id;        /* ID of root expression that is associated with the next_true statement */
-  int        false_id;       /* ID of root expression that is associated with the next_false statement */
-  statement* stmt;           /* Pointer to newly created statement */
-  exp_link*  expl;           /* Pointer to found expression link */
-  stmt_link* stmtl;          /* Pointer to found statement link */
-  int        chars_read;     /* Number of characters read from line */
-  uint32     suppl;          /* Supplemental field value */
+  int          id;          /* ID of root expression that is associated with this statement */
+  int          true_id;     /* ID of root expression that is associated with the next_true statement */
+  int          false_id;    /* ID of root expression that is associated with the next_false statement */
+  statement*   stmt;        /* Pointer to newly created statement */
+  exp_link*    expl;        /* Pointer to found expression link */
+  stmt_link*   stmtl;       /* Pointer to found statement link */
+  int          chars_read;  /* Number of characters read from line */
+  uint32       suppl;       /* Supplemental field value */
+  unsigned int ppline;      /* Line of preprocessed file */
 
-  if( sscanf( *line, "%d %x %d %d%n", &id, &suppl, &true_id, &false_id, &chars_read ) == 4 ) {
+  if( sscanf( *line, "%d %x %d %d %u%n", &id, &suppl, &true_id, &false_id, &ppline, &chars_read ) == 5 ) {
 
     *line = *line + chars_read;
 
     if( curr_funit == NULL ) {
 
       print_output( "Internal error:  statement in database written before its functional unit", FATAL, __FILE__, __LINE__ );
-      printf( "statement Throw A\n" );
       Throw 0;
 
     } else {
@@ -452,7 +455,7 @@ void statement_db_read(
       expl = exp_link_find( id, curr_funit->exp_head );
       assert( expl != NULL );
 
-      stmt = statement_create( expl->exp, curr_funit );
+      stmt = statement_create( expl->exp, curr_funit, ppline );
       stmt->suppl.all = suppl;
 
       /*
@@ -519,7 +522,6 @@ void statement_db_read(
   } else {
 
     print_output( "Unable to read statement value", FATAL, __FILE__, __LINE__ );
-    printf( "statement Throw B\n" );
     Throw 0;
 
   }
@@ -1039,6 +1041,10 @@ void statement_dealloc(
 
 /*
  $Log$
+ Revision 1.143  2009/01/11 19:59:36  phase1geo
+ More fixes for support of generate statements.  Getting close but not quite
+ there yet.  Checkpointing.
+
  Revision 1.142  2009/01/10 00:24:10  phase1geo
  More work on support for generate blocks (the new changes don't quite work yet).
  Checkpointing.

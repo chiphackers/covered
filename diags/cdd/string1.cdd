@@ -10,5 +10,5 @@
 2 6 6 70018 4 35 a 4 5
 1 chr 1 3 70012 1 0 7 0 8 17 0 ff 0 d 10 0
 1 str 2 4 60012 1 0 63 0 64 17 ffffffff ffffffff 0 d 10 0 ffffffff ffffffff 0 0 0 0
-4 6 f 6 6
+4 6 f 6 6 6
 3 1 main.u$0 "main.u$0" 0 string1.v 8 18 1
