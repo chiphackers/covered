@@ -149,6 +149,7 @@ void lxt_parse(
   struct lxt2_rd_geometry* g;
   lxtint32_t               newindx;
   char                     netname[4096];  /* Name of current signal */
+  char                     tmpname[4096];
 
   /* Open LXT file for opening and extract members */
   if( (lt = lxt2_rd_init( lxt_file )) != NULL ) {
@@ -175,7 +176,11 @@ void lxt_parse(
         newindx = lxt2_rd_get_alias_root( lt, i );
 
         /* Extract scope and net name from facility name */
-        scope_extract_back( lxt2_rd_get_facname( lt, i ), netname, curr_inst_scope[0] );
+        strcpy( tmpname, lxt2_rd_get_facname( lt, i ) );
+        if( strchr( tmpname, '\\' ) != NULL ) {
+          strcat( tmpname, " " );
+        }
+        scope_extract_back( tmpname, netname, curr_inst_scope[0] );
         db_sync_curr_instance();
 
         if( g->flags & LXT2_RD_SYM_F_DOUBLE ) {
@@ -271,6 +276,10 @@ void lxt_parse(
 
 /*
  $Log$
+ Revision 1.32  2009/01/09 21:25:01  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.31  2009/01/06 07:23:18  phase1geo
  Updating endian4 from stable branch.  Fixing LXT code to match stable branch.
 
