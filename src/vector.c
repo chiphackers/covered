@@ -2225,18 +2225,21 @@ bool vector_is_unknown(
   unsigned int size;   /* Size of data array */
 
   assert( vec != NULL );
-  assert( vec->value.ul != NULL );
 
-  switch( vec->suppl.part.data_type ) {
-    case VDATA_UL :
-      size = UL_SIZE( vec->width );
-      while( (i < size) && (vec->value.ul[i][VTYPE_INDEX_VAL_VALH] == 0) ) i++;
-      break;
-    case VDATA_R64 :
-    case VDATA_R32 :
-      size = 0;
-      break;
-    default :  assert( 0 );  break;
+  if( vec->value.ul != NULL ) {
+    switch( vec->suppl.part.data_type ) {
+      case VDATA_UL :
+        size = UL_SIZE( vec->width );
+        while( (i < size) && (vec->value.ul[i][VTYPE_INDEX_VAL_VALH] == 0) ) i++;
+        break;
+      case VDATA_R64 :
+      case VDATA_R32 :
+        size = 0;
+        break;
+      default :  assert( 0 );  break;
+    }
+  } else {
+    size = 1;
   }
 
   PROFILE_END;
@@ -2256,20 +2259,23 @@ bool vector_is_not_zero(
   unsigned int size;   /* Size of data array */
 
   assert( vec != NULL );
-  assert( vec->value.ul != NULL );
 
-  switch( vec->suppl.part.data_type ) {
-    case VDATA_UL :
-      size = UL_SIZE( vec->width );
-      while( (i < size) && (vec->value.ul[i][VTYPE_INDEX_VAL_VALL] == 0) ) i++;
-      break;
-    case VDATA_R64 :
-      size = DEQ( vec->value.r64->val, 0.0 ) ? 1 : 0;
-      break;
-    case VDATA_R32 :
-      size = FEQ( vec->value.r32->val, 0.0) ? 1 : 0;
-      break;
-    default :  assert( 0 );  break;
+  if( vec->value.ul != NULL ) {
+    switch( vec->suppl.part.data_type ) {
+      case VDATA_UL :
+        size = UL_SIZE( vec->width );
+        while( (i < size) && (vec->value.ul[i][VTYPE_INDEX_VAL_VALL] == 0) ) i++;
+        break;
+      case VDATA_R64 :
+        size = DEQ( vec->value.r64->val, 0.0 ) ? 1 : 0;
+        break;
+      case VDATA_R32 :
+        size = FEQ( vec->value.r32->val, 0.0) ? 1 : 0;
+        break;
+      default :  assert( 0 );  break;
+    }
+  } else {
+    size = 1;
   }
 
   PROFILE_END;
@@ -5232,6 +5238,10 @@ void vector_dealloc(
 
 /*
  $Log$
+ Revision 1.189  2009/01/09 21:25:01  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.188  2009/01/05 23:46:33  phase1geo
  Fixing endianness issue (bug exists in SourceForge).  Removed unnecessary
  output.  Updating merge_err1 diagnostic.  17 failures currently exist in IV

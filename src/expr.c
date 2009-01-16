@@ -5646,7 +5646,7 @@ static bool expression_is_static_only_helper(
           (expr->sig->suppl.part.type == SSUPPL_TYPE_ENUM))) ) {
       retval = TRUE;
       if( one != NULL ) {
-        *one |= vector_is_not_zero( expr->value );
+        *one |= (expr->value->value.ul != NULL) ? vector_is_not_zero( expr->value ) : TRUE;
       }
     } else if( expr->op == EXP_OP_CONCAT ) {
       bool curr_one   = FALSE;
@@ -6232,6 +6232,11 @@ void expression_dealloc(
 
 /* 
  $Log$
+ Revision 1.406  2009/01/16 00:03:53  phase1geo
+ Fixing last issue with IV/Cver regressions (OVL assertions).  Updating
+ regressions per needed changes to support this functionality.  Now only
+ VCS regression needs to be updated.
+
  Revision 1.405  2009/01/05 20:15:26  phase1geo
  Fixing issue with memory coverage.  Checkpointing (20 diags fail currently).
 
