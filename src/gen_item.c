@@ -1164,8 +1164,6 @@ static statement* generate_find_stmt_by_position_helper(
 
   if( gi != NULL ) {
 
-    printf( "In generate_find_stmt_by_position_helper, " ); gen_item_display( gi );
-
     if( (gi->suppl.part.type == GI_TYPE_STMT) && (gi->elem.stmt->exp->line <= first_line) ) {
       stmt = statement_find_statement_by_position( gi->elem.stmt, first_line, first_col );
     }
@@ -1346,6 +1344,10 @@ void gen_item_dealloc(
 
 /*
  $Log$
+ Revision 1.79  2009/01/13 07:07:04  phase1geo
+ Applying bug fix for bug 2502095.  Also sync'ing in new generate8.9 and updating
+ it for the development branch.
+
  Revision 1.78  2009/01/11 19:59:35  phase1geo
  More fixes for support of generate statements.  Getting close but not quite
  there yet.  Checkpointing.

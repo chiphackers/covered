@@ -424,16 +424,18 @@ void covered_create_value_change_cb(
   sig_link*   vsigl;
   char*       symbol;
   s_vpi_value value;
+  char*       name = strdup_safe( vpi_get_str( vpiName, sig ) );
 
   /* Only add the signal if it is in our database and needs to be assigned from the simulator */
-//  if( (vsigl = sig_link_find( vpi_get_str( vpiName, sig ), curr_instance->funit->sig_head )) != NULL ) {
   if( (curr_instance->funit != NULL) &&
-      ((vsigl = sig_link_find( vpi_get_str( vpiName, sig ), curr_instance->funit->sig_head )) != NULL) &&
-      (vsigl->sig->suppl.part.assigned == 0) ) {
+      ((((vsigl = sig_link_find( name, curr_instance->funit->sig_head )) != NULL) && ((vsigl->sig->suppl.part.assigned == 0) || info_suppl.part.inlined)) ||
+       (info_suppl.part.inlined &&
+        (((strncmp( name, "\\covered$", 9 ) == 0) && (name[9] != 'x') && (name[9] != 'X') && (name[9] != 'i') && (name[9] != 'I') && (name[9] != 'Z')) ||
+         ((strncmp( name, "covered$",   8 ) == 0) && (name[8] != 'x') && (name[8] != 'X') && (name[8] != 'i') && (name[8] != 'I') && (name[8] != 'Z'))))) ) {
 
 #ifdef DEBUG_MODE
     if( debug_mode ) {
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Adding callback for signal: %s", obf_sig( vsigl->sig->name ) );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Adding callback for signal: %s", name );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
     }
@@ -447,7 +449,11 @@ void covered_create_value_change_cb(
     }
 
     /* Add signal/symbol to symtab database */
-    db_assign_symbol( vsigl->sig->name, symbol, ((vsigl->sig->value->width + vsigl->sig->dim[0].lsb) - 1), vsigl->sig->dim[0].lsb ); 
+    if( vsigl != NULL ) {
+      db_assign_symbol( vsigl->sig->name, symbol, ((vsigl->sig->value->width + vsigl->sig->dim[0].lsb) - 1), vsigl->sig->dim[0].lsb ); 
+    } else {
+      db_assign_symbol( name, symbol, (vpi_get( vpiSize, sig ) - 1), 0 );
+    }
 
     /* Get initial value of this signal and store it for later retrieval */
     if( vpi_get( vpiType, sig ) == vpiRealVar ) {
@@ -494,6 +500,9 @@ void covered_create_value_change_cb(
     vpi_register_cb( cb );
 
   }
+
+  /* Deallocate memory */
+  free_safe( name, (strlen( name ) + 1) );
 
   PROFILE_END;
 
