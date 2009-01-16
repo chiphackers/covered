@@ -892,7 +892,7 @@ static_expr_port_list
   : static_expr_port_list ',' static_expr
     {
       if( parse_mode ) {
-        $$ = parser_append_se_port_list( $1, $3, @1.first_line, @1.first_column, @3.first_line, @3.first_column, @3.last_column );
+        $$ = parser_append_se_port_list( $1, $3, @1.first_line, @1.ppline, @1.first_column, @3.first_line, @3.ppline, @3.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -900,7 +900,7 @@ static_expr_port_list
   | static_expr
     {
       if( parse_mode ) {
-        $$ = parser_create_se_port_list( $1, @1.first_line, @1.first_column, @1.last_column );
+        $$ = parser_create_se_port_list( $1, @1.first_line, @1.ppline, @1.first_column, @1.last_column );
       } else {
         $$ = NULL;
       }
@@ -958,7 +958,7 @@ static_expr
   | static_unary_op static_expr_primary %prec UNARY_PREC
     {
       if( parse_mode ) {
-        $$ = parser_create_unary_se( $2, $1, @1.first_line, @1.first_column, @1.last_column );
+        $$ = parser_create_unary_se( $2, $1, @1.first_line, @1.ppline, @1.first_column, @1.last_column );
       } else {
         $$ = NULL;
       }
@@ -966,7 +966,7 @@ static_expr
   | static_expr '^' static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_XOR, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_XOR, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -974,7 +974,7 @@ static_expr
   | static_expr '*' static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_MULTIPLY, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_MULTIPLY, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -982,7 +982,7 @@ static_expr
   | static_expr '/' static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_DIVIDE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_DIVIDE, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -990,7 +990,7 @@ static_expr
   | static_expr '%' static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_MOD, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_MOD, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -998,7 +998,7 @@ static_expr
   | static_expr '+' static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_ADD, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_ADD, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1006,7 +1006,7 @@ static_expr
   | static_expr '-' static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_SUBTRACT, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_SUBTRACT, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1014,7 +1014,7 @@ static_expr
   | static_expr '&' static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_AND, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_AND, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1022,7 +1022,7 @@ static_expr
   | static_expr '|' static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_OR, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_OR, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1030,7 +1030,7 @@ static_expr
   | static_expr K_NOR static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_NOR, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_NOR, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1038,7 +1038,7 @@ static_expr
   | static_expr K_NAND static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_NAND, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_NAND, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1046,7 +1046,7 @@ static_expr
   | static_expr K_NXOR static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_NXOR, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_NXOR, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1054,7 +1054,7 @@ static_expr
   | static_expr K_LS static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_LSHIFT, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_LSHIFT, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1062,7 +1062,7 @@ static_expr
   | static_expr K_RS static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_RSHIFT, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_RSHIFT, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1070,7 +1070,7 @@ static_expr
   | static_expr K_GE static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_GE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_GE, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1078,7 +1078,7 @@ static_expr
   | static_expr K_LE static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_LE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_LE, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1086,7 +1086,7 @@ static_expr
   | static_expr K_EQ static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_EQ, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_EQ, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1094,7 +1094,7 @@ static_expr
   | static_expr '>' static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_GT, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_GT, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1102,7 +1102,7 @@ static_expr
   | static_expr '<' static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_LT, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_LT, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1116,7 +1116,7 @@ static_expr
           static_expr_dealloc( $3, TRUE );
           $$ = NULL;
         } else {
-          $$ = static_expr_gen( $3, $1, EXP_OP_EXPONENT, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          $$ = static_expr_gen( $3, $1, EXP_OP_EXPONENT, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
         }
       } else {
         $$ = NULL;
@@ -1133,7 +1133,7 @@ static_expr_primary
           tmp = (static_expr*)malloc_safe( sizeof( static_expr ) );
           if( vector_is_unknown( $1.vec ) ) {
             Try {
-              tmp->exp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+              tmp->exp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), NULL );
               tmp->exp->suppl.part.base = $1.base;
             } Catch_anonymous {
               error_count++;
@@ -1161,7 +1161,7 @@ static_expr_primary
         if( (ignore_mode == 0) && ($1 != NULL) ) {
           tmp = (static_expr*)malloc_safe( sizeof( static_expr ) );
           Try {
-            tmp->exp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+            tmp->exp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), NULL );
           } Catch_anonymous {
             error_count++;
           }
@@ -1184,7 +1184,7 @@ static_expr_primary
           tmp = (static_expr*)malloc_safe( sizeof( static_expr ) );
           tmp->num = -1;
           Try {
-            tmp->exp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
+            tmp->exp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), $1 );
           } Catch_anonymous {
             error_count++;
           }
@@ -1209,7 +1209,7 @@ static_expr_primary
     {
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
-          $$ = static_expr_gen( NULL, $3, EXP_OP_FUNC_CALL, @1.first_line, @1.first_column, (@4.last_column - 1), $1 );
+          $$ = static_expr_gen( NULL, $3, EXP_OP_FUNC_CALL, @1.first_line, @1.ppline, @1.first_column, (@4.last_column - 1), $1 );
         } else {
           static_expr_dealloc( $3, TRUE );
           $$ = NULL;
@@ -1223,7 +1223,7 @@ static_expr_primary
     {
       if( parse_mode ) {
         if( ignore_mode == 0 ) { 
-          $$ = static_expr_gen( NULL, $3, EXP_OP_SBIT_SEL, @1.first_line, @1.first_column, (@4.last_column - 1), $1 );
+          $$ = static_expr_gen( NULL, $3, EXP_OP_SBIT_SEL, @1.first_line, @1.ppline, @1.first_column, (@4.last_column - 1), $1 );
         } else {
           static_expr_dealloc( $3, TRUE );
           $$ = NULL;
@@ -1243,7 +1243,7 @@ static_expr_primary
   | S_allow
     {
       if( parse_mode ) {
-        $$ = parser_create_syscall_se( EXP_OP_NOOP, 0, 0, 0 );
+        $$ = parser_create_syscall_se( EXP_OP_NOOP, 0, 0, 0, 0 );
       } else {
         $$ = NULL;
       }
@@ -1251,7 +1251,7 @@ static_expr_primary
   | S_random
     {
       if( parse_mode ) {
-        $$ = parser_create_syscall_se( EXP_OP_SRANDOM, @1.first_line, @1.first_column, @1.last_column );
+        $$ = parser_create_syscall_se( EXP_OP_SRANDOM, @1.first_line, @1.ppline, @1.first_column, @1.last_column );
       } else {
         $$ = NULL;
       }
@@ -1259,7 +1259,7 @@ static_expr_primary
   | S_urandom
     {
       if( parse_mode ) {
-        $$ = parser_create_syscall_se( EXP_OP_SURANDOM, @1.first_line, @1.first_column, @1.last_column );
+        $$ = parser_create_syscall_se( EXP_OP_SURANDOM, @1.first_line, @1.ppline, @1.first_column, @1.last_column );
       } else {
         $$ = NULL;
       }
@@ -1298,7 +1298,7 @@ expression
   | '-' expr_primary %prec UNARY_PREC
     {
       if( parse_mode ) {
-        if( ($$ = parser_create_unary_exp( $2, EXP_OP_NEGATE, @1.first_line, @1.first_column, @1.last_column )) != NULL ) {
+        if( ($$ = parser_create_unary_exp( $2, EXP_OP_NEGATE, @1.first_line, @1.ppline, @1.first_column, @1.last_column )) != NULL ) {
           $$->value->suppl.part.is_signed = 1;
         }
       } else {
@@ -1308,7 +1308,7 @@ expression
   | unary_op expr_primary %prec UNARY_PREC
     {
       if( parse_mode ) {
-        $$ = parser_create_unary_exp( $2, $1, @1.first_line, @1.first_column, @1.last_column );
+        $$ = parser_create_unary_exp( $2, $1, @1.first_line, @1.ppline, @1.first_column, @1.last_column );
       } else {
         $$ = NULL;
       }
@@ -1356,7 +1356,7 @@ expression
   | expression '^' expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_XOR, @1.first_line, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_XOR, @1.first_line, @1.ppline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1364,7 +1364,7 @@ expression
   | expression '*' expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_MULTIPLY, @1.first_line, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_MULTIPLY, @1.first_line, @1.ppline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1372,7 +1372,7 @@ expression
   | expression '/' expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_DIVIDE, @1.first_line, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_DIVIDE, @1.first_line, @1.ppline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1380,7 +1380,7 @@ expression
   | expression '%' expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_MOD, @1.first_line, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_MOD, @1.first_line, @1.ppline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1388,7 +1388,7 @@ expression
   | expression '+' expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_ADD, @1.first_line, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_ADD, @1.first_line, @1.ppline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1396,7 +1396,7 @@ expression
   | expression '-' expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_SUBTRACT, @1.first_line, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_SUBTRACT, @1.first_line, @1.ppline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1404,7 +1404,7 @@ expression
   | expression '&' expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_AND, @1.first_line, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_AND, @1.first_line, @1.ppline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1412,7 +1412,7 @@ expression
   | expression '|' expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_OR, @1.first_line, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_OR, @1.first_line, @1.ppline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1420,7 +1420,7 @@ expression
   | expression K_NAND expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_NAND, @1.first_line, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_NAND, @1.first_line, @1.ppline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1428,7 +1428,7 @@ expression
   | expression K_NOR expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_NOR, @1.first_line, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_NOR, @1.first_line, @1.ppline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1436,7 +1436,7 @@ expression
   | expression K_NXOR expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_NXOR, @1.first_line, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_NXOR, @1.first_line, @1.ppline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1444,7 +1444,7 @@ expression
   | expression '<' expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LT, @1.first_line, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LT, @1.first_line, @1.ppline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1452,7 +1452,7 @@ expression
   | expression '>' expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_GT, @1.first_line, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_GT, @1.first_line, @1.ppline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1460,7 +1460,7 @@ expression
   | expression K_LS expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LSHIFT, @1.first_line, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LSHIFT, @1.first_line, @1.ppline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1468,7 +1468,7 @@ expression
   | expression K_RS expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_RSHIFT, @1.first_line, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_RSHIFT, @1.first_line, @1.ppline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1476,7 +1476,7 @@ expression
   | expression K_EQ expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_EQ, @1.first_line, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_EQ, @1.first_line, @1.ppline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1484,7 +1484,7 @@ expression
   | expression K_CEQ expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_CEQ, @1.first_line, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_CEQ, @1.first_line, @1.ppline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1492,7 +1492,7 @@ expression
   | expression K_LE expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LE, @1.first_line, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LE, @1.first_line, @1.ppline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1500,7 +1500,7 @@ expression
   | expression K_GE expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_GE, @1.first_line, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_GE, @1.first_line, @1.ppline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1508,7 +1508,7 @@ expression
   | expression K_NE expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_NE, @1.first_line, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_NE, @1.first_line, @1.ppline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1516,7 +1516,7 @@ expression
   | expression K_CNE expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_CNE, @1.first_line, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_CNE, @1.first_line, @1.ppline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1524,7 +1524,7 @@ expression
   | expression K_LOR expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LOR, @1.first_line, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LOR, @1.first_line, @1.ppline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1532,7 +1532,7 @@ expression
   | expression K_LAND expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LAND, @1.first_line, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LAND, @1.first_line, @1.ppline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1546,7 +1546,7 @@ expression
           expression_dealloc( $3, FALSE );
           $$ = NULL;
         } else {
-          $$ = parser_create_binary_exp( $1, $3, EXP_OP_EXPONENT, @1.first_line, @1.first_column, @3.last_column );
+          $$ = parser_create_binary_exp( $1, $3, EXP_OP_EXPONENT, @1.first_line, @1.ppline, @1.first_column, @3.last_column );
         }
       } else {
         $$ = NULL;
@@ -1561,7 +1561,7 @@ expression
           expression_dealloc( $3, FALSE );
           $$ = NULL;
         } else {
-          $$ = parser_create_binary_exp( $1, $3, EXP_OP_ALSHIFT, @1.first_line, @1.first_column, @3.last_column );
+          $$ = parser_create_binary_exp( $1, $3, EXP_OP_ALSHIFT, @1.first_line, @1.ppline, @1.first_column, @3.last_column );
         }
       } else {
         $$ = NULL;
@@ -1576,7 +1576,7 @@ expression
           expression_dealloc( $3, FALSE );
           $$ = NULL;
         } else {
-          $$ = parser_create_binary_exp( $1, $3, EXP_OP_ARSHIFT, @1.first_line, @1.first_column, @3.last_column );
+          $$ = parser_create_binary_exp( $1, $3, EXP_OP_ARSHIFT, @1.first_line, @1.ppline, @1.first_column, @3.last_column );
         }
       } else {
         $$ = NULL;
@@ -1587,8 +1587,8 @@ expression
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($5 != NULL) ) {
           Try {
-            expression* csel = db_create_expression( $5, $3, EXP_OP_COND_SEL, lhs_mode, $3->line, @1.first_column, (@3.last_column - 1), NULL );
-            $$ = db_create_expression( csel, $1, EXP_OP_COND, lhs_mode, @1.first_line, @1.first_column, (@5.last_column - 1), NULL );
+            expression* csel = db_create_expression( $5, $3, EXP_OP_COND_SEL, lhs_mode, $3->line, $3->ppline, @1.first_column, (@3.last_column - 1), NULL );
+            $$ = db_create_expression( csel, $1, EXP_OP_COND, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@5.last_column - 1), NULL );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -1647,7 +1647,7 @@ expr_primary
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1.vec != NULL) ) {
           Try {
-            $$ = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+            $$ = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), NULL );
             $$->suppl.part.base = $1.base;
             vector_dealloc( $$->value );
             $$->value = $1.vec;
@@ -1668,7 +1668,7 @@ expr_primary
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL) ) {
           Try {
-            $$ = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+            $$ = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), NULL );
             vector_dealloc( $$->value );
             $$->value = $1;
           } Catch_anonymous {
@@ -1688,7 +1688,7 @@ expr_primary
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
           Try {
-            $$ = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+            $$ = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), NULL );
             $$->suppl.part.base = $1.base;
             vector_dealloc( $$->value );
             $$->value = $1.vec;
@@ -1709,7 +1709,7 @@ expr_primary
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL) ) {
           Try {
-            $$ = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
+            $$ = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), $1 );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -1725,7 +1725,7 @@ expr_primary
   | identifier post_op_and_assign_op
     {
       if( parse_mode ) {
-        $$ = parser_create_op_and_assign_exp( $1, $2, @1.first_line, @1.first_column, @1.last_column, @2.last_column );
+        $$ = parser_create_op_and_assign_exp( $1, $2, @1.first_line, @1.ppline, @1.first_column, @1.last_column, @2.last_column );
       } else {
         $$ = NULL;
       }
@@ -1733,7 +1733,7 @@ expr_primary
   | pre_op_and_assign_op identifier
     {
       if( parse_mode ) {
-        $$ = parser_create_op_and_assign_exp( $2, $1, @1.first_line, @1.first_column, @1.last_column, @2.last_column );
+        $$ = parser_create_op_and_assign_exp( $2, $1, @1.first_line, @1.ppline, @1.first_column, @1.last_column, @2.last_column );
       } else {
         $$ = NULL;
       }
@@ -1748,7 +1748,7 @@ expr_primary
   | S_allow
     {
       if( parse_mode ) {
-        $$ = parser_create_syscall_exp( EXP_OP_NOOP, 0, 0, 0 );
+        $$ = parser_create_syscall_exp( EXP_OP_NOOP, 0, 0, 0, 0 );
       } else {
         $$ = NULL;
       }
@@ -1756,7 +1756,7 @@ expr_primary
   | syscall_wo_parms_op
     {
       if( parse_mode ) {
-        $$ = parser_create_syscall_exp( $1, @1.first_line, @1.first_column, @1.last_column );
+        $$ = parser_create_syscall_exp( $1, @1.first_line, @1.ppline, @1.first_column, @1.last_column );
       } else {
         $$ = NULL;
       }
@@ -1781,7 +1781,7 @@ expr_primary
   | identifier index_expr post_op_and_assign_op
     {
       if( parse_mode ) {
-        $$ = parser_create_op_and_assign_w_dim_exp( $1, $3, $2, @1.first_line, @1.first_column, @3.last_column );
+        $$ = parser_create_op_and_assign_w_dim_exp( $1, $3, $2, @1.first_line, @1.ppline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1789,7 +1789,7 @@ expr_primary
   | pre_op_and_assign_op identifier index_expr
     {
       if( parse_mode ) {
-        $$ = parser_create_op_and_assign_w_dim_exp( $2, $1, $3, @1.first_line, @1.first_column, @3.last_column );
+        $$ = parser_create_op_and_assign_w_dim_exp( $2, $1, $3, @1.first_line, @1.ppline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1799,7 +1799,7 @@ expr_primary
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL ) ) {
           Try {
-            $$ = db_create_expression( NULL, $3, EXP_OP_FUNC_CALL, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), $1 );
+            $$ = db_create_expression( NULL, $3, EXP_OP_FUNC_CALL, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@4.last_column - 1), $1 );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -1823,7 +1823,7 @@ expr_primary
   | S_allow '(' ignore_more expression_port_list ignore_less ')'
     {
       if( parse_mode ) {
-        $$ = parser_create_syscall_exp( EXP_OP_NOOP, 0, 0, 0 );
+        $$ = parser_create_syscall_exp( EXP_OP_NOOP, 0, 0, 0, 0 );
       } else {
         $$ = NULL;
       }
@@ -1831,7 +1831,7 @@ expr_primary
   | syscall_w_parms_op '(' expression_systask_list ')'
     {
       if( parse_mode ) {
-        $$ = parser_create_syscall_w_params_exp( $1, $3, @1.first_line, @1.first_column, @4.last_column );
+        $$ = parser_create_syscall_w_params_exp( $1, $3, @1.first_line, @1.ppline, @1.first_column, @4.last_column );
       } else {
         $$ = NULL;
       }
@@ -1839,7 +1839,7 @@ expr_primary
   | syscall_w_parms_op_64 '(' expression_systask_list ')'
     {
       if( parse_mode ) {
-        if( ($$ = parser_create_syscall_w_params_exp( $1, $3, @1.first_line, @1.first_column, @4.last_column )) != NULL ) {
+        if( ($$ = parser_create_syscall_w_params_exp( $1, $3, @1.first_line, @1.ppline, @1.first_column, @4.last_column )) != NULL ) {
           $$->value->suppl.part.data_type = VDATA_R64;
         }
       } else {
@@ -1849,7 +1849,7 @@ expr_primary
   | syscall_w_parms_op_32 '(' expression_systask_list ')'
     {
       if( parse_mode ) {
-        if( ($$ = parser_create_syscall_w_params_exp( $1, $3, @1.first_line, @1.first_column, @4.last_column )) != NULL ) {
+        if( ($$ = parser_create_syscall_w_params_exp( $1, $3, @1.first_line, @1.ppline, @1.first_column, @4.last_column )) != NULL ) {
           $$->value->suppl.part.data_type = VDATA_R32;
         }
       } else {
@@ -1874,7 +1874,7 @@ expr_primary
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($2 != NULL) ) {
           Try {
-            $$ = db_create_expression( $2, NULL, EXP_OP_CONCAT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            $$ = db_create_expression( $2, NULL, EXP_OP_CONCAT, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -1892,7 +1892,7 @@ expr_primary
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($2 != NULL) && ($4 != NULL) ) {
           Try {
-            $$ = db_create_expression( $4, $2, EXP_OP_EXPAND, lhs_mode, @1.first_line, @1.first_column, (@6.last_column - 1), NULL );
+            $$ = db_create_expression( $4, $2, EXP_OP_EXPAND, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@6.last_column - 1), NULL );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -1917,7 +1917,7 @@ expression_list
           if( param_mode == 0 ) {
             if( $3 != NULL ) {
               Try {
-                $$ = db_create_expression( $3, $1, EXP_OP_LIST, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+                $$ = db_create_expression( $3, $1, EXP_OP_LIST, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
               } Catch_anonymous {
                 error_count++;
                 $$ = NULL;
@@ -2029,8 +2029,8 @@ expression_port_list
         if( ignore_mode == 0 ) {
           if( $3 != NULL ) {
             Try {
-              expression* tmp = db_create_expression( $3, NULL, EXP_OP_PASSIGN, lhs_mode, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
-              $$ = db_create_expression( tmp, $1, EXP_OP_PLIST, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+              expression* tmp = db_create_expression( $3, NULL, EXP_OP_PASSIGN, lhs_mode, @3.first_line, @3.ppline, @3.first_column, (@3.last_column - 1), NULL );
+              $$ = db_create_expression( tmp, $1, EXP_OP_PLIST, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
             } Catch_anonymous {
               error_count++;
               $$ = NULL;
@@ -2050,7 +2050,7 @@ expression_port_list
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
           Try {
-            $$ = db_create_expression( $1, NULL, EXP_OP_PASSIGN, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+            $$ = db_create_expression( $1, NULL, EXP_OP_PASSIGN, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), NULL );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -2072,8 +2072,8 @@ expression_systask_list
         if( ignore_mode == 0 ) {
           if( $3 != NULL ) {
             Try {
-              expression* tmp = db_create_expression( $3, NULL, EXP_OP_SASSIGN, lhs_mode, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
-              $$ = db_create_expression( tmp, $1, EXP_OP_PLIST, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+              expression* tmp = db_create_expression( $3, NULL, EXP_OP_SASSIGN, lhs_mode, @3.first_line, @3.ppline, @3.first_column, (@3.last_column - 1), NULL );
+              $$ = db_create_expression( tmp, $1, EXP_OP_PLIST, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
             } Catch_anonymous {
               expression_dealloc( $3, FALSE );
               error_count++;
@@ -2094,7 +2094,7 @@ expression_systask_list
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
           Try {
-            $$ = db_create_expression( $1, NULL, EXP_OP_SASSIGN, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+            $$ = db_create_expression( $1, NULL, EXP_OP_SASSIGN, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), NULL );
           } Catch_anonymous {
             expression_dealloc( $1, FALSE );
             error_count++;
@@ -2375,9 +2375,9 @@ generate_passign
         if( ignore_mode == 0 ) {
           if( $3 != NULL ) {
             Try {
-              expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-              expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
-              expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+              expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), $1 );
+              expr = db_create_expr_from_static( $3, @3.first_line, @3.ppline, @3.first_column, (@3.last_column - 1) );
+              expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
               if( generate_varname == NULL ) {
                 generate_varname = $1;
               } else {
@@ -2409,9 +2409,9 @@ generate_passign
         if( ignore_mode == 0 ) {
           if( $3 != NULL ) {
             Try {
-              expr = db_create_expr_from_static( $3, @3.first_line, @3.first_column, (@3.last_column - 1) );
-              expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-              expr = db_create_expression( expr, expl, $2, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+              expr = db_create_expr_from_static( $3, @3.first_line, @3.ppline, @3.first_column, (@3.last_column - 1) );
+              expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), $1 );
+              expr = db_create_expression( expr, expl, $2, FALSE, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
               if( generate_varname == NULL ) {
                 generate_varname = $1;
               } else {
@@ -2441,8 +2441,8 @@ generate_passign
         expression* expr = NULL;
         if( ignore_mode == 0 ) {
           Try {
-            expr = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-            expr = db_create_expression( NULL, expr, $2, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
+            expr = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), $1 );
+            expr = db_create_expression( NULL, expr, $2, FALSE, @1.first_line, @1.ppline, @1.first_column, (@2.last_column - 1), NULL );
             if( generate_varname == NULL ) {
               generate_varname = $1;
             } else {
@@ -2712,7 +2712,7 @@ generate_item
           db_add_expression( $4 );
           gi1 = db_get_curr_gen_block();
           /* Create second statement and attach it to the first statement */
-          db_add_expression( db_create_expr_from_static( $6, @6.first_line, @6.first_column, (@6.last_column - 1)) );
+          db_add_expression( db_create_expr_from_static( $6, @6.first_line, @6.ppline, @6.first_column, (@6.last_column - 1)) );
           gi2 = db_get_curr_gen_block();
           db_gen_item_connect( gi1, gi2 );
           /* Add genvar to the new scope */
@@ -2751,9 +2751,9 @@ generate_item
         gen_item*   gi1;
         if( (ignore_mode == 0) && ($4 != NULL) && ($7.gitem1 != NULL) ) {
           generate_expr_mode++;
-          expr = db_create_expr_from_static( $4, @4.first_line, @4.first_column, (@4.last_column - 1) );
+          expr = db_create_expr_from_static( $4, @4.first_line, @4.ppline, @4.first_column, (@4.last_column - 1) );
           Try {
-            expr = db_create_expression( expr, NULL, EXP_OP_IF, FALSE, @1.first_line, @1.first_column, (@5.last_column - 1), NULL );
+            expr = db_create_expression( expr, NULL, EXP_OP_IF, FALSE, @1.first_line, @1.ppline, @1.first_column, (@5.last_column - 1), NULL );
           } Catch_anonymous {
             error_count++;
           }
@@ -2787,13 +2787,13 @@ generate_item
         case_gitem* tc_stmt;
         if( (ignore_mode == 0) && ($4 != NULL) ) {
           generate_expr_mode++;
-          c_expr = db_create_expr_from_static( $4, @4.first_line, @4.first_column, (@4.last_column - 1) );
+          c_expr = db_create_expr_from_static( $4, @4.first_line, @4.ppline, @4.first_column, (@4.last_column - 1) );
           while( c_stmt != NULL ) {
             Try {
               if( c_stmt->expr != NULL ) {
-                expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASE, lhs_mode, c_stmt->line, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
+                expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASE, lhs_mode, c_stmt->line, c_stmt->ppline, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
               } else {
-                expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
+                expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, c_stmt->ppline, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
               }
             } Catch_anonymous {
               error_count++;
@@ -3238,11 +3238,11 @@ module_item
               VLerror( "Empty implicit event expression for the specified always_comb statement" );
             } else {
               Try {
-                slist = db_create_expression( slist, NULL, EXP_OP_ALWAYS_COMB, lhs_mode, @2.first_line, @2.first_column, (@2.last_column - 1), NULL );
+                slist = db_create_expression( slist, NULL, EXP_OP_ALWAYS_COMB, lhs_mode, @2.first_line, @2.ppline, @2.first_column, (@2.last_column - 1), NULL );
               } Catch_anonymous {
                 error_count++;
               }
-              stmt = db_create_statement( slist, @2.ppline );
+              stmt = db_create_statement( slist );
               if( !db_statement_connect( stmt, $4 ) ) {
                 db_remove_statement( stmt );
                 db_remove_statement( $4 );
@@ -3291,11 +3291,11 @@ module_item
               VLerror( "Empty implicit event expression for the specified always_latch statement" );
             } else {
               Try {
-                slist = db_create_expression( slist, NULL, EXP_OP_ALWAYS_LATCH, lhs_mode, @2.first_line, @2.first_column, (@2.last_column - 1), NULL );
+                slist = db_create_expression( slist, NULL, EXP_OP_ALWAYS_LATCH, lhs_mode, @2.first_line, @2.ppline, @2.first_column, (@2.last_column - 1), NULL );
               } Catch_anonymous {
                 error_count++;
               }
-              stmt  = db_create_statement( slist, @2.ppline );
+              stmt  = db_create_statement( slist );
               if( !db_statement_connect( stmt, $4 ) ) {
                 db_remove_statement( stmt );
                 db_remove_statement( $4 );
@@ -3418,7 +3418,7 @@ module_item
         statement* stmt = $8;
         if( ignore_mode == 0 ) {
           if( stmt == NULL ) {
-            stmt = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, @8.first_line, @8.first_column, (@8.last_column - 1), NULL ), @8.ppline );
+            stmt = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, @8.first_line, @8.ppline, @8.first_column, (@8.last_column - 1), NULL ) );
           }
           stmt->suppl.part.head      = 1;
           stmt->suppl.part.is_called = 1;
@@ -3666,7 +3666,7 @@ for_condition
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL) ) {
           $1->suppl.part.for_cntrl = 2;
-          $$ = db_create_statement( $1, @1.ppline );
+          $$ = db_create_statement( $1 );
         } else {
           $$ = NULL;
         }
@@ -3831,17 +3831,17 @@ expression_assignment_list
             } else if( ($1 == 1) || (db_find_signal( $2, TRUE ) == NULL) ) {
               db_add_signal( $2, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @2.first_line, @2.first_column, TRUE );
             }
-            tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @2.first_line, @2.first_column, (@2.last_column - 1), $2 );
+            tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @2.first_line, @2.ppline, @2.first_column, (@2.last_column - 1), $2 );
           } Catch_anonymous {
             error_count++;
           }
           Try {
-            tmp = db_create_expression( $4, tmp, EXP_OP_BASSIGN, FALSE, @2.first_line, @2.first_column, (@4.last_column - 1), NULL );
+            tmp = db_create_expression( $4, tmp, EXP_OP_BASSIGN, FALSE, @2.first_line, @2.ppline, @2.first_column, (@4.last_column - 1), NULL );
             tmp->suppl.part.for_cntrl = 1;
           } Catch_anonymous {
             error_count++;
           }
-          stmt = db_create_statement( tmp, @2.ppline );
+          stmt = db_create_statement( tmp );
           $$ = stmt;
         } else {
           expression_dealloc( $4, FALSE );
@@ -3865,17 +3865,17 @@ expression_assignment_list
             } else if( ($3 == 1) || (db_find_signal( $4, TRUE ) == NULL) ) {
               db_add_signal( $4, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @4.first_line, @4.first_column, TRUE );
             }
-            tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @4.first_line, @4.first_column, (@4.last_column - 1), $4 );
+            tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @4.first_line, @4.ppline, @4.first_column, (@4.last_column - 1), $4 );
           } Catch_anonymous {
             error_count++;
           }
           Try {
-            tmp = db_create_expression( $6, tmp, EXP_OP_BASSIGN, FALSE, @4.first_line, @4.first_column, (@6.last_column - 1), NULL );
+            tmp = db_create_expression( $6, tmp, EXP_OP_BASSIGN, FALSE, @4.first_line, @4.ppline, @4.first_column, (@6.last_column - 1), NULL );
             tmp->suppl.part.for_cntrl = 1;
           } Catch_anonymous {
             error_count++;
           }
-          stmt = db_create_statement( tmp, @4.ppline );
+          stmt = db_create_statement( tmp );
           if( !db_statement_connect( $1, stmt ) ) {
             db_remove_statement( stmt );
           }
@@ -3897,9 +3897,9 @@ passign
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
           Try {
-            expression* tmp = db_create_expression( $3, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            expression* tmp = db_create_expression( $3, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
             tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
-            $$ = db_create_statement( tmp, @1.ppline );
+            $$ = db_create_statement( tmp );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -3930,12 +3930,12 @@ passign
           } else {
             expression* tmp = NULL;
             Try {
-              tmp = db_create_expression( $3, $1, EXP_OP_ADD_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+              tmp = db_create_expression( $3, $1, EXP_OP_ADD_A, FALSE, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
               tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
             } Catch_anonymous {
               error_count++;
             }
-            $$ = db_create_statement( tmp, @1.ppline );
+            $$ = db_create_statement( tmp );
           }
         } else {
           expression_dealloc( $1, FALSE );
@@ -3963,12 +3963,12 @@ passign
           } else {
             expression* tmp = NULL;
             Try {
-              tmp = db_create_expression( $3, $1, EXP_OP_SUB_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+              tmp = db_create_expression( $3, $1, EXP_OP_SUB_A, FALSE, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
               tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
             } Catch_anonymous {
               error_count++;
             }
-            $$ = db_create_statement( tmp, @1.ppline );
+            $$ = db_create_statement( tmp );
           }
         } else {
           expression_dealloc( $1, FALSE );
@@ -3996,12 +3996,12 @@ passign
           } else {
             expression* tmp = NULL;
             Try {
-              tmp = db_create_expression( $3, $1, EXP_OP_MLT_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+              tmp = db_create_expression( $3, $1, EXP_OP_MLT_A, FALSE, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
               tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
             } Catch_anonymous {
               error_count++;
             }
-            $$ = db_create_statement( tmp, @1.ppline );
+            $$ = db_create_statement( tmp );
           }
         } else {
           expression_dealloc( $1, FALSE );
@@ -4029,12 +4029,12 @@ passign
           } else {
             expression* tmp = NULL;
             Try {
-              tmp = db_create_expression( $3, $1, EXP_OP_DIV_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+              tmp = db_create_expression( $3, $1, EXP_OP_DIV_A, FALSE, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
               tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
             } Catch_anonymous {
               error_count++;
             }
-            $$ = db_create_statement( tmp, @1.ppline );
+            $$ = db_create_statement( tmp );
           }
         } else {
           expression_dealloc( $1, FALSE );
@@ -4062,12 +4062,12 @@ passign
           } else {
             expression* tmp = NULL;
             Try {
-              tmp = db_create_expression( $3, $1, EXP_OP_MOD_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+              tmp = db_create_expression( $3, $1, EXP_OP_MOD_A, FALSE, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
               tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
             } Catch_anonymous {
               error_count++;
             }
-            $$ = db_create_statement( tmp, @1.ppline );
+            $$ = db_create_statement( tmp );
           }
         } else {
           expression_dealloc( $1, FALSE );
@@ -4095,12 +4095,12 @@ passign
           } else {
             expression* tmp = NULL;
             Try {
-              tmp = db_create_expression( $3, $1, EXP_OP_AND_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+              tmp = db_create_expression( $3, $1, EXP_OP_AND_A, FALSE, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
               tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
             } Catch_anonymous {
               error_count++;
             }
-            $$ = db_create_statement( tmp, @1.ppline );
+            $$ = db_create_statement( tmp );
           }
         } else {
           expression_dealloc( $1, FALSE );
@@ -4128,12 +4128,12 @@ passign
           } else {
             expression* tmp = NULL;
             Try {
-              tmp = db_create_expression( $3, $1, EXP_OP_OR_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+              tmp = db_create_expression( $3, $1, EXP_OP_OR_A, FALSE, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
               tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
             } Catch_anonymous {
               error_count++;
             }
-            $$ = db_create_statement( tmp, @1.ppline );
+            $$ = db_create_statement( tmp );
           }
         } else {
           expression_dealloc( $1, FALSE );
@@ -4161,14 +4161,14 @@ passign
           } else {
             expression* tmp = NULL;
             Try {
-              tmp = db_create_expression( $3, $1, EXP_OP_XOR_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+              tmp = db_create_expression( $3, $1, EXP_OP_XOR_A, FALSE, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
               tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
             } Catch_anonymous {
               expression_dealloc( $1, FALSE );
               expression_dealloc( $3, FALSE );
               error_count++;
             }
-            $$ = db_create_statement( tmp, @1.ppline );
+            $$ = db_create_statement( tmp );
           }
         } else {
           expression_dealloc( $1, FALSE );
@@ -4196,14 +4196,14 @@ passign
           } else {
             expression* tmp = NULL;
             Try {
-              tmp = db_create_expression( $3, $1, EXP_OP_LS_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+              tmp = db_create_expression( $3, $1, EXP_OP_LS_A, FALSE, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
               tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
             } Catch_anonymous {
               expression_dealloc( $1, FALSE );
               expression_dealloc( $3, FALSE );
               error_count++;
             }
-            $$ = db_create_statement( tmp, @1.ppline );
+            $$ = db_create_statement( tmp );
           }
         } else {
           expression_dealloc( $1, FALSE );
@@ -4231,14 +4231,14 @@ passign
           } else {
             expression* tmp = NULL;
             Try {
-              tmp = db_create_expression( $3, $1, EXP_OP_RS_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+              tmp = db_create_expression( $3, $1, EXP_OP_RS_A, FALSE, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
               tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
             } Catch_anonymous {
               expression_dealloc( $1, FALSE );
               expression_dealloc( $3, FALSE );
               error_count++;
             }
-            $$ = db_create_statement( tmp, @1.ppline );
+            $$ = db_create_statement( tmp );
           }
         } else {
           expression_dealloc( $1, FALSE );
@@ -4266,14 +4266,14 @@ passign
           } else {
             expression* tmp = NULL;
             Try {
-              tmp = db_create_expression( $3, $1, EXP_OP_ALS_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+              tmp = db_create_expression( $3, $1, EXP_OP_ALS_A, FALSE, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
               tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
             } Catch_anonymous {
               expression_dealloc( $1, FALSE );
               expression_dealloc( $3, FALSE );
               error_count++;
             }
-            $$ = db_create_statement( tmp, @1.ppline );
+            $$ = db_create_statement( tmp );
           }
         } else {
           expression_dealloc( $1, FALSE );
@@ -4301,14 +4301,14 @@ passign
           } else {
             expression* tmp = NULL;
             Try {
-              tmp = db_create_expression( $3, $1, EXP_OP_ARS_A, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+              tmp = db_create_expression( $3, $1, EXP_OP_ARS_A, FALSE, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
               tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
             } Catch_anonymous {
               expression_dealloc( $1, FALSE );
               expression_dealloc( $3, FALSE );
               error_count++;
             }
-            $$ = db_create_statement( tmp, @1.ppline );
+            $$ = db_create_statement( tmp );
           }
         } else {
           expression_dealloc( $1, FALSE );
@@ -4335,13 +4335,13 @@ passign
           } else {
             expression* tmp = NULL;
             Try {
-              tmp = db_create_expression( NULL, $1, EXP_OP_PINC, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
+              tmp = db_create_expression( NULL, $1, EXP_OP_PINC, FALSE, @1.first_line, @1.ppline, @1.first_column, (@2.last_column - 1), NULL );
               tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
             } Catch_anonymous {
               expression_dealloc( $1, FALSE );
               error_count++;
             }
-            $$ = db_create_statement( tmp, @1.ppline );
+            $$ = db_create_statement( tmp );
           }
         } else {
           expression_dealloc( $1, FALSE );
@@ -4367,13 +4367,13 @@ passign
           } else {
             expression* tmp = NULL;
             Try {
-              tmp = db_create_expression( NULL, $1, EXP_OP_PDEC, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
+              tmp = db_create_expression( NULL, $1, EXP_OP_PDEC, FALSE, @1.first_line, @1.ppline, @1.first_column, (@2.last_column - 1), NULL );
               tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
             } Catch_anonymous {
               expression_dealloc( $1, FALSE );
               error_count++;
             }
-            $$ = db_create_statement( tmp, @1.ppline );
+            $$ = db_create_statement( tmp );
           }
         } else {
           expression_dealloc( $1, FALSE );
@@ -4459,11 +4459,11 @@ statement
           db_end_function_task_namedblock( @5.first_line );
           if( $3 != NULL ) {
             scope_extract_back( $3->name, back, rest );
-            exp  = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+            exp  = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), NULL );
             exp->elem.funit      = $3;
             exp->suppl.part.type = ETYPE_FUNIT;
             exp->name            = strdup_safe( back );
-            stmt = db_create_statement( exp, @1.ppline );
+            stmt = db_create_statement( exp );
             $$   = stmt;
           } else {
             $$ = NULL;
@@ -4474,8 +4474,8 @@ statement
           }
           if( ignore_mode == 0 ) {
             /* If there is no body to the begin..end block, replace the block with a NOOP */
-            exp  = db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-            stmt = db_create_statement( exp, @1.ppline );
+            exp  = db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), NULL );
+            stmt = db_create_statement( exp );
             $$   = stmt;
           }
         }
@@ -4501,11 +4501,11 @@ statement
           db_end_function_task_namedblock( @5.first_line );
           if( $4 != NULL ) {
             scope_extract_back( $4->name, back, rest );
-            exp  = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+            exp  = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), NULL );
             exp->elem.funit      = $4;
             exp->suppl.part.type = ETYPE_FUNIT;
             exp->name            = strdup_safe( back );
-            stmt = db_create_statement( exp, @1.ppline );
+            stmt = db_create_statement( exp );
             $$   = stmt;
           } else {
             ignore_mode--;
@@ -4526,11 +4526,11 @@ statement
         if( (ignore_mode == 0) && ($2 != NULL) ) {
           expression* exp = NULL;
           Try {
-            exp = db_create_expression( NULL, NULL, EXP_OP_DISABLE, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), $2 );
+            exp = db_create_expression( NULL, NULL, EXP_OP_DISABLE, FALSE, @1.first_line, @1.ppline, @1.first_column, (@2.last_column - 1), $2 );
           } Catch_anonymous {
             error_count++;
           }
-          $$ = db_create_statement( exp, @1.ppline );
+          $$ = db_create_statement( exp );
         } else {
           $$ = NULL;
         } 
@@ -4547,11 +4547,11 @@ statement
         if( (ignore_mode == 0) && ($2 != NULL) ) {
           expression* exp = NULL;
           Try {
-            exp = db_create_expression( NULL, NULL, EXP_OP_TRIGGER, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), $2 );
+            exp = db_create_expression( NULL, NULL, EXP_OP_TRIGGER, FALSE, @1.first_line, @1.ppline, @1.first_column, (@2.last_column - 1), $2 );
           } Catch_anonymous {
             error_count++;
           }
-          $$ = db_create_statement( exp, @1.ppline );
+          $$ = db_create_statement( exp );
         } else {
           $$ = NULL;
         }
@@ -4570,11 +4570,11 @@ statement
           expression* expr;
           statement*  stmt;
           Try {
-            expr = db_create_expression( NULL, NULL, EXP_OP_FOREVER, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+            expr = db_create_expression( NULL, NULL, EXP_OP_FOREVER, FALSE, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), NULL );
           } Catch_anonymous {
             error_count++;
           }
-          stmt = db_create_statement( expr, @1.ppline );
+          stmt = db_create_statement( expr );
           if( db_statement_connect( $3, $3 ) ) {
             db_connect_statement_false( stmt, $3 );
             $$ = stmt;
@@ -4604,7 +4604,7 @@ statement
           expression* expr = NULL;
           statement*  stmt;
           Try {
-            expr = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+            expr = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), NULL );
             (void)vector_from_int( vec, 0x0 );
             assert( expr->value->value.ul == NULL );
             free_safe( expr->value, sizeof( vector ) );
@@ -4613,11 +4613,11 @@ statement
             error_count++;
           }
           Try {
-            expr = db_create_expression( $3, expr, EXP_OP_REPEAT, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+            expr = db_create_expression( $3, expr, EXP_OP_REPEAT, FALSE, @1.first_line, @1.ppline, @1.first_column, (@4.last_column - 1), NULL );
           } Catch_anonymous {
             error_count++;
           }
-          stmt = db_create_statement( expr, @1.ppline );
+          stmt = db_create_statement( expr );
           db_connect_statement_true( stmt, $7 );
           stmt->conn_id = stmt_conn_id;   /* This will cause the STOP bit to be set for all statements connecting to stmt */
           assert( db_statement_connect( $7, stmt ) );
@@ -4655,14 +4655,14 @@ statement
             while( c_stmt != NULL ) {
               Try {
                 if( c_stmt->expr != NULL ) {
-                  expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASE, lhs_mode, c_stmt->line, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
+                  expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASE, lhs_mode, c_stmt->line, c_stmt->ppline, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
                 } else {
-                  expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
+                  expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, c_stmt->ppline, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
                 }
               } Catch_anonymous {
                 error_count++;
               }
-              stmt = db_create_statement( expr, c_stmt->ppline );
+              stmt = db_create_statement( expr );
               db_connect_statement_true( stmt, c_stmt->stmt );
               db_connect_statement_false( stmt, last_stmt );
               if( stmt != NULL ) {
@@ -4717,14 +4717,14 @@ statement
             while( c_stmt != NULL ) {
               Try {
                 if( c_stmt->expr != NULL ) {
-                  expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASEX, lhs_mode, c_stmt->line, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
+                  expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASEX, lhs_mode, c_stmt->line, c_stmt->ppline, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
                 } else {
-                  expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
+                  expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, c_stmt->ppline, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
                 }
               } Catch_anonymous {
                 error_count++;
               }
-              stmt = db_create_statement( expr, c_stmt->ppline );
+              stmt = db_create_statement( expr );
               db_connect_statement_true( stmt, c_stmt->stmt );
               db_connect_statement_false( stmt, last_stmt );
               if( stmt != NULL ) {
@@ -4779,14 +4779,14 @@ statement
             while( c_stmt != NULL ) {
               Try {
                 if( c_stmt->expr != NULL ) {
-                  expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASEZ, lhs_mode, c_stmt->line, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
+                  expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASEZ, lhs_mode, c_stmt->line, c_stmt->ppline, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
                 } else {
-                  expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
+                  expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, c_stmt->ppline, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
                 }
               } Catch_anonymous {
                 error_count++;
               }
-              stmt = db_create_statement( expr, c_stmt->ppline );
+              stmt = db_create_statement( expr );
               db_connect_statement_true( stmt, c_stmt->stmt );
               db_connect_statement_false( stmt, last_stmt );
               if( stmt != NULL ) {
@@ -4830,11 +4830,11 @@ statement
         if( (ignore_mode == 0) && ($4 != NULL) ) {
           expression* tmp = NULL;
           Try {
-            tmp = db_create_expression( $4, NULL, EXP_OP_IF, FALSE, @2.first_line, @2.first_column, (@5.last_column - 1), NULL );
+            tmp = db_create_expression( $4, NULL, EXP_OP_IF, FALSE, @2.first_line, @2.ppline, @2.first_column, (@5.last_column - 1), NULL );
           } Catch_anonymous {
             error_count++;
           }
-          if( ($$ = db_create_statement( tmp, @2.ppline )) != NULL ) {
+          if( ($$ = db_create_statement( tmp )) != NULL ) {
             db_connect_statement_true( $$, $7.stmt1 );
             if( $7.stmt2 != NULL ) {
               db_connect_statement_false( $$, $7.stmt2 );
@@ -4895,11 +4895,11 @@ statement
         db_end_function_task_namedblock( @12.first_line );
         if( (stmt1 != NULL) && ($2 != NULL) ) {
           scope_extract_back( $2->name, back, rest );
-          exp = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+          exp = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), NULL );
           exp->elem.funit      = $2;
           exp->suppl.part.type = ETYPE_FUNIT;
           exp->name            = strdup_safe( back );
-          stmt = db_create_statement( exp, @1.ppline );
+          stmt = db_create_statement( exp );
           $$ = stmt;
         } else {
           $$ = NULL;
@@ -4963,11 +4963,11 @@ statement
         if( (ignore_mode == 0) && ($3 != NULL) && ($7 != NULL) ) {
           expression* expr = NULL;
           Try {
-            expr = db_create_expression( $3, NULL, EXP_OP_WHILE, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+            expr = db_create_expression( $3, NULL, EXP_OP_WHILE, FALSE, @1.first_line, @1.ppline, @1.first_column, (@4.last_column - 1), NULL );
           } Catch_anonymous {
             error_count++;
           }
-          if( ($$ = db_create_statement( expr, @1.ppline )) != NULL ) {
+          if( ($$ = db_create_statement( expr )) != NULL ) {
             db_connect_statement_true( $$, $7 );
             $$->conn_id = stmt_conn_id;   /* This will cause the STOP bit to be set for all statements connecting to stmt */
             assert( db_statement_connect( $7, $$ ) );
@@ -4996,11 +4996,11 @@ statement
           expression* expr = NULL;
           statement*  stmt;
           Try {
-            expr = db_create_expression( $7, NULL, EXP_OP_WHILE, FALSE, @5.first_line, @5.first_column, (@8.last_column - 1), NULL );
+            expr = db_create_expression( $7, NULL, EXP_OP_WHILE, FALSE, @5.first_line, @5.ppline, @5.first_column, (@8.last_column - 1), NULL );
           } Catch_anonymous {
             error_count++;
           }
-          if( (stmt = db_create_statement( expr, @5.ppline )) != NULL ) {
+          if( (stmt = db_create_statement( expr )) != NULL ) {
             assert( db_statement_connect( $3, stmt ) );
             db_connect_statement_true( stmt, $3 );
             stmt->suppl.part.stop_true = 1;  /* Set STOP bit for the TRUE path */
@@ -5032,7 +5032,7 @@ statement
       if( parse_mode ) {
         statement* stmt;
         if( (ignore_mode == 0) && ($1 != NULL) ) {
-          stmt = db_create_statement( $1, @1.ppline );
+          stmt = db_create_statement( $1 );
           if( $3 != NULL ) {
             if( !db_statement_connect( stmt, $3 ) ) {
               db_remove_statement( stmt );
@@ -5067,7 +5067,7 @@ statement
       if( parse_mode ) {
         statement* stmt;
         if( (ignore_mode == 0) && ($1 != NULL) ) {
-          stmt = db_create_statement( $1, @1.ppline );
+          stmt = db_create_statement( $1 );
           if( $3 != NULL ) {
             if( !db_statement_connect( stmt, $3 ) ) {
               db_remove_statement( stmt );
@@ -5114,11 +5114,11 @@ statement
               $$ = NULL;
             } else {
               Try {
-                expr = db_create_expression( expr, NULL, EXP_OP_SLIST, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL ); 
+                expr = db_create_expression( expr, NULL, EXP_OP_SLIST, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@2.last_column - 1), NULL ); 
               } Catch_anonymous {
                 error_count++;
               }
-              stmt = db_create_statement( expr, @1.ppline );
+              stmt = db_create_statement( expr );
               if( !db_statement_connect( stmt, $4 ) ) {
                 db_remove_statement( stmt );
                 db_remove_statement( $4 );
@@ -5152,8 +5152,8 @@ statement
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
           Try {
-            expression* tmp = db_create_expression( $3, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-            $$ = db_create_statement( tmp, @1.ppline );
+            expression* tmp = db_create_expression( $3, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
+            $$ = db_create_statement( tmp );
           } Catch_anonymous {
             expression_dealloc( $1, FALSE );
             expression_dealloc( $3, FALSE );
@@ -5177,9 +5177,9 @@ statement
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($4 != NULL) ) {
           Try {
-            expression* tmp = db_create_expression( $4, $3, EXP_OP_DLY_OP, FALSE, @3.first_line, @3.first_column, (@4.last_column - 1), NULL );
-            tmp = db_create_expression( tmp, $1, EXP_OP_DLY_ASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
-            $$  = db_create_statement( tmp, @1.ppline );
+            expression* tmp = db_create_expression( $4, $3, EXP_OP_DLY_OP, FALSE, @3.first_line, @3.ppline, @3.first_column, (@4.last_column - 1), NULL );
+            tmp = db_create_expression( tmp, $1, EXP_OP_DLY_ASSIGN, FALSE, @1.first_line, @1.ppline, @1.first_column, (@4.last_column - 1), NULL );
+            $$  = db_create_statement( tmp );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -5203,8 +5203,8 @@ statement
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($4 != NULL) ) {
           Try {
-            expression* tmp = db_create_expression( $4, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
-            $$ = db_create_statement( tmp, @1.ppline );
+            expression* tmp = db_create_expression( $4, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.ppline, @1.first_column, (@4.last_column - 1), NULL );
+            $$ = db_create_statement( tmp );
           } Catch_anonymous {
             expression_dealloc( $1, FALSE );
             expression_dealloc( $4, FALSE );
@@ -5230,9 +5230,9 @@ statement
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($4 != NULL) ) {
           Try {
-            expression* tmp = db_create_expression( $4, $3, EXP_OP_DLY_OP, FALSE, @3.first_line, @3.first_column, (@4.last_column - 1), NULL );
-            tmp = db_create_expression( tmp, $1, EXP_OP_DLY_ASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
-            $$ = db_create_statement( tmp, @1.ppline );
+            expression* tmp = db_create_expression( $4, $3, EXP_OP_DLY_OP, FALSE, @3.first_line, @3.ppline, @3.first_column, (@4.last_column - 1), NULL );
+            tmp = db_create_expression( tmp, $1, EXP_OP_DLY_ASSIGN, FALSE, @1.first_line, @1.ppline, @1.first_column, (@4.last_column - 1), NULL );
+            $$ = db_create_statement( tmp );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -5256,8 +5256,8 @@ statement
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($4 != NULL) ) {
           Try {
-            expression* tmp = db_create_expression( $4, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
-            $$ = db_create_statement( tmp, @1.ppline );
+            expression* tmp = db_create_expression( $4, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.ppline, @1.first_column, (@4.last_column - 1), NULL );
+            $$ = db_create_statement( tmp );
           } Catch_anonymous {
             expression_dealloc( $1, FALSE );
             expression_dealloc( $4, FALSE );
@@ -5284,16 +5284,16 @@ statement
         if( (ignore_mode == 0) && ($1 != NULL) && ($5 != NULL) && ($7 != NULL) && ($8 != NULL) ) {
           vector* vec = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
           Try {
-            expression* tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+            expression* tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), NULL );
             (void)vector_from_int( vec, 0x0 );
             assert( tmp->value->value.ul == NULL );
             free_safe( tmp->value, sizeof( vector ) );
             tmp->value = vec;
-            tmp = db_create_expression( $5, tmp, EXP_OP_REPEAT, FALSE, @3.first_line, @3.first_column, (@6.last_column - 1), NULL );
-            tmp = db_create_expression( $7, tmp, EXP_OP_RPT_DLY, FALSE, @3.first_line, @3.first_column, (@7.last_column - 1), NULL );
-            tmp = db_create_expression( $8, tmp, EXP_OP_DLY_OP, FALSE, @3.first_line, @3.first_column, (@8.last_column - 1), NULL );
-            tmp = db_create_expression( tmp, $1, EXP_OP_DLY_ASSIGN, FALSE, @1.first_line, @1.first_column, (@8.last_column - 1), NULL );
-            $$ = db_create_statement( tmp, @1.ppline );
+            tmp = db_create_expression( $5, tmp, EXP_OP_REPEAT, FALSE, @3.first_line, @3.ppline, @3.first_column, (@6.last_column - 1), NULL );
+            tmp = db_create_expression( $7, tmp, EXP_OP_RPT_DLY, FALSE, @3.first_line, @3.ppline, @3.first_column, (@7.last_column - 1), NULL );
+            tmp = db_create_expression( $8, tmp, EXP_OP_DLY_OP, FALSE, @3.first_line, @3.ppline, @3.first_column, (@8.last_column - 1), NULL );
+            tmp = db_create_expression( tmp, $1, EXP_OP_DLY_ASSIGN, FALSE, @1.first_line, @1.ppline, @1.first_column, (@8.last_column - 1), NULL );
+            $$ = db_create_statement( tmp );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -5318,8 +5318,8 @@ statement
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL) && ($8 != NULL) ) {
           Try {
-            expression* tmp = db_create_expression( $8, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@8.last_column - 1), NULL );
-            $$ = db_create_statement( tmp, @1.ppline );
+            expression* tmp = db_create_expression( $8, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.ppline, @1.first_column, (@8.last_column - 1), NULL );
+            $$ = db_create_statement( tmp );
           } Catch_anonymous {
             expression_dealloc( $1, FALSE );
             expression_dealloc( $8, FALSE );
@@ -5362,11 +5362,11 @@ statement
         if( (ignore_mode == 0) && ($3 != NULL) ) {
           expression* exp = NULL;
           Try {
-            exp = db_create_expression( $3, NULL, EXP_OP_WAIT, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+            exp = db_create_expression( $3, NULL, EXP_OP_WAIT, FALSE, @1.first_line, @1.ppline, @1.first_column, (@4.last_column - 1), NULL );
           } Catch_anonymous {
             error_count++;
           }
-          $$ = db_create_statement( exp, @1.ppline );
+          $$ = db_create_statement( exp );
           if( $6 != NULL ) {
             if( !db_statement_connect( $$, $6 ) ) {
               db_remove_statement( $$ );
@@ -5395,7 +5395,7 @@ statement
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
           Try {
-            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, 0, 0, 0, NULL ), @1.ppline );
+            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, 0, 0, 0, 0, NULL ) );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -5413,7 +5413,7 @@ statement
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
           Try {
-            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_SFINISH, FALSE, 0, 0, 0, NULL ), @1.ppline );
+            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_SFINISH, FALSE, 0, 0, 0, 0, NULL ) );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -5431,7 +5431,7 @@ statement
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
           Try {
-            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_SSTOP, FALSE, 0, 0, 0, NULL ), @1.ppline );
+            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_SSTOP, FALSE, 0, 0, 0, 0, NULL ) );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -5449,7 +5449,7 @@ statement
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($3 != NULL) ) {
           Try {
-            $$ = db_create_statement( db_create_expression( NULL, $3, EXP_OP_SSRANDOM, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL ), @1.ppline );
+            $$ = db_create_statement( db_create_expression( NULL, $3, EXP_OP_SSRANDOM, FALSE, @1.first_line, @1.ppline, @1.first_column, (@4.last_column - 1), NULL ) );
           } Catch_anonymous {
             expression_dealloc( $3, FALSE );
             error_count++;
@@ -5476,7 +5476,7 @@ statement
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
           Try {
-            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, 0, 0, 0, NULL ), @1.ppline );
+            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, 0, 0, 0, 0, NULL ) );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -5494,7 +5494,7 @@ statement
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
           Try {
-            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_SFINISH, FALSE, 0, 0, 0, NULL ), @1.ppline );
+            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_SFINISH, FALSE, 0, 0, 0, 0, NULL ) );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -5512,7 +5512,7 @@ statement
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
           Try {
-            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_SSTOP, FALSE, 0, 0, 0, NULL ), @1.ppline );
+            $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_SSTOP, FALSE, 0, 0, 0, 0, NULL ) );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -5529,8 +5529,8 @@ statement
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
           Try {
-            expression* exp = db_create_expression( NULL, $3, EXP_OP_TASK_CALL, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), $1 );
-            $$ = db_create_statement( exp, @1.ppline );
+            expression* exp = db_create_expression( NULL, $3, EXP_OP_TASK_CALL, FALSE, @1.first_line, @1.ppline, @1.first_column, (@4.last_column - 1), $1 );
+            $$ = db_create_statement( exp );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -5551,8 +5551,8 @@ statement
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL) ) {
           Try {
-            expression* exp = db_create_expression( NULL, NULL, EXP_OP_TASK_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-            $$ = db_create_statement( exp, @1.ppline );
+            expression* exp = db_create_expression( NULL, NULL, EXP_OP_TASK_CALL, FALSE, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), $1 );
+            $$ = db_create_statement( exp );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -5574,8 +5574,8 @@ statement
         expression* exp;
         statement*  stmt;
         if( ignore_mode == 0 ) {
-          exp  = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
-          stmt = db_create_statement( exp, @1.ppline );
+          exp  = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, 0, NULL );
+          stmt = db_create_statement( exp );
           $$   = stmt;
         }
       } else {
@@ -5588,8 +5588,8 @@ statement
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
           Try {
-            expression* exp = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, NULL );
-            $$ = db_create_statement( exp, @1.ppline );
+            expression* exp = db_create_expression( NULL, NULL, EXP_OP_NOOP, lhs_mode, 0, 0, 0, 0, NULL );
+            $$ = db_create_statement( exp );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -5639,11 +5639,11 @@ fork_statement
             expression* expr = NULL;
             statement*  stmt;
             Try {
-              expr = db_create_expression( NULL, NULL, EXP_OP_JOIN, FALSE, @4.first_line, @4.first_column, (@4.last_column - 1), NULL );
+              expr = db_create_expression( NULL, NULL, EXP_OP_JOIN, FALSE, @4.first_line, @4.ppline, @4.first_column, (@4.last_column - 1), NULL );
             } Catch_anonymous {
               error_count++;
             }
-            if( ((stmt = db_create_statement( expr, @4.ppline )) != NULL) && db_statement_connect( $4, stmt ) ) {
+            if( ((stmt = db_create_statement( expr )) != NULL) && db_statement_connect( $4, stmt ) ) {
               stmt = $4;
               stmt->suppl.part.head      = 1;
               stmt->suppl.part.is_called = 1;
@@ -5782,7 +5782,7 @@ statement_list
           if( $1 == NULL ) {
             $$ = NULL;
           } else {
-            statement* stmt = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, @2.first_line, @2.first_column, (@2.last_column - 1), NULL ), @2.ppline );
+            statement* stmt = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, @2.first_line, @2.ppline, @2.first_column, (@2.last_column - 1), NULL ) );
             if( !db_statement_connect( $1, stmt ) ) {
               db_remove_statement( stmt );
             }
@@ -5797,7 +5797,7 @@ statement_list
   | ';'
     {
       if( parse_mode ) {
-        $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL ), @1.ppline );
+        $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), NULL ) );
       } else {
         $$ = NULL;  /* TBD */
       }
@@ -5823,7 +5823,7 @@ lpvalue
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL) ) {
           Try {
-            $$ = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
+            $$ = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), $1 );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -5859,7 +5859,7 @@ lpvalue
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($3 != NULL) ) {
           Try {
-            $$ = db_create_expression( $3, NULL, EXP_OP_CONCAT, TRUE, @1.first_line, @1.first_column, (@5.last_column - 1), NULL );
+            $$ = db_create_expression( $3, NULL, EXP_OP_CONCAT, TRUE, @1.first_line, @1.ppline, @1.first_column, (@5.last_column - 1), NULL );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -5883,7 +5883,7 @@ lavalue
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL) ) {
           Try {
-            $$ = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
+            $$ = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), $1 );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -5919,7 +5919,7 @@ lavalue
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($3 != NULL) ) {
           Try {
-            $$ = db_create_expression( $3, NULL, EXP_OP_CONCAT, TRUE, @1.first_line, @1.first_column, (@5.last_column - 1), NULL );
+            $$ = db_create_expression( $3, NULL, EXP_OP_CONCAT, TRUE, @1.first_line, @1.ppline, @1.first_column, (@5.last_column - 1), NULL );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -6322,7 +6322,7 @@ delay1
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($2 != NULL) ) {
           Try {
-            $$ = db_create_expression( $2, NULL, EXP_OP_DELAY, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
+            $$ = db_create_expression( $2, NULL, EXP_OP_DELAY, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@2.last_column - 1), NULL );
           } Catch_anonymous {
             expression_dealloc( $2, FALSE );
             error_count++;
@@ -6341,7 +6341,7 @@ delay1
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($3 != NULL) ) {
           Try {
-            $$ = db_create_expression( $3, NULL, EXP_OP_DELAY, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+            $$ = db_create_expression( $3, NULL, EXP_OP_DELAY, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@4.last_column - 1), NULL );
           } Catch_anonymous {
             expression_dealloc( $3, FALSE );
             error_count++;
@@ -6363,7 +6363,7 @@ delay3
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($2 != NULL) ) {
           Try {
-            $$ = db_create_expression( $2, NULL, EXP_OP_DELAY, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
+            $$ = db_create_expression( $2, NULL, EXP_OP_DELAY, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@2.last_column - 1), NULL );
           } Catch_anonymous {
             expression_dealloc( $2, FALSE );
             error_count++;
@@ -6382,7 +6382,7 @@ delay3
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($3 != NULL) ) {
           Try {
-            $$ = db_create_expression( $3, NULL, EXP_OP_DELAY, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+            $$ = db_create_expression( $3, NULL, EXP_OP_DELAY, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@4.last_column - 1), NULL );
           } Catch_anonymous {
             expression_dealloc( $3, FALSE );
             error_count++;
@@ -6402,7 +6402,7 @@ delay3
         expression_dealloc( $5, FALSE );
         if( (ignore_mode == 0) && ($3 != NULL) ) {
           Try {
-            $$ = db_create_expression( $3, NULL, EXP_OP_DELAY, lhs_mode, @1.first_line, @1.first_column, (@6.last_column - 1), NULL );
+            $$ = db_create_expression( $3, NULL, EXP_OP_DELAY, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@6.last_column - 1), NULL );
           } Catch_anonymous {
             expression_dealloc( $3, FALSE );
             error_count++;
@@ -6423,7 +6423,7 @@ delay3
         expression_dealloc( $7, FALSE );
         if( ignore_mode == 0 ) {
           Try {
-            $$ = db_create_expression( $5, NULL, EXP_OP_DELAY, lhs_mode, @1.first_line, @1.first_column, (@8.last_column - 1), NULL );
+            $$ = db_create_expression( $5, NULL, EXP_OP_DELAY, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@8.last_column - 1), NULL );
           } Catch_anonymous {
             expression_dealloc( $5, FALSE );
             error_count++;
@@ -6458,7 +6458,7 @@ delay_value
         if( (ignore_mode == 0) && (se != NULL) ) {
           if( se->exp == NULL ) {
             Try {
-              $$ = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+              $$ = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), NULL );
               vector_dealloc( $$->value );
               $$->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
               (void)vector_from_int( $$->value, se->num );
@@ -6520,7 +6520,7 @@ delay_value
           if( se != NULL ) {
             if( se->exp == NULL ) {
               Try {
-                $$ = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+                $$ = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), NULL );
                 vector_dealloc( $$->value );
                 $$->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
                 (void)vector_from_int( $$->value, se->num );
@@ -6555,7 +6555,7 @@ delay_value_simple
           Try {
             int   base;
             char* num = $1;
-            $$ = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+            $$ = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), NULL );
             assert( $$->value->value.ul == NULL );
             free_safe( $$->value, sizeof( vector ) );
             vector_from_string( &num, FALSE, &($$->value), &base );
@@ -6577,7 +6577,7 @@ delay_value_simple
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL) ) {
           Try {
-            $$ = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+            $$ = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), NULL );
             assert( $$->value->value.r64 == NULL );
             free_safe( $$->value, sizeof( vector ) );
             $$->value = $1;
@@ -6598,7 +6598,7 @@ delay_value_simple
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
           Try {
-              $$ = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
+              $$ = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), $1 );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -6626,11 +6626,11 @@ assign
           expression* tmp = NULL;
           statement*  stmt;
           Try {
-            tmp = db_create_expression( $3, $1, EXP_OP_ASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            tmp = db_create_expression( $3, $1, EXP_OP_ASSIGN, FALSE, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
           } Catch_anonymous {
             error_count++;
           }
-          if( (stmt = db_create_statement( tmp, @1.ppline )) != NULL ) {
+          if( (stmt = db_create_statement( tmp )) != NULL ) {
             stmt->suppl.part.head       = 1;
             stmt->suppl.part.stop_true  = 1;
             stmt->suppl.part.stop_false = 1;
@@ -6765,12 +6765,12 @@ register_variable
               expression* exp = NULL;
               statement*  stmt;
               Try {
-                exp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-                exp = db_create_expression( $3, exp, EXP_OP_RASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+                exp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), $1 );
+                exp = db_create_expression( $3, exp, EXP_OP_RASSIGN, FALSE, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
               } Catch_anonymous {
                 error_count++;
               }
-              if( (stmt = db_create_statement( exp, @1.ppline )) != NULL ) {
+              if( (stmt = db_create_statement( exp )) != NULL ) {
                 stmt->suppl.part.head       = 1;
                 stmt->suppl.part.stop_true  = 1;
                 stmt->suppl.part.stop_false = 1;
@@ -7030,12 +7030,12 @@ net_decl_assign
             expression* tmp = NULL;
             statement*  stmt;
             Try {
-              tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-              tmp = db_create_expression( $3, tmp, EXP_OP_DASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+              tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), $1 );
+              tmp = db_create_expression( $3, tmp, EXP_OP_DASSIGN, FALSE, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
             } Catch_anonymous {
               error_count++;
             }
-            if( (stmt = db_create_statement( tmp, @1.ppline )) != NULL ) {
+            if( (stmt = db_create_statement( tmp )) != NULL ) {
               stmt->suppl.part.head       = 1;
               stmt->suppl.part.stop_true  = 1;
               stmt->suppl.part.stop_false = 1;
@@ -7065,12 +7065,12 @@ net_decl_assign
             expression* tmp = NULL;
             statement*  stmt;
             Try {
-              tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @2.first_line, @2.first_column, (@2.last_column - 1), $2 );
-              tmp = db_create_expression( $4, tmp, EXP_OP_DASSIGN, FALSE, @2.first_line, @2.first_column, (@4.last_column - 1), NULL );
+              tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @2.first_line, @2.ppline, @2.first_column, (@2.last_column - 1), $2 );
+              tmp = db_create_expression( $4, tmp, EXP_OP_DASSIGN, FALSE, @2.first_line, @2.ppline, @2.first_column, (@4.last_column - 1), NULL );
             } Catch_anonymous {
               error_count++;
             }
-            if( (stmt = db_create_statement( tmp, @2.ppline )) != NULL ) {
+            if( (stmt = db_create_statement( tmp )) != NULL ) {
               stmt->suppl.part.head       = 1;
               stmt->suppl.part.stop_true  = 1;
               stmt->suppl.part.stop_false = 1;
@@ -7128,7 +7128,7 @@ event_control
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($2 != NULL) ) {
           Try {
-            $$ = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), $2 );
+            $$ = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@2.last_column - 1), $2 );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -7166,7 +7166,7 @@ event_expression_list
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
           Try {
-            $$ = db_create_expression( $3, $1, EXP_OP_EOR, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            $$ = db_create_expression( $3, $1, EXP_OP_EOR, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
           } Catch_anonymous {
             error_count++;
             $$ = NULL;
@@ -7192,7 +7192,7 @@ event_expression_list
         } else {
           if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
             Try {
-              $$ = db_create_expression( $3, $1, EXP_OP_EOR, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+              $$ = db_create_expression( $3, $1, EXP_OP_EOR, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
             } Catch_anonymous {
               error_count++;
               $$ = NULL;
@@ -7215,7 +7215,7 @@ event_expression
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($2 != NULL) ) {
           Try {
-            $$ = db_create_expression( $2, NULL, EXP_OP_PEDGE, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
+            $$ = db_create_expression( $2, NULL, EXP_OP_PEDGE, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@2.last_column - 1), NULL );
           } Catch_anonymous {
             expression_dealloc( $2, FALSE );
             error_count++;
@@ -7233,7 +7233,7 @@ event_expression
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($2 != NULL) ) {
           Try {
-            $$ = db_create_expression( $2, NULL, EXP_OP_NEDGE, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
+            $$ = db_create_expression( $2, NULL, EXP_OP_NEDGE, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@2.last_column - 1), NULL );
           } Catch_anonymous {
             expression_dealloc( $2, FALSE );
             error_count++;
@@ -7251,7 +7251,7 @@ event_expression
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL ) ) {
           Try {
-            $$ = db_create_expression( $1, NULL, EXP_OP_AEDGE, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+            $$ = db_create_expression( $1, NULL, EXP_OP_AEDGE, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), NULL );
           } Catch_anonymous {
             expression_dealloc( $1, FALSE );
             error_count++;
@@ -8000,7 +8000,7 @@ single_index_expr
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($2 != NULL) ) {
           Try {
-            $$ = db_create_expression( NULL, $2, EXP_OP_SBIT_SEL, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            $$ = db_create_expression( NULL, $2, EXP_OP_SBIT_SEL, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
           } Catch_anonymous {
             error_count++;
           }
@@ -8017,7 +8017,7 @@ single_index_expr
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($2 != NULL) && ($4 != NULL) ) {
           Try {
-            $$ = db_create_expression( $4, $2, EXP_OP_MBIT_SEL, lhs_mode, @1.first_line, @1.first_column, (@5.last_column - 1), NULL );
+            $$ = db_create_expression( $4, $2, EXP_OP_MBIT_SEL, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@5.last_column - 1), NULL );
           } Catch_anonymous {
             error_count++;
           }
@@ -8042,18 +8042,18 @@ single_index_expr
           if( (ignore_mode == 0) && ($2 != NULL) && ($4 != NULL) ) {
             if( $4->exp == NULL ) {
               Try {
-                expression* tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+                expression* tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), NULL );
                 vector_dealloc( tmp->value );
                 tmp->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
                 (void)vector_from_int( tmp->value, $4->num );
-                $$ = db_create_expression( tmp, $2, EXP_OP_MBIT_POS, lhs_mode, @1.first_line, @1.first_column, (@5.last_column - 1), NULL );
+                $$ = db_create_expression( tmp, $2, EXP_OP_MBIT_POS, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@5.last_column - 1), NULL );
               } Catch_anonymous {
                 error_count++;
                 $$ = NULL;
               }
             } else {
               Try {
-                $$ = db_create_expression( $4->exp, $2, EXP_OP_MBIT_POS, lhs_mode, @1.first_line, @1.first_column, (@5.last_column - 1), NULL );
+                $$ = db_create_expression( $4->exp, $2, EXP_OP_MBIT_POS, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@5.last_column - 1), NULL );
               } Catch_anonymous {
                 error_count++;
                 $$ = NULL;
@@ -8083,7 +8083,7 @@ single_index_expr
           if( (ignore_mode == 0) && ($2 != NULL) && ($4 != NULL) ) {
             if( $4->exp == NULL ) {
               Try {
-                tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+                tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), NULL );
               } Catch_anonymous {
                 error_count++;
               }
@@ -8091,13 +8091,13 @@ single_index_expr
               tmp->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
               (void)vector_from_int( tmp->value, $4->num );
               Try {
-                tmp = db_create_expression( tmp, $2, EXP_OP_MBIT_NEG, lhs_mode, @1.first_line, @1.first_column, (@5.last_column - 1), NULL );
+                tmp = db_create_expression( tmp, $2, EXP_OP_MBIT_NEG, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@5.last_column - 1), NULL );
               } Catch_anonymous {
                 error_count++;
               }
             } else {
               Try {
-                tmp = db_create_expression( $4->exp, $2, EXP_OP_MBIT_NEG, lhs_mode, @1.first_line, @1.first_column, (@5.last_column - 1), NULL );
+                tmp = db_create_expression( $4->exp, $2, EXP_OP_MBIT_NEG, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@5.last_column - 1), NULL );
               } Catch_anonymous {
                 error_count++;
               }
@@ -8122,7 +8122,7 @@ index_expr
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL) && ($2 != NULL) ) {
           Try {
-            $$ = db_create_expression( $2, $1, EXP_OP_DIM, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
+            $$ = db_create_expression( $2, $1, EXP_OP_DIM, lhs_mode, @1.first_line, @1.ppline, @1.first_column, (@2.last_column - 1), NULL );
           } Catch_anonymous {
             error_count++;
           }

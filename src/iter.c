@@ -152,10 +152,10 @@ void stmt_iter_get_next_in_order(
   /* Search for a statement that has not been traversed yet within this statement block */
   while( (si->curr != NULL) && (si->curr->stmt->suppl.part.head == 0) ) {
     if( (si->curr->stmt->suppl.part.added == 0) &&
-        (si->curr->stmt->ppline != 0) &&
-        ((si->curr->stmt->ppline < low_line) ||
-         ((si->curr->stmt->ppline == low_line) && (((si->curr->stmt->exp->col >> 16) & 0xffff) < low_col))) ) {
-      low_line = si->curr->stmt->ppline;
+        (si->curr->stmt->exp->ppline != 0) &&
+        ((si->curr->stmt->exp->ppline < low_line) ||
+         ((si->curr->stmt->exp->ppline == low_line) && (((si->curr->stmt->exp->col >> 16) & 0xffff) < low_col))) ) {
+      low_line = si->curr->stmt->exp->ppline;
       low_col  = ((si->curr->stmt->exp->col >> 16) & 0xffff);
       lsi.curr = si->curr;
       lsi.last = si->last;
@@ -196,12 +196,12 @@ void stmt_iter_get_line_before(
 
   if( si->curr != NULL ) {
 
-    if( si->curr->stmt->ppline < lnum ) {
-      while( (si->curr != NULL) && (si->curr->stmt->ppline < lnum) ) {
+    if( si->curr->stmt->exp->ppline < lnum ) {
+      while( (si->curr != NULL) && (si->curr->stmt->exp->ppline < lnum) ) {
         stmt_iter_next( si );
       }
     } else {
-      while( (si->curr != NULL) && (si->curr->stmt->ppline > lnum) ) {
+      while( (si->curr != NULL) && (si->curr->stmt->exp->ppline > lnum) ) {
         stmt_iter_next( si );
       }
     }
@@ -214,6 +214,10 @@ void stmt_iter_get_line_before(
 
 /*
  $Log$
+ Revision 1.23  2009/01/15 06:47:09  phase1geo
+ More work to support assertion coverage.  Updating regressions per these
+ changes.  Checkpointing.
+
  Revision 1.22  2009/01/09 21:25:01  phase1geo
  More generate block fixes.  Updated all copyright information source code files
  for the year 2009.  Checkpointing.

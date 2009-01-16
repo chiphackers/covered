@@ -2314,7 +2314,8 @@ struct expression_s {
   esuppl       suppl;              /*!< Supplemental information for the expression */
   int          id;                 /*!< Specifies unique ID for this expression in the parent */
   int          ulid;               /*!< Specifies underline ID for reporting purposes */
-  int          line;               /*!< Specified line in file that this expression is found on */
+  unsigned int line;               /*!< Specified line in file that this expression is found on */
+  unsigned int ppline;             /*!< Specifies the line number in the preprocessed file */
   uint32       exec_num;           /*!< Specifies the number of times this expression was executed during simulation */
   uint32       col;                /*!< Specifies column location of beginning/ending of expression */
   vsignal*     sig;                /*!< Pointer to signal.  If NULL then no signal is attached */
@@ -2434,7 +2435,6 @@ struct statement_s {
                                           already been added to the functional unit statement list and should not be added again. */
     } part;
   } suppl;                           /*!< Supplemental bits for statements */
-  unsigned int ppline;               /*!< First line from the preprocessor file */
 };
 
 /*!
@@ -2732,7 +2732,8 @@ struct case_stmt_s {
 struct case_gitem_s {
   expression*     expr;              /*!< Pointer to case equality expression */
   gen_item*       gi;                /*!< Pointer to first generate item in case generate item */
-  int             line;              /*!< Line number of case generate item */
+  unsigned int    line;              /*!< Line number of case generate item */
+  unsigned int    ppline;            /*!< Line number from preprocessed file of case generate item */
   int             fcol;              /*!< First column of case generate item */
   int             lcol;              /*!< Last column of case generate item */
   case_gitem*     prev;              /*!< Pointer to previous case generate item in list */
@@ -3103,6 +3104,10 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.352  2009/01/15 06:47:09  phase1geo
+ More work to support assertion coverage.  Updating regressions per these
+ changes.  Checkpointing.
+
  Revision 1.351  2009/01/11 19:59:35  phase1geo
  More fixes for support of generate statements.  Getting close but not quite
  there yet.  Checkpointing.

@@ -35,7 +35,8 @@ expression* expression_create(
              exp_op_type  op,
              bool         lhs,
              int          id,
-             int          line,
+             unsigned int line,
+             unsigned int ppline,
              unsigned int first,
              unsigned int last,
              bool         data
@@ -148,6 +149,10 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.74  2009/01/02 06:00:26  phase1geo
+ More updates for memory coverage (this is still not working however).  Currently
+ segfaults.  Checkpointing.
+
  Revision 1.73  2008/12/06 06:35:19  phase1geo
  Adding first crack at handling coverage-related information from dumpfile.
  This code is untested.

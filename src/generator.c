@@ -625,10 +625,10 @@ char* generator_create_expr_name(
   assert( exp != NULL );
 
   /* Create string versions of op, first line, last line and column information */
-  rv = snprintf( op,    30, "%x", exp->op );         assert( rv < 30 );
-  rv = snprintf( fline, 30, "%u", exp->line );       assert( rv < 30 );
-  rv = snprintf( lline, 30, "%u", last_exp->line );  assert( rv < 30 );
-  rv = snprintf( col,   30, "%x", exp->col );        assert( rv < 30 );
+  rv = snprintf( op,    30, "%x", exp->op );           assert( rv < 30 );
+  rv = snprintf( fline, 30, "%u", exp->ppline );       assert( rv < 30 );
+  rv = snprintf( lline, 30, "%u", last_exp->ppline );  assert( rv < 30 );
+  rv = snprintf( col,   30, "%x", exp->col );          assert( rv < 30 );
 
   /* Allocate and create the unique name */
   slen = 11 + strlen( op ) + 1 + strlen( fline ) + 1 + strlen( lline ) + 1 + strlen( col ) + 2;
@@ -1227,18 +1227,18 @@ statement* generator_find_statement(
   unsigned int first_column  /*!< First column of statement to find */
 ) { PROFILE(GENERATOR_FIND_STATEMENT);
 
-  printf( "In generator_find_statement, line: %d, column: %d\n", first_line, first_column );
+//  printf( "In generator_find_statement, line: %d, column: %d\n", first_line, first_column );
 
-  if( (curr_stmt == NULL) || (curr_stmt->exp->line < first_line) ||
-      ((curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) < first_column)) ) {
+  if( (curr_stmt == NULL) || (curr_stmt->exp->ppline < first_line) ||
+      ((curr_stmt->exp->ppline == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) < first_column)) ) {
 
-    func_iter_display( &fiter );
+//    func_iter_display( &fiter );
 
     /* Attempt to find the expression with the given position */
     while( ((curr_stmt = func_iter_get_next_statement( &fiter )) != NULL) &&
-           printf( "  statement %s %d\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff) ) &&
-           ((curr_stmt->exp->line < first_line) || 
-            ((curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) < first_column)) ||
+//           printf( "  statement %s %d %u\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff), curr_stmt->exp->ppline ) &&
+           ((curr_stmt->exp->ppline < first_line) || 
+            ((curr_stmt->exp->ppline == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) < first_column)) ||
             (curr_stmt->exp->op == EXP_OP_FORK)) );
 
     /* If we couldn't find it in the func_iter, look for it in the generate list */
@@ -1251,15 +1251,15 @@ statement* generator_find_statement(
 
   }
 
-  if( (curr_stmt != NULL) && (curr_stmt->exp->line == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) == first_column) && (curr_stmt->exp->op != EXP_OP_FORK) ) {
-    printf( "  FOUND (%s %x)!\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff) );
-  } else {
-    printf( "  NOT FOUND!\n" );
-  }
+//  if( (curr_stmt != NULL) && (curr_stmt->exp->ppline == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) == first_column) && (curr_stmt->exp->op != EXP_OP_FORK) ) {
+//    printf( "  FOUND (%s %x)!\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff) );
+//  } else {
+//    printf( "  NOT FOUND!\n" );
+//  }
 
   PROFILE_END;
 
-  return( ((curr_stmt == NULL) || (curr_stmt->exp->line != first_line) ||
+  return( ((curr_stmt == NULL) || (curr_stmt->exp->ppline != first_line) ||
           (((curr_stmt->exp->col >> 16) & 0xffff) != first_column) || (curr_stmt->exp->op == EXP_OP_FORK)) ? NULL : curr_stmt );
 
 }
@@ -1275,8 +1275,8 @@ static statement* generator_find_case_statement(
   unsigned int first_column  /*!< First column of case expression to find */
 ) { PROFILE(GENERATOR_FIND_CASE_STATEMENT);
 
-  if( (curr_stmt == NULL) || (curr_stmt->exp->left == NULL) || (curr_stmt->exp->left->line < first_line) ||
-      ((curr_stmt->exp->left->line == first_line) && (((curr_stmt->exp->left->col >> 16) & 0xffff) < first_column)) ) {
+  if( (curr_stmt == NULL) || (curr_stmt->exp->left == NULL) || (curr_stmt->exp->left->ppline < first_line) ||
+      ((curr_stmt->exp->left->ppline == first_line) && (((curr_stmt->exp->left->col >> 16) & 0xffff) < first_column)) ) {
 
     if( generate_mode > 0 ) {
 
@@ -1287,8 +1287,8 @@ static statement* generator_find_case_statement(
       /* Attempt to find the expression with the given position */
       while( ((curr_stmt = func_iter_get_next_statement( &fiter )) != NULL) && 
              ((curr_stmt->exp->left == NULL) ||
-              (curr_stmt->exp->left->line < first_line) ||
-              ((curr_stmt->exp->left->line == first_line) && (((curr_stmt->exp->left->col >> 16) & 0xffff) < first_column))) );
+              (curr_stmt->exp->left->ppline < first_line) ||
+              ((curr_stmt->exp->left->ppline == first_line) && (((curr_stmt->exp->left->col >> 16) & 0xffff) < first_column))) );
 
     }
 
@@ -1296,7 +1296,7 @@ static statement* generator_find_case_statement(
 
   PROFILE_END;
 
-  return( ((curr_stmt == NULL) || (curr_stmt->exp->left == NULL) || (curr_stmt->exp->left->line != first_line) ||
+  return( ((curr_stmt == NULL) || (curr_stmt->exp->left == NULL) || (curr_stmt->exp->left->ppline != first_line) ||
           (((curr_stmt->exp->left->col >> 16) & 0xffff) != first_column)) ? NULL : curr_stmt );
 
 }
@@ -1320,9 +1320,9 @@ void generator_insert_line_cov_with_stmt(
     char*        scope    = generator_get_relative_scope( stmt->funit ); 
 
     if( scope[0] == '\0' ) {
-      rv = snprintf( sig, 4096, " \\covered$L%d_%d_%x ", stmt->exp->line, last_exp->line, stmt->exp->col );
+      rv = snprintf( sig, 4096, " \\covered$L%d_%d_%x ", stmt->exp->ppline, last_exp->ppline, stmt->exp->col );
     } else {
-      rv = snprintf( sig, 4096, " \\covered$L%d_%d_%x$%s ", stmt->exp->line, last_exp->line, stmt->exp->col, scope );
+      rv = snprintf( sig, 4096, " \\covered$L%d_%d_%x$%s ", stmt->exp->ppline, last_exp->ppline, stmt->exp->col, scope );
     }
     assert( rv < 4096 );
     free_safe( scope, (strlen( scope ) + 1) );
@@ -1400,9 +1400,9 @@ void generator_insert_event_comb_cov(
 
   /* Create signal name */
   if( scope[0] == '\0' ) {
-    rv = snprintf( name, 4096, " \\covered$E%d_%d_%x ", exp->line, last_exp->line, exp->col );
+    rv = snprintf( name, 4096, " \\covered$E%d_%d_%x ", exp->ppline, last_exp->ppline, exp->col );
   } else {
-    rv = snprintf( name, 4096, " \\covered$E%d_%d_%x$%s ", exp->line, last_exp->line, exp->col, scope );
+    rv = snprintf( name, 4096, " \\covered$E%d_%d_%x$%s ", exp->ppline, last_exp->ppline, exp->col, scope );
   }
   assert( rv < 4096 );
   free_safe( scope, (strlen( scope ) + 1) );
@@ -1520,9 +1520,9 @@ static void generator_insert_unary_comb_cov(
 
   /* Create signal */
   if( scope[0] == '\0' ) {
-    rv = snprintf( sig,  4096, " \\covered$%c%d_%d_%x ", (net ? 'u' : 'U'), exp->line, last_exp->line, exp->col );
+    rv = snprintf( sig,  4096, " \\covered$%c%d_%d_%x ", (net ? 'u' : 'U'), exp->ppline, last_exp->ppline, exp->col );
   } else {
-    rv = snprintf( sig,  4096, " \\covered$U%d_%d_%x$%s ", exp->line, last_exp->line, exp->col, scope );
+    rv = snprintf( sig,  4096, " \\covered$U%d_%d_%x$%s ", exp->ppline, last_exp->ppline, exp->col, scope );
   }
   assert( rv < 4096 );
   free_safe( scope, (strlen( scope ) + 1) );
@@ -1577,9 +1577,9 @@ static void generator_insert_comb_comb_cov(
 
   /* Create signal */
   if( scope[0] == '\0' ) {
-    rv = snprintf( sig, 4096, " \\covered$%c%d_%d_%x ", (net ? 'c' : 'C'), exp->line, last_exp->line, exp->col );
+    rv = snprintf( sig, 4096, " \\covered$%c%d_%d_%x ", (net ? 'c' : 'C'), exp->ppline, last_exp->ppline, exp->col );
   } else {
-    rv = snprintf( sig, 4096, " \\covered$C%d_%d_%x$%s ", exp->line, last_exp->line, exp->col, scope );
+    rv = snprintf( sig, 4096, " \\covered$C%d_%d_%x$%s ", exp->ppline, last_exp->ppline, exp->col, scope );
   }
   assert( rv < 4096 );
   free_safe( scope, (strlen( scope ) + 1) );
@@ -2078,7 +2078,7 @@ static void generator_insert_subexp(
   /* If this expression needs to be substituted, do it with the lhs_str value */
   if( generator_expr_needs_to_be_substituted( exp ) ) {
     expression* last_exp = expression_get_last_line_expr( exp );
-    generator_replace( lhs_str, exp->line, ((exp->col >> 16) & 0xffff), last_exp->line, (last_exp->col & 0xffff) );
+    generator_replace( lhs_str, exp->ppline, ((exp->col >> 16) & 0xffff), last_exp->ppline, (last_exp->col & 0xffff) );
   }
 
   /* Create expression string */
@@ -2373,9 +2373,9 @@ static void generator_insert_mem_cov(
 
     /* First, create the wire/register to hold the index */
     if( scope[0] == '\0' ) {
-      rv = snprintf( iname, 4096, " \\covered$%c%d_%d_%x$%s ", (net ? 'i' : 'I'), exp->line, last_exp->line, exp->col, exp->name );
+      rv = snprintf( iname, 4096, " \\covered$%c%d_%d_%x$%s ", (net ? 'i' : 'I'), exp->ppline, last_exp->ppline, exp->col, exp->name );
     } else {
-      rv = snprintf( iname, 4096, " \\covered$%c%d_%d_%x$%s$%s ", (net ? 'i' : 'I'), exp->line, last_exp->line, exp->col, exp->name, scope );
+      rv = snprintf( iname, 4096, " \\covered$%c%d_%d_%x$%s$%s ", (net ? 'i' : 'I'), exp->ppline, last_exp->ppline, exp->col, exp->name, scope );
     }
     assert( rv < 4096 );
 
@@ -2415,9 +2415,9 @@ static void generator_insert_mem_cov(
 
     /* Create name */
     if( scope[0] == '\0' ) {
-      rv = snprintf( name, 4096, " \\covered$%c%d_%d_%x$%s ", (net ? 'w' : 'W'), exp->line, last_exp->line, exp->col, exp->name );
+      rv = snprintf( name, 4096, " \\covered$%c%d_%d_%x$%s ", (net ? 'w' : 'W'), exp->ppline, last_exp->ppline, exp->col, exp->name );
     } else {
-      rv = snprintf( name, 4096, " \\covered$%c%d_%d_%x$%s$%s ", (net ? 'w' : 'W'), exp->line, last_exp->line, exp->col, exp->name, scope );
+      rv = snprintf( name, 4096, " \\covered$%c%d_%d_%x$%s$%s ", (net ? 'w' : 'W'), exp->ppline, last_exp->ppline, exp->col, exp->name, scope );
     }
     assert( rv < 4096 );
 
@@ -2443,9 +2443,9 @@ static void generator_insert_mem_cov(
 
     /* Create name */
     if( scope[0] == '\0' ) {
-      rv = snprintf( name, 4096, " \\covered$%c%d_%d_%x$%s ", (net ? 'r' : 'R'), exp->line, last_exp->line, exp->col, exp->name );
+      rv = snprintf( name, 4096, " \\covered$%c%d_%d_%x$%s ", (net ? 'r' : 'R'), exp->ppline, last_exp->ppline, exp->col, exp->name );
     } else {
-      rv = snprintf( name, 4096, " \\covered$%c%d_%d_%x$%s$%s ", (net ? 'r' : 'R'), exp->line, last_exp->line, exp->col, exp->name, scope );
+      rv = snprintf( name, 4096, " \\covered$%c%d_%d_%x$%s$%s ", (net ? 'r' : 'R'), exp->ppline, last_exp->ppline, exp->col, exp->name, scope );
     }
     assert( rv < 4096 );
 
@@ -2768,6 +2768,10 @@ void generator_handle_event_trigger(
 
 /*
  $Log$
+ Revision 1.76  2009/01/14 23:53:38  phase1geo
+ Updates for assertion coverage.  Still need to handle file inclusion renumbering for
+ this to work.  Checkpointing.
+
  Revision 1.75  2009/01/14 21:01:35  phase1geo
  Fixing last remaining issues with generate blocks.  Checkpointing.
 

@@ -53,7 +53,7 @@ initial begin
         @(posedge clk);
         tail1  <= 1'b0;
         valid1 <= 1'b0;
-        #20;
+        #21;
         $finish;
 end
 

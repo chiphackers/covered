@@ -170,13 +170,29 @@ typedef_item* db_find_typedef( const char* name );
 gen_item* db_get_curr_gen_block();
 
 /*! \brief Creates new expression from specified information.  Called by parser and db_add_expression. */
-expression* db_create_expression( expression* right, expression* left, exp_op_type op, bool lhs, int line, int first, int last, char* sig_name );
+expression* db_create_expression(
+  expression*  right,
+  expression*  left,
+  exp_op_type  op,
+  bool         lhs,
+  unsigned int line,
+  unsigned int ppline,
+  int          first,
+  int          last,
+  char*        sig_name
+);
 
 /*! \brief Binds all necessary sub-expressions in the given tree to the given signal name */
 void db_bind_expr_tree( expression* root, char* sig_name );
 
 /*! \brief Creates an expression from the specified static expression */
-expression* db_create_expr_from_static( static_expr* se, int line, int first_col, int last_col );
+expression* db_create_expr_from_static(
+  static_expr* se,
+  unsigned int line,
+  unsigned int ppline,
+  int          first_col,
+  int          last_col
+);
 
 /*! \brief Adds specified expression to expression list.  Called by parser. */
 void db_add_expression( expression* root );
@@ -188,7 +204,7 @@ expression* db_create_sensitivity_list( statement* stmt );
 statement* db_parallelize_statement( statement* stmt );
 
 /*! \brief Creates new statement expression from specified information.  Called by parser. */
-statement* db_create_statement( expression* exp, unsigned int ppline );
+statement* db_create_statement( expression* exp );
 
 /*! \brief Adds specified statement to current functional unit's statement list.  Called by parser. */
 void db_add_statement( statement* stmt, statement* start );
@@ -250,6 +266,10 @@ bool db_do_timestep( uint64 time, bool final );
 
 /*
  $Log$
+ Revision 1.104  2009/01/15 06:47:09  phase1geo
+ More work to support assertion coverage.  Updating regressions per these
+ changes.  Checkpointing.
+
  Revision 1.103  2009/01/11 19:59:35  phase1geo
  More fixes for support of generate statements.  Getting close but not quite
  there yet.  Checkpointing.

@@ -59,9 +59,9 @@ void parser_create_task_decl(
 void parser_create_task_body(      
   statement*   stmt,
   unsigned int first_line,
+  unsigned int ppline,
   unsigned int first_column,
-  unsigned int last_column,
-  unsigned int ppline
+  unsigned int last_column
 );
 
 /*! \brief Creates a function declaration (scope). */
@@ -110,8 +110,10 @@ static_expr* parser_append_se_port_list(
   static_expr* sel,
   static_expr* se,
   unsigned int sel_first_line,
+  unsigned int sel_ppline,
   unsigned int sel_first_column,
   unsigned int se_first_line,
+  unsigned int se_ppline,
   unsigned int se_first_column,
   unsigned int se_last_column
 );
@@ -120,6 +122,7 @@ static_expr* parser_append_se_port_list(
 static_expr* parser_create_se_port_list(
   static_expr* se,
   unsigned int first_line,
+  unsigned int ppline,
   unsigned int first_column,
   unsigned int last_column
 );
@@ -129,6 +132,7 @@ static_expr* parser_create_unary_se(
   static_expr* se,
   exp_op_type  op,
   unsigned int first_line,
+  unsigned int ppline,
   unsigned int first_column,
   unsigned int last_column
 );
@@ -137,6 +141,7 @@ static_expr* parser_create_unary_se(
 static_expr* parser_create_syscall_se(
   exp_op_type  op,
   unsigned int first_line,
+  unsigned int ppline,
   unsigned int first_column,
   unsigned int last_column
 );
@@ -146,6 +151,7 @@ expression* parser_create_unary_exp(
   expression*  exp,
   exp_op_type  op,
   unsigned int first_line,
+  unsigned int ppline,
   unsigned int first_column,
   unsigned int last_column
 );
@@ -156,6 +162,7 @@ expression* parser_create_binary_exp(
   expression* rexp,
   exp_op_type op,
   unsigned int first_line,
+  unsigned int ppline,
   unsigned int first_column,
   unsigned int last_column
 );
@@ -165,6 +172,7 @@ expression* parser_create_op_and_assign_exp(
   char*        name,
   exp_op_type  op,
   unsigned int first_line1,
+  unsigned int ppline1,
   unsigned int first_column1,
   unsigned int last_column1,
   unsigned int last_column2
@@ -174,6 +182,7 @@ expression* parser_create_op_and_assign_exp(
 expression* parser_create_syscall_exp(
   exp_op_type  op,
   unsigned int first_line,
+  unsigned int ppline,
   unsigned int first_column,
   unsigned int last_column
 );
@@ -183,6 +192,7 @@ expression* parser_create_syscall_w_params_exp(
   exp_op_type  op,
   expression*  plist,
   unsigned int first_line,
+  unsigned int ppline,
   unsigned int first_column,
   unsigned int last_column
 );
@@ -193,6 +203,7 @@ expression* parser_create_op_and_assign_w_dim_exp(
   exp_op_type  op,
   expression*  dim_exp,
   unsigned int first_line,
+  unsigned int ppline,
   unsigned int first_column,
   unsigned int last_column
 );
@@ -200,6 +211,10 @@ expression* parser_create_op_and_assign_w_dim_exp(
 
 /*
  $Log$
+ Revision 1.5  2009/01/15 06:47:09  phase1geo
+ More work to support assertion coverage.  Updating regressions per these
+ changes.  Checkpointing.
+
  Revision 1.4  2009/01/11 19:59:36  phase1geo
  More fixes for support of generate statements.  Getting close but not quite
  there yet.  Checkpointing.

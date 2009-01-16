@@ -66,7 +66,7 @@ if( $DUMPTYPE eq "VCD" ) {
 &runReportCommand( "-d v -e -m ltcfamr -i -o merge10.8.rptI merge10.8.cdd" );
 &checkTest( "merge10.8", 1, $check_type );
 
-system( "rm -f merge10a.cdd merge10b.cdd merge10c.cdd merge10d.cdd merge10e.cdd merge10f.cdd merge10g.cdd merge10h.cdd" ) && die;
+# system( "rm -f merge10a.cdd merge10b.cdd merge10c.cdd merge10d.cdd merge10e.cdd merge10f.cdd merge10g.cdd merge10h.cdd" ) && die;
 
 exit 0;
 

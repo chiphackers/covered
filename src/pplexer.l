@@ -37,6 +37,7 @@
 
 extern str_link* inc_paths_head;
 extern char      user_msg[USER_MSG_LENGTH];
+extern bool      parse_mode;
 
 
 /*!
@@ -635,9 +636,11 @@ static void do_include() { PROFILE(DO_INCLUDE);
   istack            = standby;
   standby           = 0;
 
-  rv = snprintf( user_msg, USER_MSG_LENGTH, "Parsing include file '%s'", obf_file( path ) );
-  assert( rv < USER_MSG_LENGTH );
-  print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+  if( parse_mode ) {
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "Parsing include file '%s'", obf_file( path ) );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+  }
 
   yy_switch_to_buffer( yy_create_buffer( istack->file, YY_BUF_SIZE ) );
 
@@ -687,9 +690,11 @@ static int yywrap() { PROFILE(YYWRAP);
   if( istack != 0 ) {
 
     /* Otherwise, resume the input buffer that is the new stack top. */
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Resume parsing '%s'", obf_file( istack->path ) );
-    assert( rv < USER_MSG_LENGTH );
-    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+    if( parse_mode ) {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Resume parsing '%s'", obf_file( istack->path ) );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+    }
     yy_switch_to_buffer( istack->yybs );
 
     fprintf( yyout, "`line %u \"%s\" 2\n", istack->lineno + 1, istack->path );

@@ -1,15 +1,15 @@
 5 14 101 6 main.inst0
-8 /Users/trevorw/projects/covered/diags/verilog 2 -t (depth2) 2 -i (main.inst0.inst1) 2 -vcd (instance1.vcd) 2 -o (instance1.2.cdd) 2 -v (instance1.2.v) 2 -D (DUMP)
+8 /ptmp/covered/diags/verilog 2 -t (depth2) 2 -i (main.inst0.inst1) 2 -vcd (instance1.vcd) 2 -o (instance1.2.cdd) 2 -v (instance1.2.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 15 main 0
 15 main.inst0 0
 3 0 depth2 "main.inst0.inst1" 0 instance1.2.v 39 48 1
-2 1 46 110012 2 1 100c 0 0 1 1 b2
-2 2 46 c000d 3 1 100c 0 0 1 1 a2
-2 3 46 c0012 4 2 13cc 1 2 1 18 0 1 1 1 1 1
-2 4 46 70008 0 1 1410 0 0 1 1 c2
-2 5 46 70012 5 35 e 3 4
+2 1 46 46 110012 2 1 100c 0 0 1 1 b2
+2 2 46 46 c000d 3 1 100c 0 0 1 1 a2
+2 3 46 46 c0012 4 2 13cc 1 2 1 18 0 1 1 1 1 1
+2 4 46 46 70008 0 1 1410 0 0 1 1 c2
+2 5 46 46 70012 5 35 e 3 4
 1 a2 1 41 9 1 0 0 0 1 17 1 1 0 1 1 0
 1 b2 2 42 9 1 0 0 0 1 17 1 1 0 1 0 0
 1 c2 3 44 60009 1 0 0 0 1 17 1 1 0 1 1 0
-4 5 f 5 5 46
+4 5 f 5 5

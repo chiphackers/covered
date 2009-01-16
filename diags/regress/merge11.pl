@@ -106,7 +106,7 @@ system( "rm -f merge11.7a.cdd merge11.7b.cdd merge11.7c.cdd merge11.7d.cdd" );
 &checkTest( "merge11.8", 1, $check_type );
 system( "rm -f merge11.8a.cdd merge11.8b.cdd merge11.8c.cdd merge11.8d.cdd" );
 
-system( "rm -f merge11a.cdd merge11b.cdd merge11c.cdd merge11d.cdd merge11e.cdd merge11f.cdd merge11g.cdd merge11h.cdd" ) && die;
+# system( "rm -f merge11a.cdd merge11b.cdd merge11c.cdd merge11d.cdd merge11e.cdd merge11f.cdd merge11g.cdd merge11h.cdd" ) && die;
 
 exit 0;
 

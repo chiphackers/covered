@@ -242,7 +242,7 @@ void fsm_db_read(
         */
         if( iexp_id == oexp_id ) {
           Try {
-            table->from_state = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, iexp_id, 0, 0, 0, FALSE );
+            table->from_state = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, iexp_id, 0, 0, 0, 0, FALSE );
           } Catch_anonymous {
             fsm_dealloc( table );
             Throw 0;
@@ -1335,6 +1335,10 @@ void fsm_dealloc(
 
 /*
  $Log$
+ Revision 1.112  2009/01/09 21:25:00  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.111  2009/01/07 23:40:46  phase1geo
  Updates to support intermediate expression substitution.  Not done yet.  Checkpointing.
 

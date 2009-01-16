@@ -446,7 +446,7 @@ void stmt_link_display(
     assert( curr.curr->stmt != NULL );
     assert( curr.curr->stmt->exp != NULL );
     printf( "  %s, ppline: %u, col: %d, added: %d, stmt_head: %u\n",
-            expression_string( curr.curr->stmt->exp ), curr.curr->stmt->ppline, ((curr.curr->stmt->exp->col >> 16) & 0xffff),
+            expression_string( curr.curr->stmt->exp ), curr.curr->stmt->exp->ppline, ((curr.curr->stmt->exp->col >> 16) & 0xffff),
             curr.curr->stmt->suppl.part.added, curr.curr->stmt->suppl.part.head );
     stmt_iter_next( &curr );
   }
@@ -1286,6 +1286,10 @@ void inst_link_delete_list(
 
 /*
  $Log$
+ Revision 1.90  2009/01/15 06:47:09  phase1geo
+ More work to support assertion coverage.  Updating regressions per these
+ changes.  Checkpointing.
+
  Revision 1.89  2009/01/09 21:25:01  phase1geo
  More generate block fixes.  Updated all copyright information source code files
  for the year 2009.  Checkpointing.

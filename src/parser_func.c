@@ -173,14 +173,14 @@ void parser_create_task_decl(
 void parser_create_task_body(
   statement*   stmt,          /*!< Statement (list) containing task body */
   unsigned int first_line,    /*!< First line of statement (list) */
+  unsigned int ppline,        /*!< Line from preprocessed file */
   unsigned int first_column,  /*!< First column of current statement (list) */
-  unsigned int last_column,   /*!< Last column of current statement (list) */
-  unsigned int ppline         /*!< Line from preprocessed file */
+  unsigned int last_column    /*!< Last column of current statement (list) */
 ) { PROFILE(PARSER_CREATE_TASK_BODY);
 
   if( ignore_mode == 0 ) {
     if( stmt == NULL ) {
-      stmt = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, first_line, first_column, (last_column - 1), NULL ), ppline );
+      stmt = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, first_line, ppline, first_column, (last_column - 1), NULL ) );
     }
     stmt->suppl.part.head      = 1;
     stmt->suppl.part.is_called = 1;
@@ -373,8 +373,10 @@ static_expr* parser_append_se_port_list(
   static_expr* sel,               /*!< Pointer to existing static expression port list */
   static_expr* se,                /*!< Pointer to static expression to make into a port and append it to the list */
   unsigned int sel_first_line,    /*!< First line of static expression port list */
+  unsigned int sel_ppline,        /*!< First line from preprocessed file of static expression port list */
   unsigned int sel_first_column,  /*!< First column of static expression port list */
   unsigned int se_first_line,     /*!< First line of static expression */
+  unsigned int se_ppline,         /*!< First line from preprocessed file of static expression */
   unsigned int se_first_column,   /*!< First column of static expression */
   unsigned int se_last_column     /*!< Last column of static expression */
 ) { PROFILE(PARSER_APPEND_SE_PORT_LIST);
@@ -384,12 +386,12 @@ static_expr* parser_append_se_port_list(
   if( ignore_mode == 0 ) {
     if( se != NULL ) {
       Try {
-        se = static_expr_gen_unary( se, EXP_OP_PASSIGN, se_first_line, se_first_column, (se_last_column - 1) );
+        se = static_expr_gen_unary( se, EXP_OP_PASSIGN, se_first_line, se_ppline, se_first_column, (se_last_column - 1) );
       } Catch_anonymous {
         error_count++;
       }
       Try {
-        se = static_expr_gen( se, sel, EXP_OP_PLIST, sel_first_line, sel_first_column, (se_last_column - 1), NULL );
+        se = static_expr_gen( se, sel, EXP_OP_PLIST, sel_first_line, sel_ppline, sel_first_column, (se_last_column - 1), NULL );
       } Catch_anonymous {
         error_count++;
       }
@@ -411,6 +413,7 @@ static_expr* parser_append_se_port_list(
 static_expr* parser_create_se_port_list(
   static_expr* se,            /*!< Pointer to static expression to make into a port */
   unsigned int first_line,    /*!< First line of static expression */
+  unsigned int ppline,        /*!< First line from preprocessed file of static expression */
   unsigned int first_column,  /*!< First column of static expression */
   unsigned int last_column    /*!< Last column of static expression */
 ) { PROFILE(PARSER_CREATE_SE_PORT_LIST);
@@ -420,7 +423,7 @@ static_expr* parser_create_se_port_list(
   if( ignore_mode == 0 ) {
     if( se != NULL ) {
       Try {
-        se = static_expr_gen_unary( se, EXP_OP_PASSIGN, first_line, first_column, (last_column - 1) );
+        se = static_expr_gen_unary( se, EXP_OP_PASSIGN, first_line, ppline, first_column, (last_column - 1) );
       } Catch_anonymous {
         error_count++;
       }
@@ -441,6 +444,7 @@ static_expr* parser_create_unary_se(
   static_expr* se,            /*!< Pointer to child static expression */
   exp_op_type  op,            /*!< Specifies unary operation */
   unsigned int first_line,    /*!< First line of unary static expression */
+  unsigned int ppline,        /*!< First line from preprocessed file of unary static expression */
   unsigned int first_column,  /*!< First column of unary static expression */
   unsigned int last_column    /*!< Last column of unary static expression */
 ) { PROFILE(PARSER_CREATE_UNARY_SE);
@@ -448,7 +452,7 @@ static_expr* parser_create_unary_se(
   static_expr* retval = NULL;
 
   Try {
-    retval = static_expr_gen_unary( se, op, first_line, first_column, (last_column - 1) );
+    retval = static_expr_gen_unary( se, op, first_line, ppline, first_column, (last_column - 1) );
   } Catch_anonymous {
     error_count++;
   }
@@ -467,6 +471,7 @@ static_expr* parser_create_unary_se(
 static_expr* parser_create_syscall_se(
   exp_op_type  op,            /*!< Expression operation type */
   unsigned int first_line,    /*!< First line of static expression */
+  unsigned int ppline,        /*!< First line from preprocessed of static expression */
   unsigned int first_column,  /*!< First column of static expression */
   unsigned int last_column    /*!< Last column of static expression */
 ) { PROFILE(PARSER_CREATE_SYSCALL_SE);
@@ -477,7 +482,7 @@ static_expr* parser_create_syscall_se(
     se = (static_expr*)malloc_safe( sizeof( static_expr ) );
     se->num = -1;
     Try {
-      se->exp = db_create_expression( NULL, NULL, op, lhs_mode, first_line, first_column, (last_column - 1), NULL );
+      se->exp = db_create_expression( NULL, NULL, op, lhs_mode, first_line, ppline, first_column, (last_column - 1), NULL );
     } Catch_anonymous {
       error_count++;
       static_expr_dealloc( se, FALSE );
@@ -500,6 +505,7 @@ expression* parser_create_unary_exp(
   expression*  exp,           /*!< Pointer to child expression */
   exp_op_type  op,            /*!< Specifies unary operation */
   unsigned int first_line,    /*!< First line of unary expression */
+  unsigned int ppline,        /*!< First line from preprocessed file of unary expression */
   unsigned int first_column,  /*!< First column of unary expression */
   unsigned int last_column    /*!< Last column of unary expression */
 ) { PROFILE(PARSER_CREATE_UNARY_EXP);
@@ -508,7 +514,7 @@ expression* parser_create_unary_exp(
 
   if( (ignore_mode == 0) && (exp != NULL) ) {
     Try {
-      retval = db_create_expression( exp, NULL, op, lhs_mode, first_line, first_column, (last_column - 1), NULL );
+      retval = db_create_expression( exp, NULL, op, lhs_mode, first_line, ppline, first_column, (last_column - 1), NULL );
     } Catch_anonymous {
       error_count++;
     }
@@ -530,6 +536,7 @@ expression* parser_create_binary_exp(
   expression* rexp,            /*!< Pointer to child expression on the right */
   exp_op_type op,              /*!< Expression operation type */
   unsigned int first_line,     /*!< First line of expression */
+  unsigned int ppline,         /*!< First line from preprocessed file of expression */
   unsigned int first_column,   /*!< First column of expression */
   unsigned int last_column     /*!< Last column of expression */
 ) { PROFILE(PARSER_CREATE_BINARY_EXP);
@@ -538,7 +545,7 @@ expression* parser_create_binary_exp(
 
   if( (ignore_mode == 0) && (lexp != NULL) && (rexp != NULL) ) {
     Try {
-      retval = db_create_expression( rexp, lexp, op, lhs_mode, first_line, first_column, (last_column - 1), NULL );
+      retval = db_create_expression( rexp, lexp, op, lhs_mode, first_line, ppline, first_column, (last_column - 1), NULL );
     } Catch_anonymous {
       error_count++;
     }
@@ -562,6 +569,7 @@ expression* parser_create_op_and_assign_exp(
   char*        name,           /*!< Name of signal */
   exp_op_type  op,             /*!< Expression operation type */
   unsigned int first_line1,    /*!< First line of signal */
+  unsigned int ppline1,        /*!< First line from preprocessed file of signal */
   unsigned int first_column1,  /*!< First column of signal */
   unsigned int last_column1,   /*!< Last column of signal */
   unsigned int last_column2    /*!< Last column of full expression */
@@ -571,8 +579,8 @@ expression* parser_create_op_and_assign_exp(
 
   if( ignore_mode == 0 ) {
     Try {
-      expression* tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, first_line1, first_column1, (last_column1 - 1), name );
-      retval = db_create_expression( NULL, tmp, op, lhs_mode, first_line1, first_column1, (last_column2 - 1), NULL );
+      expression* tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, first_line1, ppline1, first_column1, (last_column1 - 1), name );
+      retval = db_create_expression( NULL, tmp, op, lhs_mode, first_line1, ppline1, first_column1, (last_column2 - 1), NULL );
     } Catch_anonymous {
       error_count++;
     }
@@ -593,6 +601,7 @@ expression* parser_create_op_and_assign_exp(
 expression* parser_create_syscall_exp(
   exp_op_type  op,            /*!< Expression operation type */
   unsigned int first_line,    /*!< First line of expression */
+  unsigned int ppline,        /*!< First line from preprocessed file of expression */
   unsigned int first_column,  /*!< First column of expression */
   unsigned int last_column    /*!< Last column of expression */
 ) { PROFILE(PARSER_CREATE_SYSCALL_EXP);
@@ -601,7 +610,7 @@ expression* parser_create_syscall_exp(
 
   if( ignore_mode == 0 ) {
     Try {
-      retval = db_create_expression( NULL, NULL, op, lhs_mode, first_line, first_column, (last_column - 1), NULL );
+      retval = db_create_expression( NULL, NULL, op, lhs_mode, first_line, ppline, first_column, (last_column - 1), NULL );
     } Catch_anonymous {
       error_count++;
     }
@@ -622,6 +631,7 @@ expression* parser_create_syscall_w_params_exp(
   exp_op_type  op,            /*!< Expression operation type */
   expression*  plist,         /*!< Parameter list expression */
   unsigned int first_line,    /*!< First line of expression */
+  unsigned int ppline,        /*!< First line from preprocessed file of expression */
   unsigned int first_column,  /*!< First column of expression */
   unsigned int last_column    /*!< Last column of expression */
 ) { PROFILE(PARSER_CREATE_SYSCALL_W_PARAMS_EXP);
@@ -630,7 +640,7 @@ expression* parser_create_syscall_w_params_exp(
 
   if( (ignore_mode == 0) && (plist != NULL) ) {
     Try {
-      retval = db_create_expression( NULL, plist, op, lhs_mode, first_line, first_column, (last_column - 1), NULL );
+      retval = db_create_expression( NULL, plist, op, lhs_mode, first_line, ppline, first_column, (last_column - 1), NULL );
     } Catch_anonymous {
       expression_dealloc( plist, FALSE );
       error_count++;
@@ -655,6 +665,7 @@ expression* parser_create_op_and_assign_w_dim_exp(
   exp_op_type  op,            /*!< Expression operation type */
   expression*  dim_exp,       /*!< Dimensional expression */
   unsigned int first_line,    /*!< First line of expression */
+  unsigned int ppline,        /*!< First line from preprocessed file of expression */
   unsigned int first_column,  /*!< First column of expression */
   unsigned int last_column    /*!< Last column of expression */
 ) { PROFILE(PARSER_CREATE_OP_AND_ASSIGN_W_DIM_EXP);
@@ -666,7 +677,7 @@ expression* parser_create_op_and_assign_w_dim_exp(
     dim_exp->line = first_line;
     dim_exp->col  = ((first_column & 0xffff) << 16) | (dim_exp->col & 0xffff);
     Try {
-      retval = db_create_expression( NULL, dim_exp, op, lhs_mode, first_line, first_column, (last_column - 1), NULL );
+      retval = db_create_expression( NULL, dim_exp, op, lhs_mode, first_line, ppline, first_column, (last_column - 1), NULL );
     } Catch_anonymous {
       error_count++;
     }
@@ -684,6 +695,10 @@ expression* parser_create_op_and_assign_w_dim_exp(
 
 /*
  $Log$
+ Revision 1.5  2009/01/15 06:47:09  phase1geo
+ More work to support assertion coverage.  Updating regressions per these
+ changes.  Checkpointing.
+
  Revision 1.4  2009/01/11 19:59:36  phase1geo
  More fixes for support of generate statements.  Getting close but not quite
  there yet.  Checkpointing.

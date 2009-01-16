@@ -53,7 +53,7 @@ endif
 SIM_PLUSARGS = +option1 +option2 +optionB=0000000100100011010001010110011110001001101010111100110111101111 +optionO=0123456776543210012345 +optionD=81985529216486895 +optionH=0123456789abcdef +optionE=123.456 +optionF=123.456 +optionG=123.456 +optionS1=\"Small +optionS2=small.dog
 
 IVERILOG       = iverilog
-IVERILOG_FLAGS = -cconfig_file -y ./covered/verilog -y ./lib -I./include -DRUNTEST
+IVERILOG_FLAGS = -cconfig_file -I./include -DRUNTEST
 ifdef VPI
 IVERILOG_FLAGS += -m ../../lib/covered.vpi
 else

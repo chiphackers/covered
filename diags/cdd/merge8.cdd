@@ -1,24 +1,24 @@
 5 14 101 3 main
-8 /Users/trevorw/projects/covered/diags/verilog 2 -t (foo) 2 -i (main.m1) 2 -vcd (merge8.vcd) 2 -o (merge8a.cdd) 2 -v (merge8a.v) 2 -D (DUMP) 2 -v (merge8b.v)
-12 /Users/trevorw/projects/covered/diags/verilog/merge8a.cdd main
-12 /Users/trevorw/projects/covered/diags/verilog/merge8b.cdd main
+8 /ptmp/covered/diags/verilog 2 -t (foo) 2 -i (main.m1) 2 -vcd (merge8.vcd) 2 -o (merge8a.cdd) 2 -v (merge8a.v) 2 -D (DUMP) 2 -v (merge8b.v)
+12 /ptmp/covered/diags/verilog/merge8a.cdd main
+12 /ptmp/covered/diags/verilog/merge8b.cdd main
 3 0 $root "$root" 0 NA 0 0 1
 15 main 0
 3 0 foo "main.m1" 0 merge8a.v 30 37 1
-2 1 35 d000d 1 1 1008 0 0 1 1 b
-2 2 35 90009 1 1 1004 0 0 1 1 a
-2 3 35 9000d 1 9 1088 1 2 1 18 0 1 0 1 0 0
-2 4 35 50005 0 1 1410 0 0 1 1 c
-2 5 35 5000d 2 36 a 3 4
+2 1 35 35 d000d 1 1 1008 0 0 1 1 b
+2 2 35 35 90009 1 1 1004 0 0 1 1 a
+2 3 35 35 9000d 1 9 1088 1 2 1 18 0 1 0 1 0 0
+2 4 35 35 50005 0 1 1410 0 0 1 1 c
+2 5 35 35 5000d 2 36 a 3 4
 1 a 1 31 d 1 0 0 0 1 17 1 1 0 0 0 0
 1 b 2 32 d 1 0 0 0 1 17 1 1 0 0 0 0
 1 c 3 35 60005 1 0 0 0 1 17 1 1 0 0 0 0
-4 5 f 5 5 35
+4 5 f 5 5
 3 0 bar "main.m2" 0 merge8b.v 41 47 1
-2 6 45 a000a 1 1 1008 0 0 1 1 a
-2 7 45 90009 1 1b 1004 6 0 1 18 0 1 1 0 0 0
-2 8 45 50005 0 1 1410 0 0 1 1 b
-2 9 45 5000a 2 36 6 7 8
+2 6 45 45 a000a 1 1 1008 0 0 1 1 a
+2 7 45 45 90009 1 1b 1004 6 0 1 18 0 1 1 0 0 0
+2 8 45 45 50005 0 1 1410 0 0 1 1 b
+2 9 45 45 5000a 2 36 6 7 8
 1 a 4 42 d 1 0 0 0 1 17 1 1 0 0 0 0
 1 b 5 45 60005 1 0 0 0 1 17 1 1 0 0 0 0
-4 9 f 9 9 45
+4 9 f 9 9

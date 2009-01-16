@@ -1958,14 +1958,15 @@ int db_curr_signal_count() { PROFILE(DB_CURR_SIGNAL_COUNT);
  pointer to the newly created expression.
 */
 expression* db_create_expression(
-  expression* right,    /*!< Pointer to expression on right side of expression */
-  expression* left,     /*!< Pointer to expression on left side of expression */
-  exp_op_type op,       /*!< Operation to perform on expression */
-  bool        lhs,      /*!< Specifies this expression is a left-hand-side assignment expression */
-  int         line,     /*!< Line number of current expression */
-  int         first,    /*!< Column index of first character in this expression */
-  int         last,     /*!< Column index of last character in this expression */
-  char*       sig_name  /*!< Name of signal that expression is attached to (if valid) */
+  expression*  right,    /*!< Pointer to expression on right side of expression */
+  expression*  left,     /*!< Pointer to expression on left side of expression */
+  exp_op_type  op,       /*!< Operation to perform on expression */
+  bool         lhs,      /*!< Specifies this expression is a left-hand-side assignment expression */
+  unsigned int line,     /*!< Line number of current expression */
+  unsigned int ppline,   /*!< Line number from preprocessed file */
+  int          first,    /*!< Column index of first character in this expression */
+  int          last,     /*!< Column index of last character in this expression */
+  char*        sig_name  /*!< Name of signal that expression is attached to (if valid) */
 ) { PROFILE(DB_CREATE_EXPRESSION);
 
   expression* expr;        /* Temporary pointer to newly created expression */
@@ -2021,7 +2022,7 @@ expression* db_create_expression(
   }
 
   /* Create expression with next expression ID */
-  expr = expression_create( right, left, op, lhs, curr_expr_id, line, first, last, FALSE );
+  expr = expression_create( right, left, op, lhs, curr_expr_id, line, ppline, first, last, FALSE );
   curr_expr_id++;
 
   /* If current functional unit is nested in a function, set the IN_FUNC supplemental field bit */
@@ -2144,7 +2145,8 @@ void db_bind_expr_tree(
 */
 expression* db_create_expr_from_static(
   static_expr* se,         /*!< Pointer to static expression structure */
-  int          line,       /*!< Line number that static expression was found on */
+  unsigned int line,       /*!< Line number that static expression was found on */
+  unsigned int ppline,     /*!< Line number from preprocessed file that static expression was found on */
   int          first_col,  /*!< Column that the static expression starts on */
   int          last_col    /*!< Column that the static expression ends on */
 ) { PROFILE(DB_CREATE_EXPR_FROM_STATIC);
@@ -2166,7 +2168,7 @@ expression* db_create_expr_from_static(
     if( se->exp == NULL ) {
 
       /* This static expression is a static value so create a static expression from its value */
-      expr = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, line, first_col, last_col, NULL );
+      expr = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, line, ppline, first_col, last_col, NULL );
 
       /* Create the new vector */
       vec = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
@@ -2281,12 +2283,12 @@ expression* db_create_sensitivity_list(
       while( strl != NULL ) {
 
         /* Create AEDGE and EOR for subsequent signals */
-        exps = db_create_expression( NULL, NULL, EXP_OP_SIG,   FALSE, 0, 0, 0, strl->str );
-        expa = db_create_expression( exps, NULL, EXP_OP_AEDGE, FALSE, 0, 0, 0, NULL );
+        exps = db_create_expression( NULL, NULL, EXP_OP_SIG,   FALSE, 0, 0, 0, 0, strl->str );
+        expa = db_create_expression( exps, NULL, EXP_OP_AEDGE, FALSE, 0, 0, 0, 0, NULL );
 
         /* If we have a child expression already, create the EOR expression to connect them */
         if( expc != NULL ) {
-          expe = db_create_expression( expa, expc, EXP_OP_EOR, FALSE, 0, 0, 0, NULL );
+          expe = db_create_expression( expa, expc, EXP_OP_EOR, FALSE, 0, 0, 0, 0, NULL );
           expc = expe;
         } else {
           expc = expa;
@@ -2338,7 +2340,7 @@ statement* db_parallelize_statement(
 #endif
 
     /* Create FORK expression */
-    exp = db_create_expression( NULL, NULL, EXP_OP_FORK, FALSE, stmt->exp->line, ((stmt->exp->col & 0xffff0000) >> 16), (stmt->exp->col & 0xffff), NULL );
+    exp = db_create_expression( NULL, NULL, EXP_OP_FORK, FALSE, stmt->exp->line, stmt->exp->ppline, ((stmt->exp->col & 0xffff0000) >> 16), (stmt->exp->col & 0xffff), NULL );
 
     /* Create unnamed scope */
     scope = db_create_unnamed_scope();
@@ -2367,7 +2369,7 @@ statement* db_parallelize_statement(
     Try {
 
       /* Create FORK statement and add the expression */
-      stmt = db_create_statement( exp, stmt->ppline );
+      stmt = db_create_statement( exp );
 
     } Catch_anonymous {
       expression_dealloc( exp, FALSE );
@@ -2395,8 +2397,7 @@ statement* db_parallelize_statement(
  module's statement list.
 */
 statement* db_create_statement(
-  expression*  exp,    /*!< Pointer to associated "root" expression */
-  unsigned int ppline  /*!< Preprocessed file line */
+  expression*  exp  /*!< Pointer to associated "root" expression */
 ) { PROFILE(DB_CREATE_STATEMENT);
 
   statement* stmt = NULL;  /* Pointer to newly created statement */
@@ -2406,14 +2407,14 @@ statement* db_create_statement(
 
 #ifdef DEBUG_MODE
     if( debug_mode ) {
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_create_statement, id: %d, line: %d", exp->id, exp->line );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_create_statement, %s", expression_string( exp ) );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
     }
 #endif
 
     /* Create the given statement */
-    stmt = statement_create( exp, curr_funit, ppline );
+    stmt = statement_create( exp, curr_funit );
 
     /* If we are in the exclude mode, exclude this statement */
     if( exclude_mode > 0 ) {
@@ -3083,7 +3084,7 @@ void db_assign_symbol(
           expl = inst->funit->exp_head;
           while( (expl != NULL) &&
                  ((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) &&
-                 ((expl->exp->line != fline) || (expl->exp->col != col) || (last_exp->line != lline) || !ESUPPL_IS_ROOT( expl->exp->suppl ) || (expl->exp->op == EXP_OP_FORK)) ) {
+                 ((expl->exp->ppline != fline) || (expl->exp->col != col) || (last_exp->ppline != lline) || !ESUPPL_IS_ROOT( expl->exp->suppl ) || (expl->exp->op == EXP_OP_FORK)) ) {
             expl = expl->next;
           }
 
@@ -3144,8 +3145,8 @@ void db_assign_symbol(
           /* Search the matching expression */
           expl = inst->funit->exp_head;
           while( (expl != NULL) && 
-                 ((expl->exp->line != fline) || (expl->exp->col != col) ||
-                  (((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) && (last_exp->line != lline))) ) {
+                 ((expl->exp->ppline != fline) || (expl->exp->col != col) ||
+                  (((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) && (last_exp->ppline != lline))) ) {
             expl = expl->next;
           }
 
@@ -3188,7 +3189,7 @@ void db_assign_symbol(
           expl = inst->funit->exp_head;
           while( (expl != NULL) &&
                  ((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) &&
-                 ((expl->exp->line != fline) || (expl->exp->col != col) || (last_exp->line != lline) || (expl->exp->op == EXP_OP_FORK)) ) {
+                 ((expl->exp->ppline != fline) || (expl->exp->col != col) || (last_exp->ppline != lline) || (expl->exp->op == EXP_OP_FORK)) ) {
             expl = expl->next;
           }
 
@@ -3383,6 +3384,10 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.380  2009/01/15 06:47:09  phase1geo
+ More work to support assertion coverage.  Updating regressions per these
+ changes.  Checkpointing.
+
  Revision 1.379  2009/01/14 21:01:34  phase1geo
  Fixing last remaining issues with generate blocks.  Checkpointing.
 
