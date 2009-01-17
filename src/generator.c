@@ -206,7 +206,8 @@ static unsigned int replace_first_col;
 
 static char* generator_gen_size(
   expression* exp,
-  func_unit*  funit
+  func_unit*  funit,
+  int*        number
 );
 
 /*!
@@ -1471,8 +1472,13 @@ void generator_insert_event_comb_cov(
       case EXP_OP_AEDGE :
         {
           if( reg_needed ) {
-            char* size = generator_gen_size( exp->right, funit );
-            rv = snprintf( str, 4096, "reg [(%s-1):0] %s;\n", size, tname );
+            int   number;
+            char* size = generator_gen_size( exp->right, funit, &number );
+            if( number >= 0 ) {
+              rv = snprintf( str, 4096, "reg [%d:0] %s;\n", (number - 1), tname );
+            } else {
+              rv = snprintf( str, 4096, "reg [(%s-1):0] %s;\n", size, tname );
+            }
             assert( rv < 4096 );
             generator_insert_reg( str );
             free_safe( size, (strlen( size ) + 1) );
@@ -1615,8 +1621,9 @@ static void generator_insert_comb_comb_cov(
  Generates MSB string to use for sizing subexpression values.
 */
 static char* generator_gen_size(
-  expression* exp,   /*!< Pointer to subexpression to generate MSB value for */
-  func_unit*  funit  /*!< Pointer to functional unit containing this subexpression */
+  expression* exp,    /*!< Pointer to subexpression to generate MSB value for */
+  func_unit*  funit,  /*!< Pointer to functional unit containing this subexpression */
+  int*        number  /*!< Pointer to value that is set to the number of the returned string represents numbers only */
 ) { PROFILE(GENERATOR_GEN_MSB);
 
   char* size = NULL;
@@ -1626,6 +1633,8 @@ static char* generator_gen_size(
     char*        lexp = NULL;
     char*        rexp = NULL;
     unsigned int rv;
+    int          lnumber;
+    int          rnumber;
 
     switch( exp->op ) {
       case EXP_OP_STATIC :
@@ -1633,41 +1642,44 @@ static char* generator_gen_size(
           char tmp[50];
           rv = snprintf( tmp, 50, "%d", exp->value->width );
           assert( rv < 50 );
-          size = strdup_safe( tmp );
+          size    = strdup_safe( tmp );
+          *number = exp->value->width;
         }
         break;
       case EXP_OP_LIST     :
       case EXP_OP_MULTIPLY :
-        lexp = generator_gen_size( exp->left,  funit );
-        rexp = generator_gen_size( exp->right, funit );
+        lexp = generator_gen_size( exp->left,  funit, &lnumber );
+        rexp = generator_gen_size( exp->right, funit, &rnumber );
         {
           unsigned int slen = strlen( lexp ) + strlen( rexp ) + 4;
           size = (char*)malloc_safe( slen );
-          rv  = snprintf( size, slen, "(%s+%s)", lexp, rexp );
+          rv   = snprintf( size, slen, "(%s+%s)", lexp, rexp );
           assert( rv < slen );
         }
         free_safe( lexp, (strlen( lexp ) + 1) );
         free_safe( rexp, (strlen( rexp ) + 1) );
+        *number = lnumber + rnumber;
         break;
       case EXP_OP_CONCAT         :
       case EXP_OP_NEGATE         :
-        size = generator_gen_size( exp->right, funit );
+        size = generator_gen_size( exp->right, funit, number );
         break;
       case EXP_OP_MBIT_POS       :
       case EXP_OP_MBIT_NEG       :
       case EXP_OP_PARAM_MBIT_POS :
       case EXP_OP_PARAM_MBIT_NEG :
-        size = codegen_gen_expr_one_line( exp->right, funit, FALSE );
+        size    = codegen_gen_expr_one_line( exp->right, funit, FALSE );
+        *number = -1;
         break;
       case EXP_OP_LSHIFT  :
       case EXP_OP_RSHIFT  :
       case EXP_OP_ALSHIFT :
       case EXP_OP_ARSHIFT :
-        size = generator_gen_size( exp->left, funit );
+        size = generator_gen_size( exp->left, funit, number );
         break;
       case EXP_OP_EXPAND :
         lexp = codegen_gen_expr_one_line( exp->left, funit, FALSE );
-        rexp = generator_gen_size( exp->right, funit );
+        rexp = generator_gen_size( exp->right, funit, &rnumber );
         {
           unsigned int slen = strlen( lexp ) + strlen( rexp ) + 4;
           size = (char*)malloc_safe( slen );
@@ -1676,17 +1688,20 @@ static char* generator_gen_size(
         }
         free_safe( lexp, (strlen( lexp ) + 1) );
         free_safe( rexp, (strlen( rexp ) + 1) );
+        *number = -1;
         break;
       case EXP_OP_STIME :
       case EXP_OP_SR2B  :
       case EXP_OP_SR2I  :
-        size = strdup_safe( "64" );
+        size    = strdup_safe( "64" );
+        *number = 64;
         break;
       case EXP_OP_SSR2B        :
       case EXP_OP_SRANDOM      :
       case EXP_OP_SURANDOM     :
       case EXP_OP_SURAND_RANGE :
-        size = strdup_safe( "32" );
+        size    = strdup_safe( "32" );
+        *number = 32;
         break;
       case EXP_OP_LT        :
       case EXP_OP_GT        :
@@ -1722,13 +1737,15 @@ static char* generator_gen_size(
       case EXP_OP_STESTARGS :
       case EXP_OP_SVALARGS  :
       case EXP_OP_PARAM_SBIT :
-        size = strdup_safe( "1" );
+        size    = strdup_safe( "1" );
+        *number = 1;
         break;
       case EXP_OP_SBIT_SEL  :
         if( exp->sig->suppl.part.type == SSUPPL_TYPE_MEM ) {
-          size = mod_parm_gen_size_code( exp->sig, (expression_get_curr_dimension( exp ) + 1), funit_get_curr_module( funit ) );
+          size = mod_parm_gen_size_code( exp->sig, (expression_get_curr_dimension( exp ) + 1), funit_get_curr_module( funit ), number );
         } else {
-          size = strdup_safe( "1" );
+          size    = strdup_safe( "1" );
+          *number = 1;
         }
         break;
       case EXP_OP_MBIT_SEL   :
@@ -1743,37 +1760,52 @@ static char* generator_gen_size(
         }
         free_safe( lexp, (strlen( lexp ) + 1) );
         free_safe( rexp, (strlen( rexp ) + 1) );
+        *number = -1;
         break;
       case EXP_OP_SIG       :
       case EXP_OP_PARAM     :
       case EXP_OP_FUNC_CALL :
         if( (exp->sig->suppl.part.type == SSUPPL_TYPE_GENVAR) || (exp->sig->suppl.part.type == SSUPPL_TYPE_DECL_SREAL) ) {
-          size = strdup_safe( "32" );
+          size    = strdup_safe( "32" );
+          *number = 32;
         } else if( exp->sig->suppl.part.type == SSUPPL_TYPE_DECL_REAL ) {
-          size = strdup_safe( "64" );
+          size    = strdup_safe( "64" );
+          *number = 64;
         } else {
-          size = mod_parm_gen_size_code( exp->sig, expression_get_curr_dimension( exp ), funit_get_curr_module( funit ) );
+          size = mod_parm_gen_size_code( exp->sig, expression_get_curr_dimension( exp ), funit_get_curr_module( funit ), number );
         }
         break;
       default :
-        lexp = generator_gen_size( exp->left,  funit );
-        rexp = generator_gen_size( exp->right, funit );
+        lexp = generator_gen_size( exp->left,  funit, &lnumber );
+        rexp = generator_gen_size( exp->right, funit, &rnumber );
         if( lexp != NULL ) {
           if( rexp != NULL ) {
-            unsigned int slen = (strlen( lexp ) * 2) + (strlen( rexp ) * 2) + 8;
-            size = (char*)malloc_safe_nolimit( slen );
-            rv   = snprintf( size, slen, "((%s>%s)?%s:%s)", lexp, rexp, lexp, rexp );
-            assert( rv < slen );
+            if( lnumber && rnumber ) {
+              char num[50];
+              *number = ((lnumber > rnumber) ? lnumber : rnumber);
+              rv = snprintf( num, 50, "%d", *number );
+              assert( rv < 50 );
+              size = strdup_safe( num );
+            } else {
+              unsigned int slen = (strlen( lexp ) * 2) + (strlen( rexp ) * 2) + 8;
+              size = (char*)malloc_safe_nolimit( slen );
+              rv   = snprintf( size, slen, "((%s>%s)?%s:%s)", lexp, rexp, lexp, rexp );
+              assert( rv < slen );
+              *number = -1;
+            }
             free_safe( lexp, (strlen( lexp ) + 1) );
             free_safe( rexp, (strlen( rexp ) + 1) );
           } else {
-            size = lexp;
+            size    = lexp;
+            *number = lnumber;
           }
         } else {
           if( rexp != NULL ) {
-            size = rexp;
+            size    = rexp;
+            *number = rnumber;
           } else {
-            size = NULL;
+            size    = NULL;
+            *number = 1;
           }
         }
         break;
@@ -1801,29 +1833,56 @@ static char* generator_create_lhs(
   char*        name = generator_create_expr_name( exp );
   char*        size;
   char*        code;
+  int          number;
 
   /* Generate MSB string */
-  size = generator_gen_size( exp, funit );
+  size = generator_gen_size( exp, funit, &number );
 
   if( net ) {
 
-    unsigned int slen = 7 + ((size != NULL) ? strlen( size ) : 1) + 7 + strlen( name ) + 1;
+    unsigned int slen;
 
     /* Create sized wire string */
-    code = (char*)malloc_safe_nolimit( slen );
-    rv   = snprintf( code, slen, "wire [(%s-1):0] %s", ((size != NULL) ? size : "1"), name );
+    if( number >= 0 ) {
+      char tmp[50];
+      rv = snprintf( tmp, 50, "%d", (number - 1) );
+      assert( rv < 50 );
+      slen = 6 + strlen( tmp ) + 4 + strlen( name ) + 1;
+      code = (char*)malloc_safe( slen );
+      rv   = snprintf( code, slen, "wire [%s:0] %s", tmp, name );
+    } else {
+      slen = 7 + ((size != NULL) ? strlen( size ) : 1) + 7 + strlen( name ) + 1;
+      code = (char*)malloc_safe( slen );
+      rv   = snprintf( code, slen, "wire [(%s-1):0] %s", ((size != NULL) ? size : "1"), name );
+    }
+
     assert( rv < slen );
 
   } else {
 
     /* Create sized register string */
     if( reg_needed ) {
-      unsigned int slen = 6 + ((size != NULL) ? strlen( size ) : 1) + 7 + strlen( name ) + 3;
-      char*        str  = (char*)malloc_safe( slen );
-      rv = snprintf( str, slen, "reg [(%s-1):0] %s;\n", ((size != NULL) ? size : "1"), name );
+
+      unsigned int slen;
+      char*        str;
+      
+      if( number >= 0 ) {
+        char tmp[50];
+        rv = snprintf( tmp, 50, "%d", (number - 1) );
+        assert( rv < 50 );
+        slen = 5 + strlen( tmp ) + 4 + strlen( name ) + 3;
+        str  = (char*)malloc_safe( slen );
+        rv   = snprintf( str, slen, "reg [%s:0] %s;\n", tmp, name );
+      } else {
+        slen = 6 + ((size != NULL) ? strlen( size ) : 1) + 7 + strlen( name ) + 3;
+        str  = (char*)malloc_safe( slen );
+        rv   = snprintf( str, slen, "reg [(%s-1):0] %s;\n", ((size != NULL) ? size : "1"), name );
+      }
+
       assert( rv < slen );
       generator_insert_reg( str );
       free_safe( str, (strlen( str ) + 1) );
+
     }
 
     /* Set the name to the value of code */
@@ -2160,6 +2219,12 @@ static void generator_insert_comb_cov_helper2(
 
     }
 
+#ifdef SKIP
+    /* Generate children expression trees (depth first search) */
+    generator_insert_comb_cov_helper2( exp->left,  funit, exp->op, child_depth, net, FALSE, reg_needed );
+    generator_insert_comb_cov_helper2( exp->right, funit, exp->op, child_depth, net, FALSE, reg_needed );
+#endif
+
   }
 
   PROFILE_END;
@@ -2218,6 +2283,7 @@ static char* generator_gen_mem_index(
   char*        num;
   unsigned int slen;
   unsigned int rv;
+  int          number;
 
   /* Calculate the index value */
   switch( exp->op ) {
@@ -2257,14 +2323,23 @@ static char* generator_gen_mem_index(
   }
 
   /* Get the dimensional width for the current expression */
-  num = mod_parm_gen_size_code( exp->sig, dimension, funit_get_curr_module( funit ) );
+  num = mod_parm_gen_size_code( exp->sig, dimension, funit_get_curr_module( funit ), &number );
 
   /* If the current dimension is big endian, recalculate the index value */
   if( exp->elem.dim->dim_be ) {
     char* tmp_index = index;
-    slen  = 2 + strlen( num ) + 4 + strlen( index ) + 2;
-    index = (char*)malloc_safe( slen );
-    rv    = snprintf( index, slen, "((%s-1)-%s)", num, tmp_index );
+    if( number >= 0 ) {
+      char tmp[50];
+      rv = snprintf( tmp, 50, "%d", (number - 1) );
+      assert( rv < 50 );
+      slen  = 1 + strlen( tmp ) + 1 + strlen( tmp_index ) + 2;
+      index = (char*)malloc_safe( slen );
+      rv    = snprintf( index, slen, "(%s-%s)", tmp, tmp_index );
+    } else {
+      slen  = 2 + strlen( num ) + 4 + strlen( index ) + 2;
+      index = (char*)malloc_safe( slen );
+      rv    = snprintf( index, slen, "((%s-1)-%s)", num, tmp_index );
+    }
     assert( rv < slen );
     free_safe( tmp_index, (strlen( tmp_index ) + 1) );
   }
@@ -2274,14 +2349,23 @@ static char* generator_gen_mem_index(
 
   /* Get the next dimensional width for the current expression */
   if( (dimension + 1) >= (exp->sig->udim_num + exp->sig->pdim_num) ) {
-    num = strdup_safe( "1" );
+    number = 1;
   } else {
-    num = mod_parm_gen_size_code( exp->sig, (dimension + 1), funit_get_curr_module( funit ) );
+    num = mod_parm_gen_size_code( exp->sig, (dimension + 1), funit_get_curr_module( funit ), &number );
   }
 
-  slen = 1 + strlen( index ) + 1 + strlen( num ) + 2;
-  str  = (char*)malloc_safe( slen );
-  rv   = snprintf( str, slen, "(%s*%s)", index, num );
+  if( number >= 0 ) {
+    char tmp[50];
+    rv = snprintf( tmp, 50, "%d", number );
+    assert( rv < 50 );
+    slen = 1 + strlen( index ) + 1 + strlen( tmp ) + 2;
+    str  = (char*)malloc_safe( slen );
+    rv   = snprintf( str, slen, "(%s*%s)", index, tmp );
+  } else {
+    slen = 1 + strlen( index ) + 1 + strlen( num ) + 2;
+    str  = (char*)malloc_safe( slen );
+    rv   = snprintf( str, slen, "(%s*%s)", index, num );
+  }
   assert( rv < slen );
 
   /* Deallocate memory */
@@ -2326,13 +2410,29 @@ static char* generator_gen_mem_size(
   unsigned int rv;
 
   for( i=0; i<(sig->udim_num + sig->pdim_num); i++ ) {
+
     char* tmpsize = size;
-    curr_size = mod_parm_gen_size_code( sig, i, mod );
-    slen     += strlen( curr_size ) + 2;
-    size      = (char*)malloc_safe( slen );
-    rv        = snprintf( size, slen, "%s*%s", tmpsize, curr_size );
+    int   number;
+
+    curr_size = mod_parm_gen_size_code( sig, i, mod, &number );
+
+    if( number >= 0 )  {
+      char tmp[50];
+      rv = snprintf( tmp, 50, "%d", number );
+      assert( rv < 50 );
+      slen += strlen( tmp ) + 2;
+      size  = (char*)malloc_safe( slen );
+      rv    = snprintf( size, slen, "%s*%s", tmpsize, tmp );
+    } else {
+      slen += strlen( curr_size ) + 2;
+      size  = (char*)malloc_safe( slen );
+      rv    = snprintf( size, slen, "%s*%s", tmpsize, curr_size );
+    }
+    assert( rv < slen );
+
     free_safe( curr_size, (strlen( curr_size ) + 1) );
     free_safe( tmpsize,   (strlen( tmpsize ) + 1) );
+
   }
 
   PROFILE_END;
@@ -2373,6 +2473,7 @@ static void generator_insert_mem_cov(
     char         iname[4096];
     str_link*    tmp_head = NULL;
     str_link*    tmp_tail = NULL;
+    int          number;
 
     /* First, create the wire/register to hold the index */
     if( scope[0] == '\0' ) {
@@ -2425,10 +2526,14 @@ static void generator_insert_mem_cov(
     assert( rv < 4096 );
 
     /* Generate size */
-    size = generator_gen_size( exp, funit );
+    size = generator_gen_size( exp, funit, &number );
 
     /* Create the range information for the write */
-    rv = snprintf( range, 4096, "[(%s+(%s-1)):0]", size, num );
+    if( number >= 0 ) {
+      rv = snprintf( range, 4096, "[(%d+(%s-1)):0]", number, num );
+    } else {
+      rv = snprintf( range, 4096, "[(%s+(%s-1)):0]", size, num );
+    }
     assert( rv < 4096 );
 
     /* Create the value to assign */
@@ -2691,24 +2796,43 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
 
       if( fsml->table->from_state->id == fsml->table->to_state->id ) {
 
-        char* size = generator_gen_size( fsml->table->from_state, curr_funit );
+        int   number;
+        char* size = generator_gen_size( fsml->table->from_state, curr_funit, &number );
         char* exp  = codegen_gen_expr_one_line( fsml->table->from_state, curr_funit, FALSE );
-        fprintf( curr_ofile, "wire [(%s-1):0] \\covered$F%d = %s;\n", ((size != NULL) ? size : "1"), id, exp );
+        if( number >= 0 ) {
+          fprintf( curr_ofile, "wire [%d:0] \\covered$F%d = %s;\n", (number - 1), id, exp );
+        } else {
+          fprintf( curr_ofile, "wire [(%s-1):0] \\covered$F%d = %s;\n", ((size != NULL) ? size : "1"), id, exp );
+        }
         free_safe( size, (strlen( size ) + 1) );
         free_safe( exp, (strlen( exp ) + 1) );
 
       } else {
 
-        char* fsize = generator_gen_size( fsml->table->from_state, curr_funit );
+        int   from_number;
+        int   to_number;
+        char* fsize = generator_gen_size( fsml->table->from_state, curr_funit, &from_number );
         char* fexp  = codegen_gen_expr_one_line( fsml->table->from_state, curr_funit, FALSE );
-        char* tsize = generator_gen_size( fsml->table->to_state, curr_funit );
+        char* tsize = generator_gen_size( fsml->table->to_state, curr_funit, &to_number );
         char* texp  = codegen_gen_expr_one_line( fsml->table->to_state, curr_funit, FALSE );
-        fprintf( curr_ofile, "wire [((%s+%s)-1):0] \\covered$F%d = {%s,%s};\n",
-                 ((fsize != NULL) ? fsize : "1"), ((tsize != NULL) ? tsize : "1"), id, fexp, texp );
+        if( from_number >= 0 ) {
+          if( to_number >= 0 ) {
+            fprintf( curr_ofile, "wire [%d:0] \\covered$F%d = {%s,%s};\n", ((from_number + to_number) - 1), id, fexp, texp );
+          } else {
+            fprintf( curr_ofile, "wire [((%d+%s)-1):0] \\covered$F%d = {%s,%s};\n", from_number, ((tsize != NULL) ? tsize : "1"), id, fexp, texp );
+          }
+        } else {
+          if( to_number >= 0 ) {
+            fprintf( curr_ofile, "wire [((%s+%d)-1):0] \\covered$F%d = {%s,%s};\n", ((fsize != NULL) ? fsize : "1"), to_number, id, fexp, texp );
+          } else {
+            fprintf( curr_ofile, "wire [((%s+%s)-1):0] \\covered$F%d = {%s,%s};\n",
+                     ((fsize != NULL) ? fsize : "1"), ((tsize != NULL) ? tsize : "1"), id, fexp, texp );
+          }
+        }
         free_safe( fsize, (strlen( fsize ) + 1) );
-        free_safe( fexp, (strlen( fexp ) + 1) );
+        free_safe( fexp,  (strlen( fexp )  + 1) );
         free_safe( tsize, (strlen( tsize ) + 1) );
-        free_safe( texp, (strlen( texp ) + 1) );
+        free_safe( texp,  (strlen( texp )  + 1) );
 
       }
 
@@ -2771,6 +2895,9 @@ void generator_handle_event_trigger(
 
 /*
  $Log$
+ Revision 1.78  2009/01/16 15:02:02  phase1geo
+ Updates for support of problems found in covering real code.  Checkpointing.
+
  Revision 1.77  2009/01/16 00:03:54  phase1geo
  Fixing last issue with IV/Cver regressions (OVL assertions).  Updating
  regressions per needed changes to support this functionality.  Now only
