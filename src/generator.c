@@ -1741,11 +1741,14 @@ static char* generator_gen_size(
         *number = 1;
         break;
       case EXP_OP_SBIT_SEL  :
-        if( exp->sig->suppl.part.type == SSUPPL_TYPE_MEM ) {
-          size = mod_parm_gen_size_code( exp->sig, (expression_get_curr_dimension( exp ) + 1), funit_get_curr_module( funit ), number );
-        } else {
-          size    = strdup_safe( "1" );
-          *number = 1;
+        {
+          unsigned int dimension = expression_get_curr_dimension( exp );
+          if( (exp->sig->suppl.part.type == SSUPPL_TYPE_MEM) && ((dimension + 1) < (exp->sig->udim_num + exp->sig->pdim_num)) ) {
+            size = mod_parm_gen_size_code( exp->sig, (dimension + 1), funit_get_curr_module( funit ), number );
+          } else {
+            size    = strdup_safe( "1" );
+            *number = 1;
+          }
         }
         break;
       case EXP_OP_MBIT_SEL   :
@@ -2346,6 +2349,7 @@ static char* generator_gen_mem_index(
 
   /* Deallocate memory */
   free_safe( num, (strlen( num ) + 1) );
+  num = NULL;
 
   /* Get the next dimensional width for the current expression */
   if( (dimension + 1) >= (exp->sig->udim_num + exp->sig->pdim_num) ) {
@@ -2895,6 +2899,10 @@ void generator_handle_event_trigger(
 
 /*
  $Log$
+ Revision 1.79  2009/01/17 06:25:47  phase1geo
+ Adding code to reduce reg/wire sizing output.  Fixing unary codegen handling when
+ they are surrounded by parenthesis.  Updating regression output.  Checkpointing.
+
  Revision 1.78  2009/01/16 15:02:02  phase1geo
  Updates for support of problems found in covering real code.  Checkpointing.
 
