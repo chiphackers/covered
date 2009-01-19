@@ -68,7 +68,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 include1        include1.1      include2        initial1        instance1 \
                 instance1.1     instance1.2     instance2       instance3       instance4 \
                 instance4.1     instance4.2     instance5       instance6       instance6.1 \
-                instance6.2     instance7       long_exp1       long_exp2       long_exp3 \
+                instance6.2     long_exp1       long_exp2       long_exp3 \
                 lshift1         lshift1.1       lshift1.2       lshift2         lshift2.1 \
                 lshift2.2       lshift2.3       lshift3         lshift3.1       lshift3.2 \
                 lshift3.3       lshift4         lshift4.1       lshift4.2       lshift4.3 \
@@ -259,7 +259,7 @@ IVVCSDIAGS1   = define3          delay3           exclude7.3       exclude10.5  
                 generate2.1      generate4        generate4.1      generate5        generate5.1 \
                 generate5.2      generate5.3      generate8        generate8.9      generate10       generate10.1 \
                 generate10.2     generate11       generate11.1     generate11.2     generate11.3 \
-                hier3            localparam1      localparam1.1    localparam1.2    localparam1.3 \
+                hier3            instance7        localparam1      localparam1.1    localparam1.2    localparam1.3 \
                 localparam2      localparam3      mbit_sel5        mbit_sel5.1      mbit_sel5.2 \
                 mbit_sel5.3      mbit_sel6        mbit_sel6.1      mbit_sel6.2      mbit_sel6.3 \
                 mem4             mem4.1           nand1            nor1             ovl1 \
