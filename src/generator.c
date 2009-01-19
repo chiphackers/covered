@@ -1624,7 +1624,7 @@ static char* generator_gen_size(
   expression* exp,    /*!< Pointer to subexpression to generate MSB value for */
   func_unit*  funit,  /*!< Pointer to functional unit containing this subexpression */
   int*        number  /*!< Pointer to value that is set to the number of the returned string represents numbers only */
-) { PROFILE(GENERATOR_GEN_MSB);
+) { PROFILE(GENERATOR_GEN_SIZE);
 
   char* size = NULL;
 
@@ -1658,7 +1658,7 @@ static char* generator_gen_size(
         }
         free_safe( lexp, (strlen( lexp ) + 1) );
         free_safe( rexp, (strlen( rexp ) + 1) );
-        *number = lnumber + rnumber;
+        *number = ((lnumber >= 0) && (rnumber >= 0)) ? (lnumber + rnumber) : -1;
         break;
       case EXP_OP_CONCAT         :
       case EXP_OP_NEGATE         :
@@ -1783,7 +1783,7 @@ static char* generator_gen_size(
         rexp = generator_gen_size( exp->right, funit, &rnumber );
         if( lexp != NULL ) {
           if( rexp != NULL ) {
-            if( lnumber && rnumber ) {
+            if( (lnumber >= 0) && (rnumber >= 0) ) {
               char num[50];
               *number = ((lnumber > rnumber) ? lnumber : rnumber);
               rv = snprintf( num, 50, "%d", *number );
@@ -2899,6 +2899,9 @@ void generator_handle_event_trigger(
 
 /*
  $Log$
+ Revision 1.80  2009/01/18 05:27:44  phase1geo
+ Fixing valgrind errors.
+
  Revision 1.79  2009/01/17 06:25:47  phase1geo
  Adding code to reduce reg/wire sizing output.  Fixing unary codegen handling when
  they are surrounded by parenthesis.  Updating regression output.  Checkpointing.
