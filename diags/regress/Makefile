@@ -335,7 +335,8 @@ endif
 
 ifeq ($(MAKECMDGOALS),cver)
 NOINLINEDIAGS += define4         include1        include1.1      include2        instance7 \
-                 real3.4         real3.6         real6
+                 random1.2       real3.4         real3.6         real6           sbit_sel2.1 \
+                 timescale2.8
 endif
 endif
                  
