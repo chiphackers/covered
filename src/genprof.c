@@ -835,6 +835,7 @@ profiler profiles[NUM_PROFILES] = {
   {"score_generate_top_dumpvars_module", NULL, 0, 0, 0, TRUE},
   {"score_generate_pli_tab_file", NULL, 0, 0, 0, FALSE},
   {"score_parse_define", NULL, 0, 0, 0, FALSE},
+  {"score_parse_metrics", NULL, 0, 0, 0, TRUE},
   {"score_parse_args", NULL, 0, 0, 0, FALSE},
   {"command_score", NULL, 0, 0, 0, TRUE},
   {"search_init", NULL, 0, 0, 0, FALSE},

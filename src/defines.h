@@ -1686,15 +1686,21 @@ typedef union isuppl_u isuppl;
 union isuppl_u {
   uint32 all;
   struct {
-    uint32 scored      : 1;    /*!< Specifies if the design has been scored yet */
-    uint32 excl_assign : 1;    /*!< Specifies if assign statements are being excluded from coverage */
-    uint32 excl_always : 1;    /*!< Specifies if always statements are being excluded from coverage */
-    uint32 excl_init   : 1;    /*!< Specifies if initial statements are being excluded from coverage */
-    uint32 excl_final  : 1;    /*!< Specifies if final statements are being excluded from coverage */
-    uint32 excl_pragma : 1;    /*!< Specifies if code encapsulated in coverage pragmas should be excluded from coverage */
-    uint32 assert_ovl  : 1;    /*!< Specifies that OVL assertions should be included for coverage */
-    uint32 vec_ul_size : 2;    /*!< Specifies the bit size of a vector element (0=8 bits, 1=16-bits, 2=32-bits, 3=64-bits) */
-    uint32 inlined     : 1;    /*!< Specifies if this CDD is used with an inlined code coverage method */
+    uint32 scored        : 1;  /*!< Specifies if the design has been scored yet */
+    uint32 excl_assign   : 1;  /*!< Specifies if assign statements are being excluded from coverage */
+    uint32 excl_always   : 1;  /*!< Specifies if always statements are being excluded from coverage */
+    uint32 excl_init     : 1;  /*!< Specifies if initial statements are being excluded from coverage */
+    uint32 excl_final    : 1;  /*!< Specifies if final statements are being excluded from coverage */
+    uint32 excl_pragma   : 1;  /*!< Specifies if code encapsulated in coverage pragmas should be excluded from coverage */
+    uint32 assert_ovl    : 1;  /*!< Specifies that OVL assertions should be included for coverage */
+    uint32 vec_ul_size   : 2;  /*!< Specifies the bit size of a vector element (0=8 bits, 1=16-bits, 2=32-bits, 3=64-bits) */
+    uint32 inlined       : 1;  /*!< Specifies if this CDD is used with an inlined code coverage method */
+    uint32 scored_line   : 1;  /*!< Specifies that line coverage was scored and is available for reporting */
+    uint32 scored_toggle : 1;  /*!< Specifies that toggle coverage was scored and is available for reporting */
+    uint32 scored_memory : 1;  /*!< Specifies that memory coverage was scored and is available for reporting */
+    uint32 scored_comb   : 1;  /*!< Specifies that combinational logic coverage was scored and is available for reporting */
+    uint32 scored_fsm    : 1;  /*!< Specifies that FSM coverage was scored and is available for reporting */
+    uint32 scored_assert : 1;  /*!< Specifies that assertion coverage was scored and is available for reporting */
   } part;
 };
 
@@ -3104,6 +3110,11 @@ extern struct exception_context the_exception_context[1];
 
 /*
  $Log$
+ Revision 1.353  2009/01/16 00:03:53  phase1geo
+ Fixing last issue with IV/Cver regressions (OVL assertions).  Updating
+ regressions per needed changes to support this functionality.  Now only
+ VCS regression needs to be updated.
+
  Revision 1.352  2009/01/15 06:47:09  phase1geo
  More work to support assertion coverage.  Updating regressions per these
  changes.  Checkpointing.

@@ -260,16 +260,16 @@ static void report_parse_metrics(
       case 'L' :  report_line        = TRUE;  break;
       case 't' :
       case 'T' :  report_toggle      = TRUE;  break;
+      case 'm' :
+      case 'M' :  report_memory      = TRUE;  break;
       case 'c' :
       case 'C' :  report_combination = TRUE;  break;
       case 'f' :
       case 'F' :  report_fsm         = TRUE;  break;
-      case 'r' :
-      case 'R' :  report_race        = TRUE;  break;
       case 'a' :
       case 'A' :  report_assertion   = TRUE;  break;
-      case 'm' :
-      case 'M' :  report_memory      = TRUE;  break;
+      case 'r' :
+      case 'R' :  report_race        = TRUE;  break;
       default  :
         {
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown metric specified '%c'...  Ignoring.", *ptr );
@@ -500,14 +500,14 @@ void report_gather_instance_stats(
   if( (root->funit != NULL) && ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( root->funit )) ) {
 
     /* Get coverage results for this instance */
-    if( report_line ) {
+    if( report_line && (info_suppl.part.scored_line == 1) ) {
       line_get_stats( root->funit,
                       &(root->stat->line_hit),
                       &(root->stat->line_excluded),
                       &(root->stat->line_total) );
     }
 
-    if( report_toggle ) {
+    if( report_toggle && (info_suppl.part.scored_toggle == 1) ) {
       toggle_get_stats( root->funit,
                         &(root->stat->tog01_hit), 
                         &(root->stat->tog10_hit),
@@ -516,14 +516,14 @@ void report_gather_instance_stats(
                         &(root->stat->tog_cov_found) );
     }
 
-    if( report_combination ) {
+    if( report_combination && (info_suppl.part.scored_comb == 1) ) {
       combination_get_stats( root->funit,
                              &(root->stat->comb_hit),
                              &(root->stat->comb_excluded),
                              &(root->stat->comb_total) );
     }
 
-    if( report_fsm ) {
+    if( report_fsm && (info_suppl.part.scored_fsm == 1) ) {
       fsm_get_stats( root->funit->fsm_head,
                      &(root->stat->state_hit),
                      &(root->stat->state_total),
@@ -532,14 +532,14 @@ void report_gather_instance_stats(
                      &(root->stat->arc_excluded) );
     }
 
-    if( report_assertion ) {
+    if( report_assertion && (info_suppl.part.scored_assert == 1) ) {
       assertion_get_stats( root->funit,
                            &(root->stat->assert_hit),
                            &(root->stat->assert_excluded),
                            &(root->stat->assert_total) );
     }
 
-    if( report_memory ) {
+    if( report_memory && (info_suppl.part.scored_memory == 1) ) {
       memory_get_stats( root->funit,
                         &(root->stat->mem_wr_hit),
                         &(root->stat->mem_rd_hit),
@@ -586,14 +586,14 @@ static void report_gather_funit_stats(
     if( (info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( head->funit ) ) {
 
       /* Get coverage results for this instance */
-      if( report_line ) {
+      if( report_line && (info_suppl.part.scored_line == 1) ) {
         line_get_stats( head->funit,
                         &(head->funit->stat->line_hit),
                         &(head->funit->stat->line_excluded),
                         &(head->funit->stat->line_total) );
       }
 
-      if( report_toggle ) {
+      if( report_toggle && (info_suppl.part.scored_toggle == 1) ) {
         toggle_get_stats( head->funit,
                           &(head->funit->stat->tog01_hit), 
                           &(head->funit->stat->tog10_hit),
@@ -602,14 +602,14 @@ static void report_gather_funit_stats(
                           &(head->funit->stat->tog_cov_found) );
       }
 
-      if( report_combination ) {
+      if( report_combination && (info_suppl.part.scored_comb == 1) ) {
         combination_get_stats( head->funit,
                                &(head->funit->stat->comb_hit),
                                &(head->funit->stat->comb_excluded),
                                &(head->funit->stat->comb_total) );
       }
 
-      if( report_fsm ) {
+      if( report_fsm && (info_suppl.part.scored_fsm == 1) ) {
         fsm_get_stats( head->funit->fsm_head,
                        &(head->funit->stat->state_hit),
                        &(head->funit->stat->state_total),
@@ -618,14 +618,14 @@ static void report_gather_funit_stats(
                        &(head->funit->stat->arc_excluded) );
       }
 
-      if( report_assertion ) {
+      if( report_assertion && (info_suppl.part.scored_assert == 1) ) {
         assertion_get_stats( head->funit,
                              &(head->funit->stat->assert_hit),
                              &(head->funit->stat->assert_excluded),
                              &(head->funit->stat->assert_total) );
       }
 
-      if( report_memory ) {
+      if( report_memory && (info_suppl.part.scored_memory == 1) ) {
         memory_get_stats( head->funit,
                           &(head->funit->stat->mem_wr_hit),
                           &(head->funit->stat->mem_rd_hit),
@@ -811,27 +811,51 @@ static void report_generate(
 
   /* Call out the proper reports for the specified metrics to report */
   if( report_line ) {
-    line_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+    if( info_suppl.part.scored_line ) {
+      line_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+    } else {
+      print_output( "Line reporting requested when line coverage was not accumulated during scoring", WARNING, __FILE__, __LINE__ );
+    }
   }
 
   if( report_toggle ) {
-    toggle_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+    if( info_suppl.part.scored_toggle ) {
+      toggle_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+    } else {
+      print_output( "Toggle reporting requested when toggle coverage was not accumulated during scoring", WARNING, __FILE__, __LINE__ );
+    }
   }
 
   if( report_memory ) {
-    memory_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+    if( info_suppl.part.scored_memory ) {
+      memory_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+    } else {
+      print_output( "Memory reporting requested when memory coverage was not accumulated during scoring", WARNING, __FILE__, __LINE__ );
+    }
   }
 
   if( report_combination ) {
-    combination_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+    if( info_suppl.part.scored_comb ) {
+      combination_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+    } else {
+      print_output( "Combinational logic reporting requested when combinational logic coverage was not accumulated during scoring", WARNING, __FILE__, __LINE__ );
+    }
   }
 
   if( report_fsm ) {
-    fsm_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+    if( info_suppl.part.scored_fsm ) {
+      fsm_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+    } else {
+      print_output( "FSM reporting requested when FSM coverage was not accumulated during scoring", WARNING, __FILE__, __LINE__ );
+    }
   }
 
   if( report_assertion ) {
-    assertion_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+    if( info_suppl.part.scored_assert ) {
+      assertion_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+    } else {
+      print_output( "Assertion reporting requested when assertion coverage was not accumulated during scoring", WARNING, __FILE__, __LINE__ );
+    }
   }
 
   if( report_race ) {
@@ -1236,6 +1260,10 @@ void command_report(
 
 /*
  $Log$
+ Revision 1.130  2009/01/09 21:25:01  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.129  2008/11/10 05:33:16  phase1geo
  Cleaning up some unnecessary output.
 

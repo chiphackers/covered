@@ -3208,7 +3208,7 @@ void db_assign_symbol(
 
       }
         
-    } else {
+    } else if( info_suppl.part.scored_toggle == 1 ) {
 
       sig_link* slink;
 
@@ -3384,6 +3384,11 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.381  2009/01/16 00:03:53  phase1geo
+ Fixing last issue with IV/Cver regressions (OVL assertions).  Updating
+ regressions per needed changes to support this functionality.  Now only
+ VCS regression needs to be updated.
+
  Revision 1.380  2009/01/15 06:47:09  phase1geo
  More work to support assertion coverage.  Updating regressions per these
  changes.  Checkpointing.

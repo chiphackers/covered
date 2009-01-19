@@ -49,6 +49,7 @@ extern const exp_info exp_op_info[EXP_OP_NUM];
 extern bool           debug_mode;
 extern func_unit*     curr_funit;
 extern int            generate_mode;
+extern isuppl         info_suppl;
 
 
 struct fname_link_s;
@@ -135,31 +136,6 @@ str_link* comb_tail = NULL;
  Maximum expression depth to generate coverage code for (from command-line).
 */
 unsigned int generator_max_exp_depth = 0xffffffff;
-
-/*!
- Specifies that we should perform line coverage code insertion.
-*/
-bool generator_line = TRUE;
-
-/*!
- Specifies that we should perform combinational logic coverage code insertion.
-*/
-bool generator_comb = TRUE;
-
-/*!
- Specifies that we should perform FSM coverage code insertion.
-*/
-bool generator_fsm = TRUE;
-
-/*!
- Specifies that we should perform memory coverage code insertion.
-*/
-bool generator_mem = TRUE;
-
-/*!
- Specifies that we should perform assertion coverage code insertion.
-*/
-bool generator_assert = TRUE;
 
 /*!
  Specifies that we should handle the current functional unit as an assertion.
@@ -912,7 +888,7 @@ void generator_init_funit(
   generator_clear_replace_ptrs();
 
   /* Calculate if we need to handle this functional unit as an assertion or not */
-  handle_funit_as_assert = generator_assert && ovl_is_assertion_module( funit );
+  handle_funit_as_assert = (info_suppl.part.scored_assert == 1) && ovl_is_assertion_module( funit );
 
   PROFILE_END;
 
@@ -1310,7 +1286,7 @@ void generator_insert_line_cov_with_stmt(
   bool       semicolon  /*!< Specifies if a semicolon (TRUE) or a comma (FALSE) should be appended to the created line */
 ) { PROFILE(GENERATOR_INSERT_LINE_COV_WITH_STMT);
 
-  if( (stmt != NULL) && ((generator_line && !handle_funit_as_assert) || (handle_funit_as_assert && ovl_is_coverage_point( stmt->exp ))) ) {
+  if( (stmt != NULL) && ((info_suppl.part.scored_line && !handle_funit_as_assert) || (handle_funit_as_assert && ovl_is_coverage_point( stmt->exp ))) ) {
 
     expression*  last_exp = expression_get_last_line_expr( stmt->exp );
     char         str[4096];
@@ -1366,7 +1342,7 @@ statement* generator_insert_line_cov(
   statement* stmt = NULL;
 
   if( ((stmt = generator_find_statement( first_line, first_column )) != NULL) &&
-      ((generator_line && !handle_funit_as_assert) || (handle_funit_as_assert && ovl_is_coverage_point( stmt->exp ))) ) {
+      ((info_suppl.part.scored_line && !handle_funit_as_assert) || (handle_funit_as_assert && ovl_is_coverage_point( stmt->exp ))) ) {
 
     generator_insert_line_cov_with_stmt( stmt, semicolon );
 
@@ -2656,15 +2632,15 @@ statement* generator_insert_comb_cov(
   statement* stmt = NULL;
 
   /* Insert combinational logic code coverage if it is specified on the command-line to do so and the statement exists */
-  if( (generator_comb || generator_mem) && !handle_funit_as_assert && ((stmt = generator_find_statement( first_line, first_column )) != NULL) ) {
+  if( ((info_suppl.part.scored_comb == 1) || (info_suppl.part.scored_memory == 1)) && !handle_funit_as_assert && ((stmt = generator_find_statement( first_line, first_column )) != NULL) ) {
 
     /* Generate combinational coverage */
-    if( generator_comb ) {
+    if( info_suppl.part.scored_comb == 1 ) {
       generator_insert_comb_cov_helper( (use_right ? stmt->exp->right : stmt->exp), stmt->funit, (use_right ? stmt->exp->right->op : stmt->exp->op), 0, net, TRUE, TRUE );
     }
 
     /* Generate memory coverage */
-    if( generator_mem ) {
+    if( info_suppl.part.scored_memory == 1 ) {
       generator_insert_mem_cov_helper( stmt->exp, stmt->funit, net, FALSE );
     }
 
@@ -2700,7 +2676,7 @@ statement* generator_insert_comb_cov_from_stmt_stack() { PROFILE(GENERATOR_INSER
 
   statement* stmt = NULL;
 
-  if( generator_comb && !handle_funit_as_assert ) {
+  if( (info_suppl.part.scored_comb == 1) && !handle_funit_as_assert ) {
 
     stmt_loop_link* sll;
     expression*     exp;
@@ -2735,7 +2711,7 @@ void generator_insert_comb_cov_with_stmt(
   bool       reg_needed  /*!< If TRUE, instantiate necessary registers */
 ) { PROFILE(GENERATOR_INSERT_COMB_COV_WITH_STMT);
 
-  if( generator_comb && !handle_funit_as_assert && (stmt != NULL) ) {
+  if( (info_suppl.part.scored_comb == 1) && !handle_funit_as_assert && (stmt != NULL) ) {
 
     expression* exp = use_right ? stmt->exp->right : stmt->exp;
 
@@ -2759,7 +2735,7 @@ void generator_insert_case_comb_cov(
   statement* stmt;
 
   /* Insert combinational logic code coverage if it is specified on the command-line to do so and the statement exists */
-  if( generator_comb && !handle_funit_as_assert && ((stmt = generator_find_case_statement( first_line, first_column )) != NULL) ) {
+  if( (info_suppl.part.scored_comb == 1) && !handle_funit_as_assert && ((stmt = generator_find_case_statement( first_line, first_column )) != NULL) ) {
 
     generator_insert_comb_cov_helper( stmt->exp->left, stmt->funit, stmt->exp->left->op, 0, FALSE, TRUE, TRUE );
 
@@ -2791,7 +2767,7 @@ void generator_insert_case_comb_cov(
 */
 void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
 
-  if( generator_fsm && !handle_funit_as_assert ) {
+  if( (info_suppl.part.scored_fsm == 1) && !handle_funit_as_assert ) {
 
     fsm_link*    fsml = curr_funit->fsm_head;
     unsigned int id   = 1;
@@ -2861,7 +2837,7 @@ void generator_handle_event_type(
   unsigned int first_column  /*!< First column of "event" type specifier */
 ) { PROFILE(GENERATOR_HANDLE_EVENT_TYPE);
 
-  if( generator_comb && !handle_funit_as_assert ) {
+  if( (info_suppl.part.scored_comb == 1) && !handle_funit_as_assert ) {
     generator_replace( "reg", first_line, first_column, first_line, (first_column + 4) );
   }
 
@@ -2882,7 +2858,7 @@ void generator_handle_event_trigger(
   unsigned int last_column    /*!< Last column which contains the trigger identifier (not including the semicolon) */
 ) { PROFILE(GENERATOR_HANDLE_EVENT_TRIGGER);
 
-  if( generator_comb && !handle_funit_as_assert ) {
+  if( (info_suppl.part.scored_comb == 1) && !handle_funit_as_assert ) {
 
     char         str[4096];
     unsigned int rv = snprintf( str, 4096, "%s = (%s === 1'bx) ? 1'b0 : ~%s", identifier, identifier, identifier ); 
@@ -2899,6 +2875,10 @@ void generator_handle_event_trigger(
 
 /*
  $Log$
+ Revision 1.81  2009/01/19 03:50:24  phase1geo
+ Fixing multiply and concatenation size calculations.  Full IV regression
+ passes.
+
  Revision 1.80  2009/01/18 05:27:44  phase1geo
  Fixing valgrind errors.
 

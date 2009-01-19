@@ -86,7 +86,9 @@ Usage:  covered score (-h | -t <top-level_module_name> [-vcd <dumpfile> | -lxt <
       +libext+.<extension>(+.<extension>)+
                                    Extensions of Verilog files to allow in scoring
 
-      -inline                      Outputs Verilog with inlined code coverage
+      -inline                             Outputs Verilog with inlined code coverage
+      -inline-metrics [l][t][m][c][f][a]  Specifies which coverage metrics should be inlined for scoring purposes.  Only these metrics
+                                            will be available for reporting and ranking.  Default is ltmcfa.
 
    Optimization Options:
       -e <block_name>              Name of module, task, function or named begin/end block to not score.

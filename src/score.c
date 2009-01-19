@@ -239,7 +239,9 @@ static void score_usage() {
   printf( "      +libext+.<extension>(+.<extension>)+\n" );
   printf( "                                   Extensions of Verilog files to allow in scoring\n" );
   printf( "\n" );
-  printf( "      -inline                      Outputs Verilog with inlined code coverage\n" );
+  printf( "      -inline                             Outputs Verilog with inlined code coverage\n" );
+  printf( "      -inline-metrics [l][t][m][c][f][a]  Specifies which coverage metrics should be inlined for scoring purposes.  Only these metrics\n" );
+  printf( "                                            will be available for reporting and ranking.  Default is ltmcfa.\n" );
   printf( "\n" );
   printf( "   Optimization Options:\n" );
   printf( "      -e <block_name>              Name of module, task, function or named begin/end block to not score.\n" );
@@ -488,6 +490,56 @@ void score_parse_define( const char* def ) { PROFILE(SCORE_PARSE_DEFINE);
 }
 
 /*!
+ Parses the specified string containing the metrics to test.  If
+ a legal metric character is found, its corresponding flag is set
+ to TRUE.  If a character is found that does not correspond to a
+ metric, an error message is flagged to the user (a warning).
+*/
+static void score_parse_metrics(
+  const char* metrics  /*!< Specified metrics to calculate coverage for */
+) { PROFILE(SCORE_PARSE_METRICS);
+
+  const char* ptr;  /* Pointer to current character being evaluated */
+
+  /* Set all flags to FALSE */
+  info_suppl.part.scored_line   = 0;
+  info_suppl.part.scored_toggle = 0;
+  info_suppl.part.scored_memory = 0;
+  info_suppl.part.scored_comb   = 0;
+  info_suppl.part.scored_fsm    = 0;
+  info_suppl.part.scored_assert = 0;
+
+  for( ptr=metrics; ptr<(metrics + strlen( metrics )); ptr++ ) {
+
+    switch( *ptr ) {
+      case 'l' :
+      case 'L' :  info_suppl.part.scored_line   = 1;  break;
+      case 't' :
+      case 'T' :  info_suppl.part.scored_toggle = 1;  break;
+      case 'm' :
+      case 'M' :  info_suppl.part.scored_memory = 1;  break;
+      case 'c' :
+      case 'C' :  info_suppl.part.scored_comb   = 1;  break;
+      case 'f' :
+      case 'F' :  info_suppl.part.scored_fsm    = 1;  break;
+      case 'a' :
+      case 'A' :  info_suppl.part.scored_assert = 1;  break;
+      default  :
+        {
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown metric specified '%c'...  Ignoring.", *ptr );
+          assert( rv < USER_MSG_LENGTH );
+          print_output( user_msg, WARNING, __FILE__, __LINE__ );
+        }
+        break;
+    }
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  \throws anonymous search_add_directory_path Throw Throw Throw Throw Throw Throw Throw Throw Throw Throw Throw Throw
                    Throw Throw Throw Throw Throw Throw Throw Throw Throw Throw score_parse_args ovl_add_assertions_to_no_score_list
                    fsm_arg_parse read_command_file search_add_file defparam_add search_add_extensions search_add_no_score_funit
@@ -512,6 +564,16 @@ static void score_parse_args(
 
       score_usage();
       Throw 0;
+
+    } else if( strncmp( "-inline-metrics", argv[i], 15 ) == 0 ) {
+
+      if( check_option_value( argc, argv, i ) ) {
+        bool tmp;
+        i++;
+        score_parse_metrics( argv[i] );
+      } else {
+        Throw 0;
+      }
 
     } else if( strncmp( "-inline", argv[i], 7 ) == 0 ) {
 
@@ -1114,6 +1176,14 @@ void command_score(
     /* Create a database to start storing the results */
     (void)db_create();
 
+    /* Initialize the "scored" variables within the info_suppl structure */
+    info_suppl.part.scored_line   = 1;
+    info_suppl.part.scored_toggle = 1;
+    info_suppl.part.scored_memory = 1;
+    info_suppl.part.scored_comb   = 1;
+    info_suppl.part.scored_fsm    = 1;
+    info_suppl.part.scored_assert = 1;
+
     /* Parse score command-line */
     score_parse_args( argc, last_arg, argv );
 
@@ -1204,6 +1274,10 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.150  2009/01/09 21:25:01  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.149  2008/12/08 06:48:32  phase1geo
  Moving -inline score option to appropriate place.  Checkpointing.
 
