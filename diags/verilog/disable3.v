@@ -30,7 +30,7 @@ initial begin
         $dumpfile( "disable3.vcd" );
         $dumpvars( 0, main );
 `endif
-        #10;
+        #20;
         $finish;
 end
 

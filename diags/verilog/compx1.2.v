@@ -30,6 +30,7 @@ initial begin
 	b[63] = 1'b1;
 	if( b > a )
           e = 1'b1;
+	#5;
 	$finish;
 end
 
