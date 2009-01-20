@@ -1836,7 +1836,7 @@ static char* generator_create_lhs(
       rv   = snprintf( code, slen, "wire [%s:0] %s", tmp, name );
     } else {
       slen = 7 + ((size != NULL) ? strlen( size ) : 1) + 7 + strlen( name ) + 1;
-      code = (char*)malloc_safe( slen );
+      code = (char*)malloc_safe_nolimit( slen );
       rv   = snprintf( code, slen, "wire [(%s-1):0] %s", ((size != NULL) ? size : "1"), name );
     }
 
@@ -1859,7 +1859,7 @@ static char* generator_create_lhs(
         rv   = snprintf( str, slen, "reg [%s:0] %s;\n", tmp, name );
       } else {
         slen = 6 + ((size != NULL) ? strlen( size ) : 1) + 7 + strlen( name ) + 3;
-        str  = (char*)malloc_safe( slen );
+        str  = (char*)malloc_safe_nolimit( slen );
         rv   = snprintf( str, slen, "reg [(%s-1):0] %s;\n", ((size != NULL) ? size : "1"), name );
       }
 
@@ -2637,32 +2637,36 @@ statement* generator_insert_comb_cov(
   statement* stmt = NULL;
 
   /* Insert combinational logic code coverage if it is specified on the command-line to do so and the statement exists */
-  if( ((info_suppl.part.scored_comb == 1) || (info_suppl.part.scored_memory == 1)) && !handle_funit_as_assert && ((stmt = generator_find_statement( first_line, first_column )) != NULL) ) {
+  if( ((info_suppl.part.scored_comb == 1) || (info_suppl.part.scored_memory == 1)) && !handle_funit_as_assert ) {
 
-    /* Generate combinational coverage */
-    if( info_suppl.part.scored_comb == 1 ) {
-      generator_insert_comb_cov_helper( (use_right ? stmt->exp->right : stmt->exp), stmt->funit, (use_right ? stmt->exp->right->op : stmt->exp->op), 0, net, TRUE, TRUE );
+    if( (stmt = generator_find_statement( first_line, first_column )) != NULL ) {
+
+      /* Generate combinational coverage */
+      if( info_suppl.part.scored_comb == 1 ) {
+        generator_insert_comb_cov_helper( (use_right ? stmt->exp->right : stmt->exp), stmt->funit, (use_right ? stmt->exp->right->op : stmt->exp->op), 0, net, TRUE, TRUE );
+      }
+
+      /* Generate memory coverage */
+      if( info_suppl.part.scored_memory == 1 ) {
+        generator_insert_mem_cov_helper( stmt->exp, stmt->funit, net, FALSE );
+      }
+
     }
 
-    /* Generate memory coverage */
-    if( info_suppl.part.scored_memory == 1 ) {
-      generator_insert_mem_cov_helper( stmt->exp, stmt->funit, net, FALSE );
+    /* If we need to save the found statement, do so now */
+    if( save_stmt ) {
+
+      stmt_loop_link* new_stmtl;
+
+      assert( stmt != NULL );
+
+      new_stmtl            = (stmt_loop_link*)malloc_safe( sizeof( stmt_loop_link ) );
+      new_stmtl->stmt      = stmt;
+      new_stmtl->next      = stmt_stack;
+      new_stmtl->next_true = use_right;
+      stmt_stack           = new_stmtl;
+
     }
-
-  }
-
-  /* If we need to save the found statement, do so now */
-  if( save_stmt ) {
-
-    stmt_loop_link* new_stmtl;
-
-    assert( stmt != NULL );
-
-    new_stmtl            = (stmt_loop_link*)malloc_safe( sizeof( stmt_loop_link ) );
-    new_stmtl->stmt      = stmt;
-    new_stmtl->next      = stmt_stack;
-    new_stmtl->next_true = use_right;
-    stmt_stack           = new_stmtl;
 
   }
 
@@ -2880,6 +2884,10 @@ void generator_handle_event_trigger(
 
 /*
  $Log$
+ Revision 1.83  2009/01/20 05:27:55  phase1geo
+ Fixing bug with multiple replacements.  Added random4 diagnostic to verify this
+ bug fix.  Checkpointing.
+
  Revision 1.82  2009/01/19 21:51:33  phase1geo
  Added -inlined-metrics score command option and hooked up its functionality.  Regressions
  pass with these changes; however, I have not been able to verify using this option yet.
