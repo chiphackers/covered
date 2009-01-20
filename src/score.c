@@ -1176,7 +1176,7 @@ void command_score(
     /* Create a database to start storing the results */
     (void)db_create();
 
-    /* Initialize the "scored" variables within the info_suppl structure */
+    /* Initialize the "scored" bits */
     info_suppl.part.scored_line   = 1;
     info_suppl.part.scored_toggle = 1;
     info_suppl.part.scored_memory = 1;
@@ -1186,6 +1186,16 @@ void command_score(
 
     /* Parse score command-line */
     score_parse_args( argc, last_arg, argv );
+
+    /* If inlining is not being performed, make sure that all "scored" bits are set */
+    if( info_suppl.part.inlined == 0 ) {
+      info_suppl.part.scored_line   = 1;
+      info_suppl.part.scored_toggle = 1;
+      info_suppl.part.scored_memory = 1;
+      info_suppl.part.scored_comb   = 1;
+      info_suppl.part.scored_fsm    = 1;
+      info_suppl.part.scored_assert = 1;
+    }
 
     if( output_db == NULL ) {
       output_db = strdup_safe( DFLT_OUTPUT_CDD );
@@ -1274,6 +1284,11 @@ void command_score(
 
 /*
  $Log$
+ Revision 1.151  2009/01/19 21:51:33  phase1geo
+ Added -inlined-metrics score command option and hooked up its functionality.  Regressions
+ pass with these changes; however, I have not been able to verify using this option yet.
+ Checkpointing.
+
  Revision 1.150  2009/01/09 21:25:01  phase1geo
  More generate block fixes.  Updated all copyright information source code files
  for the year 2009.  Checkpointing.

@@ -197,7 +197,8 @@ NOSIMERRLIST  = comment1        enum2           err4            err4.1 \
                 timescale3.6    timescale3.7    timescale3.8    timescale3.9    timescale3.10 \
                 timescale3.11   timescale3.12   timescale3.13   timescale3.14
            
-IVONLYDIAGS1  = always5.1       assign1         assign2.8       example         fsm1 \
+IVONLYDIAGS1  = always5.1       assign1         assign2.8       example         example1 \
+                fsm1 \
                 fsm1.1          fsm1.2          fsm1.3          fsm1.4          fsm6 \
                 fsm7            fsm7.1          fsm7.2          fsm7.3          fsm7.4 \
                 fsm7.5          fsm8            fsm8.1          fsm8.2          fsm8.3 \
@@ -327,8 +328,12 @@ endif
 
 # List of diagnostics that should not be run if we are running in inlined mode
 ifdef INLINE
-NOINLINEDIAGS := case5           casex2          casez3          exclude5.1      exclude5.3 \
-                 param10.1       param10.5
+INLINEDIAGS   := example2        example2.1      example2.2      example2.3      example2.4 \
+                 example2.5
+
+NOINLINEDIAGS := case5           casex2          casez3          example1        exclude5.1 \
+                 exclude5.3      param10.1       param10.5
+
 ifdef VPI
 NOINLINEDIAGS += fork2           generate4       generate4.1     generate8
 endif
@@ -380,7 +385,7 @@ NOSIMERRLIST   := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINL
 
 iverilog:
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS1)" DIAGLIST="$(DIAGS1) $(IVONLYDIAGS1) $(IVVCSDIAGS1) $(IVCVERDIAGS1)" DIAG2LIST="$(BDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" ERRSCORELIST="$(ERRSCORE)" ERRMERGELIST="$(ERRMERGE)" ERRREPORTLIST="$(ERRREPORT)" ERRRANKLIST="$(ERRRANK)" ERREXCLUDELIST="$(ERREXCLUDE)" RACELIST="$(RACELIST)" NOSIMLIST="$(NOSIMLIST)" NOSIMERRLIST="$(NOSIMERRLIST)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS1)" DIAGLIST="$(DIAGS1) $(IVONLYDIAGS1) $(IVVCSDIAGS1) $(IVCVERDIAGS1) $(INLINEDIAGS)" DIAG2LIST="$(BDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" ERRSCORELIST="$(ERRSCORE)" ERRMERGELIST="$(ERRMERGE)" ERRREPORTLIST="$(ERRREPORT)" ERRRANKLIST="$(ERRRANK)" ERREXCLUDELIST="$(ERREXCLUDE)" RACELIST="$(RACELIST)" NOSIMLIST="$(NOSIMLIST)" NOSIMERRLIST="$(NOSIMERRLIST)" regress
 	@cd ../verilog; \
 	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS2)" DIAGLIST="$(DIAGS2) $(IVONLYDIAGS2) $(IVVCSDIAGS2) $(IVCVERDIAGS2)" regress
 	@cd ../verilog; \
