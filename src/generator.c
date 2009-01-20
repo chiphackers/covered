@@ -302,11 +302,16 @@ void generator_replace(
 
         /* Now append the end of the working buffer */
         if( (strlen( work_buffer ) + strlen( keep_end )) < 4095 ) {
+          replace_first.word_ptr = work_buffer + strlen( work_buffer );
           strcat( work_buffer, keep_end );
         } else {
           str_link_add( strdup_safe( work_buffer ), &work_head, &work_tail );
           strcpy( work_buffer, keep_end );
+          replace_first.word_ptr = work_buffer;
         }
+
+        /* Adjust the first replacement column to match the end of the newly inserted string */
+        replace_first_col += (first_column - replace_first_col) + ((last_column - first_column) + 1);
 
       /* Otherwise, the line exists in the working list, so replace it there */
       } else {
@@ -2875,6 +2880,11 @@ void generator_handle_event_trigger(
 
 /*
  $Log$
+ Revision 1.82  2009/01/19 21:51:33  phase1geo
+ Added -inlined-metrics score command option and hooked up its functionality.  Regressions
+ pass with these changes; however, I have not been able to verify using this option yet.
+ Checkpointing.
+
  Revision 1.81  2009/01/19 03:50:24  phase1geo
  Fixing multiply and concatenation size calculations.  Full IV regression
  passes.
