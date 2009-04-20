@@ -21,6 +21,11 @@ CVER_FLAGS2 = +mindelays
 CVER_FLAGS3 = +typdelays
 CVER_FLAGS4 = +maxdelays
 
+VW_FLAGS1 =
+VW_FLAGS2 = +mindelays
+VW_FLAGS3 = +typdelays
+VW_FLAGS4 = +maxdelays
+
 CDD_DIR       = ../cdd
 
 LOGFILE = regress.log
@@ -35,13 +40,13 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 bassign2        bassign3        block1          case1           case1.1 \
                 case1.2         case1.3         case2           case3           case3.1 \
                 case3.2         case3.3         case3.4         case4           case4.1 \
-                case5           casex1          casex1.1        casex1.2        casex1.3 \
-                casex1.4        casex2          casez1          casez1.1        casez1.2 \
-                casez1.3        casez1.4        casez2          casez3          casez4 \
-                ceq1            cne1            compx1          compx1.1        compx1.2 \
-                compx1.3        concat1         concat2         concat3         concat4.1 \
-                concat4.2       concat5         concat6         concat7         concat8 \
-                cond1 \
+                case5           case6           casex1          casex1.1        casex1.2 \
+                casex1.3        casex1.4        casex2          casex3          casez1 \
+                casez1.1        casez1.2        casez1.3        casez1.4        casez2 \
+                casez3          casez4          casez5          ceq1            cne1 \
+                compx1          compx1.1        compx1.2        compx1.3        concat1 \
+                concat2         concat3         concat4.1       concat4.2       concat5 \
+                concat6         concat7         concat8         cond1 \
                 cond2           cond3           cond3.1         cond3.2         cond3.3 \
                 delay1          delay2          define1         define1.1       define1.2 \
                 define2         define2.1       define4         define5         define6 \
@@ -64,8 +69,10 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 fstrobe1        func1           func2           func5           fwrite1 \
                 gate1           hier1           hier3.1         hier3.2         hier3.3 \
                 hier3.4         hier4           if1             ifdef1          ifdef1.2 \
-                ifdef2.1        ifdef2.2        ifdef2.3        ifelse1         implicit2.1 \
-                include1        include1.1      include2        initial1        instance1 \
+                ifdef2.1        ifdef2.2        ifdef2.3        ifelse1         ifndef1 \
+                implicit2.1 \
+                include1        include1.1      include2        include4        include5 \
+                initial1        instance1 \
                 instance1.1     instance1.2     instance2       instance3       instance4 \
                 instance4.1     instance4.2     instance5       instance6       instance6.1 \
                 instance6.2     long_exp1       long_exp2       long_exp3 \
@@ -110,7 +117,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 sbit_sel3.1     sbit_sel4       sbit_sel4.1     sbit_sel4.2     sbit_sel4.3 \
                 score_env1      score_ts1       signed1         signed3         signed3.1 \
                 signed3.2       signed3.3       signed3.4       signed3.5       signed3.6 \
-                signed4         signed4.2       slist1          slist1.1        slist1.2 \
+                signed4         signed4.2       signed5         signed6         slist1          slist1.1        slist1.2 \
                 slist1.3        slist2          slist3          slist3.2        slist4 \
                 static1         string1         string2         string2.1       strobe1 \
                 supply0         supply1         task1           task1.1         task2 \
@@ -122,6 +129,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 toggle          toggle2         toggle2.1 \
                 toggle2.2       toggle2.3       tri             tri0            tri1 \
                 triand          trigger1        trior           unary2          unary3 \
+                unsigned1 \
                 version1        version1.1      wait1           wait1.1         wait2 \
                 wand            while1          while1.1        wor             write1
 # timescale1.16   timescale1.17   timescale1.18   timescale2.5   timescale2.8
@@ -135,30 +143,36 @@ MERGE1        = merge1          merge3          merge4          merge5          
                 merge6.1        merge7          merge7.1        merge7.2        merge7.3 \
                 merge7.4        merge7.5        merge7.6        merge7.7        merge7.8 \
                 merge8          merge8.1        merge8.2        merge8.3        merge8.6 \
-                merge8.7        merge8.8        merge9          merge10         merge11 \
-                fsm2            rank1           rank1.1
+                merge8.7        merge8.8        merge8.9        merge9          merge10 \
+                merge11         fsm2            rank1           rank1.1
+
 MERGE3        = merge2          merge8.4        merge8.5
 
 RACELIST      = race1           race1.1         race1.2         race2.1         race2.2 \
                 race2.3         race2.4         race4           race5           race5.1 \
-                race5.2         race6
+                race5.2         race6           race7           race7.1         race7.2
 
 ERRSCORE      = err1.0          err2.0          err3            err3.1          err5 \
                 err5.1          err6            err6.1          err6.2          err6.3 \
                 err6.4          func4           func4.1         func4.2         func4.3 \
                 func4.4         func4.5         func4.6         score_err1      score_err1.1 \
-                score_err1.2    score_err1.3    score_err1.15   score_help      task5
+                score_err1.2    score_err1.3    score_err1.15   score_err1.31   score_help \
+                task5
+
 ERRMERGE      = err5.2          err5.3          err5.4          merge_err1      merge_err1.1 \
                 merge_err1.2    merge_err1.3    merge_err2      merge_err2.1    merge_help
+
 ERRREPORT     = err7            err7.1          err8            err8.1          err8.2 \
                 err9            report_err1     report_err1.1   report_err1.2 \
                 report_err1.3   report_err1.4   report_err1.5   report_err1.6   report_err1.7 \
                 report_err1.8   report_help
+
 ERRRANK       = rank_err1       rank_err1.1     rank_err2       rank_err2.1     rank_err3 \
                 rank_err4       rank_err4.1     rank_err4.2     rank_err4.3     rank_err5 \
                 rank_err5.1     rank_err6       rank_err7       rank_err7.1     rank_err8 \
                 rank_err8.1     rank_err9       rank_err9.1     rank_err10      rank_err10.1 \
                 rank_err11      rank_err11.1    rank_err12      rank_err12.1    rank_help
+
 ERREXCLUDE    = exclude_err1    exclude_err1.1  exclude_err1.2  exclude_err2    exclude_err3 \
                 exclude_err3.1  exclude_help
 
@@ -173,8 +187,8 @@ NOSIMLIST     = gen1            gen1.1          gen1.3          gen1.4          
                 gen31.2         gen32.2         gen33.2         gen34.2         gen35.2 \
                 gen36.2         gen37.2         gen38.2         gen39.2         gen40.2
 
-NOSIMERRLIST  = comment1        enum2           err4            err4.1 \
-                expand5         for7            for7.1          func3           func3.1 \
+NOSIMERRLIST  = comment1        enum2           err4            err4.1          expand5 \
+                for7            for7.1          fsm_err1        func3           func3.1 \
                 func3.2         func3.3         func3.4         func3.5         func3.6 \
                 gen1.2          gen2            gen3            gen4            gen5 \
                 gen6            gen7            gen8            gen9            gen10 \
@@ -204,6 +218,7 @@ IVONLYDIAGS1  = always5.1       assign1         assign2.8       example         
                 fsm7.5          fsm8            fsm8.1          fsm8.2          fsm8.3 \
                 fsm9            fsm9.1          fsm9.2          fsm10           fsm10.1 \
                 fsm10.2         generate1       hier2           ifdef1.1        implicit2 \
+                profile_err1 \
                 real1.1         report4         report4.1       static2         static2.1 \
                 static2.2       unary1
 IVONLYDIAGS2  = 
@@ -230,7 +245,7 @@ VCSONLYDIAGS1 = afunc1            afunc2            always_comb1      always_com
                 int1              line1             logic1            longint1          long_sig \
                 marray1           marray1.1         marray1.2         marray1.3         marray2 \
                 marray2.1         marray2.2         marray2.3         mbit_sel5.4       mbit_sel6.4 \
-                mem3              op_assign1        param8.2          param12           param12.1 \
+                mem3              mem5              op_assign1        param8.2          param12           param12.1 \
                 real5.11          real5.12          real5.13          real5.14          real5.15 \
                 real5.16          real6.10          real6.11          real6.12          real6.13 \
                 sbit_sel3.2       shortint1         signed4.1         slist3.1          slist3.3 \
@@ -251,6 +266,11 @@ CVERONLYDIAGS2 =
 CVERONLYDIAGS3 =
 CVERONLYDIAGS4 =
 
+VWONLYDIAGS1 =
+VWONLYDIAGS2 =
+VWONLYDIAGS3 =
+VWONLYDIAGS4 =
+
 IVCVERDIAGS1  =
 IVCVERDIAGS2  =
 IVCVERDIAGS3  =
@@ -258,19 +278,21 @@ IVCVERDIAGS4  =
 
 IVVCSDIAGS1   = define3          delay3           exclude7.3       exclude10.5      exclude12.5 \
                 generate2.1      generate4        generate4.1      generate5        generate5.1 \
-                generate5.2      generate5.3      generate8        generate8.9      generate10       generate10.1 \
-                generate10.2     generate11       generate11.1     generate11.2     generate11.3 \
-                hier3            instance7        localparam1      localparam1.1    localparam1.2    localparam1.3 \
-                localparam2      localparam3      mbit_sel5        mbit_sel5.1      mbit_sel5.2 \
-                mbit_sel5.3      mbit_sel6        mbit_sel6.1      mbit_sel6.2      mbit_sel6.3 \
-                mem4             mem4.1           nand1            nor1             ovl1 \
-                ovl1.1           ovl1.2           ovl1.3           param10.1        param10.5 \
-                port2            timescale1.1     timescale1.2     timescale1.3     timescale1.4 \
-                timescale1.5     timescale1.7     timescale1.8     timescale1.10    timescale1.11 \
-                timescale1.13    timescale1.14    timescale1.19    timescale2.1     timescale4.2 \
-                timescale4.3     timescale4.4     timescale4.5     timescale4.6     timescale4.7 \
-                timescale4.8     timescale4.17    timescale4.18    timescale4.19    timescale4.20 \
-                timescale4.21    urandom1 \
+                generate5.2      generate5.3      generate8        generate8.9      generate10 \
+                generate10.1     generate10.2     generate11       generate11.1     generate11.2 \
+                generate11.3     generate15       generate15.1     generate15.2     generate15.3 \
+                generate15.4     generate15.5     generate16       generate16.1     hier3 \
+                elsif3           ifdef3           ifndef2          instance7        localparam1 \
+                localparam1.1    localparam1.2    localparam1.3    localparam2      localparam3 \
+                mbit_sel5        mbit_sel5.1      mbit_sel5.2      mbit_sel5.3      mbit_sel6 \
+                mbit_sel6.1      mbit_sel6.2      mbit_sel6.3      mem4             mem4.1 \
+                nand1            nor1             ovl1             ovl1.1           ovl1.2 \
+                ovl1.3           param10.1        param10.5        port2            timescale1.1 \
+                timescale1.2     timescale1.3     timescale1.4     timescale1.5     timescale1.7 \
+                timescale1.8     timescale1.10    timescale1.11    timescale1.13    timescale1.14 \
+                timescale1.19    timescale2.1     timescale4.2     timescale4.3     timescale4.4 \
+                timescale4.5     timescale4.6     timescale4.7     timescale4.8     timescale4.17 \
+                timescale4.18    timescale4.19    timescale4.20    timescale4.21    urandom1 \
                 urandom1.1       urandom2         urandom2.1       urandom3         urandom3.1 \
                 urandom_range1.1 urandom_range1.2 urandom_range2.1 urandom_range2.2 urandom_range3
 IVVCSDIAGS2   =
@@ -414,6 +436,17 @@ cver:
 	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS3)" DIAGLIST="$(DIAGS3) $(CVERONLYDIAGS3) $(IVCVERDIAGS3) $(CVERVCSDIAGS3)" regress
 	@cd ../verilog; \
 	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS4)" DIAGLIST="$(DIAGS4) $(CVERONLYDIAGS4) $(IVCVERDIAGS4) $(CVERVCSDIAGS4)" regress
+	@cd ../verilog;  $(MAKE) eot;  $(MAKE) clean
+
+veriwell:
+	@cd ../verilog; \
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VERIWELL=1 VERILOG_EXTRA_FLAGS=$(VW_FLAGS1)" DIAGLIST="$(DIAGS1) $(VWONLYDIAGS1)" regress
+	@cd ../verilog; \
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VERIWELL=1 VERILOG_EXTRA_FLAGS=$(VW_FLAGS2)" DIAGLIST="$(DIAGS2) $(VWONLYDIAGS2)" regress
+	@cd ../verilog; \
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VERIWELL=1 VERILOG_EXTRA_FLAGS=$(VW_FLAGS3)" DIAGLIST="$(DIAGS3) $(VWONLYDIAGS3)" regress
+	@cd ../verilog; \
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VERIWELL=1 VERILOG_EXTRA_FLAGS=$(VW_FLAGS4)" DIAGLIST="$(DIAGS4) $(VWONLYDIAGS4)" regress
 	@cd ../verilog;  $(MAKE) eot;  $(MAKE) clean
 
 all-vcd-quick:

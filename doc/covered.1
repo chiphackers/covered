@@ -1,4 +1,4 @@
-.TH "Covered" "1" "covered-20081119" "Trevor Williams" "Code Analysis"
+.TH "Covered" "1" "covered-0.7" "Trevor Williams" "Code Analysis"
 .SH "NAME"
 .LP 
 Covered \- Verilog Code Coverage Analyzer
@@ -130,8 +130,20 @@ Overrides default filename used to store intermediate preprocessor output.
 \fB\-P\fR \fIparameter_scope=value\fR
 Performs a defparam on the specified parameter with value.
 .TP 
-\fB\-r(S|W|E|I|P[=\fIname\fR])\fR
-Specifies action to take when race condition checking finds problems in design (\-rS = Silent, \-rW = Warning, \-rE = Error, \-rI = Ignore race condition checking step, \-rP = Use embedded pragmas for ignoring certain code from race condition checking consideration [if \fIname\fR is specified it is used as the pragma keyword]).  See user documentation for more information about race condition checking usage.
+\fB\-rS\fR
+When race condition checks are violated, the offending logic blocks are removed from coverage consideration and all output is suppressed regarding the race condition violation.  See user documentation for more information about race condition checking usage.
+.TP 
+\fB\-rW\fR
+When race condition checks are violated, the offending logic blocks are removed from coverage consideration and the race condition violation is output.  This is the default behavior for race condition handling.  See user documentation for more information about race condition checking usage.
+.TP 
+\fB\-rE\fR
+When race condition checks are violated, the reason is output and scoring ends immediately.  See user documentation for more information about race condition checking usage.
+.TP 
+\fB\-rI[=\fImodule name\fR]\fR
+If \fImodule name\fR is not specified, race condition checking is skipped altogether for the entire design.  If \fImodule name\fR is specified, race condition checking is skipped for the specified module.  See user documentation for more information about race condition checking usage.
+.TP 
+\fB\-rP[=\fIname\fR])\fR
+Uses embedded pragmas for ignoring certain code from race condition checking consideration (if \fIname\fR is specified it is used as the pragma keyword).  See user documentation for more information about race condition checking usage.
 .TP 
 \fB\-S\fR
 Outputs simulation statistics after simulation has completed.  This information is currently only useful for the developers of Covered.

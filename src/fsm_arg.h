@@ -38,44 +38,5 @@ void fsm_arg_parse_attr(
   bool             exclude
 );
 
-
-/*
- $Log$
- Revision 1.9  2008/02/09 19:32:44  phase1geo
- Completed first round of modifications for using exception handler.  Regression
- passes with these changes.  Updated regressions per these changes.
-
- Revision 1.8  2008/02/01 06:37:08  phase1geo
- Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
- using pragma excludes (this code is not fully working yet).  More to be done.
-
- Revision 1.7  2008/01/09 05:22:21  phase1geo
- More splint updates using the -standard option.
-
- Revision 1.6  2007/11/20 05:28:58  phase1geo
- Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
-
- Revision 1.5  2007/09/13 17:03:30  phase1geo
- Cleaning up some const-ness corrections -- still more to go but it's a good
- start.
-
- Revision 1.4  2006/03/28 22:28:27  phase1geo
- Updates to user guide and added copyright information to each source file in the
- src directory.  Added test directory in user documentation directory containing the
- example used in line, toggle, combinational logic and FSM descriptions.
-
- Revision 1.3  2005/11/08 23:12:09  phase1geo
- Fixes for function/task additions.  Still a lot of testing on these structures;
- however, regressions now pass again so we are checkpointing here.
-
- Revision 1.2  2003/10/28 00:18:06  phase1geo
- Adding initial support for inline attributes to specify FSMs.  Still more
- work to go but full regression still passes at this point.
-
- Revision 1.1  2003/10/02 12:30:56  phase1geo
- Initial code modifications to handle more robust FSM cases.
-
-*/
-
 #endif
 

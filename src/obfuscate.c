@@ -53,6 +53,8 @@ void obfuscate_set_mode(
 
   obf_mode = value;
 
+  PROFILE_END;
+
 }
 
 /*!
@@ -84,7 +86,7 @@ char* obfuscate_name(
 
     /* Create obfuscated name */
     rv = snprintf( tname, 30, "%c%04d", prefix, obf_curr_id );
-    assert( rv < slen );
+    assert( rv < 30 );
     obf_curr_id++;
 
     /* Add the obfuscated name to the tree and get the pointer to the new node */
@@ -111,72 +113,4 @@ void obfuscate_dealloc() { PROFILE(OBFUSCATE_DEALLOC);
   PROFILE_END;
 
 }
-
-
-/*
- $Log$
- Revision 1.16  2008/09/16 13:00:17  phase1geo
- Fixing some memory issues with the obfuscation functionality and minore
- optimizations to this code.  Other insignificant updates.
-
- Revision 1.15  2008/08/18 23:07:28  phase1geo
- Integrating changes from development release branch to main development trunk.
- Regression passes.  Still need to update documentation directories and verify
- that the GUI stuff works properly.
-
- Revision 1.12.4.1  2008/07/10 22:43:52  phase1geo
- Merging in rank-devel-branch into this branch.  Added -f options for all commands
- to allow files containing command-line arguments to be added.  A few error diagnostics
- are currently failing due to changes in the rank branch that never got fixed in that
- branch.  Checkpointing.
-
- Revision 1.13  2008/06/27 14:02:03  phase1geo
- Fixing splint and -Wextra warnings.  Also fixing comment formatting.
-
- Revision 1.12  2008/03/17 05:26:16  phase1geo
- Checkpointing.  Things don't compile at the moment.
-
- Revision 1.11  2008/01/16 23:10:31  phase1geo
- More splint updates.  Code is now warning/error free with current version
- of run_splint.  Still have regression issues to debug.
-
- Revision 1.10  2008/01/09 23:54:15  phase1geo
- More splint updates.
-
- Revision 1.9  2008/01/08 21:13:08  phase1geo
- Completed -weak splint run.  Full regressions pass.
-
- Revision 1.8  2007/12/11 05:48:25  phase1geo
- Fixing more compile errors with new code changes and adding more profiling.
- Still have a ways to go before we can compile cleanly again (next submission
- should do it).
-
- Revision 1.7  2007/11/20 05:28:59  phase1geo
- Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
-
- Revision 1.6  2007/09/13 17:03:30  phase1geo
- Cleaning up some const-ness corrections -- still more to go but it's a good
- start.
-
- Revision 1.5  2006/10/06 22:45:57  phase1geo
- Added support for the wait() statement.  Added wait1 diagnostic to regression
- suite to verify its behavior.  Also added missing GPL license note at the top
- of several *.h and *.c files that are somewhat new.
-
- Revision 1.4  2006/08/18 22:19:54  phase1geo
- Fully integrated obfuscation into the development release.
-
- Revision 1.3  2006/08/18 22:07:45  phase1geo
- Integrating obfuscation into all user-viewable output.  Verified that these
- changes have not made an impact on regressions.  Also improved performance
- impact of not obfuscating output.
-
- Revision 1.1.2.2  2006/08/18 04:50:51  phase1geo
- First swag at integrating name obfuscation for all output (with the exception
- of CDD output).
-
- Revision 1.1.2.1  2006/08/17 04:17:37  phase1geo
- Adding files to obfuscate actual names when outputting any user-visible
- information.
-*/
 

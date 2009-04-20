@@ -47,11 +47,13 @@ fsscanf,        S_ignore
 ftel,           S_ignore
 rewind,         S_ignore
 sformat,        S_ignore
+signed,         S_signed
 swrite,         S_allow
 swriteb,        S_allow
 swriteh,        S_allow
 swriteo,        S_allow
 ungetc,         S_allow
+unsigned,       S_unsigned
 value$plusargs, S_valargs
 %%
 

@@ -779,6 +779,8 @@ static void exclude_usage() {
 }
 
 /*!
+ \return Returns TRUE if the help option was parsed.
+
  \throws anonymous Throw Throw Throw
 
  Parses the exclude argument list, placing all parsed values into
@@ -786,22 +788,23 @@ static void exclude_usage() {
  for the score operation, an error message is displayed to the
  user.
 */
-static void exclude_parse_args(
+static bool exclude_parse_args(
   int          argc,      /*!< Number of arguments in argument list argv */
   int          last_arg,  /*!< Index of last parsed argument from list */
   const char** argv       /*!< Argument list passed to this program */
 ) {
 
-  int i;
+  int  i;
+  bool help_found = FALSE;
 
   i = last_arg + 1;
 
-  while( i < argc ) {
+  while( (i < argc) && !help_found ) {
 
     if( strncmp( "-h", argv[i], 2 ) == 0 ) {
 
       exclude_usage();
-      Throw 0;
+      help_found = TRUE;
 
     } else if( strncmp( "-f", argv[i], 2 ) == 0 ) {
 
@@ -812,7 +815,7 @@ static void exclude_parse_args(
         i++;
         Try {
           read_command_file( argv[i], &arg_list, &arg_num );
-          exclude_parse_args( arg_num, -1, (const char**)arg_list );
+          help_found = exclude_parse_args( arg_num, -1, (const char**)arg_list );
         } Catch_anonymous {
           for( j=0; j<arg_num; j++ ) {
             free_safe( arg_list[j], (strlen( arg_list[j] ) + 1) );
@@ -869,6 +872,8 @@ static void exclude_parse_args(
     i++;
 
   }
+
+  return( help_found );
 
 }
 
@@ -1877,6 +1882,7 @@ void command_exclude(
   unsigned int   rv;
   comp_cdd_cov** comp_cdds    = NULL;
   unsigned int   comp_cdd_num = 0;
+  bool           error        = FALSE;
 
   /* Output header information */
   rv = snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
@@ -1888,25 +1894,29 @@ void command_exclude(
     unsigned int rv;
 
     /* Parse score command-line */
-    exclude_parse_args( argc, last_arg, argv );
+    if( !exclude_parse_args( argc, last_arg, argv ) ) {
 
-    /* Read in database */
-    rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading CDD file \"%s\"", exclude_cdd );
-    assert( rv < USER_MSG_LENGTH );
-    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-
-    db_read( exclude_cdd, READ_MODE_REPORT_NO_MERGE );
-    bind_perform( TRUE, 0 );
-
-    /* Apply the specified exclusion IDs */
-    if( exclude_apply_exclusions() ) {
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "Writing CDD file \"%s\"", exclude_cdd );
+      /* Read in database */
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading CDD file \"%s\"", exclude_cdd );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-      db_write( exclude_cdd, FALSE, FALSE, TRUE );
+
+      db_read( exclude_cdd, READ_MODE_REPORT_NO_MERGE );
+      bind_perform( TRUE, 0 );
+
+      /* Apply the specified exclusion IDs */
+      if( exclude_apply_exclusions() ) {
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "Writing CDD file \"%s\"", exclude_cdd );
+        assert( rv < USER_MSG_LENGTH );
+        print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+        db_write( exclude_cdd, FALSE, FALSE, TRUE );
+      }
+
     }
 
-  } Catch_anonymous {}
+  } Catch_anonymous {
+    error = TRUE;
+  }
 
   /* Close down the database */
   db_close();
@@ -1914,259 +1924,12 @@ void command_exclude(
   /* Deallocate other allocated variables */
   str_link_delete_list( excl_ids_head );
   free_safe( exclude_cdd, (strlen( exclude_cdd ) + 1) );
+
+  if( error ) {
+    Throw 0;
+  }
       
   PROFILE_END;
  
 }   
-
-
-/*
- $Log$
- Revision 1.53  2008/12/05 00:22:41  phase1geo
- More work completed on code coverage generator.  Currently working on bug in
- statement finder.  Checkpointing.
-
- Revision 1.52  2008/11/27 00:24:44  phase1geo
- Fixing problems with previous version of generator.  Things work as expected at this point.
- Checkpointing.
-
- Revision 1.51  2008/11/12 19:57:07  phase1geo
- Fixing the rest of the issues from regressions in regards to the merge changes.
- Updating regression files.  IV and Cver regressions now pass.
-
- Revision 1.50  2008/11/12 15:05:22  phase1geo
- More updates for new merging algorithm.  Checkpointing.
-
- Revision 1.49  2008/10/31 22:01:33  phase1geo
- Initial code changes to support merging two non-overlapping CDD files into
- one.  This functionality seems to be working but needs regression testing to
- verify that nothing is broken as a result.
-
- Revision 1.48  2008/10/07 22:31:42  phase1geo
- Cleaning up splint warnings.  Cleaning up development documentation.
-
- Revision 1.47  2008/09/23 06:17:50  phase1geo
- Fixing a few bugs in the interactive exclusion reason conflict resolver.  Also
- adding a check for an incorrect answer and re-asking.
-
- Revision 1.46  2008/09/22 22:15:02  phase1geo
- Initial code for supporting the merging and resolution of exclusion reasons.
- This code is completely untested at this point but does compile.  Checkpointing.
-
- Revision 1.45  2008/09/22 04:19:54  phase1geo
- Fixing bug 2122019.  Also adding exclusion reason timestamp support to CDD files.
-
- Revision 1.44  2008/09/18 21:55:21  phase1geo
- Fixing memory issues in exclude.c and adding missing exclude13.err file in
- regressions.
-
- Revision 1.43  2008/09/18 14:18:36  phase1geo
- Working on exclude13 diagnostic.  Not working quite yet.  Checkpointing.
-
- Revision 1.42  2008/09/18 06:04:40  phase1geo
- Adding more diagnostics to regression to cover exclude.c missed cases.
-
- Revision 1.41  2008/09/15 03:43:49  phase1geo
- Cleaning up splint warnings.
-
- Revision 1.40  2008/09/13 13:04:47  phase1geo
- Moving exclusion ID of FSM from the arc transitions to the FSM itself (only one
- ID needed to be stored).  This improves on memory usage and performance when
- searching for exclusions.
-
- Revision 1.39  2008/09/10 23:06:36  phase1geo
- Adding several new diagnostics for coverage testing purposes.  Fixed a few
- bugs that surfaced when performing this testing.
-
- Revision 1.38  2008/09/06 05:59:45  phase1geo
- Adding assertion exclusion reason support and have most code implemented for
- FSM exclusion reason support (still working on debugging this code).  I believe
- that assertions, FSMs and lines might suffer from the same problem...
- Checkpointing.
-
- Revision 1.37  2008/09/04 21:34:20  phase1geo
- Completed work to get exclude reason support to work with toggle coverage.
- Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
-
- Revision 1.36  2008/09/04 04:15:08  phase1geo
- Adding -p option to exclude command.  Updating other files per this change.
- Checkpointing.
-
- Revision 1.35  2008/09/03 05:33:06  phase1geo
- Adding in FSM exclusion support to exclude and report -e commands.  Updating
- regressions per recent changes.  Checkpointing.
-
- Revision 1.34  2008/09/03 03:46:37  phase1geo
- Updates for memory and assertion exclusion output.  Checkpointing.
-
- Revision 1.33  2008/09/02 22:41:45  phase1geo
- Starting to work on adding exclusion reason output to report files.  Added
- support for exclusion reasons to CDD files.  Checkpointing.
-
- Revision 1.32  2008/09/02 13:12:39  phase1geo
- Adding code to remove all formatting characters from exclude messages.
- Checkpointing.
-
- Revision 1.31  2008/09/02 05:53:54  phase1geo
- More code additions for exclude command.  Fixing a few bugs in this code as well.
- Checkpointing.
-
- Revision 1.30  2008/09/02 05:20:40  phase1geo
- More updates for exclude command.  Updates to CVER regression.
-
- Revision 1.29  2008/08/23 20:00:29  phase1geo
- Full fix for bug 2054686.  Also cleaned up Cver regressions.
-
- Revision 1.28  2008/08/22 20:56:35  phase1geo
- Starting to make updates for proper unnamed scope report handling (fix for bug 2054686).
- Not complete yet.  Also making updates to documentation.  Checkpointing.
-
- Revision 1.27  2008/08/18 23:07:26  phase1geo
- Integrating changes from development release branch to main development trunk.
- Regression passes.  Still need to update documentation directories and verify
- that the GUI stuff works properly.
-
- Revision 1.24.2.6  2008/08/07 23:22:49  phase1geo
- Added initial code to synchronize module and instance exclusion information.  Checkpointing.
-
- Revision 1.24.2.5  2008/08/07 20:51:04  phase1geo
- Fixing memory allocation/deallocation issues with GUI.  Also fixing some issues with FSM
- table output and exclusion.  Checkpointing.
-
- Revision 1.24.2.4  2008/08/07 18:03:51  phase1geo
- Fixing instance exclusion segfault issue with GUI.  Also cleaned up function
- documentation in link.c.
-
- Revision 1.24.2.3  2008/08/07 06:39:10  phase1geo
- Adding "Excluded" column to the summary listbox.
-
- Revision 1.24.2.2  2008/08/06 20:11:33  phase1geo
- Adding support for instance-based coverage reporting in GUI.  Everything seems to be
- working except for proper exclusion handling.  Checkpointing.
-
- Revision 1.24.2.1  2008/07/10 22:43:50  phase1geo
- Merging in rank-devel-branch into this branch.  Added -f options for all commands
- to allow files containing command-line arguments to be added.  A few error diagnostics
- are currently failing due to changes in the rank branch that never got fixed in that
- branch.  Checkpointing.
-
- Revision 1.25  2008/06/27 14:02:00  phase1geo
- Fixing splint and -Wextra warnings.  Also fixing comment formatting.
-
- Revision 1.24  2008/05/30 05:38:30  phase1geo
- Updating development tree with development branch.  Also attempting to fix
- bug 1965927.
-
- Revision 1.23.2.3  2008/05/08 23:12:41  phase1geo
- Fixing several bugs and reworking code in arc to get FSM diagnostics
- to pass.  Checkpointing.
-
- Revision 1.23.2.2  2008/05/08 03:56:38  phase1geo
- Updating regression files and reworking arc_find and arc_add functionality.
- Checkpointing.
-
- Revision 1.23.2.1  2008/05/02 22:06:10  phase1geo
- Updating arc code for new data structure.  This code is completely untested
- but does compile and has been completely rewritten.  Checkpointing.
-
- Revision 1.23  2008/04/15 20:37:07  phase1geo
- Fixing database array support.  Full regression passes.
-
- Revision 1.22  2008/04/14 23:10:14  phase1geo
- More GUI updates and a fix to the line exclusion code.
-
- Revision 1.21  2008/03/26 21:29:31  phase1geo
- Initial checkin of new optimizations for unknown and not_zero values in vectors.
- This attempts to speed up expression operations across the board.  Working on
- debugging regressions.  Checkpointing.
-
- Revision 1.20  2008/02/25 18:22:16  phase1geo
- Moved statement supplemental bits from root expression to statement and starting
- to add support for race condition checking pragmas (still some work left to do
- on this item).  Updated IV and Cver regressions per these changes.
-
- Revision 1.19  2008/01/30 05:51:50  phase1geo
- Fixing doxygen errors.  Updated parameter list syntax to make it more readable.
-
- Revision 1.18  2008/01/16 05:01:22  phase1geo
- Switched totals over from float types to int types for splint purposes.
-
- Revision 1.17  2008/01/10 04:59:04  phase1geo
- More splint updates.  All exportlocal cases are now taken care of.
-
- Revision 1.16  2008/01/07 23:59:54  phase1geo
- More splint updates.
-
- Revision 1.15  2007/11/20 05:28:58  phase1geo
- Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
-
- Revision 1.14  2006/10/12 22:48:46  phase1geo
- Updates to remove compiler warnings.  Still some work left to go here.
-
- Revision 1.13  2006/10/06 22:45:57  phase1geo
- Added support for the wait() statement.  Added wait1 diagnostic to regression
- suite to verify its behavior.  Also added missing GPL license note at the top
- of several *.h and *.c files that are somewhat new.
-
- Revision 1.12  2006/10/02 22:41:00  phase1geo
- Lots of bug fixes to memory coverage functionality for GUI.  Memory coverage
- should now be working correctly.  We just need to update the GUI documentation
- as well as other images for the new feature add.
-
- Revision 1.11  2006/09/26 22:36:38  phase1geo
- Adding code for memory coverage to GUI and related files.  Lots of work to go
- here so we are checkpointing for the moment.
-
- Revision 1.10  2006/09/01 04:06:37  phase1geo
- Added code to support more than one instance tree.  Currently, I am seeing
- quite a few memory errors that are causing some major problems at the moment.
- Checkpointing.
-
- Revision 1.9  2006/06/29 20:57:24  phase1geo
- Added stmt_excluded bit to expression to allow us to individually control line
- and combinational logic exclusion.  This also allows us to exclude combinational
- logic within excluded lines.  Also fixing problem with highlighting the listbox
- (due to recent changes).
-
- Revision 1.8  2006/06/29 20:06:33  phase1geo
- Adding assertion exclusion code.  Things seem to be working properly with this
- now.  This concludes the initial version of code exclusion.  There are some
- things to clean up (and maybe make better looking).
-
- Revision 1.7  2006/06/28 04:35:47  phase1geo
- Adding support for line coverage and fixing toggle and combinational coverage
- to redisplay main textbox to reflect exclusion changes.  Also added messageBox
- for close and exit menu options when a CDD has been changed but not saved to
- allow the user to do so before continuing on.
-
- Revision 1.6  2006/06/27 22:06:26  phase1geo
- Fixing more code related to exclusion.  The detailed combinational expression
- window now works correctly.  I am currently working on getting the main window
- text viewer to display exclusion correctly for all coverage metrics.  Still
- have a ways to go here.
-
- Revision 1.5  2006/06/26 22:49:00  phase1geo
- More updates for exclusion of combinational logic.  Also updates to properly
- support CDD saving; however, this change causes regression errors, currently.
-
- Revision 1.4  2006/06/26 04:12:55  phase1geo
- More updates for supporting coverage exclusion.  Still a bit more to go
- before this is working properly.
-
- Revision 1.3  2006/06/23 19:45:27  phase1geo
- Adding full C support for excluding/including coverage points.  Fixed regression
- suite failures -- full regression now passes.  We just need to start adding support
- to the Tcl/Tk files for full user-specified exclusion support.
-
- Revision 1.2  2006/06/23 04:03:30  phase1geo
- Updating build files and removing syntax errors in exclude.h and exclude.c
- (though this code doesn't do anything meaningful at this point).
-
- Revision 1.1  2006/06/22 21:56:21  phase1geo
- Adding excluded bits to signal and arc structures and changed statistic gathering
- functions to not gather coverage for excluded structures.  Started to work on
- exclude.c file which will quickly adjust coverage information from GUI modifications.
- Regression has been updated for this change and it fully passes.
-
-*/
 

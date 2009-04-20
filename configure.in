@@ -87,14 +87,18 @@ AC_ARG_WITH([iv],
 elif test "${withval}" = yes; then
   want_iv=yes
 else
-  AC_CHECK_HEADER([$withval/include/verilog/vpi_user.h],
+  AC_CHECK_HEADER([$withval/include/iverilog/vpi_user.h],
     [want_iv=yes
      iv_prefix="${withval}"
-     iv_inc_prefix="${withval}/include/verilog"],
+     iv_inc_prefix="${withval}/include/iverilog"],
     [AC_CHECK_HEADER([$withval/include/vpi_user.h],
        [want_iv=yes
         iv_prefix="${withval}"
-        iv_inc_prefix="${withval}/include"],AC_MSG_ERROR([Invalid base directory specified in --with-iv]))])
+        iv_inc_prefix="${withval}/include"],
+       [AC_CHECK_HEADER([$withval/include/verilog/vpi_user.h],
+          [want_iv=yes
+           iv_prefix="${withval}"
+           iv_inc_prefix="${withval}/include/verilog"],AC_MSG_ERROR([Invalid base directory specified in --with-iv]))])])
 fi],
 [want_iv=no])
 if test "$want_iv" = yes; then

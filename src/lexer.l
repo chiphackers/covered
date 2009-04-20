@@ -1402,7 +1402,7 @@ void process_timescale(
 
     /* Remove all spaces */
     for( i=0; i<(strlen( str )+1); i++ ) {
-      if( (str[i] == ' ') || (str[i] == '\t') || (str[i] == '\n') ) {
+      if( (str[i] == ' ') || (str[i] == '\t') || (str[i] == '\n') || (str[i] == '\r') ) {
         num_spaces++;
       } else {
         str[i-num_spaces] = str[i];
@@ -1811,3 +1811,4 @@ void check_for_pragma(
   PROFILE_END;
 
 }
+

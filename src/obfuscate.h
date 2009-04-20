@@ -58,39 +58,5 @@ void obfuscate_set_mode( bool value );
 /*! \brief Deallocates all memory associated with obfuscation */
 void obfuscate_dealloc();
 
-
-/*
- $Log$
- Revision 1.8  2008/01/08 13:27:46  phase1geo
- More splint updates.
-
- Revision 1.7  2007/11/20 05:28:59  phase1geo
- Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
-
- Revision 1.6  2007/09/13 17:03:30  phase1geo
- Cleaning up some const-ness corrections -- still more to go but it's a good
- start.
-
- Revision 1.5  2006/10/06 22:45:57  phase1geo
- Added support for the wait() statement.  Added wait1 diagnostic to regression
- suite to verify its behavior.  Also added missing GPL license note at the top
- of several *.h and *.c files that are somewhat new.
-
- Revision 1.4  2006/08/18 22:19:54  phase1geo
- Fully integrated obfuscation into the development release.
-
- Revision 1.3  2006/08/18 22:07:45  phase1geo
- Integrating obfuscation into all user-viewable output.  Verified that these
- changes have not made an impact on regressions.  Also improved performance
- impact of not obfuscating output.
-
- Revision 1.1.2.2  2006/08/18 04:50:51  phase1geo
- First swag at integrating name obfuscation for all output (with the exception
- of CDD output).
-
- Revision 1.1.2.1  2006/08/17 04:17:38  phase1geo
- Adding files to obfuscate actual names when outputting any user-visible
- information.
-*/
-
 #endif
+

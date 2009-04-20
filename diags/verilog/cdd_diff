@@ -209,6 +209,8 @@ sub parse_vector {
             if( length( $val ) > 8 ) {
               my( $tmp1 )  = substr( $val, (length( $val ) - 8), 8 );
               my( $tmp2 )  = substr( $val, 0, (length( $val ) - 8) );
+              $tmp1 =~ s/^0+//;
+              $tmp2 =~ s/^0+//;
               $record1[$j] = ($tmp1 =~ /[1-9a-fA-F]+/) ? $tmp1 : "0";
               $record2[$j] = ($tmp2 =~ /[1-9a-fA-F]+/) ? $tmp2 : "0";
             } else {

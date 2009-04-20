@@ -63,37 +63,5 @@ vsignal* func_iter_get_next_signal( func_iter* fi );
 /*! \brief Deallocates functional unit iterator */
 void func_iter_dealloc( func_iter* si );
 
-
-/*
- $Log$
- Revision 1.7  2008/12/05 00:22:41  phase1geo
- More work completed on code coverage generator.  Currently working on bug in
- statement finder.  Checkpointing.
-
- Revision 1.6  2008/12/04 14:19:50  phase1geo
- Fixing bug in code generator.  Checkpointing.
-
- Revision 1.5  2008/11/27 00:24:44  phase1geo
- Fixing problems with previous version of generator.  Things work as expected at this point.
- Checkpointing.
-
- Revision 1.4  2008/08/22 20:56:35  phase1geo
- Starting to make updates for proper unnamed scope report handling (fix for bug 2054686).
- Not complete yet.  Also making updates to documentation.  Checkpointing.
-
- Revision 1.3  2008/03/17 22:02:31  phase1geo
- Adding new check_mem script and adding output to perform memory checking during
- regression runs.  Completed work on free_safe and added realloc_safe function
- calls.  Regressions are pretty broke at the moment.  Checkpointing.
-
- Revision 1.2  2007/11/20 05:28:58  phase1geo
- Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
-
- Revision 1.1  2007/04/02 20:19:36  phase1geo
- Checkpointing more work on use of functional iterators.  Not working correctly
- yet.
-
-*/
-
 #endif
 

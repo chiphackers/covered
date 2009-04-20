@@ -1,0 +1,25 @@
+#!/usr/bin/perl
+
+@files = `ls *.c | awk {'print $9'}`;
+
+$largest = 0;
+foreach $file (@files) {
+  chomp( $file );
+  if( ($file ne "vpi.c")       &&
+      ($file ne "genprof.c")   &&
+      ($file ne "tcl_funcs.c") &&
+      ($file ne "cli.c") ) {
+    if( $largest < length( $file ) ) {
+      $largest = length( $file );
+    }
+    $files_to_check[@files_to_check] = $file;
+  }
+}
+
+foreach $file (sort @files_to_check) {
+  $gcov_output = `gcov $file`;
+  if( $gcov_output =~ /Lines executed:(\d+\.\d+%)/ ) {
+    $percent = $1;
+    print "$file:" . " " x (($largest - length( $file )) + (7 - length( $percent ))) . " $percent\n";
+  }
+}
