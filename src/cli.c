@@ -892,3 +892,5 @@ void cli_read_hist_file( const char* fname ) {
 
 }
 
+#endif
+
