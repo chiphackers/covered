@@ -91,7 +91,7 @@ int lexer_keyword_sys_1995_code(
 ) { PROFILE(LEXER_KEYWORD_SYS_1995_CODE);
 
   const struct keyword_sys_1995* rc   = check_identifier_sys_1995(str, length);
-  int                            type = S_user;
+  int                            type = S_ignore;
 
   if( rc != 0 ) {
     type = rc->type;

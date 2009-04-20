@@ -641,6 +641,11 @@ expression* parser_create_syscall_w_params_exp(
   if( (ignore_mode == 0) && (plist != NULL) ) {
     Try {
       retval = db_create_expression( NULL, plist, op, lhs_mode, first_line, ppline, first_column, (last_column - 1), NULL );
+      if( op == EXP_OP_SSIGNED ) {
+        retval->value->suppl.part.is_signed = 1;
+      } else if( op == EXP_OP_SUNSIGNED ) {
+        retval->value->suppl.part.is_signed = 0;
+      }
     } Catch_anonymous {
       expression_dealloc( plist, FALSE );
       error_count++;
@@ -695,6 +700,11 @@ expression* parser_create_op_and_assign_w_dim_exp(
 
 /*
  $Log$
+ Revision 1.6  2009/01/16 00:03:54  phase1geo
+ Fixing last issue with IV/Cver regressions (OVL assertions).  Updating
+ regressions per needed changes to support this functionality.  Now only
+ VCS regression needs to be updated.
+
  Revision 1.5  2009/01/15 06:47:09  phase1geo
  More work to support assertion coverage.  Updating regressions per these
  changes.  Checkpointing.

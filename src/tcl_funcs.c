@@ -2147,7 +2147,6 @@ int tcl_func_preprocess_verilog(
     if( out == NULL ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Unable to open temporary file %s for writing", ppfilename );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      printf( "tcl_funcs Throw A\n" );
       Throw 0;
     }
 
@@ -2925,7 +2924,7 @@ int tcl_func_generate_report(
   /* Get arguments */
   Try {
 
-    report_parse_args( argc, 0, argv );
+    (void)report_parse_args( argc, 0, argv );
 
     assert( output_file != NULL );
 
@@ -2935,7 +2934,6 @@ int tcl_func_generate_report(
       snprintf( user_msg, USER_MSG_LENGTH, "Unable to open report output file %s for writing", output_file );
       Tcl_AddErrorInfo( tcl, user_msg );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      printf( "tcl_funcs Throw B\n" );
       Throw 0;
 
     } else {
@@ -3079,6 +3077,10 @@ void tcl_func_initialize(
 
 /*
  $Log$
+ Revision 1.94  2009/01/09 21:25:01  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.93  2008/11/18 22:01:46  phase1geo
  Updating merge documentation and regenerating all user guide documentation.
  Fixing issues with GUI and recent changes.  Fixing bug 2311710.

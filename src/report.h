@@ -42,7 +42,7 @@ void report_print_header(
 );
 
 /*! \brief Parses arguments on report command command-line. */
-void report_parse_args(
+bool report_parse_args(
   int          argc,
   int          last_arg,
   const char** argv
@@ -68,99 +68,6 @@ void report_output_exclusion_reason(
   char* msg,
   bool  header
 );
-
-
-/*
- $Log$
- Revision 1.21  2008/09/15 03:43:49  phase1geo
- Cleaning up splint warnings.
-
- Revision 1.20  2008/09/04 04:15:10  phase1geo
- Adding -p option to exclude command.  Updating other files per this change.
- Checkpointing.
-
- Revision 1.19  2008/09/02 22:41:46  phase1geo
- Starting to work on adding exclusion reason output to report files.  Added
- support for exclusion reasons to CDD files.  Checkpointing.
-
- Revision 1.18  2008/08/18 23:07:28  phase1geo
- Integrating changes from development release branch to main development trunk.
- Regression passes.  Still need to update documentation directories and verify
- that the GUI stuff works properly.
-
- Revision 1.16.4.1  2008/07/10 22:43:54  phase1geo
- Merging in rank-devel-branch into this branch.  Added -f options for all commands
- to allow files containing command-line arguments to be added.  A few error diagnostics
- are currently failing due to changes in the rank branch that never got fixed in that
- branch.  Checkpointing.
-
- Revision 1.16.6.1  2008/07/01 06:17:22  phase1geo
- More updates to rank command.  Updating IV/Cver regression for these changes (full
- regression not passing at this point).  Checkpointing.
-
- Revision 1.16  2008/03/11 22:06:48  phase1geo
- Finishing first round of exception handling code.
-
- Revision 1.15  2008/02/10 03:33:13  phase1geo
- More exception handling added and fixed remaining splint errors.
-
- Revision 1.14  2008/02/09 19:32:45  phase1geo
- Completed first round of modifications for using exception handler.  Regression
- passes with these changes.  Updated regressions per these changes.
-
- Revision 1.13  2008/02/08 23:58:07  phase1geo
- Starting to work on exception handling.  Much work to do here (things don't
- compile at the moment).
-
- Revision 1.12  2008/01/09 05:22:22  phase1geo
- More splint updates using the -standard option.
-
- Revision 1.11  2007/11/20 05:28:59  phase1geo
- Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
-
- Revision 1.10  2006/06/20 22:14:32  phase1geo
- Adding support for saving CDD files (needed for file merging and saving exclusion
- information for a CDD file) in the GUI.  Still have a bit to go as I am getting core
- dumps to occur.
-
- Revision 1.9  2006/06/16 22:44:19  phase1geo
- Beginning to add ability to open/close CDD files without needing to close Covered's
- GUI.  This seems to work but does cause some segfaults yet.
-
- Revision 1.8  2006/03/28 22:28:28  phase1geo
- Updates to user guide and added copyright information to each source file in the
- src directory.  Added test directory in user documentation directory containing the
- example used in line, toggle, combinational logic and FSM descriptions.
-
- Revision 1.7  2005/02/05 04:13:30  phase1geo
- Started to add reporting capabilities for race condition information.  Modified
- race condition reason calculation and handling.  Ran -Wall on all code and cleaned
- things up.  Cleaned up regression as a result of these changes.  Full regression
- now passes.
-
- Revision 1.6  2002/11/05 00:20:08  phase1geo
- Adding development documentation.  Fixing problem with combinational logic
- output in report command and updating full regression.
-
- Revision 1.5  2002/10/31 23:14:18  phase1geo
- Fixing C compatibility problems with cc and gcc.  Found a few possible problems
- with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that
- lead to bus errors.  Ran full regression in 64-bit mode without error.
-
- Revision 1.4  2002/10/29 19:57:51  phase1geo
- Fixing problems with beginning block comments within comments which are
- produced automatically by CVS.  Should fix warning messages from compiler.
-
- Revision 1.3  2002/07/09 04:46:26  phase1geo
- Adding -D and -Q options to covered for outputting debug information or
- suppressing normal output entirely.  Updated generated documentation and
- modified Verilog diagnostic Makefile to use these new options.
-
- Revision 1.2  2002/07/03 03:31:11  phase1geo
- Adding RCS Log strings in files that were missing them so that file version
- information is contained in every source and header file.  Reordering src
- Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
-*/
 
 #endif
 

@@ -280,6 +280,7 @@ int yydebug = 1;
 %token K_Shold K_Speriod K_Srecovery K_Ssetup K_Swidth K_Ssetuphold
 %token S_user S_ignore S_allow S_finish S_stop S_time S_random S_srandom S_dumpfile S_urandom S_urandom_range
 %token S_realtobits S_bitstoreal S_rtoi S_itor S_shortrealtobits S_bitstoshortreal S_testargs S_valargs
+%token S_signed S_unsigned
 
 %token K_automatic K_cell K_use K_library K_config K_endconfig K_design K_liblist K_instance
 %token K_showcancelled K_noshowcancelled K_pulsestyle_onevent K_pulsestyle_ondetect
@@ -1091,6 +1092,14 @@ static_expr
         $$ = NULL;
       }
     }
+  | static_expr K_NE static_expr
+    {
+      if( parse_mode ) {
+        $$ = static_expr_gen( $3, $1, EXP_OP_NE, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
+      } else {
+        $$ = NULL;
+      }
+    }
   | static_expr '>' static_expr
     {
       if( parse_mode ) {
@@ -1103,6 +1112,22 @@ static_expr
     {
       if( parse_mode ) {
         $$ = static_expr_gen( $3, $1, EXP_OP_LT, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | static_expr K_LAND static_expr
+    {
+      if( parse_mode ) {
+        $$ = static_expr_gen( $3, $1, EXP_OP_LAND, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | static_expr K_LOR static_expr
+    {
+      if( parse_mode ) {
+        $$ = static_expr_gen( $3, $1, EXP_OP_LOR, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1620,6 +1645,8 @@ syscall_w_parms_op
   | S_shortrealtobits { $$ = EXP_OP_SSR2B;        }
   | S_testargs        { $$ = EXP_OP_STESTARGS;    }
   | S_valargs         { $$ = EXP_OP_SVALARGS;     }
+  | S_signed          { $$ = EXP_OP_SSIGNED;      }
+  | S_unsigned        { $$ = EXP_OP_SUNSIGNED;    }
   ;
 
 syscall_w_parms_op_64
@@ -2979,11 +3006,10 @@ module_item
       }
     }
     register_variable_list ';'
-  | attribute_list_opt port_type range_opt
+  | attribute_list_opt port_type signed_opt range_opt
     {
       if( parse_mode ) {
         curr_mba     = FALSE;
-        curr_signed  = FALSE;
         curr_handled = TRUE;
         if( generate_top_mode > 0 ) {
           ignore_mode++;
@@ -3049,7 +3075,7 @@ module_item
         }
       }
     }
-  | attribute_list_opt port_type range_opt error ';'
+  | attribute_list_opt port_type signed_opt range_opt error ';'
     {
       if( parse_mode ) {
         if( generate_top_mode > 0 ) {

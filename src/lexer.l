@@ -961,14 +961,11 @@ WSPACE [ \t\b\f]+
 <PARSE>\$([a-zA-Z0-9$_]+)   { PROFILE(LEXER_SYSTEM_CALL);
   int rc = lexer_keyword_sys_1995_code( (yytext + 1), (yyleng - 1) );
   if( !parse_mode ) generator_add_orig_to_work_code( yytext, yylloc.first_line, yylloc.first_column );
-  if( (rc == S_user) && parser_check_generation( GENERATION_2001 ) ) {
+  if( (rc == S_ignore) && parser_check_generation( GENERATION_2001 ) ) {
     rc = lexer_keyword_sys_2001_code( (yytext + 1), (yyleng - 1) );
   }
-  if( (rc == S_user) && parser_check_generation( GENERATION_SV ) ) {
+  if( (rc == S_ignore) && parser_check_generation( GENERATION_SV ) ) {
     rc = lexer_keyword_sys_sv_code( (yytext + 1), (yyleng - 1) );
-    if( rc == S_user ) {  /* User PLI calls are ignored for now */
-      rc = S_ignore;
-    }
   }
   /* If we are running in conservative mode, change $random, $urandom and $urandom_range to ignored lies */
   if( flag_conservative && ((rc == S_random) || (rc == S_urandom) || (rc == S_urandom_range)) ) {

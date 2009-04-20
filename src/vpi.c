@@ -88,6 +88,8 @@ char*     cdd_message   = NULL;
 char*     merged_file   = NULL;
 bool      flag_output_exclusion_ids = FALSE;
 bool      report_exclusions = FALSE;
+str_link* race_ignore_mod_head = NULL;
+str_link* race_ignore_mod_tail = NULL;
 
 extern bool        debug_mode;
 extern symtable*   vcd_symtab;

@@ -451,120 +451,125 @@ static inst_parm* inst_parm_add(
   assert( value != NULL );
   assert( ((msb == NULL) && (lsb == NULL)) || ((msb != NULL) && (lsb != NULL)) );
 
-  /* Create new signal/expression binding */
-  iparm = (inst_parm*)malloc_safe( sizeof( inst_parm ) );
+  /* Only add the instance parameter if it currently does not exist */
+  if( (name == NULL) || (inst_name != NULL) || (inst_parm_find( name, inst->param_head ) == NULL) ) {
 
-  if( inst_name != NULL ) {
-    iparm->inst_name = strdup_safe( inst_name );
-  } else {
-    iparm->inst_name = NULL;
-  }
+    /* Create new signal/expression binding */
+    iparm = (inst_parm*)malloc_safe( sizeof( inst_parm ) );
 
-  Try {
-
-    /* If the MSB/LSB was specified, calculate the LSB and width values */
-    if( msb != NULL ) {
-
-      /* Calculate left value */
-      if( lsb->exp != NULL ) {
-        param_expr_eval( lsb->exp, inst );
-        right_val = vector_to_int( lsb->exp->value );
-      } else {
-        right_val = lsb->num;
-      }
-      assert( right_val >= 0 );
-
-      /* Calculate right value */
-      if( msb->exp != NULL ) {
-        param_expr_eval( msb->exp, inst );
-        left_val = vector_to_int( msb->exp->value );
-      } else {
-        left_val = msb->num;
-      }
-      assert( left_val >= 0 );
-
-      /* Calculate LSB and width information */
-      if( right_val > left_val ) {
-        sig_lsb   = left_val;
-        sig_width = (right_val - left_val) + 1;
-        sig_be    = 1;
-      } else {
-        sig_lsb   = right_val;
-        sig_width = (left_val - right_val) + 1;
-        sig_be    = 0;
-      }
-
+    if( inst_name != NULL ) {
+      iparm->inst_name = strdup_safe( inst_name );
     } else {
-
-      sig_lsb   = 0;
-      sig_width = value->width;
-      sig_be    = 0;
-
+      iparm->inst_name = NULL;
     }
 
-    /* If the parameter is sized too big, panic */
-    assert( (sig_width <= MAX_BIT_WIDTH) && (sig_width >= 0) );
+    Try {
 
-    /* Figure out what type of parameter this signal needs to be */
-    if( (value != NULL) && ((value->suppl.part.data_type == VDATA_R64) || (value->suppl.part.data_type == VDATA_R32)) ) {
-      sig_type = SSUPPL_TYPE_PARAM_REAL;
-    } else {
-      sig_type = SSUPPL_TYPE_PARAM;
-    }
+      /* If the MSB/LSB was specified, calculate the LSB and width values */
+      if( msb != NULL ) {
 
-    /* Create instance parameter signal */
-    iparm->sig = vsignal_create( name, sig_type, sig_width, 0, 0 );
-    iparm->sig->pdim_num   = 1;
-    iparm->sig->dim        = (dim_range*)malloc_safe( sizeof( dim_range ) * 1 );
-    iparm->sig->dim[0].lsb = right_val;
-    iparm->sig->dim[0].msb = left_val;
-    iparm->sig->suppl.part.big_endian = sig_be;
-
-    /* Store signed attribute for this vector */
-    iparm->sig->value->suppl.part.is_signed = is_signed;
-  
-    /* Copy the contents of the specified vector value to the signal */
-    switch( value->suppl.part.data_type ) {
-      case VDATA_UL :
-        (void)vector_set_value_ulong( iparm->sig->value, value->value.ul, value->width );
-        break;
-      case VDATA_R64 :
-        (void)vector_from_real64( iparm->sig->value, value->value.r64->val );
-        break;
-      case VDATA_R32 :
-        (void)vector_from_real64( iparm->sig->value, (double)value->value.r32->val );
-        break;
-      default :  assert( 0 );  break;
-    }
-
-    iparm->mparm = mparm;
-    iparm->next  = NULL;
-
-    /* Bind the module parameter expression list to this signal */
-    if( mparm != NULL ) {
-      expl = mparm->exp_head;
-      while( expl != NULL ) {
-        expl->exp->sig = iparm->sig;
-        /* Set the expression's vector to this signal's vector if we are part of a generate expression */
-        if( expl->exp->suppl.part.gen_expr == 1 ) {
-          expression_set_value( expl->exp, iparm->sig, inst->funit );
+        /* Calculate left value */
+        if( lsb->exp != NULL ) {
+          param_expr_eval( lsb->exp, inst );
+          right_val = vector_to_int( lsb->exp->value );
+        } else {
+          right_val = lsb->num;
         }
-        exp_link_add( expl->exp, &(iparm->sig->exp_head), &(iparm->sig->exp_tail) );
-        expl = expl->next;
+        assert( right_val >= 0 );
+
+        /* Calculate right value */
+        if( msb->exp != NULL ) {
+          param_expr_eval( msb->exp, inst );
+          left_val = vector_to_int( msb->exp->value );
+        } else {
+          left_val = msb->num;
+        }
+        assert( left_val >= 0 );
+
+        /* Calculate LSB and width information */
+        if( right_val > left_val ) {
+          sig_lsb   = left_val;
+          sig_width = (right_val - left_val) + 1;
+          sig_be    = 1;
+        } else {
+          sig_lsb   = right_val;
+          sig_width = (left_val - right_val) + 1;
+          sig_be    = 0;
+        }
+
+      } else {
+
+        sig_lsb   = 0;
+        sig_width = value->width;
+        sig_be    = 0;
+
       }
+
+      /* If the parameter is sized too big, panic */
+      assert( (sig_width <= MAX_BIT_WIDTH) && (sig_width >= 0) );
+
+      /* Figure out what type of parameter this signal needs to be */
+      if( (value != NULL) && ((value->suppl.part.data_type == VDATA_R64) || (value->suppl.part.data_type == VDATA_R32)) ) {
+        sig_type = SSUPPL_TYPE_PARAM_REAL;
+      } else {
+        sig_type = SSUPPL_TYPE_PARAM;
+      }
+
+      /* Create instance parameter signal */
+      iparm->sig = vsignal_create( name, sig_type, sig_width, 0, 0 );
+      iparm->sig->pdim_num   = 1;
+      iparm->sig->dim        = (dim_range*)malloc_safe( sizeof( dim_range ) * 1 );
+      iparm->sig->dim[0].lsb = right_val;
+      iparm->sig->dim[0].msb = left_val;
+      iparm->sig->suppl.part.big_endian = sig_be;
+
+      /* Store signed attribute for this vector */
+      iparm->sig->value->suppl.part.is_signed = is_signed;
+  
+      /* Copy the contents of the specified vector value to the signal */
+      switch( value->suppl.part.data_type ) {
+        case VDATA_UL :
+          (void)vector_set_value_ulong( iparm->sig->value, value->value.ul, value->width );
+          break;
+        case VDATA_R64 :
+          (void)vector_from_real64( iparm->sig->value, value->value.r64->val );
+          break;
+        case VDATA_R32 :
+          (void)vector_from_real64( iparm->sig->value, (double)value->value.r32->val );
+          break;
+        default :  assert( 0 );  break;
+      }
+
+      iparm->mparm = mparm;
+      iparm->next  = NULL;
+
+      /* Bind the module parameter expression list to this signal */
+      if( mparm != NULL ) {
+        expl = mparm->exp_head;
+        while( expl != NULL ) {
+          expl->exp->sig = iparm->sig;
+          /* Set the expression's vector to this signal's vector if we are part of a generate expression */
+          if( expl->exp->suppl.part.gen_expr == 1 ) {
+            expression_set_value( expl->exp, iparm->sig, inst->funit );
+          }
+          exp_link_add( expl->exp, &(iparm->sig->exp_head), &(iparm->sig->exp_tail) );
+          expl = expl->next;
+        }
+      }
+
+      /* Now add the parameter to the current expression */
+      if( inst->param_head == NULL ) {
+        inst->param_head = inst->param_tail = iparm;
+      } else {
+        inst->param_tail->next = iparm;
+        inst->param_tail       = iparm;
+      }
+  
+    } Catch_anonymous {
+      inst_parm_dealloc( iparm, FALSE );
+      Throw 0;
     }
 
-    /* Now add the parameter to the current expression */
-    if( inst->param_head == NULL ) {
-      inst->param_head = inst->param_tail = iparm;
-    } else {
-      inst->param_tail->next = iparm;
-      inst->param_tail       = iparm;
-    }
-  
-  } Catch_anonymous {
-    inst_parm_dealloc( iparm, FALSE );
-    Throw 0;
   }
 
   PROFILE_END;
@@ -1243,585 +1248,4 @@ void inst_parm_dealloc(
   PROFILE_END;
 
 }
-
-
-/*
- $Log$
- Revision 1.125  2009/01/09 21:25:01  phase1geo
- More generate block fixes.  Updated all copyright information source code files
- for the year 2009.  Checkpointing.
-
- Revision 1.124  2009/01/08 23:44:08  phase1geo
- Updating VCS regressions.  Fixing issues in regards to PDEC, PINC, IINC and IDEC
- operations.  Checkpointing.
-
- Revision 1.123  2009/01/07 23:40:46  phase1geo
- Updates to support intermediate expression substitution.  Not done yet.  Checkpointing.
-
- Revision 1.122  2009/01/05 23:48:00  phase1geo
- Removing unnecessary output.
-
- Revision 1.121  2009/01/05 23:46:33  phase1geo
- Fixing endianness issue (bug exists in SourceForge).  Removed unnecessary
- output.  Updating merge_err1 diagnostic.  17 failures currently exist in IV
- regression.  Checkpointing.
-
- Revision 1.120  2009/01/05 20:15:26  phase1geo
- Fixing issue with memory coverage.  Checkpointing (20 diags fail currently).
-
- Revision 1.119  2009/01/03 08:03:53  phase1geo
- Adding more code to support memory coverage.  Added to code to handle parameterized
- signal sizing.  Updated regressions.  Checkpointing.
-
- Revision 1.118  2008/11/19 19:42:10  phase1geo
- Cleaning up splint warnings.
-
- Revision 1.117  2008/11/08 00:09:04  phase1geo
- Checkpointing work on asymmetric merging algorithm.  Updated regressions
- per these changes.  We currently have 5 failures in the IV regression suite.
-
- Revision 1.116  2008/10/23 22:16:21  phase1geo
- Fixing -P support.
-
- Revision 1.115  2008/10/23 20:54:52  phase1geo
- Adding support for real parameters.  Added more real number diagnostics to
- regression suite.
-
- Revision 1.114  2008/09/11 23:06:30  phase1geo
- Fixing issue with parameters not being given valid exclusion IDs.  Updated
- regressions and fixed a few perl script diagnostics.  Full regressions for
- IV and Cver now pass.
-
- Revision 1.113  2008/09/04 21:34:20  phase1geo
- Completed work to get exclude reason support to work with toggle coverage.
- Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
-
- Revision 1.112  2008/08/18 23:07:28  phase1geo
- Integrating changes from development release branch to main development trunk.
- Regression passes.  Still need to update documentation directories and verify
- that the GUI stuff works properly.
-
- Revision 1.109.2.1  2008/07/10 22:43:53  phase1geo
- Merging in rank-devel-branch into this branch.  Added -f options for all commands
- to allow files containing command-line arguments to be added.  A few error diagnostics
- are currently failing due to changes in the rank branch that never got fixed in that
- branch.  Checkpointing.
-
- Revision 1.110  2008/06/27 14:02:03  phase1geo
- Fixing splint and -Wextra warnings.  Also fixing comment formatting.
-
- Revision 1.109  2008/05/30 05:38:31  phase1geo
- Updating development tree with development branch.  Also attempting to fix
- bug 1965927.
-
- Revision 1.108.2.2  2008/05/28 05:57:11  phase1geo
- Updating code to use unsigned long instead of uint32.  Checkpointing.
-
- Revision 1.108.2.1  2008/04/23 05:20:44  phase1geo
- Completed initial pass of code updates.  I can now begin testing...  Checkpointing.
-
- Revision 1.108  2008/03/31 18:39:08  phase1geo
- Fixing more regression issues related to latest code modifications.  Checkpointing.
-
- Revision 1.107  2008/03/17 22:02:31  phase1geo
- Adding new check_mem script and adding output to perform memory checking during
- regression runs.  Completed work on free_safe and added realloc_safe function
- calls.  Regressions are pretty broke at the moment.  Checkpointing.
-
- Revision 1.106  2008/03/17 05:26:16  phase1geo
- Checkpointing.  Things don't compile at the moment.
-
- Revision 1.105  2008/03/14 22:00:19  phase1geo
- Beginning to instrument code for exception handling verification.  Still have
- a ways to go before we have anything that is self-checking at this point, though.
-
- Revision 1.104  2008/03/11 22:06:48  phase1geo
- Finishing first round of exception handling code.
-
- Revision 1.103  2008/03/04 00:09:20  phase1geo
- More exception handling.  Checkpointing.
-
- Revision 1.102  2008/01/16 23:10:31  phase1geo
- More splint updates.  Code is now warning/error free with current version
- of run_splint.  Still have regression issues to debug.
-
- Revision 1.101  2008/01/15 23:01:15  phase1geo
- Continuing to make splint updates (not doing any memory checking at this point).
-
- Revision 1.100  2008/01/10 04:59:04  phase1geo
- More splint updates.  All exportlocal cases are now taken care of.
-
- Revision 1.99  2008/01/09 23:54:15  phase1geo
- More splint updates.
-
- Revision 1.98  2008/01/09 05:22:22  phase1geo
- More splint updates using the -standard option.
-
- Revision 1.97  2008/01/08 21:13:08  phase1geo
- Completed -weak splint run.  Full regressions pass.
-
- Revision 1.96  2008/01/07 23:59:55  phase1geo
- More splint updates.
-
- Revision 1.95  2007/12/19 14:37:29  phase1geo
- More compiler fixes (still more to go).  Checkpointing.
-
- Revision 1.94  2007/12/11 05:48:26  phase1geo
- Fixing more compile errors with new code changes and adding more profiling.
- Still have a ways to go before we can compile cleanly again (next submission
- should do it).
-
- Revision 1.93  2007/11/20 05:28:59  phase1geo
- Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
-
- Revision 1.92  2007/09/04 22:50:50  phase1geo
- Fixed static_afunc1 issues.  Reran regressions and updated necessary files.
- Also working on debugging one remaining issue with mem1.v (not solved yet).
-
- Revision 1.91  2007/08/31 22:46:36  phase1geo
- Adding diagnostics from stable branch.  Fixing a few minor bugs and in progress
- of working on static_afunc1 failure (still not quite there yet).  Checkpointing.
-
- Revision 1.90  2007/07/30 20:36:14  phase1geo
- Fixing rest of issues pertaining to new implementation of function calls.
- Full regression passes (with the exception of afunc1 which we do not expect
- to pass with these changes as of yet).
-
- Revision 1.89  2007/07/26 17:05:15  phase1geo
- Fixing problem with static functions (vector data associated with expressions
- were not being allocated).  Regressions have been run.  Only two failures
- in total still to be fixed.
-
- Revision 1.88  2007/07/26 05:03:42  phase1geo
- Starting to work on fix for static function support.  Fixing issue if
- func_call is called with NULL thr parameter (to avoid segmentation fault).
- IV regression fully passes.
-
- Revision 1.87  2007/04/18 22:35:02  phase1geo
- Revamping simulator core again.  Checkpointing.
-
- Revision 1.86  2007/04/11 22:29:48  phase1geo
- Adding support for CLI to score command.  Still some work to go to get history
- stuff right.  Otherwise, it seems to be working.
-
- Revision 1.85  2006/12/12 06:20:23  phase1geo
- More updates to support re-entrant tasks/functions.  Still working through
- compiler errors.  Checkpointing.
-
- Revision 1.84.2.1  2007/04/17 16:31:53  phase1geo
- Fixing bug 1698806 by rebinding a parameter signal to its list of expressions
- prior to writing the initial CDD file (elaboration phase).  Added param16
- diagnostic to regression suite to verify the fix.  Full regressions pass.
-
- Revision 1.84  2006/10/13 22:46:31  phase1geo
- Things are a bit of a mess at this point.  Adding generate12 diagnostic that
- shows a failure in properly handling generates of instances.
-
- Revision 1.83  2006/10/12 22:48:46  phase1geo
- Updates to remove compiler warnings.  Still some work left to go here.
-
- Revision 1.82  2006/10/03 22:47:00  phase1geo
- Adding support for read coverage to memories.  Also added memory coverage as
- a report output for DIAGLIST diagnostics in regressions.  Fixed various bugs
- left in code from array changes and updated regressions for these changes.
- At this point, all IV diagnostics pass regressions.
-
- Revision 1.81  2006/09/25 22:22:28  phase1geo
- Adding more support for memory reporting to both score and report commands.
- We are getting closer; however, regressions are currently broken.  Checkpointing.
-
- Revision 1.80  2006/09/22 19:56:45  phase1geo
- Final set of fixes and regression updates per recent changes.  Full regression
- now passes.
-
- Revision 1.79  2006/09/22 04:23:04  phase1geo
- More fixes to support new signal range structure.  Still don't have full
- regressions passing at the moment.
-
- Revision 1.78  2006/09/21 22:44:20  phase1geo
- More updates to regressions for latest changes to support memories/multi-dimensional
- arrays.  We still have a handful of VCS diagnostics that are failing.  Checkpointing
- for now.
-
- Revision 1.77  2006/09/21 04:20:59  phase1geo
- Fixing endianness diagnostics.  Still getting memory error with some diagnostics
- in regressions (ovl1 is one of them).  Updated regression.
-
- Revision 1.76  2006/09/20 22:38:09  phase1geo
- Lots of changes to support memories and multi-dimensional arrays.  We still have
- issues with endianness and VCS regressions have not been run, but this is a significant
- amount of work that needs to be checkpointed.
-
- Revision 1.75  2006/09/15 22:14:54  phase1geo
- Working on adding arrayed signals.  This is currently in progress and doesn't
- even compile at this point, much less work.  Checkpointing work.
-
- Revision 1.74  2006/09/11 22:27:55  phase1geo
- Starting to work on supporting bitwise coverage.  Moving bits around in supplemental
- fields to allow this to work.  Full regression has been updated for the current changes
- though this feature is still not fully implemented at this time.  Also added parsing support
- for SystemVerilog program blocks (ignored) and final blocks (not handled properly at this
- time).  Also added lexer support for the return, void, continue, break, final, program and
- endprogram SystemVerilog keywords.  Checkpointing work.
-
- Revision 1.73  2006/09/04 05:28:18  phase1geo
- Fixing bug 1546059 last remaining issue.  Updated user documentation.
-
- Revision 1.72  2006/08/18 22:07:45  phase1geo
- Integrating obfuscation into all user-viewable output.  Verified that these
- changes have not made an impact on regressions.  Also improved performance
- impact of not obfuscating output.
-
- Revision 1.71  2006/07/31 16:26:53  phase1geo
- Tweaking the is_static_only function to consider expressions using generate
- variables to be static.  Updating regression for changes.  Full regression
- now passes.
-
- Revision 1.70  2006/07/27 02:04:30  phase1geo
- Fixing problem with parameter usage in a generate block for signal sizing.
-
- Revision 1.69  2006/07/25 21:35:54  phase1geo
- Fixing nested namespace problem with generate blocks.  Also adding support
- for using generate values in expressions.  Still not quite working correctly
- yet, but the format of the CDD file looks good as far as I can tell at this
- point.
-
- Revision 1.68  2006/07/22 03:57:07  phase1geo
- Adding support for parameters within generate blocks.  Adding more diagnostics
- to verify statement support and parameter usage (signal sizing).
-
- Revision 1.67  2006/07/20 20:11:09  phase1geo
- More work on generate statements.  Trying to figure out a methodology for
- handling namespaces.  Still a lot of work to go...
-
- Revision 1.66  2006/07/10 03:05:04  phase1geo
- Contains bug fixes for memory leaks and segmentation faults.  Also contains
- some starting code to support generate blocks.  There is absolutely no
- functionality here, however.
-
- Revision 1.65  2006/07/08 02:06:54  phase1geo
- Updating build scripts for next development release and fixing a bug in
- the score command that caused segfaults for signals that used the same
- parameters in their range declaration.  Added diagnostic to regression
- to test this fix.  Full regression passes.
-
- Revision 1.64  2006/05/28 02:43:49  phase1geo
- Integrating stable release 0.4.4 changes into main branch.  Updated regressions
- appropriately.
-
- Revision 1.63  2006/05/25 12:11:01  phase1geo
- Including bug fix from 0.4.4 stable release and updating regressions.
-
- Revision 1.62  2006/04/21 06:14:45  phase1geo
- Merged in changes from 0.4.3 stable release.  Updated all regression files
- for inclusion of OVL library.  More documentation updates for next development
- release (but there is more to go here).
-
- Revision 1.61  2006/04/11 22:42:16  phase1geo
- First pass at adding multi-file merging.  Still need quite a bit of work here yet.
-
- Revision 1.60.4.2.4.1  2006/05/25 10:59:35  phase1geo
- Adding bug fix for hierarchically referencing parameters.  Added param13 and
- param13.1 diagnostics to verify this functionality.  Updated regressions.
-
- Revision 1.60.4.2  2006/04/21 04:42:02  phase1geo
- Adding endian2 and endian3 diagnostics to regression suite to verify other
- endianness related code.  Made small fix to parameter CDD output function
- to include the supplemental field output.  Full regression passes.
-
- Revision 1.60.4.1  2006/04/20 21:55:16  phase1geo
- Adding support for big endian signals.  Added new endian1 diagnostic to regression
- suite to verify this new functionality.  Full regression passes.  We may want to do
- some more testing on variants of this before calling it ready for stable release 0.4.3.
-
- Revision 1.60  2006/03/28 22:28:27  phase1geo
- Updates to user guide and added copyright information to each source file in the
- src directory.  Added test directory in user documentation directory containing the
- example used in line, toggle, combinational logic and FSM descriptions.
-
- Revision 1.59  2006/03/27 23:25:30  phase1geo
- Updating development documentation for 0.4 stable release.
-
- Revision 1.58  2006/02/16 21:19:26  phase1geo
- Adding support for arrays of instances.  Also fixing some memory problems for
- constant functions and fixed binding problems when hierarchical references are
- made to merged modules.  Full regression now passes.
-
- Revision 1.57  2006/02/13 15:43:01  phase1geo
- Adding support for NULL expressions in parameter override expression lists.  In VCS,
- this simply skips overriding the Nth parameter -- Covered does the same.  Full
- regression now passes.
-
- Revision 1.56  2006/02/02 22:37:41  phase1geo
- Starting to put in support for signed values and inline register initialization.
- Also added support for more attribute locations in code.  Regression updated for
- these changes.  Interestingly, with the changes that were made to the parser,
- signals are output to reports in order (before they were completely reversed).
- This is a nice surprise...  Full regression passes.
-
- Revision 1.55  2006/02/01 19:58:28  phase1geo
- More updates to allow parsing of various parameter formats.  At this point
- I believe full parameter support is functional.  Regression has been updated
- which now completely passes.  A few new diagnostics have been added to the
- testsuite to verify additional functionality that is supported.
-
- Revision 1.54  2006/02/01 15:13:11  phase1geo
- Added support for handling bit selections in RHS parameter calculations.  New
- mbit_sel5.4 diagnostic added to verify this change.  Added the start of a
- regression utility that will eventually replace the old Makefile system.
-
- Revision 1.53  2006/01/31 16:41:00  phase1geo
- Adding initial support and diagnostics for the variable multi-bit select
- operators +: and -:.  More to come but full regression passes.
-
- Revision 1.52  2006/01/25 04:32:47  phase1geo
- Fixing bug with latest checkins.  Full regression is now passing for IV simulated
- diagnostics.
-
- Revision 1.51  2006/01/24 23:24:38  phase1geo
- More updates to handle static functions properly.  I have redone quite a bit
- of code here which has regressions pretty broke at the moment.  More work
- to do but I'm checkpointing.
-
- Revision 1.50  2006/01/23 22:55:10  phase1geo
- Updates to fix constant function support.  There is some issues to resolve
- here but full regression is passing with the exception of the newly added
- static_func1.1 diagnostic.  Fixed problem where expand and multi-bit expressions
- were getting coverage numbers calculated for them before they were simulated.
-
- Revision 1.49  2006/01/20 22:50:50  phase1geo
- Code cleanup.
-
- Revision 1.48  2006/01/20 22:44:51  phase1geo
- Moving parameter resolution to post-bind stage to allow static functions to
- be considered.  Regression passes without static function testing.  Static
- function support still has some work to go.  Checkpointing.
-
- Revision 1.47  2006/01/20 19:27:14  phase1geo
- Fixing compile warning.
-
- Revision 1.46  2006/01/20 19:15:23  phase1geo
- Fixed bug to properly handle the scoping of parameters when parameters are created/used
- in non-module functional units.  Added param10*.v diagnostics to regression suite to
- verify the behavior is correct now.
-
- Revision 1.45  2006/01/19 23:10:38  phase1geo
- Adding line and starting column information to vsignal structure (and associated CDD
- files).  Regression has been fully updated for this change which now fully passes.  Final
- changes to summary GUI.  Fixed signal underlining for toggle coverage to work for both
- explicit and implicit signals.  Getting things ready for a preferences window.
-
- Revision 1.44  2006/01/16 17:27:41  phase1geo
- Fixing binding issues when designs have modules/tasks/functions that are either used
- more than once in a design or have the same name.  Full regression now passes.
-
- Revision 1.43  2006/01/12 22:53:01  phase1geo
- Adding support for localparam construct.  Added tests to regression suite to
- verify correct functionality.  Full regression passes.
-
- Revision 1.42  2006/01/12 22:14:45  phase1geo
- Completed code for handling parameter value pass by name Verilog-2001 syntax.
- Added diagnostics to regression suite and updated regression files for this
- change.  Full regression now passes.
-
- Revision 1.41  2005/12/21 23:16:53  phase1geo
- More memory leak fixes.
-
- Revision 1.40  2005/12/21 22:30:54  phase1geo
- More updates to memory leak fix list.  We are getting close!  Added some helper
- scripts/rules to more easily debug valgrind memory leak errors.  Also added suppression
- file for valgrind for a memory leak problem that exists in lex-generated code.
-
- Revision 1.39  2005/12/17 05:47:36  phase1geo
- More memory fault fixes.  Regression runs cleanly and we have verified
- no memory faults up to define3.v.  Still have a ways to go.
-
- Revision 1.38  2005/12/15 17:24:46  phase1geo
- More fixes for memory fault clean-up.  At this point all of the always
- diagnostics have been run and come up clean with valgrind.  Full regression
- passes.
-
- Revision 1.37  2005/11/28 23:28:47  phase1geo
- Checkpointing with additions for threads.
-
- Revision 1.36  2005/11/18 23:52:55  phase1geo
- More regression cleanup -- still quite a few errors to handle here.
-
- Revision 1.35  2005/01/07 17:59:52  phase1geo
- Finalized updates for supplemental field changes.  Everything compiles and links
- correctly at this time; however, a regression run has not confirmed the changes.
-
- Revision 1.34  2004/03/30 15:42:14  phase1geo
- Renaming signal type to vsignal type to eliminate compilation problems on systems
- that contain a signal type in the OS.
-
- Revision 1.33  2004/03/16 05:45:43  phase1geo
- Checkin contains a plethora of changes, bug fixes, enhancements...
- Some of which include:  new diagnostics to verify bug fixes found in field,
- test generator script for creating new diagnostics, enhancing error reporting
- output to include filename and line number of failing code (useful for error
- regression testing), support for error regression testing, bug fixes for
- segmentation fault errors found in field, additional data integrity features,
- and code support for GUI tool (this submission does not include TCL files).
-
- Revision 1.32  2004/01/08 23:24:41  phase1geo
- Removing unnecessary scope information from signals, expressions and
- statements to reduce file sizes of CDDs and slightly speeds up fscanf
- function calls.  Updated regression for this fix.
-
- Revision 1.31  2003/11/29 06:55:48  phase1geo
- Fixing leftover bugs in better report output changes.  Fixed bug in param.c
- where parameters found in RHS expressions that were part of statements that
- were being removed were not being properly removed.  Fixed bug in sim.c where
- expressions in tree above conditional operator were not being evaluated if
- conditional expression was not at the top of tree.
-
- Revision 1.30  2003/10/17 21:55:25  phase1geo
- Fixing parameter db_write function to output signal in new format.
-
- Revision 1.29  2003/10/17 12:55:36  phase1geo
- Intermediate checkin for LSB fixes.
-
- Revision 1.28  2003/02/17 22:47:20  phase1geo
- Fixing bug with merging same DUTs from different testbenches.  Updated reports
- to display full path instead of instance name and parent instance name.  Added
- merge tests and added merge testing into regression test suite.  Fixing bug with
- -D/-Q option specified with merge command.  Full regression passing.
-
- Revision 1.27  2003/02/07 02:28:23  phase1geo
- Fixing bug with statement removal.  Expressions were being deallocated but not properly
- removed from module parameter expression lists and module expression lists.  Regression
- now passes again.
-
- Revision 1.26  2003/01/14 05:52:17  phase1geo
- Fixing bug related to copying instance trees in modules that were previously
- parsed.  Added diagnostic param7.v to testsuite and regression.  Full
- regression passes.
-
- Revision 1.25  2003/01/04 03:56:28  phase1geo
- Fixing bug with parameterized modules.  Updated regression suite for changes.
-
- Revision 1.24  2002/12/13 16:49:48  phase1geo
- Fixing infinite loop bug with statement set_stop function.  Removing
- hierarchical references from scoring (same problem as defparam statement).
- Fixing problem with checked in version of param.c and fixing error output
- in bind() function to be more meaningful to user.
-
- Revision 1.23  2002/12/02 21:46:53  phase1geo
- Fixing bug in parameter file that handles parameters used in instances which are
- instantiated multiple times in the design.
-
- Revision 1.22  2002/11/05 00:20:07  phase1geo
- Adding development documentation.  Fixing problem with combinational logic
- output in report command and updating full regression.
-
- Revision 1.21  2002/11/02 16:16:20  phase1geo
- Cleaned up all compiler warnings in source and header files.
-
- Revision 1.20  2002/10/29 19:57:51  phase1geo
- Fixing problems with beginning block comments within comments which are
- produced automatically by CVS.  Should fix warning messages from compiler.
-
- Revision 1.19  2002/10/12 06:51:34  phase1geo
- Updating development documentation to match all changes within source.
- Adding new development pages created by Doxygen for the new source
- files.
-
- Revision 1.18  2002/10/11 05:23:21  phase1geo
- Removing local user message allocation and replacing with global to help
- with memory efficiency.
-
- Revision 1.17  2002/10/11 04:24:02  phase1geo
- This checkin represents some major code renovation in the score command to
- fully accommodate parameter support.  All parameter support is in at this
- point and the most commonly used parameter usages have been verified.  Some
- bugs were fixed in handling default values of constants and expression tree
- resizing has been optimized to its fullest.  Full regression has been
- updated and passes.  Adding new diagnostics to test suite.  Fixed a few
- problems in report outputting.
-
- Revision 1.16  2002/10/01 13:21:25  phase1geo
- Fixing bug in report output for single and multi-bit selects.  Also modifying
- the way that parameters are dealt with to allow proper handling of run-time
- changing bit selects of parameter values.  Full regression passes again and
- all report generators have been updated for changes.
-
- Revision 1.15  2002/09/29 02:16:51  phase1geo
- Updates to parameter CDD files for changes affecting these.  Added support
- for bit-selecting parameters.  param4.v diagnostic added to verify proper
- support for this bit-selecting.  Full regression still passes.
-
- Revision 1.14  2002/09/27 01:19:38  phase1geo
- Fixed problems with parameter overriding from command-line.  This now works
- and param1.2.v has been added to test this functionality.  Totally reworked
- regression running to allow each diagnostic to specify unique command-line
- arguments to Covered.  Full regression passes.
-
- Revision 1.13  2002/09/26 13:43:45  phase1geo
- Making code adjustments to correctly support parameter overriding.  Added
- parameter tests to verify supported functionality.  Full regression passes.
-
- Revision 1.12  2002/09/26 04:17:11  phase1geo
- Adding support for expressions in parameter definitions.  param1.1.v added to
- test simple functionality of this and it passes regression.
-
- Revision 1.11  2002/09/25 05:36:08  phase1geo
- Initial version of parameter support is now in place.  Parameters work on a
- basic level.  param1.v tests this basic functionality and param1.cdd contains
- the correct CDD output from handling parameters in this file.  Yeah!
-
- Revision 1.10  2002/09/25 02:51:44  phase1geo
- Removing need of vector nibble array allocation and deallocation during
- expression resizing for efficiency and bug reduction.  Other enhancements
- for parameter support.  Parameter stuff still not quite complete.
-
- Revision 1.9  2002/09/23 01:37:45  phase1geo
- Need to make some changes to the inst_parm structure and some associated
- functionality for efficiency purposes.  This checkin contains most of the
- changes to the parser (with the exception of signal sizing).
-
- Revision 1.8  2002/09/21 07:03:28  phase1geo
- Attached all parameter functions into db.c.  Just need to finish getting
- parser to correctly add override parameters.  Once this is complete, phase 3
- can start and will include regenerating expressions and signals before
- getting output to CDD file.
-
- Revision 1.7  2002/09/21 04:11:32  phase1geo
- Completed phase 1 for adding in parameter support.  Main code is written
- that will create an instance parameter from a given module parameter in
- its entirety.  The next step will be to complete the module parameter
- creation code all the way to the parser.  Regression still passes and
- everything compiles at this point.
-
- Revision 1.6  2002/09/19 05:25:19  phase1geo
- Fixing incorrect simulation of static values and fixing reports generated
- from these static expressions.  Also includes some modifications for parameters
- though these changes are not useful at this point.
-
- Revision 1.5  2002/09/12 05:16:25  phase1geo
- Updating all CDD files in regression suite due to change in vector handling.
- Modified vectors to assign a default value of 0xaa to unassigned registers
- to eliminate bugs where values never assigned and VCD file doesn't contain
- information for these.  Added initial working version of depth feature in
- report generation.  Updates to man page and parameter documentation.
-
- Revision 1.4  2002/09/06 03:05:28  phase1geo
- Some ideas about handling parameters have been added to these files.  Added
- "Special Thanks" section in User's Guide for acknowledgements to people
- helping in project.
-
- Revision 1.3  2002/08/27 11:53:16  phase1geo
- Adding more code for parameter support.  Moving parameters from being a
- part of modules to being a part of instances and calling the expression
- operation function in the parameter add functions.
-
- Revision 1.2  2002/08/26 12:57:04  phase1geo
- In the middle of adding parameter support.  Intermediate checkin but does
- not break regressions at this point.
-
- Revision 1.1  2002/08/23 12:55:33  phase1geo
- Starting to make modifications for parameter support.  Added parameter source
- and header files, changed vector_from_string function to be more verbose
- and updated Makefiles for new param.h/.c files.
-*/
 

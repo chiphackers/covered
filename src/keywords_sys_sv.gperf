@@ -41,7 +41,7 @@ int lexer_keyword_sys_sv_code(
 ) { PROFILE(LEXER_KEYWORD_SYS_SV_CODE);
 
   const struct keyword_sys_sv* rc   = check_identifier_sys_sv(str, length);
-  int                          type = S_user;
+  int                          type = S_ignore;
 
   if( rc != 0 ) {
     type = rc->type;

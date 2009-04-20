@@ -2269,6 +2269,21 @@ static char* generator_gen_mem_index(
   unsigned int rv;
   int          number;
 
+  if( dimension != 0 ) {
+
+    char* tmpstr = str;
+    char* rest   = generator_gen_mem_index( ((dimension == 1) ? exp->parent->expr->left : exp->parent->expr->left->right), funit, (dimension - 1) );
+
+    slen = strlen( tmpstr ) + 1 + strlen( rest ) + 1;
+    str  = (char*)malloc_safe( slen );
+    rv   = snprintf( str, slen, "%s+%s", tmpstr, rest );
+    assert( rv < slen ); 
+
+    free_safe( rest,   (strlen( rest )   + 1) );
+    free_safe( tmpstr, (strlen( tmpstr ) + 1) );
+
+  }
+
   /* Calculate the index value */
   switch( exp->op ) {
     case EXP_OP_SBIT_SEL :
@@ -2456,9 +2471,10 @@ static void generator_insert_mem_cov(
     char*        memstr;
     unsigned int vlen;
     char         iname[4096];
-    str_link*    tmp_head = NULL;
-    str_link*    tmp_tail = NULL;
+    str_link*    tmp_head  = NULL;
+    str_link*    tmp_tail  = NULL;
     int          number;
+    expression*  first_exp = expression_get_first_select( exp );
 
     /* First, create the wire/register to hold the index */
     if( scope[0] == '\0' ) {
@@ -2522,7 +2538,7 @@ static void generator_insert_mem_cov(
     assert( rv < 4096 );
 
     /* Create the value to assign */
-    memstr = codegen_gen_expr_one_line( exp, funit, FALSE );
+    memstr = codegen_gen_expr_one_line( first_exp, funit, FALSE );
     vlen   = 1 + strlen( memstr ) + 1 + strlen( iname ) + 2;
     value  = (char*)malloc_safe( vlen );
     rv = snprintf( value, vlen, "{%s,%s}", memstr, iname );
@@ -2884,6 +2900,9 @@ void generator_handle_event_trigger(
 
 /*
  $Log$
+ Revision 1.84  2009/01/20 14:48:17  phase1geo
+ Fixing issue that comes up when combinational logic coverage is not being generated.
+
  Revision 1.83  2009/01/20 05:27:55  phase1geo
  Fixing bug with multiple replacements.  Added random4 diagnostic to verify this
  bug fix.  Checkpointing.

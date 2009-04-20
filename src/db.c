@@ -1040,6 +1040,14 @@ void db_add_file_version(
 
   str_link* strl;
 
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_file_version, file: %s, version: %s", obf_file( file ), version );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
+#endif
+
   /* Add the new file version information */
   strl       = str_link_add( strdup_safe( file ), &(db_list[curr_db]->fver_head), &(db_list[curr_db]->fver_tail) );
   strl->str2 = strdup_safe( version );
@@ -3071,7 +3079,6 @@ void db_assign_symbol(
             rv   = snprintf( tscope, 4096, "%s.%s", curr_instance->name, scope );
             assert( rv < 4096 );
             inst = instance_find_scope( curr_instance, tscope, FALSE );
-            assert( inst != NULL );
 
           } else {
 
@@ -3080,19 +3087,23 @@ void db_assign_symbol(
 
           }
 
-          /* Search the matching expression */
-          expl = inst->funit->exp_head;
-          while( (expl != NULL) &&
-                 ((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) &&
-                 ((expl->exp->ppline != fline) || (expl->exp->col != col) || (last_exp->ppline != lline) || !ESUPPL_IS_ROOT( expl->exp->suppl ) || (expl->exp->op == EXP_OP_FORK)) ) {
-            expl = expl->next;
+          if( inst != NULL ) {
+
+            /* Search the matching expression */
+            expl = inst->funit->exp_head;
+            while( (expl != NULL) &&
+                   ((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) &&
+                   ((expl->exp->ppline != fline) || (expl->exp->col != col) || (last_exp->ppline != lline) || !ESUPPL_IS_ROOT( expl->exp->suppl ) || (expl->exp->op == EXP_OP_FORK)) ) {
+              expl = expl->next;
+            }
+  
+            assert( expl != NULL );
+            exp = expl->exp;
+
+            /* Add the expression to the symtable */
+            symtable_add_expression( symbol, exp, type );
+
           }
-
-          assert( expl != NULL );
-          exp = expl->exp;
-
-          /* Add the expression to the symtable */
-          symtable_add_expression( symbol, exp, type );
 
         } else if( type == 'F' ) {
 
@@ -3133,7 +3144,6 @@ void db_assign_symbol(
             rv   = snprintf( tscope, 4096, "%s.%s", curr_instance->name, scope );
             assert( rv < 4096 );
             inst = instance_find_scope( curr_instance, tscope, FALSE );
-            assert( inst != NULL );
 
           } else {
 
@@ -3142,19 +3152,23 @@ void db_assign_symbol(
 
           }
 
-          /* Search the matching expression */
-          expl = inst->funit->exp_head;
-          while( (expl != NULL) && 
-                 ((expl->exp->ppline != fline) || (expl->exp->col != col) ||
-                  (((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) && (last_exp->ppline != lline))) ) {
-            expl = expl->next;
+          if( inst != NULL ) {
+
+            /* Search the matching expression */
+            expl = inst->funit->exp_head;
+            while( (expl != NULL) && 
+                   ((expl->exp->ppline != fline) || (expl->exp->col != col) ||
+                    (((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) && (last_exp->ppline != lline))) ) {
+              expl = expl->next;
+            }
+
+            assert( expl != NULL );
+            exp = expl->exp;
+
+            /* Add the expression to the symtable */
+            symtable_add_memory( symbol, exp, type, msb );
+
           }
-
-          assert( expl != NULL );
-          exp = expl->exp;
-
-          /* Add the expression to the symtable */
-          symtable_add_memory( symbol, exp, type, msb );
 
         } else {
 
@@ -3176,7 +3190,6 @@ void db_assign_symbol(
             rv   = snprintf( tscope, 4096, "%s.%s", curr_instance->name, scope );
             assert( rv < 4096 );
             inst = instance_find_scope( curr_instance, tscope, FALSE );
-            assert( inst != NULL );
 
           } else {
 
@@ -3185,24 +3198,28 @@ void db_assign_symbol(
           
           }
 
-          /* Search the matching expression */
-          expl = inst->funit->exp_head;
-          while( (expl != NULL) &&
-                 ((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) &&
-                 ((expl->exp->ppline != fline) || (expl->exp->col != col) || (last_exp->ppline != lline) || (expl->exp->op == EXP_OP_FORK)) ) {
-            expl = expl->next;
+          if( inst != NULL ) {
+
+            /* Search the matching expression */
+            expl = inst->funit->exp_head;
+            while( (expl != NULL) &&
+                   ((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) &&
+                   ((expl->exp->ppline != fline) || (expl->exp->col != col) || (last_exp->ppline != lline) || (expl->exp->op == EXP_OP_FORK)) ) {
+              expl = expl->next;
+            }
+
+            assert( expl != NULL );
+            exp = expl->exp;
+
+            /* If the found expression's parent is an AEDGE, use that expression instead */
+            if( (ESUPPL_IS_ROOT( exp->suppl ) == 0) && (exp->parent->expr->op == EXP_OP_AEDGE) ) {
+              exp = exp->parent->expr;
+            }
+
+            /* Add the expression to the symtable */
+            symtable_add_expression( symbol, exp, type );
+
           }
-
-          assert( expl != NULL );
-          exp = expl->exp;
-
-          /* If the found expression's parent is an AEDGE, use that expression instead */
-          if( (ESUPPL_IS_ROOT( exp->suppl ) == 0) && (exp->parent->expr->op == EXP_OP_AEDGE) ) {
-            exp = exp->parent->expr;
-          }
-
-          /* Add the expression to the symtable */
-          symtable_add_expression( symbol, exp, type );
 
         }
 
@@ -3384,6 +3401,11 @@ bool db_do_timestep(
 
 /*
  $Log$
+ Revision 1.383  2009/04/20 04:52:26  phase1geo
+ Working on integrating bug fixes from stable branch into the main development
+ branch.  This work is incomplete with this checkin and the code will not compile
+ currently.  Checkpointing.
+
  Revision 1.382  2009/01/19 21:51:33  phase1geo
  Added -inlined-metrics score command option and hooked up its functionality.  Regressions
  pass with these changes; however, I have not been able to verify using this option yet.

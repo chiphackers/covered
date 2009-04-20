@@ -126,6 +126,16 @@ char* cdd_message = NULL;
 */
 bool flag_conservative = FALSE;
 
+/*!
+ Pointer to head of string list containing the names of modules that should be ignored for race condition checking.
+*/
+str_link* race_ignore_mod_head = NULL;
+
+/*!
+ Pointer to tail of string list containing the names of modules that should be ignored for race condition checking.
+*/
+str_link* race_ignore_mod_tail = NULL;
+
 
 extern int64     largest_malloc_size;
 extern int64     curr_malloc_size;
@@ -204,15 +214,6 @@ static void score_usage() {
   printf( "      -T min|typ|max               Specifies value to use in delay expressions of the form min:typ:max.\n" );
   printf( "      -ts <number>                 If design is being scored, specifying this option will output\n" );
   printf( "                                     the current timestep (by increments of <number>) to standard output.\n" );
-  printf( "      -r(S|W|E|I|P[=<name>])       Specifies action to take when race condition checking finds problems in design.\n" );
-  printf( "                                     (-rS = Silent.  Do not report condition was found, just handle it.\n" );
-  printf( "                                      -rW = Warning.  Report race condition information, but just handle it.  Default.\n" );
-  printf( "                                      -rE = Error.  Report race condition information and stop scoring.\n" );
-  printf( "                                      -rI = Ignore.  Skip race condition checking completely.)\n" );
-  printf( "                                      -rP = Use pragmas.  Skip race condition checking for all code surrounded by\n" );
-  printf( "                                            // racecheck off/on embedded pragmas.  The \"racecheck\" keyword can be\n" );
-  printf( "                                            changed by specifying =<name> where <name> is the new name for the race\n" );
-  printf( "                                            condition pragma keyword.\n" );
   printf( "      -S                           Outputs simulation performance information after scoring has completed.  This\n" );
   printf( "                                     information is currently only useful for the developers of Covered.\n" );
   printf( "      -g (<module>=)[1|2|3]        Selects generation of Verilog syntax that the parser will handle.  If\n" );
@@ -242,6 +243,21 @@ static void score_usage() {
   printf( "      -inline                             Outputs Verilog with inlined code coverage\n" );
   printf( "      -inline-metrics [l][t][m][c][f][a]  Specifies which coverage metrics should be inlined for scoring purposes.  Only these metrics\n" );
   printf( "                                            will be available for reporting and ranking.  Default is ltmcfa.\n" );
+  printf( "\n" );
+  printf( "   Race Condition Options:\n" );
+  printf( "\n" );
+  printf( "     If race condition checks are violated by one or more blocks in the design, the following options specify to Covered\n" );
+  printf( "     how to handle them.\n" );
+  printf( "\n" );
+  printf( "      -rS                          Silent.  Remove the logic blocks from coverage consideration without reporting the information.\n" );
+  printf( "      -rW                          Warning.  Remove the logic blocks from coverage consideration and report the information.  Default.\n" );
+  printf( "      -rE                          Error.  Report the race condition violations and stop scoring.\n" );
+  printf( "      -rI[=<module name>]          Ignore.  If =<module name> is not specified, do not perform race condition checking for the entire\n" );
+  printf( "                                     design.  If =<module name> is specified, do not perform race condition checking on the specified module\n" );
+  printf( "                                     only.  This option may be specified more than once.\n" );
+  printf( "      -rP[=<name>]                 Use pragmas.  Skip race condition checking for all code surrounded by // racecheck off/on\n" );
+  printf( "                                     embedded pragmas.  The \"racecheck\" keyword can be changed by specifying =<name> where <name>\n" );
+  printf( "                                     is the new name for the race condition pragma keyword.\n" );
   printf( "\n" );
   printf( "   Optimization Options:\n" );
   printf( "      -e <block_name>              Name of module, task, function or named begin/end block to not score.\n" );
@@ -540,6 +556,8 @@ static void score_parse_metrics(
 }
 
 /*!
+ \return Returns TRUE if the help option was parsed.
+
  \throws anonymous search_add_directory_path Throw Throw Throw Throw Throw Throw Throw Throw Throw Throw Throw Throw
                    Throw Throw Throw Throw Throw Throw Throw Throw Throw Throw score_parse_args ovl_add_assertions_to_no_score_list
                    fsm_arg_parse read_command_file search_add_file defparam_add search_add_extensions search_add_no_score_funit
@@ -547,23 +565,24 @@ static void score_parse_metrics(
  Parses score command argument list and performs specified functions based
  on these arguments.
 */
-static void score_parse_args(
+static bool score_parse_args(
   int          argc,      /*!< Number of arguments specified in argv parameter list */
   int          last_arg,  /*!< Index of last parsed argument in list */
   const char** argv       /*!< List of arguments to parse */
 ) { PROFILE(SCORE_PARSE_ARGS);
 
-  int   i = last_arg + 1;  /* Loop iterator */
-  int   j;                 /* Loop iterator */
-  char* ptr;               /* Pointer to current character in defined value */
-  char* rv;                /* Return value from snprintf calls */
+  int   i          = last_arg + 1;  /* Loop iterator */
+  int   j;                          /* Loop iterator */
+  char* ptr;                        /* Pointer to current character in defined value */
+  char* rv;                         /* Return value from snprintf calls */
+  bool  help_found = FALSE;
 
-  while( i < argc ) {
+  while( (i < argc) && !help_found ) {
 
     if( strncmp( "-h", argv[i], 2 ) == 0 ) {
 
       score_usage();
-      Throw 0;
+      help_found = TRUE;
 
     } else if( strncmp( "-inline-metrics", argv[i], 15 ) == 0 ) {
 
@@ -688,7 +707,7 @@ static void score_parse_args(
         i++;
         Try {
           read_command_file( argv[i], &arg_list, &arg_num );
-          score_parse_args( arg_num, -1, (const char**)arg_list );
+          help_found = score_parse_args( arg_num, -1, (const char**)arg_list );
         } Catch_anonymous {
           for( j=0; j<arg_num; j++ ) {
             free_safe( arg_list[j], (strlen( arg_list[j] ) + 1) );
@@ -992,7 +1011,12 @@ static void score_parse_args(
       switch( argv[i][2] ) {
         case 'E'  :  flag_race_check  = FATAL;    break;
         case 'W'  :  flag_race_check  = WARNING;  break;
-        case 'I'  :  flag_check_races = FALSE;
+        case 'I'  :
+          if( argv[i][3] == '=' ) {
+            str_link_add( strdup_safe( argv[i] + 4 ), &race_ignore_mod_head, &race_ignore_mod_tail );
+          } else { 
+            flag_check_races = FALSE;
+          }
         case 'S'  :
         case '\0' :  flag_race_check  = NORMAL;   break;
         case 'P'  :
@@ -1143,15 +1167,18 @@ static void score_parse_args(
 
   }
 
-  /* TBD - We need to figure out the right way to set this bit */
-  // info_suppl.part.inlined = 1;
+  if( !help_found ) {
 
-  /* If the -A option was not specified, add all OVL modules to list of no-score modules */
-  ovl_add_assertions_to_no_score_list( info_suppl.part.assert_ovl );
+    /* If the -A option was not specified, add all OVL modules to list of no-score modules */
+    ovl_add_assertions_to_no_score_list( info_suppl.part.assert_ovl );
     
-  /* Get the current directory */
-  rv = getcwd( score_run_path, 4096 );
-  assert( rv != NULL );
+    /* Get the current directory */
+    rv = getcwd( score_run_path, 4096 );
+    assert( rv != NULL );
+
+  }
+
+  return( help_found );
 
 }
 
@@ -1165,6 +1192,7 @@ void command_score(
 ) { PROFILE(COMMAND_SCORE);
 
   unsigned int rv;  /* Return value from snprintf calls */
+  bool         error = FALSE;
 
   /* Output header information */
   rv = snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
@@ -1185,69 +1213,73 @@ void command_score(
     info_suppl.part.scored_assert = 1;
 
     /* Parse score command-line */
-    score_parse_args( argc, last_arg, argv );
+    if( !score_parse_args( argc, last_arg, argv ) ) {
 
-    /* If inlining is not being performed, make sure that all "scored" bits are set */
-    if( info_suppl.part.inlined == 0 ) {
-      info_suppl.part.scored_line   = 1;
-      info_suppl.part.scored_toggle = 1;
-      info_suppl.part.scored_memory = 1;
-      info_suppl.part.scored_comb   = 1;
-      info_suppl.part.scored_fsm    = 1;
-      info_suppl.part.scored_assert = 1;
-    }
-
-    if( output_db == NULL ) {
-      output_db = strdup_safe( DFLT_OUTPUT_CDD );
-    }
- 
-    /* Parse design */
-    if( use_files_head != NULL ) {
-      print_output( "Reading design...", NORMAL, __FILE__, __LINE__ );
-      search_init();
-      parse_design( top_module, output_db );
-      print_output( "", NORMAL, __FILE__, __LINE__ );
-    }
-
-    /* Generate VPI-based top module */
-    if( vpi_file != NULL ) {
-
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "Outputting VPI file %s...", vpi_file );
-      assert( rv < USER_MSG_LENGTH );
-      print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-      score_generate_top_vpi_module( vpi_file, output_db, top_instance );
-      score_generate_pli_tab_file( vpi_file, top_module );
-
-    /* Read dumpfile and score design */
-    } else if( dump_mode != DUMP_FMT_NONE ) {
-
-      switch( dump_mode ) {
-        case DUMP_FMT_VCD :  rv = snprintf( user_msg, USER_MSG_LENGTH, "Scoring VCD dumpfile %s...", dump_file );  break;
-        case DUMP_FMT_LXT :  rv = snprintf( user_msg, USER_MSG_LENGTH, "Scoring LXT dumpfile %s...", dump_file );  break;
+      /* If inlining is not being performed, make sure that all "scored" bits are set */
+      if( info_suppl.part.inlined == 0 ) {
+        info_suppl.part.scored_line   = 1;
+        info_suppl.part.scored_toggle = 1;
+        info_suppl.part.scored_memory = 1;
+        info_suppl.part.scored_comb   = 1;
+        info_suppl.part.scored_fsm    = 1;
+        info_suppl.part.scored_assert = 1;
       }
+
+      if( output_db == NULL ) {
+        output_db = strdup_safe( DFLT_OUTPUT_CDD );
+      }
+ 
+      /* Parse design */
+      if( use_files_head != NULL ) {
+        print_output( "Reading design...", NORMAL, __FILE__, __LINE__ );
+        search_init();
+        parse_design( top_module, output_db );
+        print_output( "", NORMAL, __FILE__, __LINE__ );
+      }
+
+      /* Generate VPI-based top module */
+      if( vpi_file != NULL ) {
+
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "Outputting VPI file %s...", vpi_file );
+        assert( rv < USER_MSG_LENGTH );
+        print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+        score_generate_top_vpi_module( vpi_file, output_db, top_instance );
+        score_generate_pli_tab_file( vpi_file, top_module );
+
+      /* Read dumpfile and score design */
+      } else if( dump_mode != DUMP_FMT_NONE ) {
+
+        switch( dump_mode ) {
+          case DUMP_FMT_VCD :  rv = snprintf( user_msg, USER_MSG_LENGTH, "Scoring VCD dumpfile %s...", dump_file );  break;
+          case DUMP_FMT_LXT :  rv = snprintf( user_msg, USER_MSG_LENGTH, "Scoring LXT dumpfile %s...", dump_file );  break;
+        }
+        assert( rv < USER_MSG_LENGTH );
+        print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+        parse_and_score_dumpfile( output_db, dump_file, dump_mode );
+        print_output( "", NORMAL, __FILE__, __LINE__ );
+
+      }
+
+      if( dump_mode != DUMP_FMT_NONE ) {
+        print_output( "***  Scoring completed successfully!  ***\n", NORMAL, __FILE__, __LINE__ );
+      }
+      /*@-duplicatequals -formattype@*/
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "Dynamic memory allocated:   %llu bytes", largest_malloc_size );
       assert( rv < USER_MSG_LENGTH );
+      /*@=duplicatequals =formattype@*/
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-      parse_and_score_dumpfile( output_db, dump_file, dump_mode );
       print_output( "", NORMAL, __FILE__, __LINE__ );
 
+      /* Display simulation statistics if specified */
+      if( flag_display_sim_stats ) {
+        perf_output_inst_report( stdout );
+      }
+
     }
 
-    if( dump_mode != DUMP_FMT_NONE ) {
-      print_output( "***  Scoring completed successfully!  ***\n", NORMAL, __FILE__, __LINE__ );
-    }
-    /*@-duplicatequals -formattype@*/
-    rv = snprintf( user_msg, USER_MSG_LENGTH, "Dynamic memory allocated:   %llu bytes", largest_malloc_size );
-    assert( rv < USER_MSG_LENGTH );
-    /*@=duplicatequals =formattype@*/
-    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-    print_output( "", NORMAL, __FILE__, __LINE__ );
-
-    /* Display simulation statistics if specified */
-    if( flag_display_sim_stats ) {
-      perf_output_inst_report( stdout );
-    }
-
-  } Catch_anonymous {}
+  } Catch_anonymous {
+    error = TRUE;
+  }
 
   /* Close database */
   db_close();
@@ -1264,6 +1296,9 @@ void command_score(
   /* Deallocate generation module string list */
   str_link_delete_list( gen_mod_head );
 
+  /* Deallocate race ignore string list */
+  str_link_delete_list( race_ignore_mod_head );
+
   free_safe( output_db, (strlen( output_db ) + 1) );
   free_safe( dump_file, (strlen( dump_file ) + 1) );
   free_safe( vpi_file, (strlen( vpi_file ) + 1) );
@@ -1278,651 +1313,11 @@ void command_score(
   free_safe( pragma_coverage_name, (strlen( pragma_coverage_name ) + 1) );
   free_safe( pragma_racecheck_name, (strlen( pragma_racecheck_name ) + 1) );
 
+  if( error ) {
+    Throw 0;
+  }
+
   PROFILE_END;
 
 }
-
-/*
- $Log$
- Revision 1.151  2009/01/19 21:51:33  phase1geo
- Added -inlined-metrics score command option and hooked up its functionality.  Regressions
- pass with these changes; however, I have not been able to verify using this option yet.
- Checkpointing.
-
- Revision 1.150  2009/01/09 21:25:01  phase1geo
- More generate block fixes.  Updated all copyright information source code files
- for the year 2009.  Checkpointing.
-
- Revision 1.149  2008/12/08 06:48:32  phase1geo
- Moving -inline score option to appropriate place.  Checkpointing.
-
- Revision 1.148  2008/12/07 07:20:08  phase1geo
- Checkpointing work.  I have an end-to-end run now working with test.v in
- the testsuite.  The results are not accurate at this point but it's progress.
- I have updated the regression suite per these changes (minor), added an "-inline"
- option to the score command to control this behavior.  IV regressions have one
- failing diagnostic at this point.
-
- Revision 1.147  2008/12/06 06:35:20  phase1geo
- Adding first crack at handling coverage-related information from dumpfile.
- This code is untested.
-
- Revision 1.146  2008/11/13 05:08:36  phase1geo
- Fixing bug found with merge8.5 diagnostic and fixing issues with VPI.  Full
- regressions now pass.
-
- Revision 1.145  2008/11/12 07:04:01  phase1geo
- Fixing argument merging and updating regressions.  Checkpointing.
-
- Revision 1.144  2008/10/27 18:13:19  phase1geo
- Finished work to get $test$plusargs to work properly.  Added test_plusargs1
- diagnostic to regression suite to verify this functionality.
-
- Revision 1.143  2008/10/27 13:20:55  phase1geo
- More work on $test$plusargs and $value$plusargs support.  Checkpointing.
-
- Revision 1.142  2008/10/27 05:00:32  phase1geo
- Starting to add support for $test$plusargs and $value$plusargs system function
- calls.  More work to do here.  Checkpointing.
-
- Revision 1.141  2008/10/23 23:00:09  phase1geo
- Working on more real number diagnostics.  Fixes for negative real number parsing
- from command line.  Also added an error message when the value specified for the
- -P option to the score command is an illegal value.
-
- Revision 1.140  2008/10/07 15:09:57  phase1geo
- Changed -vpi_ts to -top_ts.
-
- Revision 1.139  2008/10/07 05:24:18  phase1geo
- Adding -dumpvars option.  Need to resolve a few issues before this work is considered
- complete.
-
- Revision 1.138  2008/10/05 20:21:36  phase1geo
- Adding more diagnostics to regression suite which fully passes.  Added -conservative
- and -Wignore options to the score command.
-
- Revision 1.137  2008/09/25 20:59:31  phase1geo
- Updates for LXT regressions (which now run cleanly).
-
- Revision 1.136  2008/09/04 21:34:20  phase1geo
- Completed work to get exclude reason support to work with toggle coverage.
- Ground-work is laid for the rest of the coverage metrics.  Checkpointing.
-
- Revision 1.135  2008/08/18 23:07:28  phase1geo
- Integrating changes from development release branch to main development trunk.
- Regression passes.  Still need to update documentation directories and verify
- that the GUI stuff works properly.
-
- Revision 1.128.2.2  2008/07/21 06:36:29  phase1geo
- Updating code from rank-devel-branch branch.
-
- Revision 1.128.2.1  2008/07/10 22:43:54  phase1geo
- Merging in rank-devel-branch into this branch.  Added -f options for all commands
- to allow files containing command-line arguments to be added.  A few error diagnostics
- are currently failing due to changes in the rank branch that never got fixed in that
- branch.  Checkpointing.
-
- Revision 1.133.2.1  2008/07/02 23:10:38  phase1geo
- Checking in work on rank function and addition of -m option to score
- function.  Added new diagnostics to verify beginning functionality.
- Checkpointing.
-
- Revision 1.133  2008/06/27 14:02:04  phase1geo
- Fixing splint and -Wextra warnings.  Also fixing comment formatting.
-
- Revision 1.132  2008/06/25 04:47:19  phase1geo
- Adding several error diagnostics for the score command to the regression suite.
- Removing unnecessary output in score.c.
-
- Revision 1.131  2008/06/24 23:15:32  phase1geo
- Adding several new diagnostics to regression.  Removing unnecessary output in
- source files for user errors hit in regressions.  Fixed memory leak in substitute_env_vars
- when an error is detected in the environment variable.  Fixing issue with gen_test script
- to make sure that it does not allow an existing diagnostic to be overwritten if the .v file
- is absent (but the .pl or .cfg file is).  Fixing score_err1.1.pl script to properly remove
- its "lib2" directory.  Checkpointing.
-
- Revision 1.130  2008/06/24 04:45:57  phase1geo
- Adding new score command error diagnostics to regression suite.
-
- Revision 1.129  2008/06/23 23:34:50  phase1geo
- Adding more score diagnostics to regression suite for coverage.
-
- Revision 1.128  2008/05/30 05:38:32  phase1geo
- Updating development tree with development branch.  Also attempting to fix
- bug 1965927.
-
- Revision 1.127.2.2  2008/05/24 05:36:22  phase1geo
- Fixing bitwise coverage functionality and updating regression files.  Added
- new bitwise1 and err5.1 diagnostics to regression suite.  Removing output
- for uncovered exceptions in command-line parsers.
-
- Revision 1.127.2.1  2008/04/28 21:08:53  phase1geo
- Fixing memory deallocation issue when CDD file is not present when report
- command is issued.  Fixing issues with left-shift function (still have one
- section to go).  Added new tests to regression suite to verify the new
- left-shift functionality.
-
- Revision 1.127  2008/04/15 20:37:11  phase1geo
- Fixing database array support.  Full regression passes.
-
- Revision 1.126  2008/04/04 20:06:39  phase1geo
- More fixes per regression runs.  Checkpointing.
-
- Revision 1.125  2008/04/02 05:39:51  phase1geo
- More updates to support error memory deallocation.  Full regression still
- fails at this point.  Checkpointing.
-
- Revision 1.124  2008/04/01 13:00:49  phase1geo
- More regression fixes and updates.  Checkpointing.
-
- Revision 1.123  2008/03/30 05:24:02  phase1geo
- Fixing a few more bugs.  Updated regression files per these changes.  Full regression
- still not running cleanly at this point.  Checkpointing.
-
- Revision 1.122  2008/03/28 21:11:32  phase1geo
- Fixing memory leak issues with -ep option and embedded FSM attributes.
-
- Revision 1.121  2008/03/26 21:29:31  phase1geo
- Initial checkin of new optimizations for unknown and not_zero values in vectors.
- This attempts to speed up expression operations across the board.  Working on
- debugging regressions.  Checkpointing.
-
- Revision 1.120  2008/03/18 21:36:24  phase1geo
- Updates from regression runs.  Regressions still do not completely pass at
- this point.  Checkpointing.
-
- Revision 1.119  2008/03/17 22:02:32  phase1geo
- Adding new check_mem script and adding output to perform memory checking during
- regression runs.  Completed work on free_safe and added realloc_safe function
- calls.  Regressions are pretty broke at the moment.  Checkpointing.
-
- Revision 1.118  2008/03/17 05:26:17  phase1geo
- Checkpointing.  Things don't compile at the moment.
-
- Revision 1.117  2008/03/14 22:00:20  phase1geo
- Beginning to instrument code for exception handling verification.  Still have
- a ways to go before we have anything that is self-checking at this point, though.
-
- Revision 1.116  2008/03/11 22:06:49  phase1geo
- Finishing first round of exception handling code.
-
- Revision 1.115  2008/02/25 18:22:16  phase1geo
- Moved statement supplemental bits from root expression to statement and starting
- to add support for race condition checking pragmas (still some work left to do
- on this item).  Updated IV and Cver regressions per these changes.
-
- Revision 1.114  2008/02/22 20:39:22  phase1geo
- More updates for exception handling.
-
- Revision 1.113  2008/02/10 03:33:13  phase1geo
- More exception handling added and fixed remaining splint errors.
-
- Revision 1.112  2008/02/09 19:32:45  phase1geo
- Completed first round of modifications for using exception handler.  Regression
- passes with these changes.  Updated regressions per these changes.
-
- Revision 1.111  2008/02/08 23:58:07  phase1geo
- Starting to work on exception handling.  Much work to do here (things don't
- compile at the moment).
-
- Revision 1.110  2008/02/01 07:03:20  phase1geo
- Fixing bugs in pragma exclusion code.  Added diagnostics to regression suite
- to verify that we correctly exclude/include signals when pragmas are set
- around a register instantiation and the -ep is present/not present, respectively.
- Full regression passes at this point.  Fixed bug in vsignal.c where the excluded
- bit was getting lost when a CDD file was read back in.  Also fixed bug in toggle
- coverage reporting where a 1 -> 0 bit transition was not getting excluded when
- the excluded bit was set for a signal.
-
- Revision 1.109  2008/02/01 06:37:08  phase1geo
- Fixing bug in genprof.pl.  Added initial code for excluding final blocks and
- using pragma excludes (this code is not fully working yet).  More to be done.
-
- Revision 1.108  2008/01/21 21:39:55  phase1geo
- Bug fix for bug 1876376.
-
- Revision 1.107  2008/01/17 06:03:08  phase1geo
- Completing regression runs.
-
- Revision 1.106  2008/01/16 23:10:33  phase1geo
- More splint updates.  Code is now warning/error free with current version
- of run_splint.  Still have regression issues to debug.
-
- Revision 1.105  2008/01/15 23:01:15  phase1geo
- Continuing to make splint updates (not doing any memory checking at this point).
-
- Revision 1.104  2008/01/14 05:08:45  phase1geo
- Fixing bug created while doing splint updates.
-
- Revision 1.103  2008/01/09 05:22:22  phase1geo
- More splint updates using the -standard option.
-
- Revision 1.102  2008/01/08 21:13:08  phase1geo
- Completed -weak splint run.  Full regressions pass.
-
- Revision 1.101  2008/01/07 23:59:55  phase1geo
- More splint updates.
-
- Revision 1.100  2007/12/12 07:23:19  phase1geo
- More work on profiling.  I have now included the ability to get function runtimes.
- Still more work to do but everything is currently working at the moment.
-
- Revision 1.99  2007/12/11 05:48:26  phase1geo
- Fixing more compile errors with new code changes and adding more profiling.
- Still have a ways to go before we can compile cleanly again (next submission
- should do it).
-
- Revision 1.98  2007/11/20 05:29:00  phase1geo
- Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
-
- Revision 1.97  2007/08/31 22:46:36  phase1geo
- Adding diagnostics from stable branch.  Fixing a few minor bugs and in progress
- of working on static_afunc1 failure (still not quite there yet).  Checkpointing.
-
- Revision 1.96  2007/08/07 02:23:32  phase1geo
- Fixing bug 1687409.
-
- Revision 1.95  2007/04/12 03:46:30  phase1geo
- Fixing bugs with CLI.  History and history file saving/loading is implemented
- and working as desired.
-
- Revision 1.94  2007/04/11 22:29:48  phase1geo
- Adding support for CLI to score command.  Still some work to go to get history
- stuff right.  Otherwise, it seems to be working.
-
- Revision 1.93  2007/04/11 03:04:13  phase1geo
- Fixing bug 1688487.
-
- Revision 1.92  2007/03/13 22:12:59  phase1geo
- Merging changes to covered-0_5-branch to fix bug 1678931.
-
- Revision 1.91.2.1  2007/03/13 22:05:10  phase1geo
- Fixing bug 1678931.  Updated regression.
-
- Revision 1.91  2006/12/01 19:05:11  phase1geo
- Fixing the usage of -vpi_ts option.  Updating its -h usage information as well.
-
- Revision 1.90  2006/11/26 05:23:38  phase1geo
- Adding several more timescale diagnostics to regression suite.  Still have a couple
- of failing diagnostics in normal regression runs.  Checkpointing.
-
- Revision 1.89  2006/11/25 04:24:40  phase1geo
- Adding initial code to fully support the timescale directive and its usage.
- Added -vpi_ts score option to allow the user to specify a top-level timescale
- value for the generated VPI file (this code has not been tested at this point,
- however).  Also updated diagnostic Makefile to get the VPI shared object files
- from the current lib directory (instead of the checked in one).
-
- Revision 1.88  2006/11/21 19:54:13  phase1geo
- Making modifications to defines.h to help in creating appropriately sized types.
- Other changes to VPI code (but this is still broken at the moment).  Checkpointing.
-
- Revision 1.87  2006/11/17 23:17:12  phase1geo
- Fixing bug in score command where parameter override values were not being saved
- off properly in the CDD file.  Also fixing bug when a parameter is found in a VCD
- file (ignoring its usage).  Updated regressions for these changes.
-
- Revision 1.86  2006/10/13 15:56:02  phase1geo
- Updating rest of source files for compiler warnings.
-
- Revision 1.85  2006/09/01 23:06:02  phase1geo
- Fixing regressions per latest round of changes.  Full regression now passes.
-
- Revision 1.84  2006/08/31 04:02:02  phase1geo
- Adding parsing support for assertions and properties.  Adding feature to
- highlighting support that looks up the generation for the given module and
- highlights accordingly.
-
- Revision 1.83  2006/08/18 22:07:45  phase1geo
- Integrating obfuscation into all user-viewable output.  Verified that these
- changes have not made an impact on regressions.  Also improved performance
- impact of not obfuscating output.
-
- Revision 1.82  2006/08/18 04:41:14  phase1geo
- Incorporating bug fixes 1538920 and 1541944.  Updated regressions.  Only
- event1.1 does not currently pass (this does not pass in the stable version
- yet either).
-
- Revision 1.81  2006/08/11 22:36:01  phase1geo
- Fixing bug 1538922.
-
- Revision 1.80  2006/08/10 22:35:14  phase1geo
- Updating with fixes for upcoming 0.4.7 stable release.  Updated regressions
- for this change.  Full regression still fails due to an unrelated issue.
-
- Revision 1.79  2006/08/06 05:02:59  phase1geo
- Documenting and adding warning message to parse.c for the -rI option.
-
- Revision 1.78  2006/08/06 04:36:20  phase1geo
- Fixing bugs 1533896 and 1533827.  Also added -rI option that will ignore
- the race condition check altogether (has not been verified to this point, however).
-
- Revision 1.77  2006/07/14 18:53:32  phase1geo
- Fixing -g option for keywords.  This seems to be working and I believe that
- regressions are passing here as well.
-
- Revision 1.76  2006/07/13 22:24:57  phase1geo
- We are really broke at this time; however, more code has been added to support
- the -g score option.
-
- Revision 1.75  2006/07/13 05:31:52  phase1geo
- Adding -g option to score command parser/usage information.  Still a lot of
- work to go before this feature is complete.
-
- Revision 1.74  2006/05/03 22:49:42  phase1geo
- Causing all files to be preprocessed when written to the file viewer.  I'm sure that
- I am breaking all kinds of things at this point, but things do work properly on a few
- select test cases so I'm checkpointing here.
-
- Revision 1.73  2006/05/02 21:49:41  phase1geo
- Updating regression files -- all but three diagnostics pass (due to known problems).
- Added SCORE_ARGS line type to CDD format which stores the directory that the score
- command was executed from as well as the command-line arguments to the score
- command.
-
- Revision 1.72  2006/04/19 22:21:33  phase1geo
- More updates to properly support assertion coverage.  Removing assertion modules
- from line, toggle, combinational logic, FSM and race condition output so that there
- won't be any overlap of information here.
-
- Revision 1.71  2006/04/18 21:59:54  phase1geo
- Adding support for environment variable substitution in configuration files passed
- to the score command.  Adding ovl.c/ovl.h files.  Working on support for assertion
- coverage in report command.  Still have a bit to go here yet.
-
- Revision 1.70  2006/04/14 17:05:13  phase1geo
- Reorganizing info line to make it more succinct and easier for future needs.
- Fixed problems with VPI library with recent merge changes.  Regression has
- been completely updated for these changes.
-
- Revision 1.69  2006/04/13 22:17:47  phase1geo
- Adding the beginning of the OVL assertion extractor.  So far the -a option is
- parsed and the race condition checker is turned off for all detectable
- OVL assertion modules (we will trust that these modules don't have race conditions
- inherent in them).
-
- Revision 1.68  2006/04/13 21:04:24  phase1geo
- Adding NOOP expression and allowing $display system calls to not cause its
- statement block to be excluded from coverage.  Updating regressions which fully
- pass.
-
- Revision 1.67  2006/04/07 22:31:07  phase1geo
- Fixes to get VPI to work with VCS.  Getting close but still some work to go to
- get the callbacks to start working.
-
- Revision 1.66  2006/04/06 22:30:03  phase1geo
- Adding VPI capability back and integrating into autoconf/automake scheme.  We
- are getting close but still have a ways to go.
-
- Revision 1.65  2006/04/05 15:19:18  phase1geo
- Adding support for FSM coverage output in the GUI.  Started adding components
- for assertion coverage to GUI and report functions though there is no functional
- support for this at this time.
-
- Revision 1.64  2006/03/28 22:28:28  phase1geo
- Updates to user guide and added copyright information to each source file in the
- src directory.  Added test directory in user documentation directory containing the
- example used in line, toggle, combinational logic and FSM descriptions.
-
- Revision 1.63  2006/02/06 15:35:36  phase1geo
- Fixing bug with -f option when the file is empty (previously segfaulted).
-
- Revision 1.62  2006/01/25 22:13:46  phase1geo
- Adding LXT-style dumpfile parsing support.  Everything is wired in but I still
- need to look at a problem at the end of the dumpfile -- I'm getting coredumps
- when using the new -lxt option.  I also need to disable LXT code if the z
- library is missing along with documenting the new feature in the user's guide
- and man page.
-
- Revision 1.61  2006/01/09 18:58:15  phase1geo
- Updating regression for VCS runs.  Added cleanup function at exit to remove the
- tmp* file (if it exists) regardless of the internal state of Covered at the time
- of exit (removes the need for the user to remove this file when things go awry).
- Documentation updates for this feature.
-
- Revision 1.60  2006/01/04 22:07:04  phase1geo
- Changing expression execution calculation from sim to expression_operate function.
- Updating all regression files for this change.  Modifications to diagnostic Makefile
- to accommodate environments that do not have valgrind.
-
- Revision 1.59  2006/01/04 03:15:52  phase1geo
- Adding bassign3 diagnostic to regression suite to verify expression_assign
- function works correctly for CONCAT/LIST ordering.
-
- Revision 1.58  2006/01/02 21:35:36  phase1geo
- Added simulation performance statistical information to end of score command
- when we are in debug mode.
-
- Revision 1.57  2005/12/31 03:30:47  phase1geo
- Various documentation updates.
-
- Revision 1.56  2005/12/22 23:04:42  phase1geo
- More memory leak fixes.
-
- Revision 1.55  2005/12/21 22:30:54  phase1geo
- More updates to memory leak fix list.  We are getting close!  Added some helper
- scripts/rules to more easily debug valgrind memory leak errors.  Also added suppression
- file for valgrind for a memory leak problem that exists in lex-generated code.
-
- Revision 1.54  2005/12/12 23:25:37  phase1geo
- Fixing memory faults.  This is a work in progress.
-
- Revision 1.53  2005/12/12 03:46:14  phase1geo
- Adding exclusion to score command to improve performance.  Updated regression
- which now fully passes.
-
- Revision 1.52  2005/11/21 04:17:43  phase1geo
- More updates to regression suite -- includes several bug fixes.  Also added --enable-debug
- facility to configuration file which will include or exclude debugging output from being
- generated.
-
- Revision 1.51  2005/11/08 23:12:10  phase1geo
- Fixes for function/task additions.  Still a lot of testing on these structures;
- however, regressions now pass again so we are checkpointing here.
-
- Revision 1.50  2005/05/09 03:08:35  phase1geo
- Intermediate checkin for VPI changes.  Also contains parser fix which should
- be branch applied to the latest stable and development versions.
-
- Revision 1.49  2005/01/10 23:03:39  phase1geo
- Added code to properly report race conditions.  Added code to remove statement blocks
- from module when race conditions are found.
-
- Revision 1.48  2005/01/07 17:59:52  phase1geo
- Finalized updates for supplemental field changes.  Everything compiles and links
- correctly at this time; however, a regression run has not confirmed the changes.
-
- Revision 1.47  2005/01/03 23:00:35  phase1geo
- Fixing library extension parser.
-
- Revision 1.46  2004/12/17 22:29:36  phase1geo
- More code added to race condition feature.  Still not usable.
-
- Revision 1.45  2004/03/16 05:45:43  phase1geo
- Checkin contains a plethora of changes, bug fixes, enhancements...
- Some of which include:  new diagnostics to verify bug fixes found in field,
- test generator script for creating new diagnostics, enhancing error reporting
- output to include filename and line number of failing code (useful for error
- regression testing), support for error regression testing, bug fixes for
- segmentation fault errors found in field, additional data integrity features,
- and code support for GUI tool (this submission does not include TCL files).
-
- Revision 1.44  2004/03/15 21:38:17  phase1geo
- Updated source files after running lint on these files.  Full regression
- still passes at this point.
-
- Revision 1.43  2004/01/31 18:58:43  phase1geo
- Finished reformatting of reports.  Fixed bug where merged reports with
- different leading hierarchies were outputting the leading hierarchy of one
- which lead to confusion when interpreting reports.  Also made modification
- to information line in CDD file for these cases.  Full regression runs clean
- with Icarus Verilog at this point.
-
- Revision 1.42  2004/01/21 22:26:56  phase1geo
- Changed default CDD file name from "cov.db" to "cov.cdd".  Changed instance
- statistic gathering from a child merging algorithm to just calculating
- instance coverage for the individual instances.  Updated full regression for
- this change and updated VCS regression for all past changes of this release.
-
- Revision 1.41  2003/10/28 13:28:00  phase1geo
- Updates for more FSM attribute handling.  Not quite there yet but full regression
- still passes.
-
- Revision 1.40  2003/10/10 20:52:07  phase1geo
- Initial submission of FSM expression allowance code.  We are still not quite
- there yet, but we are getting close.
-
- Revision 1.39  2003/10/03 21:28:43  phase1geo
- Restructuring FSM handling to be better suited to handle new FSM input/output
- state variable allowances.  Regression should still pass but new FSM support
- is not supported.
-
- Revision 1.38  2003/09/22 03:46:24  phase1geo
- Adding support for single state variable FSMs.  Allow two different ways to
- specify FSMs on command-line.  Added diagnostics to verify new functionality.
-
- Revision 1.37  2003/09/12 04:47:00  phase1geo
- More fixes for new FSM arc transition protocol.  Everything seems to work now
- except that state hits are not being counted correctly.
-
- Revision 1.36  2003/08/25 13:02:04  phase1geo
- Initial stab at adding FSM support.  Contains summary reporting capability
- at this point and roughly works.  Updated regress suite as a result of these
- changes.
-
- Revision 1.35  2003/08/15 03:52:22  phase1geo
- More checkins of last checkin and adding some missing files.
-
- Revision 1.34  2003/08/07 15:41:43  phase1geo
- Adding -ts option to score command to allow the current timestep to be
- output during the simulation phase.
-
- Revision 1.33  2003/02/07 23:12:30  phase1geo
- Optimizing db_add_statement function to avoid memory errors.  Adding check
- for -i option to avoid user error.
-
- Revision 1.32  2003/01/06 00:44:21  phase1geo
- Updates to NEWS, ChangeLog, development documentation and user documentation
- for new 0.2pre1_20030105 release.
-
- Revision 1.31  2002/11/27 06:03:35  phase1geo
- Adding diagnostics to verify selectable delay.  Removing selectable delay
- warning from being output constantly to only outputting when selectable delay
- found in design and -T option not specified.  Full regression passes.
-
- Revision 1.30  2002/11/05 00:20:08  phase1geo
- Adding development documentation.  Fixing problem with combinational logic
- output in report command and updating full regression.
-
- Revision 1.29  2002/11/02 16:16:20  phase1geo
- Cleaned up all compiler warnings in source and header files.
-
- Revision 1.28  2002/10/29 19:57:51  phase1geo
- Fixing problems with beginning block comments within comments which are
- produced automatically by CVS.  Should fix warning messages from compiler.
-
- Revision 1.27  2002/10/13 19:20:42  phase1geo
- Added -T option to score command for properly handling min:typ:max delay expressions.
- Updated documentation for -i and -T options to score command and added additional
- diagnostic to test instance handling.
-
- Revision 1.26  2002/10/13 13:55:53  phase1geo
- Fixing instance depth selection and updating all configuration files for
- regression.  Full regression now passes.
-
- Revision 1.25  2002/10/11 05:23:21  phase1geo
- Removing local user message allocation and replacing with global to help
- with memory efficiency.
-
- Revision 1.24  2002/09/27 01:19:38  phase1geo
- Fixed problems with parameter overriding from command-line.  This now works
- and param1.2.v has been added to test this functionality.  Totally reworked
- regression running to allow each diagnostic to specify unique command-line
- arguments to Covered.  Full regression passes.
-
- Revision 1.23  2002/09/25 02:51:44  phase1geo
- Removing need of vector nibble array allocation and deallocation during
- expression resizing for efficiency and bug reduction.  Other enhancements
- for parameter support.  Parameter stuff still not quite complete.
-
- Revision 1.22  2002/09/21 04:11:32  phase1geo
- Completed phase 1 for adding in parameter support.  Main code is written
- that will create an instance parameter from a given module parameter in
- its entirety.  The next step will be to complete the module parameter
- creation code all the way to the parser.  Regression still passes and
- everything compiles at this point.
-
- Revision 1.21  2002/09/19 05:25:19  phase1geo
- Fixing incorrect simulation of static values and fixing reports generated
- from these static expressions.  Also includes some modifications for parameters
- though these changes are not useful at this point.
-
- Revision 1.20  2002/08/26 21:31:22  phase1geo
- Updating score help output to reflect previous changes to score command.
-
- Revision 1.19  2002/08/23 12:55:33  phase1geo
- Starting to make modifications for parameter support.  Added parameter source
- and header files, changed vector_from_string function to be more verbose
- and updated Makefiles for new param.h/.c files.
-
- Revision 1.18  2002/08/19 21:36:25  phase1geo
- Fixing memory corruption bug in score function for adding Verilog modules
- to use_files list.  This caused a core dump to occur when the -f option
- was used.
-
- Revision 1.17  2002/07/21 00:08:58  phase1geo
- Updating score usage information.  Updated manstyle user documentation though
- there seems to be some problem getting the HTML generated from this.  Getting
- ready for the next release.
-
- Revision 1.16  2002/07/20 22:22:52  phase1geo
- Added ability to create implicit signals for local signals.  Added implicit1.v
- diagnostic to test for correctness.  Full regression passes.  Other tweaks to
- output information.
-
- Revision 1.15  2002/07/20 21:34:58  phase1geo
- Separating ability to parse design and score dumpfile.  Now both or either
- can be done (allowing one to parse once and score multiple times).
-
- Revision 1.14  2002/07/17 12:53:04  phase1geo
- Added -D option to score command and verified that this works properly.
-
- Revision 1.13  2002/07/17 00:13:57  phase1geo
- Added support for -e option and informally tested.
-
- Revision 1.12  2002/07/16 03:29:18  phase1geo
- Updates to NEWS, INSTALL, ChangeLog for release.  Modifications to Verilog
- diagnostic Makefile to make it easier to read.  Added user warning if -e
- option is specified since this is not supported at this time.  Removed
- mpatrol from configure.in.
-
- Revision 1.11  2002/07/11 15:10:00  phase1geo
- Fixing -f option to score command.  This function was causing infinite loops
- and massive memory consumption as a result of this.  Fixes bug 579946.
-
- Revision 1.10  2002/07/09 04:46:26  phase1geo
- Adding -D and -Q options to covered for outputting debug information or
- suppressing normal output entirely.  Updated generated documentation and
- modified Verilog diagnostic Makefile to use these new options.
-
- Revision 1.9  2002/07/08 19:02:12  phase1geo
- Adding -i option to properly handle modules specified for coverage that
- are instantiated within a design without needing to parse parent modules.
-
- Revision 1.8  2002/07/08 16:06:33  phase1geo
- Updating help information.
-
- Revision 1.7  2002/07/08 12:35:31  phase1geo
- Added initial support for library searching.  Code seems to be broken at the
- moment.
-
- Revision 1.6  2002/07/03 21:30:53  phase1geo
- Fixed remaining issues with always statements.  Full regression is running
- error free at this point.  Regenerated documentation.  Added EOR expression
- operation to handle the or expression in event lists.
-
- Revision 1.5  2002/07/02 22:37:35  phase1geo
- Changing on-line help command calling.  Regenerated documentation.
-*/
 

@@ -5817,6 +5817,24 @@ bool expression_is_last_select(
 }
 
 /*!
+ \return Returns a pointer to the first dimensional select of a memory.
+*/
+expression* expression_get_first_select(
+  expression* expr  /*!< Pointer to last dimension expression */
+) { PROFILE(EXPRESSION_GET_FIRST_SELECT);
+
+  while( (ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) ) {
+    expr = expr->parent->expr;
+  }
+
+  PROFILE_END;
+
+  return( expr );
+
+}
+
+
+/*!
  \return Returns TRUE if the specified expression is in an RASSIGN expression tree; otherwise,
          returns FALSE.
 */

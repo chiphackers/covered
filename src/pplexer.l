@@ -589,18 +589,19 @@ static void do_include() { PROFILE(DO_INCLUDE);
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
     }
 
+    assert( strlen( standby->path ) < 4096 );
+    strcpy( path, standby->path );
+
   } else {
 
     standby->file = 0;
     curr          = inc_paths_head;
 
     while( (curr != NULL) && (standby->file == 0) ) {
-
       rv = snprintf( path, 4096, "%s/%s", curr->str, standby->path );
       assert( rv < 4096 );
       standby->file = fopen(path, "r");
       curr = curr->next;
-
     }
 
     if( (curr == NULL) && (standby->file == 0) ) {
@@ -624,6 +625,9 @@ static void do_include() { PROFILE(DO_INCLUDE);
       free_safe( standby, sizeof( struct include_stack_t ) );
       standby = 0;
       Throw 0;
+    } else {
+      free_safe( standby->path, (strlen( standby->path ) + 1) );
+      standby->path = strdup_safe( path );
     }
 
   }
@@ -644,7 +648,7 @@ static void do_include() { PROFILE(DO_INCLUDE);
 
   yy_switch_to_buffer( yy_create_buffer( istack->file, YY_BUF_SIZE ) );
 
-  fprintf( yyout, "\n`line %u \"%s\" 1\n", (istack->lineno + 1), istack->path );
+  fprintf( yyout, "\n`line %u \"%s\" 1\n", (istack->lineno + 1), path );
 
   PROFILE_END;
   
