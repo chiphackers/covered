@@ -30,7 +30,9 @@
  \brief Adds the statement block containing the specified statement to the list of statement
         blocks to remove after parsing, binding and race condition checking has occurred.
 */
-void stmt_blk_add_to_remove_list( statement* stmt );
+void stmt_blk_add_to_remove_list(
+  statement* stmt
+);
 
 /*!
  \brief Removes all statement blocks listed for removal.
@@ -47,25 +49,6 @@ void stmt_blk_specify_removal_reason(
   const char*   cfile,  /*!< File containing removal line */
   int           cline   /*!< Line containing removal line */
 );
-
-
-/*
- $Log$
- Revision 1.4  2008/10/06 04:05:19  phase1geo
- Adding support for logic block removal warning output.
-
- Revision 1.3  2007/11/20 05:29:00  phase1geo
- Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
-
- Revision 1.2  2006/03/28 22:28:28  phase1geo
- Updates to user guide and added copyright information to each source file in the
- src directory.  Added test directory in user documentation directory containing the
- example used in line, toggle, combinational logic and FSM descriptions.
-
- Revision 1.1  2005/11/25 16:48:48  phase1geo
- Fixing bugs in binding algorithm.  Full regression now passes.
-
-*/
 
 #endif
 

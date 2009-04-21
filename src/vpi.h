@@ -26,22 +26,5 @@
 /*! \brief Displays the given message to standard output */
 void vpi_print_output( const char* msg );
 
-/*
- $Log$
- Revision 1.4  2007/11/20 05:29:00  phase1geo
- Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
-
- Revision 1.3  2007/09/14 21:22:46  phase1geo
- Fixing compile issues.
-
- Revision 1.2  2006/10/13 22:46:32  phase1geo
- Things are a bit of a mess at this point.  Adding generate12 diagnostic that
- shows a failure in properly handling generates of instances.
-
- Revision 1.1  2006/04/06 22:31:22  phase1geo
- Adding vpi.c and vpi.h to src directory.
-
-*/
-
 #endif
 

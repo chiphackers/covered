@@ -697,32 +697,133 @@ expression* parser_create_op_and_assign_w_dim_exp(
 
 }
 
-
-/*
- $Log$
- Revision 1.6  2009/01/16 00:03:54  phase1geo
- Fixing last issue with IV/Cver regressions (OVL assertions).  Updating
- regressions per needed changes to support this functionality.  Now only
- VCS regression needs to be updated.
-
- Revision 1.5  2009/01/15 06:47:09  phase1geo
- More work to support assertion coverage.  Updating regressions per these
- changes.  Checkpointing.
-
- Revision 1.4  2009/01/11 19:59:36  phase1geo
- More fixes for support of generate statements.  Getting close but not quite
- there yet.  Checkpointing.
-
- Revision 1.3  2009/01/09 21:25:01  phase1geo
- More generate block fixes.  Updated all copyright information source code files
- for the year 2009.  Checkpointing.
-
- Revision 1.2  2008/12/02 06:14:09  phase1geo
- More changes to parser.y to move its code to parser_func.c for cleanup purposes.
- Regression still passes.  Checkpointing.
-
- Revision 1.1  2008/12/02 00:17:07  phase1geo
- Adding missing files.
-
+/*!
+ Adds the given case statement expression for individual expressions (if it is a list)
+ and adds these expressions as case item statements.
 */
+void parser_handle_case_statement(
+  exp_op_type  case_op,   /*!< Case statement operation */
+  expression*  cs_expr,   /*!< Pointer to case_statement expression */
+  expression*  c_expr,    /*!< Pointer to case expression */
+  statement*   cs_stmt,   /*!< Pointer to case_statement statement */
+  unsigned int line,      /*!< Line number of default statement */
+  unsigned int ppline,    /*!< Preprocessor line of expression */
+  statement**  last_stmt  /*!< Pointer to last statement traversed */
+) { PROFILE(PARSER_HANDLE_CASE_STATEMENT);
+
+  expression* expr;
+  statement*  stmt;
+
+  if( cs_expr != NULL ) {
+    cs_expr->parent->expr = NULL;
+    expr    = db_create_expression( cs_expr, c_expr, case_op, FALSE, cs_expr->line, cs_expr->ppline, 0, 0, NULL );
+    ppline += (cs_expr->line - line);
+  } else {
+    expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, FALSE, line, ppline, 0, 0, NULL );
+  }
+
+  stmt = db_create_statement( expr );
+  db_connect_statement_true( stmt, cs_stmt );
+  db_connect_statement_false( stmt, *last_stmt );
+
+  if( stmt != NULL ) {
+    *last_stmt = stmt;
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Parses an expression tree list structure, adding each expression within the list as
+ an individual case expression.
+*/
+void parser_handle_case_statement_list(
+  exp_op_type  case_op,   /*!< Case statement operation */
+  expression*  cs_expr,   /*!< Pointer to case_statement expression */
+  expression*  c_expr,    /*!< Pointer to case expression */
+  statement*   cs_stmt,   /*!< Pointer to case_statement statement */
+  unsigned int line,      /*!< Default statement line */
+  unsigned int ppline,    /*!< Preprocessor line of expression */
+  statement**  last_stmt  /*!< Pointer to last statement traversed */
+) { PROFILE(PARSER_HANDLE_CASE_STATEMENT_LIST);
+
+  while( cs_expr->left->op == EXP_OP_LIST ) {
+    expression* tmpexp = cs_expr;
+    parser_handle_case_statement( case_op, cs_expr->right, c_expr, cs_stmt, line, ppline, last_stmt );
+    cs_expr = cs_expr->left;
+    expression_dealloc( tmpexp, TRUE );
+  }
+
+  parser_handle_case_statement( case_op, cs_expr->right, c_expr, cs_stmt, line, ppline, last_stmt );
+  parser_handle_case_statement( case_op, cs_expr->left,  c_expr, cs_stmt, line, ppline, last_stmt );
+
+  expression_dealloc( cs_expr, TRUE );
+
+  PROFILE_END;
+
+}
+
+/*!
+ Adds the given case statement expression for individual expressions (if it is a list)
+ and adds these expressions as case item statements.
+*/
+void parser_handle_generate_case_statement(
+  expression*  cs_expr, /*!< Pointer to case_statement expression */
+  expression*  c_expr,  /*!< Pointer to case expression */
+  gen_item*    gi,      /*!< Pointer to case_statement gen_item */
+  unsigned int line,    /*!< Line number of default statement */
+  gen_item**   last_gi  /*!< Pointer to last gen_item traversed */
+) { PROFILE(PARSER_HANDLE_GENERATE_CASE_STATEMENT);
+
+  expression* expr;
+  gen_item*   stmt;
+
+  if( cs_expr != NULL ) {
+    cs_expr->parent->expr = NULL;
+    expr = db_create_expression( cs_expr, c_expr, EXP_OP_CASE, FALSE, cs_expr->line, cs_expr->ppline, 0, 0, NULL );
+  } else {
+    expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, FALSE, line, 0, 0, 0, NULL );
+  }
+
+  db_add_expression( expr );
+  stmt = db_get_curr_gen_block();
+  db_gen_item_connect_true( stmt, gi );
+  db_gen_item_connect_false( stmt, *last_gi );
+
+  if( stmt != NULL ) {
+    *last_gi = stmt;
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Parses an expression tree list structure, adding each expression within the list as
+ an individual case expression.
+*/
+void parser_handle_generate_case_statement_list(
+  expression*  cs_expr,  /*!< Pointer to case_statement expression */
+  expression*  c_expr,   /*!< Pointer to case expression */
+  gen_item*    gi,       /*!< Pointer to case_statement gen_item */
+  unsigned int line,     /*!< Line number of default statement */
+  gen_item**   last_gi   /*!< Pointer to last gen_item traversed */
+) { PROFILE(PARSER_HANDLE_GENERATE_CASE_STATEMENT_LIST);
+
+  while( cs_expr->left->op == EXP_OP_LIST ) {
+    expression* tmpexp = cs_expr;
+    parser_handle_generate_case_statement( cs_expr->right, c_expr, gi, line, last_gi );
+    cs_expr = cs_expr->left;
+    expression_dealloc( tmpexp, TRUE );
+  }
+
+  parser_handle_generate_case_statement( cs_expr->right, c_expr, gi, line, last_gi );
+  parser_handle_generate_case_statement( cs_expr->left,  c_expr, gi, line, last_gi );
+
+  expression_dealloc( cs_expr, TRUE );
+
+  PROFILE_END;
+
+}
 

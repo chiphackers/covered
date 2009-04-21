@@ -313,9 +313,6 @@ void profiler_report() {
       profiler_sort_by_avg_time( ofile );
       profiler_sort_by_calls( ofile );
 
-      /* Deallocate sim_timer */
-      free_safe( sim_timer, sizeof( timer ) );
-
       /* Close the output file */
       rv = fclose( ofile );
       assert( rv == 0 );
@@ -330,50 +327,11 @@ void profiler_report() {
 
   }
 
+  /* Deallocate sim_timer */
+  free_safe( sim_timer, sizeof( timer ) );
+
   /* Delete memory associated with the profiler */
   profiler_dealloc();
 
 }
-
-
-/*
- $Log$
- Revision 1.9  2008/03/17 05:26:17  phase1geo
- Checkpointing.  Things don't compile at the moment.
-
- Revision 1.8  2008/01/16 23:10:32  phase1geo
- More splint updates.  Code is now warning/error free with current version
- of run_splint.  Still have regression issues to debug.
-
- Revision 1.7  2008/01/09 05:22:22  phase1geo
- More splint updates using the -standard option.
-
- Revision 1.6  2008/01/08 21:13:08  phase1geo
- Completed -weak splint run.  Full regressions pass.
-
- Revision 1.5  2007/12/12 23:36:57  phase1geo
- Optimized vector_op_add function significantly.  Other improvements made to
- profiler output.  Attempted to optimize the sim_simulation function although
- it hasn't had the intended effect and delay1.3 is currently failing.  Checkpointing
- for now.
-
- Revision 1.4  2007/12/12 14:17:44  phase1geo
- Enhancing the profiling report.
-
- Revision 1.3  2007/12/12 07:23:19  phase1geo
- More work on profiling.  I have now included the ability to get function runtimes.
- Still more work to do but everything is currently working at the moment.
-
- Revision 1.2  2007/12/11 23:19:14  phase1geo
- Fixed compile issues and completed first pass injection of profiling calls.
- Working on ordering the calls from most to least.
-
- Revision 1.1  2007/12/11 15:07:57  phase1geo
- Adding missing file.
-
- Revision 1.1  2007/12/10 23:16:22  phase1geo
- Working on adding profiler for use in finding performance issues.  Things don't compile
- at the moment.
-
-*/
 

@@ -27,22 +27,5 @@
 /*! \brief Parses command-line for rank options and performs rank command. */
 void command_rank( int argc, int last_arg, const char** argv );
 
-
-/*
- $Log$
- Revision 1.2  2008/07/29 06:34:22  phase1geo
- Merging in contents of development branch to the main development trunk.
-
- Revision 1.1.4.1  2008/07/10 22:43:54  phase1geo
- Merging in rank-devel-branch into this branch.  Added -f options for all commands
- to allow files containing command-line arguments to be added.  A few error diagnostics
- are currently failing due to changes in the rank branch that never got fixed in that
- branch.  Checkpointing.
-
- Revision 1.1.2.1  2008/06/30 13:14:22  phase1geo
- Starting to work on new 'rank' command.  Checkpointing.
-
-*/
-
 #endif
 

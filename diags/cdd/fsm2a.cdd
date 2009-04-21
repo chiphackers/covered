@@ -1,5 +1,5 @@
-5 14 101 47 main
-8 /ptmp/covered/diags/verilog 2 -t (fsm) 2 -i (main.fsm) 2 -vcd (fsm2a.vcd) 2 -o (fsm2a.cdd) 2 -y (lib) 2 -v (fsm2a.v) 2 -F (fsm=state,next_state) 2 -D (DUMP)
+5 14 fd81 47 main
+8 /home/bryce3/trevorw/covered/diags/verilog 2 -t (fsm) 2 -i (main.fsm) 2 -vcd (fsm2a.vcd) 2 -o (fsm2a.cdd) 2 -y (lib) 2 -v (fsm2a.v) 2 -F (fsm=state,next_state) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 15 main 0
 3 0 fsm "main.fsm" 0 lib/fsm.v 1 37 1
@@ -47,13 +47,13 @@
 3 1 fsm.u$0 "main.fsm.u$0" 0 lib/fsm.v 27 34 1
 2 24 29 29 5000e 1 32 1004 0 0 2 1 STATE_IDLE
 2 25 28 28 9000d 13 1 100e 0 0 2 1 state
-2 26 29 29 5000e 8 2d 100e 24 25 1 18 0 1 1 1 0 0
+2 26 29 29 0 8 2d 100e 24 25 1 18 0 1 1 1 0 0
 2 27 30 30 5000e 1 32 1008 0 0 2 1 STATE_HEAD
-2 28 30 30 5000e 5 2d 100e 27 25 1 18 0 1 1 1 0 0
+2 28 30 30 0 5 2d 100e 27 25 1 18 0 1 1 1 0 0
 2 29 31 31 5000e 1 32 1008 0 0 2 1 STATE_DATA
-2 30 31 31 5000e 4 2d 100e 29 25 1 18 0 1 1 1 0 0
+2 30 31 31 0 4 2d 100e 29 25 1 18 0 1 1 1 0 0
 2 31 32 32 5000e 1 32 1008 0 0 2 1 STATE_TAIL
-2 32 32 32 5000e 2 2d 100e 31 25 1 18 0 1 1 1 0 0
+2 32 32 32 0 2 2d 100e 31 25 1 18 0 1 1 1 0 0
 2 33 32 32 3d0046 1 32 1004 0 0 2 1 STATE_IDLE
 2 34 32 32 300039 1 32 1008 0 0 2 1 STATE_HEAD
 2 35 32 32 1f0039 1 1a 1004 33 34 2 18 0 3 3 0 0 0

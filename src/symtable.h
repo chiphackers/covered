@@ -30,10 +30,19 @@
 symtable* symtable_create();
 
 /*! \brief Creates a new symtable entry and adds it to the specified symbol table. */
-void symtable_add_signal( const char* sym, vsignal* sig, int msb, int lsb );
+void symtable_add_signal(
+  const char* sym,
+  vsignal*    sig,
+  int         msb,
+  int         lsb
+);
 
 /*! \brief Adds the given expression to the symtable for the purposes as specified by type. */
-void symtable_add_expression( const char* sym, expression* exp, char type );
+void symtable_add_expression(
+  const char* sym,
+  expression* exp,
+  char        type
+);
 
 /*! \brief Adds the given expression to the symtable for the purposes of memory coverage. */
 void symtable_add_memory(
@@ -52,120 +61,20 @@ void symtable_add_fsm(
 );
 
 /*! \brief Sets all matching symtable entries to specified value */
-void symtable_set_value( const char* sym, const char* value );
+void symtable_set_value(
+  const char* sym,
+  const char* value
+);
 
 /*! \brief Assigns stored values to all associated signals stored in specified symbol table. */
-void symtable_assign( const sim_time* time );
+void symtable_assign(
+  const sim_time* time
+);
 
 /*! \brief Deallocates all symtable entries for specified symbol table. */
-void symtable_dealloc( symtable* symtab );
-
-
-/*
- $Log$
- Revision 1.24  2009/01/01 07:24:44  phase1geo
- Checkpointing work on memory coverage.  Simple testing now works but still need
- to do some debugging here.
-
- Revision 1.23  2008/12/24 21:19:02  phase1geo
- Initial work at getting FSM coverage put in (this looks to be working correctly
- to this point).  Updated regressions per fixes.  Checkpointing.
-
- Revision 1.22  2008/12/05 23:05:38  phase1geo
- Working on VCD reading side of the inlined coverage handler.  Things don't
- compile at this point and are in limbo.  Checkpointing.
-
- Revision 1.21  2008/08/18 23:07:28  phase1geo
- Integrating changes from development release branch to main development trunk.
- Regression passes.  Still need to update documentation directories and verify
- that the GUI stuff works properly.
-
- Revision 1.18.6.1  2008/07/10 22:43:55  phase1geo
- Merging in rank-devel-branch into this branch.  Added -f options for all commands
- to allow files containing command-line arguments to be added.  A few error diagnostics
- are currently failing due to changes in the rank branch that never got fixed in that
- branch.  Checkpointing.
-
- Revision 1.19  2008/06/28 03:46:29  phase1geo
- More code updates for warning removal.
-
- Revision 1.18  2007/12/18 23:55:21  phase1geo
- Starting to remove 64-bit time and replacing it with a sim_time structure
- for performance enhancement purposes.  Also removing global variables for time-related
- information and passing this information around by reference for performance
- enhancement purposes.
-
- Revision 1.17  2007/11/20 05:29:00  phase1geo
- Updating e-mail address from trevorw@charter.net to phase1geo@gmail.com.
-
- Revision 1.16  2006/11/27 04:11:42  phase1geo
- Adding more changes to properly support thread time.  This is a work in progress
- and regression is currently broken for the moment.  Checkpointing.
-
- Revision 1.15  2006/03/28 22:28:28  phase1geo
- Updates to user guide and added copyright information to each source file in the
- src directory.  Added test directory in user documentation directory containing the
- example used in line, toggle, combinational logic and FSM descriptions.
-
- Revision 1.14  2006/01/05 05:52:06  phase1geo
- Removing wait bit in vector supplemental field and modifying algorithm to only
- assign in the post-sim location (pre-sim now is gone).  This fixes some issues
- with simulation results and increases performance a bit.  Updated regressions
- for these changes.  Full regression passes.
-
- Revision 1.13  2004/03/30 15:42:15  phase1geo
- Renaming signal type to vsignal type to eliminate compilation problems on systems
- that contain a signal type in the OS.
-
- Revision 1.12  2003/08/21 21:57:30  phase1geo
- Fixing bug with certain flavors of VCD files that alias signals that have differing
- MSBs and LSBs.  This takes care of the rest of the bugs for the 0.2 stable release.
-
- Revision 1.11  2003/08/15 03:52:22  phase1geo
- More checkins of last checkin and adding some missing files.
-
- Revision 1.10  2003/08/05 20:25:05  phase1geo
- Fixing non-blocking bug and updating regression files according to the fix.
- Also added function vector_is_unknown() which can be called before making
- a call to vector_to_int() which will eleviate any X/Z-values causing problems
- with this conversion.  Additionally, the real1.1 regression report files were
- updated.
-
- Revision 1.9  2003/02/13 23:44:08  phase1geo
- Tentative fix for VCD file reading.  Not sure if it works correctly when
- original signal LSB is != 0.  Icarus Verilog testsuite passes.
-
- Revision 1.8  2003/01/03 05:52:01  phase1geo
- Adding code to help safeguard from segmentation faults due to array overflow
- in VCD parser and symtable.  Reorganized code for symtable symbol lookup and
- value assignment.
-
- Revision 1.7  2002/11/05 00:20:08  phase1geo
- Adding development documentation.  Fixing problem with combinational logic
- output in report command and updating full regression.
-
- Revision 1.6  2002/10/31 23:14:30  phase1geo
- Fixing C compatibility problems with cc and gcc.  Found a few possible problems
- with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that
- lead to bus errors.  Ran full regression in 64-bit mode without error.
-
- Revision 1.5  2002/10/29 19:57:51  phase1geo
- Fixing problems with beginning block comments within comments which are
- produced automatically by CVS.  Should fix warning messages from compiler.
-
- Revision 1.4  2002/07/05 16:49:47  phase1geo
- Modified a lot of code this go around.  Fixed VCD reader to handle changes in
- the reverse order (last changes are stored instead of first for timestamp).
- Fixed problem with AEDGE operator to handle vector value changes correctly.
- Added casez2.v diagnostic to verify proper handling of casez with '?' characters.
- Full regression passes; however, the recent changes seem to have impacted
- performance -- need to look into this.
-
- Revision 1.3  2002/07/03 03:31:11  phase1geo
- Adding RCS Log strings in files that were missing them so that file version
- information is contained in every source and header file.  Reordering src
- Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
-*/
+void symtable_dealloc(
+  symtable* symtab
+);
 
 #endif
 

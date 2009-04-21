@@ -2818,36 +2818,27 @@ generate_item
           while( c_stmt != NULL ) {
             Try {
               if( c_stmt->expr != NULL ) {
-                expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASE, lhs_mode, c_stmt->line, c_stmt->ppline, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
+                parser_handle_generate_case_statement_list( c_stmt->expr, c_expr, c_stmt->gi, c_stmt->line, &last_stmt );
               } else {
-                expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, c_stmt->ppline, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
+                parser_handle_generate_case_statement( c_stmt->expr, c_expr, c_stmt->gi, c_stmt->line, &last_stmt );
               }
             } Catch_anonymous {
               error_count++;
               break;
             }
-            db_add_expression( expr );
-            stmt = db_get_curr_gen_block();
-            db_gen_item_connect_true( stmt, c_stmt->gi );
-            db_gen_item_connect_false( stmt, last_stmt );
-            if( stmt != NULL ) {
-              last_stmt = stmt;
-            }
             tc_stmt   = c_stmt;
             c_stmt    = c_stmt->prev;
             free_safe( tc_stmt, sizeof( case_gitem ) );
           }
-          if( stmt != NULL ) {
-            stmt->elem.expr->suppl.part.owned = 1;
+          if( last_stmt != NULL ) {
+            last_stmt->elem.expr->suppl.part.owned = 1;
           }
           generate_expr_mode--;
-          $$ = stmt;
+          $$ = last_stmt;
         } else {
           static_expr_dealloc( $4, FALSE );
           while( c_stmt != NULL ) {
             expression_dealloc( c_stmt->expr, FALSE );
-            // db_remove_statement( c_stmt->stmt );
-            /* statement_dealloc_recursive( c_stmt->stmt ); */
             tc_stmt = c_stmt;
             c_stmt  = c_stmt->prev;
             free_safe( tc_stmt, sizeof( case_gitem ) );
@@ -2870,7 +2861,7 @@ generate_case_item
           cstmt = (case_gitem*)malloc_safe( sizeof( case_gitem ) );
           cstmt->prev = NULL;
           cstmt->expr = $1;
-          cstmt->gi = $4;
+          cstmt->gi   = $4;
           cstmt->line = @1.first_line;
           $$ = cstmt;
         } else {
@@ -4680,28 +4671,22 @@ statement
           } else {
             while( c_stmt != NULL ) {
               Try {
-                if( c_stmt->expr != NULL ) {
-                  expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASE, lhs_mode, c_stmt->line, c_stmt->ppline, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
+                if( (c_stmt->expr != NULL) && (c_stmt->expr->op == EXP_OP_LIST) ) {
+                  parser_handle_case_statement_list( EXP_OP_CASE, c_stmt->expr, c_expr, c_stmt->stmt, c_stmt->line, c_stmt->ppline, &last_stmt );
                 } else {
-                  expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, c_stmt->ppline, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
+                  parser_handle_case_statement( EXP_OP_CASE, c_stmt->expr, c_expr, c_stmt->stmt, c_stmt->line, c_stmt->ppline, &last_stmt );
                 }
               } Catch_anonymous {
                 error_count++;
-              }
-              stmt = db_create_statement( expr );
-              db_connect_statement_true( stmt, c_stmt->stmt );
-              db_connect_statement_false( stmt, last_stmt );
-              if( stmt != NULL ) {
-                last_stmt = stmt;
               }
               tc_stmt   = c_stmt;
               c_stmt    = c_stmt->prev;
               free_safe( tc_stmt, sizeof( case_statement ) );
             }
-            if( stmt != NULL ) {
-              stmt->exp->suppl.part.owned = 1;
+            if( last_stmt != NULL ) {
+              last_stmt->exp->suppl.part.owned = 1;
             }
-            $$ = stmt;
+            $$ = last_stmt;
           }
         } else {
           expression_dealloc( $4, FALSE );
@@ -4742,28 +4727,22 @@ statement
           } else {
             while( c_stmt != NULL ) {
               Try {
-                if( c_stmt->expr != NULL ) {
-                  expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASEX, lhs_mode, c_stmt->line, c_stmt->ppline, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
+                if( (c_stmt->expr != NULL) && (c_stmt->expr->op == EXP_OP_LIST) ) {
+                  parser_handle_case_statement_list( EXP_OP_CASEX, c_stmt->expr, c_expr, c_stmt->stmt, c_stmt->line, c_stmt->ppline, &last_stmt );
                 } else {
-                  expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, c_stmt->ppline, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
+                  parser_handle_case_statement( EXP_OP_CASEX, c_stmt->expr, c_expr, c_stmt->stmt, c_stmt->line, c_stmt->ppline, &last_stmt );
                 }
               } Catch_anonymous {
                 error_count++;
-              }
-              stmt = db_create_statement( expr );
-              db_connect_statement_true( stmt, c_stmt->stmt );
-              db_connect_statement_false( stmt, last_stmt );
-              if( stmt != NULL ) {
-                last_stmt = stmt;
               }
               tc_stmt   = c_stmt;
               c_stmt    = c_stmt->prev;
               free_safe( tc_stmt, sizeof( case_statement ) );
             }
-            if( stmt != NULL ) {
-              stmt->exp->suppl.part.owned = 1;
+            if( last_stmt != NULL ) {
+              last_stmt->exp->suppl.part.owned = 1;
             }
-            $$ = stmt;
+            $$ = last_stmt;
           }
         } else {
           expression_dealloc( $4, FALSE );
@@ -4804,28 +4783,22 @@ statement
           } else {
             while( c_stmt != NULL ) {
               Try {
-                if( c_stmt->expr != NULL ) {
-                  expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASEZ, lhs_mode, c_stmt->line, c_stmt->ppline, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
+                if( (c_stmt->expr != NULL) && (c_stmt->expr->op == EXP_OP_LIST) ) {
+                  parser_handle_case_statement_list( EXP_OP_CASEZ, c_stmt->expr, c_expr, c_stmt->stmt, c_stmt->line, c_stmt->ppline, &last_stmt );
                 } else {
-                  expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, c_stmt->ppline, c_stmt->fcol, (c_stmt->lcol - 1), NULL );
+                  parser_handle_case_statement( EXP_OP_CASEZ, c_stmt->expr, c_expr, c_stmt->stmt, c_stmt->line, c_stmt->ppline, &last_stmt );
                 }
               } Catch_anonymous {
                 error_count++;
-              }
-              stmt = db_create_statement( expr );
-              db_connect_statement_true( stmt, c_stmt->stmt );
-              db_connect_statement_false( stmt, last_stmt );
-              if( stmt != NULL ) {
-                last_stmt = stmt;
               }
               tc_stmt   = c_stmt;
               c_stmt    = c_stmt->prev;
               free_safe( tc_stmt, sizeof( case_statement ) );
             }
-            if( stmt != NULL ) {
-              stmt->exp->suppl.part.owned = 1;
+            if( last_stmt != NULL ) {
+              last_stmt->exp->suppl.part.owned = 1;
             }
-            $$ = stmt;
+            $$ = last_stmt;
           }
         } else {
           expression_dealloc( $4, FALSE );

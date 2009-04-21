@@ -51,15 +51,6 @@ Usage:  covered score (-h | -t <top-level_module_name> [-vcd <dumpfile> | -lxt <
       -T min|typ|max               Specifies value to use in delay expressions of the form min:typ:max.
       -ts <number>                 If design is being scored, specifying this option will output
                                      the current timestep (by increments of <number>) to standard output.
-      -r(S|W|E|I|P[=<name>])       Specifies action to take when race condition checking finds problems in design.
-                                     (-rS = Silent.  Do not report condition was found, just handle it.
-                                      -rW = Warning.  Report race condition information, but just handle it.  Default.
-                                      -rE = Error.  Report race condition information and stop scoring.
-                                      -rI = Ignore.  Skip race condition checking completely.)
-                                      -rP = Use pragmas.  Skip race condition checking for all code surrounded by
-                                            // racecheck off/on embedded pragmas.  The "racecheck" keyword can be
-                                            changed by specifying =<name> where <name> is the new name for the race
-                                            condition pragma keyword.
       -S                           Outputs simulation performance information after scoring has completed.  This
                                      information is currently only useful for the developers of Covered.
       -g (<module>=)[1|2|3]        Selects generation of Verilog syntax that the parser will handle.  If
@@ -89,6 +80,21 @@ Usage:  covered score (-h | -t <top-level_module_name> [-vcd <dumpfile> | -lxt <
       -inline                             Outputs Verilog with inlined code coverage
       -inline-metrics [l][t][m][c][f][a]  Specifies which coverage metrics should be inlined for scoring purposes.  Only these metrics
                                             will be available for reporting and ranking.  Default is ltmcfa.
+
+   Race Condition Options:
+
+     If race condition checks are violated by one or more blocks in the design, the following options specify to Covered
+     how to handle them.
+
+      -rS                          Silent.  Remove the logic blocks from coverage consideration without reporting the information.
+      -rW                          Warning.  Remove the logic blocks from coverage consideration and report the information.  Default.
+      -rE                          Error.  Report the race condition violations and stop scoring.
+      -rI[=<module name>]          Ignore.  If =<module name> is not specified, do not perform race condition checking for the entire
+                                     design.  If =<module name> is specified, do not perform race condition checking on the specified module
+                                     only.  This option may be specified more than once.
+      -rP[=<name>]                 Use pragmas.  Skip race condition checking for all code surrounded by // racecheck off/on
+                                     embedded pragmas.  The "racecheck" keyword can be changed by specifying =<name> where <name>
+                                     is the new name for the race condition pragma keyword.
 
    Optimization Options:
       -e <block_name>              Name of module, task, function or named begin/end block to not score.

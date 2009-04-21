@@ -208,29 +208,45 @@ expression* parser_create_op_and_assign_w_dim_exp(
   unsigned int last_column
 );
 
+/*! \brief Adds the specified case statement item to the statement tree. */
+void parser_handle_case_statement(
+  exp_op_type  case_op,
+  expression*  cs_expr,
+  expression*  c_expr,
+  statement*   cs_stmt,
+  unsigned int line,
+  unsigned int ppline,
+  statement**  last_stmt
+);
 
-/*
- $Log$
- Revision 1.5  2009/01/15 06:47:09  phase1geo
- More work to support assertion coverage.  Updating regressions per these
- changes.  Checkpointing.
+/*! \brief Adds each expression within an expression list as a cast statement item. */
+void parser_handle_case_statement_list(
+  exp_op_type  case_op,
+  expression*  cs_expr,
+  expression*  c_expr,
+  statement*   cs_stmt,
+  unsigned int line,
+  unsigned int ppline,
+  statement**  last_stmt
+);
 
- Revision 1.4  2009/01/11 19:59:36  phase1geo
- More fixes for support of generate statements.  Getting close but not quite
- there yet.  Checkpointing.
+/*! \brief Addes the given expression as a case statement item. */
+void parser_handle_generate_case_statement(
+  expression*  cs_expr,
+  expression*  c_expr,
+  gen_item*    gi,
+  unsigned int line,
+  gen_item**   last_gi
+);
 
- Revision 1.3  2009/01/09 21:25:01  phase1geo
- More generate block fixes.  Updated all copyright information source code files
- for the year 2009.  Checkpointing.
-
- Revision 1.2  2008/12/02 06:14:09  phase1geo
- More changes to parser.y to move its code to parser_func.c for cleanup purposes.
- Regression still passes.  Checkpointing.
-
- Revision 1.1  2008/12/02 00:17:07  phase1geo
- Adding missing files.
-
-*/
+/*! \brief Parses an expression tree list structure, adding each expression within the list as an individual case expression. */
+void parser_handle_generate_case_statement_list(
+  expression*  cs_expr,
+  expression*  c_expr,
+  gen_item*    gi,
+  unsigned int line,
+  gen_item**   last_gi
+);
 
 #endif
 

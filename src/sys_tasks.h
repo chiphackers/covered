@@ -98,39 +98,5 @@ ulong sys_task_value_plusargs(
 /*! \brief Deallocates any memory allocated within this file. */
 void sys_task_dealloc();
 
-/*
- $Log$
- Revision 1.8  2008/10/27 18:13:19  phase1geo
- Finished work to get $test$plusargs to work properly.  Added test_plusargs1
- diagnostic to regression suite to verify this functionality.
-
- Revision 1.7  2008/10/27 13:20:55  phase1geo
- More work on $test$plusargs and $value$plusargs support.  Checkpointing.
-
- Revision 1.6  2008/10/16 23:11:50  phase1geo
- More work on support for real numbers.  I believe that all of the code now
- exists in vector.c to support them.  Still need to do work in expr.c.  Added
- two new tests for real numbers to begin verifying their support (they both do
- not currently pass, however).  Checkpointing.
-
- Revision 1.5  2008/10/15 22:15:19  phase1geo
- More updates to support real values.  Still a lot of work to go here.
-
- Revision 1.4  2008/10/07 22:31:42  phase1geo
- Cleaning up splint warnings.  Cleaning up development documentation.
-
- Revision 1.3  2008/10/04 04:28:47  phase1geo
- Adding code to support $urandom, $srandom and $urandom_range.  Added one test
- to begin verifying $urandom functionality.  The rest of the system tasks need
- to be verified.  Checkpointing.
-
- Revision 1.2  2008/10/03 21:47:32  phase1geo
- Checkpointing more system task work (things might be broken at the moment).
-
- Revision 1.1  2008/10/02 06:46:33  phase1geo
- Initial $random support added.  Added random1 and random1.1 diagnostics to regression
- suite.  random1.1 is currently failing.  Checkpointing.
-
-*/
-
 #endif
+

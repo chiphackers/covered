@@ -278,6 +278,8 @@ static void rank_usage() {
 }
 
 /*!
+ \return Returns TRUE if the help option was parsed.
+
  \throws anonymous Throw Throw Throw
 
  Parses the score argument list, placing all parsed values into
@@ -285,7 +287,7 @@ static void rank_usage() {
  for the rank operation, an error message is displayed to the
  user.
 */
-static void rank_parse_args(
+static bool rank_parse_args(
   int          argc,      /*!< Number of arguments in argument list argv */
   int          last_arg,  /*!< Index of last parsed argument from list */
   const char** argv       /*!< Argument list passed to this program */
@@ -298,15 +300,16 @@ static void rank_parse_args(
   str_link* ext_tail    = NULL;
   str_link* dir_head    = NULL;
   str_link* dir_tail    = NULL;
+  bool      help_found  = FALSE;
 
   i = last_arg + 1;
 
-  while( i < argc ) {
+  while( (i < argc) && !help_found ) {
 
     if( strncmp( "-h", argv[i], 2 ) == 0 ) {
 
       rank_usage();
-      Throw 0;
+      help_found = TRUE;
 
     } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
 
@@ -337,7 +340,7 @@ static void rank_parse_args(
         i++;
         Try {
           read_command_file( argv[i], &arg_list, &arg_num );
-          rank_parse_args( arg_num, -1, (const char**)arg_list );
+          help_found = rank_parse_args( arg_num, -1, (const char**)arg_list );
         } Catch_anonymous {
           for( j=0; j<arg_num; j++ ) {
             free_safe( arg_list[j], (strlen( arg_list[j] ) + 1) );
@@ -606,42 +609,48 @@ static void rank_parse_args(
 
   }
 
-  Try {
+  if( !help_found ) {
 
-    /* Load any ranking files found in specified directories */
-    strl = dir_head;
+    Try {
+
+      /* Load any ranking files found in specified directories */
+      strl = dir_head;
+      while( strl != NULL ) {
+        directory_load( strl->str, ext_head, &rank_in_head, &rank_in_tail );
+        strl = strl->next;
+      }
+
+    } Catch_anonymous {
+      str_link_delete_list( ext_head );
+      str_link_delete_list( dir_head );
+      Throw 0;
+    }
+
+    /* Count the number of files being ranked */
+    strl = rank_in_head;
     while( strl != NULL ) {
-      directory_load( strl->str, ext_head, &rank_in_head, &rank_in_tail );
+      rank_in_num++;
       strl = strl->next;
     }
 
-    /* Deallocate the temporary lists */
-    str_link_delete_list( ext_head );
-    str_link_delete_list( dir_head );
+    /* Check to make sure that the user specified at least two files to rank */
+    if( rank_in_num < 2 ) {
+      print_output( "Must specify at least two CDD files to rank", FATAL, __FILE__, __LINE__ );
+      Throw 0;
+    }
 
-  } Catch_anonymous {
-    str_link_delete_list( ext_head );
-    str_link_delete_list( dir_head );
-    Throw 0;
+    /* If no -depth option was specified, set its value to 1 */
+    if( cp_depth == 0 ) {
+      cp_depth = 1;
+    }
+
   }
 
-  /* Count the number of files being ranked */
-  strl = rank_in_head;
-  while( strl != NULL ) {
-    rank_in_num++;
-    strl = strl->next;
-  }
+  /* Deallocate the temporary lists */
+  str_link_delete_list( ext_head );
+  str_link_delete_list( dir_head );
 
-  /* Check to make sure that the user specified at least two files to rank */
-  if( rank_in_num < 2 ) {
-    print_output( "Must specify at least two CDD files to rank", FATAL, __FILE__, __LINE__ );
-    Throw 0;
-  }
-
-  /* If no -depth option was specified, set its value to 1 */
-  if( cp_depth == 0 ) {
-    cp_depth = 1;
-  }
+  return( help_found );
 
 }
 
@@ -1720,6 +1729,7 @@ void command_rank(
   unsigned int   rv;
   comp_cdd_cov** comp_cdds    = NULL;
   unsigned int   comp_cdd_num = 0;
+  bool           error        = FALSE;
 
   /* Output header information */
   rv = snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
@@ -1734,59 +1744,63 @@ void command_rank(
     timer*       atimer = NULL;
 
     /* Parse score command-line */
-    rank_parse_args( argc, last_arg, argv );
+    if( !rank_parse_args( argc, last_arg, argv ) ) {
 
-    /* Make sure that all coverage points are accumulated */
-    report_line        = TRUE;
-    report_toggle      = TRUE;
-    report_combination = TRUE;
-    report_fsm         = TRUE;
-    report_assertion   = TRUE;
-    report_memory      = TRUE;
-    allow_multi_expr   = FALSE;
+      /* Make sure that all coverage points are accumulated */
+      report_line        = TRUE;
+      report_toggle      = TRUE;
+      report_combination = TRUE;
+      report_fsm         = TRUE;
+      report_assertion   = TRUE;
+      report_memory      = TRUE;
+      allow_multi_expr   = FALSE;
 
-    /* Start timer */
-    if( rank_verbose ) {
-      timer_clear( &atimer );
-      timer_start( &atimer );
-    }
+      /* Start timer */
+      if( rank_verbose ) {
+        timer_clear( &atimer );
+        timer_start( &atimer );
+      }
 
-    /* Read in databases to merge */
-    strl = rank_in_head;
-    while( strl != NULL ) {
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading CDD file \"%s\"", strl->str );
+      /* Read in databases to merge */
+      strl = rank_in_head;
+      while( strl != NULL ) {
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading CDD file \"%s\"", strl->str );
+        assert( rv < USER_MSG_LENGTH );
+        print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+        rv = fflush( stdout );
+        assert( rv == 0 );
+        rank_read_cdd( strl->str, (strl->suppl == 1), first, &comp_cdds, &comp_cdd_num );
+        first = FALSE;
+        strl  = strl->next;
+      }
+
+      if( rank_verbose ) {
+        timer_stop( &atimer );
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "Completed reading in CDD files in %s", timer_to_string( atimer ) );
+        assert( rv < USER_MSG_LENGTH );
+        print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+        free_safe( atimer, sizeof( timer ) );
+      }
+
+      /* Peaform the ranking algorithm */
+      rank_perform( comp_cdds, comp_cdd_num );
+
+      /* Output the results */
+      rank_output( comp_cdds, comp_cdd_num );
+
+      /*@-duplicatequals -formattype@*/
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "Dynamic memory allocated:   %llu bytes", largest_malloc_size );
       assert( rv < USER_MSG_LENGTH );
+      /*@=duplicatequals =formattype@*/
+      print_output( "", NORMAL, __FILE__, __LINE__ );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-      rv = fflush( stdout );
-      assert( rv == 0 );
-      rank_read_cdd( strl->str, (strl->suppl == 1), first, &comp_cdds, &comp_cdd_num );
-      first = FALSE;
-      strl  = strl->next;
+      print_output( "", NORMAL, __FILE__, __LINE__ );
+
     }
 
-    if( rank_verbose ) {
-      timer_stop( &atimer );
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "Completed reading in CDD files in %s", timer_to_string( atimer ) );
-      assert( rv < USER_MSG_LENGTH );
-      print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-      free_safe( atimer, sizeof( timer ) );
-    }
-
-    /* Peaform the ranking algorithm */
-    rank_perform( comp_cdds, comp_cdd_num );
-
-    /* Output the results */
-    rank_output( comp_cdds, comp_cdd_num );
-
-    /*@-duplicatequals -formattype@*/
-    rv = snprintf( user_msg, USER_MSG_LENGTH, "Dynamic memory allocated:   %llu bytes", largest_malloc_size );
-    assert( rv < USER_MSG_LENGTH );
-    /*@=duplicatequals =formattype@*/
-    print_output( "", NORMAL, __FILE__, __LINE__ );
-    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-    print_output( "", NORMAL, __FILE__, __LINE__ );
-
-  } Catch_anonymous {}
+  } Catch_anonymous {
+    error = TRUE;
+  }
 
   /* Deallocate other allocated variables */
   str_link_delete_list( rank_in_head );
@@ -1799,231 +1813,11 @@ void command_rank(
 
   free_safe( rank_file, (strlen( rank_file ) + 1) );
 
+  if( error ) {
+    Throw 0;
+  }
+
   PROFILE_END;
 
 }
-
-/*
- $Log$
- Revision 1.16  2008/12/08 06:43:45  phase1geo
- Fixing issues with broken regression.  Updated regression per these changes (some
- code reduction was performed as well).  IV and Cver regressions now pass.
- Checkpointing.
-
- Revision 1.15  2008/12/07 07:20:08  phase1geo
- Checkpointing work.  I have an end-to-end run now working with test.v in
- the testsuite.  The results are not accurate at this point but it's progress.
- I have updated the regression suite per these changes (minor), added an "-inline"
- option to the score command to control this behavior.  IV regressions have one
- failing diagnostic at this point.
-
- Revision 1.14  2008/12/05 00:22:41  phase1geo
- More work completed on code coverage generator.  Currently working on bug in
- statement finder.  Checkpointing.
-
- Revision 1.13  2008/11/27 00:24:44  phase1geo
- Fixing problems with previous version of generator.  Things work as expected at this point.
- Checkpointing.
-
- Revision 1.12  2008/11/08 00:09:04  phase1geo
- Checkpointing work on asymmetric merging algorithm.  Updated regressions
- per these changes.  We currently have 5 failures in the IV regression suite.
-
- Revision 1.11  2008/10/23 20:54:52  phase1geo
- Adding support for real parameters.  Added more real number diagnostics to
- regression suite.
-
- Revision 1.10  2008/09/19 04:47:18  phase1geo
- Adding several new diagnostics to regression suite to add coverage for
- rank.c file (parsing option errors mostly).  Fixing issue with rank command
- when an invalid option was specified (output incorrect output message).
-
- Revision 1.9  2008/09/15 04:18:03  phase1geo
- Adding rank.c to splint checker and cleaned up all splint warnings with this file.
-
- Revision 1.8  2008/09/02 05:20:41  phase1geo
- More updates for exclude command.  Updates to CVER regression.
-
- Revision 1.7  2008/08/22 20:56:35  phase1geo
- Starting to make updates for proper unnamed scope report handling (fix for bug 2054686).
- Not complete yet.  Also making updates to documentation.  Checkpointing.
-
- Revision 1.6  2008/08/21 13:16:37  phase1geo
- Changing the name of the -required option to the rank command to -required-list
- and adding new -required-cdd option to specify a single CDD file.  Updated
- regressions for this change which fully pass.
-
- Revision 1.5  2008/08/21 03:45:22  phase1geo
- Modifying verbage in -v output for rank command.  Adding time to read in CDD
- files to the output.
-
- Revision 1.4  2008/08/18 23:07:28  phase1geo
- Integrating changes from development release branch to main development trunk.
- Regression passes.  Still need to update documentation directories and verify
- that the GUI stuff works properly.
-
- $Log$
- Revision 1.16  2008/12/08 06:43:45  phase1geo
- Fixing issues with broken regression.  Updated regression per these changes (some
- code reduction was performed as well).  IV and Cver regressions now pass.
- Checkpointing.
-
- Revision 1.15  2008/12/07 07:20:08  phase1geo
- Checkpointing work.  I have an end-to-end run now working with test.v in
- the testsuite.  The results are not accurate at this point but it's progress.
- I have updated the regression suite per these changes (minor), added an "-inline"
- option to the score command to control this behavior.  IV regressions have one
- failing diagnostic at this point.
-
- Revision 1.14  2008/12/05 00:22:41  phase1geo
- More work completed on code coverage generator.  Currently working on bug in
- statement finder.  Checkpointing.
-
- Revision 1.13  2008/11/27 00:24:44  phase1geo
- Fixing problems with previous version of generator.  Things work as expected at this point.
- Checkpointing.
-
- Revision 1.12  2008/11/08 00:09:04  phase1geo
- Checkpointing work on asymmetric merging algorithm.  Updated regressions
- per these changes.  We currently have 5 failures in the IV regression suite.
-
- Revision 1.11  2008/10/23 20:54:52  phase1geo
- Adding support for real parameters.  Added more real number diagnostics to
- regression suite.
-
- Revision 1.10  2008/09/19 04:47:18  phase1geo
- Adding several new diagnostics to regression suite to add coverage for
- rank.c file (parsing option errors mostly).  Fixing issue with rank command
- when an invalid option was specified (output incorrect output message).
-
- Revision 1.9  2008/09/15 04:18:03  phase1geo
- Adding rank.c to splint checker and cleaned up all splint warnings with this file.
-
- Revision 1.8  2008/09/02 05:20:41  phase1geo
- More updates for exclude command.  Updates to CVER regression.
-
- Revision 1.7  2008/08/22 20:56:35  phase1geo
- Starting to make updates for proper unnamed scope report handling (fix for bug 2054686).
- Not complete yet.  Also making updates to documentation.  Checkpointing.
-
- Revision 1.6  2008/08/21 13:16:37  phase1geo
- Changing the name of the -required option to the rank command to -required-list
- and adding new -required-cdd option to specify a single CDD file.  Updated
- regressions for this change which fully pass.
-
- Revision 1.5  2008/08/21 03:45:22  phase1geo
- Modifying verbage in -v output for rank command.  Adding time to read in CDD
- files to the output.
-
- Revision 1.4  2008/08/18 23:07:28  phase1geo
- Integrating changes from development release branch to main development trunk.
- Regression passes.  Still need to update documentation directories and verify
- that the GUI stuff works properly.
-
- Revision 1.1.4.19  2008/08/12 17:52:57  phase1geo
- Adding another attempt to speed up ranking.
-
- Revision 1.1.4.18  2008/08/12 16:53:10  phase1geo
- Adding timer information for -v option to the rank command.
-
- Revision 1.1.4.17  2008/08/12 06:17:53  phase1geo
- Fixing bugs in calculation and report of coverage points in rank reports.
-
- Revision 1.1.4.16  2008/08/11 21:40:50  phase1geo
- Changing compressed coverage structure to store coverage points as unsigned long values
- instead of unsigned char to increase performance.
-
- Revision 1.1.4.15  2008/08/11 04:02:27  phase1geo
- Adding -v option to the rank command to display verbose information during the ranking
- phase.
-
- Revision 1.1.4.14  2008/08/05 04:29:04  phase1geo
- Fixing the last issue in regards to required file support.  Added a few diagnostics
- to the regression list to verify this behavior.
-
- Revision 1.1.4.13  2008/08/05 00:45:34  phase1geo
- Another attempt to fix bug 2037707.
-
- Revision 1.1.4.12  2008/08/04 16:26:19  phase1geo
- Attempting to fix bug 2037707.
-
- Revision 1.1.4.11  2008/08/04 15:12:57  phase1geo
- Fixing summary output issue with ranked CDD files (bug 2037629).
-
- Revision 1.1.4.10  2008/07/25 19:41:40  phase1geo
- Adding timestep reduction information as well as multiplier improvement information
- to rank output.  Also updating more documentation.
-
- Revision 1.1.4.9  2008/07/24 23:23:49  phase1geo
- Adding -required option to the rank command.
-
- Revision 1.1.4.8  2008/07/24 21:17:13  phase1geo
- Fixing -depth issue.
-
- Revision 1.1.4.7  2008/07/23 21:38:42  phase1geo
- Adding better formatting for ranking reports to allow the inclusion of the full
- pathname for each CDD file listed.
-
- Revision 1.1.4.6  2008/07/23 18:26:21  phase1geo
- Moving -d command-line parsing to after the -depth so that they do not conflict.
-
- Revision 1.1.4.5  2008/07/23 05:34:34  phase1geo
- More updates.
-
- Revision 1.1.4.4  2008/07/23 05:10:11  phase1geo
- Adding -d and -ext options to rank and merge commands.  Updated necessary files
- per this change and updated regressions.
-
- Revision 1.1.4.3  2008/07/23 04:38:09  phase1geo
- Attempting to update rank.c with latest bug fixes.
-
- Revision 1.3  2008/07/22 03:41:35  phase1geo
- Fixing small bug with -depth command-line parser.
-
- Revision 1.2  2008/07/21 06:52:18  phase1geo
- Cleanup from rank-devel-branch integration.
-
- Revision 1.1.2.11  2008/07/21 05:53:25  phase1geo
- Fixing rank command issues (bugs 2018194 and 2021340).  Also added a
- note in the ranking report file that shows the amount of CDD file reduction
- that was calculated.
-
- Revision 1.1.2.10  2008/07/14 22:15:04  phase1geo
- Removing multi-expressions from ranking coverage point consideration.  Treating
- these as individual expressions.
-
- Revision 1.1.2.9  2008/07/14 18:43:43  phase1geo
- Fixing issue with toggle index getting incremented when calculating memory toggle coverage.
-
- Revision 1.1.2.8  2008/07/11 18:47:30  phase1geo
- Attempting to fix bug 2016187.
-
- Revision 1.1.2.7  2008/07/02 23:10:38  phase1geo
- Checking in work on rank function and addition of -m option to score
- function.  Added new diagnostics to verify beginning functionality.
- Checkpointing.
-
- Revision 1.1.2.6  2008/07/02 13:51:24  phase1geo
- Fixing bug in read mode chosen for ranking.  Should have been a report-no-merge
- rather than a merge-no-merge flavor.
-
- Revision 1.1.2.5  2008/07/02 04:40:18  phase1geo
- Adding merge5* diagnostics to verify rank function (this is not complete yet).  The
- rank function is a bit broken at this point.  Checkpointing.
-
- Revision 1.1.2.4  2008/07/01 23:08:58  phase1geo
- Initial working version of rank command.  Ranking algorithm needs some more
- testing at this point.  Checkpointing.
-
- Revision 1.1.2.3  2008/07/01 06:17:22  phase1geo
- More updates to rank command.  Updating IV/Cver regression for these changes (full
- regression not passing at this point).  Checkpointing.
-
- Revision 1.1.2.2  2008/06/30 23:02:42  phase1geo
- More work on the rank command.  Checkpointing.
-
- Revision 1.1.2.1  2008/06/30 13:14:22  phase1geo
- Starting to work on new 'rank' command.  Checkpointing.
-
-*/
 

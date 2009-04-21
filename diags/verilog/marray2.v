@@ -9,6 +9,7 @@ initial begin
           for( j=0; j<4; j++ )
             begin
              a[i][j] = 4'h0;
+             #1;
              a[i][j] = k;
              if( i == 0 )
                b = a[i][j];
@@ -21,7 +22,7 @@ initial begin
         $dumpfile( "marray2.vcd" );
         $dumpvars( 0, main );
 `endif
-        #10;
+        #100;
         $finish;
 end
 

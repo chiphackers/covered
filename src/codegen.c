@@ -1033,6 +1033,14 @@ static void codegen_gen_expr1(
             codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, "",
                                  right_code, right_code_depth, expr->right, NULL );
             break;
+          case EXP_OP_SSIGNED  :
+            codegen_create_expr( code, code_depth, expr->line, "$signed( ", left_code, left_code_depth, expr->left, " )",
+                                 NULL, 0, NULL, NULL );
+            break;
+          case EXP_OP_SUNSIGNED  :
+            codegen_create_expr( code, code_depth, expr->line, "$unsigned( ", left_code, left_code_depth, expr->left, " )",
+                                 NULL, 0, NULL, NULL );
+            break;
           case EXP_OP_SRANDOM  :
             codegen_create_expr( code, code_depth, expr->line, "$random( ", left_code, left_code_depth, expr->left, " )",
                                  NULL, 0, NULL, NULL );

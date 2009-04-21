@@ -185,7 +185,7 @@ WSPACE [ \t\b\f]+
  }
 
   /* ifdef directive */
-`ifdef{WSPACE}[a-zA-Z_][a-zA-Z0-9_]*.* {
+`ifdef{WSPACE}[a-zA-Z_][a-zA-Z0-9_]* {
      char* name = strchr( yytext, '`' );
      assert( name );
      name += 6;
@@ -199,7 +199,7 @@ WSPACE [ \t\b\f]+
  }
 
   /* ifndef directive */
-`ifndef{WSPACE}[a-zA-Z_][a-zA-Z0-9_]*.* {
+`ifndef{WSPACE}[a-zA-Z_][a-zA-Z0-9_]* {
      char* name = strchr( yytext, '`' );
      assert( name );
      name += 7;
@@ -213,7 +213,7 @@ WSPACE [ \t\b\f]+
  }
 
   /* elsif directive after unused block */
-<IFDEF_FALSE>`elsif{WSPACE}[a-zA-Z_][a-zA-Z0-9_]*.* {
+<IFDEF_FALSE>`elsif{WSPACE}[a-zA-Z_][a-zA-Z0-9_]* {
      char* name = strchr( yytext, '`' );
      assert( name );
      name += 6;

@@ -1,12 +1,12 @@
-5 14 101 68 *
-8 /ptmp/covered/diags/verilog 2 -t (main) 2 -vcd (rshift4.2.vcd) 2 -o (rshift4.2.cdd) 2 -v (rshift4.2.v) 2 -D (DUMP)
+5 14 fd81 68 *
+8 /home/bryce3/trevorw/covered/diags/verilog 2 -t (main) 2 -vcd (rshift4.2.vcd) 2 -o (rshift4.2.cdd) 2 -v (rshift4.2.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 rshift4.2.v 10 31 1
 2 1 14 14 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 u$0
-1 a 1 12 107000b 1 0 64 0 65 17 0 ffffffff 0 0 ffffffff 0 0 ffffffff 0 0 ffffffff 0 0 1 0 0 1 0
+1 a 1 12 107000b 1 0 64 0 65 17 0 ffffffffffffffff 0 0 ffffffffffffffff 0 0 1 0 0 1 0
 4 1 1 0 0
 3 1 main.u$0 "main.u$0" 0 rshift4.2.v 14 20 1
-2 2 15 15 5004a 1 0 21000 0 0 65 16 aaaaaaaa 66666666 aaaaaaaa 66666666 1 0
+2 2 15 15 5004a 1 0 21000 0 0 65 16 aaaaaaaaaaaaaaaa 6666666666666666 1 0
 2 3 15 15 10001 0 1 1410 0 0 65 1 a
 2 4 15 15 1004a 1 37 12 2 3
 2 5 16 16 9000a 1 0 1008 0 0 32 48 42 0
@@ -21,7 +21,7 @@
 2 10 17 17 30004 84 2c 900a 9 0 32 18 0 ffffffff 0 0 0 0
 2 11 18 18 c000c 1 0 1008 0 0 32 48 1 0
 2 12 18 18 70007 42 1 100c 0 0 65 1 a
-2 13 18 18 7000c 42 10 100c 11 12 65 18 0 ffffffff ffffffff ffffffff 0 0 0 ffffffff ffffffff ffffffff 0 0 0 1 1 0 0 0
+2 13 18 18 7000c 42 10 100c 11 12 65 18 0 ffffffffffffffff ffffffffffffffff ffffffffffffffff 0 0 0 1 1 0 0 0
 2 14 18 18 30003 0 1 1410 0 0 65 1 a
 2 15 18 18 3000c 42 37 e 13 14
 4 15 0 0 0

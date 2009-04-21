@@ -1,5 +1,5 @@
-5 14 101 3 *
-8 /ptmp/covered/diags/verilog 2 -t (main) 2 -vcd (version1.1.vcd) 2 -o (version1.1.cdd) 2 -v (version1.1.v) 2 -D (DUMP)
+5 14 fd81 3 *
+8 /home/bryce3/trevorw/covered/diags/verilog 2 -t (main) 2 -vcd (version1.1.vcd) 2 -o (version1.1.cdd) 2 -v (version1.1.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 version1.1.v 9 36 1
 14 version1.1.v,v 1.2 2008/09/21 13:30:12 phase1geo Exp
@@ -8,6 +8,7 @@
 1 b 2 11 1070007 1 0 0 0 1 17 0 1 0 0 0 0
 4 1 1 0 0
 3 0 foo_mod "main.mod" 0 version1.1.v 38 45 1
+14 version1.1.v,v 1.2 2008/09/21 13:30:12 phase1geo Exp
 2 2 43 43 d000d 1 1 1008 0 0 1 1 b
 2 3 43 43 90009 1 1 1008 0 0 1 1 a
 2 4 43 43 9000d 1 9 1188 2 3 1 18 0 1 1 1 0 0
@@ -18,6 +19,7 @@
 1 c 5 43 60005 1 0 0 0 1 17 1 1 0 0 0 0
 4 6 f 6 6
 3 1 main.u$0 "main.u$0" 0 version1.1.v 15 18 1
+14 version1.1.v,v 1.2 2008/09/21 13:30:12 phase1geo Exp
 2 7 16 16 50008 1 0 21008 0 0 1 16 1 0
 2 8 16 16 10001 0 1 1410 0 0 1 1 b
 2 9 16 16 10008 1 37 1a 7 8
@@ -31,12 +33,15 @@
 4 16 0 0 0
 4 9 11 16 16
 3 1 main.u$1 "main.u$1" 0 version1.1.v 20 27 1
+14 version1.1.v,v 1.2 2008/09/21 13:30:12 phase1geo Exp
 3 2 main.foo_func "main.foo_func" 0 version1.1.v 29 34 1
+14 version1.1.v,v 1.2 2008/09/21 13:30:12 phase1geo Exp
 2 17 31 31 20006 1 3d 5802 0 0 1 18 0 1 0 0 0 0 u$2
 1 foo_func 6 29 1090009 1 0 0 0 1 17 1 1 0 0 0 0
 1 a 7 30 1000008 1 0 0 0 1 17 1 1 0 0 0 0
 4 17 11 0 0
 3 1 main.foo_func.u$2 "main.foo_func.u$2" 0 version1.1.v 31 33 1
+14 version1.1.v,v 1.2 2008/09/21 13:30:12 phase1geo Exp
 2 18 32 32 100010 1 1 1804 0 0 1 1 a
 2 19 32 32 f000f 1 1b 1808 18 0 1 18 0 1 0 1 0 0
 2 20 32 32 4000b 0 1 1c10 0 0 1 1 foo_func
