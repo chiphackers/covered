@@ -82,14 +82,14 @@ sub parse_cdd {
           my( $next_start, @tmp_line ) = &parse_vector( 10, $num, @line );
           if( $#line == $next_start ) {
             my( $sig_name ) = $line[$next_start];
-            $#line = 8;
+            $#line = 9;
             @line = (@line, @tmp_line, $sig_name );
           } elsif( $#line >= $next_start ) {
             my( $sig_name ) = "@line[$next_start,$#line]";
-            $#line = 8;
+            $#line = 9;
             @line = (@line, @tmp_line, $sig_name );
           } else {
-            $#line = 8;
+            $#line = 9;
             @line = (@line, @tmp_line);
           }
         }

@@ -2817,7 +2817,7 @@ generate_item
           c_expr = db_create_expr_from_static( $4, @4.first_line, @4.ppline, @4.first_column, (@4.last_column - 1) );
           while( c_stmt != NULL ) {
             Try {
-              if( c_stmt->expr != NULL ) {
+              if( (c_stmt->expr != NULL) && (c_stmt->expr->op == EXP_OP_LIST) ) {
                 parser_handle_generate_case_statement_list( c_stmt->expr, c_expr, c_stmt->gi, c_stmt->line, &last_stmt );
               } else {
                 parser_handle_generate_case_statement( c_stmt->expr, c_expr, c_stmt->gi, c_stmt->line, &last_stmt );
