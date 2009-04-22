@@ -1,5 +1,5 @@
-5 14 fd81 31 *
-8 /home/bryce3/trevorw/covered/diags/verilog 2 -t (main) 2 -vcd (report4.vcd) 2 -v (report4.v) 2 -o (report4.cdd)
+5 14 fd01 31 *
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (report4.vcd) 2 -v (report4.v) 2 -o (report4.cdd)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 report4.v 12 40 1
 2 1 21 21 620067 1 0 21004 0 0 3 16 0 0

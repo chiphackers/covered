@@ -1,19 +1,19 @@
-5 14 fd81 4 *
-8 /home/bryce3/trevorw/covered/diags/verilog 2 -t (main) 2 -vcd (lshift2.2.vcd) 2 -o (lshift2.2.cdd) 2 -v (lshift2.2.v) 2 -D (DUMP)
+5 14 fd01 4 *
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (lshift2.2.vcd) 2 -o (lshift2.2.cdd) 2 -v (lshift2.2.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 lshift2.2.v 10 29 1
 2 1 14 14 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 u$0
-1 a 1 12 107000b 1 0 66 0 67 17 0 ffffffffffffffff 0 0 11 0 0 7 0 1 0 0
+1 a 1 12 107000b 1 0 66 0 67 17 0 ffffffff 0 0 11 0 0 ffffffff 0 0 0 0 0 7 0 1 0 0
 4 1 1 0 0
 3 1 main.u$0 "main.u$0" 0 lshift2.2.v 14 18 1
-2 2 15 15 5000d 1 0 21000 0 0 67 16 15 c 0 0
+2 2 15 15 5000d 1 0 21000 0 0 67 16 15 c 0 0 0 0
 2 3 15 15 10001 0 1 1410 0 0 67 1 a
 2 4 15 15 1000d 1 37 12 2 3
 2 5 16 16 20002 1 0 1008 0 0 32 48 5 0
 2 6 16 16 10002 2 2c 900a 5 0 32 18 0 ffffffff 0 0 0 0
 2 7 17 17 a000b 1 0 1008 0 0 32 48 40 0
 2 8 17 17 50005 1 1 1010 0 0 67 1 a
-2 9 17 17 5000b 1 f 1010 7 8 67 18 0 ffffffffffffffff ffffffffffffffff 0 0 0 0 7 2 1 0 0
+2 9 17 17 5000b 1 f 1010 7 8 67 18 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 7 2 1 0 0
 2 10 17 17 10001 0 1 1410 0 0 67 1 a
 2 11 17 17 1000b 1 37 32 9 10
 4 11 0 0 0

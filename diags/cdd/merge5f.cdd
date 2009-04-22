@@ -1,5 +1,5 @@
-5 14 fd81 4 main
-8 /home/bryce3/trevorw/covered/diags/verilog 2 -t (ranker) 2 -i (main.r) 2 -vcd (merge5f.vcd) 2 -o (merge5f.cdd) 2 -v (merge5f.v) 2 -y (lib) 2 -D (DUMP)
+5 14 fd01 4 main
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (ranker) 2 -i (main.r) 2 -vcd (merge5f.vcd) 2 -o (merge5f.cdd) 2 -v (merge5f.v) 2 -y (lib) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 15 main 0
 3 0 ranker "main.r" 0 lib/ranker.v 1 22 1
@@ -26,40 +26,40 @@
 2 21 19 19 0 0 2d 1022 20 6 1 18 0 1 0 0 0 0
 2 22 19 19 2a002a 0 1 1010 0 0 128 1 c
 2 23 19 19 260026 0 1 1010 0 0 128 1 a
-2 24 19 19 26002a 0 8 201030 22 23 128 18 0 ffffffffffffffff 0 0 0 0 0 ffffffffffffffff 0 0 0 0
+2 24 19 19 26002a 0 8 201030 22 23 128 18 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
 2 25 19 19 200020 0 1 1010 0 0 128 1 c
 2 26 19 19 1c001c 0 1 1010 0 0 128 1 b
-2 27 19 19 1c0020 0 8 201030 25 26 128 18 0 ffffffffffffffff 0 0 0 0 0 ffffffffffffffff 0 0 0 0
+2 27 19 19 1c0020 0 8 201030 25 26 128 18 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
 2 28 19 19 160016 0 1 1010 0 0 128 1 b
 2 29 19 19 120012 0 1 1010 0 0 128 1 a
-2 30 19 19 120016 0 8 201030 28 29 128 18 0 ffffffffffffffff 0 0 0 0 0 ffffffffffffffff 0 0 0 0
-2 31 19 19 110021 0 9 1030 27 30 128 18 0 ffffffffffffffff 0 0 0 0 0 ffffffffffffffff 0 0 0 0
-2 32 19 19 11002b 0 9 1030 24 31 128 18 0 ffffffffffffffff 0 0 0 0 0 ffffffffffffffff 0 0 0 0
+2 30 19 19 120016 0 8 201030 28 29 128 18 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
+2 31 19 19 110021 0 9 1030 27 30 128 18 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
+2 32 19 19 11002b 0 9 1030 24 31 128 18 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
 2 33 19 19 c000d 0 1 1410 0 0 128 1 z1
 2 34 19 19 c002b 0 37 32 32 33
 2 35 18 18 190019 1 1 1008 0 0 128 1 c
 2 36 18 18 150015 1 1 1008 0 0 128 1 b
-2 37 18 18 150019 1 8 1208 35 36 128 18 0 ffffffffffffffff aaaaaaaabbbbbbbb 6666666677777777 1111111100000000 0 0 ffffffffffffffff 8888888899999999 4444444455555555 3333333322222222 0
+2 37 18 18 150019 1 8 1208 35 36 128 18 0 ffffffff bbbbbbbb 77777777 0 0 0 ffffffff aaaaaaaa 66666666 11111111 0 0 ffffffff 99999999 55555555 22222222 0 0 ffffffff 88888888 44444444 33333333 0
 2 38 18 18 110011 1 1 1008 0 0 128 1 a
-2 39 18 18 110019 1 2 1204 37 38 128 18 0 ffffffffffffffff eeeeeeeeffffffff 0 0 1111111100000000 0 ffffffffffffffff ccccccccdddddddd 0 0 3333333322222222
+2 39 18 18 110019 1 2 1204 37 38 128 18 0 ffffffff ffffffff 0 0 0 0 ffffffff eeeeeeee 0 0 11111111 0 ffffffff dddddddd 0 0 22222222 0 ffffffff cccccccc 0 0 33333333
 2 40 18 18 c000d 0 1 1410 0 0 128 1 z1
 2 41 18 18 c0019 1 37 6 39 40
 2 42 17 17 190019 0 1 1010 0 0 128 1 c
 2 43 17 17 150015 0 1 1010 0 0 128 1 b
 2 44 17 17 110011 0 1 1010 0 0 128 1 a
-2 45 17 17 110015 0 9 1030 43 44 128 18 0 ffffffffffffffff 0 0 0 0 0 ffffffffffffffff 0 0 0 0
-2 46 17 17 110019 0 9 1030 42 45 128 18 0 ffffffffffffffff 0 0 0 0 0 ffffffffffffffff 0 0 0 0
+2 45 17 17 110015 0 9 1030 43 44 128 18 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
+2 46 17 17 110019 0 9 1030 42 45 128 18 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
 2 47 17 17 c000d 0 1 1410 0 0 128 1 z1
 2 48 17 17 c0019 0 37 32 46 47
 2 49 16 16 190019 0 1 1010 0 0 128 1 c
 2 50 16 16 150015 0 1 1010 0 0 128 1 b
 2 51 16 16 110011 0 1 1010 0 0 128 1 a
-2 52 16 16 110015 0 8 1030 50 51 128 18 0 ffffffffffffffff 0 0 0 0 0 ffffffffffffffff 0 0 0 0
-2 53 16 16 110019 0 8 1030 49 52 128 18 0 ffffffffffffffff 0 0 0 0 0 ffffffffffffffff 0 0 0 0
+2 52 16 16 110015 0 8 1030 50 51 128 18 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
+2 53 16 16 110019 0 8 1030 49 52 128 18 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
 2 54 16 16 c000d 0 1 1410 0 0 128 1 z1
 2 55 16 16 c0019 0 37 32 53 54
 2 56 15 15 120012 0 1 1010 0 0 128 1 a
-2 57 15 15 110011 0 1b 1020 56 0 128 18 0 ffffffffffffffff 0 0 0 0 0 ffffffffffffffff 0 0 0 0
+2 57 15 15 110011 0 1b 1020 56 0 128 18 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
 2 58 15 15 c000d 0 1 1410 0 0 128 1 z1
 2 59 15 15 c0012 0 37 32 57 58
 2 60 14 14 110011 0 1 1010 0 0 128 1 c
@@ -71,11 +71,11 @@
 2 66 12 12 110011 1 1 1014 0 0 128 1 a
 2 67 12 12 c000d 0 1 1410 0 0 128 1 z1
 2 68 12 12 c0011 1 37 36 66 67
-1 a 1 2 10 1 0 127 0 128 17 ffffffffffffffff ffffffffffffffff 0 1111111100000000 0 0 ffffffffffffffff ffffffffffffffff 0 3333333322222222 0 0
-1 b 2 3 10 1 0 127 0 128 17 ffffffffffffffff ffffffffffffffff 0 5555555544444444 0 0 ffffffffffffffff ffffffffffffffff 0 7777777766666666 0 0
-1 c 3 4 10 1 0 127 0 128 17 ffffffffffffffff ffffffffffffffff 0 9999999988888888 0 0 ffffffffffffffff ffffffffffffffff 0 bbbbbbbbaaaaaaaa 0 0
+1 a 1 2 10 1 0 127 0 128 17 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 11111111 0 0 ffffffff ffffffff 0 22222222 0 0 ffffffff ffffffff 0 33333333 0 0
+1 b 2 3 10 1 0 127 0 128 17 ffffffff ffffffff 0 44444444 0 0 ffffffff ffffffff 0 55555555 0 0 ffffffff ffffffff 0 66666666 0 0 ffffffff ffffffff 0 77777777 0 0
+1 c 3 4 10 1 0 127 0 128 17 ffffffff ffffffff 0 88888888 0 0 ffffffff ffffffff 0 99999999 0 0 ffffffff ffffffff 0 aaaaaaaa 0 0 ffffffff ffffffff 0 bbbbbbbb 0 0
 1 d 4 5 10 1 0 2 0 3 17 7 7 0 6 0 0
-1 z1 5 8 107000c 1 0 127 0 128 17 0 ffffffffffffffff 0 0 0 0 0 ffffffffffffffff 0 0 0 0
+1 z1 5 8 107000c 1 0 127 0 128 17 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
 4 34 6 2 2
 4 21 4 34 2
 4 41 6 2 2

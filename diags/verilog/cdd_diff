@@ -75,11 +75,11 @@ sub parse_cdd {
       # a different size than the first CDD file.
       if( ($num == 1) && ($vec_ul_size[0] != $vec_ul_size[1]) ) { 
 
-        my( $owns_vec ) = (hex( $line[6] ) >> 12) & 0x1;
+        my( $owns_vec ) = (hex( $line[7] ) >> 12) & 0x1;
 
         # If this expression owns its own vector, parse it
         if( $owns_vec == 1 ) {
-          my( $next_start, @tmp_line ) = &parse_vector( 9, $num, @line );
+          my( $next_start, @tmp_line ) = &parse_vector( 10, $num, @line );
           if( $#line == $next_start ) {
             my( $sig_name ) = $line[$next_start];
             $#line = 8;
@@ -97,8 +97,8 @@ sub parse_cdd {
       }
 
       # If our exec_num is non-zero, set it to one to make sure that we compare
-      if( $line[4] ne "0" ) {
-        $line[4] = "1";
+      if( $line[5] ne "0" ) {
+        $line[5] = "1";
       }
 
     # FSM
