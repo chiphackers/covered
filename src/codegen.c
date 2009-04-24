@@ -182,7 +182,7 @@ static void codegen_create_expr_helper(
       free_safe( left[i], (strlen( left[i] ) + 1) );
       if( right_depth > 0 ) {
         // printf( "C code[%d+%d]:%s.\n", code_index, i, code[code_index] );
-        codegen_create_expr_helper( code, (code_index + i), tmpstr, right, right_depth, last_same_line, last, NULL, 0, FALSE, NULL );
+        codegen_create_expr_helper( code, (code_index + i + 1), tmpstr, right, right_depth, last_same_line, last, NULL, 0, FALSE, NULL );
         free_safe( tmpstr, (strlen( tmpstr ) + 1) );
       } else {
         code[code_index+i+1] = tmpstr;
