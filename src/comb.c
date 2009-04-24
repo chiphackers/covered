@@ -980,7 +980,7 @@ static void combination_underline_tree(
           combination_underline_tree( exp->left,  combination_calc_depth( exp, curr_depth, TRUE ),  &l_lines, &l_depth, &l_size, exp->op, center, funit );
           combination_underline_tree( exp->right, combination_calc_depth( exp, curr_depth, FALSE ), &r_lines, &r_depth, &r_size, exp->op, center, funit );
 
-          if( parent_op == exp->op ) {
+          if( exp->suppl.part.parenthesis == 0 ) {
 
             switch( exp->op ) {
               case EXP_OP_XOR        :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s"        );  break;
