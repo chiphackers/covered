@@ -865,7 +865,6 @@ void cli_read_hist_file( const char* fname ) {
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Specified -cli file \"%s\" is not a valid CLI history file", fname );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          printf( "cli Throw A\n" );
           Throw 0;
         }
         free_safe( line, line_size );
@@ -874,7 +873,6 @@ void cli_read_hist_file( const char* fname ) {
     } Catch_anonymous {
       unsigned int rv = fclose( hfile );
       assert( rv == 0 );
-      printf( "cli Throw B\n" );
       Throw 0;
     }
 
@@ -885,7 +883,6 @@ void cli_read_hist_file( const char* fname ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to read history file \"%s\"", fname );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    printf( "cli Throw C\n" );
     Throw 0;
 
   }

@@ -117,7 +117,6 @@ WSPACE [ \t\b\f]+
                                      obf_sig( yytext ), obf_funit( se_funit->name ) );
          assert( rv < USER_MSG_LENGTH );
          print_output( user_msg, FATAL, __FILE__, __LINE__ );
-         printf( "static_lexer Throw A\n" );
          Throw 0;
        }
        yylval.number = vector_to_int( gvar->value );
@@ -126,7 +125,6 @@ WSPACE [ \t\b\f]+
                                    obf_file( se_funit->filename ), se_lineno );
        assert( rv < USER_MSG_LENGTH );
        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-       printf( "static_lexer Throw B\n" );
        Throw 0;
      }
      return NUMBER;

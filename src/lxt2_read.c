@@ -345,7 +345,6 @@ static void lxt2_rd_iter_radix(
                                         (unsigned int)lt->len[idx], lt->value[idx], (unsigned int)b->string_lens[vch], (char*)b->string_pointers[vch] );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            printf( "lxt2_read Throw B\n" );
             Throw 0;
           }
           break;
@@ -427,7 +426,6 @@ static void lxt2_rd_iter_radix0(
     case LXT2_RD_ENC_SUB3:
     case LXT2_RD_ENC_SUB4:
       print_output( "Internal error in granule 0 position 0", FATAL, __FILE__, __LINE__ );
-      printf( "lxt2_read Throw C\n" );
       Throw 0;
       /*@-unreachable@*/
       break;
@@ -462,7 +460,6 @@ static void lxt2_rd_iter_radix0(
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  vch(%u) >= num_dict_entries(%u)", vch, (unsigned int)b->num_dict_entries );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        printf( "lxt2_read Throw D\n" );
         Throw 0;
       }
       if( lt->flags[idx] & (LXT2_RD_SYM_F_DOUBLE | LXT2_RD_SYM_F_STRING) ) {
@@ -502,7 +499,6 @@ static void lxt2_rd_iter_radix0(
                                     (unsigned int)lt->len[idx], lt->value[idx], (unsigned int)b->string_lens[vch], (char*)b->string_pointers[vch] );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        printf( "lxt2_read Throw E\n" );
         Throw 0;
       }
       break;
@@ -1772,7 +1768,6 @@ int lxt2_rd_iter_blocks(
           (void)lxt2_rd_process_block( lt, b );
         } Catch_anonymous {
           free_safe( b->mem, 0 );  /* TBD */
-          printf( "lxt2_read Throw J\n" );
           Throw 0;
         }
 

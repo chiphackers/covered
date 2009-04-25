@@ -524,7 +524,6 @@ void vector_db_read(
                       }
                     } else {
                       print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
-                      printf( "vector Throw A.1\n" );
                       Throw 0;
                     }
 
@@ -540,7 +539,6 @@ void vector_db_read(
                       (*vec)->value.ul[(i*2)+1][j] = (ulong)((val >> 32) & 0xffffffffLL);
                     } else {
                       print_output( "Unable to parse vector information in database file.  Unable to read.", FATAL, __FILE__, __LINE__ );
-                      printf( "vector Throw A.2\n" );
                       Throw 0;
                     }
 #endif
@@ -734,7 +732,6 @@ void vector_db_merge(
                     }
                   } else {
                     print_output( "Unable to parse vector information in database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
-                    printf( "vector Throw E.1\n" );
                     Throw 0;
                   }
 
@@ -752,7 +749,6 @@ void vector_db_merge(
                     }
                   } else {
                     print_output( "Unable to parse vector information in database file.  Unable to merge.", FATAL, __FILE__, __LINE__ );
-                    printf( "vector Throw E.2\n" );
                     Throw 0;
                   }
 #endif
