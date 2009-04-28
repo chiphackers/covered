@@ -2269,6 +2269,7 @@ static char* generator_gen_mem_index(
   unsigned int rv;
   int          number;
 
+#ifdef SKIP
   if( dimension != 0 ) {
 
     char* tmpstr = str;
@@ -2283,6 +2284,7 @@ static char* generator_gen_mem_index(
     free_safe( tmpstr, (strlen( tmpstr ) + 1) );
 
   }
+#endif
 
   /* Calculate the index value */
   switch( exp->op ) {
