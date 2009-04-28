@@ -879,20 +879,27 @@ bool instance_read_add(
 }
 
 /*!
+ \return Returns TRUE if the two trees were successfully merged.
+
  Merges to instance trees that have the same instance root.
 */
-static void instance_merge_tree(
+static bool instance_merge_tree(
   funit_inst* root1,  /*!< Pointer to root of first instance tree to merge */
   funit_inst* root2   /*!< Pointer to root of second instance tree to merge */
 ) { PROFILE(INSTANCE_MERGE);
 
   funit_inst* child2;
-  funit_inst* last2 = NULL;
+  funit_inst* last2  = NULL;
+  bool        retval = TRUE;
 
   /* Perform functional unit merging */
   if( root1->funit != NULL ) {
     if( root2->funit != NULL ) {
-      funit_merge( root1->funit, root2->funit );
+      if( strcmp( root1->funit->name, root2->funit->name ) == 0 ) {
+        funit_merge( root1->funit, root2->funit );
+      } else {
+        retval = FALSE;
+      }
     }
   } else if( root2->funit != NULL ) {
     root1->funit = root2->funit;
@@ -901,13 +908,13 @@ static void instance_merge_tree(
 
   /* Recursively merge the child instances */
   child2 = root2->child_head;
-  while( child2 != NULL ) {
+  while( (child2 != NULL) && retval ) {
     funit_inst* child1 = root1->child_head;
     while( (child1 != NULL) && (strcmp( child1->name, child2->name ) != 0) ) {
       child1 = child1->next;
     }
     if( child1 != NULL ) {
-      instance_merge_tree( child1, child2 );
+      retval = instance_merge_tree( child1, child2 );
       last2  = child2;
       child2 = child2->next;
     } else {
@@ -937,6 +944,8 @@ static void instance_merge_tree(
   }
 
   PROFILE_END;
+
+  return( retval );
 
 }
 
@@ -1033,34 +1042,39 @@ bool instance_merge_two_trees(
 
     if( strcmp( lhier1, lhier2 ) == 0 ) {
 
-      instance_merge_tree( tinst1, tinst2 );
+      bool rv = instance_merge_tree( tinst1, tinst2 );
+      assert( rv );
 
     } else if( strcmp( root1->name, root2->name ) == 0 ) {
 
-      instance_merge_tree( root1, root2 );
+      bool rv = instance_merge_tree( root1, root2 );
+      assert( rv );
 
     } else {
       
-      instance_merge_tree( tinst1, tinst2 );
+      bool rv = instance_merge_tree( tinst1, tinst2 );
+      assert( rv );
       instance_mark_lhier_diffs( tinst1, tinst2 );
 
     }
 
   /* If the two trees share the same root name, merge them */
-  } else if( strcmp( root1->name, root2->name ) == 0 ) {
+  } else if( (strcmp( root1->name, root2->name ) == 0) && instance_merge_tree( root1, root2 ) ) {
 
-    instance_merge_tree( root1, root2 );
+    /* We have already merged so there's nothing left to do */
 
   /* Check to see if the module pointed to by tinst1 exists within the tree of tinst2 */
   } else if( (root2 = instance_find_by_funit_name_if_one( tinst2, tinst1->funit->name )) != NULL ) {
 
-    instance_merge_tree( tinst1, root2 );
+    bool rv = instance_merge_tree( tinst1, root2 );
+    assert( rv );
     instance_mark_lhier_diffs( tinst1, root2 );
 
   /* Check to see if the module pointed to by tinst2 exists within the tree of tinst1 */
   } else if( (root1 = instance_find_by_funit_name_if_one( tinst1, tinst2->funit->name )) != NULL ) {
 
-    instance_merge_tree( root1, tinst2 );
+    bool rv = instance_merge_tree( root1, tinst2 );
+    assert( rv );
     instance_mark_lhier_diffs( root1, tinst2 );
 
   /* Otherwise, we cannot merge the two CDD files so don't */

@@ -21,14 +21,14 @@ initial begin
 	x = ~x;
 end
 
-`include "inc_body.v"
+`include "inc_body2.v"
 
 initial begin
 `ifdef DUMP
         $dumpfile( "include4.vcd" );
         $dumpvars( 0, main );
 `endif
-        #10;
+        #15;
         $finish;
 end
 

@@ -12,6 +12,7 @@ reg [3:0] b;
 
 always @* begin
   b = 4'h0;
+  #1;
   casex( a )
     2'b00,
     2'b01 :  b[a] = 1'b1;
