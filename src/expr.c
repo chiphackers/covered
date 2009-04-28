@@ -5656,7 +5656,14 @@ void expression_vcd_assign(
     uint64 intval;
 
     if( convert_str_to_uint64( value, 31, 0, &intval ) ) {
-      vector_vcd_assign( expr->sig->value, (value + expr->elem.dim->dim_width), ((expr->value->width - 1) + intval), intval );
+      if( strlen( value ) > 32 ) {
+        char* tmpval = strdup_safe( value );
+        tmpval[strlen( value ) - 32] = '\0';
+        vector_vcd_assign( expr->sig->value, tmpval, ((expr->value->width - 1) + intval), intval );
+        free_safe( tmpval, (strlen( value ) + 1) );
+      } else {
+        vector_vcd_assign( expr->sig->value, "0", ((expr->value->width - 1) + intval), intval );
+      }
     }
 
   }

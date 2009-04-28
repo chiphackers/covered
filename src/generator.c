@@ -2624,7 +2624,7 @@ static void generator_insert_mem_cov_helper(
 
   if( exp != NULL ) {
 
-    if( (exp->sig != NULL) && (exp->sig->suppl.part.type == SSUPPL_TYPE_MEM) && exp->elem.dim->last ) {
+    if( (exp->sig != NULL) && (exp->sig->suppl.part.type == SSUPPL_TYPE_MEM) && (exp->elem.dim != NULL) && exp->elem.dim->last ) {
       generator_insert_mem_cov( exp, funit, net, ((exp->suppl.part.lhs == 1) && !treat_as_rhs) );
     }
 
