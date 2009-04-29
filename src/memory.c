@@ -1134,7 +1134,7 @@ static void memory_instance_verbose(
     pname = scope_gen_printable( funit_flatten_name( root->funit ) );
 
     fprintf( ofile, "\n" );
-    switch( root->funit->type ) {
+    switch( root->funit->suppl.part.type ) {
       case FUNIT_MODULE       :  fprintf( ofile, "    Module: " );       break;
       case FUNIT_ANAMED_BLOCK :
       case FUNIT_NAMED_BLOCK  :  fprintf( ofile, "    Named Block: " );  break;
@@ -1194,7 +1194,7 @@ static void memory_funit_verbose(
          ((head->funit->stat->mem_excluded > 0) && report_exclusions)) ) {
 
       fprintf( ofile, "\n" );
-      switch( head->funit->type ) {
+      switch( head->funit->suppl.part.type ) {
         case FUNIT_MODULE       :  fprintf( ofile, "    Module: " );       break;
         case FUNIT_ANAMED_BLOCK :
         case FUNIT_NAMED_BLOCK  :  fprintf( ofile, "    Named Block: " );  break;

@@ -114,7 +114,7 @@ bool ovl_is_assertion_module(
      will tell us if coverage was enabled for this module.
     */
     funitl = funit->tf_head;
-    while( (funitl != NULL) && ((strcmp( funitl->funit->name, "ovl_cover_t" ) != 0) || (funitl->funit->type != FUNIT_TASK)) ) {
+    while( (funitl != NULL) && ((strcmp( funitl->funit->name, "ovl_cover_t" ) != 0) || (funitl->funit->suppl.part.type != FUNIT_TASK)) ) {
       funitl = funitl->next;
     }
     retval = (funitl == NULL);
@@ -204,7 +204,7 @@ void ovl_get_funit_stats(
     while( curr_child != NULL ) {
 
       /* If this child instance module type is an assertion module, get its assertion information */
-      if( (curr_child->funit->type == FUNIT_MODULE) && ovl_is_assertion_module( curr_child->funit ) ) {
+      if( (curr_child->funit->suppl.part.type == FUNIT_MODULE) && ovl_is_assertion_module( curr_child->funit ) ) {
 
         /* Initialize the functional unit iterator */
         func_iter_init( &fi, curr_child->funit, TRUE, FALSE, TRUE, FALSE );
@@ -314,7 +314,7 @@ void ovl_display_verbose(
   while( curr_child != NULL ) {
 
     /* If this child instance module type is an assertion module, check its assertion information */
-    if( (curr_child->funit->type == FUNIT_MODULE) && ovl_is_assertion_module( curr_child->funit ) ) {
+    if( (curr_child->funit->suppl.part.type == FUNIT_MODULE) && ovl_is_assertion_module( curr_child->funit ) ) {
 
       /* Initialize the functional unit iterator */
       func_iter_init( &fi, curr_child->funit, TRUE, FALSE, TRUE, FALSE );
@@ -404,7 +404,7 @@ void ovl_collect(
   while( curr_child != NULL ) {
 
     /* If this child instance module type is an assertion module, get its assertion information */
-    if( (curr_child->funit->type == FUNIT_MODULE) && ovl_is_assertion_module( curr_child->funit ) ) {
+    if( (curr_child->funit->suppl.part.type == FUNIT_MODULE) && ovl_is_assertion_module( curr_child->funit ) ) {
 
       func_iter  fi;
       statement* stmt;

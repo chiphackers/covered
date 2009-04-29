@@ -747,7 +747,7 @@ void race_check_modules() { PROFILE(RACE_CHECK_MODULES);
     inst   = inst_link_find_by_funit( modl->funit, db_list[curr_db]->inst_head, &ignore );
 
     /* Only perform race condition checking for modules that are instantiated and are not OVL assertions and are not ignored */
-    if( (modl->funit->type == FUNIT_MODULE) &&
+    if( (modl->funit->suppl.part.type == FUNIT_MODULE) &&
         (inst != NULL) &&
         ((info_suppl.part.assert_ovl == 0) || !ovl_is_assertion_module( modl->funit )) &&
         (str_link_find( modl->funit->name, race_ignore_mod_head ) == NULL) ) {
@@ -945,7 +945,7 @@ static bool race_report_summary(
 
   while( head != NULL ) {
 
-    if( (head->funit->type == FUNIT_MODULE) && (head->funit->stat != NULL) ) {
+    if( (head->funit->suppl.part.type == FUNIT_MODULE) && (head->funit->stat != NULL) ) {
 
       found = (head->funit->stat->race_total > 0) ? TRUE : found;
 
@@ -982,7 +982,7 @@ static void race_report_verbose(
     if( (head->funit->stat != NULL) && (head->funit->stat->race_total > 0) ) {
 
       fprintf( ofile, "\n" );
-      switch( head->funit->type ) {
+      switch( head->funit->suppl.part.type ) {
         case FUNIT_MODULE       :  fprintf( ofile, "    Module: " );       break;
         case FUNIT_ANAMED_BLOCK :
         case FUNIT_NAMED_BLOCK  :  fprintf( ofile, "    Named Block: " );  break;

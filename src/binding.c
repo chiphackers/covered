@@ -686,7 +686,7 @@ static bool bind_task_function_namedblock(
 
       exp->elem.funit      = found_funit;
       exp->suppl.part.type = ETYPE_FUNIT;
-      retval = (found_funit->type != FUNIT_NO_SCORE);
+      retval = (found_funit->suppl.part.type != FUNIT_NO_SCORE);
 
       if( retval ) {
 

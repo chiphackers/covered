@@ -85,7 +85,7 @@ static void perf_output_mod_stats(
   pstat = perf_gen_stats( funit );
 
   /* Output the structure */
-  fprintf( ofile, "  %s: %s\n", get_funit_type( funit->type ), funit->name );
+  fprintf( ofile, "  %s: %s\n", get_funit_type( funit->suppl.part.type ), funit->name );
   fprintf( ofile, "    ExpOp      Cnt      / Executed / Avg. Executed\n" );
 
   for( i=0; i<EXP_OP_NUM; i++ ) {

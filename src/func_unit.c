@@ -66,7 +66,8 @@ static void funit_init(
   func_unit* funit  /*!< Pointer to functional unit to initialize */
 ) { PROFILE(FUNIT_INIT);
     
-  funit->type       = FUNIT_MODULE;
+  funit->suppl.all  = 0;
+  funit->suppl.part.type = FUNIT_MODULE;
   funit->name       = NULL;
   funit->filename   = NULL;
   funit->version    = NULL;
@@ -98,7 +99,6 @@ static void funit_init(
   funit->er_head    = NULL;
   funit->er_tail    = NULL;
   funit->parent     = NULL;
-  funit->elem_type  = 0;
   funit->elem.thr   = NULL;
 
   PROFILE_END;
@@ -180,13 +180,15 @@ func_unit* funit_get_curr_function(
 
   assert( funit != NULL );
 
-  while( (funit->type != FUNIT_FUNCTION) && (funit->type != FUNIT_AFUNCTION) && (funit->type != FUNIT_MODULE) ) {
+  while( (funit->suppl.part.type != FUNIT_FUNCTION)  &&
+         (funit->suppl.part.type != FUNIT_AFUNCTION) &&
+         (funit->suppl.part.type != FUNIT_MODULE) ) {
     funit = funit->parent;
   }
 
   PROFILE_END;
 
-  return( ((funit->type == FUNIT_FUNCTION) || (funit->type == FUNIT_AFUNCTION)) ? funit : NULL );
+  return( ((funit->suppl.part.type == FUNIT_FUNCTION) || (funit->suppl.part.type == FUNIT_AFUNCTION)) ? funit : NULL );
 
 }
 
@@ -200,13 +202,15 @@ func_unit* funit_get_curr_task(
 
   assert( funit != NULL );
 
-  while( (funit->type != FUNIT_TASK) && (funit->type != FUNIT_ATASK) && (funit->type != FUNIT_MODULE) ) {
+  while( (funit->suppl.part.type != FUNIT_TASK)  &&
+         (funit->suppl.part.type != FUNIT_ATASK) &&
+         (funit->suppl.part.type != FUNIT_MODULE) ) {
     funit = funit->parent;
   }
 
   PROFILE_END;
 
-  return( ((funit->type == FUNIT_TASK) || (funit->type == FUNIT_ATASK)) ? funit : NULL );
+  return( ((funit->suppl.part.type == FUNIT_TASK) || (funit->suppl.part.type == FUNIT_ATASK)) ? funit : NULL );
 
 }
 
@@ -563,15 +567,15 @@ void funit_db_write(
   char            tmp[4096];      /* Temporary string holder */
   str_link*       strl;           /* Pointer to string link */
 
-  if( funit->type != FUNIT_NO_SCORE ) {
+  if( funit->suppl.part.type != FUNIT_NO_SCORE ) {
 
 #ifdef DEBUG_MODE
-    assert( (funit->type == FUNIT_MODULE)    || (funit->type == FUNIT_NAMED_BLOCK) ||
-            (funit->type == FUNIT_FUNCTION)  || (funit->type == FUNIT_TASK)        ||
-            (funit->type == FUNIT_AFUNCTION) || (funit->type == FUNIT_ATASK)       ||
-            (funit->type == FUNIT_ANAMED_BLOCK) );
+    assert( (funit->suppl.part.type == FUNIT_MODULE)    || (funit->suppl.part.type == FUNIT_NAMED_BLOCK) ||
+            (funit->suppl.part.type == FUNIT_FUNCTION)  || (funit->suppl.part.type == FUNIT_TASK)        ||
+            (funit->suppl.part.type == FUNIT_AFUNCTION) || (funit->suppl.part.type == FUNIT_ATASK)       ||
+            (funit->suppl.part.type == FUNIT_ANAMED_BLOCK) );
     {
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Writing %s %s", get_funit_type( funit->type ), obf_funit( funit->name ) );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Writing %s %s", get_funit_type( funit->suppl.part.type ), obf_funit( funit->name ) );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
     }
@@ -585,7 +589,7 @@ void funit_db_write(
       unsigned int rv;
       strcpy( modname, inst->name );
       assert( parent_inst != NULL );
-      while( parent_inst->funit->type != FUNIT_MODULE ) {
+      while( parent_inst->funit->suppl.part.type != FUNIT_MODULE ) {
         unsigned int rv = snprintf( tmp, 4096, "%s.%s", parent_inst->name, modname );
         assert( rv < 4096 );
         strcpy( modname, tmp );
@@ -602,10 +606,13 @@ void funit_db_write(
       funit->timescale = db_scale_to_precision( (uint64)1, funit );
     }
   
+    /* Make sure that the etype bit in the supplemental field is cleared */
+    funit->suppl.part.etype = 0;
+
     /*@-duplicatequals -formattype@*/
-    fprintf( file, "%d %d %s \"%s\" %d %s %u %u %llu\n",
+    fprintf( file, "%d %x %s \"%s\" %d %s %u %u %llu\n",
       DB_TYPE_FUNIT,
-      funit->type,
+      funit->suppl.all,
       modname,
       scope,
       name_diff,
@@ -701,7 +708,7 @@ void funit_db_write(
     }
 
     /* Now print all race condition block structures in functional unit (if we are a module) */
-    if( funit->type == FUNIT_MODULE ) {
+    if( funit->suppl.part.type == FUNIT_MODULE ) {
       curr_race = funit->race_head;
       while( curr_race != NULL ) {
         race_db_write( curr_race, file );
@@ -739,8 +746,8 @@ void funit_db_read(
   int  params;       /* Number of parameters in string that were parsed */
 
   /*@-duplicatequals -formattype@*/
-  if( (params = sscanf( *line, "%d %s \"%[^\"]\" %d %s %u %u %llu%n", 
-                        &(funit->type), funit->name, scope, name_diff, funit->filename,
+  if( (params = sscanf( *line, "%x %s \"%[^\"]\" %d %s %u %u %llu%n", 
+                        &(funit->suppl.all), funit->name, scope, name_diff, funit->filename,
                         &(funit->start_line), &(funit->end_line), &(funit->timescale), &chars_read )) == 8 ) {
   /*@=duplicatequals =formattype@*/
 
@@ -954,7 +961,7 @@ void funit_db_merge(
   }
 
   /* Since race condition blocks don't get merged, we will just read these lines in */
-  if( base->type == FUNIT_MODULE ) {
+  if( base->suppl.part.type == FUNIT_MODULE ) {
     curr_base_race = base->race_head;
     while( curr_base_race != NULL ) {
       if( util_readline( file, &curr_line, &curr_line_size ) ) {
@@ -1122,7 +1129,7 @@ bool funit_is_top_module(
   assert( funit != NULL );
 
   /* Only check the signal list if we are a MODULE type */
-  if( funit->type == FUNIT_MODULE ) {
+  if( funit->suppl.part.type == FUNIT_MODULE ) {
 
     sigl = funit->sig_head;
     while( (sigl != NULL) &&
@@ -1164,7 +1171,7 @@ bool funit_is_unnamed( func_unit* funit ) { PROFILE(FUNIT_IS_UNNAMED);
   if( funit != NULL ) {
 
     /* Only begin..end blocks can be unnamed scopes */
-    if( (funit->type == FUNIT_NAMED_BLOCK) || (funit->type == FUNIT_ANAMED_BLOCK) ) {
+    if( (funit->suppl.part.type == FUNIT_NAMED_BLOCK) || (funit->suppl.part.type == FUNIT_ANAMED_BLOCK) ) {
       scope_extract_back( funit->name, back, rest );
       retval = db_is_unnamed_scope( back );
     }
@@ -1223,7 +1230,7 @@ void funit_display_signals( func_unit* funit ) { PROFILE(FUNIT_DISPLAY_SIGNALS);
 
   sig_link* sigl;  /* Pointer to current signal link element */
 
-  printf( "%s => %s", get_funit_type( funit->type ), obf_funit( funit->name ) );
+  printf( "%s => %s", get_funit_type( funit->suppl.part.type ), obf_funit( funit->name ) );
 
   sigl = funit->sig_head;
   while( sigl != NULL ) {
@@ -1245,7 +1252,7 @@ void funit_display_expressions( func_unit* funit ) { PROFILE(FUNIT_DISPLAY_EXPRE
 
   exp_link* expl;    /* Pointer to current expression link element */
 
-  printf( "%s => %s", get_funit_type( funit->type ), obf_funit( funit->name ) );
+  printf( "%s => %s", get_funit_type( funit->suppl.part.type ), obf_funit( funit->name ) );
 
   expl = funit->exp_head;
   while( expl != NULL ) {
@@ -1273,7 +1280,7 @@ void funit_add_thread(
   assert( thr != NULL );
 
   /* Statement element should point to a thread */
-  if( funit->elem_type == 0 ) {
+  if( funit->suppl.part.etype == 0 ) {
 
     /* If the statement element currently points to nothing, simply point the statement element to the given thread */
     if( funit->elem.thr == NULL ) {
@@ -1301,8 +1308,8 @@ void funit_add_thread(
       tlist->next = NULL;
     
       /* Repopulate the functional unit */
-      funit->elem.tlist = tlist;
-      funit->elem_type  = 1;
+      funit->elem.tlist       = tlist;
+      funit->suppl.part.etype = 1;
   
     }
 
@@ -1346,7 +1353,7 @@ void funit_push_threads(
 
   assert( funit != NULL );
 
-  if( funit->elem_type == 0 ) {
+  if( funit->suppl.part.etype == 0 ) {
     if( (funit->elem.thr != NULL) && (funit->elem.thr->suppl.part.state == THR_ST_WAITING) && (funit->elem.thr->curr == stmt) ) {
       sim_thread_push( funit->elem.thr, time );
     }
@@ -1379,7 +1386,7 @@ void funit_delete_thread(
   assert( thr != NULL );
 
   /* If the statement element type is a thread pointer, simply clear the thread pointer */
-  if( funit->elem_type == 0 ) {
+  if( funit->suppl.part.etype == 0 ) {
     funit->elem.thr = NULL;
 
   /* Otherwise, find the given thread in the statement thread list and remove it */
@@ -1568,7 +1575,7 @@ static void funit_clean(
     }
 
     /* Free thread list, if available */
-    if( funit->elem_type == 1 ) {
+    if( funit->suppl.part.etype == 1 ) {
       thr_link* thrl = funit->elem.tlist->head;
       thr_link* tmpl;
       while( thrl != NULL ) {

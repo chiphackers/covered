@@ -637,7 +637,7 @@ static void generator_create_filename_list(
   while( funitl != NULL ) {
 
     /* Only add modules that are not the $root "module" */
-    if( (funitl->funit->type == FUNIT_MODULE) && (strncmp( "$root", funitl->funit->name, 5 ) != 0) ) {
+    if( (funitl->funit->suppl.part.type == FUNIT_MODULE) && (strncmp( "$root", funitl->funit->name, 5 ) != 0) ) {
 
       fname_link* fnamel = *head;
 

@@ -507,7 +507,7 @@ void funit_link_display(
 
   curr = head;
   while( curr != NULL ) {
-    printf( "  name: %s, type: %s\n", obf_funit( curr->funit->name ), get_funit_type( curr->funit->type ) );
+    printf( "  name: %s, type: %s\n", obf_funit( curr->funit->name ), get_funit_type( curr->funit->suppl.part.type ) );
     curr = curr->next;
   }
 
@@ -698,7 +698,7 @@ funit_link* funit_link_find(
   funit_link* curr;    /* Pointer to current funit_link link */
 
   curr = head;
-  while( (curr != NULL) && (!scope_compare( curr->funit->name, name ) || (curr->funit->type != type)) ) {
+  while( (curr != NULL) && (!scope_compare( curr->funit->name, name ) || (curr->funit->suppl.part.type != type)) ) {
     curr = curr->next;
   }
 

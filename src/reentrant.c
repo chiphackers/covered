@@ -44,7 +44,7 @@ static int reentrant_count_afu_bits(
   exp_link* expl;      /* Pointer to current expression link */
   int       bits = 0;  /* Number of bits in this functional unit and all parent functional units in the reentrant task/function */
 
-  if( (funit->type == FUNIT_ATASK) || (funit->type == FUNIT_AFUNCTION) || (funit->type == FUNIT_ANAMED_BLOCK) ) {
+  if( (funit->suppl.part.type == FUNIT_ATASK) || (funit->suppl.part.type == FUNIT_AFUNCTION) || (funit->suppl.part.type == FUNIT_ANAMED_BLOCK) ) {
 
     /* Count the number of signal bits in this functional unit */
     sigl = funit->sig_head;
@@ -69,7 +69,7 @@ static int reentrant_count_afu_bits(
     }
 
     /* If the current functional unit is a named block, gather the bits in the parent functional unit */
-    if( funit->type == FUNIT_ANAMED_BLOCK ) {
+    if( funit->suppl.part.type == FUNIT_ANAMED_BLOCK ) {
       bits += reentrant_count_afu_bits( funit->parent );
     }
 
@@ -91,7 +91,7 @@ static void reentrant_store_data_bits(
   unsigned int curr_bit  /*!< Current bit to store (should be started at a value of 0) */
 ) { PROFILE(REENTRANT_STORE_DATA_BITS);
 
-  if( (funit->type == FUNIT_ATASK) || (funit->type == FUNIT_AFUNCTION) || (funit->type == FUNIT_ANAMED_BLOCK) ) {
+  if( (funit->suppl.part.type == FUNIT_ATASK) || (funit->suppl.part.type == FUNIT_AFUNCTION) || (funit->suppl.part.type == FUNIT_ANAMED_BLOCK) ) {
 
     sig_link* sigl = funit->sig_head;
     exp_link* expl = funit->exp_head;
@@ -201,7 +201,7 @@ static void reentrant_store_data_bits(
     }
 
     /* If the current functional unit is a named block, store the bits in the parent functional unit */
-    if( funit->type == FUNIT_ANAMED_BLOCK ) {
+    if( funit->suppl.part.type == FUNIT_ANAMED_BLOCK ) {
       reentrant_store_data_bits( funit->parent, ren, curr_bit );
     }
 
@@ -223,7 +223,7 @@ static void reentrant_restore_data_bits(
 
   int i;  /* Loop iterator */
 
-  if( (funit->type == FUNIT_ATASK) || (funit->type == FUNIT_AFUNCTION) || (funit->type == FUNIT_ANAMED_BLOCK) ) {
+  if( (funit->suppl.part.type == FUNIT_ATASK) || (funit->suppl.part.type == FUNIT_AFUNCTION) || (funit->suppl.part.type == FUNIT_ANAMED_BLOCK) ) {
 
     sig_link* sigl;
     exp_link* expl;
@@ -344,7 +344,7 @@ static void reentrant_restore_data_bits(
      If the current functional unit is a named block, restore the rest of the bits for the parent functional units
      in this reentrant task/function.
     */
-    if( funit->type == FUNIT_ANAMED_BLOCK ) {
+    if( funit->suppl.part.type == FUNIT_ANAMED_BLOCK ) {
       reentrant_restore_data_bits( funit->parent, ren, curr_bit, expr );
     }
 

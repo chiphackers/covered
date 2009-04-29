@@ -112,9 +112,9 @@ void stmt_blk_remove() { PROFILE(STMT_BLK_REMOVE);
      If we are removing the statement contained in a task, function or named block, we need to remove all statement
      blocks that contain expressions that call this task, function or named block.
     */
-    if( (curr_funit->type == FUNIT_FUNCTION)  || (curr_funit->type == FUNIT_TASK)  || (curr_funit->type == FUNIT_NAMED_BLOCK) ||
-        (curr_funit->type == FUNIT_AFUNCTION) || (curr_funit->type == FUNIT_ATASK) || (curr_funit->type == FUNIT_ANAMED_BLOCK) ) {
-      curr_funit->type = FUNIT_NO_SCORE;
+    if( (curr_funit->suppl.part.type == FUNIT_FUNCTION)  || (curr_funit->suppl.part.type == FUNIT_TASK)  || (curr_funit->suppl.part.type == FUNIT_NAMED_BLOCK) ||
+        (curr_funit->suppl.part.type == FUNIT_AFUNCTION) || (curr_funit->suppl.part.type == FUNIT_ATASK) || (curr_funit->suppl.part.type == FUNIT_ANAMED_BLOCK) ) {
+      curr_funit->suppl.part.type = FUNIT_NO_SCORE;
       db_remove_stmt_blks_calling_statement( stmt );
     }
     /* Deallocate the statement block now */

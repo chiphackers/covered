@@ -600,19 +600,19 @@ void db_read(
                   curr_funit = foundinst->funit;
                   funit_db_merge( foundinst->funit, db_handle, TRUE );
                 } else if( (read_mode == READ_MODE_REPORT_MOD_MERGE) &&
-                           ((foundfunit = funit_link_find( tmpfunit.name, tmpfunit.type, db_list[curr_db]->funit_head )) != NULL) ) {
+                           ((foundfunit = funit_link_find( tmpfunit.name, tmpfunit.suppl.part.type, db_list[curr_db]->funit_head )) != NULL) ) {
                   merge_mode = TRUE;
                   curr_funit = foundfunit->funit;
                   funit_db_merge( foundfunit->funit, db_handle, FALSE );
                 } else {
                   curr_funit             = funit_create();
                   curr_funit->name       = strdup_safe( funit_name );
-                  curr_funit->type       = tmpfunit.type;
+                  curr_funit->suppl.all  = tmpfunit.suppl.all;
                   curr_funit->filename   = strdup_safe( funit_file );
                   curr_funit->start_line = tmpfunit.start_line;
                   curr_funit->end_line   = tmpfunit.end_line;
                   curr_funit->timescale  = tmpfunit.timescale;
-                  if( tmpfunit.type != FUNIT_MODULE ) {
+                  if( tmpfunit.suppl.part.type != FUNIT_MODULE ) {
                     curr_funit->parent = scope_get_parent_funit( db_list[curr_db]->inst_tail->inst, funit_scope );
                     parent_mod         = scope_get_parent_module( db_list[curr_db]->inst_tail->inst, funit_scope );
                     funit_link_add( curr_funit, &(parent_mod->tf_head), &(parent_mod->tf_tail) );
@@ -784,7 +784,7 @@ void db_merge_funits() { PROFILE(DB_MERGE_FUNITS);
     while( (tfunitl != NULL) && (funitl != tfunitl) ) {
       func_unit* tfunit = tfunitl->funit;
       tfunitl = tfunitl->next;
-      if( (strcmp( funitl->funit->name, tfunit->name ) == 0) && (funitl->funit->type == tfunit->type) ) {
+      if( (strcmp( funitl->funit->name, tfunit->name ) == 0) && (funitl->funit->suppl.part.type == tfunit->suppl.part.type) ) {
         funit_inst* inst;
         int         ignore = 0;
         funit_merge( funitl->funit, tfunit );
@@ -1115,9 +1115,9 @@ func_unit* db_add_instance(
 #endif
 
   /* Create new functional unit node */
-  funit       = funit_create();
-  funit->name = strdup_safe( name );
-  funit->type = score ? type : FUNIT_NO_SCORE;
+  funit                  = funit_create();
+  funit->name            = strdup_safe( name );
+  funit->suppl.part.type = score ? type : FUNIT_NO_SCORE;
 
   /* If a range has been specified, calculate its width and lsb now */
   if( (range != NULL) && score ) {
@@ -1129,7 +1129,7 @@ func_unit* db_add_instance(
     }
   }
 
-  if( ((found_funit_link = funit_link_find( funit->name, funit->type, db_list[curr_db]->funit_head )) != NULL) && (generate_top_mode == 0) ) {
+  if( ((found_funit_link = funit_link_find( funit->name, funit->suppl.part.type, db_list[curr_db]->funit_head )) != NULL) && (generate_top_mode == 0) ) {
 
     if( type != FUNIT_MODULE ) {
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Multiple identical task/function/named-begin-end names (%s) found in module %s, file %s",
@@ -1322,11 +1322,11 @@ bool db_add_function_task_namedblock(
       tf->parent = curr_funit;
 
       /* If we are in an automatic task or function, set our type to FUNIT_ANAMED_BLOCK */
-      if( (curr_funit->type == FUNIT_AFUNCTION) ||
-          (curr_funit->type == FUNIT_ATASK) ||
-          (curr_funit->type == FUNIT_ANAMED_BLOCK) ) {
-        assert( tf->type == FUNIT_NAMED_BLOCK );
-        tf->type = FUNIT_ANAMED_BLOCK;
+      if( (curr_funit->suppl.part.type == FUNIT_AFUNCTION) ||
+          (curr_funit->suppl.part.type == FUNIT_ATASK) ||
+          (curr_funit->suppl.part.type == FUNIT_ANAMED_BLOCK) ) {
+        assert( tf->suppl.part.type == FUNIT_NAMED_BLOCK );
+        tf->suppl.part.type = FUNIT_ANAMED_BLOCK;
       }
 
       /* Set current functional unit to this functional unit */

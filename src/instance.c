@@ -1113,7 +1113,7 @@ void instance_db_write(
 
   if( root->funit != NULL ) {
 
-    if( root->funit->type != FUNIT_NO_SCORE ) {
+    if( root->funit->suppl.part.type != FUNIT_NO_SCORE ) {
 
       funit_inst* curr = parse_mode ? root : NULL;
 

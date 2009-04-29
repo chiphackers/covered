@@ -1771,6 +1771,28 @@ union asuppl_u {
 };
 
 /*------------------------------------------------------------------------------*/
+
+union usuppl_u;
+
+/*!
+ Renaming usuppl_u field for convenience.
+*/
+typedef union usuppl_u usuppl;
+
+/*!
+ Supplemental field for a functional unit structure.
+*/
+union usuppl_u {
+  uint8 all;                      /*!< Allows us to set all bits in the suppl field */
+  struct {
+    uint8 type      : 3;          /*!< Specifies the functional unit type (see \ref func_unit_types for legal values) */
+    uint8 etype     : 1;          /*!< Set to 0 if elem should be treated as a thread pointer; set to 1 if elem should be treated
+                                       as a thread list pointer. */
+    uint8 included  : 1;          /*!< Set to 1 if the current functional unit has been included into a file via the `include preprocessor command */
+  } part;
+};
+
+/*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION DECLARATIONS  */
 
 union  expr_stmt_u;
@@ -2589,8 +2611,7 @@ struct race_blk_s {
  Contains information for a functional unit (i.e., module, named block, function or task).
 */
 struct func_unit_s {
-  int             type;              /*!< Specifies the type of functional unit this structure represents.
-                                          Legal values are defined in \ref func_unit_types */
+  usuppl          suppl;             /*!< Supplemental field */
   char*           name;              /*!< Functional unit name */
   char*           filename;          /*!< File name where functional unit exists */
   char*           version;           /*!< Version information for functional unit (if one exists) */
@@ -2626,8 +2647,6 @@ struct func_unit_s {
   struct_union*   su_tail;           /*!< Tail pointer to list of struct/unions for this functional unit */
   exclude_reason* er_head;           /*!< Head pointer to list of exclusion reason structures for this functional unit */
   exclude_reason* er_tail;           /*!< Tail pointer to list of exclusion reason structures for this functional unit */
-  int             elem_type;         /*!< Set to 0 if elem should be treated as a thread pointer; set to 1 if elem should be treated
-                                          as a thread list pointer. */
   union {
     thread*   thr;                   /*!< Pointer to a single thread that this statement is associated with */
     thr_list* tlist;                 /*!< Pointer to a list of threads that this statement is currently associated with */

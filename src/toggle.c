@@ -581,7 +581,7 @@ static void toggle_instance_verbose(
     pname = scope_gen_printable( funit_flatten_name( root->funit ) );
 
     fprintf( ofile, "\n" );
-    switch( root->funit->type ) {
+    switch( root->funit->suppl.part.type ) {
       case FUNIT_MODULE       :  fprintf( ofile, "    Module: " );       break;
       case FUNIT_ANAMED_BLOCK :
       case FUNIT_NAMED_BLOCK  :  fprintf( ofile, "    Named Block: " );  break;
@@ -637,7 +637,7 @@ static void toggle_funit_verbose(
          (report_exclusions && (head->funit->stat->tog_excluded > 0))) ) {
 
       fprintf( ofile, "\n" );
-      switch( head->funit->type ) {
+      switch( head->funit->suppl.part.type ) {
         case FUNIT_MODULE       :  fprintf( ofile, "    Module: " );       break;
         case FUNIT_ANAMED_BLOCK :
         case FUNIT_NAMED_BLOCK  :  fprintf( ofile, "    Named Block: " );  break;

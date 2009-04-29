@@ -1044,7 +1044,7 @@ void expression_resize(
       case EXP_OP_FUNC_CALL :
         if( expr->sig != NULL ) {
           assert( funit != NULL );
-          if( (funit->type != FUNIT_AFUNCTION) && (funit->type != FUNIT_ANAMED_BLOCK) ) {
+          if( (funit->suppl.part.type != FUNIT_AFUNCTION) && (funit->suppl.part.type != FUNIT_ANAMED_BLOCK) ) {
             assert( expr->elem.funit != NULL );
             tmp_inst = inst_link_find_by_funit( expr->elem.funit, db_list[curr_db]->inst_head, &ignore );
             funit_size_elements( expr->elem.funit, tmp_inst, FALSE, FALSE );
@@ -4910,7 +4910,9 @@ bool expression_op_func__passign(
 
   /* If the current thread is running an automatic function, create a reentrant structure for it */
   if( (thr != NULL) && (thr->ren == NULL) &&
-      ((thr->funit->type == FUNIT_AFUNCTION) || (thr->funit->type == FUNIT_ATASK) || (thr->funit->type == FUNIT_ANAMED_BLOCK)) ) {
+      ((thr->funit->suppl.part.type == FUNIT_AFUNCTION) ||
+       (thr->funit->suppl.part.type == FUNIT_ATASK)     ||
+       (thr->funit->suppl.part.type == FUNIT_ANAMED_BLOCK)) ) {
     thr->ren = reentrant_create( thr->funit );
   }
 

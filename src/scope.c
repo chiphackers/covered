@@ -150,7 +150,7 @@ bool scope_find_param(
 
           if( line > 0 ) {
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
-                                        obf_sig( name ), get_funit_type( curr_funit->type ), obf_funit( curr_funit->name ),
+                                        obf_sig( name ), get_funit_type( curr_funit->suppl.part.type ), obf_funit( curr_funit->name ),
                                         obf_file( curr_funit->filename ), line );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -241,7 +241,7 @@ bool scope_find_signal(
 
           if( line > 0 ) {
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
-                                        obf_sig( name ), get_funit_type( curr_funit->type ), obf_funit( curr_funit->name ),
+                                        obf_sig( name ), get_funit_type( curr_funit->suppl.part.type ), obf_funit( curr_funit->name ),
                                         obf_file( curr_funit->filename ), line );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -322,7 +322,7 @@ bool scope_find_task_function_namedblock(
   if( ((*found_funit = scope_find_funit_from_scope( name, curr_funit, rm_unnamed )) == NULL) && must_find ) {
 
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined %s hierarchy (%s) in %s %s, file %s, line %d",
-                                get_funit_type( type ), obf_funit( name ), get_funit_type( curr_funit->type ),
+                                get_funit_type( type ), obf_funit( name ), get_funit_type( curr_funit->suppl.part.type ),
                                 obf_funit( curr_funit->name ), obf_file( curr_funit->filename ), line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -409,7 +409,7 @@ func_unit* scope_get_parent_module(
     strcpy( curr_scope, rest );
     inst = instance_find_scope( root, curr_scope, FALSE );
     assert( inst != NULL );
-  } while( inst->funit->type != FUNIT_MODULE );
+  } while( inst->funit->suppl.part.type != FUNIT_MODULE );
 
   free_safe( curr_scope, str_len );
   free_safe( rest,       str_len );

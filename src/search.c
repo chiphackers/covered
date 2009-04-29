@@ -83,9 +83,9 @@ void search_init() { PROFILE(SEARCH_INIT);
   if( flag_global_generation == GENERATION_SV ) {
 
     /* Create the global functional unit */
-    global_funit           = funit_create();
-    global_funit->name     = strdup_safe( "$root" );
-    global_funit->type     = FUNIT_MODULE;
+    global_funit                  = funit_create();
+    global_funit->name            = strdup_safe( "$root" );
+    global_funit->suppl.part.type = FUNIT_MODULE;
     global_funit->filename = strdup_safe( "NA" );
     global_funit->ts_unit  = 2;
     (void)funit_link_add( global_funit, &(db_list[curr_db]->funit_head), &(db_list[curr_db]->funit_tail) );
@@ -96,8 +96,8 @@ void search_init() { PROFILE(SEARCH_INIT);
   }
 
   /* Now create top-level module of design */
-  mod       = funit_create();
-  mod->type = FUNIT_MODULE;
+  mod                  = funit_create();
+  mod->suppl.part.type = FUNIT_MODULE;
   mod->name = strdup_safe( top_module );
 
   /* Initialize functional unit linked list */

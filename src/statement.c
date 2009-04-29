@@ -459,12 +459,12 @@ void statement_db_read(
        set the curr_funit->first_stmt pointer to this statement.
       */
       if( (stmt->suppl.part.head == 1) &&
-          ((curr_funit->type == FUNIT_TASK)        ||
-           (curr_funit->type == FUNIT_ATASK)       ||
-           (curr_funit->type == FUNIT_FUNCTION)    ||
-           (curr_funit->type == FUNIT_AFUNCTION)   ||
-           (curr_funit->type == FUNIT_NAMED_BLOCK) ||
-           (curr_funit->type == FUNIT_ANAMED_BLOCK)) ) {
+          ((curr_funit->suppl.part.type == FUNIT_TASK)        ||
+           (curr_funit->suppl.part.type == FUNIT_ATASK)       ||
+           (curr_funit->suppl.part.type == FUNIT_FUNCTION)    ||
+           (curr_funit->suppl.part.type == FUNIT_AFUNCTION)   ||
+           (curr_funit->suppl.part.type == FUNIT_NAMED_BLOCK) ||
+           (curr_funit->suppl.part.type == FUNIT_ANAMED_BLOCK)) ) {
         curr_funit->first_stmt = stmt;
       }
 
@@ -977,7 +977,7 @@ void statement_dealloc_recursive(
     /* If we are a named block or fork call statement, remove that statement block */
     if( (stmt->exp->op == EXP_OP_NB_CALL) || (stmt->exp->op == EXP_OP_FORK) ) {
 
-      if( rm_stmt_blk && (ESUPPL_TYPE( stmt->exp->suppl ) == ETYPE_FUNIT) && (stmt->exp->elem.funit->type != FUNIT_NO_SCORE) ) {
+      if( rm_stmt_blk && (ESUPPL_TYPE( stmt->exp->suppl ) == ETYPE_FUNIT) && (stmt->exp->elem.funit->suppl.part.type != FUNIT_NO_SCORE) ) {
         stmt_blk_add_to_remove_list( stmt->exp->elem.funit->first_stmt );
       }
 

@@ -90,7 +90,7 @@ static void gen_item_stringify(
         assert( rv < str_len );
         break;
       case GI_TYPE_TFN :
-        rv = snprintf( tmp, str_len, ", TFN, name: %s, type: %s", obf_inst( gi->elem.inst->name ), get_funit_type( gi->elem.inst->funit->type ) );
+        rv = snprintf( tmp, str_len, ", TFN, name: %s, type: %s", obf_inst( gi->elem.inst->name ), get_funit_type( gi->elem.inst->funit->suppl.part.type ) );
         assert( rv < str_len );
         break;
       case GI_TYPE_BIND :
