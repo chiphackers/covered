@@ -1,5 +1,5 @@
-5 14 101 4 *
-8 /ptmp/covered/diags/verilog 2 -t (main) 2 -vcd (hier3.4.vcd) 2 -o (hier3.4.cdd) 2 -v (hier3.4.v) 2 -D (DUMP)
+5 14 fd01 4 *
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (hier3.4.vcd) 2 -o (hier3.4.cdd) 2 -v (hier3.4.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 hier3.4.v 1 20 1
 2 1 5 5 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 u$0
@@ -12,9 +12,9 @@
 3 0 bar "main.a.c" 0 hier3.4.v 36 40 1
 1 y 3 38 1070004 1 0 0 0 1 17 0 1 0 0 0 0
 3 0 test "main.a.t" 0 hier3.4.v 44 54 1
-2 2 46 46 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 u$2
+2 2 46 46 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 u$0
 4 2 1 0 0
-3 1 test.u$2 "main.a.t.u$2" 0 hier3.4.v 46 50 1
+3 1 test.u$0 "main.a.t.u$0" 0 hier3.4.v 46 50 1
 2 3 47 47 9000c 1 0 21008 0 0 1 16 1 0
 2 4 47 47 10005 0 1 1410 0 0 1 1 t.a.y
 2 5 47 47 1000c 1 37 1a 3 4
