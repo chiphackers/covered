@@ -1,5 +1,5 @@
-5 14 101 4 *
-8 /ptmp/covered/diags/verilog 2 -t (main) 2 -vcd (real3.7.vcd) 2 -o (real3.7.cdd) 2 -v (real3.7.v) 2 -D (DUMP)
+5 14 fd01 4 *
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (real3.7.vcd) 2 -o (real3.7.cdd) 2 -v (real3.7.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 real3.7.v 8 31 1
 2 1 14 14 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 u$0
@@ -23,7 +23,7 @@
 2 14 19 19 c000e 1 0 1008 0 0 32 48 7b 0
 2 15 19 19 b000b 1 4d 1008 14 0 32 50 0 ffffffff 7a ffffff85 0 0
 2 16 19 19 60006 1 1 1008 0 0 32 33 b
-2 17 19 19 6000e 1 11 201008 15 16 1 50 0 1 0 1 0 0
+2 17 19 19 6000e 1 11 201008 15 16 1 18 0 1 0 1 0 0
 2 18 19 19 10001 0 1 1410 0 0 1 1 c
 2 19 19 19 1000f 1 37 1a 17 18
 4 19 0 0 0

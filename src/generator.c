@@ -1530,7 +1530,11 @@ static void generator_insert_unary_comb_cov(
   }
 
   /* Prepend the coverage assignment to the working buffer */
-  rv = snprintf( str, 4096, "%s%s = (%s > 0);", prefix, sig, sigr );
+  if( exp->value->suppl.part.is_signed == 1 ) {
+    rv = snprintf( str, 4096, "%s%s = (%s != 0);", prefix, sig, sigr );
+  } else {
+    rv = snprintf( str, 4096, "%s%s = (%s > 0);", prefix, sig, sigr );
+  }
   assert( rv < 4096 );
   str_link_add( strdup_safe( str ), &comb_head, &comb_tail );
 
@@ -1586,7 +1590,19 @@ static void generator_insert_comb_comb_cov(
   }
 
   /* Prepend the coverage assignment to the working buffer */
-  rv = snprintf( str, 4096, "%s%s = {(%s > 0),(%s > 0)};", prefix, sig, sigl, sigr );
+  if( exp->left->value->suppl.part.is_signed == 1 ) {
+    if( exp->right->value->suppl.part.is_signed == 1 ) {
+      rv = snprintf( str, 4096, "%s%s = {(%s != 0),(%s != 0)};", prefix, sig, sigl, sigr );
+    } else {
+      rv = snprintf( str, 4096, "%s%s = {(%s != 0),(%s > 0)};", prefix, sig, sigl, sigr );
+    }
+  } else {
+    if( exp->right->value->suppl.part.is_signed == 1 ) {
+      rv = snprintf( str, 4096, "%s%s = {(%s > 0),(%s != 0)};", prefix, sig, sigl, sigr );
+    } else {
+      rv = snprintf( str, 4096, "%s%s = {(%s > 0),(%s > 0)};", prefix, sig, sigl, sigr );
+    }
+  }
   assert( rv < 4096 );
   str_link_add( strdup_safe( str ), &comb_head, &comb_tail );
 
@@ -1854,13 +1870,25 @@ static char* generator_create_lhs(
         char tmp[50];
         rv = snprintf( tmp, 50, "%d", (number - 1) );
         assert( rv < 50 );
-        slen = 5 + strlen( tmp ) + 4 + strlen( name ) + 3;
-        str  = (char*)malloc_safe( slen );
-        rv   = snprintf( str, slen, "reg [%s:0] %s;\n", tmp, name );
+        if( exp->value->suppl.part.is_signed == 1 ) {
+          slen = 12 + strlen( tmp ) + 4 + strlen( name ) + 3;
+          str  = (char*)malloc_safe( slen );
+          rv   = snprintf( str, slen, "reg signed [%s:0] %s;\n", tmp, name );
+        } else {
+          slen = 5 + strlen( tmp ) + 4 + strlen( name ) + 3;
+          str  = (char*)malloc_safe( slen );
+          rv   = snprintf( str, slen, "reg [%s:0] %s;\n", tmp, name );
+        }
       } else {
-        slen = 6 + ((size != NULL) ? strlen( size ) : 1) + 7 + strlen( name ) + 3;
-        str  = (char*)malloc_safe_nolimit( slen );
-        rv   = snprintf( str, slen, "reg [(%s-1):0] %s;\n", ((size != NULL) ? size : "1"), name );
+        if( exp->value->suppl.part.is_signed == 1 ) {
+          slen = 13 + ((size != NULL) ? strlen( size ) : 1) + 7 + strlen( name ) + 3;
+          str  = (char*)malloc_safe_nolimit( slen );
+          rv   = snprintf( str, slen, "reg signed [(%s-1):0] %s;\n", ((size != NULL) ? size : "1"), name );
+        } else {
+          slen = 6 + ((size != NULL) ? strlen( size ) : 1) + 7 + strlen( name ) + 3;
+          str  = (char*)malloc_safe_nolimit( slen );
+          rv   = snprintf( str, slen, "reg [(%s-1):0] %s;\n", ((size != NULL) ? size : "1"), name );
+        }
       }
 
       assert( rv < slen );

@@ -1,5 +1,5 @@
-5 14 101 7 *
-8 /ptmp/covered/diags/verilog 2 -t (main) 2 -vcd (random1.1.vcd) 2 -o (random1.1.cdd) 2 -v (random1.1.v) 2 -D (DUMP)
+5 14 fd01 7 *
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (random1.1.vcd) 2 -o (random1.1.cdd) 2 -v (random1.1.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1
 3 0 main "main" 0 random1.1.v 8 29 1
 2 1 12 12 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 u$0
@@ -20,7 +20,7 @@
 2 8 14 14 d000f 1 37 400016 6 7
 2 9 14 14 140014 1 0 1008 0 0 32 48 4 0
 2 10 14 14 120012 5 1 100c 0 0 32 33 i
-2 11 14 14 120014 5 d 80100e 9 10 1 50 0 1 1 1 0 0
+2 11 14 14 120014 5 d 80100e 9 10 1 18 0 1 1 1 0 0
 2 12 14 14 1f0023 4 3d 5002 0 0 1 18 0 1 0 0 0 0 u$2
 2 13 14 14 1b001b 1 0 1008 0 0 32 48 1 0
 2 14 14 14 190019 4 1 101c 0 0 32 33 i

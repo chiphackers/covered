@@ -873,13 +873,7 @@ void expression_set_signed(
           (exp->op == EXP_OP_MULTIPLY) ||
           (exp->op == EXP_OP_DIVIDE)   ||
           (exp->op == EXP_OP_MOD)      ||
-          (exp->op == EXP_OP_STATIC)   ||
-          (exp->op == EXP_OP_LT)       ||
-          (exp->op == EXP_OP_GT)       ||
-          (exp->op == EXP_OP_LE)       ||
-          (exp->op == EXP_OP_GE)       ||
-          (exp->op == EXP_OP_EQ)       ||
-          (exp->op == EXP_OP_NE))) ||
+          (exp->op == EXP_OP_STATIC))) ||
         (exp->value->suppl.part.is_signed == 1) ) {
 
       exp->value->suppl.part.is_signed = 1;
