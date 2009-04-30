@@ -1007,6 +1007,11 @@ static void gen_item_resolve(
             param_resolve( child );
           }
         }
+        if( child->funit->suppl.part.type != FUNIT_MODULE ) {
+          func_unit* parent_mod = funit_get_curr_module( child->funit );
+          funit_link_add( child->funit, &(parent_mod->tf_head), &(parent_mod->tf_tail) );
+          child->funit->parent = inst->funit;
+        }
         gen_item_resolve( gi->next_true, child );
         gen_item_resolve( gi->next_false, inst );
         break;
