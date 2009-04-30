@@ -253,14 +253,50 @@
             </row>
             <row>
               <entry>
-                -r(S|W|E|I|P[=<emphasis>name</emphasis>])
+                -rS
               </entry>
               <entry>
-                Determines Covered's behavior for handling found race conditions in design (-rS = do not output information but continue scoring design,
-                -rW = output information and continue scoring design, -rE = output information and immediately exit the scoring process, -rI = skip the
-                race condition check for all modules, -rP = skip race condition check for all code surrounded by '// racecheck off' and '// racecheck on'
-                inline pragmas (the keyword "racecheck" may be substituted for another name by specifying -rP=<emphasis>name</emphasis>). See <xref
-                linkend="section.race.handling"/>.
+                Performs race condition checking and removes any offending logic blocks from coverage consideration without
+                reporting the information.  See <xref linkend="section.race.handling"/>.
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -rW
+              </entry>
+              <entry>
+                Performs race condition checking, removes any offending logic blocks from coverage consideration, and displays
+                this information to standard output.  This is the default race condition checking behavior. See
+                <xref linkend="section.race.handling"/>.
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -rE
+              </entry>
+              <entry>
+                Performs race condition checking, reports any offending logic and immediately stops scoring.  This option allows
+                Covered to be used as a static race condition checking tool. See <xref linkend="section.race.handling"/>.
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -rI[=<emphasis>module name</emphasis>]
+              </entry>
+              <entry>
+                If =<emphasis>module name</emphasis> is not specified, race condition checking is not performed for the entire
+                design.  If =<emphasis>module name</emphasis> is specified, race condition checking is not performed on the
+                specified module only.  This option may be specified more than once.  See <xref linkend="section.race.avoiding"/>.
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -rP[=<emphasis>name</emphasis>]
+              </entry>
+              <entry>
+                Skip race condition checking for all code surrounded by "// racecheck off/on" embedded pragmas.  The "racecheck"
+                keyword can be changed by specifying =<emphasis>name</emphasis> where <emphasis>name</emphasis> is the new name
+                for the race condition pragma keyword.  See <xref linkend="section.race.avoiding"/>.
               </entry>
             </row>
             <row>
@@ -268,7 +304,8 @@
                 -S
               </entry>
               <entry>
-                Outputs simulation statistics after simulation has completed. This information is currently only useful for the developers of Covered.
+                Outputs simulation statistics after simulation has completed. This information is currently only useful for the
+                developers of Covered.
               </entry>
             </row>
             <row>
@@ -734,7 +771,7 @@
       </orderedlist>
     </para>
     <para>
-      It is currently up to the user to determine to determine whether liberal or conservative coverage accumulation should occur and use
+      It is currently up to the user to determine whether liberal or conservative coverage accumulation should occur and use
       the <emphasis role="bold">-conservative</emphasis> option to the score command as needed.
     </para>
   </sect1>
@@ -749,7 +786,7 @@
     </para>
     <para>
       Note that specifying plusargs to the score command is only necessary when the score command is given either the -vcd or -lxt options.  If
-      the VPI method of coverage scoring is used, specify the plusargs to the simulation runtime as is required.  Covered will automatically extract
+      the VPI method of coverage scoring is used, specify the plusargs to the simulation runtime as required.  Covered will automatically extract
       the plusargs from the simulator runtime for its purposes.
     </para>
   </sect1>

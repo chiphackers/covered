@@ -96,13 +96,13 @@
   <sect1 id="section.race.avoiding">
     <title>Avoiding Race Condition Checking</title>
     <para>
-      Covered has two means of avoiding race condition checking: (1) skip race condition checking for the entire design 
-     altogether or (2) place inline pragmas around specific logic blocks to avoid checking. The main advantage for using 
-      either of these two methods is to allow Covered to score more of the design that would otherwise be excluded due to
-      failing a static race condition checkpoint.  The main disadvantage to avoiding race condition checking using either 
-      of these methods is that you could potentially be ignoring code that contains an actual race condition, causing 
-      Covered to potentially generate incorrect coverage information without warning. These types of "errors" are not 
-      assumed to be Covered bugs.
+      Covered has three means of avoiding race condition checking: (1) skip race condition checking for the entire design 
+      altogether, (2) skip race condition checking for one or more specified modules, or (3) place inline pragmas around
+      specific logic blocks to avoid checking. The main advantage for using either of these methods is to allow Covered
+      to score more of the design that would otherwise be excluded due to failing a static race condition checkpoint.
+      The main disadvantage to avoiding race condition checking using either of these methods is that you could potentially
+      be ignoring code that contains an actual race condition, causing Covered to potentially generate incorrect coverage
+      information without warning. These types of "errors" are not assumed to be Covered bugs.
     </para>
     <para>
       To exclude the entire design from race condition checking, simply specify the 
@@ -110,6 +110,11 @@
       the race condition checking phase entirely, outputting a warning message (unless the global -Q option has been 
       specified). The use of this command-line option is highly discouraged due to its general assumption by the user that 
       the entire design is void of race conditions.
+    </para>
+    <para>
+      To exclude an entire module from race condition checking, simply specify the
+      <emphasis role="bold"><code>-rI=</code><emphasis>module name</emphasis></emphasis> option on the score command-line.
+      This option may be specified one or more times on the score command-line (once for each module to be skipped).
     </para>
     <para>
       To exclude portions of the design from race condition checking, the user may also place inline comment-based 
