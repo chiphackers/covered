@@ -674,7 +674,7 @@ bool instance_parse_add(
     cinst = instance_find_by_funit( *root, child, &ignore);
     
     /* Filename will be set to a value if the functional unit has been parsed */
-    if( (cinst != NULL) && (cinst->funit->filename != NULL) ) { 
+    if( (cinst != NULL) && (cinst->funit->orig_fname != NULL) ) { 
 
       ignore = 0;
       while( (ignore >= 0) && ((inst = instance_find_by_funit( *root, parent, &ignore )) != NULL) ) {

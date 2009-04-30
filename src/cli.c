@@ -287,7 +287,7 @@ static void cli_display_current() {
   instance_gen_scope( scope, inst_link_find_by_funit( curr->funit, db_list[curr_db]->inst_head, &ignore ), TRUE );
 
   /* Output the given scope */
-  printf( "    SCOPE: %s, BLOCK: %s, FILE: %s\n", scope, funit_flatten_name( curr->funit ), curr->funit->filename );
+  printf( "    SCOPE: %s, BLOCK: %s, FILE: %s\n", scope, funit_flatten_name( curr->funit ), curr->funit->orig_fname );
 
   /* Display current statement */
   cli_display_current_stmt();
@@ -403,7 +403,7 @@ static void cli_display_lines(
   assert( curr->funit != NULL );
   assert( curr->curr != NULL );
 
-  if( (vfile = fopen( curr->funit->filename, "r" )) != NULL ) {
+  if( (vfile = fopen( curr->funit->orig_fname, "r" )) != NULL ) {
 
     /* Get the starting line number */
     start_line = curr->curr->exp->line;
@@ -421,7 +421,7 @@ static void cli_display_lines(
 
   } else {
 
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open current file: %s", curr->funit->filename );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to open current file: %s", curr->funit->orig_fname );
     assert( rv < USER_MSG_LENGTH );
     cli_print_error( user_msg, TRUE );
 

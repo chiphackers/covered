@@ -373,7 +373,7 @@ int tcl_func_get_filename(
   func_unit* funit;
 
   if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
-    Tcl_SetResult( tcl, funit->filename, TCL_STATIC );
+    Tcl_SetResult( tcl, funit->orig_fname, TCL_STATIC );
   } else {
     strcpy( user_msg, "Internal Error:  Unable to find specified functional unit" );
     Tcl_AddErrorInfo( tcl, user_msg );
@@ -2336,7 +2336,7 @@ int tcl_func_set_line_exclude(
 
       /* Now set the line exclusion in all matching instances in the instance database */
       for( i=0; i<gui_inst_index; i++ ) {
-        if( (strcmp( gui_inst_list[i]->funit->name, funit->name ) == 0) && (gui_inst_list[i]->funit->type == funit->type) ) {
+        if( (strcmp( gui_inst_list[i]->funit->name, funit->name ) == 0) && (gui_inst_list[i]->funit->suppl.part.type == funit->suppl.part.type) ) {
           exclude_set_line_exclude( gui_inst_list[i]->funit, line, value, ((reason != NULL) ? strdup_safe( reason ) : NULL), gui_inst_list[i]->stat );
         }
       }
@@ -2362,7 +2362,7 @@ int tcl_func_set_line_exclude(
         i = 0;
         while( (i<gui_inst_index) &&
                ((strcmp( gui_inst_list[i]->funit->name, inst->funit->name ) != 0) ||
-                (gui_inst_list[i]->funit->type != inst->funit->type)       ||
+                (gui_inst_list[i]->funit->suppl.part.type != inst->funit->suppl.part.type) ||
                 exclude_is_line_excluded( gui_inst_list[i]->funit, line )) ) i++;
 
       }
@@ -2370,7 +2370,7 @@ int tcl_func_set_line_exclude(
       /* If the line has been excluded from all instances, exclude it from the functional unit database */
       if( i == gui_inst_index ) {
         i = 0;
-        while( (i<gui_funit_index) && ((strcmp( gui_funit_list[i]->name, inst->funit->name ) != 0) || (gui_funit_list[i]->type != inst->funit->type)) ) i++;
+        while( (i<gui_funit_index) && ((strcmp( gui_funit_list[i]->name, inst->funit->name ) != 0) || (gui_funit_list[i]->suppl.part.type != inst->funit->suppl.part.type)) ) i++;
         if( i < gui_funit_index ) {
           exclude_set_line_exclude( gui_funit_list[i], line, value, ((reason != NULL) ? strdup_safe( reason ) : NULL), gui_funit_list[i]->stat );
         }
@@ -2434,7 +2434,7 @@ int tcl_func_set_toggle_exclude(
 
       /* Now set the toggle exclusion in all matching instances in the instance database */
       for( i=0; i<gui_inst_index; i++ ) {
-        if( (strcmp( gui_inst_list[i]->funit->name, funit->name ) == 0) && (gui_inst_list[i]->funit->type == funit->type) ) {
+        if( (strcmp( gui_inst_list[i]->funit->name, funit->name ) == 0) && (gui_inst_list[i]->funit->suppl.part.type == funit->suppl.part.type) ) {
           exclude_set_toggle_exclude( gui_inst_list[i]->funit, sig_name, value, 'T', ((reason != NULL) ? strdup_safe( reason ) : NULL), gui_inst_list[i]->stat );
         }
       }
@@ -2460,7 +2460,7 @@ int tcl_func_set_toggle_exclude(
         i = 0;
         while( (i<gui_inst_index) &&
                ((strcmp( gui_inst_list[i]->funit->name, inst->funit->name ) != 0) ||
-                (gui_inst_list[i]->funit->type != inst->funit->type)       ||
+                (gui_inst_list[i]->funit->suppl.part.type != inst->funit->suppl.part.type) ||
                 exclude_is_toggle_excluded( gui_inst_list[i]->funit, sig_name )) ) i++;
 
       }
@@ -2468,7 +2468,7 @@ int tcl_func_set_toggle_exclude(
       /* If the signal has been excluded from all instances, exclude it from the functional unit database */
       if( i == gui_inst_index ) {
         i = 0;
-        while( (i<gui_funit_index) && ((strcmp( gui_funit_list[i]->name, inst->funit->name ) != 0) || (gui_funit_list[i]->type != inst->funit->type)) ) i++;
+        while( (i<gui_funit_index) && ((strcmp( gui_funit_list[i]->name, inst->funit->name ) != 0) || (gui_funit_list[i]->suppl.part.type != inst->funit->suppl.part.type)) ) i++;
         if( i < gui_funit_index ) {
           exclude_set_toggle_exclude( gui_funit_list[i], sig_name, value, 'T', ((reason != NULL) ? strdup_safe( reason ) : NULL), gui_funit_list[i]->stat );
         }
@@ -2533,7 +2533,7 @@ int tcl_func_set_memory_exclude(
 
       /* Now set the memory exclusion in all matching instances in the instance database */
       for( i=0; i<gui_inst_index; i++ ) {
-        if( (strcmp( gui_inst_list[i]->funit->name, funit->name ) == 0) && (gui_inst_list[i]->funit->type == funit->type) ) {
+        if( (strcmp( gui_inst_list[i]->funit->name, funit->name ) == 0) && (gui_inst_list[i]->funit->suppl.part.type == funit->suppl.part.type) ) {
           exclude_set_toggle_exclude( gui_inst_list[i]->funit, sig_name, value, 'M', ((reason != NULL) ? strdup_safe( reason ) : NULL), gui_inst_list[i]->stat );
         }
       }
@@ -2559,7 +2559,7 @@ int tcl_func_set_memory_exclude(
         i = 0;
         while( (i<gui_inst_index) &&
                ((strcmp( gui_inst_list[i]->funit->name, inst->funit->name ) != 0) ||
-                (gui_inst_list[i]->funit->type != inst->funit->type)       ||
+                (gui_inst_list[i]->funit->suppl.part.type != inst->funit->suppl.part.type) ||
                 exclude_is_toggle_excluded( gui_inst_list[i]->funit, sig_name )) ) i++;
 
       }
@@ -2567,7 +2567,7 @@ int tcl_func_set_memory_exclude(
       /* If the signal has been excluded from all instances, exclude it from the functional unit database */
       if( i == gui_inst_index ) {
         i = 0;
-        while( (i<gui_funit_index) && ((strcmp( gui_funit_list[i]->name, inst->funit->name ) != 0) || (gui_funit_list[i]->type != inst->funit->type)) ) i++;
+        while( (i<gui_funit_index) && ((strcmp( gui_funit_list[i]->name, inst->funit->name ) != 0) || (gui_funit_list[i]->suppl.part.type != inst->funit->suppl.part.type)) ) i++;
         if( i < gui_funit_index ) {
           exclude_set_toggle_exclude( gui_funit_list[i], sig_name, value, 'M', ((reason != NULL) ? strdup_safe( reason ) : NULL), gui_funit_list[i]->stat );
         }
@@ -2635,7 +2635,7 @@ int tcl_func_set_comb_exclude(
 
       /* Now set the combinational logic exclusion in all matching instances in the instance database */
       for( i=0; i<gui_inst_index; i++ ) {
-        if( (strcmp( gui_inst_list[i]->funit->name, funit->name ) == 0) && (gui_inst_list[i]->funit->type == funit->type) ) {
+        if( (strcmp( gui_inst_list[i]->funit->name, funit->name ) == 0) && (gui_inst_list[i]->funit->suppl.part.type == funit->suppl.part.type) ) {
           exclude_set_comb_exclude( gui_inst_list[i]->funit, expr_id, uline_id, value, ((reason != NULL) ? strdup_safe( reason ) : NULL), gui_inst_list[i]->stat ); 
         }
       }
@@ -2661,7 +2661,7 @@ int tcl_func_set_comb_exclude(
         i = 0;
         while( (i<gui_inst_index) &&
                ((strcmp( gui_inst_list[i]->funit->name, inst->funit->name ) != 0) ||
-                (gui_inst_list[i]->funit->type != inst->funit->type)       ||
+                (gui_inst_list[i]->funit->suppl.part.type != inst->funit->suppl.part.type) ||
                 exclude_is_comb_excluded( gui_inst_list[i]->funit, expr_id, uline_id )) ) i++;
 
       }
@@ -2669,7 +2669,7 @@ int tcl_func_set_comb_exclude(
       /* If the expression has been excluded from all instances, exclude it from the functional unit database */
       if( i == gui_inst_index ) {
         i = 0;
-        while( (i<gui_funit_index) && ((strcmp( gui_funit_list[i]->name, inst->funit->name ) != 0) || (gui_funit_list[i]->type != inst->funit->type)) ) i++;
+        while( (i<gui_funit_index) && ((strcmp( gui_funit_list[i]->name, inst->funit->name ) != 0) || (gui_funit_list[i]->suppl.part.type != inst->funit->suppl.part.type)) ) i++;
         if( i < gui_funit_index ) {
           exclude_set_comb_exclude( gui_funit_list[i], expr_id, uline_id, value, ((reason != NULL) ? strdup_safe( reason ) : NULL), gui_funit_list[i]->stat );
         }
@@ -2737,7 +2737,7 @@ int tcl_func_set_fsm_exclude(
 
       /* Now set the combinational logic exclusion in all matching instances in the instance database */
       for( i=0; i<gui_inst_index; i++ ) {
-        if( (strcmp( gui_inst_list[i]->funit->name, funit->name ) == 0) && (gui_inst_list[i]->funit->type == funit->type) ) {
+        if( (strcmp( gui_inst_list[i]->funit->name, funit->name ) == 0) && (gui_inst_list[i]->funit->suppl.part.type == funit->suppl.part.type) ) {
           exclude_set_fsm_exclude( gui_inst_list[i]->funit, expr_id, from_state, to_state, value, ((reason != NULL) ? strdup_safe( reason ) : NULL), gui_inst_list[i]->stat );
         }
       }
@@ -2763,7 +2763,7 @@ int tcl_func_set_fsm_exclude(
         i = 0;
         while( (i<gui_inst_index) &&
                ((strcmp( gui_inst_list[i]->funit->name, inst->funit->name ) != 0) ||
-                (gui_inst_list[i]->funit->type != inst->funit->type)       ||
+                (gui_inst_list[i]->funit->suppl.part.type != inst->funit->suppl.part.type) ||
                 exclude_is_fsm_excluded( gui_inst_list[i]->funit, expr_id, from_state, to_state )) ) i++;
 
       }
@@ -2771,7 +2771,7 @@ int tcl_func_set_fsm_exclude(
       /* If the expression has been excluded from all instances, exclude it from the functional unit database */
       if( i == gui_inst_index ) {
         i = 0;
-        while( (i<gui_funit_index) && ((strcmp( gui_funit_list[i]->name, inst->funit->name ) != 0) || (gui_funit_list[i]->type != inst->funit->type)) ) i++;
+        while( (i<gui_funit_index) && ((strcmp( gui_funit_list[i]->name, inst->funit->name ) != 0) || (gui_funit_list[i]->suppl.part.type != inst->funit->suppl.part.type)) ) i++;
         if( i < gui_funit_index ) {
           exclude_set_fsm_exclude( gui_funit_list[i], expr_id, from_state, to_state, value, ((reason != NULL) ? strdup_safe( reason ) : NULL), gui_funit_list[i]->stat );
         }
@@ -2840,7 +2840,7 @@ int tcl_func_set_assert_exclude(
 
       /* Now set the combinational logic exclusion in all matching instances in the instance database */
       for( i=0; i<gui_inst_index; i++ ) {
-        if( (strcmp( gui_inst_list[i]->funit->name, funit->name ) == 0) && (gui_inst_list[i]->funit->type == funit->type) ) {
+        if( (strcmp( gui_inst_list[i]->funit->name, funit->name ) == 0) && (gui_inst_list[i]->funit->suppl.part.type == funit->suppl.part.type) ) {
           curr_db = 0;
           exclude_set_assert_exclude( gui_inst_list[i]->funit, inst_name, expr_id, value, ((reason != NULL) ? strdup_safe( reason ) : NULL), gui_inst_list[i]->stat );
         }
@@ -2868,7 +2868,7 @@ int tcl_func_set_assert_exclude(
         i       = 0;
         while( (i<gui_inst_index) &&
                ((strcmp( gui_inst_list[i]->funit->name, inst->funit->name ) != 0) ||
-                (gui_inst_list[i]->funit->type != inst->funit->type)       ||
+                (gui_inst_list[i]->funit->suppl.part.type != inst->funit->suppl.part.type) ||
                 exclude_is_assert_excluded( gui_inst_list[i]->funit, inst_name, expr_id )) ) i++;
 
       }
@@ -2876,7 +2876,7 @@ int tcl_func_set_assert_exclude(
       /* If the expression has been excluded from all instances, exclude it from the functional unit database */
       if( i == gui_inst_index ) {
         i = 0;
-        while( (i<gui_funit_index) && ((strcmp( gui_funit_list[i]->name, inst->funit->name ) != 0) || (gui_funit_list[i]->type != inst->funit->type)) ) i++;
+        while( (i<gui_funit_index) && ((strcmp( gui_funit_list[i]->name, inst->funit->name ) != 0) || (gui_funit_list[i]->suppl.part.type != inst->funit->suppl.part.type)) ) i++;
         if( i < gui_funit_index ) {
           curr_db = 1;
           exclude_set_assert_exclude( gui_funit_list[i], inst_name, expr_id, value, ((reason != NULL) ? strdup_safe( reason ) : NULL), gui_funit_list[i]->stat );

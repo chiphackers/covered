@@ -50,7 +50,8 @@ attr_param* parser_create_attr(
 void parser_create_task_decl(
   bool         automatic,
   char*        name,
-  char*        filename,
+  char*        orig_fname,
+  char*        incl_fname,
   unsigned int first_line,
   unsigned int first_column
 );
@@ -68,7 +69,8 @@ void parser_create_task_body(
 void parser_create_function_decl(
   bool         automatic,
   char*        name,
-  char*        filename,
+  char*        orig_fname,
+  char*        incl_fname,
   unsigned int first_line,
   unsigned int first_column
 );

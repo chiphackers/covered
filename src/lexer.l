@@ -908,13 +908,13 @@ WSPACE [ \t\b\f]+
       if( (foundmod = str_link_find( yytext, modlist_head )) == NULL ) {
         free_safe( yylval.text, (strlen( yylval.text ) + 1) );
         BEGIN( IGNORE_MODULE );
-        if( parse_mode ) (void)tree_add( yytext, yylloc.text, FALSE, &found_modules );
+        if( parse_mode ) (void)tree_add( yytext, yylloc.incl_fname, FALSE, &found_modules );
         rc = IGNORE;
       } else {
         if( parse_mode ) {
           if( (filelist_curr != filelist_head) && (error_count == 0) ) {
             /* The module has been found, recirculate filelist */
-            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Parsing file '%s'", obf_file( yylloc.text ) );
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Parsing file '%s'", obf_file( yylloc.orig_fname ) );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, NORMAL, __FILE__, __LINE__ );
             filelist_curr = filelist_head;
@@ -1281,7 +1281,7 @@ static void line_directive() { PROFILE(LINE_DIRECTIVE);
   strncpy( directive_filename, qt1, qt2-qt1 );
   directive_filename[qt2-qt1] = '\0';
   
-  yylloc.text = directive_filename;
+  yylloc.orig_fname = directive_filename;
   
   qt2 += 1;
   yylloc.first_line = strtoul( qt2, 0, 0 );
@@ -1321,7 +1321,7 @@ static void line_directive2() { PROFILE(LINE_DIRECTIVE2);
   strncpy( directive_filename, qt1, qt2 - qt1 );
   directive_filename[qt2-qt1] = '\0';
   
-  yylloc.text = directive_filename;
+  yylloc.orig_fname = directive_filename;
 
   PROFILE_END;
   
@@ -1560,7 +1560,8 @@ static int yywrap() { PROFILE(LEXER_YYWRAP);
     yylloc.ppline      = 1;
     yylloc.last_line   = 1;
     yylloc.last_column = 0;
-    yylloc.text        = fname;
+    yylloc.orig_fname  = fname;
+    yylloc.incl_fname  = fname;
   
     filelist_curr = curr->next;
 
@@ -1643,7 +1644,8 @@ void reset_lexer(
   yyin = fopen( ppfilename, "r" );
   yyrestart( yyin );
 
-  yylloc.text        = curr->str;
+  yylloc.orig_fname  = curr->str;
+  yylloc.incl_fname  = curr->str;
   yylloc.first_line  = 1;
   yylloc.ppline      = 1;
   yylloc.last_line   = 1;
@@ -1713,7 +1715,8 @@ void reset_lexer_for_generation(
   free_safe( ofname, slen );
   yyrestart( yyin );
 
-  yylloc.text        = in_fname;
+  yylloc.orig_fname  = in_fname;
+  yylloc.incl_fname  = in_fname;
   yylloc.first_line  = 1;
   yylloc.ppline      = 1;
   yylloc.last_line   = 1;
@@ -1793,7 +1796,7 @@ void check_for_pragma(
         }
 
         /* Save the file version information in the database */
-        db_add_file_version( yylloc.text, value );
+        db_add_file_version( yylloc.orig_fname, value );
 
       }
 

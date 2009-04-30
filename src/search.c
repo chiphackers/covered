@@ -86,8 +86,8 @@ void search_init() { PROFILE(SEARCH_INIT);
     global_funit                  = funit_create();
     global_funit->name            = strdup_safe( "$root" );
     global_funit->suppl.part.type = FUNIT_MODULE;
-    global_funit->filename = strdup_safe( "NA" );
-    global_funit->ts_unit  = 2;
+    global_funit->orig_fname      = strdup_safe( "NA" );
+    global_funit->ts_unit         = 2;
     (void)funit_link_add( global_funit, &(db_list[curr_db]->funit_head), &(db_list[curr_db]->funit_tail) );
     curr_funit = global_funit;
 

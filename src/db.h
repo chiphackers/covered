@@ -57,10 +57,16 @@ void db_merge_instance_trees();
 void db_merge_funits();
 
 /*! \brief Returns a scaled version of the given value to the timescale for the given functional unit. */
-uint64 db_scale_to_precision( uint64 value, func_unit* funit );
+uint64 db_scale_to_precision(
+  uint64     value,
+  func_unit* funit
+);
 
 /*! \brief Sets the global timescale unit and precision variables. */
-void db_set_timescale( int unit, int precision );
+void db_set_timescale(
+  int unit,
+  int precision
+);
 
 /*! \brief Searches for and sets the current functional unit. */
 void db_find_and_set_curr_funit(
@@ -90,7 +96,9 @@ char* db_gen_exclusion_id(
 char* db_create_unnamed_scope();
 
 /*! \brief Returns TRUE if the given scope is an unnamed scope name; otherwise, returns FALSE. */
-bool db_is_unnamed_scope( char* scope );
+bool db_is_unnamed_scope(
+  char* scope
+);
 
 /*! \brief Adds the given filename and version information to the database. */
 void db_add_file_version(
@@ -99,15 +107,23 @@ void db_add_file_version(
 );
 
 /*! \brief Outputs all needed signals in $dumpvars calls to the specified file. */
-void db_output_dumpvars( FILE* vfile );
+void db_output_dumpvars(
+  FILE* vfile
+);
 
 /*! \brief Adds specified functional unit node to functional unit tree.  Called by parser. */
-func_unit* db_add_instance( char* scope, char* name, int type, vector_width* range );
+func_unit* db_add_instance(
+  char*         scope,
+  char*         name,
+  int           type,
+  vector_width* range
+);
 
 /*! \brief Adds specified module to module list.  Called by parser. */
 void db_add_module(
   char*        name,
-  char*        file,
+  char*        orig_fname,
+  char*        incl_fname,
   unsigned int start_line,
   unsigned int start_col
 );
@@ -116,19 +132,33 @@ void db_add_module(
 bool db_add_function_task_namedblock(
   int   type,
   char* name,
-  char* file,
+  char* orig_fname,
+  char* incl_fname,
   int   start_line,
   int   start_column
 );
 
 /*! \brief Performs actions necessary when the end of a function/task/named-block is seen.  Called by parser. */
-void db_end_function_task_namedblock( int end_line );
+void db_end_function_task_namedblock(
+  int end_line
+);
 
 /*! \brief Adds specified declared parameter to parameter list.  Called by parser. */
-void db_add_declared_param( bool is_signed, static_expr* msb, static_expr* lsb, char* name, expression* expr, bool local );
+void db_add_declared_param(
+  bool         is_signed,
+  static_expr* msb,
+  static_expr* lsb,
+  char*        name,
+  expression*  expr,
+  bool         local
+);
 
 /*! \brief Adds specified override parameter to parameter list.  Called by parser. */
-void db_add_override_param( char* inst_name, expression* expr, char* param_name );
+void db_add_override_param(
+  char*       inst_name,
+  expression* expr,
+  char*       param_name
+);
 
 /*! \brief Adds specified defparam to parameter override list.  Called by parser. */
 void db_add_defparam( char* name, expression* expr );

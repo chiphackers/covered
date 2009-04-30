@@ -639,10 +639,11 @@ static void generator_create_filename_list(
     /* Only add modules that are not the $root "module" */
     if( (funitl->funit->suppl.part.type == FUNIT_MODULE) && (strncmp( "$root", funitl->funit->name, 5 ) != 0) ) {
 
-      fname_link* fnamel = *head;
+      fname_link* fnamel      = *head;
+      const char* funit_fname = (funitl->funit->incl_fname != NULL) ? funitl->funit->incl_fname : funitl->funit->orig_fname;
 
       /* Search for functional unit filename in our filename list */
-      while( (fnamel != NULL) && (strcmp( fnamel->filename, funitl->funit->filename ) != 0) ) {
+      while( (fnamel != NULL) && (strcmp( fnamel->filename, funit_fname ) != 0) ) {
         fnamel = fnamel->next;
       }
 
@@ -651,7 +652,7 @@ static void generator_create_filename_list(
 
         /* Allocate and initialize the filename link */
         fnamel             = (fname_link*)malloc_safe( sizeof( fname_link ) );
-        fnamel->filename   = strdup_safe( funitl->funit->filename );
+        fnamel->filename   = strdup_safe( funit_fname );
         fnamel->next_funit = funitl->funit;
         fnamel->head       = NULL;
         fnamel->tail       = NULL;

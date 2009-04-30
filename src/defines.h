@@ -1792,6 +1792,11 @@ union usuppl_u {
   } part;
 };
 
+/*!
+ Mask used for writing the functional unit mask.
+*/
+#define FUNIT_MASK     0x17
+
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION DECLARATIONS  */
 
@@ -2613,7 +2618,8 @@ struct race_blk_s {
 struct func_unit_s {
   usuppl          suppl;             /*!< Supplemental field */
   char*           name;              /*!< Functional unit name */
-  char*           filename;          /*!< File name where functional unit exists */
+  char*           orig_fname;        /*!< File name where functional unit exists */
+  char*           incl_fname;        /*!< File name where functional unit was included into */
   char*           version;           /*!< Version information for functional unit (if one exists) */
   unsigned int    start_line;        /*!< Starting line number of functional unit in its file */
   unsigned int    end_line;          /*!< Ending line number of functional unit in its file */

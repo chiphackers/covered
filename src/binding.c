@@ -436,7 +436,7 @@ bool bind_signal(
       /* If we are binding an FSM, output an error message */
       if( fsm_bind ) {
         rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to find specified FSM signal \"%s\" in module \"%s\" in file %s",
-                       obf_sig( name ), obf_funit( funit_exp->name ), obf_file( funit_exp->filename ) );
+                       obf_sig( name ), obf_funit( funit_exp->name ), obf_file( funit_exp->orig_fname ) );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         retval = FALSE;
@@ -448,7 +448,7 @@ bool bind_signal(
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, WARNING, __FILE__, __LINE__ );
         rv = snprintf( user_msg, USER_MSG_LENGTH, "module \"%s\", file \"%s\", line %d",
-                       obf_funit( funit_exp->name ), obf_file( funit_exp->filename ), exp_line );
+                       obf_funit( funit_exp->name ), obf_file( funit_exp->orig_fname ), exp_line );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, WARNING_WRAP, __FILE__, __LINE__ );
         found_sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, exp->line, ((exp->col >> 16) & 0xffff) );
@@ -719,7 +719,7 @@ static bool bind_task_function_namedblock(
           /* Check to see if the call port count matches the actual port count */
           if( (port_cnt = funit_get_port_count( found_funit )) != port_order ) {
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Number of arguments in %s call (%d) does not match its %s port list (%d), file %s, line %d",
-                                        get_funit_type( type ), port_order, get_funit_type( type ), port_cnt, obf_file( funit_exp->filename ), exp->line );
+                                        get_funit_type( type ), port_order, get_funit_type( type ), port_cnt, obf_file( funit_exp->orig_fname ), exp->line );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
             Throw 0;
@@ -831,7 +831,7 @@ void bind_perform(
 #ifdef DEBUG_MODE
             if( debug_mode ) {
               unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block containing line %d in file \"%s\", because it was unbindable",
-                                          curr_eb->exp->line, obf_file( curr_eb->funit->filename ) );
+                                          curr_eb->exp->line, obf_file( curr_eb->funit->orig_fname ) );
               assert( rv < USER_MSG_LENGTH );
               print_output( user_msg, DEBUG, __FILE__, __LINE__ );
             }

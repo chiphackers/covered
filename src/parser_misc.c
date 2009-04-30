@@ -64,7 +64,7 @@ void VLerror(
   assert( rv < USER_MSG_LENGTH );
   print_output( user_msg, FATAL, __FILE__, __LINE__ );
   rv = snprintf( user_msg, USER_MSG_LENGTH, "File: %s, Line: %u, Column: %u",
-                 obf_file( yylloc.text ), yylloc.first_line, yylloc.first_column );
+                 obf_file( yylloc.orig_fname ), yylloc.first_line, yylloc.first_column );
   assert( rv < USER_MSG_LENGTH );
   print_output( user_msg, FATAL_WRAP, __FILE__, __LINE__ );
 
@@ -88,7 +88,7 @@ void VLwarn(
   assert( rv < USER_MSG_LENGTH );
   print_output( user_msg, WARNING, __FILE__, __LINE__ );
   rv = snprintf( user_msg, USER_MSG_LENGTH, "File: %s, Line: %u, Column: %u",
-                 obf_file( yylloc.text ), yylloc.first_line, yylloc.first_column );
+                 obf_file( yylloc.orig_fname ), yylloc.first_line, yylloc.first_column );
   assert( rv < USER_MSG_LENGTH );
   print_output( user_msg, WARNING_WRAP, __FILE__, __LINE__ );
 
@@ -322,6 +322,10 @@ bool parser_check_generation(
 
 /*
  $Log$
+ Revision 1.29  2009/01/09 21:25:01  phase1geo
+ More generate block fixes.  Updated all copyright information source code files
+ for the year 2009.  Checkpointing.
+
  Revision 1.28  2008/08/18 23:07:28  phase1geo
  Integrating changes from development release branch to main development trunk.
  Regression passes.  Still need to update documentation directories and verify

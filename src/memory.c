@@ -796,7 +796,7 @@ static bool memory_toggle_funit_summary(
       /* Get printable version of functional unit name */
       pname = scope_gen_printable( funit_flatten_name( head->funit ) );
 
-      miss_found |= memory_display_toggle_funit_summary( ofile, pname, get_basename( obf_file( head->funit->filename ) ),
+      miss_found |= memory_display_toggle_funit_summary( ofile, pname, get_basename( obf_file( head->funit->orig_fname ) ),
                                                          head->funit->stat->mem_tog01_hit, head->funit->stat->mem_tog10_hit, head->funit->stat->mem_tog_total );
 
       /* Update accumulated information */
@@ -876,7 +876,7 @@ static bool memory_ae_funit_summary(
       /* Get printable version of functional unit name */
       pname = scope_gen_printable( funit_flatten_name( head->funit ) );
 
-      miss_found |= memory_display_ae_funit_summary( ofile, pname, get_basename( obf_file( head->funit->filename ) ),
+      miss_found |= memory_display_ae_funit_summary( ofile, pname, get_basename( obf_file( head->funit->orig_fname ) ),
                                                      head->funit->stat->mem_wr_hit, head->funit->stat->mem_rd_hit, head->funit->stat->mem_ae_total );
 
       /* Update accumulated information */
@@ -1144,7 +1144,7 @@ static void memory_instance_verbose(
       case FUNIT_TASK         :  fprintf( ofile, "    Task: " );         break;
       default                 :  fprintf( ofile, "    UNKNOWN: " );      break;
     }
-    fprintf( ofile, "%s, File: %s, Instance: %s\n", pname, obf_file( root->funit->filename ), tmpname );
+    fprintf( ofile, "%s, File: %s, Instance: %s\n", pname, obf_file( root->funit->orig_fname ), tmpname );
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
     free_safe( pname, (strlen( pname ) + 1) );
 
@@ -1204,7 +1204,7 @@ static void memory_funit_verbose(
         case FUNIT_TASK         :  fprintf( ofile, "    Task: " );         break;
         default                 :  fprintf( ofile, "    UNKNOWN: " );      break;
       }
-      fprintf( ofile, "%s, File: %s\n", obf_funit( funit_flatten_name( head->funit ) ), obf_file( head->funit->filename ) );
+      fprintf( ofile, "%s, File: %s\n", obf_funit( funit_flatten_name( head->funit ) ), obf_file( head->funit->orig_fname ) );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
       if( (((head->funit->stat->mem_tog01_hit < head->funit->stat->mem_tog_total) ||

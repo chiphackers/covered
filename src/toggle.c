@@ -399,7 +399,7 @@ static bool toggle_funit_summary(
       /* Get printable version of functional unit name */
       pname = scope_gen_printable( funit_flatten_name( head->funit ) );
 
-      miss_found |= toggle_display_funit_summary( ofile, pname, get_basename( obf_file( head->funit->filename ) ),
+      miss_found |= toggle_display_funit_summary( ofile, pname, get_basename( obf_file( head->funit->orig_fname ) ),
                                                   head->funit->stat->tog01_hit, head->funit->stat->tog10_hit, head->funit->stat->tog_total );
 
       free_safe( pname, (strlen( pname ) + 1) );
@@ -591,7 +591,7 @@ static void toggle_instance_verbose(
       case FUNIT_TASK         :  fprintf( ofile, "    Task: " );         break;
       default                 :  fprintf( ofile, "    UNKNOWN: " );      break;
     }
-    fprintf( ofile, "%s, File: %s, Instance: %s\n", pname, obf_file( root->funit->filename ), tmpname );
+    fprintf( ofile, "%s, File: %s, Instance: %s\n", pname, obf_file( root->funit->orig_fname ), tmpname );
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
     free_safe( pname, (strlen( pname ) + 1) );
 
@@ -647,7 +647,7 @@ static void toggle_funit_verbose(
         case FUNIT_TASK         :  fprintf( ofile, "    Task: " );         break;
         default                 :  fprintf( ofile, "    UNKNOWN: " );      break;
       }
-      fprintf( ofile, "%s, File: %s\n", obf_funit( funit_flatten_name( head->funit ) ), obf_file( head->funit->filename ) );
+      fprintf( ofile, "%s, File: %s\n", obf_funit( funit_flatten_name( head->funit ) ), obf_file( head->funit->orig_fname ) );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
       if( (!report_covered && ((head->funit->stat->tog01_hit < head->funit->stat->tog_total) || (head->funit->stat->tog10_hit < head->funit->stat->tog_total))) ||

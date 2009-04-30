@@ -540,7 +540,7 @@ static void fsm_arg_parse_trans(
 
     if( (from_state = fsm_arg_parse_value( &str, funit )) == NULL ) {
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Left-hand side FSM transition value must be a constant value or parameter, line: %d, file: %s",
-                                  expr->line, obf_file( funit->filename ) );
+                                  expr->line, obf_file( funit->orig_fname ) );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       Throw 0;
@@ -548,7 +548,7 @@ static void fsm_arg_parse_trans(
 
       if( (str[0] != '-') || (str[1] != '>') ) {
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "FSM transition values must contain the string '->' between them, line: %d, file: %s",
-                                    expr->line, obf_file( funit->filename ) );
+                                    expr->line, obf_file( funit->orig_fname ) );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         Throw 0;
@@ -558,7 +558,7 @@ static void fsm_arg_parse_trans(
 
       if( (to_state = fsm_arg_parse_value( &str, funit )) == NULL ) {
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Right-hand side FSM transition value must be a constant value or parameter, line: %d, file: %s",
-                                    expr->line, obf_file( funit->filename ) );
+                                    expr->line, obf_file( funit->orig_fname ) );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         Throw 0;
@@ -621,7 +621,7 @@ void fsm_arg_parse_attr(
         slen = strlen( tmp );
         Try {
           if( (in_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
-            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal input state expression (%s), file: %s", str, obf_file( funit->filename ) );
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal input state expression (%s), file: %s", str, obf_file( funit->orig_fname ) );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
             Throw 0;
@@ -633,7 +633,7 @@ void fsm_arg_parse_attr(
         free_safe( tmp, (slen + 1) );
       } else {
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Input state specified after output state for this FSM has already been specified, file: %s",
-                                    obf_file( funit->filename ) );
+                                    obf_file( funit->orig_fname ) );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         Throw 0;
@@ -645,7 +645,7 @@ void fsm_arg_parse_attr(
         slen = strlen( tmp );
         Try {
           if( (out_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
-            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, obf_file( funit->filename ) );
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, obf_file( funit->orig_fname ) );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
             Throw 0;
@@ -660,7 +660,7 @@ void fsm_arg_parse_attr(
         free_safe( tmp, (slen + 1) );
       } else {
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Output state specified after output state for this FSM has already been specified, file: %s",
-                                    obf_file( funit->filename ) );
+                                    obf_file( funit->orig_fname ) );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         Throw 0;
@@ -673,7 +673,7 @@ void fsm_arg_parse_attr(
         slen = strlen( tmp );
         Try {
           if( (out_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
-            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, obf_file( funit->filename ) );
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, obf_file( funit->orig_fname ) );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
             Throw 0;
@@ -688,7 +688,7 @@ void fsm_arg_parse_attr(
         free_safe( tmp, (slen + 1) );
       } else {
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Output state specified after output state for this FSM has already been specified, file: %s",
-                                    obf_file( funit->filename ) );
+                                    obf_file( funit->orig_fname ) );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         Throw 0;
@@ -696,7 +696,7 @@ void fsm_arg_parse_attr(
     } else if( (index > 1) && (strcmp( curr->name, "trans" ) == 0) && (curr->expr != NULL) ) {
       if( fsml == NULL ) {
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Attribute FSM name (%s) has not been previously created, file: %s",
-                                    obf_sig( curr->name ), obf_file( funit->filename ) );
+                                    obf_sig( curr->name ), obf_file( funit->orig_fname ) );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         Throw 0;
@@ -707,7 +707,7 @@ void fsm_arg_parse_attr(
       unsigned int rv;
       tmp = vector_to_string( curr->expr->value, ESUPPL_STATIC_BASE( curr->expr->suppl ), FALSE );
       rv = snprintf( user_msg, USER_MSG_LENGTH, "Invalid covered_fsm attribute parameter (%s=%s), file: %s",
-                     curr->name, tmp, obf_file( funit->filename ) );
+                     curr->name, tmp, obf_file( funit->orig_fname ) );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       free_safe( tmp, (strlen( tmp ) + 1) );

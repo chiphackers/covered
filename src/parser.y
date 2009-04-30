@@ -195,7 +195,7 @@ int yydebug = 1;
 /* Recent version of bison expect that the user supply a
    YYLLOC_DEFAULT macro that makes up a yylloc value from existing
    values. I need to supply an explicit version to account for the
-   text field, that otherwise won't be copied. */
+   orig_fname and incl_fname fields, that otherwise won't be copied. */
 
 #define YYRHSLOC(Rhs, K) ((Rhs)[K])
 #define YYLLOC_DEFAULT(Current, Rhs, N)                                \
@@ -206,7 +206,8 @@ int yydebug = 1;
           (Current).first_column = YYRHSLOC(Rhs, 1).first_column;       \
           (Current).last_line    = YYRHSLOC(Rhs, N).last_line;          \
           (Current).last_column  = YYRHSLOC(Rhs, N).last_column;        \
-          (Current).text         = YYRHSLOC(Rhs, 1).text;               \
+          (Current).orig_fname   = YYRHSLOC(Rhs, 1).orig_fname;         \
+          (Current).incl_fname   = YYRHSLOC(Rhs, 1).incl_fname;         \
           (Current).ppline       = YYRHSLOC(Rhs, 1).ppline;             \
         }                                                               \
       else                                                              \
@@ -215,7 +216,8 @@ int yydebug = 1;
             YYRHSLOC(Rhs, 0).last_line;                                 \
           (Current).first_column = (Current).last_column =              \
             YYRHSLOC(Rhs, 0).last_column;                               \
-          (Current).text         = YYRHSLOC(Rhs, 0).text;               \
+          (Current).orig_fname   = YYRHSLOC(Rhs, 0).orig_fname;         \
+          (Current).incl_fname   = YYRHSLOC(Rhs, 0).incl_fname;         \
           (Current).ppline       = YYRHSLOC(Rhs, 0).ppline;             \
         }                                                               \
     while (0)
@@ -591,7 +593,7 @@ description
   | K_task automatic_opt IDENTIFIER ';'
     {
       if( parse_mode ) {
-        parser_create_task_decl( $2, $3, @3.text, @3.first_line, @3.first_column );
+        parser_create_task_decl( $2, $3, @3.orig_fname, @3.incl_fname, @3.first_line, @3.first_column );
       } else {
         free_safe( $3, (strlen( $3 ) + 1) );
       }
@@ -611,7 +613,7 @@ description
   | K_function automatic_opt signed_opt range_or_type_opt IDENTIFIER ';'
     {
       if( parse_mode ) {
-        parser_create_function_decl( $2, $5, @5.text, @5.first_line, @5.first_column );
+        parser_create_function_decl( $2, $5, @5.orig_fname, @5.incl_fname, @5.first_line, @5.first_column );
       } else {
         free_safe( $5, (strlen( $5 ) + 1) );
       }
@@ -655,7 +657,7 @@ module
   : attribute_list_opt module_start IDENTIFIER 
     {
       if( parse_mode ) {
-        db_add_module( $3, @2.text, @2.first_line, @2.first_column );
+        db_add_module( $3, @2.orig_fname, @2.incl_fname, @2.first_line, @2.first_column );
       } else {
         db_find_and_set_curr_funit( $3, FUNIT_MODULE );
         generator_init_funit( db_get_curr_funit() );
@@ -1261,7 +1263,7 @@ static_expr_primary
   | S_ignore
     {
       if( parse_mode ) {
-        stmt_blk_specify_removal_reason( LOGIC_RM_SYSFUNC, @1.text, @1.first_line, __FILE__, __LINE__ );
+        stmt_blk_specify_removal_reason( LOGIC_RM_SYSFUNC, @1.orig_fname, @1.first_line, __FILE__, __LINE__ );
       }
       $$ = NULL;
     }
@@ -1768,7 +1770,7 @@ expr_primary
   | S_ignore
     {
       if( parse_mode ) {
-        stmt_blk_specify_removal_reason( LOGIC_RM_SYSFUNC, @1.text, @1.first_line, __FILE__, __LINE__ );
+        stmt_blk_specify_removal_reason( LOGIC_RM_SYSFUNC, @1.orig_fname, @1.first_line, __FILE__, __LINE__ );
       }
       $$ = NULL;
     }
@@ -1843,7 +1845,7 @@ expr_primary
   | S_ignore '(' ignore_more expression_port_list ignore_less ')'
     {
       if( parse_mode ) {
-        stmt_blk_specify_removal_reason( LOGIC_RM_SYSFUNC, @1.text, @1.first_line, __FILE__, __LINE__ );
+        stmt_blk_specify_removal_reason( LOGIC_RM_SYSFUNC, @1.orig_fname, @1.first_line, __FILE__, __LINE__ );
       }
       $$ = NULL;
     }
@@ -2259,7 +2261,7 @@ udp_primitive
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
           /* We will treat primitives like regular modules */
-          db_add_module( $2, @1.text, @1.first_line, @1.first_column );
+          db_add_module( $2, @1.orig_fname, @1.incl_fname, @1.first_line, @1.first_column );
           db_end_module( @10.first_line );
         }
       }
@@ -2586,7 +2588,7 @@ generate_item
         if( ignore_mode == 0 ) {
           char* name = db_create_unnamed_scope();
           Try {
-            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, name, @1.text, @1.first_line, @1.first_column ) ) {
+            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, name, @1.orig_fname, @1.incl_fname, @1.first_line, @1.first_column ) ) {
               ignore_mode++;
             } else {
               gen_item* gi = db_get_curr_gen_block();
@@ -2643,7 +2645,7 @@ generate_item
         generate_expr_mode++;
         if( ignore_mode == 0 ) {
           Try {
-            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $4, @4.text, @4.first_line, @4.first_column ) ) {
+            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $4, @4.orig_fname, @4.incl_fname, @4.first_line, @4.first_column ) ) {
               ignore_mode++;
             } else {
               gen_item* gi = db_get_curr_gen_block();
@@ -2696,7 +2698,7 @@ generate_item
         generate_for_mode++;
         if( ignore_mode == 0 ) {
           Try {
-            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $13, @13.text, @13.first_line, @13.first_column ) ) {
+            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $13, @13.orig_fname, @13.incl_fname, @13.first_line, @13.first_column ) ) {
               ignore_mode++;
             } else {
               gen_item* gi = db_get_curr_gen_block();
@@ -3150,7 +3152,7 @@ module_item
     {
       if( parse_mode ) {
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Defparam found but not used, file: %s, line: %u.  Please use -P option to specify",
-                                    obf_file( @1.text ), @1.first_line );
+                                    obf_file( @1.orig_fname ), @1.first_line );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
       }
@@ -3417,7 +3419,7 @@ module_item
         }
         if( ignore_mode == 0 ) {
           Try {
-            if( !db_add_function_task_namedblock( ($3 ? FUNIT_ATASK : FUNIT_TASK), $4, @4.text, @4.first_line, @4.first_column ) ) {
+            if( !db_add_function_task_namedblock( ($3 ? FUNIT_ATASK : FUNIT_TASK), $4, @4.orig_fname, @4.incl_fname, @4.first_line, @4.first_column ) ) {
               ignore_mode++;
             }
           } Catch_anonymous {
@@ -3467,7 +3469,7 @@ module_item
         }
         if( ignore_mode == 0 ) {
           Try {
-            if( db_add_function_task_namedblock( ($3 ? FUNIT_AFUNCTION : FUNIT_FUNCTION), $6, @6.text, @6.first_line, @6.first_column ) ) {
+            if( db_add_function_task_namedblock( ($3 ? FUNIT_AFUNCTION : FUNIT_FUNCTION), $6, @6.orig_fname, @6.incl_fname, @6.first_line, @6.first_column ) ) {
               generate_top_mode--;
               db_add_signal( $6, curr_sig_type, &curr_prange, NULL, curr_signed, FALSE, @6.first_line, @6.first_column, TRUE );
               generate_top_mode++;
@@ -5614,7 +5616,7 @@ fork_statement
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL) ) {
           Try {
-            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $1, @1.text, @1.first_line, @1.first_column ) ) {
+            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $1, @1.orig_fname, @1.incl_fname, @1.first_line, @1.first_column ) ) {
               ignore_mode++;
             }
           } Catch_anonymous {
@@ -5680,7 +5682,7 @@ begin_end_block
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL) ) {
           Try {
-            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $1, @1.text, @1.first_line, @1.first_column ) ) {
+            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $1, @1.orig_fname, @1.incl_fname, @1.first_line, @1.first_column ) ) {
               ignore_mode++;
             }
           } Catch_anonymous {
@@ -6488,7 +6490,7 @@ delay_value
             unsigned int rv = snprintf( user_msg,
                                         USER_MSG_LENGTH,
                                         "Delay expression type for min:typ:max not specified, using default of 'typ', file %s, line %u",
-                                        obf_file( @1.text ),
+                                        obf_file( @1.orig_fname ),
                                         @1.first_line );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, WARNING, __FILE__, __LINE__ );
@@ -8247,7 +8249,7 @@ inc_for_depth
         func_unit* funit = db_get_curr_funit();
         if( ignore_mode == 0 ) {
           Try {
-            assert( db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, scope, funit->filename, 0, 0 ) );
+            assert( db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, scope, funit->orig_fname, funit->incl_fname, 0, 0 ) );
           } Catch_anonymous {
             error_count++;
             ignore_mode++;

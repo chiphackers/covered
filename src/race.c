@@ -357,14 +357,14 @@ static void race_handle_race_condition(
       rv = snprintf( user_msg, USER_MSG_LENGTH, "Possible race condition detected - %s", race_msgs[reason] );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, flag_race_check, __FILE__, __LINE__ );
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Signal assigned in file: %s, line: %d", obf_file( mod->filename ), expr->line );
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Signal assigned in file: %s, line: %d", obf_file( mod->orig_fname ), expr->line );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, (flag_race_check + 1), __FILE__, __LINE__ );
 
       if( flag_race_check == WARNING ) {
         print_output( "  * Safely removing statement block from coverage consideration", WARNING_WRAP, __FILE__, __LINE__ );
         rv = snprintf( user_msg, USER_MSG_LENGTH, "    Statement block starting at file: %s, line: %d",
-                       obf_file( mod->filename ), stmt->exp->line );
+                       obf_file( mod->orig_fname ), stmt->exp->line );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, WARNING_WRAP, __FILE__, __LINE__ );
       }
@@ -380,18 +380,18 @@ static void race_handle_race_condition(
       rv = snprintf( user_msg, USER_MSG_LENGTH, "Possible race condition detected - %s", race_msgs[reason] );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, flag_race_check, __FILE__, __LINE__ );
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Signal assigned in file: %s, line: %d", obf_file( mod->filename ), expr->line );
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Signal assigned in file: %s, line: %d", obf_file( mod->orig_fname ), expr->line );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, (flag_race_check + 1), __FILE__, __LINE__ );
       rv = snprintf( user_msg, USER_MSG_LENGTH, "  Signal also assigned in statement starting at file: %s, line: %d",
-                     obf_file( mod->filename ), base->exp->line );
+                     obf_file( mod->orig_fname ), base->exp->line );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, (flag_race_check + 1), __FILE__, __LINE__ );
 
       if( flag_race_check == WARNING ) {
         print_output( "  * Safely removing statement block from coverage consideration", WARNING_WRAP, __FILE__, __LINE__ );
         rv = snprintf( user_msg, USER_MSG_LENGTH, "    Statement block starting at file: %s, line: %d",
-                       obf_file( mod->filename ), stmt->exp->line );
+                       obf_file( mod->orig_fname ), stmt->exp->line );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, WARNING_WRAP, __FILE__, __LINE__ );
       }
@@ -410,7 +410,7 @@ static void race_handle_race_condition(
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, flag_race_check, __FILE__, __LINE__ );
         rv = snprintf( user_msg, USER_MSG_LENGTH, "  Statement block starting in file: %s, line: %d",
-                       obf_file( mod->filename ), stmt->exp->line );
+                       obf_file( mod->orig_fname ), stmt->exp->line );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, (flag_race_check + 1), __FILE__, __LINE__ );
 	if( flag_race_check == WARNING ) {
@@ -423,7 +423,7 @@ static void race_handle_race_condition(
           print_output( "", WARNING_WRAP, __FILE__, __LINE__ );
 	  print_output( "* Safely removing statement block from coverage consideration", WARNING, __FILE__, __LINE__ );
           rv = snprintf( user_msg, USER_MSG_LENGTH, "  Statement block starting at file: %s, line: %d",
-                         obf_file( mod->filename ), stmt->exp->line );
+                         obf_file( mod->orig_fname ), stmt->exp->line );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, WARNING_WRAP, __FILE__, __LINE__ );
 	}
@@ -951,7 +951,7 @@ static bool race_report_summary(
 
       fprintf( ofile, "  %-20.20s    %-20.20s        %u\n", 
                funit_flatten_name( head->funit ),
-  	       get_basename( obf_file( head->funit->filename ) ),
+  	       get_basename( obf_file( head->funit->orig_fname ) ),
   	       head->funit->stat->race_total );
 
     }
@@ -992,7 +992,7 @@ static void race_report_verbose(
         case FUNIT_TASK         :  fprintf( ofile, "    Task: " );         break;
         default                 :  fprintf( ofile, "    UNKNOWN: " );      break;
       }
-      fprintf( ofile, "%s, File: %s\n", obf_funit( funit_flatten_name( head->funit ) ), obf_file( head->funit->filename ) );
+      fprintf( ofile, "%s, File: %s\n", obf_funit( funit_flatten_name( head->funit ) ), obf_file( head->funit->orig_fname ) );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
       fprintf( ofile, "      Starting Line #     Race Condition Violation Reason\n" );

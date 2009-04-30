@@ -122,7 +122,7 @@ WSPACE [ \t\b\f]+
        yylval.number = vector_to_int( gvar->value );
      } else {
        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Generate variable found in constant expression outside of generate block, file: %s, line: %d",
-                                   obf_file( se_funit->filename ), se_lineno );
+                                   obf_file( se_funit->orig_fname ), se_lineno );
        assert( rv < USER_MSG_LENGTH );
        print_output( user_msg, FATAL, __FILE__, __LINE__ );
        Throw 0;

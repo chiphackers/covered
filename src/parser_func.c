@@ -145,14 +145,15 @@ attr_param* parser_create_attr(
 void parser_create_task_decl(
   bool         automatic,    /*!< If set to TRUE, specifies that this task is an automatic task */
   char*        name,         /*!< Name of task */
-  char*        filename,     /*!< Name of file that contains this task */
+  char*        orig_fname,   /*!< Name of file that contains this task */
+  char*        incl_fname,   /*!< Name of file that includes this task */
   unsigned int first_line,   /*!< Starting line number of first line of task */
   unsigned int first_column  /*!< Starting column number of first line of task */
 ) { PROFILE(PARSER_CREATE_TASK_DECL);
 
   if( ignore_mode == 0 ) {
     Try {
-      if( !db_add_function_task_namedblock( (automatic ? FUNIT_ATASK : FUNIT_TASK), name, filename, first_line, first_column ) ) {
+      if( !db_add_function_task_namedblock( (automatic ? FUNIT_ATASK : FUNIT_TASK), name, orig_fname, incl_fname, first_line, first_column ) ) {
         ignore_mode++;
       }
     } Catch_anonymous {
@@ -197,14 +198,15 @@ void parser_create_task_body(
 void parser_create_function_decl(
   bool         automatic,    /*!< Set to TRUE if the function is an automatic function */
   char*        name,         /*!< Name of function */
-  char*        filename,     /*!< Filename containing function */
+  char*        orig_fname,   /*!< Filename containing function */
+  char*        incl_fname,   /*!< Filename including function */
   unsigned int first_line,   /*!< First line of function */
   unsigned int first_column  /*!< First column of function */
 ) { PROFILE(PARSER_CREATE_FUNCTION_DECL);
 
   if( ignore_mode == 0 ) {
     Try {
-      if( db_add_function_task_namedblock( (automatic ? FUNIT_AFUNCTION : FUNIT_FUNCTION), name, filename, first_line, first_column ) ) {
+      if( db_add_function_task_namedblock( (automatic ? FUNIT_AFUNCTION : FUNIT_FUNCTION), name, orig_fname, incl_fname, first_line, first_column ) ) {
         db_add_signal( name, curr_sig_type, &curr_prange, NULL, curr_signed, FALSE, first_line, first_column, TRUE );
       } else {
         ignore_mode++;

@@ -497,9 +497,9 @@ void ovl_get_coverage(
   assert( curr_child != NULL );
   
   /* Get the module name and store it in assert_mod */
-  str_size    = strlen( curr_child->funit->name ) + 1 + strlen( curr_child->funit->filename ) + 1;
+  str_size    = strlen( curr_child->funit->name ) + 1 + strlen( curr_child->funit->orig_fname ) + 1;
   *assert_mod = (char*)malloc_safe( str_size ); 
-  rv = snprintf( *assert_mod, str_size, "%s %s", curr_child->funit->name, curr_child->funit->filename );
+  rv = snprintf( *assert_mod, str_size, "%s %s", curr_child->funit->name, curr_child->funit->orig_fname );
   assert( rv < str_size );
 
   /* Initialize the functional unit iterator */

@@ -114,7 +114,7 @@ void enumerate_resolve(
       } else if( last_value == -1 ) {
         unsigned int rv;
         print_output( "Implicit enumerate assignment cannot follow an X or Z value", FATAL, __FILE__, __LINE__ );
-        rv = snprintf( user_msg, USER_MSG_LENGTH, "File: %s, Line: %d", obf_file( inst->funit->filename ), ei->sig->line );
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "File: %s, Line: %d", obf_file( inst->funit->orig_fname ), ei->sig->line );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL_WRAP, __FILE__, __LINE__ );
         Throw 0;

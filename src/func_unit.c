@@ -69,7 +69,8 @@ static void funit_init(
   funit->suppl.all  = 0;
   funit->suppl.part.type = FUNIT_MODULE;
   funit->name       = NULL;
-  funit->filename   = NULL;
+  funit->orig_fname = NULL;
+  funit->incl_fname = NULL;
   funit->version    = NULL;
   funit->start_line = 0;
   funit->end_line   = 0;
@@ -606,25 +607,23 @@ void funit_db_write(
       funit->timescale = db_scale_to_precision( (uint64)1, funit );
     }
   
-    /* Make sure that the etype bit in the supplemental field is cleared */
-    funit->suppl.part.etype = 0;
-
     /*@-duplicatequals -formattype@*/
-    fprintf( file, "%d %x %s \"%s\" %d %s %u %u %llu\n",
+    fprintf( file, "%d %x %s \"%s\" %d %s %u %u %llu %s\n",
       DB_TYPE_FUNIT,
-      funit->suppl.all,
+      (funit->suppl.all & FUNIT_MASK),
       modname,
       scope,
       name_diff,
-      funit->filename,
+      funit->orig_fname,
       funit->start_line,
       funit->end_line,
-      funit->timescale
+      funit->timescale,
+      (funit->suppl.part.included ? funit->incl_fname : "")
     );
     /*@=duplicatequals =formattype@*/
 
     /* Figure out if a file version exists for this functional unit */
-    if( (funit->version == NULL) && ((strl = str_link_find( funit->filename, db_list[curr_db]->fver_head )) != NULL) ) {
+    if( (funit->version == NULL) && ((strl = str_link_find( funit->orig_fname, db_list[curr_db]->fver_head )) != NULL) ) {
       funit->version = strdup_safe( strl->str2 );
     }
 
@@ -747,11 +746,23 @@ void funit_db_read(
 
   /*@-duplicatequals -formattype@*/
   if( (params = sscanf( *line, "%x %s \"%[^\"]\" %d %s %u %u %llu%n", 
-                        &(funit->suppl.all), funit->name, scope, name_diff, funit->filename,
+                        &(funit->suppl.all), funit->name, scope, name_diff, funit->orig_fname,
                         &(funit->start_line), &(funit->end_line), &(funit->timescale), &chars_read )) == 8 ) {
   /*@=duplicatequals =formattype@*/
 
     *line = *line + chars_read;
+
+    /* If an include filename string should be present, attempt to parse it */
+    if( funit->suppl.part.included == 1 ) {
+      if( sscanf( *line, "%s%n", funit->incl_fname, &chars_read ) == 1 ) {
+        *line += chars_read;
+      } else {
+        print_output( "Internal Error:  Incorrect number of parameters for func_unit", FATAL, __FILE__, __LINE__ );
+        Throw 0;
+      }
+    } else {
+      strcpy( funit->incl_fname, funit->orig_fname );
+    }
 
   } else {
 
@@ -1557,22 +1568,20 @@ static void funit_clean(
     enumerate_dealloc_list( funit );
 
     /* Free functional unit name */
-    if( funit->name != NULL ) {
-      free_safe( funit->name, (strlen( funit->name ) + 1) );
-      funit->name = NULL;
-    }
+    free_safe( funit->name, (strlen( funit->name ) + 1) );
+    funit->name = NULL;
 
-    /* Free functional unit filename */
-    if( funit->filename != NULL ) {
-      free_safe( funit->filename, (strlen( funit->filename ) + 1) );
-      funit->filename = NULL;
-    }
+    /* Free original filename */
+    free_safe( funit->orig_fname, (strlen( funit->orig_fname ) + 1) );
+    funit->orig_fname = NULL;
+
+    /* Free include filename */
+    free_safe( funit->incl_fname, (strlen( funit->incl_fname ) + 1) );
+    funit->incl_fname = NULL;
 
     /* Free functional unit version */
-    if( funit->version != NULL ) {
-      free_safe( funit->version, (strlen( funit->version ) + 1) );
-      funit->version = NULL;
-    }
+    free_safe( funit->version, (strlen( funit->version ) + 1) );
+    funit->version = NULL;
 
     /* Free thread list, if available */
     if( funit->suppl.part.etype == 1 ) {

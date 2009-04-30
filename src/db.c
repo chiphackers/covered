@@ -365,7 +365,7 @@ void db_write(
           */
           if( (instl->inst->funit != NULL) &&
               (instl->inst->funit->version == NULL) &&
-              ((strl = str_link_find( instl->inst->funit->filename, db_list[curr_db]->fver_head )) != NULL) ) {
+              ((strl = str_link_find( instl->inst->funit->orig_fname, db_list[curr_db]->fver_head )) != NULL) ) {
             instl->inst->funit->version = strdup_safe( strl->str2 );
           }
 
@@ -424,7 +424,8 @@ void db_read(
   char         back[4096];           /* Current functional unit instance name */
   char         funit_scope[4096];    /* Current scope of functional unit instance */
   char         funit_name[256];      /* Current name of functional unit instance */
-  char         funit_file[4096];     /* Current filename of functional unit instance */
+  char         funit_ofile[4096];    /* Current filename of functional unit instance */
+  char         funit_ifile[4096];    /* Current filename of functional unit instance */
   funit_link*  foundfunit;           /* Found functional unit link */
   funit_inst*  foundinst;            /* Found functional unit instance */
   bool         merge_mode = FALSE;   /* If TRUE, we should currently be merging data */
@@ -440,8 +441,9 @@ void db_read(
 #endif
 
   /* Setup temporary module for storage */
-  tmpfunit.name     = funit_name;
-  tmpfunit.filename = funit_file;
+  tmpfunit.name       = funit_name;
+  tmpfunit.orig_fname = funit_ofile;
+  tmpfunit.incl_fname = funit_ifile;
 
   curr_funit  = NULL;
 
@@ -608,7 +610,8 @@ void db_read(
                   curr_funit             = funit_create();
                   curr_funit->name       = strdup_safe( funit_name );
                   curr_funit->suppl.all  = tmpfunit.suppl.all;
-                  curr_funit->filename   = strdup_safe( funit_file );
+                  curr_funit->orig_fname = strdup_safe( funit_ofile );
+                  curr_funit->incl_fname = strdup_safe( funit_ifile );
                   curr_funit->start_line = tmpfunit.start_line;
                   curr_funit->end_line   = tmpfunit.end_line;
                   curr_funit->timescale  = tmpfunit.timescale;
@@ -1133,7 +1136,7 @@ func_unit* db_add_instance(
 
     if( type != FUNIT_MODULE ) {
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Multiple identical task/function/named-begin-end names (%s) found in module %s, file %s",
-                                  scope, obf_funit( curr_funit->name ), obf_file( curr_funit->filename ) );
+                                  scope, obf_funit( curr_funit->name ), obf_file( curr_funit->orig_fname ) );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       funit_dealloc( funit );
@@ -1207,7 +1210,8 @@ func_unit* db_add_instance(
 */
 void db_add_module(
   char*        name,        /*!< Name of module being added to tree */
-  char*        file,        /*!< Filename that module is a part of */
+  char*        orig_fname,  /*!< Filename that module exists in */
+  char*        incl_fname,  /*!< Name of file that this module has been included into */
   unsigned int start_line,  /*!< Starting line number of this module in the file */
   unsigned int start_col    /*!< Starting column number of this module in the file */
 ) { PROFILE(DB_ADD_MODULE);
@@ -1217,7 +1221,7 @@ void db_add_module(
 #ifdef DEBUG_MODE
   if( debug_mode ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_module, module: %s, file: %s, start_line: %d, start_col: %d",
-                                obf_funit( name ), obf_file( file ), start_line, start_col );
+                                obf_funit( name ), obf_file( orig_fname ), start_line, start_col );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
@@ -1228,10 +1232,14 @@ void db_add_module(
   assert( modl != NULL );
 
   curr_funit             = modl->funit;
-  curr_funit->filename   = strdup_safe( file );
+  curr_funit->orig_fname = strdup_safe( orig_fname );
+  curr_funit->incl_fname = strdup_safe( incl_fname );
   curr_funit->start_line = start_line;
   curr_funit->start_col  = start_col;
   curr_funit->ts_unit    = current_timescale_unit;
+  if( strcmp( orig_fname, incl_fname ) != 0 ) {
+    curr_funit->suppl.part.included = 1;
+  }
 
   /* Reset the unnamed scope ID */
   unnamed_scope_id = 0;
@@ -1278,7 +1286,8 @@ void db_end_module(
 bool db_add_function_task_namedblock(
   int   type,         /*!< Specifies type of functional unit being added (function, task or named_block) */
   char* name,         /*!< Name of functional unit */
-  char* file,         /*!< File containing the specified functional unit */
+  char* orig_fname,   /*!< File containing the specified functional unit */
+  char* incl_fname,   /*!< Name of file that the function/task/namedblock is included into */
   int   start_line,   /*!< Starting line number of functional unit */
   int   start_column  /*!< Starting line column of functional unit */
 ) { PROFILE(DB_ADD_FUNCTION_TASK_NAMEDBLOCK);
@@ -1292,8 +1301,8 @@ bool db_add_function_task_namedblock(
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_function_task_namedblock, %s: %s, file: %s, start_line: %d",
-                                get_funit_type( type ), obf_funit( name ), obf_file( file ), start_line );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_function_task_namedblock, %s: %s, file: %s (%s), start_line: %d",
+                                get_funit_type( type ), obf_funit( name ), obf_file( orig_fname ), obf_file( incl_fname ), start_line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
@@ -1331,10 +1340,14 @@ bool db_add_function_task_namedblock(
 
       /* Set current functional unit to this functional unit */
       curr_funit             = tf;
-      curr_funit->filename   = strdup_safe( file );
+      curr_funit->orig_fname = strdup_safe( orig_fname );
+      curr_funit->incl_fname = strdup_safe( incl_fname );
       curr_funit->start_line = start_line;
       curr_funit->start_col  = start_column;
       curr_funit->ts_unit    = current_timescale_unit;
+      if( strcmp( orig_fname, incl_fname ) != 0 ) {
+        curr_funit->suppl.part.included = 1;
+      }
     
     }
 
@@ -2030,7 +2043,7 @@ expression* db_create_expression(
        (op == EXP_OP_AEDGE)     ||
        (op == EXP_OP_EOR)) ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Attempting to use a delay, task call, non-blocking assign or event controls in function %s, file %s, line %d",
-                                obf_funit( func_funit->name ), obf_file( curr_funit->filename ), line );
+                                obf_funit( func_funit->name ), obf_file( curr_funit->orig_fname ), line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     Throw 0;
@@ -2359,7 +2372,7 @@ statement* db_parallelize_statement(
 
     /* Create unnamed scope */
     scope = db_create_unnamed_scope();
-    if( db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, scope, curr_funit->filename, stmt->exp->line, ((stmt->exp->col >> 16) & 0xffff) ) ) {
+    if( db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, scope, curr_funit->orig_fname, curr_funit->incl_fname, stmt->exp->line, ((stmt->exp->col >> 16) & 0xffff) ) ) {
 
       /* Create a thread block for this statement block */
       stmt->suppl.part.head      = 1;
@@ -2792,7 +2805,7 @@ bool db_statement_connect(
   if( !(retval = statement_connect( curr_stmt, next_stmt, stmt_conn_id )) ) {
 
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unreachable statement found starting at line %d in file %s.  Ignoring...",
-                                next_stmt->exp->line, obf_file( curr_funit->filename ) );
+                                next_stmt->exp->line, obf_file( curr_funit->orig_fname ) );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, WARNING, __FILE__, __LINE__ );
 

@@ -151,7 +151,7 @@ bool scope_find_param(
           if( line > 0 ) {
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
                                         obf_sig( name ), get_funit_type( curr_funit->suppl.part.type ), obf_funit( curr_funit->name ),
-                                        obf_file( curr_funit->filename ), line );
+                                        obf_file( curr_funit->orig_fname ), line );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
             Throw 0;
@@ -242,7 +242,7 @@ bool scope_find_signal(
           if( line > 0 ) {
             unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
                                         obf_sig( name ), get_funit_type( curr_funit->suppl.part.type ), obf_funit( curr_funit->name ),
-                                        obf_file( curr_funit->filename ), line );
+                                        obf_file( curr_funit->orig_fname ), line );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
             Throw 0;
@@ -323,7 +323,7 @@ bool scope_find_task_function_namedblock(
 
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined %s hierarchy (%s) in %s %s, file %s, line %d",
                                 get_funit_type( type ), obf_funit( name ), get_funit_type( curr_funit->suppl.part.type ),
-                                obf_funit( curr_funit->name ), obf_file( curr_funit->filename ), line );
+                                obf_funit( curr_funit->name ), obf_file( curr_funit->orig_fname ), line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     Throw 0;
