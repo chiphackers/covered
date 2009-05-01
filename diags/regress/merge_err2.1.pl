@@ -24,10 +24,10 @@ if( $SIMULATOR eq "IV" ) {
 }
 
 # Perform diagnostic running code here
-&runScoreCommand( "-t adder1 -i main_a.a -v merge_err2.1a.v -y lib -D DUMP -o merge_err2.1.cdd" );
-&runScoreCommand( "-t adder1 -i main_a.a -vcd merge_err2.1a.vcd -v merge_err2.1a.v -y lib -D DUMP -o merge_err2.1a.cdd" );
-&runScoreCommand( "-t adder1 -i main_b.a -vcd merge_err2.1b.vcd -v merge_err2.1b.v -y lib -D DUMP -o merge_err2.1b.cdd" );
-&runScoreCommand( "-t adder1 -i main_c.a -vcd merge_err2.1c.vcd -v merge_err2.1c.v -y lib -D DUMP -o merge_err2.1c.cdd" );
+&runScoreCommand( "-t adder1 -i main_a.adder -v merge_err2.1a.v -y lib -D DUMP -o merge_err2.1.cdd" );
+&runScoreCommand( "-t adder1 -i main_a.adder -vcd merge_err2.1a.vcd -v merge_err2.1a.v -y lib -D DUMP -o merge_err2.1a.cdd" );
+&runScoreCommand( "-t adder1 -i main_b.adder -vcd merge_err2.1b.vcd -v merge_err2.1b.v -y lib -D DUMP -o merge_err2.1b.cdd" );
+&runScoreCommand( "-t adder1 -i main_c.adder -vcd merge_err2.1c.vcd -v merge_err2.1c.v -y lib -D DUMP -o merge_err2.1c.cdd" );
 
 # Perform several merges
 &runMergeCommand( "merge_err2.1.cdd merge_err2.1a.cdd" );

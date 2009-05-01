@@ -158,8 +158,7 @@ ERRSCORE      = err1.0          err2.0          err3            err3.1          
                 err5.1          err6            err6.1          err6.2          err6.3 \
                 err6.4          func4           func4.1         func4.2         func4.3 \
                 func4.4         func4.5         func4.6         score_err1      score_err1.1 \
-                score_err1.2    score_err1.3    score_err1.15   score_err1.31   score_help \
-                task5
+                score_err1.2    score_err1.3    score_err1.15   score_err1.31   score_help
 
 ERRMERGE      = err5.2          err5.3          err5.4          merge_err1      merge_err1.1 \
                 merge_err1.2    merge_err1.3    merge_err2      merge_err2.1    merge_help
@@ -208,7 +207,8 @@ NOSIMERRLIST  = comment1        enum2           err4            err4.1          
                 score_err1.11   score_err1.12   score_err1.13   score_err1.14   score_err1.16 \
                 score_err1.17   score_err1.18   score_err1.19   score_err1.20   score_err1.21 \
                 score_err1.22   score_err1.23   score_err1.24   score_err1.25   score_err1.26 \
-                score_err1.27   score_err1.28   score_err1.29   score_err1.30   timescale3 \
+                score_err1.27   score_err1.28   score_err1.29   score_err1.30   task5 \
+                timescale3 \
                 timescale3.1    timescale3.2    timescale3.3    timescale3.4    timescale3.5 \
                 timescale3.6    timescale3.7    timescale3.8    timescale3.9    timescale3.10 \
                 timescale3.11   timescale3.12   timescale3.13   timescale3.14

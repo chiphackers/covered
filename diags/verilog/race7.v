@@ -7,7 +7,7 @@
 
 module main;
 
-reg a;
+reg x;
 
 foo a( 1'b0 );
 bar b( 1'b0 );
