@@ -1136,10 +1136,13 @@ void instance_db_write(
           expl = expl->next;
         }
 
+        /* Only assign IDs to signals that are within a generated functional unit signal list */
         sigl = root->funit->sig_head;
         while( sigl != NULL ) {
-          sigl->sig->id = curr_sig_id;
-          curr_sig_id++;
+          if( sigl->rm_sig ) {
+            sigl->sig->id = curr_sig_id;
+            curr_sig_id++;
+          }
           sigl = sigl->next;
         }
     

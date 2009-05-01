@@ -456,7 +456,7 @@ bool bind_signal(
         found_sig->dim        = (dim_range*)malloc_safe( sizeof( dim_range ) * 1 );
         found_sig->dim[0].msb = 0;
         found_sig->dim[0].lsb = 0;
-        sig_link_add( found_sig, &(funit_exp->sig_head), &(funit_exp->sig_tail) );
+        sig_link_add( found_sig, TRUE, &(funit_exp->sig_head), &(funit_exp->sig_tail) );
 
       /* Otherwise, don't attempt to bind the signal */
       } else {

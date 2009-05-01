@@ -1667,7 +1667,7 @@ void db_add_signal(
       }
     } else {
       /* Add signal to current module's signal list */
-      sig_link_add( sig, &(curr_funit->sig_head), &(curr_funit->sig_tail) );
+      sig_link_add( sig, TRUE, &(curr_funit->sig_head), &(curr_funit->sig_tail) );
     }
 
     /* Indicate if signal must be assigned by simulated results or not */
@@ -2524,7 +2524,7 @@ void db_add_statement(
       stmt->funit = curr_funit;
 
       /* Finally, add the statement to the functional unit statement list */
-      stmt_link_add_tail( stmt, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
+      stmt_link_add_tail( stmt, TRUE, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
 
     }
 

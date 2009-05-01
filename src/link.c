@@ -88,16 +88,18 @@ str_link* str_link_add(
  new element and (possibly) sets the tail value to the new element.
 */
 void stmt_link_add_head(
-            statement*  stmt,  /*!< Pointer to statement to add to specified statement list */
-  /*@out@*/ stmt_link** head,  /*!< Pointer to head str_link element of list */
-  /*@out@*/ stmt_link** tail   /*!< Pointer to tail str_link element of list */
+            statement*  stmt,     /*!< Pointer to statement to add to specified statement list */
+            bool        rm_stmt,  /*!< Value to specify if statement should be removed when the statement link is deleted */
+  /*@out@*/ stmt_link** head,     /*!< Pointer to head str_link element of list */
+  /*@out@*/ stmt_link** tail      /*!< Pointer to tail str_link element of list */
 ) { PROFILE(STMT_LINK_ADD_HEAD);
 
   stmt_link* tmp;  /* Temporary pointer to newly created stmt_link element */
 
   tmp = (stmt_link*)malloc_safe( sizeof( stmt_link ) );
 
-  tmp->stmt = stmt;
+  tmp->stmt    = stmt;
+  tmp->rm_stmt = rm_stmt;
 
   if( *head == NULL ) {
     *head = *tail = tmp;
@@ -117,16 +119,18 @@ void stmt_link_add_head(
  next pointer of element to NULL and sets the tail value to the new element.
 */
 void stmt_link_add_tail(
-            statement*  stmt,  /*!< Pointer to statement to add to specified statement list */
-  /*@out@*/ stmt_link** head,  /*!< Pointer to head str_link element of list */
-  /*@out@*/ stmt_link** tail   /*!< Pointer to tail str_link element of list */
+            statement*  stmt,     /*!< Pointer to statement to add to specified statement list */
+            bool        rm_stmt,  /*!< Value to specify if statement should be removed when the statement link is deleted */
+  /*@out@*/ stmt_link** head,     /*!< Pointer to head str_link element of list */
+  /*@out@*/ stmt_link** tail      /*!< Pointer to tail str_link element of list */
 ) { PROFILE(STMT_LINK_ADD_TAIL);
 
   stmt_link* tmp;    /* Temporary pointer to newly created stmt_link element */
 
   tmp = (stmt_link*)malloc_safe( sizeof( stmt_link ) );
 
-  tmp->stmt = stmt;
+  tmp->stmt    = stmt;
+  tmp->rm_stmt = rm_stmt;
 
   if( *head == NULL ) {
     *head = *tail = tmp;
@@ -260,17 +264,19 @@ void exp_link_add(
  to the new element and sets the tail value to the new element.
 */
 void sig_link_add(
-            vsignal*   sig,   /*!< Signal to add to specified signal list */
-  /*@out@*/ sig_link** head,  /*!< Pointer to head sig_link element of list */
-  /*@out@*/ sig_link** tail   /*!< Pointer to tail sig_link element of list */
+            vsignal*   sig,     /*!< Signal to add to specified signal list */
+            bool       rm_sig,  /*!< Set to TRUE if signal should be deallocated when the sig_link is deallocated */
+  /*@out@*/ sig_link** head,    /*!< Pointer to head sig_link element of list */
+  /*@out@*/ sig_link** tail     /*!< Pointer to tail sig_link element of list */
 ) { PROFILE(SIG_LINK_ADD);
 
   sig_link* tmp;   /* Temporary pointer to newly created sig_link element */
 
   tmp = (sig_link*)malloc_safe( sizeof( sig_link ) );
 
-  tmp->sig  = sig;
-  tmp->next = NULL;
+  tmp->sig    = sig;
+  tmp->rm_sig = rm_sig;
+  tmp->next   = NULL;
 
   if( *head == NULL ) {
     *head = *tail = tmp;
@@ -1089,10 +1095,12 @@ void stmt_link_delete_list(
   while( curr.curr != NULL ) {
 
     /* Deallocate statement */
-    statement_dealloc( curr.curr->stmt );
+    if( curr.curr->rm_stmt ) {
+      statement_dealloc( curr.curr->stmt );
+    }
     curr.curr->stmt = NULL;
 
-    head      = (stmt_link*)((long int)(curr.curr->ptr) ^ (long int)(curr.last));
+    head = (stmt_link*)((long int)(curr.curr->ptr) ^ (long int)(curr.last));
     if( head != NULL ) {
       head->ptr = (stmt_link*)((long int)(curr.curr) ^ (long int)(head->ptr));
     }
@@ -1154,7 +1162,7 @@ void sig_link_delete_list(
     head = tmp->next;
 
     /* Deallocate signal */
-    if( del_sig ) {
+    if( del_sig && tmp->rm_sig ) {
       vsignal_dealloc( tmp->sig );
       tmp->sig = NULL;
     }

@@ -1785,10 +1785,11 @@ typedef union usuppl_u usuppl;
 union usuppl_u {
   uint8 all;                      /*!< Allows us to set all bits in the suppl field */
   struct {
-    uint8 type      : 3;          /*!< Specifies the functional unit type (see \ref func_unit_types for legal values) */
-    uint8 etype     : 1;          /*!< Set to 0 if elem should be treated as a thread pointer; set to 1 if elem should be treated
-                                       as a thread list pointer. */
-    uint8 included  : 1;          /*!< Set to 1 if the current functional unit has been included into a file via the `include preprocessor command */
+    uint8 type      : 3;          /*!< Bits 0:2.  Mask = 1.  Specifies the functional unit type (see \ref func_unit_types for legal values) */
+    uint8 etype     : 1;          /*!< Bit 3.     Mask = 0.  Set to 0 if elem should be treated as a thread pointer; set to 1 if elem should
+                                       be treated as a thread list pointer. */
+    uint8 included  : 1;          /*!< Bit 4.     Mask = 1.  Set to 1 if the current functional unit has been included into a file via the
+                                       `include preprocessor command */
   } part;
 };
 
@@ -2478,6 +2479,7 @@ struct statement_s {
 struct sig_link_s {
   vsignal*  sig;                     /*!< Pointer to signal in list */
   sig_link* next;                    /*!< Pointer to next signal link element in list */
+  bool      rm_sig;                  /*!< Set to TRUE to indicate that the signal should be removed when deallocated */
 };
 
 /*!
@@ -2502,6 +2504,7 @@ struct exp_link_s {
 struct stmt_link_s {
   statement* stmt;                   /*!< Pointer to statement */
   stmt_link* ptr;                    /*!< Pointer to next statement element in list */
+  bool       rm_stmt;                /*!< Set to TRUE if the associated statement should be removed */
 };
 
 /*!

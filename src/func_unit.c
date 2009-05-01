@@ -653,7 +653,9 @@ void funit_db_write(
     /* Now print all signals in functional unit */
     curr_sig = funit->sig_head;
     while( curr_sig != NULL ) {
-      vsignal_db_write( curr_sig->sig, file );
+      if( curr_sig->rm_sig ) {
+        vsignal_db_write( curr_sig->sig, file );
+      }
       curr_sig = curr_sig->next; 
     }
 
@@ -684,7 +686,9 @@ void funit_db_write(
       stmt_iter_reset( &curr_stmt, funit->stmt_head );
     }
     while( curr_stmt.curr != NULL ) {
-      statement_db_write( curr_stmt.curr->stmt, file, ids_issued );
+      if( curr_stmt.curr->rm_stmt ) {
+        statement_db_write( curr_stmt.curr->stmt, file, ids_issued );
+      }
       stmt_iter_next( &curr_stmt );
     }
 

@@ -498,9 +498,9 @@ void statement_db_read(
 
       /* Add the statement to the functional unit list */
       if( (read_mode == READ_MODE_NO_MERGE) || (read_mode == READ_MODE_MERGE_NO_MERGE) || (read_mode == READ_MODE_MERGE_INST_MERGE) ) {
-        stmt_link_add_tail( stmt, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
+        stmt_link_add_tail( stmt, TRUE, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
       } else {
-        stmt_link_add_head( stmt, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
+        stmt_link_add_head( stmt, TRUE, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
       }
 
       /*

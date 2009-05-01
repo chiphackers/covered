@@ -242,7 +242,8 @@ VCSONLYDIAGS1 = afunc1            afunc2            always_comb1      always_com
                 generate6         generate7         generate7.1       generate7.2       generate8.1 \
                 generate8.2       generate8.3       generate8.4       generate8.5       generate8.6 \
                 generate8.7       generate8.8       generate9         generate9.1       generate9.2 \
-                generate9.3       generate11.4      generate13        generate14        hier1.1 \
+                generate9.3       generate11.4      generate13        generate14        generate16 \
+                hier1.1 \
                 inc1              inc1.1            inc2              inc3              inc3.1 \
                 int1              line1             logic1            longint1          long_sig \
                 marray1           marray1.1         marray1.2         marray1.3         marray2 \
@@ -283,7 +284,7 @@ IVVCSDIAGS1   = define3          delay3           exclude7.3       exclude10.5  
                 generate5.2      generate5.3      generate8        generate8.9      generate10 \
                 generate10.1     generate10.2     generate11       generate11.1     generate11.2 \
                 generate11.3     generate15       generate15.1     generate15.2     generate15.3 \
-                generate15.4     generate15.5     generate16       generate16.1     hier3 \
+                generate15.4     generate15.5     generate16.1     hier3 \
                 elsif3           ifdef3           ifndef2          instance7        localparam1 \
                 localparam1.1    localparam1.2    localparam1.3    localparam2      localparam3 \
                 mbit_sel5        mbit_sel5.1      mbit_sel5.2      mbit_sel5.3      mbit_sel6 \

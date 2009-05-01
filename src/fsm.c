@@ -502,7 +502,7 @@ static void fsm_gather_signals(
     if( expr->sig != NULL ) {
 
       /* Add this signal to the list */
-      sig_link_add( expr->sig, head, tail );
+      sig_link_add( expr->sig, TRUE, head, tail );
 
       /* Add specified expression ID to the expression IDs array, if needed */
       if( expr_id >= 0 ) {

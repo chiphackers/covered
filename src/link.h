@@ -27,36 +27,80 @@
 
 
 /*! \brief Adds specified string to str_link element at the end of the list. */
-str_link* str_link_add( char* str, str_link** head, str_link** tail );
+str_link* str_link_add(
+  char*      str,
+  str_link** head,
+  str_link** tail
+);
 
 /*! \brief Adds specified statement to stmt_link element at the beginning of the list. */
-void stmt_link_add_head( statement* stmt, stmt_link** head, stmt_link** tail );
+void stmt_link_add_head(
+  statement*  stmt,
+  bool        rm_stmt,
+  stmt_link** head,
+  stmt_link** tail
+);
 
 /*! \brief Adds specified statement to stmt_link element at the end of the list. */
-void stmt_link_add_tail( statement* stmt, stmt_link** head, stmt_link** tail );
+void stmt_link_add_tail(
+  statement*  stmt,
+  bool        rm_stmt, 
+  stmt_link** head,
+  stmt_link** tail
+);
 
 /*! \brief Joins two statement links together. */
-void stmt_link_merge( stmt_link** base_head, stmt_link** base_tail, stmt_link* other_head, stmt_link* other_tail );
+void stmt_link_merge(
+  stmt_link** base_head,
+  stmt_link** base_tail,
+  stmt_link*  other_head,
+  stmt_link*  other_tail
+);
 
 /*! \brief Adds specified expression to exp_link element at the end of the list. */
-void exp_link_add( expression* expr, exp_link** head, exp_link** tail );
+void exp_link_add(
+  expression* expr,
+  exp_link**  head,
+  exp_link**  tail
+);
 
 /*! \brief Adds specified signal to sig_link element at the end of the list. */
-void sig_link_add( vsignal* sig, sig_link** head, sig_link** tail );
+void sig_link_add(
+  vsignal*   sig,
+  bool       rm_sig,
+  sig_link** head,
+  sig_link** tail
+);
 
 /*! \brief Adds specified FSM to fsm_link element at the end of the list. */
-void fsm_link_add( fsm* table, fsm_link** head, fsm_link** tail );
+void fsm_link_add(
+  fsm*       table,
+  fsm_link** head,
+  fsm_link** tail
+);
 
 /*! \brief Adds specified functional unit to funit_link element at the end of the list. */
-void funit_link_add( func_unit* funit, funit_link** head, funit_link** tail );
+void funit_link_add(
+  func_unit*   funit,
+  funit_link** head,
+  funit_link** tail
+);
 
 #ifndef VPI_ONLY
 /*! \brief Adds specified generate item to the end of specified gitem list. */
-void gitem_link_add( gen_item* gi, gitem_link** head, gitem_link** tail );
+void gitem_link_add(
+  gen_item*    gi,
+  gitem_link** head,
+  gitem_link** tail
+);
 #endif
 
 /*! \brief Adds specified functional unit instance to inst_link element at the end of the list. */
-inst_link* inst_link_add( funit_inst* inst, inst_link** head, inst_link** tail );
+inst_link* inst_link_add(
+  funit_inst* inst,
+  inst_link** head,
+  inst_link** tail
+);
 
 /*********************************************************************************/
 
@@ -133,33 +177,58 @@ void funit_link_remove( func_unit* funit, funit_link** head, funit_link** tail, 
 /*********************************************************************************/
 
 /*! \brief Deletes entire list specified by head pointer. */
-void str_link_delete_list( str_link* head );
+void str_link_delete_list(
+  str_link* head
+);
 
 /*! \brief Unlinks the stmt_link specified by the specified statement */
-void stmt_link_unlink( statement* stmt, stmt_link** head, stmt_link** tail );
+void stmt_link_unlink(
+  statement*  stmt,
+  stmt_link** head,
+  stmt_link** tail
+);
 
 /*! \brief Deletes entire list specified by head pointer. */
-void stmt_link_delete_list( stmt_link* head );
+void stmt_link_delete_list(
+  stmt_link* head
+);
 
 /*! \brief Deletes entire list specified by head pointer. */
-void exp_link_delete_list( exp_link* head, bool del_exp );
+void exp_link_delete_list(
+  exp_link* head,
+  bool      del_exp
+);
 
 /*! \brief Deletes entire list specified by head pointer. */
-void sig_link_delete_list( sig_link* head, bool del_sig );
+void sig_link_delete_list(
+  sig_link* head,
+  bool      del_sig
+);
 
 /*! \brief Deletes entire list specified by head pointer. */
-void fsm_link_delete_list( fsm_link* head );
+void fsm_link_delete_list(
+  fsm_link* head
+);
 
 /*! \brief Deletes entire list specified by head pointer. */
-void funit_link_delete_list( funit_link** head, funit_link** tail, bool rm_funit );
+void funit_link_delete_list(
+  funit_link** head,
+  funit_link** tail,
+  bool         rm_funit
+);
 
 #ifndef VPI_ONLY
 /*! \brief Deletes entire list specified by head pointer. */
-void gitem_link_delete_list( gitem_link* head, bool rm_elems );
+void gitem_link_delete_list(
+  gitem_link* head,
+  bool        rm_elems
+);
 #endif
 
 /*! \brief Deletes entire list specified by head pointer. */
-void inst_link_delete_list( inst_link* head );
+void inst_link_delete_list(
+  inst_link* head
+);
 
 #endif
 

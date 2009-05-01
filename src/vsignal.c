@@ -360,7 +360,7 @@ void vsignal_db_read(
       print_output( "Internal error:  vsignal in database written before its functional unit", FATAL, __FILE__, __LINE__ );
       Throw 0;
     } else {
-      sig_link_add( sig, &(curr_funit->sig_head), &(curr_funit->sig_tail) );
+      sig_link_add( sig, TRUE, &(curr_funit->sig_head), &(curr_funit->sig_tail) );
     }
 
   } else {

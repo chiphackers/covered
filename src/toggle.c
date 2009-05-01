@@ -149,7 +149,7 @@ void toggle_collect(
       if( ((cov == 1) && (hit01 == sig->value->width) && (hit10 == sig->value->width)) ||
           ((cov == 0) && ((hit01 < sig->value->width) || (hit10 < sig->value->width))) ) {
 
-        sig_link_add( sig, sig_head, sig_tail );
+        sig_link_add( sig, TRUE, sig_head, sig_tail );
           
       }
 

@@ -530,7 +530,7 @@ void memory_collect(
       if( ((cov == 1) && (wr_hit > 0) && (rd_hit > 0) && (hit01 == tog_total) && (hit10 == tog_total)) ||
           ((cov == 0) && ((wr_hit == 0) || (rd_hit == 0) || (hit01 < tog_total) || (hit10 < tog_total))) ) {
 
-        sig_link_add( sig, head, tail );
+        sig_link_add( sig, TRUE, head, tail );
 
       }
 
