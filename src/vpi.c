@@ -190,7 +190,7 @@ PLI_INT32 covered_value_change_bin(
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change_bin, name: %s, time: %lld, value: %s",
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change_bin, name: %s, time: %llu, value: %s",
                                 obf_sig( vpi_get_str( vpiFullName, cb->obj ) ), (((uint64)cb->time->high << 32) | (uint64)cb->time->low), value.value.str );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -209,7 +209,7 @@ PLI_INT32 covered_value_change_bin(
 #else
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change_bin, name: %s, time: %d%0d, value: %s",
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change_bin, name: %s, time: %llu, value: %s",
                                 obf_sig( vpi_get_str( vpiFullName, cb->obj ) ), (((uint64)cb->time->high << 32) | (uint64)cb->time->low), cb->value->value.str );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -255,7 +255,7 @@ PLI_INT32 covered_value_change_real(
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change_real, name: %s, time: %lld, value: %.16f",
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change_real, name: %s, time: %llu, value: %.16f",
                                 obf_sig( vpi_get_str( vpiFullName, cb->obj ) ), (((uint64)cb->time->high << 32) | (uint64)cb->time->low), value.value.real );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -275,7 +275,7 @@ PLI_INT32 covered_value_change_real(
 #else
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change_real, name: %s, time: %d%0d, value: %.16f",
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change_real, name: %s, time: %llu, value: %.16f",
                                 obf_sig( vpi_get_str( vpiFullName, cb->obj ) ), (((uint64)cb->time->high << 32) | (uint64)cb->time->low), cb->value->value.real );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -546,6 +546,19 @@ void covered_parse_task_func( vpiHandle mod ) { PROFILE(COVERED_PARSE_TASK_FUNC)
         if( curr_instance != NULL ) {
 
           /* Parse signals */
+          if( (liter = vpi_iterate( vpiNet, scope )) != NULL ) {
+            while( (handle = vpi_scan( liter )) != NULL ) {
+#ifdef DEBUG_MODE
+              if( debug_mode ) {
+                unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Found net: %s", obf_sig( vpi_get_str( vpiFullName, handle ) ) );
+                assert( rv < USER_MSG_LENGTH );
+                print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+              }
+#endif
+              covered_create_value_change_cb( handle );
+            }
+          }
+
           if( (liter = vpi_iterate( vpiReg, scope )) != NULL ) {
             while( (handle = vpi_scan( liter )) != NULL ) {
 #ifdef DEBUG_MODE

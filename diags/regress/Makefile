@@ -284,7 +284,7 @@ IVVCSDIAGS1   = define3          delay3           exclude7.3       exclude10.5  
                 generate5.2      generate5.3      generate8        generate8.9      generate10 \
                 generate10.1     generate10.2     generate11       generate11.1     generate11.2 \
                 generate11.3     generate15       generate15.1     generate15.2     generate15.3 \
-                generate15.4     generate15.5     generate16.1     hier3 \
+                generate15.4     generate15.5     generate16.1     generate17       hier3 \
                 elsif3           ifdef3           ifndef2          instance7        localparam1 \
                 localparam1.1    localparam1.2    localparam1.3    localparam2      localparam3 \
                 mbit_sel5        mbit_sel5.1      mbit_sel5.2      mbit_sel5.3      mbit_sel6 \
@@ -365,9 +365,9 @@ NOINLINEDIAGS += fork2           generate4       generate4.1     generate8
 endif
 
 ifeq ($(MAKECMDGOALS),cver)
-NOINLINEDIAGS += define4         include1        include1.1      include2        instance7 \
-                 random1.2       real3.4         real3.6         real6           sbit_sel2.1 \
-                 timescale2.8
+NOINLINEDIAGS += define4         include1        include1.1      include2        include4 \
+                 include5        instance7       random1.2       real3.4         real3.6 \
+                 real6           sbit_sel2.1     timescale2.8
 endif
 endif
                  
