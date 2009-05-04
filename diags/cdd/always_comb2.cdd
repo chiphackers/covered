@@ -1,13 +1,13 @@
-5 14 181 2 *
-8 /home/bryce3/trevorw/covered/diags/verilog 2 -t (main) 2 -vcd (always_comb2.vcd) 2 -o (always_comb2.cdd) 2 -v (always_comb2.v) 2 -D (DUMP)
-3 0 $root "$root" 0 NA 0 0 1
-3 0 main "main" 0 always_comb2.v 8 24 1
+5 14 ff81 2 *
+8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -vcd (always_comb2.vcd) 2 -o (always_comb2.cdd) 2 -D (DUMP) 2 -t (main) 2 -v (always_comb2.v)
+3 0 $root "$root" 0 NA 0 0 1 
+3 0 main "main" 0 always_comb2.v 8 24 1 
 2 1 0 0 0 0 1 1000 0 0 1 1 b
 2 2 0 0 0 0 29 1000 1 0 1 18 0 1 0 0 0 0
 2 3 0 0 0 0 1 1000 0 0 1 1 c
 2 4 0 0 0 0 29 1000 3 0 1 18 0 1 0 0 0 0
 2 5 0 0 0 0 2b 1000 2 4 1 18 0 1 0 0 0 0
-2 6 12 12 a 2 4f 100a 5 0 1 18 0 1 0 0 0 0
+2 6 12 12 a 1 4f 100a 5 0 1 18 0 1 0 0 0 0
 2 7 13 13 a000a 0 1 1000 0 0 1 1 c
 2 8 13 13 60006 0 1 1000 0 0 1 1 b
 2 9 13 13 6000a 0 8 1000 7 8 1 18 0 1 0 0 0 0
@@ -18,4 +18,4 @@
 1 c 3 10 7000a 1 0 0 0 1 17 0 1 0 0 0 0
 4 11 6 6 6
 4 6 1 11 0
-3 1 main.u$0 "main.u$0" 0 always_comb2.v 15 22 1
+3 1 main.u$0 "main.u$0" 0 always_comb2.v 15 22 1 

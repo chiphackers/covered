@@ -248,17 +248,20 @@ VCSONLYDIAGS1 = afunc1            afunc2            always_comb1      always_com
                 int1              line1             logic1            longint1          long_sig \
                 marray1           marray1.1         marray1.2         marray1.3         marray2 \
                 marray2.1         marray2.2         marray2.3         mbit_sel5.4       mbit_sel6.4 \
-                mem3              mem5              op_assign1        param8.2          param12           param12.1 \
+                mem3              param8.2          param12           param12.1 \
                 real5.11          real5.12          real5.13          real5.14          real5.15 \
                 real5.16          real6.10          real6.11          real6.12          real6.13 \
                 sbit_sel3.2       shortint1         signed4.1         slist3.1          slist3.3 \
-                static_afunc1     static_func1      static_func1.1    static_func2      static_func2.1 \
-                static_func2.2    static_func2.3    static_func3      timescale4        timescale4.1 \
+                timescale4        timescale4.1 \
                 timescale4.9      timescale4.10     timescale4.11     timescale4.12     timescale4.13 \
                 timescale4.14     timescale4.16     trireg            urandom1.2        urandom1.3 \
                 urandom_range1    urandom_range2    value_plusargs1   value_plusargs2   value_plusargs3 \
                 value_plusargs4   value_plusargs5   value_plusargs6   value_plusargs7   value_plusargs8 \
                 value_plusargs8.1
+# These need to go back in:
+#               mem5              op_assign1        static_afunc1     static_func1      static_func1.1    static_func2      static_func2.1
+#               static_func2.2    static_func2.3    static_func3
+
 # null_stmt1.4  real4            timescale4.15
 VCSONLYDIAGS2 = 
 VCSONLYDIAGS3 = 
@@ -358,7 +361,7 @@ INLINEDIAGS   := example2        example2.1      example2.2      example2.3     
                  example2.5
 
 NOINLINEDIAGS := case5           casex2          casez3          example1        exclude5.1 \
-                 exclude5.3      param10.1       param10.5
+                 exclude5.3      param10.1       param10.5       sbit_sel3.2     signed4.1
 
 ifdef VPI
 NOINLINEDIAGS += fork2           generate4       generate4.1     generate8
