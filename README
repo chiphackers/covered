@@ -7,7 +7,7 @@ For information regarding...
 
 For User documentation...
 
-* User's Guide can be found in HTML form at ./doc/user/index.html.
+* User's Guide can be found in HTML form at ./doc/html/index.html.
 * Command-line help can be found by typing "covered -h" after Covered has been installed.
 * Version information about Covered can be found by typing "covered -v" after Covered
   has been installed.
@@ -25,7 +25,7 @@ For Development documentation...
 
 For GUI documentation...
 
-* The GUI User's Guide is available in HTML form at ./doc/gui/welcome.html.
+* The GUI User's Guide is available in HTML form at ./doc/html/index.html.
 * This documentation can also be accessed by clicking on the "Help->User Guide" menu item 
 
 The Covered website is located... 

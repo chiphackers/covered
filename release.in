@@ -9,8 +9,9 @@ rm -rf ./doc/htdocs
 rm -rf ./doc/manstyle
 rm -rf ./src/vpi
 rm -rf ./covered.spec
+chmod 755 install-sh
 ./configure
-if -e doxygen; then cd ./doc; make devel_doc; cd devel/html; tar cvlf ../../../../devel.tar *; gzip ../../../../devel.tar; cd ../..; make clean devel_doc_clean; fi
+if test -n `which doxygen`; then cd ./doc; make devel_doc; cd devel/html; tar cvlf ../../../../devel.tar *; gzip ../../../../devel.tar; cd ../..; make clean devel_doc_clean; fi
 cd ./doc/html; tar cvlf ../../../user.tar *; gzip ../../../user.tar
 tar cvlf ../covered-diags.tar diags; gzip ../covered-diags.tar
 rm -rf ./diags
