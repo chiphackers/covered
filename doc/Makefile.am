@@ -116,6 +116,7 @@ img_DATA = html/img/app_menu.gif \
            html/img/up.gif \
            html/img/up_button.gif \
            html/img/vhier.png \
+           html/img/vhier2.png \
            html/img/view_menu.gif \
            html/img/wizard.gif
 man_MANS = covered.1

@@ -4,7 +4,7 @@ Summary: Verilog code coverage analyzer
 Name: covered
 Version: %{version}
 Release: 1
-Copyright: GPL
+License: GPL
 Group: Applications/Engineering
 Source: covered-%{version}.tar.gz
 BuildRoot: /tmp/%{name}-buildroot
@@ -117,7 +117,7 @@ make clean
 /usr/local/share/covered/doc/html/img/assert_excl.gif
 /usr/local/share/covered/doc/html/img/assert_src.gif
 /usr/local/share/covered/doc/html/img/assert_window.gif
-/usr/local/share/covered/doc/html/img/banner.gif
+/usr/local/share/covered/doc/html/img/banner.jpg
 /usr/local/share/covered/doc/html/img/close_warn.gif
 /usr/local/share/covered/doc/html/img/col_show_hide.gif
 /usr/local/share/covered/doc/html/img/comb_complex.gif
@@ -186,7 +186,7 @@ make clean
 /usr/local/share/covered/doc/html/img/vhier2.png
 /usr/local/share/covered/doc/html/img/view_menu.gif
 /usr/local/share/covered/doc/html/img/wizard.gif
-/usr/local/share/man/man1/covered.1
+/usr/local/man/man1/covered.1
 
 %changelog
 
