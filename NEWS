@@ -1,6 +1,62 @@
 Covered-Related NEWS
 ====================
 
+    * 5/7/2009
+
+Stable release covered-0.7.1 made.  This is a bug fix release only.  Here are the details:
+
+  - Fixed bug 2782473.  CDD files being merged from different testbenches but with similar leading hierarchy 
+    (but different top-level modules) which would lead to internal assertion errors.
+  - Fixed bug 2785453.  Wires declared in generated named scopes were not handled correctly by Covered in VPI mode of operation,
+    leading to inaccurate coverage information.
+  - Fixed bug 2786986.  An always block with a part select in the sensitivity list was triggering on the entire signal change
+    rather than the specific part select, leading to a potential degradation in performance and inaccuracy in coverage information.
+  - Allow time variable types to be included for coverage.
+  - Fixing permission issue with the install-sh script that some people would get after first downloading and installing.
+  - Updated README and INSTALL files to be more accurate.
+  - Fixed coverage accuracy issue for code that uses variable part selects in LHS of expressions. 
+
+    * 4/26/2009
+
+Stable release covered-0.7 made.  This description contains only the changes made between the 11/19/2008 and this release.
+This is primarily a bug fix period.  Here are the details:
+
+  - Added many new diagnostics to help with C source code coverage.
+  - Fixed memory leak issue when profiling output is directed to unwrittable file.
+  - Fixed bug 2423290.  Arithmetic right shift operator was not acting like a logical right shift operator when
+    the left operand was an unsigned value.
+  - Fixed bug 2471776.  The $time system call was not returning the correct value if the timescale was not 1-to-1.
+  - Fixed bug 2482797.  If an unpacked dimension is accessed for a memory read, memory read coverage is not output
+    correctly (not reported as being read).
+  - Fixed bug 2446877.  Big endian signals were not being handled correctly from the VCD file.
+  - Fixed bug 2502095.  Named blocks within generate statements generating wrong code.
+  - Adding support for line order reporting when included files contain coverage information.
+  - Fixed bug 2562345.  Timescales were not being handled properly in a DOS-formatted file.
+  - Fixing issue where text following an `ifdef, `ifndef and `elsif was being parsed incorrectly.
+  - Fixed bug 2565447.  Added support for LAND and LOR "static" operators to allow these operator types to be used
+    in generate blocks.
+  - Fixed bug 2565347.  Added missing support for $signed and $unsigned system function operators.
+  - Fixed issue where a user-defined system call is found in the logic and Covered issues an error message.
+  - Fixed bug 2565259.  Fixed a bug with preprocessor's handling of `include filenames.
+  - Fixed bug 2565405.  Signed input/output signals were not parsed correctly.
+  - Fixed bug 2422415.  Fixed simulation/coverage issue with comma-separated case items.
+  - Fixed bug 2614516.  Added support for != operator in "static" expressions.
+  - Fixed bug with obfuscation global option.
+  - Fixed bug which produced segmentation fault when the $Id$ keyword is found in a Verilog source file.
+  - Fixed bug 2617354.  Fixed parameter handling in generate blocks.
+  - Added capability to ignore race condition checking on a per-module basis.  Enhanced the -rI option to allow an optional
+    module name (i.e., "-rI=foobar") to be specified to achieve this functionality.
+  - Updated user documentation
+  - Cleaned up all splint warnings
+  - Fixed bug 2722062.  When an error is found within a Covered command run, Covered will now return a value of 1 (EXIT_FAILURE)
+    instead of a value of 0.
+  - Fixed bug 1899674.  When the score command is run to perform VCD scoring (after the CDD file was created with the score command)
+    and the CDD file was found to be empty, an internal assertion error was output instead of a readable user error message.
+  - Fixed bug 2779785.  Segmentation fault occurred when reporting certain Verilog styles (error in code generator).
+  - Fixed bug 2781023.  Segmentation fault occurred when reporting certain Verilog styles (error in combinational logic
+    underline functionality).
+  - Performed various non-functional code cleanup.
+
     * 11/19/2008
 
 Development release covered-20081119 made.  This development release adds support for more complex CDD merging (previously
