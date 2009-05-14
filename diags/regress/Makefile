@@ -31,12 +31,14 @@ CDD_DIR       = ../cdd
 LOGFILE = regress.log
 
 DIAGS1        = add1            aedge1          aedge1.1        always1         always2 \
-                always3         always3.1.11A   always4         always5         always6 \
+                always3         always3.1.11A   always4         always5         always5.1 \
+                always6 \
                 always7         always7.1       always8         always9         always10 \
                 always11        always11.1      always11.2      always12        always13 \
-                always15        ashift1         ashift2         ashift3         ashift4         assign2 \
+                always15        ashift1         ashift2         ashift3         ashift4 \
+                assign1         assign2 \
                 assign2.1       assign2.2       assign2.3       assign2.4       assign2.5 \
-                assign2.6       assign2.7       assign2.9       assign3.2A      bassign1 \
+                assign2.6       assign2.7       assign2.8       assign2.9       assign3.2A      bassign1 \
                 bassign2        bassign3        block1          case1           case1.1 \
                 case1.2         case1.3         case2           case3           case3.1 \
                 case3.2         case3.3         case3.4         case4           case4.1 \
@@ -53,7 +55,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 define6.1       disable1        disable1.1      disable2        disable2.1 \
                 disable3        display1        div1            dly_assign1     endian1 \
                 endian2         endian3         endian4         event1          event1.1 \
-                event2          exclude1 \
+                event2          example         example1        exclude1 \
                 exclude2        exclude3        exclude4        exclude6        exclude6.1 \
                 exclude7        exclude7.1      exclude7.2      exclude8        exclude8.1 \
                 exclude9        exclude9.1      exclude9.2      exclude9.3      exclude9.4 \
@@ -64,13 +66,19 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 exclude13       exclude14       expand1         expand2         expand3 \
                 expand4         expand4.1       expand4.2       expand4.3       expand4.4 \
                 fdisplay1       finish1         for1            for2            forever1 \
-                fork1           fork2           fsm3            fsm4            fsm4.1 \
-                fsm5            fsm5.1          fsm5.2          fsm5.3          fsm11 \
+                fork1           fork2           fsm1            fsm1.1          fsm1.2 \
+                fsm1.3          fsm1.4          fsm3            fsm4            fsm4.1 \
+                fsm5            fsm5.1          fsm5.2          fsm5.3          fsm6 \
+                fsm7            fsm7.1          fsm7.2          fsm7.3          fsm7.4 \
+                fsm7.5          fsm8            fsm8.1          fsm8.2          fsm8.3 \
+                fsm9            fsm9.1          fsm9.2          fsm10           fsm10.1 \
+                fsm10.2         fsm11 \
                 fstrobe1        func1           func2           func5           fwrite1 \
-                gate1           hier1           hier3.1         hier3.2         hier3.3 \
-                hier3.4         hier4           if1             ifdef1          ifdef1.2 \
+                gate1           generate1       hier1           hier2           hier3.1         hier3.2         hier3.3 \
+                hier3.4         hier4           if1             ifdef1          ifdef1.1 \
+                ifdef1.2 \
                 ifdef2.1        ifdef2.2        ifdef2.3        ifelse1         ifndef1 \
-                implicit2.1 \
+                implicit2       implicit2.1 \
                 include1        include1.1      include2        include4        include5 \
                 initial1        instance1 \
                 instance1.1     instance1.2     instance2       instance3       instance4 \
@@ -99,9 +107,9 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 param10.2       param10.3       param10.4       param11         param13 \
                 param13.1       param14         param15         param16         param17 \
                 param17.1       pedge1          port1           port3           printtimescale1 \
-                pulldown1       pullup1         random1         random1.1       random2 \
+                profile_err1    pulldown1       pullup1         random1         random1.1       random2 \
                 random2.1       random3         random3.1       random4         rassign1        rassign2 \
-                real1           real2           real2.1         real3           real3.1 \
+                real1           real1.1         real2           real2.1         real3           real3.1 \
                 real3.2         real3.3         real3.4         real3.5         real3.6 \
                 real3.7         real3.8         real5           real5.1         real5.2 \
                 real5.3         real5.4         real5.5         real5.6         real5.7 \
@@ -109,7 +117,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 real6.2         real6.3         real6.4         real6.5         real6.6 \
                 real6.7         real6.8         real6.9         real7           repeat1 \
                 repeat2         repeat3         report1         report2         report3 \
-                report3.1       report4.2       report5         report6         report7 \
+                report3.1       report4         report4.1       report4.2       report5         report6         report7 \
                 report7.1       report8         rshift1         rshift1.1       rshift1.2 \
                 rshift1.3       rshift2         rshift2.1       rshift2.2       rshift2.3 \
                 rshift3         rshift3.1       rshift4         rshift4.1       rshift4.2 \
@@ -120,7 +128,7 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 signed4         signed4.2       signed5         signed6         slist1 \
                 slist1.1        slist1.2        slist1.3        slist2          slist3 \
                 slist3.2        slist4          slist6 \
-                static1         string1         string2         string2.1       strobe1 \
+                static1         static2         static2.1       static2.2       string1         string2         string2.1       strobe1 \
                 supply0         supply1         task1           task1.1         task2 \
                 task2.1         task2.2         task2.3         task3           task3.1 \
                 task4           task4.1         task6           test_plusargs1  time1 \
@@ -129,11 +137,12 @@ DIAGS1        = add1            aedge1          aedge1.1        always1         
                 timescale2      timescale2.2    timescale2.3    timescale2.4 \
                 toggle          toggle2         toggle2.1 \
                 toggle2.2       toggle2.3       tri             tri0            tri1 \
-                triand          trigger1        trior           unary2          unary3 \
+                triand          trigger1        trior           unary1          unary2          unary3 \
                 unsigned1 \
                 version1        version1.1      wait1           wait1.1         wait2 \
                 wand            while1          while1.1        wor             write1
 # timescale1.16   timescale1.17   timescale1.18   timescale2.5   timescale2.8
+
 DIAGS2        = delay1.1
 DIAGS3        = delay1.2
 DIAGS4        = delay1.3
@@ -213,20 +222,6 @@ NOSIMERRLIST  = bug2791651      comment1        enum2           err4            
                 timescale3.6    timescale3.7    timescale3.8    timescale3.9    timescale3.10 \
                 timescale3.11   timescale3.12   timescale3.13   timescale3.14
            
-IVONLYDIAGS1  = always5.1       assign1         assign2.8       example         example1 \
-                fsm1 \
-                fsm1.1          fsm1.2          fsm1.3          fsm1.4          fsm6 \
-                fsm7            fsm7.1          fsm7.2          fsm7.3          fsm7.4 \
-                fsm7.5          fsm8            fsm8.1          fsm8.2          fsm8.3 \
-                fsm9            fsm9.1          fsm9.2          fsm10           fsm10.1 \
-                fsm10.2         generate1       hier2           ifdef1.1        implicit2 \
-                profile_err1 \
-                real1.1         report4         report4.1       static2         static2.1 \
-                static2.2       unary1
-IVONLYDIAGS2  = 
-IVONLYDIAGS3  = 
-IVONLYDIAGS4  = 
- 
 VCSONLYDIAGS1 = afunc1            afunc2            always_comb1      always_comb2      always_ff1        always_latch1 \
                 always_latch2     assert1           atask1            bit1              byte1 \
                 char1             dec1              dec1.1            dec2              dec3 \
@@ -313,180 +308,193 @@ CVERVCSDIAGS2 =
 CVERVCSDIAGS3 =
 CVERVCSDIAGS4 =
 
+# Exclude diagnostics for each simulator type
+ifeq ($(MAKECMDGOALS),cver)
+EXCLUDE      += always5.1       assign1         assign2.8       example         example1 \
+                fsm1 \
+                fsm1.1          fsm1.2          fsm1.3          fsm1.4          fsm6 \
+                fsm7            fsm7.1          fsm7.2          fsm7.3          fsm7.4 \
+                fsm7.5          fsm8            fsm8.1          fsm8.2          fsm8.3 \
+                fsm9            fsm9.1          fsm9.2          fsm10           fsm10.1 \
+                fsm10.2         generate1       hier2           ifdef1.1        implicit2 \
+                profile_err1 \
+                real1.1         report4         report4.1       static2         static2.1 \
+                static2.2       unary1
+else ifeq ($(MAKECMDGOALS),vcs)
+EXCLUDE      += always5.1       assign1         assign2.8       example         example1 \
+                fsm1 \
+                fsm1.1          fsm1.2          fsm1.3          fsm1.4          fsm6 \
+                fsm7            fsm7.1          fsm7.2          fsm7.3          fsm7.4 \
+                fsm7.5          fsm8            fsm8.1          fsm8.2          fsm8.3 \
+                fsm9            fsm9.1          fsm9.2          fsm10           fsm10.1 \
+                fsm10.2         generate1       hier2           ifdef1.1        implicit2 \
+                profile_err1 \
+                real1.1         report4         report4.1       static2         static2.1 \
+                static2.2       unary1
+else ifeq ($(MAKECMDGOALS),veriwell)
+EXCLUDE      +=
+else
+EXCLUDE      +=
+endif
+
 # List of diagnostics that should not be run if we are using VCD dumpfiles
 ifdef VCD
-NOVCDDIAGS   :=  
+EXCLUDE      +=  
 endif
 
 # List of diagnostics that should not be run if we are using LXT dumpfiles (because they don't output any value changes after time 0)
 ifdef LXT
-NOLXTDIAGS    := add1            always7         always7.1       always11.2      ashift1 \
-                 ashift2         bassign2        bassign3        case5           casex2 \
-                 casez3          concat6         define5         disable1        disable2.1 \
-                 exclude1        exclude9.7      exclude9.8      exclude9.9      finish1 \
-                 for1            fsm11           func5           generate2.1     generate5.1 \
-                 generate8       generate10      generate10.1    generate10.2    generate16 \
-                 hier1           hier2 \
-                 hier4           localparam1     localparam1.1   localparam1.2   localparam1.3 \
-                 localparam2     localparam3     long_exp1       long_exp2       long_exp3 \
-                 mbit_sel3       mbit_sel3.1     mbit_sel4       mbit_sel4.1     mbit_sel4.2 \
-                 mbit_sel4.3     mem1            mem2            merge1          merge2 \
-                 merge5          merge6          merge6.1        merge7          merge7.1 \
-                 merge7.2        merge7.3        merge7.4        merge7.5        merge7.6 \
-                 merge7.7        merge7.8        multi_exp1      multi_exp1.1    multi_exp1.2 \
-                 multi_exp1.3    multi_exp1.4 \
-                 multi_exp1.5    multi_exp1.6    multi_exp1.7    multi_exp1.8    multi_exp3 \
-                 named_block2    nested_block1   nested_block2   nested_block2.1 param4 \
-                 param6          param6.1        param7          param8          param8.1 \
-                 param9          param9.1        param9.2        param10         param10.1 \
-                 param10.2       param10.3       param10.4       param10.5       param13 \
-                 param13.1       param14         param16         port1           port2 \
-                 port3           race1           race1.1         race1.2         rassign1 \
-                 real1           repeat1         sbit_sel1.1     sbit_sel2.1     score_err1.14 \
-                 score_err1.15   score_err1.16   signed1 \
-                 signed3         signed4         signed4.2       slist2          static1 \
-                 static2         static2.1       static2.2       task3.1         timescale1.16 \
-                 timescale1.17   timescale1.18   timescale1.19   timescale2.8    trigger1 \
-                 unary1          wait1           wait1.1
+EXCLUDE      += add1            always7         always7.1       always11.2      ashift1 \
+                ashift2         bassign2        bassign3        case5           casex2 \
+                casez3          concat6         define5         disable1        disable2.1 \
+                exclude1        exclude9.7      exclude9.8      exclude9.9      finish1 \
+                for1            fsm11           func5           generate2.1     generate5.1 \
+                generate8       generate10      generate10.1    generate10.2    generate16 \
+                hier1           hier2 \
+                hier4           localparam1     localparam1.1   localparam1.2   localparam1.3 \
+                localparam2     localparam3     long_exp1       long_exp2       long_exp3 \
+                mbit_sel3       mbit_sel3.1     mbit_sel4       mbit_sel4.1     mbit_sel4.2 \
+                mbit_sel4.3     mem1            mem2            merge1          merge2 \
+                merge5          merge6          merge6.1        merge7          merge7.1 \
+                merge7.2        merge7.3        merge7.4        merge7.5        merge7.6 \
+                merge7.7        merge7.8        multi_exp1      multi_exp1.1    multi_exp1.2 \
+                multi_exp1.3    multi_exp1.4 \
+                multi_exp1.5    multi_exp1.6    multi_exp1.7    multi_exp1.8    multi_exp3 \
+                named_block2    nested_block1   nested_block2   nested_block2.1 param4 \
+                param6          param6.1        param7          param8          param8.1 \
+                param9          param9.1        param9.2        param10         param10.1 \
+                param10.2       param10.3       param10.4       param10.5       param13 \
+                param13.1       param14         param16         port1           port2 \
+                port3           race1           race1.1         race1.2         rassign1 \
+                real1           repeat1         sbit_sel1.1     sbit_sel2.1     score_err1.14 \
+                score_err1.15   score_err1.16   signed1 \
+                signed3         signed4         signed4.2       slist2          static1 \
+                static2         static2.1       static2.2       task3.1         timescale1.16 \
+                timescale1.17   timescale1.18   timescale1.19   timescale2.8    trigger1 \
+                unary1          wait1           wait1.1
 endif
 
 # List of diagnostics that should not be run if we are using VPI
 ifdef VPI
-NOVPIDIAGS    := err5.2          err5.3          err5.4          score_err1.14   score_err1.16
+EXCLUDE       += err5.2          err5.3          err5.4          score_err1.14   score_err1.16
 endif
 
 # List of diagnostics that should not be run if we are running in inlined mode
 ifdef INLINE
-INLINEDIAGS   := example2        example2.1      example2.2      example2.3      example2.4 \
+DIAGS         += example2        example2.1      example2.2      example2.3      example2.4 \
                  example2.5
 
-NOINLINEDIAGS := case5           casex2          casez3          example1        exclude5.1 \
+EXCLUDE       += case5           casex2          casez3          example1        exclude5.1 \
                  exclude5.3      param10.1       param10.5       sbit_sel3.2     signed4.1
 
 ifdef VPI
-NOINLINEDIAGS += fork2           generate4       generate4.1     generate8
+EXCLUDE       += fork2           generate4       generate4.1     generate8
 endif
 
 ifeq ($(MAKECMDGOALS),cver)
-NOINLINEDIAGS += define4         include1        include1.1      include2        include4 \
+EXCLUDE       += define4         include1        include1.1      include2        include4 \
                  include5        instance7       random1.2       real3.4         real3.6 \
                  real6           sbit_sel2.1     timescale2.8
 endif
 endif
                  
 # Remove filtered diagnostics
-DIAGS1         := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(DIAGS1))
-DIAGS2         := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(DIAGS2))
-DIAGS3         := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(DIAGS3))
-DIAGS4         := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(DIAGS4))
-IVONLYDIAGS1   := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(IVONLYDIAGS1))
-IVONLYDIAGS2   := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(IVONLYDIAGS2))
-IVONLYDIAGS3   := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(IVONLYDIAGS3))
-IVONLYDIAGS4   := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(IVONLYDIAGS4))
-CVERONLYDIAGS1 := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(CVERONLYDIAGS1))
-CVERONLYDIAGS2 := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(CVERONLYDIAGS2))
-CVERONLYDIAGS3 := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(CVERONLYDIAGS3))
-CVERONLYDIAGS4 := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(CVERONLYDIAGS4))
-VCSONLYDIAGS1  := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(VCSONLYDIAGS1))
-VCSONLYDIAGS2  := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(VCSONLYDIAGS2))
-VCSONLYDIAGS3  := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(VCSONLYDIAGS3))
-VCSONLYDIAGS4  := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(VCSONLYDIAGS4))
-IVVCSDIAGS1    := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(IVVCSDIAGS1))
-IVVCSDIAGS2    := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(IVVCSDIAGS2))
-IVVCSDIAGS3    := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(IVVCSDIAGS3))
-IVVCSDIAGS4    := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(IVVCSDIAGS4))
-IVCVERDIAGS1   := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(IVCVERDIAGS1))
-IVCVERDIAGS2   := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(IVCVERDIAGS2))
-IVCVERDIAGS3   := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(IVCVERDIAGS3))
-IVCVERDIAGS4   := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(IVCVERDIAGS4))
-CVERVCSDIAGS1  := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(CVERVCSDIAGS1))
-CVERVCSDIAGS2  := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(CVERVCSDIAGS2))
-CVERVCSDIAGS3  := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(CVERVCSDIAGS3))
-CVERVCSDIAGS4  := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(CVERVCSDIAGS4))
-MERGE1         := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(MERGE1))
-MERGE3         := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(MERGE3))
-RACELIST       := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(RACELIST))
-ERRSCORE       := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(ERRSCORE))
-ERRMERGE       := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(ERRMERGE))
-ERRRANK        := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(ERRRANK))
-NOSIMLIST      := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(NOSIMLIST))
-NOSIMERRLIST   := $(filter-out $(NOLXTDIAGS) $(NOVCDDIAGS) $(NOVPIDIAGS) $(NOINLINEDIAGS), $(NOSIMERRLIST))
+DIAGS1         := $(filter-out $(EXCLUDE), $(DIAGS1))
+DIAGS2         := $(filter-out $(EXCLUDE), $(DIAGS2))
+DIAGS3         := $(filter-out $(EXCLUDE), $(DIAGS3))
+DIAGS4         := $(filter-out $(EXCLUDE), $(DIAGS4))
+MERGE1         := $(filter-out $(EXCLUDE), $(MERGE1))
+MERGE3         := $(filter-out $(EXCLUDE), $(MERGE3))
+RACELIST       := $(filter-out $(EXCLUDE), $(RACELIST))
+ERRSCORE       := $(filter-out $(EXCLUDE), $(ERRSCORE))
+ERRMERGE       := $(filter-out $(EXCLUDE), $(ERRMERGE))
+ERRRANK        := $(filter-out $(EXCLUDE), $(ERRRANK))
+NOSIMLIST      := $(filter-out $(EXCLUDE), $(NOSIMLIST))
+NOSIMERRLIST   := $(filter-out $(EXCLUDE), $(NOSIMERRLIST))
 
 iverilog:
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS1)" DIAGLIST="$(DIAGS1) $(IVONLYDIAGS1) $(IVVCSDIAGS1) $(IVCVERDIAGS1) $(INLINEDIAGS)" DIAG2LIST="$(BDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" ERRSCORELIST="$(ERRSCORE)" ERRMERGELIST="$(ERRMERGE)" ERRREPORTLIST="$(ERRREPORT)" ERRRANKLIST="$(ERRRANK)" ERREXCLUDELIST="$(ERREXCLUDE)" RACELIST="$(RACELIST)" NOSIMLIST="$(NOSIMLIST)" NOSIMERRLIST="$(NOSIMERRLIST)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS1)" DIAGLIST="$(DIAGS1)" DIAG2LIST="$(BDIAGS1)" MERGELIST="$(MERGE1)" MERGE3LIST="$(MERGE3)" ERRSCORELIST="$(ERRSCORE)" ERRMERGELIST="$(ERRMERGE)" ERRREPORTLIST="$(ERRREPORT)" ERRRANKLIST="$(ERRRANK)" ERREXCLUDELIST="$(ERREXCLUDE)" RACELIST="$(RACELIST)" NOSIMLIST="$(NOSIMLIST)" NOSIMERRLIST="$(NOSIMERRLIST)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS2)" DIAGLIST="$(DIAGS2) $(IVONLYDIAGS2) $(IVVCSDIAGS2) $(IVCVERDIAGS2)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS2)" DIAGLIST="$(DIAGS2)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS3)" DIAGLIST="$(DIAGS3) $(IVONLYDIAGS3) $(IVVCSDIAGS3) $(IVCVERDIAGS3)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS3)" DIAGLIST="$(DIAGS3)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS4)" DIAGLIST="$(DIAGS4) $(IVONLYDIAGS4) $(IVVCSDIAGS4) $(IVCVERDIAGS4)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= VERILOG_EXTRA_FLAGS="$(IVERILOG_FLAGS4)" DIAGLIST="$(DIAGS4)" regress
 	@cd ../verilog;  $(MAKE) eot;  $(MAKE) clean
 
 vcs:
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS1)" DIAGLIST="$(VCSONLYDIAGS1)" DIAG2LIST="$(BDIAGS1)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS1)" DIAGLIST="$(DIAGS1)" DIAG2LIST="$(BDIAGS1)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS2)" DIAGLIST="$(VCSONLYDIAGS2)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS2)" DIAGLIST="$(DIAGS2)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS3)" DIAGLIST="$(VCSONLYDIAGS3)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS3)" DIAGLIST="$(DIAGS3)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS4)" DIAGLIST="$(VCSONLYDIAGS4)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VCS=1 VERILOG_EXTRA_FLAGS="$(VCS_FLAGS4)" DIAGLIST="$(DIAGS4)" regress
 	@cd ../verilog;  $(MAKE) eot;  $(MAKE) clean
 
 cver:
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS1)" DIAGLIST="$(DIAGS1) $(CVERONLYDIAGS1) $(IVCVERDIAGS1) $(CVERVCSDIAGS1)" DIAG2LIST="$(BDIAGS1)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS1)" DIAGLIST="$(DIAGS1)" DIAG2LIST="$(BDIAGS1)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS2)" DIAGLIST="$(DIAGS2) $(CVERONLYDIAGS2) $(IVCVERDIAGS2) $(CVERVCSDIAGS2)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS2)" DIAGLIST="$(DIAGS2)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS3)" DIAGLIST="$(DIAGS3) $(CVERONLYDIAGS3) $(IVCVERDIAGS3) $(CVERVCSDIAGS3)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS3)" DIAGLIST="$(DIAGS3)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS4)" DIAGLIST="$(DIAGS4) $(CVERONLYDIAGS4) $(IVCVERDIAGS4) $(CVERVCSDIAGS4)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_CVER=1 VERILOG_EXTRA_FLAGS="$(CVER_FLAGS4)" DIAGLIST="$(DIAGS4)" regress
 	@cd ../verilog;  $(MAKE) eot;  $(MAKE) clean
 
 veriwell:
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VERIWELL=1 VERILOG_EXTRA_FLAGS="$(VW_FLAGS1)" DIAGLIST="$(DIAGS1) $(VWONLYDIAGS1)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VERIWELL=1 VERILOG_EXTRA_FLAGS="$(VW_FLAGS1)" DIAGLIST="$(DIAGS1)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VERIWELL=1 VERILOG_EXTRA_FLAGS="$(VW_FLAGS2)" DIAGLIST="$(DIAGS2) $(VWONLYDIAGS2)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VERIWELL=1 VERILOG_EXTRA_FLAGS="$(VW_FLAGS2)" DIAGLIST="$(DIAGS2)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VERIWELL=1 VERILOG_EXTRA_FLAGS="$(VW_FLAGS3)" DIAGLIST="$(DIAGS3) $(VWONLYDIAGS3)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VERIWELL=1 VERILOG_EXTRA_FLAGS="$(VW_FLAGS3)" DIAGLIST="$(DIAGS3)" regress
 	@cd ../verilog; \
-	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VERIWELL=1 VERILOG_EXTRA_FLAGS="$(VW_FLAGS4)" DIAGLIST="$(DIAGS4) $(VWONLYDIAGS4)" regress
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VERIWELL=1 VERILOG_EXTRA_FLAGS="$(VW_FLAGS4)" DIAGLIST="$(DIAGS4)" regress
 	@cd ../verilog;  $(MAKE) eot;  $(MAKE) clean
 
 all-vcd-quick:
 	$(MAKE) iverilog LEAVE=1
 	$(MAKE) cver LEAVE=1
+	$(MAKE) veriwell LEAVE=1
 	$(MAKE) vcs
 
 all-vcd-inline-quick:
 	$(MAKE) iverilog LEAVE=1 INLINE=1
 	$(MAKE) cver LEAVE=1 INLINE=1
+	$(MAKE) veriwell LEAVE=1 INLINE=1
 	$(MAKE) vcs INLINE=1
 
 all-vcd-full:
 	$(MAKE) iverilog
 	$(MAKE) cver
+	$(MAKE) veriwell
 	$(MAKE) vcs
 
 all-vcd-inline-full:
 	$(MAKE) iverilog INLINE=1
 	$(MAKE) cver INLINE=1
+	$(MAKE) veriwell INLINE=1
 	$(MAKE) vcs INLINE=1
 
 all-lxt-quick:
 	$(MAKE) iverilog LXT=1
+	$(MAKE) veriwell LXT=1
 
 all-lxt-inline-quick:
 	$(MAKE) iverilog LXT=1 INLINE=1
+	$(MAKE) veriwell LXT=1 INLINE=1
 
 all-lxt-full:
 	$(MAKE) iverilog LXT=1
+	$(MAKE) veriwell LXT=1
 
 all-lxt-inline-full:
 	$(MAKE) iverilog LXT=1 INLINE=1
+	$(MAKE) veriwell LXT=1 INLINE=1
 
 all-vpi-quick:
 	$(MAKE) iverilog VPI=1 LEAVE=1
