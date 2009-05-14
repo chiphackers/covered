@@ -1,33 +1,15 @@
 module main;
 
-integer i, j;
-event   e, f;
+wire a;
 
-initial begin
-	for( i=0; i<2000000; i=i+1 ) begin
-	  #2;
-	  ->e;
-        end
-end
-
-initial begin
-	#1;
-	for( j=0; j<2000000; j=j+1 ) begin
-	  #2;
-	  ->f; 
-	end
-        $finish;
-end
-
-always @(e) begin
-	@(f);
-end
+always_comb
+  $display( "HERE!" );
 	  
+/*
 initial begin
-`ifdef DUMP
-        $dumpfile( "test.vcd" );
-        $dumpvars( 0, main );
-`endif
+	#10;
+	$finish;
 end
+*/
 
 endmodule

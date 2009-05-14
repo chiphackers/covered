@@ -22,7 +22,7 @@ initial begin
 	$finish;
 end
 
-`line 4 "include2.v" 2
+	 `line 4 "include2.v" 2
 
 initial begin
 `ifdef DUMP

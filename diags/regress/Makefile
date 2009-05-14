@@ -188,7 +188,7 @@ NOSIMLIST     = gen1            gen1.1          gen1.3          gen1.4          
                 gen31.2         gen32.2         gen33.2         gen34.2         gen35.2 \
                 gen36.2         gen37.2         gen38.2         gen39.2         gen40.2
 
-NOSIMERRLIST  = comment1        enum2           err4            err4.1          expand5 \
+NOSIMERRLIST  = bug2791651      comment1        enum2           err4            err4.1          expand5 \
                 for7            for7.1          fsm_err1        func3           func3.1 \
                 func3.2         func3.3         func3.4         func3.5         func3.6 \
                 gen1.2          gen2            gen3            gen4            gen5 \

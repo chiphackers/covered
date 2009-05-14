@@ -1,0 +1,7 @@
+ERROR!  syntax error, unexpected K_begin,
+        File: bug2791651.v, Line: 10, Column: 0
+ERROR!  Invalid module item.  Did you forget an initial or always?,
+        File: bug2791651.v, Line: 18, Column: 11
+ERROR!  Invalid module item.  Did you forget an initial or always?,
+        File: bug2791651.v, Line: 19, Column: 15
+ERROR!  Error in parsing design

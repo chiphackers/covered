@@ -172,14 +172,14 @@ WSPACE [ \t\b\f]+
  }
 
   /* Handle line directives */
-^"#line"[ ]+\"[^\"]*\"[ ]+[0-9]+.* {
+^{WSPACE}?"#line"[ ]+\"[^\"]*\"[ ]+[0-9]+.* {
   if( !parse_mode ) generator_add_orig_to_work_code( yytext, yylloc.ppline, yylloc.first_column );
   yylloc.first_column = yylloc.last_column;
   yylloc.last_column += strlen( yytext );
   line_directive();
  }
 
-^"`line"[ ]+[0-9]+[ ]+\"[^\"]*\".* {
+^{WSPACE}?"`line"[ ]+[0-9]+[ ]+\"[^\"]*\".* {
   if( !parse_mode ) generator_add_orig_to_work_code( yytext, yylloc.ppline, yylloc.first_column );
   yylloc.first_column = yylloc.last_column;
   yylloc.last_column += strlen( yytext );
@@ -1300,9 +1300,8 @@ static void line_directive2() { PROFILE(LINE_DIRECTIVE2);
   char* qt1;
   char* qt2;
   
-  assert( strncmp( yytext, "`line", 5 ) == 0 );
-  
-  cp = yytext + strlen( "`line" );
+  cp = yytext + strspn( yytext, "`line" );
+  assert( *cp != 0 );
   cp += strspn( cp, " " );
   yylloc.first_line = strtoul( cp, &cp, 10 ) - 1;
   yylloc.last_line = yylloc.first_line;

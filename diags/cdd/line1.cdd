@@ -1,7 +1,7 @@
 5 14 fd81 6 *
 8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (line1.vcd) 2 -o (line1.cdd) 2 -v (line1.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
-3 0 main "main" 0 line1.v 1 12 1 
+3 0 main "main" 0 line1.v 1 8 1 
 2 1 4 8 f000f 4 1 100c 0 0 1 1 c
 2 2 4 8 b000b 2 1 100c 0 0 1 1 b
 2 3 4 8 b000f 5 8 138c 1 2 1 18 0 1 1 1 1 0
@@ -55,4 +55,4 @@
 4 14 0 17 0
 4 12 0 14 14
 4 9 11 12 12
-3 11 main.u$1 "main.u$1" 0 include2.v 5 10 1 line1.v
+3 11 main.u$1 "main.u$1" 0 include2.v 1 6 1 line1.v
