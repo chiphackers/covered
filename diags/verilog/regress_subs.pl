@@ -117,6 +117,10 @@ sub initialize {
         $SIMULATOR = "CVER";
       } elsif( $varname eq "USE_VCS" ) {
         $SIMULATOR = "VCS";
+      } elsif( $varname eq "USE_VERILATOR" ) {
+        $SIMULATOR = "VERILATOR";
+      } elsif( $varname eq "USE_VERIWELL" ) {
+        $SIMULATOR = "VERIWELL";
       } elsif( $varname eq "LXT" ) {
         $DUMPTYPE = "LXT";
       } elsif( $varname eq "VPI" ) {
@@ -285,16 +289,16 @@ sub checkTest {
     my( $check1, $check2, $check3, $check4, $check5 );
     
     # If this is not an error test, check the CDD and report files */
-    if( ($mode == 0) || ($mode == 1) ) {
+    if( ($mode == 0) || ($mode == 1) || ($mode == 5) ) {
 
       # Check CDD file
       if( (-e "${test}.cdd") || ($mode == 1) ) {
-        if( ($mode == 0) || (-e "${CDD_DIR}/${test}.cdd") ) {
+        if( ($mode != 5) && (($mode == 0) || (-e "${CDD_DIR}/${test}.cdd")) ) {
           $check1 = system( "./cdd_diff ${test}.cdd ${CDD_DIR}/${test}.cdd" );
         } else {
           $check1 = 0;
         }
-        if( $check1 == 0 ) {
+        if( ($check1 == 0) || ($mode == 5) ) {
           if( $rm_cdd > 0 ) {
             system( "rm -f ${test}.cdd" ) && die;
           }
@@ -433,7 +437,7 @@ sub convertCfg {
     if( $dumponly == 1 ) {
       $tmpline = "";
       if( $line =~ /(-vcd\s+[a-zA-Z0-9_\.]+\s+)/ ) {
-        $tmpline = $1;
+        $tmpline .= $1;
       }
       if( $line =~ /(-(o|cdd)\s+[a-zA-Z0-9_\.]+\s+)/ ) {
         $tmpline .= $1;
@@ -458,5 +462,87 @@ sub dequote {
   local $_ = shift;
   s/^\s*\@\@\@[ ]?//gm;
   return $_;
+}
+
+sub regress_run {
+
+  my( $diagname, @args ) = @_;
+
+  # Initialize the environment from the specified arguments
+  &initialize( $diagname, 0, @args );
+
+  # Perform the simulation
+  if( $SIMULATOR eq "IV" ) {
+    &regress_iv( $diagname );
+  } elsif( $SIMULATOR eq "CVER" ) {
+    &regress_cver( $diagname );
+  } elsif( $SIMULATOR eq "VCS" ) {
+    &regress_vcs( $diagname );
+  } elsif( $SIMULATOR eq "VERIWELL" ) {
+    &regress_veriwell( $diagname );
+  } elsif( $SIMULATOR eq "VERILATOR" ) {
+    &regress_verilator( $diagname );
+  } else {
+    die "Unknown simulator type ($SIMULATOR)\n";
+  }
+
+}
+
+sub regress_iv {
+
+  my( $diagname ) = $_[0];
+
+  # TBD
+
+}
+
+sub regress_cver {
+
+  my( $diagname ) = $_[0];
+
+  # TBD
+
+}
+
+sub regress_vcs {
+
+  my( $diagname ) = $_[0];
+
+  # TBD
+
+}
+
+sub regress_veriwell {
+
+  my( $diagname ) = $_[0];
+
+  # TBD
+
+}
+
+sub regress_verilator {
+
+  my( $diagname ) = $_[0];
+
+  # Verilator only supports VCD dumping
+  if( $DUMPTYPE eq "VCD" ) {
+
+    # Run Verilator on the .v and sim_main.cpp files in the diagname directory
+    &runCommand( "verilator --cc $diagname/$diagname.v --trace --exe $diagname/sim_main.cpp" );
+
+    # Perform a "make" in the obj_dir directory
+    &runCommand( "cd obj_dir; make -f V$diagname.mk" );
+
+    # Now run the simulation -- the VCD dumpfile will be output in the obj_dir directory
+    &runCommand( "cd obj_dir; ./V$diagname" );
+
+    # Score the run (substitute the -v option with the Verilog file in the diagname directory
+    $runargs = `cat ../regress/$diagname.cfg`;
+    $runargs =~ s/-v\s+(\w+)/-v $diagname\/$1/;
+    print "runargs: $runargs\n";
+    &runScoreCommand( $runargs );
+
+  }
+
 }
 

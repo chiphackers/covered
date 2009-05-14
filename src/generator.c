@@ -1426,10 +1426,10 @@ void generator_insert_event_comb_cov(
             assert( rv < 4096 );
             generator_insert_reg( str );
           }
-          rv = snprintf( str, 4096, " %s = %s;", tname, event_str );
-          assert( rv < 4096 );
-          generator_prepend_to_work_code( str );
           rv = snprintf( str, 4096, " %s = (%s!==1'b1) & (%s===1'b1);", name, tname, event_str );
+          assert( rv < 4096 );
+          generator_add_cov_to_work_code( str );
+          rv = snprintf( str, 4096, " %s = %s;", tname, event_str );
           assert( rv < 4096 );
           generator_add_cov_to_work_code( str );
         }
@@ -1442,10 +1442,10 @@ void generator_insert_event_comb_cov(
             assert( rv < 4096 );
             generator_insert_reg( str );
           }
-          rv = snprintf( str, 4096, " %s = %s;", tname, event_str );
-          assert( rv < 4096 );
-          generator_prepend_to_work_code( str );
           rv = snprintf( str, 4096, " %s = (%s!==1'b0) & (%s===1'b0);", name, tname, event_str );
+          assert( rv < 4096 );
+          generator_add_cov_to_work_code( str );
+          rv = snprintf( str, 4096, " %s = %s;", tname, event_str );
           assert( rv < 4096 );
           generator_add_cov_to_work_code( str );
         }
@@ -1465,10 +1465,10 @@ void generator_insert_event_comb_cov(
             generator_insert_reg( str );
             free_safe( size, (strlen( size ) + 1) );
           }
-          rv = snprintf( str, 4096, " %s = %s;", tname, event_str );
-          assert( rv < 4096 );
-          generator_prepend_to_work_code( str );
           rv = snprintf( str, 4096, " %s = (%s!==%s);", name, tname, event_str );
+          assert( rv < 4096 );
+          generator_add_cov_to_work_code( str );
+          rv = snprintf( str, 4096, " %s = %s;", tname, event_str );
           assert( rv < 4096 );
           generator_add_cov_to_work_code( str );
         }
