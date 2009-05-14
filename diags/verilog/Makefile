@@ -84,14 +84,14 @@ endif
 CVER_EXEC =
 
 VERIWELL       = veriwell
-VERIWELL_FLAGS = -c +libext+.v+.vlib -y ./covered/verilog -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 +define+DUMP $(SIM_PLUSARGS)
+VERIWELL_FLAGS = +libext+.v+.vlib -y ./covered/verilog -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 +define+DUMP $(SIM_PLUSARGS)
 VERIWELL_EXEC  =
 
 ifdef USE_VERIWELL
 VERILOG       = $(VERIWELL)
 VERILOG_FLAGS = $(VERIWELL_FLAGS) $(VERILOG_EXTRA_FLAGS)
 VERILOG_EXEC  = $(VERIWELL_EXEC)
-VERILOG_CMD   = $(VERIWELL_EXEC) $(DUMP_FMT)
+VERILOG_CMD   = $(VERIWELL_EXEC)
 else
 ifdef USE_VCS
 VERILOG       = $(VCS)
@@ -168,7 +168,9 @@ else
 endif
 	$(VERILOG) $(VERILOG_FLAGS) $(TOP)
 ifndef USE_CVER
+ifndef USE_VERIWELL
 	@$(VERILOG_CMD)
+endif
 endif
 	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
@@ -213,7 +215,9 @@ endif
 else
 	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
 ifndef USE_CVER
+ifndef USE_VERIWELL
 	@$(VERILOG_CMD)
+endif
 endif   
 	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -b -e -d v -m ltcfam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
@@ -258,7 +262,9 @@ endif
 else
 	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
 ifndef USE_CVER
+ifndef USE_VERIWELL
 	@$(VERILOG_CMD)
+endif
 endif
 	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfamr -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
@@ -302,7 +308,9 @@ endif
 else
 	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
 ifndef USE_CVER
+ifndef USE_VERIWELL
 	@$(VERILOG_CMD)
+endif
 endif
 	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
@@ -359,7 +367,9 @@ ifndef VPI
 	@./convert_cfg $(CFG_CMD) 0 $(DIAG).cfg
 	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
 ifndef USE_CVER
+ifndef USE_VERIWELL
 	@$(VERILOG_CMD)
+endif
 endif
 	-$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP 2> $(DIAG).err $(CHECKMEM)
 	@rm -f $(DIAG).cfg
@@ -384,7 +394,9 @@ ifndef VPI
 	@./convert_cfg $(CFG_CMD) 0 $(DIAG).cfg
 	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
 ifndef USE_CVER
+ifndef USE_VERIWELL
 	@$(VERILOG_CMD)
+endif
 endif
 	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
 	@rm -f $(DIAG).cfg
@@ -416,7 +428,9 @@ ifndef VPI
 	@echo Running $(DIAG) -- should see an error message
 	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
 ifndef USE_CVER
+ifndef USE_VERIWELL
 	@$(VERILOG_CMD)
+endif
 endif
 	@./convert_cfg $(CFG_CMD) 0 $(DIAG).cfg
 	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
@@ -453,7 +467,9 @@ ifndef VPI
 	@echo Running $(DIAG) -- should see an error message
 	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
 ifndef USE_CVER
+ifndef USE_VERIWELL
 	@$(VERILOG_CMD)
+endif
 endif
 	@./convert_cfg $(CFG_CMD) 0 $(DIAG).cfg
 	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
