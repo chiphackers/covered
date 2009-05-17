@@ -15,6 +15,8 @@ if( $SIMULATOR eq "IV" ) {
   system( "cver -q +define+DUMP +libext+.v+.vlib+ -y lib exclude12.4.v" ) && die;
 } elsif( $SIMULATOR eq "VCS" ) {
   system( "vcs +define+DUMP +libext+.v+.vlib+ -y lib exclude12.4.v; ./simv" ) && die;
+} elsif( $SIMULATOR eq "VERIWELL" ) {
+  system( "veriwell +define+DUMP +libext+.v+.vlib -y lib exclude12.4.v" ) && die;
 }
 
 # Perform diagnostic running code here

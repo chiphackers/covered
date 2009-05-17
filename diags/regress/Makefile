@@ -30,117 +30,167 @@ CDD_DIR       = ../cdd
 
 LOGFILE = regress.log
 
-DIAGS1        = add1            aedge1          aedge1.1        always1         always2 \
-                always3         always3.1.11A   always4         always5         always5.1 \
-                always6 \
-                always7         always7.1       always8         always9         always10 \
-                always11        always11.1      always11.2      always12        always13 \
-                always15        ashift1         ashift2         ashift3         ashift4 \
-                assign1         assign2 \
-                assign2.1       assign2.2       assign2.3       assign2.4       assign2.5 \
-                assign2.6       assign2.7       assign2.8       assign2.9       assign3.2A      bassign1 \
-                bassign2        bassign3        block1          case1           case1.1 \
+DIAGS1        = add1            aedge1          aedge1.1        afunc1          afunc2 \
+                always1         always2         always3         always3.1.11A   always4 \
+                always5         always5.1       always6         always7         always7.1 \
+                always8         always9         always10        always11        always11.1 \
+                always11.2      always12        always13        always15        always_comb1 \
+                always_comb2    always_ff1      always_latch1   always_latch2   ashift1 \
+                ashift2         ashift3         ashift4         assert1         assign1 \
+                assign2         assign2.1       assign2.2       assign2.3       assign2.4 \
+                assign2.5       assign2.6       assign2.7       assign2.8       assign2.9 \
+                assign3.2A      atask1          bassign1        bassign2        bassign3 \
+                block1          bit1            byte1           case1           case1.1 \
                 case1.2         case1.3         case2           case3           case3.1 \
                 case3.2         case3.3         case3.4         case4           case4.1 \
                 case5           case6           casex1          casex1.1        casex1.2 \
                 casex1.3        casex1.4        casex2          casex3          casez1 \
                 casez1.1        casez1.2        casez1.3        casez1.4        casez2 \
-                casez3          casez4          casez5          ceq1            cne1 \
-                compx1          compx1.1        compx1.2        compx1.3        concat1 \
-                concat2         concat3         concat4.1       concat4.2       concat5 \
-                concat6         concat7         concat8         cond1 \
+                casez3          casez4          casez5          ceq1            char1 \
+                cne1            compx1          compx1.1        compx1.2        compx1.3 \
+                concat1         concat2         concat3         concat4.1       concat4.2 \
+                concat5         concat6         concat7         concat8         cond1 \
                 cond2           cond3           cond3.1         cond3.2         cond3.3 \
+                dec1            dec1.1          dec2            dec3            dec3.1 \
                 delay1          delay2          define1         define1.1       define1.2 \
-                define2         define2.1       define4         define5         define6 \
-                define6.1       disable1        disable1.1      disable2        disable2.1 \
-                disable3        display1        div1            dly_assign1     endian1 \
-                endian2         endian3         endian4         event1          event1.1 \
-                event2          example         example1        exclude1 \
-                exclude2        exclude3        exclude4        exclude6        exclude6.1 \
-                exclude7        exclude7.1      exclude7.2      exclude8        exclude8.1 \
-                exclude9        exclude9.1      exclude9.2      exclude9.3      exclude9.4 \
-                exclude9.5      exclude9.6      exclude9.7      exclude9.8      exclude9.9 \
-                exclude10       exclude10.1     exclude10.2     exclude10.3     exclude10.3.1 \
-                exclude10.3.2   exclude10.3.3   exclude10.4     exclude11       exclude12 \
-                exclude12.1     exclude12.2     exclude12.3     exclude12.4     exclude12.6 \
+                define2         define2.1       define3         define4         define5 \
+                define6         define6.1       delay3          disable1        disable1.1 \
+                disable2        disable2.1      disable3        display1        div1 \
+                dly_assign1     dly_assign1.1   dly_assign1.2   dly_assign1.3   dly_assign1.4 \
+                dly_assign2     dly_assign2.1   do_while1       do_while1.1     do_while2 \
+                elsif1          elsif1.1        elsif1.2        elsif1.3        elsif1.4 \
+                elsif2          elsif2.1        elsif3          endian1         endian2         endian3 \
+                endian4         enum1           enum1.1         enum1.2         enum1.3 \
+                enum2.1         event1          event1.1        event2          example \
+                example1        exclude1        exclude2        exclude3        exclude4 \
+                exclude5        exclude5.1      exclude5.2      exclude5.3      exclude6 \
+                exclude6.1      exclude7        exclude7.1      exclude7.2      exclude7.3 \
+                exclude8        exclude8.1      exclude9        exclude9.1      exclude9.2 \
+                exclude9.3      exclude9.4      exclude9.5      exclude9.6      exclude9.7 \
+                exclude9.8      exclude9.9      exclude10       exclude10.1     exclude10.2 \
+                exclude10.3     exclude10.3.1   exclude10.3.2   exclude10.3.3   exclude10.4 \
+                exclude10.5     exclude11       exclude12       exclude12.1     exclude12.2 \
+                exclude12.3     exclude12.4     exclude12.5     exclude12.6 \
                 exclude13       exclude14       expand1         expand2         expand3 \
                 expand4         expand4.1       expand4.2       expand4.3       expand4.4 \
-                fdisplay1       finish1         for1            for2            forever1 \
+                exponent1       final1          fdisplay1       finish1         fmonitor1 \
+                for1            for2            for3            for5            for5.1          for5.2 \
+                for5.3          for5.4          for5.5          for5.6          for5.8 \
+                for5.9          for5.10         for6            forever1 \
                 fork1           fork2           fsm1            fsm1.1          fsm1.2 \
                 fsm1.3          fsm1.4          fsm3            fsm4            fsm4.1 \
                 fsm5            fsm5.1          fsm5.2          fsm5.3          fsm6 \
                 fsm7            fsm7.1          fsm7.2          fsm7.3          fsm7.4 \
                 fsm7.5          fsm8            fsm8.1          fsm8.2          fsm8.3 \
                 fsm9            fsm9.1          fsm9.2          fsm10           fsm10.1 \
-                fsm10.2         fsm11 \
-                fstrobe1        func1           func2           func5           fwrite1 \
-                gate1           generate1       hier1           hier2           hier3.1         hier3.2         hier3.3 \
+                fsm10.2         fsm11           fstrobe1        func1           func2 \
+                func5           fwrite1         gate1           gate1.1         generate1 \
+                generate1.1     generate2       generate2.1     generate3       generate3.1 \
+                generate4       generate4.1     generate5       generate5.1     generate5.2 \
+                generate5.3     generate6       generate7       generate7.1     generate7.2 \
+                generate8       generate8.1     generate8.2     generate8.3     generate8.4 \
+                generate8.5     generate8.6     generate8.7     generate8.8     generate8.9 \
+                generate9       generate9.1     generate9.2     generate9.3     generate10 \
+                generate10.1    generate10.2    generate11      generate11.1    generate11.2 \
+                generate11.3    generate11.4    generate13      generate14      generate15 \
+                generate15.1    generate15.2    generate15.3    generate15.4    generate15.5 \
+                generate16      generate16.1    generate17      hier1           hier1.1 \
+                hier2           hier3           hier3.1         hier3.2         hier3.3 \
                 hier3.4         hier4           if1             ifdef1          ifdef1.1 \
-                ifdef1.2 \
-                ifdef2.1        ifdef2.2        ifdef2.3        ifelse1         ifndef1 \
-                implicit2       implicit2.1 \
+                ifdef1.2        ifdef2.1        ifdef2.2        ifdef2.3        ifdef3 \
+                ifelse1         ifndef1         ifndef2         implicit2       implicit2.1 \
+                inc1            inc1.1          inc2            inc3            inc3.1 \
                 include1        include1.1      include2        include4        include5 \
-                initial1        instance1 \
-                instance1.1     instance1.2     instance2       instance3       instance4 \
-                instance4.1     instance4.2     instance5       instance6       instance6.1 \
-                instance6.2     long_exp1       long_exp2       long_exp3 \
-                lshift1         lshift1.1       lshift1.2       lshift2         lshift2.1 \
-                lshift2.2       lshift2.3       lshift3         lshift3.1       lshift3.2 \
-                lshift3.3       lshift4         lshift4.1       lshift4.2       lshift4.3 \
-                lshift5         mbit_sel1       mbit_sel2       mbit_sel3       mbit_sel3.1 \
-                mbit_sel4       mbit_sel4.1     mbit_sel4.2     mbit_sel4.3     mbit_sel7 \
-                mbit_sel9       mbit_sel9.1     mbit_sel9.2     mem1            mem2 \
+                initial1        instance1       instance1.1     instance1.2     instance2 \
+                instance3       instance4       instance4.1     instance4.2     instance5 \
+                instance6       instance6.1     instance6.2     instance7       int1 \
+                line1           localparam1     localparam1.1   localparam1.2   localparam1.3 \
+                localparam2     localparam3     logic1          long_exp1 \
+                long_exp2       long_exp3       longint1        long_sig        lshift1 \
+                lshift1.1       lshift1.2       lshift2         lshift2.1       lshift2.2 \
+                lshift2.3       lshift3         lshift3.1       lshift3.2       lshift3.3 \
+                lshift4         lshift4.1       lshift4.2       lshift4.3       lshift5 \
+                marray1         marray1.1       marray1.2       marray1.3       marray2 \
+                marray2.1       marray2.2       marray2.3       mbit_sel1       mbit_sel2 \
+                mbit_sel3       mbit_sel3.1     mbit_sel4       mbit_sel4.1     mbit_sel4.2 \
+                mbit_sel4.3     mbit_sel5       mbit_sel5.1     mbit_sel5.2     mbit_sel5.3 \
+                mbit_sel5.4     mbit_sel6       mbit_sel6.1     mbit_sel6.2     mbit_sel6.3 \
+                mbit_sel6.4     mbit_sel7       mbit_sel9       mbit_sel9.1     mbit_sel9.2 \
+                mem1            mem2            mem3            mem4            mem4.1 \
                 mod1            monitor1        monitor1.1      msg1            mult1 \
                 mult2           multi_exp1      multi_exp1.1    multi_exp1.2    multi_exp1.3 \
                 multi_exp1.4    multi_exp1.5    multi_exp1.6    multi_exp1.7    multi_exp1.8 \
                 multi_exp1.9    multi_exp1.10   multi_exp1.11   multi_exp1.12   multi_exp1.13 \
                 multi_exp1.14   multi_exp1.15   multi_exp2      multi_exp2.1    multi_exp3 \
                 multi_exp4      named_block1    named_block2    named_block3    named_block4 \
-                negate1         negate2         nedge1          nested_block1   nested_block2 \
-                nested_block2.1 nested_block3   not1            null_stmt1      null_stmt1.1 \
-                null_stmt1.2    null_stmt1.3    null_stmt1.5    null_stmt1.6    null_stmt1.7 \
-                null_stmt1.8    null_stmt1.9    null_stmt1.10   param1          param1.1 \
+                nand1           negate1         negate2         nedge1          nested_block1 \
+                nested_block2   nested_block2.1 nested_block3   nor1            not1 \
+                null_stmt1      null_stmt1.1    null_stmt1.2    null_stmt1.3    null_stmt1.5 \
+                null_stmt1.6    null_stmt1.7    null_stmt1.8    null_stmt1.9    null_stmt1.10 \
+                null_stmt2      null_stmt2.1    ovl1            ovl1.1          ovl1.2 \
+                ovl1.3          param1          param1.1 \
                 param1.2        param1.3        param3          param3.1        param3.2 \
                 param3.3        param3.4        param3.5        param4          param4.1 \
                 param5          param6          param6.1        param7          param8 \
-                param8.1        param9          param9.1        param9.2        param10 \
-                param10.2       param10.3       param10.4       param11         param13 \
-                param13.1       param14         param15         param16         param17 \
-                param17.1       pedge1          port1           port3           printtimescale1 \
-                profile_err1    pulldown1       pullup1         random1         random1.1       random2 \
-                random2.1       random3         random3.1       random4         rassign1        rassign2 \
-                real1           real1.1         real2           real2.1         real3           real3.1 \
-                real3.2         real3.3         real3.4         real3.5         real3.6 \
-                real3.7         real3.8         real5           real5.1         real5.2 \
-                real5.3         real5.4         real5.5         real5.6         real5.7 \
-                real5.8         real5.9         real5.10        real6           real6.1 \
-                real6.2         real6.3         real6.4         real6.5         real6.6 \
-                real6.7         real6.8         real6.9         real7           repeat1 \
-                repeat2         repeat3         report1         report2         report3 \
-                report3.1       report4         report4.1       report4.2       report5         report6         report7 \
+                param8.1        param8.2        param9          param9.1        param9.2 \
+                param10         param10.1       param10.2       param10.3       param10.4 \
+                param10.5       param11 \
+                param12         param12.1       param13         param13.1       param14 \
+                param15         param16         param17         param17.1       pedge1 \
+                port1           port2           port3           port4           printtimescale1 \
+                profile_err1    pulldown1       pullup1         random1         random1.1 \
+                random1.2       random1.3       random2         random2.1 \
+                random3         random3.1       random4         rassign1        rassign2 \
+                real1           real1.1         real2           real2.1         real3 \
+                real3.1         real3.2         real3.3         real3.4         real3.5 \
+                real3.6         real3.7         real3.8         real5           real5.1 \
+                real5.2         real5.3         real5.4         real5.5         real5.6 \
+                real5.7         real5.8         real5.9         real5.10        real5.11 \
+                real5.12        real5.13        real5.14        real5.15        real5.16 \
+                real6           real6.1         real6.2         real6.3         real6.4 \
+                real6.5         real6.6         real6.7         real6.8         real6.9 \
+                real6.10        real6.11        real6.12        real6.13        real7 \
+                real8           repeat1         repeat2         repeat3         report1 \
+                report2         report3         report3.1       report4         report4.1 \
+                report4.2       report5         report6         report7 \
                 report7.1       report8         rshift1         rshift1.1       rshift1.2 \
                 rshift1.3       rshift2         rshift2.1       rshift2.2       rshift2.3 \
                 rshift3         rshift3.1       rshift4         rshift4.1       rshift4.2 \
-                rshift5         sbit_sel1       sbit_sel1.1     sbit_sel2       sbit_sel3 \
-                sbit_sel3.1     sbit_sel4       sbit_sel4.1     sbit_sel4.2     sbit_sel4.3 \
-                score_env1      score_ts1       signed1         signed3         signed3.1 \
-                signed3.2       signed3.3       signed3.4       signed3.5       signed3.6 \
-                signed4         signed4.2       signed5         signed6         slist1 \
-                slist1.1        slist1.2        slist1.3        slist2          slist3 \
-                slist3.2        slist4          slist6 \
-                static1         static2         static2.1       static2.2       string1         string2         string2.1       strobe1 \
+                rshift5         sbit_sel1       sbit_sel1.1     sbit_sel2       sbit_sel2.1 \
+                sbit_sel3       sbit_sel3.1     sbit_sel3.2     sbit_sel4       sbit_sel4.1 \
+                sbit_sel4.2     sbit_sel4.3     score_env1      score_ts1       shortint1 \
+                signed1         signed3         signed3.1       signed3.2       signed3.3 \
+                signed3.4       signed3.5       signed3.6       signed4         signed4.1 \
+                signed4.2       signed5         signed6         slist1          slist1.1 \
+                slist1.2        slist1.3        slist2          slist3          slist3.1 \
+                slist3.2        slist3.3        slist4          slist6          static1 \
+                static2         static2.1       static2.2       string1         string2 \
+                string2.1       strobe1 \
                 supply0         supply1         task1           task1.1         task2 \
                 task2.1         task2.2         task2.3         task3           task3.1 \
                 task4           task4.1         task6           test_plusargs1  time1 \
-                time1.1         time2           timeformat1     timescale1      timescale1.6 \
-                timescale1.9    timescale1.12   timescale1.15 \
-                timescale2      timescale2.2    timescale2.3    timescale2.4 \
-                toggle          toggle2         toggle2.1 \
-                toggle2.2       toggle2.3       tri             tri0            tri1 \
-                triand          trigger1        trior           unary1          unary2          unary3 \
-                unsigned1 \
-                version1        version1.1      wait1           wait1.1         wait2 \
-                wand            while1          while1.1        wor             write1
+                time1.1           time2            timeformat1      timescale1       timescale1.1 \
+                timescale1.2      timescale1.3     timescale1.4     timescale1.5     timescale1.6 \
+                timescale1.7      timescale1.8     timescale1.9     timescale1.10    timescale1.11 \
+                timescale1.12     timescale1.13    timescale1.14    timescale1.15    timescale1.16 \
+                timescale1.17     timescale1.18    timescale1.19    timescale1.20    timescale2 \
+                timescale2.1      timescale2.2     timescale2.3     timescale2.4     timescale2.5 \
+                timescale2.6      timescale2.7     timescale2.8 \
+                timescale4        timescale4.1     timescale4.2     timescale4.3     timescale4.4 \
+                timescale4.5      timescale4.6     timescale4.7     timescale4.8     timescale4.9 \
+                timescale4.10     timescale4.11    timescale4.12    timescale4.13    timescale4.14 \
+                timescale4.16     timescale4.17    timescale4.18    timescale4.19    timescale4.20 \
+                timescale4.21     toggle           toggle2          toggle2.1        toggle2.2 \
+                toggle2.3         tri              tri0             tri1             triand \
+                trigger1          trior            trireg           unary1           unary2 \
+                unary3            unsigned1        urandom1         urandom1.1       urandom1.2 \
+                urandom1.3        urandom2         urandom2.1       urandom3         urandom3.1 \
+                urandom_range1    urandom_range1.1 urandom_range1.2 urandom_range2   urandom_range2.1 \
+                urandom_range2.2  urandom_range3   value_plusargs1  value_plusargs2  value_plusargs3 \
+                value_plusargs4   value_plusargs5  value_plusargs6  value_plusargs7  value_plusargs8 \
+                value_plusargs8.1 version1         version1.1       wait1            wait1.1 \
+                wait2             wand             while1           while1.1         wor \
+                write1
 # timescale1.16   timescale1.17   timescale1.18   timescale2.5   timescale2.8
 
 DIAGS2        = delay1.1
@@ -222,7 +272,148 @@ NOSIMERRLIST  = bug2791651      comment1        enum2           err4            
                 timescale3.6    timescale3.7    timescale3.8    timescale3.9    timescale3.10 \
                 timescale3.11   timescale3.12   timescale3.13   timescale3.14
            
-VCSONLYDIAGS1 = afunc1            afunc2            always_comb1      always_comb2      always_ff1        always_latch1 \
+# VCSONLYDIAGS1
+# These need to go back in:
+#               mem5              op_assign1        static_afunc1     static_func1      static_func1.1    static_func2      static_func2.1
+#               static_func2.2    static_func2.3    static_func3
+
+# null_stmt1.4  real4            timescale4.15
+
+# Exclude diagnostics for each simulator type
+ifeq ($(MAKECMDGOALS),cver)
+EXCLUDE      += afunc1            afunc2            always5.1         always_comb1      always_comb2 \
+                always_ff1        always_latch1     always_latch2     assert1           assign1 \
+                assign2.8         atask1            bit1              byte1             char1 \
+                dec1              dec1.1            dec2              dec3              dec3.1 \
+                define3           delay3            dly_assign1.1     dly_assign1.2     dly_assign1.3 \
+                dly_assign1.4     dly_assign2       dly_assign2.1     do_while1         do_while1.1 \
+                do_while2         elsif1            elsif1.1          elsif1.2          elsif1.3 \
+                elsif1.4          elsif2            elsif2.1          elsif3            enum1 \
+                enum1.1           enum1.2           enum1.3           enum2.1           example \
+                example1          exclude5          exclude5.1        exclude5.2        exclude5.3 \
+                exclude7.3        exclude10.5       exclude12.5       exponent1         final1 \
+                for3              for5              for5.1            for5.2            for5.3 \
+                for5.4            for5.5            for5.6            for5.8            for5.9 \
+                for5.10           for6              fsm1              fsm1.1            fsm1.2 \
+                fsm1.3            fsm1.4            fsm6              fsm7              fsm7.1 \
+                fsm7.2            fsm7.3            fsm7.4            fsm7.5            fsm8 \
+                fsm8.1            fsm8.2            fsm8.3            fsm9              fsm9.1 \
+                fsm9.2            fsm10             fsm10.1           fsm10.2           gate1.1 \
+                generate1         generate1.1       generate2         generate2.1       generate3 \
+                generate3.1       generate4         generate4.1       generate5         generate5.1 \
+                generate5.2       generate5.3       generate6         generate7         generate7.1 \
+                generate7.2       generate8         generate8.1       generate8.2       generate8.3 \
+                generate8.4       generate8.5       generate8.6       generate8.7       generate8.8 \
+                generate8.9       generate9         generate9.1       generate9.2       generate9.3 \
+                generate10        generate10.1      generate10.2      generate11        generate11.1 \
+                generate11.2      generate11.3      generate11.4      generate13        generate14 \
+                generate15        generate15.1      generate15.2      generate15.3      generate15.4 \
+                generate15.5      generate16        generate16.1      generate17        hier1.1 \
+                hier2             hier3             ifdef1.1          ifdef3            ifndef2 \
+                implicit2         inc1              inc1.1            inc2              inc3 \
+                inc3.1            instance7         int1              line1             localparam1 \
+                localparam1.1     localparam1.2     localparam1.3     localparam2       localparam3 \
+                logic1            longint1          long_sig          marray1           marray1.1 \
+                marray1.2         marray1.3         marray2           marray2.1         marray2.2 \
+                marray2.3         mbit_sel5         mbit_sel5.1       mbit_sel5.2       mbit_sel5.3 \
+                mbit_sel5.4       mbit_sel6         mbit_sel6.1       mbit_sel6.2       mbit_sel6.3 \
+                mbit_sel6.4       mem3              mem4              mem4.1            nand1 \
+                nor1              ovl1              ovl1.1            ovl1.2            ovl1.3 \
+                param8.2          param10.1         param10.5         param12           param12.1 \
+                port2             profile_err1      real1.1           real5.11 \
+                real5.12          real5.13          real5.14          real5.15          real5.16 \
+                real6.10          real6.11          real6.12          real6.13          report4 \
+                report4.1         sbit_sel3.2       shortint1         signed4.1         slist3.1 \
+                slist3.3          static2           static2.1         static2.2         timescale1.1 \
+                timescale1.2      timescale1.3      timescale1.4      timescale1.5      timescale1.7 \
+                timescale1.8      timescale1.10     timescale1.11     timescale1.13     timescale1.14 \
+                timescale1.19     timescale2.1      timescale4        timescale4.1      timescale4.2 \
+                timescale4.3      timescale4.4      timescale4.5      timescale4.6      timescale4.7 \
+                timescale4.8      timescale4.9      timescale4.10     timescale4.11     timescale4.12 \
+                timescale4.13     timescale4.14     timescale4.16     timescale4.17     timescale4.18 \
+                timescale4.19     timescale4.20     timescale4.21     trireg            unary1 \
+                urandom1          urandom1.1        urandom1.2        urandom1.3        urandom2 \
+                urandom2.1        urandom3          urandom3.1        urandom_range1    urandom_range1.1 \
+                urandom_range1.2  urandom_range2    urandom_range2.1  urandom_range2.2  urandom_range3 \
+                value_plusargs1   value_plusargs2   value_plusargs3   value_plusargs4   value_plusargs5 \
+                value_plusargs6   value_plusargs7   value_plusargs8   value_plusargs8.1
+else ifeq ($(MAKECMDGOALS),vcs)
+EXCLUDE      += always5.1         assign1           assign2.8         example           example1 \
+                fsm1              fsm1.1            fsm1.2            fsm1.3            fsm1.4 \
+                fsm6              fsm7              fsm7.1            fsm7.2            fsm7.3 \
+                fsm7.4            fsm7.5            fsm8              fsm8.1            fsm8.2 \
+                fsm8.3            fsm9              fsm9.1            fsm9.2            fsm10 \
+                fsm10.1           fsm10.2           generate1         hier2             ifdef1.1 \
+                implicit2         profile_err1      real1.1           report4           report4.1 \
+                static2           static2.1         static2.2         unary1
+else ifeq ($(MAKECMDGOALS),veriwell)
+EXCLUDE      += afunc1            afunc2            always5.1         always_comb1      always_comb2 \
+                always_ff1        always_latch1     always_latch2     ashift1           ashift2 \
+                ashift3           ashift4           assert1           assign1           atask1 \
+                bit1              byte1             case5             case6             casex2 \
+                casex3            casez3            casez4            casez5            char1 \
+                dec1              dec1.1            dec2              dec3              dec3.1 \
+                define3           define5           define6           define6.1         delay3 \
+                disable2.1        dly_assign2       dly_assign2.1     do_while1         do_while1.1 \
+                do_while2         elsif1            enum1             enum1.1           enum1.2 \
+                enum1.3           enum2.1           example           example1          exclude5 \
+                exclude5.1        exclude5.2        exclude5.3        exclude7.2        exclude7.3 \
+                exclude9.8        exclude9.9        exclude10.2       exclude10.4       exclude10.5 \
+                exclude12.2       exclude12.4       exclude12.5       exponent1         final1 \
+                for3              for5              for5.1            for5.2            for5.3 \
+                for5.4            for5.5            for5.6            for5.7            for5.8 \
+                for5.9            for5.10           for6              fsm6              fsm7 \
+                fsm7.1            fsm7.2            fsm7.3            fsm7.4            fsm7.5 \
+                fsm8              fsm8.1            fsm8.2            fsm8.3            fsm9 \
+                fsm9.1            fsm9.2            fsm10.1           fsm10.2           fsm11 \
+                generate1         generate1.1       generate2         generate2.1       generate3 \
+                generate3.1       generate4         generate4.1       generate5         generate5.1 \
+                generate5.2       generate5.3       generate6         generate7         generate7.1 \
+                generate7.2       generate8         generate8.1       generate8.2       generate8.3 \
+                generate8.4       generate8.5       generate8.6       generate8.7       generate8.8 \
+                generate8.9       generate9         generate9.1       generate9.2       generate9.3 \
+                generate10        generate10.1      generate10.2      generate11        generate11.1 \
+                generate11.2      generate11.3      generate11.4      generate13        generate14 \
+                generate15        generate15.1      generate15.2      generate15.3      generate15.4 \
+                generate15.5      generate16        generate16.1      generate17        hier1.1 \
+                hier2             hier3             hier3.1           hier3.2           hier3.3 \
+                hier3.4           hier4             ifndef1           ifndef2           implicit2.1 \
+                inc1              inc1.1            inc2              inc3              inc3.1 \
+                int1              line1             localparam1       localparam1.1     localparam1.2 \
+                localparam1.3     localparam2       localparam3       logic1            longint1 \
+                marray1           marray1.1         marray1.2         marray1.3         marray2 \
+                marray2.1         marray2.2         marray2.3         mbit_sel5         mbit_sel5.1 \
+                mbit_sel5.2       mbit_sel5.3       mbit_sel5.4       mbit_sel6         mbit_sel6.1 \
+                mbit_sel6.2       mbit_sel6.3       mbit_sel6.4       mem2              mem3 \
+                mem4              mem4.1            named_block2      nand1             nor1 \
+                null_stmt2        null_stmt2.1      ovl1              ovl1.1            ovl1.2 \
+                ovl1.3            param7            param8            param8.1          param8.2 \
+                param9.1          param9.2          param10           param10.1         param10.2 \
+                param10.3         param10.4         param10.5         param12           param12.1 \
+                param16           port1             port2             printtimescale1   random1.2 \
+                random1.3         rassign1          rassign2          real3             real3.1 \
+                real3.2           real3.4           real3.5           real3.6           real3.8 \
+                real5.1           real5.2           real5.3           real5.11          real5.12 \
+                real5.13          real5.14          real5.15          real5.16          real6 \
+                real6.1           real6.2           real6.3           real6.10          real6.11 \
+                real6.12          real6.13          repeat3           sbit_sel3.2       shortint1 \
+                signed1           signed3           signed4           signed4.1         signed4.2 \
+                signed5           signed6           slist1            slist1.1          slist1.2 \
+                slist1.3          slist2            slist3            slist3.1          slist3.2 \
+                slist3.3          slist4            slist6            task4.1           time1.1 \
+                timescale1.3      timescale1.4      timescale1.5      timescale4        timescale4.1 \
+                timescale4.2      timescale4.3      timescale4.4      timescale4.5      timescale4.6 \
+                timescale4.7      timescale4.8      timescale4.9      timescale4.10     timescale4.11 \
+                timescale4.12     timescale4.13     timescale4.14     timescale4.16     timescale4.17 \
+                timescale4.18     timescale4.19     timescale4.20     timescale4.21     trireg \
+                unsigned1         urandom1          urandom1.1        urandom1.2        urandom1.3 \
+                urandom2          urandom2.1        urandom3          urandom3.1        urandom_range1 \
+                urandom_range1.1  urandom_range1.2  urandom_range2    urandom_range2.1  urandom_range2.2 \
+                urandom_range3    value_plusargs1   value_plusargs2   value_plusargs3   value_plusargs4   value_plusargs5 \
+                value_plusargs6   value_plusargs7   value_plusargs8   value_plusargs8.1 version1 \
+                version1.1
+else
+EXCLUDE      += afunc1            afunc2            always_comb1      always_comb2      always_ff1        always_latch1 \
                 always_latch2     assert1           atask1            bit1              byte1 \
                 char1             dec1              dec1.1            dec2              dec3 \
                 dec3.1            dly_assign1.1     dly_assign1.2     dly_assign1.3     dly_assign1.4 \
@@ -230,7 +421,8 @@ VCSONLYDIAGS1 = afunc1            afunc2            always_comb1      always_com
                 elsif1            elsif1.1          elsif1.2          elsif1.3          elsif1.4 \
                 elsif2            elsif2.1          enum1             enum1.1           enum1.2 \
                 enum1.3           enum2.1           exclude5          exclude5.1        exclude5.2 \
-                exclude5.3        exponent1         final1            for3              for5 \
+                exclude5.3        exponent1         final1            fmonitor1         for3 \
+                for5 \
                 for5.1            for5.2            for5.3            for5.4            for5.5 \
                 for5.6            for5.8            for5.9            for5.10           for6 \
                 gate1.1           generate1.1       generate2         generate3         generate3.1 \
@@ -243,98 +435,19 @@ VCSONLYDIAGS1 = afunc1            afunc2            always_comb1      always_com
                 int1              line1             logic1            longint1          long_sig \
                 marray1           marray1.1         marray1.2         marray1.3         marray2 \
                 marray2.1         marray2.2         marray2.3         mbit_sel5.4       mbit_sel6.4 \
-                mem3              param8.2          param12           param12.1 \
+                mem3              null_stmt2        null_stmt2.1      param8.2          param12 \
+                param12.1         port4             random1.2         random1.3 \
                 real5.11          real5.12          real5.13          real5.14          real5.15 \
                 real5.16          real6.10          real6.11          real6.12          real6.13 \
-                sbit_sel3.2       shortint1         signed4.1         slist3.1          slist3.3 \
-                timescale4        timescale4.1 \
-                timescale4.9      timescale4.10     timescale4.11     timescale4.12     timescale4.13 \
-                timescale4.14     timescale4.16     trireg            urandom1.2        urandom1.3 \
+                real8             sbit_sel2.1       sbit_sel3.2       shortint1         signed4.1 \
+                slist3.1          slist3.3          timescale1.16     timescale1.17     timescale1.18 \
+                timescale1.20     timescale2.5      timescale2.6      timescale2.7      timescale2.8 \
+                timescale4        timescale4.1      timescale4.9      timescale4.10     timescale4.11 \
+                timescale4.12     timescale4.13     timescale4.14     timescale4.16     trireg \
+                urandom1.2        urandom1.3 \
                 urandom_range1    urandom_range2    value_plusargs1   value_plusargs2   value_plusargs3 \
                 value_plusargs4   value_plusargs5   value_plusargs6   value_plusargs7   value_plusargs8 \
                 value_plusargs8.1
-# These need to go back in:
-#               mem5              op_assign1        static_afunc1     static_func1      static_func1.1    static_func2      static_func2.1
-#               static_func2.2    static_func2.3    static_func3
-
-# null_stmt1.4  real4            timescale4.15
-VCSONLYDIAGS2 = 
-VCSONLYDIAGS3 = 
-VCSONLYDIAGS4 = 
-
-CVERONLYDIAGS1 =
-CVERONLYDIAGS2 =
-CVERONLYDIAGS3 =
-CVERONLYDIAGS4 =
-
-VWONLYDIAGS1 =
-VWONLYDIAGS2 =
-VWONLYDIAGS3 =
-VWONLYDIAGS4 =
-
-IVCVERDIAGS1  =
-IVCVERDIAGS2  =
-IVCVERDIAGS3  =
-IVCVERDIAGS4  =
-
-IVVCSDIAGS1   = define3          delay3           exclude7.3       exclude10.5      exclude12.5 \
-                generate2.1      generate4        generate4.1      generate5        generate5.1 \
-                generate5.2      generate5.3      generate8        generate8.9      generate10 \
-                generate10.1     generate10.2     generate11       generate11.1     generate11.2 \
-                generate11.3     generate15       generate15.1     generate15.2     generate15.3 \
-                generate15.4     generate15.5     generate16.1     generate17       hier3 \
-                elsif3           ifdef3           ifndef2          instance7        localparam1 \
-                localparam1.1    localparam1.2    localparam1.3    localparam2      localparam3 \
-                mbit_sel5        mbit_sel5.1      mbit_sel5.2      mbit_sel5.3      mbit_sel6 \
-                mbit_sel6.1      mbit_sel6.2      mbit_sel6.3      mem4             mem4.1 \
-                nand1            nor1             ovl1             ovl1.1           ovl1.2 \
-                ovl1.3           param10.1        param10.5        port2            timescale1.1 \
-                timescale1.2     timescale1.3     timescale1.4     timescale1.5     timescale1.7 \
-                timescale1.8     timescale1.10    timescale1.11    timescale1.13    timescale1.14 \
-                timescale1.19    timescale2.1     timescale4.2     timescale4.3     timescale4.4 \
-                timescale4.5     timescale4.6     timescale4.7     timescale4.8     timescale4.17 \
-                timescale4.18    timescale4.19    timescale4.20    timescale4.21    urandom1 \
-                urandom1.1       urandom2         urandom2.1       urandom3         urandom3.1 \
-                urandom_range1.1 urandom_range1.2 urandom_range2.1 urandom_range2.2 urandom_range3
-IVVCSDIAGS2   =
-IVVCSDIAGS3   =
-IVVCSDIAGS4   =
-
-CVERVCSDIAGS1 = fmonitor1        null_stmt2       null_stmt2.1     port4            random1.2 \
-                random1.3        real8            sbit_sel2.1      timescale1.16    timescale1.17 \
-                timescale1.18    timescale1.20    timescale2.5     timescale2.6     timescale2.7 \
-                timescale2.8
-CVERVCSDIAGS2 =
-CVERVCSDIAGS3 =
-CVERVCSDIAGS4 =
-
-# Exclude diagnostics for each simulator type
-ifeq ($(MAKECMDGOALS),cver)
-EXCLUDE      += always5.1       assign1         assign2.8       example         example1 \
-                fsm1 \
-                fsm1.1          fsm1.2          fsm1.3          fsm1.4          fsm6 \
-                fsm7            fsm7.1          fsm7.2          fsm7.3          fsm7.4 \
-                fsm7.5          fsm8            fsm8.1          fsm8.2          fsm8.3 \
-                fsm9            fsm9.1          fsm9.2          fsm10           fsm10.1 \
-                fsm10.2         generate1       hier2           ifdef1.1        implicit2 \
-                profile_err1 \
-                real1.1         report4         report4.1       static2         static2.1 \
-                static2.2       unary1
-else ifeq ($(MAKECMDGOALS),vcs)
-EXCLUDE      += always5.1       assign1         assign2.8       example         example1 \
-                fsm1 \
-                fsm1.1          fsm1.2          fsm1.3          fsm1.4          fsm6 \
-                fsm7            fsm7.1          fsm7.2          fsm7.3          fsm7.4 \
-                fsm7.5          fsm8            fsm8.1          fsm8.2          fsm8.3 \
-                fsm9            fsm9.1          fsm9.2          fsm10           fsm10.1 \
-                fsm10.2         generate1       hier2           ifdef1.1        implicit2 \
-                profile_err1 \
-                real1.1         report4         report4.1       static2         static2.1 \
-                static2.2       unary1
-else ifeq ($(MAKECMDGOALS),veriwell)
-EXCLUDE      +=
-else
-EXCLUDE      +=
 endif
 
 # List of diagnostics that should not be run if we are using VCD dumpfiles

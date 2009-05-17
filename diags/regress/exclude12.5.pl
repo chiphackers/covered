@@ -15,6 +15,8 @@ if( $SIMULATOR eq "IV" ) {
   system( "cver -q +define+DUMP +libext+.v+.vlib+ -y ./ovl +incdir+./ovl +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 exclude12.5.v" ) && die;
 } elsif( $SIMULATOR eq "VCS" ) {
   system( "vcs +define+DUMP +libext+.v+.vlib+ -y ./ovl +incdir+./ovl +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 exclude12.5.v; ./simv" ) && die;
+} elsif( $SIMULATOR eq "VERIWELL" ) {
+  system( "veriwell +define+DUMP +libext+.v+vlib -y ./ovl +incdir+./ovl +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 exclude12.5.v" ) && die;
 }
 
 # Perform diagnostic running code here

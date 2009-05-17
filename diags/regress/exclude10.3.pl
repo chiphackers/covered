@@ -16,6 +16,8 @@ if( $SIMULATOR eq "IV" ) {
   system( "cver -q +define+DUMP exclude10.3.v" ) && die;
 } elsif( $SIMULATOR eq "VCS" ) {
   system( "vcs +define+DUMP exclude10.3.v; ./simv" ) && die;
+} elsif( $SIMULATOR eq "VERIWELL" ) {
+  system( "veriwell +define+DUMP exclude10.3.v" ) && die;
 }
 
 # Perform diagnostic running code here
