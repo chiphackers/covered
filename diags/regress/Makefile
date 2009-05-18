@@ -390,28 +390,32 @@ EXCLUDE      += afunc1            afunc2            always5.1         always_com
                 ovl1.3            param7            param8            param8.1          param8.2 \
                 param9.1          param9.2          param10           param10.1         param10.2 \
                 param10.3         param10.4         param10.5         param12           param12.1 \
-                param16           port1             port2             printtimescale1   random1.2 \
-                random1.3         rassign1          rassign2          real3             real3.1 \
-                real3.2           real3.4           real3.5           real3.6           real3.8 \
-                real5.1           real5.2           real5.3           real5.11          real5.12 \
-                real5.13          real5.14          real5.15          real5.16          real6 \
-                real6.1           real6.2           real6.3           real6.10          real6.11 \
-                real6.12          real6.13          repeat3           sbit_sel3.2       shortint1 \
-                signed1           signed3           signed4           signed4.1         signed4.2 \
-                signed5           signed6           slist1            slist1.1          slist1.2 \
-                slist1.3          slist2            slist3            slist3.1          slist3.2 \
-                slist3.3          slist4            slist6            task4.1           time1.1 \
-                timescale1.3      timescale1.4      timescale1.5      timescale4        timescale4.1 \
-                timescale4.2      timescale4.3      timescale4.4      timescale4.5      timescale4.6 \
-                timescale4.7      timescale4.8      timescale4.9      timescale4.10     timescale4.11 \
-                timescale4.12     timescale4.13     timescale4.14     timescale4.16     timescale4.17 \
-                timescale4.18     timescale4.19     timescale4.20     timescale4.21     trireg \
-                unsigned1         urandom1          urandom1.1        urandom1.2        urandom1.3 \
-                urandom2          urandom2.1        urandom3          urandom3.1        urandom_range1 \
-                urandom_range1.1  urandom_range1.2  urandom_range2    urandom_range2.1  urandom_range2.2 \
-                urandom_range3    value_plusargs1   value_plusargs2   value_plusargs3   value_plusargs4   value_plusargs5 \
-                value_plusargs6   value_plusargs7   value_plusargs8   value_plusargs8.1 version1 \
-                version1.1
+                param16           port1             port2             printtimescale1   pulldown1 \
+                pullup1           random1.2         random1.3         rassign1          rassign2 \
+                real2.1           real3             real3.1           real3.2           real3.4 \
+                real3.5           real3.6           real3.8           real5.1           real5.2 \
+                real5.3           real5.4           real5.5           real5.6           real5.7 \
+                real5.8           real5.9           real5.11          real5.12          real5.13 \
+                real5.14          real5.15          real5.16          real6             real6.1 \
+                real6.2           real6.3           real6.4           real6.5           real6.6 \
+                real6.7           real6.8           real6.9           real6.10          real6.11 \
+                real6.12          real6.13          repeat3           report4           report4.1 \
+                sbit_sel3.2       shortint1         signed1           signed3           signed4 \
+                signed4.1         signed4.2         signed5           signed6           slist1 \
+                slist1.1          slist1.2          slist1.3          slist2            slist3 \
+                slist3.1          slist3.2          slist3.3          slist4            slist6 \
+                supply1           task3             task3.1           task4             task4.1 \
+                time1.1           timescale1.3      timescale1.4      timescale1.5      timescale2.6 \
+                timescale2.7      timescale4        timescale4.1      timescale4.2      timescale4.3 \
+                timescale4.4      timescale4.5      timescale4.6      timescale4.7      timescale4.8 \
+                timescale4.9      timescale4.10     timescale4.11     timescale4.12     timescale4.13 \
+                timescale4.14     timescale4.16     timescale4.17     timescale4.18     timescale4.19 \
+                timescale4.20     timescale4.21     trireg            unsigned1         urandom1 \
+                urandom1.1        urandom1.2        urandom1.3        urandom2          urandom2.1 \
+                urandom3          urandom3.1        urandom_range1    urandom_range1.1  urandom_range1.2 \
+                urandom_range2    urandom_range2.1  urandom_range2.2  urandom_range3    value_plusargs1 \
+                value_plusargs2   value_plusargs3   value_plusargs4   value_plusargs5   value_plusargs6 \
+                value_plusargs7   value_plusargs8   value_plusargs8.1 version1          version1.1
 else
 EXCLUDE      += afunc1            afunc2            always_comb1      always_comb2      always_ff1        always_latch1 \
                 always_latch2     assert1           atask1            bit1              byte1 \

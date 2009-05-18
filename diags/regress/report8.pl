@@ -16,6 +16,8 @@ if( $SIMULATOR eq "IV" ) {
   system( "cver -q +define+DUMP report8.v" ) && die;
 } elsif( $SIMULATOR eq "VCS" ) {
   system( "vcs +define+DUMP report8.v; ./simv" ) && die;
+} elsif( $SIMULATOR eq "VERIWELL" ) {
+  system( "veriwell +define+DUMP report8.v" ) && die;
 }
 
 $check_mem_cmd = $CHECK_MEM_CMD;

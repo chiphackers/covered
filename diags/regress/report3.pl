@@ -15,6 +15,8 @@ if( $SIMULATOR eq "IV" ) {
   system( "cver -q +define+DUMP report3.v" ) && die;
 } elsif( $SIMULATOR eq "VCS" ) {
   system( "vcs +define+DUMP report3.v; ./simv" ) && die;
+} elsif( $SIMULATOR eq "VERIWELL" ) {
+  system( "veriwell +define+DUMP report3.v" ) && die;
 }
 
 &runScoreCommand( "-t main -vcd report3.vcd -v report3.v -o report3.cdd" );
