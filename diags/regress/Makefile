@@ -26,6 +26,11 @@ VW_FLAGS2 = +mindelays
 VW_FLAGS3 = +typdelays
 VW_FLAGS4 = +maxdelays
 
+VCOMP_FLAGS1 =
+VCOMP_FLAGS2 = +mindelays
+VCOMP_FLAGS3 = +typdelays
+VCOMP_FLAGS4 = +maxdelays
+
 CDD_DIR       = ../cdd
 
 LOGFILE = regress.log
@@ -337,7 +342,8 @@ EXCLUDE      += afunc1            afunc2            always5.1         always_com
                 urandom_range1.2  urandom_range2    urandom_range2.1  urandom_range2.2  urandom_range3 \
                 value_plusargs1   value_plusargs2   value_plusargs3   value_plusargs4   value_plusargs5 \
                 value_plusargs6   value_plusargs7   value_plusargs8   value_plusargs8.1
-else ifeq ($(MAKECMDGOALS),vcs)
+else
+ifeq ($(MAKECMDGOALS),vcs)
 EXCLUDE      += always5.1         assign1           assign2.8         example           example1 \
                 fsm1              fsm1.1            fsm1.2            fsm1.3            fsm1.4 \
                 fsm6              fsm7              fsm7.1            fsm7.2            fsm7.3 \
@@ -346,7 +352,8 @@ EXCLUDE      += always5.1         assign1           assign2.8         example   
                 fsm10.1           fsm10.2           generate1         hier2             ifdef1.1 \
                 implicit2         profile_err1      real1.1           report4           report4.1 \
                 static2           static2.1         static2.2         unary1
-else ifeq ($(MAKECMDGOALS),veriwell)
+else
+ifeq ($(MAKECMDGOALS),veriwell)
 EXCLUDE      += afunc1            afunc2            always5.1         always_comb1      always_comb2 \
                 always_ff1        always_latch1     always_latch2     ashift1           ashift2 \
                 ashift3           ashift4           assert1           assign1           atask1 \
@@ -417,6 +424,9 @@ EXCLUDE      += afunc1            afunc2            always5.1         always_com
                 value_plusargs2   value_plusargs3   value_plusargs4   value_plusargs5   value_plusargs6 \
                 value_plusargs7   value_plusargs8   value_plusargs8.1 version1          version1.1
 else
+ifeq ($(MAKECMDGOALS),vcomp)
+EXCLUDE      +=
+else
 EXCLUDE      += afunc1            afunc2            always_comb1      always_comb2      always_ff1        always_latch1 \
                 always_latch2     assert1           atask1            bit1              byte1 \
                 char1             dec1              dec1.1            dec2              dec3 \
@@ -452,6 +462,9 @@ EXCLUDE      += afunc1            afunc2            always_comb1      always_com
                 urandom_range1    urandom_range2    value_plusargs1   value_plusargs2   value_plusargs3 \
                 value_plusargs4   value_plusargs5   value_plusargs6   value_plusargs7   value_plusargs8 \
                 value_plusargs8.1
+endif
+endif
+endif
 endif
 
 # List of diagnostics that should not be run if we are using VCD dumpfiles
@@ -571,6 +584,17 @@ veriwell:
 	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VERIWELL=1 VERILOG_EXTRA_FLAGS="$(VW_FLAGS3)" DIAGLIST="$(DIAGS3)" regress
 	@cd ../verilog; \
 	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VERIWELL=1 VERILOG_EXTRA_FLAGS="$(VW_FLAGS4)" DIAGLIST="$(DIAGS4)" regress
+	@cd ../verilog;  $(MAKE) eot;  $(MAKE) clean
+
+vcomp:
+	@cd ../verilog; \
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VCOMP=1 VERILOG_EXTRA_FLAGS="$(VCOMP_FLAGS1)" DIAGLIST="$(DIAGS1)" regress
+	@cd ../verilog; \
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VCOMP=1 VERILOG_EXTRA_FLAGS="$(VCOMP_FLAGS2)" DIAGLIST="$(DIAGS2)" regress
+	@cd ../verilog; \
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VCOMP=1 VERILOG_EXTRA_FLAGS="$(VCOMP_FLAGS3)" DIAGLIST="$(DIAGS3)" regress
+	@cd ../verilog; \
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VCOMP=1 VERILOG_EXTRA_FLAGS="$(VCOMP_FLAGS4)" DIAGLIST="$(DIAGS4)" regress
 	@cd ../verilog;  $(MAKE) eot;  $(MAKE) clean
 
 all-vcd-quick:

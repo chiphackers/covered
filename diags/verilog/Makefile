@@ -52,6 +52,7 @@ endif
 
 SIM_PLUSARGS = +option1 +option2 +optionB=0000000100100011010001010110011110001001101010111100110111101111 +optionO=0123456776543210012345 +optionD=81985529216486895 +optionH=0123456789abcdef +optionE=123.456 +optionF=123.456 +optionG=123.456 +optionS1=\"Small +optionS2=small.dog
 
+# Icarus Verilog support
 IVERILOG       = iverilog
 IVERILOG_FLAGS = -cconfig_file -I./include -DRUNTEST
 ifdef VPI
@@ -62,6 +63,7 @@ endif
 IVERILOG_EXEC  = a.out $(SIM_PLUSARGS)
 IVERILOG_INTER = vvp
 
+# VCS support
 VCS       = vcs
 VCS_FLAGS = +librescan +libext+.v+.vlib+ -y ./covered/verilog -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 +v2k -sverilog -ntb_opts dtm -PP +vcs+lic+wait
 ifdef VPI
@@ -74,6 +76,7 @@ VCS_FLAGS += +define+DUMP
 endif
 VCS_EXEC  = ./simv $(SIM_PLUSARGS)
 
+# Cver support
 CVER      = cver
 CVER_FLAGS = -q +librescan +libext+.v+.vlib+ -y ./covered/verilog -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 $(SIM_PLUSARGS)
 ifdef VPI
@@ -83,9 +86,16 @@ CVER_FLAGS += +define+DUMP
 endif
 CVER_EXEC =
 
+# Veriwell support
 VERIWELL       = veriwell
 VERIWELL_FLAGS = +libext+.v+.vlib -y ./covered/verilog -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 +define+DUMP $(SIM_PLUSARGS)
 VERIWELL_EXEC  =
+
+# VComp support
+VCOMP_LIB      = $(realpath $(dir $(shell which vcomp))../lib)
+VCOMP          = vcomp
+VCOMP_FLAGS    = -d0 -logfile foobar +libext+.v+.vlib -y ./covered/verilog -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT+15 +define+DUMP -LL $(VCOMP_LIB) -P $(VCOMP_LIB)/vcomp/vcd.tab
+VCOMP_EXEC     = ./vrun $(SIM_PLUSARGS)
 
 ifdef USE_VERIWELL
 VERILOG       = $(VERIWELL)
@@ -105,10 +115,17 @@ VERILOG_FLAGS = $(CVER_FLAGS) $(VERILOG_EXTRA_FLAGS)
 VERILOG_EXEC  = $(CVER_EXEC)
 VERILOG_CMD   = $(CVER_EXEC)
 else
+ifdef USE_VCOMP
+VERILOG       = $(VCOMP)
+VERILOG_FLAGS = $(VCOMP_FLAGS) $(VERILOG_EXTRA_FLAGS)
+VERILOG_EXEC  = $(VCOMP_EXEC)
+VERILOG_CMD   = $(VCOMP_EXEC)
+else
 VERILOG       = $(IVERILOG)
 VERILOG_FLAGS = $(IVERILOG_FLAGS) $(VERILOG_EXTRA_FLAGS)
 VERILOG_EXEC  = $(IVERILOG_EXEC)
 VERILOG_CMD   = $(IVERILOG_INTER) $(IVERILOG_EXEC) $(DUMP_FMT)
+endif
 endif
 endif
 endif
