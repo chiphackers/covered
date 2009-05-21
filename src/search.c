@@ -221,9 +221,12 @@ void search_add_file(
   char* tmp;  /* Temporary filename */
 
   if( file_exists( file ) ) {
-    if( str_link_find( file, use_files_head ) == NULL ) {
+    str_link* strl;
+    if( (strl = str_link_find( file, use_files_head )) == NULL ) {
       tmp = strdup_safe( file );
       (void)str_link_add( tmp, &use_files_head, &use_files_tail );
+    } else {
+      strl->suppl = 0x0;
     }
   } else {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "File %s does not exist", file );

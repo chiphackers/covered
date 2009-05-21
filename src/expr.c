@@ -1488,7 +1488,9 @@ void expression_db_write_tree(
   if( root != NULL ) {
 
     /* Print children first */
-    expression_db_write_tree( root->left, ofile );
+    if( EXPR_LEFT_DEALLOCABLE( root ) ) {
+      expression_db_write_tree( root->left, ofile );
+    }
     expression_db_write_tree( root->right, ofile );
 
     /* Now write ourselves */

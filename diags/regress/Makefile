@@ -45,7 +45,7 @@ DIAGS1        = add1            aedge1          aedge1.1        afunc1          
                 assign2         assign2.1       assign2.2       assign2.3       assign2.4 \
                 assign2.5       assign2.6       assign2.7       assign2.8       assign2.9 \
                 assign3.2A      atask1          bassign1        bassign2        bassign3 \
-                block1          bit1            byte1           case1           case1.1 \
+                block1          bit1            bug2794588      byte1           case1           case1.1 \
                 case1.2         case1.3         case2           case3           case3.1 \
                 case3.2         case3.3         case3.4         case4           case4.1 \
                 case5           case6           casex1          casex1.1        casex1.2 \
@@ -99,7 +99,7 @@ DIAGS1        = add1            aedge1          aedge1.1        afunc1          
                 generate10.1    generate10.2    generate11      generate11.1    generate11.2 \
                 generate11.3    generate11.4    generate13      generate14      generate15 \
                 generate15.1    generate15.2    generate15.3    generate15.4    generate15.5 \
-                generate16      generate16.1    generate17      hier1           hier1.1 \
+                generate16      generate16.1    generate17      generate18      hier1           hier1.1 \
                 hier2           hier3           hier3.1         hier3.2         hier3.3 \
                 hier3.4         hier4           if1             ifdef1          ifdef1.1 \
                 ifdef1.2        ifdef2.1        ifdef2.2        ifdef2.3        ifdef3 \
@@ -313,7 +313,8 @@ EXCLUDE      += afunc1            afunc2            always5.1         always_com
                 generate10        generate10.1      generate10.2      generate11        generate11.1 \
                 generate11.2      generate11.3      generate11.4      generate13        generate14 \
                 generate15        generate15.1      generate15.2      generate15.3      generate15.4 \
-                generate15.5      generate16        generate16.1      generate17        hier1.1 \
+                generate15.5      generate16        generate16.1      generate17        generate18 \
+                hier1.1 \
                 hier2             hier3             ifdef1.1          ifdef3            ifndef2 \
                 implicit2         inc1              inc1.1            inc2              inc3 \
                 inc3.1            instance7         int1              line1             localparam1 \
@@ -382,7 +383,8 @@ EXCLUDE      += afunc1            afunc2            always5.1         always_com
                 generate10        generate10.1      generate10.2      generate11        generate11.1 \
                 generate11.2      generate11.3      generate11.4      generate13        generate14 \
                 generate15        generate15.1      generate15.2      generate15.3      generate15.4 \
-                generate15.5      generate16        generate16.1      generate17        hier1.1 \
+                generate15.5      generate16        generate16.1      generate17        generate18 \
+                hier1.1 \
                 hier2             hier3             hier3.1           hier3.2           hier3.3 \
                 hier3.4           hier4             ifndef1           ifndef2           implicit2.1 \
                 inc1              inc1.1            inc2              inc3              inc3.1 \
@@ -444,7 +446,7 @@ EXCLUDE      += afunc1            afunc2            always_comb1      always_com
                 generate8.2       generate8.3       generate8.4       generate8.5       generate8.6 \
                 generate8.7       generate8.8       generate9         generate9.1       generate9.2 \
                 generate9.3       generate11.4      generate13        generate14        generate16 \
-                hier1.1 \
+                generate18        hier1.1 \
                 inc1              inc1.1            inc2              inc3              inc3.1 \
                 int1              line1             logic1            longint1          long_sig \
                 marray1           marray1.1         marray1.2         marray1.3         marray2 \
