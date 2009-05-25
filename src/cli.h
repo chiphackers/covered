@@ -28,10 +28,21 @@
 
 
 /*! \brief Performs CLI management. */
-void cli_execute( const sim_time* time, bool force );
+void cli_execute(
+  const sim_time* time,
+  bool            force,
+  statement*      stmt
+);
 
 /*! \brief Reads in given history file from -cli option */
-void cli_read_hist_file( const char* fname );
+void cli_read_hist_file(
+  const char* fname
+);
+
+/*! \brief Signal handler for Ctrl-C event */
+void cli_ctrl_c(
+  int sig
+);
 
 #endif
 

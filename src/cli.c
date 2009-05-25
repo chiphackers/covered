@@ -35,6 +35,7 @@
 #include "scope.h"
 #include "sim.h"
 #include "util.h"
+#include "vector.h"
 #include "vsignal.h"
 
 
@@ -49,6 +50,7 @@ extern db**         db_list;
 extern unsigned int curr_db;
 extern char         user_msg[USER_MSG_LENGTH];
 extern bool         flag_use_command_line_debug;
+extern bool         debug_mode;
 
 
 /*!
@@ -106,6 +108,38 @@ static unsigned int history_index = 0;
 */
 static unsigned int history_size = 0;
 
+/*!
+ The current find vector (signal or expression in the design).
+*/
+static vector* cli_goto_vec1 = NULL;
+
+/*!
+ Comparison operator for the find vectors.
+*/
+static exp_op_type cli_goto_op;
+
+/*!
+ User-specified value to compare against.  If this value is NULL, no comparison is performed.  If the compare occurs and
+ returns TRUE, this vector MUST be deallocated.
+*/
+static vector* cli_goto_vec2 = NULL;
+
+/*!
+ One-bit target vector to store comparison results into.
+*/
+static vector* cli_goto_vec = NULL;
+
+/*
+ Specifies the name of the file containing the line number to simulate to.  If this value is not NULL, we
+ should be simulating until the line number matches.
+*/
+static char* cli_goto_filename = NULL;
+
+/*!
+ Specifies the line number to find.  The value is valid if cli_goto_filename is not NULL.
+*/
+static int cli_goto_linenum;
+
 
 /*!
  Displays CLI usage information to standard output.
@@ -115,41 +149,59 @@ static void cli_usage() {
   printf( "\n" );
   printf( "Covered score command CLI usage:\n" );
   printf( "\n" );
-  printf( "  step [<num>]            Advances to the next statement if <num> is not\n" );
-  printf( "                            specified; otherwise, advances <num> statements\n" );
-  printf( "                            before returning to the CLI prompt.\n" );
-  printf( "  next [<num>]            Advances to the next timestep if <num> is not\n" );
-  printf( "                            specified; otherwise, advances <num> timesteps\n" );
-  printf( "                            before returning to the CLI prompt.\n" );
-  printf( "  goto <num>              Advances to the given timestep (or the next timestep after the\n" );
-  printf( "                            given value if the timestep is not executed) specified by <num>.\n" );
-  printf( "  run                     Runs the simulation.\n" );
-  printf( "  continue                Continues running the simulation.\n" );
-  printf( "  thread active            Displays the current state of the active simulation queue.\n" );
-  printf( "  thread delayed           Displays the current state of the delayed simulation queue.\n" );
-  printf( "  thread all              Displays the list of all threads.\n" );
-  printf( "  current                 Displays the current scope, block, filename and line number.\n" );
-  printf( "  time                    Displays the current simulation time.\n" );
-  printf( "  signal <name>           Displays the current value of the given net/variable.\n" );
-  printf( "  expr <num>              Displays the given expression and its current value where <num>\n" );
-  printf( "                            is the ID of the expression to output.\n" );
-  printf( "  debug [on | off]        Turns verbose debug output from simulator on\n" );
-  printf( "                            or off.  If 'on' or 'off' is not specified,\n" );
-  printf( "                            displays the current debug mode.\n" );
-  printf( "  list [<num>]            Lists the contents of the file where the\n" );
-  printf( "                            current statement is to be executed.  If\n" );
-  printf( "                            <num> is specified, outputs the given number\n" );
-  printf( "                            of lines; otherwise, outputs 10 lines.\n" );
-  printf( "  savehist <file>         Saves the current history to the specified file.\n" );
-  printf( "  history [(<num> | all)] Displays the last 10 lines of command-line\n" );
-  printf( "                            history.  If 'all' is specified, the entire\n" );
-  printf( "                            history contents will be displayed.  If <num>\n" );
-  printf( "                            is specified, the last <num> commands will be\n" );
-  printf( "                            displayed.\n" );
-  printf( "  !<num>                  Executes the command at the <num> position in history.\n" );
-  printf( "  !!                      Executes the last valid command.\n" );
-  printf( "  help                    Displays this usage message.\n" );
-  printf( "  quit                    Ends simulation.\n" );
+  printf( "  step [<num>]\n" );
+  printf( "      Advances to the next statement if <num> is not specified; otherwise, advances <num> statements\n" );
+  printf( "      before returning to the CLI prompt.\n\n" );
+  printf( "  next [<num>]\n" );
+  printf( "      Advances to the next timestep if <num> is not specified; otherwise, advances <num> timesteps\n" );
+  printf( "      before returning to the CLI prompt.\n\n" );
+  printf( "  goto time <num>\n" );
+  printf( "      Simulates to the given timestep (or the next timestep after the given value if the timestep is\n" );
+  printf( "      not executed) specified by <num>.\n\n" );
+  printf( "  goto line [<filename>:]<num>\n" );
+  printf( "      Simulates until the given line number is about to be executed.  If <filename> is specified, the\n" );
+  printf( "      specified filename is used for searching; otherwise, the currently executing filename is used.\n\n" );
+  printf( "  goto expr (<name>|<num>) (!=|!==|==|===|<|>|<=|>=) <num>\n" );
+  printf( "      Simulates to the point where the given signal (<name>) or expression <num> evaluates to be true\n" );
+  printf( "      with the given value and operation.\n\n" );
+  printf( "  run\n" );
+  printf( "      Runs the simulation.\n\n" );
+  printf( "  continue\n" );
+  printf( "      Continues running the simulation.\n\n" );
+  printf( "  thread active\n" );
+  printf( "      Displays the current state of the active simulation queue.\n\n" );
+  printf( "  thread delayed\n" );
+  printf( "      Displays the current state of the delayed simulation queue.\n\n" );
+  printf( "  thread all\n" );
+  printf( "      Displays the list of all threads.\n\n" );
+  printf( "  current\n" );
+  printf( "      Displays the current scope, block, filename and line number.\n\n" );
+  printf( "  time\n" );
+  printf( "      Displays the current simulation time.\n\n" );
+  printf( "  signal <name>\n" );
+  printf( "      Displays the current value of the given net/variable.\n\n" );
+  printf( "  expr <num>\n" );
+  printf( "      Displays the given expression and its current value where <num> is the ID of the expression to output.\n\n" );
+  printf( "  debug [less | more | off]\n" );
+  printf( "      Turns verbose debug output from simulator on or off.  If 'less' is specified, only the executed expression\n" );
+  printf( "      is output.  If 'more' is specified, the full debug information from internal debug statements in Covered is\n" );
+  printf( "      is output.  If 'less', 'more' or 'off' is not specified, displays the current debug mode.\n\n" );
+  printf( "  list [<num>]\n" );
+  printf( "      Lists the contents of the file where the current statement is to be executed.  If <num> is specified,\n" );
+  printf( "      outputs the given number of lines; otherwise, outputs 10 lines.\n\n" );
+  printf( "  savehist <file>\n" );
+  printf( "      Saves the current history to the specified file.\n\n" );
+  printf( "  history [(<num> | all)]\n" );
+  printf( "      Displays the last 10 lines of command-line history.  If 'all' is specified, the entire history contents\n" );
+  printf( "      will be displayed.  If <num> is specified, the last <num> commands will be displayed.\n\n" );
+  printf( "  !<num>\n" );
+  printf( "      Executes the command at the <num> position in history.\n\n" );
+  printf( "  !!\n" );
+  printf( "      Executes the last valid command.\n\n" );
+  printf( "  help\n" );
+  printf( "      Displays this usage message.\n\n" );
+  printf( "  quit\n" );
+  printf( "      Ends simulation.\n" );
   printf( "\n" );
 
 }
@@ -237,26 +289,27 @@ static void cli_draw_status_bar(
 /*!
  Displays the current statement to standard output.
 */
-static void cli_display_current_stmt() {
+static void cli_display_current_stmt(
+  statement* curr_stmt  /*!< Pointer to current statement */
+) {
 
-  thread*      curr;        /* Pointer to current thread in queue */
+  thread*      curr_thr;    /* Pointer to current thread in queue */
   char**       code;        /* Pointer to code string from code generator */
   unsigned int code_depth;  /* Depth of code array */
   unsigned int i;           /* Loop iterator */
 
   /* Get current thread from simulator */
-  curr = sim_current_thread();
+  curr_thr = sim_current_thread();
 
-  assert( curr != NULL );
-  assert( curr->funit != NULL );
-  assert( curr->curr != NULL );
+  assert( curr_thr != NULL );
+  assert( curr_thr->funit != NULL );
 
   /* Generate the logic */
-  codegen_gen_expr( curr->curr->exp, curr->funit, &code, &code_depth );
+  codegen_gen_expr( curr_stmt->exp, curr_thr->funit, &code, &code_depth );
 
   /* Output the full expression */
   for( i=0; i<code_depth; i++ ) {
-    printf( "    %7d:    %s\n", curr->curr->exp->line, code[i] );
+    printf( "    %7d:    %s\n", curr_stmt->exp->line, code[i] );
     free_safe( code[i], (strlen( code[i] ) + 1) );
   }
 
@@ -269,7 +322,9 @@ static void cli_display_current_stmt() {
 /*!
  Outputs the scope, block name, filename and line number of the current thread in the active queue to standard output.
 */
-static void cli_display_current() {
+static void cli_display_current(
+  statement* curr_stmt  /*!< Pointer to current statement */
+) {
 
   thread* curr;         /* Pointer to current thread */
   char    scope[4096];  /* String containing scope of given functional unit */
@@ -280,7 +335,6 @@ static void cli_display_current() {
 
   assert( curr != NULL );
   assert( curr->funit != NULL );
-  assert( curr->curr != NULL );
 
   /* Get the scope of the functional unit represented by the current thread */
   scope[0] = '\0';
@@ -290,18 +344,18 @@ static void cli_display_current() {
   printf( "    SCOPE: %s, BLOCK: %s, FILE: %s\n", scope, funit_flatten_name( curr->funit ), curr->funit->orig_fname );
 
   /* Display current statement */
-  cli_display_current_stmt();
+  cli_display_current_stmt( curr_stmt );
 
 }
 
 /*!
- \param name  Name of signal to display
-
  \return Returns TRUE if signal was found; otherwise, returns FALSE.
 
  Outputs the given signal value to standard output.
 */
-static bool cli_display_signal( char* name ) {
+static bool cli_display_signal(
+  char* name  /*!< Name of signal to display */
+) {
 
   bool       retval = TRUE;  /* Return value for this function */
   thread*    curr;           /* Pointer to current thread in simulator */
@@ -438,7 +492,8 @@ static bool cli_parse_input(
   char*           line,       /*!< User-specified command line to parse */
   bool            perform,    /*!< Set to TRUE if we should perform the specified command */
   bool            replaying,  /*!< Set to TRUE if we are calling this due to replaying the history */
-  const sim_time* time        /*!< Pointer to current simulation time */
+  const sim_time* time,       /*!< Pointer to current simulation time */
+  statement*      curr_stmt   /*!< Pointer to current statement */
 ) {
 
   char     arg[4096];         /* Holder for user argument */
@@ -446,6 +501,7 @@ static bool cli_parse_input(
   int      chars_read;        /* Specifies the number of characters that was read from the string */
   unsigned num;               /* Unsigned integer value from user */
   FILE*    hfile;             /* History file to read or to write */
+  thread*  curr_thr;          /* Pointer to current thread */
 
   /* Resize the history if necessary */
   if( history_index == history_size ) {
@@ -455,7 +511,7 @@ static bool cli_parse_input(
 
   /* Store this command in the history buffer if we are not in replay mode */
   if( !replaying ) {
-    history[history_index] = line;
+    history[history_index] = strdup_safe( line );
   }
 
   /* Parse first string */
@@ -469,13 +525,13 @@ static bool cli_parse_input(
       line++;
       if( arg[1] == '!' ) {
         free_safe( history[history_index], (strlen( history[history_index] ) + 1) );
-        (bool)cli_parse_input( strdup_safe( history[history_index-1] ), perform, replaying, time );
+        (bool)cli_parse_input( history[history_index-1], perform, replaying, time, curr_stmt );
         history_index--;
         cli_replay_index--;
       } else if( sscanf( line, "%d", &num ) == 1 ) {
         if( num < (history_index + 1) ) {
           free_safe( history[history_index], (strlen( history[history_index] ) + 1) );
-          cli_parse_input( strdup_safe( history[num-1] ), perform, replaying, time );
+          cli_parse_input( history[num-1], perform, replaying, time, curr_stmt );
           history_index--;
           cli_replay_index--;
         } else {
@@ -513,16 +569,119 @@ static bool cli_parse_input(
 
     } else if( strncmp( "goto", arg, 4 ) == 0 ) {
 
-      if( perform ) {
-        uint64 timestep;
-        if( sscanf( line, "%llu", &timestep ) != 1 ) {
-          cli_print_error( "No timestep specified for goto command", perform );
-          valid_cmd = FALSE;
+      if( sscanf( line, "%s%n", arg, &chars_read ) == 1 ) {
+        line += chars_read;
+        if( strncmp( "time", arg, 4 ) == 0 ) {
+          if( perform ) {
+            uint64 timestep;
+            if( sscanf( line, "%llu", &timestep ) != 1 ) {
+              cli_print_error( "No timestep specified for goto command", perform );
+              valid_cmd = FALSE;
+            } else {
+              goto_timestep.lo   = (timestep & 0xffffffffLL);
+              goto_timestep.hi   = ((timestep >> 32) & 0xffffffffLL);
+              goto_timestep.full = timestep;
+            }
+          }
+        } else if( strncmp( "expr", arg, 4 ) == 0 ) {
+          if( perform ) {
+            vsignal*   sig;
+            func_unit* funit;
+            exp_link*  expl;
+            int        id;
+            int        base;
+            if( sscanf( line, "%s%n", arg, &chars_read ) == 1 ) {
+              line += chars_read;
+              curr_thr = sim_current_thread();
+              if( scope_find_signal( arg, curr_thr->funit, &sig, &funit, 0 ) ) {
+                cli_goto_vec1 = sig->value;
+              } else {
+                cli_print_error( "Unable to find signal in find expression", perform );
+                valid_cmd = FALSE;
+              }
+            } else if( sscanf( line, "%d%n", id, &chars_read ) == 1 ) {
+              if( (funit = funit_find_by_id( id )) != NULL ) {
+                expl = exp_link_find( id, funit->exp_head );
+                assert( expl != NULL );
+                cli_goto_vec1 = expl->exp->value;
+              } else {
+                cli_print_error( "Unable to find expression ID in find expression", perform );
+                valid_cmd = FALSE;
+              }
+            } else {
+              cli_print_error( "Illegal find expression specified", perform );
+              valid_cmd = FALSE;
+            }
+            if( valid_cmd ) {
+              if( sscanf( line, "%s%n", arg, &chars_read ) == 1 ) {
+                line += chars_read;
+                if( strcmp( "==", arg ) == 0 ) {
+                  cli_goto_op = EXP_OP_EQ;
+                } else if( strcmp( "===", arg ) == 0 ) {
+                  cli_goto_op = EXP_OP_CEQ;
+                } else if( strcmp( "!=", arg ) == 0 ) {
+                  cli_goto_op = EXP_OP_NE;
+                } else if( strcmp( "!==", arg ) == 0 ) {
+                  cli_goto_op = EXP_OP_CNE;
+                } else if( strcmp( "<=", arg ) == 0 ) {
+                  cli_goto_op = EXP_OP_LE;
+                } else if( strcmp( "<",  arg ) == 0 ) {
+                  cli_goto_op = EXP_OP_LT;
+                } else if( strcmp( ">=", arg ) == 0 ) {
+                  cli_goto_op = EXP_OP_GE;
+                } else if( strcmp( ">",  arg ) == 0 ) {
+                  cli_goto_op = EXP_OP_GT;
+                } else {
+                  cli_print_error( "Illegal expression operator specified", perform );
+                  valid_cmd = FALSE;
+                }
+              } else {
+                cli_print_error( "Illegal find expression specified", perform );
+                valid_cmd = FALSE;
+              }
+            }
+            if( valid_cmd ) {
+              if( sscanf( line, "%s", arg ) == 1 ) {
+                char* tmpstr = arg;
+                vector_from_string( &tmpstr, FALSE, &cli_goto_vec2, &base );
+                if( cli_goto_vec2 != NULL ) {
+                  cli_goto_vec = vector_create( 1, VTYPE_VAL, VDATA_UL, TRUE );
+                } else {
+                  cli_print_error( "Illegal value string specified", perform );
+                  valid_cmd = FALSE;
+                }
+              } else {
+                cli_print_error( "Illegal find expression specified", perform );
+                valid_cmd = FALSE;
+              }
+            }
+          }
+        } else if( strncmp( "line", arg, 4 ) == 0 ) {
+          if( perform ) {
+            if( sscanf( line, "%d", &cli_goto_linenum ) == 1 ) {
+              curr_thr = sim_current_thread();
+              cli_goto_filename = strdup_safe( curr_thr->funit->orig_fname );
+            } else if( sscanf( line, "%s", arg ) == 1 ) {
+              char targ[4096];
+              strcpy( targ, arg );
+              if( sscanf( targ, "%[^:]:%d", arg, &cli_goto_linenum ) == 2 ) {
+                cli_goto_filename = strdup_safe( arg );
+              } else {
+                cli_print_error( "Illegal line number specified", perform );
+                valid_cmd = FALSE;
+              }
+            } else {
+              cli_print_error( "Illegal line number specified", perform );
+              valid_cmd = FALSE;
+            }
+          }
         } else {
-          goto_timestep.lo   = (timestep & 0xffffffffLL);
-          goto_timestep.hi   = ((timestep >> 32) & 0xffffffffLL);
-          goto_timestep.full = timestep;
+          cli_print_error( "Unknown goto type specified", perform );
+          valid_cmd = FALSE;
         }
+      } else {
+        cli_print_error( "No goto type was specified", perform );
+        valid_cmd = FALSE;
       }
 
     } else if( strncmp( "run", arg, 3 ) == 0 ) {
@@ -565,13 +724,13 @@ static bool cli_parse_input(
     } else if( strncmp( "current", arg, 7 ) == 0 ) {
 
       if( perform ) {
-        cli_display_current();
+        cli_display_current( curr_stmt );
       }
 
     } else if( strncmp( "time", arg, 4 ) == 0 ) {
 
       if( perform ) {
-        printf( "    TIME: %lld\n", time->full );
+        printf( "    TIME: %llu\n", time->full );
       }
 
     } else if( strncmp( "signal", arg, 6 ) == 0 ) {
@@ -607,7 +766,12 @@ static bool cli_parse_input(
     } else if( strncmp( "debug", arg, 5 ) == 0 ) {
 
       if( sscanf( line, "%s", arg ) == 1 ) {
-        if( strncmp( "on", arg, 2 ) == 0 ) {
+        if( strncmp( "less", arg, 4 ) == 0 ) {
+          if( perform ) {
+            cli_debug_mode = TRUE;
+            set_debug( FALSE );
+          }
+        } else if( strncmp( "more", arg, 4 ) == 0 ) {
           if( perform ) {
             cli_debug_mode = TRUE;
             set_debug( TRUE );
@@ -620,13 +784,16 @@ static bool cli_parse_input(
           cli_print_error( "Unknown debug command parameter", perform );
           valid_cmd = FALSE; 
         }
-      } else {
-        if( perform ) {
-          if( cli_debug_mode ) {
-            printf( "Current debug mode is on.\n" );
+      }
+      if( perform ) {
+        if( cli_debug_mode ) {
+          if( debug_mode ) { 
+            printf( "Current debug mode is 'more'.\n" );
           } else {
-            printf( "Current debug mode is off.\n" );
+            printf( "Current debug mode is 'less'.\n" );
           }
+        } else {
+          printf( "Current debug mode is 'off'.\n" );
         }
       }
 
@@ -681,7 +848,7 @@ static bool cli_parse_input(
     } else {
 
       cli_print_error( "Unknown command", perform );
-      valid_cmd = FALSE; 
+      
 
     }
 
@@ -716,7 +883,8 @@ static bool cli_parse_input(
  to be issued.
 */
 static void cli_prompt_user(
-  const sim_time* time  /*!< Pointer to current simulation time */
+  const sim_time* time,      /*!< Pointer to current simulation time */
+  statement*      curr_stmt  /*!< Pointer to current statement to be executed */
 ) {
 
   do {
@@ -726,7 +894,7 @@ static void cli_prompt_user(
 
       printf( "\ncli %d> %s\n", (cli_replay_index + 1), history[cli_replay_index] );
 
-      (void)cli_parse_input( history[cli_replay_index], TRUE, TRUE, time );
+      (void)cli_parse_input( history[cli_replay_index], TRUE, TRUE, time, curr_stmt );
 
     } else {
 
@@ -741,14 +909,14 @@ static void cli_prompt_user(
       (void)util_readline( stdin, &line, &line_size );
 
       /* Parse the command line */
-      (void)cli_parse_input( line, TRUE, FALSE, time );
+      (void)cli_parse_input( line, TRUE, FALSE, time, curr_stmt );
 
       /* Deallocate the memory allocated for the read line */
       free_safe( line, line_size );
 
     }
 
-  } while( (stmts_left == 0) && (timesteps_left == 0) && TIME_CMP_GE(*time, goto_timestep) && !dont_stop );
+  } while( (stmts_left == 0) && (timesteps_left == 0) && (cli_goto_vec == NULL) && (cli_goto_filename == NULL) && TIME_CMP_GE(*time, goto_timestep) && !dont_stop );
 
 }
 
@@ -766,6 +934,30 @@ void cli_reset(
   goto_timestep.full  = time->full;
   goto_timestep.final = time->final;
   dont_stop           = FALSE;
+  cli_goto_vec1       = NULL;
+  vector_dealloc( cli_goto_vec2 );
+  cli_goto_vec2       = NULL;
+  vector_dealloc( cli_goto_vec );
+  cli_goto_vec        = NULL;
+  free_safe( cli_goto_filename, (strlen( cli_goto_filename ) + 1) );
+  cli_goto_filename   = NULL;
+
+}
+
+/*!
+ Signal handler for Ctrl-C event.
+*/
+void cli_ctrl_c(
+  int sig  /*!< Signal that was received */
+) {
+
+  thread* curr_thr = sim_current_thread();
+
+  /* Display a message to the user */
+  printf( "\nCtrl-C interrupt encountered.  Stopping current command.\n" );
+
+  /* Reset the CLI - this will cause the CLI prompt to be displayed ASAP */
+  cli_reset( &curr_thr->curr_time );
 
 }
 
@@ -776,11 +968,13 @@ void cli_reset(
  Performs CLI prompting if necessary.
 */
 void cli_execute(
-  const sim_time* time,
-  bool            force
+  const sim_time* time,      /*!< Pointer to current simulation time */
+  bool            force,     /*!< Forces us to provide a CLI prompt */
+  statement*      curr_stmt  /*!< Pointer to statement that is about to be executed */
 ) {
 
   static sim_time last_timestep = {0,0,0,FALSE};
+  bool            new_timestep  = FALSE;
 
   if( flag_use_command_line_debug || force ) {
 
@@ -797,39 +991,86 @@ void cli_execute(
     /* If the given time is not 0, possibly decrement the number of timesteps left */
     if( (time->hi!=0) || (time->lo!=0) ) {
 
-      /* Decrement timesteps_left it is set and the last timestep differs from the current simulation time */
-      if( (timesteps_left > 0) && TIME_CMP_NE(last_timestep, *time) ) {
-        timesteps_left--;
-      }
+      if( TIME_CMP_NE(last_timestep, *time) ) {
 
-      /* Record the last timestep seen */
-      last_timestep = *time;
+        new_timestep = TRUE;
+
+        /* Decrement timesteps_left it is set and the last timestep differs from the current simulation time */
+        if( timesteps_left > 0 ) {
+          timesteps_left--;
+        }
+
+        /* Record the last timestep seen */
+        last_timestep = *time;
+
+      }
 
     }
 
-    /* If we have no more statements to execute and we are not supposed to continuely run, prompt the user */
-    if( (stmts_left == 0) && (timesteps_left == 0) && TIME_CMP_GE(*time, goto_timestep) && !dont_stop ) {
+    /* If the find expression was in progress, check to see if it evaluates to TRUE */
+    if( cli_goto_vec != NULL ) {
+      vector tgt;
+      switch( cli_goto_op ) {
+        case EXP_OP_EQ  :  vector_op_eq(  cli_goto_vec, cli_goto_vec1, cli_goto_vec2 );  break;
+        case EXP_OP_CEQ :  vector_op_ceq( cli_goto_vec, cli_goto_vec1, cli_goto_vec2 );  break;
+        case EXP_OP_NE  :  vector_op_ne(  cli_goto_vec, cli_goto_vec1, cli_goto_vec2 );  break;
+        case EXP_OP_CNE :  vector_op_cne( cli_goto_vec, cli_goto_vec1, cli_goto_vec2 );  break;
+        case EXP_OP_LE  :  vector_op_le(  cli_goto_vec, cli_goto_vec1, cli_goto_vec2 );  break;
+        case EXP_OP_LT  :  vector_op_lt(  cli_goto_vec, cli_goto_vec1, cli_goto_vec2 );  break;
+        case EXP_OP_GE  :  vector_op_ge(  cli_goto_vec, cli_goto_vec1, cli_goto_vec2 );  break;
+        case EXP_OP_GT  :  vector_op_gt(  cli_goto_vec, cli_goto_vec1, cli_goto_vec2 );  break;
+      }
+      if( !vector_is_unknown( cli_goto_vec ) && vector_is_not_zero( cli_goto_vec ) ) {
+        vector_dealloc( cli_goto_vec2 );  cli_goto_vec2 = NULL;
+        vector_dealloc( cli_goto_vec );   cli_goto_vec  = NULL;
+      }
+    }
+
+    /* If we are looking for a line number, check for it */
+    if( cli_goto_filename != NULL ) {
+      thread* thr = sim_current_thread();
+      if( (strcmp( thr->funit->orig_fname, cli_goto_filename ) == 0) && (cli_goto_linenum == curr_stmt->exp->line) ) {
+        free_safe( cli_goto_filename, (strlen( cli_goto_filename ) + 1) );
+        cli_goto_filename = NULL;
+      }
+    }
+
+    /*
+     If we have no more statements to execute, timesteps to execute, comparisons to execute, and we
+     are not supposed to continuely run, prompt the user.
+    */
+    if( (stmts_left == 0) && (timesteps_left == 0) && (cli_goto_vec2 == NULL) && (cli_goto_filename == NULL) && TIME_CMP_GE(*time, goto_timestep) && !dont_stop ) {
 
       /* Erase the status bar */
       cli_erase_status_bar( TRUE );
 
       /* Display current line that will be executed if we are not replaying */
       if( cli_replay_index == history_index ) {
-        cli_display_current_stmt();
+        cli_display_current_stmt( curr_stmt );
       }
 
       /* Get the next instruction from the user */
-      cli_prompt_user( time );
+      cli_prompt_user( time, curr_stmt );
 
     /* Otherwise, potentially display a status bar */
     } else {
 
-      if( stmts_left > 0 ) {
-        cli_draw_status_bar( ((stmts_specified - stmts_left) * 100) / stmts_specified );
-      } else if ( timesteps_left > 0 ) {
-        cli_draw_status_bar( ((timesteps_specified - timesteps_left) * 100) / timesteps_specified );
-      } else if ( TIME_CMP_GT(goto_timestep, *time) ) {
-        cli_draw_status_bar( 100 - (((goto_timestep.full - time->full) * 100) / goto_timestep.full) );
+      /* Only draw the status bar if we are not in debug mode */
+      if( cli_debug_mode ) {
+        if( !debug_mode && (cli_replay_index == history_index) ) {
+          if( new_timestep ) {
+            printf( "  TIME: %llu\n", time->full );
+          }
+          cli_display_current_stmt( curr_stmt );
+        }
+      } else {
+        if( stmts_left > 0 ) {
+          cli_draw_status_bar( ((stmts_specified - stmts_left) * 100) / stmts_specified );
+        } else if ( timesteps_left > 0 ) {
+          cli_draw_status_bar( ((timesteps_specified - timesteps_left) * 100) / timesteps_specified );
+        } else if ( TIME_CMP_GT(goto_timestep, *time) ) {
+          cli_draw_status_bar( 100 - (((goto_timestep.full - time->full) * 100) / goto_timestep.full) );
+        }
       }
 
     }
@@ -861,7 +1102,7 @@ void cli_read_hist_file( const char* fname ) {
       unsigned int line_size;  /* Allocated bytes for read line */
 
       while( util_readline( hfile, &line, &line_size ) ) {
-        if( !cli_parse_input( line, FALSE, FALSE, &time ) ) {
+        if( !cli_parse_input( line, FALSE, FALSE, &time, NULL ) ) {
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Specified -cli file \"%s\" is not a valid CLI history file", fname );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );

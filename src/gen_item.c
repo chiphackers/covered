@@ -1009,9 +1009,9 @@ static void gen_item_resolve(
           rv = snprintf( inst_name, 4096, "%s.%s", inst->name, gi->elem.inst->name );
           assert( rv < 4096 );
           child = instance_find_scope( inst, inst_name, TRUE );
-          if( child != NULL ) {
-            param_resolve( child );
-          }
+        }
+        if( child != NULL ) {
+          param_resolve( child );
         }
         if( child->funit->suppl.part.type != FUNIT_MODULE ) {
           func_unit* parent_mod = funit_get_curr_module( child->funit );

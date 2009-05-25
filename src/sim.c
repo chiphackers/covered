@@ -79,6 +79,7 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include <signal.h>
 
 #ifdef DEBUG_MODE
 #ifndef VPI_ONLY
@@ -1006,7 +1007,7 @@ void sim_thread(
 
 #ifdef DEBUG_MODE
 #ifndef VPI_ONLY
-    cli_execute( time, force_stop );
+    cli_execute( time, force_stop, stmt );
     force_stop = FALSE;
 #endif
 #endif
@@ -1151,6 +1152,13 @@ void sim_initialize() { PROFILE(SIM_INITIALIZE);
   /* Set the CLI debug mode to the value of the general debug mode */
   cli_debug_mode = debug_mode;
 #endif
+#endif
+
+#ifndef VPI_ONLY
+  /* Add a signal handler for Ctrl-C if we are running in CLI mode */
+  if( flag_use_command_line_debug ) {
+    signal( SIGINT, cli_ctrl_c );
+  }
 #endif
 
   PROFILE_END;

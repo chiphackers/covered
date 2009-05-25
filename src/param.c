@@ -942,11 +942,12 @@ static inst_parm* param_has_override(
 
     icurr = mod_inst->parent->param_head;
     while( (icurr != NULL) && 
-           !((icurr->mparm->suppl.part.type == PARAM_TYPE_OVERRIDE) &&
-             (mparm->suppl.part.type != PARAM_TYPE_DECLARED_LOCAL) &&
-             ((icurr->sig->name != NULL) ? (strcmp( icurr->sig->name, mparm->name ) == 0) :
-                                           (mparm->suppl.part.order == icurr->mparm->suppl.part.order )) &&
-             (strcmp( mod_inst->name, icurr->inst_name ) == 0)) ) {
+           ((icurr->mparm == NULL) ||
+            !((icurr->mparm->suppl.part.type == PARAM_TYPE_OVERRIDE) &&
+              (mparm->suppl.part.type != PARAM_TYPE_DECLARED_LOCAL) &&
+              ((icurr->sig->name != NULL) ? (strcmp( icurr->sig->name, mparm->name ) == 0) :
+                                            (mparm->suppl.part.order == icurr->mparm->suppl.part.order )) &&
+              (strcmp( mod_inst->name, icurr->inst_name ) == 0))) ) {
       icurr = icurr->next;
     }
 

@@ -1086,10 +1086,12 @@ proc create_exclusion_pref {} {
   }
   bind .prefwin.pf.f.elf.lf.tl <<ListboxSelect>> {
     set row [.prefwin.pf.f.elf.lf.tl curselection]
-    .prefwin.pf.f.elf.tf.t   delete 1.0 end
-    .prefwin.pf.f.elf.tf.t   insert end [%W getcells [list $row,0]]
-    .prefwin.pf.f.elf.bf.add configure -state normal
-    .prefwin.pf.f.elf.bf.del configure -state normal
+    if {$row != ""} {
+      .prefwin.pf.f.elf.tf.t   delete 1.0 end
+      .prefwin.pf.f.elf.tf.t   insert end [%W getcells [list $row,0]]
+      .prefwin.pf.f.elf.bf.add configure -state normal
+      .prefwin.pf.f.elf.bf.del configure -state normal
+    }
   }
   scrollbar .prefwin.pf.f.elf.lf.hb -command {.prefwin.pf.f.elf.lf.tl xview} -orient horizontal
   scrollbar .prefwin.pf.f.elf.lf.vb -command {.prefwin.pf.f.elf.lf.tl yview}

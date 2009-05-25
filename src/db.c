@@ -3247,22 +3247,23 @@ void db_assign_symbol(
         
     } else if( info_suppl.part.scored_toggle == 1 ) {
 
-      sig_link* slink;
+      vsignal*   sig;
+      func_unit* found_funit;
 
       /* Find the signal that matches the specified signal name */
-      if( (slink = sig_link_find( name, curr_instance->funit->sig_head )) != NULL ) {
+      if( scope_find_signal( name, curr_instance->funit, &sig, &found_funit, 0 ) ) {
 
         /* Only add the symbol if we are not going to generate this value ourselves */
-        if( ((slink->sig->suppl.part.assigned == 0) || info_suppl.part.inlined) &&
-            (slink->sig->suppl.part.type != SSUPPL_TYPE_PARAM)      &&
-            (slink->sig->suppl.part.type != SSUPPL_TYPE_PARAM_REAL) &&
-            (slink->sig->suppl.part.type != SSUPPL_TYPE_ENUM)       &&
-            (slink->sig->suppl.part.type != SSUPPL_TYPE_MEM)        &&
-            (slink->sig->suppl.part.type != SSUPPL_TYPE_GENVAR)     &&
-            (slink->sig->suppl.part.type != SSUPPL_TYPE_EVENT) ) {
+        if( ((sig->suppl.part.assigned == 0) || info_suppl.part.inlined) &&
+            (sig->suppl.part.type != SSUPPL_TYPE_PARAM)      &&
+            (sig->suppl.part.type != SSUPPL_TYPE_PARAM_REAL) &&
+            (sig->suppl.part.type != SSUPPL_TYPE_ENUM)       &&
+            (sig->suppl.part.type != SSUPPL_TYPE_MEM)        &&
+            (sig->suppl.part.type != SSUPPL_TYPE_GENVAR)     &&
+            (sig->suppl.part.type != SSUPPL_TYPE_EVENT) ) {
 
           /* Add this signal */
-          symtable_add_signal( symbol, slink->sig, msb, lsb );
+          symtable_add_signal( symbol, sig, msb, lsb );
 
         }
 

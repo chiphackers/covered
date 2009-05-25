@@ -7,12 +7,12 @@
 
 module main;
 
-reg clock;
-reg b;
+reg       clock;
+reg [1:0] b;
 
 generate
   genvar i;
-  for( i=0; i<2; i++ ) begin : u
+  for( i=0; i<2; i=i+1 ) begin : u
     reg  a;
     always @(posedge clock)
       casex( b )
@@ -29,7 +29,9 @@ initial begin
         $dumpfile( "generate18.vcd" );
         $dumpvars( 0, main );
 `endif
-	b = 1'b0;
+	b = 2'b01;
+	#5;
+	b = 2'b00;
         #10;
         $finish;
 end

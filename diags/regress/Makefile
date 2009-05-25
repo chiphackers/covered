@@ -99,7 +99,8 @@ DIAGS1        = add1            aedge1          aedge1.1        afunc1          
                 generate10.1    generate10.2    generate11      generate11.1    generate11.2 \
                 generate11.3    generate11.4    generate13      generate14      generate15 \
                 generate15.1    generate15.2    generate15.3    generate15.4    generate15.5 \
-                generate16      generate16.1    generate17      generate18      hier1           hier1.1 \
+                generate16      generate16.1    generate16.2    generate16.3    generate17 \
+                generate18      hier1           hier1.1 \
                 hier2           hier3           hier3.1         hier3.2         hier3.3 \
                 hier3.4         hier4           if1             ifdef1          ifdef1.1 \
                 ifdef1.2        ifdef2.1        ifdef2.2        ifdef2.3        ifdef3 \
@@ -313,8 +314,8 @@ EXCLUDE      += afunc1            afunc2            always5.1         always_com
                 generate10        generate10.1      generate10.2      generate11        generate11.1 \
                 generate11.2      generate11.3      generate11.4      generate13        generate14 \
                 generate15        generate15.1      generate15.2      generate15.3      generate15.4 \
-                generate15.5      generate16        generate16.1      generate17        generate18 \
-                hier1.1 \
+                generate15.5      generate16        generate16.1      generate16.2      generate16.3 \
+                generate17        generate18        hier1.1 \
                 hier2             hier3             ifdef1.1          ifdef3            ifndef2 \
                 implicit2         inc1              inc1.1            inc2              inc3 \
                 inc3.1            instance7         int1              line1             localparam1 \
@@ -383,8 +384,8 @@ EXCLUDE      += afunc1            afunc2            always5.1         always_com
                 generate10        generate10.1      generate10.2      generate11        generate11.1 \
                 generate11.2      generate11.3      generate11.4      generate13        generate14 \
                 generate15        generate15.1      generate15.2      generate15.3      generate15.4 \
-                generate15.5      generate16        generate16.1      generate17        generate18 \
-                hier1.1 \
+                generate15.5      generate16        generate16.1      generate16.2      generate16.3 \
+                generate17        generate18        hier1.1 \
                 hier2             hier3             hier3.1           hier3.2           hier3.3 \
                 hier3.4           hier4             ifndef1           ifndef2           implicit2.1 \
                 inc1              inc1.1            inc2              inc3              inc3.1 \
@@ -509,6 +510,23 @@ endif
 # List of diagnostics that should not be run if we are using VPI
 ifdef VPI
 EXCLUDE       += err5.2          err5.3          err5.4          score_err1.14   score_err1.16
+ifeq ($(MAKECMDGOALS),cver)
+EXCLUDE       +=
+else
+ifeq ($(MAKECMDGOALS),vcs)
+EXCLUDE       +=
+else
+ifeq ($(MAKECMDGOALS),veriwell)
+EXCLUDE       +=
+else
+ifeq ($(MAKECMDGOALS),vcomp)
+EXCLUDE       +=
+else
+EXCLUDE       += generate16.2    generate16.3
+endif
+endif
+endif
+endif
 endif
 
 # List of diagnostics that should not be run if we are running in inlined mode
@@ -516,7 +534,7 @@ ifdef INLINE
 DIAGS         += example2        example2.1      example2.2      example2.3      example2.4 \
                  example2.5
 
-EXCLUDE       += case5           casex2          casez3          example1        exclude5.1 \
+EXCLUDE       += bug2794588      case5           casex2          casez3          example1        exclude5.1 \
                  exclude5.3      param10.1       param10.5       sbit_sel3.2     signed4.1
 
 ifdef VPI
@@ -527,6 +545,20 @@ ifeq ($(MAKECMDGOALS),cver)
 EXCLUDE       += define4         include1        include1.1      include2        include4 \
                  include5        instance7       random1.2       real3.4         real3.6 \
                  real6           sbit_sel2.1     timescale2.8
+else
+ifeq ($(MAKECMDGOALS),vcs)
+EXCLUDE       +=
+else
+ifeq ($(MAKECMDGOALS),veriwell)
+EXCLUDE       +=
+else
+ifeq ($(MAKECMDGOALS),vcomp)
+EXCLUDE       +=
+else
+EXCLUDE       += 
+endif
+endif
+endif
 endif
 endif
                  
