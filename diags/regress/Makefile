@@ -123,7 +123,7 @@ DIAGS1        = add1            aedge1          aedge1.1        afunc1          
                 mbit_sel5.4     mbit_sel6       mbit_sel6.1     mbit_sel6.2     mbit_sel6.3 \
                 mbit_sel6.4     mbit_sel7       mbit_sel9       mbit_sel9.1     mbit_sel9.2 \
                 mem1            mem2            mem3            mem4            mem4.1 \
-                mod1            monitor1        monitor1.1      msg1            mult1 \
+                mem6            mem6.1          mod1            monitor1        monitor1.1      msg1            mult1 \
                 mult2           multi_exp1      multi_exp1.1    multi_exp1.2    multi_exp1.3 \
                 multi_exp1.4    multi_exp1.5    multi_exp1.6    multi_exp1.7    multi_exp1.8 \
                 multi_exp1.9    multi_exp1.10   multi_exp1.11   multi_exp1.12   multi_exp1.13 \
