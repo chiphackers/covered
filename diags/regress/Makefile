@@ -395,7 +395,7 @@ EXCLUDE      += afunc1            afunc2            always5.1         always_com
                 marray2.1         marray2.2         marray2.3         mbit_sel5         mbit_sel5.1 \
                 mbit_sel5.2       mbit_sel5.3       mbit_sel5.4       mbit_sel6         mbit_sel6.1 \
                 mbit_sel6.2       mbit_sel6.3       mbit_sel6.4       mem2              mem3 \
-                mem4              mem4.1            named_block2      nand1             nor1 \
+                mem4              mem4.1            mem6              named_block2      nand1             nor1 \
                 null_stmt2        null_stmt2.1      ovl1              ovl1.1            ovl1.2 \
                 ovl1.3            param7            param8            param8.1          param8.2 \
                 param9.1          param9.2          param10           param10.1         param10.2 \
@@ -487,7 +487,7 @@ EXCLUDE      += add1            always7         always7.1       always11.2      
                 hier4           localparam1     localparam1.1   localparam1.2   localparam1.3 \
                 localparam2     localparam3     long_exp1       long_exp2       long_exp3 \
                 mbit_sel3       mbit_sel3.1     mbit_sel4       mbit_sel4.1     mbit_sel4.2 \
-                mbit_sel4.3     mem1            mem2            merge1          merge2 \
+                mbit_sel4.3     mem1            mem2            mem6            merge1          merge2 \
                 merge5          merge6          merge6.1        merge7          merge7.1 \
                 merge7.2        merge7.3        merge7.4        merge7.5        merge7.6 \
                 merge7.7        merge7.8        multi_exp1      multi_exp1.1    multi_exp1.2 \
