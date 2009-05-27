@@ -1621,6 +1621,8 @@ union esuppl_u {
     uint32 prev_called    :1;  /*!< Bit 30.  Temporary value used by named block and task expression
                                     functions to indicate if we are in the middle of executing a named block or task
                                     expression (since these cause a context switch to occur. */
+    uint32 nba            :1;  /*!< Bit 31.  Specifies that this expression is on the left-hand-side of a non-blocking
+                                    assignment. */
   } part;
 };
 
@@ -1873,6 +1875,8 @@ struct comp_cdd_cov_s;
 struct exclude_reason_s;
 struct stmt_pair_s;
 struct gitem_pair_s;
+struct dim_and_nba_s;
+struct nonblock_assign_s;
 
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION TYPEDEFS  */
@@ -2219,6 +2223,16 @@ typedef struct stmt_pair_s stmt_pair;
 */
 typedef struct gitem_pair_s gitem_pair;
 
+/*!
+ Renaming dim_and_nba_s structure for convenience.
+*/
+typedef struct dim_and_nba_s dim_and_nba;
+
+/*!
+ Renaming nonblock_assign_s structure for convenience.
+*/
+typedef struct nonblock_assign_s nonblock_assign;
+
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION DEFINITIONS  */
 
@@ -2362,11 +2376,12 @@ struct expression_s {
   expression*  left;               /*!< Pointer to expression on left */
   fsm*         table;              /*!< Pointer to FSM table associated with this expression */
   union {
-    func_unit* funit;              /*!< Pointer to task/function to be called by this expression */
-    thread*    thr;                /*!< Pointer to next thread to be called */
-    uint64*    scale;              /*!< Pointer to parent functional unit's timescale value */
-    vecblk*    tvecs;              /*!< Temporary vectors that are sized to match value */   
-    exp_dim*   dim;                /*!< Current dimensional LSB of this expression (valid for DIM, SBIT_SEL, MBIT_SEL, MBIT_NEG and MBIT_POS) */
+    func_unit*   funit;            /*!< Pointer to task/function to be called by this expression */
+    thread*      thr;              /*!< Pointer to next thread to be called */
+    uint64*      scale;            /*!< Pointer to parent functional unit's timescale value */
+    vecblk*      tvecs;            /*!< Temporary vectors that are sized to match value */
+    exp_dim*     dim;              /*!< Current dimensional LSB of this expression (valid for DIM, SBIT_SEL, MBIT_SEL, MBIT_NEG and MBIT_POS) */
+    dim_and_nba* dim_nba;          /*!< Dimension and non-blocking assignment information */
   } elem;
 };
 
@@ -3129,6 +3144,31 @@ struct stmt_pair_s {
 struct gitem_pair_s {
   gen_item* gitem1;                     /*!< Pointer to first generate item */
   gen_item* gitem2;                     /*!< Pointer to second generate item */
+};
+
+/*!
+ Dimension and non-blocking assignment structure that exists as an element within an expression that is on the LHS of a non-blocking
+ assignment.
+*/
+struct dim_and_nba_s {
+  exp_dim*         dim;                 /*!< Pointer to current LHS dimension */
+  nonblock_assign* nba;                 /*!< Pointer to non-blocking assignment */
+};
+
+/*!
+ Structure that holds information for performing non-blocking assignments.
+*/
+struct nonblock_assign_s {
+  vsignal*        lhs_sig;              /*!< Pointer to left-hand-side signal to assign */
+  int             lhs_lsb;              /*!< Left-hand-side LSB to assign */
+  int             lhs_msb;              /*!< Left-hand-side MSB to assign */
+  vector*         rhs_vec;              /*!< Pointer to right-hand-side vector containing value to assign */
+  int             rhs_lsb;              /*!< Right-hand-side LSB to assign */
+  int             rhs_msb;              /*!< Right-hand-side MSB to assign */
+  struct {
+    uint8         is_signed : 1;        /*!< Specifies if value is signed */
+    uint8         added     : 1;        /*!< Set to 1 if this nonblocking assignment has been added to the simulation queue */
+  } suppl;                              /*!< Supplemental field */
 };
 
 /*!

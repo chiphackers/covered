@@ -105,6 +105,20 @@ void sim_stop();
 /*! \brief Causes simulator to finish gracefully */
 void sim_finish();
 
+/*! \brief Updates the given non-blocking assign structure and adds it to the non-blocking assignment queue. */
+void sim_add_nonblock_assign(
+  nonblock_assign* nba,
+  int              lhs_lsb,
+  int              lhs_msb,
+  int              rhs_lsb,
+  int              rhs_msb
+);
+
+/*! \brief Performs non-blocking assignment for currently queued assignment items for the current timestep. */
+void sim_perform_nba(
+  const sim_time* time
+);
+
 /*! \brief Deallocates all memory for simulator */
 void sim_dealloc();
 

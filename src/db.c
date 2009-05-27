@@ -3411,6 +3411,9 @@ bool db_do_timestep(
     /* Assign all stored values in current post-timestep to stored signals */
     symtable_assign( &curr_time );
 
+    /* Perform non-blocking assignment */
+    sim_perform_nba( &curr_time );
+
   }
 
   PROFILE_END;

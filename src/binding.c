@@ -505,6 +505,18 @@ bool bind_signal(
           expression_set_value( exp, found_sig, funit_exp );
         }
 
+        /*
+         Create a non-blocking assignment handler for the given expression if the attached signal is a memory
+         and the expression is assignable on the LHS of a non-blocking assignment operator.  Only perform this
+         if we are reading from the CDD file and binding.
+        */
+        if( cdd_reading && (found_sig->suppl.part.type == SSUPPL_TYPE_MEM) ) {
+          expression* nba_exp;
+          if( (nba_exp = expression_is_nba_lhs( exp )) != NULL ) {
+            expression_create_nba( exp, found_sig, nba_exp->right->value );
+          }
+        }
+
       }
 
       if( !cdd_reading ) {

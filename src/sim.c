@@ -175,6 +175,21 @@ static bool simulate = TRUE;
 */
 static bool force_stop = FALSE;
 
+/*!
+ Non-blocking assignment queue.
+*/
+static nonblock_assign** nba_queue = NULL;
+
+/*!
+ The allocated size of the non-blocking assignment queue.
+*/
+int nba_queue_size = 0;
+
+/*!
+ The current number of nba structures in the nba_queue.
+*/
+static int nba_queue_curr_size = 0;
+
 
 /*!
  Displays the contents of the given thread to standard output.
@@ -1144,6 +1159,12 @@ bool sim_simulate(
 */
 void sim_initialize() { PROFILE(SIM_INITIALIZE);
 
+  /* Create non-blocking assignment queue */
+  if( nba_queue_size > 0 ) {
+    nba_queue           = (nonblock_assign**)malloc_safe( sizeof( nonblock_assign ) * nba_queue_size );
+    nba_queue_curr_size = 0;
+  }
+
   /* Add static values */
   sim_add_statics();
 
@@ -1196,6 +1217,72 @@ void sim_finish() { PROFILE(SIM_FINISH);
 }
 
 /*!
+ Updates and adds the given non-blocking assignment structure to the simulation
+ queue.
+*/
+void sim_add_nonblock_assign(
+  nonblock_assign* nba,      /*!< Pointer to non-blocking assignment to updated and add */
+  int              lhs_lsb,  /*!< LSB of left-hand-side vector to assign */
+  int              lhs_msb,  /*!< MSB of left-hand-side vector to assign */
+  int              rhs_lsb,  /*!< LSB of right-hand-side vector to assign from */
+  int              rhs_msb   /*!< MSB of right-hand-side vector to assign from */
+) { PROFILE(SIM_ADD_NONBLOCK_ASSIGN);
+
+  /* Update the non-blocking assignment structure */
+  nba->lhs_lsb = lhs_lsb;
+  nba->lhs_msb = lhs_msb;
+  nba->rhs_lsb = rhs_lsb;
+  nba->rhs_msb = rhs_msb;
+
+  /* Add it to the simulation queue (if it has not been already) */
+  if( nba->suppl.added == 0 ) {
+    nba_queue[nba_queue_curr_size++] = nba;
+    nba->suppl.added = 1;
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Performs non-blocking assignment for the nba elements in the current nba simulation queue.
+*/
+void sim_perform_nba(
+  const sim_time* time  /*!< Current simulation time */
+) { PROFILE(SIM_PERFORM_NBA);
+
+  int              i;
+  bool             changed;
+  nonblock_assign* nba;
+
+  for( i=0; i<nba_queue_curr_size; i++ ) {
+    nba     = nba_queue[i];
+    changed = vector_part_select_push( nba->lhs_sig->value, nba->lhs_lsb, nba->lhs_msb, nba->rhs_vec, nba->rhs_lsb, nba->rhs_msb, nba->suppl.is_signed );
+    nba->lhs_sig->value->suppl.part.set = 1;
+#ifdef DEBUG_MODE
+#ifndef VPI_ONLY
+    if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
+      if( i == 0 ) {
+        printf( "Non-blocking assignments:\n" );
+      }
+      printf( "    " );  vsignal_display( nba->lhs_sig );
+    }
+#endif
+#endif
+    if( changed ) {
+      vsignal_propagate( nba->lhs_sig, time );
+    }
+    nba->suppl.added = 0;
+  }
+
+  /* Clear the nba queue */
+  nba_queue_curr_size = 0;
+
+  PROFILE_END;
+
+}
+
+/*!
  Deallocates all allocated memory for simulation code.
 */
 void sim_dealloc() { PROFILE(SIM_DEALLOC);
@@ -1215,6 +1302,9 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
 
   /* Deallocate all static expressions, if there are any */
   exp_link_delete_list( static_expr_head, FALSE );
+
+  /* Deallocate the non-blocking assignment queue */
+  free_safe( nba_queue, (sizeof( nonblock_assign ) * nba_queue_size) );
 
 #ifdef DEBUG_MODE
 #ifndef VPI_ONLY

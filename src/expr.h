@@ -28,6 +28,18 @@
 #include "defines.h"
 
 
+/*! \brief Creates, initializes and adds a non-blocking assignment structure to the given expression's element pointer. */
+void expression_create_nba(
+  expression* expr,
+  vsignal*    lhs_sig,
+  vector*     rhs_vec
+);
+
+/*! \brief Returns a pointer to the non-blocking assignment expression if the given expression is an assignable expression on the LHS of a non-blocking assignment. */
+expression* expression_is_nba_lhs(
+  expression* exp
+);
+
 /*! \brief Creates new expression. */
 expression* expression_create(
   /*@null@*/ expression*  right,
