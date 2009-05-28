@@ -153,6 +153,12 @@ static void vcd_parse_def_var(
           Throw 0;
         }
 
+      } else if( sscanf( ref, "%[a-zA-Z0-9_]\[%s].", reftmp, tmp ) == 2 ) {
+
+        /* This is a hierarchical reference so we shouldn't modify ref -- quirky behavior from VCS */
+        msb = size - 1;
+        lsb = 0;
+
       } else if( sscanf( ref, "%[a-zA-Z0-9_]\[%s]", reftmp, tmp ) == 2 ) {
   
         strcpy( ref, reftmp );

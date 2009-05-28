@@ -542,9 +542,9 @@ EXCLUDE       += fork2           generate4       generate4.1     generate8
 endif
 
 ifeq ($(MAKECMDGOALS),cver)
-EXCLUDE       += define4         include1        include1.1      include2        include4 \
-                 include5        instance7       random1.2       real3.4         real3.6 \
-                 real6           sbit_sel2.1     timescale2.8
+EXCLUDE       += always15        define4         include1        include1.1      include2 \
+                 include4        include5        instance7       random1.2       real3.4 \
+                 real3.6         real6           sbit_sel2.1     timescale2.8
 else
 ifeq ($(MAKECMDGOALS),vcs)
 EXCLUDE       +=

@@ -423,17 +423,26 @@ void covered_create_value_change_cb(
 ) { PROFILE(COVERED_CREATE_VALUE_CHANGE_CB);
 
   p_cb_data   cb;
-  sig_link*   vsigl;
+  sig_link*   vsigl = NULL;
+  vsignal*    vsig  = NULL;
+  func_unit*  found_funit;
   char*       symbol;
   s_vpi_value value;
-  char*       name = strdup_safe( vpi_get_str( vpiName, sig ) );
+  char*       name  = strdup_safe( vpi_get_str( vpiName, sig ) );
 
   /* Only add the signal if it is in our database and needs to be assigned from the simulator */
   if( (curr_instance->funit != NULL) &&
-      ((((vsigl = sig_link_find( name, curr_instance->funit->sig_head )) != NULL) && ((vsigl->sig->suppl.part.assigned == 0) || info_suppl.part.inlined)) ||
+      (((((vsigl = sig_link_find( name, curr_instance->funit->sig_head )) != NULL) ||
+         scope_find_signal( name, curr_instance->funit, &vsig, &found_funit )) &&
+        (((vsigl != NULL) && (vsigl->sig->suppl.part.assigned == 0)) ||
+         ((vsig != NULL) && (vsig->suppl.part.assigned == 0)) || info_suppl.part.inlined)) ||
        (info_suppl.part.inlined &&
         (((strncmp( name, "\\covered$", 9 ) == 0) && (name[9] != 'x') && (name[9] != 'X') && (name[9] != 'i') && (name[9] != 'I') && (name[9] != 'Z')) ||
          ((strncmp( name, "covered$",   8 ) == 0) && (name[8] != 'x') && (name[8] != 'X') && (name[8] != 'i') && (name[8] != 'I') && (name[8] != 'Z'))))) ) {
+
+    if( vsigl != NULL ) {
+      vsig = vsigl->sig;
+    }
 
 #ifdef DEBUG_MODE
     if( debug_mode ) {
@@ -451,8 +460,8 @@ void covered_create_value_change_cb(
     }
 
     /* Add signal/symbol to symtab database */
-    if( vsigl != NULL ) {
-      db_assign_symbol( vsigl->sig->name, symbol, ((vsigl->sig->value->width + vsigl->sig->dim[0].lsb) - 1), vsigl->sig->dim[0].lsb ); 
+    if( vsig != NULL ) {
+      db_assign_symbol( vsig->name, symbol, ((vsig->value->width + vsig->dim[0].lsb) - 1), vsig->dim[0].lsb ); 
     } else {
       db_assign_symbol( name, symbol, (vpi_get( vpiSize, sig ) - 1), 0 );
     }

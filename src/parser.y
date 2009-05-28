@@ -5958,7 +5958,8 @@ statement_list
           }
         }
       } else {
-        $$ = NULL;  /* TBD */
+        generator_flush_work_code;
+        $$ = NULL;
       }
     }
   /* This rule is not in the LRM but seems to be supported by several simulators */
@@ -5967,7 +5968,8 @@ statement_list
       if( parse_mode ) {
         $$ = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, @1.first_line, @1.ppline, @1.first_column, (@1.last_column - 1), NULL ) );
       } else {
-        $$ = NULL;  /* TBD */
+        generator_flush_work_code;
+        $$ = NULL;
       }
     }
   ;
