@@ -1407,6 +1407,7 @@ void generator_insert_event_comb_cov(
     rv = snprintf( str, 4096, "%s = 1'b1;", name );
     assert( rv < 4096 );
     generator_add_cov_to_work_code( str );
+    generator_add_cov_to_work_code( "\n" );
 
   /*
    Otherwise, we need to save off the state of the temporary event variable and compare it after the event statement
@@ -1432,6 +1433,7 @@ void generator_insert_event_comb_cov(
           rv = snprintf( str, 4096, " %s = %s;", tname, event_str );
           assert( rv < 4096 );
           generator_add_cov_to_work_code( str );
+          generator_add_cov_to_work_code( "\n" );
         }
         break;
 
@@ -1448,6 +1450,7 @@ void generator_insert_event_comb_cov(
           rv = snprintf( str, 4096, " %s = %s;", tname, event_str );
           assert( rv < 4096 );
           generator_add_cov_to_work_code( str );
+          generator_add_cov_to_work_code( "\n" );
         }
         break;
 
@@ -1471,6 +1474,7 @@ void generator_insert_event_comb_cov(
           rv = snprintf( str, 4096, " %s = %s;", tname, event_str );
           assert( rv < 4096 );
           generator_add_cov_to_work_code( str );
+          generator_add_cov_to_work_code( "\n" );
         }
         break;
 
@@ -2631,6 +2635,7 @@ static void generator_insert_mem_cov(
 
   /* Append the line coverage assignment to the working buffer */
   generator_add_cov_to_work_code( str );
+  generator_add_cov_to_work_code( "\n" );
 
   /* Deallocate temporary memory */
   free_safe( idxstr, (strlen( idxstr ) + 1) );
