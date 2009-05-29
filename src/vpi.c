@@ -461,7 +461,7 @@ void covered_create_value_change_cb(
 
     /* Add signal/symbol to symtab database */
     if( vsig != NULL ) {
-      db_assign_symbol( vsig->name, symbol, ((vsig->value->width + vsig->dim[0].lsb) - 1), vsig->dim[0].lsb ); 
+      db_assign_symbol( name, symbol, ((vsig->value->width + vsig->dim[0].lsb) - 1), vsig->dim[0].lsb ); 
     } else {
       db_assign_symbol( name, symbol, (vpi_get( vpiSize, sig ) - 1), 0 );
     }
