@@ -9,6 +9,7 @@
 module main;
 
 reg [3:0] a[0:1];
+reg       b;
 
 initial begin
 	a[0] <= 4'h0;
@@ -24,6 +25,8 @@ initial begin
         $dumpvars( 0, main );
 `endif
         #20;
+	b = 1'b0;
+	#5;
         $finish;
 end
 

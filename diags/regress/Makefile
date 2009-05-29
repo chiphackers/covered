@@ -353,7 +353,7 @@ EXCLUDE      += always5.1         assign1           assign2.8         example   
                 fsm8.3            fsm9              fsm9.1            fsm9.2            fsm10 \
                 fsm10.1           fsm10.2           generate1         hier2             ifdef1.1 \
                 implicit2         profile_err1      real1.1           report4           report4.1 \
-                static2           static2.1         static2.2         unary1
+                static2           static2.1         static2.2         timeformat1       unary1
 else
 ifeq ($(MAKECMDGOALS),veriwell)
 EXCLUDE      += afunc1            afunc2            always5.1         always_comb1      always_comb2 \
