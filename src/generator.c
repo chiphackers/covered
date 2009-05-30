@@ -193,6 +193,7 @@ void generator_display() { PROFILE(GENERATOR_DISPLAY);
 
   str_link* strl;
 
+  printf( "----------------------------------------------------------------\n" );
   printf( "Holding code list (%p %p):\n", hold_head, hold_tail );
   strl = hold_head;
   while( strl != NULL ) {
@@ -956,7 +957,9 @@ void generator_add_to_work_code(
   const char*  str,           /*!< String to write */
   unsigned int first_line,    /*!< First line of string from file */
   unsigned int first_column,  /*!< First column of string from file */
-  bool         from_code      /*!< Specifies if the string came from the code directly */
+  bool         from_code,     /*!< Specifies if the string came from the code directly */
+  const char*  file,          /*!< Filename that called this function */
+  unsigned int line           /*!< Line number where this function call was performed from */
 ) { PROFILE(GENERATOR_ADD_TO_WORK_CODE);
 
   static bool semi_from_code_just_seen  = FALSE;
@@ -1010,6 +1013,15 @@ void generator_add_to_work_code(
     /* I don't believe that a line will ever exceed 4K chars */
     assert( (strlen( work_buffer ) + strlen( str )) < 4095 );
     strcat( work_buffer, str );
+
+#ifdef DEBUG_MODE
+    if( debug_mode ) {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Adding to work code [%s] (file: %s, line: %u)", str, file, line );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+      generator_display();
+    }
+#endif
 
     /* If we have hit a newline, add the working buffer to the working list and clear the working buffer */
     if( strcmp( str, "\n" ) == 0 ) {
@@ -1120,12 +1132,23 @@ void generator_flush_work_code1(
  the code is added to the exp_list array.
 */
 void generator_add_to_hold_code(
-  const char*  str  /*!< String to write */
+  const char*  str,   /*!< String to write */
+  const char*  file,  /*!< Filename of caller of this function */
+  unsigned int line   /*!< Line number of caller of this function */
 ) { PROFILE(GENERATOR_ADD_TO_HOLD_CODE);
  
   /* I don't believe that a line will ever exceed 4K chars */
   assert( (strlen( hold_buffer ) + strlen( str )) < 4095 );
   strcat( hold_buffer, str );
+
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Adding to hold code [%s] (file: %s, line: %u)", str, file, line );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+//    generator_display();
+  }
+#endif
 
   /* If we have hit a newline, add it to the hold list and clear the hold buffer */
   if( strcmp( str, "\n" ) == 0 ) {

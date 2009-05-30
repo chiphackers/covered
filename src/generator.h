@@ -36,10 +36,10 @@
 #define generator_flush_all generator_flush_all1( __FILE__, __LINE__ )
 
 /*! Shortcut for the generator_add_to_work_code function for code coming from Covered */
-#define generator_add_cov_to_work_code(x) generator_add_to_work_code(x, 0, 0, FALSE)
+#define generator_add_cov_to_work_code(x) generator_add_to_work_code(x, 0, 0, FALSE, __FILE__, __LINE__ )
 
 /*! Shortcut for the generator_add_to_work_code function for code coming from original file */
-#define generator_add_orig_to_work_code(x, y, z) generator_add_to_work_code(x, y, z, TRUE)
+#define generator_add_orig_to_work_code(x, y, z) generator_add_to_work_code(x, y, z, TRUE, __FILE__, __LINE__ )
 
 
 /*! \brief Outputs the current state of the code generator to standard output for debugging purposes. */
@@ -98,7 +98,9 @@ void generator_add_to_work_code(
   const char*  str,
   unsigned int first_line,
   unsigned int first_column,
-  bool         from_code
+  bool         from_code,
+  const char*  file,
+  unsigned int line
 );
 
 /*! \brief Flushes the working code to the hold code */
@@ -109,7 +111,9 @@ void generator_flush_work_code1(
 
 /*! \brief Adds the given string to the hold code buffers */
 void generator_add_to_hold_code(
-  const char* str
+  const char*  str,
+  const char*  file,
+  unsigned int line
 );
 
 /*! \brief Outputs all held code to the output file. */

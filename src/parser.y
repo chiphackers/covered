@@ -2546,7 +2546,7 @@ end_gen_block
   :
     {
       if( !parse_mode ) {
-        generator_add_to_hold_code( " end " );
+        generator_add_to_hold_code( " end ", __FILE__, __LINE__ );
       }
     }
   ;
@@ -2620,7 +2620,7 @@ generate_item
         scope_extract_back( funit->name, back, rest );
         rv = snprintf( str, 50, " : %s", back );
         assert( rv < 50 );
-        generator_add_to_hold_code( str );
+        generator_add_to_hold_code( str, __FILE__, __LINE__ );
         free_safe( back, (strlen( funit->name ) + 1) );
         free_safe( rest, (strlen( funit->name ) + 1) );
         generator_push_funit( funit );
@@ -3532,7 +3532,7 @@ module_item
     function_item_list
     {
       if( !parse_mode ) {
-        generator_add_to_hold_code( " begin" );
+        generator_add_to_hold_code( " begin", __FILE__, __LINE__ );
         block_depth++;
       }
     }
@@ -3546,7 +3546,7 @@ module_item
           db_add_statement( stmt, stmt );
         }
       } else {
-        generator_add_to_hold_code( " end " );
+        generator_add_to_hold_code( " end ", __FILE__, __LINE__ );
         block_depth--;
       }
     }
@@ -5182,7 +5182,7 @@ statement
           $$ = NULL;
         }
       } else {
-        generator_add_to_hold_code( " end " );
+        generator_add_to_hold_code( " end ", __FILE__, __LINE__ );
         block_depth--;
         // generator_flush_work_code;
         $$ = NULL;
@@ -5221,7 +5221,7 @@ statement
           $$ = NULL;
         }
       } else {
-        generator_add_to_hold_code( " end " );
+        generator_add_to_hold_code( " end ", __FILE__, __LINE__ );
         block_depth--;
         $$ = NULL;
       }
@@ -8386,7 +8386,7 @@ dec_block_depth
     {
       block_depth--;
       if( !parse_mode ) {
-        generator_add_to_hold_code( " end " );
+        generator_add_to_hold_code( " end ", __FILE__, __LINE__ );
       }
     }
   ;
