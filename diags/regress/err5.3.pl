@@ -12,8 +12,8 @@ require "../verilog/regress_subs.pl";
 &initialize( "err5.3", 1, @ARGV );
 
 # Simulate and get coverage information
-system( "make DIAG=err5.3a oneerrmergerun" ) && die;
-system( "make DIAG=err5.3b oneerrmergerun" ) && die;
+system( "$MAKE DIAG=err5.3a oneerrmergerun" ) && die;
+system( "$MAKE DIAG=err5.3b oneerrmergerun" ) && die;
 system( "mv err5.3b.cdd err5.3b.tmp.cdd" ) && die;
 
 # Modify the version to something which is different

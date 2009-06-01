@@ -10,8 +10,8 @@ require "../verilog/regress_subs.pl";
 &initialize( "merge4", 0, @ARGV );
 
 # Run both of the CDDs to be merged
-system( "make DIAG=merge4a onemergerun" ) && die;
-system( "make DIAG=merge4b onemergerun" ) && die;
+system( "$MAKE DIAG=merge4a onemergerun" ) && die;
+system( "$MAKE DIAG=merge4b onemergerun" ) && die;
 
 # Copy the merge4a CDD file to a temporary file (for comparison purposes)
 system( "cp merge4a.cdd merge4a.tmp.cdd" ) && die;

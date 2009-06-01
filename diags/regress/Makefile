@@ -550,7 +550,8 @@ ifeq ($(MAKECMDGOALS),vcs)
 EXCLUDE       +=
 else
 ifeq ($(MAKECMDGOALS),veriwell)
-EXCLUDE       +=
+EXCLUDE       += always15        define4         include1        include1.1      include2 \
+                 include4        include5        real3.7
 else
 ifeq ($(MAKECMDGOALS),vcomp)
 EXCLUDE       +=

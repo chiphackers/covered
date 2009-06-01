@@ -1170,9 +1170,6 @@ void generator_flush_hold_code1(
 
   str_link* strl = hold_head;
 
-  /* We shouldn't ever by flushing the hold code if the reg_top is more than one entry deep */
-  assert( (reg_top == NULL) || (reg_top != NULL) && (reg_top->next == NULL) );
-
 #ifdef DEBUG_MODE
   if( debug_mode ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Flushing hold code (file: %s, line: %u)", file, line );
@@ -1181,6 +1178,9 @@ void generator_flush_hold_code1(
 //    generator_display();
   }
 #endif
+
+  /* We shouldn't ever be flushing the hold code if the reg_top is more than one entry deep */
+  assert( (reg_top == NULL) || (reg_top->next == NULL) );
 
   fprintf( curr_ofile, "\n" );
 
@@ -1899,9 +1899,9 @@ static char* generator_create_lhs(
         rv = snprintf( tmp, 50, "%d", (number - 1) );
         assert( rv < 50 );
         if( exp->value->suppl.part.is_signed == 1 ) {
-          slen = 12 + strlen( tmp ) + 4 + strlen( name ) + 3;
+          slen = 30 + strlen( name ) + 20 + strlen( tmp ) + 4 + strlen( name ) + 10;
           str  = (char*)malloc_safe( slen );
-          rv   = snprintf( str, slen, "reg signed [%s:0] %s;\n", tmp, name );
+          rv   = snprintf( str, slen, "`ifdef V1995_COV_MODE\ninteger %s;\n`else\nreg signed [%s:0] %s;\n`endif\n", name, tmp, name );
         } else {
           slen = 5 + strlen( tmp ) + 4 + strlen( name ) + 3;
           str  = (char*)malloc_safe( slen );
@@ -1909,9 +1909,9 @@ static char* generator_create_lhs(
         }
       } else {
         if( exp->value->suppl.part.is_signed == 1 ) {
-          slen = 13 + ((size != NULL) ? strlen( size ) : 1) + 7 + strlen( name ) + 3;
+          slen = 30 + strlen( name ) + 21 + ((size != NULL) ? strlen( size ) : 1) + 7 + strlen( name ) + 10;
           str  = (char*)malloc_safe_nolimit( slen );
-          rv   = snprintf( str, slen, "reg signed [(%s-1):0] %s;\n", ((size != NULL) ? size : "1"), name );
+          rv   = snprintf( str, slen, "`ifdef V1995_COV_MODE\ninteger %s;\n`else\nreg signed [(%s-1):0] %s;\n`endif\n", name, ((size != NULL) ? size : "1"), name );
         } else {
           slen = 6 + ((size != NULL) ? strlen( size ) : 1) + 7 + strlen( name ) + 3;
           str  = (char*)malloc_safe_nolimit( slen );

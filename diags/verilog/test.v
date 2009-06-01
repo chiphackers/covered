@@ -10,8 +10,8 @@ module main;
 reg a, b, c;
 reg clock;
 
+initial @(posedge clock) if( b ) c <= b;
 always @(posedge clock) if( b ) a <= b;
-always @(posedge clock) if( b ) c <= b;
 
 initial begin
 `ifdef DUMP

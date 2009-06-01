@@ -16,14 +16,14 @@ if( $DUMPTYPE eq "VCD" ) {
 }
 
 # Perform diagnostic running code here
-&runCommand( "make DIAG=merge11a onemergerun" );
-&runCommand( "make DIAG=merge11b onemergerun" );
-&runCommand( "make DIAG=merge11c onemergerun" );
-&runCommand( "make DIAG=merge11d onemergerun" );
-&runCommand( "make DIAG=merge11e onemergerun" );
-&runCommand( "make DIAG=merge11f onemergerun" );
-&runCommand( "make DIAG=merge11g onemergerun" );
-&runCommand( "make DIAG=merge11h onemergerun" );
+&runCommand( "$MAKE DIAG=merge11a onemergerun" );
+&runCommand( "$MAKE DIAG=merge11b onemergerun" );
+&runCommand( "$MAKE DIAG=merge11c onemergerun" );
+&runCommand( "$MAKE DIAG=merge11d onemergerun" );
+&runCommand( "$MAKE DIAG=merge11e onemergerun" );
+&runCommand( "$MAKE DIAG=merge11f onemergerun" );
+&runCommand( "$MAKE DIAG=merge11g onemergerun" );
+&runCommand( "$MAKE DIAG=merge11h onemergerun" );
 
 # Perform all combinations of merges
 &runMergeCommand( "-o merge11.1a.cdd merge11a.cdd merge11b.cdd" );

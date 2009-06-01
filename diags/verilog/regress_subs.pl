@@ -11,6 +11,9 @@
 # Global variable that can be used to specify Covered's executable pathname
 $COVERED = "../../src/covered";
 
+# Specifies the make command to run
+$MAKE = "make";
+
 # Global command flags to use for all Covered commands
 $COVERED_GFLAGS = "-D";
 
@@ -138,6 +141,13 @@ sub initialize {
   # If the TESTMODE was found in the src Makefile, go ahead and allow the usage of the check_mem script in
   # Covered command runs.
   $CHECK_MEM_CMD = &checkForTestMode;
+
+  # Figure out which version of MAKE to run
+  if( `which gmake` ne "" ) {
+    $MAKE = "gmake";
+  } else {
+    $MAKE = "make";
+  }
 
 }
 

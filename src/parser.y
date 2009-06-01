@@ -2951,32 +2951,32 @@ module_item_list_opt
 
 module_item_list
   : module_item_list module_item
-    {
-      if( !parse_mode ) {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
-    }
   | module_item
-    {
-      if( !parse_mode ) {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
-    }
   ;
 
 module_item
   : attribute_list_opt
     net_type signed_opt range_opt list_of_variables ';'
+    {
+      if( !parse_mode ) {
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
+      }
+    }
   | attribute_list_opt
     net_type signed_opt range_opt net_decl_assigns ';'
+    {
+      if( !parse_mode ) {
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
+      }
+    }
   | attribute_list_opt
     net_type drive_strength
     {
@@ -2990,7 +2990,11 @@ module_item
     net_decl_assigns ';'
     {
       if( !parse_mode ) {
-        /* TBD - Need to add code generation stuff here */
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
       }
     }
   | attribute_list_opt
@@ -3005,6 +3009,15 @@ module_item
       }
     }
     register_variable_list ';'
+    {
+      if( !parse_mode ) {
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
+      }
+    }
   | attribute_list_opt port_type signed_opt range_opt
     {
       if( parse_mode ) {
@@ -3021,6 +3034,12 @@ module_item
       if( parse_mode ) {
         if( generate_top_mode > 0 ) {
           ignore_mode--;
+        }
+      } else {
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
         }
       }
     }
@@ -3047,6 +3066,12 @@ module_item
         if( !parser_check_generation( GENERATION_2001 ) || (generate_top_mode > 0) ) {
           ignore_mode--;
         }
+      } else {
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
       }
     }
   | attribute_list_opt K_output var_type signed_opt range_opt
@@ -3071,6 +3096,12 @@ module_item
       if( parse_mode ) {
         if( !parser_check_generation( GENERATION_2001 ) || (generate_top_mode > 0) ) {
           ignore_mode--;
+        }
+      } else {
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
         }
       }
     }
@@ -3103,57 +3134,120 @@ module_item
         if( generate_top_mode > 0 ) {
           ignore_mode--;
         }
+      } else {
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
       }
     }
   | attribute_list_opt gatetype gate_instance_list ';'
     {
       if( parse_mode ) {
         str_link_delete_list( $3 );
+      } else {
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
       }
     }
   | attribute_list_opt gatetype delay3 gate_instance_list ';'
     {
       if( parse_mode ) {
         str_link_delete_list( $4 );
+      } else {
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
       }
     }
   | attribute_list_opt gatetype drive_strength gate_instance_list ';'
     {
       if( parse_mode ) {
         str_link_delete_list( $4 );
+      } else {
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
       }
     }
   | attribute_list_opt gatetype drive_strength delay3 gate_instance_list ';'
     {
       if( parse_mode ) {
         str_link_delete_list( $5 );
+      } else {
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
       }
     }
   | attribute_list_opt K_pullup gate_instance_list ';'
     {
       if( parse_mode ) {
         str_link_delete_list( $3 );
+      } else {
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
       }
     }
   | attribute_list_opt K_pulldown gate_instance_list ';'
     {
       if( parse_mode ) {
         str_link_delete_list( $3 );
+      } else {
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
       }
     }
   | attribute_list_opt K_pullup '(' dr_strength1 ')' gate_instance_list ';'
     {
       if( parse_mode ) {
         str_link_delete_list( $6 );
+      } else {
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
       }
     }
   | attribute_list_opt K_pulldown '(' dr_strength0 ')' gate_instance_list ';'
     {
       if( parse_mode ) {
         str_link_delete_list( $6 );
+      } else {
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
       }
     }
   | block_item_decl
+    {
+      if( !parse_mode ) {
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
+      }
+    }
   | attribute_list_opt K_defparam defparam_assign_list ';'
     {
       if( parse_mode ) {
@@ -3161,6 +3255,8 @@ module_item
                                     obf_file( @1.orig_fname ), @1.first_line );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      } else {
+        generator_flush_all;
       }
     }
   | attribute_list_opt K_event
@@ -3176,6 +3272,15 @@ module_item
       }
     }
     list_of_variables ';'
+    {
+      if( !parse_mode ) {
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
+      }
+    }
   /* Handles instantiations of modules and user-defined primitives. */
   | attribute_list_opt IDENTIFIER parameter_value_opt gate_instance_list ';'
     {
@@ -3206,7 +3311,11 @@ module_item
           param_oride_tail = NULL;
         }
       } else {
-        generator_flush_work_code;
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
       }
       FREE_TEXT( $2 );
     }
@@ -3214,7 +3323,11 @@ module_item
     K_assign drive_strength_opt { ignore_mode++; } delay3_opt { ignore_mode--; } assign_list ';'
     {
       if( !parse_mode ) {
-//        generator_insert_comb_cov();
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
       }
     }
   | attribute_list_opt
@@ -3234,8 +3347,8 @@ module_item
           }
         }
       } else {
-        generator_flush_work_code;
-        // generator_flush_hold_code;
+        // generator_flush_work_code;
+        generator_flush_hold_code;
       }
     }
   | attribute_list_opt
@@ -3620,6 +3733,12 @@ module_item
         if( !parser_check_generation( GENERATION_2001 ) ) {
           ignore_mode--;
         }
+      } else {
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
       }
     }
   | attribute_list_opt
@@ -3632,6 +3751,15 @@ module_item
       }
     }
     ignore_more specify_item_list ignore_less K_endspecify
+    {
+      if( !parse_mode ) {
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
+      }
+    }
   | attribute_list_opt
     K_specify
     {
@@ -3642,6 +3770,15 @@ module_item
       }
     }
     K_endspecify
+    {
+      if( !parse_mode ) {
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
+      }
+    }
   | attribute_list_opt
     K_specify
     {
@@ -3684,28 +3821,83 @@ module_item
           strl = strl->next;
         }
         str_link_delete_list( $3 );
+      } else {
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
       }
     }
   | attribute_list_opt
     typedef_decl
+    {
+      if( !parse_mode ) {
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
+      }
+    }
   /* SystemVerilog assertion - we don't currently support these and I don't want to worry about how to parse them either */
   | attribute_list_opt
     IDENTIFIER ':' K_assert ';'
     {
+      if( !parse_mode ) {
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
+      }
       FREE_TEXT( $2 );
     }
   /* SystemVerilog property - we don't currently support these but crudely parse them */
   | attribute_list_opt
     K_property K_endproperty
-
+    {
+      if( !parse_mode ) {
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
+      }
+    }
   /* SystemVerilog sequence - we don't currently support these but crudely will parse them */
   | attribute_list_opt
     K_sequence K_endsequence
+    {
+      if( !parse_mode ) {
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
+      }
+    }
   /* SystemVerilog program block - we don't currently support these but crudely will parse them */
   | attribute_list_opt
     K_program K_endprogram
+    {
+      if( !parse_mode ) {
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
+      }
+    }
   | KK_attribute '(' IDENTIFIER ',' STRING ',' STRING ')' ';'
     {
+      if( !parse_mode ) {
+        if( generate_mode ) {
+          generator_flush_work_code;
+        } else {
+          generator_flush_all;
+        }
+      }
       FREE_TEXT( $3 );
       vector_dealloc( $5.vec );
       vector_dealloc( $7.vec );
