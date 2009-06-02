@@ -1440,6 +1440,7 @@ void generator_insert_event_comb_cov(
 
     char* tname     = generator_create_expr_name( exp );
     char* event_str = codegen_gen_expr_one_line( exp->right, funit, FALSE );
+    bool  stmt_head = (root_exp->parent->stmt->suppl.part.head == 1);
 
     /* Handle the event */
     switch( exp->op ) {
@@ -1455,7 +1456,11 @@ void generator_insert_event_comb_cov(
           generator_add_cov_to_work_code( str );
           rv = snprintf( str, 4096, " %s = %s;", tname, event_str );
           assert( rv < 4096 );
-          generator_add_cov_to_work_code( str );
+          if( stmt_head ) {
+            generator_add_cov_to_work_code( str );
+          } else {
+            generator_prepend_to_work_code( str );
+          }
           generator_add_cov_to_work_code( "\n" );
         }
         break;
@@ -1472,7 +1477,11 @@ void generator_insert_event_comb_cov(
           generator_add_cov_to_work_code( str );
           rv = snprintf( str, 4096, " %s = %s;", tname, event_str );
           assert( rv < 4096 );
-          generator_add_cov_to_work_code( str );
+          if( stmt_head ) {
+            generator_add_cov_to_work_code( str );
+          } else {
+            generator_prepend_to_work_code( str );
+          }
           generator_add_cov_to_work_code( "\n" );
         }
         break;

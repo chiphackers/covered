@@ -534,9 +534,9 @@ ifdef INLINE
 DIAGS         += example2        example2.1      example2.2      example2.3      example2.4 \
                  example2.5
 
-EXCLUDE       += bug2794588      case5           casex2          casez3          example1        exclude5.1 \
-                 exclude5.3      param10.1       param10.5       sbit_sel3.2     signed4.1
-
+EXCLUDE       += bug2794588      case5           casex2          casez3          example1 \
+                 exclude5.1      exclude5.3      param10.1       param10.5       sbit_sel3.2 \
+                 signed4.1
 ifdef VPI
 EXCLUDE       += fork2           generate4       generate4.1     generate8
 endif
@@ -550,7 +550,8 @@ ifeq ($(MAKECMDGOALS),vcs)
 EXCLUDE       +=
 else
 ifeq ($(MAKECMDGOALS),veriwell)
-EXCLUDE       += always15        define4         include1        include1.1      include2 \
+EXCLUDE       += always15        compx1          compx1.1        compx1.2        compx1.3 \
+                 concat7         define4         include1        include1.1      include2 \
                  include4        include5        real3.7
 else
 ifeq ($(MAKECMDGOALS),vcomp)
