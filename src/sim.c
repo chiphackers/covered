@@ -29,7 +29,7 @@
  in the VCD file, the expressions to which it is a part of the RHS are looked up
  in the design tree.  The expression tree is then parsed from the expression to
  the root, setting the #ESUPPL_IS_LEFT_CHANGED or #ESUPPL_IS_RIGHT_CHANGED as it 
- makes its way to the root.  When at the root expression, the #ESUPPL_IS_STMT_HEAD 
+ makes its way to the root.  When at the root expression, the statement's head
  bit is interrogated.  If this bit is a 1, the expression's statement is loaded 
  into the pre-simulation statement queue.  If the bit is a 0, no further action is 
  taken.
@@ -42,7 +42,7 @@
  is empty.  This signifies that the timestep has been completed.
 
  \par
- When a statement is placed into the statement simulation engine, the #ESUPPL_IS_STMT_HEAD 
+ When a statement is placed into the statement simulation engine, the head
  bit is cleared in the root expression.  Additionally, the root expression pointed to by 
  the statement is interrogated to see if the #ESUPPL_IS_LEFT_CHANGED or #ESUPPL_IS_RIGHT_CHANGED 
  bits are set.  If one or both of the bits are found to be set, the root expression 
@@ -52,7 +52,7 @@
  of the root expression is true, the next_true statement is loaded into the statement 
  simulation engine.  If the value of the root expression is false and the next_false 
  pointer is NULL, this signifies that the current statement tree has completed for this 
- timestep.  At this point, the current statement will set the #ESUPPL_IS_STMT_HEAD bit in 
+ timestep.  At this point, the current statement will set the head bit in 
  its root expression and is removed from the statement simulation engine.  The next statement 
  at the head of the pre-simulation statement queue is then loaded into the statement 
  simulation engine.  If next_false statement is not NULL, it is loaded into the statement 
@@ -1172,14 +1172,12 @@ void sim_initialize() { PROFILE(SIM_INITIALIZE);
 #ifndef VPI_ONLY
   /* Set the CLI debug mode to the value of the general debug mode */
   cli_debug_mode = debug_mode;
-#endif
-#endif
 
-#ifndef VPI_ONLY
   /* Add a signal handler for Ctrl-C if we are running in CLI mode */
   if( flag_use_command_line_debug ) {
     signal( SIGINT, cli_ctrl_c );
   }
+#endif
 #endif
 
   PROFILE_END;

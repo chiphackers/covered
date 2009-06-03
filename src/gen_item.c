@@ -1220,7 +1220,7 @@ statement* generate_find_stmt_by_position(
   func_unit*   funit,       /*!< Pointer to module that contains the generate item block */
   unsigned int first_line,  /*!< First line of statement to search for */
   unsigned int first_col    /*!< First column of statement to search for */
-) { PROFILE(GENERATE_FIND_STMT_BY_POSITION)
+) { PROFILE(GENERATE_FIND_STMT_BY_POSITION);
 
   gitem_link* gil  = funit->gitem_head;
   statement*  stmt = NULL;
@@ -1287,7 +1287,7 @@ func_unit* generate_find_tfn_by_position(
   func_unit*   funit,       /*!< Pointer to module that contains the generate item block */
   unsigned int first_line,  /*!< First line of statement to search for */
   unsigned int first_col    /*!< First column of statement to search for */
-) { PROFILE(GENERATE_FIND_TFN_BY_POSITION)
+) { PROFILE(GENERATE_FIND_TFN_BY_POSITION);
 
   gitem_link* gil = funit->gitem_head;
   func_unit*  tfn = NULL;
