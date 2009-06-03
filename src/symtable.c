@@ -201,6 +201,12 @@ static void symtable_add_sym_exp(
   new_se         = (sym_exp*)malloc_safe( sizeof( sym_exp ) );
   new_se->exp    = exp;
   new_se->action = action;
+  new_se->next   = NULL;
+
+  /* Add new structure to head of symtable list */
+  if( symtab->entry.exp != NULL ) {
+    new_se->next = symtab->entry.exp;
+  }
 
   /* Populate symtab entry */
   symtab->entry.exp  = new_se;
@@ -255,9 +261,10 @@ symtable* symtable_create() { PROFILE(SYMTABLE_CREATE);
   symtable* symtab;  /* Pointer to new symtable entry */
   int       i;       /* Loop iterator */
 
-  symtab            = (symtable*)malloc_safe( sizeof( symtable ) );
-  symtab->entry.sig = NULL;
-  symtab->value     = NULL;
+  symtab             = (symtable*)malloc_safe( sizeof( symtable ) );
+  symtab->entry.sig  = NULL;
+  symtab->entry_type = 0;
+  symtab->value      = NULL;
   for( i=0; i<94; i++ ) {
     symtab->table[i] = NULL;
   }
@@ -494,19 +501,22 @@ void symtable_assign(
 ) { PROFILE(SYMTABLE_ASSIGN);
 
   symtable* curr;  /* Pointer to current symtable entry */
-  sym_sig*  sig;   /* Pointer to current sym_sig in list */
   int       i;     /* Loop iterator */
 
   for( i=0; i<postsim_size; i++ ) {
     curr = timestep_tab[i];
     if( curr->entry_type == 0 ) {
-      sig = curr->entry.sig;
+      sym_sig* sig = curr->entry.sig;
       while( sig != NULL ) {
         vsignal_vcd_assign( sig->sig, curr->value, sig->msb, sig->lsb, time );
         sig = sig->next;
       }
     } else if( curr->entry_type == 1 ) {
-      expression_vcd_assign( curr->entry.exp->exp, curr->entry.exp->action, curr->value );
+      sym_exp* exp = curr->entry.exp;
+      while( exp != NULL ) {
+        expression_vcd_assign( exp->exp, exp->action, curr->value );
+        exp = exp->next;
+      }
     } else {
       fsm_vcd_assign( curr->entry.table, curr->value );
     }
@@ -552,7 +562,16 @@ void symtable_dealloc(
 
     } else if( symtab->entry_type == 1 ) {
 
-      free_safe( symtab->entry.exp, sizeof( sym_exp ) );
+      sym_exp* curr;
+      sym_exp* tmp;
+
+      /* Remove sym_exp list */
+      curr = symtab->entry.exp;
+      while( curr != NULL ) {
+        tmp = curr->next;
+        free_safe( curr, sizeof( sym_exp ) );
+        curr = tmp;
+      }
 
     }
 

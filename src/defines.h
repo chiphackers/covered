@@ -2714,6 +2714,7 @@ struct sym_sig_s {
 struct sym_exp_s {
   expression* exp;                   /*!< Pointer to expression pertaining to this entry */
   char        action;                /*!< Specifies the action to perform to the expression (line=0, logic=1) */
+  sym_exp*    next;                  /*!< Pointer to next expression */
 };
 
 /*!
