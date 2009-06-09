@@ -2696,8 +2696,8 @@ static void generator_insert_mem_cov_helper(
       generator_insert_mem_cov( exp, funit, net, ((exp->suppl.part.lhs == 1) && !treat_as_rhs) );
     }
 
-    generator_insert_mem_cov_helper( exp->left,  funit, net, treat_as_rhs );
-    generator_insert_mem_cov_helper( exp->right, funit, net, treat_as_rhs );
+    generator_insert_mem_cov_helper( exp->left,  funit, net, ((exp->op == EXP_OP_SBIT_SEL) || (exp->op == EXP_OP_MBIT_SEL) || (exp->op == EXP_OP_MBIT_POS) || (exp->op == EXP_OP_MBIT_NEG) || treat_as_rhs) );
+    generator_insert_mem_cov_helper( exp->right, funit, net, ((exp->op == EXP_OP_MBIT_SEL) || treat_as_rhs) );
 
   }
 

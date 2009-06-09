@@ -5677,6 +5677,15 @@ void expression_vcd_assign(
   const char* value    /*!< Coverage data from dumpfile to assign */
 ) { PROFILE(EXPRESSION_VCD_ASSIGN);
 
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Assigning expression (line: %d, op: %s, id: %d, action=%c) to value %s",
+                                expr->line, expression_string_op( expr->op ), expr->id, action, value );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+  }
+#endif
+
   if( action == 'L' ) {
 
     /* If we have seen a value of 1, increment the exec_num to indicate that the line has been hit */
