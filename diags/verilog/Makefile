@@ -88,7 +88,7 @@ CVER_EXEC =
 
 # Veriwell support
 VERIWELL       = veriwell
-VERIWELL_FLAGS = +libext+.v+.vlib -y ./covered/verilog -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 +define+DUMP +define+V1995_COV_MODE $(SIM_PLUSARGS)
+VERIWELL_FLAGS = +libext+.v+.vlib -y ./lib -y ./covered/verilog -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 +define+DUMP +define+V1995_COV_MODE $(SIM_PLUSARGS)
 VERIWELL_EXEC  =
 
 # VComp support
