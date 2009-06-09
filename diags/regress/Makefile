@@ -557,7 +557,7 @@ else
 ifeq ($(MAKECMDGOALS),vcomp)
 EXCLUDE       +=
 else
-EXCLUDE       += 
+EXCLUDE       += case4.1
 endif
 endif
 endif
