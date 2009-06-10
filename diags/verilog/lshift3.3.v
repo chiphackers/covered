@@ -12,7 +12,7 @@ module main;
 reg [64:0] a;
 
 initial begin
-	a = 65'b1xz01xz01xz01xz0_1xz01xz01xz01xz01xz01xz01xz01xz0_1xz01xz01xz01xz01xz01xz01xz01xz0;
+	a = 65'b0_1xz01xz01xz01xz01xz01xz01xz01xz0_1xz01xz01xz01xz01xz01xz01xz01xz0;
 	repeat( 65 ) begin
   	  #5;
 	  a = a << 1;

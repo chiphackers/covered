@@ -551,9 +551,11 @@ EXCLUDE       +=
 else
 ifeq ($(MAKECMDGOALS),veriwell)
 EXCLUDE       += always15        compx1          compx1.1        compx1.2        compx1.3 \
-                 concat7         define4         ifelse1         include1        include1.1 \
-                 include2        include4        include5        real3.3         real3.7 \
-                 real5           real5.10        real7           real8
+                 concat7         define4         func1           func2           ifelse1 \
+                 include1        include1.1      include2        include4        include5 \
+                 lshift3.3       real3.3         real3.7         real5           real5.10 \
+                 real7           real8           rshift1.2       rshift2.2       timescale1.16 \
+                 timescale1.17   timescale1.18   timescale2.5    timescale2.8
 else
 ifeq ($(MAKECMDGOALS),vcomp)
 EXCLUDE       +=
