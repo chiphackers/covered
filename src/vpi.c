@@ -433,7 +433,7 @@ void covered_create_value_change_cb(
   /* Only add the signal if it is in our database and needs to be assigned from the simulator */
   if( (curr_instance->funit != NULL) &&
       (((((vsigl = sig_link_find( name, curr_instance->funit->sig_head )) != NULL) ||
-         scope_find_signal( name, curr_instance->funit, &vsig, &found_funit )) &&
+         scope_find_signal( name, curr_instance->funit, &vsig, &found_funit, 0 )) &&
         (((vsigl != NULL) && (vsigl->sig->suppl.part.assigned == 0)) ||
          ((vsig != NULL) && (vsig->suppl.part.assigned == 0)) || info_suppl.part.inlined)) ||
        (info_suppl.part.inlined &&

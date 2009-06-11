@@ -6090,11 +6090,11 @@ void expression_assign(
         *lsb += lhs->value->width;
         break;
       case EXP_OP_SBIT_SEL :
+        if( eval_lhs && (ESUPPL_IS_LEFT_CHANGED( lhs->suppl ) == 1) ) {
+          (void)sim_expression( lhs->left, thr, time, TRUE );
+        }
         if( lhs->sig->suppl.part.assigned == 1 ) {
           bool changed = FALSE;
-          if( eval_lhs && (ESUPPL_IS_LEFT_CHANGED( lhs->suppl ) == 1) ) {
-            (void)sim_expression( lhs->left, thr, time, TRUE );
-          }
           if( !vector_is_unknown( lhs->left->value ) ) {
             int intval = (vector_to_int( lhs->left->value ) - dim->dim_lsb) * dim->dim_width;
             if( intval >= 0 ) {           // Only perform assignment if selected bit is within range
@@ -6167,10 +6167,10 @@ void expression_assign(
         break;
 #ifdef NOT_SUPPORTED
       case EXP_OP_MBIT_POS :
+        if( eval_lhs && (ESUPPL_IS_LEFT_CHANGED( lhs->suppl ) == 1) ) {
+          (void)sim_expression( lhs->left, thr, time, TRUE );
+        }
         if( lhs->sig->suppl.part.assigned == 1 ) {
-          if( eval_lhs && (ESUPPL_IS_LEFT_CHANGED( lhs->suppl ) == 1) ) {
-            (void)sim_expression( lhs->left, thr, time, TRUE );
-          }
           if( !lhs->left->value->suppl.part.unknown ) {
             intval1 = (vector_to_int( lhs->left->value ) - dim_lsb) * lhs->value->width;
             intval2 = vector_to_int( lhs->right->value ) * lhs->value->width;
@@ -6202,10 +6202,10 @@ void expression_assign(
         }
         break;
       case EXP_OP_MBIT_NEG :
+        if( eval_lhs && (ESUPPL_IS_LEFT_CHANGED( lhs->suppl ) == 1) ) {
+          (void)sim_expression( lhs->left, thr, time, TRUE );
+        }
         if( lhs->sig->suppl.part.assigned == 1 ) {
-          if( eval_lhs && (ESUPPL_IS_LEFT_CHANGED( lhs->suppl ) == 1) ) {
-            (void)sim_expression( lhs->left, thr, time, TRUE );
-          }
           if( !lhs->left->value->part.unknown ) {
             intval1 = (vector_to_int( lhs->left->value ) - dim_lsb) * lhs->value->width;
             intval2 = vector_to_int( lhs->right->value ) * lhs->value->width;

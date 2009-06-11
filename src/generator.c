@@ -2515,7 +2515,10 @@ static void generator_insert_mem_cov(
   expression* exp,    /*!< Pointer to expression accessing memory signal */
   func_unit*  funit,  /*!< Pointer to functional unit containing the given expression */
   bool        net,    /*!< If TRUE, creates the signal name for a net; otherwise, creates the signal name for a register */
-  bool        write   /*!< If TRUE, creates write logic; otherwise, creates read logic */
+  bool        write,  /*!< If TRUE, creates write logic; otherwise, creates read logic */
+  expression* rhs     /*!< If the root expression is a non-blocking assignment, this pointer will point to the RHS
+                           expression that is required to extract memory coverage.  If this pointer is NULL, handle
+                           memory coverage normally. */
 ) { PROFILE(GENERATOR_INSERT_MEM_COV);
 
   char         name[4096];
@@ -2578,6 +2581,58 @@ static void generator_insert_mem_cov(
 
     /* Prepend the index */
     str_link_add( str, &tmp_head, &tmp_tail );
+
+    /* Generate size needed to store memory element */
+    size = generator_gen_size( exp, funit, &number );
+
+    /*
+     If the rhs expression is not NULL, we are within a non-blocking assignment so calculate the value that will be stored
+     in the memory element.
+    */
+    if( rhs != NULL ) {
+
+      char        ename[4096];
+      char        rhs_reg[4096];
+      expression* last_rhs = expression_get_last_line_expr( rhs );
+      char*       rhs_str;
+
+      rv = snprintf( ename, 4096, " \\covered$X%x_%u_%u_%x ", rhs->op, rhs->ppline, last_rhs->ppline, rhs->col );
+      assert( rv < 4096 );
+
+      if( number >= 0 ) {
+        rv = snprintf( rhs_reg, 4096, "reg [%d:0] %s;\n", (number - 1), ename );
+      } else {
+        rv = snprintf( rhs_reg, 4096, "reg [(%s-1):0] %s;\n", size, ename );
+      }
+      assert( rv < 4096 );
+      generator_insert_reg( rhs_reg );
+
+      /* Add the expression that will be assigned to the memory element */
+      rhs_str = codegen_gen_expr_one_line( rhs, funit, FALSE );
+      vlen    = strlen( ename ) + 3 + strlen( rhs_str ) + 2;
+      value   = (char*)malloc_safe( vlen );
+      rv      = snprintf( value, vlen, "%s = %s;", ename, rhs_str );
+      assert( rv < vlen );
+      free_safe( rhs_str, (strlen( rhs_str ) + 1) );
+
+      /* Prepend the expression */
+      str_link_add( value, &tmp_head, &tmp_tail );
+
+#ifdef SKIP
+      vlen   = strlen( ename ) + 1 + strlen( msb_str ) + 1 + strlen( lsb_str ) + 2;
+      memstr = (char*)malloc_safe( vlen );
+      rv     = snprintf( memstr, vlen, "%s[%s:%s]", ename, msb_str, lsb_str );
+#else
+      memstr = strdup_safe( ename );
+#endif
+
+    } else {
+
+      memstr = codegen_gen_expr_one_line( first_exp, funit, FALSE );
+
+    }
+
+    /* Prepend the temporary list to the working list */
     if( work_head == NULL ) {
       work_head = work_tail = tmp_head;
     } else {
@@ -2593,9 +2648,6 @@ static void generator_insert_mem_cov(
     }
     assert( rv < 4096 );
 
-    /* Generate size */
-    size = generator_gen_size( exp, funit, &number );
-
     /* Create the range information for the write */
     if( number >= 0 ) {
       rv = snprintf( range, 4096, "[(%d+(%s-1)):0]", number, num );
@@ -2605,7 +2657,6 @@ static void generator_insert_mem_cov(
     assert( rv < 4096 );
 
     /* Create the value to assign */
-    memstr = codegen_gen_expr_one_line( first_exp, funit, FALSE );
     vlen   = 1 + strlen( memstr ) + 1 + strlen( iname ) + 2;
     value  = (char*)malloc_safe( vlen );
     rv = snprintf( value, vlen, "{%s,%s}", memstr, iname );
@@ -2684,20 +2735,23 @@ static void generator_insert_mem_cov(
  coverage code is inserted into the output buffers.
 */
 static void generator_insert_mem_cov_helper(
-  expression* exp,          /*!< Pointer to current expression */
-  func_unit*  funit,        /*!< Pointer to functional unit containing the expression */
-  bool        net,          /*!< Specifies if the code generator should produce code for a net or a register */
-  bool        treat_as_rhs  /*!< If TRUE, treats any memory access as a memory read regardless of position (by default, set to FALSE) */
+  expression* exp,           /*!< Pointer to current expression */
+  func_unit*  funit,         /*!< Pointer to functional unit containing the expression */
+  bool        net,           /*!< Specifies if the code generator should produce code for a net or a register */
+  bool        treat_as_rhs,  /*!< If TRUE, treats any memory access as a memory read regardless of position (by default, set to FALSE) */
+  expression* rhs            /*!< Set to the RHS expression if the root expression was a non-blocking assignment */
 ) { PROFILE(GENERATOR_INSERT_MEM_COV_HELPER);
 
   if( exp != NULL ) {
 
     if( (exp->sig != NULL) && (exp->sig->suppl.part.type == SSUPPL_TYPE_MEM) && (exp->elem.dim != NULL) && exp->elem.dim->last ) {
-      generator_insert_mem_cov( exp, funit, net, ((exp->suppl.part.lhs == 1) && !treat_as_rhs) );
+      generator_insert_mem_cov( exp, funit, net, ((exp->suppl.part.lhs == 1) && !treat_as_rhs), rhs );
     }
 
-    generator_insert_mem_cov_helper( exp->left,  funit, net, ((exp->op == EXP_OP_SBIT_SEL) || (exp->op == EXP_OP_MBIT_SEL) || (exp->op == EXP_OP_MBIT_POS) || (exp->op == EXP_OP_MBIT_NEG) || treat_as_rhs) );
-    generator_insert_mem_cov_helper( exp->right, funit, net, ((exp->op == EXP_OP_MBIT_SEL) || treat_as_rhs) );
+    generator_insert_mem_cov_helper( exp->left,  funit, net,
+                                     ((exp->op == EXP_OP_SBIT_SEL) || (exp->op == EXP_OP_MBIT_SEL) || (exp->op == EXP_OP_MBIT_POS) ||
+                                      (exp->op == EXP_OP_MBIT_NEG) || treat_as_rhs), rhs );
+    generator_insert_mem_cov_helper( exp->right, funit, net, ((exp->op == EXP_OP_MBIT_SEL) || treat_as_rhs), rhs );
 
   }
 
@@ -2732,7 +2786,7 @@ statement* generator_insert_comb_cov(
 
       /* Generate memory coverage */
       if( info_suppl.part.scored_memory == 1 ) {
-        generator_insert_mem_cov_helper( stmt->exp, stmt->funit, net, FALSE );
+        generator_insert_mem_cov_helper( stmt->exp, stmt->funit, net, FALSE, ((stmt->exp->op == EXP_OP_NASSIGN) ? stmt->exp->right : NULL) );
       }
 
     }
