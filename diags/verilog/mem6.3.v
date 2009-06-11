@@ -11,10 +11,10 @@ module main;
 reg [3:0] a[0:1];
 
 initial begin
-	a[0] = 4'h0;
-	a[1] = 4'h0;
+	a[0] <= 4'h0;
+	a[1] <= 4'h0;
 	#5;
-	{a[0],a[1]} = 8'h12;
+	{a[0],a[1]} <= 8'h12;
 end
 
 initial begin
