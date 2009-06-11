@@ -219,9 +219,9 @@ char* mod_parm_gen_size_code(
     }
 
     /* Generate code string */
-    slen = (strlen( msb_str ) * 3) + (strlen( lsb_str ) * 3) + 18;
+    slen = (strlen( msb_str ) * 3) + (strlen( lsb_str ) * 3) + 30;
     code = (char*)malloc_safe( slen );
-    rv   = snprintf( code, slen, "(((%s>%s)?(%s-%s):(%s-%s))+1)", msb_str, lsb_str, msb_str, lsb_str, lsb_str, msb_str );
+    rv   = snprintf( code, slen, "((((%s)>(%s))?((%s)-(%s)):((%s)-(%s)))+1)", msb_str, lsb_str, msb_str, lsb_str, lsb_str, msb_str );
     assert( rv < slen );
 
     /* Deallocate temporary strings */

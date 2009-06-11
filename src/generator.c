@@ -2268,12 +2268,6 @@ static void generator_insert_comb_cov_helper2(
 
     }
 
-#ifdef SKIP
-    /* Generate children expression trees (depth first search) */
-    generator_insert_comb_cov_helper2( exp->left,  funit, exp->op, child_depth, net, FALSE, reg_needed );
-    generator_insert_comb_cov_helper2( exp->right, funit, exp->op, child_depth, net, FALSE, reg_needed );
-#endif
-
   }
 
   PROFILE_END;
@@ -2333,23 +2327,6 @@ static char* generator_gen_mem_index(
   unsigned int slen;
   unsigned int rv;
   int          number;
-
-#ifdef SKIP
-  if( dimension != 0 ) {
-
-    char* tmpstr = str;
-    char* rest   = generator_gen_mem_index( ((dimension == 1) ? exp->parent->expr->left : exp->parent->expr->left->right), funit, (dimension - 1) );
-
-    slen = strlen( tmpstr ) + 1 + strlen( rest ) + 1;
-    str  = (char*)malloc_safe( slen );
-    rv   = snprintf( str, slen, "%s+%s", tmpstr, rest );
-    assert( rv < slen ); 
-
-    free_safe( rest,   (strlen( rest )   + 1) );
-    free_safe( tmpstr, (strlen( tmpstr ) + 1) );
-
-  }
-#endif
 
   /* Calculate the index value */
   switch( exp->op ) {
@@ -2527,10 +2504,10 @@ static char* generator_get_lhs_lsb_helper(
     unsigned int slen;
 
     /* Get the LSB information for the right expression */
-    if( (ESUPPL_IS_ROOT( exp->parent->expr->parent->expr->suppl ) == 0) && (exp->parent->expr->parent->expr->op != EXP_OP_NASSIGN) ) {
+    if( (ESUPPL_IS_ROOT( exp->parent->expr->parent->expr->suppl ) == 0) && (exp->parent->expr->parent->expr->op != EXP_OP_CONCAT) ) {
       right = generator_get_lhs_lsb_helper( exp->parent->expr->parent->expr->right, funit );
     } else {
-      right = strdup_safe( "" );
+      right = strdup_safe( "0" );
     }
 
     /* Calculate our width */
@@ -2551,6 +2528,9 @@ static char* generator_get_lhs_lsb_helper(
       rv   = snprintf( lsb, slen, "%s+%s", size, right );
       assert( rv < slen );
     }
+
+    free_safe( size,  (strlen( size ) + 1) );
+    free_safe( right, (strlen( right ) + 1) );
 
   } else {
 
@@ -2576,7 +2556,13 @@ static char* generator_get_lhs_lsb(
 
   if( (exp != NULL) && (ESUPPL_IS_ROOT( exp->parent->expr->suppl ) == 0) && (exp->parent->expr->op != EXP_OP_NASSIGN) ) {
 
-    lsb = generator_get_lhs_lsb_helper( exp->parent->expr->right, funit );
+    if( exp->parent->expr->left == exp ) {
+      lsb = generator_get_lhs_lsb_helper( exp->parent->expr->right, funit );
+    } else if( exp->parent->expr->parent->expr->op != EXP_OP_CONCAT ) {
+      lsb = generator_get_lhs_lsb_helper( exp->parent->expr->parent->expr->right, funit );
+    } else {
+      lsb = strdup_safe( "0" );
+    }
 
   } else {
     
@@ -2673,34 +2659,50 @@ static void generator_insert_mem_cov(
     */
     if( rhs != NULL ) {
 
-      char        ename[4096];
+      char*       ename    = generator_create_expr_name( rhs );
       char        rhs_reg[4096];
       expression* last_rhs = expression_get_last_line_expr( rhs );
       char*       rhs_str;
       char*       lsb_str;
       char*       msb_str;
 
-      rv = snprintf( ename, 4096, " \\covered$X%x_%u_%u_%x ", rhs->op, rhs->ppline, last_rhs->ppline, rhs->col );
-      assert( rv < 4096 );
+      /*
+       We are reusing the comb_cntd bit in the expression supplemental field to indicate that this expression
+       has or has not been created.
+      */
+      if( rhs->suppl.part.comb_cntd == 0 ) {
 
-      if( number >= 0 ) {
-        rv = snprintf( rhs_reg, 4096, "reg [%d:0] %s;\n", (number - 1), ename );
-      } else {
-        rv = snprintf( rhs_reg, 4096, "reg [(%s-1):0] %s;\n", size, ename );
+        char* size;
+        int   number;
+
+        /* Generate size needed to store memory element */
+        size = generator_gen_size( rhs, funit, &number );
+
+        if( number >= 0 ) {
+          rv = snprintf( rhs_reg, 4096, "reg [%d:0] %s;\n", (number - 1), ename );
+        } else {
+          rv = snprintf( rhs_reg, 4096, "reg [(%s-1):0] %s;\n", size, ename );
+        }
+        assert( rv < 4096 );
+        generator_insert_reg( rhs_reg );
+
+        /* Add the expression that will be assigned to the memory element */
+        rhs_str = codegen_gen_expr_one_line( rhs, funit, FALSE );
+        vlen    = strlen( ename ) + 3 + strlen( rhs_str ) + 2;
+        value   = (char*)malloc_safe( vlen );
+        rv      = snprintf( value, vlen, "%s = %s;", ename, rhs_str );
+        assert( rv < vlen );
+        free_safe( rhs_str, (strlen( rhs_str ) + 1) );
+
+        /* Prepend the expression */
+        str_link_add( value, &tmp_head, &tmp_tail );
+
+        /* Specify that the expression has been placed */
+        rhs->suppl.part.comb_cntd = 1;
+
+        free_safe( size, (strlen( size ) + 1) );
+
       }
-      assert( rv < 4096 );
-      generator_insert_reg( rhs_reg );
-
-      /* Add the expression that will be assigned to the memory element */
-      rhs_str = codegen_gen_expr_one_line( rhs, funit, FALSE );
-      vlen    = strlen( ename ) + 3 + strlen( rhs_str ) + 2;
-      value   = (char*)malloc_safe( vlen );
-      rv      = snprintf( value, vlen, "%s = %s;", ename, rhs_str );
-      assert( rv < vlen );
-      free_safe( rhs_str, (strlen( rhs_str ) + 1) );
-
-      /* Prepend the expression */
-      str_link_add( value, &tmp_head, &tmp_tail );
 
       /* Generate the LSB of the RHS expression that needs to be assigned to this memory element */
       lsb_str = generator_get_lhs_lsb( exp, funit );
@@ -2728,6 +2730,7 @@ static void generator_insert_mem_cov(
 
       free_safe( lsb_str, (strlen( lsb_str ) + 1) );
       free_safe( msb_str, (strlen( msb_str ) + 1) );
+      free_safe( ename,   (strlen( ename )   + 1) );
 
     } else {
 
