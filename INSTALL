@@ -11,15 +11,18 @@
 2.  Required Tools
   The following is a list of tools that are necessary for building/compiling the
   Covered executable.
-  - gcc  (Version 2.96)
+  - gcc  (Version 2.96 or higher)
   - flex (Version 2.5.4 -- later versions are known to not work yet)
   - bison (Version 1.85 or higher)
   - GNU make (Version 3.27.1 or higher)
   - GNU gperf (Version 2.7.2 or higher)
-  - TCL (Version 8.5 or higher)
-  - TK (Version 8.5 or higher)
-  - tablelist4.11 (9tablelist is a Tk widget that can be found at:
-    //http://www.nemethi.de/)
+  - tcl (Version 8.5 or higher)
+  - tcl-devel (Version 8.5 or higher)
+  - tk (Version 8.5 or higher)
+  - tk-devel (Version 8.5 or higher)
+  - tablelist4.11 (tablelist is a Tk widget that can be found at:
+    //http://www.nemethi.de/) -- alternatively you can install the tcllib package which
+    includes the tablelist package and many more (that are currently used by Covered).
 
   If you would like to use LXT2 formatted dumpfiles with Covered, you now may but
   it will additionally require you to have the following library package:
