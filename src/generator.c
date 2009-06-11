@@ -1864,7 +1864,7 @@ static char* generator_create_lhs(
   func_unit*  funit,      /*!< Functional unit containing the expression */
   bool        net,        /*!< If set to TRUE, generate code for a net; otherwise, generate for a register */
   bool        reg_needed  /*!< If TRUE, instantiates the needed registers */
-) { PROFILE(GENERATOR_CREATE_RHS);
+) { PROFILE(GENERATOR_CREATE_LHS);
 
   unsigned int rv;
   char*        name = generator_create_expr_name( exp );
@@ -2509,6 +2509,88 @@ static char* generator_gen_mem_size(
 }
 
 /*!
+ \return Returns a string containing the LSB of the RHS to use to assign to this LHS expression.
+*/
+static char* generator_get_lhs_lsb_helper(
+  expression* exp,   /*!< Pointer to LHS expression to get LSB information for */
+  func_unit*  funit  /*!< Functional unit containing the given expression */
+) { PROFILE(GENERATOR_GET_LHS_LSB_HELPER);
+
+  char* lsb;
+
+  if( exp != NULL ) {
+
+    char*        right;
+    char*        size;
+    int          number;
+    unsigned int rv;
+    unsigned int slen;
+
+    /* Get the LSB information for the right expression */
+    if( (ESUPPL_IS_ROOT( exp->parent->expr->parent->expr->suppl ) == 0) && (exp->parent->expr->parent->expr->op != EXP_OP_NASSIGN) ) {
+      right = generator_get_lhs_lsb_helper( exp->parent->expr->parent->expr->right, funit );
+    } else {
+      right = strdup_safe( "" );
+    }
+
+    /* Calculate our width */
+    size = generator_gen_size( exp, funit, &number );
+
+    /* Add our size to the size of the right expression */
+    if( number >= 0 ) {
+      char num[50];
+      rv = snprintf( num, 50, "%d", number );
+      assert( rv < 50 );
+      slen = strlen( num ) + 1 + strlen( right ) + 1;
+      lsb  = (char*)malloc_safe( slen );
+      rv   = snprintf( lsb, slen, "%s+%s", num, right );
+      assert( rv < slen );
+    } else {
+      slen = strlen( size ) + 1 + strlen( right ) + 1;
+      lsb  = (char*)malloc_safe( slen );
+      rv   = snprintf( lsb, slen, "%s+%s", size, right );
+      assert( rv < slen );
+    }
+
+  } else {
+
+    lsb = strdup_safe( "0" );
+
+  }
+
+  PROFILE_END;
+
+  return( lsb );
+
+}
+
+/*!
+ \return Returns a string containing the LSB of the RHS to use to assign to this LHS expression.
+*/
+static char* generator_get_lhs_lsb(
+  expression* exp,   /*!< Pointer to LHS expression to get LSB information for */
+  func_unit*  funit  /*!< Pointer to functional unit containing this expression */
+) { PROFILE(GENERATOR_GET_LHS_LSB);
+
+  char* lsb;
+
+  if( (exp != NULL) && (ESUPPL_IS_ROOT( exp->parent->expr->suppl ) == 0) && (exp->parent->expr->op != EXP_OP_NASSIGN) ) {
+
+    lsb = generator_get_lhs_lsb_helper( exp->parent->expr->right, funit );
+
+  } else {
+    
+    lsb = strdup_safe( "0" );
+
+  }
+
+  PROFILE_END;
+
+  return( lsb );
+
+}
+
+/*!
  Inserts memory coverage for the given expression.
 */
 static void generator_insert_mem_cov(
@@ -2595,6 +2677,8 @@ static void generator_insert_mem_cov(
       char        rhs_reg[4096];
       expression* last_rhs = expression_get_last_line_expr( rhs );
       char*       rhs_str;
+      char*       lsb_str;
+      char*       msb_str;
 
       rv = snprintf( ename, 4096, " \\covered$X%x_%u_%u_%x ", rhs->op, rhs->ppline, last_rhs->ppline, rhs->col );
       assert( rv < 4096 );
@@ -2618,13 +2702,32 @@ static void generator_insert_mem_cov(
       /* Prepend the expression */
       str_link_add( value, &tmp_head, &tmp_tail );
 
-#ifdef SKIP
+      /* Generate the LSB of the RHS expression that needs to be assigned to this memory element */
+      lsb_str = generator_get_lhs_lsb( exp, funit );
+
+      /* Generate the MSB of the RHS expression that needs to be assigned to this memory element */
+      if( number >= 0 ) {
+        char num[50];
+        rv = snprintf( num, 50, "%d", number );
+        assert( rv < 50 );
+        vlen    = 1 + strlen( num ) + 4 + strlen( lsb_str ) + 1;
+        msb_str = (char*)malloc_safe( vlen );
+        rv      = snprintf( msb_str, vlen, "(%s-1)+%s", num, lsb_str );
+        assert( rv < vlen );
+      } else {
+        vlen    = 1 + strlen( size ) + 4 + strlen( lsb_str ) + 1;
+        msb_str = (char*)malloc_safe( vlen );
+        rv      = snprintf( msb_str, vlen, "(%s-1)+%s", size, lsb_str );
+        assert( rv < vlen );
+      }
+
+      /* Generate the part select of the RHS expression to assign to this memory element */
       vlen   = strlen( ename ) + 1 + strlen( msb_str ) + 1 + strlen( lsb_str ) + 2;
       memstr = (char*)malloc_safe( vlen );
       rv     = snprintf( memstr, vlen, "%s[%s:%s]", ename, msb_str, lsb_str );
-#else
-      memstr = strdup_safe( ename );
-#endif
+
+      free_safe( lsb_str, (strlen( lsb_str ) + 1) );
+      free_safe( msb_str, (strlen( msb_str ) + 1) );
 
     } else {
 
