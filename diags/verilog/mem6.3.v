@@ -8,13 +8,14 @@
 
 module main;
 
-reg [3:0] a[0:1];
+reg [3:0] a[0:2];
 
 initial begin
 	a[0] <= 4'h0;
 	a[1] <= 4'h0;
+	a[2] <= 4'h0;
 	#5;
-	{a[0],a[1]} <= 8'h12;
+	{a[0],a[1],a[2]} <= 12'h123;
 end
 
 initial begin
