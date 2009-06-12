@@ -61,7 +61,7 @@ static int reentrant_count_afu_bits(
     /* Count the number of expression bits in this functional unit */
     expl = funit->exp_head;
     while( expl != NULL ) {
-      if( (ESUPPL_OWNS_VEC( expl->exp->suppl ) == 1) && (EXPR_IS_STATIC( expl->exp ) == 0) ) {
+      if( (EXPR_OWNS_VEC( expl->exp->op ) == 1) && (EXPR_IS_STATIC( expl->exp ) == 0) ) {
         bits += (expl->exp->value->width * 2);
       }
       bits += ((ESUPPL_BITS_TO_STORE % 2) == 0) ? ESUPPL_BITS_TO_STORE : (ESUPPL_BITS_TO_STORE + 1);
@@ -145,7 +145,7 @@ static void reentrant_store_data_bits(
     /* Walk through expression list in the reentrant functional unit, compressing and saving vector and supplemental values */
     while( expl != NULL ) {
       unsigned int i;
-      if( (ESUPPL_OWNS_VEC( expl->exp->suppl ) == 1) && (EXPR_IS_STATIC( expl->exp ) == 0) ) {
+      if( (EXPR_OWNS_VEC( expl->exp->op ) == 1) && (EXPR_IS_STATIC( expl->exp ) == 0) ) {
         switch( expl->exp->value->suppl.part.data_type ) {
           case VDATA_UL :
             {
@@ -283,7 +283,7 @@ static void reentrant_restore_data_bits(
       if( expl->exp == expr ) {
         curr_bit += (expr->value->width * 2);
       } else {
-        if( (ESUPPL_OWNS_VEC( expl->exp->suppl ) == 1) && (EXPR_IS_STATIC( expl->exp ) == 0) ) {
+        if( (EXPR_OWNS_VEC( expl->exp->op ) == 1) && (EXPR_IS_STATIC( expl->exp ) == 0) ) {
           switch( expl->exp->value->suppl.part.data_type ) {
             case VDATA_UL :
               {

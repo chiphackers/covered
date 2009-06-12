@@ -27,8 +27,11 @@ end
 task automatic foo;
   input a;
   begin
-   if( a )
+   if( a ) begin
+     #1;
      foo( ~a );
+   end
+   #1;
    bar = a;
   end
 endtask

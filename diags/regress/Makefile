@@ -548,7 +548,10 @@ EXCLUDE       += always15        define4         include1        include1.1     
                  real3.6         real6           sbit_sel2.1     timescale2.8
 else
 ifeq ($(MAKECMDGOALS),vcs)
-EXCLUDE       +=
+EXCLUDE       += afunc1          afunc2          for5            for5.1          for5.2 \
+                 for5.3          for5.4          for5.5          for5.6          for5.8 \
+                 for5.9          for5.10         for6 \
+generate8.1     generate18
 else
 ifeq ($(MAKECMDGOALS),veriwell)
 EXCLUDE       += always15        compx1          compx1.1        compx1.2        compx1.3 \
