@@ -34,12 +34,20 @@ mod_parm* mod_parm_find(
   mod_parm* parm
 );
 
-/*! \brief Generates a string version of given signal if it exists */
+/*! \brief Generates a string version of given signal's width (size) if it exists */
 char* mod_parm_gen_size_code(
-  vsignal*     sig,
-  unsigned int dimension,
-  func_unit*   mod,
-  int*         number
+            vsignal*     sig,
+            unsigned int dimension,
+            func_unit*   mod,
+  /*@out@*/ int*         number
+);
+
+/*! \brief Generates a string version of given signal's LSB if it exists */
+char* mod_parm_gen_lsb_code(
+            vsignal*     sig,
+            unsigned int dimension,
+            func_unit*   mod,
+  /*@out@*/ int*         number
 );
 
 /*! \brief Creates new module parameter and adds it to the specified list. */

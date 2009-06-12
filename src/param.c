@@ -239,6 +239,100 @@ char* mod_parm_gen_size_code(
 }
 
 /*!
+ \return Returns a string version of the LSB of the specified signal if it is found; otherwise, return
+         a NULL value.
+*/
+char* mod_parm_gen_lsb_code(
+  vsignal*     sig,        /*!< Specifies the name of the signal that we are searching for */
+  unsigned int dimension,  /*!< Specifies the dimension that we are searching for */
+  func_unit*   mod,        /*!< Pointer to module containing signal */
+  int*         number      /*!< Pointer to value that specifies the returned string as a number (if the values are numbers only) */
+) { PROFILE(MOD_PARM_GEN_LSB_CODE);
+
+  char*        code    = NULL;
+  char*        lsb_str = NULL;
+  char*        msb_str = NULL;
+  unsigned int rv;
+  mod_parm*    mparm   = mod->param_head;
+
+  /* First, find the matching LSB module parameter */
+  while( (mparm != NULL) && ((mparm->sig != sig) || (mparm->suppl.part.dimension != dimension)) ) {
+    mparm = mparm->next;
+  }
+
+  if( mparm != NULL ) {
+
+    if( mparm->suppl.part.type == PARAM_TYPE_SIG_LSB ) {
+      lsb_str = codegen_gen_expr_one_line( mparm->expr, mod, FALSE );
+    } else {
+      msb_str = codegen_gen_expr_one_line( mparm->expr, mod, FALSE );
+    }
+
+    /* Second, find the matching MSB module parameter */
+    mparm = mparm->next;
+    while( (mparm != NULL) && ((mparm->sig != sig) || (mparm->suppl.part.dimension != dimension)) ) {
+      mparm = mparm->next;
+    }
+    if( mparm != NULL ) {
+      if( mparm->suppl.part.type == PARAM_TYPE_SIG_LSB ) {
+        lsb_str = codegen_gen_expr_one_line( mparm->expr, mod, FALSE );
+      } else {
+        msb_str = codegen_gen_expr_one_line( mparm->expr, mod, FALSE );
+      }
+    }
+
+  }
+
+  if( (lsb_str == NULL) && (msb_str == NULL) ) {
+
+    char num[50];
+    int  msb = sig->dim[dimension].msb;
+    int  lsb = sig->dim[dimension].lsb;
+
+    *number = ((msb > lsb) ? lsb : msb);
+    rv      = snprintf( num, 50, "%d", *number );
+    assert( rv < 50 );
+    code    = strdup_safe( num );
+
+  } else {
+
+    unsigned int slen;
+
+    if( lsb_str == NULL ) {
+      char num[50];
+      rv = snprintf( num, 50, "%d", sig->dim[dimension].lsb );
+      assert( rv < 50 );
+      lsb_str = strdup_safe( num );
+    }
+
+    if( msb_str == NULL ) {
+      char num[50];
+      rv = snprintf( num, 50, "%d", sig->dim[dimension].msb );
+      assert( rv < 50 );
+      msb_str = strdup_safe( num );
+    }
+
+    /* Generate code string */
+    slen = (strlen( msb_str ) * 3) + (strlen( lsb_str ) * 3) + 30;
+    code = (char*)malloc_safe( slen );
+    rv   = snprintf( code, slen, "(((%s)>(%s))?(%s):(%s))", msb_str, lsb_str, lsb_str, msb_str );
+    assert( rv < slen );
+
+    /* Deallocate temporary strings */
+    free_safe( lsb_str, (strlen( lsb_str ) + 1) );
+    free_safe( msb_str, (strlen( msb_str ) + 1) );
+
+    *number = -1;
+
+  }
+
+  PROFILE_END;
+
+  return( code );
+
+}
+
+/*!
  \return Returns pointer to newly created module parameter.
 
  Creates a new module parameter with the specified information and adds 
