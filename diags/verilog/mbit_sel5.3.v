@@ -6,8 +6,10 @@ parameter [15:0] a    = 16'h8421;
 reg  [3:0]  b;
 reg  [3:0]  c;
 
-always @*
+always @* begin
+  $display( "a: %h, c: %h", a, c );
   b = a[c+:incr];
+end
 
 initial begin
 `ifdef DUMP

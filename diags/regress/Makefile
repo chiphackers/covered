@@ -546,7 +546,7 @@ else
 ifeq ($(MAKECMDGOALS),vcs)
 EXCLUDE       += afunc1           afunc2            for5              for5.1            for5.2 \
                  for5.3           for5.4            for5.5            for5.6            for5.8 \
-                 for5.9           for5.10           for6 \
+                 for5.9           for5.10           for6              timescale2.8 \
 generate8.1     generate18
 else
 ifeq ($(MAKECMDGOALS),veriwell)
