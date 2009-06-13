@@ -386,17 +386,17 @@ EXCLUDE      += afunc1            afunc2            always5.1         always_com
                 generate11.2      generate11.3      generate11.4      generate13        generate14 \
                 generate15        generate15.1      generate15.2      generate15.3      generate15.4 \
                 generate15.5      generate16        generate16.1      generate16.2      generate16.3 \
-                generate17        generate18        hier1.1 \
-                hier2             hier3             hier3.1           hier3.2           hier3.3 \
-                hier3.4           hier4             ifndef1           ifndef2           implicit2.1 \
-                inc1              inc1.1            inc2              inc3              inc3.1 \
-                int1              line1             localparam1       localparam1.1     localparam1.2 \
-                localparam1.3     localparam2       localparam3       logic1            longint1 \
-                marray1           marray1.1         marray1.2         marray1.3         marray2 \
-                marray2.1         marray2.2         marray2.3         mbit_sel5         mbit_sel5.1 \
-                mbit_sel5.2       mbit_sel5.3       mbit_sel5.4       mbit_sel6         mbit_sel6.1 \
-                mbit_sel6.2       mbit_sel6.3       mbit_sel6.4       mem2              mem3 \
-                mem4              mem4.1            mem6              named_block2      nand1             nor1 \
+                generate17        generate18        hier1.1           hier2             hier3 \
+                hier3.1           hier3.2           hier3.3           hier3.4           hier4 \
+                ifndef1           ifndef2           implicit2.1       inc1              inc1.1 \
+                inc2              inc3              inc3.1            int1              line1 \
+                localparam1       localparam1.1     localparam1.2     localparam1.3     localparam2 \
+                localparam3       logic1            longint1          marray1           marray1.1 \
+                marray1.2         marray1.3         marray2           marray2.1         marray2.2 \
+                marray2.3         mbit_sel5         mbit_sel5.1       mbit_sel5.2       mbit_sel5.3 \
+                mbit_sel5.4       mbit_sel6         mbit_sel6.1       mbit_sel6.2       mbit_sel6.3 \
+                mbit_sel6.4       mem2              mem3              mem4              mem4.1 \
+                mem6              mem6.3            named_block2      nand1             nor1 \
                 null_stmt2        null_stmt2.1      ovl1              ovl1.1            ovl1.2 \
                 ovl1.3            param7            param8            param8.1          param8.2 \
                 param9.1          param9.2          param10           param10.1         param10.2 \
@@ -484,28 +484,27 @@ EXCLUDE      += add1            always7         always7.1       always11.2      
                 exclude1        exclude9.7      exclude9.8      exclude9.9      finish1 \
                 for1            fsm11           func5           generate2.1     generate5.1 \
                 generate8       generate10      generate10.1    generate10.2    generate16 \
-                hier1           hier2 \
-                hier4           localparam1     localparam1.1   localparam1.2   localparam1.3 \
-                localparam2     localparam3     long_exp1       long_exp2       long_exp3 \
-                mbit_sel3       mbit_sel3.1     mbit_sel4       mbit_sel4.1     mbit_sel4.2 \
-                mbit_sel4.3     mem1            mem2            mem6            merge1          merge2 \
-                merge5          merge6          merge6.1        merge7          merge7.1 \
-                merge7.2        merge7.3        merge7.4        merge7.5        merge7.6 \
-                merge7.7        merge7.8        multi_exp1      multi_exp1.1    multi_exp1.2 \
-                multi_exp1.3    multi_exp1.4 \
-                multi_exp1.5    multi_exp1.6    multi_exp1.7    multi_exp1.8    multi_exp3 \
-                named_block2    nested_block1   nested_block2   nested_block2.1 param4 \
-                param6          param6.1        param7          param8          param8.1 \
-                param9          param9.1        param9.2        param10         param10.1 \
-                param10.2       param10.3       param10.4       param10.5       param13 \
-                param13.1       param14         param16         port1           port2 \
-                port3           race1           race1.1         race1.2         rassign1 \
-                real1           repeat1         sbit_sel1.1     sbit_sel2.1     score_err1.14 \
-                score_err1.15   score_err1.16   signed1 \
-                signed3         signed4         signed4.2       slist2          static1 \
-                static2         static2.1       static2.2       task3.1         timescale1.16 \
-                timescale1.17   timescale1.18   timescale1.19   timescale2.8    trigger1 \
-                unary1          wait1           wait1.1
+                hier1           hier2           hier4           localparam1     localparam1.1 \
+                localparam1.2   localparam1.3   localparam2     localparam3     long_exp1 \
+                long_exp2       long_exp3       mbit_sel3       mbit_sel3.1     mbit_sel4 \
+                mbit_sel4.1     mbit_sel4.2     mbit_sel4.3     mem1            mem2 \
+                mem6            mem6.3          merge1          merge2          merge5 \
+                merge6          merge6.1        merge7          merge7.1        merge7.2 \
+                merge7.3        merge7.4        merge7.5        merge7.6        merge7.7 \
+                merge7.8        multi_exp1      multi_exp1.1    multi_exp1.2    multi_exp1.3 \
+                multi_exp1.4    multi_exp1.5    multi_exp1.6    multi_exp1.7    multi_exp1.8 \
+                multi_exp3      named_block2    nested_block1   nested_block2   nested_block2.1 \
+                param4          param6          param6.1        param7          param8 \
+                param8.1        param9          param9.1        param9.2        param10 \
+                param10.1       param10.2       param10.3       param10.4       param10.5 \
+                param13         param13.1       param14         param16         port1 \
+                port2           port3           race1           race1.1         race1.2 \
+                rassign1        real1           repeat1         sbit_sel1.1     sbit_sel2.1 \
+                score_err1.14   score_err1.15   score_err1.16   signed1         signed3 \
+                signed4         signed4.2       slist2          static1         static2 \
+                static2.1       static2.2       task3.1         timescale1.16   timescale1.17 \
+                timescale1.18   timescale1.19   timescale2.8    trigger1        unary1 \
+                wait1           wait1.1
 endif
 
 # List of diagnostics that should not be run if we are using VPI
