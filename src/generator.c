@@ -2313,14 +2313,16 @@ static void generator_insert_comb_cov_helper(
 }
 
 /*!
+ \return Returns a string containing the memory index value to use for memory write/read coverage.
+
  Generates a memory index value for a given memory expression.
 */
-static char* generator_gen_mem_index(
+static char* generator_gen_mem_index_helper(
   expression* exp,        /*!< Pointer to expression accessing memory signal */
   func_unit*  funit,      /*!< Pointer to functional unit containing exp */
   int         dimension,  /*!< Current memory dimension (should be initially set to expression_get_curr_dimension( exp ) */
   char*       ldim_width  /*!< Bit width of the lower dimension in string form (should be NULL in first call) */
-) { PROFILE(GENERATOR_GEN_MEM_INDEX);
+) { PROFILE(GENERATOR_GEN_MEM_INDEX_HELPER);
 
   char*        index;
   char*        str;
@@ -2419,7 +2421,7 @@ static char* generator_gen_mem_index(
     rv   = snprintf( str, slen, "(%s*%s)", index, ldim_width );
     assert( rv < slen );
   } else {
-    str  = strdup_safe( index );
+    str = strdup_safe( index );
   }
 
   if( dimension != 0 ) {
@@ -2428,18 +2430,9 @@ static char* generator_gen_mem_index(
 
     /* Create the width of this dimension */
     if( ldim_width != NULL ) {
-      if( number >= 0 ) {
-        char tmp[50];
-        rv = snprintf( tmp, 50, "%d", number );
-        assert( rv < 50 );
-        slen  = 1 + strlen( ldim_width ) + 1 + strlen( tmp ) + 2;
-        width = (char*)malloc_safe( slen );
-        rv    = snprintf( width, slen, "(%s*%s)", ldim_width, tmp );
-      } else {
-        slen  = 1 + strlen( ldim_width ) + 1 + strlen( num ) + 2;
-        width = (char*)malloc_safe( slen );
-        rv    = snprintf( width, slen, "(%s*%s)", ldim_width, num );
-      }
+      slen  = 1 + strlen( ldim_width ) + 1 + strlen( num ) + 2;
+      width = (char*)malloc_safe( slen );
+      rv    = snprintf( width, slen, "(%s*%s)", ldim_width, num );
       assert( rv < slen );
     } else {
       width = strdup_safe( num );
@@ -2448,7 +2441,7 @@ static char* generator_gen_mem_index(
     /* Adding our generated value to the other dimensional information */
     {
       char* tmpstr = str;
-      char* rest   = generator_gen_mem_index( ((dimension == 1) ? exp->parent->expr->left : exp->parent->expr->left->right), funit, (dimension - 1), width );
+      char* rest   = generator_gen_mem_index_helper( ((dimension == 1) ? exp->parent->expr->left : exp->parent->expr->left->right), funit, (dimension - 1), width );
 
       slen = strlen( tmpstr ) + 1 + strlen( rest ) + 1;
       str  = (char*)malloc_safe( slen );
@@ -2467,6 +2460,52 @@ static char* generator_gen_mem_index(
   /* Deallocate memory */
   free_safe( num,   (strlen( num )   + 1) );
   free_safe( index, (strlen( index ) + 1) );
+
+  PROFILE_END;
+
+  return( str );
+
+}
+
+/*!
+ \return Returns a string containing the memory index value to use for memory write/read coverage.
+
+ Generates a memory index value for a given memory expression.
+*/
+static char* generator_gen_mem_index(
+  expression* exp,       /*!< Pointer to expression accessing memory signal */
+  func_unit*  funit,     /*!< Pointer to functional unit containing exp */
+  int         dimension  /*!< Current memory dimension (should be initially set to expression_get_curr_dimension( exp ) */
+) { PROFILE(GENERATOR_GEN_MEM_INDEX);
+
+  char* ldim_width = NULL;
+  char* str;
+
+  /* If the dimension has not been set and its not the last dimension, calculate a last dimension value */
+  if( dimension < ((exp->sig->udim_num + exp->sig->pdim_num) - 1) ) {
+    int          number;
+    int          slen;
+    unsigned int rv;
+    int          dim = (exp->sig->udim_num + exp->sig->pdim_num) - 1;
+    char*        num = mod_parm_gen_size_code( exp->sig, dim--, funit_get_curr_module( funit ), &number );
+    ldim_width = num;
+    for( ; dim>dimension; dim-- ) {
+      char* tmp_str = ldim_width;
+      num        = mod_parm_gen_size_code( exp->sig, dim, funit_get_curr_module( funit ), &number );
+      slen       = 1 + strlen( tmp_str ) + 1 + strlen( num ) + 2;
+      ldim_width = (char*)malloc_safe( slen );
+      rv         = snprintf( ldim_width, slen, "(%s*%s)", tmp_str, num );
+      assert( rv < slen );
+      free_safe( tmp_str, (strlen( tmp_str ) + 1) );
+      free_safe( num,     (strlen( num )     + 1) );
+    }
+  }
+
+  /* Call the helper function to calculate the string */
+  str = generator_gen_mem_index_helper( exp, funit, dimension, ldim_width );
+
+  /* Deallocate memory */
+  free_safe( ldim_width, (strlen( ldim_width ) + 1) );
 
   PROFILE_END;
 
@@ -2627,7 +2666,7 @@ static void generator_insert_mem_cov(
   char         name[4096];
   char         range[4096];
   unsigned int rv;
-  char*        idxstr   = generator_gen_mem_index( exp, funit, expression_get_curr_dimension( exp ), NULL );
+  char*        idxstr   = generator_gen_mem_index( exp, funit, expression_get_curr_dimension( exp ) );
   char*        value;
   char*        str;
   expression*  last_exp = expression_get_last_line_expr( exp );
