@@ -1446,10 +1446,11 @@ void generator_insert_event_comb_cov(
     switch( exp->op ) {
       case EXP_OP_PEDGE :
         {
-          if( reg_needed ) {
+          if( reg_needed && (exp->suppl.part.eval_t == 0) ) {
             rv = snprintf( str, 4096, "reg %s;\n", tname );
             assert( rv < 4096 );
             generator_insert_reg( str );
+            exp->suppl.part.eval_t = 1;
           }
           rv = snprintf( str, 4096, " %s = (%s!==1'b1) & (%s===1'b1);", name, tname, event_str );
           assert( rv < 4096 );
@@ -1467,10 +1468,11 @@ void generator_insert_event_comb_cov(
 
       case EXP_OP_NEDGE :
         {
-          if( reg_needed ) {
+          if( reg_needed && (exp->suppl.part.eval_t == 0) ) {
             rv = snprintf( str, 4096, "reg %s;\n", tname );
             assert( rv < 4096 );
             generator_insert_reg( str );
+            exp->suppl.part.eval_t = 1;
           }
           rv = snprintf( str, 4096, " %s = (%s!==1'b0) & (%s===1'b0);", name, tname, event_str );
           assert( rv < 4096 );
@@ -1488,7 +1490,7 @@ void generator_insert_event_comb_cov(
 
       case EXP_OP_AEDGE :
         {
-          if( reg_needed ) {
+          if( reg_needed && (exp->suppl.part.eval_t == 0) ) {
             int   number;
             char* size = generator_gen_size( exp->right, funit, &number );
             if( number >= 0 ) {
@@ -1499,6 +1501,7 @@ void generator_insert_event_comb_cov(
             assert( rv < 4096 );
             generator_insert_reg( str );
             free_safe( size, (strlen( size ) + 1) );
+            exp->suppl.part.eval_t = 1;
           }
           rv = snprintf( str, 4096, " %s = (%s!==%s);", name, tname, event_str );
           assert( rv < 4096 );
@@ -1898,7 +1901,7 @@ static char* generator_create_lhs(
   } else {
 
     /* Create sized register string */
-    if( reg_needed ) {
+    if( reg_needed && (exp->suppl.part.eval_t == 0) ) {
 
       unsigned int slen;
       char*        str;
@@ -1931,6 +1934,8 @@ static char* generator_create_lhs(
       assert( rv < slen );
       generator_insert_reg( str );
       free_safe( str, (strlen( str ) + 1) );
+
+      exp->suppl.part.eval_t = 1;
 
     }
 
@@ -2744,7 +2749,7 @@ static void generator_insert_mem_cov(
        We are reusing the comb_cntd bit in the expression supplemental field to indicate that this expression
        has or has not been created.
       */
-      if( rhs->suppl.part.comb_cntd == 0 ) {
+      if( rhs->suppl.part.eval_t == 0 ) {
 
         char* size;
         int   number;
@@ -2772,7 +2777,7 @@ static void generator_insert_mem_cov(
         str_link_add( value, &tmp_head, &tmp_tail );
 
         /* Specify that the expression has been placed */
-        rhs->suppl.part.comb_cntd = 1;
+        rhs->suppl.part.eval_t = 1;
 
         free_safe( size, (strlen( size ) + 1) );
 
