@@ -996,7 +996,7 @@ static void gen_item_resolve(
           }
           rv = snprintf( inst_name, 4096, "%s[%d]", gi->elem.inst->name, vector_to_int( genvar->value ) );
           assert( rv < 4096 );
-          (void)instance_parse_add( &inst, inst->funit, gi->elem.inst->funit, inst_name, NULL, FALSE, TRUE );
+          (void)instance_parse_add( &inst, inst->funit, gi->elem.inst->funit, inst_name, NULL, FALSE, TRUE, FALSE, TRUE );
           rv = snprintf( inst_name, 4096, "%s.%s[%d]", inst->name, gi->elem.inst->name, vector_to_int( genvar->value ) );
           assert( rv < 4096 );
           if( (child = instance_find_scope( inst, inst_name, TRUE )) != NULL ) {
@@ -1005,7 +1005,7 @@ static void gen_item_resolve(
         } else {
           char         inst_name[4096];
           unsigned int rv;
-          (void)instance_parse_add( &inst, inst->funit, gi->elem.inst->funit, gi->elem.inst->name, NULL, FALSE, TRUE );
+          (void)instance_parse_add( &inst, inst->funit, gi->elem.inst->funit, gi->elem.inst->name, NULL, FALSE, TRUE, FALSE, TRUE );
           rv = snprintf( inst_name, 4096, "%s.%s", inst->name, gi->elem.inst->name );
           assert( rv < 4096 );
           child = instance_find_scope( inst, inst_name, TRUE );

@@ -161,40 +161,79 @@ void db_add_override_param(
 );
 
 /*! \brief Adds specified defparam to parameter override list.  Called by parser. */
-void db_add_defparam( char* name, expression* expr );
+void db_add_defparam(
+  char*       name,
+  expression* expr
+);
 
 /*! \brief Adds specified vsignal to vsignal list.  Called by parser. */
-void db_add_signal( char* name, int type, sig_range* prange, sig_range* urange, bool is_signed, bool mba, int line, int col, bool handled );
+void db_add_signal(
+  char*      name,
+  int        type,
+  sig_range* prange,
+  sig_range* urange,
+  bool       is_signed,
+  bool       mba,
+  int        line,
+  int        col,
+  bool       handled
+);
 
 /*! \brief Creates statement block that acts like a fork join block from a standard statement block */
-statement* db_add_fork_join( statement* stmt );
+statement* db_add_fork_join(
+  statement* stmt
+);
 
 /*! \brief Creates an enumerated list based on the given parameters */
-void db_add_enum( vsignal* enum_sig, static_expr* value );
+void db_add_enum(
+  vsignal*     enum_sig,
+  static_expr* value
+);
 
 /*! \brief Called after all enumerated values for the current list have been added */
 void db_end_enum_list();
 
 /*! \brief Adds given typedefs to the database */
-void db_add_typedef( const char* name, bool is_signed, bool is_handled, bool is_sizable, sig_range* prange, sig_range* urange );
+void db_add_typedef(
+  const char* name,
+  bool        is_signed,
+  bool        is_handled,
+  bool        is_sizable,
+  sig_range*  prange,
+  sig_range*  urange
+);
 
 /*! \brief Called when the endmodule keyword is parsed. */
-void db_end_module( int end_line );
+void db_end_module(
+  int end_line
+);
 
 /*! \brief Called when the endfunction or endtask keyword is parsed. */
-void db_end_function_task( int end_line );
+void db_end_function_task(
+  int end_line
+);
 
 /*! \brief Finds specified signal in functional unit and returns pointer to the signal structure.  Called by parser. */
-vsignal* db_find_signal( char* name, bool okay_if_not_found );
+vsignal* db_find_signal(
+  char* name,
+  bool  okay_if_not_found
+);
 
 /*! \brief Adds a generate block to the database.  Called by parser. */
-void db_add_gen_item_block( gen_item* gi );
+void db_add_gen_item_block(
+  gen_item* gi
+);
 
 /*! \brief Find specified generate item in the current functional unit.  Called by parser. */
-gen_item* db_find_gen_item( gen_item* root, gen_item* gi );
+gen_item* db_find_gen_item(
+  gen_item* root,
+  gen_item* gi
+);
 
 /*! \brief Finds specified typedef and returns TRUE if it is found */
-typedef_item* db_find_typedef( const char* name );
+typedef_item* db_find_typedef(
+  const char* name
+);
 
 /*! \brief Returns a pointer to the current implicitly connected generate block.  Called by parser. */
 gen_item* db_get_curr_gen_block();
@@ -213,7 +252,10 @@ expression* db_create_expression(
 );
 
 /*! \brief Binds all necessary sub-expressions in the given tree to the given signal name */
-void db_bind_expr_tree( expression* root, char* sig_name );
+void db_bind_expr_tree(
+  expression* root,
+  char*       sig_name
+);
 
 /*! \brief Creates an expression from the specified static expression */
 expression* db_create_expr_from_static(
@@ -225,70 +267,123 @@ expression* db_create_expr_from_static(
 );
 
 /*! \brief Adds specified expression to expression list.  Called by parser. */
-void db_add_expression( expression* root );
+void db_add_expression(
+  expression* root
+);
 
 /*! \brief Creates an expression tree sensitivity list for the given statement block */
-expression* db_create_sensitivity_list( statement* stmt );
+expression* db_create_sensitivity_list(
+  statement* stmt
+);
 
 /*! \brief Checks specified statement for parallelization and if it must be, creates a parallel statement block */
-statement* db_parallelize_statement( statement* stmt );
+statement* db_parallelize_statement(
+  statement* stmt
+);
 
 /*! \brief Creates new statement expression from specified information.  Called by parser. */
-statement* db_create_statement( expression* exp );
+statement* db_create_statement(
+  expression* exp
+);
 
 /*! \brief Adds specified statement to current functional unit's statement list.  Called by parser. */
-void db_add_statement( statement* stmt, statement* start );
+void db_add_statement(
+  statement* stmt,
+  statement* start
+);
 
 /*! \brief Removes specified statement from current functional unit. */
-void db_remove_statement_from_current_funit( statement* stmt );
+void db_remove_statement_from_current_funit(
+  statement* stmt
+);
 
 /*! \brief Removes specified statement and associated expression from list and memory. */
-void db_remove_statement( statement* stmt );
+void db_remove_statement(
+  statement* stmt
+);
 
 /*! \brief Connects gi2 to the true path of gi1 */
-void db_gen_item_connect_true( gen_item* gi1, gen_item* gi2 );
+void db_gen_item_connect_true(
+  gen_item* gi1,
+  gen_item* gi2
+);
 
 /*! \brief Connects gi2 to the false path of gi1 */
-void db_gen_item_connect_false( gen_item* gi1, gen_item* gi2 );
+void db_gen_item_connect_false(
+  gen_item* gi1,
+  gen_item* gi2
+);
 
 /*! \brief Connects one generate item block to another. */
-void db_gen_item_connect( gen_item* gi1, gen_item* gi2 );
+void db_gen_item_connect(
+  gen_item* gi1,
+  gen_item* gi2
+);
 
 /*! \brief Connects one statement block to another. */
-bool db_statement_connect( statement* curr_stmt, statement* next_stmt );
+bool db_statement_connect(
+  statement* curr_stmt,
+  statement* next_stmt
+);
 
 /*! \brief Connects true statement to specified statement. */
-void db_connect_statement_true( statement* stmt, statement* exp_true );
+void db_connect_statement_true(
+  statement* stmt,
+  statement* exp_true
+);
 
 /*! \brief Connects false statement to specified statement. */
-void db_connect_statement_false( statement* stmt, statement* exp_false );
+void db_connect_statement_false(
+  statement* stmt,
+  statement* exp_false
+);
 
 /*! \brief Allocates and initializes an attribute parameter. */
-attr_param* db_create_attr_param( char* name, expression* expr );
+attr_param* db_create_attr_param(
+  char*       name,
+  expression* expr
+);
 
 /*! \brief Parses the specified attribute parameter list for Covered attributes */
-void db_parse_attribute( attr_param* ap );
+void db_parse_attribute(
+  attr_param* ap
+);
 
 /*! \brief Searches entire design for expressions that call the specified statement */
-void db_remove_stmt_blks_calling_statement( statement* stmt );
+void db_remove_stmt_blks_calling_statement(
+  statement* stmt
+);
 
 /*! \brief Synchronizes the curr_instance pointer to match the curr_inst_scope hierarchy */
 void db_sync_curr_instance();
 
 /*! \brief Sets current VCD scope to specified scope. */
-void db_set_vcd_scope( const char* scope );
+void db_set_vcd_scope(
+  const char* scope
+);
 
 /*! \brief Moves current VCD hierarchy up one level */
 void db_vcd_upscope();
 
 /*! \brief Adds symbol to signal specified by name. */
-void db_assign_symbol( const char* name, const char* symbol, int msb, int lsb );
+void db_assign_symbol(
+  char*       name,
+  const char* symbol,
+  int         msb,
+  int         lsb
+);
 
 /*! \brief Sets the found symbol value to specified character value.  Called by VCD lexer. */
-void db_set_symbol_char( const char* sym, char value );
+void db_set_symbol_char(
+  const char* sym,
+  char        value
+);
 
 /*! \brief Sets the found symbol value to specified string value.  Called by VCD lexer. */
-void db_set_symbol_string( const char* sym, const char* value );
+void db_set_symbol_string(
+  const char* sym,
+  const char* value
+);
 
 /*! \brief Performs a timestep for all signal changes during this timestep. */
 bool db_do_timestep(

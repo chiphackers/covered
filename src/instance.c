@@ -77,12 +77,12 @@ static void instance_display_tree_helper(
   if( root->funit != NULL ) {
     char* piname = scope_gen_printable( root->name );
     char* pfname = scope_gen_printable( root->funit->name );
-    printf( "%s%s (%s) - %p\n", prefix, piname, pfname, root );
+    printf( "%s%s (%s) - %p (ign: %d, gend: %d)\n", prefix, piname, pfname, root, root->suppl.ignore, root->suppl.gend_scope );
     free_safe( piname, (strlen( piname ) + 1) );
     free_safe( pfname, (strlen( pfname ) + 1) );
   } else {
     char* piname = scope_gen_printable( root->name );
-    printf( "%s%s () - %p\n", prefix, piname, root );
+    printf( "%s%s () - %p (%d %d)\n", prefix, piname, root, root->suppl.ignore, root->suppl.gend_scope );
     free_safe( piname, (strlen( piname ) + 1) );
   }
 
@@ -123,27 +123,31 @@ void instance_display_tree(
  returns a pointer to it.
 */
 funit_inst* instance_create(
-  func_unit*    funit,      /*!< Pointer to functional unit to store in this instance */
-  char*         inst_name,  /*!< Instantiated name of this instance */
-  bool          name_diff,  /*!< Specifies if the inst_name provided is not accurate due to merging */
-  vector_width* range       /*!< For arrays of instances, contains range information for this array */
+  func_unit*    funit,       /*!< Pointer to functional unit to store in this instance */
+  char*         inst_name,   /*!< Instantiated name of this instance */
+  bool          name_diff,   /*!< Specifies if the inst_name provided is not accurate due to merging */
+  bool          ignore,      /*!< Specifies that this instance is just a placeholder, not to be written to CDD */
+  bool          gend_scope,  /*!< Specifies if this instance is a generated scope */
+  vector_width* range        /*!< For arrays of instances, contains range information for this array */
 ) { PROFILE(INSTANCE_CREATE);
 
   funit_inst* new_inst;  /* Pointer to new functional unit instance */
 
-  new_inst             = (funit_inst*)malloc_safe( sizeof( funit_inst ) );
-  new_inst->funit      = funit;
-  new_inst->name       = strdup_safe( inst_name );
-  new_inst->name_diff  = name_diff;
-  new_inst->stat       = NULL;
-  new_inst->param_head = NULL;
-  new_inst->param_tail = NULL;
-  new_inst->gitem_head = NULL;
-  new_inst->gitem_tail = NULL;
-  new_inst->parent     = NULL;
-  new_inst->child_head = NULL;
-  new_inst->child_tail = NULL;
-  new_inst->next       = NULL;
+  new_inst                   = (funit_inst*)malloc_safe( sizeof( funit_inst ) );
+  new_inst->funit            = funit;
+  new_inst->name             = strdup_safe( inst_name );
+  new_inst->suppl.name_diff  = name_diff;
+  new_inst->suppl.ignore     = ignore;
+  new_inst->suppl.gend_scope = gend_scope;
+  new_inst->stat             = NULL;
+  new_inst->param_head       = NULL;
+  new_inst->param_tail       = NULL;
+  new_inst->gitem_head       = NULL;
+  new_inst->gitem_tail       = NULL;
+  new_inst->parent           = NULL;
+  new_inst->child_head       = NULL;
+  new_inst->child_tail       = NULL;
+  new_inst->next             = NULL;
 
   /* Create range (get a copy since this memory is managed by the parser) */
   if( range == NULL ) {
@@ -536,26 +540,28 @@ int instance_find_fsm_arc_index_by_exclusion_id(
  instance, and resolves any parameters.
 */
 static funit_inst* instance_add_child(
-  funit_inst*   inst,    /*!< Pointer to instance to add child instance to */
-  func_unit*    child,   /*!< Pointer to child functional unit to create instance for */
-  char*         name,    /*!< Name of instance to add */
-  vector_width* range,   /*!< For arrays of instances, contains the range of the instance array */
-  bool          resolve  /*!< Set to TRUE if newly added instance should be immediately resolved */
+  funit_inst*   inst,          /*!< Pointer to instance to add child instance to */
+  func_unit*    child,         /*!< Pointer to child functional unit to create instance for */
+  char*         name,          /*!< Name of instance to add */
+  vector_width* range,         /*!< For arrays of instances, contains the range of the instance array */
+  bool          resolve,       /*!< Set to TRUE if newly added instance should be immediately resolved */
+  bool          ignore_child,  /*!< Set to TRUE if the child to be added should not be written to a CDD file */
+  bool          gend_scope     /*!< Set to TRUE if the child scope is a generated scope */
 ) { PROFILE(INSTANCE_ADD_CHILD);
 
   funit_inst* new_inst;  /* Pointer to newly created instance to add */
 
   /* Check to see if this instance already exists */
   new_inst = inst->child_head;
-  while( (new_inst != NULL) && (strcmp( new_inst->name, name ) != 0) ) {
+  while( (new_inst != NULL) && ((strcmp( new_inst->name, name ) != 0) || (new_inst->funit != child)) ) {
     new_inst = new_inst->next;
   }
 
-  /* If this instance already exists, don't add it again */
-  if( new_inst == NULL ) {
+  /* If this instance already exists (unless the existing and new child is a placeholder), don't add it again */
+  if( (new_inst == NULL) || (new_inst->suppl.ignore && ignore_child) ) {
 
     /* Generate new instance */
-    new_inst = instance_create( child, name, FALSE, range );
+    new_inst = instance_create( child, name, FALSE, ignore_child, gend_scope, range );
 
     /* Add new instance to inst child instance list */
     if( inst->child_head == NULL ) {
@@ -579,6 +585,9 @@ static funit_inst* instance_add_child(
 
   } else {
 
+    /* Set the ignore value in the instance to FALSE */
+    new_inst->suppl.ignore = FALSE;
+
     new_inst = NULL;
 
   }
@@ -595,13 +604,14 @@ static funit_inst* instance_add_child(
  Recursively copies the instance tree of from_inst to the instance
  to_inst, allocating memory for the new instances and resolving parameters.
 */
-funit_inst* instance_copy(
+static funit_inst* instance_copy_helper(
   funit_inst*   from_inst,  /*!< Pointer to instance tree to copy */
   funit_inst*   to_inst,    /*!< Pointer to instance to copy tree to */
   char*         name,       /*!< Instance name of current instance being copied */
   vector_width* range,      /*!< For arrays of instances, indicates the array range */
-  bool          resolve     /*!< Set to TRUE if newly added instance should be immediately resolved */
-) { PROFILE(INSTANCE_COPY);
+  bool          resolve,    /*!< Set to TRUE if newly added instance should be immediately resolved */
+  bool          is_root     /*!< Set to TRUE if the from_inst is the root instance */
+) { PROFILE(INSTANCE_COPY_HELPER);
 
   funit_inst* curr;      /* Pointer to current functional unit instance to copy */
   funit_inst* new_inst;  /* Pointer to newly created functional unit instance */
@@ -611,7 +621,7 @@ funit_inst* instance_copy(
   assert( name      != NULL );
 
   /* Add new child instance */
-  new_inst = instance_add_child( to_inst, from_inst->funit, name, range, resolve );
+  new_inst = instance_add_child( to_inst, from_inst->funit, name, range, resolve, (from_inst->suppl.ignore && from_inst->suppl.gend_scope && !is_root), from_inst->suppl.gend_scope );
 
   /* Do not add children if no child instance was created */
   if( new_inst != NULL ) {
@@ -619,11 +629,35 @@ funit_inst* instance_copy(
     /* Iterate through rest of current child's list of children */
     curr = from_inst->child_head;
     while( curr != NULL ) {
-      (void)instance_copy( curr, new_inst, curr->name, curr->range, resolve );
+      (void)instance_copy_helper( curr, new_inst, curr->name, curr->range, resolve, FALSE );
       curr = curr->next;
     }
 
   }
+
+  PROFILE_END;
+
+  return( new_inst );
+
+}
+
+/*!
+ \return Returns a pointer to the newly added instance; otherwise, returns NULL if a new instance was not added.
+
+ Recursively copies the instance tree of from_inst to the instance
+ to_inst, allocating memory for the new instances and resolving parameters.
+*/
+funit_inst* instance_copy(
+  funit_inst*   from_inst,  /*!< Pointer to instance tree to copy */
+  funit_inst*   to_inst,    /*!< Pointer to instance to copy tree to */
+  char*         name,       /*!< Instance name of current instance being copied */
+  vector_width* range,      /*!< For arrays of instances, indicates the array range */
+  bool          resolve     /*!< Set to TRUE if newly added instance should be immediately resolved */
+) { PROFILE(INSTANCE_COPY);
+
+  funit_inst* new_inst;
+
+  new_inst = instance_copy_helper( from_inst, to_inst, name, range, resolve, TRUE );
 
   PROFILE_END;
 
@@ -641,13 +675,15 @@ funit_inst* instance_copy(
  function during the parsing stage.
 */
 bool instance_parse_add(
-  funit_inst**  root,       /*!< Root funit_inst pointer of functional unit instance tree */
-  func_unit*    parent,     /*!< Pointer to parent functional unit of specified child */
-  func_unit*    child,      /*!< Pointer to child functional unit to add */
-  char*         inst_name,  /*!< Name of new functional unit instance */
-  vector_width* range,      /*!< For array of instances, specifies the name range */
-  bool          resolve,    /*!< If set to TRUE, resolve any added instance */
-  bool          child_gend  /*!< If set to TRUE, specifies that child is a generated instance and should only be added once */
+  funit_inst**  root,          /*!< Root funit_inst pointer of functional unit instance tree */
+  func_unit*    parent,        /*!< Pointer to parent functional unit of specified child */
+  func_unit*    child,         /*!< Pointer to child functional unit to add */
+  char*         inst_name,     /*!< Name of new functional unit instance */
+  vector_width* range,         /*!< For array of instances, specifies the name range */
+  bool          resolve,       /*!< If set to TRUE, resolve any added instance */
+  bool          child_gend,    /*!< If set to TRUE, specifies that child is a generated instance and should only be added once */
+  bool          ignore_child,  /*!< If set to TRUE, causes the child instance to be ignored when writing to CDD file */
+  bool          gend_scope     /*!< If set to TRUE, the child instance is a generated scope */
 ) { PROFILE(INSTANCE_PARSE_ADD);
   
   bool        retval = TRUE;  /* Return value for this function */
@@ -658,7 +694,7 @@ bool instance_parse_add(
 
   if( *root == NULL ) {
 
-    *root = instance_create( child, inst_name, FALSE, range );
+    *root = instance_create( child, inst_name, FALSE, ignore_child, gend_scope, range );
 
   } else {
 
@@ -687,7 +723,7 @@ bool instance_parse_add(
 
       ignore = 0;
       while( (ignore >= 0) && ((inst = instance_find_by_funit( *root, parent, &ignore )) != NULL) ) {
-        cinst = instance_add_child( inst, child, inst_name, range, resolve );
+        cinst = instance_add_child( inst, child, inst_name, range, resolve, ignore_child, gend_scope );
         i++;
         ignore = (child_gend && (cinst != NULL)) ? -1 : i;
       }
@@ -761,7 +797,7 @@ bool instance_resolve_inst(
       assert( rv < slen );
 
       /* Add the instance */
-      (void)instance_parse_add( &root, ((curr->parent == NULL) ? NULL : curr->parent->funit), curr->funit, new_name, NULL, TRUE, FALSE );
+      (void)instance_parse_add( &root, ((curr->parent == NULL) ? NULL : curr->parent->funit), curr->funit, new_name, NULL, TRUE, FALSE, FALSE, FALSE );
 
     }
 
@@ -841,7 +877,7 @@ bool instance_read_add(
 
   if( *root == NULL ) {
 
-    *root = instance_create( child, inst_name, FALSE, NULL );
+    *root = instance_create( child, inst_name, FALSE, FALSE, FALSE, NULL );
 
   } else {
 
@@ -850,7 +886,7 @@ bool instance_read_add(
     if( (inst = instance_find_scope( *root, parent, FALSE )) != NULL ) {
 
       /* Create new instance */
-      new_inst = instance_create( child, inst_name, FALSE, NULL );
+      new_inst = instance_create( child, inst_name, FALSE, FALSE, FALSE, NULL );
 
       if( inst->child_head == NULL ) {
         inst->child_head = new_inst;
@@ -1005,7 +1041,7 @@ static void instance_mark_lhier_diffs(
    not accurate since its child tree with a child tree with a differen parent scope.
   */
   while( root1 != NULL ) {
-    root1->name_diff = TRUE;
+    root1->suppl.name_diff = TRUE;
     root1 = root1->parent;
   }
 
@@ -1113,7 +1149,7 @@ void instance_db_write(
 
   if( root->funit != NULL ) {
 
-    if( root->funit->suppl.part.type != FUNIT_NO_SCORE ) {
+    if( (root->funit->suppl.part.type != FUNIT_NO_SCORE) && !root->suppl.ignore ) {
 
       funit_inst* curr = parse_mode ? root : NULL;
 
@@ -1158,7 +1194,7 @@ void instance_db_write(
       }
 
       /* Display root functional unit */
-      funit_db_write( root->funit, scope, root->name_diff, file, curr, report_save, issue_ids );
+      funit_db_write( root->funit, scope, root->suppl.name_diff, file, curr, report_save, issue_ids );
 
     } else {
 
@@ -1168,7 +1204,7 @@ void instance_db_write(
 
   } else {
 
-    fprintf( file, "%d %s %d\n", DB_TYPE_INST_ONLY, scope, root->name_diff );
+    fprintf( file, "%d %s %d\n", DB_TYPE_INST_ONLY, scope, root->suppl.name_diff );
 
   }
 
@@ -1213,7 +1249,7 @@ void instance_only_db_read(
     scope_extract_back( scope, back, rest ); 
 
     /* Create "placeholder" instance */
-    child = instance_create( NULL, back, name_diff, NULL );
+    child = instance_create( NULL, back, name_diff, FALSE, FALSE, NULL );
 
     /* If we are the top-most instance, just add ourselves to the instance link list */
     if( rest[0] == '\0' ) {
@@ -1273,7 +1309,7 @@ void instance_only_db_merge(
     scope_extract_back( scope, back, rest );
 
     /* Create "placeholder" instance */
-    child = instance_create( NULL, back, name_diff, NULL );
+    child = instance_create( NULL, back, name_diff, FALSE, FALSE, NULL );
 
     /* If we are the top-most instance, just add ourselves to the instance link list */
     if( rest[0] == '\0' ) {

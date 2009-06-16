@@ -2796,7 +2796,13 @@ struct case_gitem_s {
 */
 struct funit_inst_s {
   char*         name;                /*!< Instance name of this functional unit instance */
-  bool          name_diff;           /*!< If set to TRUE, means that this instance name is not accurate due to merging */
+  struct {
+    uint8 name_diff : 1;             /*!< If set to TRUE, means that this instance name is not accurate due to merging */
+    uint8 ignore    : 1;             /*!< If set to TRUE, causes this instance to not be written to the CDD file (used
+                                          as a placeholder in the instance tree for functional unit that will be generated
+                                          at a later time). */
+    uint8 gend_scope: 1;             /*!< Set to 1 if this instance is a generated scope */
+  } suppl;                           /*!< Supplemental field for the instance */
   func_unit*    funit;               /*!< Pointer to functional unit this instance represents */
   statistic*    stat;                /*!< Pointer to statistic holder */
   vector_width* range;               /*!< Used to create an array of instances */

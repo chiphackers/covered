@@ -713,7 +713,7 @@ static bool fsm_instance_summary(
   /* Generate printable version of instance name */
   pname = scope_gen_printable( root->name );
 
-  if( db_is_unnamed_scope( pname ) || root->name_diff ) {
+  if( db_is_unnamed_scope( pname ) || root->suppl.name_diff ) {
     strcpy( tmpname, parent_inst );
   } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
@@ -1115,7 +1115,7 @@ static void fsm_instance_verbose(
   /* Get printable version of instance name */
   pname = scope_gen_printable( root->name );
 
-  if( db_is_unnamed_scope( pname ) || root->name_diff ) {
+  if( db_is_unnamed_scope( pname ) || root->suppl.name_diff ) {
     strcpy( tmpname, parent_inst );
   } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
@@ -1247,7 +1247,7 @@ void fsm_report(
 
     instl = db_list[curr_db]->inst_head;
     while( instl != NULL ) {
-      missed_found |= fsm_instance_summary( ofile, instl->inst, (instl->inst->name_diff ? "<NA>" : "*"), &acc_st_hits, &acc_st_total, &acc_arc_hits, &acc_arc_total );
+      missed_found |= fsm_instance_summary( ofile, instl->inst, (instl->inst->suppl.name_diff ? "<NA>" : "*"), &acc_st_hits, &acc_st_total, &acc_arc_hits, &acc_arc_total );
       instl = instl->next;
     }
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -1257,7 +1257,7 @@ void fsm_report(
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       instl = db_list[curr_db]->inst_head;
       while( instl != NULL ) {
-        fsm_instance_verbose( ofile, instl->inst, (instl->inst->name_diff ? "<NA>" : "*") );
+        fsm_instance_verbose( ofile, instl->inst, (instl->inst->suppl.name_diff ? "<NA>" : "*") );
         instl = instl->next;
       }
     }

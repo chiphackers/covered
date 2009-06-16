@@ -31,6 +31,8 @@ funit_inst* instance_create(
              func_unit*    funit,
              char*         inst_name,
              bool          name_diff,
+             bool          ignore,
+             bool          gend_scope,
   /*@null@*/ vector_width* range
 );
 
@@ -99,7 +101,9 @@ bool instance_parse_add(
   char*         inst_name,
   vector_width* range,
   bool          resolve,
-  bool          child_gend
+  bool          child_gend,
+  bool          ignore_child,
+  bool          gend_scope
 );
 
 /*! \brief Resolves all instance arrays. */

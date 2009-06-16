@@ -565,7 +565,7 @@ void db_read(
                   /* Attempt to add it to the last instance tree */
                   if( (db_list[curr_db]->inst_tail == NULL) ||
                       !instance_read_add( &(db_list[curr_db]->inst_tail->inst), parent_scope, curr_funit, back ) ) {
-                    (void)inst_link_add( instance_create( curr_funit, funit_scope, inst_name_diff, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
+                    (void)inst_link_add( instance_create( curr_funit, funit_scope, inst_name_diff, FALSE, FALSE, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
                   }
 
                 }
@@ -692,7 +692,7 @@ void db_read(
       /* Attempt to add it to the last instance tree */
       if( (db_list[curr_db]->inst_tail == NULL) ||
           !instance_read_add( &(db_list[curr_db]->inst_tail->inst), parent_scope, curr_funit, back ) ) {
-        (void)inst_link_add( instance_create( curr_funit, funit_scope, inst_name_diff, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
+        (void)inst_link_add( instance_create( curr_funit, funit_scope, inst_name_diff, FALSE, FALSE, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
       }
 
     }
@@ -1143,23 +1143,13 @@ func_unit* db_add_instance(
       Throw 0;
     }
 
-    /* If we are currently within a generate block, create a generate item for this instance to resolve it later */
-    if( generate_top_mode > 0 ) {
-      last_gi = gen_item_create_inst( instance_create( found_funit_link->funit, scope, FALSE, range ) );
-      if( curr_gi_block != NULL ) {
-        db_gen_item_connect( curr_gi_block, last_gi );
-      } else {
-        curr_gi_block = last_gi;
+    if( (last_gi == NULL) || (last_gi->suppl.part.type != GI_TYPE_INST) || !instance_parse_add( &last_gi->elem.inst, curr_funit, found_funit_link->funit, scope, range, FALSE, TRUE, FALSE, FALSE ) ) {
+      inst_link* instl = db_list[curr_db]->inst_head;
+      while( (instl != NULL) && !instance_parse_add( &instl->inst, curr_funit, found_funit_link->funit, scope, range, FALSE, FALSE, FALSE, FALSE ) ) {
+        instl = instl->next;
       }
-    } else {
-      if( (last_gi == NULL) || (last_gi->suppl.part.type != GI_TYPE_INST) || !instance_parse_add( &last_gi->elem.inst, curr_funit, found_funit_link->funit, scope, range, FALSE, TRUE ) ) {
-        inst_link* instl = db_list[curr_db]->inst_head;
-        while( (instl != NULL) && !instance_parse_add( &instl->inst, curr_funit, found_funit_link->funit, scope, range, FALSE, FALSE ) ) {
-          instl = instl->next;
-        }
-        if( instl == NULL ) {
-          (void)inst_link_add( instance_create( found_funit_link->funit, scope, FALSE, range ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
-        }
+      if( instl == NULL ) {
+        (void)inst_link_add( instance_create( found_funit_link->funit, scope, FALSE, FALSE, FALSE, range ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
       }
     }
 
@@ -1172,21 +1162,22 @@ func_unit* db_add_instance(
 
     /* If we are currently within a generate block, create a generate item for this instance to resolve it later */
     if( generate_top_mode > 0 ) {
-      last_gi = gen_item_create_inst( instance_create( funit, scope, FALSE, range ) );
+      last_gi = gen_item_create_inst( instance_create( funit, scope, FALSE, FALSE, FALSE, range ) );
       if( curr_gi_block != NULL ) {
         db_gen_item_connect( curr_gi_block, last_gi );
       } else {
         curr_gi_block = last_gi;
       }
-    } else {
-      if( (last_gi == NULL) || (last_gi->suppl.part.type != GI_TYPE_INST) || !instance_parse_add( &last_gi->elem.inst, curr_funit, funit, scope, range, FALSE, TRUE ) ) {
-        inst_link* instl = db_list[curr_db]->inst_head;
-        while( (instl != NULL) && !instance_parse_add( &instl->inst, curr_funit, funit, scope, range, FALSE, FALSE ) ) {
-          instl = instl->next;
-        }
-        if( instl == NULL ) {
-          (void)inst_link_add( instance_create( funit, scope, FALSE, range ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
-        }
+    }
+
+    /* Add the instance to the instance tree in the proper place */
+    {
+      inst_link* instl = db_list[curr_db]->inst_head;
+      while( (instl != NULL) && !instance_parse_add( &instl->inst, curr_funit, funit, scope, range, FALSE, FALSE, (generate_top_mode > 0), (generate_expr_mode > 0) ) ) {
+        instl = instl->next;
+      }
+      if( instl == NULL ) {
+        (void)inst_link_add( instance_create( funit, scope, FALSE, (generate_top_mode > 0), (generate_expr_mode > 0), range ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
       }
     }
 
@@ -3047,7 +3038,7 @@ void db_vcd_upscope() { PROFILE(DB_VCD_UPSCOPE);
  Creates a new entry in the symbol table for the specified signal and symbol.
 */
 void db_assign_symbol(
-  const char* name,    /*!< Name of signal/expression to set value to */
+  char*       name,    /*!< Name of signal/expression to set value to */
   const char* symbol,  /*!< Symbol of the associated signal/expression symbol */
   int         msb,     /*!< Most significant bit of symbol to set */
   int         lsb      /*!< Least significant bit of symbol to set */
@@ -3067,16 +3058,32 @@ void db_assign_symbol(
   assert( name != NULL );
 
   if( (curr_instance != NULL) && (curr_instance->funit != NULL) ) {
-    
-    if( info_suppl.part.inlined && ((strncmp( name, "\\covered$", 9 ) == 0) || (strncmp( name, "covered$", 8 ) == 0)) ) {
 
-      unsigned int index = (name[0] == '\\') ? 9 : 8;
+    char* found_str;
+    
+    if( info_suppl.part.inlined && (((found_str = strstr( name, "\\covered$" )) != NULL) || ((found_str = strstr( name, "covered$" )) != NULL)) ) {
+
+      unsigned int index = (found_str - name) + ((name[found_str-name] == '\\') ? 9 : 8);
       char         type  = name[index];
 
       /* If the type is an x (temporary register) or a y (temporary wire), don't continue on */
       if( (type != 'x') && (type != 'X') && (type != 'i') && (type != 'I') && (type != 'Z') ) {
 
-        expression* exp;
+        expression*  exp;
+        funit_inst*  curr_inst = curr_instance;
+        unsigned int rv;
+
+        /*
+         If the covered string was not at the beginning of the name string, we have some hierarchical referencing in the signal name that
+         we need to resolve.
+        */
+        if( found_str != name ) {
+          char tscope[4096];
+          name[(found_str-name)-1] = '\0';
+          rv   = snprintf( tscope, 4096, "%s.%s", curr_instance->name, name );
+          assert( rv < 4096 );
+          curr_inst = instance_find_scope( curr_instance, tscope, FALSE );
+        }
 
         /* Handle line coverage */
         if( type == 'L' ) {
@@ -3084,11 +3091,10 @@ void db_assign_symbol(
           int          fline;
           int          lline;
           int          col;
-          unsigned int rv;
           char         scope[4096];
           exp_link*    expl;
           expression*  last_exp;
-          funit_inst*  inst = curr_instance;
+          funit_inst*  inst = curr_inst;
 
           /* Extract the line, first column and funit scope information from name */
           if( sscanf( (name + (index + 1)), "%d_%d_%x$%s", &fline, &lline, &col, scope ) == 4 ) {
@@ -3096,9 +3102,9 @@ void db_assign_symbol(
             char tscope[4096];
 
             /* Get the relative instance that contains the expression */
-            rv   = snprintf( tscope, 4096, "%s.%s", curr_instance->name, scope );
+            rv   = snprintf( tscope, 4096, "%s.%s", curr_inst->name, scope );
             assert( rv < 4096 );
-            inst = instance_find_scope( curr_instance, tscope, FALSE );
+            inst = instance_find_scope( curr_inst, tscope, FALSE );
 
           } else {
 
@@ -3130,11 +3136,12 @@ void db_assign_symbol(
           fsm_link*    fsml;
           unsigned int id;
           unsigned int count = 1;
-          unsigned int rv    = sscanf( (name + (index + 1)), "%d", &id );
+
+          rv = sscanf( (name + (index + 1)), "%d", &id );
           assert( rv == 1 );
 
           /* Find the matching FSM table */
-          fsml = curr_instance->funit->fsm_head;
+          fsml = curr_inst->funit->fsm_head;
           while( (fsml != NULL) && (count != id ) ) {
             fsml = fsml->next;
             count++;
@@ -3149,25 +3156,24 @@ void db_assign_symbol(
           int          fline;
           int          lline;
           int          col;
-          unsigned int rv;
           char         scope[4096];
           char         mname[4096];
           exp_link*    expl;
           expression*  last_exp;
-          funit_inst*  inst = curr_instance;
+          funit_inst*  inst = curr_inst;
 
           if( sscanf( (name + (index + 1)), "%d_%d_%x$%[^$]$%s", &fline, &lline, &col, mname, scope ) == 5 ) {
 
             char        tscope[4096];
 
             /* Get the relative instance that contains the expression */
-            rv   = snprintf( tscope, 4096, "%s.%s", curr_instance->name, scope );
+            rv   = snprintf( tscope, 4096, "%s.%s", curr_inst->name, scope );
             assert( rv < 4096 );
-            inst = instance_find_scope( curr_instance, tscope, FALSE );
+            inst = instance_find_scope( curr_inst, tscope, FALSE );
 
           } else {
 
-            unsigned int rv = sscanf( (name + (index + 1)), "%d_%d_%x$%s", &fline, &lline, &col, mname );
+            rv = sscanf( (name + (index + 1)), "%d_%d_%x$%s", &fline, &lline, &col, mname );
             assert( rv == 4 );
 
           }
@@ -3195,11 +3201,10 @@ void db_assign_symbol(
           int          fline;
           int          lline;
           int          col;
-          unsigned int rv;
           char         scope[4096];
           exp_link*    expl;
           expression*  last_exp;
-          funit_inst*  inst = curr_instance;
+          funit_inst*  inst = curr_inst;
 
           /* Extract the line and column (and possibly instance) information */
           if( sscanf( (name + (index + 1)), "%d_%d_%x$%s", &fline, &lline, &col, scope ) == 4 ) {
@@ -3207,9 +3212,9 @@ void db_assign_symbol(
             char tscope[4096];
 
             /* Get the relative instance that contains the expression */
-            rv   = snprintf( tscope, 4096, "%s.%s", curr_instance->name, scope );
+            rv   = snprintf( tscope, 4096, "%s.%s", curr_inst->name, scope );
             assert( rv < 4096 );
-            inst = instance_find_scope( curr_instance, tscope, FALSE );
+            inst = instance_find_scope( curr_inst, tscope, FALSE );
 
           } else {
 

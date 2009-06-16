@@ -601,7 +601,7 @@ static bool memory_toggle_instance_summary(
 
   /* Get printable version of this instance */
   pname = scope_gen_printable( root->name );
-  if( db_is_unnamed_scope( pname ) || root->name_diff ) {
+  if( db_is_unnamed_scope( pname ) || root->suppl.name_diff ) {
     strcpy( tmpname, parent_inst );
   } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
@@ -699,7 +699,7 @@ static bool memory_ae_instance_summary(
 
   /* Get printable version of this instance */
   pname = scope_gen_printable( root->name );
-  if( db_is_unnamed_scope( pname ) || root->name_diff ) {
+  if( db_is_unnamed_scope( pname ) || root->suppl.name_diff ) {
     strcpy( tmpname, parent_inst );
   } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
@@ -1112,7 +1112,7 @@ static void memory_instance_verbose(
   /* Get printable version of the signal */
   pname = scope_gen_printable( root->name );
 
-  if( db_is_unnamed_scope( pname ) || root->name_diff ) {
+  if( db_is_unnamed_scope( pname ) || root->suppl.name_diff ) {
     strcpy( tmpname, parent_inst );
   } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
@@ -1257,7 +1257,7 @@ void memory_report(
 
     instl = db_list[curr_db]->inst_head;
     while( instl != NULL ) {
-      missed_found |= memory_toggle_instance_summary( ofile, instl->inst, (instl->inst->name_diff ? "<NA>" : "*"), &acc_hits01, &acc_hits10, &acc_tog_total );
+      missed_found |= memory_toggle_instance_summary( ofile, instl->inst, (instl->inst->suppl.name_diff ? "<NA>" : "*"), &acc_hits01, &acc_hits10, &acc_tog_total );
       instl = instl->next;
     }
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -1270,7 +1270,7 @@ void memory_report(
 
     instl = db_list[curr_db]->inst_head;
     while( instl != NULL ) {
-      missed_found |= memory_ae_instance_summary( ofile, instl->inst, (instl->inst->name_diff ? "<NA>" : "*"), &acc_wr_hits, &acc_rd_hits, &acc_ae_total );
+      missed_found |= memory_ae_instance_summary( ofile, instl->inst, (instl->inst->suppl.name_diff ? "<NA>" : "*"), &acc_wr_hits, &acc_rd_hits, &acc_ae_total );
       instl = instl->next;
     }
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -1280,7 +1280,7 @@ void memory_report(
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       instl = db_list[curr_db]->inst_head;
       while( instl != NULL ) {
-        memory_instance_verbose( ofile, instl->inst, (instl->inst->name_diff ? "<NA>" : "*") );
+        memory_instance_verbose( ofile, instl->inst, (instl->inst->suppl.name_diff ? "<NA>" : "*") );
         instl = instl->next;
       }
     }

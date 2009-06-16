@@ -301,7 +301,7 @@ static bool toggle_instance_summary(
   /* Get printable version of this instance */
   pname = scope_gen_printable( root->name );
 
-  if( db_is_unnamed_scope( pname ) || root->name_diff ) {
+  if( db_is_unnamed_scope( pname ) || root->suppl.name_diff ) {
     strcpy( tmpname, parent_inst );
   } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
@@ -562,7 +562,7 @@ static void toggle_instance_verbose(
   /* Get printable version of the signal */
   pname = scope_gen_printable( root->name );
 
-  if( db_is_unnamed_scope( pname ) || root->name_diff ) {
+  if( db_is_unnamed_scope( pname ) || root->suppl.name_diff ) {
     strcpy( tmpname, parent_inst );
   } else if( strcmp( parent_inst, "*" ) == 0 ) {
     strcpy( tmpname, pname );
@@ -697,7 +697,7 @@ void toggle_report(
 
     instl = db_list[curr_db]->inst_head;
     while( instl != NULL ) {
-      missed_found |= toggle_instance_summary( ofile, instl->inst, (instl->inst->name_diff ? "<NA>" : "*"), &acc_hits01, &acc_hits10, &acc_total );
+      missed_found |= toggle_instance_summary( ofile, instl->inst, (instl->inst->suppl.name_diff ? "<NA>" : "*"), &acc_hits01, &acc_hits10, &acc_total );
       instl = instl->next;
     }
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -707,7 +707,7 @@ void toggle_report(
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       instl = db_list[curr_db]->inst_head;
       while( instl != NULL ) {
-        toggle_instance_verbose( ofile, instl->inst, (instl->inst->name_diff ? "<NA>" : "*") );
+        toggle_instance_verbose( ofile, instl->inst, (instl->inst->suppl.name_diff ? "<NA>" : "*") );
         instl = instl->next;
       }
     }
