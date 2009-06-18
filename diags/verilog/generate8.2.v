@@ -8,6 +8,7 @@ generate
        begin : V
         reg [3:0] x = 0;
         initial begin
+		#1;
                 x = (i * 4) + j;
         end
        end
