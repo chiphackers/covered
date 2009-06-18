@@ -2923,20 +2923,39 @@ static void generator_insert_mem_cov_helper(
   expression* exp,           /*!< Pointer to current expression */
   func_unit*  funit,         /*!< Pointer to functional unit containing the expression */
   bool        net,           /*!< Specifies if the code generator should produce code for a net or a register */
-  bool        treat_as_rhs,  /*!< If TRUE, treats any memory access as a memory read regardless of position (by default, set to FALSE) */
+  bool        do_read,       /*!< If TRUE, performs memory read access for any memories found in the expression tree (by default, set it to FALSE) */
+  bool        do_write,      /*!< If TRUE, performs memory write access for any memories found in the expression tree (by default, set it to FALSE) */
   expression* rhs            /*!< Set to the RHS expression if the root expression was a non-blocking assignment */
 ) { PROFILE(GENERATOR_INSERT_MEM_COV_HELPER);
 
   if( exp != NULL ) {
 
+    /* Generate code to perform memory write/read access */
     if( (exp->sig != NULL) && (exp->sig->suppl.part.type == SSUPPL_TYPE_MEM) && (exp->elem.dim != NULL) && exp->elem.dim->last ) {
-      generator_insert_mem_cov( exp, funit, net, ((exp->suppl.part.lhs == 1) && !treat_as_rhs), rhs );
+      if( ((exp->suppl.part.lhs == 1) || do_write) && !do_read ) {
+        generator_insert_mem_cov( exp, funit, net, TRUE, rhs );
+      }
+      if( (exp->suppl.part.lhs == 0) || do_read ) {
+        generator_insert_mem_cov( exp, funit, net, FALSE, rhs );
+      }
     }
 
-    generator_insert_mem_cov_helper( exp->left,  funit, net,
+    /* Get memory coverage for left expression */
+    generator_insert_mem_cov_helper( exp->left,
+                                     funit,
+                                     net,
                                      ((exp->op == EXP_OP_SBIT_SEL) || (exp->op == EXP_OP_MBIT_SEL) || (exp->op == EXP_OP_MBIT_POS) ||
-                                      (exp->op == EXP_OP_MBIT_NEG) || treat_as_rhs), rhs );
-    generator_insert_mem_cov_helper( exp->right, funit, net, ((exp->op == EXP_OP_MBIT_SEL) || treat_as_rhs), rhs );
+                                      (exp->op == EXP_OP_MBIT_NEG) || do_read),
+                                     FALSE,
+                                     rhs );
+
+    /* Get memory coverage for right expression */
+    generator_insert_mem_cov_helper( exp->right,
+                                     funit,
+                                     net,
+                                     ((exp->op == EXP_OP_MBIT_SEL) || do_read),
+                                     ((exp->op == EXP_OP_SASSIGN) && (exp->parent->expr != NULL) && ((exp->parent->expr->op == EXP_OP_SRANDOM) || (exp->parent->expr->op == EXP_OP_SURANDOM))),
+                                     rhs );
 
   }
 
@@ -2971,7 +2990,7 @@ statement* generator_insert_comb_cov(
 
       /* Generate memory coverage */
       if( info_suppl.part.scored_memory == 1 ) {
-        generator_insert_mem_cov_helper( stmt->exp, stmt->funit, net, FALSE, ((stmt->exp->op == EXP_OP_NASSIGN) ? stmt->exp->right : NULL) );
+        generator_insert_mem_cov_helper( stmt->exp, stmt->funit, net, FALSE, FALSE, ((stmt->exp->op == EXP_OP_NASSIGN) ? stmt->exp->right : NULL) );
       }
 
     }

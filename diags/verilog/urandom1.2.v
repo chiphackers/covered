@@ -16,6 +16,7 @@ initial begin
 	#5;
         for( i=0; i<4; i=i+1 ) begin
           a = $urandom( seeds[0] );
+	  $display( "a: %d", a );
 	  #5;
 	end
 end
