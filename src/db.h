@@ -391,5 +391,9 @@ bool db_do_timestep(
   bool   final
 ); 
 
+/*! \brief Called after all signals are parsed from dumpfile.  Checks to see if dumpfile results were
+           correct for the covered design. */
+void db_check_dumpfile_scopes();
+
 #endif
 

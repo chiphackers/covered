@@ -38,20 +38,9 @@
 
 
 extern char       user_msg[USER_MSG_LENGTH];
-extern char*      top_instance;
-extern bool       instance_specified;
 extern symtable*  vcd_symtab;
 extern int        vcd_symtab_size;
 extern symtable** timestep_tab;
-
-
-/*!
- This flag is used to indicate if Covered was successfull in finding at least one
- matching instance from the VCD file.  If no instances were found for the entire
- VCD file, the user has either not specified the -i option or has specified an
- incorrect path to the top-level module instance so let them know about this.
-*/
-bool one_instance_found = FALSE;
 
 
 /*!
@@ -279,23 +268,7 @@ static void vcd_parse_def(
   assert( enddef_found );
 
   /* Check to see that at least one instance was found */
-  if( !one_instance_found ) {
-
-    print_output( "No instances were found in specified VCD file that matched design", FATAL, __FILE__, __LINE__ );
-
-    /* If the -i option was not specified, let the user know */
-    if( !instance_specified ) {
-      print_output( "  Please use -i option to specify correct hierarchy to top-level module to score",
-                    FATAL, __FILE__, __LINE__ );
-    } else {
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "  Incorrect hierarchical path specified in -i option: %s", top_instance );
-      assert( rv < USER_MSG_LENGTH );
-      print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    }
-
-    Throw 0;
-
-  }
+  db_check_dumpfile_scopes();
 
   PROFILE_END;
 

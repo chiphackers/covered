@@ -202,6 +202,11 @@ void funit_output_dumpvars(
   const char* scope
 );
 
+/*! \brief Returns TRUE if at least one signal was found that needs to be assigned by the dumpfile. */
+bool funit_is_one_signal_assigned(
+  func_unit* funit
+);
+
 /*! \brief Deallocates functional unit element from heap. */
 void funit_dealloc(
   func_unit* funit

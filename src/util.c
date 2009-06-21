@@ -222,6 +222,7 @@ void print_output(
       }
       break; 
     case FATAL:
+      fflush( stdout );
       if( debug_mode ) {
         if( report_gui ) {
           unsigned int rv = snprintf( tmpmsg, USER_MSG_LENGTH, "%s (file: %s, line: %d)\n", msg, file, line );

@@ -62,7 +62,6 @@ sym_value* sv_tail       = NULL;   /*!< Pointer to tail of sym_value list */
 
 /* These are needed for compile purposes only */
 bool   report_gui          = FALSE;
-bool   one_instance_found  = FALSE;
 int    timestep_update     = 0;
 bool   report_covered      = FALSE;
 bool   flag_use_line_width = FALSE;
@@ -90,6 +89,7 @@ bool      flag_output_exclusion_ids = FALSE;
 bool      report_exclusions = FALSE;
 str_link* race_ignore_mod_head = NULL;
 str_link* race_ignore_mod_tail = NULL;
+bool      instance_specified   = FALSE;
 
 extern bool        debug_mode;
 extern symtable*   vcd_symtab;
@@ -711,12 +711,6 @@ void covered_parse_instance( vpiHandle inst ) { PROFILE(COVERED_PARSE_INSTANCE);
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
     }
 #endif
-
-    /*
-     Set one_instance_found to TRUE to indicate that we were successful in
-     matching our design to the actual design
-    */
-    one_instance_found = TRUE;
 
     /* Parse all signals */
     covered_parse_signals( inst );

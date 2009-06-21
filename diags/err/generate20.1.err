@@ -1,0 +1,1 @@
+ERROR!  Attempting to bind an generate expression to a signal that is not a genvar, file generate20.1.v, line 13

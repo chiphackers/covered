@@ -33,12 +33,9 @@
 
 
 extern char       user_msg[USER_MSG_LENGTH];
-extern char*      top_instance;
-extern bool       instance_specified;
 extern symtable*  vcd_symtab;
 extern int        vcd_symtab_size;
 extern symtable** timestep_tab;
-extern bool       one_instance_found;
 extern char**     curr_inst_scope;
 extern int        curr_inst_scope_size;
 
@@ -208,23 +205,7 @@ void lxt_parse(
       }
 
       /* Check to see that at least one instance was found */
-      if( !one_instance_found ) {
-
-        print_output( "No instances were found in specified VCD file that matched design", FATAL, __FILE__, __LINE__ );
-
-        /* If the -i option was not specified, let the user know */
-        if( !instance_specified ) {
-          print_output( "  Please use -i option to specify correct hierarchy to top-level module to score",
-                        FATAL, __FILE__, __LINE__ );
-        } else {
-          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "  Incorrect hierarchical path specified in -i option: %s", top_instance );
-          assert( rv < USER_MSG_LENGTH );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        }
-
-        Throw 0;
-
-      }
+      db_check_dumpfile_scopes();
 
       /* Create timestep symbol table array */
       if( vcd_symtab_size > 0 ) {

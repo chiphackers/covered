@@ -57,6 +57,7 @@ extern char         user_msg[USER_MSG_LENGTH];
 extern db**         db_list;
 extern unsigned int curr_db;
 extern func_unit*   curr_funit;
+extern isuppl       info_suppl;
 
 
 /*!
@@ -1480,6 +1481,25 @@ void funit_output_dumpvars(
   }
 
   PROFILE_END;
+
+}
+
+/*!
+ \return Returns TRUE if at least one signal was found that needs to be assigned by the dumpfile.
+*/
+bool funit_is_one_signal_assigned(
+  func_unit* funit  /*!< Pointer to functional unit to check */
+) { PROFILE(FUNIT_IS_ONE_SIGNAL_ASSIGNED);
+
+  sig_link* sigl = funit->sig_head;
+
+  while( (sigl != NULL) && ((sigl->sig->exp_head == NULL) || !SIGNAL_ASSIGN_FROM_DUMPFILE( sigl->sig )) ) {
+    sigl = sigl->next;
+  }
+
+  PROFILE_END;
+
+  return( sigl != NULL );
 
 }
 

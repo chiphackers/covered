@@ -596,6 +596,17 @@
                                    (x->suppl.part.type == SSUPPL_TYPE_IMPLICIT_NEG))
      
 /*!
+ Returns TRUE if the signal must be assigned from the dumpfile.
+*/
+#define SIGNAL_ASSIGN_FROM_DUMPFILE(x)  (((x->suppl.part.assigned == 0) || info_suppl.part.inlined) && \
+                                         (x->suppl.part.type != SSUPPL_TYPE_PARAM)      && \
+                                         (x->suppl.part.type != SSUPPL_TYPE_PARAM_REAL) && \
+                                         (x->suppl.part.type != SSUPPL_TYPE_ENUM)       && \
+                                         (x->suppl.part.type != SSUPPL_TYPE_MEM)        && \
+                                         (x->suppl.part.type != SSUPPL_TYPE_GENVAR)     && \
+                                         (x->suppl.part.type != SSUPPL_TYPE_EVENT))
+
+/*!
  \addtogroup read_modes Modes for reading database file
 
  Specify how to integrate read data from database file into memory structures.

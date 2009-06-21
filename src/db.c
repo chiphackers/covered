@@ -62,7 +62,6 @@
 extern char*       top_module;
 extern str_link*   no_score_head;
 extern char        user_msg[USER_MSG_LENGTH];
-extern bool        one_instance_found;
 extern isuppl      info_suppl;
 extern uint64      timestep_update;
 extern bool        debug_mode;
@@ -76,6 +75,10 @@ extern int         generate_expr_mode;
 extern int         for_mode;
 extern int         curr_sig_id;
 extern int         curr_arc_id;
+extern int         vcd_symtab_size;
+extern bool        instance_specified;
+extern char*       top_instance;
+
 
 /*!
  Array of database pointers storing all currently loaded databases.
@@ -2952,14 +2955,7 @@ void db_sync_curr_instance() { PROFILE(DB_SYNC_CURR_INSTANCE);
   if( (scope = db_gen_curr_inst_scope()) != NULL ) {
 
     if( scope[0] != '\0' ) {
-
       curr_instance = inst_link_find_by_scope( scope, db_list[curr_db]->inst_head, TRUE );
-
-      /* If we have found at least one matching instance, set the one_instance_found flag */
-      if( curr_instance != NULL ) {
-        one_instance_found = TRUE;
-      }
-
     }
 
     free_safe( scope, (strlen( scope ) + 1) );
@@ -3266,13 +3262,7 @@ void db_assign_symbol(
         }
 
         /* Only add the symbol if we are not going to generate this value ourselves */
-        if( ((sig->suppl.part.assigned == 0) || info_suppl.part.inlined) &&
-            (sig->suppl.part.type != SSUPPL_TYPE_PARAM)      &&
-            (sig->suppl.part.type != SSUPPL_TYPE_PARAM_REAL) &&
-            (sig->suppl.part.type != SSUPPL_TYPE_ENUM)       &&
-            (sig->suppl.part.type != SSUPPL_TYPE_MEM)        &&
-            (sig->suppl.part.type != SSUPPL_TYPE_GENVAR)     &&
-            (sig->suppl.part.type != SSUPPL_TYPE_EVENT) ) {
+        if( SIGNAL_ASSIGN_FROM_DUMPFILE( sig ) ) {
 
           /* Add this signal */
           symtable_add_signal( symbol, sig, msb, lsb );
@@ -3434,3 +3424,45 @@ bool db_do_timestep(
 
 }
 
+/*!
+ Checks to make sure that if the current design has any signals that need to be assigned
+ from the dumpfile that at least one of these signals was satisfied for this need.
+*/
+void db_check_dumpfile_scopes() { PROFILE(DB_CHECK_DUMPFILE_SCOPES);
+
+  /* If no signals were used from the VCD dumpfile, check to see if any signals were needed */
+  if( vcd_symtab_size == 0 ) {
+
+    funit_link* funitl = db_list[curr_db]->funit_head;
+
+    while( (funitl != NULL) && !funit_is_one_signal_assigned( funitl->funit ) ) {
+      funitl = funitl->next;
+    }
+
+    /*
+     If at least one functional unit contains a signal that needs to be assigned from the dumpfile,
+     we have some bad/unuseful dumpfile results.
+    */
+    if( funitl != NULL ) {
+
+      print_output( "No instances were found in specified VCD file that matched design", FATAL, __FILE__, __LINE__ );
+
+      /* If the -i option was not specified, let the user know */
+      if( !instance_specified ) {
+        print_output( "  Please use -i option to specify correct hierarchy to top-level module to score",
+                      FATAL, __FILE__, __LINE__ );
+      } else {
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "  Incorrect hierarchical path specified in -i option: %s", top_instance );
+        assert( rv < USER_MSG_LENGTH );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      }
+
+      Throw 0;
+
+    }
+
+  }
+
+  PROFILE_END;
+
+}
