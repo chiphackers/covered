@@ -26,9 +26,9 @@ module foo;
 reg a;
 
 initial begin
-	a = 1'b0;
+	a <= 1'b0;
 	#10;
-	a = 1'b1;
+	a <= 1'b1;
 end
 
 endmodule
