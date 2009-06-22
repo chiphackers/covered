@@ -10,8 +10,10 @@ generate
       initial begin : c
 	      integer i;
               #1;
-     	      for( i=0; i<4; i=i+1 )
+     	      for( i=0; i<4; i=i+1 ) begin
                 f.x = i;
+                #1;
+              end
       end
       always @(f.x) count = count + 1;
     end

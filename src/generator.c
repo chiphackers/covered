@@ -1177,12 +1177,11 @@ void generator_flush_hold_code1(
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Flushing hold code (file: %s, line: %u)", file, line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-//    generator_display();
   }
 #endif
 
   /* We shouldn't ever be flushing the hold code if the reg_top is more than one entry deep */
-  assert( (reg_top == NULL) || (reg_top->next == NULL) );
+  // assert( (reg_top == NULL) || (reg_top->next == NULL) );
 
   fprintf( curr_ofile, "\n" );
 

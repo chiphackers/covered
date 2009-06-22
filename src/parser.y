@@ -2552,22 +2552,22 @@ end_gen_block
   ;
 
 gen_if_body
-  : inc_block_depth_only generate_item dec_block_depth_only K_else inc_block_depth_only generate_item dec_block_depth_only
+  : generate_item K_else generate_item
     {
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
-          $$.gitem1 = $2;
-          $$.gitem2 = $6;
+          $$.gitem1 = $1;
+          $$.gitem2 = $3;
         }
       } else {
         $$.gitem1 = NULL;
       }
     }
-  | inc_block_depth_only generate_item dec_block_depth_only %prec less_than_K_else
+  | generate_item %prec less_than_K_else
     {
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
-          $$.gitem1 = $2;
+          $$.gitem1 = $1;
           $$.gitem2 = NULL;
         }
       } else {
