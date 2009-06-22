@@ -528,7 +528,8 @@ bool generator_expr_needs_to_be_substituted(
 
   bool retval = (exp->op == EXP_OP_SRANDOM)      ||
                 (exp->op == EXP_OP_SURANDOM)     ||
-                (exp->op == EXP_OP_SURAND_RANGE);
+                (exp->op == EXP_OP_SURAND_RANGE) ||
+                (exp->op == EXP_OP_SVALARGS);
 
   PROFILE_END;
 
@@ -1016,7 +1017,8 @@ void generator_add_to_work_code(
 
 #ifdef DEBUG_MODE
     if( debug_mode ) {
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Adding to work code [%s] (file: %s, line: %u)", str, file, line );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Adding to work code [%s] (fline: %u, fcol: %u, from_code: %d, file: %s, line: %u)",
+                                  str, first_line, first_column, from_code, file, line );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
       generator_display();

@@ -158,6 +158,7 @@ WSPACE [ \t\b\f]+
 
   /* Whitespace -- we ignore this */
 [ \t\b\f\r]   {
+  yylloc.first_column = yylloc.last_column;
   yylloc.last_column += strlen( yytext );
   if( !parse_mode ) generator_add_orig_to_work_code( yytext, yylloc.ppline, yylloc.first_column );
  }
