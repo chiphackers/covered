@@ -3347,8 +3347,8 @@ module_item
           }
         }
       } else {
-        // generator_flush_work_code;
-        generator_flush_hold_code;
+        generator_flush_work_code;
+        // generator_flush_hold_code;
       }
     }
   | attribute_list_opt

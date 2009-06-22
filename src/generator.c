@@ -1181,7 +1181,7 @@ void generator_flush_hold_code1(
 #endif
 
   /* We shouldn't ever be flushing the hold code if the reg_top is more than one entry deep */
-  // assert( (reg_top == NULL) || (reg_top->next == NULL) );
+  assert( (reg_top == NULL) || (reg_top->next == NULL) );
 
   fprintf( curr_ofile, "\n" );
 
