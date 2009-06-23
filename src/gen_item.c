@@ -966,7 +966,8 @@ static void gen_item_resolve(
       case GI_TYPE_STMT :
         gitem_link_add( gen_item_create_stmt( gi->elem.stmt ), &(inst->gitem_head), &(inst->gitem_tail) );
         if( stmt_link_find( gi->elem.stmt->exp->id, inst->funit->stmt_head ) == NULL ) {
-          stmt_link_add_head( gi->elem.stmt, FALSE, &(inst->funit->stmt_head), &(inst->funit->stmt_tail) );
+          // stmt_link_add_head( gi->elem.stmt, FALSE, &(inst->funit->stmt_head), &(inst->funit->stmt_tail) );
+          stmt_link_add_tail( gi->elem.stmt, FALSE, &(inst->funit->stmt_head), &(inst->funit->stmt_tail) );
         }
         gen_item_resolve( gi->next_true, inst );
         break;

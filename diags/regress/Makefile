@@ -447,7 +447,7 @@ EXCLUDE      += afunc1            afunc2            always_comb1      always_com
                 generate7.2       generate8.1       generate8.2       generate8.3       generate8.4 \
                 generate8.5       generate8.6       generate8.7       generate8.8       generate9 \
                 generate9.1       generate9.2       generate9.3       generate11.4      generate13 \
-                generate14        generate16        generate18        hier1.1 \
+                generate14        generate16        hier1.1 \
                 inc1              inc1.1            inc2              inc3              inc3.1 \
                 int1              line1             logic1            longint1          long_sig \
                 marray1           marray1.1         marray1.2         marray1.3         marray2 \
@@ -547,8 +547,7 @@ EXCLUDE       += afunc1           afunc2            for5              for5.1    
                  for5.3           for5.4            for5.5            for5.6            for5.8 \
                  for5.9           for5.10           for6              timescale2.8      urandom1 \
                  urandom1.1       urandom1.2        urandom1.3        urandom2.1        urandom_range1.1 \
-                 urandom_range1.2 \
-generate18
+                 urandom_range1.2
 else
 ifeq ($(MAKECMDGOALS),veriwell)
 EXCLUDE       += always15         compx1            compx1.1          compx1.2          compx1.3 \
