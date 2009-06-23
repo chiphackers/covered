@@ -210,6 +210,27 @@
             </row>
             <row>
               <entry>
+                -inline
+              </entry>
+              <entry>
+                Causes Covered to read in the specified Verilog files/libraries and output corresponding Verilog files containing inlined code coverage
+                information to the "covered/verilog" directory (relative to the directory where the Covered command is being executed).  A corresponding
+                CDD file is also created in the current directory for the portion of the design being scored.  No scoring takes place with this option
+                specified.  See <xref linkend="section.score.inline"/> for more details.
+              </entry>
+            </row>
+            <row>
+              <entry>
+                -inline-metrics [l][t][m][c][f][a]
+              </entry>
+              <entry>
+                If the -inline option is specified, the metrics specified with this option will be inlined in the output Verilog files.  Only metrics
+                specified with this option will be available in generated reports.  By default all six metrics are inlined.  Reducing the needed metrics
+                will cause simulation performance to improve.
+              </entry>
+            </row>
+            <row>
+              <entry>
                 -lxt <emphasis>dumpfile</emphasis>
               </entry>
               <entry>
@@ -788,6 +809,13 @@
       Note that specifying plusargs to the score command is only necessary when the score command is given either the -vcd or -lxt options.  If
       the VPI method of coverage scoring is used, specify the plusargs to the simulation runtime as required.  Covered will automatically extract
       the plusargs from the simulator runtime for its purposes.
+    </para>
+  </sect1>
+
+  <sect1 id="section.score.inline">
+    <title>Inlined Scoring</title>
+    <para>
+      TBD
     </para>
   </sect1>
 
