@@ -345,11 +345,11 @@ bool vector_vcd_assign(
 
 /*! \brief Assigns specified VCD value to specified vectors. */
 bool vector_vcd_assign2(
-  vector* vec1,
-  vector* vec2,
-  char*   value,
-  int     msb,
-  int     lsb
+               vector* vec1,
+               vector* vec2,
+               char*   value,
+  /*@unused@*/ int     msb,
+  /*@unused@*/ int     lsb
 );
 
 /*! \brief Counts toggle01 and toggle10 information from specifed vector. */

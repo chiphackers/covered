@@ -1013,7 +1013,7 @@ static bool score_parse_args(
         case 'W'  :  flag_race_check  = WARNING;  break;
         case 'I'  :
           if( argv[i][3] == '=' ) {
-            str_link_add( strdup_safe( argv[i] + 4 ), &race_ignore_mod_head, &race_ignore_mod_tail );
+            (void)str_link_add( strdup_safe( argv[i] + 4 ), &race_ignore_mod_head, &race_ignore_mod_tail );
           } else { 
             flag_check_races = FALSE;
           }

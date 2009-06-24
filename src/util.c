@@ -222,7 +222,7 @@ void print_output(
       }
       break; 
     case FATAL:
-      fflush( stdout );
+      (void)fflush( stdout );
       if( debug_mode ) {
         if( report_gui ) {
           unsigned int rv = snprintf( tmpmsg, USER_MSG_LENGTH, "%s (file: %s, line: %d)\n", msg, file, line );
@@ -1761,7 +1761,7 @@ int calc_num_bits_to_store(
   int values  /*!< Number of values that need to be stored */
 ) { PROFILE(CALC_NUM_BITS_TO_STORE);
 
-  int bits = 1;
+  unsigned int bits = 1;
 
   while( (1 << bits) < values ) bits++;
 

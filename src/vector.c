@@ -3186,11 +3186,11 @@ bool vector_vcd_assign(
  Assigns the given vectors the value from the VCD file (bit-extended as necessary).
 */
 bool vector_vcd_assign2(
-  vector* vec1,   /*!< Vector to fill which occupies the low-order bits */
-  vector* vec2,   /*!< Vector to fill which occupies the high-order bits */
-  char*   value,  /*!< VCD value (in string form) */
-  int     msb,    /*!< Most-significant bit from VCD file */
-  int     lsb     /*!< Least-significant bit from VCD file */
+               vector* vec1,   /*!< Vector to fill which occupies the low-order bits */
+               vector* vec2,   /*!< Vector to fill which occupies the high-order bits */
+               char*   value,  /*!< VCD value (in string form) */
+  /*@unused@*/ int     msb,    /*!< Most-significant bit from VCD file */
+  /*@unused@*/ int     lsb     /*!< Least-significant bit from VCD file */
 ) { PROFILE(VECTOR_VCD_ASSIGN2);
 
   bool         retval     = FALSE;

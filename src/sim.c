@@ -213,7 +213,7 @@ void sim_display_thread(
   } else {
     printf( "stmt %d, ", thr->curr->exp->id );
     printf( "%s, ", expression_string_op( thr->curr->exp->op ) );
-    printf( "line %d, ", thr->curr->exp->line );
+    printf( "line %u, ", thr->curr->exp->line );
   }
 
   printf( "state %s ", thread_state_str[thr->suppl.part.state] );

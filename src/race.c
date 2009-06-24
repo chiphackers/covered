@@ -357,13 +357,13 @@ static void race_handle_race_condition(
       rv = snprintf( user_msg, USER_MSG_LENGTH, "Possible race condition detected - %s", race_msgs[reason] );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, flag_race_check, __FILE__, __LINE__ );
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Signal assigned in file: %s, line: %d", obf_file( mod->orig_fname ), expr->line );
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Signal assigned in file: %s, line: %u", obf_file( mod->orig_fname ), expr->line );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, (flag_race_check + 1), __FILE__, __LINE__ );
 
       if( flag_race_check == WARNING ) {
         print_output( "  * Safely removing statement block from coverage consideration", WARNING_WRAP, __FILE__, __LINE__ );
-        rv = snprintf( user_msg, USER_MSG_LENGTH, "    Statement block starting at file: %s, line: %d",
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "    Statement block starting at file: %s, line: %u",
                        obf_file( mod->orig_fname ), stmt->exp->line );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, WARNING_WRAP, __FILE__, __LINE__ );
@@ -380,17 +380,17 @@ static void race_handle_race_condition(
       rv = snprintf( user_msg, USER_MSG_LENGTH, "Possible race condition detected - %s", race_msgs[reason] );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, flag_race_check, __FILE__, __LINE__ );
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Signal assigned in file: %s, line: %d", obf_file( mod->orig_fname ), expr->line );
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Signal assigned in file: %s, line: %u", obf_file( mod->orig_fname ), expr->line );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, (flag_race_check + 1), __FILE__, __LINE__ );
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Signal also assigned in statement starting at file: %s, line: %d",
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "  Signal also assigned in statement starting at file: %s, line: %u",
                      obf_file( mod->orig_fname ), base->exp->line );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, (flag_race_check + 1), __FILE__, __LINE__ );
 
       if( flag_race_check == WARNING ) {
         print_output( "  * Safely removing statement block from coverage consideration", WARNING_WRAP, __FILE__, __LINE__ );
-        rv = snprintf( user_msg, USER_MSG_LENGTH, "    Statement block starting at file: %s, line: %d",
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "    Statement block starting at file: %s, line: %u",
                        obf_file( mod->orig_fname ), stmt->exp->line );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, WARNING_WRAP, __FILE__, __LINE__ );
@@ -409,7 +409,7 @@ static void race_handle_race_condition(
 	rv = snprintf( user_msg, USER_MSG_LENGTH, "Possible race condition detected - %s", race_msgs[reason] );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, flag_race_check, __FILE__, __LINE__ );
-        rv = snprintf( user_msg, USER_MSG_LENGTH, "  Statement block starting in file: %s, line: %d",
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "  Statement block starting in file: %s, line: %u",
                        obf_file( mod->orig_fname ), stmt->exp->line );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, (flag_race_check + 1), __FILE__, __LINE__ );
@@ -422,7 +422,7 @@ static void race_handle_race_condition(
 	if( flag_race_check == WARNING ) {
           print_output( "", WARNING_WRAP, __FILE__, __LINE__ );
 	  print_output( "* Safely removing statement block from coverage consideration", WARNING, __FILE__, __LINE__ );
-          rv = snprintf( user_msg, USER_MSG_LENGTH, "  Statement block starting at file: %s, line: %d",
+          rv = snprintf( user_msg, USER_MSG_LENGTH, "  Statement block starting at file: %s, line: %u",
                          obf_file( mod->orig_fname ), stmt->exp->line );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, WARNING_WRAP, __FILE__, __LINE__ );
