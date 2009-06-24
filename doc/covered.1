@@ -1,4 +1,4 @@
-.TH "Covered" "1" "covered-0.7" "Trevor Williams" "Code Analysis"
+.TH "Covered" "1" "covered-20090624" "Trevor Williams" "Code Analysis"
 .SH "NAME"
 .LP 
 Covered \- Verilog Code Coverage Analyzer
@@ -114,6 +114,12 @@ Directory to find included Verilog files.
 .TP 
 \fB\-i\fR \fIinstance_name\fR
 Verilog hierarchical reference to the module that is at the top of the tree to be scored.  This option is necessary if module to verify coverage is not the top\-level module in the design.  If not specified, \fI\-t\fR value is used.
+.TP
+\fB\-inline\fR
+Creates a directory in the current directory called "covered/verilog" and outputs an instrumented version of the original Verilog design files that are to be covered.
+.TP
+\fB\-inline-metrics\fR \fI[l][t][m][c][f][a]\fR
+Specifies which coverage metrics should be inlined for scoring purposes.  Only these metrics will be available for reporting and ranking.  Default is ltmcfa (line, toggle, memory, combinational logic, FSM and assertion).
 .TP 
 \fB\-lxt\fR \fIfilename\fR
 Name of LXT2 dumpfile to score design with.  If this or the \-vcd option is not used, Covered will only create an initial CDD file from the design and will not attempt to score the design.

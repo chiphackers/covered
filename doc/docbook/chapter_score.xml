@@ -815,8 +815,78 @@
   <sect1 id="section.score.inline">
     <title>Inlined Scoring</title>
     <para>
-      TBD
+      When the -inline option is used, Covered creates a directory in the current directory called "covered".  In this directory is another
+      directory called "verilog" which will contain the instrumented version of the original design files.  Compiling with these files instead
+      of the original design files will allow Covered to gain coverage information without the need for Covered to "resimulate" the design.
+      See <xref linkend="section.start.methods.sim.inline"/> for more information about the advantages/disadvantages of using Covered
+      in this manner.
     </para>
+
+    <sect2 id="section.score.inline.dump">
+      <title>Inlined coverage with dumpfile workflow</title>
+      <para>
+        To create a scored CDD file using the inlined code coverage method and VCD/LXT2 dumpfiles, perform the following steps:
+      </para>
+      <para>
+        <orderedlist>
+          <listitem>
+            <para>
+              Call the covered score command with the <emphasis role="bold">-inline</emphasis> option and, if only a few metrics will be
+              used when generating reports, specify the <emphasis role="bold">-inline-metrics</emphasis> option with the needed values.  In
+              this score command, provide any other non-dumpfile options.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Compile/simulate the design, specifying the "-y covered/verilog" option (i.e., use the Verilog files in the covered/verilog
+              directory) before any other library directories.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Run the covered score command specifying the CDD file and dumpfile only.  This will score the given CDD file with the
+              contents of the dumpfile.
+            </para>
+          </listitem>
+        </orderedlist>
+      </para> 
+      <para>
+        The end result is a scored CDD file that can be merged, reported on, used for ranking, etc.
+      </para>
+    </sect2>
+
+    <sect2 id="section.score.inline.vpi">
+      <title>Inlined coverage with VPI workflow</title>
+      <para>
+        To create a scored CDD file using the inlined code coverage method and VPI usage, perform the following steps:
+      </para>
+      <para>
+        <orderedlist>
+          <listitem>
+            <para>
+              Call the covered score command with the <emphasis role="bold">-inline</emphasis> option and, if only a few metrics
+              will be used when generating reports, specify the <emphasis role="bold">-inline-metrics</emphasis> option with the
+              needed values.  Additionally, use the -vpi option (see <xref linkend="section.start.dump.lxt"/> for more information
+              about this command usage).  In this same score command, provide any other options.  This will create and populate
+              a "covered/verilog" directory with instrumented Verilog design files, an empty CDD file (in the current directory)
+              and the VPI files needed for simulation.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Compile the design, specifying the "-y covered/verilog" option (i.e., use the Verilog files in the covered/verilog
+              directory) before any other library directories.  Also specify the VPI file as a top-level file to be compiled along
+              with the necessary options for using the VPI.  Run with the
+              <emphasis role="bold">+covered_cdd=<emphasis>output CDD file</emphasis></emphasis> plusarg option if a different CDD
+              filename is desired from the original unscored CDD file.
+            </para>
+          </listitem>
+        </orderedlist>
+      </para>
+      <para>
+        The end result is a scored CDD file  that can be merged, reported on, used for ranking, etc.
+      </para>
+    </sect2>
   </sect1>
 
   <sect1 id="section.score.other">

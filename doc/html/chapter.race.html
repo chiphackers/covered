@@ -1,4 +1,4 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 4. Race Condition Checking</title><link rel="stylesheet" href="covered.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.74.0"><link rel="home" href="index.html" title="Covered"><link rel="up" href="part.overview.html" title="Part I. Overview"><link rel="prev" href="chapter.boundaries.html" title="Chapter 3. Coverage Boundaries"><link rel="next" href="chapter.attr.html" title="Chapter 5. Inline Attributes"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 4. Race Condition Checking</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter.boundaries.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part I. Overview</th><td width="20%" align="right"> <a accesskey="n" href="chapter.attr.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.race"></a>Chapter 4. Race Condition Checking</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.race.html#section.race.guidelines">4.1. Checked Coding Guidelines</a></span></dt><dt><span class="sect1"><a href="chapter.race.html#section.race.handling">4.2. Race Condition Handling</a></span></dt><dt><span class="sect1"><a href="chapter.race.html#section.race.avoiding">4.3. Avoiding Race Condition Checking</a></span></dt><dt><span class="sect1"><a href="chapter.race.html#section.race.conditions">4.4. Reporting Race Conditions</a></span></dt></dl></div><p>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 4. Race Condition Checking</title><link rel="stylesheet" href="covered.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.71.1"><link rel="start" href="index.html" title="Covered"><link rel="up" href="part.overview.html" title="Part I. Overview"><link rel="prev" href="chapter.boundaries.html" title="Chapter 3. Coverage Boundaries"><link rel="next" href="chapter.attr.html" title="Chapter 5. Inline Attributes"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 4. Race Condition Checking</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="chapter.boundaries.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part I. Overview</th><td width="20%" align="right"> <a accesskey="n" href="chapter.attr.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.race"></a>Chapter 4. Race Condition Checking</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.race.html#section.race.guidelines">4.1. Checked Coding Guidelines</a></span></dt><dt><span class="sect1"><a href="chapter.race.html#section.race.handling">4.2. Race Condition Handling</a></span></dt><dt><span class="sect1"><a href="chapter.race.html#section.race.avoiding">4.3. Avoiding Race Condition Checking</a></span></dt><dt><span class="sect1"><a href="chapter.race.html#section.race.conditions">4.4. Reporting Race Conditions</a></span></dt></dl></div><p>
     Due to Covered's method of abstracting coverage from a dumpfile, a partial "resimulation" of the design is needed 
     to obtain proper statistics for line, combinational logic and FSM metrics. Therefore, accurately resimulating what 
     occurred in the actual simulation is a requirement for obtaining correct results. This can be easily achieved so 
@@ -47,19 +47,23 @@
       under consideration. The second mode of operation is meant to allow the user to use Covered as a race-condition 
       checking tool.
     </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.race.avoiding"></a>4.3. Avoiding Race Condition Checking</h2></div></div></div><p>
-      Covered has two means of avoiding race condition checking: (1) skip race condition checking for the entire design 
-     altogether or (2) place inline pragmas around specific logic blocks to avoid checking. The main advantage for using 
-      either of these two methods is to allow Covered to score more of the design that would otherwise be excluded due to
-      failing a static race condition checkpoint.  The main disadvantage to avoiding race condition checking using either 
-      of these methods is that you could potentially be ignoring code that contains an actual race condition, causing 
-      Covered to potentially generate incorrect coverage information without warning. These types of "errors" are not 
-      assumed to be Covered bugs.
+      Covered has three means of avoiding race condition checking: (1) skip race condition checking for the entire design 
+      altogether, (2) skip race condition checking for one or more specified modules, or (3) place inline pragmas around
+      specific logic blocks to avoid checking. The main advantage for using either of these methods is to allow Covered
+      to score more of the design that would otherwise be excluded due to failing a static race condition checkpoint.
+      The main disadvantage to avoiding race condition checking using either of these methods is that you could potentially
+      be ignoring code that contains an actual race condition, causing Covered to potentially generate incorrect coverage
+      information without warning. These types of "errors" are not assumed to be Covered bugs.
     </p><p>
       To exclude the entire design from race condition checking, simply specify the 
       <span class="bold"><strong><code class="code">-rI</code></strong></span> option on the score command-line.  This will cause Covered to skip 
       the race condition checking phase entirely, outputting a warning message (unless the global -Q option has been 
       specified). The use of this command-line option is highly discouraged due to its general assumption by the user that 
       the entire design is void of race conditions.
+    </p><p>
+      To exclude an entire module from race condition checking, simply specify the
+      <span class="bold"><strong><code class="code">-rI=</code><span class="emphasis"><em>module name</em></span></strong></span> option on the score command-line.
+      This option may be specified one or more times on the score command-line (once for each module to be skipped).
     </p><p>
       To exclude portions of the design from race condition checking, the user may also place inline comment-based 
       pragmas in the design and specify the <span class="bold"><strong><code class="code">-rP</code></strong></span> option to the score 

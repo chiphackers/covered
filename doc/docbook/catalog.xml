@@ -4,17 +4,17 @@
 <catalog  xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">  2
 
   <!-- XML stylesheet file installed under /sw/share/xml/xsl/docbook-xsl -->
-  <!--
   <group xml:base="file:///sw/share/xml/xsl/docbook-xsl/">
     <uri name="chunkfast.xsl" uri="html/chunkfast.xsl" />
     <uri name="docbook.xsl"   uri="html/docbook.xsl" />
   </group>
-  -->
 
   <!-- XML stylesheet file installed under /home/trevorw/Desktop/docbook-xsl-1.74.0 -->
+  <!--
   <group xml:base="file:///home/bryce/trevorw/Desktop/docbook-xsl-1.74.0/">
     <uri name="chunkfast.xsl" uri="html/chunkfast.xsl" />
     <uri name="docbook.xsl"   uri="html/docbook.xsl" />
   </group>
+  -->
 
 </catalog>

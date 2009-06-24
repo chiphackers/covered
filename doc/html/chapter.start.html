@@ -1,31 +1,78 @@
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 7. Getting Started</title><link rel="stylesheet" href="covered.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.74.0"><link rel="home" href="index.html" title="Covered"><link rel="up" href="part.command.line.usage.html" title="Part III. Command-line Usage"><link rel="prev" href="part.command.line.usage.html" title="Part III. Command-line Usage"><link rel="next" href="chapter.using.html" title="Chapter 8. Using Covered"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 7. Getting Started</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="part.command.line.usage.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part III. Command-line Usage</th><td width="20%" align="right"> <a accesskey="n" href="chapter.using.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.start"></a>Chapter 7. Getting Started</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.start.html#section.start.methods">7.1. Methods for scoring the design</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.start.html#section.start.methods.dumppost">Post-processing VCD/LXT2 dumpfiles</a></span></dt><dt><span class="sect2"><a href="chapter.start.html#section.start.methods.dumpco">Co-processing VCD/LXT2 dumpfiles via FIFO</a></span></dt><dt><span class="sect2"><a href="chapter.start.html#section.start.methods.vpi">Using the VPI interface to gather coverage information</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.start.html#section.start.dump">7.2. What is needed for dumpfile scoring?</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.start.html#section.start.dump.selecting">Selecting What to Dump</a></span></dt><dt><span class="sect2"><a href="chapter.start.html#section.start.dump.vcd">Creating a VCD dumpfile</a></span></dt><dt><span class="sect2"><a href="chapter.start.html#section.start.dump.lxt">Creating an LXT2 dumpfile</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.start.html#section.start.vpi">7.3. What is needed for VPI scoring?</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.start.html#section.start.vpi.iv">Compiling for Icarus Verilog</a></span></dt><dt><span class="sect2"><a href="chapter.start.html#section.start.vpi.cver">Compiling for Cver</a></span></dt><dt><span class="sect2"><a href="chapter.start.html#section.start.vpi.vcs">Compiling for VCS</a></span></dt></dl></dd></dl></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.start.methods"></a>7.1. Methods for scoring the design</h2></div></div></div><p>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Chapter 7. Getting Started</title><link rel="stylesheet" href="covered.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.71.1"><link rel="start" href="index.html" title="Covered"><link rel="up" href="part.command.line.usage.html" title="Part III. Command-line Usage"><link rel="prev" href="part.command.line.usage.html" title="Part III. Command-line Usage"><link rel="next" href="chapter.using.html" title="Chapter 8. Using Covered"></head><body bgcolor="#dfeef8" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Chapter 7. Getting Started</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="part.command.line.usage.html"><img src="img/prev.gif" alt="Prev"></a> </td><th width="60%" align="center">Part III. Command-line Usage</th><td width="20%" align="right"> <a accesskey="n" href="chapter.using.html"><img src="img/next.gif" alt="Next"></a></td></tr></table><hr></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="chapter.start"></a>Chapter 7. Getting Started</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="chapter.start.html#section.start.methods">7.1. Methods for scoring the design</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.start.html#section.start.methods.sim">Simulating the design</a></span></dt><dt><span class="sect2"><a href="chapter.start.html#section.start.methods.score">Dumping the design</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.start.html#section.start.dump">7.2. What is needed for dumpfile scoring?</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.start.html#section.start.dump.selecting">Selecting What to Dump</a></span></dt><dt><span class="sect2"><a href="chapter.start.html#section.start.dump.vcd">Creating a VCD dumpfile</a></span></dt><dt><span class="sect2"><a href="chapter.start.html#section.start.dump.lxt">Creating an LXT2 dumpfile</a></span></dt></dl></dd><dt><span class="sect1"><a href="chapter.start.html#section.start.vpi">7.3. What is needed for VPI scoring?</a></span></dt><dd><dl><dt><span class="sect2"><a href="chapter.start.html#section.start.vpi.iv">Compiling for Icarus Verilog</a></span></dt><dt><span class="sect2"><a href="chapter.start.html#section.start.vpi.cver">Compiling for Cver</a></span></dt><dt><span class="sect2"><a href="chapter.start.html#section.start.vpi.vcs">Compiling for VCS</a></span></dt></dl></dd></dl></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.start.methods"></a>7.1. Methods for scoring the design</h2></div></div></div><p>
       Before you are ready to being scoring, merging and generating coverage reports from the design, you will first need to
-      decide whether you want to post-process VCD/LXT2 -formatted dumpfiles generated from simulation, co-process VCD/LXT2 -formatted
-      dumpfiles using two processes (one for the simulation process and one for the Covered process) and a Unix FIFO, or whether
-      you want to accummulate coverage information alongside the simulator using the simulator's VPI interface. There are advantages and
-      disadvantages to these methods, so select the method that will best work for you.
-    </p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.start.methods.dumppost"></a>Post-processing VCD/LXT2 dumpfiles</h3></div></div></div><p>
-        Generating post-process coverage information from VCD/LXT2 -formatted dumpfiles requires three steps:
-      </p><p>
-        </p><div class="orderedlist"><ol type="1"><li><p>Compile the simulator to dump in the specified format.</p></li><li><p>Run the simulation.</p></li><li><p>Run Covered's score command using the dumpfile as input along with the design.</p></li></ol></div><p>
-      </p><p>
-        Performing these steps will generate the needed CDD file that can be used for merging or reporting.
-        The advantages to this approach is that the steps are fairly simple and are compiler/simulator -independent. However,
-        there are two main drawbacks. First, compiling with dumping enabled often slows simulation by some significant factor.
-        Second, the dumpfiles generated from simulation can often be quite large (especially for VCD dumping), consuming a lot
-        of disk space. Additionally, if your simulator dumps in a format different from VCD or LXT2, you will need to perform
-        an additional step in transforming the original dumpfile into one of these formats. This is often a time-consuming task
-        if the design and/or dumpfile is significantly large. If you are generating lots of dumpfiles for coverage (say from
-        running a regression), the amount of disk space needed to store these files can be tremendous, making this approach
-        almost not feasible.
-      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.start.methods.dumpco"></a>Co-processing VCD/LXT2 dumpfiles via FIFO</h3></div></div></div><p>
-        Generating co-process coverage information from VCD/LXT2 -formatted dumpfiles requires four steps:
-      </p><p>
-        </p><div class="orderedlist"><ol type="1"><li><p>Compile the simulator to dump in the specified format.</p></li><li><p>Create a Unix FIFO via the <code class="code">mkfifo <span class="emphasis"><em>fifoname</em></span></code> command.</p></li><li><p>Create an empty CDD file for the design using Covered's score command.</p></li><li><p>
-              Run the simulation and Covered's score command simultaneously.  The following is an example of a testbench and
-              command-line commands:
-            </p><p>
-              </p><div class="example"><a name="example.start.methods.dumpco"></a><p class="title"><b>Example 7.1. Running Covered Alongside a Simulation Process Using a Unix FIFO to Pass Dumpfile Information</b></p><div class="example-contents"><pre class="programlisting">
+      decide whether you want to create instrumented design files and simulate with those or simulate with the original design files.
+      Additionally, you will need to decide if you want to post-process VCD/LXT2 -formatted dumpfiles generated from simulation,
+      co-process VCD/LXT2 -formatted dumpfiles using two processes (one for the simulation process and one for the Covered process) and
+      a Unix FIFO, or whether you want to accummulate coverage information alongside the simulator using the simulator's VPI interface.
+      There are advantages and disadvantages to these methods, so select the method that will best work for you.
+    </p><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.start.methods.sim"></a>Simulating the design</h3></div></div></div><p>
+        Prior to compiling and simulating the design in preparation for coverage, you will need to determine if you would like
+        Covered to create an alternative design file that contains embedded code coverage information in it, or whether you would like
+        to simulate the original design files and have Covered score the design on its own.  Both methods have advantages and disadvantages
+        that you will need to consider prior to compiling/simulating and are described in detail below.
+      </p><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="section.start.methods.sim.noinline"></a>Compile original design files</h4></div></div></div><p>
+          In this method the design is first simulated with the original design files and code coverage is obtained by resimulating portions
+          of the design after (or during the original simulation).  This method has been the way of obtaining coverage results for Covered
+          since its beginning.  The advantages to this method are primarily philosophical.  Code coverage and simulation are two distinct
+          processes and neither interferes with the other.  However, the disadvantage to this method are primarily three-fold.
+        </p><p>
+          First, to obtain coverage results for line coverage, combinational logic coverage and assertion coverage, information above and
+          beyond the information contained in the dumpfile (or via the VPI) are needed which requires Covered to perform a second simulation
+          of the design.  The simulation speed of this second simulation is dependent upon Covered and since Covered is not intended to be
+          a full-fledged Verilog simulator, it generally will simulate slower than commercial and some open source simulators as these are
+          tuned for simulation (not code coverage).  The additional overhead of Covered's second simulation can lead to longer scoring runs.
+          It would be preferable to avoid the second simulation altogether and lean on a Verilog simulator's speed improvements to get the
+          coverage information.
+        </p><p>
+          Second, since Covered performs its own simulation of the design, it is possible that the exact execution sequence may be different
+          between the original simulated results and the scored simulated results (especially when there are actual race conditions present
+          within the original code).  This can mean that the coverage results have the potential to be different than actual results.  This
+          is typically not an issue if Covered's built-in race condition checker is used, but the use of the race condition checker can cause
+          blocks of logic to be excluded from coverage consideration.  It would be better if we could guarantee that the scored results will
+          match the simulated results exactly and not exclude any code from coverage consideration.
+        </p><p>
+          Third, since Covered is not a full simulator, it cannot simulate some Verilog constructs (see <a href="chapter.boundaries.html#section.boundaries.unanalyzed" title="3.2. What logic cannot be currently analyzed?">Section 3.2, &#8220;What logic cannot be currently analyzed?&#8221;</a>)
+          those blocks are pulled from coverage consideration.  Again, it would be better if these types of logic blocks could be
+          included for coverage consideration.
+        </p></div><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="section.start.methods.sim.inline"></a>Instrumenting (Inlining) code coverage into design files</h4></div></div></div><p>
+          In this method, Covered is first used to read in the original design files and output a copy of those files into a separate directory
+          that contain additional Verilog code that used by Covered for extracting coverage information directly.  Instead of compiling/simulating
+          the original files, the user uses this versions of the files for simulation.  The dumpfile output (or VPI callbacks) contain all of the
+          code coverage information such that running Covered's score command eliminates the need for Covered's own simulation.  The advantages
+          of these method address each of the disadvantages of the prior method, leading to faster score runs.  The primary disadvantage to this
+          method is that toggle coverage information can be incorrect if a wire/reg/etc. is assigned to different values within the same timestep.
+          The intermediate values are not seen by Covered (only the final value).  This means that signals used within functions, for loop control
+          expressions (where there is no delay within the for loop) and some behavioral-level may not be accurate.  You will need to decide if the
+          performance enhancements and code coverage consideration enhancements are worth the price of accurate toggle coverage within behavioral-level
+          code.
+        </p><p>
+          See <a href="chapter.score.html#section.score.inline" title="9.9. Inlined Scoring">Section 9.9, &#8220;Inlined Scoring&#8221;</a> for more details.
+        </p></div></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.start.methods.score"></a>Dumping the design</h3></div></div></div><p>
+        Once you have decided whether to create inlined design files or use the original files for scoring, you will need
+        to decide how to run Covered's score command to create a scored CDD file.  Here are the different methods available to you
+        (note that all methods work with Covered regardless of whether inlined or original design files are used).
+      </p><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="section.start.methods.score.dumppost"></a>Post-processing VCD/LXT2 dumpfiles</h4></div></div></div><p>
+          Generating post-process coverage information from VCD/LXT2 -formatted dumpfiles requires three steps:
+        </p><p>
+          </p><div class="orderedlist"><ol type="1"><li><p>Compile the simulator to dump in the specified format.</p></li><li><p>Run the simulation.</p></li><li><p>Run Covered's score command using the dumpfile as input along with the design.</p></li></ol></div><p>
+        </p><p>
+          Performing these steps will generate the needed CDD file that can be used for merging or reporting.
+          The advantages to this approach is that the steps are fairly simple and are compiler/simulator -independent. However,
+          there are two main drawbacks. First, compiling with dumping enabled often slows simulation by some significant factor.
+          Second, the dumpfiles generated from simulation can often be quite large (especially for VCD dumping), consuming a lot
+          of disk space. Additionally, if your simulator dumps in a format different from VCD or LXT2, you will need to perform
+          an additional step in transforming the original dumpfile into one of these formats. This is often a time-consuming task
+          if the design and/or dumpfile is significantly large. If you are generating lots of dumpfiles for coverage (say from
+          running a regression), the amount of disk space needed to store these files can be tremendous, making this approach
+          almost not feasible.
+        </p></div><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="section.start.methods.score.dumpco"></a>Co-processing VCD/LXT2 dumpfiles via FIFO</h4></div></div></div><p>
+          Generating co-process coverage information from VCD/LXT2 -formatted dumpfiles requires four steps:
+        </p><p>
+          </p><div class="orderedlist"><ol type="1"><li><p>Compile the simulator to dump in the specified format.</p></li><li><p>Create a Unix FIFO via the <code class="code">mkfifo <span class="emphasis"><em>fifoname</em></span></code> command.</p></li><li><p>Create an empty CDD file for the design using Covered's score command.</p></li><li><p>
+                Run the simulation and Covered's score command simultaneously.  The following is an example of a testbench and
+                command-line commands:
+              </p><p>
+                </p><div class="example"><a name="example.start.methods.score.dumpco"></a><p class="title"><b>Example 7.1. Running Covered Alongside a Simulation Process Using a Unix FIFO to Pass Dumpfile Information</b></p><div class="example-contents"><pre class="programlisting">
   # Module listing for file "test.v"
   module tb;
     ...
@@ -43,43 +90,43 @@
   &gt; covered score -t tb -v test.v -o test.cdd
   &gt; ./simv &amp;
   &gt; covered score -cdd test.cdd -vcd dump_fifo
-                </pre></div></div><p><br class="example-break">
-            </p></li></ol></div><p>
-      </p><p>
-        The end result of these steps is the same CDD file that results from using the dumpfile method described above.
-        The primary advantages of this approach are that no dumpfiles are actually created, saving on disk space, and
-        it does not significantly slow down the simulation process.  Because both simulation and coverage scoring
-        occur simultaneously, there should be a wall clock time improvement with this method.
-      </p><p>
-        The drawbacks of this approach are basically that the time improvement won't be significant if you are running
-        on a single processor/core system and that it is restricted to machines that support the Unix fifo (this may
-        not be an actual restriction, however).
-      </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.start.methods.vpi"></a>Using the VPI interface to gather coverage information</h3></div></div></div><p>
-        Generating coverage information using the VPI interface of the simulator requires three main steps:
-      </p><p>
-        </p><div class="orderedlist"><ol type="1"><li><p>
-              Create a base CDD file from the design along with a top-level Verilog module and PLI table file (this second
-              file is needed for the commercial VCS compiler).
-            </p></li><li><p>
-              Compile the simulator using the Covered VPI module (or shared object).
-            </p></li><li><p>
-              Run the simulation.
-            </p></li></ol></div><p>
-      </p><p>
-        The end result of these steps is the same CDD file that results from using the dumpfile method described
-        above. The primary advantage of this approach is that no dumpfiles are required, saving on disk space and dumpfile
-        processing time. The drawbacks of this approach are the following:
-      </p><p>
-        </p><div class="orderedlist"><ol type="1"><li><p>
-              Simulation runs much slower using the VPI and Covered (most likely slower than creating dumpfiles from the
-              simulator).
-            </p></li><li><p>
-              Covered VPI modules are only available for certain compilers (Icarus Verilog, Cver and VCS currently); however,
-              adding support for other compilers should not be a difficult thing to do.
-            </p></li><li><p>
-              The VPI modules will only work for compilers that support the VPI interface (a Verilog-2001 feature).
-            </p></li></ol></div><p>
-      </p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.start.dump"></a>7.2. What is needed for dumpfile scoring?</h2></div></div></div><p>
+                  </pre></div></div><p><br class="example-break">
+              </p></li></ol></div><p>
+        </p><p>
+          The end result of these steps is the same CDD file that results from using the dumpfile method described above.
+          The primary advantages of this approach are that no dumpfiles are actually created, saving on disk space, and
+          it does not significantly slow down the simulation process.  Because both simulation and coverage scoring
+          occur simultaneously, there should be a wall clock time improvement with this method.
+        </p><p>
+          The drawbacks of this approach are basically that the time improvement won't be significant if you are running
+          on a single processor/core system and that it is restricted to machines that support the Unix fifo (this may
+          not be an actual restriction, however).
+        </p></div><div class="sect3" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="section.start.methods.score.vpi"></a>Using the VPI interface to gather coverage information</h4></div></div></div><p>
+          Generating coverage information using the VPI interface of the simulator requires three main steps:
+        </p><p>
+          </p><div class="orderedlist"><ol type="1"><li><p>
+                Create a base CDD file from the design along with a top-level Verilog module and PLI table file (this second
+                file is needed for the commercial VCS compiler).
+              </p></li><li><p>
+                Compile the simulator using the Covered VPI module (or shared object).
+              </p></li><li><p>
+                Run the simulation.
+              </p></li></ol></div><p>
+        </p><p>
+          The end result of these steps is the same CDD file that results from using the dumpfile method described
+          above. The primary advantage of this approach is that no dumpfiles are required, saving on disk space and dumpfile
+          processing time. The drawbacks of this approach are the following:
+        </p><p>
+          </p><div class="orderedlist"><ol type="1"><li><p>
+                Simulation runs much slower using the VPI and Covered (most likely slower than creating dumpfiles from the
+                simulator).
+              </p></li><li><p>
+                Covered VPI modules are only available for certain compilers (Icarus Verilog, Cver and VCS currently); however,
+                adding support for other compilers should not be a difficult thing to do.
+              </p></li><li><p>
+                The VPI modules will only work for compilers that support the VPI interface (a Verilog-2001 feature).
+              </p></li></ol></div><p>
+        </p></div></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.start.dump"></a>7.2. What is needed for dumpfile scoring?</h2></div></div></div><p>
       Before Covered can be invoked for dumpfile scoring, you must have a simulatable Verilog design and a VCD or LXT2 dumpfile
       containing information from a simulation run of the design that dumps the module(s) that you want to check for coverage.
       The VCD dumpfile style was chosen due to its universal support by Verilog simulators while the LXT2 dumpfile style was
@@ -127,7 +174,7 @@
         use the resulting VCD dumpfile in the -vcd option to the score command to obtain coverage for that design.
       </p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="section.start.dump.lxt"></a>Creating an LXT2 dumpfile</h3></div></div></div><p>
         An LXT2 dumpfile can be created in several different ways depending on the Verilog simulation tool that you are using. If
-        you are using the <a class="ulink" href="http://www.icarus.com/eda/verilog" target="_top">Icarus Verilog</a> open source simulator, you can
+        you are using the <a href="http://www.icarus.com/eda/verilog" target="_top">Icarus Verilog</a> open source simulator, you can
         simply generate an LXT2-style dumpfile by specifying the -lxt2 option to the simulator command-line. For example, if you
         had a file called "foo.v" that contained the same $dumpfile and $dumpvars commands used for VCD dumping and compiled it
         with Icarus Verilog into a VVP file called "a.out", you could cause Icarus Verilog to generate an LXT2 dumpfile (instead
@@ -135,10 +182,10 @@
         dumpfile.
       </p><p>
         You can also transform many different dumpfile formats into an LXT2 style dumpfile with the helper programs that come with
-        the <a class="ulink" href="http://home.nc.rr.com/gtkwave/" target="_top">GtkWave</a> waveform viewer.
+        the <a href="http://home.nc.rr.com/gtkwave/" target="_top">GtkWave</a> waveform viewer.
       </p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="section.start.vpi"></a>7.3. What is needed for VPI scoring?</h2></div></div></div><p>
       After Covered has been configured and built to include the creation of a VPI loadable module or shared object file (see
-      <a class="xref" href="chapter.installation.html#section.installation.configuring" title="6.3. Configuring the build">Section 6.3, &#8220;Configuring the build&#8221;</a> for details), Covered is capable of scoring during a simulation run by using the VPI
+      <a href="chapter.installation.html#section.installation.configuring" title="6.3. Configuring the build">Section 6.3, &#8220;Configuring the build&#8221;</a> for details), Covered is capable of scoring during a simulation run by using the VPI
       (Verilog Procedural Interface) access mechanism. This is done by loading the Covered VPI module (or shared object) into the
       simulator executable prior to running (depending on the simulator being used). The following steps should be taken to create
       a scored CDD file using this method.
