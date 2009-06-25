@@ -1461,7 +1461,7 @@ void generator_insert_event_comb_cov(
             generator_insert_reg( str );
             exp->suppl.part.eval_t = 1;
           }
-          rv = snprintf( str, 4096, " %s = (%s!==1'b1) & (%s===1'b1);", name, tname, event_str );
+          rv = snprintf( str, 4096, " %s = (%s!==1'b1) & ((%s)===1'b1);", name, tname, event_str );
           assert( rv < 4096 );
           generator_add_cov_to_work_code( str );
           rv = snprintf( str, 4096, " %s = %s;", tname, event_str );
@@ -1483,7 +1483,7 @@ void generator_insert_event_comb_cov(
             generator_insert_reg( str );
             exp->suppl.part.eval_t = 1;
           }
-          rv = snprintf( str, 4096, " %s = (%s!==1'b0) & (%s===1'b0);", name, tname, event_str );
+          rv = snprintf( str, 4096, " %s = (%s!==1'b0) & ((%s)===1'b0);", name, tname, event_str );
           assert( rv < 4096 );
           generator_add_cov_to_work_code( str );
           rv = snprintf( str, 4096, " %s = %s;", tname, event_str );
@@ -1505,14 +1505,14 @@ void generator_insert_event_comb_cov(
             if( number >= 0 ) {
               rv = snprintf( str, 4096, "reg [%d:0] %s;\n", (number - 1), tname );
             } else {
-              rv = snprintf( str, 4096, "reg [(%s-1):0] %s;\n", size, tname );
+              rv = snprintf( str, 4096, "reg [((%s)-1):0] %s;\n", size, tname );
             }
             assert( rv < 4096 );
             generator_insert_reg( str );
             free_safe( size, (strlen( size ) + 1) );
             exp->suppl.part.eval_t = 1;
           }
-          rv = snprintf( str, 4096, " %s = (%s!==%s);", name, tname, event_str );
+          rv = snprintf( str, 4096, " %s = (%s!==(%s));", name, tname, event_str );
           assert( rv < 4096 );
           generator_add_cov_to_work_code( str );
           rv = snprintf( str, 4096, " %s = %s;", tname, event_str );
@@ -1697,9 +1697,9 @@ static char* generator_gen_size(
         lexp = generator_gen_size( exp->left,  funit, &lnumber );
         rexp = generator_gen_size( exp->right, funit, &rnumber );
         {
-          unsigned int slen = strlen( lexp ) + strlen( rexp ) + 4;
+          unsigned int slen = strlen( lexp ) + strlen( rexp ) + 6;
           size = (char*)malloc_safe( slen );
-          rv   = snprintf( size, slen, "(%s+%s)", lexp, rexp );
+          rv   = snprintf( size, slen, "(%s)+(%s)", lexp, rexp );
           assert( rv < slen );
         }
         free_safe( lexp, (strlen( lexp ) + 1) );
@@ -1727,9 +1727,9 @@ static char* generator_gen_size(
         lexp = codegen_gen_expr_one_line( exp->left, funit, FALSE );
         rexp = generator_gen_size( exp->right, funit, &rnumber );
         {
-          unsigned int slen = strlen( lexp ) + strlen( rexp ) + 4;
+          unsigned int slen = strlen( lexp ) + strlen( rexp ) + 6;
           size = (char*)malloc_safe( slen );
-          rv  = snprintf( size, slen, "(%s*%s)", lexp, rexp );
+          rv  = snprintf( size, slen, "(%s)*(%s)", lexp, rexp );
           assert( rv < slen );
         }
         free_safe( lexp, (strlen( lexp ) + 1) );
@@ -1802,9 +1802,9 @@ static char* generator_gen_size(
         lexp = codegen_gen_expr_one_line( exp->left,  funit, FALSE );
         rexp = codegen_gen_expr_one_line( exp->right, funit, FALSE );
         {
-          unsigned int slen = (strlen( lexp ) * 3) + (strlen( rexp ) * 3) + 18;
+          unsigned int slen = (strlen( lexp ) * 3) + (strlen( rexp ) * 3) + 28;
           size = (char*)malloc_safe( slen );
-          rv  = snprintf( size, slen, "(((%s>%s)?(%s-%s):(%s-%s))+1)", lexp, rexp, lexp, rexp, rexp, lexp );
+          rv  = snprintf( size, slen, "(((%s)>(%s))?((%s)-(%s)):((%s)-(%s)))+1", lexp, rexp, lexp, rexp, rexp, lexp );
           assert( rv < slen );
         }
         free_safe( lexp, (strlen( lexp ) + 1) );
@@ -1836,9 +1836,9 @@ static char* generator_gen_size(
               assert( rv < 50 );
               size = strdup_safe( num );
             } else {
-              unsigned int slen = (strlen( lexp ) * 2) + (strlen( rexp ) * 2) + 8;
+              unsigned int slen = (strlen( lexp ) * 2) + (strlen( rexp ) * 2) + 14;
               size = (char*)malloc_safe_nolimit( slen );
-              rv   = snprintf( size, slen, "((%s>%s)?%s:%s)", lexp, rexp, lexp, rexp );
+              rv   = snprintf( size, slen, "((%s)>(%s))?(%s):(%s)", lexp, rexp, lexp, rexp );
               assert( rv < slen );
               *number = -1;
             }
@@ -1902,7 +1902,7 @@ static char* generator_create_lhs(
     } else {
       slen = 7 + ((size != NULL) ? strlen( size ) : 1) + 7 + strlen( name ) + 1;
       code = (char*)malloc_safe_nolimit( slen );
-      rv   = snprintf( code, slen, "wire [(%s-1):0] %s", ((size != NULL) ? size : "1"), name );
+      rv   = snprintf( code, slen, "wire [(%s)-1:0] %s", ((size != NULL) ? size : "1"), name );
     }
 
     assert( rv < slen );
@@ -1936,7 +1936,7 @@ static char* generator_create_lhs(
         } else {
           slen = 6 + ((size != NULL) ? strlen( size ) : 1) + 7 + strlen( name ) + 3;
           str  = (char*)malloc_safe_nolimit( slen );
-          rv   = snprintf( str, slen, "reg [(%s-1):0] %s;\n", ((size != NULL) ? size : "1"), name );
+          rv   = snprintf( str, slen, "reg [(%s)-1:0] %s;\n", ((size != NULL) ? size : "1"), name );
         }
       }
 
@@ -2358,9 +2358,9 @@ static char* generator_gen_mem_index_helper(
       {
         char* lstr = codegen_gen_expr_one_line( exp->left,  funit, FALSE );
         char* rstr = codegen_gen_expr_one_line( exp->right, funit, FALSE );
-        slen  = (strlen( lstr ) * 3) + (strlen( rstr ) * 3) + 14;
+        slen  = (strlen( lstr ) * 3) + (strlen( rstr ) * 3) + 24;
         index = (char*)malloc_safe( slen );
-        rv    = snprintf( index, slen, "((%s>%s)?(%s-%s):(%s-%s))", lstr, rstr, lstr, rstr, rstr, lstr );
+        rv    = snprintf( index, slen, "((%s)>(%s))?((%s)-(%s)):((%s)-(%s))", lstr, rstr, lstr, rstr, rstr, lstr );
         assert( rv < slen );
         free_safe( lstr, (strlen( lstr ) + 1) );
         free_safe( rstr, (strlen( rstr ) + 1) );
@@ -2373,9 +2373,9 @@ static char* generator_gen_mem_index_helper(
       {
         char* lstr = codegen_gen_expr_one_line( exp->left,  funit, FALSE );
         char* rstr = codegen_gen_expr_one_line( exp->right, funit, FALSE );
-        slen  = 2 + strlen( lstr ) + 1 + strlen( rstr ) + 5;
+        slen  = 2 + strlen( lstr ) + 3 + strlen( rstr ) + 5;
         index = (char*)malloc_safe( slen );
-        rv    = snprintf( index, slen, "((%s-%s)+1)", lstr, rstr );
+        rv    = snprintf( index, slen, "((%s)-(%s))+1", lstr, rstr );
         assert( rv < slen );
         free_safe( lstr, (strlen( lstr ) + 1) );
         free_safe( rstr, (strlen( rstr ) + 1) );
@@ -2396,14 +2396,14 @@ static char* generator_gen_mem_index_helper(
       char tmp[50];
       rv = snprintf( tmp, 50, "%d", number );
       assert( rv < 50 );
-      slen  = 1 + strlen( tmp_index ) + 1 + strlen( tmp ) + 2;
+      slen  = 1 + strlen( tmp_index ) + 3 + strlen( tmp ) + 2;
       index = (char*)malloc_safe( slen );
-      rv    = snprintf( index, slen, "(%s-%s)", tmp_index, tmp );
+      rv    = snprintf( index, slen, "(%s)-(%s)", tmp_index, tmp );
       assert( rv < slen );
     } else {
-      slen  = 1 + strlen( tmp_index ) + 1 + strlen( num ) + 2;
+      slen  = 1 + strlen( tmp_index ) + 3 + strlen( num ) + 2;
       index = (char*)malloc_safe( slen );
-      rv    = snprintf( index, slen, "(%s-%s)", tmp_index, num );
+      rv    = snprintf( index, slen, "(%s)-(%s)", tmp_index, num );
       assert( rv < slen );
     }
     free_safe( tmp_index, (strlen( tmp_index ) + 1) );
@@ -2420,13 +2420,13 @@ static char* generator_gen_mem_index_helper(
       char tmp[50];
       rv = snprintf( tmp, 50, "%d", (number - 1) );
       assert( rv < 50 );
-      slen  = 1 + strlen( tmp ) + 1 + strlen( tmp_index ) + 2;
+      slen  = 1 + strlen( tmp ) + 3 + strlen( tmp_index ) + 2;
       index = (char*)malloc_safe( slen );
-      rv    = snprintf( index, slen, "(%s-%s)", tmp, tmp_index );
+      rv    = snprintf( index, slen, "(%s)-(%s)", tmp, tmp_index );
     } else {
-      slen  = 2 + strlen( num ) + 4 + strlen( index ) + 2;
+      slen  = 2 + strlen( num ) + 5 + strlen( index ) + 1;
       index = (char*)malloc_safe( slen );
-      rv    = snprintf( index, slen, "((%s-1)-%s)", num, tmp_index );
+      rv    = snprintf( index, slen, "((%s)-1)-%s", num, tmp_index );
     }
     assert( rv < slen );
     free_safe( tmp_index, (strlen( tmp_index ) + 1) );
@@ -2434,9 +2434,9 @@ static char* generator_gen_mem_index_helper(
 
   /* Create the full string for this dimension */
   if( ldim_width != NULL ) {
-    slen = 1 + strlen( index ) + 1 + strlen( ldim_width ) + 2;
+    slen = 1 + strlen( index ) + 3 + strlen( ldim_width ) + 2;
     str  = (char*)malloc_safe( slen );
-    rv   = snprintf( str, slen, "(%s*%s)", index, ldim_width );
+    rv   = snprintf( str, slen, "(%s)*(%s)", index, ldim_width );
     assert( rv < slen );
   } else {
     str = strdup_safe( index );
@@ -2448,9 +2448,9 @@ static char* generator_gen_mem_index_helper(
 
     /* Create the width of this dimension */
     if( ldim_width != NULL ) {
-      slen  = 1 + strlen( ldim_width ) + 1 + strlen( num ) + 2;
+      slen  = 1 + strlen( ldim_width ) + 3 + strlen( num ) + 2;
       width = (char*)malloc_safe( slen );
-      rv    = snprintf( width, slen, "(%s*%s)", ldim_width, num );
+      rv    = snprintf( width, slen, "(%s)*(%s)", ldim_width, num );
       assert( rv < slen );
     } else {
       width = strdup_safe( num );
@@ -2461,9 +2461,9 @@ static char* generator_gen_mem_index_helper(
       char* tmpstr = str;
       char* rest   = generator_gen_mem_index_helper( ((dimension == 1) ? exp->parent->expr->left : exp->parent->expr->left->right), funit, (dimension - 1), width );
 
-      slen = strlen( tmpstr ) + 1 + strlen( rest ) + 1;
+      slen = 1 + strlen( tmpstr ) + 3 + strlen( rest ) + 2;
       str  = (char*)malloc_safe( slen );
-      rv   = snprintf( str, slen, "%s+%s", tmpstr, rest );
+      rv   = snprintf( str, slen, "(%s)+(%s)", tmpstr, rest );
       assert( rv < slen ); 
 
       free_safe( rest,   (strlen( rest )   + 1) );
@@ -2510,9 +2510,9 @@ static char* generator_gen_mem_index(
     for( ; dim>dimension; dim-- ) {
       char* tmp_str = ldim_width;
       num        = mod_parm_gen_size_code( exp->sig, dim, funit_get_curr_module( funit ), &number );
-      slen       = 1 + strlen( tmp_str ) + 1 + strlen( num ) + 2;
+      slen       = 1 + strlen( tmp_str ) + 3 + strlen( num ) + 2;
       ldim_width = (char*)malloc_safe( slen );
-      rv         = snprintf( ldim_width, slen, "(%s*%s)", tmp_str, num );
+      rv         = snprintf( ldim_width, slen, "(%s)*(%s)", tmp_str, num );
       assert( rv < slen );
       free_safe( tmp_str, (strlen( tmp_str ) + 1) );
       free_safe( num,     (strlen( num )     + 1) );
@@ -2557,13 +2557,13 @@ static char* generator_gen_mem_size(
       char tmp[50];
       rv = snprintf( tmp, 50, "%d", number );
       assert( rv < 50 );
-      slen += strlen( tmp ) + 2;
+      slen += strlen( tmp ) + 6;
       size  = (char*)malloc_safe( slen );
-      rv    = snprintf( size, slen, "%s*%s", tmpsize, tmp );
+      rv    = snprintf( size, slen, "(%s)*(%s)", tmpsize, tmp );
     } else {
-      slen += strlen( curr_size ) + 2;
+      slen += strlen( curr_size ) + 6;
       size  = (char*)malloc_safe( slen );
-      rv    = snprintf( size, slen, "%s*%s", tmpsize, curr_size );
+      rv    = snprintf( size, slen, "(%s)*(%s)", tmpsize, curr_size );
     }
     assert( rv < slen );
 
@@ -2612,14 +2612,14 @@ static char* generator_get_lhs_lsb_helper(
       char num[50];
       rv = snprintf( num, 50, "%d", number );
       assert( rv < 50 );
-      slen = strlen( num ) + 1 + strlen( right ) + 1;
+      slen = 1 + strlen( num ) + 3 + strlen( right ) + 2;
       lsb  = (char*)malloc_safe( slen );
-      rv   = snprintf( lsb, slen, "%s+%s", num, right );
+      rv   = snprintf( lsb, slen, "(%s)+(%s)", num, right );
       assert( rv < slen );
     } else {
-      slen = strlen( size ) + 1 + strlen( right ) + 1;
+      slen = 1 + strlen( size ) + 3 + strlen( right ) + 2;
       lsb  = (char*)malloc_safe( slen );
-      rv   = snprintf( lsb, slen, "%s+%s", size, right );
+      rv   = snprintf( lsb, slen, "(%s)+(%s)", size, right );
       assert( rv < slen );
     }
 
@@ -2721,7 +2721,7 @@ static void generator_insert_mem_cov(
       unsigned int slen = 7 + strlen( num ) + 7 + strlen( name ) + 3 + strlen( idxstr ) + 2;
 
       str = (char*)malloc_safe( slen );
-      rv  = snprintf( str, slen, "wire [(%s-1):0] %s = %s;", num, iname, idxstr );
+      rv  = snprintf( str, slen, "wire [(%s)-1:0] %s = %s;", num, iname, idxstr );
       assert( rv < slen );
 
     } else {
@@ -2729,7 +2729,7 @@ static void generator_insert_mem_cov(
       unsigned int slen = 6 + strlen( num ) + 7 + strlen( iname ) + 3;
 
       str = (char*)malloc_safe( slen );
-      rv  = snprintf( str, slen, "reg [(%s-1):0] %s;\n", num, iname );
+      rv  = snprintf( str, slen, "reg [(%s)-1:0] %s;\n", num, iname );
       assert( rv < slen );
       generator_insert_reg( str );
       free_safe( str, (strlen( str ) + 1) );
@@ -2775,7 +2775,7 @@ static void generator_insert_mem_cov(
         if( number >= 0 ) {
           rv = snprintf( rhs_reg, 4096, "reg [%d:0] %s;\n", (number - 1), ename );
         } else {
-          rv = snprintf( rhs_reg, 4096, "reg [(%s-1):0] %s;\n", size, ename );
+          rv = snprintf( rhs_reg, 4096, "reg [(%s)-1:0] %s;\n", size, ename );
         }
         assert( rv < 4096 );
         generator_insert_reg( rhs_reg );
@@ -2806,14 +2806,14 @@ static void generator_insert_mem_cov(
         char num[50];
         rv = snprintf( num, 50, "%d", number );
         assert( rv < 50 );
-        vlen    = 1 + strlen( num ) + 4 + strlen( lsb_str ) + 1;
+        vlen    = 2 + strlen( num ) + 6 + strlen( lsb_str ) + 2;
         msb_str = (char*)malloc_safe( vlen );
-        rv      = snprintf( msb_str, vlen, "(%s-1)+%s", num, lsb_str );
+        rv      = snprintf( msb_str, vlen, "((%s)-1)+(%s)", num, lsb_str );
         assert( rv < vlen );
       } else {
-        vlen    = 1 + strlen( size ) + 4 + strlen( lsb_str ) + 1;
+        vlen    = 2 + strlen( size ) + 6 + strlen( lsb_str ) + 2;
         msb_str = (char*)malloc_safe( vlen );
-        rv      = snprintf( msb_str, vlen, "(%s-1)+%s", size, lsb_str );
+        rv      = snprintf( msb_str, vlen, "((%s)-1)+(%s)", size, lsb_str );
         assert( rv < vlen );
       }
 
@@ -2850,9 +2850,9 @@ static void generator_insert_mem_cov(
 
     /* Create the range information for the write */
     if( number >= 0 ) {
-      rv = snprintf( range, 4096, "[(%d+(%s-1)):0]", number, num );
+      rv = snprintf( range, 4096, "[%d+((%s)-1):0]", number, num );
     } else {
-      rv = snprintf( range, 4096, "[(%s+(%s-1)):0]", size, num );
+      rv = snprintf( range, 4096, "[(%s)+((%s)-1):0]", size, num );
     }
     assert( rv < 4096 );
 
@@ -2877,7 +2877,7 @@ static void generator_insert_mem_cov(
     assert( rv < 4096 );
 
     /* Create the range information for the read */
-    rv = snprintf( range, 4096, "[(%s-1):0]", num );
+    rv = snprintf( range, 4096, "[(%s)-1:0]", num );
     assert( rv < 4096 );
 
     /* Create the value to assign */
@@ -2924,7 +2924,7 @@ static void generator_insert_mem_cov(
   free_safe( idxstr, (strlen( idxstr ) + 1) );
   free_safe( value,  (strlen( value )  + 1) );
   free_safe( str,    (strlen( str )    + 1) );
-  free_safe( scope, (strlen( scope ) + 1) );
+  free_safe( scope,  (strlen( scope )  + 1) );
 
   PROFILE_END;
 
@@ -3148,7 +3148,7 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
         if( number >= 0 ) {
           fprintf( curr_ofile, "wire [%d:0] \\covered$F%u = %s;\n", (number - 1), id, exp );
         } else {
-          fprintf( curr_ofile, "wire [(%s-1):0] \\covered$F%u = %s;\n", ((size != NULL) ? size : "1"), id, exp );
+          fprintf( curr_ofile, "wire [(%s)-1:0] \\covered$F%u = %s;\n", ((size != NULL) ? size : "1"), id, exp );
         }
         free_safe( size, (strlen( size ) + 1) );
         free_safe( exp, (strlen( exp ) + 1) );
@@ -3165,13 +3165,13 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
           if( to_number >= 0 ) {
             fprintf( curr_ofile, "wire [%d:0] \\covered$F%u = {%s,%s};\n", ((from_number + to_number) - 1), id, fexp, texp );
           } else {
-            fprintf( curr_ofile, "wire [((%d+%s)-1):0] \\covered$F%u = {%s,%s};\n", from_number, ((tsize != NULL) ? tsize : "1"), id, fexp, texp );
+            fprintf( curr_ofile, "wire [(%d+(%s))-1:0] \\covered$F%u = {%s,%s};\n", from_number, ((tsize != NULL) ? tsize : "1"), id, fexp, texp );
           }
         } else {
           if( to_number >= 0 ) {
-            fprintf( curr_ofile, "wire [((%s+%d)-1):0] \\covered$F%u = {%s,%s};\n", ((fsize != NULL) ? fsize : "1"), to_number, id, fexp, texp );
+            fprintf( curr_ofile, "wire [((%s)+%d)-1:0] \\covered$F%u = {%s,%s};\n", ((fsize != NULL) ? fsize : "1"), to_number, id, fexp, texp );
           } else {
-            fprintf( curr_ofile, "wire [((%s+%s)-1):0] \\covered$F%u = {%s,%s};\n",
+            fprintf( curr_ofile, "wire [((%s)+(%s))-1:0] \\covered$F%u = {%s,%s};\n",
                      ((fsize != NULL) ? fsize : "1"), ((tsize != NULL) ? tsize : "1"), id, fexp, texp );
           }
         }

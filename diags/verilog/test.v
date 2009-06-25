@@ -7,35 +7,23 @@
 
 module main;
 
-reg       clock;
-reg [1:0] b;
+reg [1:0]  b;
+reg [31:0] a;
 
-reg  a;
-
-always @(posedge clock)
-  casex( b )
-    2'b01  :  a <= 1'b1;
-    2'b10  :  a <= 1'b0;
-    default:  a <= a;
-  endcase
-
-wire c = ~a;
+initial begin
+	b = 2'h0;
+        #5;
+        b = a[32-8-1-2-1:32-8-1-2-2];
+end
 
 initial begin
 `ifdef DUMP
         $dumpfile( "test.vcd" );
         $dumpvars( 0, main );
 `endif
-	b = 2'b01;
-	#5;
-	// b = 2'b00;
+	a = 32'h00080000;
         #10;
         $finish;
-end
-
-initial begin
-	clock = 1'b0;
-	forever #(2) clock = ~clock;
 end
 
 endmodule
