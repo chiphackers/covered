@@ -7013,6 +7013,7 @@ assign
           expression_dealloc( $3, FALSE );
         }
       } else {
+        generator_flush_work_code;
         (void)generator_insert_comb_cov( @1.ppline, @1.first_column, TRUE, TRUE, FALSE );
       }
     }

@@ -7,21 +7,27 @@
 
 module main;
 
-reg [1:0]  b;
-reg [31:0] a;
+reg RST0;
+reg CLK0;
+reg CE0;
+wire [21:0] P, R;
+reg [21:0] Q;
+reg A, B;
 
-initial begin
-	b = 2'h0;
-        #5;
-        b = a[32-8-1-2-1:32-8-1-2-2];
-end
+always @(posedge RST0 or posedge CLK0)
+  if (RST0)
+    Q <= {22{1'b0}};
+  else
+  if (CE0)
+    Q <= { {11{1'b0}}, A} * { {11{1'b0}}, B};
+assign P = Q;
+assign R = P;
 
 initial begin
 `ifdef DUMP
         $dumpfile( "test.vcd" );
         $dumpvars( 0, main );
 `endif
-	a = 32'h00080000;
         #10;
         $finish;
 end

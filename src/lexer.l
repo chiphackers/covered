@@ -882,7 +882,8 @@ WSPACE [ \t\b\f]+
     /* Clear the current hold buffer before working on a new statement block */
     if( (rc != K_begin) && (rc != K_end) ) {
       if( (rc == K_initial)   || (rc == K_always) || (rc == K_always_latch) || (rc == K_always_comb) ||
-          (rc == K_always_ff) || (rc == K_final)  || (rc == K_task)         || (rc == K_function) ) {
+          (rc == K_always_ff) || (rc == K_final)  || (rc == K_task)         || (rc == K_function)    ||
+          (rc == K_assign) ) {
         // generator_flush_all;
         generator_add_orig_to_work_code( yytext, yylloc.ppline, yylloc.first_column );
       } else {
