@@ -847,7 +847,7 @@ static void param_find_and_set_expr_value(
       if( inst->funit->parent != NULL ) {
         param_find_and_set_expr_value( expr, inst->parent );
       } else {
-        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Parameter used in expression but not defined in current module, line %d", expr->line );
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Parameter used in expression but not defined in current module, file: %s, line %u", obf_file( inst->funit->orig_fname ), expr->line );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         Throw 0;

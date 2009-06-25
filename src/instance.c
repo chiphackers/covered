@@ -77,12 +77,16 @@ static void instance_display_tree_helper(
   if( root->funit != NULL ) {
     char* piname = scope_gen_printable( root->name );
     char* pfname = scope_gen_printable( root->funit->name );
-    printf( "%s%s (%s) - %p (ign: %d, gend: %d)\n", prefix, piname, pfname, root, root->suppl.ignore, root->suppl.gend_scope );
+    /*@-formatcode@*/
+    printf( "%s%s (%s) - %p (ign: %hhu, gend: %hhu)\n", prefix, piname, pfname, root, root->suppl.ignore, root->suppl.gend_scope );
+    /*@=formatcode@*/
     free_safe( piname, (strlen( piname ) + 1) );
     free_safe( pfname, (strlen( pfname ) + 1) );
   } else {
     char* piname = scope_gen_printable( root->name );
-    printf( "%s%s () - %p (%d %d)\n", prefix, piname, root, root->suppl.ignore, root->suppl.gend_scope );
+    /*@-formatcode@*/
+    printf( "%s%s () - %p (ign: %hhu, gend: %hhu)\n", prefix, piname, root, root->suppl.ignore, root->suppl.gend_scope );
+    /*@=formatcode@*/
     free_safe( piname, (strlen( piname ) + 1) );
   }
 
@@ -1204,7 +1208,9 @@ void instance_db_write(
 
   } else {
 
-    fprintf( file, "%d %s %d\n", DB_TYPE_INST_ONLY, scope, root->suppl.name_diff );
+    /*@-formatcode@*/
+    fprintf( file, "%d %s %hhu\n", DB_TYPE_INST_ONLY, scope, root->suppl.name_diff );
+    /*@=formatcode@*/
 
   }
 

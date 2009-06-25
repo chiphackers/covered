@@ -749,7 +749,7 @@ static bool bind_task_function_namedblock(
 
           /* Check to see if the call port count matches the actual port count */
           if( (port_cnt = funit_get_port_count( found_funit )) != port_order ) {
-            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Number of arguments in %s call (%d) does not match its %s port list (%d), file %s, line %d",
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Number of arguments in %s call (%d) does not match its %s port list (%d), file %s, line %u",
                                         get_funit_type( type ), port_order, get_funit_type( type ), port_cnt, obf_file( funit_exp->orig_fname ), exp->line );
             assert( rv < USER_MSG_LENGTH );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );

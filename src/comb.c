@@ -880,14 +880,14 @@ static void combination_parenthesize(
  measurable expression.
 */
 static void combination_underline_tree(
-            expression*   exp,         /*!< Pointer to expression to create underline for */
-            unsigned int  curr_depth,  /*!< Specifies current depth in expression tree */
-  /*@out@*/ char***       lines,       /*!< Stack of lines for left child */
-  /*@out@*/ unsigned int* depth,       /*!< Pointer to top of left child stack */
-  /*@out@*/ unsigned int* size,        /*!< Pointer to character width of this node */
-            exp_op_type   parent_op,   /*!< Expression operation of parent used for calculating parenthesis */
-            bool          center,      /*!< Specifies if expression IDs should be centered in underlines or at beginning */
-            func_unit*    funit        /*!< Pointer to current functional unit containing this expression */
+               expression*   exp,         /*!< Pointer to expression to create underline for */
+               unsigned int  curr_depth,  /*!< Specifies current depth in expression tree */
+  /*@out@*/    char***       lines,       /*!< Stack of lines for left child */
+  /*@out@*/    unsigned int* depth,       /*!< Pointer to top of left child stack */
+  /*@out@*/    unsigned int* size,        /*!< Pointer to character width of this node */
+  /*@unused@*/ exp_op_type   parent_op,   /*!< Expression operation of parent used for calculating parenthesis */
+               bool          center,      /*!< Specifies if expression IDs should be centered in underlines or at beginning */
+               func_unit*    funit        /*!< Pointer to current functional unit containing this expression */
 ) { PROFILE(COMBINATION_UNDERLINE_TREE);
 
   char**       l_lines;         /* Pointer to left underline stack */
@@ -1511,7 +1511,7 @@ static void combination_underline(
     assert( code[j] != NULL );
 
     if( j == 0 ) {
-      fprintf( ofile, "        %7d:    %s\n", exp->line, code[j] );
+      fprintf( ofile, "        %7u:    %s\n", exp->line, code[j] );
     } else {
       fprintf( ofile, "                    %s\n", code[j] );
     }

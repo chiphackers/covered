@@ -539,7 +539,7 @@ static void fsm_arg_parse_trans(
   Try {
 
     if( (from_state = fsm_arg_parse_value( &str, funit )) == NULL ) {
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Left-hand side FSM transition value must be a constant value or parameter, line: %d, file: %s",
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Left-hand side FSM transition value must be a constant value or parameter, line: %u, file: %s",
                                   expr->line, obf_file( funit->orig_fname ) );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -547,7 +547,7 @@ static void fsm_arg_parse_trans(
     } else {
 
       if( (str[0] != '-') || (str[1] != '>') ) {
-        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "FSM transition values must contain the string '->' between them, line: %d, file: %s",
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "FSM transition values must contain the string '->' between them, line: %u, file: %s",
                                     expr->line, obf_file( funit->orig_fname ) );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -557,7 +557,7 @@ static void fsm_arg_parse_trans(
       }
 
       if( (to_state = fsm_arg_parse_value( &str, funit )) == NULL ) {
-        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Right-hand side FSM transition value must be a constant value or parameter, line: %d, file: %s",
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Right-hand side FSM transition value must be a constant value or parameter, line: %u, file: %s",
                                     expr->line, obf_file( funit->orig_fname ) );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );

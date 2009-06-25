@@ -451,7 +451,7 @@ void stmt_link_display(
   while( curr.curr != NULL ) {
     assert( curr.curr->stmt != NULL );
     assert( curr.curr->stmt->exp != NULL );
-    printf( "  %s, ppline: %u, col: %d, added: %d, stmt_head: %u\n",
+    printf( "  %s, ppline: %u, col: %u, added: %u, stmt_head: %u\n",
             expression_string( curr.curr->stmt->exp ), curr.curr->stmt->exp->ppline, ((curr.curr->stmt->exp->col >> 16) & 0xffff),
             curr.curr->stmt->suppl.part.added, curr.curr->stmt->suppl.part.head );
     stmt_iter_next( &curr );
@@ -473,7 +473,7 @@ void exp_link_display(
 
   curr = head;
   while( curr != NULL ) {
-    printf( "  id: %d, op: %s, line: %d\n", curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line );
+    printf( "  id: %d, op: %s, line: %u\n", curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line );
     curr = curr->next;
   }
 

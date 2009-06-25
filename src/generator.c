@@ -297,7 +297,7 @@ void generator_replace(
         if( (strlen( work_buffer ) + strlen( str )) < 4095 ) {
           strcat( work_buffer, str );
         } else {
-          str_link_add( strdup_safe( work_buffer ), &work_head, &work_tail );
+          (void)str_link_add( strdup_safe( work_buffer ), &work_head, &work_tail );
           strcpy( work_buffer, str );
         }
 
@@ -306,7 +306,7 @@ void generator_replace(
           replace_first.word_ptr = work_buffer + strlen( work_buffer );
           strcat( work_buffer, keep_end );
         } else {
-          str_link_add( strdup_safe( work_buffer ), &work_head, &work_tail );
+          (void)str_link_add( strdup_safe( work_buffer ), &work_head, &work_tail );
           strcpy( work_buffer, keep_end );
           replace_first.word_ptr = work_buffer;
         }
@@ -400,7 +400,7 @@ void generator_push_reg_insert() { PROFILE(GENERATOR_PUSH_REG_INSERT);
   /* Make sure that the hold buffer is added to the hold list */
   if( hold_buffer[0] != '\0' ) {
     strcat( hold_buffer, "\n" );
-    str_link_add( strdup_safe( hold_buffer ), &hold_head, &hold_tail );
+    (void)str_link_add( strdup_safe( hold_buffer ), &hold_head, &hold_tail );
     hold_buffer[0] = '\0';
   }
 
@@ -432,6 +432,7 @@ void generator_pop_reg_insert() { PROFILE(GENERATOR_POP_REG_INSERT);
 
 }
 
+#ifdef OBSOLETE
 /*!
  \return Returns TRUE if the reg_top stack contains exactly one element.
 */
@@ -444,6 +445,7 @@ static bool generator_is_reg_top_one_deep() { PROFILE(GENERATOR_IS_BASE_REG_INSE
   return( retval );
 
 }
+#endif
 
 /*!
  Inserts the given register instantiation string into the appropriate spot in the hold buffer.
@@ -458,7 +460,7 @@ static void generator_insert_reg(
   assert( reg_top != NULL );
 
   /* Create string link */
-  str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
+  (void)str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
 
   /* Insert it at the insertion point */
   if( reg_top->ptr == NULL ) {
@@ -694,6 +696,7 @@ static void generator_create_filename_list(
 
 }
 
+#ifdef OBSOLETE
 /*!
  \return Returns TRUE if next functional unit exists; otherwise, returns FALSE.
 
@@ -725,6 +728,7 @@ static bool generator_set_next_funit(
   return( next_funit != NULL );
 
 }
+#endif
 
 /*!
  Deallocates all memory allocated for the given filename linked list.
@@ -780,7 +784,7 @@ static void generator_output_funits(
     /* Populate the modlist list */
     funitl = head->head;
     while( funitl != NULL ) {
-      str_link_add( strdup_safe( funitl->funit->name ), &modlist_head, &modlist_tail );
+      (void)str_link_add( strdup_safe( funitl->funit->name ), &modlist_head, &modlist_tail );
       funitl = funitl->next;
     }
 
@@ -789,7 +793,7 @@ static void generator_output_funits(
 
       /* Parse the original code and output inline coverage code */
       reset_lexer_for_generation( head->filename, "covered/verilog" );
-      VLparse();
+      (void)VLparse();
 
       /* Flush the work and hold buffers */
       generator_flush_all;
@@ -829,7 +833,9 @@ void generator_output() { PROFILE(GENERATOR_OUTPUT);
 
   /* Create the initial "covered" directory - TBD - this should be done prior to this function call */
   if( !directory_exists( "covered" ) ) {
+    /*@-shiftimplementation@*/
     if( mkdir( "covered", (S_IRWXU | S_IRWXG | S_IRWXO) ) != 0 ) {
+    /*@=shiftimplementation@*/
       print_output( "Unable to create \"covered\" directory", FATAL, __FILE__, __LINE__ );
       Throw 0;
     }
@@ -844,7 +850,9 @@ void generator_output() { PROFILE(GENERATOR_OUTPUT);
   }
 
   /* Create "covered/verilog" directory */
+  /*@-shiftimplementation@*/
   if( mkdir( "covered/verilog", (S_IRWXU | S_IRWXG | S_IRWXO) ) != 0 ) {
+  /*@=shiftimplementation@*/
     print_output( "Unable to create \"covered/verilog\" directory", FATAL, __FILE__, __LINE__ );
     Throw 0;
   }
@@ -921,7 +929,7 @@ void generator_prepend_to_work_code(
       rv = snprintf( work_buffer, 4096, "%s %s", str, tmpstr );
       assert( rv < 4096 );
     } else {
-      str_link_add( strdup_safe( str ), &work_head, &work_tail );
+      (void)str_link_add( strdup_safe( str ), &work_head, &work_tail );
     }
 
   /* Otherwise, prepend the string to the head string of the work list */
@@ -936,7 +944,7 @@ void generator_prepend_to_work_code(
     } else {
       str_link* tmp_head = NULL;
       str_link* tmp_tail = NULL;
-      str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
+      (void)str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
       if( work_head == NULL ) {
         work_head = work_tail = tmp_head;
       } else {
@@ -955,12 +963,12 @@ void generator_prepend_to_work_code(
  Adds the given string to the working code buffer.
 */
 void generator_add_to_work_code(
-  const char*  str,           /*!< String to write */
-  unsigned int first_line,    /*!< First line of string from file */
-  unsigned int first_column,  /*!< First column of string from file */
-  bool         from_code,     /*!< Specifies if the string came from the code directly */
-  const char*  file,          /*!< Filename that called this function */
-  unsigned int line           /*!< Line number where this function call was performed from */
+               const char*  str,           /*!< String to write */
+               unsigned int first_line,    /*!< First line of string from file */
+               unsigned int first_column,  /*!< First column of string from file */
+               bool         from_code,     /*!< Specifies if the string came from the code directly */
+  /*@unused@*/ const char*  file,          /*!< Filename that called this function */
+  /*@unused@*/ unsigned int line           /*!< Line number where this function call was performed from */
 ) { PROFILE(GENERATOR_ADD_TO_WORK_CODE);
 
   static bool semi_from_code_just_seen  = FALSE;
@@ -1083,8 +1091,8 @@ void generator_add_to_work_code(
  Flushes the current working code to the holding code buffers.
 */
 void generator_flush_work_code1(
-  const char*  file,  /*!< Filename that calls this function */
-  unsigned int line   /*!< Line number that calls this function */
+  /*@unused@*/ const char*  file,  /*!< Filename that calls this function */
+  /*@unused@*/ unsigned int line   /*!< Line number that calls this function */
 ) { PROFILE(GENERATOR_FLUSH_WORK_CODE1);
 
 #ifdef DEBUG_MODE
@@ -1098,7 +1106,7 @@ void generator_flush_work_code1(
 
   /* If the hold_buffer is not empty, move it to the hold list */
   if( strlen( hold_buffer ) > 0 ) {
-    str_link_add( strdup_safe( hold_buffer ), &hold_head, &hold_tail );
+    (void)str_link_add( strdup_safe( hold_buffer ), &hold_head, &hold_tail );
   }
 
   /* If the working list is not empty, append it to the holding code */
@@ -1134,9 +1142,9 @@ void generator_flush_work_code1(
  the code is added to the exp_list array.
 */
 void generator_add_to_hold_code(
-  const char*  str,   /*!< String to write */
-  const char*  file,  /*!< Filename of caller of this function */
-  unsigned int line   /*!< Line number of caller of this function */
+               const char*  str,   /*!< String to write */
+  /*@unused@*/ const char*  file,  /*!< Filename of caller of this function */
+  /*@unused@*/ unsigned int line   /*!< Line number of caller of this function */
 ) { PROFILE(GENERATOR_ADD_TO_HOLD_CODE);
  
   /* I don't believe that a line will ever exceed 4K chars */
@@ -1154,7 +1162,7 @@ void generator_add_to_hold_code(
 
   /* If we have hit a newline, add it to the hold list and clear the hold buffer */
   if( strcmp( str, "\n" ) == 0 ) {
-    str_link_add( strdup_safe( hold_buffer ), &hold_head, &hold_tail );
+    (void)str_link_add( strdup_safe( hold_buffer ), &hold_head, &hold_tail );
     hold_buffer[0] = '\0';
   }
 
@@ -1166,8 +1174,8 @@ void generator_add_to_hold_code(
  Outputs all held code to the output file.
 */
 void generator_flush_hold_code1(
-  const char*  file,  /*!< Filename that calls this function */
-  unsigned int line   /*!< Line number that calls this function */
+  /*@unused@*/ const char*  file,  /*!< Filename that calls this function */
+  /*@unused@*/ unsigned int line   /*!< Line number that calls this function */
 ) { PROFILE(GENERATOR_FLUSH_HOLD_CODE1);
 
   str_link* strl = hold_head;
@@ -1287,7 +1295,7 @@ static statement* generator_find_case_statement(
 
     if( generate_mode > 0 ) {
 
-      generate_find_stmt_by_position( curr_funit, first_line, first_column );
+      (void)generate_find_stmt_by_position( curr_funit, first_line, first_column );
 
     } else {
 
@@ -1327,9 +1335,9 @@ void generator_insert_line_cov_with_stmt(
     char*        scope    = generator_get_relative_scope( stmt->funit ); 
 
     if( scope[0] == '\0' ) {
-      rv = snprintf( sig, 4096, " \\covered$L%d_%d_%x ", stmt->exp->ppline, last_exp->ppline, stmt->exp->col );
+      rv = snprintf( sig, 4096, " \\covered$L%u_%u_%x ", stmt->exp->ppline, last_exp->ppline, stmt->exp->col );
     } else {
-      rv = snprintf( sig, 4096, " \\covered$L%d_%d_%x$%s ", stmt->exp->ppline, last_exp->ppline, stmt->exp->col, scope );
+      rv = snprintf( sig, 4096, " \\covered$L%u_%u_%x$%s ", stmt->exp->ppline, last_exp->ppline, stmt->exp->col, scope );
     }
     assert( rv < 4096 );
     free_safe( scope, (strlen( scope ) + 1) );
@@ -1342,7 +1350,7 @@ void generator_insert_line_cov_with_stmt(
     /* Prepend the line coverage assignment to the working buffer */
     rv = snprintf( str, 4096, " %s = 1'b1%c", sig, (semicolon ? ';' : ',') );
     assert( rv < 4096 );
-    str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
+    (void)str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
     if( work_head == NULL ) {
       work_head = work_tail = tmp_head;
     } else {
@@ -1362,11 +1370,11 @@ void generator_insert_line_cov_with_stmt(
  Inserts line coverage information in string queues.
 */
 statement* generator_insert_line_cov(
-  unsigned int first_line,    /*!< First line to create line coverage for */
-  unsigned int last_line,     /*!< Last line to create line coverage for */
-  unsigned int first_column,  /*!< First column of statement */
-  unsigned int last_column,   /*!< Last column of statement */
-  bool         semicolon      /*!< Set to TRUE to create a semicolon after the line assignment; otherwise, adds a comma */
+               unsigned int first_line,    /*!< First line to create line coverage for */
+  /*@unused@*/ unsigned int last_line,     /*!< Last line to create line coverage for */
+               unsigned int first_column,  /*!< First column of statement */
+  /*@unused@*/ unsigned int last_column,   /*!< Last column of statement */
+               bool         semicolon      /*!< Set to TRUE to create a semicolon after the line assignment; otherwise, adds a comma */
 ) { PROFILE(GENERATOR_INSERT_LINE_COV);
 
   statement* stmt = NULL;
@@ -1407,9 +1415,9 @@ void generator_insert_event_comb_cov(
 
   /* Create signal name */
   if( scope[0] == '\0' ) {
-    rv = snprintf( name, 4096, " \\covered$E%d_%d_%x ", exp->ppline, last_exp->ppline, exp->col );
+    rv = snprintf( name, 4096, " \\covered$E%u_%u_%x ", exp->ppline, last_exp->ppline, exp->col );
   } else {
-    rv = snprintf( name, 4096, " \\covered$E%d_%d_%x$%s ", exp->ppline, last_exp->ppline, exp->col, scope );
+    rv = snprintf( name, 4096, " \\covered$E%u_%u_%x$%s ", exp->ppline, last_exp->ppline, exp->col, scope );
   }
   assert( rv < 4096 );
   free_safe( scope, (strlen( scope ) + 1) );
@@ -1548,9 +1556,9 @@ static void generator_insert_unary_comb_cov(
 
   /* Create signal */
   if( scope[0] == '\0' ) {
-    rv = snprintf( sig,  4096, " \\covered$%c%d_%d_%x ", (net ? 'u' : 'U'), exp->ppline, last_exp->ppline, exp->col );
+    rv = snprintf( sig,  4096, " \\covered$%c%u_%u_%x ", (net ? 'u' : 'U'), exp->ppline, last_exp->ppline, exp->col );
   } else {
-    rv = snprintf( sig,  4096, " \\covered$U%d_%d_%x$%s ", exp->ppline, last_exp->ppline, exp->col, scope );
+    rv = snprintf( sig,  4096, " \\covered$U%u_%u_%x$%s ", exp->ppline, last_exp->ppline, exp->col, scope );
   }
   assert( rv < 4096 );
   free_safe( scope, (strlen( scope ) + 1) );
@@ -1577,7 +1585,7 @@ static void generator_insert_unary_comb_cov(
     rv = snprintf( str, 4096, "%s%s = (%s > 0);", prefix, sig, sigr );
   }
   assert( rv < 4096 );
-  str_link_add( strdup_safe( str ), &comb_head, &comb_tail );
+  (void)str_link_add( strdup_safe( str ), &comb_head, &comb_tail );
 
   /* Deallocate temporary memory */
   free_safe( sigr, (strlen( sigr ) + 1) );
@@ -1609,9 +1617,9 @@ static void generator_insert_comb_comb_cov(
 
   /* Create signal */
   if( scope[0] == '\0' ) {
-    rv = snprintf( sig, 4096, " \\covered$%c%d_%d_%x ", (net ? 'c' : 'C'), exp->ppline, last_exp->ppline, exp->col );
+    rv = snprintf( sig, 4096, " \\covered$%c%u_%u_%x ", (net ? 'c' : 'C'), exp->ppline, last_exp->ppline, exp->col );
   } else {
-    rv = snprintf( sig, 4096, " \\covered$C%d_%d_%x$%s ", exp->ppline, last_exp->ppline, exp->col, scope );
+    rv = snprintf( sig, 4096, " \\covered$C%u_%u_%x$%s ", exp->ppline, last_exp->ppline, exp->col, scope );
   }
   assert( rv < 4096 );
   free_safe( scope, (strlen( scope ) + 1) );
@@ -1645,7 +1653,7 @@ static void generator_insert_comb_comb_cov(
     }
   }
   assert( rv < 4096 );
-  str_link_add( strdup_safe( str ), &comb_head, &comb_tail );
+  (void)str_link_add( strdup_safe( str ), &comb_head, &comb_tail );
 
   /* Deallocate memory */
   free_safe( sigl, (strlen( sigl ) + 1) );
@@ -1678,7 +1686,7 @@ static char* generator_gen_size(
       case EXP_OP_STATIC :
         {
           char tmp[50];
-          rv = snprintf( tmp, 50, "%d", exp->value->width );
+          rv = snprintf( tmp, 50, "%u", exp->value->width );
           assert( rv < 50 );
           size    = strdup_safe( tmp );
           *number = exp->value->width;
@@ -1955,17 +1963,18 @@ static char* generator_create_lhs(
 
 }
 
+#ifdef OBSOLETE
 /*!
  Concatenates the given string values and appends them to the working code buffer.
 */
 static void generator_concat_code(
-             char* lhs,     /*!< LHS string */
-  /*@null@*/ char* before,  /*!< Optional string that precedes the left subexpression string array */
-  /*@null@*/ char* lstr,    /*!< String array from left subexpression */
-  /*@null@*/ char* middle,  /*!< Optional string that is placed in-between the left and right subexpression array strings */
-  /*@null@*/ char* rstr,    /*!< String array from right subexpression */
-  /*@null@*/ char* after,   /*!< Optional string that is placed after the right subpexression string array */
-             bool  net      /*!< If TRUE, specifies that this subexpression exists in net logic */
+               char* lhs,     /*!< LHS string */
+  /*@null@*/   char* before,  /*!< Optional string that precedes the left subexpression string array */
+  /*@null@*/   char* lstr,    /*!< String array from left subexpression */
+  /*@null@*/   char* middle,  /*!< Optional string that is placed in-between the left and right subexpression array strings */
+  /*@null@*/   char* rstr,    /*!< String array from right subexpression */
+  /*@null@*/   char* after,   /*!< Optional string that is placed after the right subpexression string array */
+  /*@unused@*/ bool  net      /*!< If TRUE, specifies that this subexpression exists in net logic */
 ) { PROFILE(GENERATOR_CONCAT_CODE);
 
   str_link*    tmp_head = NULL;
@@ -1981,7 +1990,7 @@ static void generator_concat_code(
     if( (strlen( str ) + strlen( before )) < 4095 ) {
       strcat( str, before );
     } else {
-      str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
+      (void)str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
       strcpy( str, before );
     }
   }
@@ -1989,11 +1998,11 @@ static void generator_concat_code(
     if( (strlen( str ) + strlen( lstr )) < 4095 ) {
       strcat( str, lstr );
     } else {
-      str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
+      (void)str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
       if( strlen( lstr ) < 4095 ) {
         strcpy( str, lstr );
       } else {
-        str_link_add( strdup_safe( lstr ), &tmp_head, &tmp_tail );
+        (void)str_link_add( strdup_safe( lstr ), &tmp_head, &tmp_tail );
         str[0] = '\0';
       }
     }
@@ -2002,7 +2011,7 @@ static void generator_concat_code(
     if( (strlen( str ) + strlen( middle )) < 4095 ) {
       strcat( str, middle );
     } else {
-      str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
+      (void)str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
       strcpy( str, middle );
     }
   }
@@ -2010,11 +2019,11 @@ static void generator_concat_code(
     if( (strlen( str ) + strlen( rstr )) < 4095 ) {
       strcat( str, rstr );
     } else {
-      str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
+      (void)str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
       if( strlen( rstr ) < 4095 ) {
         strcpy( str, lstr );
       } else {
-        str_link_add( strdup_safe( rstr ), &tmp_head, &tmp_tail );
+        (void)str_link_add( strdup_safe( rstr ), &tmp_head, &tmp_tail );
         str[0] = '\0';
       }
     }
@@ -2023,17 +2032,17 @@ static void generator_concat_code(
     if( (strlen( str ) + strlen( after )) < 4095 ) {
       strcat( str, after );
     } else {
-      str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
+      (void)str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
       strcpy( str, after );
     }
   }
   if( (strlen( str ) + 1) < 4095 ) {
     strcat( str, ";" );
   } else {
-    str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
+    (void)str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
     strcpy( str, ";" );
   }
-  str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
+  (void)str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
       
   /* Prepend to the working list */
   if( work_head == NULL ) {
@@ -2046,7 +2055,9 @@ static void generator_concat_code(
   PROFILE_END;
 
 }
+#endif
 
+#ifdef OBSOLETE
 /*!
  Generates the combinational logic temporary expression string for the given expression.
 */
@@ -2166,6 +2177,7 @@ static void generator_create_exp(
   PROFILE_END;
 
 }
+#endif
 
 /*!
  Generates temporary subexpression for the given expression (not recursively)
@@ -2205,7 +2217,7 @@ static void generator_insert_subexp(
   assert( rv < slen );
 
   /* Prepend the string to the register/working code */
-  str_link_add( str, &comb_head, &comb_tail );
+  (void)str_link_add( str, &comb_head, &comb_tail );
 
   /* Deallocate memory */
   free_safe( lhs_str, (strlen( lhs_str ) + 1) );
@@ -2519,6 +2531,7 @@ static char* generator_gen_mem_index(
 
 }
 
+#ifdef OBSOLETE
 /*!
  \return Returns the string form of the overall size of the given memory.
 */
@@ -2564,6 +2577,7 @@ static char* generator_gen_mem_size(
   return( size );
 
 }
+#endif
 
 /*!
  \return Returns a string containing the LSB of the RHS to use to assign to this LHS expression.
@@ -2696,9 +2710,9 @@ static void generator_insert_mem_cov(
 
     /* First, create the wire/register to hold the index */
     if( scope[0] == '\0' ) {
-      rv = snprintf( iname, 4096, " \\covered$%c%d_%d_%x$%s ", (net ? 'i' : 'I'), exp->ppline, last_exp->ppline, exp->col, exp->name );
+      rv = snprintf( iname, 4096, " \\covered$%c%u_%u_%x$%s ", (net ? 'i' : 'I'), exp->ppline, last_exp->ppline, exp->col, exp->name );
     } else {
-      rv = snprintf( iname, 4096, " \\covered$%c%d_%d_%x$%s$%s ", (net ? 'i' : 'I'), exp->ppline, last_exp->ppline, exp->col, exp->name, scope );
+      rv = snprintf( iname, 4096, " \\covered$%c%u_%u_%x$%s$%s ", (net ? 'i' : 'I'), exp->ppline, last_exp->ppline, exp->col, exp->name, scope );
     }
     assert( rv < 4096 );
 
@@ -2728,7 +2742,7 @@ static void generator_insert_mem_cov(
     }
 
     /* Prepend the index */
-    str_link_add( str, &tmp_head, &tmp_tail );
+    (void)str_link_add( str, &tmp_head, &tmp_tail );
 
     /* Generate size needed to store memory element */
     size = generator_gen_size( exp, funit, &number );
@@ -2775,7 +2789,7 @@ static void generator_insert_mem_cov(
         free_safe( rhs_str, (strlen( rhs_str ) + 1) );
 
         /* Prepend the expression */
-        str_link_add( value, &tmp_head, &tmp_tail );
+        (void)str_link_add( value, &tmp_head, &tmp_tail );
 
         /* Specify that the expression has been placed */
         rhs->suppl.part.eval_t = 1;
@@ -2828,9 +2842,9 @@ static void generator_insert_mem_cov(
 
     /* Create name */
     if( scope[0] == '\0' ) {
-      rv = snprintf( name, 4096, " \\covered$%c%d_%d_%x$%s ", (net ? 'w' : 'W'), exp->ppline, last_exp->ppline, exp->col, exp->name );
+      rv = snprintf( name, 4096, " \\covered$%c%u_%u_%x$%s ", (net ? 'w' : 'W'), exp->ppline, last_exp->ppline, exp->col, exp->name );
     } else {
-      rv = snprintf( name, 4096, " \\covered$%c%d_%d_%x$%s$%s ", (net ? 'w' : 'W'), exp->ppline, last_exp->ppline, exp->col, exp->name, scope );
+      rv = snprintf( name, 4096, " \\covered$%c%u_%u_%x$%s$%s ", (net ? 'w' : 'W'), exp->ppline, last_exp->ppline, exp->col, exp->name, scope );
     }
     assert( rv < 4096 );
 
@@ -2856,9 +2870,9 @@ static void generator_insert_mem_cov(
 
     /* Create name */
     if( scope[0] == '\0' ) {
-      rv = snprintf( name, 4096, " \\covered$%c%d_%d_%x$%s ", (net ? 'r' : 'R'), exp->ppline, last_exp->ppline, exp->col, exp->name );
+      rv = snprintf( name, 4096, " \\covered$%c%u_%u_%x$%s ", (net ? 'r' : 'R'), exp->ppline, last_exp->ppline, exp->col, exp->name );
     } else {
-      rv = snprintf( name, 4096, " \\covered$%c%d_%d_%x$%s$%s ", (net ? 'r' : 'R'), exp->ppline, last_exp->ppline, exp->col, exp->name, scope );
+      rv = snprintf( name, 4096, " \\covered$%c%u_%u_%x$%s$%s ", (net ? 'r' : 'R'), exp->ppline, last_exp->ppline, exp->col, exp->name, scope );
     }
     assert( rv < 4096 );
 
@@ -3132,9 +3146,9 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
         char* size = generator_gen_size( fsml->table->from_state, curr_funit, &number );
         char* exp  = codegen_gen_expr_one_line( fsml->table->from_state, curr_funit, FALSE );
         if( number >= 0 ) {
-          fprintf( curr_ofile, "wire [%d:0] \\covered$F%d = %s;\n", (number - 1), id, exp );
+          fprintf( curr_ofile, "wire [%d:0] \\covered$F%u = %s;\n", (number - 1), id, exp );
         } else {
-          fprintf( curr_ofile, "wire [(%s-1):0] \\covered$F%d = %s;\n", ((size != NULL) ? size : "1"), id, exp );
+          fprintf( curr_ofile, "wire [(%s-1):0] \\covered$F%u = %s;\n", ((size != NULL) ? size : "1"), id, exp );
         }
         free_safe( size, (strlen( size ) + 1) );
         free_safe( exp, (strlen( exp ) + 1) );
@@ -3149,15 +3163,15 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
         char* texp  = codegen_gen_expr_one_line( fsml->table->to_state, curr_funit, FALSE );
         if( from_number >= 0 ) {
           if( to_number >= 0 ) {
-            fprintf( curr_ofile, "wire [%d:0] \\covered$F%d = {%s,%s};\n", ((from_number + to_number) - 1), id, fexp, texp );
+            fprintf( curr_ofile, "wire [%d:0] \\covered$F%u = {%s,%s};\n", ((from_number + to_number) - 1), id, fexp, texp );
           } else {
-            fprintf( curr_ofile, "wire [((%d+%s)-1):0] \\covered$F%d = {%s,%s};\n", from_number, ((tsize != NULL) ? tsize : "1"), id, fexp, texp );
+            fprintf( curr_ofile, "wire [((%d+%s)-1):0] \\covered$F%u = {%s,%s};\n", from_number, ((tsize != NULL) ? tsize : "1"), id, fexp, texp );
           }
         } else {
           if( to_number >= 0 ) {
-            fprintf( curr_ofile, "wire [((%s+%d)-1):0] \\covered$F%d = {%s,%s};\n", ((fsize != NULL) ? fsize : "1"), to_number, id, fexp, texp );
+            fprintf( curr_ofile, "wire [((%s+%d)-1):0] \\covered$F%u = {%s,%s};\n", ((fsize != NULL) ? fsize : "1"), to_number, id, fexp, texp );
           } else {
-            fprintf( curr_ofile, "wire [((%s+%s)-1):0] \\covered$F%d = {%s,%s};\n",
+            fprintf( curr_ofile, "wire [((%s+%s)-1):0] \\covered$F%u = {%s,%s};\n",
                      ((fsize != NULL) ? fsize : "1"), ((tsize != NULL) ? tsize : "1"), id, fexp, texp );
           }
         }

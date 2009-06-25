@@ -1077,7 +1077,7 @@ void expression_resize(
       case EXP_OP_EXPAND :
         expression_operate_recursively( expr->left, funit, TRUE );
         if( vector_is_unknown( expr->left->value ) ) {
-          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown value used for concatenation multiplier, file: %s, line: %d", funit->orig_fname, expr->line );
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown value used for concatenation multiplier, file: %s, line: %u", funit->orig_fname, expr->line );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           Throw 0;
@@ -1507,7 +1507,7 @@ void expression_db_write(
 
   assert( expr != NULL );
 
-  fprintf( file, "%d %u %u %d %x %x %x %x %d %d",
+  fprintf( file, "%d %d %u %u %x %x %x %x %d %d",
     DB_TYPE_EXPRESSION,
     expression_get_id( expr, ids_issued ),
     expr->line,
@@ -3101,7 +3101,7 @@ bool expression_op_func__urandom_range(
   bool          retval;
 
   if( (plist == NULL) || ((plist->op != EXP_OP_PLIST) && (plist->op != EXP_OP_SASSIGN)) ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$urandom_range called without any parameters specified (file: %s, line: %d)", thr->funit->orig_fname, expr->line );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$urandom_range called without any parameters specified (file: %s, line: %u)", thr->funit->orig_fname, expr->line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     Throw 0;
@@ -3155,7 +3155,7 @@ bool expression_op_func__realtobits(
 
   /* Check to make sure that there is exactly one parameter */ 
   if( (left == NULL) || (left->op != EXP_OP_SASSIGN) ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$realtobits called with incorrect number of parameters (file: %s, line: %d)", thr->funit->orig_fname, expr->line );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$realtobits called with incorrect number of parameters (file: %s, line: %u)", thr->funit->orig_fname, expr->line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     Throw 0;
@@ -3163,7 +3163,7 @@ bool expression_op_func__realtobits(
 
   /* Check to make sure that the parameter is a real */
   if( left->value->suppl.part.data_type != VDATA_R64 ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$realtobits called without real parameter (file: %s, line: %d)", thr->funit->orig_fname, expr->line );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$realtobits called without real parameter (file: %s, line: %u)", thr->funit->orig_fname, expr->line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     Throw 0;
@@ -3198,7 +3198,7 @@ bool expression_op_func__bitstoreal(
 
   /* Check to make sure that there is exactly one parameter */
   if( (left == NULL) || (left->op != EXP_OP_SASSIGN) ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$bitstoreal called with incorrect number of parameters (file: %s, line: %d)", thr->funit->orig_fname, expr->line );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$bitstoreal called with incorrect number of parameters (file: %s, line: %u)", thr->funit->orig_fname, expr->line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     Throw 0;
@@ -3206,7 +3206,7 @@ bool expression_op_func__bitstoreal(
 
   /* Check to make sure that the parameter is a real */
   if( left->value->suppl.part.data_type != VDATA_UL ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$bitstoreal called without non-real parameter (file: %s, line: %d)", thr->funit->orig_fname, expr->line );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$bitstoreal called without non-real parameter (file: %s, line: %u)", thr->funit->orig_fname, expr->line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     Throw 0;
@@ -3238,7 +3238,7 @@ bool expression_op_func__shortrealtobits(
 
   /* Check to make sure that there is exactly one parameter */
   if( (left == NULL) || (left->op != EXP_OP_SASSIGN) ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$shortrealtobits called with incorrect number of parameters (file: %s, line: %d)", thr->funit->orig_fname, expr->line );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$shortrealtobits called with incorrect number of parameters (file: %s, line: %u)", thr->funit->orig_fname, expr->line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     Throw 0;
@@ -3246,7 +3246,7 @@ bool expression_op_func__shortrealtobits(
 
   /* Check to make sure that the parameter is a real */
   if( left->value->suppl.part.data_type != VDATA_R64 ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$shortrealtobits called without real parameter (file: %s, line: %d)", thr->funit->orig_fname, expr->line );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$shortrealtobits called without real parameter (file: %s, line: %u)", thr->funit->orig_fname, expr->line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     Throw 0;
@@ -3281,7 +3281,7 @@ bool expression_op_func__bitstoshortreal(
 
   /* Check to make sure that there is exactly one parameter */
   if( (left == NULL) || (left->op != EXP_OP_SASSIGN) ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$bitstoshortreal called with incorrect number of parameters (file: %s, line: %d)", thr->funit->orig_fname, expr->line );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$bitstoshortreal called with incorrect number of parameters (file: %s, line: %u)", thr->funit->orig_fname, expr->line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     Throw 0;
@@ -3289,7 +3289,7 @@ bool expression_op_func__bitstoshortreal(
 
   /* Check to make sure that the parameter is a real */
   if( left->value->suppl.part.data_type != VDATA_UL ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$bitstoshortreal called without non-real parameter (file: %s, line: %d)", thr->funit->orig_fname, expr->line );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$bitstoshortreal called without non-real parameter (file: %s, line: %u)", thr->funit->orig_fname, expr->line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     Throw 0;
@@ -3321,7 +3321,7 @@ bool expression_op_func__itor(
 
   /* Check to make sure that there is exactly one parameter */
   if( (left == NULL) || (left->op != EXP_OP_SASSIGN) ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$itor called with incorrect number of parameters (file: %s, line: %d)", thr->funit->orig_fname, expr->line );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$itor called with incorrect number of parameters (file: %s, line: %u)", thr->funit->orig_fname, expr->line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     Throw 0;
@@ -3329,7 +3329,7 @@ bool expression_op_func__itor(
 
   /* Check to make sure that the parameter is a real */
   if( left->value->suppl.part.data_type != VDATA_UL ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$itor called without non-real parameter (file: %s, line: %d)", thr->funit->orig_fname, expr->line );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$itor called without non-real parameter (file: %s, line: %u)", thr->funit->orig_fname, expr->line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     Throw 0;
@@ -3361,7 +3361,7 @@ bool expression_op_func__rtoi(
 
   /* Check to make sure that there is exactly one parameter */
   if( (left == NULL) || (left->op != EXP_OP_SASSIGN) ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$rtoi called with incorrect number of parameters (file: %s, line: %d)", thr->funit->orig_fname, expr->line );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$rtoi called with incorrect number of parameters (file: %s, line: %u)", thr->funit->orig_fname, expr->line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     Throw 0;
@@ -3369,7 +3369,7 @@ bool expression_op_func__rtoi(
 
   /* Check to make sure that the parameter is a real */
   if( left->value->suppl.part.data_type != VDATA_R64 ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$rtoi called without real parameter (file: %s, line: %d)", thr->funit->orig_fname, expr->line );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$rtoi called without real parameter (file: %s, line: %u)", thr->funit->orig_fname, expr->line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     Throw 0;
@@ -3411,7 +3411,7 @@ bool expression_op_func__test_plusargs(
 
     /* Check to make sure that there is exactly one parameter */
     if( (left == NULL) || (left->op != EXP_OP_SASSIGN) ) {
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$test$plusargs called with incorrect number of parameters (file: %s, line: %d)", thr->funit->orig_fname, expr->line );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$test$plusargs called with incorrect number of parameters (file: %s, line: %u)", thr->funit->orig_fname, expr->line );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       Throw 0;
@@ -3466,7 +3466,7 @@ bool expression_op_func__value_plusargs(
 
     /* Check to make sure that there is exactly two parameters */
     if( (left == NULL) || (left->op != EXP_OP_PLIST) || (left->left->op != EXP_OP_SASSIGN) || (left->right->op != EXP_OP_SASSIGN) ) {
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$value$plusargs called with incorrect number of parameters (file: %s, line: %d)", thr->funit->orig_fname, expr->line );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$value$plusargs called with incorrect number of parameters (file: %s, line: %u)", thr->funit->orig_fname, expr->line );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       Throw 0;
@@ -5583,7 +5583,7 @@ bool expression_operate(
 
 #ifdef DEBUG_MODE
     if( debug_mode ) {
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "      In expression_operate, id: %d, op: %s, line: %d, addr: %p",
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "      In expression_operate, id: %d, op: %s, line: %u, addr: %p",
                                   expr->id, expression_string_op( expr->op ), expr->line, expr );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -5679,7 +5679,7 @@ void expression_vcd_assign(
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Assigning expression (line: %d, op: %s, id: %d, action=%c) to value %s",
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Assigning expression (line: %u, op: %s, id: %d, action=%c) to value %s",
                                 expr->line, expression_string_op( expr->op ), expr->id, action, value );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -5742,10 +5742,10 @@ void expression_vcd_assign(
       if( strlen( value ) > 32 ) {
         char* tmpval = strdup_safe( value );
         tmpval[strlen( value ) - 32] = '\0';
-        vector_vcd_assign( expr->sig->value, tmpval, ((expr->value->width - 1) + intval), intval );
+        (void)vector_vcd_assign( expr->sig->value, tmpval, ((expr->value->width - 1) + intval), intval );
         free_safe( tmpval, (strlen( value ) + 1) );
       } else {
-        vector_vcd_assign( expr->sig->value, "0", ((expr->value->width - 1) + intval), intval );
+        (void)vector_vcd_assign( expr->sig->value, "0", ((expr->value->width - 1) + intval), intval );
       }
     }
 

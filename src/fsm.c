@@ -405,9 +405,9 @@ void fsm_vcd_assign(
 
   /* Assign the string value to the given state vectors */
   if( table->from_state->id == table->to_state->id ) {
-    vector_vcd_assign( table->to_state->value, value, (table->to_state->value->width - 1), 0 );
+    (void)vector_vcd_assign( table->to_state->value, value, (table->to_state->value->width - 1), 0 );
   } else {
-    vector_vcd_assign2( table->to_state->value, table->from_state->value, value, ((table->from_state->value->width + table->to_state->value->width) - 1), 0 );
+    (void)vector_vcd_assign2( table->to_state->value, table->from_state->value, value, ((table->from_state->value->width + table->to_state->value->width) - 1), 0 );
   }
 
   /* Add the states and state transition */

@@ -1529,7 +1529,7 @@ void db_add_defparam(
 #endif
 
   {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "defparam construct is not supported, line: %d.  Use -P option to score instead", expr->line );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "defparam construct is not supported, line: %u.  Use -P option to score instead", expr->line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, WARNING, __FILE__, __LINE__ );
   }
@@ -2036,7 +2036,7 @@ expression* db_create_expression(
        (op == EXP_OP_NEDGE)     ||
        (op == EXP_OP_AEDGE)     ||
        (op == EXP_OP_EOR)) ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Attempting to use a delay, task call, non-blocking assign or event controls in function %s, file %s, line %d",
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Attempting to use a delay, task call, non-blocking assign or event controls in function %s, file %s, line %u",
                                 obf_funit( func_funit->name ), obf_file( curr_funit->orig_fname ), line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -2798,7 +2798,7 @@ bool db_statement_connect(
   */
   if( !(retval = statement_connect( curr_stmt, next_stmt, stmt_conn_id )) ) {
 
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unreachable statement found starting at line %d in file %s.  Ignoring...",
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unreachable statement found starting at line %u in file %s.  Ignoring...",
                                 next_stmt->exp->line, obf_file( curr_funit->orig_fname ) );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, WARNING, __FILE__, __LINE__ );
@@ -3084,16 +3084,16 @@ void db_assign_symbol(
         /* Handle line coverage */
         if( type == 'L' ) {
       
-          int          fline;
-          int          lline;
-          int          col;
+          unsigned int fline;
+          unsigned int lline;
+          unsigned int col;
           char         scope[4096];
           exp_link*    expl;
           expression*  last_exp;
           funit_inst*  inst = curr_inst;
 
           /* Extract the line, first column and funit scope information from name */
-          if( sscanf( (name + (index + 1)), "%d_%d_%x$%s", &fline, &lline, &col, scope ) == 4 ) {
+          if( sscanf( (name + (index + 1)), "%u_%u_%x$%s", &fline, &lline, &col, scope ) == 4 ) {
 
             char tscope[4096];
 
@@ -3104,7 +3104,7 @@ void db_assign_symbol(
 
           } else {
 
-            rv = sscanf( (name + (index + 1)), "%d_%d_%x", &fline, &lline, &col );
+            rv = sscanf( (name + (index + 1)), "%u_%u_%x", &fline, &lline, &col );
             assert( rv == 3 );
 
           }
@@ -3133,7 +3133,7 @@ void db_assign_symbol(
           unsigned int id;
           unsigned int count = 1;
 
-          rv = sscanf( (name + (index + 1)), "%d", &id );
+          rv = sscanf( (name + (index + 1)), "%u", &id );
           assert( rv == 1 );
 
           /* Find the matching FSM table */
@@ -3149,16 +3149,16 @@ void db_assign_symbol(
 
         } else if( (type == 'w') || (type == 'W') || (type == 'r') || (type == 'R') ) {
 
-          int          fline;
-          int          lline;
-          int          col;
+          unsigned int fline;
+          unsigned int lline;
+          unsigned int col;
           char         scope[4096];
           char         mname[4096];
           exp_link*    expl;
           expression*  last_exp;
           funit_inst*  inst = curr_inst;
 
-          if( sscanf( (name + (index + 1)), "%d_%d_%x$%[^$]$%s", &fline, &lline, &col, mname, scope ) == 5 ) {
+          if( sscanf( (name + (index + 1)), "%u_%u_%x$%[^$]$%s", &fline, &lline, &col, mname, scope ) == 5 ) {
 
             char        tscope[4096];
 
@@ -3169,7 +3169,7 @@ void db_assign_symbol(
 
           } else {
 
-            rv = sscanf( (name + (index + 1)), "%d_%d_%x$%s", &fline, &lline, &col, mname );
+            rv = sscanf( (name + (index + 1)), "%u_%u_%x$%s", &fline, &lline, &col, mname );
             assert( rv == 4 );
 
           }
@@ -3194,16 +3194,16 @@ void db_assign_symbol(
 
         } else {
 
-          int          fline;
-          int          lline;
-          int          col;
+          unsigned int fline;
+          unsigned int lline;
+          unsigned int col;
           char         scope[4096];
           exp_link*    expl;
           expression*  last_exp;
           funit_inst*  inst = curr_inst;
 
           /* Extract the line and column (and possibly instance) information */
-          if( sscanf( (name + (index + 1)), "%d_%d_%x$%s", &fline, &lline, &col, scope ) == 4 ) {
+          if( sscanf( (name + (index + 1)), "%u_%u_%x$%s", &fline, &lline, &col, scope ) == 4 ) {
 
             char tscope[4096];
 
@@ -3214,7 +3214,7 @@ void db_assign_symbol(
 
           } else {
 
-            rv = sscanf( (name + (index + 1)), "%d_%d_%x", &fline, &lline, &col );
+            rv = sscanf( (name + (index + 1)), "%u_%u_%x", &fline, &lline, &col );
             assert( rv == 3 );
           
           }

@@ -247,6 +247,7 @@ int funit_get_port_count(
 
 }
 
+#ifdef OBSOLETE
 /*!
  \return Returns pointer to found functional unit that exists at the given file position.
 */
@@ -263,6 +264,7 @@ func_unit* funit_find_by_position(
   return( funit );
 
 }
+#endif
 
 /*!
  \return Returns a pointer to the module parameter structure that contains the specified

@@ -82,7 +82,7 @@ static void gen_item_stringify(
         assert( rv < str_len );
         break;
       case GI_TYPE_STMT :
-        rv = snprintf( tmp, str_len, ", STMT, id: %d, line: %d", gi->elem.stmt->exp->id, gi->elem.stmt->exp->line );
+        rv = snprintf( tmp, str_len, ", STMT, id: %d, line: %u", gi->elem.stmt->exp->id, gi->elem.stmt->exp->line );
         assert( rv < str_len );
         break;
       case GI_TYPE_INST :

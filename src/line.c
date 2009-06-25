@@ -449,14 +449,14 @@ static void line_display_verbose(
         codegen_gen_expr( unexec_exp, funit, &code, &code_depth );
         if( flag_output_exclusion_ids && (rtype != RPT_TYPE_HIT) ) {
           exclude_reason* er;
-          fprintf( ofile, "      (%s)  %7d:    %s%s\n",
+          fprintf( ofile, "      (%s)  %7u:    %s%s\n",
                    db_gen_exclusion_id( 'L', unexec_exp->id ), unexec_exp->line, code[0], ((code_depth == 1) ? "" : "...") );
           if( (rtype == RPT_TYPE_EXCL) && ((er = exclude_find_exclude_reason( 'L', unexec_exp->id, funit )) != NULL) ) {
             report_output_exclusion_reason( ofile, (22 + (db_get_exclusion_id_size() - 1)), er->reason, TRUE );
           }
         } else {
           exclude_reason* er;
-          fprintf( ofile, "      %7d:    %s%s\n", unexec_exp->line, code[0], ((code_depth == 1) ? "" : "...") );
+          fprintf( ofile, "      %7u:    %s%s\n", unexec_exp->line, code[0], ((code_depth == 1) ? "" : "...") );
           if( (rtype == RPT_TYPE_EXCL) && ((er = exclude_find_exclude_reason( 'L', unexec_exp->id, funit )) != NULL) ) {
             report_output_exclusion_reason( ofile, 18, er->reason, TRUE );
           }
