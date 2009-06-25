@@ -976,7 +976,7 @@ static void gen_item_resolve(
         {
           funit_inst* tinst;
           if( (tinst = instance_copy( gi->elem.inst, inst, gi->elem.inst->name, gi->elem.inst->range, FALSE )) != NULL ) {
-            param_resolve( tinst );
+            param_resolve_inst( tinst );
           }
           gen_item_resolve( gi->next_true, inst );
         }
@@ -1012,7 +1012,7 @@ static void gen_item_resolve(
           child = instance_find_scope( inst, inst_name, TRUE );
         }
         if( child != NULL ) {
-          param_resolve( child );
+          param_resolve_inst( child );
         }
         if( child->funit->suppl.part.type != FUNIT_MODULE ) {
           func_unit* parent_mod = funit_get_curr_module( child->funit );
@@ -1076,32 +1076,23 @@ void gen_item_bind(
 /*!
  \throws anonymous generate_resolve gen_item_resolve
 
- Recursively resolves all generate items in the design.  This is called at a specific point
+ Resolves all generate items in the given instance.  This is called at a specific point
  in the binding process.
 */
-void generate_resolve(
-  funit_inst* root  /*!< Pointer to current instance in instance tree to resolve for */
-) { PROFILE(GENERATE_RESOLVE);
+void generate_resolve_inst(
+  funit_inst* inst  /*!< Pointer to current instance to resolve for */
+) { PROFILE(GENERATE_RESOLVE_INST);
 
-  funit_inst* curr_child;  /* Pointer to current child to resolve for */
-
-  if( root != NULL ) {
+  if( inst != NULL ) {
 
     /* Resolve ourself */
-    if( root->funit != NULL ) {
-      gitem_link* curr_gi = root->funit->gitem_head;
+    if( inst->funit != NULL ) {
+      gitem_link* curr_gi = inst->funit->gitem_head;
       while( curr_gi != NULL ) {
-        gen_item_resolve( curr_gi->gi, root );
+        gen_item_resolve( curr_gi->gi, inst );
         curr_gi = curr_gi->next;
       }
     }
-
-    /* Resolve children */
-    curr_child = root->child_head;
-    while( curr_child != NULL ) {
-      generate_resolve( curr_child );
-      curr_child = curr_child->next;
-    } 
 
   }
 

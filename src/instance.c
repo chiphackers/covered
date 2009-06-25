@@ -47,6 +47,7 @@ extern int          curr_expr_id;
 extern db**         db_list;
 extern unsigned int curr_db;
 extern char         user_msg[USER_MSG_LENGTH];
+extern bool         debug_mode;
 
 
 /*!
@@ -829,14 +830,41 @@ static void instance_resolve_helper(
 
   if( curr != NULL ) {
 
-    /* Resolve all children first */
+    /* Resolve parameters */
+#ifdef DEBUG_MODE
+    if( debug_mode ) {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Resolving parameters for instance %s...", curr->name );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    }
+#endif
+    param_resolve_inst( curr );
+
+    /* Resolve generate blocks */
+#ifdef DEBUG_MODE
+    if( debug_mode ) {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Resolving generate statements for instance %s...", curr->name );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    }
+#endif
+    generate_resolve_inst( curr );
+
+    /* Resolve all children */
     curr_child = curr->child_head;
     while( curr_child != NULL ) {
       instance_resolve_helper( root, curr_child );
       curr_child = curr_child->next;
     }
 
-    /* Now resolve this instance */
+    /* Now resolve this instance's arrays */
+#ifdef DEBUG_MODE
+    if( debug_mode ) {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Resolving instance arrays for instance %s...", curr->name );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    }
+#endif
     (void)instance_resolve_inst( root, curr );
 
   }

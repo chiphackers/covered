@@ -883,33 +883,7 @@ void bind_perform(
 #ifndef VPI_ONLY
       /* If we are in parse mode, resolve all parameters and arrays of instances now */
       if( !cdd_reading && (pass == 0) ) {
-        inst_link* instl;
-#ifdef DEBUG_MODE
-        if( debug_mode ) {
-          print_output( "Resolving parameters...", DEBUG, __FILE__, __LINE__ );
-        }
-#endif
-        instl = db_list[curr_db]->inst_head;
-        while( instl != NULL ) {
-          param_resolve( instl->inst );
-          instl = instl->next;
-        }
-#ifdef DEBUG_MODE
-        if( debug_mode ) {
-          print_output( "Resolving generate statements...", DEBUG, __FILE__, __LINE__ );
-        }
-#endif
-        instl = db_list[curr_db]->inst_head;
-        while( instl != NULL ) {
-          generate_resolve( instl->inst );
-          instl = instl->next;
-        }
-#ifdef DEBUG_MODE
-        if( debug_mode ) {
-          print_output( "Resolving arrays of instances...", DEBUG, __FILE__, __LINE__ );
-        }
-#endif
-        instl = db_list[curr_db]->inst_head;
+        inst_link* instl = db_list[curr_db]->inst_head;
         while( instl != NULL ) {
           instance_resolve( instl->inst );
           instl = instl->next;

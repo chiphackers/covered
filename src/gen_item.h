@@ -136,8 +136,8 @@ void gen_item_bind(
   gen_item* gi
 );
 
-/*! \brief Resolves all generate items in the design */
-void generate_resolve(
+/*! \brief Resolves all generate items in the given instance */
+void generate_resolve_inst(
   funit_inst* inst
 );
 

@@ -100,6 +100,11 @@ void param_expr_eval(
 );
 
 /*! \brief Resolves all parameters for the specified instance. */
+void param_resolve_inst(
+  funit_inst* inst
+);
+
+/*! \brief Resolves all parameters for the specified instance tree. */
 void param_resolve(
   funit_inst* inst
 );

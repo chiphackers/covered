@@ -1196,16 +1196,12 @@ static void param_resolve_override(
 }
 
 /*!
- \throws anonymous param_resolve_override param_resolve param_resolve_declared
-
- Called after binding has occurred.  Recursively resolves all parameters for the given
- instance tree.
+ Called after local binding has occurred.  Resolves the parameters for the given functional unit
+ instance.
 */
-void param_resolve(
+void param_resolve_inst(
   funit_inst* inst  /*!< Pointer to functional unit instance to resolve parameter values for */
-) { PROFILE(PARAM_RESOLVE);
-
-  funit_inst* child;  /* Pointer to child instance of this instance */
+) { PROFILE(PARAM_RESOLVE_INST);
 
   assert( inst != NULL );
 
@@ -1222,6 +1218,27 @@ void param_resolve(
       mparm = mparm->next;
     }
   }
+
+  PROFILE_END;
+
+}
+
+/*!
+ \throws anonymous param_resolve_override param_resolve param_resolve_declared
+
+ Called after binding has occurred.  Recursively resolves all parameters for the given
+ instance tree.
+*/
+void param_resolve(
+  funit_inst* inst  /*!< Pointer to functional unit instance to resolve parameter values for */
+) { PROFILE(PARAM_RESOLVE);
+
+  funit_inst* child;  /* Pointer to child instance of this instance */
+
+  assert( inst != NULL );
+
+  /* Resolve this instance */
+  param_resolve_inst( inst );
 
   /* Resolve all child instances */
   child = inst->child_head;
