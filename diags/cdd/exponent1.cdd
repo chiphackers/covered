@@ -1,13 +1,13 @@
-5 14 181 4 *
-8 /home/bryce3/trevorw/covered/diags/verilog 2 -t (main) 2 -vcd (exponent1.vcd) 2 -o (exponent1.cdd) 2 -v (exponent1.v) 2 -D (DUMP)
-3 0 $root "$root" 0 NA 0 0 1
-3 0 main "main" 0 exponent1.v 1 23 1
+5 14 fd81 4 *
+8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (exponent1.vcd) 2 -o (exponent1.cdd) 2 -v (exponent1.v) 2 -D (DUMP)
+3 0 $root "$root" 0 NA 0 0 1 
+3 0 main "main" 0 exponent1.v 1 23 1 
 2 1 5 5 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 u$0
 1 a 1 3 107000b 1 0 31 0 32 17 0 ffffffff 0 200 8 0
 1 b 2 3 107000e 1 0 31 0 32 17 0 ffffffff 0 0 0 0
 1 c 3 3 1070011 1 0 31 0 32 17 0 ffffffff 0 0 0 0
-4 1 1 0 0
-3 1 main.u$0 "main.u$0" 0 exponent1.v 5 12 1
+4 1 1 0 0 1
+3 1 main.u$0 "main.u$0" 0 exponent1.v 5 12 1 
 2 2 6 6 50005 1 0 1008 0 0 32 48 2 0
 2 3 6 6 10001 0 1 1410 0 0 32 1 b
 2 4 6 6 10005 1 37 1a 2 3
@@ -28,10 +28,10 @@
 2 19 11 11 5000a 1 46 1018 17 18 32 18 0 ffffffff fffffdff 200 0 0
 2 20 11 11 10001 0 1 1410 0 0 32 1 a
 2 21 11 11 1000a 1 37 3a 19 20
-4 21 0 0 0
-4 16 0 21 0
-4 14 0 16 16
-4 9 0 14 0
-4 7 0 9 9
-4 4 11 7 7
-3 1 main.u$1 "main.u$1" 0 exponent1.v 14 21 1
+4 4 11 7 7 4
+4 7 0 9 9 4
+4 9 0 14 0 4
+4 14 0 16 16 4
+4 16 0 21 0 4
+4 21 0 0 0 4
+3 1 main.u$1 "main.u$1" 0 exponent1.v 14 21 1 

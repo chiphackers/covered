@@ -1,7 +1,7 @@
-5 14 101 5 *
-8 /ptmp/covered/diags/verilog 2 -t (main) 2 -vcd (assign2.7.vcd) 2 -o (assign2.7.cdd) 2 -v (assign2.7.v) 2 -D (DUMP)
-3 0 $root "$root" 0 NA 0 0 1
-3 0 main "main" 0 assign2.7.v 1 25 1
+5 14 fd81 5 *
+8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (assign2.7.vcd) 2 -o (assign2.7.cdd) 2 -v (assign2.7.v) 2 -D (DUMP)
+3 0 $root "$root" 0 NA 0 0 1 
+3 0 main "main" 0 assign2.7.v 1 25 1 
 2 1 5 5 140014 2 1 100c 0 0 1 1 b
 2 2 5 5 100010 2 1 100c 0 0 1 1 a
 2 3 5 5 100014 3 2 134c 1 2 1 18 0 1 1 0 1 1
@@ -30,8 +30,8 @@
 1 w1 4 6 6000b 1 0 31 0 32 17 ffffffff ffffffff 0 3 1 0
 1 w2 5 7 6000b 1 0 0 0 1 17 1 1 0 0 1 0
 1 w3 6 8 6000b 1 0 1 0 2 17 3 3 0 0 0 0
-4 5 f 5 5
-4 10 f 10 10
-4 14 f 14 14
-4 22 f 22 22
-3 1 main.u$0 "main.u$0" 0 assign2.7.v 10 23 1
+4 5 f 5 5 5
+4 10 f 10 10 10
+4 14 f 14 14 14
+4 22 f 22 22 22
+3 1 main.u$0 "main.u$0" 0 assign2.7.v 10 23 1 

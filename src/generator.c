@@ -1026,7 +1026,7 @@ void generator_add_to_work_code(
                                   str, first_line, first_column, from_code, file, line );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-      generator_display();
+      // generator_display();
     }
 #endif
 
@@ -1287,24 +1287,31 @@ static statement* generator_find_case_statement(
   unsigned int first_column  /*!< First column of case expression to find */
 ) { PROFILE(GENERATOR_FIND_CASE_STATEMENT);
 
+//  printf( "In generator_find_case_statement, line: %d, column: %d\n", first_line, first_column );
+
   if( (curr_stmt == NULL) || (curr_stmt->exp->left == NULL) || (curr_stmt->exp->left->ppline < first_line) ||
       ((curr_stmt->exp->left->ppline == first_line) && (((curr_stmt->exp->left->col >> 16) & 0xffff) < first_column)) ) {
 
-    if( generate_mode > 0 ) {
+//    if( curr_stmt->exp->left != NULL ) {
+//      printf( "curr_stmt->exp->left: %s\n", expression_string( curr_stmt->exp->left ) );
+//    }
+//    func_iter_display( &fiter );
 
-      (void)generate_find_stmt_by_position( curr_funit, first_line, first_column );
 
-    } else {
-
-      /* Attempt to find the expression with the given position */
-      while( ((curr_stmt = func_iter_get_next_statement( &fiter )) != NULL) && 
-             ((curr_stmt->exp->left == NULL) ||
-              (curr_stmt->exp->left->ppline < first_line) ||
-              ((curr_stmt->exp->left->ppline == first_line) && (((curr_stmt->exp->left->col >> 16) & 0xffff) < first_column))) );
-
-    }
+    /* Attempt to find the expression with the given position */
+    while( ((curr_stmt = func_iter_get_next_statement( &fiter )) != NULL) && 
+//           printf( "  statement %s %d %u\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff), curr_stmt->exp->ppline ) &&
+           ((curr_stmt->exp->left == NULL) ||
+            (curr_stmt->exp->left->ppline < first_line) ||
+            ((curr_stmt->exp->left->ppline == first_line) && (((curr_stmt->exp->left->col >> 16) & 0xffff) < first_column))) );
 
   }
+
+//  if( (curr_stmt != NULL) && (curr_stmt->exp->left != NULL) && (curr_stmt->exp->left->ppline == first_line) && (((curr_stmt->exp->left->col >> 16) & 0xffff) == first_column) ) {
+//    printf( "  FOUND (%s %x)!\n", expression_string( curr_stmt->exp->left ), ((curr_stmt->exp->left->col >> 16) & 0xffff) );
+//  } else {
+//    printf( "  NOT FOUND!\n" );
+//  }
 
   PROFILE_END;
 

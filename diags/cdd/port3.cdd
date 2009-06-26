@@ -1,11 +1,11 @@
-5 14 101 3 *
-8 /ptmp/covered/diags/verilog 2 -t (main) 2 -vcd (port3.vcd) 2 -o (port3.cdd) 2 -v (port3.v) 2 -D (DUMP)
-3 0 $root "$root" 0 NA 0 0 1
-3 0 main "main" 0 port3.v 1 23 1
+5 14 fd81 3 *
+8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (port3.vcd) 2 -o (port3.cdd) 2 -v (port3.v) 2 -D (DUMP)
+3 0 $root "$root" 0 NA 0 0 1 
+3 0 main "main" 0 port3.v 1 23 1 
 2 1 5 5 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 u$0
 1 a 1 3 1070004 1 0 0 0 1 17 0 1 0 0 0 0
-4 1 1 0 0
-3 1 main.u$0 "main.u$0" 0 port3.v 5 7 1
+4 1 1 0 0 1
+3 1 main.u$0 "main.u$0" 0 port3.v 5 7 1 
 2 2 6 6 160019 1 0 21008 0 0 1 16 1 0
 2 3 6 6 100013 1 0 21004 0 0 1 16 0 0
 2 4 6 6 100019 1 31 1008 2 3 2 18 0 3 2 1 0 0
@@ -14,13 +14,13 @@
 2 7 6 6 5001c 1 3a 5008 0 6 1 18 0 1 0 1 0 0 foo_func
 2 8 6 6 10001 0 1 1410 0 0 1 1 a
 2 9 6 6 1001c 1 37 1a 7 8
-4 9 11 0 0
-3 1 main.u$1 "main.u$1" 0 port3.v 9 16 1
-3 2 main.foo_func "main.foo_func" 0 port3.v 18 21 1
+4 9 11 0 0 9
+3 1 main.u$1 "main.u$1" 0 port3.v 9 16 1 
+3 2 main.foo_func "main.foo_func" 0 port3.v 18 21 1 
 2 10 20 20 c000c 1 1 1808 0 0 2 1 b
 2 11 20 20 b000b 1 1e 1808 10 0 1 18 0 1 0 1 0 0
 2 12 20 20 7 0 1 1c10 0 0 1 1 foo_func
 2 13 20 20 c 1 37 81a 11 12
 1 foo_func 2 18 1090009 1 0 0 0 1 17 1 1 0 0 0 0
 1 b 3 19 100000c 1 0 1 0 2 17 3 3 0 0 0 0
-4 13 11 0 0
+4 13 11 0 0 13

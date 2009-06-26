@@ -1,10 +1,10 @@
-5 14 101 5 *
-8 /ptmp/covered/diags/verilog 2 -t (main) 2 -vcd (instance6.1.vcd) 2 -o (instance6.1.cdd) 2 -v (instance6.1.v) 2 -D (DUMP)
-3 0 $root "$root" 0 NA 0 0 1
-3 0 main "main" 0 instance6.1.v 6 28 1
+5 14 fd81 5 *
+8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (instance6.1.vcd) 2 -o (instance6.1.cdd) 2 -v (instance6.1.v) 2 -D (DUMP)
+3 0 $root "$root" 0 NA 0 0 1 
+3 0 main "main" 0 instance6.1.v 6 28 1 
 1 a 1 8 7000a 1 0 2 0 3 17 0 7 0 5 1 0
 1 b 2 8 7000d 1 0 2 0 3 17 0 7 0 0 0 0
-3 0 foobar "main.foo" 0 instance6.1.v 31 41 1
+3 0 foobar "main.foo" 0 instance6.1.v 31 41 1 
 2 1 39 39 f000f 1 0 1008 0 0 32 48 1 0
 2 2 39 39 d000d 4 0 1008 0 0 32 48 2 0
 2 3 39 39 b0010 4 24 100c 1 2 2 18 0 3 0 0 0 0 b
@@ -13,10 +13,10 @@
 1 b 3 35 13 1 0 2 0 3 17 7 7 0 5 1 0
 1 a 4 37 6000b 1 0 1 0 2 17 3 3 0 2 0 0
 1 bsize 5 0 c0000 1 0 31 0 32 17 3 0 0 0 0 0
-4 5 f 5 5
-3 0 barfoo "main.bar" 0 instance6.1.v 44 50 1
+4 5 f 5 5 5
+3 0 barfoo "main.bar" 0 instance6.1.v 44 50 1 
 1 b 6 46 d 1 0 2 0 3 17 7 7 0 0 0 0
-3 0 foobar "main.bar.dude" 0 instance6.1.v 31 41 1
+3 0 foobar "main.bar.dude" 0 instance6.1.v 31 41 1 
 2 6 39 39 f000f 1 0 1008 0 0 32 48 1 0
 2 7 39 39 d000d 2 0 1008 0 0 32 48 2 0
 2 8 39 39 b0010 2 24 1008 6 7 2 18 0 3 0 0 0 0 b
@@ -25,5 +25,5 @@
 1 b 7 35 13 1 0 2 0 3 17 7 7 0 0 0 0
 1 a 8 37 6000b 1 0 1 0 2 17 3 3 0 0 0 0
 1 bsize 9 0 c0000 1 0 31 0 32 17 3 0 0 0 0 0
-4 10 f 10 10
-3 1 main.u$0 "main.u$0" 0 instance6.1.v 13 26 1
+4 10 f 10 10 10
+3 1 main.u$0 "main.u$0" 0 instance6.1.v 13 26 1 

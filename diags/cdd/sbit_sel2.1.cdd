@@ -1,12 +1,12 @@
-5 14 101 3 *
-8 /ptmp/covered/diags/verilog 2 -t (main) 2 -vcd (sbit_sel2.1.vcd) 2 -o (sbit_sel2.1.cdd) 2 -v (sbit_sel2.1.v) 2 -D (DUMP)
-3 0 $root "$root" 0 NA 0 0 1
-3 0 main "main" 0 sbit_sel2.1.v 9 30 1
+5 14 fd81 2 *
+8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (sbit_sel2.1.vcd) 2 -o (sbit_sel2.1.cdd) 2 -v (sbit_sel2.1.v) 2 -D (DUMP)
+3 0 $root "$root" 0 NA 0 0 1 
+3 0 main "main" 0 sbit_sel2.1.v 9 30 1 
 2 1 14 14 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 u$0
 1 a 1 11 107000a 1 0 4 1 4 17 0 f 0 0 0 0
 1 b 2 12 107000a 1 0 0 0 1 17 0 1 0 0 0 0
-4 1 1 0 0
-3 1 main.u$0 "main.u$0" 0 sbit_sel2.1.v 14 19 1
+4 1 1 0 0 1
+3 1 main.u$0 "main.u$0" 0 sbit_sel2.1.v 14 19 1 
 2 2 15 15 8000b 1 0 61008 0 0 4 16 f 0
 2 3 15 15 10001 0 1 1410 0 0 4 1 a
 2 4 15 15 1000b 1 37 1a 2 3
@@ -21,8 +21,8 @@
 2 13 18 18 f0012 1 23 1000 0 12 1 18 0 1 0 0 0 0 a
 2 14 18 18 80008 0 1 1410 0 0 1 1 b
 2 15 18 18 80012 1 37 12 13 14
-4 15 0 0 0
-4 11 0 15 15
-4 7 0 11 11
-4 4 11 7 7
-3 1 main.u$1 "main.u$1" 0 sbit_sel2.1.v 21 28 1
+4 4 11 7 7 4
+4 7 0 11 11 4
+4 11 0 15 15 4
+4 15 0 0 0 4
+3 1 main.u$1 "main.u$1" 0 sbit_sel2.1.v 21 28 1 

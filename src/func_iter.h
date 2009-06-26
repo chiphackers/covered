@@ -30,7 +30,7 @@
  Structure for iterating through a functional unit and its unnamed scopes.
 */
 typedef struct func_iter_s {
-  unsigned int scopes;     /*!< The number of scopes iterated with this iteration (i.e., the allocated size of sis and sigs) */
+  unsigned int scopes;     /*!< The number of scopes iterated with this iteration (i.e., the allocated size of sls and sigs) */
   stmt_link**  sls;        /*!< Pointer to array of statement links (sorted by line number) for the given functional unit */
   unsigned int sl_num;     /*!< Specifies the current index in the sls array to process */
   sig_link**   sigs;       /*!< Pointer to array of signal lists for the given functional unit */

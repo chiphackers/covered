@@ -157,9 +157,6 @@ static void func_iter_add_stmt_links(
     fi->sls[i+1] = fi->sls[i];
   }
 
-  /* Now allocate a new statement iterator at position 0 and point it at the current functional unit statement list */
-  fi->sls[0] = (stmt_link*)malloc_safe( sizeof( stmt_link ) );
-
   /* Set the sls pointer to the head of the functional unit statement list */
   fi->sls[0] = funit->stmt_head;
 
@@ -348,11 +345,6 @@ void func_iter_dealloc(
 
     /* Deallocate statement iterators */
     if( fi->sls != NULL ) {
-
-      /* Deallocate all statement iterators */
-      for( i=0; i<fi->scopes; i++ ) {
-        free_safe( fi->sls[i], sizeof( stmt_link ) );
-      }
 
       /* Deallocate array of statement iterators */
       free_safe( fi->sls, (sizeof( stmt_link* ) * fi->scopes) );

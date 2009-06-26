@@ -112,7 +112,10 @@ void stmt_link_add(
     stmt_link* last = NULL;
 
     /* Insert the new statement in order (based on ppline) - start at tail the tail and work to the head */
-    while( (curr != NULL) && (curr->stmt->exp->ppline < stmt->exp->ppline) ) {
+    while( (curr != NULL) &&
+           ((curr->stmt->exp->ppline < stmt->exp->ppline) ||
+            ((curr->stmt->exp->ppline == stmt->exp->ppline) &&
+             (((curr->stmt->exp->col >> 16) & 0xffff) < (stmt->exp->col >> 16 & 0xffff)))) ) {
       last = curr;
       curr = curr->next;
     }
@@ -348,7 +351,7 @@ void stmt_link_display(
   stmt_link* head  /*!< Pointer to head of stmt_link list */
 ) {
 
-  stmt_link* curr;
+  stmt_link* curr = head;
 
   printf( "Statement list:\n" );
 

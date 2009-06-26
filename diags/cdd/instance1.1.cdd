@@ -1,8 +1,8 @@
-5 14 101 6 main
-8 /ptmp/covered/diags/verilog 2 -t (depth1) 2 -i (main.inst0) 2 -vcd (instance1.vcd) 2 -o (instance1.1.cdd) 2 -v (instance1.1.v) 2 -D (DUMP)
-3 0 $root "$root" 0 NA 0 0 1
+5 14 fd81 6 main
+8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (depth1) 2 -i (main.inst0) 2 -vcd (instance1.vcd) 2 -o (instance1.1.cdd) 2 -v (instance1.1.v) 2 -D (DUMP)
+3 0 $root "$root" 0 NA 0 0 1 
 15 main 0
-3 0 depth1 "main.inst0" 0 instance1.1.v 26 37 1
+3 0 depth1 "main.inst0" 0 instance1.1.v 26 37 1 
 2 1 33 33 110012 2 1 100c 0 0 1 1 b1
 2 2 33 33 c000d 3 1 100c 0 0 1 1 a1
 2 3 33 33 c0012 4 8 138c 1 2 1 18 0 1 1 1 1 0
@@ -11,8 +11,8 @@
 1 a1 1 28 9 1 0 0 0 1 17 1 1 0 1 1 0
 1 b1 2 29 9 1 0 0 0 1 17 1 1 0 1 0 0
 1 c1 3 31 60009 1 0 0 0 1 17 1 1 0 1 1 0
-4 5 f 5 5
-3 0 depth2 "main.inst0.inst1" 0 instance1.1.v 39 48 1
+4 5 f 5 5 5
+3 0 depth2 "main.inst0.inst1" 0 instance1.1.v 39 48 1 
 2 6 46 46 110012 2 1 100c 0 0 1 1 b2
 2 7 46 46 c000d 3 1 100c 0 0 1 1 a2
 2 8 46 46 c0012 4 2 13cc 6 7 1 18 0 1 1 1 1 1
@@ -21,4 +21,4 @@
 1 a2 4 41 9 1 0 0 0 1 17 1 1 0 1 1 0
 1 b2 5 42 9 1 0 0 0 1 17 1 1 0 1 0 0
 1 c2 6 44 60009 1 0 0 0 1 17 1 1 0 1 1 0
-4 10 f 10 10
+4 10 f 10 10 10

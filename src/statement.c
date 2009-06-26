@@ -905,6 +905,40 @@ bool statement_contains_expr_calling_stmt(
 }
 
 /*!
+ Recursively traverses the entire statement block and adds the given statements to the specified statement list.
+*/
+void statement_add_to_stmt_link(
+  statement*  stmt,  /*!< Pointer to statement block to traverse */
+  stmt_link** head,  /*!< Pointer to head of stmt_link list */
+  stmt_link** tail   /*!< Pointer to tail of stmt_link list */
+) { PROFILE(STATEMENT_ADD_TO_STMT_LINK);
+
+  if( stmt != NULL ) {
+
+    /* Add the current statement to the stmt_link list */
+    stmt_link_add( stmt, FALSE, head, tail );
+    printf( "Added stmt %s to stmt_link list\n", expression_string( stmt->exp ) );
+
+    /* Traverse down the rest of the statement block */
+    if( (stmt->next_true == stmt->next_false) && (stmt->suppl.part.stop_true == 0) ) {
+      statement_add_to_stmt_link( stmt->next_true, head, tail );
+    } else {
+      if( stmt->suppl.part.stop_false == 0 ) {
+        statement_add_to_stmt_link( stmt->next_false, head, tail );
+      }
+      if( stmt->suppl.part.stop_true == 0 ) {
+        statement_add_to_stmt_link( stmt->next_true, head, tail );
+      }
+    }
+
+  }
+
+  PROFILE_END;
+
+}
+
+
+/*!
  Recursively deallocates specified statement tree.
 */
 void statement_dealloc_recursive(

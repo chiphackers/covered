@@ -1,12 +1,12 @@
-5 14 121 3 *
-8 /ptmp/covered/diags/verilog 2 -t (main) 2 -vcd (exclude9.7.vcd) 2 -o (exclude9.7.cdd) 2 -v (exclude9.7.v) 1 -ep 2 -D (DUMP)
-3 0 $root "$root" 0 NA 0 0 1
-3 0 main "main" 0 exclude9.7.v 11 32 1
+5 14 fda1 3 *
+8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (exclude9.7.vcd) 2 -o (exclude9.7.cdd) 2 -v (exclude9.7.v) 1 -ep 2 -D (DUMP)
+3 0 $root "$root" 0 NA 0 0 1 
+3 0 main "main" 0 exclude9.7.v 11 32 1 
 2 1 16 16 8000c 1 3d 7002 0 0 1 18 0 1 0 0 0 0 u$0
 1 a 1 13 1070004 1 0 0 0 1 17 0 1 0 0 0 0
 1 b 2 13 1070007 1 0 0 0 1 17 0 1 0 0 0 0
-4 1 21 0 0
-3 1 main.u$0 "main.u$0" 0 exclude9.7.v 16 20 1
+4 1 21 0 0 1
+3 1 main.u$0 "main.u$0" 0 exclude9.7.v 16 20 1 
 2 2 17 17 50008 1 0 23004 0 0 1 16 0 0
 2 3 17 17 10001 0 1 3410 0 0 1 1 a
 2 4 17 17 10008 1 37 2016 2 3
@@ -15,7 +15,7 @@
 2 7 19 19 e0011 0 0 23010 0 0 1 16 1 0
 2 8 19 19 a000a 0 1 3400 0 0 1 1 b
 2 9 19 19 a0011 0 37 2022 7 8
-4 9 20 0 0
-4 6 20 9 0
-4 4 31 6 6
-3 1 main.u$1 "main.u$1" 0 exclude9.7.v 23 30 1
+4 4 31 6 6 4
+4 6 20 9 0 4
+4 9 20 0 0 4
+3 1 main.u$1 "main.u$1" 0 exclude9.7.v 23 30 1 

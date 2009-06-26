@@ -1,15 +1,15 @@
-5 14 101 3 *
-8 /ptmp/covered/diags/verilog 2 -t (main) 2 -vcd (always11.2.vcd) 2 -o (always11.2.cdd) 2 -v (always11.2.v) 2 -D (DUMP)
-3 0 $root "$root" 0 NA 0 0 1
-3 0 main "main" 0 always11.2.v 1 22 1
+5 14 fd81 3 *
+8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (always11.2.vcd) 2 -o (always11.2.cdd) 2 -v (always11.2.v) 2 -D (DUMP)
+3 0 $root "$root" 0 NA 0 0 1 
+3 0 main "main" 0 always11.2.v 1 22 1 
 2 1 5 5 90009 1 1 1004 0 0 1 1 a
 2 2 5 5 90009 2 29 100a 1 0 1 18 0 1 0 0 0 0
 2 3 6 6 20006 1 3d 5002 0 0 1 18 0 1 0 0 0 0 u$0
 1 a 1 3 70007 1 0 0 0 1 17 0 1 0 0 0 0
 1 b 2 3 107000a 1 0 0 0 1 17 0 1 0 0 0 0
-4 3 6 2 0
-4 2 1 3 0
-3 1 main.u$0 "main.u$0" 0 always11.2.v 6 10 1
+4 2 1 3 0 2
+4 3 6 2 0 2
+3 1 main.u$0 "main.u$0" 0 always11.2.v 6 10 1 
 2 4 7 7 7000a 1 0 21004 0 0 1 16 0 0
 2 5 7 7 30003 0 1 1410 0 0 1 1 b
 2 6 7 7 3000a 1 37 16 4 5
@@ -18,7 +18,7 @@
 2 9 9 9 7000a 0 0 21010 0 0 1 16 1 0
 2 10 9 9 30003 0 1 1410 0 0 1 1 b
 2 11 9 9 3000a 0 37 32 9 10
-4 11 0 0 0
-4 8 0 11 0
-4 6 11 8 8
-3 1 main.u$1 "main.u$1" 0 always11.2.v 12 20 1
+4 6 11 8 8 6
+4 8 0 11 0 6
+4 11 0 0 0 6
+3 1 main.u$1 "main.u$1" 0 always11.2.v 12 20 1 

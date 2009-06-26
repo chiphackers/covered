@@ -1,9 +1,9 @@
-5 14 101 4 main.adder
-8 /ptmp/covered/diags/verilog 2 -t (adder1) 2 -i (main.adder.bit0) 2 -vcd (merge8.2b.vcd) 2 -o (merge8.2b.cdd) 2 -v (merge8.2b.v) 2 -y (lib) 2 -D (DUMP)
-3 0 $root "$root" 0 NA 0 0 1
+5 14 fd81 4 main.adder
+8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (adder1) 2 -i (main.adder.bit0) 2 -vcd (merge8.2b.vcd) 2 -o (merge8.2b.cdd) 2 -v (merge8.2b.v) 2 -y (lib) 2 -D (DUMP)
+3 0 $root "$root" 0 NA 0 0 1 
 15 main 0
 15 main.adder 0
-3 0 adder1 "main.adder.bit0" 0 lib/adder1.v 1 18 1
+3 0 adder1 "main.adder.bit0" 0 lib/adder1.v 1 18 1 
 2 1 15 15 f000f 2 1 100c 0 0 1 1 b
 2 2 15 15 b000b 1 1 1004 0 0 1 1 a
 2 3 15 15 b000f 2 2 10cc 1 2 1 18 0 1 1 1 0 0
@@ -18,5 +18,5 @@
 1 b 2 9 7 1 0 0 0 1 17 1 1 0 1 0 0
 1 c 3 10 20008 1 0 0 0 1 17 1 1 0 0 0 0
 1 z 4 11 20009 1 0 0 0 1 17 1 1 0 1 0 0
-4 5 f 5 5
-4 10 f 10 10
+4 5 f 5 5 5
+4 10 f 10 10 10

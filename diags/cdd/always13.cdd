@@ -1,7 +1,7 @@
-5 14 101 24 *
-8 /ptmp/covered/diags/verilog 2 -t (main) 2 -vcd (always13.vcd) 2 -o (always13.cdd) 2 -v (always13.v) 2 -D (DUMP)
-3 0 $root "$root" 0 NA 0 0 1
-3 0 main "main" 0 always13.v 1 19 1
+5 14 fd81 24 *
+8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (always13.vcd) 2 -o (always13.cdd) 2 -v (always13.v) 2 -D (DUMP)
+3 0 $root "$root" 0 NA 0 0 1 
+3 0 main "main" 0 always13.v 1 19 1 
 2 1 5 5 90009 1 0 1008 0 0 32 48 5 0
 2 2 5 5 7000a 2f 2c 900a 1 0 32 18 0 ffffffff 0 0 0 0
 2 3 5 5 200022 15 1 101c 0 0 1 1 clk
@@ -14,6 +14,6 @@
 2 10 5 5 c0022 17 37 3e 8 9
 1 rst 1 3 70004 1 0 0 0 1 17 0 1 0 0 1 0
 1 clk 2 3 1070009 1 0 0 0 1 17 0 1 0 1 1 0
-4 10 6 2 2
-4 2 1 10 0
-3 1 main.u$0 "main.u$0" 0 always13.v 7 17 1
+4 2 1 10 0 2
+4 10 6 2 2 2
+3 1 main.u$0 "main.u$0" 0 always13.v 7 17 1 

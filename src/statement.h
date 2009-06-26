@@ -108,6 +108,13 @@ bool statement_contains_expr_calling_stmt(
   statement* stmt
 );
 
+/*! \brief Recursively traverses the entire statement block and adds the given statements to the specified statement list */
+void statement_add_to_stmt_link(
+  statement*  stmt,
+  stmt_link** head,
+  stmt_link** tail
+);
+
 /*! \brief Recursively deallocates specified statement tree. */
 void statement_dealloc_recursive(
   statement* stmt,

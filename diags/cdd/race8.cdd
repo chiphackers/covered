@@ -1,5 +1,5 @@
-5 14 fd01 8 main
-8 /Users/trevorw/projects/covered/diags/verilog 2 -t (foo) 2 -i (main.f) 2 -vcd (race8.vcd) 2 -o (race8.cdd) 2 -v (race8.v) 2 -D (DUMP)
+5 14 fd81 8 main
+8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (foo) 2 -i (main.f) 2 -vcd (race8.vcd) 2 -o (race8.cdd) 2 -v (race8.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 15 main 0
 3 0 foo "main.f" 0 race8.v 36 50 1 
@@ -11,5 +11,5 @@
 1 a 2 38 8 1 0 0 0 1 17 1 1 0 1 0 0
 1 b 3 41 70005 1 0 0 0 1 17 0 1 0 0 1 0
 1 c 4 42 60005 1 0 0 0 1 17 1 1 0 1 0 0
-4 4 f 4 4
+4 4 f 4 4 4
 7 0 44 44

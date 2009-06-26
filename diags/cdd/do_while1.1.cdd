@@ -1,12 +1,12 @@
-5 14 181 6 *
-8 /home/bryce3/trevorw/covered/diags/verilog 2 -t (main) 2 -vcd (do_while1.1.vcd) 2 -o (do_while1.1.cdd) 2 -v (do_while1.1.v) 2 -D (DUMP)
-3 0 $root "$root" 0 NA 0 0 1
-3 0 main "main" 0 do_while1.1.v 1 30 1
+5 14 fd81 6 *
+8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (do_while1.1.vcd) 2 -o (do_while1.1.cdd) 2 -v (do_while1.1.v) 2 -D (DUMP)
+3 0 $root "$root" 0 NA 0 0 1 
+3 0 main "main" 0 do_while1.1.v 1 30 1 
 2 1 6 6 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 u$0
 1 a 1 3 107000b 1 0 31 0 32 17 0 ffffffff 0 b 7 0
 1 b 2 4 107000b 1 0 0 0 1 17 0 1 0 1 0 0
-4 1 1 0 0
-3 1 main.u$0 "main.u$0" 0 do_while1.1.v 6 19 1
+4 1 1 0 0 1
+3 1 main.u$0 "main.u$0" 0 do_while1.1.v 6 19 1 
 2 2 7 7 c000c 1 0 1008 0 0 32 48 4 0
 2 3 7 7 80008 0 1 1410 0 0 32 1 a
 2 4 7 7 8000c 1 37 1a 2 3
@@ -21,12 +21,12 @@
 2 13 18 18 50008 1 0 21008 0 0 1 16 1 0
 2 14 18 18 10001 0 1 1410 0 0 1 1 b
 2 15 18 18 10008 1 37 1a 13 14
-4 15 0 0 0
-4 12 2 8 15
-4 8 0 12 0
-4 7 0 8 8
-4 4 11 7 7
-3 1 main.u$0.u$1 "main.u$0.u$1" 0 do_while1.1.v 10 16 1
+4 4 11 7 7 4
+4 7 0 8 8 4
+4 8 0 12 0 4
+4 12 2 8 15 4
+4 15 0 0 0 4
+3 1 main.u$0.u$1 "main.u$0.u$1" 0 do_while1.1.v 10 16 1 
 2 16 11 11 c000c 1 0 1008 0 0 32 48 5 0
 2 17 11 11 b000c 8 2c 900a 16 0 32 18 0 ffffffff 0 0 0 0
 2 18 12 12 120012 4 0 1008 0 0 32 48 1 0
@@ -43,8 +43,8 @@
 2 29 13 13 110015 2 6 1218 27 28 32 18 0 ffffffff fffffffd 2 c 0
 2 30 13 13 d000d 0 1 1410 0 0 32 1 a
 2 31 13 13 d0015 2 37 3a 29 30
-4 26 0 0 0
-4 31 0 0 0
-4 21 0 31 26
-4 17 11 21 0
-3 1 main.u$2 "main.u$2" 0 do_while1.1.v 21 28 1
+4 17 11 21 0 17
+4 21 0 31 26 17
+4 31 0 0 0 17
+4 26 0 0 0 17
+3 1 main.u$2 "main.u$2" 0 do_while1.1.v 21 28 1 

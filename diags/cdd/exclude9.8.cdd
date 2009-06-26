@@ -1,7 +1,7 @@
-5 14 fd21 3 *
-8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (exclude9.8.vcd) 2 -o (exclude9.8.cdd) 2 -v (exclude9.8.v) 1 -ep 2 -D (DUMP)
-3 0 $root "$root" 0 NA 0 0 1
-3 0 main "main" 0 exclude9.8.v 11 35 1
+5 14 fda1 3 *
+8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (exclude9.8.vcd) 2 -o (exclude9.8.cdd) 2 -v (exclude9.8.v) 1 -ep 2 -D (DUMP)
+3 0 $root "$root" 0 NA 0 0 1 
+3 0 main "main" 0 exclude9.8.v 11 35 1 
 2 1 0 0 0 1 1 1004 0 0 2 1 a
 2 2 0 0 0 1 29 1008 1 0 1 18 0 1 0 0 0 0
 2 3 16 16 70008 3 45 100a 2 0 1 18 0 1 0 0 0 0
@@ -22,11 +22,11 @@
 2 18 18 18 f0016 1 37 16 16 17
 1 a 1 13 7000a 1 0 1 0 2 17 0 3 0 0 0 0
 1 b 2 14 107000a 1 0 0 0 1 17 0 1 0 0 0 0
-4 12 26 3 3
-4 9 4 12 3
-4 15 6 3 3
-4 8 0 15 9
-4 18 6 3 3
-4 6 0 18 8
-4 3 1 6 0
-3 1 main.u$0 "main.u$0" 0 exclude9.8.v 25 33 1
+4 3 1 6 0 3
+4 6 0 18 8 3
+4 18 6 3 3 3
+4 8 0 15 9 3
+4 15 6 3 3 3
+4 9 4 12 3 3
+4 12 26 3 3 3
+3 1 main.u$0 "main.u$0" 0 exclude9.8.v 25 33 1 
