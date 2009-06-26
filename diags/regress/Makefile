@@ -314,10 +314,11 @@ EXCLUDE      += afunc1            afunc2            always5.1         always_com
                 generate8.4       generate8.5       generate8.6       generate8.7       generate8.8 \
                 generate8.9       generate9         generate9.1       generate9.2       generate9.3 \
                 generate10        generate10.1      generate10.2      generate11        generate11.1 \
-                generate11.2      generate11.3      generate11.4      generate13        generate14 \
-                generate15        generate15.1      generate15.2      generate15.3      generate15.4 \
-                generate15.5      generate16        generate16.1      generate16.2      generate16.3 \
-                generate17        generate18        generate19        generate19.1      generate19.2     hier1.1 \
+                generate11.2      generate11.3      generate11.4      generate12        generate13 \
+                generate14        generate15        generate15.1      generate15.2      generate15.3 \
+                generate15.4      generate15.5      generate16        generate16.1      generate16.2 \
+                generate16.3      generate17        generate18        generate19        generate19.1 \
+                generate19.2      generate21        hier1.1 \
                 hier2             hier3             ifdef1.1          ifdef3            ifndef2 \
                 implicit2         inc1              inc1.1            inc2              inc3 \
                 inc3.1            instance7         int1              line1             localparam1 \
@@ -384,11 +385,11 @@ EXCLUDE      += afunc1            afunc2            always5.1         always_com
                 generate8.4       generate8.5       generate8.6       generate8.7       generate8.8 \
                 generate8.9       generate9         generate9.1       generate9.2       generate9.3 \
                 generate10        generate10.1      generate10.2      generate11        generate11.1 \
-                generate11.2      generate11.3      generate11.4      generate13        generate14 \
-                generate15        generate15.1      generate15.2      generate15.3      generate15.4 \
-                generate15.5      generate16        generate16.1      generate16.2      generate16.3 \
-                generate17        generate18        generate19        generate19.1      generate19.2 \
-                hier1.1           hier2             hier3 \
+                generate11.2      generate11.3      generate11.4      generate12        generate13 \
+                generate14        generate15        generate15.1      generate15.2      generate15.3 \
+                generate15.4      generate15.5      generate16        generate16.1      generate16.2 \
+                generate16.3      generate17        generate18        generate19        generate19.1 \
+                generate19.2      generate21        hier1.1           hier2             hier3 \
                 hier3.1           hier3.2           hier3.3           hier3.4           hier4 \
                 ifndef1           ifndef2           implicit2.1       inc1              inc1.1 \
                 inc2              inc3              inc3.1            int1              line1 \
