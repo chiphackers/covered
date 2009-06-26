@@ -260,24 +260,6 @@ void func_iter_init(
 }
 
 /*!
- Clears the added bits of all statements in the statement link array.
-*/
-void func_iter_reset(
-  func_iter* fi  /*!< Pointer to functional unit to reset */
-) { PROFILE(FUNC_ITER_RESET);
-
-  stmt_link* curr = fi->funit->stmt_head;
-
-  while( curr != NULL ) {
-    curr->stmt->suppl.part.added = 0;
-    curr = curr->next;
-  }
-
-  PROFILE_END;
-
-}
-
-/*!
  \return Returns pointer to next statement in line order (or NULL if there are no more
          statements in the given functional unit)
 */

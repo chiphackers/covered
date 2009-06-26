@@ -49,11 +49,6 @@ void func_iter_init(
             bool       inc_all
 );
 
-/*! \brief Resets the functional iterator structure (call after initializing) */
-void func_iter_reset(
-  func_iter* fi
-);
-
 /*! \brief Provides the next statement iterator in the functional unit statement iterator */
 statement* func_iter_get_next_statement(
   func_iter* fi

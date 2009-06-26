@@ -897,9 +897,6 @@ void generator_init_funit(
   /* Clear the current statement pointer */
   curr_stmt = NULL;
 
-  /* Reset the structure */
-  func_iter_reset( &fiter );
-
   /* Reset the replacement string information */
   generator_clear_replace_ptrs();
 
