@@ -353,15 +353,19 @@ void funit_remove_stmt_blks_calling_stmt(
   statement* stmt    /*!< Pointer to statement to search for */
 ) { PROFILE(FUNIT_REMOVE_STMT_BLKS_CALLING_STMT);
 
-  stmt_iter si;  /* Statement list iterator */
+  if( funit != NULL ) {
 
-  /* Search all of the statement blocks */
-  stmt_iter_reset( &si, funit->stmt_head );
-  while( si.curr != NULL ) {
-    if( (si.curr->stmt->suppl.part.head == 1) && statement_contains_expr_calling_stmt( si.curr->stmt, stmt ) ) {
-      stmt_blk_add_to_remove_list( si.curr->stmt );
+    stmt_iter si;  /* Statement list iterator */
+
+    /* Search all of the statement blocks */
+    stmt_iter_reset( &si, funit->stmt_head );
+    while( si.curr != NULL ) {
+      if( (si.curr->stmt->suppl.part.head == 1) && statement_contains_expr_calling_stmt( si.curr->stmt, stmt ) ) {
+        stmt_blk_add_to_remove_list( si.curr->stmt );
+      }
+      stmt_iter_next( &si );
     }
-    stmt_iter_next( &si );
+
   }
 
   PROFILE_END;
