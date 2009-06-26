@@ -135,7 +135,7 @@ DIAGS1        = add1              aedge1            aedge1.1          afunc1    
                 nested_block2     nested_block2.1   nested_block3     nor1              not1 \
                 null_stmt1        null_stmt1.1      null_stmt1.2      null_stmt1.3      null_stmt1.5 \
                 null_stmt1.6      null_stmt1.7      null_stmt1.8      null_stmt1.9      null_stmt1.10 \
-                null_stmt2        null_stmt2.1      ovl1              ovl1.1            ovl1.2 \
+                null_stmt2        null_stmt2.1      op_assign1        ovl1              ovl1.1            ovl1.2 \
                 ovl1.3            param1            param1.1          param1.2          param1.3 \
                 param3            param3.1          param3.2          param3.3          param3.4 \
                 param3.5          param4            param4.1          param5            param6 \
@@ -282,7 +282,7 @@ NOSIMERRLIST  = bug2791651        comment1          enum2             err4      
            
 # VCSONLYDIAGS1
 # These need to go back in:
-#               mem5              op_assign1        static_afunc1     static_func1      static_func1.1    static_func2      static_func2.1
+#               mem5              static_afunc1     static_func1      static_func1.1    static_func2      static_func2.1
 #               static_func2.2    static_func2.3    static_func3
 
 # null_stmt1.4  real4            timescale4.15
@@ -328,7 +328,7 @@ EXCLUDE      += afunc1            afunc2            always5.1         always_com
                 marray2.3         mbit_sel5         mbit_sel5.1       mbit_sel5.2       mbit_sel5.3 \
                 mbit_sel5.4       mbit_sel6         mbit_sel6.1       mbit_sel6.2       mbit_sel6.3 \
                 mbit_sel6.4       mem3              mem4              mem4.1            nand1 \
-                nor1              ovl1              ovl1.1            ovl1.2            ovl1.3 \
+                nor1              op_assign1        ovl1              ovl1.1            ovl1.2            ovl1.3 \
                 param8.2          param10.1         param10.5         param12           param12.1 \
                 port2             profile_err1      real1.1           real5.11 \
                 real5.12          real5.13          real5.14          real5.15          real5.16 \
@@ -400,7 +400,7 @@ EXCLUDE      += afunc1            afunc2            always5.1         always_com
                 mbit_sel5.4       mbit_sel6         mbit_sel6.1       mbit_sel6.2       mbit_sel6.3 \
                 mbit_sel6.4       mem2              mem3              mem4              mem4.1 \
                 mem6              mem6.3            named_block2      nand1             nor1 \
-                null_stmt2        null_stmt2.1      ovl1              ovl1.1            ovl1.2 \
+                null_stmt2        null_stmt2.1      op_assign1        ovl1              ovl1.1            ovl1.2 \
                 ovl1.3            param7            param8            param8.1          param8.2 \
                 param9.1          param9.2          param10           param10.1         param10.2 \
                 param10.3         param10.4         param10.5         param12           param12.1 \
@@ -455,8 +455,8 @@ EXCLUDE      += afunc1            afunc2            always_comb1      always_com
                 int1              line1             logic1            longint1          long_sig \
                 marray1           marray1.1         marray1.2         marray1.3         marray2 \
                 marray2.1         marray2.2         marray2.3         mbit_sel5.4       mbit_sel6.4 \
-                mem3              null_stmt2        null_stmt2.1      param8.2          param12 \
-                param12.1         port4             random1.2         random1.3 \
+                mem3              null_stmt2        null_stmt2.1      op_assign1        param8.2 \
+                param12           param12.1         port4             random1.2         random1.3 \
                 real5.11          real5.12          real5.13          real5.14          real5.15 \
                 real5.16          real6.10          real6.11          real6.12          real6.13 \
                 real8             sbit_sel2.1       sbit_sel3.2       shortint1         signed4.1 \

@@ -2206,7 +2206,38 @@ static void generator_insert_subexp(
   lhs_str = generator_create_lhs( exp, funit, net, reg_needed );
 
   /* Generate value string */
-  val_str = codegen_gen_expr_one_line( exp, funit, !generator_expr_needs_to_be_substituted( exp ) );
+  if( EXPR_IS_OP_AND_ASSIGN( exp ) == 1 ) {
+    char  op_str[4];
+    char* lval_str = codegen_gen_expr_one_line( exp->left,  funit, !generator_expr_needs_to_be_substituted( exp->left ) );
+    char* rval_str = codegen_gen_expr_one_line( exp->right, funit, !generator_expr_needs_to_be_substituted( exp->right ) );
+
+    switch( exp->op ) {
+      case EXP_OP_MLT_A :  strcpy( op_str, "*"  );   break;
+      case EXP_OP_DIV_A :  strcpy( op_str, "/"  );   break;
+      case EXP_OP_MOD_A :  strcpy( op_str, "%"  );   break;
+      case EXP_OP_LS_A  :  strcpy( op_str, "<<" );   break;
+      case EXP_OP_RS_A  :  strcpy( op_str, ">>" );   break;
+      case EXP_OP_ALS_A :  strcpy( op_str, "<<<" );  break;
+      case EXP_OP_ARS_A :  strcpy( op_str, ">>>" );  break;
+      default :
+        assert( 0 );
+        break;
+    }
+
+    /* Construct the string */
+    slen    = 1 + strlen( lval_str ) + 2 + strlen( op_str ) + 2 + strlen( rval_str ) + 2;
+    val_str = (char*)malloc_safe( slen );
+    rv      = snprintf( val_str, slen, "(%s) %s (%s)", lval_str, op_str, rval_str );
+    assert( rv < slen );
+
+    free_safe( lval_str, (strlen( lval_str ) + 1) );
+    free_safe( rval_str, (strlen( rval_str ) + 1) );
+
+  /* Otherwise, the value string is just the expression itself */
+  } else {
+    val_str = codegen_gen_expr_one_line( exp, funit, !generator_expr_needs_to_be_substituted( exp ) );
+
+  }
 
   /* If this expression needs to be substituted, do it with the lhs_str value */
   if( generator_expr_needs_to_be_substituted( exp ) ) {
