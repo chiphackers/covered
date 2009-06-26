@@ -1171,8 +1171,7 @@ void instance_db_write(
   FILE*       file,        /*!< Output file to display contents to */
   char*       scope,       /*!< Scope of this functional unit */
   bool        parse_mode,  /*!< Specifies if we are parsing or scoring */
-  bool        issue_ids,   /*!< Specifies that we need to issue expression and signal IDs */
-  bool        report_save  /*!< Specifies if we are saving a CDD file after modifying it with the report command */
+  bool        issue_ids    /*!< Specifies that we need to issue expression and signal IDs */
 ) { PROFILE(INSTANCE_DB_WRITE);
 
   bool stop_recursive = FALSE;
@@ -1226,7 +1225,7 @@ void instance_db_write(
       }
 
       /* Display root functional unit */
-      funit_db_write( root->funit, scope, root->suppl.name_diff, file, curr, report_save, issue_ids );
+      funit_db_write( root->funit, scope, root->suppl.name_diff, file, curr, issue_ids );
 
     } else {
 
@@ -1251,7 +1250,7 @@ void instance_db_write(
     while( curr != NULL ) {
       unsigned int rv = snprintf( tscope, 4096, "%s.%s", scope, curr->name );
       assert( rv < 4096 );
-      instance_db_write( curr, file, tscope, parse_mode, issue_ids, report_save );
+      instance_db_write( curr, file, tscope, parse_mode, issue_ids );
       curr = curr->next;
     }
 

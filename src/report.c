@@ -952,7 +952,7 @@ void report_save_cdd(
   /* Write the instance database */
   curr_db = 1;
 
-  db_write( filename, FALSE, FALSE, TRUE );
+  db_write( filename, FALSE, FALSE );
 
   /* Restore the database */
   curr_db = 0;

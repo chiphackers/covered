@@ -39,7 +39,6 @@
 #include "func_unit.h"
 #include "gen_item.h"
 #include "instance.h"
-#include "iter.h"
 #include "link.h"
 #include "obfuscate.h"
 #include "param.h"
@@ -355,15 +354,14 @@ void funit_remove_stmt_blks_calling_stmt(
 
   if( funit != NULL ) {
 
-    stmt_iter si;  /* Statement list iterator */
+    stmt_link* curr = funit->stmt_head;
 
     /* Search all of the statement blocks */
-    stmt_iter_reset( &si, funit->stmt_head );
-    while( si.curr != NULL ) {
-      if( (si.curr->stmt->suppl.part.head == 1) && statement_contains_expr_calling_stmt( si.curr->stmt, stmt ) ) {
-        stmt_blk_add_to_remove_list( si.curr->stmt );
+    while( curr != NULL ) {
+      if( (curr->stmt->suppl.part.head == 1) && statement_contains_expr_calling_stmt( curr->stmt, stmt ) ) {
+        stmt_blk_add_to_remove_list( curr->stmt );
       }
-      stmt_iter_next( &si );
+      curr = curr->next;
     }
 
   }
@@ -556,14 +554,12 @@ void funit_db_write(
   bool        name_diff,    /*!< Specifies that this instance has an inaccurate way */
   FILE*       file,         /*!< Pointer to specified output file to write contents */
   funit_inst* inst,         /*!< Pointer to the current functional unit instance */
-  bool        report_save,  /*!< Specifies that we are attempting to save a CDD after modifying the database in
-                                 the report command */
   bool        ids_issued    /*!< Specifies if IDs have been issued prior to calling this function */
 ) { PROFILE(FUNIT_DB_WRITE);
 
   sig_link*       curr_sig;       /* Pointer to current functional unit sig_link element */
   exp_link*       curr_exp;       /* Pointer to current functional unit exp_link element */
-  stmt_iter       curr_stmt;      /* Statement list iterator */
+  stmt_link*      curr_stmt;      /* Statement list iterator */
   inst_parm*      curr_parm;      /* Pointer to current instance parameter */
   fsm_link*       curr_fsm;       /* Pointer to current functional unit fsm_link element */
   race_blk*       curr_race;      /* Pointer to current race condition block */
@@ -687,16 +683,12 @@ void funit_db_write(
 #endif
 
     /* Now print all statements in functional unit */
-    if( report_save ) {
-      stmt_iter_reset( &curr_stmt, funit->stmt_tail );
-    } else {
-      stmt_iter_reset( &curr_stmt, funit->stmt_head );
-    }
-    while( curr_stmt.curr != NULL ) {
-      if( curr_stmt.curr->rm_stmt ) {
-        statement_db_write( curr_stmt.curr->stmt, file, ids_issued );
+    curr_stmt = funit->stmt_head;
+    while( curr_stmt != NULL ) {
+      if( curr_stmt->rm_stmt ) {
+        statement_db_write( curr_stmt->stmt, file, ids_issued );
       }
-      stmt_iter_next( &curr_stmt );
+      curr_stmt = curr_stmt->next;
     }
 
 #ifndef VPI_ONLY
@@ -826,7 +818,7 @@ void funit_db_merge(
 
   exp_link*    curr_base_exp;   /* Pointer to current expression in base functional unit expression list */
   sig_link*    curr_base_sig;   /* Pointer to current signal in base functional unit signal list */
-  stmt_iter    curr_base_stmt;  /* Statement list iterator */
+  stmt_link*   curr_base_stmt;  /* Statement list link */
   fsm_link*    curr_base_fsm;   /* Pointer to current FSM in base functional unit FSM list */
   race_blk*    curr_base_race;  /* Pointer to current race condition block in base module list  */
   char*        curr_line;       /* Pointer to current line being read from CDD */
@@ -927,8 +919,8 @@ void funit_db_merge(
   }
 
   /* Since statements don't get merged, we will just read these lines in */
-  stmt_iter_reset( &curr_base_stmt, base->stmt_head );
-  while( curr_base_stmt.curr != NULL ) {
+  curr_base_stmt = base->stmt_head;
+  while( curr_base_stmt != NULL ) {
     if( util_readline( file, &curr_line, &curr_line_size ) ) {
       Try {
         if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
@@ -950,7 +942,7 @@ void funit_db_merge(
       print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
       Throw 0;
     }
-    stmt_iter_next( &curr_base_stmt );
+    curr_base_stmt = curr_base_stmt->next;
   }
 
   /* Handle all functional unit FSMs */

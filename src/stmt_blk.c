@@ -76,13 +76,13 @@ void stmt_blk_add_to_remove_list(
       assert( funit != NULL );
 
       /* Find the head statement of the statement block that contains this statement */
-      stmt = statement_find_head_statement( stmt, funit->stmt_head );
+      stmt = stmt->head;
 
     }
 
     /* If this statement has not been added to the removal list already, do so now */
     if( stmt_link_find( stmt->exp->id, rm_stmt_head ) == NULL ) {
-      stmt_link_add_tail( stmt, TRUE, &rm_stmt_head, &rm_stmt_tail );
+      stmt_link_add( stmt, TRUE, &rm_stmt_head, &rm_stmt_tail );
     }
 
 #ifndef VPI_ONLY

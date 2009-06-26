@@ -90,7 +90,6 @@
 #include "expr.h"
 #include "func_unit.h"
 #include "instance.h"
-#include "iter.h"
 #include "link.h"
 #include "reentrant.h"
 #include "sim.h"

@@ -35,7 +35,6 @@
 #include "func_iter.h"
 #include "func_unit.h"
 #include "instance.h"
-#include "iter.h"
 #include "link.h"
 #include "obfuscate.h"
 #include "ovl.h"
@@ -207,7 +206,7 @@ void ovl_get_funit_stats(
       if( (curr_child->funit->suppl.part.type == FUNIT_MODULE) && ovl_is_assertion_module( curr_child->funit ) ) {
 
         /* Initialize the functional unit iterator */
-        func_iter_init( &fi, curr_child->funit, TRUE, FALSE, TRUE, FALSE );
+        func_iter_init( &fi, curr_child->funit, TRUE, FALSE, FALSE );
 
         while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
 
@@ -317,7 +316,7 @@ void ovl_display_verbose(
     if( (curr_child->funit->suppl.part.type == FUNIT_MODULE) && ovl_is_assertion_module( curr_child->funit ) ) {
 
       /* Initialize the functional unit iterator */
-      func_iter_init( &fi, curr_child->funit, TRUE, FALSE, TRUE, FALSE );
+      func_iter_init( &fi, curr_child->funit, TRUE, FALSE, FALSE );
 
       while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
 
@@ -390,7 +389,6 @@ void ovl_collect(
   funit_inst*  funiti;             /* Pointer to found functional unit instance containing this functional unit */
   funit_inst*  curr_child;         /* Current child of this functional unit's instance */
   int          ignore        = 0;  /* Number of functional units to ignore */
-  stmt_iter    si;                 /* Statement iterator */
   unsigned int total         = 0;  /* Total number of coverage points for a given assertion module */
   unsigned int hit           = 0;  /* Number of hit coverage points for a given assertion module */
   int          exclude_found = 0;  /* Set to a value of 1 if at least one excluded coverage point was found */
@@ -414,7 +412,7 @@ void ovl_collect(
       hit   = 0;
 
       /* Initialize the functional unit iterator */
-      func_iter_init( &fi, curr_child->funit, TRUE, FALSE, TRUE, FALSE );
+      func_iter_init( &fi, curr_child->funit, TRUE, FALSE, FALSE );
 
       while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
 
@@ -503,7 +501,7 @@ void ovl_get_coverage(
   assert( rv < str_size );
 
   /* Initialize the functional unit iterator */
-  func_iter_init( &fi, curr_child->funit, TRUE, FALSE, TRUE, FALSE );
+  func_iter_init( &fi, curr_child->funit, TRUE, FALSE, FALSE );
 
   /* Gather all missed coverage points */
   while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {

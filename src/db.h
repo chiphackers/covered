@@ -40,8 +40,7 @@ bool db_check_for_top_module();
 void db_write(
   const char* file,
   bool        parse_mode,
-  bool        issue_ids,
-  bool        report_save
+  bool        issue_ids
 );
 
 /*! \brief Reads contents of database file and stores into internal lists. */

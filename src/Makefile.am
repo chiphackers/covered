@@ -22,7 +22,6 @@ covered_SOURCES = arc.c \
                   generator.c \
 		  info.c \
 		  instance.c \
- 		  iter.c \
 		  keywords_1995.c \
 		  keywords_2001.c \
 		  keywords_sv.c \

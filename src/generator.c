@@ -862,7 +862,7 @@ void generator_output() { PROFILE(GENERATOR_OUTPUT);
   hold_buffer[0] = '\0';
 
   /* Initialize the functional unit iter */
-  fiter.sis  = NULL;
+  fiter.sls  = NULL;
   fiter.sigs = NULL;
 
   /* Create the filename list from the functional unit list */
@@ -892,7 +892,7 @@ void generator_init_funit(
   func_iter_dealloc( &fiter );
 
   /* Initializes the functional unit iterator */
-  func_iter_init( &fiter, funit, TRUE, FALSE, FALSE, TRUE );
+  func_iter_init( &fiter, funit, TRUE, FALSE, TRUE );
 
   /* Clear the current statement pointer */
   curr_stmt = NULL;
@@ -3017,11 +3017,11 @@ statement* generator_insert_comb_cov(
 
       assert( stmt != NULL );
 
-      new_stmtl            = (stmt_loop_link*)malloc_safe( sizeof( stmt_loop_link ) );
-      new_stmtl->stmt      = stmt;
-      new_stmtl->next      = stmt_stack;
-      new_stmtl->next_true = use_right;
-      stmt_stack           = new_stmtl;
+      new_stmtl       = (stmt_loop_link*)malloc_safe( sizeof( stmt_loop_link ) );
+      new_stmtl->stmt = stmt;
+      new_stmtl->next = stmt_stack;
+      new_stmtl->type = use_right ? 0 : 1;
+      stmt_stack      = new_stmtl;
 
     }
 
@@ -3051,7 +3051,7 @@ statement* generator_insert_comb_cov_from_stmt_stack() { PROFILE(GENERATOR_INSER
 
     stmt = stmt_stack->stmt;
     sll  = stmt_stack;
-    exp  = stmt_stack->next_true ? stmt->exp->right : stmt->exp;
+    exp  = stmt_stack->type ? stmt->exp->right : stmt->exp;
 
     /* Generate combinational coverage information */
     generator_insert_comb_cov_helper( exp, stmt->funit, exp->op, 0, FALSE, TRUE, FALSE );

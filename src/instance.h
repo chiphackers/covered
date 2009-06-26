@@ -138,8 +138,7 @@ void instance_db_write(
   FILE*       file,
   char*       scope,
   bool        parse_mode,
-  bool        issue_ids,
-  bool        report_save
+  bool        issue_ids
 );
 
 /*! \brief Reads in and handles an instance-only line from the database */

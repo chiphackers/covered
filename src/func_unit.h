@@ -102,7 +102,6 @@ void funit_db_write(
   bool        name_diff,
   FILE*       file,
   funit_inst* inst,
-  bool        report_save,
   bool        ids_issued
 );
 

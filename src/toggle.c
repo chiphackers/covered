@@ -73,7 +73,7 @@ void toggle_get_stats(
     func_iter fi;   /* Functional unit iterator */
     vsignal*  sig;  /* Pointer to current signal */
 
-    func_iter_init( &fi, funit, FALSE, TRUE, TRUE, FALSE );
+    func_iter_init( &fi, funit, FALSE, TRUE, FALSE );
   
     /* Search signal list */
     while( (sig = func_iter_get_next_signal( &fi )) != NULL ) {
@@ -126,7 +126,7 @@ void toggle_collect(
   unsigned int hit01;  /* Number of bits that toggled from 0 to 1 */
   unsigned int hit10;  /* Number of bits that toggled from 1 to 0 */
      
-  func_iter_init( &fi, funit, FALSE, TRUE, TRUE, FALSE );
+  func_iter_init( &fi, funit, FALSE, TRUE, FALSE );
 
   while( (sig = func_iter_get_next_signal( &fi )) != NULL ) {
 
@@ -183,7 +183,7 @@ void toggle_get_coverage(
   exclude_reason* er;   /* Pointer to found exclude reason structure */
 
   /* Find the matching signal */
-  func_iter_init( &fi, funit, FALSE, TRUE, TRUE, FALSE );
+  func_iter_init( &fi, funit, FALSE, TRUE, FALSE );
   while( ((sig = func_iter_get_next_signal( &fi )) != NULL) && (strcmp( sig->name, sig_name ) != 0) );
   func_iter_dealloc( &fi );
 
@@ -460,7 +460,7 @@ static void toggle_display_verbose(
 
   fprintf( ofile, "      ---------------------------------------------------------------------------------------------------------\n" );
 
-  func_iter_init( &fi, funit, FALSE, TRUE, TRUE, FALSE );
+  func_iter_init( &fi, funit, FALSE, TRUE, FALSE );
 
   while( (sig = func_iter_get_next_signal( &fi )) != NULL ) {
 

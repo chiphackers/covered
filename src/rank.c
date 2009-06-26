@@ -1013,14 +1013,14 @@ static void rank_gather_comp_cdd_cov(
       statement* stmt;
 
       /* First, clear the comb_cntd bits in all of the expressions */
-      func_iter_init( &fi, inst->funit, TRUE, FALSE, TRUE, FALSE );
+      func_iter_init( &fi, inst->funit, TRUE, FALSE, FALSE );
       while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
         combination_reset_counted_expr_tree( stmt->exp );
       }
       func_iter_dealloc( &fi );
 
       /* Then populate the comp_cov structure, accordingly */
-      func_iter_init( &fi, inst->funit, TRUE, FALSE, TRUE, FALSE );
+      func_iter_init( &fi, inst->funit, TRUE, FALSE, FALSE );
       while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
         rank_gather_expression_cov( stmt->exp, stmt->suppl.part.excluded, comp_cov );
       }

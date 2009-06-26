@@ -49,14 +49,6 @@ void stmt_link_add_tail(
   stmt_link** tail
 );
 
-/*! \brief Joins two statement links together. */
-void stmt_link_merge(
-  stmt_link** base_head,
-  stmt_link** base_tail,
-  stmt_link*  other_head,
-  stmt_link*  other_tail
-);
-
 /*! \brief Adds specified expression to exp_link element at the end of the list. */
 void exp_link_add(
   expression* expr,

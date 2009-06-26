@@ -39,7 +39,6 @@
 #include "defines.h"
 #include "expr.h"
 #include "func_unit.h"
-#include "iter.h"
 #include "link.h"
 #include "obfuscate.h"
 #include "ovl.h"
@@ -732,7 +731,7 @@ static void race_check_race_count() { PROFILE(RACE_CHECK_RACE_COUNT);
 void race_check_modules() { PROFILE(RACE_CHECK_MODULES);
 
   int         sb_index;  /* Index to statement block array */
-  stmt_iter   si;        /* Statement iterator */
+  stmt_link*  curr;      /* Statement iterator */
   funit_link* modl;      /* Pointer to current module link */
   int         i;         /* Loop iterator */
   int         ignore;    /* Placeholder */
@@ -759,13 +758,13 @@ void race_check_modules() { PROFILE(RACE_CHECK_MODULES);
       sb_size = 0;
 
       /* First, get the size of the statement block array for this module */
-      stmt_iter_reset( &si, modl->funit->stmt_tail );
-      while( si.curr != NULL ) {
-        if( (si.curr->stmt->suppl.part.head == 1) &&
-            (si.curr->stmt->suppl.part.is_called == 0) ) {
+      curr = modl->funit->stmt_head;
+      while( curr != NULL ) {
+        if( (curr->stmt->suppl.part.head == 1) &&
+            (curr->stmt->suppl.part.is_called == 0) ) {
           sb_size++;
         }
-        stmt_iter_next( &si );
+        curr = curr->next;
       }
 
       if( sb_size > 0 ) {
@@ -775,11 +774,11 @@ void race_check_modules() { PROFILE(RACE_CHECK_MODULES);
         sb_index = 0;
 
         /* Second, populate the statement block array with pointers to the head statements */
-        stmt_iter_reset( &si, modl->funit->stmt_tail );
-        while( si.curr != NULL ) {
-          if( (si.curr->stmt->suppl.part.head == 1) &&
-              (si.curr->stmt->suppl.part.is_called == 0) ) {
-            sb[sb_index].stmt    = si.curr->stmt;
+        curr = modl->funit->stmt_head;
+        while( curr != NULL ) {
+          if( (curr->stmt->suppl.part.head == 1) &&
+              (curr->stmt->suppl.part.is_called == 0) ) {
+            sb[sb_index].stmt    = curr->stmt;
             sb[sb_index].remove  = FALSE;
             sb[sb_index].seq     = FALSE;
 	    sb[sb_index].cmb     = FALSE;
@@ -790,7 +789,7 @@ void race_check_modules() { PROFILE(RACE_CHECK_MODULES);
             sb_index++; 
             stmt_conn_id++;
           }
-          stmt_iter_next( &si );
+          curr = curr->next;
         }
 
         /* Perform checks #1 - #5 */
@@ -800,7 +799,6 @@ void race_check_modules() { PROFILE(RACE_CHECK_MODULES);
         race_check_one_block_assignment( modl->funit );
 
         /* Cleanup statements to be removed */
-        stmt_iter_reverse( &si );
         curr_funit = modl->funit;
         for( i=0; i<sb_size; i++ ) {
           if( sb[i].remove ) {

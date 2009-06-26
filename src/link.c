@@ -37,7 +37,6 @@
 #include "func_unit.h"
 #include "util.h"
 #include "statement.h"
-#include "iter.h"
 #include "fsm.h"
 #include "gen_item.h"
 #include "obfuscate.h"
@@ -87,7 +86,7 @@ str_link* str_link_add(
  next pointer of element to head, sets the head element to point to the
  new element and (possibly) sets the tail value to the new element.
 */
-void stmt_link_add_head(
+void stmt_link_add(
             statement*  stmt,     /*!< Pointer to statement to add to specified statement list */
             bool        rm_stmt,  /*!< Value to specify if statement should be removed when the statement link is deleted */
   /*@out@*/ stmt_link** head,     /*!< Pointer to head str_link element of list */
@@ -95,135 +94,41 @@ void stmt_link_add_head(
 ) { PROFILE(STMT_LINK_ADD_HEAD);
 
   stmt_link* tmp;  /* Temporary pointer to newly created stmt_link element */
+  stmt_link* curr;
 
   tmp = (stmt_link*)malloc_safe( sizeof( stmt_link ) );
 
   tmp->stmt    = stmt;
   tmp->rm_stmt = rm_stmt;
+  tmp->next    = NULL;
 
   if( *head == NULL ) {
+
     *head = *tail = tmp;
-    tmp->ptr = NULL;
+
   } else {
-    tmp->ptr     = (stmt_link*)((long int)(*head) ^ (long int)NULL);
-    (*head)->ptr = (stmt_link*)((long int)((*head)->ptr) ^ (long int)tmp);
-    *head        = tmp;
-  }
 
-  PROFILE_END;
+    stmt_link* curr = *head;
+    stmt_link* last = NULL;
 
-}
-
-/*!
- Creates a new stmt_link element with the value specified for stmt.  Sets
- next pointer of element to NULL and sets the tail value to the new element.
-*/
-void stmt_link_add_tail(
-            statement*  stmt,     /*!< Pointer to statement to add to specified statement list */
-            bool        rm_stmt,  /*!< Value to specify if statement should be removed when the statement link is deleted */
-  /*@out@*/ stmt_link** head,     /*!< Pointer to head str_link element of list */
-  /*@out@*/ stmt_link** tail      /*!< Pointer to tail str_link element of list */
-) { PROFILE(STMT_LINK_ADD_TAIL);
-
-  stmt_link* tmp;    /* Temporary pointer to newly created stmt_link element */
-
-  tmp = (stmt_link*)malloc_safe( sizeof( stmt_link ) );
-
-  tmp->stmt    = stmt;
-  tmp->rm_stmt = rm_stmt;
-
-  if( *head == NULL ) {
-    *head = *tail = tmp;
-    tmp->ptr = NULL;
-  } else {
-    tmp->ptr     = (stmt_link*)((long int)(*tail) ^ (long int)NULL);
-    (*tail)->ptr = (stmt_link*)((long int)((*tail)->ptr) ^ (long int)tmp);
-    *tail        = tmp;
-  }
-
-  PROFILE_END;
-
-}
-
-/*!
- Joins two statement links together such that the statements are stored in line order.
- Assumes that the base list contains at least one statement link.
-*/
-void stmt_link_merge(
-  /*@out@*/ stmt_link** base_head,   /*!< Pointer to head of statement link of first statement link list to merge into */
-  /*@out@*/ stmt_link** base_tail,   /*!< Pointer to tail of statement link of first statement link list to merge into */
-            stmt_link*  other_head,  /*!< Pointer to head of statement link of second statement link list to merge */
-            stmt_link*  other_tail   /*!< Pointer to tail of statement link of second statement link list to merge */
-) { PROFILE(STMT_LINK_MERGE);
-
-  stmt_iter si_base;   /* Statement iterator for the base list */
-  stmt_iter si_base2;  /* Statement iterator for the base list */
-  stmt_iter si_other;  /* Statement iterator for the other list */
-
-  /* Get next to last statement link in tail list */
-  stmt_iter_reset( &si_base, *base_head );
-  stmt_iter_get_line_before( &si_base, other_head->stmt->exp->line );
-  stmt_iter_reset( &si_other, other_head );
-
-  /* The other list should succeed the base list */
-  if( si_base.curr == NULL ) {
-
-    stmt_iter_reverse( &si_base );
-    stmt_iter_next( &si_base );
-    stmt_iter_reverse( &si_base );
-    stmt_iter_next( &si_other );
-
-    si_base.curr->ptr  = (stmt_link*)((long int)(si_base.last) ^ (long int)si_other.last);
-    si_other.last->ptr = (stmt_link*)((long int)(si_other.curr) ^ (long int)si_base.curr);
-
-    *base_tail = other_tail;
-
-  /* The other list should precede the base list */
-  } else if( si_base.last == NULL ) {
-
-    stmt_iter_next( &si_base );
-    stmt_iter_next( &si_base );
-    while( si_other.curr != NULL ) {
-      stmt_iter_next( &si_other );
+    /* Insert the new statement in order (based on ppline) - start at tail the tail and work to the head */
+    while( (curr != NULL) && (curr->stmt->exp->ppline < stmt->exp->ppline) ) {
+      last = curr;
+      curr = curr->next;
     }
-    stmt_iter_reverse( &si_other );
-    stmt_iter_next( &si_other );
-    stmt_iter_reverse( &si_other );
 
-    si_base.last->ptr  = (stmt_link*)((long int)(si_base.curr) ^ (long int)si_other.curr);
-    si_other.curr->ptr = (stmt_link*)((long int)(si_other.last) ^ (long int)si_base.last);
-
-    *base_head = other_head;
-
-  /* Otherwise, the other list needs to be merged into the base list */
-  } else {
-
-    stmt_iter_next( &si_other );
-    stmt_iter_copy( &si_base2, &si_base );
-    stmt_iter_next( &si_base2 );
-    stmt_iter_reverse( &si_base );
-    stmt_iter_next( &si_base );
-    stmt_iter_reverse( &si_base );
-
-    /* Tie up the front of the other list */
-    si_base.curr->ptr  = (stmt_link*)((long int)(si_base.last) ^ (long int)si_other.last);
-    si_other.last->ptr = (stmt_link*)((long int)(si_other.curr) ^ (long int)si_base.curr);
-
-    while( si_other.curr != NULL ) {
-      stmt_iter_next( &si_other );
+    if( curr == *head ) {
+      tmp->next = *head;
+      *head     = tmp;
+    } else if( curr == NULL ) {
+      (*tail)->next = tmp;
+      *tail         = tmp;
+    } else {
+      tmp->next  = curr;
+      last->next = tmp;
     }
-    stmt_iter_reverse( &si_other );
-    stmt_iter_next( &si_other );
-    stmt_iter_reverse( &si_other );
-
-    /* Now tie up the tail */
-    si_other.curr->ptr = (stmt_link*)((long int)(si_base2.last) ^ (long int)si_other.last);
-    si_base2.last->ptr = (stmt_link*)((long int)(si_other.curr) ^ (long int)si_base2.curr);
 
   }
-    
-  /* Finally, clear the IS_STMT_HEAD bit */
-  other_head->stmt->suppl.part.head = 0;
 
   PROFILE_END;
 
@@ -443,18 +348,17 @@ void stmt_link_display(
   stmt_link* head  /*!< Pointer to head of stmt_link list */
 ) {
 
-  stmt_iter curr;   /* Statement list iterator */
+  stmt_link* curr;
 
   printf( "Statement list:\n" );
 
-  stmt_iter_reset( &curr, head );
-  while( curr.curr != NULL ) {
-    assert( curr.curr->stmt != NULL );
-    assert( curr.curr->stmt->exp != NULL );
+  while( curr != NULL ) {
+    assert( curr->stmt != NULL );
+    assert( curr->stmt->exp != NULL );
     printf( "  %s, ppline: %u, col: %u, added: %u, stmt_head: %u\n",
-            expression_string( curr.curr->stmt->exp ), curr.curr->stmt->exp->ppline, ((curr.curr->stmt->exp->col >> 16) & 0xffff),
-            curr.curr->stmt->suppl.part.added, curr.curr->stmt->suppl.part.head );
-    stmt_iter_next( &curr );
+            expression_string( curr->stmt->exp ), curr->stmt->exp->ppline, ((curr->stmt->exp->col >> 16) & 0xffff),
+            curr->stmt->suppl.part.added, curr->stmt->suppl.part.head );
+    curr = curr->next;
   }
 
 }
@@ -600,16 +504,15 @@ stmt_link* stmt_link_find(
   stmt_link* head  /*!< Pointer to head of stmt_link list to search */
 ) { PROFILE(STMT_LINK_FIND);
 
-  stmt_iter curr;   /* Statement list iterator */
+  stmt_link* curr = head;
 
-  stmt_iter_reset( &curr, head );
-  while( (curr.curr != NULL) && (curr.curr->stmt->exp->id != id) ) {
-    stmt_iter_next( &curr );
+  while( (curr != NULL) && (curr->stmt->exp->id != id) ) {
+    curr = curr->next;
   }
 
   PROFILE_END;
 
-  return( curr.curr );
+  return( curr );
 
 }
 
@@ -1040,40 +943,29 @@ void stmt_link_unlink(
   /*@out@*/ stmt_link** tail   /*!< Pointer to the tail of a statement list */
 ) { PROFILE(STMT_LINK_UNLINK);
 
-  stmt_iter  curr;   /* Statement list iterator */
-  stmt_link* next;   /* Pointer to next stmt_link in list */
-  stmt_link* next2;  /* Pointer to next after next stmt_link in list */
-  stmt_link* last2;  /* Pointer to last before last stmt_link in list */
+  stmt_link* curr = *head;
+  stmt_link* last = NULL;
 
-  stmt_iter_reset( &curr, *head );
-
-  while( (curr.curr != NULL) && (curr.curr->stmt != stmt) ) {
-    stmt_iter_next( &curr );
+  while( (curr != NULL) && (curr->stmt != stmt) ) {
+    last = curr;
+    curr = curr->next;
   }
 
-  if( curr.curr != NULL ) {
+  if( curr != NULL ) {
 
-    if( (curr.curr == *head) && (curr.curr == *tail) ) {
+    if( (curr == *head) && (curr == *tail) ) {
       *head = *tail = NULL;
-    } else if( curr.curr == *head ) {
-      next           = (stmt_link*)((long int)curr.curr->ptr ^ (long int)curr.last);
-      next2          = (stmt_link*)((long int)next->ptr ^ (long int)curr.curr);
-      next->ptr      = next2;
-      *head          = next;
-    } else if( curr.curr == *tail ) {
-      last2          = (stmt_link*)((long int)curr.last->ptr ^ (long int)curr.curr);
-      curr.last->ptr = last2;
-      *tail          = curr.last;
+    } else if( curr == *head ) {
+      *head = (*head)->next;
+    } else if( curr == *tail ) {
+      last->next = NULL;
+      *tail      = last;
     } else {
-      next           = (stmt_link*)((long int)curr.curr->ptr ^ (long int)curr.last);
-      next2          = (stmt_link*)((long int)next->ptr ^ (long int)curr.curr);
-      last2          = (stmt_link*)((long int)curr.last->ptr ^ (long int)curr.curr);
-      next->ptr      = (stmt_link*)((long int)curr.last ^ (long int)next2);
-      curr.last->ptr = (stmt_link*)((long int)last2 ^ (long int)next);
+      last->next = curr->next;
     }
 
     /* Deallocate the stmt_link */
-    free_safe( curr.curr, sizeof( stmt_link ) );
+    free_safe( curr, sizeof( stmt_link ) );
 
   }
 
@@ -1088,28 +980,23 @@ void stmt_link_delete_list(
   stmt_link* head  /*!< Pointer to head stmt_link element of list */
 ) { PROFILE(STMT_LINK_DELETE_LIST);
 
-  stmt_iter curr;  /* Statement list iterator */
+  stmt_link* curr = head;
+  stmt_link* tmp;
 
-  stmt_iter_reset( &curr, head );
-  
-  while( curr.curr != NULL ) {
+  while( curr != NULL ) {
+
+    tmp  = curr;
+    curr = curr->next;
 
     /* Deallocate statement */
-    if( curr.curr->rm_stmt ) {
-      statement_dealloc( curr.curr->stmt );
+    if( tmp->rm_stmt ) {
+      statement_dealloc( tmp->stmt );
     }
-    curr.curr->stmt = NULL;
-
-    head = (stmt_link*)((long int)(curr.curr->ptr) ^ (long int)(curr.last));
-    if( head != NULL ) {
-      head->ptr = (stmt_link*)((long int)(curr.curr) ^ (long int)(head->ptr));
-    }
+    tmp->stmt = NULL;
 
     /* Deallocate stmt_link element itself */
-    free_safe( curr.curr, sizeof( stmt_link ) );
+    free_safe( tmp, sizeof( stmt_link ) );
 
-    stmt_iter_reset( &curr, head );
-    
   }
 
   PROFILE_END;

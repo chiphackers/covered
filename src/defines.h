@@ -2465,6 +2465,7 @@ struct statement_s {
   expression* exp;                   /*!< Pointer to associated expression tree */
   statement*  next_true;             /*!< Pointer to next statement to run if expression tree non-zero */
   statement*  next_false;            /*!< Pointer to next statement to run if next_true not picked */
+  statement*  head;                  /*!< Pointer to head statement in this block */
   int         conn_id;               /*!< Current connection ID (used to make sure that we do not infinitely loop
                                           in connecting statements together) */
   func_unit*  funit;                 /*!< Pointer to statement's functional unit that it belongs to */
@@ -2529,7 +2530,7 @@ struct exp_link_s {
 */
 struct stmt_link_s {
   statement* stmt;                   /*!< Pointer to statement */
-  stmt_link* ptr;                    /*!< Pointer to next statement element in list */
+  stmt_link* next;                   /*!< Pointer to next statement element in list */
   bool       rm_stmt;                /*!< Set to TRUE if the associated statement should be removed */
 };
 
@@ -2547,7 +2548,7 @@ struct stmt_link_s {
 struct stmt_loop_link_s {
   statement*      stmt;              /*!< Pointer to last statement in loop */
   int             id;                /*!< ID of next statement after last */
-  bool            next_true;         /*!< Specifies if the ID is for next_true or next_false */
+  int             type;              /*!< Specifies if the ID is for next_true, next_false or head */
   stmt_loop_link* next;              /*!< Pointer to next statement in stack */
 };
 

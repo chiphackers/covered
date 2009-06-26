@@ -70,7 +70,6 @@
 #include "expr.h"
 #include "func_iter.h"
 #include "func_unit.h"
-#include "iter.h"
 #include "link.h"
 #include "obfuscate.h"
 #include "ovl.h"
@@ -540,7 +539,7 @@ void combination_get_stats(
   if( !funit_is_unnamed( funit ) ) {
 
     /* Initialize functional unit iterator */
-    func_iter_init( &fi, funit, TRUE, FALSE, TRUE, FALSE );
+    func_iter_init( &fi, funit, TRUE, FALSE, FALSE );
 
     /* Traverse statements in the given functional unit */
     while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
@@ -2596,7 +2595,7 @@ static void combination_display_verbose(
   }
 
   /* Initialize functional unit iterator */
-  func_iter_init( &fi, funit, TRUE, FALSE, TRUE, FALSE );
+  func_iter_init( &fi, funit, TRUE, FALSE, FALSE );
 
   /* Display missed combinations */
   stmt = func_iter_get_next_statement( &fi );
@@ -2800,7 +2799,7 @@ void combination_collect(
   *exprs    = NULL;
   *excludes = NULL;
 
-  func_iter_init( &fi, funit, TRUE, FALSE, TRUE, FALSE );
+  func_iter_init( &fi, funit, TRUE, FALSE, FALSE );
 
   stmt = func_iter_get_next_statement( &fi );
   while( stmt != NULL ) {

@@ -108,7 +108,6 @@
 #include "link.h"
 #include "sim.h"
 #include "db.h"
-#include "iter.h"
 #include "stmt_blk.h"
 
 
@@ -144,6 +143,7 @@ statement* statement_create(
   stmt->exp->parent->stmt = stmt;
   stmt->next_true         = NULL;
   stmt->next_false        = NULL;
+  stmt->head              = NULL;
   stmt->conn_id           = 0;
   stmt->suppl.all         = 0;
   stmt->funit             = funit;
@@ -165,7 +165,7 @@ void statement_queue_display() {
 
   sll = stmt_loop_head;
   while( sll != NULL ) {
-    printf( "  id: %d, next_true: %d, stmt: %s  ", sll->id, sll->next_true, expression_string( sll->stmt->exp ) );
+    printf( "  id: %d, type: %d, stmt: %s  ", sll->id, sll->type, expression_string( sll->stmt->exp ) );
     if( sll == stmt_loop_head ) {
       printf( "H" );
     }
@@ -179,17 +179,13 @@ void statement_queue_display() {
 }
 
 /*!
- \param stmt       Pointer of statement waiting to be linked.
- \param id         ID of statement to be read out later.
- \param next_true  Set to TRUE if the specified ID is for the next_true statement.
-
  Creates a new statement loop link for the specified parameters and adds this
  element to the top of the statement loop queue.
 */
 static void statement_queue_add(
-  statement* stmt,
-  int        id,
-  bool       next_true
+  statement* stmt,  /*!< Pointer of statement waiting to be linked */
+  int        id,    /*!< ID of statement to be read out later */
+  int        type   /*!< Specifies the type of statement that we are storing */
 ) { PROFILE(STATEMENT_QUEUE_ADD);
 
   stmt_loop_link* sll;  /* Pointer to newly created statement loop link */
@@ -198,10 +194,10 @@ static void statement_queue_add(
   sll = (stmt_loop_link*)malloc_safe( sizeof( stmt_loop_link ) );
 
   /* Populate statement loop link with specified parameters */
-  sll->stmt      = stmt;
-  sll->id        = id;
-  sll->next_true = next_true;
-  sll->next      = NULL;
+  sll->stmt = stmt;
+  sll->id   = id;
+  sll->type = type;
+  sll->next = NULL;
 
   /* Add to top of statement loop queue */
   if( stmt_loop_head == NULL ) {
@@ -216,8 +212,6 @@ static void statement_queue_add(
 }
 
 /*!
- \param stmt  Pointer to statement being read out of the CDD.
- 
  Compares the specified statement against the top of the statement loop queue.  If
  an ID in the queue matches this statement's ID, the element is removed and the
  next_true and next_false pointers of the stored statement are pointed
@@ -225,7 +219,7 @@ static void statement_queue_add(
  and the process is repeated until a match is not found.
 */
 static void statement_queue_compare(
-  statement* stmt
+  statement* stmt  /*!< Pointer to statement being read out of the CDD */
 ) { PROFILE(STATEMENT_QUEUE_COMPARE);
 
   stmt_loop_link* sll;       /* Pointer to current element in statement loop list */
@@ -241,11 +235,14 @@ static void statement_queue_compare(
     if( stmt->exp->id == sll->id ) {
 
       /* Set next_true and next_false pointers */
-      if( (sll->stmt->next_true == NULL) && sll->next_true ) {
+      if( (sll->stmt->next_true == NULL) && (sll->type == 0) ) {
         sll->stmt->next_true = stmt;
       }
-      if( (sll->stmt->next_false == NULL) && !sll->next_true ) {
+      if( (sll->stmt->next_false == NULL) && (sll->type == 1) ) {
         sll->stmt->next_false = stmt;
+      }
+      if( (sll->stmt->head == NULL) && (sll->type == 2) ) {
+        sll->stmt->head = stmt;
       }
        
       /* Remove this element from the list */
@@ -279,16 +276,13 @@ static void statement_queue_compare(
 }
 
 /*!
- \param stmt   Pointer to statement block to size elements for
- \param funit  Pointer to functional unit containing this statement block
-
  \throws anonymous expression_resize statement_size_elements statement_size_elements statement_size_elements
 
  Recursively sizes all elements for the given statement block.
 */
 void statement_size_elements(
-  statement* stmt,
-  func_unit* funit
+  statement* stmt,  /*!< Pointer to statement block to size elements for */
+  func_unit* funit  /*!< Pointer to functional unit containing this statement block */
 ) { PROFILE(STATEMENT_SIZE_ELEMENTS);
 
   if( stmt != NULL ) {
@@ -329,12 +323,13 @@ void statement_db_write(
   assert( stmt != NULL );
 
   /* Write out contents of this statement last */
-  fprintf( ofile, "%d %d %x %d %d",
+  fprintf( ofile, "%d %d %x %d %d %d",
     DB_TYPE_STATEMENT,
     expression_get_id( stmt->exp, ids_issued ),
     (stmt->suppl.all & 0xff),
     ((stmt->next_true   == NULL) ? 0 : expression_get_id( stmt->next_true->exp, ids_issued )),
-    ((stmt->next_false  == NULL) ? 0 : expression_get_id( stmt->next_false->exp, ids_issued ))
+    ((stmt->next_false  == NULL) ? 0 : expression_get_id( stmt->next_false->exp, ids_issued )),
+    ((stmt->head        == NULL) ? 0 : expression_get_id( stmt->head->exp, ids_issued ))
   );
 
   fprintf( ofile, "\n" );
@@ -344,14 +339,11 @@ void statement_db_write(
 }
 
 /*!
- \param stmt   Pointer to root of statement tree to output
- \param ofile  Pointer to output file to write statements to
-
  Traverses specified statement tree, outputting all statements within that tree.
 */
 void statement_db_write_tree(
-  statement* stmt,
-  FILE*      ofile
+  statement* stmt,  /*!< Pointer to root of statement tree to output */
+  FILE*      ofile  /*!< Pointer to output file to write statements to */
 ) { PROFILE(STATEMENT_DB_WRITE_TREE);
 
   if( stmt != NULL ) {
@@ -378,14 +370,11 @@ void statement_db_write_tree(
 }
 
 /*!
- \param stmt   Pointer to specified statement tree to display
- \param ofile  Pointer to output file to write
-
  Traverses the specified statement block, writing all expression trees to specified output file.
 */
 void statement_db_write_expr_tree(
-  statement* stmt,
-  FILE*      ofile
+  statement* stmt,  /*!< Pointer to specified statement tree to display */
+  FILE*      ofile  /*!< Pointer to output file to write */
 ) { PROFILE(STATEMENT_DB_WRITE_EXPR_TREE);
 
   if( stmt != NULL ) {
@@ -412,31 +401,28 @@ void statement_db_write_expr_tree(
 }
 
 /*!
- \param line        Pointer to current line of file being read.
- \param curr_funit  Pointer to current module.
- \param read_mode   If set to REPORT, adds statement to head of list; otherwise, adds statement to tail.
- 
  \throws anonymous Throw Throw
 
  Reads in the contents of the statement from the specified line, creates
  a statement structure to hold the contents.
 */
 void statement_db_read(
-  char**     line,
-  func_unit* curr_funit,
-  int        read_mode
+  char**     line,        /*!< Pointer to current line of file being read */
+  func_unit* curr_funit,  /*!< Pointer to current module */
+  int        read_mode    /*!< If set to REPORT, adds statement to head of list; otherwise, adds statement to tail */
 ) { PROFILE(STATEMENT_DB_READ);
 
   int        id;          /* ID of root expression that is associated with this statement */
   int        true_id;     /* ID of root expression that is associated with the next_true statement */
   int        false_id;    /* ID of root expression that is associated with the next_false statement */
+  int        head_id;
   statement* stmt;        /* Pointer to newly created statement */
   exp_link*  expl;        /* Pointer to found expression link */
   stmt_link* stmtl;       /* Pointer to found statement link */
   int        chars_read;  /* Number of characters read from line */
   uint32     suppl;       /* Supplemental field value */
 
-  if( sscanf( *line, "%d %x %d %d%n", &id, &suppl, &true_id, &false_id, &chars_read ) == 4 ) {
+  if( sscanf( *line, "%d %x %d %d %d%n", &id, &suppl, &true_id, &false_id, &head_id, &chars_read ) == 5 ) {
 
     *line = *line + chars_read;
 
@@ -475,7 +461,7 @@ void statement_db_read(
         stmtl = stmt_link_find( true_id, curr_funit->stmt_head );
         if( stmtl == NULL ) {
           /* Add to statement loop queue */
-          statement_queue_add( stmt, true_id, TRUE );
+          statement_queue_add( stmt, true_id, 0 );
         } else {
           stmt->next_true = stmtl->stmt;
         }
@@ -489,19 +475,28 @@ void statement_db_read(
       } else if( false_id != 0 ) {
         stmtl = stmt_link_find( false_id, curr_funit->stmt_head );
         if( stmtl == NULL ) {
-          statement_queue_add( stmt, false_id, FALSE );
+          statement_queue_add( stmt, false_id, 1 );
         } else {
           stmt->next_false = stmtl->stmt;
         }
         statement_queue_compare( stmt );
       }
 
-      /* Add the statement to the functional unit list */
-      if( (read_mode == READ_MODE_NO_MERGE) || (read_mode == READ_MODE_MERGE_NO_MERGE) || (read_mode == READ_MODE_MERGE_INST_MERGE) ) {
-        stmt_link_add_tail( stmt, TRUE, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
-      } else {
-        stmt_link_add_head( stmt, TRUE, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
+      /* Find and link head */
+      if( head_id == id ) {
+        stmt->head = stmt;
+      } else if( head_id != 0 ) {
+        stmtl = stmt_link_find( head_id, curr_funit->stmt_head );
+        if( stmtl == NULL ) {
+          statement_queue_add( stmt, head_id, 2 );
+        } else {
+          stmt->head = stmtl->stmt;
+        }
+        statement_queue_compare( stmt );
       }
+
+      /* Add the statement to the functional unit list */
+      stmt_link_add( stmt, TRUE, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
 
       /*
        Possibly add statement to presimulation queue (if the current functional unit is a task
@@ -527,17 +522,14 @@ void statement_db_read(
 }
 
 /*!
- \param stmt   Pointer to statement block to traverse
- \param funit  Pointer to functional unit containing this statement block
-
  \throws anonymous statement_assign_expr_ids statement_assign_expr_ids statement_assign_expr_ids expression_assign_expr_ids
 
  Recursively traverses the entire statement block and assigns unique expression IDs for each
  expression tree that it finds.
 */
 void statement_assign_expr_ids(
-  statement* stmt,
-  func_unit* funit
+  statement* stmt,  /*!< Pointer to statement block to traverse */
+  func_unit* funit  /*!< Pointer to functional unit containing this statement block */
 ) { PROFILE(STATEMENT_ASSIGN_EXPR_IDS);
 
   if( stmt != NULL ) {
@@ -575,10 +567,6 @@ void display( char* id, statement* curr_stmt, statement* next_stmt, int conn_id 
 #endif
 
 /*!
- \param curr_stmt  Pointer to statement sequence to traverse.
- \param next_stmt  Pointer to statement to connect ends to.
- \param conn_id    Current connection identifier (used to eliminate infinite looping and connection overwrite)
-
  \return Returns TRUE if statement was connected to the given statement list; otherwise, returns FALSE.
 
  Recursively traverses the specified stmt sequence.  When it reaches a statement 
@@ -586,9 +574,9 @@ void display( char* id, statement* curr_stmt, statement* next_stmt, int conn_id 
  next_false of that statement to point to the next_stmt statement.
 */
 bool statement_connect(
-  statement* curr_stmt,
-  statement* next_stmt,
-  int        conn_id
+  statement* curr_stmt,  /*!< Pointer to statement sequence to traverse */
+  statement* next_stmt,  /*!< Pointer to statement to connect ends to */
+  int        conn_id     /*!< Current connection identifier (used to eliminate infinite looping and connection overwrite) */
 ) { PROFILE(STATEMENT_CONNECT);
 
   bool retval = FALSE;  /* Return value for this function */
@@ -687,9 +675,6 @@ bool statement_connect(
 }
 
 /*!
- \param stmt  Pointer to current statement to look at.
- \param base  Pointer to root statement in statement tree.
-
  \return Returns the last line number of the specified statement tree.
 
  Recursively iterates through the specified statement tree searching for the last
@@ -699,8 +684,8 @@ bool statement_connect(
  numbered line is returned.
 */
 static int statement_get_last_line_helper(
-  statement* stmt,
-  statement* base
+  statement* stmt,  /*!< Pointer to current statement to look at */
+  statement* base   /*!< Pointer to root statement in statement tree */
 ) { PROFILE(STATEMENT_GET_LAST_LINE_HELPER);
 
   expression* last_exp;         /* Pointer to last expression in the statement tree */
@@ -795,49 +780,6 @@ void statement_find_rhs_sigs(
   }
 
   PROFILE_END;
-
-}
-
-/*!
- \return Returns a pointer to the head statement of the block that contains stmt.
-*/
-statement* statement_find_head_statement(
-  statement* stmt,  /*!< Pointer to child statement of statement block to find head statement for */
-  stmt_link* head   /*!< Pointer to head of statement link list */
-) { PROFILE(STATEMENT_FIND_HEAD_STATEMENT);
-
-  stmt_iter  si;     /* Statement iterator used to find head statement */
-  statement* fhead;  /* Pointer to found head statement */
-
-  assert( stmt != NULL );
-
-  /* If the specified statement is the head statement, just return it */
-  if( stmt->suppl.part.head == 1 ) {
-
-    fhead = stmt;
-
-  } else {
-
-    /* Find statement in statement linked list */
-    stmt_iter_reset( &si, head );
-    while( (si.curr != NULL) && (si.curr->stmt != stmt) ) {
-      stmt_iter_next( &si );
-    }
-
-    assert( si.curr != NULL );
-
-    /* Find the head statement using the statement iterator */
-    stmt_iter_find_head( &si, FALSE );
-
-    assert( si.curr != NULL );
-
-    fhead = si.curr->stmt;
-
-  }
-
-  PROFILE_END;
-
-  return( fhead );
 
 }
 

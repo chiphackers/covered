@@ -89,12 +89,6 @@ void statement_find_rhs_sigs(
   str_link** tail
 );
 
-/*! \brief Gets the head statement for the block containing stmt */
-statement* statement_find_head_statement(
-  statement* stmt,
-  stmt_link* head
-);
-
 /*! \brief Searches for statement with ID in the given statement block */
 statement* statement_find_statement(
   statement* curr,

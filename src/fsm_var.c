@@ -284,7 +284,7 @@ static bool fsm_var_bind_stmt(
     stmt->suppl.part.added = 1;
 
     /* Second, add our statement to this functional unit's statement list */
-    stmt_link_add_head( stmt, TRUE, &(funitl->funit->stmt_head), &(funitl->funit->stmt_tail) );
+    stmt_link_add( stmt, TRUE, &(funitl->funit->stmt_head), &(funitl->funit->stmt_tail) );
 
     /* Third, add the functional unit to this statement's pointer */
     stmt->funit = funitl->funit;

@@ -206,7 +206,7 @@ void parse_design(
     }
 
     /* Write contents to baseline database file. */
-    db_write( output_db, TRUE, TRUE, FALSE );
+    db_write( output_db, TRUE, TRUE );
 
     /* Generate the needed Verilog - TBD - This needs to be optional */
     if( info_suppl.part.inlined ) {
@@ -305,7 +305,7 @@ void parse_and_score_dumpfile(
     info_suppl.part.scored = 1;
 
     /* Write contents to database file */
-    db_write( db, FALSE, FALSE, FALSE );
+    db_write( db, FALSE, FALSE );
 
   } Catch_anonymous {
     sim_dealloc();

@@ -26,7 +26,6 @@
 #include "expr.h"
 #include "func_iter.h"
 #include "func_unit.h"
-#include "iter.h"
 #include "util.h"
 
 
@@ -39,17 +38,12 @@ void func_iter_display(
 
   int i;  /* Loop iterator */
 
-  printf( "Functional unit iterator (scopes: %u, si_num: %u):\n", fi->scopes, fi->si_num );
+  printf( "Functional unit iterator (scopes: %u, sl_num: %u):\n", fi->scopes, fi->sl_num );
 
-  if( fi->sis != NULL ) {
-    for( i=0; i<fi->si_num; i++ ) {
-      if( fi->sis[i] != NULL ) {
-        stmt_iter si;
-        stmt_iter_copy( &si, fi->sis[i] );
-        stmt_iter_reverse( &si );
-        while( si.curr != NULL ) stmt_iter_next( &si );
-        stmt_iter_reverse( &si );
-        stmt_link_display( si.curr );
+  if( fi->sls != NULL ) {
+    for( i=0; i<fi->sl_num; i++ ) {
+      if( fi->sls[i] != NULL ) {
+        stmt_link_display( fi->sls[i] );
       }
     }
   }
@@ -73,38 +67,38 @@ static void func_iter_sort(
   func_iter* fi  /*!< Pointer to functional unit iterator to sort */
 ) { PROFILE(FUNC_ITER_SORT);
 
-  stmt_iter* tmp;  /* Temporary statement iterator */
+  stmt_link* tmp;  /* Temporary statement link */
   int        i;    /* Loop iterator */
 
   assert( fi != NULL );
-  assert( fi->si_num > 0 );
+  assert( fi->sl_num > 0 );
 
-  tmp = fi->sis[0];
+  tmp = fi->sls[0];
 
   /*
    If the statement iterator at the top of the list is NULL, shift all valid statement iterators
    towards the top and store this statement iterator after them 
   */
-  if( tmp->curr == NULL ) {
+  if( tmp == NULL ) {
 
-    for( i=0; i<(fi->si_num - 1); i++ ) {
-      fi->sis[i] = fi->sis[i+1];
+    for( i=0; i<(fi->sl_num - 1); i++ ) {
+      fi->sls[i] = fi->sls[i+1];
     }
-    fi->sis[i] = tmp;
-    (fi->si_num)--;
+    fi->sls[i] = tmp;
+    (fi->sl_num)--;
 
   /* Otherwise, re-sort them based on line number and then column number (if there is a tie). */
   } else {
 
     i = 0;
-    while( (i < (fi->si_num - 1)) &&
-           ((tmp->curr->stmt->exp->ppline > fi->sis[i+1]->curr->stmt->exp->ppline) ||
-            ((tmp->curr->stmt->exp->ppline == fi->sis[i+1]->curr->stmt->exp->ppline) &&
-             ((tmp->curr->stmt->exp->col & 0xffff) > (fi->sis[i+1]->curr->stmt->exp->col & 0xffff)))) ) {
-      fi->sis[i] = fi->sis[i+1];
+    while( (i < (fi->sl_num - 1)) &&
+           ((tmp->stmt->exp->ppline > fi->sls[i+1]->stmt->exp->ppline) ||
+            ((tmp->stmt->exp->ppline == fi->sls[i+1]->stmt->exp->ppline) &&
+             ((tmp->stmt->exp->col & 0xffff) > (fi->sls[i+1]->stmt->exp->col & 0xffff)))) ) {
+      fi->sls[i] = fi->sls[i+1];
       i++;
     }
-    fi->sis[i] = tmp;
+    fi->sls[i] = tmp;
 
   }
 
@@ -148,11 +142,10 @@ static int func_iter_count_scopes(
 /*!
  Recursively iterates through functional units, adding their statement iterators to the func_iter structure's array.
 */
-static void func_iter_add_stmt_iters(
-  func_iter* fi,        /*!< Pointer to functional unit iterator to populate */
-  func_unit* funit,     /*!< Pointer to current functional unit */
-  bool       use_tail,  /*!< If TRUE, starts at the statement tail; otherwise, starts at the statement head */
-  bool       inc_all    /*!< If TRUE, uses all statements in the functional unit (even in named scopes) */
+static void func_iter_add_stmt_links(
+  func_iter* fi,      /*!< Pointer to functional unit iterator to populate */
+  func_unit* funit,   /*!< Pointer to current functional unit */
+  bool       inc_all  /*!< If TRUE, uses all statements in the functional unit (even in named scopes) */
 ) { PROFILE(FUNC_ITER_ADD_STMT_ITERS);
 
   funit_link* child;   /* Pointer to child functional unit */
@@ -161,22 +154,17 @@ static void func_iter_add_stmt_iters(
 
   /* First, shift all current statement iterators down by one */
   for( i=(fi->scopes - 2); i>=0; i-- ) {
-    fi->sis[i+1] = fi->sis[i];
+    fi->sls[i+1] = fi->sls[i];
   }
 
   /* Now allocate a new statement iterator at position 0 and point it at the current functional unit statement list */
-  fi->sis[0] = (stmt_iter*)malloc_safe( sizeof( stmt_iter ) );
+  fi->sls[0] = (stmt_link*)malloc_safe( sizeof( stmt_link ) );
 
-  /* Clear the added bits in the statements */
-  if( use_tail ) {
-    stmt_iter_reset( fi->sis[0], funit->stmt_tail );
-  } else {
-    stmt_iter_reset( fi->sis[0], funit->stmt_head );
-  }
-  stmt_iter_find_head( fi->sis[0], FALSE );
+  /* Set the sls pointer to the head of the functional unit statement list */
+  fi->sls[0] = funit->stmt_head;
 
   /* Increment the si_num */
-  (fi->si_num)++;
+  (fi->sl_num)++;
 
   /* Now sort the new statement iterator */
   func_iter_sort( fi );
@@ -188,7 +176,7 @@ static void func_iter_add_stmt_iters(
   child = parent->tf_head;
   while( child != NULL ) {
     if( (inc_all || funit_is_unnamed( child->funit )) && (child->funit->parent == funit) ) {
-      func_iter_add_stmt_iters( fi, child->funit, use_tail, inc_all );
+      func_iter_add_stmt_links( fi, child->funit, inc_all );
     }
     child = child->next;
   }
@@ -235,12 +223,11 @@ static void func_iter_add_sig_links(
  information.
 */
 void func_iter_init(
-  func_iter* fi,        /*!< Pointer to functional unit iterator to initializes */
-  func_unit* funit,     /*!< Pointer to main functional unit to create iterator for (must be named) */
-  bool       stmts,     /*!< Set to TRUE if we want statements to be included in the iterator */
-  bool       sigs,      /*!< Set to TRUE if we want signals to be included in the iterator */
-  bool       use_tail,  /*!< Set to TRUE to use statement tail (in reporting mode); otherwise, use head */
-  bool       inc_all    /*!< Set to TRUE to use all statements/signals including those in named scopes */
+  func_iter* fi,      /*!< Pointer to functional unit iterator to initializes */
+  func_unit* funit,   /*!< Pointer to main functional unit to create iterator for (must be named) */
+  bool       stmts,   /*!< Set to TRUE if we want statements to be included in the iterator */
+  bool       sigs,    /*!< Set to TRUE if we want signals to be included in the iterator */
+  bool       inc_all  /*!< Set to TRUE to use all statements/signals including those in named scopes */
 ) { PROFILE(FUNC_ITER_INIT);
 
   assert( fi != NULL );
@@ -248,15 +235,15 @@ void func_iter_init(
 
   /* Count the number of scopes that are within the functional unit iterator */
   fi->scopes  = func_iter_count_scopes( funit, inc_all );
-  fi->sis     = NULL;
+  fi->sls     = NULL;
   fi->sigs    = NULL;
   fi->sig_num = 0;
 
   /* Add statement iterators */
   if( stmts ) {
-    fi->sis    = (stmt_iter**)malloc_safe( sizeof( stmt_iter* ) * fi->scopes );
-    fi->si_num = 0;
-    func_iter_add_stmt_iters( fi, funit, use_tail, inc_all );
+    fi->sls    = (stmt_link**)malloc_safe( sizeof( stmt_link* ) * fi->scopes );
+    fi->sl_num = 0;
+    func_iter_add_stmt_links( fi, funit, inc_all );
   }
 
   /* Add signal lists */
@@ -279,23 +266,11 @@ void func_iter_reset(
   func_iter* fi  /*!< Pointer to functional unit to reset */
 ) { PROFILE(FUNC_ITER_RESET);
 
-  unsigned int i;
-  stmt_iter    si;
+  stmt_link* curr = fi->funit->stmt_head;
 
-  for( i=0; i<fi->si_num; i++ ) {
-    stmt_iter_copy( &si, fi->sis[i] );
-    while( si.curr != NULL ) {
-      si.curr->stmt->suppl.part.added = 0;
-      stmt_iter_next( &si );
-    }
-    stmt_iter_copy( &si, fi->sis[i] );
-    stmt_iter_reverse( &si );
-    if( si.curr != NULL ) {
-      while( si.curr != NULL ) {
-        si.curr->stmt->suppl.part.added = 0;
-        stmt_iter_next( &si );
-      }
-    }
+  while( curr != NULL ) {
+    curr->stmt->suppl.part.added = 0;
+    curr = curr->next;
   }
 
   PROFILE_END;
@@ -314,19 +289,19 @@ statement* func_iter_get_next_statement(
 
   assert( fi != NULL );
 
-  if( fi->si_num == 0 ) {
+  if( fi->sl_num == 0 ) {
 
     stmt = NULL;
 
   } else {
 
-    assert( fi->sis[0]->curr != NULL );
+    assert( fi->sls[0] != NULL );
 
     /* Get the statement at the head of the sorted list */
-    stmt = fi->sis[0]->curr->stmt;
+    stmt = fi->sls[0]->stmt;
 
     /* Go to the next statement in the current statement list */
-    stmt_iter_get_next_in_order( fi->sis[0] );
+    fi->sls[0] = fi->sls[0]->next;
 
     /* Resort */
     func_iter_sort( fi );
@@ -390,17 +365,17 @@ void func_iter_dealloc(
   if( fi != NULL ) {
 
     /* Deallocate statement iterators */
-    if( fi->sis != NULL ) {
+    if( fi->sls != NULL ) {
 
       /* Deallocate all statement iterators */
       for( i=0; i<fi->scopes; i++ ) {
-        free_safe( fi->sis[i], sizeof( stmt_iter ) );
+        free_safe( fi->sls[i], sizeof( stmt_link ) );
       }
 
       /* Deallocate array of statement iterators */
-      free_safe( fi->sis, (sizeof( stmt_iter* ) * fi->scopes) );
+      free_safe( fi->sls, (sizeof( stmt_link* ) * fi->scopes) );
 
-      fi->sis = NULL;
+      fi->sls = NULL;
 
     }
 

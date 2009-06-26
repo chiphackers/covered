@@ -38,7 +38,6 @@
 #include "func_iter.h"
 #include "func_unit.h"
 #include "instance.h"
-#include "iter.h"
 #include "line.h"
 #include "link.h"
 #include "obfuscate.h"
@@ -77,7 +76,7 @@ void line_get_stats(
   if( !funit_is_unnamed( funit ) ) {
 
     /* Initialize the functional unit iterator */
-    func_iter_init( &fi, funit, TRUE, FALSE, TRUE, FALSE );
+    func_iter_init( &fi, funit, TRUE, FALSE, FALSE );
 
     stmt = func_iter_get_next_statement( &fi );
     while( stmt != NULL ) {
@@ -142,7 +141,7 @@ void line_collect(
   *reasons   = (char**)malloc_safe( sizeof( char* ) * (*line_size) );
 
   /* Initialize the functional unit iterator */
-  func_iter_init( &fi, funit, TRUE, FALSE, TRUE, FALSE );
+  func_iter_init( &fi, funit, TRUE, FALSE, FALSE );
 
   stmt = func_iter_get_next_statement( &fi );
   while( stmt != NULL ) {
@@ -423,7 +422,7 @@ static void line_display_verbose(
   }
 
   /* Initialize functional unit iterator */
-  func_iter_init( &fi, funit, TRUE, FALSE, TRUE, FALSE );
+  func_iter_init( &fi, funit, TRUE, FALSE, FALSE );
 
   /* Display current instance missed lines */
   while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {

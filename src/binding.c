@@ -81,7 +81,6 @@
 #include "func_unit.h"
 #include "gen_item.h"
 #include "instance.h"
-#include "iter.h"
 #include "link.h"
 #include "obfuscate.h"
 #include "ovl.h"
