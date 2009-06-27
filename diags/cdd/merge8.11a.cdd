@@ -1,5 +1,5 @@
-5 14 fd81 4 main
-8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (dut_nand_proc) 2 -i (main.dut) 2 -vcd (merge8.11a.vcd) 2 -o (merge8.11a.cdd) 2 -v (merge8.11a.v) 2 -y (lib) 2 -D (DUMP)
+5 14 fd01 4 main
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (dut_nand_proc) 2 -i (main.dut) 2 -vcd (merge8.11a.vcd) 2 -o (merge8.11a.cdd) 2 -v (merge8.11a.v) 2 -y (lib) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 15 main 0
 3 0 dut_nand_proc "main.dut" 0 merge8.11a.v 33 47 1 
@@ -11,8 +11,8 @@
 1 b 2 35 e 1 0 0 0 1 17 1 1 0 0 0 0
 1 c 3 36 e 1 0 0 0 1 17 1 1 0 1 0 0
 1 x 4 39 60005 1 0 0 0 1 17 1 1 0 0 0 0
-4 4 6 3 0 3
 4 3 1 4 0 3
+4 4 6 3 0 3
 3 0 dut_and_proc "main.dut.and_proc" 0 lib/dut_and_proc.v 1 11 1 
 2 5 0 0 0 1 1 1004 0 0 1 1 b
 2 6 0 0 0 1 29 1008 5 0 1 18 0 1 0 0 0 0
@@ -24,8 +24,8 @@
 1 a 5 3 103000c 1 0 0 0 1 17 0 1 0 0 0 0
 1 b 6 4 6000c 1 0 0 0 1 17 1 1 0 0 0 0
 1 c 7 5 6000c 1 0 0 0 1 17 1 1 0 1 0 0
-4 11 6 10 0 10
 4 10 1 11 0 10
+4 11 6 10 0 10
 3 1 dut_and_proc.u$0 "main.dut.and_proc.u$0" 0 lib/dut_and_proc.v 7 9 1 
 2 12 8 8 a000a 2 1 100c 0 0 1 1 c
 2 13 8 8 60006 1 1 1004 0 0 1 1 b
