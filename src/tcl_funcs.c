@@ -2283,7 +2283,7 @@ int tcl_func_get_generation(
         generation[0] = arg->str2[(strlen( arg->str2 ) - 1)];
         mod_found     = TRUE;
       }
-    
+      arg = arg->next; 
     }
 
   }
