@@ -20,7 +20,7 @@ initial begin
         $dumpfile( "final1.vcd" );
         $dumpvars( 0, main );
 `endif
-        #10;
+        #15;
         $finish;
 end
 
