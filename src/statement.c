@@ -113,6 +113,7 @@
 
 extern char     user_msg[USER_MSG_LENGTH];
 extern exp_info exp_op_info[EXP_OP_NUM];
+extern isuppl   info_suppl;
 
 /*!
  Pointer to head of statement loop list.
@@ -503,7 +504,7 @@ void statement_db_read(
        or function, do not add this to the presimulation queue (this will be added when the expression
        is called.
       */
-      if( (read_mode == READ_MODE_NO_MERGE) && (stmt->suppl.part.is_called == 0) ) {
+      if( (read_mode == READ_MODE_NO_MERGE) && (stmt->suppl.part.is_called == 0) && (info_suppl.part.inlined == 0) ) {
         sim_time tmp_time = {0,0,0,FALSE};
         (void)sim_add_thread( NULL, stmt, curr_funit, &tmp_time );
       }
@@ -917,7 +918,6 @@ void statement_add_to_stmt_link(
 
     /* Add the current statement to the stmt_link list */
     stmt_link_add( stmt, FALSE, head, tail );
-    printf( "Added stmt %s to stmt_link list\n", expression_string( stmt->exp ) );
 
     /* Traverse down the rest of the statement block */
     if( (stmt->next_true == stmt->next_false) && (stmt->suppl.part.stop_true == 0) ) {

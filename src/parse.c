@@ -273,7 +273,9 @@ void parse_and_score_dumpfile(
     bind_perform( TRUE, 0 );
 
     /* Add static values to simulator */
-    sim_initialize();
+    if( info_suppl.part.inlined == 0 ) {
+      sim_initialize();
+    }
 
 #ifdef DEBUG_MODE
     if( debug_mode ) {
