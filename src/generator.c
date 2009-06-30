@@ -2556,20 +2556,20 @@ static char* generator_gen_mem_index_helper(
     char* width;
 
     /* Create the width of this dimension */
+    if( num == NULL ) {
+      char numstr[50];
+      rv = snprintf( numstr, 50, "%d", number );
+      assert( rv < 50 );
+      num = strdup_safe( numstr );
+    }
+
     if( ldim_width != NULL ) {
       slen  = 1 + strlen( ldim_width ) + 3 + strlen( num ) + 2;
       width = (char*)malloc_safe( slen );
       rv    = snprintf( width, slen, "(%s)*(%s)", ldim_width, num );
       assert( rv < slen );
     } else {
-      if( num == NULL ) {
-        char numstr[50];
-        rv = snprintf( numstr, 50, "%d", number );
-        assert( rv < 50 );
-        width = strdup_safe( numstr );
-      } else {
-        width = strdup_safe( num );
-      }
+      width = strdup_safe( num );
     }
 
     /* Adding our generated value to the other dimensional information */
