@@ -329,13 +329,14 @@ EXCLUDE      += afunc1            afunc2            always5.1         always_com
                 marray2.3         mbit_sel5         mbit_sel5.1       mbit_sel5.2       mbit_sel5.3 \
                 mbit_sel5.4       mbit_sel6         mbit_sel6.1       mbit_sel6.2       mbit_sel6.3 \
                 mbit_sel6.4       mem3              mem4              mem4.1            nand1 \
-                nor1              op_assign1        ovl1              ovl1.1            ovl1.2            ovl1.3 \
-                param8.2          param10.1         param10.5         param12           param12.1 \
-                port2             profile_err1      real1.1           real5.11 \
+                nor1              op_assign1        ovl1              ovl1.1            ovl1.2 \
+                ovl1.3            param8.2          param10.1         param10.5         param12 \
+                param12.1         port2             profile_err1      real1.1           real5.11 \
                 real5.12          real5.13          real5.14          real5.15          real5.16 \
                 real6.10          real6.11          real6.12          real6.13          report4 \
                 report4.1         sbit_sel3.2       shortint1         signed4.1         slist3.1 \
-                slist3.3          static2           static2.1         static2.2         timescale1.1 \
+                slist3.3          static2           static2.1         static2.2         static_func4 \
+                timescale1.1 \
                 timescale1.2      timescale1.3      timescale1.4      timescale1.5      timescale1.7 \
                 timescale1.8      timescale1.10     timescale1.11     timescale1.13     timescale1.14 \
                 timescale1.19     timescale2.1      timescale4        timescale4.1      timescale4.2 \
@@ -419,7 +420,7 @@ EXCLUDE      += afunc1            afunc2            always5.1         always_com
                 signed4.1         signed4.2         signed5           signed6           slist1 \
                 slist1.1          slist1.2          slist1.3          slist2            slist3 \
                 slist3.1          slist3.2          slist3.3          slist4            slist6 \
-                supply1           task3             task3.1           task4             task4.1 \
+                static_func4      supply1           task3             task3.1           task4             task4.1 \
                 time1.1           timescale1.3      timescale1.4      timescale1.5      timescale2.6 \
                 timescale2.7      timescale4        timescale4.1      timescale4.2      timescale4.3 \
                 timescale4.4      timescale4.5      timescale4.6      timescale4.7      timescale4.8 \
@@ -461,7 +462,7 @@ EXCLUDE      += afunc1            afunc2            always_comb1      always_com
                 real5.11          real5.12          real5.13          real5.14          real5.15 \
                 real5.16          real6.10          real6.11          real6.12          real6.13 \
                 real8             sbit_sel2.1       sbit_sel3.2       shortint1         signed4.1 \
-                slist3.1          slist3.3          timescale1.16     timescale1.17     timescale1.18 \
+                slist3.1          slist3.3          static_func4      timescale1.16     timescale1.17     timescale1.18 \
                 timescale1.20     timescale2.5      timescale2.6      timescale2.7      timescale2.8 \
                 timescale4        timescale4.1      timescale4.9      timescale4.10     timescale4.11 \
                 timescale4.12     timescale4.13     timescale4.14     timescale4.16     trireg \
@@ -536,7 +537,7 @@ DIAGS         += assign4          example2          example2.1        example2.2
 
 EXCLUDE       += bug2794588       case5             casex2            casez3            example1 \
                  exclude5.1       exclude5.3        param10.1         param10.5         sbit_sel3.2 \
-                 signed4.1
+                 signed4.1        static_func4
 ifdef VPI
 EXCLUDE       += fork2            generate4         generate4.1       generate8
 endif
