@@ -216,7 +216,7 @@ static_expr* static_expr_gen(
           (op == EXP_OP_LSHIFT) || (op == EXP_OP_RSHIFT)   || (op == EXP_OP_LIST)   || (op == EXP_OP_FUNC_CALL) ||
           (op == EXP_OP_GE)     || (op == EXP_OP_LE)       || (op == EXP_OP_EQ)     || (op == EXP_OP_GT)        ||
           (op == EXP_OP_LT)     || (op == EXP_OP_SBIT_SEL) || (op == EXP_OP_LAND)   || (op == EXP_OP_LOR)       ||
-          (op == EXP_OP_NE) );
+          (op == EXP_OP_NE)     || (op == EXP_OP_PLIST) );
 
   if( (right != NULL) && (left != NULL) ) {
 
@@ -322,7 +322,96 @@ static_expr* static_expr_gen(
 
   static_expr_dealloc( left, FALSE );
 
+  PROFILE_END;
+
   return( right );
+
+}
+
+/*!
+ \return Returns a static expression structure which represents the value of the given ternary expression (?:).
+*/
+static_expr* static_expr_gen_ternary( 
+  static_expr* sel,       /*!< Pointer to selection static expression */
+  static_expr* right,     /*!< Pointer to right static expression */
+  static_expr* left,      /*!< Pointer to left static expression */
+  unsigned int line,      /*!< Line number that static expression operation found on */
+  unsigned int ppline,    /*!< Line number from preprocessed file that static expression is found at */
+  int          first,     /*!< Column index of first character in expression */
+  int          last       /*!< Column index of last character in expression */
+) { PROFILE(STATIC_EXPR_GEN_TERNARY);
+
+  if( (sel != NULL) && (right != NULL) && (left != NULL) ) {
+
+    /* If the selector is known, select the needed value immediately */
+    if( sel->exp == NULL ) {
+
+      /* If the left is selected, get the number or expression */
+      if( sel->num ) {
+        if( left->exp == NULL ) {
+          sel->num = left->num;
+        } else {
+          sel->exp = left->exp;
+        }
+        expression_dealloc( right->exp, FALSE );
+
+      /* Otherwise, get the number of expression for the right static expression */
+      } else {
+        if( right->exp == NULL ) {
+          sel->num = right->num;
+        } else {
+          sel->exp = right->exp;
+        }
+        expression_dealloc( left->exp, FALSE );
+  
+      }
+
+    /* Otherwise, create the ternary expression */
+    } else {
+
+      expression* tmpcond;
+      expression* tmpcsel;
+
+      if( left->exp == NULL ) {
+        left->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, ppline, first, last, FALSE );
+        curr_expr_id++;
+        {
+          vector* vec = vector_create( 32, VTYPE_EXP, VDATA_UL, TRUE );
+          vector_dealloc( left->exp->value );
+          left->exp->value = vec;
+        }
+        (void)vector_from_int( left->exp->value, left->num );
+      }
+
+      if( right->exp == NULL ) {
+        right->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, ppline, first, last, FALSE );
+        curr_expr_id++;
+        {
+          vector* vec = vector_create( 32, VTYPE_EXP, VDATA_UL, TRUE );
+          vector_dealloc( right->exp->value );
+          right->exp->value = vec;
+        }
+        (void)vector_from_int( right->exp->value, right->num );
+      }
+
+      tmpcsel = expression_create( right->exp, left->exp, EXP_OP_COND_SEL, FALSE, curr_expr_id, line, ppline, first, last, FALSE );
+      curr_expr_id++;
+
+      tmpcond = expression_create( tmpcsel, sel->exp, EXP_OP_COND, FALSE, curr_expr_id, line, ppline, first, last, FALSE );
+      curr_expr_id++;
+
+      sel->exp = tmpcond;
+
+    }
+
+  }
+
+  static_expr_dealloc( right, FALSE );
+  static_expr_dealloc( left,  FALSE );
+
+  PROFILE_END;
+
+  return( sel );
 
 }
 

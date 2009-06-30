@@ -621,6 +621,11 @@ description
       if( parse_mode ) {
         parser_create_function_decl( $2, $5, @5.orig_fname, @5.incl_fname, @5.first_line, @5.first_column );
       } else {
+        generator_flush_work_code;
+        /* If this is not an automatic function, place all intermediate signals within the function */
+        if( $2 == FALSE ) {
+          generator_push_reg_insert();
+        }
         FREE_TEXT( $5 );
       }
     }
@@ -633,6 +638,9 @@ description
       if( parse_mode ) {
         parser_end_task_function( @11.first_line );
       } else {
+        if( $2 == FALSE ) {
+          generator_pop_reg_insert();
+        }
         generator_flush_all;
       }
     }
@@ -1151,6 +1159,14 @@ static_expr
         } else {
           $$ = static_expr_gen( $3, $1, EXP_OP_EXPONENT, @1.first_line, @1.ppline, @1.first_column, (@3.last_column - 1), NULL );
         }
+      } else {
+        $$ = NULL;
+      }
+    }
+  | static_expr '?' static_expr ':' static_expr
+    {
+      if( parse_mode ) {
+        $$ = static_expr_gen_ternary( $1, $5, $3, @1.first_line, @1.ppline, @1.first_column, (@5.last_column - 1) );
       } else {
         $$ = NULL;
       }
@@ -1894,7 +1910,7 @@ expr_primary
   | '(' expression ')'
     {
       if( parse_mode ) {
-        if( ignore_mode == 0 ) {
+        if( (ignore_mode == 0) && ($2 != NULL) ) {
           $2->suppl.part.parenthesis = 1;
           $$ = $2;
         } else {
@@ -3635,10 +3651,13 @@ module_item
             error_count++;
             ignore_mode++;
           }
-        } else {
-          generator_flush_work_code;
         }
         generate_top_mode--;
+      } else {
+        generator_flush_work_code;
+        if( $3 == FALSE ) {
+          generator_push_reg_insert();
+        }
       }
       FREE_TEXT( $6 );
     }
@@ -3673,6 +3692,9 @@ module_item
           ignore_mode--;
         }
       } else {
+        if( $3 == FALSE ) {
+          generator_pop_reg_insert();
+        }
         generator_flush_work_code;
         // generator_flush_all;
       }
@@ -8320,7 +8342,7 @@ list_of_names
           str_link* strl = (str_link*)malloc_safe( sizeof( str_link ) );
           str_link* strt = $1;
           strl->str    = $3;
-          strl->str    = NULL;
+          strl->str2   = NULL;
           strl->suppl  = @3.first_line;
           strl->suppl2 = @3.first_column;
           strl->next   = NULL;

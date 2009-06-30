@@ -48,6 +48,17 @@ static_expr* static_expr_gen(
   char*        func_name
 );
 
+/*! \brief Calculates new values for ternary static expressions and returns the new static expression. */
+static_expr* static_expr_gen_ternary( 
+  static_expr* sel,
+  static_expr* right,
+  static_expr* left,
+  unsigned int line,
+  unsigned int ppline,
+  int          first,
+  int          last
+);
+
 /*! \brief Calculates LSB, width and endianness for specified left/right pair for vector (used before parameter resolve). */
 void static_expr_calc_lsb_and_width_pre(
             static_expr*  left,

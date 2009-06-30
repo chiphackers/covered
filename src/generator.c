@@ -397,6 +397,12 @@ void generator_push_reg_insert() { PROFILE(GENERATOR_PUSH_REG_INSERT);
 
   reg_insert* ri;
 
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    print_output( "In generator_push_reg_insert", DEBUG, __FILE__, __LINE__ );
+  }
+#endif
+
   /* Make sure that the hold buffer is added to the hold list */
   if( hold_buffer[0] != '\0' ) {
     strcat( hold_buffer, "\n" );
@@ -422,6 +428,12 @@ void generator_push_reg_insert() { PROFILE(GENERATOR_PUSH_REG_INSERT);
 void generator_pop_reg_insert() { PROFILE(GENERATOR_POP_REG_INSERT);
 
   reg_insert* ri;
+
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    print_output( "In generator_pop_reg_insert", DEBUG, __FILE__, __LINE__ );
+  }
+#endif
 
   /* Save pointer to the top reg_insert structure and adjust reg_top */
   ri      = reg_top;
@@ -1026,7 +1038,7 @@ void generator_add_to_work_code(
                                   str, first_line, first_column, from_code, file, line );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-      // generator_display();
+      generator_display();
     }
 #endif
 
@@ -1963,8 +1975,10 @@ static char* generator_create_lhs(
 
   } else {
 
+    printf( "In generator_create_lhs, name: %s, reg_needed: %d, eval_t: %d\n", name, reg_needed, exp->suppl.part.eval_t );
+
     /* Create sized register string */
-    if( reg_needed && (exp->suppl.part.eval_t == 0) ) {
+    if( reg_needed ) {  // && (exp->suppl.part.eval_t == 0) ) {
 
       unsigned int slen;
       char*        str;
