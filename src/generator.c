@@ -1667,6 +1667,30 @@ static void generator_insert_comb_comb_cov(
 
 }
 
+static char* generator_mbit_gen_value(
+  expression* exp,
+  func_unit*  funit,
+  int*        number
+) { PROFILE(GENERATOR_MBIT_GEN_VALUE);
+
+  char* value = NULL;
+
+  if( exp != NULL ) {
+
+    if( exp->op == EXP_OP_STATIC ) {
+      *number = vector_to_int( exp->value );
+    } else { 
+      value = codegen_gen_expr_one_line( exp, funit, FALSE );
+    }
+    
+  }
+
+  PROFILE_END;
+
+  return( value );
+
+}
+
 /*!
  Generates MSB string to use for sizing subexpression values.
 */
@@ -1678,6 +1702,8 @@ static char* generator_gen_size(
 
   char* size = NULL;
 
+  *number = -1;
+
   if( exp != NULL ) {
 
     char*        lexp = NULL;
@@ -1688,38 +1714,45 @@ static char* generator_gen_size(
 
     switch( exp->op ) {
       case EXP_OP_STATIC :
-        {
-          char tmp[50];
-          rv = snprintf( tmp, 50, "%u", exp->value->width );
-          assert( rv < 50 );
-          size    = strdup_safe( tmp );
-          *number = exp->value->width;
-        }
+        *number = exp->value->width;
         break;
       case EXP_OP_LIST     :
       case EXP_OP_MULTIPLY :
         lexp = generator_gen_size( exp->left,  funit, &lnumber );
         rexp = generator_gen_size( exp->right, funit, &rnumber );
-        {
-          unsigned int slen = strlen( lexp ) + strlen( rexp ) + 6;
+        if( (lexp == NULL) && (rexp == NULL) ) {
+          *number = lnumber + rnumber;
+        } else {
+          unsigned int slen;
+          if( lexp == NULL ) {
+            char num[50];
+            rv = snprintf( num, 50, "%d", lnumber );
+            assert( rv < 50 );
+            lexp = strdup_safe( num );
+          } else if( rexp == NULL ) {
+            char num[50];
+            rv = snprintf( num, 50, "%d", rnumber );
+            assert( rv < 50 );
+            rexp = strdup_safe( num );
+          }
+          slen = 1 + strlen( lexp ) + 3 + strlen( rexp ) + 2;
           size = (char*)malloc_safe( slen );
           rv   = snprintf( size, slen, "(%s)+(%s)", lexp, rexp );
           assert( rv < slen );
+          free_safe( lexp, (strlen( lexp ) + 1) );
+          free_safe( rexp, (strlen( rexp ) + 1) );
         }
-        free_safe( lexp, (strlen( lexp ) + 1) );
-        free_safe( rexp, (strlen( rexp ) + 1) );
-        *number = ((lnumber >= 0) && (rnumber >= 0)) ? (lnumber + rnumber) : -1;
         break;
       case EXP_OP_CONCAT         :
       case EXP_OP_NEGATE         :
+      case EXP_OP_COND           :
         size = generator_gen_size( exp->right, funit, number );
         break;
       case EXP_OP_MBIT_POS       :
       case EXP_OP_MBIT_NEG       :
       case EXP_OP_PARAM_MBIT_POS :
       case EXP_OP_PARAM_MBIT_NEG :
-        size    = codegen_gen_expr_one_line( exp->right, funit, FALSE );
-        *number = -1;
+        size = generator_mbit_gen_value( exp->right, funit, number );
         break;
       case EXP_OP_LSHIFT  :
       case EXP_OP_RSHIFT  :
@@ -1728,29 +1761,40 @@ static char* generator_gen_size(
         size = generator_gen_size( exp->left, funit, number );
         break;
       case EXP_OP_EXPAND :
-        lexp = codegen_gen_expr_one_line( exp->left, funit, FALSE );
+        lexp = generator_mbit_gen_value( exp->left, funit, &lnumber );
         rexp = generator_gen_size( exp->right, funit, &rnumber );
-        {
-          unsigned int slen = strlen( lexp ) + strlen( rexp ) + 6;
+        if( (lexp == NULL) && (rexp == NULL) ) {
+          *number = lnumber * rnumber;
+        } else {
+          unsigned int slen;
+          if( lexp == NULL ) {
+            char num[50];
+            rv = snprintf( num, 50, "%d", lnumber );
+            assert( rv < 50 );
+            lexp = strdup_safe( num );
+          } else if( rexp == NULL ) {
+            char num[50];
+            rv = snprintf( num, 50, "%d", rnumber );
+            assert( rv < 50 );
+            rexp = strdup_safe( num );
+          }
+          slen = 1 + strlen( lexp ) + 3 + strlen( rexp ) + 2;
           size = (char*)malloc_safe( slen );
-          rv  = snprintf( size, slen, "(%s)*(%s)", lexp, rexp );
+          rv   = snprintf( size, slen, "(%s)*(%s)", lexp, rexp );
           assert( rv < slen );
+          free_safe( lexp, (strlen( lexp ) + 1) );
+          free_safe( rexp, (strlen( rexp ) + 1) );
         }
-        free_safe( lexp, (strlen( lexp ) + 1) );
-        free_safe( rexp, (strlen( rexp ) + 1) );
-        *number = -1;
         break;
       case EXP_OP_STIME :
       case EXP_OP_SR2B  :
       case EXP_OP_SR2I  :
-        size    = strdup_safe( "64" );
         *number = 64;
         break;
       case EXP_OP_SSR2B        :
       case EXP_OP_SRANDOM      :
       case EXP_OP_SURANDOM     :
       case EXP_OP_SURAND_RANGE :
-        size    = strdup_safe( "32" );
         *number = 32;
         break;
       case EXP_OP_LT        :
@@ -1787,7 +1831,6 @@ static char* generator_gen_size(
       case EXP_OP_STESTARGS :
       case EXP_OP_SVALARGS  :
       case EXP_OP_PARAM_SBIT :
-        size    = strdup_safe( "1" );
         *number = 1;
         break;
       case EXP_OP_SBIT_SEL  :
@@ -1796,69 +1839,100 @@ static char* generator_gen_size(
           if( (exp->sig->suppl.part.type == SSUPPL_TYPE_MEM) && ((dimension + 1) < (exp->sig->udim_num + exp->sig->pdim_num)) ) {
             size = mod_parm_gen_size_code( exp->sig, (dimension + 1), funit_get_curr_module( funit ), number );
           } else {
-            size    = strdup_safe( "1" );
             *number = 1;
           }
         }
         break;
       case EXP_OP_MBIT_SEL   :
       case EXP_OP_PARAM_MBIT :
-        lexp = codegen_gen_expr_one_line( exp->left,  funit, FALSE );
-        rexp = codegen_gen_expr_one_line( exp->right, funit, FALSE );
-        {
-          unsigned int slen = (strlen( lexp ) * 3) + (strlen( rexp ) * 3) + 28;
+        lexp = generator_mbit_gen_value( exp->left,  funit, &lnumber );
+        rexp = generator_mbit_gen_value( exp->right, funit, &rnumber );
+        if( (lexp == NULL) && (rexp == NULL) ) {
+          *number = (exp->sig->suppl.part.big_endian == 1) ? (rnumber - lnumber) : (lnumber - rnumber);
+        } else {
+          unsigned int slen;
+          if( lexp == NULL ) {
+            char num[50];
+            rv = snprintf( num, 50, "%d", lnumber );
+            assert( rv < 50 );
+            lexp = strdup_safe( num );
+          } else if( rexp == NULL ) {
+            char num[50];
+            rv = snprintf( num, 50, "%d", rnumber );
+            assert( rv < 50 );
+            rexp = strdup_safe( num );
+          }
+          slen = 1 + strlen( lexp ) + 3 + strlen( rexp ) + 2;
           size = (char*)malloc_safe( slen );
-          rv  = snprintf( size, slen, "(((%s)>(%s))?((%s)-(%s)):((%s)-(%s)))+1", lexp, rexp, lexp, rexp, rexp, lexp );
+          if( exp->sig->suppl.part.big_endian == 1 ) {
+            rv = snprintf( size, slen, "(%s)-(%s)", rexp, lexp );
+          } else {
+            rv = snprintf( size, slen, "(%s)-(%s)", lexp, rexp );
+          }
           assert( rv < slen );
+          free_safe( lexp, (strlen( lexp ) + 1) );
+          free_safe( rexp, (strlen( rexp ) + 1) );
         }
-        free_safe( lexp, (strlen( lexp ) + 1) );
-        free_safe( rexp, (strlen( rexp ) + 1) );
-        *number = -1;
         break;
       case EXP_OP_SIG       :
       case EXP_OP_PARAM     :
       case EXP_OP_FUNC_CALL :
         if( (exp->sig->suppl.part.type == SSUPPL_TYPE_GENVAR) || (exp->sig->suppl.part.type == SSUPPL_TYPE_DECL_SREAL) ) {
-          size    = strdup_safe( "32" );
           *number = 32;
         } else if( exp->sig->suppl.part.type == SSUPPL_TYPE_DECL_REAL ) {
-          size    = strdup_safe( "64" );
           *number = 64;
         } else {
           size = mod_parm_gen_size_code( exp->sig, expression_get_curr_dimension( exp ), funit_get_curr_module( funit ), number );
         }
         break;
       default :
-        lexp = generator_gen_size( exp->left,  funit, &lnumber );
-        rexp = generator_gen_size( exp->right, funit, &rnumber );
-        if( lexp != NULL ) {
-          if( rexp != NULL ) {
-            if( (lnumber >= 0) && (rnumber >= 0) ) {
-              char num[50];
-              *number = ((lnumber > rnumber) ? lnumber : rnumber);
-              rv = snprintf( num, 50, "%d", *number );
-              assert( rv < 50 );
-              size = strdup_safe( num );
+        {
+          bool set = FALSE;
+          if( exp->left != NULL ) {
+            lexp = generator_gen_size( exp->left, funit, &lnumber );
+            if( exp->right == NULL ) {
+              if( lexp == NULL ) {
+                *number = lnumber;
+              } else {
+                size = lexp;
+              }
+              set = TRUE;
+            }
+          }
+          if( exp->right != NULL ) {
+            rexp = generator_gen_size( exp->right, funit, &rnumber );
+            if( exp->left == NULL ) {
+              if( rexp == NULL ) {
+                *number = rnumber;
+              } else {
+                size = rexp;
+              }
+              set = TRUE;
+            }
+          }
+          if( !set ) {
+            if( (lexp == NULL) && (rexp == NULL) ) {
+              *number = (lnumber > rnumber) ? lnumber : rnumber;
             } else {
-              unsigned int slen = (strlen( lexp ) * 2) + (strlen( rexp ) * 2) + 14;
-              size = (char*)malloc_safe_nolimit( slen );
+              unsigned int slen;
+              if( lexp == NULL ) {
+                char num[50];
+                rv = snprintf( num, 50, "%d", lnumber );
+                assert( rv < 50 );
+                lexp = strdup_safe( num );
+              } else if( rexp == NULL ) {
+                char num[50];
+                rv = snprintf( num, 50, "%d", rnumber );
+                assert( rv < 50 );
+                rexp = strdup_safe( num );
+              }
+              slen = (strlen( lexp ) * 2) + (strlen( rexp ) * 2) + 14;
+              size = (char*)malloc_safe( slen );
               rv   = snprintf( size, slen, "((%s)>(%s))?(%s):(%s)", lexp, rexp, lexp, rexp );
               assert( rv < slen );
-              *number = -1;
+              free_safe( lexp, (strlen( lexp ) + 1) );
+              free_safe( rexp, (strlen( rexp ) + 1) );
             }
-            free_safe( lexp, (strlen( lexp ) + 1) );
-            free_safe( rexp, (strlen( rexp ) + 1) );
-          } else {
-            size    = lexp;
-            *number = lnumber;
-          }
-        } else {
-          if( rexp != NULL ) {
-            size    = rexp;
-            *number = rnumber;
-          } else {
-            size    = NULL;
-            *number = 1;
           }
         }
         break;

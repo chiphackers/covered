@@ -191,13 +191,9 @@ char* mod_parm_gen_size_code(
 
   if( (lsb_str == NULL) && (msb_str == NULL) ) {
 
-    char num[50];
-    int  msb = sig->dim[dimension].msb;
-    int  lsb = sig->dim[dimension].lsb;
+    int msb = sig->dim[dimension].msb;
+    int lsb = sig->dim[dimension].lsb;
 
-    rv = snprintf( num, 50, "%d", (((msb > lsb) ? (msb - lsb) : (lsb - msb)) + 1) );
-    assert( rv < 50 );
-    code    = strdup_safe( num );
     *number = (((msb > lsb) ? (msb - lsb) : (lsb - msb)) + 1);
 
   } else {
