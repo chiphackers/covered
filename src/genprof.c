@@ -1040,6 +1040,7 @@ profiler profiles[NUM_PROFILES] = {
   {"calc_miss_percent", NULL, 0, 0, 0, TRUE},
   {"read_command_file", NULL, 0, 0, 0, TRUE},
   {"convert_str_to_uint64", NULL, 0, 0, 0, TRUE},
+  {"convert_int_to_str", NULL, 0, 0, 0, TRUE},
   {"calc_num_bits_to_store", NULL, 0, 0, 0, TRUE},
   {"vcd_calc_index", NULL, 0, 0, 0, TRUE},
   {"vcd_parse_def_ignore", NULL, 0, 0, 0, TRUE},

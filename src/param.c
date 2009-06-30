@@ -251,6 +251,8 @@ char* mod_parm_gen_lsb_code(
   unsigned int rv;
   mod_parm*    mparm   = mod->param_head;
 
+  *number = -1;
+
   /* First, find the matching LSB module parameter */
   while( (mparm != NULL) && ((mparm->sig != sig) || (mparm->suppl.part.dimension != dimension)) ) {
     mparm = mparm->next;
@@ -281,14 +283,10 @@ char* mod_parm_gen_lsb_code(
 
   if( (lsb_str == NULL) && (msb_str == NULL) ) {
 
-    char num[50];
-    int  msb = sig->dim[dimension].msb;
-    int  lsb = sig->dim[dimension].lsb;
+    int msb = sig->dim[dimension].msb;
+    int lsb = sig->dim[dimension].lsb;
 
     *number = ((msb > lsb) ? lsb : msb);
-    rv      = snprintf( num, 50, "%d", *number );
-    assert( rv < 50 );
-    code    = strdup_safe( num );
 
   } else {
 
@@ -317,8 +315,6 @@ char* mod_parm_gen_lsb_code(
     /* Deallocate temporary strings */
     free_safe( lsb_str, (strlen( lsb_str ) + 1) );
     free_safe( msb_str, (strlen( msb_str ) + 1) );
-
-    *number = -1;
 
   }
 

@@ -1755,6 +1755,28 @@ bool convert_str_to_uint64(
 }
 
 /*!
+ \return Returns an allocated string version of the integer value.
+*/
+char* convert_int_to_str(
+  int value  /*!< Integer value to convert */
+) { PROFILE(CONVERT_INT_TO_STR);
+
+  char         numstr[50];
+  unsigned int rv;
+  char*        str;
+  
+  rv = snprintf( numstr, 50, "%d", value );
+  assert( rv < 50 );
+
+  str = strdup_safe( numstr );
+
+  PROFILE_END;
+
+  return( str );
+
+}
+
+/*!
  \return Returns the number of bits that are required to store the number of values represented.
 */
 int calc_num_bits_to_store(

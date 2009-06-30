@@ -326,6 +326,11 @@ bool convert_str_to_uint64(
   uint64*     value
 );
 
+/*! \brief Converts an integer value to a string, allocating memory for the string. */
+char* convert_int_to_str(
+  int value
+);
+
 /*! \brief Calculates the number of bits needed to store the given number of values. */
 int calc_num_bits_to_store(
   int values

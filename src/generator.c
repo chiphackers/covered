@@ -1725,15 +1725,9 @@ static char* generator_gen_size(
         } else {
           unsigned int slen;
           if( lexp == NULL ) {
-            char num[50];
-            rv = snprintf( num, 50, "%d", lnumber );
-            assert( rv < 50 );
-            lexp = strdup_safe( num );
+            lexp = convert_int_to_str( lnumber );
           } else if( rexp == NULL ) {
-            char num[50];
-            rv = snprintf( num, 50, "%d", rnumber );
-            assert( rv < 50 );
-            rexp = strdup_safe( num );
+            rexp = convert_int_to_str( rnumber );
           }
           slen = 1 + strlen( lexp ) + 3 + strlen( rexp ) + 2;
           size = (char*)malloc_safe( slen );
@@ -1768,15 +1762,9 @@ static char* generator_gen_size(
         } else {
           unsigned int slen;
           if( lexp == NULL ) {
-            char num[50];
-            rv = snprintf( num, 50, "%d", lnumber );
-            assert( rv < 50 );
-            lexp = strdup_safe( num );
+            lexp = convert_int_to_str( lnumber );
           } else if( rexp == NULL ) {
-            char num[50];
-            rv = snprintf( num, 50, "%d", rnumber );
-            assert( rv < 50 );
-            rexp = strdup_safe( num );
+            rexp = convert_int_to_str( rnumber );
           }
           slen = 1 + strlen( lexp ) + 3 + strlen( rexp ) + 2;
           size = (char*)malloc_safe( slen );
@@ -1852,15 +1840,9 @@ static char* generator_gen_size(
         } else {
           unsigned int slen;
           if( lexp == NULL ) {
-            char num[50];
-            rv = snprintf( num, 50, "%d", lnumber );
-            assert( rv < 50 );
-            lexp = strdup_safe( num );
+            lexp = convert_int_to_str( lnumber );
           } else if( rexp == NULL ) {
-            char num[50];
-            rv = snprintf( num, 50, "%d", rnumber );
-            assert( rv < 50 );
-            rexp = strdup_safe( num );
+            rexp = convert_int_to_str( rnumber );
           }
           slen = 2 + strlen( lexp ) + 3 + strlen( rexp ) + 5;
           size = (char*)malloc_safe( slen );
@@ -1916,15 +1898,9 @@ static char* generator_gen_size(
             } else {
               unsigned int slen;
               if( lexp == NULL ) {
-                char num[50];
-                rv = snprintf( num, 50, "%d", lnumber );
-                assert( rv < 50 );
-                lexp = strdup_safe( num );
+                lexp = convert_int_to_str( lnumber );
               } else if( rexp == NULL ) {
-                char num[50];
-                rv = snprintf( num, 50, "%d", rnumber );
-                assert( rv < 50 );
-                rexp = strdup_safe( num );
+                rexp = convert_int_to_str( rnumber );
               }
               slen = (strlen( lexp ) * 2) + (strlen( rexp ) * 2) + 14;
               size = (char*)malloc_safe( slen );
@@ -1970,7 +1946,7 @@ static char* generator_create_lhs(
     unsigned int slen;
 
     /* Create sized wire string */
-    if( number >= 0 ) {
+    if( size == NULL ) {
       char tmp[50];
       rv = snprintf( tmp, 50, "%d", (number - 1) );
       assert( rv < 50 );
@@ -1993,7 +1969,7 @@ static char* generator_create_lhs(
       unsigned int slen;
       char*        str;
       
-      if( number >= 0 ) {
+      if( size == NULL ) {
         char tmp[50];
         rv = snprintf( tmp, 50, "%d", (number - 1) );
         assert( rv < 50 );
@@ -2501,7 +2477,7 @@ static char* generator_gen_mem_index_helper(
   /* Adjust the index to get the true index */
   {
     char* tmp_index = index;
-    if( number >= 0 ) {
+    if( num == NULL ) {
       char tmp[50];
       rv = snprintf( tmp, 50, "%d", number );
       assert( rv < 50 );
@@ -2514,9 +2490,9 @@ static char* generator_gen_mem_index_helper(
       index = (char*)malloc_safe( slen );
       rv    = snprintf( index, slen, "(%s)-(%s)", tmp_index, num );
       assert( rv < slen );
+      free_safe( num, (strlen( num ) + 1) );
     }
     free_safe( tmp_index, (strlen( tmp_index ) + 1) );
-    free_safe( num,       (strlen( num )       + 1) );
   }
 
   /* Get the dimensional width for the current expression */
@@ -2557,10 +2533,7 @@ static char* generator_gen_mem_index_helper(
 
     /* Create the width of this dimension */
     if( num == NULL ) {
-      char numstr[50];
-      rv = snprintf( numstr, 50, "%d", number );
-      assert( rv < 50 );
-      num = strdup_safe( numstr );
+      num = convert_int_to_str( number );
     }
 
     if( ldim_width != NULL ) {
@@ -2622,10 +2595,17 @@ static char* generator_gen_mem_index(
     unsigned int rv;
     int          dim = (exp->sig->udim_num + exp->sig->pdim_num) - 1;
     char*        num = mod_parm_gen_size_code( exp->sig, dim--, funit_get_curr_module( funit ), &number );
-    ldim_width = num;
+    if( num == NULL ) {
+      ldim_width = convert_int_to_str( number );
+    } else {
+      ldim_width = num;
+    }
     for( ; dim>dimension; dim-- ) {
       char* tmp_str = ldim_width;
       num        = mod_parm_gen_size_code( exp->sig, dim, funit_get_curr_module( funit ), &number );
+      if( num == NULL ) {
+        num = convert_int_to_str( number );
+      }
       slen       = 1 + strlen( tmp_str ) + 3 + strlen( num ) + 2;
       ldim_width = (char*)malloc_safe( slen );
       rv         = snprintf( ldim_width, slen, "(%s)*(%s)", tmp_str, num );
