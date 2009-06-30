@@ -1848,7 +1848,7 @@ static char* generator_gen_size(
         lexp = generator_mbit_gen_value( exp->left,  funit, &lnumber );
         rexp = generator_mbit_gen_value( exp->right, funit, &rnumber );
         if( (lexp == NULL) && (rexp == NULL) ) {
-          *number = (exp->sig->suppl.part.big_endian == 1) ? (rnumber - lnumber) : (lnumber - rnumber);
+          *number = ((exp->sig->suppl.part.big_endian == 1) ? (rnumber - lnumber) : (lnumber - rnumber)) + 1;
         } else {
           unsigned int slen;
           if( lexp == NULL ) {
@@ -1862,12 +1862,12 @@ static char* generator_gen_size(
             assert( rv < 50 );
             rexp = strdup_safe( num );
           }
-          slen = 1 + strlen( lexp ) + 3 + strlen( rexp ) + 2;
+          slen = 2 + strlen( lexp ) + 3 + strlen( rexp ) + 5;
           size = (char*)malloc_safe( slen );
           if( exp->sig->suppl.part.big_endian == 1 ) {
-            rv = snprintf( size, slen, "(%s)-(%s)", rexp, lexp );
+            rv = snprintf( size, slen, "((%s)-(%s))+1", rexp, lexp );
           } else {
-            rv = snprintf( size, slen, "(%s)-(%s)", lexp, rexp );
+            rv = snprintf( size, slen, "((%s)-(%s))+1", lexp, rexp );
           }
           assert( rv < slen );
           free_safe( lexp, (strlen( lexp ) + 1) );
@@ -2525,7 +2525,7 @@ static char* generator_gen_mem_index_helper(
   /* If the current dimension is big endian, recalculate the index value */
   if( exp->elem.dim->dim_be ) {
     char* tmp_index = index;
-    if( number >= 0 ) {
+    if( num == NULL ) {
       char tmp[50];
       rv = snprintf( tmp, 50, "%d", (number - 1) );
       assert( rv < 50 );
@@ -2562,7 +2562,14 @@ static char* generator_gen_mem_index_helper(
       rv    = snprintf( width, slen, "(%s)*(%s)", ldim_width, num );
       assert( rv < slen );
     } else {
-      width = strdup_safe( num );
+      if( num == NULL ) {
+        char numstr[50];
+        rv = snprintf( numstr, 50, "%d", number );
+        assert( rv < 50 );
+        width = strdup_safe( numstr );
+      } else {
+        width = strdup_safe( num );
+      }
     }
 
     /* Adding our generated value to the other dimensional information */
