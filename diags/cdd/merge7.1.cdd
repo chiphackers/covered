@@ -1,4 +1,4 @@
-5 14 fd81 3 main
+5 15 fd81 3 main
 8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (dut_and) 2 -i (main.dut) 2 -vcd (merge7.1a.vcd) 2 -o (merge7.1a.cdd) 2 -v (merge7.1a.v) 2 -y (lib) 2 -D (DUMP) 2 -v (merge7.1b.v)
 12 /home/bryce3/trevorw/devel/covered/diags/verilog/merge7.1a.cdd main
 12 /home/bryce3/trevorw/devel/covered/diags/verilog/merge7.1b.cdd main
@@ -14,4 +14,4 @@
 1 b 2 4 8 1 0 0 0 1 17 1 1 0 0 0 0
 1 c 3 5 8 1 0 0 0 1 17 1 1 0 0 0 0
 4 5 f 5 5 5
-13 T 1 1246027070 The output variable a is not being used
+13 T 1 1246487267 The output variable a is not being used

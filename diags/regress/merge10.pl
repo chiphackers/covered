@@ -66,7 +66,15 @@ if( $DUMPTYPE eq "VCD" ) {
 &runReportCommand( "-d v -e -m ltcfamr -i -o merge10.8.rptI merge10.8.cdd" );
 &checkTest( "merge10.8", 1, $check_type );
 
-system( "rm -f merge10a.cdd merge10b.cdd merge10c.cdd merge10d.cdd merge10e.cdd merge10f.cdd merge10g.cdd merge10h.cdd" ) && die;
+# Remove intermediate CDD files
+&checkTest( "merge10a", 1, 6 );
+&checkTest( "merge10b", 1, 6 );
+&checkTest( "merge10c", 1, 6 );
+&checkTest( "merge10d", 1, 6 );
+&checkTest( "merge10e", 1, 6 );
+&checkTest( "merge10f", 1, 6 );
+&checkTest( "merge10g", 1, 6 );
+&checkTest( "merge10h", 1, 6 );
 
 exit 0;
 

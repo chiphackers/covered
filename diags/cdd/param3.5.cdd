@@ -1,4 +1,4 @@
-5 14 fd81 5 main
+5 15 fd81 5 main
 8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (foo) 2 -i (main.bar1) 2 -vcd (param3.vcd) 2 -o (param3.5.cdd) 2 -v (param3.5.v) 2 -P (main.bar1.alpha=1'b1) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 15 main 0

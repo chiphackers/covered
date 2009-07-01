@@ -1,12 +1,12 @@
-5 14 101 3 *
-8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (localparam1.3.vcd) 2 -o (localparam1.3.cdd) 2 -v (localparam1.3.v) 2 -D (DUMP)
-3 0 $root "$root" 0 NA 0 0 1
-3 0 main "main" 0 localparam1.3.v 1 14 1
-3 0 foo "main.bar" 0 localparam1.3.v 17 27 1
+5 15 fd81 3 *
+8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (localparam1.3.vcd) 2 -o (localparam1.3.cdd) 2 -v (localparam1.3.v) 2 -D (DUMP)
+3 0 $root "$root" 0 NA 0 0 1 
+3 0 main "main" 0 localparam1.3.v 1 14 1 
+3 0 foo "main.bar" 0 localparam1.3.v 17 27 1 
 1 a 1 23 60014 1 0 4 0 5 17 1f 1f 0 0 0 0
 1 b 2 24 60014 1 0 9 0 10 17 3ff 3ff 0 0 0 0
 1 c 3 25 60014 1 0 19 0 20 17 fffff fffff 0 0 0 0
 1 SIZEG1 4 0 c0000 1 0 31 0 32 17 a 0 0 0 0 0
 1 SIZEL 5 0 c0000 1 0 31 0 32 17 5 0 0 0 0 0
 1 SIZEG2 6 0 c0000 1 0 31 0 32 17 14 0 0 0 0 0
-3 1 main.u$0 "main.u$0" 0 localparam1.3.v 5 12 1
+3 1 main.u$0 "main.u$0" 0 localparam1.3.v 5 12 1 

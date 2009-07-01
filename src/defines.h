@@ -52,7 +52,7 @@
  Contains the CDD version number of all CDD files that this version of Covered can write
  and read.
 */
-#define CDD_VERSION        20
+#define CDD_VERSION        21
 
 /*!
  This contains the header information specified when executing this tool.

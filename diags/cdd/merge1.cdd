@@ -1,4 +1,4 @@
-5 14 fd81 3 main1
+5 15 fd81 3 main1
 8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (dut_and) 2 -i (main1.dut) 2 -vcd (merge1a.vcd) 2 -o (merge1a.cdd) 2 -v (merge1a.v) 2 -y (./lib) 2 -D (DUMP) 2 -v (merge1b.v)
 12 /home/bryce3/trevorw/devel/covered/diags/verilog/merge1a.cdd main1
 12 /home/bryce3/trevorw/devel/covered/diags/verilog/merge1b.cdd main2

@@ -260,6 +260,7 @@ sub runCommand {
 #          mode 3:  Finish run (removes all *.done files if FAILED count == 0)
 #          mode 4:  Finish run but leave *.done files
 #          mode 5:  Run report file diagnostic error check (for use with LXT/VPI dump verification)
+#          mode 6:  Remove CDD files only (that match)
 sub checkTest {
  
   my( $test, $rm_cdd, $mode ) = @_;
@@ -299,7 +300,7 @@ sub checkTest {
     my( $check1, $check2, $check3, $check4, $check5 );
     
     # If this is not an error test, check the CDD and report files */
-    if( ($mode == 0) || ($mode == 1) || ($mode == 5) ) {
+    if( ($mode == 0) || ($mode == 1) || ($mode == 5) || ($mode == 6) ) {
 
       # Check CDD file
       if( (-e "${test}.cdd") || ($mode == 1) ) {
@@ -308,7 +309,7 @@ sub checkTest {
         } else {
           $check1 = 0;
         }
-        if( ($check1 == 0) || ($mode == 5) ) {
+        if( ($check1 == 0) || ($mode == 5) || ($mode == 6) ) {
           if( $rm_cdd > 0 ) {
             system( "rm -f ${test}.cdd" ) && die;
           }
@@ -389,6 +390,10 @@ sub checkTest {
       }
 
     }
+
+  }
+
+  if( $mode != 6 ) {
 
     open( RPT_RESULTS, ">${RPT_OUTPUT}" ) || die "Can't open ${RPT_OUTPUT} for writing!\n";
     open( RPT_FAILED, ">>${FAIL_OUTPUT}" ) || die "Can't open ${FAIL_OUTPUT} for writing!\n";

@@ -1,4 +1,4 @@
-5 14 fd80 0 *
+5 15 fd80 0 *
 8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (foo) 2 -vcd (err3.vcd) 2 -o (err3.cdd) 2 -v (err3.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 3 0 foo "foo" 0 err3.v 24 34 1 

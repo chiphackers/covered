@@ -1,4 +1,4 @@
-5 14 fd81 22 *
+5 15 fd81 22 *
 8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (fsm1.1.vcd) 2 -o (fsm1.1.cdd) 2 -y (lib) 2 -v (fsm1.1.v) 2 -F (fsm=state,next_state) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 3 0 main "main" 0 fsm1.1.v 1 37 1 
