@@ -1975,8 +1975,6 @@ static char* generator_create_lhs(
 
   } else {
 
-    printf( "In generator_create_lhs, name: %s, reg_needed: %d, eval_t: %d\n", name, reg_needed, exp->suppl.part.eval_t );
-
     /* Create sized register string */
     if( reg_needed ) {  // && (exp->suppl.part.eval_t == 0) ) {
 

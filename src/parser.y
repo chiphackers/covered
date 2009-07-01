@@ -166,7 +166,6 @@ bool curr_mba = FALSE;
 */
 bool curr_packed = TRUE;
 
-
 /*!
  Pointer to head of stack structure that stores the contents of generate
  items that we want to refer to later.
@@ -183,6 +182,7 @@ gitem_link* save_gi_tail = NULL;
  Generate block index.
 */
 int generate_block_index = 0;
+
 
 /*!
  Macro to free a text variable type.  Sets the pointer to NULL so that the pointer is re-deallocated.
@@ -621,9 +621,11 @@ description
       if( parse_mode ) {
         parser_create_function_decl( $2, $5, @5.orig_fname, @5.incl_fname, @5.first_line, @5.first_column );
       } else {
+        func_unit* funit;
         generator_flush_work_code;
         /* If this is not an automatic function, place all intermediate signals within the function */
-        if( $2 == FALSE ) {
+        if( ($2 == FALSE) && ((funit = db_get_tfn_by_position( @5.first_line, @5.first_column )) != NULL) ) {
+          generator_push_funit( funit );
           generator_push_reg_insert();
         }
         FREE_TEXT( $5 );
@@ -638,8 +640,9 @@ description
       if( parse_mode ) {
         parser_end_task_function( @11.first_line );
       } else {
-        if( $2 == FALSE ) {
+        if( ($2 == FALSE) && (db_get_tfn_by_position( @5.first_line, @5.first_column ) != NULL) ) {
           generator_pop_reg_insert();
+          generator_pop_funit();
         }
         generator_flush_all;
       }
@@ -3654,8 +3657,10 @@ module_item
         }
         generate_top_mode--;
       } else {
+        func_unit* funit;
         generator_flush_work_code;
-        if( $3 == FALSE ) {
+        if( ($3 == FALSE) && ((funit = db_get_tfn_by_position( @6.first_line, @6.first_column )) != NULL) ) {
+          generator_push_funit( funit );
           generator_push_reg_insert();
         }
       }
@@ -3692,8 +3697,9 @@ module_item
           ignore_mode--;
         }
       } else {
-        if( $3 == FALSE ) {
+        if( ($3 == FALSE) && (db_get_tfn_by_position( @6.first_line, @6.first_column ) != NULL) ) {
           generator_pop_reg_insert();
+          generator_pop_funit();
         }
         generator_flush_work_code;
         // generator_flush_all;
