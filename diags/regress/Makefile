@@ -198,7 +198,6 @@ DIAGS1        = add1              aedge1            aedge1.1          afunc1    
                 value_plusargs8.1 version1          version1.1        wait1             wait1.1 \
                 wait2             wand              while1            while1.1          wor \
                 write1
-# timescale1.16   timescale1.17   timescale1.18   timescale2.5   timescale2.8
 
 DIAGS2        = delay1.1
 DIAGS3        = delay1.2
