@@ -181,7 +181,7 @@ void parser_create_task_body(
 
   if( ignore_mode == 0 ) {
     if( stmt == NULL ) {
-      stmt = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, first_line, ppline, first_column, (last_column - 1), NULL ) );
+      stmt = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, first_line, ppline, first_column, (last_column - 1), NULL, FALSE ) );
     }
     stmt->suppl.part.head      = 1;
     stmt->suppl.part.is_called = 1;
@@ -484,7 +484,7 @@ static_expr* parser_create_syscall_se(
     se = (static_expr*)malloc_safe( sizeof( static_expr ) );
     se->num = -1;
     Try {
-      se->exp = db_create_expression( NULL, NULL, op, lhs_mode, first_line, ppline, first_column, (last_column - 1), NULL );
+      se->exp = db_create_expression( NULL, NULL, op, lhs_mode, first_line, ppline, first_column, (last_column - 1), NULL, FALSE );
     } Catch_anonymous {
       error_count++;
       static_expr_dealloc( se, FALSE );
@@ -516,7 +516,7 @@ expression* parser_create_unary_exp(
 
   if( (ignore_mode == 0) && (exp != NULL) ) {
     Try {
-      retval = db_create_expression( exp, NULL, op, lhs_mode, first_line, ppline, first_column, (last_column - 1), NULL );
+      retval = db_create_expression( exp, NULL, op, lhs_mode, first_line, ppline, first_column, (last_column - 1), NULL, FALSE );
     } Catch_anonymous {
       error_count++;
     }
@@ -547,7 +547,7 @@ expression* parser_create_binary_exp(
 
   if( (ignore_mode == 0) && (lexp != NULL) && (rexp != NULL) ) {
     Try {
-      retval = db_create_expression( rexp, lexp, op, lhs_mode, first_line, ppline, first_column, (last_column - 1), NULL );
+      retval = db_create_expression( rexp, lexp, op, lhs_mode, first_line, ppline, first_column, (last_column - 1), NULL, FALSE );
     } Catch_anonymous {
       error_count++;
     }
@@ -581,8 +581,8 @@ expression* parser_create_op_and_assign_exp(
 
   if( ignore_mode == 0 ) {
     Try {
-      expression* tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, first_line1, ppline1, first_column1, (last_column1 - 1), name );
-      retval = db_create_expression( NULL, tmp, op, lhs_mode, first_line1, ppline1, first_column1, (last_column2 - 1), NULL );
+      expression* tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, first_line1, ppline1, first_column1, (last_column1 - 1), name, FALSE );
+      retval = db_create_expression( NULL, tmp, op, lhs_mode, first_line1, ppline1, first_column1, (last_column2 - 1), NULL, FALSE );
     } Catch_anonymous {
       error_count++;
     }
@@ -612,7 +612,7 @@ expression* parser_create_syscall_exp(
 
   if( ignore_mode == 0 ) {
     Try {
-      retval = db_create_expression( NULL, NULL, op, lhs_mode, first_line, ppline, first_column, (last_column - 1), NULL );
+      retval = db_create_expression( NULL, NULL, op, lhs_mode, first_line, ppline, first_column, (last_column - 1), NULL, FALSE );
     } Catch_anonymous {
       error_count++;
     }
@@ -642,7 +642,7 @@ expression* parser_create_syscall_w_params_exp(
 
   if( (ignore_mode == 0) && (plist != NULL) ) {
     Try {
-      retval = db_create_expression( NULL, plist, op, lhs_mode, first_line, ppline, first_column, (last_column - 1), NULL );
+      retval = db_create_expression( NULL, plist, op, lhs_mode, first_line, ppline, first_column, (last_column - 1), NULL, FALSE );
       if( op == EXP_OP_SSIGNED ) {
         retval->value->suppl.part.is_signed = 1;
       } else if( op == EXP_OP_SUNSIGNED ) {
@@ -684,7 +684,7 @@ expression* parser_create_op_and_assign_w_dim_exp(
     dim_exp->line = first_line;
     dim_exp->col  = ((first_column & 0xffff) << 16) | (dim_exp->col & 0xffff);
     Try {
-      retval = db_create_expression( NULL, dim_exp, op, lhs_mode, first_line, ppline, first_column, (last_column - 1), NULL );
+      retval = db_create_expression( NULL, dim_exp, op, lhs_mode, first_line, ppline, first_column, (last_column - 1), NULL, FALSE );
     } Catch_anonymous {
       error_count++;
     }
@@ -718,10 +718,10 @@ void parser_handle_case_statement(
 
   if( cs_expr != NULL ) {
     cs_expr->parent->expr = NULL;
-    expr    = db_create_expression( cs_expr, c_expr, case_op, FALSE, cs_expr->line, cs_expr->ppline, 0, 0, NULL );
+    expr    = db_create_expression( cs_expr, c_expr, case_op, FALSE, cs_expr->line, cs_expr->ppline, 0, 0, NULL, FALSE );
     ppline += (cs_expr->line - line);
   } else {
-    expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, FALSE, line, ppline, 0, 0, NULL );
+    expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, FALSE, line, ppline, 0, 0, NULL, FALSE );
   }
 
   stmt = db_create_statement( expr );
@@ -783,9 +783,9 @@ void parser_handle_generate_case_statement(
 
   if( cs_expr != NULL ) {
     cs_expr->parent->expr = NULL;
-    expr = db_create_expression( cs_expr, c_expr, EXP_OP_CASE, FALSE, cs_expr->line, cs_expr->ppline, 0, 0, NULL );
+    expr = db_create_expression( cs_expr, c_expr, EXP_OP_CASE, FALSE, cs_expr->line, cs_expr->ppline, 0, 0, NULL, FALSE );
   } else {
-    expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, FALSE, line, 0, 0, 0, NULL );
+    expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, FALSE, line, 0, 0, 0, NULL, FALSE );
   }
 
   db_add_expression( expr );

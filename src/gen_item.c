@@ -1026,11 +1026,11 @@ static void gen_item_resolve(
       case GI_TYPE_BIND :
         varname = gen_item_calc_signal_name( gi->varname, inst->funit, gi->elem.expr->line, FALSE );
         switch( gi->elem.expr->op ) {
-          case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION,    varname, gi->elem.expr, inst->funit );  break;
-          case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,        varname, gi->elem.expr, inst->funit );  break;
-          case EXP_OP_NB_CALL   :  bind_add( FUNIT_NAMED_BLOCK, varname, gi->elem.expr, inst->funit );  break;
-          case EXP_OP_DISABLE   :  bind_add( 1,                 varname, gi->elem.expr, inst->funit );  break;
-          default               :  bind_add( 0,                 varname, gi->elem.expr, inst->funit );  break;
+          case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION,    varname, gi->elem.expr, inst->funit, FALSE );  break;
+          case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,        varname, gi->elem.expr, inst->funit, FALSE );  break;
+          case EXP_OP_NB_CALL   :  bind_add( FUNIT_NAMED_BLOCK, varname, gi->elem.expr, inst->funit, FALSE );  break;
+          case EXP_OP_DISABLE   :  bind_add( 1,                 varname, gi->elem.expr, inst->funit, FALSE );  break;
+          default               :  bind_add( 0,                 varname, gi->elem.expr, inst->funit, FALSE );  break;
         }
         gitem_link_add( gen_item_create_bind( varname, gi->elem.expr ), &(inst->gitem_head), &(inst->gitem_tail) );
         free_safe( varname, (strlen( varname ) + 1) ); 

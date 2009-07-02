@@ -117,10 +117,11 @@ static exp_bind* eb_tail;
  parsed.
 */
 void bind_add(
-  int         type,  /*!< Type of thing being bound with the specified expression (0=signal, 1=functional unit) */
-  const char* name,  /*!< Signal/Function/Task scope to bind */
-  expression* exp,   /*!< Expression ID to bind */
-  func_unit*  funit  /*!< Pointer to module containing specified expression */
+  int         type,    /*!< Type of thing being bound with the specified expression (0=signal, 1=functional unit) */
+  const char* name,    /*!< Signal/Function/Task scope to bind */
+  expression* exp,     /*!< Expression ID to bind */
+  func_unit*  funit,   /*!< Pointer to module containing specified expression */
+  bool        staticf  /*!< Set to TRUE if the given binding is a static function binding */
 ) { PROFILE(BIND_ADD);
   
   exp_bind* eb;   /* Temporary pointer to signal/expressing binding */
@@ -136,6 +137,7 @@ void bind_add(
   eb->funit          = funit;
   eb->exp            = exp;
   eb->fsm            = NULL;
+  eb->staticf        = staticf;
   eb->next           = NULL;
   
   /* Add new signal/expression binding to linked list */
@@ -662,7 +664,7 @@ static void bind_task_function_ports(
         assert( rv < 4096 );
 
         /* Add the signal to the binding list */
-        bind_add( 0, sig_name, expr, funit_exp );
+        bind_add( 0, sig_name, expr, funit_exp, FALSE );
 
         /* Specify that this vector will be assigned by Covered and not the dumpfile */
         sigl->sig->suppl.part.assigned = 1;
@@ -689,13 +691,15 @@ static void bind_task_function_ports(
  Binds an expression to a function/task/named block.
 */
 static bool bind_task_function_namedblock(
-  int         type,         /*!< Type of functional unit to bind */
-  char*       name,         /*!< Name of functional unit to bind */
-  expression* exp,          /*!< Pointer to expression containing FUNC_CALL/TASK_CALL operation type to bind */
-  func_unit*  funit_exp,    /*!< Pointer to functional unit containing exp */
-  bool        cdd_reading,  /*!< Set to TRUE when we are reading from the CDD file (FALSE when parsing) */
-  int         exp_line,     /*!< Line number of expression that is being bound (used when exp is NULL) */
-  bool        bind_locally  /*!< If set to TRUE, only attempt to bind a task/function local to the expression functional unit */
+  int         type,          /*!< Type of functional unit to bind */
+  char*       name,          /*!< Name of functional unit to bind */
+  expression* exp,           /*!< Pointer to expression containing FUNC_CALL/TASK_CALL operation type to bind */
+  func_unit*  funit_exp,     /*!< Pointer to functional unit containing exp */
+  bool        cdd_reading,   /*!< Set to TRUE when we are reading from the CDD file (FALSE when parsing) */
+  int         exp_line,      /*!< Line number of expression that is being bound (used when exp is NULL) */
+  bool        bind_locally,  /*!< If set to TRUE, only attempt to bind a task/function local to the expression functional unit */
+  bool        staticf        /*!< If set to TRUE, set the staticf bit on the found functional unit; otherwise, set the normalf
+                                  bit on the found functional unit */
 ) { PROFILE(BIND_TASK_FUNCTION_NAMEDBLOCK);
 
   bool       retval = FALSE;  /* Return value for this function */
@@ -713,6 +717,15 @@ static bool bind_task_function_namedblock(
 
     if( scope_find_task_function_namedblock( name, type, funit_exp, &found_funit, exp_line, !bind_locally, 
                                              ((exp->op != EXP_OP_NB_CALL) && (exp->op != EXP_OP_FORK)) ) ) {
+
+      /* Set the static/normal bit in the functional unit as needed */
+      if( type == FUNIT_FUNCTION ) {
+        if( staticf ) {
+          found_funit->suppl.part.staticf = 1;
+        } else {
+          found_funit->suppl.part.normalf = 1;
+        }
+      }
 
       exp->elem.funit      = found_funit;
       exp->suppl.part.type = ETYPE_FUNIT;
@@ -828,9 +841,9 @@ void bind_perform(
 
             /* Attempt to bind a named block -- if unsuccessful, attempt to bind with a task */
             if( !(bound = bind_task_function_namedblock( FUNIT_NAMED_BLOCK, curr_eb->name, curr_eb->exp, curr_eb->funit,
-                                                         cdd_reading, curr_eb->line, (pass == 0) )) ) {
+                                                         cdd_reading, curr_eb->line, (pass == 0), FALSE )) ) {
               bound = bind_task_function_namedblock( FUNIT_TASK, curr_eb->name, curr_eb->exp, curr_eb->funit,
-                                                     cdd_reading, curr_eb->line, (pass == 0) );
+                                                     cdd_reading, curr_eb->line, (pass == 0), FALSE );
             }
 
           /* Otherwise, handle function/task binding */
@@ -841,7 +854,7 @@ void bind_perform(
              that this expression is a part of.
             */
             bound = bind_task_function_namedblock( curr_eb->type, curr_eb->name, curr_eb->exp, curr_eb->funit,
-                                                   cdd_reading, curr_eb->line, (pass == 0) );
+                                                   cdd_reading, curr_eb->line, (pass == 0), curr_eb->staticf );
 
           }
 

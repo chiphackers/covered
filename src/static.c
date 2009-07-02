@@ -316,7 +316,7 @@ static_expr* static_expr_gen(
     curr_expr_id++;
 
     /* Make sure that we bind this later */
-    bind_add( FUNIT_FUNCTION, func_name, right->exp, curr_funit );
+    bind_add( FUNIT_FUNCTION, func_name, right->exp, curr_funit, TRUE );
 
   }
 

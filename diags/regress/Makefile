@@ -171,8 +171,9 @@ DIAGS1        = add1              aedge1            aedge1.1          afunc1    
                 signed4.2         signed5           signed6           slist1            slist1.1 \
                 slist1.2          slist1.3          slist2            slist3            slist3.1 \
                 slist3.2          slist3.3          slist4            slist6            static1 \
-                static2           static2.1         static2.2         static3           static_func4 \
-                string1           string2 \
+                static2           static2.1         static2.2         static3           static_afunc1 \
+                static_func1      static_func1.1    static_func2      static_func2.1    static_func2.2 \
+                static_func2.3    static_func3   static_func4         string1           string2 \
                 string2.1         strobe1           supply0           supply1           task1 \
                 task1.1           task2             task2.1           task2.2           task2.3 \
                 task3             task3.1           task4             task4.1           task6 \

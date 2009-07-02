@@ -1967,15 +1967,16 @@ int db_curr_signal_count() { PROFILE(DB_CURR_SIGNAL_COUNT);
  pointer to the newly created expression.
 */
 expression* db_create_expression(
-  expression*  right,    /*!< Pointer to expression on right side of expression */
-  expression*  left,     /*!< Pointer to expression on left side of expression */
-  exp_op_type  op,       /*!< Operation to perform on expression */
-  bool         lhs,      /*!< Specifies this expression is a left-hand-side assignment expression */
-  unsigned int line,     /*!< Line number of current expression */
-  unsigned int ppline,   /*!< Line number from preprocessed file */
-  int          first,    /*!< Column index of first character in this expression */
-  int          last,     /*!< Column index of last character in this expression */
-  char*        sig_name  /*!< Name of signal that expression is attached to (if valid) */
+  expression*  right,     /*!< Pointer to expression on right side of expression */
+  expression*  left,      /*!< Pointer to expression on left side of expression */
+  exp_op_type  op,        /*!< Operation to perform on expression */
+  bool         lhs,       /*!< Specifies this expression is a left-hand-side assignment expression */
+  unsigned int line,      /*!< Line number of current expression */
+  unsigned int ppline,    /*!< Line number from preprocessed file */
+  int          first,     /*!< Column index of first character in this expression */
+  int          last,      /*!< Column index of last character in this expression */
+  char*        sig_name,  /*!< Name of signal that expression is attached to (if valid) */
+  bool         in_static  /*!< Set to TRUE if this expression exists in a static expression position */
 ) { PROFILE(DB_CREATE_EXPRESSION);
 
   expression* expr;        /* Temporary pointer to newly created expression */
@@ -2090,11 +2091,11 @@ expression* db_create_expression(
       }
     } else {
       switch( op ) {
-        case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION,    sig_name, expr, curr_funit );  break;
-        case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,        sig_name, expr, curr_funit );  break;
-        case EXP_OP_NB_CALL   :  bind_add( FUNIT_NAMED_BLOCK, sig_name, expr, curr_funit );  break;
-        case EXP_OP_DISABLE   :  bind_add( 1,                 sig_name, expr, curr_funit );  break;
-        default               :  bind_add( 0,                 sig_name, expr, curr_funit );  break;
+        case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION,    sig_name, expr, curr_funit, in_static );  break;
+        case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,        sig_name, expr, curr_funit, FALSE );      break;
+        case EXP_OP_NB_CALL   :  bind_add( FUNIT_NAMED_BLOCK, sig_name, expr, curr_funit, FALSE );      break;
+        case EXP_OP_DISABLE   :  bind_add( 1,                 sig_name, expr, curr_funit, FALSE );      break;
+        default               :  bind_add( 0,                 sig_name, expr, curr_funit, FALSE );      break;
       }
     }
 
@@ -2136,7 +2137,7 @@ void db_bind_expr_tree(
         (root->op == EXP_OP_MBIT_SEL) ||
         (root->op == EXP_OP_MBIT_POS) ||
         (root->op == EXP_OP_MBIT_NEG) ) {
-      bind_add( 0, sig_name, root, curr_funit );
+      bind_add( 0, sig_name, root, curr_funit, FALSE );
     }
 
   }
@@ -2177,7 +2178,7 @@ expression* db_create_expr_from_static(
     if( se->exp == NULL ) {
 
       /* This static expression is a static value so create a static expression from its value */
-      expr = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, line, ppline, first_col, last_col, NULL );
+      expr = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, line, ppline, first_col, last_col, NULL, TRUE );
 
       /* Create the new vector */
       vec = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
@@ -2292,12 +2293,12 @@ expression* db_create_sensitivity_list(
       while( strl != NULL ) {
 
         /* Create AEDGE and EOR for subsequent signals */
-        exps = db_create_expression( NULL, NULL, EXP_OP_SIG,   FALSE, 0, 0, 0, 0, strl->str );
-        expa = db_create_expression( exps, NULL, EXP_OP_AEDGE, FALSE, 0, 0, 0, 0, NULL );
+        exps = db_create_expression( NULL, NULL, EXP_OP_SIG,   FALSE, 0, 0, 0, 0, strl->str, FALSE );
+        expa = db_create_expression( exps, NULL, EXP_OP_AEDGE, FALSE, 0, 0, 0, 0, NULL, FALSE );
 
         /* If we have a child expression already, create the EOR expression to connect them */
         if( expc != NULL ) {
-          expe = db_create_expression( expa, expc, EXP_OP_EOR, FALSE, 0, 0, 0, 0, NULL );
+          expe = db_create_expression( expa, expc, EXP_OP_EOR, FALSE, 0, 0, 0, 0, NULL, FALSE );
           expc = expe;
         } else {
           expc = expa;
@@ -2349,7 +2350,7 @@ statement* db_parallelize_statement(
 #endif
 
     /* Create FORK expression */
-    exp = db_create_expression( NULL, NULL, EXP_OP_FORK, FALSE, stmt->exp->line, stmt->exp->ppline, ((stmt->exp->col & 0xffff0000) >> 16), (stmt->exp->col & 0xffff), NULL );
+    exp = db_create_expression( NULL, NULL, EXP_OP_FORK, FALSE, stmt->exp->line, stmt->exp->ppline, ((stmt->exp->col & 0xffff0000) >> 16), (stmt->exp->col & 0xffff), NULL, FALSE );
 
     /* Create unnamed scope */
     scope = db_create_unnamed_scope();

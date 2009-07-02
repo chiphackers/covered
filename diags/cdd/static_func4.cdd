@@ -23,7 +23,7 @@
 4 6 0 14 0 4
 4 14 0 0 0 4
 3 1 main.u$1 "main.u$1" 0 static_func4.v 19 26 1 
-3 2 main.find_max "main.find_max" 0 static_func4.v 28 40 1 
+3 62 main.find_max "main.find_max" 0 static_func4.v 28 40 1 
 2 15 33 33 20006 2 3d 5802 0 0 1 18 0 1 0 0 0 0 u$2
 1 find_max 2 28 1090010 1 0 31 0 32 17 ffffffff ffffffff 0 0 0 0
 1 a 3 30 100000f 1 0 31 0 32 17 ffffffff ffffffff 0 0 0 0

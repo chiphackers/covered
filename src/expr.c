@@ -1670,12 +1670,12 @@ void expression_db_read(
       if( ((*line)[0] != '\n') && ((*line)[0] != '\0') ) {
         (*line)++;   /* Remove space */
         switch( op ) {
-          case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION,    *line, expr, curr_funit );  break;
-          case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,        *line, expr, curr_funit );  break;
+          case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION,    *line, expr, curr_funit, FALSE );  break;
+          case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,        *line, expr, curr_funit, FALSE );  break;
           case EXP_OP_FORK      :
-          case EXP_OP_NB_CALL   :  bind_add( FUNIT_NAMED_BLOCK, *line, expr, curr_funit );  break;
-          case EXP_OP_DISABLE   :  bind_add( 1,                 *line, expr, curr_funit );  break;
-          default               :  bind_add( 0,                 *line, expr, curr_funit );  break;
+          case EXP_OP_NB_CALL   :  bind_add( FUNIT_NAMED_BLOCK, *line, expr, curr_funit, FALSE );  break;
+          case EXP_OP_DISABLE   :  bind_add( 1,                 *line, expr, curr_funit, FALSE );  break;
+          default               :  bind_add( 0,                 *line, expr, curr_funit, FALSE );  break;
         }
       }
 

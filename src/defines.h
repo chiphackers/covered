@@ -1803,13 +1803,15 @@ union usuppl_u {
                                        be treated as a thread list pointer. */
     uint8 included  : 1;          /*!< Bit 4.     Mask = 1.  Set to 1 if the current functional unit has been included into a file via the
                                        `include preprocessor command */
+    uint8 staticf   : 1;          /*!< Bit 5.     Mask = 1.  Set to 1 if this functional unit is used as a static function */
+    uint8 normalf   : 1;          /*!< Bit 6.     Mask = 1.  Set to 1 if this functional unit is used as a normal function */
   } part;
 };
 
 /*!
  Mask used for writing the functional unit mask.
 */
-#define FUNIT_MASK     0x17
+#define FUNIT_MASK     0x77
 
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION DECLARATIONS  */
@@ -2772,6 +2774,7 @@ struct exp_bind_s {
   expression*      exp;              /*!< Expression to bind. */
   expression*      fsm;              /*!< FSM expression to create value for when this expression is bound */
   func_unit*       funit;            /*!< Pointer to functional unit containing expression */
+  bool             staticf;          /*!< Set to TRUE if the functional unit being bound to is a result of a static function */
   exp_bind*        next;             /*!< Pointer to next binding in list */
 };
 

@@ -27,26 +27,54 @@
 
 
 /*! \brief Adds vsignal and expression to binding list. */
-void bind_add( int type, const char* name, expression* exp, func_unit* funit );
+void bind_add(
+  int         type,
+  const char* name,
+  expression* exp,
+  func_unit*  funit,
+  bool        staticf
+);
 
 /*! \brief Appends an FSM expression to a matching expression binding structure */
-void bind_append_fsm_expr( expression* fsm_exp, const expression* exp, const func_unit* curr_funit );
+void bind_append_fsm_expr(
+  expression*       fsm_exp,
+  const expression* exp,
+  const func_unit*  curr_funit
+);
 
 /*! \brief Removes the expression with ID of id from binding list. */
-void bind_remove( int id, bool clear_assigned );
+void bind_remove(
+  int  id,
+  bool clear_assigned
+);
 
 /*! \brief Searches current binding list for the signal name associated with the given expression */
-char* bind_find_sig_name( const expression* exp );
+char* bind_find_sig_name(
+  const expression* exp
+);
 
 /*! \brief Removes the statement block associated with the expression with ID of id after binding has occurred */
-void bind_rm_stmt( int id );
+void bind_rm_stmt(
+  int id
+);
 
 /*! \brief Binds a signal to an expression */
-bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bind, bool cdd_reading,
-                  bool clear_assigned, int exp_line, bool bind_locally );
+bool bind_signal(
+  char*       name,
+  expression* exp,
+  func_unit*  funit_exp,
+  bool        fsm_bind,
+  bool        cdd_reading,
+  bool        clear_assigned,
+  int         exp_line,
+  bool        bind_locally
+);
 
 /*! \brief Performs vsignal/expression bind (performed after parse completed). */
-void bind_perform( bool cdd_reading, int pass );
+void bind_perform(
+  bool cdd_reading,
+  int  pass
+);
 
 /*! \brief Deallocates memory used for binding */
 void bind_dealloc();

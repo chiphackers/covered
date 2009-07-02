@@ -247,7 +247,8 @@ expression* db_create_expression(
   unsigned int ppline,
   int          first,
   int          last,
-  char*        sig_name
+  char*        sig_name,
+  bool         in_static
 );
 
 /*! \brief Binds all necessary sub-expressions in the given tree to the given signal name */
