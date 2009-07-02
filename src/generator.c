@@ -88,6 +88,11 @@ funit_link* funit_top = NULL;
 FILE* curr_ofile = NULL;
 
 /*!
+ Buffer containing lookahead token.
+*/
+char lahead_buffer[4096];
+
+/*!
  Temporary holding buffer for code to be output.
 */
 char work_buffer[4096];
@@ -209,6 +214,7 @@ void generator_display() { PROFILE(GENERATOR_DISPLAY);
     strl = strl->next;
   }
   printf( "Working buffer:\n  %s\n", work_buffer );
+  printf( "Look-ahead buffer:\n  %s\n", lahead_buffer );
 
   PROFILE_END;
 
@@ -250,6 +256,21 @@ void generator_clear_replace_ptrs() { PROFILE(GENERATOR_CLEAR_REPLACE_PTRS);
   replace_last.list_ptr = NULL;
 
   PROFILE_END;
+
+}
+
+/*!
+ \return Returns TRUE if the given functional unit is within a static-only function; otherwise, returns FALSE.
+*/
+static bool generator_is_static_function_only(
+  func_unit* funit  /*!< Pointer to functional unit to check */
+) { PROFILE(GENERATOR_IS_STATIC_FUNCTION);
+
+  func_unit* func = funit_get_curr_function( funit );
+
+  PROFILE_END;
+
+  return( (func != NULL) && (func->suppl.part.staticf == 1) && (func->suppl.part.normalf == 0) );
 
 }
 
@@ -1395,7 +1416,7 @@ statement* generator_insert_line_cov(
 
   statement* stmt = NULL;
 
-  if( ((stmt = generator_find_statement( first_line, first_column )) != NULL) &&
+  if( ((stmt = generator_find_statement( first_line, first_column )) != NULL) && !generator_is_static_function_only( stmt->funit ) &&
       ((info_suppl.part.scored_line && !handle_funit_as_assert) || (handle_funit_as_assert && ovl_is_coverage_point( stmt->exp ))) ) {
 
     generator_insert_line_cov_with_stmt( stmt, semicolon );
@@ -3102,36 +3123,33 @@ statement* generator_insert_comb_cov(
   statement* stmt = NULL;
 
   /* Insert combinational logic code coverage if it is specified on the command-line to do so and the statement exists */
-  if( ((info_suppl.part.scored_comb == 1) || (info_suppl.part.scored_memory == 1)) && !handle_funit_as_assert ) {
+  if( ((info_suppl.part.scored_comb == 1) || (info_suppl.part.scored_memory == 1)) && !handle_funit_as_assert &&
+      ((stmt = generator_find_statement( first_line, first_column )) != NULL) && !generator_is_static_function_only( stmt->funit ) ) {
 
-    if( (stmt = generator_find_statement( first_line, first_column )) != NULL ) {
-
-      /* Generate combinational coverage */
-      if( info_suppl.part.scored_comb == 1 ) {
-        generator_insert_comb_cov_helper( (use_right ? stmt->exp->right : stmt->exp), stmt->funit, (use_right ? stmt->exp->right->op : stmt->exp->op), 0, net, TRUE, TRUE );
-      }
-
-      /* Generate memory coverage */
-      if( info_suppl.part.scored_memory == 1 ) {
-        generator_insert_mem_cov_helper( stmt->exp, stmt->funit, net, FALSE, FALSE, ((stmt->exp->op == EXP_OP_NASSIGN) ? stmt->exp->right : NULL) );
-      }
-
+    /* Generate combinational coverage */
+    if( info_suppl.part.scored_comb == 1 ) {
+      generator_insert_comb_cov_helper( (use_right ? stmt->exp->right : stmt->exp), stmt->funit, (use_right ? stmt->exp->right->op : stmt->exp->op), 0, net, TRUE, TRUE );
     }
 
-    /* If we need to save the found statement, do so now */
-    if( save_stmt ) {
-
-      stmt_loop_link* new_stmtl;
-
-      assert( stmt != NULL );
-
-      new_stmtl       = (stmt_loop_link*)malloc_safe( sizeof( stmt_loop_link ) );
-      new_stmtl->stmt = stmt;
-      new_stmtl->next = stmt_stack;
-      new_stmtl->type = use_right ? 0 : 1;
-      stmt_stack      = new_stmtl;
-
+    /* Generate memory coverage */
+    if( info_suppl.part.scored_memory == 1 ) {
+      generator_insert_mem_cov_helper( stmt->exp, stmt->funit, net, FALSE, FALSE, ((stmt->exp->op == EXP_OP_NASSIGN) ? stmt->exp->right : NULL) );
     }
+
+  }
+
+  /* If we need to save the found statement, do so now */
+  if( save_stmt ) {
+
+    stmt_loop_link* new_stmtl;
+
+    assert( stmt != NULL );
+
+    new_stmtl       = (stmt_loop_link*)malloc_safe( sizeof( stmt_loop_link ) );
+    new_stmtl->stmt = stmt;
+    new_stmtl->next = stmt_stack;
+    new_stmtl->type = use_right ? 0 : 1;
+    stmt_stack      = new_stmtl;
 
   }
 
@@ -3162,7 +3180,9 @@ statement* generator_insert_comb_cov_from_stmt_stack() { PROFILE(GENERATOR_INSER
     exp  = stmt_stack->type ? stmt->exp->right : stmt->exp;
 
     /* Generate combinational coverage information */
-    generator_insert_comb_cov_helper( exp, stmt->funit, exp->op, 0, FALSE, TRUE, FALSE );
+    if( !generator_is_static_function_only( stmt->funit ) ) {
+      generator_insert_comb_cov_helper( exp, stmt->funit, exp->op, 0, FALSE, TRUE, FALSE );
+    }
 
     /* Now pop the statement stack */
     stmt_stack = sll->next;
@@ -3185,7 +3205,7 @@ void generator_insert_comb_cov_with_stmt(
   bool       reg_needed  /*!< If TRUE, instantiate necessary registers */
 ) { PROFILE(GENERATOR_INSERT_COMB_COV_WITH_STMT);
 
-  if( (info_suppl.part.scored_comb == 1) && !handle_funit_as_assert && (stmt != NULL) ) {
+  if( (info_suppl.part.scored_comb == 1) && !handle_funit_as_assert && (stmt != NULL) && !generator_is_static_function_only( stmt->funit ) ) {
 
     expression* exp = use_right ? stmt->exp->right : stmt->exp;
 
@@ -3209,7 +3229,8 @@ void generator_insert_case_comb_cov(
   statement* stmt;
 
   /* Insert combinational logic code coverage if it is specified on the command-line to do so and the statement exists */
-  if( (info_suppl.part.scored_comb == 1) && !handle_funit_as_assert && ((stmt = generator_find_case_statement( first_line, first_column )) != NULL) ) {
+  if( (info_suppl.part.scored_comb == 1) && !handle_funit_as_assert && ((stmt = generator_find_case_statement( first_line, first_column )) != NULL) &&
+      !generator_is_static_function_only( stmt->funit ) ) {
 
     generator_insert_comb_cov_helper( stmt->exp->left, stmt->funit, stmt->exp->left->op, 0, FALSE, TRUE, TRUE );
 
@@ -3241,7 +3262,7 @@ void generator_insert_case_comb_cov(
 */
 void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
 
-  if( (info_suppl.part.scored_fsm == 1) && !handle_funit_as_assert ) {
+  if( (info_suppl.part.scored_fsm == 1) && !handle_funit_as_assert && !generator_is_static_function_only( curr_funit ) ) {
 
     fsm_link*    fsml = curr_funit->fsm_head;
     unsigned int id   = 1;

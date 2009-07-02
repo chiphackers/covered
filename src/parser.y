@@ -626,26 +626,32 @@ description
       if( parse_mode ) {
         parser_create_function_decl( $2, $5, @5.orig_fname, @5.incl_fname, @5.first_line, @5.first_column );
       } else {
-        func_unit* funit;
-        generator_flush_work_code;
-        /* If this is not an automatic function, place all intermediate signals within the function */
-        if( ($2 == FALSE) && ((funit = db_get_tfn_by_position( @5.first_line, @5.first_column )) != NULL) ) {
-          generator_push_funit( funit );
-          generator_push_reg_insert();
-        }
         FREE_TEXT( $5 );
       }
     }
-    function_item_list statement
+    function_item_list
     {
-      parser_create_function_body( $9 );
+      if( !parse_mode ) {
+        func_unit* funit;
+        generator_flush_work_code;
+        /* If this is not an automatic function, place all intermediate signals within the function */
+        if( ($2 == FALSE) && ((funit = db_get_tfn_by_position( @5.first_line, @5.first_column )) != NULL) && (funit->suppl.part.staticf == 1) ) {
+          generator_push_funit( funit );
+          generator_push_reg_insert();
+        }
+      }
+    }
+    statement
+    {
+      parser_create_function_body( $10 );
     }
     K_endfunction
     {
       if( parse_mode ) {
-        parser_end_task_function( @11.first_line );
+        parser_end_task_function( @12.first_line );
       } else {
-        if( ($2 == FALSE) && (db_get_tfn_by_position( @5.first_line, @5.first_column ) != NULL) ) {
+        func_unit* funit;
+        if( ($2 == FALSE) && ((funit = db_get_tfn_by_position( @5.first_line, @5.first_column )) != NULL) && (funit->suppl.part.staticf == 1) ) {
           generator_pop_reg_insert();
           generator_pop_funit();
         }
@@ -3661,19 +3667,18 @@ module_item
           }
         }
         generate_top_mode--;
-      } else {
-        func_unit* funit;
-        generator_flush_work_code;
-        if( ($3 == FALSE) && ((funit = db_get_tfn_by_position( @6.first_line, @6.first_column )) != NULL) ) {
-          generator_push_funit( funit );
-          generator_push_reg_insert();
-        }
       }
       FREE_TEXT( $6 );
     }
     function_item_list
     {
       if( !parse_mode ) {
+        func_unit* funit;
+        generator_flush_work_code;
+        if( ($3 == FALSE) && ((funit = db_get_tfn_by_position( @6.first_line, @6.first_column )) != NULL) && (funit->suppl.part.staticf == 1) ) {
+          generator_push_funit( funit );
+          generator_push_reg_insert();
+        }
         generator_add_to_hold_code( " begin", __FILE__, __LINE__ );
         block_depth++;
       }
@@ -3702,7 +3707,8 @@ module_item
           ignore_mode--;
         }
       } else {
-        if( ($3 == FALSE) && (db_get_tfn_by_position( @6.first_line, @6.first_column ) != NULL) ) {
+        func_unit* funit;
+        if( ($3 == FALSE) && ((funit = db_get_tfn_by_position( @6.first_line, @6.first_column )) != NULL) && (funit->suppl.part.staticf == 1) ) {
           generator_pop_reg_insert();
           generator_pop_funit();
         }

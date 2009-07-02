@@ -879,28 +879,17 @@ WSPACE [ \t\b\f]+
   yylloc.first_column = yylloc.last_column;
   yylloc.last_column += strlen( yytext );
   if( !parse_mode ) {
-    /* Clear the current hold buffer before working on a new statement block */
-    if( (rc != K_begin) && (rc != K_end) ) {
-      if( (rc == K_initial)   || (rc == K_always) || (rc == K_always_latch) || (rc == K_always_comb) ||
-          (rc == K_always_ff) || (rc == K_final)  || (rc == K_task)         || (rc == K_function)    ||
-          (rc == K_assign) ) {
-        // generator_flush_all;
-        generator_add_orig_to_work_code( yytext, yylloc.ppline, yylloc.first_column );
-      } else {
-        if( rc == K_endmodule ) {
-          generator_flush_all;
-          generator_insert_fsm_covs();
-        }
-        generator_add_orig_to_work_code( yytext, yylloc.ppline, yylloc.first_column );
-      }
+    if( rc == K_endmodule ) {
+      generator_flush_all;
+      generator_insert_fsm_covs();
     }
+    generator_add_orig_to_work_code( yytext, yylloc.ppline, yylloc.first_column );
   }
   if( rc == IDENTIFIER ) {
     if( (generate_mode == 0) && ((last_gi == NULL) || (last_gi->suppl.part.type != GI_TYPE_INST)) && (strchr( yytext, '.' ) != NULL) ) {
       yylval.text = gen_item_calc_signal_name( yytext, curr_funit, yylloc.ppline, TRUE );
     } else {
       yylval.text = strdup_safe( yytext );
-      // printf( "yylval.text: %s (%p)\n", yylval.text, yylval.text );
     }
     // printf( "Allocated IDENTIFIER %p  %s, line %d\n", yylval.text, yylval.text, yylloc.first_line );
     if( strncmp( yylval.text, "PATHPULSE$", 10) == 0 ) {
