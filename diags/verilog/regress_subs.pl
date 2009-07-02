@@ -309,7 +309,7 @@ sub checkTest {
         } else {
           $check1 = 0;
         }
-        if( ($check1 == 0) || ($mode == 5) || ($mode == 6) ) {
+        if( ($check1 == 0) || ($mode == 5) ) {
           if( $rm_cdd > 0 ) {
             system( "rm -f ${test}.cdd" ) && die;
           }
@@ -391,47 +391,47 @@ sub checkTest {
 
     }
 
-  }
+    if( $mode != 6 ) {
 
-  if( $mode != 6 ) {
+      open( RPT_RESULTS, ">${RPT_OUTPUT}" ) || die "Can't open ${RPT_OUTPUT} for writing!\n";
+      open( RPT_FAILED, ">>${FAIL_OUTPUT}" ) || die "Can't open ${FAIL_OUTPUT} for writing!\n";
 
-    open( RPT_RESULTS, ">${RPT_OUTPUT}" ) || die "Can't open ${RPT_OUTPUT} for writing!\n";
-    open( RPT_FAILED, ">>${FAIL_OUTPUT}" ) || die "Can't open ${FAIL_OUTPUT} for writing!\n";
+      if( (($mode == 0) && (($check1 > 0) || ($check2 > 0) || ($check3 > 0) || ($check4 > 0) || ($check5 > 0))) ||
+          (($mode == 1) && ($check1 > 0)) ||
+          (($mode == 5) && (($check2 > 0) || ($check3 > 0) || ($check4 > 0) || ($check5 > 0))) ) {
+        print "  Checking output results         -- FAILED\n";
+        print RPT_FAILED "${test}\n";
+        $failed++;
+        $retval = 1;
 
-    if( (($mode == 0) && (($check1 > 0) || ($check2 > 0) || ($check3 > 0) || ($check4 > 0) || ($check5 > 0))) ||
-        (($mode == 1) && ($check1 > 0)) ||
-        (($mode == 5) && (($check2 > 0) || ($check3 > 0) || ($check4 > 0) || ($check5 > 0))) ) {
-      print "  Checking output results         -- FAILED\n";
-      print RPT_FAILED "${test}\n";
-      $failed++;
-      $retval = 1;
+      } else {
 
-    } else {
+        # Check to make sure that a tmp* file does not exist
+        my( $tmp ) = `ls | grep ^tmp`;
+        chomp( $tmp );
+        if( $tmp ne "" ) {
+          die "  Temporary file was not removed!\n";
+        }
 
-      # Check to make sure that a tmp* file does not exist
-      my( $tmp ) = `ls | grep ^tmp`;
-      chomp( $tmp );
-      if( $tmp ne "" ) {
-        die "  Temporary file was not removed!\n";
-      }
+        if( ($mode == 0) || ($mode == 1) || ($mode == 5) ) {
+          print "  Checking output results         -- PASSED\n";
+        }
+        $passed++;
 
-      if( ($mode == 0) || ($mode == 1) || ($mode == 5) ) {
-        print "  Checking output results         -- PASSED\n";
-      }
-      $passed++;
-
-      # Remove VCD file
-      # system( "rm -f *.vcd" ) && die;
+        # Remove VCD file
+        # system( "rm -f *.vcd" ) && die;
  
-      # Create the done file
-      system( "touch ${test}.done" ) && die;
+        # Create the done file
+        system( "touch ${test}.done" ) && die;
+
+      }
+
+      print RPT_RESULTS "DIAGNOSTICS PASSED: ${passed}, FAILED: ${failed}\n";
+
+      close( RPT_RESULTS );
+      close( RPT_FAILED  );
 
     }
-
-    print RPT_RESULTS "DIAGNOSTICS PASSED: ${passed}, FAILED: ${failed}\n";
-
-    close( RPT_RESULTS );
-    close( RPT_FAILED  );
 
   }
 

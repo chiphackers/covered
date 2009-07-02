@@ -106,7 +106,15 @@ system( "rm -f merge11.7a.cdd merge11.7b.cdd merge11.7c.cdd merge11.7d.cdd" );
 &checkTest( "merge11.8", 1, $check_type );
 system( "rm -f merge11.8a.cdd merge11.8b.cdd merge11.8c.cdd merge11.8d.cdd" );
 
-system( "rm -f merge11a.cdd merge11b.cdd merge11c.cdd merge11d.cdd merge11e.cdd merge11f.cdd merge11g.cdd merge11h.cdd" ) && die;
+# Remove intermediate CDD files
+&checkTest( "merge11a", 1, 6 );
+&checkTest( "merge11b", 1, 6 );
+&checkTest( "merge11c", 1, 6 );
+&checkTest( "merge11d", 1, 6 );
+&checkTest( "merge11e", 1, 6 );
+&checkTest( "merge11f", 1, 6 );
+&checkTest( "merge11g", 1, 6 );
+&checkTest( "merge11h", 1, 6 );
 
 exit 0;
 
