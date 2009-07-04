@@ -3152,8 +3152,6 @@ bool vector_vcd_assign(
         if( sscanf( value, "%lf", &real ) == 1 ) {
           retval = !DEQ( vec->value.r64->val, real );
           vec->value.r64->val = real;
-        } else {
-          assert( 0 );
         }
       }
       break;
@@ -3163,8 +3161,6 @@ bool vector_vcd_assign(
         if( sscanf( value, "%f", &real ) != 1 ) {
           retval = !FEQ( vec->value.r32->val, real );
           vec->value.r32->val = real;
-        } else {
-          assert( 0 );
         }
       }
       break;

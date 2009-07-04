@@ -635,7 +635,7 @@ description
         func_unit* funit;
         generator_flush_work_code;
         /* If this is not an automatic function, place all intermediate signals within the function */
-        if( ($2 == FALSE) && ((funit = db_get_tfn_by_position( @5.first_line, @5.first_column )) != NULL) && (funit->suppl.part.staticf == 1) ) {
+        if( ((funit = db_get_tfn_by_position( @5.first_line, @5.first_column )) != NULL) && generator_is_static_function( funit ) ) {
           generator_push_funit( funit );
           generator_push_reg_insert();
         }
@@ -651,7 +651,7 @@ description
         parser_end_task_function( @12.first_line );
       } else {
         func_unit* funit;
-        if( ($2 == FALSE) && ((funit = db_get_tfn_by_position( @5.first_line, @5.first_column )) != NULL) && (funit->suppl.part.staticf == 1) ) {
+        if( ((funit = db_get_tfn_by_position( @5.first_line, @5.first_column )) != NULL) && generator_is_static_function( funit ) ) {
           generator_pop_reg_insert();
           generator_pop_funit();
         }
@@ -3675,7 +3675,7 @@ module_item
       if( !parse_mode ) {
         func_unit* funit;
         // generator_flush_work_code;
-        if( ($3 == FALSE) && ((funit = db_get_tfn_by_position( @6.first_line, @6.first_column )) != NULL) && (funit->suppl.part.staticf == 1) ) {
+        if( ((funit = db_get_tfn_by_position( @6.first_line, @6.first_column )) != NULL) && generator_is_static_function( funit ) ) {
           generator_push_funit( funit );
           generator_push_reg_insert();
         }
@@ -3708,7 +3708,7 @@ module_item
         }
       } else {
         func_unit* funit;
-        if( ($3 == FALSE) && ((funit = db_get_tfn_by_position( @6.first_line, @6.first_column )) != NULL) && (funit->suppl.part.staticf == 1) ) {
+        if( ((funit = db_get_tfn_by_position( @6.first_line, @6.first_column )) != NULL) && generator_is_static_function( funit ) ) {
           generator_pop_reg_insert();
           generator_pop_funit();
         }

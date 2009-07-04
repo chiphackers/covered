@@ -45,6 +45,11 @@
 /*! \brief Outputs the current state of the code generator to standard output for debugging purposes. */
 void generator_display();
 
+/*! \brief Returns TRUE if the given functional unit is within a static function; otherwise, returns FALSE. */
+bool generator_is_static_function(
+  func_unit* funit
+);
+
 /*! \brief Replaces original code with the specified code string. */
 void generator_replace(
   const char*  str,

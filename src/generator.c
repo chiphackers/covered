@@ -269,6 +269,27 @@ static bool generator_is_static_function_only(
 }
 
 /*!
+ \return Returns TRUE if the given functional unit is within a static function; otherwise, returns FALSE.
+*/
+bool generator_is_static_function(
+  func_unit* funit  /*!< Pointer to functional unit to check */
+) { PROFILE(GENERATOR_IS_STATIC_FUNCTION);
+
+  func_unit* func = funit_get_curr_function( funit );
+
+  printf( "In generator_is_static_function\n" );
+
+  if( func != NULL ) {
+    printf( "Found function %s, staticf: %d\n", func->name, func->suppl.part.staticf );
+  }
+
+  PROFILE_END;
+
+  return( (func != NULL) && (func->suppl.part.staticf == 1) );
+
+}
+
+/*!
  Replaces a portion (as specified by the line and column inputs) of the currently
  marked code segment (marking occurs automatically) with the given string.
 */
