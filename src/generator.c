@@ -277,12 +277,6 @@ bool generator_is_static_function(
 
   func_unit* func = funit_get_curr_function( funit );
 
-  printf( "In generator_is_static_function\n" );
-
-  if( func != NULL ) {
-    printf( "Found function %s, staticf: %d\n", func->name, func->suppl.part.staticf );
-  }
-
   PROFILE_END;
 
   return( (func != NULL) && (func->suppl.part.staticf == 1) );
