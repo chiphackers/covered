@@ -124,7 +124,7 @@ DIAGS1        = add1              aedge1            aedge1.1          afunc1    
                 mbit_sel5.4       mbit_sel6         mbit_sel6.1       mbit_sel6.2       mbit_sel6.3 \
                 mbit_sel6.4       mbit_sel7         mbit_sel9         mbit_sel9.1       mbit_sel9.2 \
                 mem1              mem2              mem3              mem4              mem4.1 \
-                mem6              mem6.1            mem6.2            mem6.3            mem6.4 \
+                mem5              mem6              mem6.1            mem6.2            mem6.3            mem6.4 \
                 mod1              monitor1          monitor1.1        msg1              mult1 \
                 mult2             multi_exp1        multi_exp1.1      multi_exp1.2      multi_exp1.3 \
                 multi_exp1.4      multi_exp1.5      multi_exp1.6      multi_exp1.7      multi_exp1.8 \
@@ -281,10 +281,6 @@ NOSIMERRLIST  = bug2791651        comment1          enum2             err4      
                 timescale3.5      timescale3.6      timescale3.7      timescale3.8      timescale3.9 \
                 timescale3.10     timescale3.11     timescale3.12     timescale3.13     timescale3.14
            
-# VCSONLYDIAGS1
-# These need to go back in:
-#               mem5              
-
 # null_stmt1.4  real4            timescale4.15
 
 # Exclude diagnostics for each simulator type
@@ -327,16 +323,16 @@ EXCLUDE      += afunc1            afunc2            always5.1         always_com
                 marray1.2         marray1.3         marray2           marray2.1         marray2.2 \
                 marray2.3         mbit_sel5         mbit_sel5.1       mbit_sel5.2       mbit_sel5.3 \
                 mbit_sel5.4       mbit_sel6         mbit_sel6.1       mbit_sel6.2       mbit_sel6.3 \
-                mbit_sel6.4       mem3              mem4              mem4.1            nand1 \
-                nor1              op_assign1        ovl1              ovl1.1            ovl1.2 \
-                ovl1.3            param8.2          param10.1         param10.5         param12 \
-                param12.1         port2             profile_err1      real1.1           real5.11 \
-                real5.12          real5.13          real5.14          real5.15          real5.16 \
-                real6.10          real6.11          real6.12          real6.13          report4 \
-                report4.1         sbit_sel3.2       shortint1         signed4.1         slist3.1 \
-                slist3.3          static2           static2.1         static2.2         static_afunc1 \
-                static_func1      static_func1.1    static_func2      static_func2.1    static_func2.2 \
-                static_func2.3    static_func3      static_func4      timescale1.1 \
+                mbit_sel6.4       mem3              mem4              mem4.1            mem5 \
+                nand1             nor1              op_assign1        ovl1              ovl1.1 \
+                ovl1.2            ovl1.3            param8.2          param10.1         param10.5 \
+                param12           param12.1         port2             profile_err1      real1.1 \
+                real5.11          real5.12          real5.13          real5.14          real5.15 \
+                real5.16          real6.10          real6.11          real6.12          real6.13 \
+                report4           report4.1         sbit_sel3.2       shortint1         signed4.1 \
+                slist3.1          slist3.3          static2           static2.1         static2.2 \
+                static_afunc1     static_func1      static_func1.1    static_func2      static_func2.1 \
+                static_func2.2    static_func2.3    static_func3      static_func4      timescale1.1 \
                 timescale1.2      timescale1.3      timescale1.4      timescale1.5      timescale1.7 \
                 timescale1.8      timescale1.10     timescale1.11     timescale1.13     timescale1.14 \
                 timescale1.19     timescale2.1      timescale4        timescale4.1      timescale4.2 \
@@ -401,7 +397,7 @@ EXCLUDE      += afunc1            afunc2            always5.1         always_com
                 marray2.3         mbit_sel5         mbit_sel5.1       mbit_sel5.2       mbit_sel5.3 \
                 mbit_sel5.4       mbit_sel6         mbit_sel6.1       mbit_sel6.2       mbit_sel6.3 \
                 mbit_sel6.4       mem2              mem3              mem4              mem4.1 \
-                mem6              mem6.3            named_block2      nand1             nor1 \
+                mem5              mem6              mem6.3            named_block2      nand1             nor1 \
                 null_stmt2        null_stmt2.1      op_assign1        ovl1              ovl1.1            ovl1.2 \
                 ovl1.3            param7            param8            param8.1          param8.2 \
                 param9.1          param9.2          param10           param10.1         param10.2 \
@@ -454,12 +450,12 @@ EXCLUDE      += afunc1            afunc2            always_comb1      always_com
                 generate7.2       generate8.1       generate8.2       generate8.3       generate8.4 \
                 generate8.5       generate8.6       generate8.7       generate8.8       generate9 \
                 generate9.1       generate9.2       generate9.3       generate11.4      generate13 \
-                generate14        generate16        hier1.1 \
-                inc1              inc1.1            inc2              inc3              inc3.1 \
-                int1              line1             logic1            longint1          long_sig \
-                marray1           marray1.1         marray1.2         marray1.3         marray2 \
-                marray2.1         marray2.2         marray2.3         mbit_sel5.4       mbit_sel6.4 \
-                mem3              null_stmt2        null_stmt2.1      op_assign1        param8.2 \
+                generate14        generate16        hier1.1           inc1              inc1.1 \
+                inc2              inc3              inc3.1            int1              line1 \
+                logic1            longint1          long_sig          marray1           marray1.1 \
+                marray1.2         marray1.3         marray2           marray2.1         marray2.2 \
+                marray2.3         mbit_sel5.4       mbit_sel6.4       mem3              mem5 \
+                null_stmt2        null_stmt2.1      op_assign1        param8.2 \
                 param12           param12.1         port4             random1.2         random1.3 \
                 real5.11          real5.12          real5.13          real5.14          real5.15 \
                 real5.16          real6.10          real6.11          real6.12          real6.13 \
@@ -537,7 +533,7 @@ endif
 # List of diagnostics that should not be run if we are running in inlined mode
 ifdef INLINE
 DIAGS         += assign4          example2          example2.1        example2.2        example2.3 \
-                 example2.4       example2.5
+                 example2.4       example2.5        mem5
 
 EXCLUDE       += bug2794588       case5             casex2            casez3            example1 \
                  exclude5.1       exclude5.3        param10.1         param10.5         sbit_sel3.2 \
