@@ -879,11 +879,13 @@ WSPACE [ \t\b\f]+
   yylloc.first_column = yylloc.last_column;
   yylloc.last_column += strlen( yytext );
   if( !parse_mode ) {
-    if( rc == K_endmodule ) {
-      generator_flush_all;
-      generator_insert_fsm_covs();
+    if( (rc != K_begin) && (rc != K_end) ) {
+      if( rc == K_endmodule ) {
+        generator_flush_all;
+        generator_insert_fsm_covs();
+      }
+      generator_add_orig_to_work_code( yytext, yylloc.ppline, yylloc.first_column );
     }
-    generator_add_orig_to_work_code( yytext, yylloc.ppline, yylloc.first_column );
   }
   if( rc == IDENTIFIER ) {
     if( (generate_mode == 0) && ((last_gi == NULL) || (last_gi->suppl.part.type != GI_TYPE_INST)) && (strchr( yytext, '.' ) != NULL) ) {

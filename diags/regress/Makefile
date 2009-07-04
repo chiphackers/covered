@@ -173,7 +173,7 @@ DIAGS1        = add1              aedge1            aedge1.1          afunc1    
                 slist3.2          slist3.3          slist4            slist6            static1 \
                 static2           static2.1         static2.2         static3           static_afunc1 \
                 static_func1      static_func1.1    static_func2      static_func2.1    static_func2.2 \
-                static_func2.3    static_func3   static_func4         string1           string2 \
+                static_func2.3    static_func3      static_func4      string1           string2 \
                 string2.1         strobe1           supply0           supply1           task1 \
                 task1.1           task2             task2.1           task2.2           task2.3 \
                 task3             task3.1           task4             task4.1           task6 \
@@ -283,8 +283,7 @@ NOSIMERRLIST  = bug2791651        comment1          enum2             err4      
            
 # VCSONLYDIAGS1
 # These need to go back in:
-#               mem5              static_afunc1     static_func1      static_func1.1    static_func2      static_func2.1
-#               static_func2.2    static_func2.3    static_func3
+#               mem5              
 
 # null_stmt1.4  real4            timescale4.15
 
@@ -335,8 +334,9 @@ EXCLUDE      += afunc1            afunc2            always5.1         always_com
                 real5.12          real5.13          real5.14          real5.15          real5.16 \
                 real6.10          real6.11          real6.12          real6.13          report4 \
                 report4.1         sbit_sel3.2       shortint1         signed4.1         slist3.1 \
-                slist3.3          static2           static2.1         static2.2         static_func4 \
-                timescale1.1 \
+                slist3.3          static2           static2.1         static2.2         static_afunc1 \
+                static_func1      static_func1.1    static_func2      static_func2.1    static_func2.2 \
+                static_func2.3    static_func3      static_func4      timescale1.1 \
                 timescale1.2      timescale1.3      timescale1.4      timescale1.5      timescale1.7 \
                 timescale1.8      timescale1.10     timescale1.11     timescale1.13     timescale1.14 \
                 timescale1.19     timescale2.1      timescale4        timescale4.1      timescale4.2 \
@@ -420,7 +420,9 @@ EXCLUDE      += afunc1            afunc2            always5.1         always_com
                 signed4.1         signed4.2         signed5           signed6           slist1 \
                 slist1.1          slist1.2          slist1.3          slist2            slist3 \
                 slist3.1          slist3.2          slist3.3          slist4            slist6 \
-                static_func4      supply1           task3             task3.1           task4             task4.1 \
+                static_afunc1     static_func1      static_func1.1    static_func2      static_func2.1 \
+                static_func2.2    static_func2.3    static_func3      static_func4      supply1 \
+                task3             task3.1           task4             task4.1 \
                 time1.1           timescale1.3      timescale1.4      timescale1.5      timescale2.6 \
                 timescale2.7      timescale4        timescale4.1      timescale4.2      timescale4.3 \
                 timescale4.4      timescale4.5      timescale4.6      timescale4.7      timescale4.8 \
@@ -462,7 +464,9 @@ EXCLUDE      += afunc1            afunc2            always_comb1      always_com
                 real5.11          real5.12          real5.13          real5.14          real5.15 \
                 real5.16          real6.10          real6.11          real6.12          real6.13 \
                 real8             sbit_sel2.1       sbit_sel3.2       shortint1         signed4.1 \
-                slist3.1          slist3.3          static_func4      timescale1.16     timescale1.17     timescale1.18 \
+                slist3.1          slist3.3          static_afunc1     static_func1      static_func1.1 \
+                static_func2      static_func2.1    static_func2.2    static_func2.3    static_func3 \
+                static_func4      timescale1.16     timescale1.17     timescale1.18 \
                 timescale1.20     timescale2.5      timescale2.6      timescale2.7      timescale2.8 \
                 timescale4        timescale4.1      timescale4.9      timescale4.10     timescale4.11 \
                 timescale4.12     timescale4.13     timescale4.14     timescale4.16     trireg \

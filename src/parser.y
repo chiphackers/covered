@@ -3674,7 +3674,7 @@ module_item
     {
       if( !parse_mode ) {
         func_unit* funit;
-        generator_flush_work_code;
+        // generator_flush_work_code;
         if( ($3 == FALSE) && ((funit = db_get_tfn_by_position( @6.first_line, @6.first_column )) != NULL) && (funit->suppl.part.staticf == 1) ) {
           generator_push_funit( funit );
           generator_push_reg_insert();

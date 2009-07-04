@@ -88,11 +88,6 @@ funit_link* funit_top = NULL;
 FILE* curr_ofile = NULL;
 
 /*!
- Buffer containing lookahead token.
-*/
-char lahead_buffer[4096];
-
-/*!
  Temporary holding buffer for code to be output.
 */
 char work_buffer[4096];
@@ -214,7 +209,6 @@ void generator_display() { PROFILE(GENERATOR_DISPLAY);
     strl = strl->next;
   }
   printf( "Working buffer:\n  %s\n", work_buffer );
-  printf( "Look-ahead buffer:\n  %s\n", lahead_buffer );
 
   PROFILE_END;
 
