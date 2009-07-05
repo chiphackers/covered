@@ -1,37 +1,33 @@
+2009-07-04 17:48  phase1geo
+
+	Updating regression files.
+
+2009-07-04 17:45  phase1geo
+
+	Removing unnecessary output.
+
+2009-07-04 14:44  phase1geo
+
+	Regression updates.
+
+2009-07-04 01:09  phase1geo
+
+	Fixing regression issues with inlined code coverage.
+
+2009-07-03 23:45  phase1geo
+
+	Fixing regression issues with last submission.	Removing static
+	function diagnostics from IV, Cver and Veriwell regression runs. 
+	Removing lookahead buffer code from code generator (this was deemed
+	to not be necessary).
+
 2009-07-02 16:45  phase1geo
 
-	* src/: generator.c, genprof.c, genprof.h, lexer.l, parser.y:
 	Working on changes to fully support static functions.  Also started
 	to put support in for a look-ahead buffer to the code generator.
 
 2009-07-02 11:42  phase1geo
 
-	* diags/cdd/afunc1.cdd, diags/cdd/afunc2.cdd,
-	diags/cdd/exclude3.cdd, diags/cdd/exclude4.cdd,
-	diags/cdd/exclude6.1.cdd, diags/cdd/exclude6.cdd,
-	diags/cdd/exclude9.4.cdd, diags/cdd/func1.cdd, diags/cdd/func2.cdd,
-	diags/cdd/func5.cdd, diags/cdd/generate9.2.cdd,
-	diags/cdd/generate9.3.cdd, diags/cdd/nested_block2.1.cdd,
-	diags/cdd/nested_block2.cdd, diags/cdd/port3.cdd,
-	diags/cdd/real5.1.cdd, diags/cdd/real5.11.cdd,
-	diags/cdd/real5.12.cdd, diags/cdd/real5.13.cdd,
-	diags/cdd/real5.14.cdd, diags/cdd/real5.15.cdd,
-	diags/cdd/real5.16.cdd, diags/cdd/real5.2.cdd,
-	diags/cdd/real5.3.cdd, diags/cdd/real6.1.cdd,
-	diags/cdd/real6.10.cdd, diags/cdd/real6.11.cdd,
-	diags/cdd/real6.12.cdd, diags/cdd/real6.13.cdd,
-	diags/cdd/real6.2.cdd, diags/cdd/real6.3.cdd, diags/cdd/real6.cdd,
-	diags/cdd/real7.cdd, diags/cdd/sbit_sel3.1.cdd,
-	diags/cdd/sbit_sel3.2.cdd, diags/cdd/static_afunc1.cdd,
-	diags/cdd/static_func1.1.cdd, diags/cdd/static_func1.cdd,
-	diags/cdd/static_func2.1.cdd, diags/cdd/static_func2.2.cdd,
-	diags/cdd/static_func2.3.cdd, diags/cdd/static_func2.cdd,
-	diags/cdd/static_func3.cdd, diags/cdd/static_func4.cdd,
-	diags/cdd/value_plusargs5.cdd, diags/cdd/value_plusargs6.cdd,
-	diags/cdd/value_plusargs7.cdd, diags/cdd/version1.1.cdd,
-	diags/cdd/version1.cdd, diags/regress/Makefile, src/binding.c,
-	src/binding.h, src/db.c, src/db.h, src/defines.h, src/expr.c,
-	src/gen_item.c, src/parser.y, src/parser_func.c, src/static.c:
 	Completing work on marking functions as statically used and/or
 	normally used to the CDD file.	Finished regression file updates
 	and re-added static function tests to regression (although these
@@ -39,1655 +35,2445 @@
 
 2009-07-02 08:06  phase1geo
 
-	* diags/cdd/: afunc1.cdd, afunc2.cdd, always_comb1.cdd,
-	always_comb2.cdd, always_ff1.cdd, always_latch1.cdd,
-	always_latch2.cdd, assert1.cdd, atask1.cdd, bit1.cdd, byte1.cdd,
-	char1.cdd, dec1.1.cdd, dec1.cdd, dec2.cdd, dec3.1.cdd, dec3.cdd,
-	dly_assign2.1.cdd, dly_assign2.cdd, do_while1.1.cdd, do_while1.cdd,
-	do_while2.cdd, elsif1.cdd, enum1.1.cdd, enum1.2.cdd, enum1.3.cdd,
-	enum1.cdd, enum2.1.cdd, exclude5.1.cdd, exclude5.2.cdd,
-	exclude5.3.cdd, exclude5.cdd, exponent1.cdd, final1.cdd, for3.cdd,
-	for5.1.cdd, for5.10.cdd, for5.2.cdd, for5.3.cdd, for5.4.cdd,
-	for5.5.cdd, for5.6.cdd, for5.8.cdd, for5.9.cdd, for5.cdd, for6.cdd,
-	generate1.1.cdd, generate11.4.cdd, generate13.cdd, generate14.cdd,
-	generate16.cdd, generate2.cdd, generate3.1.cdd, generate3.cdd,
-	generate6.cdd, generate7.1.cdd, generate7.2.cdd, generate7.cdd,
-	generate8.1.cdd, generate8.2.cdd, generate8.3.cdd, generate8.4.cdd,
-	generate8.5.cdd, generate8.6.cdd, generate8.7.cdd, generate8.8.cdd,
-	generate9.1.cdd, generate9.2.cdd, generate9.3.cdd, generate9.cdd,
-	hier1.1.cdd, inc1.1.cdd, inc1.cdd, inc2.cdd, inc3.1.cdd, inc3.cdd,
-	int1.cdd, line1.cdd, logic1.cdd, longint1.cdd, marray1.1.cdd,
-	marray1.2.cdd, marray1.3.cdd, marray1.cdd, marray2.1.cdd,
-	marray2.2.cdd, marray2.3.cdd, marray2.cdd, mbit_sel5.4.cdd,
-	mbit_sel6.4.cdd, mem3.cdd, op_assign1.cdd, param12.1.cdd,
-	param12.cdd, param8.2.cdd, real5.11.cdd, real5.12.cdd,
-	real5.13.cdd, real5.14.cdd, real5.15.cdd, real5.16.cdd,
-	real6.10.cdd, real6.11.cdd, real6.12.cdd, real6.13.cdd,
-	sbit_sel3.2.cdd, shortint1.cdd, signed4.1.cdd, slist3.1.cdd,
-	slist3.3.cdd, static_func4.cdd, timescale4.1.cdd,
-	timescale4.10.cdd, timescale4.11.cdd, timescale4.12.cdd,
-	timescale4.13.cdd, timescale4.14.cdd, timescale4.16.cdd,
-	timescale4.9.cdd, timescale4.cdd, trireg.cdd, urandom1.2.cdd,
-	urandom1.3.cdd, urandom_range1.cdd, urandom_range2.cdd: Updates to
-	VCS regressions with CDD version upgrade.
+	Updates to VCS regressions with CDD version upgrade.
 
 2009-07-01 22:18  phase1geo
 
-	* diags/: cdd/dly_assign1.1.cdd, cdd/dly_assign1.2.cdd,
-	cdd/dly_assign1.3.cdd, cdd/dly_assign1.4.cdd, cdd/elsif1.1.cdd,
-	cdd/elsif1.2.cdd, cdd/elsif1.3.cdd, cdd/elsif1.4.cdd,
-	cdd/elsif2.1.cdd, cdd/elsif2.cdd, cdd/fmonitor1.cdd,
-	cdd/gate1.1.cdd, cdd/long_sig.cdd, cdd/merge10a.cdd,
-	cdd/merge10b.cdd, cdd/merge10c.cdd, cdd/merge10d.cdd,
-	cdd/merge10e.cdd, cdd/merge10f.cdd, cdd/merge10g.cdd,
-	cdd/merge10h.cdd, cdd/merge11a.cdd, cdd/merge11b.cdd,
-	cdd/merge11c.cdd, cdd/merge11d.cdd, cdd/merge11e.cdd,
-	cdd/merge11f.cdd, cdd/merge11g.cdd, cdd/merge11h.cdd,
-	cdd/null_stmt2.1.cdd, cdd/null_stmt2.cdd, cdd/port4.cdd,
-	cdd/random1.2.cdd, cdd/random1.3.cdd, cdd/real8.cdd,
-	cdd/sbit_sel2.1.cdd, cdd/timescale1.16.cdd, cdd/timescale1.17.cdd,
-	cdd/timescale1.18.cdd, cdd/timescale1.20.cdd, cdd/timescale2.5.cdd,
-	cdd/timescale2.6.cdd, cdd/timescale2.7.cdd, cdd/timescale2.8.cdd,
-	regress/merge11.pl, verilog/regress_subs.pl: Fixing checkTest
-	subroutine and updating all of the regression files for the IV,
-	Cver and Veriwell regression runs.
+	Fixing checkTest subroutine and updating all of the regression
+	files for the IV, Cver and Veriwell regression runs.
 
 2009-07-01 18:18  phase1geo
 
-	* diags/cdd/add1.cdd, diags/cdd/aedge1.1.cdd, diags/cdd/aedge1.cdd,
-	diags/cdd/always1.cdd, diags/cdd/always10.cdd,
-	diags/cdd/always11.1.cdd, diags/cdd/always11.2.cdd,
-	diags/cdd/always11.cdd, diags/cdd/always12.cdd,
-	diags/cdd/always13.cdd, diags/cdd/always15.cdd,
-	diags/cdd/always2.cdd, diags/cdd/always3.1.11A.cdd,
-	diags/cdd/always3.cdd, diags/cdd/always4.cdd,
-	diags/cdd/always5.1.cdd, diags/cdd/always5.cdd,
-	diags/cdd/always6.cdd, diags/cdd/always7.1.cdd,
-	diags/cdd/always7.cdd, diags/cdd/always8.cdd,
-	diags/cdd/always9.cdd, diags/cdd/ashift1.cdd,
-	diags/cdd/ashift2.cdd, diags/cdd/ashift3.cdd,
-	diags/cdd/ashift4.cdd, diags/cdd/assign1.cdd,
-	diags/cdd/assign2.1.cdd, diags/cdd/assign2.2.cdd,
-	diags/cdd/assign2.3.cdd, diags/cdd/assign2.4.cdd,
-	diags/cdd/assign2.5.cdd, diags/cdd/assign2.6.cdd,
-	diags/cdd/assign2.7.cdd, diags/cdd/assign2.8.cdd,
-	diags/cdd/assign2.9.cdd, diags/cdd/assign2.cdd,
-	diags/cdd/assign3.2A.cdd, diags/cdd/bassign1.cdd,
-	diags/cdd/bassign2.cdd, diags/cdd/bassign3.cdd,
-	diags/cdd/bitwise1.cdd, diags/cdd/block1.cdd,
-	diags/cdd/bug2794588.cdd, diags/cdd/case1.1.cdd,
-	diags/cdd/case1.2.cdd, diags/cdd/case1.3.cdd, diags/cdd/case1.cdd,
-	diags/cdd/case2.cdd, diags/cdd/case3.1.cdd, diags/cdd/case3.2.cdd,
-	diags/cdd/case3.3.cdd, diags/cdd/case3.4.cdd, diags/cdd/case3.cdd,
-	diags/cdd/case4.1.cdd, diags/cdd/case4.cdd, diags/cdd/case5.cdd,
-	diags/cdd/case6.cdd, diags/cdd/casex1.1.cdd,
-	diags/cdd/casex1.2.cdd, diags/cdd/casex1.3.cdd,
-	diags/cdd/casex1.4.cdd, diags/cdd/casex1.cdd, diags/cdd/casex2.cdd,
-	diags/cdd/casex3.cdd, diags/cdd/casez1.1.cdd,
-	diags/cdd/casez1.2.cdd, diags/cdd/casez1.3.cdd,
-	diags/cdd/casez1.4.cdd, diags/cdd/casez1.cdd, diags/cdd/casez2.cdd,
-	diags/cdd/casez3.cdd, diags/cdd/casez4.cdd, diags/cdd/casez5.cdd,
-	diags/cdd/ceq1.cdd, diags/cdd/cne1.cdd, diags/cdd/compx1.1.cdd,
-	diags/cdd/compx1.2.cdd, diags/cdd/compx1.3.cdd,
-	diags/cdd/compx1.cdd, diags/cdd/concat1.cdd, diags/cdd/concat2.cdd,
-	diags/cdd/concat3.cdd, diags/cdd/concat4.1.cdd,
-	diags/cdd/concat4.2.cdd, diags/cdd/concat5.cdd,
-	diags/cdd/concat6.cdd, diags/cdd/concat7.cdd,
-	diags/cdd/concat8.cdd, diags/cdd/cond1.cdd, diags/cdd/cond2.cdd,
-	diags/cdd/cond3.1.cdd, diags/cdd/cond3.2.cdd,
-	diags/cdd/cond3.3.cdd, diags/cdd/cond3.cdd,
-	diags/cdd/define1.1.cdd, diags/cdd/define1.2.cdd,
-	diags/cdd/define1.cdd, diags/cdd/define2.1.cdd,
-	diags/cdd/define2.cdd, diags/cdd/define3.cdd,
-	diags/cdd/define4.cdd, diags/cdd/define5.cdd,
-	diags/cdd/define6.1.cdd, diags/cdd/define6.cdd,
-	diags/cdd/delay1.1.cdd, diags/cdd/delay1.2.cdd,
-	diags/cdd/delay1.3.cdd, diags/cdd/delay1.cdd, diags/cdd/delay2.cdd,
-	diags/cdd/delay3.cdd, diags/cdd/disable1.1.cdd,
-	diags/cdd/disable1.cdd, diags/cdd/disable2.1.cdd,
-	diags/cdd/disable2.cdd, diags/cdd/disable3.cdd,
-	diags/cdd/display1.cdd, diags/cdd/div1.cdd,
-	diags/cdd/dly_assign1.cdd, diags/cdd/elsif3.cdd,
-	diags/cdd/endian1.cdd, diags/cdd/endian2.cdd,
-	diags/cdd/endian3.cdd, diags/cdd/endian4.cdd, diags/cdd/err3.1.cdd,
-	diags/cdd/err3.cdd, diags/cdd/err7.cdd, diags/cdd/event1.1.cdd,
-	diags/cdd/event1.cdd, diags/cdd/event2.cdd, diags/cdd/example.cdd,
-	diags/cdd/example1.cdd, diags/cdd/exclude1.cdd,
-	diags/cdd/exclude10.1.cdd, diags/cdd/exclude10.2.cdd,
-	diags/cdd/exclude10.3.1.cdd, diags/cdd/exclude10.3.2.cdd,
-	diags/cdd/exclude10.3.3.cdd, diags/cdd/exclude10.3.cdd,
-	diags/cdd/exclude10.4.cdd, diags/cdd/exclude10.5.cdd,
-	diags/cdd/exclude10.cdd, diags/cdd/exclude11.cdd,
-	diags/cdd/exclude14.cdd, diags/cdd/exclude2.cdd,
-	diags/cdd/exclude3.cdd, diags/cdd/exclude4.cdd,
-	diags/cdd/exclude6.1.cdd, diags/cdd/exclude6.cdd,
-	diags/cdd/exclude7.1.cdd, diags/cdd/exclude7.2.cdd,
-	diags/cdd/exclude7.3.cdd, diags/cdd/exclude7.cdd,
-	diags/cdd/exclude8.1.cdd, diags/cdd/exclude8.cdd,
-	diags/cdd/exclude9.1.cdd, diags/cdd/exclude9.2.cdd,
-	diags/cdd/exclude9.3.cdd, diags/cdd/exclude9.4.cdd,
-	diags/cdd/exclude9.5.cdd, diags/cdd/exclude9.6.cdd,
-	diags/cdd/exclude9.7.cdd, diags/cdd/exclude9.8.cdd,
-	diags/cdd/exclude9.9.cdd, diags/cdd/exclude9.cdd,
-	diags/cdd/expand1.cdd, diags/cdd/expand2.cdd,
-	diags/cdd/expand3.cdd, diags/cdd/expand4.1.cdd,
-	diags/cdd/expand4.2.cdd, diags/cdd/expand4.3.cdd,
-	diags/cdd/expand4.4.cdd, diags/cdd/expand4.cdd,
-	diags/cdd/fdisplay1.cdd, diags/cdd/finish1.cdd, diags/cdd/for1.cdd,
-	diags/cdd/for2.cdd, diags/cdd/forever1.cdd, diags/cdd/fork1.cdd,
-	diags/cdd/fork2.cdd, diags/cdd/fsm1.1.cdd, diags/cdd/fsm1.2.cdd,
-	diags/cdd/fsm1.3.cdd, diags/cdd/fsm1.4.cdd, diags/cdd/fsm1.cdd,
-	diags/cdd/fsm10.1.cdd, diags/cdd/fsm10.2.cdd, diags/cdd/fsm10.cdd,
-	diags/cdd/fsm11.cdd, diags/cdd/fsm2.cdd, diags/cdd/fsm2a.cdd,
-	diags/cdd/fsm2b.cdd, diags/cdd/fsm3.cdd, diags/cdd/fsm4.1.cdd,
-	diags/cdd/fsm4.cdd, diags/cdd/fsm5.1.cdd, diags/cdd/fsm5.2.cdd,
-	diags/cdd/fsm5.3.cdd, diags/cdd/fsm5.cdd, diags/cdd/fsm6.cdd,
-	diags/cdd/fsm7.1.cdd, diags/cdd/fsm7.2.cdd, diags/cdd/fsm7.3.cdd,
-	diags/cdd/fsm7.4.cdd, diags/cdd/fsm7.5.cdd, diags/cdd/fsm7.cdd,
-	diags/cdd/fsm8.1.cdd, diags/cdd/fsm8.2.cdd, diags/cdd/fsm8.3.cdd,
-	diags/cdd/fsm8.cdd, diags/cdd/fsm9.1.cdd, diags/cdd/fsm9.2.cdd,
-	diags/cdd/fsm9.cdd, diags/cdd/fstrobe1.cdd, diags/cdd/func1.cdd,
-	diags/cdd/func2.cdd, diags/cdd/func5.cdd, diags/cdd/fwrite1.cdd,
-	diags/cdd/gate1.cdd, diags/cdd/generate1.cdd,
-	diags/cdd/generate10.1.cdd, diags/cdd/generate10.2.cdd,
-	diags/cdd/generate10.cdd, diags/cdd/generate11.1.cdd,
-	diags/cdd/generate11.2.cdd, diags/cdd/generate11.3.cdd,
-	diags/cdd/generate11.cdd, diags/cdd/generate12.cdd,
-	diags/cdd/generate15.1.cdd, diags/cdd/generate15.2.cdd,
-	diags/cdd/generate15.3.cdd, diags/cdd/generate15.4.cdd,
-	diags/cdd/generate15.5.cdd, diags/cdd/generate15.cdd,
-	diags/cdd/generate16.1.cdd, diags/cdd/generate16.2.cdd,
-	diags/cdd/generate16.3.cdd, diags/cdd/generate17.cdd,
-	diags/cdd/generate18.cdd, diags/cdd/generate19.1.cdd,
-	diags/cdd/generate19.2.cdd, diags/cdd/generate19.cdd,
-	diags/cdd/generate2.1.cdd, diags/cdd/generate21.cdd,
-	diags/cdd/generate4.1.cdd, diags/cdd/generate4.cdd,
-	diags/cdd/generate5.1.cdd, diags/cdd/generate5.2.cdd,
-	diags/cdd/generate5.3.cdd, diags/cdd/generate5.cdd,
-	diags/cdd/generate8.9.cdd, diags/cdd/generate8.cdd,
-	diags/cdd/hier1.cdd, diags/cdd/hier2.cdd, diags/cdd/hier3.1.cdd,
-	diags/cdd/hier3.2.cdd, diags/cdd/hier3.3.cdd,
-	diags/cdd/hier3.4.cdd, diags/cdd/hier3.cdd, diags/cdd/hier4.cdd,
-	diags/cdd/if1.cdd, diags/cdd/ifdef1.1.cdd, diags/cdd/ifdef1.2.cdd,
-	diags/cdd/ifdef1.cdd, diags/cdd/ifdef2.1.cdd,
-	diags/cdd/ifdef2.2.cdd, diags/cdd/ifdef2.3.cdd,
-	diags/cdd/ifdef3.cdd, diags/cdd/ifelse1.cdd, diags/cdd/ifndef1.cdd,
-	diags/cdd/ifndef2.cdd, diags/cdd/implicit2.1.cdd,
-	diags/cdd/implicit2.cdd, diags/cdd/include1.1.cdd,
-	diags/cdd/include1.cdd, diags/cdd/include2.cdd,
-	diags/cdd/include4.cdd, diags/cdd/include5.cdd,
-	diags/cdd/initial1.cdd, diags/cdd/instance1.1.cdd,
-	diags/cdd/instance1.2.cdd, diags/cdd/instance1.cdd,
-	diags/cdd/instance2.cdd, diags/cdd/instance3.cdd,
-	diags/cdd/instance4.1.cdd, diags/cdd/instance4.2.cdd,
-	diags/cdd/instance4.cdd, diags/cdd/instance5.cdd,
-	diags/cdd/instance6.1.cdd, diags/cdd/instance6.2.cdd,
-	diags/cdd/instance6.cdd, diags/cdd/instance7.cdd,
-	diags/cdd/localparam1.1.cdd, diags/cdd/localparam1.2.cdd,
-	diags/cdd/localparam1.3.cdd, diags/cdd/localparam1.cdd,
-	diags/cdd/localparam2.cdd, diags/cdd/localparam3.cdd,
-	diags/cdd/long_exp1.cdd, diags/cdd/long_exp2.cdd,
-	diags/cdd/long_exp3.cdd, diags/cdd/lshift1.1.cdd,
-	diags/cdd/lshift1.2.cdd, diags/cdd/lshift1.cdd,
-	diags/cdd/lshift2.1.cdd, diags/cdd/lshift2.2.cdd,
-	diags/cdd/lshift2.3.cdd, diags/cdd/lshift2.cdd,
-	diags/cdd/lshift3.1.cdd, diags/cdd/lshift3.2.cdd,
-	diags/cdd/lshift3.3.cdd, diags/cdd/lshift3.cdd,
-	diags/cdd/lshift4.1.cdd, diags/cdd/lshift4.2.cdd,
-	diags/cdd/lshift4.3.cdd, diags/cdd/lshift4.cdd,
-	diags/cdd/lshift5.cdd, diags/cdd/mbit_sel1.cdd,
-	diags/cdd/mbit_sel2.cdd, diags/cdd/mbit_sel3.1.cdd,
-	diags/cdd/mbit_sel3.cdd, diags/cdd/mbit_sel4.1.cdd,
-	diags/cdd/mbit_sel4.2.cdd, diags/cdd/mbit_sel4.3.cdd,
-	diags/cdd/mbit_sel4.cdd, diags/cdd/mbit_sel5.1.cdd,
-	diags/cdd/mbit_sel5.2.cdd, diags/cdd/mbit_sel5.3.cdd,
-	diags/cdd/mbit_sel5.cdd, diags/cdd/mbit_sel6.1.cdd,
-	diags/cdd/mbit_sel6.2.cdd, diags/cdd/mbit_sel6.3.cdd,
-	diags/cdd/mbit_sel6.cdd, diags/cdd/mbit_sel7.cdd,
-	diags/cdd/mbit_sel9.1.cdd, diags/cdd/mbit_sel9.2.cdd,
-	diags/cdd/mbit_sel9.cdd, diags/cdd/mem1.cdd, diags/cdd/mem2.cdd,
-	diags/cdd/mem4.1.cdd, diags/cdd/mem4.cdd, diags/cdd/mem6.1.cdd,
-	diags/cdd/mem6.2.cdd, diags/cdd/mem6.3.cdd, diags/cdd/mem6.4.cdd,
-	diags/cdd/mem6.cdd, diags/cdd/merge1.cdd, diags/cdd/merge10.1.cdd,
-	diags/cdd/merge10.2.cdd, diags/cdd/merge10.3.cdd,
-	diags/cdd/merge10.4.cdd, diags/cdd/merge10.5.cdd,
-	diags/cdd/merge10.6.cdd, diags/cdd/merge10.7.cdd,
-	diags/cdd/merge10.8.cdd, diags/cdd/merge11.1.cdd,
-	diags/cdd/merge11.2.cdd, diags/cdd/merge11.3.cdd,
-	diags/cdd/merge11.4.cdd, diags/cdd/merge11.5.cdd,
-	diags/cdd/merge11.6.cdd, diags/cdd/merge11.7.cdd,
-	diags/cdd/merge11.8.cdd, diags/cdd/merge1a.cdd,
-	diags/cdd/merge1b.cdd, diags/cdd/merge2.cdd, diags/cdd/merge2a.cdd,
-	diags/cdd/merge2b.cdd, diags/cdd/merge2c.cdd, diags/cdd/merge3.cdd,
-	diags/cdd/merge3a.cdd, diags/cdd/merge3b.cdd, diags/cdd/merge4.cdd,
-	diags/cdd/merge4a.cdd, diags/cdd/merge4b.cdd,
-	diags/cdd/merge5a.cdd, diags/cdd/merge5b.cdd,
-	diags/cdd/merge5c.cdd, diags/cdd/merge5d.cdd,
-	diags/cdd/merge5e.cdd, diags/cdd/merge5f.cdd,
-	diags/cdd/merge5g.cdd, diags/cdd/merge6.1.cdd,
-	diags/cdd/merge6.cdd, diags/cdd/merge7.1.cdd,
-	diags/cdd/merge7.1a.cdd, diags/cdd/merge7.1b.cdd,
-	diags/cdd/merge7.2.cdd, diags/cdd/merge7.2a.cdd,
-	diags/cdd/merge7.2b.cdd, diags/cdd/merge7.3.cdd,
-	diags/cdd/merge7.3a.cdd, diags/cdd/merge7.3b.cdd,
-	diags/cdd/merge7.4.cdd, diags/cdd/merge7.4a.cdd,
-	diags/cdd/merge7.4b.cdd, diags/cdd/merge7.5.cdd,
-	diags/cdd/merge7.5a.cdd, diags/cdd/merge7.5b.cdd,
-	diags/cdd/merge7.6.cdd, diags/cdd/merge7.6a.cdd,
-	diags/cdd/merge7.6b.cdd, diags/cdd/merge7.7.cdd,
-	diags/cdd/merge7.7a.cdd, diags/cdd/merge7.7b.cdd,
-	diags/cdd/merge7.8.cdd, diags/cdd/merge7.8a.cdd,
-	diags/cdd/merge7.8b.cdd, diags/cdd/merge7.cdd,
-	diags/cdd/merge7a.cdd, diags/cdd/merge7b.cdd,
-	diags/cdd/merge8.1.cdd, diags/cdd/merge8.10.cdd,
-	diags/cdd/merge8.10a.cdd, diags/cdd/merge8.10b.cdd,
-	diags/cdd/merge8.11.cdd, diags/cdd/merge8.11a.cdd,
-	diags/cdd/merge8.11b.cdd, diags/cdd/merge8.1a.cdd,
-	diags/cdd/merge8.1b.cdd, diags/cdd/merge8.2.cdd,
-	diags/cdd/merge8.2a.cdd, diags/cdd/merge8.2b.cdd,
-	diags/cdd/merge8.3.cdd, diags/cdd/merge8.3a.cdd,
-	diags/cdd/merge8.3b.cdd, diags/cdd/merge8.4.cdd,
-	diags/cdd/merge8.4a.cdd, diags/cdd/merge8.4b.cdd,
-	diags/cdd/merge8.4c.cdd, diags/cdd/merge8.5.cdd,
-	diags/cdd/merge8.5a.cdd, diags/cdd/merge8.5b.cdd,
-	diags/cdd/merge8.5c.cdd, diags/cdd/merge8.6.cdd,
-	diags/cdd/merge8.6a.cdd, diags/cdd/merge8.6b.cdd,
-	diags/cdd/merge8.7.cdd, diags/cdd/merge8.7a.cdd,
-	diags/cdd/merge8.7b.cdd, diags/cdd/merge8.8.cdd,
-	diags/cdd/merge8.8a.cdd, diags/cdd/merge8.8b.cdd,
-	diags/cdd/merge8.9.cdd, diags/cdd/merge8.9a.cdd,
-	diags/cdd/merge8.9b.cdd, diags/cdd/merge8.cdd,
-	diags/cdd/merge8a.cdd, diags/cdd/merge8b.cdd, diags/cdd/merge9.cdd,
-	diags/cdd/merge9a.cdd, diags/cdd/merge9b.cdd,
-	diags/cdd/merge_err1a.cdd, diags/cdd/merge_err1b.cdd,
-	diags/cdd/merge_err2.1.cdd, diags/cdd/mod1.cdd,
-	diags/cdd/monitor1.1.cdd, diags/cdd/monitor1.cdd,
-	diags/cdd/msg1.cdd, diags/cdd/mult1.cdd, diags/cdd/mult2.cdd,
-	diags/cdd/multi_exp1.1.cdd, diags/cdd/multi_exp1.10.cdd,
-	diags/cdd/multi_exp1.11.cdd, diags/cdd/multi_exp1.12.cdd,
-	diags/cdd/multi_exp1.13.cdd, diags/cdd/multi_exp1.14.cdd,
-	diags/cdd/multi_exp1.15.cdd, diags/cdd/multi_exp1.2.cdd,
-	diags/cdd/multi_exp1.3.cdd, diags/cdd/multi_exp1.4.cdd,
-	diags/cdd/multi_exp1.5.cdd, diags/cdd/multi_exp1.6.cdd,
-	diags/cdd/multi_exp1.7.cdd, diags/cdd/multi_exp1.8.cdd,
-	diags/cdd/multi_exp1.9.cdd, diags/cdd/multi_exp1.cdd,
-	diags/cdd/multi_exp2.1.cdd, diags/cdd/multi_exp2.cdd,
-	diags/cdd/multi_exp3.cdd, diags/cdd/multi_exp4.cdd,
-	diags/cdd/named_block1.cdd, diags/cdd/named_block2.cdd,
-	diags/cdd/named_block3.cdd, diags/cdd/named_block4.cdd,
-	diags/cdd/nand1.cdd, diags/cdd/nedge1.cdd, diags/cdd/negate1.cdd,
-	diags/cdd/negate2.cdd, diags/cdd/nested_block1.cdd,
-	diags/cdd/nested_block2.1.cdd, diags/cdd/nested_block2.cdd,
-	diags/cdd/nested_block3.cdd, diags/cdd/nor1.cdd,
-	diags/cdd/not1.cdd, diags/cdd/null_stmt1.1.cdd,
-	diags/cdd/null_stmt1.10.cdd, diags/cdd/null_stmt1.2.cdd,
-	diags/cdd/null_stmt1.3.cdd, diags/cdd/null_stmt1.5.cdd,
-	diags/cdd/null_stmt1.6.cdd, diags/cdd/null_stmt1.7.cdd,
-	diags/cdd/null_stmt1.8.cdd, diags/cdd/null_stmt1.9.cdd,
-	diags/cdd/null_stmt1.cdd, diags/cdd/ovl1.1.cdd,
-	diags/cdd/ovl1.2.cdd, diags/cdd/ovl1.3.cdd, diags/cdd/ovl1.cdd,
-	diags/cdd/param1.1.cdd, diags/cdd/param1.2.cdd,
-	diags/cdd/param1.3.cdd, diags/cdd/param1.cdd,
-	diags/cdd/param10.1.cdd, diags/cdd/param10.2.cdd,
-	diags/cdd/param10.3.cdd, diags/cdd/param10.4.cdd,
-	diags/cdd/param10.5.cdd, diags/cdd/param10.cdd,
-	diags/cdd/param11.cdd, diags/cdd/param13.1.cdd,
-	diags/cdd/param13.cdd, diags/cdd/param14.cdd,
-	diags/cdd/param15.cdd, diags/cdd/param16.cdd,
-	diags/cdd/param17.1.cdd, diags/cdd/param17.cdd,
-	diags/cdd/param3.1.cdd, diags/cdd/param3.2.cdd,
-	diags/cdd/param3.3.cdd, diags/cdd/param3.4.cdd,
-	diags/cdd/param3.5.cdd, diags/cdd/param3.cdd,
-	diags/cdd/param4.1.cdd, diags/cdd/param4.cdd, diags/cdd/param5.cdd,
-	diags/cdd/param6.1.cdd, diags/cdd/param6.cdd, diags/cdd/param7.cdd,
-	diags/cdd/param8.1.cdd, diags/cdd/param8.cdd,
-	diags/cdd/param9.1.cdd, diags/cdd/param9.2.cdd,
-	diags/cdd/param9.cdd, diags/cdd/pedge1.cdd, diags/cdd/port1.cdd,
-	diags/cdd/port2.cdd, diags/cdd/port3.cdd,
-	diags/cdd/printtimescale1.cdd, diags/cdd/pulldown1.cdd,
-	diags/cdd/pullup1.cdd, diags/cdd/race1.1.cdd,
-	diags/cdd/race1.2.cdd, diags/cdd/race1.cdd, diags/cdd/race2.1.cdd,
-	diags/cdd/race2.2.cdd, diags/cdd/race2.3.cdd,
-	diags/cdd/race2.4.cdd, diags/cdd/race4.cdd, diags/cdd/race5.1.cdd,
-	diags/cdd/race5.2.cdd, diags/cdd/race5.cdd, diags/cdd/race6.cdd,
-	diags/cdd/race7.1.cdd, diags/cdd/race7.2.cdd, diags/cdd/race7.cdd,
-	diags/cdd/race8.cdd, diags/cdd/random1.1.cdd,
-	diags/cdd/random1.cdd, diags/cdd/random2.1.cdd,
-	diags/cdd/random2.cdd, diags/cdd/random3.1.cdd,
-	diags/cdd/random3.cdd, diags/cdd/random4.cdd,
-	diags/cdd/rank1.1a.cdd, diags/cdd/rank1.1b.cdd,
-	diags/cdd/rank1.1c.cdd, diags/cdd/rank1a.cdd, diags/cdd/rank1b.cdd,
-	diags/cdd/rank1c.cdd, diags/cdd/rassign1.cdd,
-	diags/cdd/rassign2.cdd, diags/cdd/real1.1.cdd, diags/cdd/real1.cdd,
-	diags/cdd/real2.1.cdd, diags/cdd/real2.cdd, diags/cdd/real3.1.cdd,
-	diags/cdd/real3.2.cdd, diags/cdd/real3.3.cdd,
-	diags/cdd/real3.4.cdd, diags/cdd/real3.5.cdd,
-	diags/cdd/real3.6.cdd, diags/cdd/real3.7.cdd,
-	diags/cdd/real3.8.cdd, diags/cdd/real3.cdd, diags/cdd/real5.1.cdd,
-	diags/cdd/real5.10.cdd, diags/cdd/real5.2.cdd,
-	diags/cdd/real5.3.cdd, diags/cdd/real5.4.cdd,
-	diags/cdd/real5.5.cdd, diags/cdd/real5.6.cdd,
-	diags/cdd/real5.7.cdd, diags/cdd/real5.8.cdd,
-	diags/cdd/real5.9.cdd, diags/cdd/real5.cdd, diags/cdd/real6.1.cdd,
-	diags/cdd/real6.2.cdd, diags/cdd/real6.3.cdd,
-	diags/cdd/real6.4.cdd, diags/cdd/real6.5.cdd,
-	diags/cdd/real6.6.cdd, diags/cdd/real6.7.cdd,
-	diags/cdd/real6.8.cdd, diags/cdd/real6.9.cdd, diags/cdd/real6.cdd,
-	diags/cdd/real7.cdd, diags/cdd/repeat1.cdd, diags/cdd/repeat2.cdd,
-	diags/cdd/repeat3.cdd, diags/cdd/report1.cdd,
-	diags/cdd/report2.cdd, diags/cdd/report3.1.cdd,
-	diags/cdd/report3.cdd, diags/cdd/report4.1.cdd,
-	diags/cdd/report4.2.cdd, diags/cdd/report4.cdd,
-	diags/cdd/report5.cdd, diags/cdd/report6.cdd,
-	diags/cdd/report7.1.cdd, diags/cdd/report7.cdd,
-	diags/cdd/report8.cdd, diags/cdd/rshift1.1.cdd,
-	diags/cdd/rshift1.2.cdd, diags/cdd/rshift1.3.cdd,
-	diags/cdd/rshift1.cdd, diags/cdd/rshift2.1.cdd,
-	diags/cdd/rshift2.2.cdd, diags/cdd/rshift2.3.cdd,
-	diags/cdd/rshift2.cdd, diags/cdd/rshift3.1.cdd,
-	diags/cdd/rshift3.cdd, diags/cdd/rshift4.1.cdd,
-	diags/cdd/rshift4.2.cdd, diags/cdd/rshift4.cdd,
-	diags/cdd/rshift5.cdd, diags/cdd/sbit_sel1.1.cdd,
-	diags/cdd/sbit_sel1.cdd, diags/cdd/sbit_sel2.cdd,
-	diags/cdd/sbit_sel3.1.cdd, diags/cdd/sbit_sel3.cdd,
-	diags/cdd/sbit_sel4.1.cdd, diags/cdd/sbit_sel4.2.cdd,
-	diags/cdd/sbit_sel4.3.cdd, diags/cdd/sbit_sel4.cdd,
-	diags/cdd/score_env1.cdd, diags/cdd/score_ts1.cdd,
-	diags/cdd/signed1.cdd, diags/cdd/signed3.1.cdd,
-	diags/cdd/signed3.2.cdd, diags/cdd/signed3.3.cdd,
-	diags/cdd/signed3.4.cdd, diags/cdd/signed3.5.cdd,
-	diags/cdd/signed3.6.cdd, diags/cdd/signed3.cdd,
-	diags/cdd/signed4.2.cdd, diags/cdd/signed4.cdd,
-	diags/cdd/signed5.cdd, diags/cdd/signed6.cdd,
-	diags/cdd/slist1.1.cdd, diags/cdd/slist1.2.cdd,
-	diags/cdd/slist1.3.cdd, diags/cdd/slist1.cdd, diags/cdd/slist2.cdd,
-	diags/cdd/slist3.2.cdd, diags/cdd/slist3.cdd, diags/cdd/slist4.cdd,
-	diags/cdd/slist6.cdd, diags/cdd/static1.cdd,
-	diags/cdd/static2.1.cdd, diags/cdd/static2.2.cdd,
-	diags/cdd/static2.cdd, diags/cdd/static3.cdd,
-	diags/cdd/string1.cdd, diags/cdd/string2.1.cdd,
-	diags/cdd/string2.cdd, diags/cdd/strobe1.cdd,
-	diags/cdd/supply0.cdd, diags/cdd/supply1.cdd,
-	diags/cdd/task1.1.cdd, diags/cdd/task1.cdd, diags/cdd/task2.1.cdd,
-	diags/cdd/task2.2.cdd, diags/cdd/task2.3.cdd, diags/cdd/task2.cdd,
-	diags/cdd/task3.1.cdd, diags/cdd/task3.cdd, diags/cdd/task4.1.cdd,
-	diags/cdd/task4.cdd, diags/cdd/task6.cdd,
-	diags/cdd/test_plusargs1.cdd, diags/cdd/time1.1.cdd,
-	diags/cdd/time1.cdd, diags/cdd/time2.cdd,
-	diags/cdd/timeformat1.cdd, diags/cdd/timescale1.1.cdd,
-	diags/cdd/timescale1.10.cdd, diags/cdd/timescale1.11.cdd,
-	diags/cdd/timescale1.12.cdd, diags/cdd/timescale1.13.cdd,
-	diags/cdd/timescale1.14.cdd, diags/cdd/timescale1.15.cdd,
-	diags/cdd/timescale1.19.cdd, diags/cdd/timescale1.2.cdd,
-	diags/cdd/timescale1.3.cdd, diags/cdd/timescale1.4.cdd,
-	diags/cdd/timescale1.5.cdd, diags/cdd/timescale1.6.cdd,
-	diags/cdd/timescale1.7.cdd, diags/cdd/timescale1.8.cdd,
-	diags/cdd/timescale1.9.cdd, diags/cdd/timescale1.cdd,
-	diags/cdd/timescale2.1.cdd, diags/cdd/timescale2.2.cdd,
-	diags/cdd/timescale2.3.cdd, diags/cdd/timescale2.4.cdd,
-	diags/cdd/timescale2.cdd, diags/cdd/timescale4.17.cdd,
-	diags/cdd/timescale4.18.cdd, diags/cdd/timescale4.19.cdd,
-	diags/cdd/timescale4.2.cdd, diags/cdd/timescale4.20.cdd,
-	diags/cdd/timescale4.21.cdd, diags/cdd/timescale4.3.cdd,
-	diags/cdd/timescale4.4.cdd, diags/cdd/timescale4.5.cdd,
-	diags/cdd/timescale4.6.cdd, diags/cdd/timescale4.7.cdd,
-	diags/cdd/timescale4.8.cdd, diags/cdd/toggle.cdd,
-	diags/cdd/toggle2.1.cdd, diags/cdd/toggle2.2.cdd,
-	diags/cdd/toggle2.3.cdd, diags/cdd/toggle2.cdd, diags/cdd/tri.cdd,
-	diags/cdd/tri0.cdd, diags/cdd/tri1.cdd, diags/cdd/triand.cdd,
-	diags/cdd/trigger1.cdd, diags/cdd/trior.cdd, diags/cdd/unary1.cdd,
-	diags/cdd/unary2.cdd, diags/cdd/unary3.cdd,
-	diags/cdd/unsigned1.cdd, diags/cdd/urandom1.1.cdd,
-	diags/cdd/urandom1.cdd, diags/cdd/urandom2.1.cdd,
-	diags/cdd/urandom2.cdd, diags/cdd/urandom3.1.cdd,
-	diags/cdd/urandom3.cdd, diags/cdd/urandom_range1.1.cdd,
-	diags/cdd/urandom_range1.2.cdd, diags/cdd/urandom_range2.1.cdd,
-	diags/cdd/urandom_range2.2.cdd, diags/cdd/urandom_range3.cdd,
-	diags/cdd/value_plusargs1.cdd, diags/cdd/value_plusargs2.cdd,
-	diags/cdd/value_plusargs3.cdd, diags/cdd/value_plusargs4.cdd,
-	diags/cdd/value_plusargs5.cdd, diags/cdd/value_plusargs6.cdd,
-	diags/cdd/value_plusargs7.cdd, diags/cdd/value_plusargs8.1.cdd,
-	diags/cdd/value_plusargs8.cdd, diags/cdd/version1.1.cdd,
-	diags/cdd/version1.cdd, diags/cdd/wait1.1.cdd, diags/cdd/wait1.cdd,
-	diags/cdd/wait2.cdd, diags/cdd/wand.cdd, diags/cdd/while1.1.cdd,
-	diags/cdd/while1.cdd, diags/cdd/wor.cdd, diags/cdd/write1.cdd,
-	diags/regress/merge10.pl, diags/verilog/regress_subs.pl,
-	diags/verilog/test.v, src/defines.h: Working on updating the
-	revision number of the CDD file.  Also adjusting some features of
-	the check_test perl subroutine (however, this isn't doing what I
-	want at the moment).  Checkpointing.
+	Working on updating the revision number of the CDD file.  Also
+	adjusting some features of the check_test perl subroutine (however,
+	this isn't doing what I want at the moment).  Checkpointing.
 
 2009-07-01 08:53  phase1geo
 
-	* diags/regress/Makefile: Regression file update.
+	Regression file update.
 
 2009-07-01 01:30  phase1geo
 
-	* src/: generator.c, parser.y: Correcting regression problems due
-	to latest checkins.
+	Correcting regression problems due to latest checkins.
 
 2009-06-30 17:45  phase1geo
 
-	* diags/regress/Makefile: Regression updates.
+	Regression updates.
 
 2009-06-30 17:39  phase1geo
 
-	* diags/cdd/static3.cdd, diags/cdd/static_func4.cdd,
-	diags/regress/Makefile, diags/regress/static3.cfg,
-	diags/regress/static_func4.cfg, diags/rpt/static3.rptI,
-	diags/rpt/static3.rptM, diags/rpt/static_func4.rptI,
-	diags/rpt/static_func4.rptM, diags/verilog/static3.v,
-	diags/verilog/static_func4.v, src/generator.c, src/genprof.c,
-	src/genprof.h, src/parser.y, src/static.c, src/static.h: Adding
-	support for static ternary operators.  Also adding static function
-	support for inlined code coverage usage.  I think that there's a
-	bit of tinkering to do to the regression Makefile to get everything
-	to pass.  Checkpointing.
+	Adding support for static ternary operators.  Also adding static
+	function support for inlined code coverage usage.  I think that
+	there's a bit of tinkering to do to the regression Makefile to get
+	everything to pass.  Checkpointing.
 
 2009-06-30 08:52  phase1geo
 
-	* src/: generator.c, genprof.c, genprof.h, param.c, util.c, util.h:
 	Fixing memory indexing issue.
 
 2009-06-30 01:49  phase1geo
 
-	* src/generator.c: Fixing another issue with the code generator. 
-	Still more work to do to get regressions working again.
+	Fixing another issue with the code generator.  Still more work to
+	do to get regressions working again.
 
 2009-06-30 01:26  phase1geo
 
-	* src/generator.c: Fixing regression issues.
+	Fixing regression issues.
 
 2009-06-30 00:41  phase1geo
 
-	* src/vpi.c: Fixing compile issue.
+	Fixing compile issue.
 
 2009-06-30 00:39  phase1geo
 
-	* src/: genprof.c, genprof.h: Updating genprof files.
+	Updating genprof files.
 
 2009-06-30 00:32  phase1geo
 
-	* src/: generator.c, param.c: Improving code generator signal sizer
-	performance.
+	Improving code generator signal sizer performance.
 
 2009-06-29 11:10  phase1geo
 
-	* src/: parse.c, statement.c: Removing calls to sim_expr_changed
-	and sim_add_thread when scoring with an inlined CDD file as these
-	should not be necessary.  Cleaning up left-over output in
-	statement.c.
+	Removing calls to sim_expr_changed and sim_add_thread when scoring
+	with an inlined CDD file as these should not be necessary. 
+	Cleaning up left-over output in statement.c.
 
 2009-06-29 09:34  phase1geo
 
-	* diags/verilog/final1.v: Diagnostic update.
+	Diagnostic update.
 
 2009-06-27 21:41  phase1geo
 
-	* src/tcl_funcs.c: Integrating bug fix from stable release.
-
-2009-06-27 21:40  phase1geo
-
-	* src/tcl_funcs.c: Fixing bug 2813405.
+	Integrating bug fix from stable release.
 
 2009-06-27 00:09  phase1geo
 
-	* diags/cdd/: mem5.cdd, static_afunc1.cdd: Updating CDD files.
+	Updating CDD files.
 
 2009-06-26 23:53  phase1geo
 
-	* diags/cdd/: fsm2.cdd, fsm2a.cdd, fsm2b.cdd, merge8.11.cdd,
-	merge8.11a.cdd, merge8.11b.cdd: Diagnostic updates.
+	Diagnostic updates.
 
 2009-06-26 18:22  phase1geo
 
-	* diags/cdd/op_assign1.cdd, diags/regress/Makefile,
-	diags/rpt/op_assign1.rptI, diags/rpt/op_assign1.rptM,
-	diags/verilog/op_assign1.v, src/generator.c: Fixing op_assign1
-	failure with inlined code coverage.  Diagnostic has been placed
-	back into regression.
+	Fixing op_assign1 failure with inlined code coverage.  Diagnostic
+	has been placed back into regression.
 
 2009-06-26 17:23  phase1geo
 
-	* diags/cdd/add1.cdd, diags/cdd/aedge1.1.cdd, diags/cdd/aedge1.cdd,
-	diags/cdd/afunc1.cdd, diags/cdd/afunc2.cdd, diags/cdd/always1.cdd,
-	diags/cdd/always10.cdd, diags/cdd/always11.1.cdd,
-	diags/cdd/always11.2.cdd, diags/cdd/always11.cdd,
-	diags/cdd/always12.cdd, diags/cdd/always13.cdd,
-	diags/cdd/always15.cdd, diags/cdd/always2.cdd,
-	diags/cdd/always3.1.11A.cdd, diags/cdd/always3.cdd,
-	diags/cdd/always4.cdd, diags/cdd/always5.1.cdd,
-	diags/cdd/always5.cdd, diags/cdd/always6.cdd,
-	diags/cdd/always8.cdd, diags/cdd/always9.cdd,
-	diags/cdd/always_comb1.cdd, diags/cdd/always_comb2.cdd,
-	diags/cdd/always_ff1.cdd, diags/cdd/always_latch1.cdd,
-	diags/cdd/always_latch2.cdd, diags/cdd/ashift1.cdd,
-	diags/cdd/ashift2.cdd, diags/cdd/ashift3.cdd,
-	diags/cdd/ashift4.cdd, diags/cdd/assert1.cdd,
-	diags/cdd/assign1.cdd, diags/cdd/assign2.1.cdd,
-	diags/cdd/assign2.2.cdd, diags/cdd/assign2.3.cdd,
-	diags/cdd/assign2.4.cdd, diags/cdd/assign2.5.cdd,
-	diags/cdd/assign2.6.cdd, diags/cdd/assign2.7.cdd,
-	diags/cdd/assign2.8.cdd, diags/cdd/assign2.9.cdd,
-	diags/cdd/assign2.cdd, diags/cdd/assign3.2A.cdd,
-	diags/cdd/atask1.cdd, diags/cdd/bassign1.cdd,
-	diags/cdd/bassign2.cdd, diags/cdd/bassign3.cdd, diags/cdd/bit1.cdd,
-	diags/cdd/bitwise1.cdd, diags/cdd/block1.cdd,
-	diags/cdd/bug2794588.cdd, diags/cdd/byte1.cdd,
-	diags/cdd/case1.1.cdd, diags/cdd/case1.2.cdd,
-	diags/cdd/case1.3.cdd, diags/cdd/case1.cdd, diags/cdd/case2.cdd,
-	diags/cdd/case3.1.cdd, diags/cdd/case3.2.cdd,
-	diags/cdd/case3.3.cdd, diags/cdd/case3.4.cdd, diags/cdd/case3.cdd,
-	diags/cdd/case4.1.cdd, diags/cdd/case4.cdd, diags/cdd/case6.cdd,
-	diags/cdd/casex1.1.cdd, diags/cdd/casex1.2.cdd,
-	diags/cdd/casex1.3.cdd, diags/cdd/casex1.4.cdd,
-	diags/cdd/casex1.cdd, diags/cdd/casex3.cdd, diags/cdd/casez1.1.cdd,
-	diags/cdd/casez1.2.cdd, diags/cdd/casez1.3.cdd,
-	diags/cdd/casez1.4.cdd, diags/cdd/casez1.cdd, diags/cdd/casez2.cdd,
-	diags/cdd/casez4.cdd, diags/cdd/casez5.cdd, diags/cdd/ceq1.cdd,
-	diags/cdd/char1.cdd, diags/cdd/cne1.cdd, diags/cdd/compx1.1.cdd,
-	diags/cdd/compx1.2.cdd, diags/cdd/compx1.3.cdd,
-	diags/cdd/compx1.cdd, diags/cdd/concat1.cdd, diags/cdd/concat2.cdd,
-	diags/cdd/concat3.cdd, diags/cdd/concat4.1.cdd,
-	diags/cdd/concat4.2.cdd, diags/cdd/concat5.cdd,
-	diags/cdd/concat6.cdd, diags/cdd/concat7.cdd,
-	diags/cdd/concat8.cdd, diags/cdd/cond1.cdd, diags/cdd/cond2.cdd,
-	diags/cdd/cond3.1.cdd, diags/cdd/cond3.2.cdd,
-	diags/cdd/cond3.3.cdd, diags/cdd/cond3.cdd, diags/cdd/dec1.1.cdd,
-	diags/cdd/dec1.cdd, diags/cdd/dec2.cdd, diags/cdd/dec3.1.cdd,
-	diags/cdd/dec3.cdd, diags/cdd/define1.1.cdd,
-	diags/cdd/define1.2.cdd, diags/cdd/define1.cdd,
-	diags/cdd/define2.1.cdd, diags/cdd/define2.cdd,
-	diags/cdd/define3.cdd, diags/cdd/define4.cdd,
-	diags/cdd/define5.cdd, diags/cdd/define6.1.cdd,
-	diags/cdd/define6.cdd, diags/cdd/delay1.1.cdd,
-	diags/cdd/delay1.2.cdd, diags/cdd/delay1.3.cdd,
-	diags/cdd/delay1.cdd, diags/cdd/delay2.cdd, diags/cdd/delay3.cdd,
-	diags/cdd/disable1.1.cdd, diags/cdd/disable1.cdd,
-	diags/cdd/disable2.1.cdd, diags/cdd/disable2.cdd,
-	diags/cdd/disable3.cdd, diags/cdd/display1.cdd, diags/cdd/div1.cdd,
-	diags/cdd/dly_assign1.1.cdd, diags/cdd/dly_assign1.2.cdd,
-	diags/cdd/dly_assign1.3.cdd, diags/cdd/dly_assign1.4.cdd,
-	diags/cdd/dly_assign1.cdd, diags/cdd/dly_assign2.1.cdd,
-	diags/cdd/dly_assign2.cdd, diags/cdd/do_while1.1.cdd,
-	diags/cdd/do_while1.cdd, diags/cdd/do_while2.cdd,
-	diags/cdd/elsif1.1.cdd, diags/cdd/elsif1.2.cdd,
-	diags/cdd/elsif1.3.cdd, diags/cdd/elsif1.4.cdd,
-	diags/cdd/elsif1.cdd, diags/cdd/elsif2.1.cdd, diags/cdd/elsif2.cdd,
-	diags/cdd/elsif3.cdd, diags/cdd/endian1.cdd, diags/cdd/endian2.cdd,
-	diags/cdd/endian3.cdd, diags/cdd/endian4.cdd,
-	diags/cdd/enum1.1.cdd, diags/cdd/enum1.2.cdd,
-	diags/cdd/enum1.3.cdd, diags/cdd/enum1.cdd, diags/cdd/err3.1.cdd,
-	diags/cdd/err3.cdd, diags/cdd/err7.cdd, diags/cdd/event1.1.cdd,
-	diags/cdd/event1.cdd, diags/cdd/event2.cdd, diags/cdd/example.cdd,
-	diags/cdd/example1.cdd, diags/cdd/exclude10.1.cdd,
-	diags/cdd/exclude10.2.cdd, diags/cdd/exclude10.3.1.cdd,
-	diags/cdd/exclude10.3.2.cdd, diags/cdd/exclude10.3.3.cdd,
-	diags/cdd/exclude10.3.cdd, diags/cdd/exclude10.4.cdd,
-	diags/cdd/exclude10.5.cdd, diags/cdd/exclude10.cdd,
-	diags/cdd/exclude11.cdd, diags/cdd/exclude14.cdd,
-	diags/cdd/exclude2.cdd, diags/cdd/exclude3.cdd,
-	diags/cdd/exclude4.cdd, diags/cdd/exclude5.1.cdd,
-	diags/cdd/exclude5.2.cdd, diags/cdd/exclude5.3.cdd,
-	diags/cdd/exclude5.cdd, diags/cdd/exclude6.1.cdd,
-	diags/cdd/exclude6.cdd, diags/cdd/exclude7.1.cdd,
-	diags/cdd/exclude7.2.cdd, diags/cdd/exclude7.3.cdd,
-	diags/cdd/exclude7.cdd, diags/cdd/exclude8.1.cdd,
-	diags/cdd/exclude8.cdd, diags/cdd/exclude9.1.cdd,
-	diags/cdd/exclude9.2.cdd, diags/cdd/exclude9.3.cdd,
-	diags/cdd/exclude9.4.cdd, diags/cdd/exclude9.5.cdd,
-	diags/cdd/exclude9.6.cdd, diags/cdd/exclude9.7.cdd,
-	diags/cdd/exclude9.8.cdd, diags/cdd/exclude9.9.cdd,
-	diags/cdd/exclude9.cdd, diags/cdd/expand1.cdd,
-	diags/cdd/expand2.cdd, diags/cdd/expand3.cdd,
-	diags/cdd/expand4.1.cdd, diags/cdd/expand4.2.cdd,
-	diags/cdd/expand4.3.cdd, diags/cdd/expand4.4.cdd,
-	diags/cdd/expand4.cdd, diags/cdd/exponent1.cdd,
-	diags/cdd/fdisplay1.cdd, diags/cdd/final1.cdd,
-	diags/cdd/finish1.cdd, diags/cdd/fmonitor1.cdd, diags/cdd/for1.cdd,
-	diags/cdd/for2.cdd, diags/cdd/for3.cdd, diags/cdd/for5.1.cdd,
-	diags/cdd/for5.10.cdd, diags/cdd/for5.2.cdd, diags/cdd/for5.3.cdd,
-	diags/cdd/for5.4.cdd, diags/cdd/for5.5.cdd, diags/cdd/for5.6.cdd,
-	diags/cdd/for5.8.cdd, diags/cdd/for5.9.cdd, diags/cdd/for5.cdd,
-	diags/cdd/for6.cdd, diags/cdd/forever1.cdd, diags/cdd/fork1.cdd,
-	diags/cdd/fork2.cdd, diags/cdd/fsm1.1.cdd, diags/cdd/fsm1.2.cdd,
-	diags/cdd/fsm1.3.cdd, diags/cdd/fsm1.4.cdd, diags/cdd/fsm1.cdd,
-	diags/cdd/fsm10.1.cdd, diags/cdd/fsm10.2.cdd, diags/cdd/fsm10.cdd,
-	diags/cdd/fsm11.cdd, diags/cdd/fsm2.cdd, diags/cdd/fsm2a.cdd,
-	diags/cdd/fsm2b.cdd, diags/cdd/fsm3.cdd, diags/cdd/fsm4.1.cdd,
-	diags/cdd/fsm4.cdd, diags/cdd/fsm5.1.cdd, diags/cdd/fsm5.2.cdd,
-	diags/cdd/fsm5.3.cdd, diags/cdd/fsm5.cdd, diags/cdd/fsm6.cdd,
-	diags/cdd/fsm7.1.cdd, diags/cdd/fsm7.2.cdd, diags/cdd/fsm7.3.cdd,
-	diags/cdd/fsm7.4.cdd, diags/cdd/fsm7.5.cdd, diags/cdd/fsm7.cdd,
-	diags/cdd/fsm8.1.cdd, diags/cdd/fsm8.2.cdd, diags/cdd/fsm8.3.cdd,
-	diags/cdd/fsm8.cdd, diags/cdd/fsm9.1.cdd, diags/cdd/fsm9.2.cdd,
-	diags/cdd/fsm9.cdd, diags/cdd/fstrobe1.cdd, diags/cdd/func1.cdd,
-	diags/cdd/func2.cdd, diags/cdd/func5.cdd, diags/cdd/fwrite1.cdd,
-	diags/cdd/generate1.cdd, diags/cdd/generate10.1.cdd,
-	diags/cdd/generate10.2.cdd, diags/cdd/generate10.cdd,
-	diags/cdd/generate11.1.cdd, diags/cdd/generate11.2.cdd,
-	diags/cdd/generate11.3.cdd, diags/cdd/generate11.4.cdd,
-	diags/cdd/generate11.cdd, diags/cdd/generate12.cdd,
-	diags/cdd/generate13.cdd, diags/cdd/generate14.cdd,
-	diags/cdd/generate15.1.cdd, diags/cdd/generate15.2.cdd,
-	diags/cdd/generate15.3.cdd, diags/cdd/generate15.4.cdd,
-	diags/cdd/generate15.5.cdd, diags/cdd/generate15.cdd,
-	diags/cdd/generate16.1.cdd, diags/cdd/generate16.2.cdd,
-	diags/cdd/generate16.3.cdd, diags/cdd/generate16.cdd,
-	diags/cdd/generate17.cdd, diags/cdd/generate18.cdd,
-	diags/cdd/generate19.1.cdd, diags/cdd/generate19.2.cdd,
-	diags/cdd/generate19.cdd, diags/cdd/generate2.cdd,
-	diags/cdd/generate21.cdd, diags/cdd/generate3.1.cdd,
-	diags/cdd/generate3.cdd, diags/cdd/generate4.1.cdd,
-	diags/cdd/generate4.cdd, diags/cdd/generate5.2.cdd,
-	diags/cdd/generate5.3.cdd, diags/cdd/generate5.cdd,
-	diags/cdd/generate6.cdd, diags/cdd/generate7.1.cdd,
-	diags/cdd/generate7.2.cdd, diags/cdd/generate7.cdd,
-	diags/cdd/generate8.1.cdd, diags/cdd/generate8.2.cdd,
-	diags/cdd/generate8.3.cdd, diags/cdd/generate8.4.cdd,
-	diags/cdd/generate8.5.cdd, diags/cdd/generate8.6.cdd,
-	diags/cdd/generate8.7.cdd, diags/cdd/generate8.8.cdd,
-	diags/cdd/generate8.9.cdd, diags/cdd/generate8.cdd,
-	diags/cdd/generate9.1.cdd, diags/cdd/generate9.2.cdd,
-	diags/cdd/generate9.3.cdd, diags/cdd/generate9.cdd,
-	diags/cdd/hier1.1.cdd, diags/cdd/hier1.cdd, diags/cdd/hier2.cdd,
-	diags/cdd/hier3.1.cdd, diags/cdd/hier3.2.cdd,
-	diags/cdd/hier3.3.cdd, diags/cdd/hier3.4.cdd, diags/cdd/hier3.cdd,
-	diags/cdd/ifdef1.1.cdd, diags/cdd/ifdef1.2.cdd,
-	diags/cdd/ifdef1.cdd, diags/cdd/ifdef2.1.cdd,
-	diags/cdd/ifdef2.2.cdd, diags/cdd/ifdef2.3.cdd,
-	diags/cdd/ifdef3.cdd, diags/cdd/ifelse1.cdd, diags/cdd/ifndef1.cdd,
-	diags/cdd/ifndef2.cdd, diags/cdd/implicit2.cdd,
-	diags/cdd/inc1.1.cdd, diags/cdd/inc1.cdd, diags/cdd/inc2.cdd,
-	diags/cdd/inc3.1.cdd, diags/cdd/inc3.cdd, diags/cdd/include1.1.cdd,
-	diags/cdd/include1.cdd, diags/cdd/include2.cdd,
-	diags/cdd/include4.cdd, diags/cdd/include5.cdd,
-	diags/cdd/initial1.cdd, diags/cdd/instance1.1.cdd,
-	diags/cdd/instance1.2.cdd, diags/cdd/instance1.cdd,
-	diags/cdd/instance2.cdd, diags/cdd/instance3.cdd,
-	diags/cdd/instance4.1.cdd, diags/cdd/instance4.2.cdd,
-	diags/cdd/instance4.cdd, diags/cdd/instance5.cdd,
-	diags/cdd/instance6.1.cdd, diags/cdd/instance6.2.cdd,
-	diags/cdd/instance6.cdd, diags/cdd/instance7.cdd,
-	diags/cdd/int1.cdd, diags/cdd/line1.cdd, diags/cdd/logic1.cdd,
-	diags/cdd/long_exp1.cdd, diags/cdd/long_exp2.cdd,
-	diags/cdd/long_exp3.cdd, diags/cdd/long_sig.cdd,
-	diags/cdd/longint1.cdd, diags/cdd/lshift1.1.cdd,
-	diags/cdd/lshift1.2.cdd, diags/cdd/lshift1.cdd,
-	diags/cdd/lshift2.1.cdd, diags/cdd/lshift2.2.cdd,
-	diags/cdd/lshift2.3.cdd, diags/cdd/lshift2.cdd,
-	diags/cdd/lshift3.1.cdd, diags/cdd/lshift3.2.cdd,
-	diags/cdd/lshift3.3.cdd, diags/cdd/lshift3.cdd,
-	diags/cdd/lshift4.1.cdd, diags/cdd/lshift4.2.cdd,
-	diags/cdd/lshift4.3.cdd, diags/cdd/lshift4.cdd,
-	diags/cdd/lshift5.cdd, diags/cdd/marray1.1.cdd,
-	diags/cdd/marray1.2.cdd, diags/cdd/marray1.3.cdd,
-	diags/cdd/marray1.cdd, diags/cdd/marray2.1.cdd,
-	diags/cdd/marray2.2.cdd, diags/cdd/marray2.3.cdd,
-	diags/cdd/marray2.cdd, diags/cdd/mbit_sel1.cdd,
-	diags/cdd/mbit_sel2.cdd, diags/cdd/mbit_sel3.1.cdd,
-	diags/cdd/mbit_sel3.cdd, diags/cdd/mbit_sel5.1.cdd,
-	diags/cdd/mbit_sel5.2.cdd, diags/cdd/mbit_sel5.3.cdd,
-	diags/cdd/mbit_sel5.4.cdd, diags/cdd/mbit_sel5.cdd,
-	diags/cdd/mbit_sel6.1.cdd, diags/cdd/mbit_sel6.2.cdd,
-	diags/cdd/mbit_sel6.3.cdd, diags/cdd/mbit_sel6.4.cdd,
-	diags/cdd/mbit_sel6.cdd, diags/cdd/mbit_sel7.cdd,
-	diags/cdd/mbit_sel9.1.cdd, diags/cdd/mbit_sel9.2.cdd,
-	diags/cdd/mbit_sel9.cdd, diags/cdd/mem2.cdd, diags/cdd/mem3.cdd,
-	diags/cdd/mem4.1.cdd, diags/cdd/mem4.cdd, diags/cdd/mem6.1.cdd,
-	diags/cdd/mem6.2.cdd, diags/cdd/mem6.3.cdd, diags/cdd/mem6.4.cdd,
-	diags/cdd/mem6.cdd, diags/cdd/merge1.cdd, diags/cdd/merge10.1.cdd,
-	diags/cdd/merge10.2.cdd, diags/cdd/merge10.3.cdd,
-	diags/cdd/merge10.4.cdd, diags/cdd/merge10.5.cdd,
-	diags/cdd/merge10.6.cdd, diags/cdd/merge10.7.cdd,
-	diags/cdd/merge10.8.cdd, diags/cdd/merge10a.cdd,
-	diags/cdd/merge10b.cdd, diags/cdd/merge10c.cdd,
-	diags/cdd/merge10d.cdd, diags/cdd/merge10e.cdd,
-	diags/cdd/merge10f.cdd, diags/cdd/merge10g.cdd,
-	diags/cdd/merge10h.cdd, diags/cdd/merge11.1.cdd,
-	diags/cdd/merge11.2.cdd, diags/cdd/merge11.3.cdd,
-	diags/cdd/merge11.4.cdd, diags/cdd/merge11.5.cdd,
-	diags/cdd/merge11.6.cdd, diags/cdd/merge11.7.cdd,
-	diags/cdd/merge11.8.cdd, diags/cdd/merge11a.cdd,
-	diags/cdd/merge11b.cdd, diags/cdd/merge11c.cdd,
-	diags/cdd/merge11d.cdd, diags/cdd/merge11e.cdd,
-	diags/cdd/merge11f.cdd, diags/cdd/merge11g.cdd,
-	diags/cdd/merge11h.cdd, diags/cdd/merge1a.cdd,
-	diags/cdd/merge1b.cdd, diags/cdd/merge2.cdd, diags/cdd/merge2a.cdd,
-	diags/cdd/merge2b.cdd, diags/cdd/merge2c.cdd, diags/cdd/merge3.cdd,
-	diags/cdd/merge3a.cdd, diags/cdd/merge3b.cdd, diags/cdd/merge4.cdd,
-	diags/cdd/merge4a.cdd, diags/cdd/merge4b.cdd,
-	diags/cdd/merge5a.cdd, diags/cdd/merge5b.cdd,
-	diags/cdd/merge5c.cdd, diags/cdd/merge5d.cdd,
-	diags/cdd/merge5e.cdd, diags/cdd/merge5f.cdd,
-	diags/cdd/merge5g.cdd, diags/cdd/merge6.1.cdd,
-	diags/cdd/merge6.cdd, diags/cdd/merge7.1.cdd,
-	diags/cdd/merge7.1a.cdd, diags/cdd/merge7.1b.cdd,
-	diags/cdd/merge7.2.cdd, diags/cdd/merge7.2a.cdd,
-	diags/cdd/merge7.2b.cdd, diags/cdd/merge7.3.cdd,
-	diags/cdd/merge7.3a.cdd, diags/cdd/merge7.3b.cdd,
-	diags/cdd/merge7.4.cdd, diags/cdd/merge7.4a.cdd,
-	diags/cdd/merge7.4b.cdd, diags/cdd/merge7.5.cdd,
-	diags/cdd/merge7.5a.cdd, diags/cdd/merge7.5b.cdd,
-	diags/cdd/merge7.6.cdd, diags/cdd/merge7.6a.cdd,
-	diags/cdd/merge7.6b.cdd, diags/cdd/merge7.7.cdd,
-	diags/cdd/merge7.7a.cdd, diags/cdd/merge7.7b.cdd,
-	diags/cdd/merge7.8.cdd, diags/cdd/merge7.8a.cdd,
-	diags/cdd/merge7.8b.cdd, diags/cdd/merge7.cdd,
-	diags/cdd/merge7a.cdd, diags/cdd/merge7b.cdd,
-	diags/cdd/merge8.1.cdd, diags/cdd/merge8.10.cdd,
-	diags/cdd/merge8.10a.cdd, diags/cdd/merge8.10b.cdd,
-	diags/cdd/merge8.11.cdd, diags/cdd/merge8.11a.cdd,
-	diags/cdd/merge8.11b.cdd, diags/cdd/merge8.1a.cdd,
-	diags/cdd/merge8.1b.cdd, diags/cdd/merge8.2.cdd,
-	diags/cdd/merge8.2a.cdd, diags/cdd/merge8.2b.cdd,
-	diags/cdd/merge8.3.cdd, diags/cdd/merge8.3a.cdd,
-	diags/cdd/merge8.3b.cdd, diags/cdd/merge8.4.cdd,
-	diags/cdd/merge8.4a.cdd, diags/cdd/merge8.4b.cdd,
-	diags/cdd/merge8.4c.cdd, diags/cdd/merge8.5.cdd,
-	diags/cdd/merge8.5a.cdd, diags/cdd/merge8.5b.cdd,
-	diags/cdd/merge8.5c.cdd, diags/cdd/merge8.6.cdd,
-	diags/cdd/merge8.6a.cdd, diags/cdd/merge8.6b.cdd,
-	diags/cdd/merge8.7.cdd, diags/cdd/merge8.7a.cdd,
-	diags/cdd/merge8.7b.cdd, diags/cdd/merge8.8.cdd,
-	diags/cdd/merge8.8a.cdd, diags/cdd/merge8.8b.cdd,
-	diags/cdd/merge8.9.cdd, diags/cdd/merge8.9a.cdd,
-	diags/cdd/merge8.9b.cdd, diags/cdd/merge8.cdd,
-	diags/cdd/merge8a.cdd, diags/cdd/merge8b.cdd, diags/cdd/merge9.cdd,
-	diags/cdd/merge9a.cdd, diags/cdd/merge9b.cdd,
-	diags/cdd/merge_err1a.cdd, diags/cdd/merge_err1b.cdd,
-	diags/cdd/merge_err2.1.cdd, diags/cdd/mod1.cdd,
-	diags/cdd/monitor1.1.cdd, diags/cdd/monitor1.cdd,
-	diags/cdd/msg1.cdd, diags/cdd/mult1.cdd, diags/cdd/mult2.cdd,
-	diags/cdd/multi_exp1.1.cdd, diags/cdd/multi_exp1.10.cdd,
-	diags/cdd/multi_exp1.11.cdd, diags/cdd/multi_exp1.12.cdd,
-	diags/cdd/multi_exp1.13.cdd, diags/cdd/multi_exp1.14.cdd,
-	diags/cdd/multi_exp1.15.cdd, diags/cdd/multi_exp1.2.cdd,
-	diags/cdd/multi_exp1.3.cdd, diags/cdd/multi_exp1.4.cdd,
-	diags/cdd/multi_exp1.5.cdd, diags/cdd/multi_exp1.6.cdd,
-	diags/cdd/multi_exp1.7.cdd, diags/cdd/multi_exp1.8.cdd,
-	diags/cdd/multi_exp1.9.cdd, diags/cdd/multi_exp1.cdd,
-	diags/cdd/multi_exp2.1.cdd, diags/cdd/multi_exp2.cdd,
-	diags/cdd/multi_exp3.cdd, diags/cdd/multi_exp4.cdd,
-	diags/cdd/named_block1.cdd, diags/cdd/named_block3.cdd,
-	diags/cdd/named_block4.cdd, diags/cdd/nand1.cdd,
-	diags/cdd/nedge1.cdd, diags/cdd/negate1.cdd, diags/cdd/negate2.cdd,
-	diags/cdd/nested_block1.cdd, diags/cdd/nested_block2.1.cdd,
-	diags/cdd/nested_block2.cdd, diags/cdd/nested_block3.cdd,
-	diags/cdd/nor1.cdd, diags/cdd/not1.cdd, diags/cdd/null_stmt1.1.cdd,
-	diags/cdd/null_stmt1.10.cdd, diags/cdd/null_stmt1.2.cdd,
-	diags/cdd/null_stmt1.3.cdd, diags/cdd/null_stmt1.5.cdd,
-	diags/cdd/null_stmt1.6.cdd, diags/cdd/null_stmt1.7.cdd,
-	diags/cdd/null_stmt1.8.cdd, diags/cdd/null_stmt1.9.cdd,
-	diags/cdd/null_stmt1.cdd, diags/cdd/null_stmt2.1.cdd,
-	diags/cdd/null_stmt2.cdd, diags/cdd/ovl1.1.cdd,
-	diags/cdd/ovl1.2.cdd, diags/cdd/ovl1.3.cdd, diags/cdd/ovl1.cdd,
-	diags/cdd/param1.1.cdd, diags/cdd/param1.2.cdd,
-	diags/cdd/param1.3.cdd, diags/cdd/param1.cdd,
-	diags/cdd/param10.1.cdd, diags/cdd/param10.2.cdd,
-	diags/cdd/param10.3.cdd, diags/cdd/param10.4.cdd,
-	diags/cdd/param10.5.cdd, diags/cdd/param10.cdd,
-	diags/cdd/param11.cdd, diags/cdd/param12.1.cdd,
-	diags/cdd/param12.cdd, diags/cdd/param13.1.cdd,
-	diags/cdd/param13.cdd, diags/cdd/param15.cdd,
-	diags/cdd/param16.cdd, diags/cdd/param17.1.cdd,
-	diags/cdd/param3.1.cdd, diags/cdd/param3.2.cdd,
-	diags/cdd/param3.3.cdd, diags/cdd/param3.4.cdd,
-	diags/cdd/param3.5.cdd, diags/cdd/param3.cdd,
-	diags/cdd/param4.1.cdd, diags/cdd/param4.cdd, diags/cdd/param5.cdd,
-	diags/cdd/param6.1.cdd, diags/cdd/param6.cdd, diags/cdd/param7.cdd,
-	diags/cdd/param8.1.cdd, diags/cdd/param8.cdd, diags/cdd/pedge1.cdd,
-	diags/cdd/port1.cdd, diags/cdd/port3.cdd, diags/cdd/port4.cdd,
-	diags/cdd/printtimescale1.cdd, diags/cdd/pulldown1.cdd,
-	diags/cdd/pullup1.cdd, diags/cdd/race1.1.cdd,
-	diags/cdd/race1.2.cdd, diags/cdd/race2.1.cdd,
-	diags/cdd/race2.2.cdd, diags/cdd/race2.3.cdd,
-	diags/cdd/race2.4.cdd, diags/cdd/race4.cdd, diags/cdd/race5.1.cdd,
-	diags/cdd/race5.2.cdd, diags/cdd/race5.cdd, diags/cdd/race6.cdd,
-	diags/cdd/race7.1.cdd, diags/cdd/race7.2.cdd, diags/cdd/race7.cdd,
-	diags/cdd/race8.cdd, diags/cdd/random1.1.cdd,
-	diags/cdd/random1.2.cdd, diags/cdd/random1.3.cdd,
-	diags/cdd/random1.cdd, diags/cdd/random2.1.cdd,
-	diags/cdd/random2.cdd, diags/cdd/random4.cdd,
-	diags/cdd/rank1.1a.cdd, diags/cdd/rank1.1b.cdd,
-	diags/cdd/rank1.1c.cdd, diags/cdd/rank1a.cdd, diags/cdd/rank1b.cdd,
-	diags/cdd/rank1c.cdd, diags/cdd/rassign1.cdd,
-	diags/cdd/rassign2.cdd, diags/cdd/real1.1.cdd, diags/cdd/real1.cdd,
-	diags/cdd/real2.1.cdd, diags/cdd/real2.cdd, diags/cdd/real3.1.cdd,
-	diags/cdd/real3.2.cdd, diags/cdd/real3.3.cdd,
-	diags/cdd/real3.4.cdd, diags/cdd/real3.5.cdd,
-	diags/cdd/real3.6.cdd, diags/cdd/real3.7.cdd,
-	diags/cdd/real3.8.cdd, diags/cdd/real3.cdd, diags/cdd/real5.1.cdd,
-	diags/cdd/real5.10.cdd, diags/cdd/real5.11.cdd,
-	diags/cdd/real5.12.cdd, diags/cdd/real5.13.cdd,
-	diags/cdd/real5.14.cdd, diags/cdd/real5.15.cdd,
-	diags/cdd/real5.16.cdd, diags/cdd/real5.2.cdd,
-	diags/cdd/real5.3.cdd, diags/cdd/real5.4.cdd,
-	diags/cdd/real5.5.cdd, diags/cdd/real5.6.cdd,
-	diags/cdd/real5.7.cdd, diags/cdd/real5.8.cdd,
-	diags/cdd/real5.9.cdd, diags/cdd/real5.cdd, diags/cdd/real6.1.cdd,
-	diags/cdd/real6.10.cdd, diags/cdd/real6.11.cdd,
-	diags/cdd/real6.12.cdd, diags/cdd/real6.13.cdd,
-	diags/cdd/real6.2.cdd, diags/cdd/real6.3.cdd,
-	diags/cdd/real6.4.cdd, diags/cdd/real6.5.cdd,
-	diags/cdd/real6.6.cdd, diags/cdd/real6.7.cdd,
-	diags/cdd/real6.8.cdd, diags/cdd/real6.9.cdd, diags/cdd/real6.cdd,
-	diags/cdd/real7.cdd, diags/cdd/real8.cdd, diags/cdd/repeat1.cdd,
-	diags/cdd/repeat2.cdd, diags/cdd/repeat3.cdd,
-	diags/cdd/report1.cdd, diags/cdd/report2.cdd,
-	diags/cdd/report3.1.cdd, diags/cdd/report3.cdd,
-	diags/cdd/report4.1.cdd, diags/cdd/report4.2.cdd,
-	diags/cdd/report4.cdd, diags/cdd/report5.cdd,
-	diags/cdd/report6.cdd, diags/cdd/report7.1.cdd,
-	diags/cdd/report7.cdd, diags/cdd/report8.cdd,
-	diags/cdd/rshift1.1.cdd, diags/cdd/rshift1.2.cdd,
-	diags/cdd/rshift1.3.cdd, diags/cdd/rshift1.cdd,
-	diags/cdd/rshift2.1.cdd, diags/cdd/rshift2.2.cdd,
-	diags/cdd/rshift2.3.cdd, diags/cdd/rshift2.cdd,
-	diags/cdd/rshift3.1.cdd, diags/cdd/rshift3.cdd,
-	diags/cdd/rshift4.1.cdd, diags/cdd/rshift4.2.cdd,
-	diags/cdd/rshift4.cdd, diags/cdd/rshift5.cdd,
-	diags/cdd/sbit_sel1.1.cdd, diags/cdd/sbit_sel1.cdd,
-	diags/cdd/sbit_sel2.1.cdd, diags/cdd/sbit_sel2.cdd,
-	diags/cdd/sbit_sel3.1.cdd, diags/cdd/sbit_sel3.2.cdd,
-	diags/cdd/sbit_sel3.cdd, diags/cdd/sbit_sel4.1.cdd,
-	diags/cdd/sbit_sel4.2.cdd, diags/cdd/sbit_sel4.3.cdd,
-	diags/cdd/sbit_sel4.cdd, diags/cdd/score_env1.cdd,
-	diags/cdd/score_ts1.cdd, diags/cdd/shortint1.cdd,
-	diags/cdd/signed1.cdd, diags/cdd/signed3.1.cdd,
-	diags/cdd/signed3.2.cdd, diags/cdd/signed3.3.cdd,
-	diags/cdd/signed3.4.cdd, diags/cdd/signed3.5.cdd,
-	diags/cdd/signed3.6.cdd, diags/cdd/signed3.cdd,
-	diags/cdd/signed4.1.cdd, diags/cdd/signed4.cdd,
-	diags/cdd/signed5.cdd, diags/cdd/signed6.cdd,
-	diags/cdd/slist1.1.cdd, diags/cdd/slist1.2.cdd,
-	diags/cdd/slist1.3.cdd, diags/cdd/slist1.cdd, diags/cdd/slist2.cdd,
-	diags/cdd/slist3.1.cdd, diags/cdd/slist3.2.cdd,
-	diags/cdd/slist3.3.cdd, diags/cdd/slist3.cdd, diags/cdd/slist4.cdd,
-	diags/cdd/slist6.cdd, diags/cdd/static1.cdd,
-	diags/cdd/static2.1.cdd, diags/cdd/static2.2.cdd,
-	diags/cdd/static2.cdd, diags/cdd/string1.cdd,
-	diags/cdd/string2.1.cdd, diags/cdd/string2.cdd,
-	diags/cdd/strobe1.cdd, diags/cdd/supply0.cdd,
-	diags/cdd/supply1.cdd, diags/cdd/task1.1.cdd, diags/cdd/task1.cdd,
-	diags/cdd/task2.1.cdd, diags/cdd/task2.2.cdd,
-	diags/cdd/task2.3.cdd, diags/cdd/task2.cdd, diags/cdd/task3.1.cdd,
-	diags/cdd/task3.cdd, diags/cdd/task4.1.cdd, diags/cdd/task4.cdd,
-	diags/cdd/task6.cdd, diags/cdd/test_plusargs1.cdd,
-	diags/cdd/time1.1.cdd, diags/cdd/time1.cdd, diags/cdd/time2.cdd,
-	diags/cdd/timeformat1.cdd, diags/cdd/timescale1.1.cdd,
-	diags/cdd/timescale1.10.cdd, diags/cdd/timescale1.11.cdd,
-	diags/cdd/timescale1.12.cdd, diags/cdd/timescale1.13.cdd,
-	diags/cdd/timescale1.14.cdd, diags/cdd/timescale1.15.cdd,
-	diags/cdd/timescale1.16.cdd, diags/cdd/timescale1.17.cdd,
-	diags/cdd/timescale1.18.cdd, diags/cdd/timescale1.19.cdd,
-	diags/cdd/timescale1.2.cdd, diags/cdd/timescale1.20.cdd,
-	diags/cdd/timescale1.3.cdd, diags/cdd/timescale1.4.cdd,
-	diags/cdd/timescale1.5.cdd, diags/cdd/timescale1.6.cdd,
-	diags/cdd/timescale1.7.cdd, diags/cdd/timescale1.8.cdd,
-	diags/cdd/timescale1.9.cdd, diags/cdd/timescale1.cdd,
-	diags/cdd/timescale2.1.cdd, diags/cdd/timescale2.2.cdd,
-	diags/cdd/timescale2.3.cdd, diags/cdd/timescale2.4.cdd,
-	diags/cdd/timescale2.5.cdd, diags/cdd/timescale2.6.cdd,
-	diags/cdd/timescale2.7.cdd, diags/cdd/timescale2.8.cdd,
-	diags/cdd/timescale2.cdd, diags/cdd/timescale4.1.cdd,
-	diags/cdd/timescale4.10.cdd, diags/cdd/timescale4.11.cdd,
-	diags/cdd/timescale4.12.cdd, diags/cdd/timescale4.13.cdd,
-	diags/cdd/timescale4.14.cdd, diags/cdd/timescale4.16.cdd,
-	diags/cdd/timescale4.17.cdd, diags/cdd/timescale4.18.cdd,
-	diags/cdd/timescale4.19.cdd, diags/cdd/timescale4.2.cdd,
-	diags/cdd/timescale4.20.cdd, diags/cdd/timescale4.21.cdd,
-	diags/cdd/timescale4.3.cdd, diags/cdd/timescale4.4.cdd,
-	diags/cdd/timescale4.5.cdd, diags/cdd/timescale4.6.cdd,
-	diags/cdd/timescale4.7.cdd, diags/cdd/timescale4.8.cdd,
-	diags/cdd/timescale4.9.cdd, diags/cdd/timescale4.cdd,
-	diags/cdd/toggle2.1.cdd, diags/cdd/toggle2.2.cdd,
-	diags/cdd/toggle2.3.cdd, diags/cdd/toggle2.cdd, diags/cdd/tri.cdd,
-	diags/cdd/tri0.cdd, diags/cdd/tri1.cdd, diags/cdd/triand.cdd,
-	diags/cdd/trigger1.cdd, diags/cdd/trior.cdd, diags/cdd/trireg.cdd,
-	diags/cdd/unary1.cdd, diags/cdd/unary2.cdd, diags/cdd/unary3.cdd,
-	diags/cdd/unsigned1.cdd, diags/cdd/urandom1.1.cdd,
-	diags/cdd/urandom1.2.cdd, diags/cdd/urandom1.3.cdd,
-	diags/cdd/urandom1.cdd, diags/cdd/urandom2.1.cdd,
-	diags/cdd/urandom2.cdd, diags/cdd/urandom_range1.1.cdd,
-	diags/cdd/urandom_range1.2.cdd, diags/cdd/urandom_range1.cdd,
-	diags/cdd/urandom_range2.1.cdd, diags/cdd/urandom_range2.2.cdd,
-	diags/cdd/urandom_range2.cdd, diags/cdd/value_plusargs1.cdd,
-	diags/cdd/value_plusargs2.cdd, diags/cdd/value_plusargs3.cdd,
-	diags/cdd/value_plusargs4.cdd, diags/cdd/value_plusargs5.cdd,
-	diags/cdd/value_plusargs6.cdd, diags/cdd/value_plusargs7.cdd,
-	diags/cdd/value_plusargs8.1.cdd, diags/cdd/value_plusargs8.cdd,
-	diags/cdd/version1.1.cdd, diags/cdd/version1.cdd,
-	diags/cdd/wait1.1.cdd, diags/cdd/wait1.cdd, diags/cdd/wait2.cdd,
-	diags/cdd/wand.cdd, diags/cdd/while1.1.cdd, diags/cdd/while1.cdd,
-	diags/cdd/wor.cdd, diags/cdd/write1.cdd, diags/verilog/Makefile,
-	src/func_iter.c, src/func_iter.h, src/gen_item.c, src/generator.c,
-	src/genprof.c, src/genprof.h, src/link.c, src/statement.c,
-	src/statement.h: Completing work on stmt_link changes.	generate18
-	now added to regressions which passes in inlined coverage mode. 
-	Updated regression files for these changes.
+	Completing work on stmt_link changes.  generate18 now added to
+	regressions which passes in inlined coverage mode.  Updated
+	regression files for these changes.
 
 2009-06-26 07:36  phase1geo
 
-	* src/: func_iter.c, func_iter.h, generator.c: More code
-	adjustments.
+	More code adjustments.
 
 2009-06-26 01:41  phase1geo
 
-	* lib/Makefile.am, lib/Makefile.in, src/Makefile.am,
-	src/Makefile.in, src/binding.c, src/comb.c, src/db.c, src/db.h,
-	src/defines.h, src/exclude.c, src/fsm_var.c, src/func_iter.c,
-	src/func_iter.h, src/func_unit.c, src/func_unit.h, src/gen_item.c,
-	src/generator.c, src/instance.c, src/instance.h, src/iter.c,
-	src/iter.h, src/line.c, src/link.c, src/link.h, src/memory.c,
-	src/merge.c, src/ovl.c, src/parse.c, src/race.c, src/rank.c,
-	src/report.c, src/sim.c, src/statement.c, src/statement.h,
-	src/stmt_blk.c, src/toggle.c: Working on transitioning stmt_link
-	structure and related functionality to cause this structure to be
-	much more simple and ordered.  Things compile but do not currently
-	run.
+	Working on transitioning stmt_link structure and related
+	functionality to cause this structure to be much more simple and
+	ordered.  Things compile but do not currently run.
 
 2009-06-25 23:46  phase1geo
 
-	* diags/regress/Makefile: Updating regression Makefile.
+	Updating regression Makefile.
 
 2009-06-25 23:30  phase1geo
 
-	* diags/cdd/race8.cdd, diags/regress/Makefile,
-	diags/regress/race8.cfg, diags/rpt/race8.rptI,
-	diags/rpt/race8.rptM, diags/verilog/race8.v, src/func_unit.c:
 	Integrating bug fix 2812495 from stable branch.
 
 2009-06-25 23:03  phase1geo
 
-	* diags/rpt/race8.rptI: file race8.rptI was initially added on
-	branch stable-0_7-branch.
+	file race8.rptI was initially added on branch stable-0_7-branch.
 
 2009-06-25 23:03  phase1geo
 
-	* diags/verilog/race8.v: file race8.v was initially added on branch
-	stable-0_7-branch.
+	file race8.v was initially added on branch stable-0_7-branch.
 
 2009-06-25 23:03  phase1geo
 
-	* diags/regress/race8.cfg: file race8.cfg was initially added on
-	branch stable-0_7-branch.
+	file race8.cfg was initially added on branch stable-0_7-branch.
 
 2009-06-25 23:03  phase1geo
 
-	* diags/rpt/race8.rptM: file race8.rptM was initially added on
-	branch stable-0_7-branch.
+	file race8.rptM was initially added on branch stable-0_7-branch.
 
 2009-06-25 23:03  phase1geo
 
-	* diags/cdd/race8.cdd: file race8.cdd was initially added on branch
-	stable-0_7-branch.
-
-2009-06-25 23:03  phase1geo
-
-	* diags/cdd/race8.cdd, diags/regress/Makefile,
-	diags/regress/race8.cfg, diags/rpt/race8.rptI,
-	diags/rpt/race8.rptM, diags/verilog/race8.v, src/func_unit.c:
-	Fixing bug 2812495.  Added race8 diagnostic to verify the bug fix.
+	file race8.cdd was initially added on branch stable-0_7-branch.
 
 2009-06-25 17:03  phase1geo
 
-	* diags/cdd/err3.cdd, diags/cdd/generate12.cdd,
-	diags/cdd/generate21.cdd, diags/regress/Makefile,
-	diags/regress/generate21.cfg, diags/rpt/generate12.rptI,
-	diags/rpt/generate12.rptM, diags/rpt/generate21.rptI,
-	diags/rpt/generate21.rptM, diags/verilog/generate21.v,
-	src/binding.c, src/gen_item.c, src/gen_item.h, src/genprof.c,
-	src/genprof.h, src/instance.c, src/param.c, src/param.h:
 	Integrating bug fix 2812321 from stable branch into the development
 	branch.
 
-2009-06-25 16:40  phase1geo
-
-	* src/: gen_item.c, genprof.c, genprof.h, param.c: Fixing a few
-	issues with the last checkin.
-
 2009-06-25 15:36  phase1geo
 
-	* diags/: cdd/assign4.cdd, regress/Makefile, regress/assign4.cfg,
-	rpt/assign4.rptI, rpt/assign4.rptM, verilog/assign4.v: Adding
-	assign4 diagnostic to verify prior bug fix.
+	Adding assign4 diagnostic to verify prior bug fix.
 
 2009-06-25 15:30  phase1geo
 
-	* diags/verilog/test.v, src/lexer.l, src/parser.y: Fixing issue
-	with assign statements being interrupted with combinational logic
-	coverage when the assign statement follows a procedural block.
+	Fixing issue with assign statements being interrupted with
+	combinational logic coverage when the assign statement follows a
+	procedural block.
 
 2009-06-25 13:48  phase1geo
 
-	* diags/verilog/test.v, src/generator.c: Fixing issue with
-	parenthesis placement in generated output.
+	Fixing issue with parenthesis placement in generated output.
 
 2009-06-25 13:47  phase1geo
 
-	* diags/rpt/generate21.rptM: file generate21.rptM was initially
-	added on branch stable-0_7-branch.
+	file generate21.rptM was initially added on branch
+	stable-0_7-branch.
 
 2009-06-25 13:47  phase1geo
 
-	* diags/rpt/generate12.rptM: file generate12.rptM was initially
-	added on branch stable-0_7-branch.
+	file generate12.rptM was initially added on branch
+	stable-0_7-branch.
 
 2009-06-25 13:47  phase1geo
 
-	* diags/rpt/generate21.rptI: file generate21.rptI was initially
-	added on branch stable-0_7-branch.
+	file generate21.rptI was initially added on branch
+	stable-0_7-branch.
 
 2009-06-25 13:47  phase1geo
 
-	* diags/regress/generate21.cfg: file generate21.cfg was initially
-	added on branch stable-0_7-branch.
+	file generate21.cfg was initially added on branch
+	stable-0_7-branch.
 
 2009-06-25 13:47  phase1geo
 
-	* diags/verilog/generate21.v: file generate21.v was initially added
-	on branch stable-0_7-branch.
+	file generate21.v was initially added on branch stable-0_7-branch.
 
 2009-06-25 13:47  phase1geo
 
-	* diags/rpt/generate12.rptI: file generate12.rptI was initially
-	added on branch stable-0_7-branch.
+	file generate12.rptI was initially added on branch
+	stable-0_7-branch.
 
 2009-06-25 13:47  phase1geo
 
-	* diags/cdd/generate21.cdd: file generate21.cdd was initially added
-	on branch stable-0_7-branch.
+	file generate21.cdd was initially added on branch
+	stable-0_7-branch.
 
 2009-06-25 13:47  phase1geo
 
-	* diags/cdd/generate12.cdd: file generate12.cdd was initially added
-	on branch stable-0_7-branch.
-
-2009-06-25 13:47  phase1geo
-
-	* diags/cdd/generate12.cdd, diags/cdd/generate21.cdd,
-	diags/regress/Makefile, diags/regress/generate21.cfg,
-	diags/rpt/generate12.rptI, diags/rpt/generate12.rptM,
-	diags/rpt/generate21.rptI, diags/rpt/generate21.rptM,
-	diags/verilog/generate21.v, src/binding.c, src/gen_item.c,
-	src/gen_item.h, src/genprof.c, src/genprof.h, src/instance.c,
-	src/param.c, src/param.h: Fixed bug 2812321.  Added generate12 and
-	generate21 regression files and included both diagnostics in the
-	regression.
+	file generate12.cdd was initially added on branch
+	stable-0_7-branch.
 
 2009-06-25 12:14  phase1geo
 
-	* src/: binding.c, comb.c, db.c, expr.c, fsm.c, fsm_arg.c,
-	func_unit.c, gen_item.c, generator.c, instance.c, line.c, link.c,
-	param.c: Cleaning up splint warnings.
-
-2009-06-25 08:37  phase1geo
-
-	* Makefile.in, aclocal.m4, configure, configure.in,
-	doc/Makefile.in, doc/covered.1, doc/covered.dox,
-	doc/docbook/Makefile.in, lib/Makefile.in, scripts/Makefile.in,
-	src/Makefile.in: Updating version number to 0.7.5 in preparation
-	for the new stable release.
-
-2009-06-25 07:33  phase1geo
-
-	* src/: comb.c, instance.c, util.c: Cleaning up splint warnings.
+	Cleaning up splint warnings.
 
 2009-06-23 23:00  phase1geo
 
-	* src/: parser.y, race.c, score.c, sim.c, util.c, vector.c,
-	vector.h: Working on cleaning up some splint warnings. 
-	Checkpointing.
+	Working on cleaning up some splint warnings.  Checkpointing.
 
 2009-06-23 22:45  phase1geo
 
-	* configure, configure.in, doc/Makefile.in, doc/covered.1,
-	doc/covered.dox, doc/docbook/catalog.xml,
-	doc/docbook/chapter_score.xml, doc/html/chapter.attr.html,
-	doc/html/chapter.boundaries.html, doc/html/chapter.debug.html,
-	doc/html/chapter.epilogue.html, doc/html/chapter.exclude.html,
-	doc/html/chapter.faq.html, doc/html/chapter.gui.assert.html,
-	doc/html/chapter.gui.assert.source.html,
-	doc/html/chapter.gui.exclude.html, doc/html/chapter.gui.fsm.html,
-	doc/html/chapter.gui.genreport.html,
-	doc/html/chapter.gui.intro.html, doc/html/chapter.gui.line.html,
-	doc/html/chapter.gui.logic.html, doc/html/chapter.gui.main.html,
-	doc/html/chapter.gui.memory.html, doc/html/chapter.gui.new.html,
-	doc/html/chapter.gui.preferences.html,
-	doc/html/chapter.gui.rank.html, doc/html/chapter.gui.toggle.html,
-	doc/html/chapter.gui.wizard.html,
-	doc/html/chapter.installation.html, doc/html/chapter.intro.html,
-	doc/html/chapter.merge.html, doc/html/chapter.metrics.html,
-	doc/html/chapter.race.html, doc/html/chapter.rank.html,
-	doc/html/chapter.reading.html, doc/html/chapter.report.html,
-	doc/html/chapter.score.html, doc/html/chapter.start.html,
-	doc/html/chapter.using.html, doc/html/index.html,
-	doc/html/part.command.line.usage.html, doc/html/part.epilogue.html,
-	doc/html/part.faq.html, doc/html/part.gui.html,
-	doc/html/part.installation.html, doc/html/part.overview.html:
 	Updates to user documentation for inlined code coverage.  Added
 	information to man page.  Updated build scripts for the upcoming
 	development release of Covered.
 
 2009-06-23 17:56  phase1geo
 
-	* doc/docbook/: chapter_score.xml, chapter_start.xml: Adding
-	documentation for inlined code coverage.  Still need a section
-	filled in for the score command section.  Checkpointing.
+	Adding documentation for inlined code coverage.  Still need a
+	section filled in for the score command section.  Checkpointing.
 
 2009-06-23 08:05  phase1geo
 
-	* diags/regress/Makefile, diags/verilog/test.v, src/gen_item.c:
 	Fixing one issue related to the failure of generate18.	Updated
 	Makefile to include generate18 in regression runs (though currently
 	it fails).
 
 2009-06-22 18:21  phase1geo
 
-	* src/: generator.c, parser.y: Changing inlined coverage flush from
-	a hold_flush to a work_flush for always statements.  Inlined
-	regressions seem to still pass with this fix.
+	Changing inlined coverage flush from a hold_flush to a work_flush
+	for always statements.	Inlined regressions seem to still pass with
+	this fix.
 
 2009-06-22 13:38  phase1geo
 
-	* diags/cdd/generate8.1.cdd, diags/regress/Makefile,
-	diags/rpt/generate8.1.rptI, diags/rpt/generate8.1.rptM,
-	diags/verilog/generate8.1.v, src/generator.c, src/parser.y: Fixing
-	issue with generate IF statements.  Updated generate8.1 diagnostic
-	and readded it to VCS inlined regressions.
+	Fixing issue with generate IF statements.  Updated generate8.1
+	diagnostic and readded it to VCS inlined regressions.
 
 2009-06-22 00:47  phase1geo
 
-	* diags/verilog/: add1.cc, add1.verilator.v: Adding test versions
-	of the add1 diagnostic for Verilator testing.  Checkpointing.
+	Adding test versions of the add1 diagnostic for Verilator testing. 
+	Checkpointing.
 
 2009-06-22 00:39  phase1geo
 
-	* diags/regress/Makefile: Removing VCS diagnostics from inlined
-	regression.
+	Removing VCS diagnostics from inlined regression.
 
 2009-06-21 23:06  phase1geo
 
-	* diags/regress/Makefile, src/generator.c, src/lexer.l: Fixing
-	inlined coverage issue with value_plusargs5.  Removed
+	Fixing inlined coverage issue with value_plusargs5.  Removed
 	value_plusargs* diagnostics from Icarus exclusion list.
 
 2009-06-21 22:40  phase1geo
 
-	* diags/regress/Makefile: Removing urandom1.2 and urandom1.3 from
-	inlined code coverage regression runs.
+	Removing urandom1.2 and urandom1.3 from inlined code coverage
+	regression runs.
 
 2009-06-21 00:44  phase1geo
 
-	* diags/verilog/err3.v: Integrating fixes from stable release.
+	Integrating fixes from stable release.
 
 2009-06-21 00:38  phase1geo
 
-	* diags/err/err3.2.err, diags/err/generate20.1.err,
-	diags/err/generate20.err, diags/regress/Makefile,
-	diags/regress/err3.2.cfg, diags/regress/generate20.1.cfg,
-	diags/regress/generate20.cfg, diags/verilog/err3.2.v,
-	diags/verilog/generate20.1.v, diags/verilog/generate20.v,
-	src/binding.c, src/db.c, src/db.h, src/defines.h, src/func_unit.c,
-	src/func_unit.h, src/genprof.c, src/genprof.h, src/lxt.c,
-	src/util.c, src/vcd.c, src/vpi.c: Integrating changes from stable
-	branch.  Currently one diagnostic is failing, err3.
+	Integrating changes from stable branch.  Currently one diagnostic
+	is failing, err3.
 
 2009-06-20 22:49  phase1geo
 
-	* diags/regress/err3.2.cfg: file err3.2.cfg was initially added on
-	branch stable-0_7-branch.
+	file err3.2.cfg was initially added on branch stable-0_7-branch.
 
 2009-06-20 22:49  phase1geo
 
-	* diags/verilog/err3.2.v: file err3.2.v was initially added on
-	branch stable-0_7-branch.
+	file err3.2.v was initially added on branch stable-0_7-branch.
 
 2009-06-20 22:49  phase1geo
 
-	* diags/err/err3.2.err: file err3.2.err was initially added on
-	branch stable-0_7-branch.
-
-2009-06-20 22:49  phase1geo
-
-	* diags/err/err3.2.err, diags/regress/Makefile,
-	diags/regress/err3.2.cfg, diags/verilog/err3.2.v,
-	diags/verilog/err3.v, src/db.c, src/db.h, src/defines.h,
-	src/func_unit.c, src/func_unit.h, src/genprof.c, src/genprof.h,
-	src/lxt.c, src/vcd.c, src/vpi.c: Fixing bug 2808820.  Added err3.2
-	to verify part of the fix.
+	file err3.2.err was initially added on branch stable-0_7-branch.
 
 2009-06-20 16:48  phase1geo
 
-	* diags/verilog/generate20.1.v: file generate20.1.v was initially
-	added on branch stable-0_7-branch.
+	file generate20.1.v was initially added on branch
+	stable-0_7-branch.
 
 2009-06-20 16:48  phase1geo
 
-	* diags/err/generate20.1.err, diags/regress/Makefile,
-	diags/regress/generate20.1.cfg, diags/verilog/generate20.1.v,
-	src/binding.c: Fixing bug 2808820.
+	file generate20.1.cfg was initially added on branch
+	stable-0_7-branch.
 
 2009-06-20 16:48  phase1geo
 
-	* diags/regress/generate20.1.cfg: file generate20.1.cfg was
-	initially added on branch stable-0_7-branch.
-
-2009-06-20 16:48  phase1geo
-
-	* diags/err/generate20.1.err: file generate20.1.err was initially
-	added on branch stable-0_7-branch.
-
-2009-06-20 16:19  phase1geo
-
-	* diags/verilog/generate20.v: Removing dump portion of the
-	generate20 diagnostic.
+	file generate20.1.err was initially added on branch
+	stable-0_7-branch.
 
 2009-06-20 16:14  phase1geo
 
-	* diags/err/generate20.err: file generate20.err was initially added
-	on branch stable-0_7-branch.
-
-2009-06-20 16:14  phase1geo
-
-	* diags/err/generate20.err, diags/regress/Makefile,
-	diags/regress/generate20.cfg, diags/verilog/generate20.v,
-	src/binding.c, src/util.c: Fixing bug 2809587.	Adding generate20.v
-	diagnostic to verify bug fix.
+	file generate20.err was initially added on branch
+	stable-0_7-branch.
 
 2009-06-19 08:07  phase1geo
 
-	* diags/verilog/generate20.v: file generate20.v was initially added
-	on branch stable-0_7-branch.
+	file generate20.v was initially added on branch stable-0_7-branch.
 
 2009-06-19 08:07  phase1geo
 
-	* diags/regress/generate20.cfg: file generate20.cfg was initially
-	added on branch stable-0_7-branch.
-
-2009-06-19 08:07  phase1geo
-
-	* diags/: regress/Makefile, regress/generate20.cfg,
-	verilog/generate20.v: Adding generate20 diagnostic to hit bug
-	2808818.
+	file generate20.cfg was initially added on branch
+	stable-0_7-branch.
 
 2009-06-18 17:30  phase1geo
 
-	* diags/verilog/urandom1.2.v, src/generator.c: Updating for
-	$random( seed ) and $urandom( seed ) calls in regression
-	diagnostics with inlined code coverage.
+	Updating for $random( seed ) and $urandom( seed ) calls in
+	regression diagnostics with inlined code coverage.
 
 2009-06-18 12:51  phase1geo
 
-	* diags/: cdd/generate8.2.cdd, cdd/generate9.3.cdd,
-	rpt/generate9.3.rptI, rpt/generate9.3.rptM, verilog/generate8.2.v,
-	verilog/generate9.3.v: Updating regression files to be used with
-	inlined code coverage.
-
-2009-06-17 22:13  phase1geo
-
-	* ChangeLog, NEWS: Readying files for new 0.7.4 stable release.
+	Updating regression files to be used with inlined code coverage.
 
 2009-06-16 18:16  phase1geo
 
-	* diags/cdd/generate15.1.cdd, diags/cdd/generate15.2.cdd,
-	diags/cdd/generate15.3.cdd, diags/cdd/generate15.4.cdd,
-	diags/cdd/generate15.5.cdd, diags/cdd/generate15.cdd,
-	diags/cdd/generate16.1.cdd, diags/cdd/generate17.cdd,
-	diags/cdd/generate19.1.cdd, diags/cdd/generate19.2.cdd,
-	diags/cdd/generate19.cdd, diags/cdd/generate5.2.cdd,
-	diags/cdd/generate5.3.cdd, diags/cdd/generate5.cdd,
-	diags/cdd/generate8.9.cdd, diags/cdd/generate8.cdd,
-	diags/regress/Makefile, diags/regress/generate19.1.cfg,
-	diags/regress/generate19.2.cfg, diags/regress/generate19.cfg,
-	diags/rpt/generate19.1.rptI, diags/rpt/generate19.1.rptM,
-	diags/rpt/generate19.2.rptI, diags/rpt/generate19.2.rptM,
-	diags/rpt/generate19.rptI, diags/rpt/generate19.rptM,
-	diags/verilog/generate19.1.v, diags/verilog/generate19.2.v,
-	diags/verilog/generate19.v, src/assertion.c, src/comb.c, src/db.c,
-	src/db.h, src/defines.h, src/fsm.c, src/gen_item.c, src/genprof.c,
-	src/genprof.h, src/instance.c, src/instance.h, src/line.c,
-	src/memory.c, src/search.c, src/toggle.c: Integrating bug fix from
-	stable release.  Updating regression files.
-
-2009-06-16 17:37  phase1geo
-
-	* src/: genprof.c, genprof.h, instance.c: Updating profiling
-	defines.
-
-2009-06-16 17:12  phase1geo
-
-	* diags/cdd/generate16.cdd, diags/cdd/generate2.cdd,
-	diags/cdd/generate3.1.cdd, diags/cdd/generate3.cdd,
-	diags/cdd/generate5.2.cdd, diags/cdd/generate5.3.cdd,
-	diags/cdd/generate7.1.cdd, diags/cdd/generate7.2.cdd,
-	diags/cdd/generate7.cdd, diags/cdd/generate8.1.cdd,
-	diags/cdd/generate8.4.cdd, diags/cdd/generate8.5.cdd,
-	diags/cdd/generate8.6.cdd, diags/cdd/generate9.1.cdd,
-	diags/cdd/generate9.2.cdd, diags/cdd/generate9.3.cdd,
-	diags/cdd/generate9.cdd, diags/regress/Makefile, src/assertion.c,
-	src/comb.c, src/db.c, src/defines.h, src/fsm.c, src/gen_item.c,
-	src/instance.c, src/instance.h, src/line.c, src/memory.c,
-	src/search.c, src/toggle.c: Fixing bug 2806855.  Updated regression
-	files per this change.
+	Integrating bug fix from stable release.  Updating regression
+	files.
 
 2009-06-16 08:19  phase1geo
 
-	* diags/rpt/generate19.2.rptI: file generate19.2.rptI was initially
-	added on branch stable-0_7-branch.
+	file generate19.2.rptI was initially added on branch
+	stable-0_7-branch.
 
 2009-06-16 08:19  phase1geo
 
-	* diags/rpt/generate19.rptI: file generate19.rptI was initially
-	added on branch stable-0_7-branch.
+	file generate19.rptI was initially added on branch
+	stable-0_7-branch.
 
 2009-06-16 08:19  phase1geo
 
-	* diags/rpt/generate19.2.rptM: file generate19.2.rptM was initially
-	added on branch stable-0_7-branch.
+	file generate19.2.rptM was initially added on branch
+	stable-0_7-branch.
 
 2009-06-16 08:19  phase1geo
 
-	* diags/rpt/generate19.rptM: file generate19.rptM was initially
-	added on branch stable-0_7-branch.
+	file generate19.rptM was initially added on branch
+	stable-0_7-branch.
 
 2009-06-16 08:18  phase1geo
 
-	* diags/cdd/generate19.2.cdd: file generate19.2.cdd was initially
-	added on branch stable-0_7-branch.
+	file generate19.2.cdd was initially added on branch
+	stable-0_7-branch.
 
 2009-06-16 08:18  phase1geo
 
-	* diags/cdd/generate19.cdd: file generate19.cdd was initially added
-	on branch stable-0_7-branch.
-
-2009-06-16 08:18  phase1geo
-
-	* diags/: cdd/generate15.2.cdd, cdd/generate15.5.cdd,
-	cdd/generate15.cdd, cdd/generate16.1.cdd, cdd/generate17.cdd,
-	cdd/generate19.2.cdd, cdd/generate19.cdd, cdd/generate5.cdd,
-	cdd/generate8.3.cdd, cdd/generate8.9.cdd, cdd/generate8.cdd,
-	rpt/generate19.2.rptI, rpt/generate19.2.rptM, rpt/generate19.rptI,
-	rpt/generate19.rptM: Regression updates per recent changes.
+	file generate19.cdd was initially added on branch
+	stable-0_7-branch.
 
 2009-06-15 21:57  phase1geo
 
-	* diags/verilog/generate19.2.v: file generate19.2.v was initially
-	added on branch stable-0_7-branch.
+	file generate19.2.v was initially added on branch
+	stable-0_7-branch.
 
 2009-06-15 21:57  phase1geo
 
-	* diags/verilog/generate19.1.v: file generate19.1.v was initially
-	added on branch stable-0_7-branch.
+	file generate19.1.v was initially added on branch
+	stable-0_7-branch.
 
 2009-06-15 21:57  phase1geo
 
-	* diags/regress/generate19.2.cfg: file generate19.2.cfg was
-	initially added on branch stable-0_7-branch.
+	file generate19.2.cfg was initially added on branch
+	stable-0_7-branch.
 
 2009-06-15 21:57  phase1geo
 
-	* diags/rpt/generate19.1.rptI: file generate19.1.rptI was initially
-	added on branch stable-0_7-branch.
+	file generate19.1.rptI was initially added on branch
+	stable-0_7-branch.
 
 2009-06-15 21:57  phase1geo
 
-	* diags/rpt/generate19.1.rptM: file generate19.1.rptM was initially
-	added on branch stable-0_7-branch.
+	file generate19.1.rptM was initially added on branch
+	stable-0_7-branch.
 
 2009-06-15 21:57  phase1geo
 
-	* diags/regress/generate19.1.cfg: file generate19.1.cfg was
-	initially added on branch stable-0_7-branch.
+	file generate19.1.cfg was initially added on branch
+	stable-0_7-branch.
 
 2009-06-15 21:57  phase1geo
 
-	* diags/cdd/generate19.1.cdd: file generate19.1.cdd was initially
-	added on branch stable-0_7-branch.
-
-2009-06-15 21:57  phase1geo
-
-	* diags/: cdd/generate19.1.cdd, regress/Makefile,
-	regress/generate19.1.cfg, regress/generate19.2.cfg,
-	rpt/generate19.1.rptI, rpt/generate19.1.rptM,
-	verilog/generate19.1.v, verilog/generate19.2.v,
-	verilog/generate19.v: Adding generate19.1 and generate19.2
-	diagnostics to test other cases like generate19.
+	file generate19.1.cdd was initially added on branch
+	stable-0_7-branch.
 
 2009-06-15 17:28  phase1geo
 
-	* diags/verilog/generate19.v: file generate19.v was initially added
-	on branch stable-0_7-branch.
+	file generate19.v was initially added on branch stable-0_7-branch.
 
 2009-06-15 17:28  phase1geo
 
-	* diags/regress/generate19.cfg: file generate19.cfg was initially
-	added on branch stable-0_7-branch.
-
-2009-06-15 17:28  phase1geo
-
-	* diags/: regress/Makefile, regress/generate19.cfg,
-	verilog/generate19.v: Adding generate19 diagnostic to regression
-	suite to hit bug 2806855.
+	file generate19.cfg was initially added on branch
+	stable-0_7-branch.
 
 2009-06-15 00:06  phase1geo
 
-	* src/generator.c: Fixing issue where multiple registers are
-	created for the same expression.
+	Fixing issue where multiple registers are created for the same
+	expression.
 
 2009-06-13 13:17  actonide
 
-	* AUTHORS: Adding Jason Jorstad to the list of Covered developers.
+	Adding Jason Jorstad to the list of Covered developers.
 
 2009-06-13 08:08  phase1geo
 
-	* diags/: cdd/mbit_sel5.2.cdd, cdd/mbit_sel5.3.cdd,
-	regress/Makefile, verilog/mbit_sel5.2.v, verilog/mbit_sel5.3.v:
 	Updating regression files.
 
 2009-06-13 01:05  phase1geo
 
-	* diags/regress/Makefile: Cleaing up the formatting of the
-	regression Makefile.
+	Cleaing up the formatting of the regression Makefile.
 
 2009-06-13 00:39  phase1geo
 
-	* diags/regress/Makefile: Updating regressions.
+	Updating regressions.
 
 2009-06-12 23:02  phase1geo
 
-	* diags/cdd/marray2.1.cdd, diags/cdd/marray2.2.cdd,
-	diags/cdd/marray2.3.cdd, diags/cdd/marray2.cdd,
-	diags/verilog/marray2.1.v, diags/verilog/marray2.2.v,
-	diags/verilog/marray2.3.v, diags/verilog/marray2.v,
-	src/generator.c, src/genprof.c, src/genprof.h: Fixing another issue
-	related to memory coverage index calculation.  Updating regression
-	files for compatibility purposes with inlined coverage.
+	Fixing another issue related to memory coverage index calculation. 
+	Updating regression files for compatibility purposes with inlined
+	coverage.
 
 2009-06-12 18:12  phase1geo
 
-	* diags/: cdd/marray1.3.cdd, verilog/marray1.3.v: Updating
-	regression files for inlined coverage compatibility.
+	Updating regression files for inlined coverage compatibility.
 
 2009-06-12 18:05  phase1geo
 
-	* src/: generator.c, genprof.c, genprof.h, param.c, param.h: Fixing
-	code generator for multi-dimensional array access.
+	Fixing code generator for multi-dimensional array access.
 
 2009-06-12 15:17  phase1geo
 
-	* diags/cdd/atask1.cdd, diags/regress/Makefile,
-	diags/rpt/atask1.rptI, diags/rpt/atask1.rptM,
-	diags/verilog/atask1.v, src/reentrant.c: Fixing reentrant bug that
-	lead to incorrect toggle coverage results with automatic
-	functions/tasks.  Updating regression files to match.
-
-2009-06-11 21:31  phase1geo
-
-	* diags/: cdd/atask1.cdd, rpt/atask1.rptI, rpt/atask1.rptM:
-	Updating atask1 regression files.
-
-2009-06-11 21:08  phase1geo
-
-	* src/reentrant.c: Checking in fix for bug 2805191.
+	Fixing reentrant bug that lead to incorrect toggle coverage results
+	with automatic functions/tasks.  Updating regression files to
+	match.
 
 2009-06-11 13:06  phase1geo
 
-	* INSTALL: Updating INSTALL file.
-
-2009-06-11 13:04  phase1geo
-
-	* covered.spec: Missed a file from the last checkin.
-
-2009-06-11 13:03  phase1geo
-
-	* INSTALL, Makefile.in, aclocal.m4, configure, configure.in,
-	doc/Makefile.in, doc/covered.1, doc/covered.dox,
-	doc/docbook/Makefile.in, lib/Makefile.in, scripts/Makefile.in,
-	src/Makefile.in: Incrementing 0.7.3 release to 0.7.4 in preparation
-	for the next stable release.  Updated the INSTALL file to bring it
-	up to date.
+	Updating INSTALL file.
 
 2009-06-11 12:52  phase1geo
 
-	* diags/cdd/mem6.4.cdd, diags/regress/Makefile,
-	diags/regress/mem6.4.cfg, diags/rpt/mem6.4.rptI,
-	diags/rpt/mem6.4.rptM, diags/verilog/mem6.4.v, src/generator.c,
-	src/param.c: Completing support for memories assigned in
-	non-blocking assignments.
-
-2009-06-11 12:34  phase1geo
-
-	* diags/cdd/afunc2.cdd: Updating regression files.
+	Completing support for memories assigned in non-blocking
+	assignments.
 
 2009-06-11 09:30  phase1geo
 
-	* src/: generator.c, genprof.c, genprof.h: Initial code to get
-	mem6.3 diagnostic passing.  This is not working correctly and
-	causes memory deallocation problems at this point.  Checkpointing.
+	Initial code to get mem6.3 diagnostic passing.	This is not working
+	correctly and causes memory deallocation problems at this point. 
+	Checkpointing.
 
 2009-06-11 08:01  phase1geo
 
-	* diags/: cdd/mem6.3.cdd, rpt/mem6.3.rptI, rpt/mem6.3.rptM,
-	verilog/mem6.3.v: Changing mem6.3 diagnostic to help verify new
-	code to fix its issues.
+	Changing mem6.3 diagnostic to help verify new code to fix its
+	issues.
 
 2009-06-11 00:44  phase1geo
 
-	* diags/: cdd/mem6.3.cdd, verilog/mem6.3.v: Fixing issue with
-	mem6.3 diagnostic.
+	Fixing issue with mem6.3 diagnostic.
 
 2009-06-11 00:42  phase1geo
 
-	* diags/: cdd/mem6.2.cdd, cdd/mem6.3.cdd, regress/Makefile,
-	regress/mem6.2.cfg, regress/mem6.3.cfg, rpt/mem6.2.rptI,
-	rpt/mem6.2.rptM, rpt/mem6.3.rptI, rpt/mem6.3.rptM,
-	verilog/mem6.2.v, verilog/mem6.3.v: Adding mem6.2 and mem6.3
-	diagnostics to the regression suite to showcase a few shortcomings
-	with the inlined code coverage handling of memory write coverage.
-
-2009-06-11 00:28  phase1geo
-
-	* src/vpi.c: Fixing issue with scope_find_signal call within VPI
-	usage.
+	Adding mem6.2 and mem6.3 diagnostics to the regression suite to
+	showcase a few shortcomings with the inlined code coverage handling
+	of memory write coverage.
 
 2009-06-11 00:25  phase1geo
 
-	* diags/cdd/always9.cdd, diags/cdd/lshift3.3.cdd,
-	diags/cdd/mem6.1.cdd, diags/cdd/race6.cdd, diags/rpt/mem6.1.rptI,
-	diags/rpt/mem6.1.rptM, src/expr.c, src/generator.c, src/vpi.c:
 	Integrating bug fix from stable release.  Adding preliminary
 	support for memory coverage within non-blocking assignments (still
 	need to make the solution more robust but it solves the issue with
 	mem6 and mem6.1).  Updating regression files per bug fix.
 
-2009-06-10 23:55  phase1geo
-
-	* diags/: cdd/always9.cdd, cdd/mem6.1.cdd, cdd/race6.cdd,
-	rpt/mem6.1.rptI, rpt/mem6.1.rptM: Updating regression files for bug
-	fix 2804585.
-
-2009-06-10 23:55  phase1geo
-
-	* src/expr.c: Fixing bug 2804585.
-
 2009-06-10 15:01  phase1geo
 
-	* diags/: regress/Makefile, verilog/lshift3.3.v: Updated regression
-	Makefile to get Veriwell inlined code coverage regression to run
-	cleanly.  Only one diagnostic fails (mem6.1) which also fails in
-	all other regressions.	Cleaning up Verilog warning in lshift3.3.v.
+	Updated regression Makefile to get Veriwell inlined code coverage
+	regression to run cleanly.  Only one diagnostic fails (mem6.1)
+	which also fails in all other regressions.  Cleaning up Verilog
+	warning in lshift3.3.v.
 
 2009-06-09 18:25  phase1geo
 
-	* diags/verilog/Makefile: Fixing Veriwell command-line to get the
-	paths parsed properly.
+	Fixing Veriwell command-line to get the paths parsed properly.
 
 2009-06-09 18:17  phase1geo
 
-	* diags/regress/Makefile: Updating for Veriwell inline code
-	coverage regression run.
+	Updating for Veriwell inline code coverage regression run.
 
 2009-06-09 17:36  phase1geo
 
-	* src/: expr.c, generator.c: Fixing memory coverage generator to
-	pay attention to memories used within LHS bit selects (these should
-	be treated as memory reads, not writes.  Also added extra debug
-	information to the expression_vcd_assign function for the purposes
-	of debugging failures.	This change causes mem6.1 to fail.
+	Fixing memory coverage generator to pay attention to memories used
+	within LHS bit selects (these should be treated as memory reads,
+	not writes.  Also added extra debug information to the
+	expression_vcd_assign function for the purposes of debugging
+	failures.  This change causes mem6.1 to fail.
 
 2009-06-09 16:54  phase1geo
 
-	* diags/regress/Makefile: Removing case4.1 in IV inlined regression
-	runs as IV seems to think that undriven wires cause events that
-	@(a) style event control statements get triggered on.
+	Removing case4.1 in IV inlined regression runs as IV seems to think
+	that undriven wires cause events that @(a) style event control
+	statements get triggered on.
 
 2009-06-06 17:10  phase1geo
 
-	* diags/cdd/: exclude10.5.cdd, ovl1.1.cdd, ovl1.2.cdd, ovl1.3.cdd,
-	ovl1.cdd: Updating regression files for the latest version of the
-	OVL.
-
-2009-06-06 15:36  phase1geo
-
-	* diags/cdd/: exclude10.5.cdd, ovl1.1.cdd, ovl1.2.cdd, ovl1.3.cdd,
-	ovl1.cdd: Updating a few regression files that fail with older
-	versions of the OVL (previous to the 2.4 release).
-
-2009-06-04 21:34  phase1geo
-
-	* ChangeLog, NEWS, diags/regress/err5.2.pl,
-	diags/regress/err5.3.pl, diags/regress/err5.4.pl,
-	diags/regress/merge10.pl, diags/regress/merge11.pl,
-	diags/regress/merge4.pl, diags/regress/merge_err1.pl,
-	diags/verilog/regress_subs.pl: Submitting files for 0.7.3 stable
-	release.
+	Updating regression files for the latest version of the OVL.
 
 2009-06-03 11:39  phase1geo
 
-	* src/: defines.h, symtable.c: Fixing issue with VCS-generated
-	dumpfiles which will cause expressions to be assigned to the same
-	VCD symbol.
+	Fixing issue with VCS-generated dumpfiles which will cause
+	expressions to be assigned to the same VCD symbol.
 
 2009-06-03 01:21  phase1geo
 
-	* src/: gen_item.c, sim.c: Fixing some compile issues found in the
-	stable release.  Also fixing some Doxygen errors.
-
-2009-06-03 01:20  phase1geo
-
-	* Makefile.in, aclocal.m4, configure, configure.in, covered.spec,
-	doc/Makefile.in, doc/covered.1, doc/covered.dox,
-	doc/docbook/Makefile.in, lib/Makefile.in, scripts/Makefile.in,
-	src/Makefile.in, src/devel_doc.h, src/sim.c: Fixing some compile
-	issues that occur when the --enable-debug and --enable-profiling
-	options are not specified.  Updating various files for the upcoming
-	0.7.3 stable release.  Also fixing some Doxygen errors.
+	Fixing some compile issues found in the stable release.  Also
+	fixing some Doxygen errors.
 
 2009-06-02 01:02  phase1geo
 
-	* diags/regress/Makefile, src/generator.c: Attempting to fix issues
-	with handling PEDGE and NEDGE events with inlined code coverage
-	handler.
+	Attempting to fix issues with handling PEDGE and NEDGE events with
+	inlined code coverage handler.
+
+2009-05-31 22:30  phase1geo
+
+	Fixing more inlined code coverage cases and integrating stable
+	branch regression changes into this branch.
+
+2009-05-29 22:58  phase1geo
+
+	Adding some debug code for inlined code coverage.
+
+2009-05-29 08:16  phase1geo
+
+	Fixing bug with VPI mode and VCS with signals within generate
+	blocks.
+
+2009-05-28 23:40  phase1geo
+
+	Updating VCS regression.
+
+2009-05-28 00:08  phase1geo
+
+	Adding newlines after inserted coverage code to eliminate the
+	possibility of creating exceedingly long lines.
+
+2009-05-27 23:33  phase1geo
+
+	Integrating fixes from stable branch.  Also made a few fixes for
+	inlined code coverage failures.
+
+2009-05-27 08:58  phase1geo
+
+	Cleaning up regression runs per latest checkin.
+
+2009-05-27 08:37  phase1geo
+
+	Integrating fix for bug 2790827 from stable branch.
+
+2009-05-27 02:00  phase1geo
+
+	Adding mem6 and mem6.1 diagnostics from the stable branch.  Need to
+	incorporate the code changes in that branch to this trunk before
+	these diagnostics will pass.  Checkpointing.
+
+2009-05-27 01:44  phase1geo
+
+	file mem6.1.rptM was initially added on branch stable-0_7-branch.
+
+2009-05-27 01:44  phase1geo
+
+	file mem6.1.v was initially added on branch stable-0_7-branch.
+
+2009-05-27 01:44  phase1geo
+
+	file mem6.1.cdd was initially added on branch stable-0_7-branch.
+
+2009-05-27 01:44  phase1geo
+
+	file mem6.1.rptI was initially added on branch stable-0_7-branch.
+
+2009-05-27 01:44  phase1geo
+
+	file mem6.1.cfg was initially added on branch stable-0_7-branch.
+
+2009-05-26 18:17  phase1geo
+
+	file mem6.rptM was initially added on branch stable-0_7-branch.
+
+2009-05-26 18:17  phase1geo
+
+	file mem6.v was initially added on branch stable-0_7-branch.
+
+2009-05-26 18:17  phase1geo
+
+	file mem6.cfg was initially added on branch stable-0_7-branch.
+
+2009-05-26 18:17  phase1geo
+
+	file mem6.rptI was initially added on branch stable-0_7-branch.
+
+2009-05-26 18:17  phase1geo
+
+	file mem6.cdd was initially added on branch stable-0_7-branch.
+
+2009-05-25 14:56  phase1geo
+
+	Integrating changes from stable branch.
+
+2009-05-22 18:05  phase1geo
+
+	file generate18.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-05-22 18:05  phase1geo
+
+	file generate18.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-05-22 18:05  phase1geo
+
+	file generate18.cdd was initially added on branch
+	stable-0_7-branch.
+
+2009-05-22 17:52  phase1geo
+
+	file generate16.2.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-05-22 17:52  phase1geo
+
+	file generate16.2.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-05-22 17:52  phase1geo
+
+	file generate16.3.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-05-22 17:52  phase1geo
+
+	file generate16.2.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-05-22 17:52  phase1geo
+
+	file generate16.2.v was initially added on branch
+	stable-0_7-branch.
+
+2009-05-22 17:52  phase1geo
+
+	file generate16.3.v was initially added on branch
+	stable-0_7-branch.
+
+2009-05-22 17:52  phase1geo
+
+	file generate16.3.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-05-22 17:52  phase1geo
+
+	file generate16.3.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-05-22 17:52  phase1geo
+
+	file generate16.2.cdd was initially added on branch
+	stable-0_7-branch.
+
+2009-05-22 17:52  phase1geo
+
+	file generate16.3.cdd was initially added on branch
+	stable-0_7-branch.
+
+2009-05-21 01:00  phase1geo
+
+	Integrating bug fixes from stable branch.
+
+2009-05-21 00:30  phase1geo
+
+	file bug2794588.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-05-20 21:54  phase1geo
+
+	file bug2794588.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-05-20 21:54  phase1geo
+
+	file bug2794588.v was initially added on branch stable-0_7-branch.
+
+2009-05-20 21:54  phase1geo
+
+	file bug2794588.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-05-20 21:54  phase1geo
+
+	file top.v was initially added on branch stable-0_7-branch.
+
+2009-05-20 21:54  phase1geo
+
+	file bug2794588.cdd was initially added on branch
+	stable-0_7-branch.
+
+2009-05-20 17:26  phase1geo
+
+	file generate18.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-05-20 17:26  phase1geo
+
+	file generate18.v was initially added on branch stable-0_7-branch.
+
+2009-05-18 17:39  phase1geo
+
+	Adding support for vcomp to regression Makefiles even though vcomp
+	itself isn't behaving well.
+
+2009-05-18 00:07  phase1geo
+
+	Completing Veriwell integration work.
+
+2009-05-16 23:17  phase1geo
+
+	Updating regression Makefile to add Veriwell support.  Modified
+	diagnostic adding approach.
+
+2009-05-14 17:56  phase1geo
+
+	Reworking the Makefile to make it easier to add support for
+	different simulators and for ease in maintaining the diagnostic
+	list.  This is a work in progress.  Checkpointing.
+
+2009-05-14 17:38  phase1geo
+
+	Fixing support for running Veriwell in regressions.
+
+2009-05-14 17:26  phase1geo
+
+	Integrating bug fixes from stable branch.
+
+2009-05-14 13:46  phase1geo
+
+	file bug2791651.v was initially added on branch stable-0_7-branch.
+
+2009-05-14 13:46  phase1geo
+
+	file bug2791651.err was initially added on branch
+	stable-0_7-branch.
+
+2009-05-14 13:46  phase1geo
+
+	file bug2791651.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-05-14 00:06  phase1geo
+
+	More fixes to the inlined code generator to allow the generator to
+	be Verilator compatible.  This is still a work in progress. 
+	Checkpointing.
+
+2009-05-13 21:42  phase1geo
+
+	Integrating changes from stable branch.  Also starting to work on
+	inlined code coverage generation compatibility with simulators like
+	Verilator which only support synthesizable Verilog.  Still have
+	work to do here.  Checkpointing.
+
+2009-05-10 22:21  phase1geo
+
+	Updating NEWS.
+
+2009-05-10 22:20  phase1geo
+
+	Updating from stable branch.
+
+2009-05-06 17:07  phase1geo
+
+	Updating files from stable branch.
+
+2009-05-04 21:52  phase1geo
+
+	file always15.v was initially added on branch stable-0_7-branch.
+
+2009-05-04 21:52  phase1geo
+
+	file always15.rptM was initially added on branch stable-0_7-branch.
+
+2009-05-04 21:52  phase1geo
+
+	file always15.cfg was initially added on branch stable-0_7-branch.
+
+2009-05-04 21:52  phase1geo
+
+	file always15.rptI was initially added on branch stable-0_7-branch.
+
+2009-05-04 21:52  phase1geo
+
+	file always15.cdd was initially added on branch stable-0_7-branch.
+
+2009-05-03 22:55  phase1geo
+
+	Updates for inlined code coverage VCS regression.
+
+2009-05-02 01:17  phase1geo
+
+	Integrating fixes from stable branch for bug 2785453.  Cleaning up
+	regressions for Cver inlined code coverage.
+
+2009-05-02 00:36  phase1geo
+
+	file generate17.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-05-02 00:36  phase1geo
+
+	file generate17.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-05-02 00:36  phase1geo
+
+	file generate17.v was initially added on branch stable-0_7-branch.
+
+2009-05-02 00:36  phase1geo
+
+	file generate17.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-05-02 00:36  phase1geo
+
+	file generate17.cdd was initially added on branch
+	stable-0_7-branch.
+
+2009-05-01 18:22  phase1geo
+
+	Fixing rest of issues in regards to inlined code coverage for the
+	IV test suite.	Checkpointing.
+
+2009-04-30 23:55  phase1geo
+
+	Updating regression per changes to Icarus Verilog error checking.
+
+2009-04-30 16:55  phase1geo
+
+	Fixing generate item handling for task, function and begin..end
+	blocks for the purposes of inlined coverage support.
+
+2009-04-30 12:55  phase1geo
+
+	Updating VCS regressions per recent changes.
+
+2009-04-30 01:21  phase1geo
+
+	Updating documentation to match the stable 0.7 branch.
+
+2009-04-30 00:48  phase1geo
+
+	Removing CVS comment blocks.
+
+2009-04-30 00:41  phase1geo
+
+	Adding include filename in CDD file for scopes that are included
+	into other files.
+
+2009-04-29 18:21  phase1geo
+
+	Adding supplemental field to functional unit structure and moving
+	type and elem_type fields into this field (also added an included
+	bit to indicate that the module was included into a different file
+	via a `include preprocessor command).  Regression is currently
+	broken.  Checkpointing.
+
+2009-04-29 11:31  phase1geo
+
+	Fixing issues related to signed values and inline code coverage
+	handling.  Updated regression files per this change.
+
+2009-04-29 00:06  phase1geo
+
+	Integrating bug fix 2782473.  Updated regressions.
+
+2009-04-28 23:02  phase1geo
+
+	file merge8.11b.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-04-28 23:02  phase1geo
+
+	file dut_and_proc.v was initially added on branch
+	stable-0_7-branch.
+
+2009-04-28 23:02  phase1geo
+
+	file merge8.11a.cdd was initially added on branch
+	stable-0_7-branch.
+
+2009-04-28 23:02  phase1geo
+
+	file merge8.11b.v was initially added on branch stable-0_7-branch.
+
+2009-04-28 23:02  phase1geo
+
+	file merge8.11a.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-04-28 23:02  phase1geo
+
+	file merge8.11a.v was initially added on branch stable-0_7-branch.
+
+2009-04-28 23:02  phase1geo
+
+	file merge8.11b.cdd was initially added on branch
+	stable-0_7-branch.
+
+2009-04-28 23:02  phase1geo
+
+	file merge8.11.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-04-28 23:02  phase1geo
+
+	file merge8.11.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-04-28 23:02  phase1geo
+
+	file merge8.11b.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-04-28 23:02  phase1geo
+
+	file merge8.11b.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-04-28 23:02  phase1geo
+
+	file merge8.11a.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-04-28 23:02  phase1geo
+
+	file merge8.11a.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-04-28 23:02  phase1geo
+
+	file merge8.11.cdd was initially added on branch stable-0_7-branch.
+
+2009-04-28 17:46  phase1geo
+
+	Temporarily removing code block that causes a segmentation fault. 
+	I'm not sure why the code block is there right now, so I'm keeping
+	it in its place until I can get some clarification.  Checkpointing.
+
+2009-04-28 17:31  phase1geo
+
+	Fixing regression simulation errors in code generator.
+
+2009-04-28 11:45  phase1geo
+
+	Fixing bug 2782244.  Added slist6 diagnostic to regression suite to
+	verify the fix.  Also fixed issue with memory write coverage number
+	calculation with inlined code coverage method.
+
+2009-04-27 18:19  phase1geo
+
+	Adding merge8.10 diagnostic to regression suite.  Currently the
+	code is missing that will allow this diagnostic to pass. 
+	Checkpointing.
+
+2009-04-27 18:07  phase1geo
+
+	file merge8.10b.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-04-27 18:07  phase1geo
+
+	file merge8.10a.cdd was initially added on branch
+	stable-0_7-branch.
+
+2009-04-27 18:07  phase1geo
+
+	file merge8.10b.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-04-27 18:07  phase1geo
+
+	file merge8.10b.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-04-27 18:07  phase1geo
+
+	file merge8.10b.v was initially added on branch stable-0_7-branch.
+
+2009-04-27 18:07  phase1geo
+
+	file merge8.10.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-04-27 18:07  phase1geo
+
+	file merge8.10a.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-04-27 18:07  phase1geo
+
+	file merge8.10a.v was initially added on branch stable-0_7-branch.
+
+2009-04-27 18:07  phase1geo
+
+	file merge8.10.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-04-27 18:07  phase1geo
+
+	file merge8.10.cdd was initially added on branch stable-0_7-branch.
+
+2009-04-27 18:07  phase1geo
+
+	file merge8.10a.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-04-27 18:07  phase1geo
+
+	file merge8.10b.cdd was initially added on branch
+	stable-0_7-branch.
+
+2009-04-27 18:07  phase1geo
+
+	file merge8.10a.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-04-25 16:06  phase1geo
+
+	Removing unnecessary output.
+
+2009-04-25 15:27  phase1geo
+
+	Fixing bug 2781023 and updating regressions accordingly.
+
+2009-04-24 18:09  phase1geo
+
+	Integrating long_exp4 diagnostic and related bug fix.
+
+2009-04-24 18:07  phase1geo
+
+	file long_exp4.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-04-24 18:07  phase1geo
+
+	file long_exp4.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-04-24 18:07  phase1geo
+
+	file long_exp4.cdd was initially added on branch stable-0_7-branch.
+
+2009-04-24 13:04  phase1geo
+
+	Removing history comments.
+
+2009-04-24 13:02  phase1geo
+
+	Fixing underlining for parenthesized expressions.  Updated
+	regressions accordingly.
+
+2009-04-23 17:39  phase1geo
+
+	file long_exp4.v was initially added on branch stable-0_7-branch.
+
+2009-04-23 17:39  phase1geo
+
+	file long_exp4.cfg was initially added on branch stable-0_7-branch.
+
+2009-04-22 12:54  phase1geo
+
+	Last batch of changes to get the stable branch integrated.  Full
+	non-inlined regressions are passing again.  Checkpointing.
+
+2009-04-22 00:54  phase1geo
+
+	Fixing a few more issues with the integration of the stable branch.
+	 Non-inlined regressions fully pass for IV and Cver runs.  Need to
+	iron out the issues with the inlined regressions now. 
+	Checkpointing.
+
+2009-04-21 17:40  phase1geo
+
+	Fixed a few issues with the integration.  Working on getting fully
+	passing regressions.  Checkpointing.
+
+2009-04-20 18:19  phase1geo
+
+	Missed some needed compile syntax.
+
+2009-04-20 18:17  phase1geo
+
+	More updates to remove CVS history information from files.
+
+2009-04-20 18:06  phase1geo
+
+	More updates to integrate the stable branch changes into the
+	development branch.
+
+2009-04-19 23:52  phase1geo
+
+	Working on integrating bug fixes from stable branch into the main
+	development branch.  This work is incomplete with this checkin and
+	the code will not compile currently.  Checkpointing.
+
+2009-04-17 11:10  phase1geo
+
+	file score_err1.31.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-04-17 11:10  phase1geo
+
+	file score_err1.31.err was initially added on branch
+	stable-0_7-branch.
+
+2009-04-17 11:10  phase1geo
+
+	file score_err1.31.v was initially added on branch
+	stable-0_7-branch.
+
+2009-02-25 17:32  phase1geo
+
+	file race7.2.v was initially added on branch stable-0_7-branch.
+
+2009-02-25 17:32  phase1geo
+
+	file race7.2.rptI was initially added on branch stable-0_7-branch.
+
+2009-02-25 17:32  phase1geo
+
+	file race7.2.rptM was initially added on branch stable-0_7-branch.
+
+2009-02-25 17:32  phase1geo
+
+	file race7.2.cfg was initially added on branch stable-0_7-branch.
+
+2009-02-25 17:32  phase1geo
+
+	file race7.1.rptM was initially added on branch stable-0_7-branch.
+
+2009-02-25 17:32  phase1geo
+
+	file race7.rptI was initially added on branch stable-0_7-branch.
+
+2009-02-25 17:32  phase1geo
+
+	file race7.rptM was initially added on branch stable-0_7-branch.
+
+2009-02-25 17:32  phase1geo
+
+	file race7.cfg was initially added on branch stable-0_7-branch.
+
+2009-02-25 17:32  phase1geo
+
+	file race7.1.rptI was initially added on branch stable-0_7-branch.
+
+2009-02-25 17:32  phase1geo
+
+	file race7.1.v was initially added on branch stable-0_7-branch.
+
+2009-02-25 17:32  phase1geo
+
+	file race7.v was initially added on branch stable-0_7-branch.
+
+2009-02-25 17:32  phase1geo
+
+	file race7.1.cfg was initially added on branch stable-0_7-branch.
+
+2009-02-25 17:31  phase1geo
+
+	file race7.cdd was initially added on branch stable-0_7-branch.
+
+2009-02-25 17:31  phase1geo
+
+	file race7.2.cdd was initially added on branch stable-0_7-branch.
+
+2009-02-25 17:31  phase1geo
+
+	file race7.1.cdd was initially added on branch stable-0_7-branch.
+
+2009-02-24 18:04  phase1geo
+
+	file generate16.1.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-02-24 18:04  phase1geo
+
+	file generate16.1.v was initially added on branch
+	stable-0_7-branch.
+
+2009-02-24 18:04  phase1geo
+
+	file generate16.1.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-02-24 18:04  phase1geo
+
+	file generate16.1.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-02-24 18:04  phase1geo
+
+	file generate16.1.cdd was initially added on branch
+	stable-0_7-branch.
+
+2009-02-24 13:06  phase1geo
+
+	file generate16.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-02-24 13:06  phase1geo
+
+	file generate16.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-02-24 13:06  phase1geo
+
+	file generate16.cdd was initially added on branch
+	stable-0_7-branch.
+
+2009-02-23 18:15  phase1geo
+
+	file generate16.v was initially added on branch stable-0_7-branch.
+
+2009-02-23 18:14  phase1geo
+
+	file generate16.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-02-23 14:40  phase1geo
+
+	file version2.v was initially added on branch stable-0_7-branch.
+
+2009-02-19 09:22  phase1geo
+
+	file generate15.5.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-02-19 09:22  phase1geo
+
+	file generate15.4.v was initially added on branch
+	stable-0_7-branch.
+
+2009-02-19 09:22  phase1geo
+
+	file generate15.5.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-02-19 09:22  phase1geo
+
+	file generate15.4.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-02-19 09:22  phase1geo
+
+	file generate15.5.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-02-19 09:22  phase1geo
+
+	file generate15.5.v was initially added on branch
+	stable-0_7-branch.
+
+2009-02-19 09:22  phase1geo
+
+	file generate15.4.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-02-19 09:22  phase1geo
+
+	file generate15.4.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-02-19 09:20  phase1geo
+
+	file generate15.5.cdd was initially added on branch
+	stable-0_7-branch.
+
+2009-02-19 09:20  phase1geo
+
+	file generate15.4.cdd was initially added on branch
+	stable-0_7-branch.
+
+2009-02-11 23:59  phase1geo
+
+	file casex3.v was initially added on branch stable-0_7-branch.
+
+2009-02-11 23:59  phase1geo
+
+	file casez5.v was initially added on branch stable-0_7-branch.
+
+2009-02-11 23:59  phase1geo
+
+	file casex3.rptI was initially added on branch stable-0_7-branch.
+
+2009-02-11 23:59  phase1geo
+
+	file casex3.cfg was initially added on branch stable-0_7-branch.
+
+2009-02-11 23:59  phase1geo
+
+	file casex3.rptM was initially added on branch stable-0_7-branch.
+
+2009-02-11 23:59  phase1geo
+
+	file casez5.cfg was initially added on branch stable-0_7-branch.
+
+2009-02-11 23:59  phase1geo
+
+	file casez5.rptM was initially added on branch stable-0_7-branch.
+
+2009-02-11 23:59  phase1geo
+
+	file casez5.rptI was initially added on branch stable-0_7-branch.
+
+2009-02-11 23:58  phase1geo
+
+	file casez5.cdd was initially added on branch stable-0_7-branch.
+
+2009-02-11 23:58  phase1geo
+
+	file casex3.cdd was initially added on branch stable-0_7-branch.
+
+2009-02-11 08:32  phase1geo
+
+	file case6.rptM was initially added on branch stable-0_7-branch.
+
+2009-02-11 08:32  phase1geo
+
+	file case6.rptI was initially added on branch stable-0_7-branch.
+
+2009-02-11 08:29  phase1geo
+
+	file case6.cdd was initially added on branch stable-0_7-branch.
+
+2009-02-09 22:47  phase1geo
+
+	file case6.v was initially added on branch stable-0_7-branch.
+
+2009-02-09 22:47  phase1geo
+
+	file case6.cfg was initially added on branch stable-0_7-branch.
+
+2009-02-09 00:21  phase1geo
+
+	file signed6.v was initially added on branch stable-0_7-branch.
+
+2009-02-09 00:21  phase1geo
+
+	file signed6.rptI was initially added on branch stable-0_7-branch.
+
+2009-02-09 00:21  phase1geo
+
+	file signed6.cdd was initially added on branch stable-0_7-branch.
+
+2009-02-09 00:21  phase1geo
+
+	file signed6.cfg was initially added on branch stable-0_7-branch.
+
+2009-02-09 00:21  phase1geo
+
+	file signed6.rptM was initially added on branch stable-0_7-branch.
+
+2009-02-08 23:46  phase1geo
+
+	file include5.rptI was initially added on branch stable-0_7-branch.
+
+2009-02-08 23:46  phase1geo
+
+	file include5.rptM was initially added on branch stable-0_7-branch.
+
+2009-02-08 23:46  phase1geo
+
+	file adder1.v was initially added on branch stable-0_7-branch.
+
+2009-02-08 23:46  phase1geo
+
+	file adder4.v was initially added on branch stable-0_7-branch.
+
+2009-02-08 23:46  phase1geo
+
+	file include5.cfg was initially added on branch stable-0_7-branch.
+
+2009-02-08 23:46  phase1geo
+
+	file include5.v was initially added on branch stable-0_7-branch.
+
+2009-02-08 23:46  phase1geo
+
+	file include5.cdd was initially added on branch stable-0_7-branch.
+
+2009-02-06 23:44  phase1geo
+
+	file signed5.rptM was initially added on branch stable-0_7-branch.
+
+2009-02-06 23:44  phase1geo
+
+	file unsigned1.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-02-06 23:44  phase1geo
+
+	file unsigned1.cfg was initially added on branch stable-0_7-branch.
+
+2009-02-06 23:44  phase1geo
+
+	file unsigned1.v was initially added on branch stable-0_7-branch.
+
+2009-02-06 23:44  phase1geo
+
+	file signed5.cdd was initially added on branch stable-0_7-branch.
+
+2009-02-06 23:44  phase1geo
+
+	file signed5.v was initially added on branch stable-0_7-branch.
+
+2009-02-06 23:44  phase1geo
+
+	file unsigned1.cdd was initially added on branch stable-0_7-branch.
+
+2009-02-06 23:44  phase1geo
+
+	file unsigned1.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-02-06 23:44  phase1geo
+
+	file signed5.rptI was initially added on branch stable-0_7-branch.
+
+2009-02-06 23:44  phase1geo
+
+	file signed5.cfg was initially added on branch stable-0_7-branch.
+
+2009-02-04 17:09  phase1geo
+
+	file generate15.2.cdd was initially added on branch
+	stable-0_7-branch.
+
+2009-02-04 17:09  phase1geo
+
+	file generate15.1.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-02-04 17:09  phase1geo
+
+	file generate15.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-02-04 17:09  phase1geo
+
+	file generate15.v was initially added on branch stable-0_7-branch.
+
+2009-02-04 17:09  phase1geo
+
+	file generate15.1.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-02-04 17:09  phase1geo
+
+	file generate15.3.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-02-04 17:09  phase1geo
+
+	file generate15.cdd was initially added on branch
+	stable-0_7-branch.
+
+2009-02-04 17:09  phase1geo
+
+	file generate15.2.v was initially added on branch
+	stable-0_7-branch.
+
+2009-02-04 17:09  phase1geo
+
+	file generate15.3.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-02-04 17:09  phase1geo
+
+	file generate15.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-02-04 17:09  phase1geo
+
+	file generate15.2.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-02-04 17:09  phase1geo
+
+	file generate15.3.cdd was initially added on branch
+	stable-0_7-branch.
+
+2009-02-04 17:09  phase1geo
+
+	file generate15.2.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-02-04 17:09  phase1geo
+
+	file generate15.3.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-02-04 17:09  phase1geo
+
+	file generate15.1.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-02-04 17:09  phase1geo
+
+	file generate15.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-02-04 17:09  phase1geo
+
+	file generate15.1.v was initially added on branch
+	stable-0_7-branch.
+
+2009-02-04 17:09  phase1geo
+
+	file generate15.1.cdd was initially added on branch
+	stable-0_7-branch.
+
+2009-02-04 17:09  phase1geo
+
+	file generate15.3.v was initially added on branch
+	stable-0_7-branch.
+
+2009-02-04 17:09  phase1geo
+
+	file generate15.2.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-02-04 00:03  phase1geo
+
+	file ifndef1.rptM was initially added on branch stable-0_7-branch.
+
+2009-02-04 00:03  phase1geo
+
+	file ifndef1.rptI was initially added on branch stable-0_7-branch.
+
+2009-02-04 00:03  phase1geo
+
+	file ifndef2.rptM was initially added on branch stable-0_7-branch.
+
+2009-02-04 00:03  phase1geo
+
+	file ifndef1.v was initially added on branch stable-0_7-branch.
+
+2009-02-04 00:03  phase1geo
+
+	file ifndef2.v was initially added on branch stable-0_7-branch.
+
+2009-02-04 00:03  phase1geo
+
+	file elsif3.v was initially added on branch stable-0_7-branch.
+
+2009-02-04 00:03  phase1geo
+
+	file ifdef3.rptI was initially added on branch stable-0_7-branch.
+
+2009-02-04 00:03  phase1geo
+
+	file ifdef3.rptM was initially added on branch stable-0_7-branch.
+
+2009-02-04 00:03  phase1geo
+
+	file ifdef3.v was initially added on branch stable-0_7-branch.
+
+2009-02-04 00:03  phase1geo
+
+	file ifndef2.rptI was initially added on branch stable-0_7-branch.
+
+2009-02-04 00:03  phase1geo
+
+	file elsif3.rptI was initially added on branch stable-0_7-branch.
+
+2009-02-04 00:03  phase1geo
+
+	file ifndef1.cdd was initially added on branch stable-0_7-branch.
+
+2009-02-04 00:03  phase1geo
+
+	file elsif3.cfg was initially added on branch stable-0_7-branch.
+
+2009-02-04 00:03  phase1geo
+
+	file ifndef2.cdd was initially added on branch stable-0_7-branch.
+
+2009-02-04 00:03  phase1geo
+
+	file ifdef3.cfg was initially added on branch stable-0_7-branch.
+
+2009-02-04 00:03  phase1geo
+
+	file ifdef3.cdd was initially added on branch stable-0_7-branch.
+
+2009-02-04 00:03  phase1geo
+
+	file elsif3.rptM was initially added on branch stable-0_7-branch.
+
+2009-02-04 00:03  phase1geo
+
+	file ifndef2.cfg was initially added on branch stable-0_7-branch.
+
+2009-02-04 00:03  phase1geo
+
+	file ifndef1.cfg was initially added on branch stable-0_7-branch.
+
+2009-02-04 00:03  phase1geo
+
+	file elsif3.cdd was initially added on branch stable-0_7-branch.
+
+2009-01-20 08:48  phase1geo
+
+	Fixing issue that comes up when combinational logic coverage is not
+	being generated.
+
+2009-01-19 23:27  phase1geo
+
+	Fixing bug with multiple replacements.	Added random4 diagnostic to
+	verify this bug fix.  Checkpointing.
+
+2009-01-19 22:37  phase1geo
+
+	Fixing code associated with the addition of the -inline-metrics
+	options.  Added new diagnostics to regression suite to verify this
+	new functionality.
+
+2009-01-19 15:51  phase1geo
+
+	Added -inlined-metrics score command option and hooked up its
+	functionality.	Regressions pass with these changes; however, I
+	have not been able to verify using this option yet.  Checkpointing.
+
+2009-01-19 00:25  phase1geo
+
+	Regression updates.  IV and CVER regressions fully pass in all
+	modes of operation.
+
+2009-01-18 23:44  phase1geo
+
+	More CVER regression updates.  CVER regressions now run cleanly
+	with inlined code coverage applied.
+
+2009-01-18 23:32  phase1geo
+
+	Updating CVER regression files.  Almost complete.
+
+2009-01-18 21:50  phase1geo
+
+	Fixing multiply and concatenation size calculations.  Full IV
+	regression passes.
+
+2009-01-17 23:27  phase1geo
+
+	Fixing valgrind errors.
+
+2009-01-17 00:25  phase1geo
+
+	Adding code to reduce reg/wire sizing output.  Fixing unary codegen
+	handling when they are surrounded by parenthesis.  Updating
+	regression output.  Checkpointing.
+
+2009-01-16 09:02  phase1geo
+
+	Updates for support of problems found in covering real code. 
+	Checkpointing.
+
+2009-01-16 00:18  phase1geo
+
+	Fixing VPI issues with inlined coverage.  Removed unnecessary
+	output in gen_item.c.  Removed tests from inlined VPI runs (IV
+	seems to have a bug that keeps these diagnostics from running). 
+	Also added missing Makefile rules to run inlined coverage
+	regressions.
+
+2009-01-15 22:50  phase1geo
+
+	Fixing LXT support for inlined coverage.
+
+2009-01-15 18:03  phase1geo
+
+	Fixing last issue with IV/Cver regressions (OVL assertions). 
+	Updating regressions per needed changes to support this
+	functionality.	Now only VCS regression needs to be updated.
+
+2009-01-15 00:47  phase1geo
+
+	file include4.cfg was initially added on branch stable-0_7-branch.
+
+2009-01-15 00:47  phase1geo
+
+	file include4.v was initially added on branch stable-0_7-branch.
+
+2009-01-15 00:47  phase1geo
+
+	file include4.rptI was initially added on branch stable-0_7-branch.
+
+2009-01-15 00:47  phase1geo
+
+	file include4.rptM was initially added on branch stable-0_7-branch.
+
+2009-01-15 00:47  phase1geo
+
+	file include4.cdd was initially added on branch stable-0_7-branch.
+
+2009-01-15 00:46  phase1geo
+
+	More work to support assertion coverage.  Updating regressions per
+	these changes.	Checkpointing.
+
+2009-01-14 17:53  phase1geo
+
+	Updates for assertion coverage.  Still need to handle file
+	inclusion renumbering for this to work.  Checkpointing.
+
+2009-01-14 15:01  phase1geo
+
+	Fixing last remaining issues with generate blocks.  Checkpointing.
+
+2009-01-14 08:57  phase1geo
+
+	Initial addition of the functional unit stack for inlined coverage
+	code.  Checkpointing.
+
+2009-01-13 17:37  phase1geo
+
+	Adding support for register insertion when generating inlined
+	coverage code.	Still have one more issue to resolve before
+	generate blocks work.  Checkpointing.
+
+2009-01-13 01:07  phase1geo
+
+	Applying bug fix for bug 2502095.  Also sync'ing in new generate8.9
+	and updating it for the development branch.
+
+2009-01-13 00:06  phase1geo
+
+	file generate8.9.cfg was initially added on branch
+	stable-0_7-branch.
+
+2009-01-13 00:06  phase1geo
+
+	file generate8.9.v was initially added on branch stable-0_7-branch.
+
+2009-01-13 00:06  phase1geo
+
+	file generate8.9.rptI was initially added on branch
+	stable-0_7-branch.
+
+2009-01-13 00:06  phase1geo
+
+	file generate8.9.rptM was initially added on branch
+	stable-0_7-branch.
+
+2009-01-13 00:06  phase1geo
+
+	file generate8.9.cdd was initially added on branch
+	stable-0_7-branch.
+
+2009-01-11 13:59  phase1geo
+
+	More fixes for support of generate statements.	Getting close but
+	not quite there yet.  Checkpointing.
+
+2009-01-09 18:24  phase1geo
+
+	More work on support for generate blocks (the new changes don't
+	quite work yet).  Checkpointing.
+
+2009-01-09 18:20  phase1geo
+
+	Updating VCS regressions per recent change.
+
+2009-01-09 15:25  phase1geo
+
+	More generate block fixes.  Updated all copyright information
+	source code files for the year 2009.  Checkpointing.
+
+2009-01-09 00:06  phase1geo
+
+	Another fix and removing unnecessary output.  Checkpointing.
+
+2009-01-08 23:53  phase1geo
+
+	More work on generate handling.  Still not working but Verilog
+	output looks correct for IF generate statements now. 
+	Checkpointing.
+
+2009-01-08 18:19  phase1geo
+
+	Updating regression Makefile.
+
+2009-01-08 18:19  phase1geo
+
+	Updates for generate handling (IP).  Checkpointing.
+
+2009-01-08 17:44  phase1geo
+
+	Updating VCS regressions.  Fixing issues in regards to PDEC, PINC,
+	IINC and IDEC operations.  Checkpointing.
+
+2009-01-08 10:21  phase1geo
+
+	Working on support for generate blocks.  Checkpointing.
+
+2009-01-08 10:13  phase1geo
+
+	Completing work on substitution support.  Updated regressions.
+
+2009-01-08 08:12  phase1geo
+
+	Fixing some issues from last checkin.  Still a few more issues to
+	iron out but this is close.  Checkpointing.
+
+2009-01-08 02:00  phase1geo
+
+	Closest thing to working code for code substitution.  Not quite
+	finished yet but close.  Checkpointing.
+
+2009-01-07 17:40  phase1geo
+
+	Updates to support intermediate expression substitution.  Not done
+	yet.  Checkpointing.
+
+2009-01-06 18:10  phase1geo
+
+	Fixing regression issues.  Checkpointing.
+
+2009-01-06 17:51  phase1geo
+
+	Cleaning up unnecessary output.
+
+2009-01-06 17:10  phase1geo
+
+	Completed and debugged new generator_replace functionality.  Fixed
+	issue with event coverage handling.  Added new event2 diagnostic to
+	verify the event coverage handling.  Checkpointing.
+
+2009-01-06 08:35  phase1geo
+
+	Starting work on generator_replace functionality.  Not quite
+	complete yet but I need to checkpoint.
+
+2009-01-06 01:23  phase1geo
+
+	Updating endian4 from stable branch.  Fixing LXT code to match
+	stable branch.
+
+2009-01-06 01:07  phase1geo
+
+	file endian4.v was initially added on branch stable-0_7-branch.
+
+2009-01-06 01:07  phase1geo
+
+	file endian4.rptM was initially added on branch stable-0_7-branch.
+
+2009-01-06 01:07  phase1geo
+
+	file endian4.rptI was initially added on branch stable-0_7-branch.
+
+2009-01-06 01:07  phase1geo
+
+	file endian4.cdd was initially added on branch stable-0_7-branch.
+
+2009-01-06 01:07  phase1geo
+
+	file endian4.cfg was initially added on branch stable-0_7-branch.
+
+2009-01-06 00:59  phase1geo
+
+	Adding initial support for string replacement.	More work to do
+	here.  Checkpointing.
+
+2009-01-05 17:48  phase1geo
+
+	Removing obsolete code.
+
+2009-01-05 17:48  phase1geo
+
+	Removing unnecessary output.
+
+2009-01-05 17:46  phase1geo
+
+	Fixing endianness issue (bug exists in SourceForge).  Removed
+	unnecessary output.  Updating merge_err1 diagnostic.  17 failures
+	currently exist in IV regression.  Checkpointing.
+
+2009-01-05 16:20  phase1geo
+
+	Updating VCS regressions per changes to unnamed scope internal name
+	change.  Also adding support for combinational logic coverage for
+	repeat expressions within repeat statements (I don't know if this
+	is really necessary).  Checkpointing.
+
+2009-01-05 14:15  phase1geo
+
+	Fixing issue with memory coverage.  Checkpointing (20 diags fail
+	currently).
+
+2009-01-05 00:21  phase1geo
+
+	Fixing more regression bugs with inlined coverage regressions. 
+	Checkpointing.
+
+2009-01-04 14:11  phase1geo
+
+	Completed initial work on event handling.
+
+2009-01-03 15:21  phase1geo
+
+	Fixing combinational logic coverage issue with dimension operators.
+	 Update to regressions.  Checkpointing (30 diagnostics failing in
+	IV regression).
+
+2009-01-03 14:41  phase1geo
+
+	Fixing lastest issue with memory coverage.  Need to fix a
+	combinational logic coverage issue next.  Checkpointing.
+
+2009-01-03 02:03  phase1geo
+
+	Adding more code to support memory coverage.  Added to code to
+	handle parameterized signal sizing.  Updated regressions. 
+	Checkpointing.
+
+2009-01-02 21:49  phase1geo
+
+	Checkpointing memory coverage work.
+
+2009-01-02 18:18  phase1geo
+
+	file mem5.rptM was initially added on branch stable-0_7-branch.
+
+2009-01-02 18:18  phase1geo
+
+	file mem5.v was initially added on branch stable-0_7-branch.
+
+2009-01-02 18:18  phase1geo
+
+	file mem5.cfg was initially added on branch stable-0_7-branch.
+
+2009-01-02 18:18  phase1geo
+
+	file mem5.rptI was initially added on branch stable-0_7-branch.
+
+2009-01-02 18:18  phase1geo
+
+	file mem5.cdd was initially added on branch stable-0_7-branch.
+
+2009-01-02 00:00  phase1geo
+
+	More updates for memory coverage (this is still not working
+	however).  Currently segfaults.  Checkpointing.
+
+2009-01-01 01:53  phase1geo
+
+	Fixing bug in conversion function.  Checkpointing.
+
+2009-01-01 01:24  phase1geo
+
+	Checkpointing work on memory coverage.	Simple testing now works
+	but still need to do some debugging here.
+
+2008-12-31 18:19  phase1geo
+
+	Adding memory coverage insertion code.	Still need to add memory
+	coverage handling code during runtime.	Checkpointing.
+
+2008-12-28 23:40  phase1geo
+
+	Regression updates.  Starting to add memory coverage (not even
+	close to being finished at this point).  Checkpointing.
+
+2008-12-28 13:39  phase1geo
+
+	Fixing the handling of wait statements.  Updated regressions as
+	necessary.  Checkpointing.
+
+2008-12-28 01:04  phase1geo
+
+	Updating regressions.  Inlined IV regression now only 37 failures. 
+	Checkpointing.
+
+2008-12-28 00:47  phase1geo
+
+	Updating regressions per bug fix.
+
+2008-12-28 00:23  phase1geo
+
+	Updating regressions per recent change.
+
+2008-12-27 22:14  phase1geo
+
+	Fixing support for case statement combinational coverage.  Updating
+	regressions.  We are now down to 41 failures in regression. 
+	Checkpointing.
+
+2008-12-27 15:05  phase1geo
+
+	Updating CDD version and regressions per this change. 
+	Checkpointing.
+
+2008-12-26 22:47  phase1geo
+
+	Updating regressions.  Added code to support while loops; however,
+	the new code does not support FOR loops as I was hoping so I might
+	end up reverting these changes somewhat in the end.  Checkpointing.
+
+2008-12-25 00:34  phase1geo
+
+	Regression updates to help make inlined regressions and postprocess
+	regressions match.  Still 91 failures in IV regression. 
+	Checkpointing.
+
+2008-12-24 15:48  phase1geo
+
+	Fixing issue with naming of FSM register.
+
+2008-12-24 15:18  phase1geo
+
+	Initial work at getting FSM coverage put in (this looks to be
+	working correctly to this point).  Updated regressions per fixes. 
+	Checkpointing.
+
+2008-12-20 01:32  phase1geo
+
+	More IV regression cleanup as well as some documentation cleanup. 
+	Checkpointing.
+
+2008-12-20 00:35  phase1geo
+
+	Fixing more IV regression bugs and adding regression Makefile
+	support for finding library files in the covered/verilog directory.
+	 About 104 diagnostics are now failing.  Checkpointing.
+
+2008-12-20 00:04  phase1geo
+
+	IV regression fixes for inlined code coverage (around 117 tests are
+	still failing at this point).  Checkpointing.
+
+2008-12-19 13:06  phase1geo
+
+	More regression updates.
+
+2008-12-19 00:55  phase1geo
+
+	A few code fixes.  Checkpointing.
+
+2008-12-18 18:05  phase1geo
+
+	IV regression updates.	Checkpointing.
+
+2008-12-18 18:04  phase1geo
+
+	VCS regression updates.  Checkpointing.
+
+2008-12-18 08:15  phase1geo
+
+	Removing diagnostic from inlined code coverage regression run.
+
+2008-12-17 17:06  phase1geo
+
+	More fixes from VCS regression run.  Checkpointing.
+
+2008-12-17 16:53  phase1geo
+
+	More bug fixes for regressions.  Checkpointing.
+
+2008-12-17 16:31  phase1geo
+
+	Fixing unary and combination expression coverage bug.  Adding
+	support for do..while.	Checkpointing.
+
+2008-12-17 15:31  phase1geo
+
+	Updating VCS regressions (now fully pass) per recent changes for
+	inlined code coverage handling.
+
+2008-12-17 12:17  phase1geo
+
+	Checkpointing inlined code coverage work.
+
+2008-12-17 09:23  phase1geo
+
+	More updates for inlined code coverage.  Updating regressions per
+	these changes.	Checkpointing.
+
+2008-12-16 18:02  phase1geo
+
+	More work on inlined coverage code.  Making good progress through
+	the regression suite.  Checkpointing.
+
+2008-12-15 22:56  phase1geo
+
+	More updates for inlined code generation feature.  Updates to
+	regression per these changes.  Checkpointing.
+
+2008-12-15 18:18  phase1geo
+
+	Checkpointing work on for2 diagnostic.	Adding initial support for
+	fork..join blocks -- more work to do here.  Starting to add support
+	for FOR loop control logic although I'm thinking that I may want to
+	pull this coverage support from the current coverage handling
+	structures.
+
+2008-12-15 00:48  phase1geo
+
+	More updates to code generator for regressions.  Checkpointing. 
+	Updates to regressions per these changes.
+
+2008-12-14 00:55  phase1geo
+
+	Making some code modifications to set the stage for supporting case
+	statements with the new inlined code coverage methodology. 
+	Updating regressions per this change (IV and Cver fully pass).
+
+2008-12-13 01:04  phase1geo
+
+	Fixing more regression bugs and updating regression per recent
+	changes.  Checkpointing.
+
+2008-12-12 18:17  phase1geo
+
+	Fixing more regression bugs.  Updated some original tests to make
+	them comparable to the inlined method output.  Checkpointing.
+
+2008-12-11 23:57  phase1geo
+
+	Checkpointing work on code coverage injection.	We are making
+	decent progress in getting regressions back to a working state. 
+	Lots to go, but good progress at this point.
+
+2008-12-11 18:17  phase1geo
+
+	Fixing some bugs, creating some new ones...  Checkpointing.
+
+2008-12-10 23:53  phase1geo
+
+	Fixing some bugs in the combinational logic code coverage
+	generator.  Checkpointing.
+
+2008-12-10 17:37  phase1geo
+
+	Working on handling event combinational logic cases.  This does not
+	fully work at this point.  Fixed issues with combinational logic
+	generation for IF statements.  Checkpointing.
+
+2008-12-10 00:25  phase1geo
+
+	More work on LHS signal sizing (not complete yet but almost). 
+	Fixed several issues found with regression runs.  Still working on
+	always1.v failures.  Checkpointing.
+
+2008-12-09 18:19  phase1geo
+
+	Fixing issues with aedge1 diagnostic (still need to handle events
+	but this will be worked on a later time).  Working on sizing
+	temporary subexpression LHS signals.  This is not complete and does
+	not compile at this time.  Checkpointing.
+
+2008-12-09 00:17  phase1geo
+
+	More work on inline code generator.  Also working on
+	verilog/Makefile for regression runs.  Checkpointing.
+
+2008-12-08 18:20  phase1geo
+
+	More work on code generator.  Also made first changes to verilog
+	Makefile for regression testing (more work to do here).
+
+2008-12-08 00:48  phase1geo
+
+	Moving -inline score option to appropriate place.  Checkpointing.
+
+2008-12-08 00:43  phase1geo
+
+	Fixing issues with broken regression.  Updated regression per these
+	changes (some code reduction was performed as well).  IV and Cver
+	regressions now pass.  Checkpointing.
+
+2008-12-07 01:20  phase1geo
+
+	Checkpointing work.  I have an end-to-end run now working with
+	test.v in the testsuite.  The results are not accurate at this
+	point but it's progress.  I have updated the regression suite per
+	these changes (minor), added an "-inline" option to the score
+	command to control this behavior.  IV regressions have one failing
+	diagnostic at this point.
+
+2008-12-06 00:35  phase1geo
+
+	Adding first crack at handling coverage-related information from
+	dumpfile.  This code is untested.
+
+2008-12-05 17:05  phase1geo
+
+	Working on VCD reading side of the inlined coverage handler. 
+	Things don't compile at this point and are in limbo. 
+	Checkpointing.
+
+2008-12-05 00:11  phase1geo
+
+	Fixing always block handling and generator_find_statement
+	functionality.	Improving statement link display output.
+
+2008-12-04 23:49  phase1geo
+
+	Adding temporary test diagnostic.
+
+2008-12-04 23:48  phase1geo
+
+	More work on code coverage insertion.  Checkpointing.
+
+2008-12-04 22:55  phase1geo
+
+	Fixing memory deallocation in parse.c.	Checkpointing.
+
+2008-12-04 22:39  phase1geo
+
+	Checkpointing.	Updating regressions.
+
+2008-12-04 18:22  phase1geo
+
+	More work completed on code coverage generator.  Currently working
+	on bug in statement finder.  Checkpointing.
+
+2008-12-04 08:19  phase1geo
+
+	Fixing bug in code generator.  Checkpointing.
+
+2008-12-04 01:14  phase1geo
+
+	Doing more work on the code generator to handle combination logic
+	output.  Still more coding and debugging work to do here.  Need to
+	clear the added bit in the statement lists to get current code
+	working correctly.  Checkpointing.
+
+2008-12-03 17:29  phase1geo
+
+	Finished getting line coverage insertion working.  Starting to work
+	on combinational logic coverage.  Checkpointing.
+
+2008-12-03 11:15  phase1geo
+
+	Code to output coverage file is now working from an end-to-end
+	perspective.  Checkpointing.  We are now ready to start injecting
+	actual coverage information into this file.
+
+2008-12-03 01:27  phase1geo
+
+	Made initial pass through the parser to add parse_mode.  Things are
+	quite broken in regression at this point and we have conflicts in
+	the resultant parser.  Checkpointing.
+
+2008-12-02 17:43  phase1geo
+
+	Reimplementing inlined code generation code.  Added this code to
+	Verilog lexer and parser.  More work to do here.  Checkpointing.
+
+2008-12-02 07:58  phase1geo
+
+	More updates to parser.
+
+2008-12-02 00:14  phase1geo
+
+	More changes to parser.y to move its code to parser_func.c for
+	cleanup purposes.  Regression still passes.  Checkpointing.
+
+2008-12-01 18:17  phase1geo
+
+	Adding missing files.
+
+2008-12-01 18:12  phase1geo
+
+	Working on removing code from parser.y (to clean it up and make
+	more easily extensible) and moving it to parser_func.c. 
+	Checkpointing.
+
+2008-12-01 00:02  phase1geo
+
+	More updates to get begin/end code injection to work.  This is
+	still not fully working at this point.	Checkpointing.
+
+2008-11-30 14:48  phase1geo
+
+	More work on instrumenting Verilog code.  Added statement iterator
+	and fixed a few issues with the code.  Checkpointing.
+
+2008-11-29 22:16  phase1geo
+
+	Adding bit to save off parenthesis existence from original Verilog
+	source.  Updating regression per these changes.
+
+2008-11-28 22:27  phase1geo
+
+	More work on inlined coverage code insertion.  Net assigns and
+	procedural assigns seem to be working at a most basic level. 
+	Currently, I have an issue that I need to solve where non-head
+	statements are being ignored.  Checkpointing.
+
+2008-11-26 18:24  phase1geo
+
+	Fixing problems with previous version of generator.  Things work as
+	expected at this point.  Checkpointing.
+
+2008-11-26 18:01  phase1geo
+
+	More work on coverage generator.  Checkpointing.
+
+2008-11-25 23:34  phase1geo
+
+	More work on Verilog generator file.  We are now able to create the
+	needed directories and output a non-instrumented version of a
+	module to the appropriate directory.  Checkpointing.
+
+2008-11-25 17:53  phase1geo
+
+	Adding files for Verilog generator functions.
+
+2008-11-24 23:45  phase1geo
+
+	file fsm_err1.cfg was initially added on branch stable-0_7-branch.
+
+2008-11-24 23:45  phase1geo
+
+	file fsm_err1.v was initially added on branch stable-0_7-branch.
+
+2008-11-24 23:45  phase1geo
+
+	file fsm_err1.1.cfg was initially added on branch
+	stable-0_7-branch.
+
+2008-11-24 23:45  phase1geo
+
+	file profile_err1.pl was initially added on branch
+	stable-0_7-branch.
+
+2008-11-24 23:45  phase1geo
+
+	file fsm_err1.1.v was initially added on branch stable-0_7-branch.
+
+2008-11-24 23:45  phase1geo
+
+	file profile_err1.err was initially added on branch
+	stable-0_7-branch.
+
+2008-11-24 23:45  phase1geo
+
+	file fsm_err1.err was initially added on branch stable-0_7-branch.
+
+2008-11-20 09:24  phase1geo
+
+	file run_gcov was initially added on branch stable-0_7-branch.
+
+2008-11-20 00:36  phase1geo
+
+	file multilevel3.v was initially added on branch stable-0_7-branch.
+
+2008-11-20 00:36  phase1geo
+
+	file merge8.9b.v was initially added on branch stable-0_7-branch.
+
+2008-11-20 00:36  phase1geo
+
+	file merge8.9a.v was initially added on branch stable-0_7-branch.
+
+2008-11-20 00:36  phase1geo
+
+	file merge8.9b.rptM was initially added on branch
+	stable-0_7-branch.
+
+2008-11-20 00:36  phase1geo
+
+	file merge8.9b.rptI was initially added on branch
+	stable-0_7-branch.
+
+2008-11-20 00:36  phase1geo
+
+	file merge8.9a.rptM was initially added on branch
+	stable-0_7-branch.
+
+2008-11-20 00:36  phase1geo
+
+	file merge8.9a.cfg was initially added on branch stable-0_7-branch.
+
+2008-11-20 00:36  phase1geo
+
+	file merge8.9.rptM was initially added on branch stable-0_7-branch.
+
+2008-11-20 00:36  phase1geo
+
+	file merge8.9a.rptI was initially added on branch
+	stable-0_7-branch.
+
+2008-11-20 00:36  phase1geo
+
+	file merge8.9.rptI was initially added on branch stable-0_7-branch.
+
+2008-11-20 00:36  phase1geo
+
+	file merge8.9b.cfg was initially added on branch stable-0_7-branch.
+
+2008-11-20 00:36  phase1geo
+
+	file merge8.9a.cdd was initially added on branch stable-0_7-branch.
+
+2008-11-20 00:36  phase1geo
+
+	file merge8.9b.cdd was initially added on branch stable-0_7-branch.
+
+2008-11-20 00:36  phase1geo
+
+	file merge8.9.cdd was initially added on branch stable-0_7-branch.
+
+2008-11-19 16:50  phase1geo
+
+	Updates for new development release.
+
+2008-11-19 13:42  phase1geo
+
+	Cleaning up splint warnings.
+
+2008-11-19 13:35  phase1geo
+
+	Updating TODO list.
+
+2008-11-19 12:51  phase1geo
+
+	User documentation updates.  Also enhancing the configuration
+	source files to handle the new Icarus Verilog include directory
+	structure (also backward compatible).
+
+2008-11-19 09:08  phase1geo
+
+	Adding vhier2 image to user documentation.
+
+2008-11-19 00:27  phase1geo
+
+	Updating ChangeLog.
+
+2008-11-19 00:19  phase1geo
+
+	Updates for next development release.  Updating configuration files
+	for new locations of Icarus Verilog development releases.  Also
+	fixing syntax error in vector.c source file.
+
+2008-11-19 00:03  phase1geo
+
+	Removing real8 from IV regression (latest version doesn't seem to
+	work with this diagnostic now).
 

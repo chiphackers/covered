@@ -1,6 +1,33 @@
 Covered-Related NEWS
 ====================
 
+    * 7/5/2009
+
+Development release covered-20090705 made.  This development branch adds support for a new type of code coverage scoring.
+Code coverage information is embedded (inlined) in a copy of the original design files.  These instrumented files can
+then be simulated and either a dumpfile can be generated and run through Covered's score command or Covered can run in VPI
+mode with the simulator to generate a scored CDD file.
+
+The advantage to running in this mode of operation will be more accurate coverage of the design based on the simulator being
+used and a lack of "resimulation" to be done by Covered.  Eventually, this mode of operation will be Covered's only method
+of code coverage accumulation, but this development release merely adds this as another way to run Covered (i.e., all previous
+code coverage methods work as they have).  Use the new -inline (and optionally -inline-metrics) score options to cause the
+instrumented files to be output in a directory called "covered/verilog" in the directory where the Covered score command is
+run (see user documentation for details).
+
+This feature is fully passing in Covered's regression but should be considered in an alpha state at this point.  In the next
+development release, I am planning on adding some performance improvements for this feature, but please feel free to submit
+bug reports about anything related to this new feature.
+
+Here's a list of a few other features added:
+
+  - Integrated all bug fixes found in the stable release of Covered.
+  - Added regression support for the Veriwell simulator
+  - Added initial regression support for the Vcomp simulator (however, vcomp doesn't seem to be working well for me).
+  - Added documentation to user guide for the new inlined code coverage options and usage flow
+  - Verified that all code is splint clean
+  - Added support for ternary operators in static expression locations
+
     * 5/7/2009
 
 Stable release covered-0.7.1 made.  This is a bug fix release only.  Here are the details:
