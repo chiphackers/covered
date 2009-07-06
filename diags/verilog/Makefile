@@ -18,6 +18,10 @@ COVERED       = $(COVERED_SRC)/covered
 COVERED_GFLAG = -D
 COVERED_SCORE_GFLAG = -P
 
+ifeq ($(COVERED_GFLAG),-D)
+VCDDIFF_VERBOSE = -v
+endif
+
 ifdef CHECK_MEM
 VG_COVERED    = $(VG_EXEC) $(VG_FLAGS) $(COVERED)
 else
@@ -180,6 +184,17 @@ ifdef INLINE
 	@./convert_cfg inline 0 $(DIAG).cfg
 	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
 	@./convert_cfg $(CFG_CMD) 1 $(DIAG).cfg
+ifeq ($(dir $(TOP)),covered/verilog/)
+ifndef LXT
+	$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
+ifndef USE_CVER
+ifndef USE_VERIWELL
+	@$(VERILOG_CMD)
+endif
+endif
+	@mv $(DIAG).vcd $(DIAG).vcd.1
+endif
+endif
 else
 	@./convert_cfg $(CFG_CMD) 0 $(DIAG).cfg
 endif
@@ -187,6 +202,14 @@ endif
 ifndef USE_CVER
 ifndef USE_VERIWELL
 	@$(VERILOG_CMD)
+endif
+endif
+ifdef INLINE
+ifeq ($(dir $(TOP)),covered/verilog/)
+ifndef LXT
+	./vcd_diff $(VCDDIFF_VERBOSE) $(DIAG).vcd $(DIAG).vcd.1
+	@rm -f $(DIAG).vcd.1
+endif
 endif
 endif
 	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
