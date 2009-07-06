@@ -4,10 +4,19 @@
 # Author:       Trevor Williams  (phase1geo at gmail.com)
 # Date:         7/5/2009
 # Description:  Compares two VCD files removing Covered inlined coverage signals and glitches.
-# Usage:        vcd_diff <VCD filename> <VCD filename>
+# Usage:        vcd_diff [-v] <VCD filename> <VCD filename>
 
-$VNAME1 = $ARGV[0];
-$VNAME2 = $ARGV[1];
+$VERBOSE = $ARGV[0];
+$VNAME1  = $ARGV[1];
+$VNAME2  = $ARGV[2];
+
+if( $VERBOSE eq "-v" ) {
+  $VERBOSE = 1;
+} else {
+  $VERBOSE = 0;
+  $VNAME1  = $ARGV[0];
+  $VNAME2  = $ARGV[1];
+}
 
 if( ($VNAME1 eq "") || ($VNAME2 eq "") ) {
   &usage;
@@ -25,8 +34,9 @@ open( VFILE2, "$VNAME2" ) || die "Can't open $VNAME2 for reading: $!\n";
 &vcd_diff_header;
 
 while( ($timestep1 != -1) && ($timestep2 != -1) ) {
-  &vcd_parse_sim( 0 );
-  &vcd_parse_sim( 1 );
+  $timestep1 = &vcd_parse_sim( 0 );
+  $timestep2 = &vcd_parse_sim( 1 );
+  &vcd_diff_timestep;
 }
 
 close( VFILE1 );
@@ -36,25 +46,27 @@ close( VFILE2 );
 
 sub usage {
 
-  print "Usage:  vcd_diff <VCD filename> <VCD filename>\n";
+  print "Usage:  vcd_diff [-v] <VCD filename> <VCD filename>\n";
   die;
 
 }
 
 sub vcd_parse_def_var {
 
-  my( $num, $str ) = $@;
+  my( $num, $str ) = @_;
   my $type;
   my $size;
   my $id_code;
   my $ref;
   my $reftmp;
-  my $tmp[15];
+  my $tmp;
   my $msb = -1;
   my $lsb = -1;
   my $tmplsb;
 
-  if( $str ~= /\s*(\w+)\s+(\d+)\s+(\w+)\s+(\w+)\s+(\w+)/ ) {
+  # print "str: $str (w,d,S,S,S)\n";
+
+  if( $str =~ /\s*(\w+)\s+(\d+)\s+(\S+)\s+(\S+)\s+(\S+)/ ) {
 
     $type    = $1;
     $size    = $2;
@@ -69,47 +81,42 @@ sub vcd_parse_def_var {
 
     } else {
 
-      if( $tmp ne "$end" ) {
+      if( $tmp ne "\$end" ) {
 
-        /* A bit select was specified for this signal, get the size */
-        if( $tmp ~= /\[(\d+):(\d+)\]/ ) {
+        # A bit select was specified for this signal, get the size
+        if( $tmp =~ /\[(\d+):(\d+)\]/ ) {
           $msb = $1;
           $lsb = $2;
-        } elseif( $tmp ~= /\[(\d+)\]/ ) {
+        } elsif( $tmp =~ /\[(\d+)\]/ ) {
           $lsb = $1;
           $msb = $lsb;
         } else {
-          die "ERROR:  Unrecognized $var format\n";
+          die "ERROR:  Unrecognized \$var format (1)\n";
         }
 
-        if( (fscanf( vcd, "%s", tmp ) != 1) || (strncmp( "$end", tmp, 4 ) != 0) ) {
-          print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
-          Throw 0;
-        }
-
-      } elseif( $ref ~= /([a-zA-Z0-9_]+)\[(\w+)\]\./ ) {
+      } elsif( $ref =~ /([a-zA-Z0-9_]+)\[(\w+)\]\./ ) {
 
         $reftmp = $1;
         $tmp    = $2;
 
         # This is a hierarchical reference so we shouldn't modify ref -- quirky behavior from VCS
-        msb = size - 1;
-        lsb = 0;
+        $msb = $size - 1;
+        $lsb = 0;
 
-      } elseif( $ref ~= /([a-zA-Z0-9_]+)\[(\w+)\]/ ) {
+      } elsif( $ref =~ /([a-zA-Z0-9_]+)\[(\w+)\]/ ) {
 
         $reftmp = $1;
         $tmp    = $2;
         $ref    = $reftmp;
 
-        if( $tmp ~= /(\d+):(\d+)/ ) {
+        if( $tmp =~ /(\d+):(\d+)/ ) {
           $msb = $1;
           $lsb = $2;
-        } elseif( $tmp ~= /(\d+)/ ) {
+        } elsif( $tmp =~ /(\d+)/ ) {
           $lsb = $1;
           $msb = $lsb;
         } else {
-          die "ERROR:  Unrecognized $var format\n";
+          die "ERROR:  Unrecognized \$var format (2)\n";
         }
 
       } else {
@@ -122,14 +129,22 @@ sub vcd_parse_def_var {
     }     
             
     # Store the signal
-    $db->{$num}{SCOPES}{$curr_scope}{SIGNALS}{$ref}{ID}  = $id_code;
-    $db->{$num}{SCOPES}{$curr_scope}{SIGNALS}{$ref}{MSB} = $msb;
-    $db->{$num}{SCOPES}{$curr_scope}{SIGNALS}{$ref}{LSB} = $lsb;
-    $db->{$num}{IDS}{$id_code}                           = $ref;
+    if( $ref =~ /\s*\\?covered\$/ ) {
+
+      # Don't store internal coverage signals
+
+    } else {
+
+      $db->{$num}{SCOPES}{$curr_scope}{SIGNALS}{$ref}{ID}  = $id_code;
+      $db->{$num}{SCOPES}{$curr_scope}{SIGNALS}{$ref}{MSB} = $msb;
+      $db->{$num}{SCOPES}{$curr_scope}{SIGNALS}{$ref}{LSB} = $lsb;
+      $db->{$num}{IDS}{$id_code}                           = "$curr_scope.$ref";
+
+    }
         
   } else {
         
-    die "ERROR:  Unrecognized $var format\n";
+    die "ERROR:  Unrecognized \$var format (3)\n";
         
   }
       
@@ -142,7 +157,7 @@ sub vcd_parse_def_scope {
   my $type;
   my $id;
           
-  if( $str ~= /\s*(\w+)\s+(\w+)\s+\$end/ ) {
+  if( $str =~ /\s*(\w+)\s+(\w+)\s+\$end/ ) {
 
     $type = $1;
     $id   = $2;
@@ -155,11 +170,9 @@ sub vcd_parse_def_scope {
 
   } else {
 
-    die "ERROR:  Unrecognized $scope format\n";
+    die "ERROR:  Unrecognized \$scope format\n";
 
   }
-
-  PROFILE_END;
 
 }
 
@@ -169,23 +182,40 @@ sub vcd_parse_def {
   my $enddef_found = 0;
   my $keyword, $line;
   my $chars_read;
+  my $skip_to_end  = 0;
 
-  while( !enddef_found && ((($num == 0) && ($line = <VFILE1>)) || (($num == 1) && ($line = <VFILE2>))) ) {
+  if( $VERBOSE ) {
+    print "Reading in VCD header $num\n";
+  }
+
+  while( !$enddef_found && ((($num == 0) && ($line = <VFILE1>)) || (($num == 1) && ($line = <VFILE2>))) ) {
 
     chomp( $line );
-    ($keyword, $line) = split( $line );
 
-    if( substr( $keyword, 0, 1 ) eq "$" ) {
+    ($keyword, @rest) = split( /\s+/, $line );
+    $line = join( " ", @rest );
+
+    # print "  keyword: $keyword, line: $line\n";
+
+    if( substr( $keyword, 0, 1 ) eq "\$" ) {
 
       if( substr( $keyword, 1 ) eq "var" ) {
         &vcd_parse_def_var( $num, $line );
-      } elseif( substr( $keyword, 1 ) eq "scope" ) {
-        &vcd_parse_def_scope( vcd, $line );
-      } elseif( substr( $keyword, 1 ) eq "upscope" ) {
+      } elsif( substr( $keyword, 1 ) eq "scope" ) {
+        &vcd_parse_def_scope( $num, $line );
+      } elsif( substr( $keyword, 1 ) eq "upscope" ) {
         $curr_scope = $db->{$num}{PARENT}{$curr_scope};
-      } elseif( substr( $keyword, 1 ) eq "enddefinitions" ) {
-        enddef_found = 1;
+      } elsif( substr( $keyword, 1 ) eq "enddefinitions" ) {
+        $enddef_found = 1;
+      } elsif( $skip_to_end && ($line =~ /\$end/) ) {
+        $skip_to_end = 0;
+      } else {
+        $skip_to_end = 1;
       }
+
+    } elsif( $skip_to_end ) {
+
+      # Ignore
 
     } else {
 
@@ -199,82 +229,203 @@ sub vcd_parse_def {
 
 sub vcd_diff_header {
 
+  if( $VERBOSE ) {
+    print "Comparing VCD headers...  ";
+  }
+
   # First, compare the first database against the second
-  foreach $scope (keywords %db->{0}{SCOPES}) {
-    if( keywords( %db->{1}{SCOPES}{$scope} ) ne "" ) {
+  $scopes = $db->{0}{SCOPES};
+  foreach $scope (keys %$scopes) {
+    $curr_scope = $db->{1}{SCOPES}{$scope};
+    if( keys( %$curr_scope ) ne "" ) {
       $db->{1}{SCOPES}{$scope}{MATCHED} = 1;
     } else {
-      die "ERROR:  Scope $scope not found in second database\n";
+      if( $VERBOSE ) {
+        print "FAILED!\n";
+      }
+      die "  ERROR:  Scope $scope not found in second database\n";
     }
-    foreach $signal (keywords %db->{0}{SCOPES}{$scope}{SIGNALS}) {
-      if( ($db->{0}{SCOPES}{$scope}{SIGNALS}{$signal}{MSB} ne $db->{1}{SCOPES}{$scope}{SIGNALS}{$signal}{MSB}) ||
-          ($db->{0}{SCOPES}{$scope}{SIGNALS}{$signal}{LSB} ne $db->{1}{SCOPES}{$scope}{SIGNALS}{$signal}{LSB}) ) {
+    $signals = $db->{0}{SCOPES}{$scope}{SIGNALS};
+    foreach $signal (keys %$signals) {
+      if( ($db->{0}{SCOPES}{$scope}{SIGNALS}{$signal}{MSB} eq $db->{1}{SCOPES}{$scope}{SIGNALS}{$signal}{MSB}) &&
+          ($db->{0}{SCOPES}{$scope}{SIGNALS}{$signal}{LSB} eq $db->{1}{SCOPES}{$scope}{SIGNALS}{$signal}{LSB}) ) {
         $db->{1}{SCOPES}{$scope}{SIGNALS}{$signal}{MATCHED} = 1;
       } else {
-        die "ERROR:  Signal $scope.$signal not found in second database\n";
+        if( $VERBOSE ) {
+          print "FAILED!\n";
+        }
+        die "  ERROR:  Matching signal $scope.$signal not found in second database\n";
       }
     }
   }
 
   # Second, scroll through the second database to see if there are any unmatched things
-  foreach $scope (keywords %db->{1}{SCOPES}) {
+  $scopes = $db->{1}{SCOPES};
+  foreach $scope (keys %$scopes) {
     if( $db->{1}{SCOPES}{$scope}{MATCHED} == 0 ) {
-      die "ERROR:  Scope $scope not found in first database\n";
+      if( $VERBOSE ) {
+        print "FAILED!\n";
+      }
+      die "  ERROR:  Scope $scope not found in first database\n";
     }
-    foreach $signal (keywords %db->{1}{SCOPES}{$scope}{SIGNALS}) {
+    $signals = $db->{1}{SCOPES}{$scope}{SIGNALS};
+    foreach $signal (keys %$signals) {
       if( $db->{1}{SCOPES}{$scope}{SIGNALS}{$signal}{MATCHED} == 0 ) {
-        die "ERROR:  Signal $scope.$signal not found in first database\n";
+        if( $VERBOSE ) {
+          print "FAILED!\n";
+        }
+        die "  ERROR:  Signal $scope.$signal not found in first database\n";
       }
     }
+  }
+
+  if( $VERBOSE ) {
+    print "PASSED!\n";
   }
 
 }
 
 sub vcd_diff_timestep {
 
-  my $timestep = $_[0];
+  # First, check to make sure that the two timesteps match.
+  if( $timestep1 ne $timestep2 ) {
+    die "ERROR:  Timesteps of dumpfiles do not match (timestep1: $timestep1, timestep2: $timestep2)\n";
+  }
 
+  if( $VERBOSE ) {
+    print "Comparing timestep $timestep1...  ";
+  }
   
+  # First, compare the first database to the second
+  $values = $db->{0}{VALUES};
+  foreach $sym (keys %$values) {
+    if( $db->{0}{VALUES}{$sym}{VALUE} eq $db->{1}{VALUES}{$sym}{VALUE} ) {
+      $db->{1}{VALUES}{$sym}{MATCHED} = 1;
+    } else {
+      if( $VERBOSE ) {
+        print "FAILED!\n";
+      }
+      die "  ERROR:  Signal $sym mismatched in second database\n";
+    }
+  } 
+
+  # Second, check to make sure that the second database doesn't have unmatched elements
+  $values = $db->{1}{VALUES};
+  foreach $sym (keys %$values) {
+    if( $db->{1}{VALUES}{$sym}{MATCHED} == 0 ) {
+      if( $VERBOSE ) {
+        print "FAILED!\n";
+      }
+      die "  ERROR:  Signal $sym mismatched in first database\n";
+    }
+  }
+
+  # Third, clear the hash tables
+  %db->{0}{VALUES} = {};
+  %db->{1}{VALUES} = {};
+
+  if( $VERBOSE ) {
+    print "PASSED!\n";
+  }
+
+}
+
+sub vcd_parse_sim_vector {
+
+  my( $num, $line ) = @_;
+  my $sym;
+  my $value;
+
+  # print "In sim_vector: $line (w,S)\n";
+
+  if( $line =~ /(\w+)\s+(\S+)/ ) {
+
+    $value = $1;
+    $sym   = $2;
+
+    $id = $db->{$num}{IDS}{$sym};
+    if( $id ne "" ) {
+      $db->{$num}{VALUES}{$id}{VALUE} = $value;
+    }
+
+  } else {
+
+    die "ERROR:  Bad file format\n";
+
+  }
+
+}
+
+sub vcd_parse_sim_real {
+
+  my( $num, $line ) = @_;
+  my $sym;
+  my $value;
+
+  # print "In sim_real: $line (w,S)\n";
+
+  if( $line =~ /(\S+)\s+(\S+)/ ) {
+
+    $value = $1;
+    $sym   = $2;
+
+    $id = $db->{$num}{IDS}{$sym};
+    if( $id ne "" ) {
+      $db->{$num}{VALUES}{$id}{VALUE} = $value;
+    }
+
+  } else {
+
+    die "ERROR:  Bad file format\n";
+
+  }
 
 }
 
 sub vcd_parse_sim {
 
-  my $num           = @_;
-  my $token;
+  my $num           = $_[0];
   my $last_timestep = 0;
-  my $carry_over    = 0;
   my $simulate      = 1;
+  my $sym, $id;
 
-  while( (($num == 0) && ($line = <VFILE1)) || (($num == 1) && ($line = <VFILE2>)) && $simulate ) {
+  if( $VERBOSE ) {
+    print "Parsing simulation information from VCD $num\n";
+  }
 
-    if( $line[0] == '$' ) {
+  while( $simulate && ((($num == 0) && ($line = <VFILE1>)) || (($num == 1) && ($line = <VFILE2>))) ) {
 
-      /* Ignore */
+    chomp( $line );
+
+    if( substr( $line, 0, 1 ) eq "\$" ) {
+
+      # Ignore
 
     } elsif( (substr( $line, 0, 1 ) eq "b") || (substr( $line, 0, 1 ) eq "B") ) {
 
       &vcd_parse_sim_vector( $num, substr( $line, 1 ) );
 
-    } else if( (substr( $line, 0, 1 ) eq "r") || (substr( $line, 0, 1 ) eq "R") || $carry_over ) {
+    } elsif( (substr( $line, 0, 1 ) eq "r") || (substr( $line, 0, 1 ) eq "R") || $carry_over ) {
 
       &vcd_parse_sim_real( $num, substr( $line, 1 ) );
-      $carry_over = 0;
 
-    } else if( substr( $line, 0, 1 ) eq "#" ) {
+    } elsif( substr( $line, 0, 1 ) eq "#" ) {
 
       $simulate      = 0;
       $last_timestep = substr( $line, 1 );
-      &vcd_diff_timestep( $last_timestep );
 
-    } else if( (substr( $line, 0, 1 ) eq "0") ||
+    } elsif( (substr( $line, 0, 1 ) eq "0") ||
                (substr( $line, 0, 1 ) eq "1") ||
                (substr( $line, 0, 1 ) eq "x") ||
                (substr( $line, 0, 1 ) eq "X") ||
                (substr( $line, 0, 1 ) eq "z") ||
                (substr( $line, 0, 1 ) eq "Z") ) {
 
-      &db_set_symbol_char( $num, substrtoken + 1, token[0] );
+      $sym = substr( $line, 1 );
+      $id  = $db->{$num}{IDS}{$sym}; 
+      if( $id ne "" ) {
+        $db->{$num}{VALUES}{$id}{VALUE} = substr( $line, 0, 1 );
+      }
 
     } else {
 
@@ -284,18 +435,7 @@ sub vcd_parse_sim {
 
   }
 
-  # Simulate the last timestep now
-  if( $simulate ) {
-    &vcd_diff_timestep( $last_timestep );
-  }
-
-  PROFILE_END;
-
-}
-
-sub vcd_parse_sim_timestep {
-
-  my( $num ) = $_[0];
+  return( $simulate ? -1 : $last_timestep );
 
 }
 
