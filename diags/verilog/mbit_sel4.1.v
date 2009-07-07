@@ -4,7 +4,7 @@ reg  [3:0] a;
 
 initial begin
 `ifdef DUMP
-	$dumpfile( "mbit_sel4.vcd" );
+	$dumpfile( "mbit_sel4.1.vcd" );
 	$dumpvars( 0, main );
 `endif
 	a[0] = 1'b1;

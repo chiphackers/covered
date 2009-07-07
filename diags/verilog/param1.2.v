@@ -10,7 +10,7 @@ assign a = b ? value0 : value1;
 
 initial begin
 `ifdef DUMP
-	$dumpfile( "param1.vcd" );
+	$dumpfile( "param1.2.vcd" );
 	$dumpvars( 0, main );
 `endif
 	b = 1'b0;

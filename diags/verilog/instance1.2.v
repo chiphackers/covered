@@ -4,7 +4,7 @@ reg    a, b;
 
 initial begin
 `ifdef DUMP
-	$dumpfile( "instance1.vcd" );
+	$dumpfile( "instance1.2.vcd" );
 	$dumpvars( 0, main );
 `endif
 	a = 1'b0;

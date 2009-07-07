@@ -16,7 +16,7 @@ initial begin
 end
 `endif
 
-`ifndef BARFOO
+`ifndef RUNTEST
 reg b;
 initial begin
 	b = 1'b0;

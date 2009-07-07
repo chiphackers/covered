@@ -4,7 +4,7 @@ reg	x, y;
 
 initial begin
 `ifdef DUMP
-	$dumpfile( "param3.vcd" );
+	$dumpfile( "param3.5.vcd" );
 	$dumpvars( 0, main );
 `endif
 	x = 1'b0;

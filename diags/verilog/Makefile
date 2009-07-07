@@ -207,7 +207,7 @@ endif
 ifdef INLINE
 ifeq ($(dir $(TOP)),covered/verilog/)
 ifndef LXT
-	./vcd_diff $(VCDDIFF_VERBOSE) $(DIAG).vcd $(DIAG).vcd.1
+	./vcd_diff $(VCDDIFF_VERBOSE) $(DIAG).vcd $(DIAG).vcd.1 $(DIAG).map
 	@rm -f $(DIAG).vcd.1
 endif
 endif

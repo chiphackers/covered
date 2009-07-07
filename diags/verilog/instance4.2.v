@@ -6,7 +6,7 @@ foobar foo( a, b );
 
 initial begin
 `ifdef DUMP
-	$dumpfile( "instance4.vcd" );
+	$dumpfile( "instance4.2.vcd" );
 	$dumpvars( 0, main );
 `endif
 	a = 1'b0;
