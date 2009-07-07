@@ -998,6 +998,9 @@ void funit_db_merge(
     }
   }
 
+  /* Deallocate memory */
+  free_safe( curr_line, curr_line_size );
+
   PROFILE_END;
 
 }
