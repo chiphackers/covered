@@ -95,7 +95,7 @@ static void vcd_parse_def_ignore(
  Parses definition $var keyword line until $end keyword is seen.
 */
 static void vcd_parse_def_var(
-  FILE* vcd  /*!< File handle pointer to opened VCD file */
+  char* line  /*!< Pointer to line from VCD file */
 ) { PROFILE(VCD_PARSE_DEF_VAR);
 
   char type[256];     /* Variable type */
@@ -107,14 +107,17 @@ static void vcd_parse_def_var(
   int  msb = -1;      /* Most significant bit */
   int  lsb = -1;      /* Least significant bit */
   int  tmplsb;        /* Temporary LSB if swapping is needed */
+  int  chars_read;
 
-  if( fscanf( vcd, "%s %d %s %s %s", type, &size, id_code, ref, tmp ) == 5 ) {
+  if( sscanf( line, "%s %d %s %s %s%n", type, &size, id_code, ref, tmp, &chars_read ) == 5 ) {
 
     /* Make sure that we have not exceeded array boundaries */
     assert( strlen( type )    <= 256 );
     assert( strlen( ref )     <= 256 );
     assert( strlen( tmp )     <= 15  );
     assert( strlen( id_code ) <= 256 );
+
+    line += chars_read;
     
     if( strncmp( "real", type, 4 ) == 0 ) {
 
@@ -137,7 +140,7 @@ static void vcd_parse_def_var(
 
         }
 
-        if( (fscanf( vcd, "%s", tmp ) != 1) || (strncmp( "$end", tmp, 4 ) != 0) ) {
+        if( (sscanf( line, "%s", tmp ) != 1) || (strncmp( "$end", tmp, 4 ) != 0) ) {
           print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
           Throw 0;
         }
@@ -190,13 +193,13 @@ static void vcd_parse_def_var(
  Parses definition $scope keyword line until $end keyword is seen.
 */
 static void vcd_parse_def_scope(
-  FILE* vcd  /*!< File handle pointer to opened VCD file */
+  char* line  /*!< Line read from VCD file */
 ) { PROFILE(VCD_PARSE_DEF_SCOPE);
 
   char type[256];  /* Scope type */
   char id[256];    /* Name of scope to change to */
 
-  if( fscanf( vcd, "%s %s $end", type, id ) == 2 ) {
+  if( sscanf( line, "%s %s $end", type, id ) == 2 ) {
 
     /* Make sure that we have not exceeded any array boundaries */
     assert( strlen( type ) <= 256 );
@@ -225,40 +228,55 @@ static void vcd_parse_def(
   FILE* vcd  /*!< File handle pointer to opened VCD file */
 ) { PROFILE(VCD_PARSE_DEF);
 
-  bool enddef_found = FALSE;  /* If set to true, definition section is finished */
-  char keyword[256];          /* Holds keyword value */
-  int  chars_read;            /* Number of characters scanned in */
+  bool         enddef_found = FALSE;  /* If set to true, definition section is finished */
+  char         keyword[256];          /* Holds keyword value */
+  int          chars_read;            /* Number of characters scanned in */
+  char*        line         = NULL;
+  unsigned int line_size;
+  char*        ptr;
+  bool         ignore       = FALSE;
 
-  while( !enddef_found && (fscanf( vcd, "%s%n", keyword, &chars_read ) == 1) ) {
+  while( !enddef_found && util_readline( vcd, &line, &line_size ) ) {
 
-    assert( chars_read <= 256 );
+    ptr = line;
+
+    if( sscanf( ptr, "%s%n", keyword, &chars_read ) == 1 ) {
+
+      assert( chars_read <= 256 );
     
-    if( keyword[0] == '$' ) {
+      ptr = ptr + chars_read;
 
-      if( strncmp( "var", (keyword + 1), 3 ) == 0 ) {
-        vcd_parse_def_var( vcd );
-      } else if( strncmp( "scope", (keyword + 1), 5 ) == 0 ) {
-        vcd_parse_def_scope( vcd );
-      } else if( strncmp( "upscope", (keyword + 1), 7 ) == 0 ) {
-        db_vcd_upscope();
-        vcd_parse_def_ignore( vcd );
-      } else if( strncmp( "enddefinitions", (keyword + 1), 14 ) == 0 ) {
-        enddef_found = TRUE;
-        vcd_parse_def_ignore( vcd );
-      } else {
-        vcd_parse_def_ignore( vcd );
+      if( keyword[0] == '$' ) {
+
+        if( strncmp( "var", (keyword + 1), 3 ) == 0 ) {
+          vcd_parse_def_var( ptr );
+        } else if( strncmp( "scope", (keyword + 1), 5 ) == 0 ) {
+          vcd_parse_def_scope( ptr );
+        } else if( strncmp( "upscope", (keyword + 1), 7 ) == 0 ) {
+          db_vcd_upscope();
+        } else if( strncmp( "enddefinitions", (keyword + 1), 14 ) == 0 ) {
+          enddef_found = TRUE;
+        } else if( strncmp( "end", (keyword + 1), 3 ) == 0 ) {
+          ignore = FALSE;
+        } else {
+          ignore = TRUE;
+        }
+
+      } else if( !ignore ) {
+
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Non-keyword located where one should have been \"%s\"", keyword );
+        assert( rv < USER_MSG_LENGTH );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        Throw 0;
+
       }
-
-    } else {
-
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Non-keyword located where one should have been \"%s\"", keyword );
-      assert( rv < USER_MSG_LENGTH );
-      print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      Throw 0;
 
     }
   
   }
+
+  /* Deallocate memory */
+  free_safe( line, line_size );
 
   if( !enddef_found ) {
     print_output( "Specified VCD file is not a valid VCD file", FATAL, __FILE__, __LINE__ );

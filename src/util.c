@@ -746,8 +746,10 @@ bool util_readline(
   char         c;      /* Character recently read from file */
   unsigned int i = 0;  /* Current index of line */
 
-  *line_size = 128;
-  *line      = (char*)malloc_safe( *line_size );
+  if( *line == NULL ) {
+    *line_size = 128;
+    *line      = (char*)malloc_safe( *line_size );
+  }
 
   while( !feof( file ) && ((c = (char)fgetc( file )) != '\n') ) {
 

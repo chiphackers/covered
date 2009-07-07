@@ -443,12 +443,12 @@ static void cli_display_lines(
   unsigned num  /*!< Maximum number of lines to display */
 ) {
 
-  thread*      curr;        /* Pointer to current thread in simulation */
-  FILE*        vfile;       /* File pointer to Verilog file */
-  char*        line;        /* Pointer to current line */
-  unsigned int line_size;   /* Allocated size of the current line */
-  unsigned int lnum = 1;    /* Current line number */
-  unsigned int start_line;  /* Starting line */
+  thread*      curr;         /* Pointer to current thread in simulation */
+  FILE*        vfile;        /* File pointer to Verilog file */
+  char*        line = NULL;  /* Pointer to current line */
+  unsigned int line_size;    /* Allocated size of the current line */
+  unsigned int lnum = 1;     /* Current line number */
+  unsigned int start_line;   /* Starting line */
 
   /* Get the current thread from the simulator */
   curr = sim_current_thread();
@@ -467,11 +467,13 @@ static void cli_display_lines(
       if( (lnum >= start_line) && (lnum < (start_line + num)) ) {
         printf( "    %7d:  %s\n", lnum, line );
       }
-      free_safe( line, line_size );
       lnum++;
     }
 
     fclose( vfile );
+
+    /* Deallocate memory */
+    free_safe( line, line_size );
 
   } else {
 
@@ -1097,9 +1099,9 @@ void cli_read_hist_file( const char* fname ) {
 
     Try {
 
-      sim_time     time;       /* Temporary simulation time holder */
-      char*        line;       /* Holds current line read from history file */
-      unsigned int line_size;  /* Allocated bytes for read line */
+      sim_time     time;         /* Temporary simulation time holder */
+      char*        line = NULL;  /* Holds current line read from history file */
+      unsigned int line_size;    /* Allocated bytes for read line */
 
       while( util_readline( hfile, &line, &line_size ) ) {
         if( !cli_parse_input( line, FALSE, FALSE, &time, NULL ) ) {
@@ -1108,8 +1110,10 @@ void cli_read_hist_file( const char* fname ) {
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           Throw 0;
         }
-        free_safe( line, line_size );
       }
+
+      /* Deallocate memory */
+      free_safe( line, line_size );
 
     } Catch_anonymous {
       unsigned int rv = fclose( hfile );

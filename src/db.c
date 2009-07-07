@@ -417,7 +417,7 @@ void db_read(
   FILE*        db_handle;            /* Pointer to database file being read */
   int          type;                 /* Specifies object type */
   func_unit    tmpfunit;             /* Temporary functional unit pointer */
-  char*        curr_line;            /* Pointer to current line being read from db */
+  char*        curr_line = NULL;     /* Pointer to current line being read from db */
   unsigned int curr_line_size;       /* Allocated number of bytes for curr_line */
   char*        rest_line;            /* Pointer to rest of the current line */
   int          chars_read;           /* Number of characters currently read on line */
@@ -657,8 +657,6 @@ void db_read(
           Throw 0;
 
         }
-
-        free_safe( curr_line, curr_line_size );
 
       }
 

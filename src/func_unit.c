@@ -816,16 +816,16 @@ void funit_db_merge(
   bool       same   /*!< Specifies if functional unit to be merged should match existing functional unit exactly or not */
 ) { PROFILE(FUNIT_DB_MERGE);
 
-  exp_link*    curr_base_exp;   /* Pointer to current expression in base functional unit expression list */
-  sig_link*    curr_base_sig;   /* Pointer to current signal in base functional unit signal list */
-  stmt_link*   curr_base_stmt;  /* Statement list link */
-  fsm_link*    curr_base_fsm;   /* Pointer to current FSM in base functional unit FSM list */
-  race_blk*    curr_base_race;  /* Pointer to current race condition block in base module list  */
-  char*        curr_line;       /* Pointer to current line being read from CDD */
-  unsigned int curr_line_size;  /* Number of bytes allocated for curr_line */
-  char*        rest_line;       /* Pointer to rest of read line */
-  int          type;            /* Specifies currently read CDD type */
-  int          chars_read;      /* Number of characters read from current CDD line */
+  exp_link*    curr_base_exp;     /* Pointer to current expression in base functional unit expression list */
+  sig_link*    curr_base_sig;     /* Pointer to current signal in base functional unit signal list */
+  stmt_link*   curr_base_stmt;    /* Statement list link */
+  fsm_link*    curr_base_fsm;     /* Pointer to current FSM in base functional unit FSM list */
+  race_blk*    curr_base_race;    /* Pointer to current race condition block in base module list  */
+  char*        curr_line = NULL;  /* Pointer to current line being read from CDD */
+  unsigned int curr_line_size;    /* Number of bytes allocated for curr_line */
+  char*        rest_line;         /* Pointer to rest of read line */
+  int          type;              /* Specifies currently read CDD type */
+  int          chars_read;        /* Number of characters read from current CDD line */
 
   assert( base != NULL );
   assert( base->name != NULL );
@@ -881,7 +881,6 @@ void funit_db_merge(
         free_safe( curr_line, curr_line_size );
         Throw 0;
       }
-      free_safe( curr_line, curr_line_size );
     } else {
       print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
       Throw 0;
@@ -910,7 +909,6 @@ void funit_db_merge(
         free_safe( curr_line, curr_line_size );
         Throw 0;
       }
-      free_safe( curr_line, curr_line_size );
     } else {
       print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
       Throw 0;
@@ -937,7 +935,6 @@ void funit_db_merge(
         free_safe( curr_line, curr_line_size );
         Throw 0;
       }
-      free_safe( curr_line, curr_line_size );
     } else {
       print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
       Throw 0;
@@ -966,7 +963,6 @@ void funit_db_merge(
         free_safe( curr_line, curr_line_size );
         Throw 0;
       }
-      free_safe( curr_line, curr_line_size );
     } else {
       print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
       Throw 0;
@@ -994,7 +990,6 @@ void funit_db_merge(
           free_safe( curr_line, curr_line_size );
           Throw 0;
         }
-        free_safe( curr_line, curr_line_size );
       } else {
         print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
         Throw 0;
