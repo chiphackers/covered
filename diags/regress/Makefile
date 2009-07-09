@@ -701,6 +701,24 @@ all-vpi-inline-full:
 	$(MAKE) cver VPI=1 INLINE=1
 	$(MAKE) vcs VPI=1 INLINE=1
 
+all-iv:
+	$(MAKE) iverilog
+	$(MAKE) iverilog LXT=1
+	$(MAKE) iverilog VPI=1
+	$(MAKE) iverilog INLINE=1
+	$(MAKE) iverilog INLINE=1 LXT=1
+	$(MAKE) iverilog INLINE=1 VPI=1
+
+all-cver:
+	$(MAKE) cver
+	$(MAKE) cver VPI=1
+	$(MAKE) cver INLINE=1
+	$(MAKE) cver INLINE=1 VPI=1
+
+all-veriwell:
+	$(MAKE) veriwell
+	$(MAKE) veriwell INLINE=1
+
 all-quick:
 	$(MAKE) all-vcd-quick
 	$(MAKE) all-vcd-inline-quick
