@@ -259,13 +259,15 @@ sub vcd_parse_def {
         $curr_scope = $db->{$num}{PARENT}{$curr_scope};
       } elsif( substr( $keyword, 1 ) eq "enddefinitions" ) {
         $enddef_found = 1;
-      } elsif( $skip_to_end && ($line =~ /\$end/) ) {
-        $skip_to_end = 0;
       } else {
         $skip_to_end = 1;
       }
 
-    } elsif( $skip_to_end ) {
+      if( $skip_to_end && ($line =~ /\$end/) ) {
+        $skip_to_end = 0;
+      }
+
+    } elsif( $skip_to_end || ($line =~/^\s*$/) ) {
 
       # Ignore
 
@@ -480,7 +482,7 @@ sub vcd_parse_sim {
 
     chomp( $line );
 
-    if( substr( $line, 0, 1 ) eq "\$" ) {
+    if( (substr( $line, 0, 1 ) eq "\$") || ($line =~ /^\s*$/) ) {
 
       # Ignore
 
