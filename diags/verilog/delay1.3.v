@@ -7,7 +7,7 @@ always @(posedge b) #(5:10:15) a <= c[1] & c[0];
 
 initial begin
 `ifdef DUMP
-	$dumpfile( "delay1.vcd" );
+	$dumpfile( "delay1.3.vcd" );
 	$dumpvars( 0, main );
 `endif
 	b = 1'b0;

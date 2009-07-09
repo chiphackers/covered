@@ -171,9 +171,9 @@ sub vcd_parse_def_var {
     }     
             
     # Store the signal
-    if( $ref =~ /\s*\\?covered\$/ ) {
+    if( ($ref =~ /\s*\\?covered\$/) || ($type eq "event") ) {
 
-      # Don't store internal coverage signals
+      # Don't store internal coverage signals or events
 
     } else {
 
