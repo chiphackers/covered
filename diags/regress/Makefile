@@ -434,6 +434,12 @@ else
 ifeq ($(MAKECMDGOALS),vcomp)
 EXCLUDE      +=
 else
+ifeq ($(MAKECMDGOALS),verilator)
+DIAGS1       := $(filter $(basename $(basename $(notdir $(wildcard ../verilog/*.verilator.v)))), $(DIAGS1))
+$(warning Available diagnostics: $(basename $(basename $(notdir $(wildcard ../verilog/*.verilator.v)))))
+$(warning Diagnostics to test: $(DIAGS1))
+EXCLUDE      += case4.1
+else
 EXCLUDE      += afunc1            afunc2            always_comb1      always_comb2      always_ff1 \
                 always_latch1     always_latch2     assert1           atask1            bit1 \
                 byte1             char1             dec1              dec1.1            dec2 \
@@ -467,6 +473,7 @@ EXCLUDE      += afunc1            afunc2            always_comb1      always_com
                 timescale4        timescale4.1      timescale4.9      timescale4.10     timescale4.11 \
                 timescale4.12     timescale4.13     timescale4.14     timescale4.16     trireg \
                 urandom1.2        urandom1.3        urandom_range1    urandom_range2
+endif
 endif
 endif
 endif
@@ -641,6 +648,11 @@ vcomp:
 	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VCOMP=1 VERILOG_EXTRA_FLAGS="$(VCOMP_FLAGS4)" DIAGLIST="$(DIAGS4)" regress
 	@cd ../verilog;  $(MAKE) eot;  $(MAKE) clean
 
+verilator:
+	@cd ../verilog; \
+	$(MAKE) COVERED_GFLAG=-Q COVERED_SCORE_GFLAG= USE_VERILATOR=1 DIAGLIST="$(DIAGS1)" regress
+	@cd ../verilog;  $(MAKE) eot;  $(MAKE) clean
+
 all-vcd-quick:
 	$(MAKE) iverilog LEAVE=1
 	$(MAKE) cver LEAVE=1
@@ -724,6 +736,10 @@ all-vcs:
 	$(MAKE) vcs VPI=1
 	$(MAKE) vcs INLINE=1
 	$(MAKE) vcs INLINE=1 VPI=1
+
+all-verilator:
+	$(MAKE) verilator
+	$(MAKE) verilator INLINE=1
 
 all-quick:
 	$(MAKE) all-vcd-quick

@@ -10,7 +10,6 @@ initial begin
 end
 
 always @(posedge gend_clock) begin
-  $display( "B Time: %d", $time );
   if( $time >= 10 ) $finish;
 end
 
