@@ -1,0 +1,66 @@
+%{
+/*
+ Copyright (c) 2006-2009 Trevor Williams
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 2 of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along with this program;
+ if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
+/*
+ Command-line: gperf -o -i 1 -C -k 1-3,$ -L C -H vcd_keyword_hash -N vcd_check_identifier -tT vcd_keywords.gperf
+ */
+
+#include <string.h>
+#include "defines.h"
+#include "profiler.h"
+#include "vcd.new.h"
+
+%}
+struct vcd_keyword { char *name; int type; };
+%%
+comment,        T_COMMENT
+date,           T_DATE
+dumpall,        T_DUMPALL
+dumpoff,        T_DUMPOFF
+dumpon,         T_DUMPON
+dumpports,      T_DUMPPORTS
+dumpportsoff,   T_DUMPPORTSOFF
+dumpportson,    T_DUMPPORTSON
+dumpportsall,   T_DUMPPORTSALL
+dumpvars,       T_DUMPVARS
+end,            T_END
+enddefinitions, T_ENDDEF
+scope,          T_SCOPE
+timescale,      T_TIMESCALE
+upscope,        T_UPSCOPE
+var,            T_VAR
+vcdclose        T_VCDCLOSE
+version,        T_VERSION
+%%
+
+int vcd_keyword_code(
+  const char* str,
+  int         length
+) { PROFILE(VCD_KEYWORD_CODE);
+
+  const struct vcd_keyword* rc   = vcd_check_identifier( str, length );
+  int                       type = T_UNKNOWN;
+
+  if( rc != 0 ) {
+    type = rc->type;
+  }
+
+  PROFILE_END;
+
+  return( type );
+
+}
+

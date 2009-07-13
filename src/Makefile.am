@@ -66,6 +66,7 @@ covered_SOURCES = arc.c \
                   tree.c \
                   util.c \
                   vcd.c \
+		  vcd_keywords.c
 		  vector.c \
 		  vsignal.c
 
@@ -107,6 +108,9 @@ keywords_sv.c:  keywords_sv.gperf
 keywords_sys_sv.c:  keywords_sys_sv.gperf
 	gperf -o -i 7 -C -k 1-3,$$ -L ANSI-C -H keyword_hash_sys_sv -N check_identifier_sys_sv -t $(srcdir)/keywords_sys_sv.gperf > keywords_sys_sv.c || (rm -f keywords_sys_sv.c ; false)
 
+vcd_keywords.c:  vcd_keywords.gperf
+	gperf -o -i 7 -C -k 1-3,$$ -L ANSI-C -H vcd_keyword_hash -N vcd_check_identifier -t $(srcdir)/vcd_keywords.gperf > vcd_keywords.c || (rm -f vcd_keywords.c ; false)
+
 CLEANFILES = pplexer.c \
              lexer.c \
              static_lexer.c \
@@ -121,4 +125,5 @@ CLEANFILES = pplexer.c \
              parser.output \
              static_parser.c \
              static_parser.h \
-             static_parser.output
+             static_parser.output \
+             vcd_keywords.c
