@@ -442,7 +442,7 @@ sub checkTest {
 # Converts a configuration file for the current dump type.
 sub convertCfg {
 
-  my( $type, $dumponly, $file ) = @_;
+  my( $type, $dumponly, $using_verilator, $file ) = @_;
   my( $tmpline ) = "";
 
   open( OFILE, ">${file}" ) || die "Can't open ${file} for writing!\n";
@@ -458,6 +458,17 @@ sub convertCfg {
         $tmpline .= $1;
       }
       $line = $tmpline;
+    } elsif( $using_verilator == 1 ) {
+      my( $basename );
+      if( $file =~ /(.*)\.cfg/ ) {
+        $basename = $1;
+      }
+      $line =~ s/-v\s+$basename.v/-v $basename.verilator.v/;
+      if( $line =~ /-i\s+/ ) {
+        $line =~ s/-i\s+main/-i TOP.v/;
+      } else {
+        $line .= "-i TOP.v";
+      }
     }
     $line =~ s/\-vcd/\-$type/g;
     if( ($type eq "vpi") || ($type eq "inline -vpi") ) {

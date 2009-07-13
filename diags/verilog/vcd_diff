@@ -244,6 +244,7 @@ sub vcd_parse_def {
 
     chomp( $line );
 
+    $line =~ s/^\s+//;  # Remove any whitespace before the keyword
     ($keyword, @rest) = split( /\s+/, $line );
     $line = join( " ", @rest );
 
