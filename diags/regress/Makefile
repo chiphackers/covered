@@ -719,6 +719,12 @@ all-veriwell:
 	$(MAKE) veriwell
 	$(MAKE) veriwell INLINE=1
 
+all-vcs:
+	$(MAKE) vcs
+	$(MAKE) vcs VPI=1
+	$(MAKE) vcs INLINE=1
+	$(MAKE) vcs INLINE=1 VPI=1
+
 all-quick:
 	$(MAKE) all-vcd-quick
 	$(MAKE) all-vcd-inline-quick

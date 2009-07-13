@@ -78,7 +78,7 @@ sub vcd_read_mapfile {
       $scope2 = $3;
       $map->{SCOPE}{$parent}{$scope1} = $scope2;
       $map->{SCOPE}{$parent}{$scope2} = $scope1;
-    } elsif( /SIGNAL\s+(\S+)\s+(\S+)/ ) {
+    } elsif( /SIGNAL\s+(\S+)\s+(\S+)\s+(\S+)/ ) {
       $parent  = $1;
       $signal1 = $2;
       $signal2 = $3;
