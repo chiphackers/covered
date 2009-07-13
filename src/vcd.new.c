@@ -47,6 +47,10 @@
 */
 #define vcd_getch(vcd) ((vcd_rdbuf_cur != vcd_rdbuf_end) ? ((int)(*(vcd_rdbuf_cur++))) : vcd_getch_fetch( vcd ))
 
+/*!
+ Reads in a token that will be discarded.  Breaks the main while loop if an $end or an EOF is encountered.
+*/
+#define vcd_get        (void)get_token();  if( (tok==T_END) || (tok==T_EOF) ) { break; }
 
 extern char       user_msg[USER_MSG_LENGTH];
 extern symtable*  vcd_symtab;
