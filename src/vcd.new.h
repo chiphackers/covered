@@ -27,27 +27,27 @@
  List of VCD tokens.
 */
 enum vcd_tokens {
-  T_VAR,
-  T_END,
-  T_SCOPE,
-  T_UPSCOPE,
-  T_COMMENT,
-  T_DATE,
-  T_DUMPALL,
-  T_DUMPOFF,
-  T_DUMPON,
-  T_DUMPVARS,
-  T_ENDDEF,
-  T_DUMPPORTS,
-  T_DUMPPORTSOFF,
-  T_DUMPPORTSON,
-  T_DUMPPORTSALL,
-  T_TIMESCALE,
-  T_VERSION,
-  T_VCDCLOSE,
-  T_EOF,
-  T_STRING,
-  T_UNKNOWN
+  T_VAR,            /*!<  0 : $var */
+  T_END,            /*!<  1 : $end */
+  T_SCOPE,          /*!<  2 : $scope */
+  T_UPSCOPE,        /*!<  3 : $upscope */
+  T_COMMENT,        /*!<  4 : $comment */
+  T_DATE,           /*!<  5 : $date */
+  T_DUMPALL,        /*!<  6 : $dumpall */
+  T_DUMPOFF,        /*!<  7 : $dumpoff */ 
+  T_DUMPON,         /*!<  8 : $dumpon */
+  T_DUMPVARS,       /*!<  9 : $dumpvars */
+  T_ENDDEF,         /*!< 10 : $enddefinition */
+  T_DUMPPORTS,      /*!< 11 : $dumpports */
+  T_DUMPPORTSOFF,   /*!< 12 : $dumpportsoff */
+  T_DUMPPORTSON,    /*!< 13 : $dumpportson */
+  T_DUMPPORTSALL,   /*!< 14 : $dumpportsall */
+  T_TIMESCALE,      /*!< 15 : $timescale */
+  T_VERSION,        /*!< 16 : $version */
+  T_VCDCLOSE,       /*!< 17 : $vcdclose */
+  T_EOF,            /*!< 18 : End-of-file */
+  T_STRING,         /*!< 19 : Other string */
+  T_UNKNOWN         /*!< 20 : Unknown */
 };
 
 /*! \brief Parses specified VCD file, storing information into database. */

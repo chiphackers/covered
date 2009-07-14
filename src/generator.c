@@ -258,7 +258,7 @@ void generator_clear_replace_ptrs() { PROFILE(GENERATOR_CLEAR_REPLACE_PTRS);
 */
 static bool generator_is_static_function_only(
   func_unit* funit  /*!< Pointer to functional unit to check */
-) { PROFILE(GENERATOR_IS_STATIC_FUNCTION);
+) { PROFILE(GENERATOR_IS_STATIC_FUNCTION_ONLY);
 
   func_unit* func = funit_get_curr_function( funit );
 

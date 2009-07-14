@@ -24,6 +24,7 @@
 #endif
 
 #include <stdio.h>
+#include <errno.h>
 #include <assert.h>
 #include <stdlib.h>
 #ifdef HAVE_STRING_H
@@ -50,7 +51,17 @@
 /*!
  Reads in a token that will be discarded.  Breaks the main while loop if an $end or an EOF is encountered.
 */
-#define vcd_get        (void)get_token();  if( (tok==T_END) || (tok==T_EOF) ) { break; }
+#define vcd_get(vcd)   tok = vcd_get_token1( vcd, 0 );  if( (tok==T_END) || (tok==T_EOF) ) { break; }
+
+/*!
+ Returns a token in yytext starting at byte 0.
+*/
+#define vcd_get_token(vcd) vcd_get_token1( vcd, 0 )
+
+/*!
+ Adds a token to the existing yytext.
+*/
+#define vcd_append_token(vcd, new_start) vcd_get_token1( vcd, (new_start = (vcd_yylen + 1)) )
 
 extern char       user_msg[USER_MSG_LENGTH];
 extern symtable*  vcd_symtab;
@@ -76,6 +87,11 @@ static char* vcd_rdbuf_cur = NULL;
  Contains the string version of the next read token.
 */
 static char* vcd_yytext = NULL;
+
+/*!
+ Number of bytes allocated for the vcd_yytext array.
+*/
+static int vcd_yytext_size = 0;
 
 /*!
  Contains the length of the read token.
@@ -130,7 +146,7 @@ static int vcd_getch_fetch(
 
   PROFILE_END;
 
-  return( (int)(*(vcd_rdbuf_cur++)));
+  return( ch );
 
 }
 
@@ -139,14 +155,15 @@ static int vcd_getch_fetch(
 
  Reads in the next token, storing the result in vcd_yytext and vcd_yylen.
 */
-static int vcd_get_token(
-  FILE* vcd  /*!< Pointer to dumpfile to read */
+static int vcd_get_token1(
+  FILE* vcd,   /*!< Pointer to dumpfile to read */
+  int   start  /*!< Index of yytext to start adding characters to */
 ) { PROFILE(VCD_GET_TOKEN);
 
-  int   token     = T_UNKNOWN_KEY;  /* Return value for this function */
+  int   token     = T_UNKNOWN;  /* Return value for this function */
   int   ch;
   int   i;
-  int   len       = 0;
+  int   len       = start;
   int   is_string = 0;
   char* yyshadow;
 
@@ -164,48 +181,26 @@ static int vcd_get_token(
 
   if( token != T_EOF ) {
 
-    if( ch == '$' ) {
-
-      vcd_yytext[len++] = ch;
-
-      /* Eat any extra whitespace */
-      for(;;) {
-        ch = vcd_getch( vcd );
-        if( ch < 0 ) {
-          token = T_EOF;
-          break;
-        }
-        if( ch > ' ' ) {
-          break;
-        }
-      }
-
-    } else {
-
+    if( ch != '$' ) {
       is_string = 1;
-
     }
 
-    if( token != T_EOF ) {
-
-      for( vcd_yytext[len++] = ch; ; vcd_yytext[len++] = ch ) {
-        if( len == vcd_yytext_size ) {
-          vcd_yytext = (char*)realloc_safe( vcd_yytext, (vcd_yytext_size = ((vcd_yytext_size * 2) + 1)) );
-        }
-        ch = vcd_getch( vcd );
-        if( ch <= ' ' ) {
-          break;
-        }
+    for( vcd_yytext[len++] = ch; ; vcd_yytext[len++] = ch ) {
+      if( len == vcd_yytext_size ) {
+        vcd_yytext = (char*)realloc_safe( vcd_yytext, vcd_yytext_size, (vcd_yytext_size = ((vcd_yytext_size * 2) + 1)) );
       }
-      vcd_yytext[len] = '\0';
-
-      if( is_string ) {
-        vcd_yylen = len;
-        token = T_STRING;
-      } else {
-        token = vcd_keyword_code( vcd_yytext, len );
+      ch = vcd_getch( vcd );
+      if( ch <= ' ' ) {
+        break;
       }
+    }
+    vcd_yytext[len] = '\0';
+    vcd_yylen       = len;
 
+    if( is_string ) {
+      token = T_STRING;
+    } else {
+      token = vcd_keyword_code( (vcd_yytext + 1), (len - 1) );
     }
 
   }
@@ -217,24 +212,20 @@ static int vcd_get_token(
 }
 
 /*!
- Parses specified file until $end keyword is seen, ignoring all text inbetween.
+ Reads the line to the $end token, ignoring the contents of the body.
 */
-static void vcd_parse_def_ignore(
-  FILE* vcd  /*!< File handle pointer to opened VCD file */
-) { PROFILE(VCD_PARSE_DEF_IGNORE);
+static void vcd_sync_end(
+  FILE* vcd  /*!< Pointer to VCD file */
+) { PROFILE(VCD_SYNC_END);
 
-  bool end_seen = FALSE;  /* If set to true, $end keyword was seen */
-  char token[256];        /* String value of current token */
-  int  chars_read;        /* Number of characters scanned in */
+  int tok;
 
-  while( !end_seen && (fscanf( vcd, "%s%n", token, &chars_read ) == 1) ) {
-    assert( chars_read <= 256 );
-    if( strncmp( "$end", token, 4 ) == 0 ) {
-      end_seen = TRUE;
+  for(;;) {
+    tok = vcd_get_token( vcd );
+    if( (tok==T_END) || (tok==T_EOF) ) {
+      break;
     }
   }
-
-  assert( end_seen );
 
   PROFILE_END;
 
@@ -246,55 +237,59 @@ static void vcd_parse_def_ignore(
  Parses definition $var keyword line until $end keyword is seen.
 */
 static void vcd_parse_def_var(
-  char* line  /*!< Pointer to line from VCD file */
+  FILE* vcd  /*!< Pointer to VCD file to read */
 ) { PROFILE(VCD_PARSE_DEF_VAR);
 
-  char type[256];     /* Variable type */
-  int  size;          /* Bit width of specified variable */
-  char id_code[256];  /* Unique variable identifier_code */
-  char ref[256];      /* Name of variable in design */
-  char reftmp[256];   /* Temporary variable name */
-  char tmp[15];       /* Temporary string holder */
-  int  msb = -1;      /* Most significant bit */
-  int  lsb = -1;      /* Least significant bit */
-  int  tmplsb;        /* Temporary LSB if swapping is needed */
-  int  chars_read;
+  int  size;
+  char id_code[256];        /* Unique variable identifier_code */
+  char ref[256];            /* Name of variable in design */
+  char reftmp[256];         /* Temporary variable name */
+  char tmp[256];            /* Temporary string holder */
+  int  msb        = -1;     /* Most significant bit */
+  int  lsb        = -1;     /* Least significant bit */
+  int  tmplsb;              /* Temporary LSB if swapping is needed */
+  bool found_real = FALSE;
 
-  if( sscanf( line, "%s %d %s %s %s%n", type, &size, id_code, ref, tmp, &chars_read ) == 5 ) {
+  int tok;
 
-    /* Make sure that we have not exceeded array boundaries */
-    assert( strlen( type )    <= 256 );
-    assert( strlen( ref )     <= 256 );
-    assert( strlen( tmp )     <= 15  );
-    assert( strlen( id_code ) <= 256 );
+  Try {
 
-    line += chars_read;
-    
-    if( strncmp( "real", type, 4 ) == 0 ) {
+    /* Get the value type */
+    if( (tok = vcd_get_token( vcd )) != T_STRING ) { printf( "A\n" );  Throw 0; }
+    if( strncmp( "real", vcd_yytext, 4 ) == 0 ) { found_real = TRUE; }
 
+    /* Get the size */
+    if( (tok = vcd_get_token( vcd )) != T_STRING ) { printf( "B\n" );  Throw 0; }
+    size = atoi( vcd_yytext );
+      
+    /* Get the ID code */
+    if( (tok = vcd_get_token( vcd )) == T_EOF ) { printf( "C\n" );  Throw 0; }
+    assert( vcd_yylen <= 256 );
+    strcpy( id_code, vcd_yytext );
+     
+    /* Get the ref */
+    if( (tok = vcd_get_token( vcd )) != T_STRING ) { printf( "D %s\n", vcd_yytext );  Throw 0; }
+    assert( vcd_yylen <= 256 );
+    strcpy( ref, vcd_yytext );
+
+    /* Get the tmp */
+    tok = vcd_get_token( vcd );
+
+    if( found_real ) {
+  
       msb = 63;
       lsb = 0;
 
     } else {
 
-      if( strncmp( "$end", tmp, 4 ) != 0 ) {
+      if( tok != T_END ) {
 
-        /* A bit select was specified for this signal, get the size */
-        if( sscanf( tmp, "\[%d:%d]", &msb, &lsb ) != 2 ) {
-        
-          if( sscanf( tmp, "\[%d]", &lsb ) != 1 ) {
-            print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
-            Throw 0;
-          } else {
-            msb = lsb;
-          }
-
+        if( tok != T_STRING ) { printf( "E\n" ); Throw 0; }
+        if( sscanf( vcd_yytext, "\[%d:%d]", &msb, &lsb ) != 2 ) {
+          if( sscanf( vcd_yytext, "\[%d]", &lsb ) != 1 ) { printf( "F\n" ); Throw 0; }
+          msb = lsb;
         }
-
-        if( (sscanf( line, "%s", tmp ) != 1) || (strncmp( "$end", tmp, 4 ) != 0) ) {
-          print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
-          Throw 0;
-        }
+        if( (tok = vcd_get_token( vcd )) != T_END ) { printf( "A\n" );  Throw 0; }
 
       } else if( sscanf( ref, "%[a-zA-Z0-9_]\[%s].", reftmp, tmp ) == 2 ) {
 
@@ -303,16 +298,12 @@ static void vcd_parse_def_var(
         lsb = 0;
 
       } else if( sscanf( ref, "%[a-zA-Z0-9_]\[%s]", reftmp, tmp ) == 2 ) {
-  
+ 
         strcpy( ref, reftmp );
-  
+
         if( sscanf( tmp, "%d:%d", &msb, &lsb ) != 2 ) {
-          if( sscanf( tmp, "%d", &lsb ) != 1 ) {
-            print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
-            Throw 0;
-          } else {
-            msb = lsb;
-          }
+          if( sscanf( tmp, "%d", &lsb ) != 1 ) { printf( "F\n" ); Throw 0; }
+          msb = lsb;
         }
 
       } else {
@@ -327,7 +318,7 @@ static void vcd_parse_def_var(
     /* For now we will let any type and size slide */
     db_assign_symbol( ref, id_code, msb, lsb );
     
-  } else {
+  } Catch_anonymous {
 
     print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
     Throw 0;
@@ -336,38 +327,6 @@ static void vcd_parse_def_var(
 
   PROFILE_END;
 
-}
-
-/*!
- \throws anonymous Throw
-
- Parses definition $scope keyword line until $end keyword is seen.
-*/
-static void vcd_parse_def_scope(
-  char* line  /*!< Line read from VCD file */
-) { PROFILE(VCD_PARSE_DEF_SCOPE);
-
-  char type[256];  /* Scope type */
-  char id[256];    /* Name of scope to change to */
-
-  if( sscanf( line, "%s %s $end", type, id ) == 2 ) {
-
-    /* Make sure that we have not exceeded any array boundaries */
-    assert( strlen( type ) <= 256 );
-    assert( strlen( id )   <= 256 );
-    
-    /* For now we will let any type slide */
-    db_set_vcd_scope( id );
-
-  } else {
-
-    print_output( "Unrecognized $scope format", FATAL, __FILE__, __LINE__ );
-    Throw 0;
-
-  }
-
-  PROFILE_END;
-  
 }
 
 /*!
@@ -387,54 +346,51 @@ static void vcd_parse_def(
   char*        ptr;
   bool         ignore       = FALSE;
 
-  while( !enddef_found && util_readline( vcd, &line, &line_size ) ) {
+  int tok = T_UNKNOWN;
 
-    ptr = line;
+  for(;;) {
 
-    if( sscanf( ptr, "%s%n", keyword, &chars_read ) == 1 ) {
-
-      assert( chars_read <= 256 );
-    
-      ptr = ptr + chars_read;
-
-      if( keyword[0] == '$' ) {
-
-        if( strncmp( "var", (keyword + 1), 3 ) == 0 ) {
-          vcd_parse_def_var( ptr );
-        } else if( strncmp( "scope", (keyword + 1), 5 ) == 0 ) {
-          vcd_parse_def_scope( ptr );
-        } else if( strncmp( "upscope", (keyword + 1), 7 ) == 0 ) {
-          db_vcd_upscope();
-        } else if( strncmp( "enddefinitions", (keyword + 1), 14 ) == 0 ) {
-          enddef_found = TRUE;
-        } else if( strncmp( "end", (keyword + 1), 3 ) == 0 ) {
-          ignore = FALSE;
-        } else {
-          ignore = TRUE;
+    switch( tok = vcd_get_token( vcd ) ) {
+      case T_COMMENT   :
+      case T_DATE      :
+      case T_VERSION   :
+      case T_TIMESCALE :
+        vcd_sync_end( vcd );
+        break;
+      case T_SCOPE     :
+        vcd_get( vcd );
+        vcd_get( vcd );
+        if( tok == T_STRING ) {
+          db_set_vcd_scope( vcd_yytext );
         }
-
-      } else if( !ignore ) {
-
-        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Non-keyword located where one should have been \"%s\"", keyword );
-        assert( rv < USER_MSG_LENGTH );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        Throw 0;
-
-      }
-
+        vcd_sync_end( vcd );
+        break;
+      case T_UPSCOPE   :
+        db_vcd_upscope();
+        vcd_sync_end( vcd );
+        break;
+      case T_VAR       :
+        vcd_parse_def_var( vcd );
+        break;
+      case T_ENDDEF    :
+        goto end_definition;
+      default          :
+        {
+          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown VCD definition token (%s)", vcd_yytext );
+          assert( rv < USER_MSG_LENGTH );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          Throw 0;
+        }
     }
-  
+
   }
 
-  /* Deallocate memory */
-  free_safe( line, line_size );
+  end_definition:
 
-  if( !enddef_found ) {
+  if( tok != T_ENDDEF ) {
     print_output( "Specified VCD file is not a valid VCD file", FATAL, __FILE__, __LINE__ );
     Throw 0;
   }
-
-  assert( enddef_found );
 
   /* Check to see that at least one instance was found */
   db_check_dumpfile_scopes();
@@ -450,25 +406,15 @@ static void vcd_parse_def(
  function for this signal change.
 */
 static void vcd_parse_sim_vector(
-  FILE* vcd,   /*!< File handle of opened VCD file */
-  char* value  /*!< String containing value of current signal */
+  FILE* vcd  /*!< File handle of opened VCD file */
 ) { PROFILE(VCD_PARSE_SIM_VECTOR);
 
-  char sym[256];    /* String value of signal symbol */
-  int  chars_read;  /* Number of characters scanned in */
+  int tok;
+  int sym_start;
 
-  if( fscanf( vcd, "%s%n", sym, &chars_read ) == 1 ) {
+  if( (tok = vcd_append_token( vcd, sym_start )) == T_EOF ) { Throw 0; }
 
-    assert( chars_read <= 256 );
-    
-    db_set_symbol_string( sym, value );
-
-  } else {
-
-    print_output( "Bad file format", FATAL, __FILE__, __LINE__ );
-    Throw 0;
-
-  }
+  db_set_symbol_string( (vcd_yytext + sym_start), (vcd_yytext + 1) );
 
   PROFILE_END;
 
@@ -481,51 +427,15 @@ static void vcd_parse_sim_vector(
  function for this signal change.
 */
 static void vcd_parse_sim_real(
-  FILE* vcd,   /*!< File handle of opened VCD file */
-  char* value  /*!< String containing value of current signal */
+  FILE* vcd  /*!< File handle of opened VCD file */
 ) { PROFILE(VCD_PARSE_SIM_REAL);
 
-  char sym[256];    /* String value of signal symbol */
-  int  chars_read;  /* Number of characters scanned in */
+  int tok;
+  int sym_start;
 
-  if( fscanf( vcd, "%s%n", sym, &chars_read ) == 1 ) {
+  if( (tok = vcd_append_token( vcd, sym_start )) == T_EOF ) { Throw 0; }
 
-    assert( chars_read <= 256 );
-
-    db_set_symbol_string( sym, value );
-
-  } else {
-
-    print_output( "Bad file format", FATAL, __FILE__, __LINE__ );
-    Throw 0;
-
-  }
-
-  PROFILE_END;
-
-}
-
-/*!
- \throws anonymous Throw
-
- Reads in symbol from simulation vector line that is to be ignored 
- (unused).  Signals an error message if the line is improperly formatted.
-*/
-/*@unused@*/ static void vcd_parse_sim_ignore(
-  FILE* vcd  /*!< File handle of opened VCD file */
-) { PROFILE(VCD_PARSE_SIM_IGNORE);
-
-  char sym[256];    /* String value of signal symbol */
-  int  chars_read;  /* Number of characters scanned in */
-
-  if( fscanf( vcd, "%s%n", sym, &chars_read ) != 1 ) {
-
-    print_output( "Bad file format", FATAL, __FILE__, __LINE__ );
-    Throw 0;
-
-  }
-  
-  assert( chars_read <= 256 );
+  db_set_symbol_string( (vcd_yytext + sym_start), (vcd_yytext + 1) );
 
   PROFILE_END;
 
@@ -540,59 +450,53 @@ static void vcd_parse_sim(
   FILE* vcd  /*!< File handle of opened VCD file */
 ) { PROFILE(VCD_PARSE_SIM);
 
-  char   token[4100];                /* Current token from VCD file */
   uint64 last_timestep     = 0;      /* Value of last timestamp from file */
   bool   use_last_timestep = FALSE;  /* Specifies if timestep has been encountered */
-  int    chars_read;                 /* Number of characters scanned in */
-  bool   carry_over        = FALSE;  /* Specifies if last string was too long */
   bool   simulate          = TRUE;   /* Specifies if we should continue to simulate */
  
-  while( !feof( vcd ) && (fscanf( vcd, "%4099s%n", token, &chars_read ) == 1) && simulate ) {
+  int tok;
 
-    if( chars_read < 4099 ) {
-    
-      if( token[0] == '$' ) {
+  for(;;) {
 
-        /* Ignore */
+    /* We ignore all other tokens besides value changes */
+    if( (tok = vcd_get_token( vcd )) == T_STRING ) {
 
-      } else if( (token[0] == 'b') || (token[0] == 'B') ) {
-
-        vcd_parse_sim_vector( vcd, (token + 1) );
-
-      } else if( (token[0] == 'r') || (token[0] == 'R') || carry_over ) {
-
-        vcd_parse_sim_real( vcd, (token + 1) );
-        carry_over = FALSE;
-
-      } else if( token[0] == '#' ) {
-
-        if( use_last_timestep ) {
-          simulate = db_do_timestep( last_timestep, FALSE );
-        }
-        last_timestep = ato64( token + 1 );
-        use_last_timestep = TRUE;
-
-      } else if( (token[0] == '0') ||
-                 (token[0] == '1') ||
-                 (token[0] == 'x') ||
-                 (token[0] == 'X') ||
-                 (token[0] == 'z') ||
-                 (token[0] == 'Z') ) {
-
-        db_set_symbol_char( token + 1, token[0] );
-
-      } else {
-
-        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Badly placed token \"%s\"", token );
-        assert( rv < USER_MSG_LENGTH );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        Throw 0;
-
+      switch( vcd_yytext[0] ) {
+        case 'b' :
+        case 'B' :
+          vcd_parse_sim_vector( vcd );
+          break;
+        case 'r' :
+        case 'R' :
+          vcd_parse_sim_real( vcd );
+          break;
+        case '#' :
+          if( use_last_timestep ) {
+            simulate = db_do_timestep( last_timestep, FALSE );
+          }
+          last_timestep = ato64( vcd_yytext + 1 );
+          use_last_timestep = TRUE;
+          break;
+        case '0' :
+        case '1' :
+        case 'x' :
+        case 'X' :
+        case 'z' :
+        case 'Z' :
+          db_set_symbol_char( (vcd_yytext + 1), vcd_yytext[0] );
+          break;
+        default  :
+          {
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Badly placed token \"%s\"", vcd_yytext );
+            assert( rv < USER_MSG_LENGTH );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            Throw 0;
+          }
       }
 
-    } else {
- 
-      carry_over = TRUE;
+    } else if( tok == T_EOF ) {
+
+      break;
 
     }
 
@@ -632,6 +536,9 @@ void vcd_parse(
       /* Allocate memory for read buffer */
       vcd_rdbuf_start = vcd_rdbuf_end = vcd_rdbuf_cur = (char*)malloc_safe( VCD_BUFSIZE );
 
+      /* Allocate memory for vcd_yytext */
+      vcd_yytext = (char*)malloc_safe( (vcd_yytext_size = 1024) );
+
       vcd_parse_def( vcd_handle );
 
       /* Create timestep symbol table array */
@@ -645,6 +552,7 @@ void vcd_parse(
       symtable_dealloc( vcd_symtab );
       free_safe( timestep_tab, (sizeof( symtable*) * vcd_symtab_size) );
       free_safe( vcd_rdbuf_start, VCD_BUFSIZE );
+      free_safe( vcd_yytext, vcd_yytext_size );
       rv = fclose( vcd_handle );
       assert( rv == 0 );
       Throw 0;
@@ -654,6 +562,7 @@ void vcd_parse(
     symtable_dealloc( vcd_symtab );
     free_safe( timestep_tab, (sizeof( symtable*) * vcd_symtab_size) );
     free_safe( vcd_rdbuf_start, VCD_BUFSIZE );
+    free_safe( vcd_yytext, vcd_yytext_size );
 
     /* Close VCD file */
     rv = fclose( vcd_handle );

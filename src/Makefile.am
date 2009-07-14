@@ -65,8 +65,8 @@ covered_SOURCES = arc.c \
 		  toggle.c \
                   tree.c \
                   util.c \
-                  vcd.c \
-		  vcd_keywords.c
+                  vcd.new.c \
+		  vcd_keywords.c \
 		  vector.c \
 		  vsignal.c
 
