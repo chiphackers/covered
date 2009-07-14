@@ -1,0 +1,3 @@
+ERROR!  The CDD file in use was not created for inlined coverage; however,
+        Covered has detected an inlined signal from the specified dumpfile.
+        Please use a CDD file created for inlined coverage.

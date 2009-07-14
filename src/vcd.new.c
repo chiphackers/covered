@@ -67,6 +67,8 @@ extern char       user_msg[USER_MSG_LENGTH];
 extern symtable*  vcd_symtab;
 extern int        vcd_symtab_size;
 extern symtable** timestep_tab;
+extern char**     curr_inst_scope;
+extern int        curr_inst_scope_size;
 
 /*!
  Pointer to start of VCD read buffer.
@@ -316,15 +318,15 @@ static void vcd_parse_def_var(
 
     }
 
-    /* For now we will let any type and size slide */
-    db_assign_symbol( ref, id_code, msb, lsb );
-    
   } Catch_anonymous {
 
     print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
     Throw 0;
   
   }
+
+  /* For now we will let any type and size slide */
+  db_assign_symbol( ref, id_code, msb, lsb );
 
   PROFILE_END;
 
@@ -349,40 +351,59 @@ static void vcd_parse_def(
 
   int tok = T_UNKNOWN;
 
-  for(;;) {
+  Try {
 
-    switch( tok = vcd_get_token( vcd ) ) {
-      case T_COMMENT   :
-      case T_DATE      :
-      case T_VERSION   :
-      case T_TIMESCALE :
-        vcd_sync_end( vcd );
-        break;
-      case T_SCOPE     :
-        vcd_get( vcd );
-        vcd_get( vcd );
-        if( tok == T_STRING ) {
-          db_set_vcd_scope( vcd_yytext );
-        }
-        vcd_sync_end( vcd );
-        break;
-      case T_UPSCOPE   :
-        db_vcd_upscope();
-        vcd_sync_end( vcd );
-        break;
-      case T_VAR       :
-        vcd_parse_def_var( vcd );
-        break;
-      case T_ENDDEF    :
-        goto end_definition;
-      default          :
-        {
-          unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown VCD definition token (%s)", vcd_yytext );
-          assert( rv < USER_MSG_LENGTH );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          Throw 0;
-        }
+    for(;;) {
+
+      switch( tok = vcd_get_token( vcd ) ) {
+        case T_COMMENT   :
+        case T_DATE      :
+        case T_VERSION   :
+        case T_TIMESCALE :
+          vcd_sync_end( vcd );
+          break;
+        case T_SCOPE     :
+          vcd_get( vcd );
+          vcd_get( vcd );
+          if( tok == T_STRING ) {
+            db_set_vcd_scope( vcd_yytext );
+          }
+          vcd_sync_end( vcd );
+          break;
+        case T_UPSCOPE   :
+          db_vcd_upscope();
+          vcd_sync_end( vcd );
+          break;
+        case T_VAR       :
+          vcd_parse_def_var( vcd );
+          break;
+        case T_ENDDEF    :
+          goto end_definition;
+        default          :
+          {
+            unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown VCD definition token (%s)", vcd_yytext );
+            assert( rv < USER_MSG_LENGTH );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
+            Throw 0;
+          }
+      }
+
     }
+
+  } Catch_anonymous {
+
+    /* If we threw an exception, the curr_inst_scope array may be left in an allocated state */
+    if( curr_inst_scope_size > 0 ) {
+      int i;
+      for( i=0; i<curr_inst_scope_size; i++ ) {
+        free_safe( curr_inst_scope[i], (strlen( curr_inst_scope[i] ) + 1) );
+      }
+      free_safe( curr_inst_scope, (sizeof( char* ) * curr_inst_scope_size) );
+      curr_inst_scope      = NULL;
+      curr_inst_scope_size = 0;
+    }
+
+    Throw 0;
 
   }
 

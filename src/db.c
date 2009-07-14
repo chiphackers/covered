@@ -3045,8 +3045,9 @@ void db_assign_symbol(
   if( (curr_instance != NULL) && (curr_instance->funit != NULL) ) {
 
     char* found_str;
+    bool  internal_sig_found = ((found_str = strstr( name, "\\covered$" )) != NULL) || ((found_str = strstr( name, "covered$" )) != NULL);
     
-    if( info_suppl.part.inlined && (((found_str = strstr( name, "\\covered$" )) != NULL) || ((found_str = strstr( name, "covered$" )) != NULL)) ) {
+    if( info_suppl.part.inlined && internal_sig_found ) {
 
       unsigned int index = (found_str - name) + ((name[found_str-name] == '\\') ? 9 : 8);
       char         type  = name[index];
@@ -3240,6 +3241,17 @@ void db_assign_symbol(
       sig_link*  sigl;
       vsignal*   sig;
       func_unit* found_funit;
+
+      /*
+       If we found an internal Covered signal in a CDD that is not expecting inlined data, the user specified a bad CDD file.
+       Alert them to this issue and quit immediately.
+      */
+      if( !info_suppl.part.inlined && internal_sig_found ) {
+        print_output( "The CDD file in use was not created for inlined coverage; however,",  FATAL,      __FILE__, __LINE__ );
+        print_output( "Covered has detected an inlined signal from the specified dumpfile.", FATAL_WRAP, __FILE__, __LINE__ );
+        print_output( "Please use a CDD file created for inlined coverage.",                 FATAL_WRAP, __FILE__, __LINE__ );
+        Throw 0;
+      }
 
       /* Find the signal that matches the specified signal name */
       if( ((sigl = sig_link_find( name, curr_instance->funit->sig_head )) != NULL) ||

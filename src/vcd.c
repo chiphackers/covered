@@ -173,9 +173,6 @@ static void vcd_parse_def_var(
 
     }
 
-    /* For now we will let any type and size slide */
-    db_assign_symbol( ref, id_code, msb, lsb );
-    
   } else {
 
     print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
@@ -183,6 +180,9 @@ static void vcd_parse_def_var(
   
   }
 
+  /* For now we will let any type and size slide */
+  db_assign_symbol( ref, id_code, msb, lsb );
+    
   PROFILE_END;
 
 }
