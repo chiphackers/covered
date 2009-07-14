@@ -187,7 +187,8 @@ static int vcd_get_token1(
 
     for( vcd_yytext[len++] = ch; ; vcd_yytext[len++] = ch ) {
       if( len == vcd_yytext_size ) {
-        vcd_yytext = (char*)realloc_safe( vcd_yytext, vcd_yytext_size, (vcd_yytext_size = ((vcd_yytext_size * 2) + 1)) );
+        vcd_yytext      = (char*)realloc_safe_nolimit( vcd_yytext, vcd_yytext_size, ((vcd_yytext_size * 2) + 1) );
+        vcd_yytext_size = ((vcd_yytext_size * 2) + 1);
       }
       ch = vcd_getch( vcd );
       if( ch <= ' ' ) {

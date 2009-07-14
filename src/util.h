@@ -30,25 +30,28 @@
 
 
 /*! Overload for the malloc_safe function which includes profiling information */
-#define malloc_safe(x)         malloc_safe1(x,__FILE__,__LINE__,profile_index)
+#define malloc_safe(x)              malloc_safe1(x,__FILE__,__LINE__,profile_index)
 
 /*! Overload for the malloc_safe_nolimit function which includes profiling information */
-#define malloc_safe_nolimit(x) malloc_safe_nolimit1(x,__FILE__,__LINE__,profile_index)
+#define malloc_safe_nolimit(x)      malloc_safe_nolimit1(x,__FILE__,__LINE__,profile_index)
 
 /*! Overload for the strdup_safe function which includes profiling information */
-#define strdup_safe(x)         strdup_safe1(x,__FILE__,__LINE__,profile_index)
+#define strdup_safe(x)              strdup_safe1(x,__FILE__,__LINE__,profile_index)
 
 /*! Overload for the realloc_safe1 function which includes profiling information */
-#define realloc_safe(x,y,z)    realloc_safe1(x,(((x)!=NULL)?y:0),z,__FILE__,__LINE__,profile_index)
+#define realloc_safe(x,y,z)         realloc_safe1(x,(((x)!=NULL)?y:0),z,__FILE__,__LINE__,profile_index)
+
+/*! Overload for the realloc_safe_nolimit1 function which includes profiling information */
+#define realloc_safe_nolimit(x,y,z) realloc_safe_nolimit1(x,(((x)!=NULL)?y:0),z,__FILE__,__LINE__,profile_index)
 
 /*! Overload for the calloc_safe1 function which includes profiling information */
-#define calloc_safe(x,y)       calloc_safe1(x,y,__FILE__,__LINE__,profile_index)
+#define calloc_safe(x,y)            calloc_safe1(x,y,__FILE__,__LINE__,profile_index)
 
 /*! Overload for the free-safe function which includes profiling information */
 #ifdef TESTMODE
-#define free_safe(x,y)         free_safe2(x,(((x)!=NULL)?y:0),__FILE__, __LINE__,profile_index)
+#define free_safe(x,y)              free_safe2(x,(((x)!=NULL)?y:0),__FILE__, __LINE__,profile_index)
 #else
-#define free_safe(x,y)         free_safe1(x,profile_index)
+#define free_safe(x,y)              free_safe1(x,profile_index)
 #endif
 
 
@@ -235,6 +238,16 @@ void free_safe2(
 
 /*! \brief Safely reallocates heap memory by performing a call to realloc */
 /*@only@*/ void* realloc_safe1(
+  /*@null@*/ void*        ptr,
+             size_t       old_size,
+             size_t       size,
+             const char*  file,
+             int          line,
+             unsigned int profile_index
+);
+
+/*! \brief Safely reallocates heap memory by performing a call to realloc */
+/*@only@*/ void* realloc_safe_nolimit1(
   /*@null@*/ void*        ptr,
              size_t       old_size,
              size_t       size,

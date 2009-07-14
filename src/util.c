@@ -1385,6 +1385,48 @@ void* realloc_safe1(
 }
 
 /*!
+ Calls the realloc() function for the specified memory and size, making sure that the memory
+ size doesn't exceed a threshold value and that the requested memory was allocated.
+*/
+void* realloc_safe_nolimit1(
+  /*@null@*/   void*        ptr,           /*!< Pointer to old memory to copy */
+               size_t       old_size,      /*!< Size of originally allocated memory (in bytes) */
+               size_t       size,          /*!< Size of new allocated memory (in bytes) */
+  /*@unused@*/ const char*  file,          /*!< Name of file that called this function */
+  /*@unused@*/ int          line,          /*!< Line number of file that called this function */
+  /*@unused@*/ unsigned int profile_index  /*!< Profile index of function that called this function */
+) {
+
+  void* newptr;
+
+  curr_malloc_size -= old_size;
+  curr_malloc_size += size;
+  if( curr_malloc_size > largest_malloc_size ) {
+    largest_malloc_size = curr_malloc_size;
+  }
+
+  if( size == 0 ) {
+    if( ptr != NULL ) {
+      free( ptr );
+    }
+    newptr = NULL;
+  } else {
+    newptr = realloc( ptr, size );
+    assert( newptr != NULL );
+  }
+#ifdef TESTMODE
+  if( test_mode ) {
+    printf( "REALLOC (%p -> %p) %d (%d) bytes (file: %s, line: %d) - %lld\n", ptr, newptr, size, old_size, file, line, curr_malloc_size );
+  }
+#endif
+
+  MALLOC_CALL(profile_index);
+
+  return( newptr );
+
+}
+
+/*!
  \return Returns a pointer to the newly allocated/initialized data
 
  Verifies that the specified size is not oversized, callocs the memory, verifies that the memory pointer returned is not NULL,
