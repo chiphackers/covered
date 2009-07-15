@@ -50,6 +50,7 @@ extern bool           debug_mode;
 extern func_unit*     curr_funit;
 extern int            generate_mode;
 extern isuppl         info_suppl;
+extern unsigned int   inline_comb_depth;
 
 
 struct fname_link_s;

@@ -80,6 +80,8 @@ Usage:  covered score (-h | -t <top-level_module_name> [-vcd <dumpfile> | -lxt <
       -inline                             Outputs Verilog with inlined code coverage
       -inline-metrics [l][t][m][c][f][a]  Specifies which coverage metrics should be inlined for scoring purposes.  Only these metrics
                                             will be available for reporting and ranking.  Default is ltmcfa.
+      -inline-comb-depth <value>          Specifies the depth in an expression tree that combinational logic coverage will be scored for.
+                                            By default, combinational logic depth is infinite.
 
    Race Condition Options:
 
