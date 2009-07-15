@@ -195,7 +195,7 @@ endif
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
 else
 ifdef INLINE
-	@./convert_cfg "inline -inline-comb-depth 1" 0 $(VERILATOR_SET) $(DIAG).cfg
+	@./convert_cfg inline 0 $(VERILATOR_SET) $(DIAG).cfg
 	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
 	@./convert_cfg $(CFG_CMD) 1 $(VERILATOR_SET) $(DIAG).cfg
 ifeq ($(dir $(TOP)),covered/verilog/)

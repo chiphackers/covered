@@ -1,4 +1,4 @@
-5 15 fd81 3 main
+5 16 fd81 3 ffffffff main
 8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (dut_and) 2 -i (main.dut) 2 -vcd (merge7.6b.vcd) 2 -o (merge7.6b.cdd) 2 -v (merge7.6b.v) 2 -y (lib) 2 -D (DUMP) 2 -v (merge7.6a.v)
 12 /home/bryce3/trevorw/devel/covered/diags/verilog/merge7.6b.cdd main
 12 /home/bryce3/trevorw/devel/covered/diags/verilog/merge7.6a.cdd main
@@ -14,4 +14,4 @@
 1 b 2 4 8 1 0 0 0 1 17 1 1 0 0 0 0
 1 c 3 5 8 1 0 0 0 1 17 1 1 0 0 0 0
 4 5 f 5 5 5
-13 T 1 1246487275 I dont like the variable a
+13 T 1 1247696268 I dont like the variable a

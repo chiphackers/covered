@@ -596,6 +596,9 @@ static bool score_parse_args(
       if( check_option_value( argc, argv, i ) ) {
         i++;
         inline_comb_depth = atoi( argv[i] );
+        if( inline_comb_depth <= 0 ) {
+          inline_comb_depth = 0xffffffff;
+        }
       } else {
         Throw 0;
       }

@@ -159,7 +159,7 @@ void info_db_write(
   info_set_vector_elem_size();
 
   /*@-formattype -duplicatequals@*/
-  fprintf( file, "%d %x %x %llu %u %s\n",
+  fprintf( file, "%d %x %x %llu %x %s\n",
            DB_TYPE_INFO,
            CDD_VERSION,
            info_suppl.all,
@@ -245,7 +245,7 @@ void info_db_read(
     }
 
     /*@-formattype -duplicatequals@*/
-    if( sscanf( *line, "%x %llu %u %s%n", &(info_suppl.all), &num_timesteps, &inline_comb_depth, tmp, &chars_read ) == 4 ) {
+    if( sscanf( *line, "%x %llu %x %s%n", &(info_suppl.all), &num_timesteps, &inline_comb_depth, tmp, &chars_read ) == 4 ) {
     /*@=formattype =duplicatequals@*/
 
       *line = *line + chars_read;
