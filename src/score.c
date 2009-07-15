@@ -136,6 +136,11 @@ str_link* race_ignore_mod_head = NULL;
 */
 str_link* race_ignore_mod_tail = NULL;
 
+/*!
+ Specifies the depth that inlined combinational logic will be generated for.
+*/
+int inline_comb_depth = -1;
+
 
 extern int64     largest_malloc_size;
 extern int64     curr_malloc_size;
@@ -243,6 +248,8 @@ static void score_usage() {
   printf( "      -inline                             Outputs Verilog with inlined code coverage\n" );
   printf( "      -inline-metrics [l][t][m][c][f][a]  Specifies which coverage metrics should be inlined for scoring purposes.  Only these metrics\n" );
   printf( "                                            will be available for reporting and ranking.  Default is ltmcfa.\n" );
+  printf( "      -inline-comb-depth <value>          Specifies the depth in an expression tree that combinational logic coverage will be scored for.\n" );
+  printf( "                                            By default, combinational logic depth is infinite.\n" );
   printf( "\n" );
   printf( "   Race Condition Options:\n" );
   printf( "\n" );
@@ -584,10 +591,18 @@ static bool score_parse_args(
       score_usage();
       help_found = TRUE;
 
+    } else if( strncmp( "-inline-comb-depth", argv[i], 18 ) == 0 ) {
+
+      if( check_option_value( argc, argv, i ) ) {
+        i++;
+        inline_comb_depth = atoi( argv[i] );
+      } else {
+        Throw 0;
+      }
+
     } else if( strncmp( "-inline-metrics", argv[i], 15 ) == 0 ) {
 
       if( check_option_value( argc, argv, i ) ) {
-        bool tmp;
         i++;
         score_parse_metrics( argv[i] );
       } else {
