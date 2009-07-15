@@ -134,11 +134,6 @@ str_link* comb_head = NULL;
 str_link* comb_tail = NULL;
 
 /*!
- Maximum expression depth to generate coverage code for (from command-line).
-*/
-unsigned int generator_max_exp_depth = 0xffffffff;
-
-/*!
  Specifies that we should handle the current functional unit as an assertion.
 */
 bool handle_funit_as_assert = FALSE;
@@ -590,7 +585,7 @@ static bool generator_expr_cov_needed(
   unsigned int depth  /*!< Expression depth of the given expression */
 ) { PROFILE(GENERATOR_EXPR_COV_NEEDED);
 
-  bool retval = (depth < generator_max_exp_depth) && (EXPR_IS_MEASURABLE( exp ) == 1) && !expression_is_static_only( exp );
+  bool retval = (depth < inline_comb_depth) && (EXPR_IS_MEASURABLE( exp ) == 1) && !expression_is_static_only( exp );
 
   PROFILE_END;
 
@@ -2373,11 +2368,14 @@ static void generator_insert_comb_cov_helper2(
 
   if( exp != NULL ) {
 
-    int child_depth = (depth + ((exp->op != parent_op) ? 1 : 0));
+    int left_child_depth  = (depth + (((exp->left  != NULL) && (exp->op != exp->left->op))  ? 1 : 0));
+    int right_child_depth = (depth + (((exp->right != NULL) && (exp->op != exp->right->op)) ? 1 : 0));
+
+    printf( "In generator_insert_comb_cov_helper2, exp: %s, depth: %d, left_child_depth: %d, right_child_depth: %d, inline_comb_depth: %u\n", expression_string( exp ), depth, left_child_depth, right_child_depth, inline_comb_depth );
 
     /* Generate children expression trees (depth first search) */
-    generator_insert_comb_cov_helper2( exp->left,  funit, exp->op, child_depth, net, FALSE, reg_needed );
-    generator_insert_comb_cov_helper2( exp->right, funit, exp->op, child_depth, net, FALSE, reg_needed );
+    generator_insert_comb_cov_helper2( exp->left,  funit, exp->op, left_child_depth,  net, FALSE, reg_needed );
+    generator_insert_comb_cov_helper2( exp->right, funit, exp->op, right_child_depth, net, FALSE, reg_needed );
 
     /* Generate event combinational logic type */
     if( EXPR_IS_EVENT( exp ) ) {
@@ -2390,10 +2388,10 @@ static void generator_insert_comb_cov_helper2(
 
     /* Otherwise, generate binary combinational logic type */
     } else if( EXPR_IS_COMB( exp ) ) {
-      if( (exp->left != NULL) && (!generator_expr_cov_needed( exp->left, child_depth ) || generator_expr_needs_to_be_substituted( exp->left )) ) {
+      if( (exp->left != NULL) && (!generator_expr_cov_needed( exp->left, left_child_depth ) || generator_expr_needs_to_be_substituted( exp->left )) ) {
         generator_insert_subexp( exp->left,  funit, net, reg_needed );
       }
-      if( (exp->right != NULL) && (!generator_expr_cov_needed( exp->right, child_depth ) || generator_expr_needs_to_be_substituted( exp->right )) ) {
+      if( (exp->right != NULL) && (!generator_expr_cov_needed( exp->right, right_child_depth ) || generator_expr_needs_to_be_substituted( exp->right )) ) {
         generator_insert_subexp( exp->right, funit, net, reg_needed );
       }
       if( !root && (generator_expr_cov_needed( exp, depth ) || generator_expr_needs_to_be_substituted( exp )) ) {

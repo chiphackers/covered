@@ -46,6 +46,7 @@ extern char*        merged_file;
 extern uint64       num_timesteps;
 extern char*        cdd_message;
 extern char         user_msg[USER_MSG_LENGTH];
+extern unsigned int inline_comb_depth;
 
 
 /*!
@@ -158,11 +159,12 @@ void info_db_write(
   info_set_vector_elem_size();
 
   /*@-formattype -duplicatequals@*/
-  fprintf( file, "%d %x %x %llu %s\n",
+  fprintf( file, "%d %x %x %llu %u %s\n",
            DB_TYPE_INFO,
            CDD_VERSION,
            info_suppl.all,
            num_timesteps,
+           inline_comb_depth,
            db_list[curr_db]->leading_hierarchies[0] );
   /*@=formattype =duplicatequals@*/
 
@@ -243,7 +245,7 @@ void info_db_read(
     }
 
     /*@-formattype -duplicatequals@*/
-    if( sscanf( *line, "%x %llu %s%n", &(info_suppl.all), &num_timesteps, tmp, &chars_read ) == 3 ) {
+    if( sscanf( *line, "%x %llu %u %s%n", &(info_suppl.all), &num_timesteps, &inline_comb_depth, tmp, &chars_read ) == 4 ) {
     /*@=formattype =duplicatequals@*/
 
       *line = *line + chars_read;

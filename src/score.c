@@ -142,20 +142,19 @@ str_link* race_ignore_mod_tail = NULL;
 unsigned int inline_comb_depth = 0xffffffff;
 
 
-extern int64        largest_malloc_size;
-extern int64        curr_malloc_size;
-extern str_link*    use_files_head;
-extern char         user_msg[USER_MSG_LENGTH];
-extern char*        directive_filename;
-extern bool         debug_mode;
-extern isuppl       info_suppl;
-extern char*        pragma_coverage_name;
-extern char*        pragma_racecheck_name;
-extern char         score_run_path[4096];
-extern bool         warnings_suppressed;
-extern str_link*    sim_plusargs_head;
-extern str_link*    sim_plusargs_tail;
-extern unsigned int generator_max_exp_depth;
+extern int64     largest_malloc_size;
+extern int64     curr_malloc_size;
+extern str_link* use_files_head;
+extern char      user_msg[USER_MSG_LENGTH];
+extern char*     directive_filename;
+extern bool      debug_mode;
+extern isuppl    info_suppl;
+extern char*     pragma_coverage_name;
+extern char*     pragma_racecheck_name;
+extern char      score_run_path[4096];
+extern bool      warnings_suppressed;
+extern str_link* sim_plusargs_head;
+extern str_link* sim_plusargs_tail;
 
 
 extern void process_timescale( const char* txt, bool report );
@@ -596,7 +595,7 @@ static bool score_parse_args(
 
       if( check_option_value( argc, argv, i ) ) {
         i++;
-        generator_max_exp_depth = atoi( argv[i] );
+        inline_comb_depth = atoi( argv[i] );
       } else {
         Throw 0;
       }

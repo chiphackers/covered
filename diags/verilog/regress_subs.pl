@@ -473,7 +473,7 @@ sub convertCfg {
     $line =~ s/\-vcd/\-$type/g;
     if( ($type eq "vpi") || ($type eq "inline -vpi") ) {
       $line =~ s/[0-9a-zA-Z_\.]+\.(vcd|dump)/covered_vpi.v/g;
-    } elsif( $type eq "inline" ) {
+    } elsif( ($type eq "inline") || ($type eq "inline -inline-comb-depth 1") ) {
       $line =~ s/[0-9a-zA-Z_\.]+\.(vcd|dump)//g;
     }
     print OFILE $line;
