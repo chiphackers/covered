@@ -1,4 +1,4 @@
-5 15 fd01 6 main
+5 16 fd01 6 ffffffff main
 8 /Users/trevorw/projects/covered/diags/verilog 2 -t (depth1) 2 -i (main.inst0) 2 -vcd (instance1.1.vcd) 2 -o (instance1.1.cdd) 2 -v (instance1.1.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 15 main 0

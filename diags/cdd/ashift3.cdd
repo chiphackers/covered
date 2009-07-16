@@ -1,19 +1,19 @@
-5 15 fd81 4 *
-8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (ashift3.vcd) 2 -o (ashift3.cdd) 2 -v (ashift3.v) 2 -D (DUMP)
+5 16 fd01 4 ffffffff *
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (ashift3.vcd) 2 -o (ashift3.cdd) 2 -v (ashift3.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 3 0 main "main" 0 ashift3.v 10 29 1 
 2 1 14 14 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 u$0
-1 a 1 12 1070012 1 0 95 0 96 49 0 ffffffffffffffff 0 f000000000000000 0 0 0 ffffffff 0 7fffffff 0 0
+1 a 1 12 1070012 1 0 95 0 96 49 0 ffffffff 0 0 0 0 0 ffffffff 0 f0000000 0 0 0 ffffffff 0 7fffffff 0 0
 4 1 1 0 0 1
 3 1 main.u$0 "main.u$0" 0 ashift3.v 14 18 1 
-2 2 15 15 50022 1 0 61008 0 0 96 16 0 0 80000000 0
+2 2 15 15 50022 1 0 61008 0 0 96 16 0 0 0 0 80000000 0
 2 3 15 15 10001 0 1 1410 0 0 96 33 a
 2 4 15 15 10022 1 37 1a 2 3
 2 5 16 16 20002 1 0 1008 0 0 32 48 5 0
 2 6 16 16 10002 2 2c 900a 5 0 32 18 0 ffffffff 0 0 0 0
 2 7 17 17 b000c 1 0 1008 0 0 32 48 23 0
 2 8 17 17 50005 1 1 1018 0 0 96 33 a
-2 9 17 17 5000c 1 44 1018 7 8 96 18 0 ffffffffffffffff fffffffffffffff f000000000000000 0 0 0 ffffffff 0 ffffffff 0 0
+2 9 17 17 5000c 1 44 1018 7 8 96 18 0 ffffffff ffffffff 0 0 0 0 ffffffff fffffff f0000000 0 0 0 ffffffff 0 ffffffff 0 0
 2 10 17 17 10001 0 1 1410 0 0 96 33 a
 2 11 17 17 1000c 1 37 3a 9 10
 4 4 11 6 6 4

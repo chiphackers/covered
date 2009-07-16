@@ -1,5 +1,5 @@
-5 15 fd81 8 *
-8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (generate19.1.vcd) 2 -o (generate19.1.cdd) 2 -v (generate19.1.v) 2 -D (DUMP)
+5 16 fd01 8 ffffffff *
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (generate19.1.vcd) 2 -o (generate19.1.cdd) 2 -v (generate19.1.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 3 0 main "main" 0 generate19.1.v 9 41 1 
 2 1 36 36 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 u$1

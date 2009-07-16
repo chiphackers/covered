@@ -1,5 +1,5 @@
-5 15 fd81 5 main
-8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (foo) 2 -i (main.a) 2 -vcd (real3.8.vcd) 2 -o (real3.8.cdd) 2 -v (real3.8.v) 2 -P (main.a.A=-3.4) 2 -D (DUMP)
+5 16 fd01 5 ffffffff main
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (foo) 2 -i (main.a) 2 -vcd (real3.8.vcd) 2 -o (real3.8.cdd) 2 -v (real3.8.v) 2 -P (main.a.A=-3.4) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 15 main 0
 3 0 foo "main.a" 0 real3.8.v 24 41 1 

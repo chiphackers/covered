@@ -1,7 +1,7 @@
-5 15 fd81 3 main
-8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (foo) 2 -i (main.m1) 2 -vcd (merge8.vcd) 2 -o (merge8a.cdd) 2 -v (merge8a.v) 2 -D (DUMP) 2 -v (merge8b.v)
-12 /home/bryce3/trevorw/devel/covered/diags/verilog/merge8a.cdd main
-12 /home/bryce3/trevorw/devel/covered/diags/verilog/merge8b.cdd main
+5 16 fd01 3 ffffffff main
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (foo) 2 -i (main.m1) 2 -vcd (merge8.vcd) 2 -o (merge8a.cdd) 2 -v (merge8a.v) 2 -D (DUMP) 2 -v (merge8b.v)
+12 /Users/trevorw/projects/covered/diags/verilog/merge8a.cdd main
+12 /Users/trevorw/projects/covered/diags/verilog/merge8b.cdd main
 3 0 $root "$root" 0 NA 0 0 1 
 15 main 0
 3 0 foo "main.m1" 0 merge8a.v 30 37 1 
