@@ -2380,7 +2380,13 @@ struct expression_s {
   unsigned int line;               /*!< Specified line in file that this expression is found on */
   unsigned int ppline;             /*!< Specifies the line number in the preprocessed file */
   uint32       exec_num;           /*!< Specifies the number of times this expression was executed during simulation */
-  uint32       col;                /*!< Specifies column location of beginning/ending of expression */
+  union {
+    uint32 all;
+    struct {
+      uint32 last  : 16;           /*!< Column position of the end of the expression */
+      uint32 first : 16;           /*!< Column position of the beginning of the expression */
+    } part;
+  } col;                           /*!< Specifies column location of beginning/ending of expression */
   vsignal*     sig;                /*!< Pointer to signal.  If NULL then no signal is attached */
   char*        name;               /*!< Name of signal/function/task for output purposes (only valid if we are binding
                                         to a signal, task or function */

@@ -618,7 +618,8 @@ void generator_clear_comb_cntd(
     generator_clear_comb_cntd( exp->right );
 
     /* Only clear the comb_cntd bit if it does not require substitution */
-    if( !generator_expr_needs_to_be_substituted( exp ) ) {
+    if( exp->suppl.part.eval_t ) {
+      exp->suppl.part.eval_t    = 0;
       exp->suppl.part.comb_cntd = 0;
     }
 
@@ -1280,7 +1281,7 @@ statement* generator_find_statement(
 //  printf( "In generator_find_statement, line: %d, column: %d\n", first_line, first_column );
 
   if( (curr_stmt == NULL) || (curr_stmt->exp->ppline < first_line) ||
-      ((curr_stmt->exp->ppline == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) < first_column)) ) {
+      ((curr_stmt->exp->ppline == first_line) && (curr_stmt->exp->col.part.first < first_column)) ) {
 
 //    func_iter_display( &fiter );
 
@@ -1288,7 +1289,7 @@ statement* generator_find_statement(
     while( ((curr_stmt = func_iter_get_next_statement( &fiter )) != NULL) &&
 //           printf( "  statement %s %d %u\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff), curr_stmt->exp->ppline ) &&
            ((curr_stmt->exp->ppline < first_line) || 
-            ((curr_stmt->exp->ppline == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) < first_column)) ||
+            ((curr_stmt->exp->ppline == first_line) && (curr_stmt->exp->col.part.first < first_column)) ||
             (curr_stmt->exp->op == EXP_OP_FORK)) );
 
     /* If we couldn't find it in the func_iter, look for it in the generate list */
@@ -1301,8 +1302,8 @@ statement* generator_find_statement(
 
   }
 
-//  if( (curr_stmt != NULL) && (curr_stmt->exp->ppline == first_line) && (((curr_stmt->exp->col >> 16) & 0xffff) == first_column) && (curr_stmt->exp->op != EXP_OP_FORK) ) {
-//    printf( "  FOUND (%s %x)!\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff) );
+//  if( (curr_stmt != NULL) && (curr_stmt->exp->ppline == first_line) && (curr_stmt->exp->col.part.first == first_column) && (curr_stmt->exp->op != EXP_OP_FORK) ) {
+//    printf( "  FOUND (%s %x)!\n", expression_string( curr_stmt->exp ), curr_stmt->exp->col.part.first );
 //  } else {
 //    printf( "  NOT FOUND!\n" );
 //  }
@@ -1310,7 +1311,7 @@ statement* generator_find_statement(
   PROFILE_END;
 
   return( ((curr_stmt == NULL) || (curr_stmt->exp->ppline != first_line) ||
-          (((curr_stmt->exp->col >> 16) & 0xffff) != first_column) || (curr_stmt->exp->op == EXP_OP_FORK)) ? NULL : curr_stmt );
+          (curr_stmt->exp->col.part.first != first_column) || (curr_stmt->exp->op == EXP_OP_FORK)) ? NULL : curr_stmt );
 
 }
 
@@ -1328,7 +1329,7 @@ static statement* generator_find_case_statement(
 //  printf( "In generator_find_case_statement, line: %d, column: %d\n", first_line, first_column );
 
   if( (curr_stmt == NULL) || (curr_stmt->exp->left == NULL) || (curr_stmt->exp->left->ppline < first_line) ||
-      ((curr_stmt->exp->left->ppline == first_line) && (((curr_stmt->exp->left->col >> 16) & 0xffff) < first_column)) ) {
+      ((curr_stmt->exp->left->ppline == first_line) && (curr_stmt->exp->left->col.part.first < first_column)) ) {
 
 //    if( curr_stmt->exp->left != NULL ) {
 //      printf( "curr_stmt->exp->left: %s\n", expression_string( curr_stmt->exp->left ) );
@@ -1338,15 +1339,15 @@ static statement* generator_find_case_statement(
 
     /* Attempt to find the expression with the given position */
     while( ((curr_stmt = func_iter_get_next_statement( &fiter )) != NULL) && 
-//           printf( "  statement %s %d %u\n", expression_string( curr_stmt->exp ), ((curr_stmt->exp->col >> 16) & 0xffff), curr_stmt->exp->ppline ) &&
+//           printf( "  statement %s %d %u\n", expression_string( curr_stmt->exp ), curr_stmt->exp->col.part.first, curr_stmt->exp->ppline ) &&
            ((curr_stmt->exp->left == NULL) ||
             (curr_stmt->exp->left->ppline < first_line) ||
-            ((curr_stmt->exp->left->ppline == first_line) && (((curr_stmt->exp->left->col >> 16) & 0xffff) < first_column))) );
+            ((curr_stmt->exp->left->ppline == first_line) && (curr_stmt->exp->left->col.part.first < first_column))) );
 
   }
 
-//  if( (curr_stmt != NULL) && (curr_stmt->exp->left != NULL) && (curr_stmt->exp->left->ppline == first_line) && (((curr_stmt->exp->left->col >> 16) & 0xffff) == first_column) ) {
-//    printf( "  FOUND (%s %x)!\n", expression_string( curr_stmt->exp->left ), ((curr_stmt->exp->left->col >> 16) & 0xffff) );
+//  if( (curr_stmt != NULL) && (curr_stmt->exp->left != NULL) && (curr_stmt->exp->left->ppline == first_line) && (curr_stmt->exp->left->col.part.first == first_column) ) {
+//    printf( "  FOUND (%s %x)!\n", expression_string( curr_stmt->exp->left ), curr_stmt->exp->left->col.part.first );
 //  } else {
 //    printf( "  NOT FOUND!\n" );
 //  }
@@ -1354,7 +1355,7 @@ static statement* generator_find_case_statement(
   PROFILE_END;
 
   return( ((curr_stmt == NULL) || (curr_stmt->exp->left == NULL) || (curr_stmt->exp->left->ppline != first_line) ||
-          (((curr_stmt->exp->left->col >> 16) & 0xffff) != first_column)) ? NULL : curr_stmt );
+          (curr_stmt->exp->left->col.part.first != first_column)) ? NULL : curr_stmt );
 
 }
 
@@ -2275,10 +2276,11 @@ static void generator_create_exp(
  Generates temporary subexpression for the given expression (not recursively)
 */
 static void generator_insert_subexp(
-  expression* exp,        /*!< Pointer to the current expression */
-  func_unit*  funit,      /*!< Pointer to the functional unit that exp exists in */
-  bool        net,        /*!< If TRUE, specifies that we are generating for a net */
-  bool        reg_needed  /*!< If TRUE, instantiates needed registers */
+  expression* exp,         /*!< Pointer to the current expression */
+  func_unit*  funit,       /*!< Pointer to the functional unit that exp exists in */
+  bool        net,         /*!< If TRUE, specifies that we are generating for a net */
+  bool        reg_needed,  /*!< If TRUE, instantiates needed registers */
+  bool        replace_exp  /*!< If TRUE, replaces the actual logic with this subexpression */
 ) { PROFILE(GENERATOR_INSERT_SUBEXP);
 
   char*        lhs_str  = NULL;
@@ -2328,9 +2330,11 @@ static void generator_insert_subexp(
   }
 
   /* If this expression needs to be substituted, do it with the lhs_str value */
-  if( generator_expr_needs_to_be_substituted( exp ) ) {
+  if( replace_exp && !net ) {
     expression* last_exp = expression_get_last_line_expr( exp );
-    generator_replace( lhs_str, exp->ppline, ((exp->col >> 16) & 0xffff), last_exp->ppline, (last_exp->col & 0xffff) );
+    generator_replace( lhs_str, exp->ppline, exp->col.part.first, last_exp->ppline, exp->col.part.last );
+    printf( "REPLACING... lhs_str (%s), exp: %s", lhs_str, expression_string( exp ) );
+    printf( ", last_exp: %s, first: %u, last: %u\n", expression_string( last_exp ), exp->col.part.first, last_exp->col.part.last );
   }
 
   /* Create expression string */
@@ -2364,19 +2368,23 @@ static void generator_insert_comb_cov_helper2(
   bool         force_subexp,  /*!< Set to TRUE if a expression subexpression is required needed (originally set to FALSE) */
   bool         net,           /*!< If set to TRUE generate code for a net */
   bool         root,          /*!< Set to TRUE only for the "root" expression in the tree */
-  bool         reg_needed     /*!< If set to TRUE, registers are created as needed; otherwise, they are omitted */
+  bool         reg_needed,    /*!< If set to TRUE, registers are created as needed; otherwise, they are omitted */
+  bool         replace_exp    /*!< If set to TRUE, will allow this expression to replace the original */
 ) { PROFILE(GENERATOR_INSERT_COMB_COV_HELPER2);
 
   if( exp != NULL ) {
 
-    int  depth           = parent_depth + ((exp->op != parent_op) ? 1 : 0);
-    bool expr_cov_needed = generator_expr_cov_needed( exp, depth );
+    int  depth             = parent_depth + ((exp->op != parent_op) ? 1 : 0);
+    bool expr_cov_needed   = generator_expr_cov_needed( exp, depth );
+    bool child_replace_exp = replace_exp &&
+                             !(force_subexp ||
+                               generator_expr_needs_to_be_substituted( exp ) ||
+                               (EXPR_IS_COMB( exp ) && !root && expr_cov_needed) ||
+                               (!EXPR_IS_EVENT( exp ) && !EXPR_IS_COMB( exp ) && expr_cov_needed));
 
     /* Generate children expression trees (depth first search) */
-    generator_insert_comb_cov_helper2( exp->left,  funit, exp->op, depth, (expr_cov_needed & EXPR_IS_COMB( exp )), net, FALSE, reg_needed );
-    generator_insert_comb_cov_helper2( exp->right, funit, exp->op, depth, (expr_cov_needed & EXPR_IS_COMB( exp )), net, FALSE, reg_needed );
-
-    // printf( "In generator_insert_comb_cov_helper2, exp: %s, parent_depth: %d, depth: %d, inline_comb_depth: %u\n", expression_string( exp ), parent_depth, depth, inline_comb_depth );
+    generator_insert_comb_cov_helper2( exp->left,  funit, exp->op, depth, (expr_cov_needed & EXPR_IS_COMB( exp )), net, FALSE, reg_needed, child_replace_exp );
+    generator_insert_comb_cov_helper2( exp->right, funit, exp->op, depth, (expr_cov_needed & EXPR_IS_COMB( exp )), net, FALSE, reg_needed, child_replace_exp );
 
     /* Generate event combinational logic type */
     if( EXPR_IS_EVENT( exp ) ) {
@@ -2384,13 +2392,13 @@ static void generator_insert_comb_cov_helper2(
         generator_insert_event_comb_cov( exp, funit, reg_needed );
       }
       if( force_subexp || generator_expr_needs_to_be_substituted( exp ) ) {
-        generator_insert_subexp( exp, funit, net, reg_needed );
+        generator_insert_subexp( exp, funit, net, reg_needed, replace_exp );
       }
 
     /* Otherwise, generate binary combinational logic type */
     } else if( EXPR_IS_COMB( exp ) ) {
       if( !root && (expr_cov_needed || force_subexp || generator_expr_needs_to_be_substituted( exp )) ) {
-        generator_insert_subexp( exp, funit, net, reg_needed );
+        generator_insert_subexp( exp, funit, net, reg_needed, replace_exp );
       }
       if( expr_cov_needed ) {
         generator_insert_comb_comb_cov( exp, funit, net, reg_needed );
@@ -2399,7 +2407,7 @@ static void generator_insert_comb_cov_helper2(
     /* Generate unary combinational logic type */
     } else {
       if( expr_cov_needed || force_subexp || generator_expr_needs_to_be_substituted( exp ) ) {
-        generator_insert_subexp( exp, funit, net, reg_needed );
+        generator_insert_subexp( exp, funit, net, reg_needed, replace_exp );
       }
       if( expr_cov_needed ) {
         generator_insert_unary_comb_cov( exp, funit, net, reg_needed );
@@ -2426,7 +2434,7 @@ static void generator_insert_comb_cov_helper(
 ) { PROFILE(GENERATOR_INSERT_COMB_COV_HELPER);
 
   /* Generate the code */
-  generator_insert_comb_cov_helper2( exp, funit, parent_op, 0, FALSE, net, root, reg_needed );
+  generator_insert_comb_cov_helper2( exp, funit, parent_op, 0, FALSE, net, root, reg_needed, TRUE );
 
   /* Output the generated code */
   if( comb_head != NULL ) {

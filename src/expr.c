@@ -648,7 +648,8 @@ expression* expression_create(
   new_expr->ulid                = -1;
   new_expr->line                = line;
   new_expr->ppline              = ppline;
-  new_expr->col                 = ((first & 0xffff) << 16) | (last & 0xffff);
+  new_expr->col.part.first      = first;
+  new_expr->col.part.last       = last;
   new_expr->exec_num            = 0;
   new_expr->sig                 = NULL;
   new_expr->parent              = (expr_stmt*)malloc_safe( sizeof( expr_stmt ) );
@@ -1751,7 +1752,7 @@ void expression_db_merge(
 
     *line = *line + chars_read;
 
-    if( (base->op != op) || (base->line != linenum) || (base->ppline != ppline) || (base->col != column) ) {
+    if( (base->op != op) || (base->line != linenum) || (base->ppline != ppline) || (base->col.all != column) ) {
 
       print_output( "Attempting to merge databases derived from different designs.  Unable to merge",
                     FATAL, __FILE__, __LINE__ );
@@ -1797,9 +1798,9 @@ void expression_merge(
 ) { PROFILE(EXPRESSION_MERGE);
 
   assert( base != NULL );
-  assert( base->op   == other->op );
-  assert( base->line == other->line );
-  assert( base->col  == other->col );
+  assert( base->op      == other->op );
+  assert( base->line    == other->line );
+  assert( base->col.all == other->col.all );
 
   /* Merge expression supplemental fields */
   base->suppl.all = (base->suppl.all & ESUPPL_MERGE_MASK) | (other->suppl.all & ESUPPL_MERGE_MASK);

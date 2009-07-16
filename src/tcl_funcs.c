@@ -988,8 +988,8 @@ int tcl_func_collect_uncovered_combs(
     /* Load uncovered statements into Tcl */
     for( i=0; i<exp_cnt; i++ ) {
       last = expression_get_last_line_expr( exprs[i] );
-      snprintf( str, 85, "%d.%d %d.%d %d %d", (exprs[i]->line - (startline - 1)), (((exprs[i]->col >> 16) & 0xffff) + 14),
-                                              (last->line     - (startline - 1)), ((last->col             & 0xffff) + 15),
+      snprintf( str, 85, "%d.%d %d.%d %d %d", (exprs[i]->line - (startline - 1)), (exprs[i]->col.part.first + 14),
+                                              (last->line     - (startline - 1)), (last->col.part.last + 15),
                                               exprs[i]->id, excludes[i] );
       Tcl_AppendElement( tcl, str );
     }
@@ -1046,8 +1046,8 @@ int tcl_func_collect_covered_combs(
     /* Load covered statements into Tcl */
     for( i=0; i<exp_cnt; i++ ) {
       last = expression_get_last_line_expr( exprs[i] );
-      snprintf( str, 85, "%d.%d %d.%d %d %d", (exprs[i]->line - (startline - 1)), (((exprs[i]->col >> 16) & 0xffff) + 14),
-                                              (last->line     - (startline - 1)), ((last->col             & 0xffff) + 15),
+      snprintf( str, 85, "%d.%d %d.%d %d %d", (exprs[i]->line - (startline - 1)), (exprs[i]->col.part.first + 14),
+                                              (last->line     - (startline - 1)), (last->col.part.last + 15),
                                               exprs[i]->id, excludes[i] );
       Tcl_AppendElement( tcl, str );
     }

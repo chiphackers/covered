@@ -115,7 +115,7 @@ void stmt_link_add(
     while( (curr != NULL) &&
            ((curr->stmt->exp->ppline < stmt->exp->ppline) ||
             ((curr->stmt->exp->ppline == stmt->exp->ppline) &&
-             (((curr->stmt->exp->col >> 16) & 0xffff) < (stmt->exp->col >> 16 & 0xffff)))) ) {
+             (curr->stmt->exp->col.part.first < stmt->exp->col.part.first))) ) {
       last = curr;
       curr = curr->next;
     }
@@ -359,7 +359,7 @@ void stmt_link_display(
     assert( curr->stmt != NULL );
     assert( curr->stmt->exp != NULL );
     printf( "  %s, ppline: %u, col: %u, added: %u, stmt_head: %u\n",
-            expression_string( curr->stmt->exp ), curr->stmt->exp->ppline, ((curr->stmt->exp->col >> 16) & 0xffff),
+            expression_string( curr->stmt->exp ), curr->stmt->exp->ppline, curr->stmt->exp->col.part.first,
             curr->stmt->suppl.part.added, curr->stmt->suppl.part.head );
     curr = curr->next;
   }

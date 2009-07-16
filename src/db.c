@@ -2348,11 +2348,11 @@ statement* db_parallelize_statement(
 #endif
 
     /* Create FORK expression */
-    exp = db_create_expression( NULL, NULL, EXP_OP_FORK, FALSE, stmt->exp->line, stmt->exp->ppline, ((stmt->exp->col & 0xffff0000) >> 16), (stmt->exp->col & 0xffff), NULL, FALSE );
+    exp = db_create_expression( NULL, NULL, EXP_OP_FORK, FALSE, stmt->exp->line, stmt->exp->ppline, stmt->exp->col.part.first, stmt->exp->col.part.last, NULL, FALSE );
 
     /* Create unnamed scope */
     scope = db_create_unnamed_scope();
-    if( db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, scope, curr_funit->orig_fname, curr_funit->incl_fname, stmt->exp->line, ((stmt->exp->col >> 16) & 0xffff) ) ) {
+    if( db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, scope, curr_funit->orig_fname, curr_funit->incl_fname, stmt->exp->line, stmt->exp->col.part.first ) ) {
 
       /* Create a thread block for this statement block */
       stmt->suppl.part.head      = 1;
@@ -3105,7 +3105,7 @@ void db_assign_symbol(
             expl = inst->funit->exp_head;
             while( (expl != NULL) &&
                    ((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) &&
-                   ((expl->exp->ppline != fline) || (expl->exp->col != col) || (last_exp->ppline != lline) || !ESUPPL_IS_ROOT( expl->exp->suppl ) || (expl->exp->op == EXP_OP_FORK)) ) {
+                   ((expl->exp->ppline != fline) || (expl->exp->col.all != col) || (last_exp->ppline != lline) || !ESUPPL_IS_ROOT( expl->exp->suppl ) || (expl->exp->op == EXP_OP_FORK)) ) {
               expl = expl->next;
             }
   
@@ -3150,7 +3150,7 @@ void db_assign_symbol(
 
           if( sscanf( (name + (index + 1)), "%u_%u_%x$%[^$]$%s", &fline, &lline, &col, mname, scope ) == 5 ) {
 
-            char        tscope[4096];
+            char tscope[4096];
 
             /* Get the relative instance that contains the expression */
             rv   = snprintf( tscope, 4096, "%s.%s", curr_inst->name, scope );
@@ -3169,7 +3169,7 @@ void db_assign_symbol(
             /* Search the matching expression */
             expl = inst->funit->exp_head;
             while( (expl != NULL) && 
-                   ((expl->exp->ppline != fline) || (expl->exp->col != col) ||
+                   ((expl->exp->ppline != fline) || (expl->exp->col.all != col) ||
                     (((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) && (last_exp->ppline != lline))) ) {
               expl = expl->next;
             }
@@ -3215,7 +3215,7 @@ void db_assign_symbol(
             expl = inst->funit->exp_head;
             while( (expl != NULL) &&
                    ((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) &&
-                   ((expl->exp->ppline != fline) || (expl->exp->col != col) || (last_exp->ppline != lline) || (expl->exp->op == EXP_OP_FORK)) ) {
+                   ((expl->exp->ppline != fline) || (expl->exp->col.all != col) || (last_exp->ppline != lline) || (expl->exp->op == EXP_OP_FORK)) ) {
               expl = expl->next;
             }
 

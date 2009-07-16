@@ -7,10 +7,16 @@
 
 module main;
 
-parameter FOO = 128'hffffffff_ffffffff_ffffffff_ffffffff;
+reg a, b, c, d;
 
 initial begin
-	$display( "foo: %h", FOO );
+	a = 1'b0;
+	b = 1'b0;
+	c = 1'b0;
+	d = 1'b0;
+	#5;
+	if(a&&(b||c))
+	  d = 1'b1;
 end
 
 initial begin

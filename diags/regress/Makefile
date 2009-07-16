@@ -436,8 +436,6 @@ EXCLUDE      +=
 else
 ifeq ($(MAKECMDGOALS),verilator)
 DIAGS1       := $(filter $(basename $(basename $(notdir $(wildcard ../verilog/*.verilator.v)))), $(DIAGS1))
-$(warning Available diagnostics: $(basename $(basename $(notdir $(wildcard ../verilog/*.verilator.v)))))
-$(warning Diagnostics to test: $(DIAGS1))
 EXCLUDE      += case4.1
 else
 EXCLUDE      += afunc1            afunc2            always_comb1      always_comb2      always_ff1 \
@@ -544,7 +542,8 @@ DIAGS         += assign4          example2          example2.1        example2.2
 
 EXCLUDE       += bug2794588       case5             casex2            casez3            example1 \
                  exclude5.1       exclude5.3        mem5              param10.1         param10.5 \
-                 sbit_sel3.2      signed4.1         static_func4
+                 sbit_sel3.2      signed4.1         static_func4 \
+concat5   exclude7.1   exclude8.1   long_exp2   null_stmt1.7   case4.1   sbit_sel2.1
 ifdef VPI
 EXCLUDE       += fork2            generate4         generate4.1       generate8
 endif
@@ -565,7 +564,7 @@ ifeq ($(MAKECMDGOALS),veriwell)
 EXCLUDE       += always15         compx1            compx1.1          compx1.2          compx1.3 \
                  concat7          define4           elsif1.4          elsif2.1          func1             func2 \
                  ifelse1          include1          include1.1        include2          include4 \
-                 include5         lshift3.3         real3.3           real3.7           real5 \
+                 include5         lshift3.3         negate1           real3.3           real3.7           real5 \
                  real5.10         real7             real8             rshift1.2         rshift2.2 \
                  timescale1.16    timescale1.17     timescale1.18     timescale2.5      timescale2.8
 else

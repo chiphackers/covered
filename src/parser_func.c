@@ -681,8 +681,8 @@ expression* parser_create_op_and_assign_w_dim_exp(
 
   if( (ignore_mode == 0) && (dim_exp != NULL) ) {
     db_bind_expr_tree( dim_exp, name );
-    dim_exp->line = first_line;
-    dim_exp->col  = ((first_column & 0xffff) << 16) | (dim_exp->col & 0xffff);
+    dim_exp->line           = first_line;
+    dim_exp->col.part.first = first_column;
     Try {
       retval = db_create_expression( NULL, dim_exp, op, lhs_mode, first_line, ppline, first_column, (last_column - 1), NULL, FALSE );
     } Catch_anonymous {

@@ -846,7 +846,7 @@ statement* statement_find_statement_by_position(
 
   if( curr != NULL ) {
 
-    if( (curr->exp->line == first_line) && (((curr->exp->col >> 16) & 0xffff) == first_column) ) {
+    if( (curr->exp->line == first_line) && (curr->exp->col.part.first == first_column) ) {
 
       found = curr;
 

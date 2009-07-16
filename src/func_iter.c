@@ -94,7 +94,7 @@ static void func_iter_sort(
     while( (i < (fi->sl_num - 1)) &&
            ((tmp->stmt->exp->ppline > fi->sls[i+1]->stmt->exp->ppline) ||
             ((tmp->stmt->exp->ppline == fi->sls[i+1]->stmt->exp->ppline) &&
-             ((tmp->stmt->exp->col & 0xffff) > (fi->sls[i+1]->stmt->exp->col & 0xffff)))) ) {
+             (tmp->stmt->exp->col.part.last > fi->sls[i+1]->stmt->exp->col.part.last))) ) {
       fi->sls[i] = fi->sls[i+1];
       i++;
     }

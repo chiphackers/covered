@@ -459,7 +459,7 @@ bool bind_signal(
                        obf_funit( funit_exp->name ), obf_file( funit_exp->orig_fname ), exp_line );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, WARNING_WRAP, __FILE__, __LINE__ );
-        found_sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, exp->line, ((exp->col >> 16) & 0xffff) );
+        found_sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, exp->line, exp->col.part.first );
         found_sig->pdim_num   = 1;
         found_sig->dim        = (dim_range*)malloc_safe( sizeof( dim_range ) * 1 );
         found_sig->dim[0].msb = 0;

@@ -1350,6 +1350,7 @@ expression
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
           $2->value->suppl.part.is_signed = 1;
+          $2->col.part.first = @1.first_column;
           $$ = $2;
         } else {
           $$ = NULL;
@@ -1361,7 +1362,7 @@ expression
   | '-' expr_primary %prec UNARY_PREC
     {
       if( parse_mode ) {
-        if( ($$ = parser_create_unary_exp( $2, EXP_OP_NEGATE, @1.first_line, @1.ppline, @1.first_column, @1.last_column )) != NULL ) {
+        if( ($$ = parser_create_unary_exp( $2, EXP_OP_NEGATE, @1.first_line, @1.ppline, @1.first_column, @2.last_column )) != NULL ) {
           $$->value->suppl.part.is_signed = 1;
         }
       } else {
@@ -1371,7 +1372,7 @@ expression
   | unary_op expr_primary %prec UNARY_PREC
     {
       if( parse_mode ) {
-        $$ = parser_create_unary_exp( $2, $1, @1.first_line, @1.ppline, @1.first_column, @1.last_column );
+        $$ = parser_create_unary_exp( $2, $1, @1.first_line, @1.ppline, @1.first_column, @2.last_column );
       } else {
         $$ = NULL;
       }
@@ -1831,8 +1832,8 @@ expr_primary
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL) && ($2 != NULL) ) {
           db_bind_expr_tree( $2, $1 );
-          $2->line = @1.first_line;
-          $2->col  = ((@1.first_column & 0xffff) << 16) | ($2->col & 0xffff);
+          $2->line           = @1.first_line;
+          $2->col.part.first = @1.first_column;
           $$ = $2;
         } else {
           expression_dealloc( $2, FALSE );
@@ -1926,6 +1927,8 @@ expr_primary
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($2 != NULL) ) {
           $2->suppl.part.parenthesis = 1;
+          $2->col.part.first = @1.first_column;
+          $2->col.part.last  = @3.first_column;
           $$ = $2;
         } else {
           $$ = NULL;
@@ -6242,8 +6245,8 @@ lpvalue
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
           db_bind_expr_tree( $3, $1 );
-          $3->line = @1.first_line;
-          $3->col  = ((@1.first_column & 0xffff) << 16) | ($3->col & 0xffff);
+          $3->line           = @1.first_line;
+          $3->col.part.first = @1.first_column;
           FREE_TEXT( $1 );
           $$ = $3;
         } else {
@@ -6302,8 +6305,8 @@ lavalue
       if( parse_mode ) {
         if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
           db_bind_expr_tree( $3, $1 );
-          $3->line = @1.first_line;
-          $3->col  = ((@1.first_column & 0xffff) << 16) | ($3->col & 0xffff);
+          $3->line           = @1.first_line;
+          $3->col.part.first = @1.first_column;
           FREE_TEXT( $1 );
           $$ = $3;
         } else {
