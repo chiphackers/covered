@@ -396,6 +396,7 @@ void generator_replace(
         strcpy( work_buffer, tmp_buffer );
         replace_first.word_ptr = work_buffer;
         replace_first_col      = last_column + 1;
+        work_tail              = first_list_ptr;
 
       /* Otherwise, remove the last line portion from the list */
       } else {
@@ -2333,8 +2334,6 @@ static void generator_insert_subexp(
   if( replace_exp && !net ) {
     expression* last_exp = expression_get_last_line_expr( exp );
     generator_replace( lhs_str, exp->ppline, exp->col.part.first, last_exp->ppline, exp->col.part.last );
-    printf( "REPLACING... lhs_str (%s), exp: %s", lhs_str, expression_string( exp ) );
-    printf( ", last_exp: %s, first: %u, last: %u\n", expression_string( last_exp ), exp->col.part.first, last_exp->col.part.last );
   }
 
   /* Create expression string */
