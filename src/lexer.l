@@ -203,7 +203,9 @@ WSPACE [ \t\b\f]+
   if( parse_mode ) {
     check_for_pragma( yytext );
   } else {
+    yytext[strlen( yytext ) - 1] = '\0';
     generator_add_orig_to_work_code( yytext, yylloc.ppline, yylloc.first_column );
+    generator_add_orig_to_work_code( "\n", yylloc.ppline, yylloc.first_column );
   }
   BEGIN( state_enter );
   yylloc.first_line++;

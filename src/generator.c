@@ -2433,7 +2433,7 @@ static void generator_insert_comb_cov_helper(
 ) { PROFILE(GENERATOR_INSERT_COMB_COV_HELPER);
 
   /* Generate the code */
-  generator_insert_comb_cov_helper2( exp, funit, parent_op, 0, FALSE, net, root, reg_needed, TRUE );
+  generator_insert_comb_cov_helper2( exp, funit, parent_op, 0, FALSE, net, root, reg_needed, ((ESUPPL_IS_ROOT( exp->suppl ) == 1) || !EXPR_IS_EVENT( exp->parent->expr )) );
 
   /* Output the generated code */
   if( comb_head != NULL ) {
