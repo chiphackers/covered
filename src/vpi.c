@@ -90,6 +90,7 @@ bool      report_exclusions = FALSE;
 str_link* race_ignore_mod_head = NULL;
 str_link* race_ignore_mod_tail = NULL;
 bool      instance_specified   = FALSE;
+unsigned int inline_comb_depth = 0xffffffff;
 
 extern bool        debug_mode;
 extern symtable*   vcd_symtab;
