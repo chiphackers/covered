@@ -621,16 +621,17 @@ static void expression_create_value(
  usage.  Right and left expressions need to be created before this function is called.
 */
 expression* expression_create(
-  expression*  right,   /*!< Pointer to expression on right */
-  expression*  left,    /*!< Pointer to expression on left */
-  exp_op_type  op,      /*!< Operation to perform for this expression */
-  bool         lhs,     /*!< Specifies this expression is a left-hand-side assignment expression */
-  int          id,      /*!< ID for this expression as determined by the parent */
-  unsigned int line,    /*!< Line number this expression is on */
-  unsigned int ppline,  /*!< Line number from preprocessed file */
-  unsigned int first,   /*!< First column index of expression */
-  unsigned int last,    /*!< Last column index of expression */
-  bool         data     /*!< Specifies if we should create a uint8 array for the vector value */
+  expression*  right,    /*!< Pointer to expression on right */
+  expression*  left,     /*!< Pointer to expression on left */
+  exp_op_type  op,       /*!< Operation to perform for this expression */
+  bool         lhs,      /*!< Specifies this expression is a left-hand-side assignment expression */
+  int          id,       /*!< ID for this expression as determined by the parent */
+  unsigned int line,     /*!< Line number this expression is on */
+  unsigned int ppfline,  /*!< First line number from preprocessed file */
+  unsigned int pplline,  /*!< Last line number from preprocessed file */
+  unsigned int first,    /*!< First column index of expression */
+  unsigned int last,     /*!< Last column index of expression */
+  bool         data      /*!< Specifies if we should create a uint8 array for the vector value */
 ) { PROFILE(EXPRESSION_CREATE);
 
   expression* new_expr;    /* Pointer to newly created expression */
@@ -647,7 +648,8 @@ expression* expression_create(
   new_expr->id                  = id;
   new_expr->ulid                = -1;
   new_expr->line                = line;
-  new_expr->ppline              = ppline;
+  new_expr->ppfline             = ppfline;
+  new_expr->pplline             = pplline;
   new_expr->col.part.first      = first;
   new_expr->col.part.last       = last;
   new_expr->exec_num            = 0;
@@ -1508,11 +1510,12 @@ void expression_db_write(
 
   assert( expr != NULL );
 
-  fprintf( file, "%d %d %u %u %x %x %x %x %d %d",
+  fprintf( file, "%d %d %u %u %u %x %x %x %x %d %d",
     DB_TYPE_EXPRESSION,
     expression_get_id( expr, ids_issued ),
     expr->line,
-    expr->ppline,
+    expr->ppfline,
+    expr->pplline,
     expr->col.all,
     ((((expr->op == EXP_OP_DASSIGN) || (expr->op == EXP_OP_ASSIGN)) && (expr->exec_num == 0)) ? (uint32)1 : expr->exec_num),
     expr->op,
@@ -1583,7 +1586,8 @@ void expression_db_read(
 
   expression*  expr;        /* Pointer to newly created expression */
   unsigned int linenum;     /* Holder of current line for this expression */
-  unsigned int ppline;
+  unsigned int ppfline;
+  unsigned int pplline;
   unsigned int column;      /* Holder of column alignment information */
   uint32       exec_num;    /* Holder of expression's execution number */
   uint32       op;          /* Holder of expression operation */
@@ -1596,7 +1600,7 @@ void expression_db_read(
   vector*      vec;         /* Holders vector value of this expression */
   exp_link*    expl;        /* Pointer to found expression in functional unit */
 
-  if( sscanf( *line, "%d %u %u %x %x %x %x %d %d%n", &curr_expr_id, &linenum, &ppline, &column, &exec_num, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 9 ) {
+  if( sscanf( *line, "%d %u %u %u %x %x %x %x %d %d%n", &curr_expr_id, &linenum, &ppfline, &pplline, &column, &exec_num, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 10 ) {
 
     *line = *line + chars_read;
 
@@ -1635,7 +1639,7 @@ void expression_db_read(
       }
 
       /* Create new expression */
-      expr = expression_create( right, left, op, ESUPPL_IS_LHS( suppl ), curr_expr_id, linenum, ppline,
+      expr = expression_create( right, left, op, ESUPPL_IS_LHS( suppl ), curr_expr_id, linenum, ppfline, pplline,
                                 ((column >> 16) & 0xffff), (column & 0xffff), ESUPPL_OWNS_VEC( suppl ) );
 
       expr->suppl.all = suppl.all;
@@ -1737,7 +1741,8 @@ void expression_db_merge(
 
   int          id;             /* Expression ID field */
   unsigned int linenum;        /* Expression line number */
-  unsigned int ppline;
+  unsigned int ppfline;
+  unsigned int pplline;
   unsigned int column;         /* Column information */
   uint32       exec_num;       /* Execution number */
   uint32       op;             /* Expression operation */
@@ -1748,11 +1753,11 @@ void expression_db_merge(
 
   assert( base != NULL );
 
-  if( sscanf( *line, "%d %u %u %x %x %x %x %d %d%n", &id, &linenum, &ppline, &column, &exec_num, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 9 ) {
+  if( sscanf( *line, "%d %u %u %u %x %x %x %x %d %d%n", &id, &linenum, &ppfline, &pplline, &column, &exec_num, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 10 ) {
 
     *line = *line + chars_read;
 
-    if( (base->op != op) || (base->line != linenum) || (base->ppline != ppline) || (base->col.all != column) ) {
+    if( (base->op != op) || (base->line != linenum) || (base->ppfline != ppfline) || (base->pplline != pplline) || (base->col.all != column) ) {
 
       print_output( "Attempting to merge databases derived from different designs.  Unable to merge",
                     FATAL, __FILE__, __LINE__ );
@@ -1842,7 +1847,7 @@ char* expression_string(
   expression* exp  /*!< Pointer to expression to display */
 ) { PROFILE(EXPRESSION_STRING);
 
-  unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "%d (%s line %u, %u)", exp->id, expression_string_op( exp->op ), exp->line, exp->ppline );
+  unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "%d (%s line %u, %u)", exp->id, expression_string_op( exp->op ), exp->line, exp->ppfline );
   assert( rv < USER_MSG_LENGTH );
 
   PROFILE_END;
@@ -1876,12 +1881,13 @@ void expression_display(
     right_id = expr->right->id;
   }
 
-  printf( "  Expression (%p) =>  id: %d, op: %s, line: %u, ppline: %u, col: %x, suppl: %x, exec_num: %u, left: %d, right: %d, ", 
+  printf( "  Expression (%p) =>  id: %d, op: %s, line: %u, ppfline: %u, pplline: %u, col: %x, suppl: %x, exec_num: %u, left: %d, right: %d, ", 
           expr,
           expr->id,
           expression_string_op( expr->op ),
           expr->line,
-          expr->ppline,
+          expr->ppfline,
+          expr->pplline,
 	  expr->col.all,
           expr->suppl.all,
           expr->exec_num,

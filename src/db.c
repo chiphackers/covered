@@ -1970,7 +1970,8 @@ expression* db_create_expression(
   exp_op_type  op,        /*!< Operation to perform on expression */
   bool         lhs,       /*!< Specifies this expression is a left-hand-side assignment expression */
   unsigned int line,      /*!< Line number of current expression */
-  unsigned int ppline,    /*!< Line number from preprocessed file */
+  unsigned int ppfline,   /*!< First line number from preprocessed file */
+  unsigned int pplline,   /*!< Last line number from preprocessed file */
   int          first,     /*!< Column index of first character in this expression */
   int          last,      /*!< Column index of last character in this expression */
   char*        sig_name,  /*!< Name of signal that expression is attached to (if valid) */
@@ -2030,7 +2031,7 @@ expression* db_create_expression(
   }
 
   /* Create expression with next expression ID */
-  expr = expression_create( right, left, op, lhs, curr_expr_id, line, ppline, first, last, FALSE );
+  expr = expression_create( right, left, op, lhs, curr_expr_id, line, ppfline, pplline, first, last, FALSE );
   curr_expr_id++;
 
   /* If current functional unit is nested in a function, set the IN_FUNC supplemental field bit */
@@ -2154,7 +2155,8 @@ void db_bind_expr_tree(
 expression* db_create_expr_from_static(
   static_expr* se,         /*!< Pointer to static expression structure */
   unsigned int line,       /*!< Line number that static expression was found on */
-  unsigned int ppline,     /*!< Line number from preprocessed file that static expression was found on */
+  unsigned int ppfline,    /*!< First line number from preprocessed file that static expression was found on */
+  unsigned int pplline,    /*!< Last line number from preprocessed file that static expression was found on */
   int          first_col,  /*!< Column that the static expression starts on */
   int          last_col    /*!< Column that the static expression ends on */
 ) { PROFILE(DB_CREATE_EXPR_FROM_STATIC);
@@ -2176,7 +2178,7 @@ expression* db_create_expr_from_static(
     if( se->exp == NULL ) {
 
       /* This static expression is a static value so create a static expression from its value */
-      expr = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, line, ppline, first_col, last_col, NULL, TRUE );
+      expr = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, line, ppfline, pplline, first_col, last_col, NULL, TRUE );
 
       /* Create the new vector */
       vec = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
@@ -2291,12 +2293,12 @@ expression* db_create_sensitivity_list(
       while( strl != NULL ) {
 
         /* Create AEDGE and EOR for subsequent signals */
-        exps = db_create_expression( NULL, NULL, EXP_OP_SIG,   FALSE, 0, 0, 0, 0, strl->str, FALSE );
-        expa = db_create_expression( exps, NULL, EXP_OP_AEDGE, FALSE, 0, 0, 0, 0, NULL, FALSE );
+        exps = db_create_expression( NULL, NULL, EXP_OP_SIG,   FALSE, 0, 0, 0, 0, 0, strl->str, FALSE );
+        expa = db_create_expression( exps, NULL, EXP_OP_AEDGE, FALSE, 0, 0, 0, 0, 0, NULL, FALSE );
 
         /* If we have a child expression already, create the EOR expression to connect them */
         if( expc != NULL ) {
-          expe = db_create_expression( expa, expc, EXP_OP_EOR, FALSE, 0, 0, 0, 0, NULL, FALSE );
+          expe = db_create_expression( expa, expc, EXP_OP_EOR, FALSE, 0, 0, 0, 0, 0, NULL, FALSE );
           expc = expe;
         } else {
           expc = expa;
@@ -2348,7 +2350,7 @@ statement* db_parallelize_statement(
 #endif
 
     /* Create FORK expression */
-    exp = db_create_expression( NULL, NULL, EXP_OP_FORK, FALSE, stmt->exp->line, stmt->exp->ppline, stmt->exp->col.part.first, stmt->exp->col.part.last, NULL, FALSE );
+    exp = db_create_expression( NULL, NULL, EXP_OP_FORK, FALSE, stmt->exp->line, stmt->exp->ppfline, stmt->exp->pplline, stmt->exp->col.part.first, stmt->exp->col.part.last, NULL, FALSE );
 
     /* Create unnamed scope */
     scope = db_create_unnamed_scope();
@@ -3079,7 +3081,6 @@ void db_assign_symbol(
           unsigned int col;
           char         scope[4096];
           exp_link*    expl;
-          expression*  last_exp;
           funit_inst*  inst = curr_inst;
 
           /* Extract the line, first column and funit scope information from name */
@@ -3104,8 +3105,7 @@ void db_assign_symbol(
             /* Search the matching expression */
             expl = inst->funit->exp_head;
             while( (expl != NULL) &&
-                   ((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) &&
-                   ((expl->exp->ppline != fline) || (expl->exp->col.all != col) || (last_exp->ppline != lline) || !ESUPPL_IS_ROOT( expl->exp->suppl ) || (expl->exp->op == EXP_OP_FORK)) ) {
+                   ((expl->exp->ppfline != fline) || (expl->exp->col.all != col) || (exp->pplline != lline) || !ESUPPL_IS_ROOT( expl->exp->suppl ) || (expl->exp->op == EXP_OP_FORK)) ) {
               expl = expl->next;
             }
   
@@ -3145,7 +3145,6 @@ void db_assign_symbol(
           char         scope[4096];
           char         mname[4096];
           exp_link*    expl;
-          expression*  last_exp;
           funit_inst*  inst = curr_inst;
 
           if( sscanf( (name + (index + 1)), "%u_%u_%x$%[^$]$%s", &fline, &lline, &col, mname, scope ) == 5 ) {
@@ -3169,8 +3168,7 @@ void db_assign_symbol(
             /* Search the matching expression */
             expl = inst->funit->exp_head;
             while( (expl != NULL) && 
-                   ((expl->exp->ppline != fline) || (expl->exp->col.all != col) ||
-                    (((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) && (last_exp->ppline != lline))) ) {
+                   ((expl->exp->ppfline != fline) || (expl->exp->col.all != col) || (expl->exp->pplline != lline)) ) {
               expl = expl->next;
             }
 
@@ -3189,7 +3187,6 @@ void db_assign_symbol(
           unsigned int col;
           char         scope[4096];
           exp_link*    expl;
-          expression*  last_exp;
           funit_inst*  inst = curr_inst;
 
           /* Extract the line and column (and possibly instance) information */
@@ -3214,8 +3211,7 @@ void db_assign_symbol(
             /* Search the matching expression */
             expl = inst->funit->exp_head;
             while( (expl != NULL) &&
-                   ((last_exp = expression_get_last_line_expr( expl->exp )) != NULL) &&
-                   ((expl->exp->ppline != fline) || (expl->exp->col.all != col) || (last_exp->ppline != lline) || (expl->exp->op == EXP_OP_FORK)) ) {
+                   ((expl->exp->ppfline != fline) || (expl->exp->col.all != col) || (exp->pplline != lline) || (expl->exp->op == EXP_OP_FORK)) ) {
               expl = expl->next;
             }
 

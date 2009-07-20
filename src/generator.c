@@ -291,6 +291,8 @@ void generator_replace(
   unsigned int last_column    /*!< Column number of end of code to replace */
 ) { PROFILE(GENERATOR_REPLACE);
 
+  printf( "In generator_replace, str: %s, first_line: %u, first_column: %u, last_line: %u, last_column: %u\n", str, first_line, first_column, last_line, last_column );
+
   /* We can only perform the replacement if something has been previously marked for replacement */
   if( replace_first.word_ptr != NULL ) {
 
@@ -1624,9 +1626,9 @@ static void generator_insert_unary_comb_cov(
 
   /* Prepend the coverage assignment to the working buffer */
   if( exp->value->suppl.part.is_signed == 1 ) {
-    rv = snprintf( str, 4096, "%s%s = (%s != 0);", prefix, sig, sigr );
+    rv = snprintf( str, 4096, "%s%s = (%s != 0);\n", prefix, sig, sigr );
   } else {
-    rv = snprintf( str, 4096, "%s%s = (%s > 0);", prefix, sig, sigr );
+    rv = snprintf( str, 4096, "%s%s = (%s > 0);\n", prefix, sig, sigr );
   }
   assert( rv < 4096 );
   (void)str_link_add( strdup_safe( str ), &comb_head, &comb_tail );
@@ -1685,15 +1687,15 @@ static void generator_insert_comb_comb_cov(
   /* Prepend the coverage assignment to the working buffer */
   if( exp->left->value->suppl.part.is_signed == 1 ) {
     if( exp->right->value->suppl.part.is_signed == 1 ) {
-      rv = snprintf( str, 4096, "%s%s = {(%s != 0),(%s != 0)};", prefix, sig, sigl, sigr );
+      rv = snprintf( str, 4096, "%s%s = {(%s != 0),(%s != 0)};\n", prefix, sig, sigl, sigr );
     } else {
-      rv = snprintf( str, 4096, "%s%s = {(%s != 0),(%s > 0)};", prefix, sig, sigl, sigr );
+      rv = snprintf( str, 4096, "%s%s = {(%s != 0),(%s > 0)};\n", prefix, sig, sigl, sigr );
     }
   } else {
     if( exp->right->value->suppl.part.is_signed == 1 ) {
-      rv = snprintf( str, 4096, "%s%s = {(%s > 0),(%s != 0)};", prefix, sig, sigl, sigr );
+      rv = snprintf( str, 4096, "%s%s = {(%s > 0),(%s != 0)};\n", prefix, sig, sigl, sigr );
     } else {
-      rv = snprintf( str, 4096, "%s%s = {(%s > 0),(%s > 0)};", prefix, sig, sigl, sigr );
+      rv = snprintf( str, 4096, "%s%s = {(%s > 0),(%s > 0)};\n", prefix, sig, sigl, sigr );
     }
   }
   assert( rv < 4096 );
@@ -1728,6 +1730,29 @@ static char* generator_mbit_gen_value(
   PROFILE_END;
 
   return( value );
+
+}
+
+/*!
+ \return Returns TRUE if the specified expression is on the RHS of an assignment operation; otherwise,
+         returns FALSE.
+*/
+static bool generator_is_rhs_of_assignment(
+  expression* exp  /*!< Pointer to expression to check */
+) { PROFILE(GENERATOR_IS_RHS_OF_ASSIGNMENT);
+
+  bool retval = (ESUPPL_IS_ROOT( exp->suppl ) == 0) &&
+                (ESUPPL_IS_LHS( exp->suppl )  == 0) &&
+                ((exp->parent->expr->op == EXP_OP_ASSIGN)  ||
+                 (exp->parent->expr->op == EXP_OP_DASSIGN) ||
+                 (exp->parent->expr->op == EXP_OP_BASSIGN) ||
+                 (exp->parent->expr->op == EXP_OP_NASSIGN) ||
+                 (exp->parent->expr->op == EXP_OP_RASSIGN) ||
+                 (exp->parent->expr->op == EXP_OP_DLY_OP));
+
+  PROFILE_END;
+
+  return( retval );
 
 }
 
@@ -1792,7 +1817,11 @@ static char* generator_gen_size(
       case EXP_OP_RSHIFT  :
       case EXP_OP_ALSHIFT :
       case EXP_OP_ARSHIFT :
-        size = generator_gen_size( exp->left, funit, number );
+        if( generator_is_rhs_of_assignment( exp ) ) {
+          size = generator_gen_size( exp->parent->expr->left, funit, number );
+        } else {
+          size = generator_gen_size( exp->left, funit, number );
+        }
         break;
       case EXP_OP_EXPAND :
         lexp = generator_mbit_gen_value( exp->left, funit, &lnumber );
@@ -1975,85 +2004,74 @@ static char* generator_create_lhs(
   unsigned int rv;
   char*        name = generator_create_expr_name( exp );
   char*        size;
-  char*        code;
   int          number;
+  unsigned int slen;
+  char*        str  = NULL;
 
   /* Generate MSB string */
   size = generator_gen_size( exp, funit, &number );
 
   if( net ) {
 
-    unsigned int slen;
-
     /* Create sized wire string */
     if( size == NULL ) {
       char tmp[50];
       rv = snprintf( tmp, 50, "%d", (number - 1) );
       assert( rv < 50 );
-      slen = 6 + strlen( tmp ) + 4 + strlen( name ) + 1;
-      code = (char*)malloc_safe( slen );
-      rv   = snprintf( code, slen, "wire [%s:0] %s", tmp, name );
+      slen = 6 + strlen( tmp ) + 4 + strlen( name ) + 3;
+      str  = (char*)malloc_safe( slen );
+      rv   = snprintf( str, slen, "wire [%s:0] %s;\n", tmp, name );
     } else {
-      slen = 7 + ((size != NULL) ? strlen( size ) : 1) + 7 + strlen( name ) + 1;
-      code = (char*)malloc_safe_nolimit( slen );
-      rv   = snprintf( code, slen, "wire [(%s)-1:0] %s", ((size != NULL) ? size : "1"), name );
+      slen = 7 + ((size != NULL) ? strlen( size ) : 1) + 7 + strlen( name ) + 3;
+      str  = (char*)malloc_safe_nolimit( slen );
+      rv   = snprintf( str, slen, "wire [(%s)-1:0] %s;\n", ((size != NULL) ? size : "1"), name );
     }
 
-    assert( rv < slen );
+  /* Create sized register string */
+  } else if( reg_needed ) {
 
-  } else {
-
-    /* Create sized register string */
-    if( reg_needed ) {  // && (exp->suppl.part.eval_t == 0) ) {
-
-      unsigned int slen;
-      char*        str;
-      
-      if( size == NULL ) {
-        char tmp[50];
-        rv = snprintf( tmp, 50, "%d", (number - 1) );
-        assert( rv < 50 );
-        if( exp->value->suppl.part.is_signed == 1 ) {
-          slen = 30 + strlen( name ) + 20 + strlen( tmp ) + 4 + strlen( name ) + 10;
-          str  = (char*)malloc_safe( slen );
-          rv   = snprintf( str, slen, "`ifdef V1995_COV_MODE\ninteger %s;\n`else\nreg signed [%s:0] %s;\n`endif\n", name, tmp, name );
-        } else {
-          slen = 5 + strlen( tmp ) + 4 + strlen( name ) + 3;
-          str  = (char*)malloc_safe( slen );
-          rv   = snprintf( str, slen, "reg [%s:0] %s;\n", tmp, name );
-        }
+    if( size == NULL ) {
+      char tmp[50];
+      rv = snprintf( tmp, 50, "%d", (number - 1) );
+      assert( rv < 50 );
+      if( exp->value->suppl.part.is_signed == 1 ) {
+        slen = 30 + strlen( name ) + 20 + strlen( tmp ) + 4 + strlen( name ) + 10;
+        str  = (char*)malloc_safe( slen );
+        rv   = snprintf( str, slen, "`ifdef V1995_COV_MODE\ninteger %s;\n`else\nreg signed [%s:0] %s;\n`endif\n", name, tmp, name );
       } else {
-        if( exp->value->suppl.part.is_signed == 1 ) {
-          slen = 30 + strlen( name ) + 21 + ((size != NULL) ? strlen( size ) : 1) + 7 + strlen( name ) + 10;
-          str  = (char*)malloc_safe_nolimit( slen );
-          rv   = snprintf( str, slen, "`ifdef V1995_COV_MODE\ninteger %s;\n`else\nreg signed [(%s-1):0] %s;\n`endif\n", name, ((size != NULL) ? size : "1"), name );
-        } else {
-          slen = 6 + ((size != NULL) ? strlen( size ) : 1) + 7 + strlen( name ) + 3;
-          str  = (char*)malloc_safe_nolimit( slen );
-          rv   = snprintf( str, slen, "reg [(%s)-1:0] %s;\n", ((size != NULL) ? size : "1"), name );
-        }
+        slen = 5 + strlen( tmp ) + 4 + strlen( name ) + 3;
+        str  = (char*)malloc_safe( slen );
+        rv   = snprintf( str, slen, "reg [%s:0] %s;\n", tmp, name );
       }
-
-      assert( rv < slen );
-      generator_insert_reg( str );
-      free_safe( str, (strlen( str ) + 1) );
-
-      exp->suppl.part.eval_t = 1;
-
+    } else {
+      if( exp->value->suppl.part.is_signed == 1 ) {
+        slen = 30 + strlen( name ) + 21 + ((size != NULL) ? strlen( size ) : 1) + 7 + strlen( name ) + 10;
+        str  = (char*)malloc_safe_nolimit( slen );
+        rv   = snprintf( str, slen, "`ifdef V1995_COV_MODE\ninteger %s;\n`else\nreg signed [(%s-1):0] %s;\n`endif\n", name, ((size != NULL) ? size : "1"), name );
+      } else {
+        slen = 6 + ((size != NULL) ? strlen( size ) : 1) + 7 + strlen( name ) + 3;
+        str  = (char*)malloc_safe_nolimit( slen );
+        rv   = snprintf( str, slen, "reg [(%s)-1:0] %s;\n", ((size != NULL) ? size : "1"), name );
+      }
     }
 
-    /* Set the name to the value of code */
-    code = strdup_safe( name );
+    exp->suppl.part.eval_t = 1;
 
+  }
+  assert( rv < slen );
+
+  /* Add the wire/reg */
+  if( str != NULL ) {
+    generator_insert_reg( str );
   }
 
   /* Deallocate memory */
-  free_safe( name, (strlen( name ) + 1) );
+  free_safe( str,  (strlen( str )  + 1) );
   free_safe( size, (strlen( size ) + 1) );
 
   PROFILE_END;
 
-  return( code );
+  return( name );
 
 }
 
@@ -2331,15 +2349,21 @@ static void generator_insert_subexp(
   }
 
   /* If this expression needs to be substituted, do it with the lhs_str value */
-  if( replace_exp && !net ) {
+  if( replace_exp ) {
     expression* last_exp = expression_get_last_line_expr( exp );
     generator_replace( lhs_str, exp->ppline, exp->col.part.first, last_exp->ppline, exp->col.part.last );
   }
 
   /* Create expression string */
-  slen = strlen( lhs_str ) + 3 + strlen( val_str ) + 2;
-  str  = (char*)malloc_safe_nolimit( slen );
-  rv   = snprintf( str, slen, "%s = %s;", lhs_str, val_str );
+  if( net ) {
+    slen = 7 + strlen( lhs_str ) + 3 + strlen( val_str ) + 3;
+    str  = (char*)malloc_safe_nolimit( slen );
+    rv   = snprintf( str, slen, "assign %s = %s;\n", lhs_str, val_str );
+  } else {
+    slen = strlen( lhs_str ) + 3 + strlen( val_str ) + 3;
+    str  = (char*)malloc_safe_nolimit( slen );
+    rv   = snprintf( str, slen, "%s = %s;\n", lhs_str, val_str );
+  }
   assert( rv < slen );
 
   /* Prepend the string to the register/working code */

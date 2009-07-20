@@ -37,7 +37,8 @@ struct vlltype {
   unsigned int last_column;
   char*        orig_fname;
   char*        incl_fname;
-  unsigned int ppline;
+  unsigned int ppfline;
+  unsigned int pplline;
 };
 
 #define YYLTYPE struct vlltype

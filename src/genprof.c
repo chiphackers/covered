@@ -505,6 +505,7 @@ profiler profiles[NUM_PROFILES] = {
   {"generator_insert_unary_comb_cov", NULL, 0, 0, 0, TRUE},
   {"generator_insert_and_comb_cov", NULL, 0, 0, 0, TRUE},
   {"generator_mbit_gen_value", NULL, 0, 0, 0, TRUE},
+  {"generator_is_rhs_of_assignment", NULL, 0, 0, 0, TRUE},
   {"generator_gen_size", NULL, 0, 0, 0, TRUE},
   {"generator_create_lhs", NULL, 0, 0, 0, TRUE},
   {"generator_concat_code", NULL, 0, 0, 0, TRUE},

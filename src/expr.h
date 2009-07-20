@@ -48,7 +48,8 @@ expression* expression_create(
              bool         lhs,
              int          id,
              unsigned int line,
-             unsigned int ppline,
+             unsigned int ppfline,
+             unsigned int pplline,
              unsigned int first,
              unsigned int last,
              bool         data

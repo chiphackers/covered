@@ -244,7 +244,8 @@ expression* db_create_expression(
   exp_op_type  op,
   bool         lhs,
   unsigned int line,
-  unsigned int ppline,
+  unsigned int ppfline,
+  unsigned int pplline,
   int          first,
   int          last,
   char*        sig_name,
@@ -261,7 +262,8 @@ void db_bind_expr_tree(
 expression* db_create_expr_from_static(
   static_expr* se,
   unsigned int line,
-  unsigned int ppline,
+  unsigned int ppfline,
+  unsigned int pplline,
   int          first_col,
   int          last_col
 );

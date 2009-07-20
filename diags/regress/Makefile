@@ -44,7 +44,7 @@ DIAGS1        = add1              aedge1            aedge1.1          afunc1    
                 ashift2           ashift3           ashift4           assert1           assign1 \
                 assign2           assign2.1         assign2.2         assign2.3         assign2.4 \
                 assign2.5         assign2.6         assign2.7         assign2.8         assign2.9 \
-                assign3.2A        atask1            bassign1          bassign2          bassign3 \
+                assign3.2A        assign5           atask1            bassign1          bassign2          bassign3 \
                 block1            bit1              bug2794588        byte1             case1           case1.1 \
                 case1.2           case1.3           case2             case3             case3.1 \
                 case3.2           case3.3           case3.4           case4             case4.1 \

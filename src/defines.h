@@ -2377,8 +2377,9 @@ struct expression_s {
   esuppl       suppl;              /*!< Supplemental information for the expression */
   int          id;                 /*!< Specifies unique ID for this expression in the parent */
   int          ulid;               /*!< Specifies underline ID for reporting purposes */
-  unsigned int line;               /*!< Specified line in file that this expression is found on */
-  unsigned int ppline;             /*!< Specifies the line number in the preprocessed file */
+  unsigned int line;               /*!< Specified first line in file that this expression is found on */
+  unsigned int ppfline;            /*!< Specifies the first line number in the preprocessed file */
+  unsigned int pplline;            /*!< Specifies the last line number in the preprocessed file */
   uint32       exec_num;           /*!< Specifies the number of times this expression was executed during simulation */
   union {
     uint32 all;
@@ -2791,8 +2792,9 @@ struct exp_bind_s {
 struct case_stmt_s {
   expression*     expr;              /*!< Pointer to case equality expression */
   statement*      stmt;              /*!< Pointer to first statement in case statement */
-  unsigned int    line;              /*!< Line number of case statement */
-  unsigned int    ppline;            /*!< Line number from preprocessed file of case statement */
+  unsigned int    line;              /*!< First line number of case statement */
+  unsigned int    ppfline;           /*!< First line number from preprocessed file of case statement */
+  unsigned int    pplline;           /*!< Last line number from preprocessed file of case statement */
   int             fcol;              /*!< First column of case statement */
   int             lcol;              /*!< Last column of case statement */
   case_statement* prev;              /*!< Pointer to previous case statement in list */

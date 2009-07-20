@@ -81,31 +81,31 @@ static expression* fsm_arg_parse_state(
 
           if( sig->value->width == 0 ) {
 
-            expr = expression_create( NULL, NULL, EXP_OP_SIG, FALSE, curr_expr_id, 0, 0, 0, 0, FALSE );
+            expr = expression_create( NULL, NULL, EXP_OP_SIG, FALSE, curr_expr_id, 0, 0, 0, 0, 0, FALSE );
             curr_expr_id++;
             fsm_var_bind_add( sig->name, expr, funit_name );
 
           } else if( sig->value->width == 1 ) {
 
-            expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, 0, FALSE );
+            expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, 0, 0, FALSE );
             curr_expr_id++;
             vector_dealloc( expr->value );
             expr->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
             (void)vector_from_int( expr->value, sig->dim[0].lsb );
 
-            expr = expression_create( NULL, expr, EXP_OP_SBIT_SEL, FALSE, curr_expr_id, 0, 0, 0, 0, FALSE );
+            expr = expression_create( NULL, expr, EXP_OP_SBIT_SEL, FALSE, curr_expr_id, 0, 0, 0, 0, 0, FALSE );
             curr_expr_id++;
             fsm_var_bind_add( sig->name, expr, funit_name );
 
           } else {
 
-            expt = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, 0, FALSE );
+            expt = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, 0, 0, FALSE );
             curr_expr_id++;
             vector_dealloc( expt->value );
             expt->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
             (void)vector_from_int( expt->value, sig->dim[0].lsb );
 
-            expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, 0, FALSE );
+            expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, 0, 0, FALSE );
             curr_expr_id++;
             vector_dealloc( expr->value );
             expr->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
@@ -117,14 +117,14 @@ static expression* fsm_arg_parse_state(
               case SSUPPL_TYPE_IMPLICIT_NEG :  op = EXP_OP_MBIT_NEG;  break;
               default                       :  assert( 0 );           break;
             }
-            expr = expression_create( expt, expr, op, FALSE, curr_expr_id, 0, 0, 0, 0, FALSE );
+            expr = expression_create( expt, expr, op, FALSE, curr_expr_id, 0, 0, 0, 0, 0, FALSE );
             curr_expr_id++;
             fsm_var_bind_add( sig->name, expr, funit_name );
 
           }
 
           if( expl != NULL ) {
-            expl = expression_create( expr, expl, EXP_OP_LIST, FALSE, curr_expr_id, 0, 0, 0, 0, FALSE );
+            expl = expression_create( expr, expl, EXP_OP_LIST, FALSE, curr_expr_id, 0, 0, 0, 0, 0, FALSE );
             curr_expr_id++;
           } else {
             expl = expr;
@@ -146,7 +146,7 @@ static expression* fsm_arg_parse_state(
     }
     if( !error ) {
       (*arg)++;
-      expl = expression_create( expl, NULL, EXP_OP_CONCAT, FALSE, curr_expr_id, 0, 0, 0, 0, FALSE );
+      expl = expression_create( expl, NULL, EXP_OP_CONCAT, FALSE, curr_expr_id, 0, 0, 0, 0, 0, FALSE );
       curr_expr_id++;
     }
 
@@ -158,29 +158,29 @@ static expression* fsm_arg_parse_state(
 
         if( sig->value->width == 0 ) {
 
-          expl = expression_create( NULL, NULL, EXP_OP_SIG, FALSE, curr_expr_id, 0, 0, 0, 0, FALSE );
+          expl = expression_create( NULL, NULL, EXP_OP_SIG, FALSE, curr_expr_id, 0, 0, 0, 0, 0, FALSE );
           curr_expr_id++;
 
         } else if( sig->value->width == 1 ) {
 
-          expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, 0, FALSE );
+          expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, 0, 0, FALSE );
           curr_expr_id++;
           vector_dealloc( expr->value );
           expr->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
           (void)vector_from_int( expr->value, sig->dim[0].lsb );
 
-          expl = expression_create( NULL, expr, EXP_OP_SBIT_SEL, FALSE, curr_expr_id, 0, 0, 0, 0, FALSE );
+          expl = expression_create( NULL, expr, EXP_OP_SBIT_SEL, FALSE, curr_expr_id, 0, 0, 0, 0, 0, FALSE );
           curr_expr_id++;
 
         } else {
 
-          expt = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, 0, FALSE );
+          expt = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, 0, 0, FALSE );
           curr_expr_id++;
           vector_dealloc( expt->value );
           expt->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
           (void)vector_from_int( expt->value, sig->dim[0].lsb );
 
-          expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, 0, FALSE );
+          expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, 0, 0, FALSE );
           curr_expr_id++;
           vector_dealloc( expr->value );
           expr->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
@@ -193,7 +193,7 @@ static expression* fsm_arg_parse_state(
             default                       :  assert( 0 );           break;
           }
 
-          expl = expression_create( expt, expr, op, FALSE, curr_expr_id, 0, 0, 0, 0, FALSE );
+          expl = expression_create( expt, expr, op, FALSE, curr_expr_id, 0, 0, 0, 0, 0, FALSE );
           curr_expr_id++;
 
         }
@@ -344,7 +344,7 @@ static expression* fsm_arg_parse_value(
 
     /* This value represents a static value, handle as such */
     Try {
-      expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, 0, FALSE );
+      expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, 0, 0, FALSE );
     } Catch_anonymous {
       vector_dealloc( vec );
       Throw 0;
@@ -362,7 +362,7 @@ static expression* fsm_arg_parse_value(
       if( (mparm = mod_parm_find( str_val, funit->param_head )) != NULL ) {
 
         /* Generate left child expression */
-        left = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, 0, FALSE );
+        left = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, 0, 0, FALSE );
         curr_expr_id++;
         vector_dealloc( left->value );
         left->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
@@ -370,7 +370,7 @@ static expression* fsm_arg_parse_value(
 
         /* Generate right child expression */
         Try {
-          right = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, 0, FALSE );
+          right = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, 0, 0, FALSE );
         } Catch_anonymous {
           expression_dealloc( left, FALSE );
           Throw 0;
@@ -382,7 +382,7 @@ static expression* fsm_arg_parse_value(
 
         /* Generate multi-bit parameter expression */
         Try {
-          expr = expression_create( right, left, EXP_OP_PARAM_MBIT, FALSE, curr_expr_id, 0, 0, 0, 0, FALSE ); 
+          expr = expression_create( right, left, EXP_OP_PARAM_MBIT, FALSE, curr_expr_id, 0, 0, 0, 0, 0, FALSE ); 
         } Catch_anonymous {
           expression_dealloc( left, FALSE );
           expression_dealloc( right, FALSE );
@@ -397,7 +397,7 @@ static expression* fsm_arg_parse_value(
       if( (mparm = mod_parm_find( str_val, funit->param_head )) != NULL ) {
 
         /* Generate left child expression */
-        left = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, 0, FALSE );
+        left = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, 0, 0, FALSE );
         curr_expr_id++;
         vector_dealloc( left->value );
         left->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
@@ -405,7 +405,7 @@ static expression* fsm_arg_parse_value(
 
         /* Generate right child expression */
         Try {
-          right = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, 0, FALSE );
+          right = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, 0, 0, FALSE );
         } Catch_anonymous {
           expression_dealloc( left, FALSE );
           Throw 0;
@@ -417,7 +417,7 @@ static expression* fsm_arg_parse_value(
 
         /* Generate variable positive multi-bit parameter expression */
         Try {
-          expr = expression_create( right, left, EXP_OP_PARAM_MBIT_POS, FALSE, curr_expr_id, 0, 0, 0, 0, FALSE );
+          expr = expression_create( right, left, EXP_OP_PARAM_MBIT_POS, FALSE, curr_expr_id, 0, 0, 0, 0, 0, FALSE );
         } Catch_anonymous {
           expression_dealloc( left, FALSE );
           expression_dealloc( right, FALSE );
@@ -432,7 +432,7 @@ static expression* fsm_arg_parse_value(
       if( (mparm = mod_parm_find( str_val, funit->param_head )) != NULL ) {
 
         /* Generate left child expression */
-        left = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, 0, FALSE );
+        left = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, 0, 0, FALSE );
         curr_expr_id++;
         vector_dealloc( left->value );
         left->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
@@ -440,7 +440,7 @@ static expression* fsm_arg_parse_value(
 
         /* Generate right child expression */
         Try {
-          right = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, 0, FALSE );
+          right = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, 0, 0, FALSE );
         } Catch_anonymous {
           expression_dealloc( left, FALSE );
           Throw 0;
@@ -452,7 +452,7 @@ static expression* fsm_arg_parse_value(
 
         /* Generate variable positive multi-bit parameter expression */
         Try {
-          expr = expression_create( right, left, EXP_OP_PARAM_MBIT_NEG, FALSE, curr_expr_id, 0, 0, 0, 0, FALSE );
+          expr = expression_create( right, left, EXP_OP_PARAM_MBIT_NEG, FALSE, curr_expr_id, 0, 0, 0, 0, 0, FALSE );
         } Catch_anonymous {
           expression_dealloc( left, FALSE );
           expression_dealloc( right, FALSE );
@@ -467,7 +467,7 @@ static expression* fsm_arg_parse_value(
       if( (mparm = mod_parm_find( str_val, funit->param_head )) != NULL ) {
 
         /* Generate left child expression */
-        left = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, 0, FALSE );
+        left = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, 0, 0, FALSE );
         curr_expr_id++;
         vector_dealloc( left->value );
         left->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
@@ -475,7 +475,7 @@ static expression* fsm_arg_parse_value(
 
         /* Generate single-bit parameter expression */
         Try {
-          expr = expression_create( NULL, left, EXP_OP_PARAM_SBIT, FALSE, curr_expr_id, 0, 0, 0, 0, FALSE );
+          expr = expression_create( NULL, left, EXP_OP_PARAM_SBIT, FALSE, curr_expr_id, 0, 0, 0, 0, 0, FALSE );
         } Catch_anonymous {
           expression_dealloc( left, FALSE );
           Throw 0;
@@ -489,7 +489,7 @@ static expression* fsm_arg_parse_value(
       if( (mparm = mod_parm_find( str_val, funit->param_head )) != NULL ) {
 
         /* Generate parameter expression */
-        expr = expression_create( NULL, NULL, EXP_OP_PARAM, FALSE, curr_expr_id, 0, 0, 0, 0, FALSE );
+        expr = expression_create( NULL, NULL, EXP_OP_PARAM, FALSE, curr_expr_id, 0, 0, 0, 0, 0, FALSE );
         curr_expr_id++;
         exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
 

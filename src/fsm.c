@@ -242,7 +242,7 @@ void fsm_db_read(
         */
         if( iexp_id == oexp_id ) {
           Try {
-            table->from_state = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, iexp_id, 0, 0, 0, 0, FALSE );
+            table->from_state = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, iexp_id, 0, 0, 0, 0, 0, FALSE );
           } Catch_anonymous {
             fsm_dealloc( table );
             Throw 0;
