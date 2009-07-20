@@ -113,8 +113,8 @@ void stmt_link_add(
 
     /* Insert the new statement in order (based on ppline) - start at tail the tail and work to the head */
     while( (curr != NULL) &&
-           ((curr->stmt->exp->ppline < stmt->exp->ppline) ||
-            ((curr->stmt->exp->ppline == stmt->exp->ppline) &&
+           ((curr->stmt->exp->ppfline < stmt->exp->ppfline) ||
+            ((curr->stmt->exp->ppfline == stmt->exp->ppfline) &&
              (curr->stmt->exp->col.part.first < stmt->exp->col.part.first))) ) {
       last = curr;
       curr = curr->next;
