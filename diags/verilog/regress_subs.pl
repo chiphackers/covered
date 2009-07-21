@@ -469,6 +469,7 @@ sub convertCfg {
       } else {
         $line .= "-i TOP.v";
       }
+      $line .= " -ep";
     }
     $line =~ s/\-vcd/\-$type/g;
     if( ($type eq "vpi") || ($type eq "inline -vpi") ) {

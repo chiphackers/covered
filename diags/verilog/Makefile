@@ -103,7 +103,7 @@ VCOMP_EXEC     = ./vrun $(SIM_PLUSARGS)
 
 # Verilator support
 VERILATOR       = verilator
-VERILATOR_FLAGS = --cc --trace --Mdir $(DIAG) -Wno-UNOPTFLAT --exe $(DIAG).cc
+VERILATOR_FLAGS = --cc --trace --Mdir $(DIAG) -Wno-UNOPTFLAT -Wno-WIDTH --exe $(DIAG).cc
 VERILATOR_EXEC  = cd $(DIAG); make -f V$(basename $(DIAG)).mk; ./V$(basename $(DIAG)); cp $(DIAG).vcd ..
 
 ifdef USE_VERILATOR
