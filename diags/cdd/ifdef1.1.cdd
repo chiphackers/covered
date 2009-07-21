@@ -1,12 +1,12 @@
-5 16 fd01 4 ffffffff *
-8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (ifdef1.1.vcd) 2 -o (ifdef1.1.cdd) 2 -v (ifdef1.1.v) 2 -D (DUMP)
+5 16 fd81 4 ffffffff *
+8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (ifdef1.1.vcd) 2 -o (ifdef1.1.cdd) 2 -v (ifdef1.1.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 3 0 main "main" 0 ifdef1.1.v 1 26 1 
-2 1 12 12 f0012 1 0 21004 0 0 1 16 0 0
-2 2 12 12 b000b 2 1 100c 0 0 1 1 b
-2 3 12 12 b0012 3 8 1184 1 2 1 18 0 1 1 1 0 0
-2 4 12 12 70007 0 1 1410 0 0 1 1 a
-2 5 12 12 70012 2 35 6 3 4
+2 1 12 12 12 f0012 1 0 21004 0 0 1 16 0 0
+2 2 12 12 12 b000b 2 1 100c 0 0 1 1 b
+2 3 12 12 12 b0012 3 8 1184 1 2 1 18 0 1 1 1 0 0
+2 4 12 12 12 70007 0 1 1410 0 0 1 1 a
+2 5 12 12 12 70012 2 35 6 3 4
 1 a 1 9 60005 1 0 0 0 1 17 1 1 0 0 0 0
 1 b 2 10 70005 1 0 0 0 1 17 0 1 0 1 0 0
 4 5 f 5 5 5

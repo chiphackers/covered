@@ -359,7 +359,7 @@ void stmt_link_display(
     assert( curr->stmt != NULL );
     assert( curr->stmt->exp != NULL );
     printf( "  %s, ppline: %u, col: %u, added: %u, stmt_head: %u\n",
-            expression_string( curr->stmt->exp ), curr->stmt->exp->ppline, curr->stmt->exp->col.part.first,
+            expression_string( curr->stmt->exp ), curr->stmt->exp->ppfline, curr->stmt->exp->col.part.first,
             curr->stmt->suppl.part.added, curr->stmt->suppl.part.head );
     curr = curr->next;
   }

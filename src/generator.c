@@ -291,7 +291,7 @@ void generator_replace(
   unsigned int last_column    /*!< Column number of end of code to replace */
 ) { PROFILE(GENERATOR_REPLACE);
 
-  printf( "In generator_replace, str: %s, first_line: %u, first_column: %u, last_line: %u, last_column: %u\n", str, first_line, first_column, last_line, last_column );
+  // printf( "In generator_replace, str: %s, first_line: %u, first_column: %u, last_line: %u, last_column: %u\n", str, first_line, first_column, last_line, last_column );
 
   /* We can only perform the replacement if something has been previously marked for replacement */
   if( replace_first.word_ptr != NULL ) {
@@ -644,7 +644,6 @@ char* generator_create_expr_name(
   char*        name;
   unsigned int slen;
   unsigned int rv;
-  expression*  last_exp = expression_get_last_line_expr( exp );
   char         op[30];
   char         fline[30];
   char         lline[30];
@@ -653,10 +652,10 @@ char* generator_create_expr_name(
   assert( exp != NULL );
 
   /* Create string versions of op, first line, last line and column information */
-  rv = snprintf( op,    30, "%x", exp->op );           assert( rv < 30 );
-  rv = snprintf( fline, 30, "%u", exp->ppline );       assert( rv < 30 );
-  rv = snprintf( lline, 30, "%u", last_exp->ppline );  assert( rv < 30 );
-  rv = snprintf( col,   30, "%x", exp->col.all );      assert( rv < 30 );
+  rv = snprintf( op,    30, "%x", exp->op );       assert( rv < 30 );
+  rv = snprintf( fline, 30, "%u", exp->ppfline );  assert( rv < 30 );
+  rv = snprintf( lline, 30, "%u", exp->pplline );  assert( rv < 30 );
+  rv = snprintf( col,   30, "%x", exp->col.all );  assert( rv < 30 );
 
   /* Allocate and create the unique name */
   slen = 11 + strlen( op ) + 1 + strlen( fline ) + 1 + strlen( lline ) + 1 + strlen( col ) + 2;
@@ -1283,16 +1282,16 @@ statement* generator_find_statement(
 
 //  printf( "In generator_find_statement, line: %d, column: %d\n", first_line, first_column );
 
-  if( (curr_stmt == NULL) || (curr_stmt->exp->ppline < first_line) ||
-      ((curr_stmt->exp->ppline == first_line) && (curr_stmt->exp->col.part.first < first_column)) ) {
+  if( (curr_stmt == NULL) || (curr_stmt->exp->ppfline < first_line) ||
+      ((curr_stmt->exp->ppfline == first_line) && (curr_stmt->exp->col.part.first < first_column)) ) {
 
 //    func_iter_display( &fiter );
 
     /* Attempt to find the expression with the given position */
     while( ((curr_stmt = func_iter_get_next_statement( &fiter )) != NULL) &&
-//           printf( "  statement %s %d %u\n", expression_string( curr_stmt->exp ), curr_stmt->exp->col.part.first, curr_stmt->exp->ppline ) &&
-           ((curr_stmt->exp->ppline < first_line) || 
-            ((curr_stmt->exp->ppline == first_line) && (curr_stmt->exp->col.part.first < first_column)) ||
+//           printf( "  statement %s %d %u\n", expression_string( curr_stmt->exp ), curr_stmt->exp->col.part.first, curr_stmt->exp->ppfline ) &&
+           ((curr_stmt->exp->ppfline < first_line) || 
+            ((curr_stmt->exp->ppfline == first_line) && (curr_stmt->exp->col.part.first < first_column)) ||
             (curr_stmt->exp->op == EXP_OP_FORK)) );
 
     /* If we couldn't find it in the func_iter, look for it in the generate list */
@@ -1305,7 +1304,7 @@ statement* generator_find_statement(
 
   }
 
-//  if( (curr_stmt != NULL) && (curr_stmt->exp->ppline == first_line) && (curr_stmt->exp->col.part.first == first_column) && (curr_stmt->exp->op != EXP_OP_FORK) ) {
+//  if( (curr_stmt != NULL) && (curr_stmt->exp->ppfline == first_line) && (curr_stmt->exp->col.part.first == first_column) && (curr_stmt->exp->op != EXP_OP_FORK) ) {
 //    printf( "  FOUND (%s %x)!\n", expression_string( curr_stmt->exp ), curr_stmt->exp->col.part.first );
 //  } else {
 //    printf( "  NOT FOUND!\n" );
@@ -1313,7 +1312,7 @@ statement* generator_find_statement(
 
   PROFILE_END;
 
-  return( ((curr_stmt == NULL) || (curr_stmt->exp->ppline != first_line) ||
+  return( ((curr_stmt == NULL) || (curr_stmt->exp->ppfline != first_line) ||
           (curr_stmt->exp->col.part.first != first_column) || (curr_stmt->exp->op == EXP_OP_FORK)) ? NULL : curr_stmt );
 
 }
@@ -1331,8 +1330,8 @@ static statement* generator_find_case_statement(
 
 //  printf( "In generator_find_case_statement, line: %d, column: %d\n", first_line, first_column );
 
-  if( (curr_stmt == NULL) || (curr_stmt->exp->left == NULL) || (curr_stmt->exp->left->ppline < first_line) ||
-      ((curr_stmt->exp->left->ppline == first_line) && (curr_stmt->exp->left->col.part.first < first_column)) ) {
+  if( (curr_stmt == NULL) || (curr_stmt->exp->left == NULL) || (curr_stmt->exp->left->ppfline < first_line) ||
+      ((curr_stmt->exp->left->ppfline == first_line) && (curr_stmt->exp->left->col.part.first < first_column)) ) {
 
 //    if( curr_stmt->exp->left != NULL ) {
 //      printf( "curr_stmt->exp->left: %s\n", expression_string( curr_stmt->exp->left ) );
@@ -1342,14 +1341,14 @@ static statement* generator_find_case_statement(
 
     /* Attempt to find the expression with the given position */
     while( ((curr_stmt = func_iter_get_next_statement( &fiter )) != NULL) && 
-//           printf( "  statement %s %d %u\n", expression_string( curr_stmt->exp ), curr_stmt->exp->col.part.first, curr_stmt->exp->ppline ) &&
+//           printf( "  statement %s %d %u\n", expression_string( curr_stmt->exp ), curr_stmt->exp->col.part.first, curr_stmt->exp->ppfline ) &&
            ((curr_stmt->exp->left == NULL) ||
-            (curr_stmt->exp->left->ppline < first_line) ||
-            ((curr_stmt->exp->left->ppline == first_line) && (curr_stmt->exp->left->col.part.first < first_column))) );
+            (curr_stmt->exp->left->ppfline < first_line) ||
+            ((curr_stmt->exp->left->ppfline == first_line) && (curr_stmt->exp->left->col.part.first < first_column))) );
 
   }
 
-//  if( (curr_stmt != NULL) && (curr_stmt->exp->left != NULL) && (curr_stmt->exp->left->ppline == first_line) && (curr_stmt->exp->left->col.part.first == first_column) ) {
+//  if( (curr_stmt != NULL) && (curr_stmt->exp->left != NULL) && (curr_stmt->exp->left->ppfline == first_line) && (curr_stmt->exp->left->col.part.first == first_column) ) {
 //    printf( "  FOUND (%s %x)!\n", expression_string( curr_stmt->exp->left ), curr_stmt->exp->left->col.part.first );
 //  } else {
 //    printf( "  NOT FOUND!\n" );
@@ -1357,7 +1356,7 @@ static statement* generator_find_case_statement(
 
   PROFILE_END;
 
-  return( ((curr_stmt == NULL) || (curr_stmt->exp->left == NULL) || (curr_stmt->exp->left->ppline != first_line) ||
+  return( ((curr_stmt == NULL) || (curr_stmt->exp->left == NULL) || (curr_stmt->exp->left->ppfline != first_line) ||
           (curr_stmt->exp->left->col.part.first != first_column)) ? NULL : curr_stmt );
 
 }
@@ -1372,7 +1371,6 @@ void generator_insert_line_cov_with_stmt(
 
   if( (stmt != NULL) && ((info_suppl.part.scored_line && !handle_funit_as_assert) || (handle_funit_as_assert && ovl_is_coverage_point( stmt->exp ))) ) {
 
-    expression*  last_exp = expression_get_last_line_expr( stmt->exp );
     char         str[4096];
     char         sig[4096];
     unsigned int rv;
@@ -1381,9 +1379,9 @@ void generator_insert_line_cov_with_stmt(
     char*        scope    = generator_get_relative_scope( stmt->funit ); 
 
     if( scope[0] == '\0' ) {
-      rv = snprintf( sig, 4096, " \\covered$L%u_%u_%x ", stmt->exp->ppline, last_exp->ppline, stmt->exp->col.all );
+      rv = snprintf( sig, 4096, " \\covered$L%u_%u_%x ", stmt->exp->ppfline, stmt->exp->pplline, stmt->exp->col.all );
     } else {
-      rv = snprintf( sig, 4096, " \\covered$L%u_%u_%x$%s ", stmt->exp->ppline, last_exp->ppline, stmt->exp->col.all, scope );
+      rv = snprintf( sig, 4096, " \\covered$L%u_%u_%x$%s ", stmt->exp->ppfline, stmt->exp->pplline, stmt->exp->col.all, scope );
     }
     assert( rv < 4096 );
     free_safe( scope, (strlen( scope ) + 1) );
@@ -1450,7 +1448,6 @@ void generator_insert_event_comb_cov(
   char         name[4096];
   char         str[4096];
   unsigned int rv;
-  expression*  last_exp = expression_get_last_line_expr( exp );
   expression*  root_exp = exp;
   char*        scope    = generator_get_relative_scope( funit );
 
@@ -1461,9 +1458,9 @@ void generator_insert_event_comb_cov(
 
   /* Create signal name */
   if( scope[0] == '\0' ) {
-    rv = snprintf( name, 4096, " \\covered$E%u_%u_%x ", exp->ppline, last_exp->ppline, exp->col.all );
+    rv = snprintf( name, 4096, " \\covered$E%u_%u_%x ", exp->ppfline, exp->pplline, exp->col.all );
   } else {
-    rv = snprintf( name, 4096, " \\covered$E%u_%u_%x$%s ", exp->ppline, last_exp->ppline, exp->col.all, scope );
+    rv = snprintf( name, 4096, " \\covered$E%u_%u_%x$%s ", exp->ppfline, exp->pplline, exp->col.all, scope );
   }
   assert( rv < 4096 );
   free_safe( scope, (strlen( scope ) + 1) );
@@ -1597,14 +1594,13 @@ static void generator_insert_unary_comb_cov(
   char*        sigr;
   char         str[4096];
   unsigned int rv;
-  expression*  last_exp = expression_get_last_line_expr( exp );
-  char*        scope    = generator_get_relative_scope( funit );
+  char*        scope = generator_get_relative_scope( funit );
 
   /* Create signal */
   if( scope[0] == '\0' ) {
-    rv = snprintf( sig,  4096, " \\covered$%c%u_%u_%x ", (net ? 'u' : 'U'), exp->ppline, last_exp->ppline, exp->col.all );
+    rv = snprintf( sig,  4096, " \\covered$%c%u_%u_%x ", (net ? 'u' : 'U'), exp->ppfline, exp->pplline, exp->col.all );
   } else {
-    rv = snprintf( sig,  4096, " \\covered$U%u_%u_%x$%s ", exp->ppline, last_exp->ppline, exp->col.all, scope );
+    rv = snprintf( sig,  4096, " \\covered$U%u_%u_%x$%s ", exp->ppfline, exp->pplline, exp->col.all, scope );
   }
   assert( rv < 4096 );
   free_safe( scope, (strlen( scope ) + 1) );
@@ -1658,14 +1654,13 @@ static void generator_insert_comb_comb_cov(
   unsigned int rv;
   str_link*    tmp_head = NULL;
   str_link*    tmp_tail = NULL;
-  expression*  last_exp = expression_get_last_line_expr( exp );
   char*        scope    = generator_get_relative_scope( funit );
 
   /* Create signal */
   if( scope[0] == '\0' ) {
-    rv = snprintf( sig, 4096, " \\covered$%c%u_%u_%x ", (net ? 'c' : 'C'), exp->ppline, last_exp->ppline, exp->col.all );
+    rv = snprintf( sig, 4096, " \\covered$%c%u_%u_%x ", (net ? 'c' : 'C'), exp->ppfline, exp->pplline, exp->col.all );
   } else {
-    rv = snprintf( sig, 4096, " \\covered$C%u_%u_%x$%s ", exp->ppline, last_exp->ppline, exp->col.all, scope );
+    rv = snprintf( sig, 4096, " \\covered$C%u_%u_%x$%s ", exp->ppfline, exp->pplline, exp->col.all, scope );
   }
   assert( rv < 4096 );
   free_safe( scope, (strlen( scope ) + 1) );
@@ -2058,10 +2053,10 @@ static char* generator_create_lhs(
     exp->suppl.part.eval_t = 1;
 
   }
-  assert( rv < slen );
 
   /* Add the wire/reg */
   if( str != NULL ) {
+    assert( rv < slen );
     generator_insert_reg( str );
   }
 
@@ -2350,8 +2345,7 @@ static void generator_insert_subexp(
 
   /* If this expression needs to be substituted, do it with the lhs_str value */
   if( replace_exp ) {
-    expression* last_exp = expression_get_last_line_expr( exp );
-    generator_replace( lhs_str, exp->ppline, exp->col.part.first, last_exp->ppline, exp->col.part.last );
+    generator_replace( lhs_str, exp->ppfline, exp->col.part.first, exp->pplline, exp->col.part.last );
   }
 
   /* Create expression string */
@@ -2848,12 +2842,11 @@ static void generator_insert_mem_cov(
   char         name[4096];
   char         range[4096];
   unsigned int rv;
-  char*        idxstr   = generator_gen_mem_index( exp, funit, expression_get_curr_dimension( exp ) );
+  char*        idxstr = generator_gen_mem_index( exp, funit, expression_get_curr_dimension( exp ) );
   char*        value;
   char*        str;
-  expression*  last_exp = expression_get_last_line_expr( exp );
   char         num[50];
-  char*        scope    = generator_get_relative_scope( funit );
+  char*        scope  = generator_get_relative_scope( funit );
 
   /* Figure out the size to store the number of dimensions */
   strcpy( num, "32" );
@@ -2872,9 +2865,9 @@ static void generator_insert_mem_cov(
 
     /* First, create the wire/register to hold the index */
     if( scope[0] == '\0' ) {
-      rv = snprintf( iname, 4096, " \\covered$%c%u_%u_%x$%s ", (net ? 'i' : 'I'), exp->ppline, last_exp->ppline, exp->col.all, exp->name );
+      rv = snprintf( iname, 4096, " \\covered$%c%u_%u_%x$%s ", (net ? 'i' : 'I'), exp->ppfline, exp->pplline, exp->col.all, exp->name );
     } else {
-      rv = snprintf( iname, 4096, " \\covered$%c%u_%u_%x$%s$%s ", (net ? 'i' : 'I'), exp->ppline, last_exp->ppline, exp->col.all, exp->name, scope );
+      rv = snprintf( iname, 4096, " \\covered$%c%u_%u_%x$%s$%s ", (net ? 'i' : 'I'), exp->ppfline, exp->pplline, exp->col.all, exp->name, scope );
     }
     assert( rv < 4096 );
 
@@ -3004,9 +2997,9 @@ static void generator_insert_mem_cov(
 
     /* Create name */
     if( scope[0] == '\0' ) {
-      rv = snprintf( name, 4096, " \\covered$%c%u_%u_%x$%s ", (net ? 'w' : 'W'), exp->ppline, last_exp->ppline, exp->col.all, exp->name );
+      rv = snprintf( name, 4096, " \\covered$%c%u_%u_%x$%s ", (net ? 'w' : 'W'), exp->ppfline, exp->pplline, exp->col.all, exp->name );
     } else {
-      rv = snprintf( name, 4096, " \\covered$%c%u_%u_%x$%s$%s ", (net ? 'w' : 'W'), exp->ppline, last_exp->ppline, exp->col.all, exp->name, scope );
+      rv = snprintf( name, 4096, " \\covered$%c%u_%u_%x$%s$%s ", (net ? 'w' : 'W'), exp->ppfline, exp->pplline, exp->col.all, exp->name, scope );
     }
     assert( rv < 4096 );
 
@@ -3032,9 +3025,9 @@ static void generator_insert_mem_cov(
 
     /* Create name */
     if( scope[0] == '\0' ) {
-      rv = snprintf( name, 4096, " \\covered$%c%u_%u_%x$%s ", (net ? 'r' : 'R'), exp->ppline, last_exp->ppline, exp->col.all, exp->name );
+      rv = snprintf( name, 4096, " \\covered$%c%u_%u_%x$%s ", (net ? 'r' : 'R'), exp->ppfline, exp->pplline, exp->col.all, exp->name );
     } else {
-      rv = snprintf( name, 4096, " \\covered$%c%u_%u_%x$%s$%s ", (net ? 'r' : 'R'), exp->ppline, last_exp->ppline, exp->col.all, exp->name, scope );
+      rv = snprintf( name, 4096, " \\covered$%c%u_%u_%x$%s$%s ", (net ? 'r' : 'R'), exp->ppfline, exp->pplline, exp->col.all, exp->name, scope );
     }
     assert( rv < 4096 );
 

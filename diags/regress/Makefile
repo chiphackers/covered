@@ -359,7 +359,8 @@ else
 ifeq ($(MAKECMDGOALS),veriwell)
 EXCLUDE      += afunc1            afunc2            always5.1         always_comb1      always_comb2 \
                 always_ff1        always_latch1     always_latch2     ashift1           ashift2 \
-                ashift3           ashift4           assert1           assign1           atask1 \
+                ashift3           ashift4           assert1           assign1           assign5 \
+                atask1 \
                 bit1              byte1             case5             case6             casex2 \
                 casex3            casez3            casez4            casez5            char1 \
                 dec1              dec1.1            dec2              dec3              dec3.1 \

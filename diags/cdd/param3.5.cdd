@@ -1,13 +1,13 @@
-5 16 fd01 5 ffffffff main
-8 /Users/trevorw/projects/covered/diags/verilog 2 -t (foo) 2 -i (main.bar1) 2 -vcd (param3.5.vcd) 2 -o (param3.5.cdd) 2 -v (param3.5.v) 2 -P (main.bar1.alpha=1'b1) 2 -D (DUMP)
+5 16 fd81 5 ffffffff main
+8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (foo) 2 -i (main.bar1) 2 -vcd (param3.5.vcd) 2 -o (param3.5.cdd) 2 -v (param3.5.v) 2 -P (main.bar1.alpha=1'b1) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 15 main 0
 3 0 foo "main.bar1" 0 param3.5.v 25 32 1 
-2 1 30 30 f0013 1 32 1008 0 0 32 1 alpha
-2 2 30 30 b000b 3 1 100c 0 0 1 1 b
-2 3 30 30 b0013 4 2 128c 1 2 1 18 0 1 0 1 0 1
-2 4 30 30 70007 0 1 1410 0 0 1 1 a
-2 5 30 30 70013 4 35 e 3 4
+2 1 30 30 30 f0013 1 32 1008 0 0 32 1 alpha
+2 2 30 30 30 b000b 3 1 100c 0 0 1 1 b
+2 3 30 30 30 b0013 4 2 128c 1 2 1 18 0 1 0 1 0 1
+2 4 30 30 30 70007 0 1 1410 0 0 1 1 a
+2 5 30 30 30 70013 4 35 e 3 4
 1 b 1 26 6 1 0 0 0 1 17 1 1 0 1 1 0
 1 a 2 28 60005 1 0 0 0 1 17 1 1 0 1 1 0
 1 alpha 3 0 c0000 1 0 31 0 32 17 1 0 0 0 0 0

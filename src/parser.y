@@ -220,7 +220,7 @@ int yydebug = 1;
           (Current).orig_fname   = YYRHSLOC(Rhs, 1).orig_fname;         \
           (Current).incl_fname   = YYRHSLOC(Rhs, 1).incl_fname;         \
           (Current).ppfline      = YYRHSLOC(Rhs, 1).ppfline;            \
-          (Current).pplline      = YYRHSLOC(Rhs, 1).pplline;            \
+          (Current).pplline      = YYRHSLOC(Rhs, N).pplline;            \
         }                                                               \
       else                                                              \
         {                                                               \
@@ -613,7 +613,7 @@ description
     }
     task_item_list_opt statement_or_null
     {
-      parser_create_task_body( $7, @7.first_line, @7.first_column, @7.last_column, @7.ppfline );
+      parser_create_task_body( $7, @7.first_line, @7.first_column, @7.last_column, @7.ppfline, @7.pplline );
     }
     K_endtask
     {
@@ -925,7 +925,7 @@ static_expr_port_list
   : static_expr_port_list ',' static_expr
     {
       if( parse_mode ) {
-        $$ = parser_append_se_port_list( $1, $3, @1.first_line, @1.ppfline, @1.first_column, @3.first_line, @3.ppfline, @3.first_column, @3.last_column );
+        $$ = parser_append_se_port_list( $1, $3, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, @3.first_line, @3.ppfline, @3.pplline, @3.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -933,7 +933,7 @@ static_expr_port_list
   | static_expr
     {
       if( parse_mode ) {
-        $$ = parser_create_se_port_list( $1, @1.first_line, @1.ppfline, @1.first_column, @1.last_column );
+        $$ = parser_create_se_port_list( $1, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, @1.last_column );
       } else {
         $$ = NULL;
       }
@@ -991,7 +991,7 @@ static_expr
   | static_unary_op static_expr_primary %prec UNARY_PREC
     {
       if( parse_mode ) {
-        $$ = parser_create_unary_se( $2, $1, @1.first_line, @1.ppfline, @1.first_column, @1.last_column );
+        $$ = parser_create_unary_se( $2, $1, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, @1.last_column );
       } else {
         $$ = NULL;
       }
@@ -999,7 +999,7 @@ static_expr
   | static_expr '^' static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_XOR, @1.first_line, @1.ppfline, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_XOR, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1007,7 +1007,7 @@ static_expr
   | static_expr '*' static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_MULTIPLY, @1.first_line, @1.ppfline, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_MULTIPLY, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1015,7 +1015,7 @@ static_expr
   | static_expr '/' static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_DIVIDE, @1.first_line, @1.ppfline, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_DIVIDE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1023,7 +1023,7 @@ static_expr
   | static_expr '%' static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_MOD, @1.first_line, @1.ppfline, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_MOD, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1031,7 +1031,7 @@ static_expr
   | static_expr '+' static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_ADD, @1.first_line, @1.ppfline, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_ADD, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1039,7 +1039,7 @@ static_expr
   | static_expr '-' static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_SUBTRACT, @1.first_line, @1.ppfline, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_SUBTRACT, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1047,7 +1047,7 @@ static_expr
   | static_expr '&' static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_AND, @1.first_line, @1.ppfline, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_AND, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1055,7 +1055,7 @@ static_expr
   | static_expr '|' static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_OR, @1.first_line, @1.ppfline, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_OR, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1063,7 +1063,7 @@ static_expr
   | static_expr K_NOR static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_NOR, @1.first_line, @1.ppfline, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_NOR, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1071,7 +1071,7 @@ static_expr
   | static_expr K_NAND static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_NAND, @1.first_line, @1.ppfline, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_NAND, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1079,7 +1079,7 @@ static_expr
   | static_expr K_NXOR static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_NXOR, @1.first_line, @1.ppfline, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_NXOR, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1087,7 +1087,7 @@ static_expr
   | static_expr K_LS static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_LSHIFT, @1.first_line, @1.ppfline, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_LSHIFT, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1095,7 +1095,7 @@ static_expr
   | static_expr K_RS static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_RSHIFT, @1.first_line, @1.ppfline, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_RSHIFT, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1103,7 +1103,7 @@ static_expr
   | static_expr K_GE static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_GE, @1.first_line, @1.ppfline, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_GE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1111,7 +1111,7 @@ static_expr
   | static_expr K_LE static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_LE, @1.first_line, @1.ppfline, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_LE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1119,7 +1119,7 @@ static_expr
   | static_expr K_EQ static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_EQ, @1.first_line, @1.ppfline, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_EQ, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1127,7 +1127,7 @@ static_expr
   | static_expr K_NE static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_NE, @1.first_line, @1.ppfline, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_NE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1135,7 +1135,7 @@ static_expr
   | static_expr '>' static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_GT, @1.first_line, @1.ppfline, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_GT, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1143,7 +1143,7 @@ static_expr
   | static_expr '<' static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_LT, @1.first_line, @1.ppfline, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_LT, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1151,7 +1151,7 @@ static_expr
   | static_expr K_LAND static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_LAND, @1.first_line, @1.ppfline, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_LAND, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1159,7 +1159,7 @@ static_expr
   | static_expr K_LOR static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_LOR, @1.first_line, @1.ppfline, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = static_expr_gen( $3, $1, EXP_OP_LOR, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
       } else {
         $$ = NULL;
       }
@@ -1173,7 +1173,7 @@ static_expr
           static_expr_dealloc( $3, TRUE );
           $$ = NULL;
         } else {
-          $$ = static_expr_gen( $3, $1, EXP_OP_EXPONENT, @1.first_line, @1.ppfline, @1.first_column, (@3.last_column - 1), NULL );
+          $$ = static_expr_gen( $3, $1, EXP_OP_EXPONENT, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
         }
       } else {
         $$ = NULL;
@@ -1182,7 +1182,7 @@ static_expr
   | static_expr '?' static_expr ':' static_expr
     {
       if( parse_mode ) {
-        $$ = static_expr_gen_ternary( $1, $5, $3, @1.first_line, @1.ppfline, @1.first_column, (@5.last_column - 1) );
+        $$ = static_expr_gen_ternary( $1, $5, $3, @1.first_line, @1.ppfline, @5.pplline, @1.first_column, (@5.last_column - 1) );
       } else {
         $$ = NULL;
       }
@@ -1274,7 +1274,7 @@ static_expr_primary
     {
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
-          $$ = static_expr_gen( NULL, $3, EXP_OP_FUNC_CALL, @1.first_line, @1.ppfline, @1.first_column, (@4.last_column - 1), $1 );
+          $$ = static_expr_gen( NULL, $3, EXP_OP_FUNC_CALL, @1.first_line, @1.ppfline, @4.pplline, @1.first_column, (@4.last_column - 1), $1 );
         } else {
           static_expr_dealloc( $3, TRUE );
           $$ = NULL;
@@ -1288,7 +1288,7 @@ static_expr_primary
     {
       if( parse_mode ) {
         if( ignore_mode == 0 ) { 
-          $$ = static_expr_gen( NULL, $3, EXP_OP_SBIT_SEL, @1.first_line, @1.ppfline, @1.first_column, (@4.last_column - 1), $1 );
+          $$ = static_expr_gen( NULL, $3, EXP_OP_SBIT_SEL, @1.first_line, @1.ppfline, @4.pplline, @1.first_column, (@4.last_column - 1), $1 );
         } else {
           static_expr_dealloc( $3, TRUE );
           $$ = NULL;
@@ -1308,7 +1308,7 @@ static_expr_primary
   | S_allow
     {
       if( parse_mode ) {
-        $$ = parser_create_syscall_se( EXP_OP_NOOP, 0, 0, 0, 0 );
+        $$ = parser_create_syscall_se( EXP_OP_NOOP, 0, 0, 0, 0, 0 );
       } else {
         $$ = NULL;
       }
@@ -1316,7 +1316,7 @@ static_expr_primary
   | S_random
     {
       if( parse_mode ) {
-        $$ = parser_create_syscall_se( EXP_OP_SRANDOM, @1.first_line, @1.ppfline, @1.first_column, @1.last_column );
+        $$ = parser_create_syscall_se( EXP_OP_SRANDOM, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, @1.last_column );
       } else {
         $$ = NULL;
       }
@@ -1324,7 +1324,7 @@ static_expr_primary
   | S_urandom
     {
       if( parse_mode ) {
-        $$ = parser_create_syscall_se( EXP_OP_SURANDOM, @1.first_line, @1.ppfline, @1.first_column, @1.last_column );
+        $$ = parser_create_syscall_se( EXP_OP_SURANDOM, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, @1.last_column );
       } else {
         $$ = NULL;
       }
@@ -1364,7 +1364,7 @@ expression
   | '-' expr_primary %prec UNARY_PREC
     {
       if( parse_mode ) {
-        if( ($$ = parser_create_unary_exp( $2, EXP_OP_NEGATE, @1.first_line, @1.ppfline, @1.first_column, @2.last_column )) != NULL ) {
+        if( ($$ = parser_create_unary_exp( $2, EXP_OP_NEGATE, @1.first_line, @1.ppfline, @2.pplline, @1.first_column, @2.last_column )) != NULL ) {
           $$->value->suppl.part.is_signed = 1;
         }
       } else {
@@ -1374,7 +1374,7 @@ expression
   | unary_op expr_primary %prec UNARY_PREC
     {
       if( parse_mode ) {
-        $$ = parser_create_unary_exp( $2, $1, @1.first_line, @1.ppfline, @1.first_column, @2.last_column );
+        $$ = parser_create_unary_exp( $2, $1, @1.first_line, @1.ppfline, @2.pplline, @1.first_column, @2.last_column );
       } else {
         $$ = NULL;
       }
@@ -1422,7 +1422,7 @@ expression
   | expression '^' expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_XOR, @1.first_line, @1.ppfline, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_XOR, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1430,7 +1430,7 @@ expression
   | expression '*' expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_MULTIPLY, @1.first_line, @1.ppfline, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_MULTIPLY, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1438,7 +1438,7 @@ expression
   | expression '/' expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_DIVIDE, @1.first_line, @1.ppfline, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_DIVIDE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1446,7 +1446,7 @@ expression
   | expression '%' expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_MOD, @1.first_line, @1.ppfline, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_MOD, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1454,7 +1454,7 @@ expression
   | expression '+' expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_ADD, @1.first_line, @1.ppfline, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_ADD, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1462,7 +1462,7 @@ expression
   | expression '-' expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_SUBTRACT, @1.first_line, @1.ppfline, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_SUBTRACT, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1470,7 +1470,7 @@ expression
   | expression '&' expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_AND, @1.first_line, @1.ppfline, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_AND, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1478,7 +1478,7 @@ expression
   | expression '|' expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_OR, @1.first_line, @1.ppfline, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_OR, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1486,7 +1486,7 @@ expression
   | expression K_NAND expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_NAND, @1.first_line, @1.ppfline, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_NAND, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1494,7 +1494,7 @@ expression
   | expression K_NOR expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_NOR, @1.first_line, @1.ppfline, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_NOR, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1502,7 +1502,7 @@ expression
   | expression K_NXOR expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_NXOR, @1.first_line, @1.ppfline, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_NXOR, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1510,7 +1510,7 @@ expression
   | expression '<' expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LT, @1.first_line, @1.ppfline, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LT, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1518,7 +1518,7 @@ expression
   | expression '>' expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_GT, @1.first_line, @1.ppfline, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_GT, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1526,7 +1526,7 @@ expression
   | expression K_LS expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LSHIFT, @1.first_line, @1.ppfline, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LSHIFT, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1534,7 +1534,7 @@ expression
   | expression K_RS expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_RSHIFT, @1.first_line, @1.ppfline, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_RSHIFT, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1542,7 +1542,7 @@ expression
   | expression K_EQ expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_EQ, @1.first_line, @1.ppfline, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_EQ, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1550,7 +1550,7 @@ expression
   | expression K_CEQ expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_CEQ, @1.first_line, @1.ppfline, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_CEQ, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1558,7 +1558,7 @@ expression
   | expression K_LE expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LE, @1.first_line, @1.ppfline, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1566,7 +1566,7 @@ expression
   | expression K_GE expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_GE, @1.first_line, @1.ppfline, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_GE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1574,7 +1574,7 @@ expression
   | expression K_NE expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_NE, @1.first_line, @1.ppfline, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_NE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1582,7 +1582,7 @@ expression
   | expression K_CNE expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_CNE, @1.first_line, @1.ppfline, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_CNE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1590,7 +1590,7 @@ expression
   | expression K_LOR expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LOR, @1.first_line, @1.ppfline, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LOR, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1598,7 +1598,7 @@ expression
   | expression K_LAND expression
     {
       if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LAND, @1.first_line, @1.ppfline, @1.first_column, @3.last_column );
+        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LAND, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1612,7 +1612,7 @@ expression
           expression_dealloc( $3, FALSE );
           $$ = NULL;
         } else {
-          $$ = parser_create_binary_exp( $1, $3, EXP_OP_EXPONENT, @1.first_line, @1.ppfline, @1.first_column, @3.last_column );
+          $$ = parser_create_binary_exp( $1, $3, EXP_OP_EXPONENT, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
         }
       } else {
         $$ = NULL;
@@ -1627,7 +1627,7 @@ expression
           expression_dealloc( $3, FALSE );
           $$ = NULL;
         } else {
-          $$ = parser_create_binary_exp( $1, $3, EXP_OP_ALSHIFT, @1.first_line, @1.ppfline, @1.first_column, @3.last_column );
+          $$ = parser_create_binary_exp( $1, $3, EXP_OP_ALSHIFT, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
         }
       } else {
         $$ = NULL;
@@ -1642,7 +1642,7 @@ expression
           expression_dealloc( $3, FALSE );
           $$ = NULL;
         } else {
-          $$ = parser_create_binary_exp( $1, $3, EXP_OP_ARSHIFT, @1.first_line, @1.ppfline, @1.first_column, @3.last_column );
+          $$ = parser_create_binary_exp( $1, $3, EXP_OP_ARSHIFT, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
         }
       } else {
         $$ = NULL;
@@ -1793,7 +1793,7 @@ expr_primary
   | identifier post_op_and_assign_op
     {
       if( parse_mode ) {
-        $$ = parser_create_op_and_assign_exp( $1, $2, @1.first_line, @1.ppfline, @1.first_column, @1.last_column, @2.last_column );
+        $$ = parser_create_op_and_assign_exp( $1, $2, @1.first_line, @1.ppfline, @2.pplline, @1.first_column, @1.last_column, @2.last_column );
       } else {
         $$ = NULL;
       }
@@ -1801,7 +1801,7 @@ expr_primary
   | pre_op_and_assign_op identifier
     {
       if( parse_mode ) {
-        $$ = parser_create_op_and_assign_exp( $2, $1, @1.first_line, @1.ppfline, @1.first_column, @1.last_column, @2.last_column );
+        $$ = parser_create_op_and_assign_exp( $2, $1, @1.first_line, @1.ppfline, @2.pplline, @1.first_column, @1.last_column, @2.last_column );
       } else {
         $$ = NULL;
       }
@@ -1816,7 +1816,7 @@ expr_primary
   | S_allow
     {
       if( parse_mode ) {
-        $$ = parser_create_syscall_exp( EXP_OP_NOOP, 0, 0, 0, 0 );
+        $$ = parser_create_syscall_exp( EXP_OP_NOOP, 0, 0, 0, 0, 0 );
       } else {
         $$ = NULL;
       }
@@ -1824,7 +1824,7 @@ expr_primary
   | syscall_wo_parms_op
     {
       if( parse_mode ) {
-        $$ = parser_create_syscall_exp( $1, @1.first_line, @1.ppfline, @1.first_column, @1.last_column );
+        $$ = parser_create_syscall_exp( $1, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, @1.last_column );
       } else {
         $$ = NULL;
       }
@@ -1849,7 +1849,7 @@ expr_primary
   | identifier index_expr post_op_and_assign_op
     {
       if( parse_mode ) {
-        $$ = parser_create_op_and_assign_w_dim_exp( $1, $3, $2, @1.first_line, @1.ppfline, @1.first_column, @3.last_column );
+        $$ = parser_create_op_and_assign_w_dim_exp( $1, $3, $2, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1857,7 +1857,7 @@ expr_primary
   | pre_op_and_assign_op identifier index_expr
     {
       if( parse_mode ) {
-        $$ = parser_create_op_and_assign_w_dim_exp( $2, $1, $3, @1.first_line, @1.ppfline, @1.first_column, @3.last_column );
+        $$ = parser_create_op_and_assign_w_dim_exp( $2, $1, $3, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
       } else {
         $$ = NULL;
       }
@@ -1891,7 +1891,7 @@ expr_primary
   | S_allow '(' ignore_more expression_port_list ignore_less ')'
     {
       if( parse_mode ) {
-        $$ = parser_create_syscall_exp( EXP_OP_NOOP, 0, 0, 0, 0 );
+        $$ = parser_create_syscall_exp( EXP_OP_NOOP, 0, 0, 0, 0, 0 );
       } else {
         $$ = NULL;
       }
@@ -1899,7 +1899,7 @@ expr_primary
   | syscall_w_parms_op '(' expression_systask_list ')'
     {
       if( parse_mode ) {
-        $$ = parser_create_syscall_w_params_exp( $1, $3, @1.first_line, @1.ppfline, @1.first_column, @4.last_column );
+        $$ = parser_create_syscall_w_params_exp( $1, $3, @1.first_line, @1.ppfline, @4.pplline, @1.first_column, @4.last_column );
       } else {
         $$ = NULL;
       }
@@ -1907,7 +1907,7 @@ expr_primary
   | syscall_w_parms_op_64 '(' expression_systask_list ')'
     {
       if( parse_mode ) {
-        if( ($$ = parser_create_syscall_w_params_exp( $1, $3, @1.first_line, @1.ppfline, @1.first_column, @4.last_column )) != NULL ) {
+        if( ($$ = parser_create_syscall_w_params_exp( $1, $3, @1.first_line, @1.ppfline, @4.pplline, @1.first_column, @4.last_column )) != NULL ) {
           $$->value->suppl.part.data_type = VDATA_R64;
         }
       } else {
@@ -1917,7 +1917,7 @@ expr_primary
   | syscall_w_parms_op_32 '(' expression_systask_list ')'
     {
       if( parse_mode ) {
-        if( ($$ = parser_create_syscall_w_params_exp( $1, $3, @1.first_line, @1.ppfline, @1.first_column, @4.last_column )) != NULL ) {
+        if( ($$ = parser_create_syscall_w_params_exp( $1, $3, @1.first_line, @1.ppfline, @4.pplline, @1.first_column, @4.last_column )) != NULL ) {
           $$->value->suppl.part.data_type = VDATA_R32;
         }
       } else {
@@ -5035,9 +5035,9 @@ statement
             while( c_stmt != NULL ) {
               Try {
                 if( (c_stmt->expr != NULL) && (c_stmt->expr->op == EXP_OP_LIST) ) {
-                  parser_handle_case_statement_list( EXP_OP_CASE, c_stmt->expr, c_expr, c_stmt->stmt, c_stmt->line, c_stmt->ppfline, &last_stmt );
+                  parser_handle_case_statement_list( EXP_OP_CASE, c_stmt->expr, c_expr, c_stmt->stmt, c_stmt->line, c_stmt->ppfline, c_stmt->pplline, &last_stmt );
                 } else {
-                  parser_handle_case_statement( EXP_OP_CASE, c_stmt->expr, c_expr, c_stmt->stmt, c_stmt->line, c_stmt->ppfline, &last_stmt );
+                  parser_handle_case_statement( EXP_OP_CASE, c_stmt->expr, c_expr, c_stmt->stmt, c_stmt->line, c_stmt->ppfline, c_stmt->pplline, &last_stmt );
                 }
               } Catch_anonymous {
                 error_count++;
@@ -5091,9 +5091,9 @@ statement
             while( c_stmt != NULL ) {
               Try {
                 if( (c_stmt->expr != NULL) && (c_stmt->expr->op == EXP_OP_LIST) ) {
-                  parser_handle_case_statement_list( EXP_OP_CASEX, c_stmt->expr, c_expr, c_stmt->stmt, c_stmt->line, c_stmt->ppfline, &last_stmt );
+                  parser_handle_case_statement_list( EXP_OP_CASEX, c_stmt->expr, c_expr, c_stmt->stmt, c_stmt->line, c_stmt->ppfline, c_stmt->pplline, &last_stmt );
                 } else {
-                  parser_handle_case_statement( EXP_OP_CASEX, c_stmt->expr, c_expr, c_stmt->stmt, c_stmt->line, c_stmt->ppfline, &last_stmt );
+                  parser_handle_case_statement( EXP_OP_CASEX, c_stmt->expr, c_expr, c_stmt->stmt, c_stmt->line, c_stmt->ppfline, c_stmt->pplline, &last_stmt );
                 }
               } Catch_anonymous {
                 error_count++;
@@ -5147,9 +5147,9 @@ statement
             while( c_stmt != NULL ) {
               Try {
                 if( (c_stmt->expr != NULL) && (c_stmt->expr->op == EXP_OP_LIST) ) {
-                  parser_handle_case_statement_list( EXP_OP_CASEZ, c_stmt->expr, c_expr, c_stmt->stmt, c_stmt->line, c_stmt->ppfline, &last_stmt );
+                  parser_handle_case_statement_list( EXP_OP_CASEZ, c_stmt->expr, c_expr, c_stmt->stmt, c_stmt->line, c_stmt->ppfline, c_stmt->pplline, &last_stmt );
                 } else {
-                  parser_handle_case_statement( EXP_OP_CASEZ, c_stmt->expr, c_expr, c_stmt->stmt, c_stmt->line, c_stmt->ppfline, &last_stmt );
+                  parser_handle_case_statement( EXP_OP_CASEZ, c_stmt->expr, c_expr, c_stmt->stmt, c_stmt->line, c_stmt->ppfline, c_stmt->pplline, &last_stmt );
                 }
               } Catch_anonymous {
                 error_count++;

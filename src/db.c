@@ -3105,7 +3105,7 @@ void db_assign_symbol(
             /* Search the matching expression */
             expl = inst->funit->exp_head;
             while( (expl != NULL) &&
-                   ((expl->exp->ppfline != fline) || (expl->exp->col.all != col) || (exp->pplline != lline) || !ESUPPL_IS_ROOT( expl->exp->suppl ) || (expl->exp->op == EXP_OP_FORK)) ) {
+                   ((expl->exp->ppfline != fline) || (expl->exp->col.all != col) || (expl->exp->pplline != lline) || !ESUPPL_IS_ROOT( expl->exp->suppl ) || (expl->exp->op == EXP_OP_FORK)) ) {
               expl = expl->next;
             }
   
@@ -3211,7 +3211,7 @@ void db_assign_symbol(
             /* Search the matching expression */
             expl = inst->funit->exp_head;
             while( (expl != NULL) &&
-                   ((expl->exp->ppfline != fline) || (expl->exp->col.all != col) || (exp->pplline != lline) || (expl->exp->op == EXP_OP_FORK)) ) {
+                   ((expl->exp->ppfline != fline) || (expl->exp->col.all != col) || (expl->exp->pplline != lline) || (expl->exp->op == EXP_OP_FORK)) ) {
               expl = expl->next;
             }
 

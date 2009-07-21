@@ -31,7 +31,8 @@ static_expr* static_expr_gen_unary(
   static_expr* stexp,
   exp_op_type  op,
   unsigned int line,
-  unsigned int ppline,
+  unsigned int ppfline,
+  unsigned int pplline,
   int          first,
   int          last
 );
@@ -42,7 +43,8 @@ static_expr* static_expr_gen(
   static_expr* left,
   int          op,
   unsigned int line,
-  unsigned int ppline,
+  unsigned int ppfline,
+  unsigned int pplline,
   int          first,
   int          last,
   char*        func_name
@@ -54,7 +56,8 @@ static_expr* static_expr_gen_ternary(
   static_expr* right,
   static_expr* left,
   unsigned int line,
-  unsigned int ppline,
+  unsigned int ppfline,
+  unsigned int pplline,
   int          first,
   int          last
 );

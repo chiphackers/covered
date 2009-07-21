@@ -87,12 +87,13 @@ extern int        curr_expr_id;
  this expression in the original expression pointer field.
 */
 static_expr* static_expr_gen_unary(
-  static_expr* stexp,  /*!< Pointer to static expression */
-  exp_op_type  op,     /*!< Unary static expression operation */
-  unsigned int line,   /*!< Line number that this expression was found on in file */
-  unsigned int ppline,  /*!< Line number from preprocessed file of this expression */
-  int          first,  /*!< Column index of first character in this expression */
-  int          last    /*!< Column index of last character in this expression */
+  static_expr* stexp,    /*!< Pointer to static expression */
+  exp_op_type  op,       /*!< Unary static expression operation */
+  unsigned int line,     /*!< Line number that this expression was found on in file */
+  unsigned int ppfline,  /*!< First line number from preprocessed file of this expression */
+  unsigned int pplline,  /*!< Last line number from preprocessed file of this expression */
+  int          first,    /*!< Column index of first character in this expression */
+  int          last      /*!< Column index of last character in this expression */
 ) { PROFILE(STATIC_EXPR_GEN_UNARY);
 
   expression*  tmpexp;  /* Container for newly created expression */
@@ -149,7 +150,7 @@ static_expr* static_expr_gen_unary(
           break;
 
         case EXP_OP_PASSIGN :
-          tmpexp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, ppline, first, last, FALSE );
+          tmpexp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, ppfline, pplline, first, last, FALSE );
           curr_expr_id++;
           {
             vector* vec = vector_create( 32, VTYPE_EXP, VDATA_UL, TRUE );
@@ -158,7 +159,7 @@ static_expr* static_expr_gen_unary(
           }
           (void)vector_from_int( tmpexp->value, stexp->num );
 
-          stexp->exp = expression_create( tmpexp, NULL, op, FALSE, curr_expr_id, line, ppline, first, last, FALSE );
+          stexp->exp = expression_create( tmpexp, NULL, op, FALSE, curr_expr_id, line, ppfline, pplline, first, last, FALSE );
           curr_expr_id++;
           break;
         default :  break;
@@ -166,7 +167,7 @@ static_expr* static_expr_gen_unary(
 
     } else {
 
-      tmpexp = expression_create( stexp->exp, NULL, op, FALSE, curr_expr_id, line, ppline, first, last, FALSE );
+      tmpexp = expression_create( stexp->exp, NULL, op, FALSE, curr_expr_id, line, ppfline, pplline, first, last, FALSE );
       curr_expr_id++;
       stexp->exp = tmpexp;
 
@@ -200,7 +201,8 @@ static_expr* static_expr_gen(
   static_expr* left,      /*!< Pointer to left static expression */
   int          op,        /*!< Static expression operation */
   unsigned int line,      /*!< Line number that static expression operation found on */
-  unsigned int ppline,    /*!< Line number from preprocessed file that static expression is found at */
+  unsigned int ppfline,   /*!< First line number from preprocessed file that static expression is found at */
+  unsigned int pplline,   /*!< Last line number from preprocessed file that static expression is found at */
   int          first,     /*!< Column index of first character in expression */
   int          last,      /*!< Column index of last character in expression */
   char*        func_name  /*!< Name of function to call (only valid when op == EXP_OP_FUNC_CALL) */
@@ -259,7 +261,7 @@ static_expr* static_expr_gen(
 
       } else {
 
-        right->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, ppline, first, last, FALSE );
+        right->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, ppfline, pplline, first, last, FALSE );
         curr_expr_id++;
         {
           vector* vec = vector_create( 32, VTYPE_EXP, VDATA_UL, TRUE );
@@ -268,7 +270,7 @@ static_expr* static_expr_gen(
         }
         (void)vector_from_int( right->exp->value, right->num );
 
-        tmpexp = expression_create( right->exp, left->exp, op, FALSE, curr_expr_id, line, ppline, first, last, FALSE );
+        tmpexp = expression_create( right->exp, left->exp, op, FALSE, curr_expr_id, line, ppfline, pplline, first, last, FALSE );
         curr_expr_id++;
         right->exp = tmpexp;
         
@@ -278,7 +280,7 @@ static_expr* static_expr_gen(
 
       if( left->exp == NULL ) {
 
-        left->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, ppline, first, last, FALSE );
+        left->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, ppfline, pplline, first, last, FALSE );
         curr_expr_id++;
         {
           vector* vec = vector_create( 32, VTYPE_EXP, VDATA_UL, TRUE );
@@ -287,13 +289,13 @@ static_expr* static_expr_gen(
         }
         (void)vector_from_int( left->exp->value, left->num );
 
-        tmpexp = expression_create( right->exp, left->exp, op, FALSE, curr_expr_id, line, ppline, first, last, FALSE );
+        tmpexp = expression_create( right->exp, left->exp, op, FALSE, curr_expr_id, line, ppfline, pplline, first, last, FALSE );
         curr_expr_id++;
         right->exp = tmpexp;
 
       } else {
 
-        tmpexp = expression_create( right->exp, left->exp, op, FALSE, curr_expr_id, line, ppline, first, last, FALSE );
+        tmpexp = expression_create( right->exp, left->exp, op, FALSE, curr_expr_id, line, ppfline, pplline, first, last, FALSE );
         curr_expr_id++;
         right->exp = tmpexp;
 
@@ -312,7 +314,7 @@ static_expr* static_expr_gen(
     assert( left  != NULL );
 
     right = (static_expr*)malloc_safe( sizeof( static_expr ) );
-    right->exp = expression_create( NULL, left->exp, op, FALSE, curr_expr_id, line, ppline, first, last, FALSE );
+    right->exp = expression_create( NULL, left->exp, op, FALSE, curr_expr_id, line, ppfline, pplline, first, last, FALSE );
     curr_expr_id++;
 
     /* Make sure that we bind this later */
@@ -336,7 +338,8 @@ static_expr* static_expr_gen_ternary(
   static_expr* right,     /*!< Pointer to right static expression */
   static_expr* left,      /*!< Pointer to left static expression */
   unsigned int line,      /*!< Line number that static expression operation found on */
-  unsigned int ppline,    /*!< Line number from preprocessed file that static expression is found at */
+  unsigned int ppfline,   /*!< First line number from preprocessed file that static expression is found at */
+  unsigned int pplline,   /*!< Last line number from preprocessed file that static expression is found at */
   int          first,     /*!< Column index of first character in expression */
   int          last       /*!< Column index of last character in expression */
 ) { PROFILE(STATIC_EXPR_GEN_TERNARY);
@@ -373,7 +376,7 @@ static_expr* static_expr_gen_ternary(
       expression* tmpcsel;
 
       if( left->exp == NULL ) {
-        left->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, ppline, first, last, FALSE );
+        left->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, ppfline, pplline, first, last, FALSE );
         curr_expr_id++;
         {
           vector* vec = vector_create( 32, VTYPE_EXP, VDATA_UL, TRUE );
@@ -384,7 +387,7 @@ static_expr* static_expr_gen_ternary(
       }
 
       if( right->exp == NULL ) {
-        right->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, ppline, first, last, FALSE );
+        right->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, line, ppfline, pplline, first, last, FALSE );
         curr_expr_id++;
         {
           vector* vec = vector_create( 32, VTYPE_EXP, VDATA_UL, TRUE );
@@ -394,10 +397,10 @@ static_expr* static_expr_gen_ternary(
         (void)vector_from_int( right->exp->value, right->num );
       }
 
-      tmpcsel = expression_create( right->exp, left->exp, EXP_OP_COND_SEL, FALSE, curr_expr_id, line, ppline, first, last, FALSE );
+      tmpcsel = expression_create( right->exp, left->exp, EXP_OP_COND_SEL, FALSE, curr_expr_id, line, ppfline, pplline, first, last, FALSE );
       curr_expr_id++;
 
-      tmpcond = expression_create( tmpcsel, sel->exp, EXP_OP_COND, FALSE, curr_expr_id, line, ppline, first, last, FALSE );
+      tmpcond = expression_create( tmpcsel, sel->exp, EXP_OP_COND, FALSE, curr_expr_id, line, ppfline, pplline, first, last, FALSE );
       curr_expr_id++;
 
       sel->exp = tmpcond;

@@ -1,48 +1,48 @@
-5 16 fd01 3 ffffffff *
-8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (mbit_sel3.vcd) 2 -o (mbit_sel3.cdd) 2 -v (mbit_sel3.v) 2 -D (DUMP)
+5 16 fd81 3 ffffffff *
+8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (mbit_sel3.vcd) 2 -o (mbit_sel3.cdd) 2 -v (mbit_sel3.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 3 0 main "main" 0 mbit_sel3.v 1 27 1 
-2 1 10 10 550055 1 0 1004 0 0 32 48 0 0
-2 2 10 10 510053 2 0 1008 0 0 32 48 7f 0
-2 3 10 10 4f0056 2 24 1008 1 2 128 18 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 e
-2 4 10 10 4c004c 1 1 1004 0 0 1 1 g
-2 5 10 10 490049 1 1 1004 0 0 1 1 f
-2 6 10 10 49004c 1 31 1004 4 5 2 18 0 3 3 0 0 0
-2 7 10 10 490056 2 31 1008 3 6 130 18 0 ffffffff 89abcdef 76543210 0 0 0 ffffffff 1234567 fedcba98 0 0 0 ffffffff 76543210 89abcdef 0 0 0 ffffffff fedcba98 1234567 0 0 0 3 3 0 0 0
-2 8 10 10 480057 2 26 1008 7 0 130 18 0 ffffffff 89abcdef 76543210 0 0 0 ffffffff 1234567 fedcba98 0 0 0 ffffffff 76543210 89abcdef 0 0 0 ffffffff fedcba98 1234567 0 0 0 3 3 0 0 0
-2 9 10 10 420042 1 1 1008 0 0 1 1 b
-2 10 10 10 410042 1 1b 1004 9 0 1 18 0 1 1 0 0 0
-2 11 10 10 3d003d 1 1 1004 0 0 1 1 c
-2 12 10 10 3d0042 1 8 1184 10 11 1 18 0 1 1 1 0 0
-2 13 10 10 39003b 1 0 1008 0 0 32 48 82 0
-2 14 10 10 380044 2 25 1004 12 13 130 18 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 3 3 0 0 0
-2 15 10 10 380057 2 8 1084 8 14 130 18 0 ffffffff ffffffff 89abcdef 0 0 0 ffffffff ffffffff 1234567 0 0 0 ffffffff ffffffff 76543210 0 0 0 ffffffff ffffffff fedcba98 0 0 0 3 3 3 0 0
-2 16 10 10 320032 1 0 1004 0 0 32 48 0 0
-2 17 10 10 2f0030 2 0 1008 0 0 32 48 3f 0
-2 18 10 10 2d0033 2 24 1008 16 17 64 18 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 e
-2 19 10 10 290029 1 0 1004 0 0 32 48 0 0
-2 20 10 10 260027 2 0 1008 0 0 32 48 3f 0
-2 21 10 10 24002a 2 24 1008 19 20 64 18 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 e
-2 22 10 10 1e0021 1 0 21004 0 0 1 16 0 0
-2 23 10 10 1b001b 1 1 1004 0 0 1 1 d
-2 24 10 10 1b0021 2 31 1004 22 23 2 18 0 3 3 0 0 0
-2 25 10 10 1b002a 2 31 1008 21 24 66 18 0 ffffffff 89abcdef 76543210 0 0 0 ffffffff 1234567 fedcba98 0 0 0 3 3 0 0 0
-2 26 10 10 1b0033 2 31 1008 18 25 130 18 0 ffffffff 89abcdef 76543210 0 0 0 ffffffff 1234567 fedcba98 0 0 0 ffffffff 89abcdef 76543210 0 0 0 ffffffff 1234567 fedcba98 0 0 0 3 3 0 0 0
-2 27 10 10 1a0034 2 26 1008 26 0 130 18 0 ffffffff 89abcdef 76543210 0 0 0 ffffffff 1234567 fedcba98 0 0 0 ffffffff 89abcdef 76543210 0 0 0 ffffffff 1234567 fedcba98 0 0 0 3 3 0 0 0
-2 28 10 10 140014 1 1 1004 0 0 1 1 c
-2 29 10 10 100010 1 1 1008 0 0 1 1 b
-2 30 10 10 100014 1 8 1104 28 29 1 18 0 1 0 1 0 0
-2 31 10 10 c000e 1 0 1008 0 0 32 48 82 0
-2 32 10 10 b0016 2 25 1004 30 31 130 18 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 3 3 0 0 0
-2 33 10 10 b0034 2 8 1084 27 32 130 18 0 ffffffff ffffffff 89abcdef 0 0 0 ffffffff ffffffff 1234567 0 0 0 ffffffff ffffffff 89abcdef 0 0 0 ffffffff ffffffff 1234567 0 0 0 3 3 3 0 0
-2 34 10 10 b0057 2 9 1044 15 33 130 18 0 ffffffff 0 0 ffffffff 0 0 ffffffff 0 0 ffffffff 0 0 ffffffff 0 0 ffffffff 0 0 ffffffff 0 0 ffffffff 0 0 3 0 0 3 0
-2 35 10 10 70007 0 1 1410 0 0 130 1 a
-2 36 10 10 70057 2 35 6 34 35
-1 a 1 3 60010 1 0 129 0 130 17 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 3 3 0 0 0 0
+2 1 10 10 10 550055 1 0 1004 0 0 32 48 0 0
+2 2 10 10 10 510053 2 0 1008 0 0 32 48 7f 0
+2 3 10 10 10 4f0056 2 24 1008 1 2 128 18 0 ffffffffffffffff 0 0 0 0 0 ffffffffffffffff 0 0 0 0 e
+2 4 10 10 10 4c004c 1 1 1004 0 0 1 1 g
+2 5 10 10 10 490049 1 1 1004 0 0 1 1 f
+2 6 10 10 10 49004c 1 31 1004 4 5 2 18 0 3 3 0 0 0
+2 7 10 10 10 490056 2 31 1008 3 6 130 18 0 ffffffffffffffff 123456789abcdef fedcba9876543210 0 0 0 ffffffffffffffff fedcba9876543210 123456789abcdef 0 0 0 3 3 0 0 0
+2 8 10 10 10 480057 2 26 1008 7 0 130 18 0 ffffffffffffffff 123456789abcdef fedcba9876543210 0 0 0 ffffffffffffffff fedcba9876543210 123456789abcdef 0 0 0 3 3 0 0 0
+2 9 10 10 10 420042 1 1 1008 0 0 1 1 b
+2 10 10 10 10 410042 1 1b 1004 9 0 1 18 0 1 1 0 0 0
+2 11 10 10 10 3d003d 1 1 1004 0 0 1 1 c
+2 12 10 10 10 3d0042 1 8 1184 10 11 1 18 0 1 1 1 0 0
+2 13 10 10 10 39003b 1 0 1008 0 0 32 48 82 0
+2 14 10 10 10 380044 2 25 1004 12 13 130 18 0 ffffffffffffffff ffffffffffffffff 0 0 0 0 ffffffffffffffff ffffffffffffffff 0 0 0 0 3 3 0 0 0
+2 15 10 10 10 380057 2 8 1084 8 14 130 18 0 ffffffffffffffff ffffffffffffffff 123456789abcdef 0 0 0 ffffffffffffffff ffffffffffffffff fedcba9876543210 0 0 0 3 3 3 0 0
+2 16 10 10 10 320032 1 0 1004 0 0 32 48 0 0
+2 17 10 10 10 2f0030 2 0 1008 0 0 32 48 3f 0
+2 18 10 10 10 2d0033 2 24 1008 16 17 64 18 0 ffffffffffffffff 0 0 0 0 e
+2 19 10 10 10 290029 1 0 1004 0 0 32 48 0 0
+2 20 10 10 10 260027 2 0 1008 0 0 32 48 3f 0
+2 21 10 10 10 24002a 2 24 1008 19 20 64 18 0 ffffffffffffffff 0 0 0 0 e
+2 22 10 10 10 1e0021 1 0 21004 0 0 1 16 0 0
+2 23 10 10 10 1b001b 1 1 1004 0 0 1 1 d
+2 24 10 10 10 1b0021 2 31 1004 22 23 2 18 0 3 3 0 0 0
+2 25 10 10 10 1b002a 2 31 1008 21 24 66 18 0 ffffffffffffffff 123456789abcdef fedcba9876543210 0 0 0 3 3 0 0 0
+2 26 10 10 10 1b0033 2 31 1008 18 25 130 18 0 ffffffffffffffff 123456789abcdef fedcba9876543210 0 0 0 ffffffffffffffff 123456789abcdef fedcba9876543210 0 0 0 3 3 0 0 0
+2 27 10 10 10 1a0034 2 26 1008 26 0 130 18 0 ffffffffffffffff 123456789abcdef fedcba9876543210 0 0 0 ffffffffffffffff 123456789abcdef fedcba9876543210 0 0 0 3 3 0 0 0
+2 28 10 10 10 140014 1 1 1004 0 0 1 1 c
+2 29 10 10 10 100010 1 1 1008 0 0 1 1 b
+2 30 10 10 10 100014 1 8 1104 28 29 1 18 0 1 0 1 0 0
+2 31 10 10 10 c000e 1 0 1008 0 0 32 48 82 0
+2 32 10 10 10 b0016 2 25 1004 30 31 130 18 0 ffffffffffffffff ffffffffffffffff 0 0 0 0 ffffffffffffffff ffffffffffffffff 0 0 0 0 3 3 0 0 0
+2 33 10 10 10 b0034 2 8 1084 27 32 130 18 0 ffffffffffffffff ffffffffffffffff 123456789abcdef 0 0 0 ffffffffffffffff ffffffffffffffff 123456789abcdef 0 0 0 3 3 3 0 0
+2 34 10 10 10 b0057 2 9 1044 15 33 130 18 0 ffffffffffffffff 0 0 ffffffffffffffff 0 0 ffffffffffffffff 0 0 ffffffffffffffff 0 0 3 0 0 3 0
+2 35 10 10 10 70007 0 1 1410 0 0 130 1 a
+2 36 10 10 10 70057 2 35 6 34 35
+1 a 1 3 60010 1 0 129 0 130 17 ffffffffffffffff ffffffffffffffff 0 0 0 0 ffffffffffffffff ffffffffffffffff 0 0 0 0 3 3 0 0 0 0
 1 b 2 4 70005 1 0 0 0 1 17 0 1 0 0 0 0
 1 c 3 5 70005 1 0 0 0 1 17 0 1 0 0 0 0
 1 d 4 6 70005 1 0 0 0 1 17 0 1 0 0 0 0
-1 e 5 7 70010 1 0 127 0 128 17 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
+1 e 5 7 70010 1 0 127 0 128 17 0 ffffffffffffffff 0 0 0 0 0 ffffffffffffffff 0 0 0 0
 1 f 6 8 70005 1 0 0 0 1 17 0 1 0 0 0 0
 1 g 7 8 70008 1 0 0 0 1 17 0 1 0 0 0 0
 4 36 f 36 36 36
