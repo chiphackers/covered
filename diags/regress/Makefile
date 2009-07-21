@@ -571,7 +571,7 @@ else
 ifeq ($(MAKECMDGOALS),vcomp)
 EXCLUDE       +=
 else
-EXCLUDE       += case4.1          random4
+EXCLUDE       += case4.1          nested_block2     nested_block2.1   random4
 endif
 endif
 endif
