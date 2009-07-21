@@ -287,7 +287,7 @@ NOSIMERRLIST  = bug2791651        comment1          enum2             err4      
 ifeq ($(MAKECMDGOALS),cver)
 EXCLUDE      += afunc1            afunc2            always5.1         always_comb1      always_comb2 \
                 always_ff1        always_latch1     always_latch2     assert1           assign1 \
-                assign2.8         atask1            bit1              byte1             char1 \
+                assign2.8         assign5           atask1            bit1              byte1             char1 \
                 dec1              dec1.1            dec2              dec3              dec3.1 \
                 define3           delay3            dly_assign1.1     dly_assign1.2     dly_assign1.3 \
                 dly_assign1.4     dly_assign2       dly_assign2.1     do_while1         do_while1.1 \
