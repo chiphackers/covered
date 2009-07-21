@@ -2400,7 +2400,7 @@ static void generator_insert_comb_cov_helper2(
                                (!EXPR_IS_EVENT( exp ) && !EXPR_IS_COMB( exp ) && expr_cov_needed));
 
     /* Generate children expression trees (depth first search) */
-    generator_insert_comb_cov_helper2( exp->left,  funit, exp->op, depth, (expr_cov_needed & EXPR_IS_COMB( exp )), net, FALSE, reg_needed, child_replace_exp );
+    generator_insert_comb_cov_helper2( exp->left,  funit, exp->op, depth, (expr_cov_needed & EXPR_IS_COMB( exp )), net, FALSE, reg_needed, (child_replace_exp && !EXPR_IS_OP_AND_ASSIGN( exp )) );
     generator_insert_comb_cov_helper2( exp->right, funit, exp->op, depth, (expr_cov_needed & EXPR_IS_COMB( exp )), net, FALSE, reg_needed, child_replace_exp );
 
     /* Generate event combinational logic type */
@@ -2409,7 +2409,7 @@ static void generator_insert_comb_cov_helper2(
         generator_insert_event_comb_cov( exp, funit, reg_needed );
       }
       if( force_subexp || generator_expr_needs_to_be_substituted( exp ) ) {
-        generator_insert_subexp( exp, funit, net, reg_needed, replace_exp );
+        generator_insert_subexp( exp, funit, net, reg_needed, (replace_exp && !EXPR_IS_OP_AND_ASSIGN( exp )) );
       }
 
     /* Otherwise, generate binary combinational logic type */
@@ -2424,7 +2424,7 @@ static void generator_insert_comb_cov_helper2(
     /* Generate unary combinational logic type */
     } else {
       if( expr_cov_needed || force_subexp || generator_expr_needs_to_be_substituted( exp ) ) {
-        generator_insert_subexp( exp, funit, net, reg_needed, replace_exp );
+        generator_insert_subexp( exp, funit, net, reg_needed, (replace_exp && !EXPR_IS_OP_AND_ASSIGN( exp )) );
       }
       if( expr_cov_needed ) {
         generator_insert_unary_comb_cov( exp, funit, net, reg_needed );

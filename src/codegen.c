@@ -994,40 +994,20 @@ static void codegen_gen_expr1(
                                  NULL, 0, NULL, NULL );
             break;
           case EXP_OP_IINC     :
-            if( inline_exp ) {
-              codegen_create_expr( code, code_depth, expr->line, "(", left_code, left_code_depth, expr->left, "+ 1)",
-                                   NULL, 0, NULL, NULL );
-            } else {
-              codegen_create_expr( code, code_depth, expr->line, "++", left_code, left_code_depth, expr->left, NULL,
-                                   NULL, 0, NULL, NULL );
-            }
+            codegen_create_expr( code, code_depth, expr->line, "++", left_code, left_code_depth, expr->left, NULL,
+                                 NULL, 0, NULL, NULL );
             break;
           case EXP_OP_PINC     :
-            if( inline_exp ) {
-              codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, NULL,
-                                   NULL, 0, NULL, NULL );
-            } else {
-              codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, "++",
-                                   NULL, 0, NULL, NULL );
-            }
+            codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, "++",
+                                 NULL, 0, NULL, NULL );
             break;
           case EXP_OP_IDEC     :
-            if( inline_exp ) {
-              codegen_create_expr( code, code_depth, expr->line, "(", left_code, left_code_depth, expr->left, "- 1)",
-                                   NULL, 0, NULL, NULL );
-            } else {
-              codegen_create_expr( code, code_depth, expr->line, "--", left_code, left_code_depth, expr->left, NULL,
-                                   NULL, 0, NULL, NULL );
-            }
+            codegen_create_expr( code, code_depth, expr->line, "--", left_code, left_code_depth, expr->left, NULL,
+                                 NULL, 0, NULL, NULL );
             break;
           case EXP_OP_PDEC     :
-            if( inline_exp ) {
-              codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, NULL,
-                                   NULL, 0, NULL, NULL );
-            } else {
-              codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, "--",
-                                   NULL, 0, NULL, NULL );
-            }
+            codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, "--",
+                                 NULL, 0, NULL, NULL );
             break;
           case EXP_OP_DIM      :
             codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left, "",
