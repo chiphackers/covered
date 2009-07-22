@@ -527,13 +527,10 @@ static void generator_insert_reg(
     tmp_tail->next     = reg_top->ptr->next;
     reg_top->ptr->next = tmp_head;
     if( hold_tail == reg_top->ptr ) {
-      hold_tail = tmp_head;
+      hold_tail = tmp_tail;
     }
   }
 
-  printf( "In generator_insert_reg, hold list:\n" );
-  str_link_display( hold_head );
- 
   PROFILE_END;
 
 }
