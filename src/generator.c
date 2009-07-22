@@ -492,7 +492,8 @@ static bool generator_is_reg_top_one_deep() { PROFILE(GENERATOR_IS_BASE_REG_INSE
  Inserts the given register instantiation string into the appropriate spot in the hold buffer.
 */
 static void generator_insert_reg(
-  const char* str  /*!< Register instantiation string to insert */
+  const char* str,     /*!< Register instantiation string to insert */
+  bool        tmp_reg  /*!< Set to TRUE if the added register/wire is an intermediate signal */
 ) { PROFILE(GENERATOR_INSERT_REG);
 
   str_link* tmp_head = NULL;
@@ -500,24 +501,38 @@ static void generator_insert_reg(
 
   assert( reg_top != NULL );
 
+  /* If the signal is an intermediate signal, turn tracing off for this signal */
+  if( tmp_reg ) {
+    (void)str_link_add( strdup_safe( "/* verilator tracing_off */\n" ), &tmp_head, &tmp_tail );
+  }
+
   /* Create string link */
   (void)str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
 
+  /* If the signal is an intermediate signal, turn tracing back on for this signal */
+  if( tmp_reg ) {
+    (void)str_link_add( strdup_safe( "/* verilator tracing_on */\n" ), &tmp_head, &tmp_tail );
+  }
+
   /* Insert it at the insertion point */
   if( reg_top->ptr == NULL ) {
-    tmp_head->next = hold_head;
+    tmp_tail->next = hold_head;
     if( hold_head == NULL ) {
-      hold_head = hold_tail = tmp_head;
+      hold_head = tmp_head;
+      hold_tail = tmp_tail;
     } else {
       hold_head = tmp_head;
     }
   } else {
-    tmp_head->next     = reg_top->ptr->next;
+    tmp_tail->next     = reg_top->ptr->next;
     reg_top->ptr->next = tmp_head;
     if( hold_tail == reg_top->ptr ) {
       hold_tail = tmp_head;
     }
   }
+
+  printf( "In generator_insert_reg, hold list:\n" );
+  str_link_display( hold_head );
  
   PROFILE_END;
 
@@ -1389,7 +1404,7 @@ void generator_insert_line_cov_with_stmt(
     /* Create the register */
     rv = snprintf( str, 4096, "reg %s;\n", sig );
     assert( rv < 4096 );
-    generator_insert_reg( str );
+    generator_insert_reg( str, FALSE );
 
     /* Prepend the line coverage assignment to the working buffer */
     rv = snprintf( str, 4096, " %s = 1'b1%c", sig, (semicolon ? ';' : ',') );
@@ -1469,7 +1484,7 @@ void generator_insert_event_comb_cov(
   if( reg_needed ) {
     rv = snprintf( str, 4096, "reg %s;\n", name );
     assert( rv < 4096 );
-    generator_insert_reg( str );
+    generator_insert_reg( str, FALSE );
   }
 
   /*
@@ -1501,7 +1516,7 @@ void generator_insert_event_comb_cov(
           if( reg_needed && (exp->suppl.part.eval_t == 0) ) {
             rv = snprintf( str, 4096, "reg %s;\n", tname );
             assert( rv < 4096 );
-            generator_insert_reg( str );
+            generator_insert_reg( str, FALSE );
             exp->suppl.part.eval_t = 1;
           }
           rv = snprintf( str, 4096, " %s = (%s!==1'b1) & ((%s)===1'b1);", name, tname, event_str );
@@ -1523,7 +1538,7 @@ void generator_insert_event_comb_cov(
           if( reg_needed && (exp->suppl.part.eval_t == 0) ) {
             rv = snprintf( str, 4096, "reg %s;\n", tname );
             assert( rv < 4096 );
-            generator_insert_reg( str );
+            generator_insert_reg( str, FALSE );
             exp->suppl.part.eval_t = 1;
           }
           rv = snprintf( str, 4096, " %s = (%s!==1'b0) & ((%s)===1'b0);", name, tname, event_str );
@@ -1551,7 +1566,7 @@ void generator_insert_event_comb_cov(
               rv = snprintf( str, 4096, "reg [((%s)-1):0] %s;\n", size, tname );
             }
             assert( rv < 4096 );
-            generator_insert_reg( str );
+            generator_insert_reg( str, FALSE );
             free_safe( size, (strlen( size ) + 1) );
             exp->suppl.part.eval_t = 1;
           }
@@ -1616,7 +1631,7 @@ static void generator_insert_unary_comb_cov(
     if( reg_needed ) {
       rv = snprintf( str, 4096, "reg %s;\n", sig );
       assert( rv < 4096 );
-      generator_insert_reg( str );
+      generator_insert_reg( str, FALSE );
     }
   }
 
@@ -1676,7 +1691,7 @@ static void generator_insert_comb_comb_cov(
     prefix[0] = '\0';
     rv = snprintf( str, 4096, "reg [1:0] %s;\n", sig );
     assert( rv < 4096 );
-    generator_insert_reg( str );
+    generator_insert_reg( str, FALSE );
   }
 
   /* Prepend the coverage assignment to the working buffer */
@@ -2057,7 +2072,7 @@ static char* generator_create_lhs(
   /* Add the wire/reg */
   if( str != NULL ) {
     assert( rv < slen );
-    generator_insert_reg( str );
+    generator_insert_reg( str, TRUE );
   }
 
   /* Deallocate memory */
@@ -2886,7 +2901,7 @@ static void generator_insert_mem_cov(
       str = (char*)malloc_safe( slen );
       rv  = snprintf( str, slen, "reg [(%s)-1:0] %s;\n", num, iname );
       assert( rv < slen );
-      generator_insert_reg( str );
+      generator_insert_reg( str, FALSE );
       free_safe( str, (strlen( str ) + 1) );
 
       slen = 1 + strlen( iname ) + 3 + strlen( idxstr ) + 2;
@@ -2908,12 +2923,11 @@ static void generator_insert_mem_cov(
     */
     if( rhs != NULL ) {
 
-      char*       ename    = generator_create_expr_name( rhs );
-      char        rhs_reg[4096];
-      expression* last_rhs = expression_get_last_line_expr( rhs );
-      char*       rhs_str;
-      char*       lsb_str;
-      char*       msb_str;
+      char* ename = generator_create_expr_name( rhs );
+      char  rhs_reg[4096];
+      char* rhs_str;
+      char* lsb_str;
+      char* msb_str;
 
       /*
        We are reusing the comb_cntd bit in the expression supplemental field to indicate that this expression
@@ -2933,7 +2947,7 @@ static void generator_insert_mem_cov(
           rv = snprintf( rhs_reg, 4096, "reg [(%s)-1:0] %s;\n", size, ename );
         }
         assert( rv < 4096 );
-        generator_insert_reg( rhs_reg );
+        generator_insert_reg( rhs_reg, TRUE );
 
         /* Add the expression that will be assigned to the memory element */
         rhs_str = codegen_gen_expr_one_line( rhs, funit, FALSE );
@@ -3060,7 +3074,7 @@ static void generator_insert_mem_cov(
     assert( rv < slen );
 
     /* Add the register to the register list */
-    generator_insert_reg( str );
+    generator_insert_reg( str, FALSE );
     free_safe( str, (strlen( str ) + 1) );
 
     /* Now create the assignment string */
