@@ -2062,7 +2062,7 @@ static char* generator_create_lhs(
     }
 
   /* Create sized register string */
-  } else if( reg_needed ) {
+  } else if( reg_needed && (exp->suppl.part.eval_t == 0) ) {
 
     if( size == NULL ) {
       char tmp[50];
@@ -2508,9 +2508,6 @@ static void generator_insert_comb_cov_helper(
     comb_head = comb_tail = NULL;
 
   }
-
-  /* Clear the comb_cntd bits in the expression tree */
-  generator_clear_comb_cntd( exp );
 
 }
 
@@ -3200,6 +3197,9 @@ statement* generator_insert_comb_cov(
       generator_insert_mem_cov_helper( stmt->exp, stmt->funit, net, FALSE, FALSE, ((stmt->exp->op == EXP_OP_NASSIGN) ? stmt->exp->right : NULL) );
     }
 
+    /* Clear the comb_cntd bits in the expression tree */
+    generator_clear_comb_cntd( stmt->exp );
+
   }
 
   /* If we need to save the found statement, do so now */
@@ -3248,6 +3248,9 @@ statement* generator_insert_comb_cov_from_stmt_stack() { PROFILE(GENERATOR_INSER
       generator_insert_comb_cov_helper( exp, stmt->funit, exp->op, FALSE, TRUE, FALSE );
     }
 
+    /* Clear the comb_cntd bits in the expression tree */
+    generator_clear_comb_cntd( exp );
+
     /* Now pop the statement stack */
     stmt_stack = sll->next;
     free_safe( sll, sizeof( stmt_loop_link ) );
@@ -3276,6 +3279,9 @@ void generator_insert_comb_cov_with_stmt(
     /* Insert combinational coverage */
     generator_insert_comb_cov_helper( exp, stmt->funit, exp->op, FALSE, TRUE, reg_needed );
 
+    /* Clear the comb_cntd bits in the expression tree */
+    generator_clear_comb_cntd( exp );
+
   }
 
   PROFILE_END;
@@ -3298,22 +3304,8 @@ void generator_insert_case_comb_cov(
 
     generator_insert_comb_cov_helper( stmt->exp->left, stmt->funit, stmt->exp->left->op, FALSE, TRUE, TRUE );
 
-#ifdef FUTURE_ENHANCEMENT
-    /* Generate covered for the current case item */
-    generator_insert_comb_cov_helper( stmt->exp, stmt->funit, stmt->exp->op, FALSE, TRUE, TRUE );
-
-    /* If the current statement is a case item type, handle it; otherwise, we are done */
-    while( !stmt->suppl.part.stop_false &&
-           ((stmt->next_false->exp->op == EXP_OP_CASE) || (stmt->next_false->exp->op == EXP_OP_CASEX) || (stmt->next_false->exp->op == EXP_OP_CASEZ)) ) {
-
-      /* Move statement to next false statement */
-      stmt = stmt->next_false;
-
-      /* Generate covered for the current case item */
-      generator_insert_comb_cov_helper( stmt->exp, stmt->funit, stmt->exp->op, FALSE, TRUE, TRUE );
-
-    }
-#endif
+    /* Clear the comb_cntd bits in the expression tree */
+    generator_clear_comb_cntd( stmt->exp->left );
 
   }
 

@@ -723,7 +723,10 @@ static bool bind_task_function_namedblock(
         if( staticf ) {
           found_funit->suppl.part.staticf = 1;
         } else {
-          found_funit->suppl.part.normalf = 1;
+          func_unit* parent_func = funit_get_curr_function( funit_exp );
+          if( parent_func != found_funit ) {
+            found_funit->suppl.part.normalf = 1;
+          }
         }
       }
 

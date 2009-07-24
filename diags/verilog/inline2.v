@@ -21,11 +21,12 @@ initial begin
         $dumpfile( "inline2.vcd" );
         $dumpvars( 0, main );
 `endif
-	c   = 2'b01;
-	wen = 1'b0;
+	c   <= 2'b01;
+	wen <= 1'b0;
 	@(posedge clock);
-	wen = 1'b1;
-        #5;
+	wen <= 1'b1;
+	@(posedge clock);
+	@(posedge clock);
         $finish;
 end
 
