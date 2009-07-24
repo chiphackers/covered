@@ -204,5 +204,8 @@ void generator_handle_event_trigger(
   unsigned int last_column
 );
 
+/*! \brief Removes the last token in the work buffer and holds onto it. */
+void generator_hold_last_token();
+
 #endif
 

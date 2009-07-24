@@ -230,7 +230,9 @@ WSPACE [ \t\b\f]+
  }
 <CCOMMENT>\n   {
   yylloc.first_line++;
-  yylloc.ppfline++;
+  if( parse_mode ) {
+    yylloc.ppfline++;
+  }
   yylloc.pplline++;
   yylloc.last_line++;
   yylloc.last_column = 0;
@@ -240,7 +242,21 @@ WSPACE [ \t\b\f]+
   if( parse_mode ) {
     check_for_pragma( yytext );
   } else {
-    generator_add_orig_to_work_code( yytext, yylloc.ppfline, yylloc.first_column );
+    char* line = yytext;
+    char* ptr  = yytext;
+    while( *ptr != '\0' ) {
+      if( *ptr == '\n' ) {
+        *ptr = '\0';
+        generator_add_orig_to_work_code( line, yylloc.ppfline, yylloc.first_column );
+        generator_add_orig_to_work_code( "\n", yylloc.ppfline, yylloc.first_column );
+        line = ptr + 1;
+        yylloc.ppfline++;
+      }
+      ptr++;
+    }
+    if( line != '\0' ) {
+      generator_add_orig_to_work_code( line, yylloc.ppfline, yylloc.first_column );
+    }
   }
   yylloc.last_column += 2;
   BEGIN( state_enter );

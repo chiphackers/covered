@@ -175,6 +175,16 @@ static unsigned int replace_first_line;
 */
 static unsigned int replace_first_col;
 
+/*!
+ Index of last token added to the working buffer.
+*/
+static unsigned int last_token_index;
+
+/*!
+ Look-ahead buffer that stores last parsed token.
+*/
+static char lahead_buffer[4096];
+
 
 static char* generator_gen_size(
   expression* exp,
@@ -196,7 +206,7 @@ void generator_display() { PROFILE(GENERATOR_DISPLAY);
     printf( "    %s\n", strl->str );
     strl = strl->next;
   }
-  printf( "Holding buffer:\n  %s\n", hold_buffer );
+  printf( "Holding buffer:\n  [%s]\n", hold_buffer );
 
   printf( "Working code list (%p %p):\n", work_head, work_tail );
   strl = work_head;
@@ -204,7 +214,7 @@ void generator_display() { PROFILE(GENERATOR_DISPLAY);
     printf( "    %s\n", strl->str );
     strl = strl->next;
   }
-  printf( "Working buffer:\n  %s\n", work_buffer );
+  printf( "Working buffer:\n  [%s]\n", work_buffer );
 
   PROFILE_END;
 
@@ -300,6 +310,7 @@ void generator_replace(
     while( first_line > replace_first_line ) {
       replace_first.list_ptr = replace_first.list_ptr->next;
       if( replace_first.list_ptr == NULL ) {
+        // printf( "  replace_first_line: %u\n", replace_first_line );
         assert( first_line == (replace_first_line + 1) );
         replace_first.word_ptr = work_buffer;
       } else {
@@ -1069,6 +1080,20 @@ void generator_add_to_work_code(
 
     long replace_offset = strlen( work_buffer );
 
+    /* If something is stored in the look-ahead buffer, add it to the work buffer first */
+    if( strlen( lahead_buffer ) > 0 ) {
+
+      assert( (strlen( work_buffer ) + strlen( lahead_buffer)) < 4095 );
+      strcat( work_buffer, lahead_buffer );
+      lahead_buffer[0] = '\0';
+
+    } else {
+
+      /* Set the last_token index to the replace_offset */
+      last_token_index = replace_offset;
+
+    }
+
     /* I don't believe that a line will ever exceed 4K chars */
     assert( (strlen( work_buffer ) + strlen( str )) < 4095 );
     strcat( work_buffer, str );
@@ -1180,7 +1205,9 @@ void generator_flush_work_code1(
   work_buffer[0] = '\0';
 
   /* Clear replacement pointers */
-  generator_clear_replace_ptrs();
+  if( strlen( lahead_buffer ) == 0 ) {
+    generator_clear_replace_ptrs();
+  }
 
   PROFILE_END;
 
@@ -3404,3 +3431,29 @@ void generator_handle_event_trigger(
 
 }
 
+/*!
+ Removes the last token from the working buffer and holds onto it, adding it back when the next token is parsed.
+*/
+void generator_hold_last_token() { PROFILE(GENERATOR_HOLD_LAST_TOKEN);
+
+  /* Find the last token and store it into the look-ahead buffer */
+  if( strlen( work_buffer ) > 0 ) {
+
+    strcpy( lahead_buffer, (work_buffer + last_token_index) );
+    work_buffer[last_token_index] = '\0';
+    replace_last.word_ptr = work_buffer + (last_token_index - 1);
+
+#ifdef DEBUG_MODE
+    if( debug_mode ) {
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Holding last token [%s]", lahead_buffer );
+      assert( rv < USER_MSG_LENGTH );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+      generator_display();
+    }
+#endif
+
+  }
+
+  PROFILE_END;
+
+}

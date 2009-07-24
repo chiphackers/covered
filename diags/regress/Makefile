@@ -101,14 +101,14 @@ DIAGS1        = add1              aedge1            aedge1.1          afunc1    
                 generate15        generate15.1      generate15.2      generate15.3      generate15.4 \
                 generate15.5      generate16        generate16.1      generate16.2      generate16.3 \
                 generate17        generate18        generate19        generate19.1      generate19.2 \
-                generate21        hier1             hier1.1 \
-                hier2             hier3             hier3.1           hier3.2           hier3.3 \
-                hier3.4           hier4             if1               ifdef1            ifdef1.1 \
-                ifdef1.2          ifdef2.1          ifdef2.2          ifdef2.3          ifdef3 \
-                ifelse1           ifndef1           ifndef2           implicit2         implicit2.1 \
-                inc1              inc1.1            inc2              inc3              inc3.1 \
-                include1          include1.1        include2          include4          include5 \
-                initial1          instance1         instance1.1       instance1.2       instance2 \
+                generate21        hier1             hier1.1           hier2             hier3 \
+                hier3.1           hier3.2           hier3.3           hier3.4           hier4 \
+                if1               ifdef1            ifdef1.1          ifdef1.2          ifdef2.1 \
+                ifdef2.2          ifdef2.3          ifdef3            ifelse1           ifndef1 \
+                ifndef2           implicit2         implicit2.1       inc1              inc1.1 \
+                inc2              inc3              inc3.1            include1          include1.1 \
+                include2          include4          include5          initial1          inline1 \
+                inline1.1         instance1         instance1.1       instance1.2       instance2 \
                 instance3         instance4         instance4.1       instance4.2       instance5 \
                 instance6         instance6.1       instance6.2       instance7         int1 \
                 line1             localparam1       localparam1.1     localparam1.2     localparam1.3 \

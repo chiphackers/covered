@@ -527,6 +527,7 @@ profiler profiles[NUM_PROFILES] = {
   {"generator_insert_fsm_covs", NULL, 0, 0, 0, TRUE},
   {"generator_handle_event_type", NULL, 0, 0, 0, TRUE},
   {"generator_handle_event_trigger", NULL, 0, 0, 0, TRUE},
+  {"generator_hold_last_token", NULL, 0, 0, 0, TRUE},
   {"score_add_args", NULL, 0, 0, 0, FALSE},
   {"info_set_vector_elem_size", NULL, 0, 0, 0, TRUE},
   {"info_db_write", NULL, 0, 0, 0, TRUE},

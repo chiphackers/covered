@@ -4769,6 +4769,9 @@ if_body
     {
       $$.stmt1 = $2;
       $$.stmt2 = NULL;
+      if( !parse_mode ) {
+        generator_hold_last_token();
+      }
     }
   | inc_block_depth statement_or_null dec_block_depth K_else inc_block_depth statement_or_null dec_block_depth
     {
