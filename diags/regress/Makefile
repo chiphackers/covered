@@ -108,7 +108,7 @@ DIAGS1        = add1              aedge1            aedge1.1          afunc1    
                 ifndef2           implicit2         implicit2.1       inc1              inc1.1 \
                 inc2              inc3              inc3.1            include1          include1.1 \
                 include2          include4          include5          initial1          inline1 \
-                inline1.1         instance1         instance1.1       instance1.2       instance2 \
+                inline1.1         inline2           instance1         instance1.1       instance1.2       instance2 \
                 instance3         instance4         instance4.1       instance4.2       instance5 \
                 instance6         instance6.1       instance6.2       instance7         int1 \
                 line1             localparam1       localparam1.1     localparam1.2     localparam1.3 \
