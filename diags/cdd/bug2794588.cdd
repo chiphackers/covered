@@ -1,5 +1,5 @@
-5 16 fd81 3 ffffffff *
-8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (top.vcd) 2 -o (bug2794588.cdd) 2 -y (lib) 2 -v (lib/top.v) 2 -D (DUMP)
+5 17 1fd01 3 ffffffff *
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (top.vcd) 2 -o (bug2794588.cdd) 2 -y (lib) 2 -v (lib/top.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 3 0 main "main" 0 lib/top.v 1 24 1 
 1 a 1 3 70005 1 0 0 0 1 17 0 1 0 0 0 0

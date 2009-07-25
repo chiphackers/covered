@@ -1,9 +1,9 @@
-5 16 fd81 50 ffffffff *
-8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (fsm3.vcd) 2 -o (fsm3.cdd) 2 -y (lib) 2 -v (fsm3.v) 2 -F (main=state,next_state) 2 -D (DUMP)
+5 17 1fd01 51 ffffffff *
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (fsm3.vcd) 2 -o (fsm3.cdd) 2 -y (lib) 2 -v (fsm3.v) 2 -F (main=state,next_state) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 3 0 main "main" 0 fsm3.v 1 66 1 
-2 1 16 16 16 110013 32 1 100c 0 0 1 1 clk
-2 2 16 16 16 90013 4c 27 100a 1 0 1 18 0 1 0 0 0 0
+2 1 16 16 16 110013 33 1 100c 0 0 1 1 clk
+2 2 16 16 16 90013 4d 27 100a 1 0 1 18 0 1 0 0 0 0
 2 3 16 16 16 34003d 7 1 1008 0 0 16 1 next_state
 2 4 16 16 16 270030 1 32 1008 0 0 16 1 STATE_IDLE
 2 5 16 16 16 1f0030 9 1a 1008 3 4 16 18 0 ffff ffff 1111 0 0
@@ -106,11 +106,11 @@
 2 72 62 62 62 1000a 1 37 16 70 71
 2 73 63 63 63 8000e 1 68 1002 0 0 1 18 0 1 0 0 0 0
 2 74 63 63 63 120012 1 0 1008 0 0 32 48 2 0
-2 75 63 63 63 100013 63 2c 900a 74 0 32 18 0 ffffffff 0 0 0 0
-2 76 63 63 63 1c001e 31 1 101c 0 0 1 1 clk
-2 77 63 63 63 1b001e 31 1b 102c 76 0 1 18 0 1 1 1 0 0
+2 75 63 63 63 100013 65 2c 900a 74 0 32 18 0 ffffffff 0 0 0 0
+2 76 63 63 63 1c001e 32 1 101c 0 0 1 1 clk
+2 77 63 63 63 1b001e 32 1b 102c 76 0 1 18 0 1 1 1 0 0
 2 78 63 63 63 150017 0 1 1410 0 0 1 1 clk
-2 79 63 63 63 15001e 31 37 3e 77 78
+2 79 63 63 63 15001e 32 37 3e 77 78
 4 72 11 73 73 72
 4 73 0 0 75 72
 4 75 0 79 0 72

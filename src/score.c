@@ -245,11 +245,12 @@ static void score_usage() {
   printf( "      +libext+.<extension>(+.<extension>)+\n" );
   printf( "                                   Extensions of Verilog files to allow in scoring\n" );
   printf( "\n" );
-  printf( "      -inline                             Outputs Verilog with inlined code coverage\n" );
-  printf( "      -inline-metrics [l][t][m][c][f][a]  Specifies which coverage metrics should be inlined for scoring purposes.  Only these metrics\n" );
-  printf( "                                            will be available for reporting and ranking.  Default is ltmcfa.\n" );
-  printf( "      -inline-comb-depth <value>          Specifies the depth in an expression tree that combinational logic coverage will be scored for.\n" );
-  printf( "                                            By default, combinational logic depth is infinite.\n" );
+  printf( "      -inline                                Outputs Verilog with inlined code coverage\n" );
+  printf( "      -inline-metrics [l][t][m][e][c][f][a]  Specifies which coverage metrics should be inlined for scoring purposes.  Only these metrics\n" );
+  printf( "                                               will be available for reporting and ranking.  l=line, t=toggle, m=memory, e=logic events,\n" );
+  printf( "                                               c=combinational logic, f=FSM, a=assertions.  Default is ltmecfa.\n" );
+  printf( "      -inline-comb-depth <value>             Specifies the depth in an expression tree that combinational logic coverage will be scored for.\n" );
+  printf( "                                               By default, combinational logic depth is infinite.\n" );
   printf( "\n" );
   printf( "   Race Condition Options:\n" );
   printf( "\n" );
@@ -531,6 +532,7 @@ static void score_parse_metrics(
   info_suppl.part.scored_comb   = 0;
   info_suppl.part.scored_fsm    = 0;
   info_suppl.part.scored_assert = 0;
+  info_suppl.part.scored_events = 0;
 
   for( ptr=metrics; ptr<(metrics + strlen( metrics )); ptr++ ) {
 
@@ -547,6 +549,8 @@ static void score_parse_metrics(
       case 'F' :  info_suppl.part.scored_fsm    = 1;  break;
       case 'a' :
       case 'A' :  info_suppl.part.scored_assert = 1;  break;
+      case 'e' :
+      case 'E' :  info_suppl.part.scored_events = 1;  break;
       default  :
         {
           unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Unknown metric specified '%c'...  Ignoring.", *ptr );
@@ -1229,6 +1233,7 @@ void command_score(
     info_suppl.part.scored_comb   = 1;
     info_suppl.part.scored_fsm    = 1;
     info_suppl.part.scored_assert = 1;
+    info_suppl.part.scored_events = 1;
 
     /* Parse score command-line */
     if( !score_parse_args( argc, last_arg, argv ) ) {
@@ -1241,6 +1246,7 @@ void command_score(
         info_suppl.part.scored_comb   = 1;
         info_suppl.part.scored_fsm    = 1;
         info_suppl.part.scored_assert = 1;
+        info_suppl.part.scored_events = 1;
       }
 
       if( output_db == NULL ) {

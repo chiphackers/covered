@@ -1,5 +1,5 @@
-5 16 fd81 3 ffffffff main
-8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (adder1) 2 -i (main.adder) 2 -vcd (rank1.1c.vcd) 2 -o (rank1.1c.cdd) 2 -v (rank1.1c.v) 2 -y (lib) 2 -D (DUMP)
+5 17 1fd01 3 ffffffff main
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (adder1) 2 -i (main.adder) 2 -vcd (rank1.1c.vcd) 2 -o (rank1.1c.cdd) 2 -v (rank1.1c.v) 2 -y (lib) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 15 main 0
 3 0 adder1 "main.adder" 0 lib/adder1.v 1 18 1 

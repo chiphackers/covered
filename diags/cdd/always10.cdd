@@ -1,9 +1,9 @@
-5 16 fd81 22 ffffffff *
-8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (always10.vcd) 2 -o (always10.cdd) 2 -v (always10.v) 2 -D (DUMP)
+5 17 1fd01 23 ffffffff *
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (always10.vcd) 2 -o (always10.cdd) 2 -v (always10.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 3 0 main "main" 0 always10.v 1 29 1 
-2 1 6 6 6 110015 16 1 100c 0 0 1 1 clock
-2 2 6 6 6 90015 22 27 100a 1 0 1 18 0 1 0 0 0 0
+2 1 6 6 6 110015 17 1 100c 0 0 1 1 clock
+2 2 6 6 6 90015 23 27 100a 1 0 1 18 0 1 0 0 0 0
 2 3 7 7 7 60006 3 1 100c 0 0 1 1 a
 2 4 7 7 7 20008 b 39 e 3 0
 2 5 8 8 8 90009 1 1 1004 0 0 1 1 c
@@ -25,11 +25,11 @@
 2 11 25 25 25 1000c 1 37 16 9 10
 2 12 26 26 26 10007 1 68 1002 0 0 1 18 0 1 0 0 0 0
 2 13 26 26 26 b000b 1 0 1008 0 0 32 48 2 0
-2 14 26 26 26 9000c 2b 2c 900a 13 0 32 18 0 ffffffff 0 0 0 0
-2 15 26 26 26 17001b 15 1 101c 0 0 1 1 clock
-2 16 26 26 26 16001b 15 1b 102c 15 0 1 18 0 1 1 1 0 0
+2 14 26 26 26 9000c 2d 2c 900a 13 0 32 18 0 ffffffff 0 0 0 0
+2 15 26 26 26 17001b 16 1 101c 0 0 1 1 clock
+2 16 26 26 26 16001b 16 1b 102c 15 0 1 18 0 1 1 1 0 0
 2 17 26 26 26 e0012 0 1 1410 0 0 1 1 clock
-2 18 26 26 26 e001b 15 37 3e 16 17
+2 18 26 26 26 e001b 16 37 3e 16 17
 4 11 11 12 12 11
 4 12 0 0 14 11
 4 14 0 18 0 11

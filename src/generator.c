@@ -1484,133 +1484,138 @@ void generator_insert_event_comb_cov(
   bool        reg_needed  /*!< If set to TRUE, instantiates needed registers */
 ) { PROFILE(GENERATOR_INSERT_EVENT_COMB_COV);
 
-  char         name[4096];
-  char         str[4096];
-  unsigned int rv;
-  expression*  root_exp = exp;
-  char*        scope    = generator_get_relative_scope( funit );
+  /* Only insert event coverage if it is desired */
+  if( info_suppl.part.scored_events == 1 ) {
 
-  /* Find the root event of this expression tree */
-  while( (ESUPPL_IS_ROOT( root_exp->suppl ) == 0) && (EXPR_IS_EVENT( root_exp->parent->expr ) == 1) ) {
-    root_exp = root_exp->parent->expr;
-  }
+    char         name[4096];
+    char         str[4096];
+    unsigned int rv;
+    expression*  root_exp = exp;
+    char*        scope    = generator_get_relative_scope( funit );
 
-  /* Create signal name */
-  if( scope[0] == '\0' ) {
-    rv = snprintf( name, 4096, " \\covered$E%u_%u_%x ", exp->ppfline, exp->pplline, exp->col.all );
-  } else {
-    rv = snprintf( name, 4096, " \\covered$E%u_%u_%x$%s ", exp->ppfline, exp->pplline, exp->col.all, scope );
-  }
-  assert( rv < 4096 );
-  free_safe( scope, (strlen( scope ) + 1) );
-
-  /* Create register */
-  if( reg_needed ) {
-    rv = snprintf( str, 4096, "reg %s;\n", name );
-    assert( rv < 4096 );
-    generator_insert_reg( str, FALSE );
-  }
-
-  /*
-   If the expression is also the root of its expression tree, it is the only event in the statement; therefore,
-   the coverage string should just set the coverage variable to a value of 1 to indicate that the event was hit.
-  */
-  if( exp == root_exp ) {
-
-    /* Create assignment and append it to the working code list */
-    rv = snprintf( str, 4096, "%s = 1'b1;", name );
-    assert( rv < 4096 );
-    generator_add_cov_to_work_code( str );
-    generator_add_cov_to_work_code( "\n" );
-
-  /*
-   Otherwise, we need to save off the state of the temporary event variable and compare it after the event statement
-   has triggered to see which events where hit in the event statement.
-  */
-  } else {
-
-    char* tname     = generator_create_expr_name( exp );
-    char* event_str = codegen_gen_expr_one_line( exp->right, funit, FALSE );
-    bool  stmt_head = (root_exp->parent->stmt->suppl.part.head == 1);
-
-    /* Handle the event */
-    switch( exp->op ) {
-      case EXP_OP_PEDGE :
-        {
-          if( reg_needed && (exp->suppl.part.eval_t == 0) ) {
-            rv = snprintf( str, 4096, "reg %s;\n", tname );
-            assert( rv < 4096 );
-            generator_insert_reg( str, FALSE );
-            exp->suppl.part.eval_t = 1;
-          }
-          rv = snprintf( str, 4096, " %s = (%s!==1'b1) & ((%s)===1'b1);", name, tname, event_str );
-          assert( rv < 4096 );
-          generator_add_cov_to_work_code( str );
-          rv = snprintf( str, 4096, " %s = %s;", tname, event_str );
-          assert( rv < 4096 );
-          if( stmt_head ) {
-            generator_add_cov_to_work_code( str );
-          } else {
-            generator_prepend_to_work_code( str );
-          }
-          generator_add_cov_to_work_code( "\n" );
-        }
-        break;
-
-      case EXP_OP_NEDGE :
-        {
-          if( reg_needed && (exp->suppl.part.eval_t == 0) ) {
-            rv = snprintf( str, 4096, "reg %s;\n", tname );
-            assert( rv < 4096 );
-            generator_insert_reg( str, FALSE );
-            exp->suppl.part.eval_t = 1;
-          }
-          rv = snprintf( str, 4096, " %s = (%s!==1'b0) & ((%s)===1'b0);", name, tname, event_str );
-          assert( rv < 4096 );
-          generator_add_cov_to_work_code( str );
-          rv = snprintf( str, 4096, " %s = %s;", tname, event_str );
-          assert( rv < 4096 );
-          if( stmt_head ) {
-            generator_add_cov_to_work_code( str );
-          } else {
-            generator_prepend_to_work_code( str );
-          }
-          generator_add_cov_to_work_code( "\n" );
-        }
-        break;
-
-      case EXP_OP_AEDGE :
-        {
-          if( reg_needed && (exp->suppl.part.eval_t == 0) ) {
-            int   number;
-            char* size = generator_gen_size( exp->right, funit, &number );
-            if( number >= 0 ) {
-              rv = snprintf( str, 4096, "reg [%d:0] %s;\n", (number - 1), tname );
-            } else {
-              rv = snprintf( str, 4096, "reg [((%s)-1):0] %s;\n", size, tname );
-            }
-            assert( rv < 4096 );
-            generator_insert_reg( str, FALSE );
-            free_safe( size, (strlen( size ) + 1) );
-            exp->suppl.part.eval_t = 1;
-          }
-          rv = snprintf( str, 4096, " %s = (%s!==(%s));", name, tname, event_str );
-          assert( rv < 4096 );
-          generator_add_cov_to_work_code( str );
-          rv = snprintf( str, 4096, " %s = %s;", tname, event_str );
-          assert( rv < 4096 );
-          generator_add_cov_to_work_code( str );
-          generator_add_cov_to_work_code( "\n" );
-        }
-        break;
-
-      default :
-        break;
+    /* Find the root event of this expression tree */
+    while( (ESUPPL_IS_ROOT( root_exp->suppl ) == 0) && (EXPR_IS_EVENT( root_exp->parent->expr ) == 1) ) {
+      root_exp = root_exp->parent->expr;
     }
 
-    /* Deallocate memory */
-    free_safe( event_str, (strlen( event_str ) + 1) );
-    free_safe( tname,     (strlen( tname )     + 1) );
+    /* Create signal name */
+    if( scope[0] == '\0' ) {
+      rv = snprintf( name, 4096, " \\covered$E%u_%u_%x ", exp->ppfline, exp->pplline, exp->col.all );
+    } else {
+      rv = snprintf( name, 4096, " \\covered$E%u_%u_%x$%s ", exp->ppfline, exp->pplline, exp->col.all, scope );
+    }
+    assert( rv < 4096 );
+    free_safe( scope, (strlen( scope ) + 1) );
+
+    /* Create register */
+    if( reg_needed ) {
+      rv = snprintf( str, 4096, "reg %s;\n", name );
+      assert( rv < 4096 );
+      generator_insert_reg( str, FALSE );
+    }
+
+    /*
+     If the expression is also the root of its expression tree, it is the only event in the statement; therefore,
+     the coverage string should just set the coverage variable to a value of 1 to indicate that the event was hit.
+    */
+    if( exp == root_exp ) {
+
+      /* Create assignment and append it to the working code list */
+      rv = snprintf( str, 4096, "%s = 1'b1;", name );
+      assert( rv < 4096 );
+      generator_add_cov_to_work_code( str );
+      generator_add_cov_to_work_code( "\n" );
+
+    /*
+     Otherwise, we need to save off the state of the temporary event variable and compare it after the event statement
+     has triggered to see which events where hit in the event statement.
+    */
+    } else {
+
+      char* tname     = generator_create_expr_name( exp );
+      char* event_str = codegen_gen_expr_one_line( exp->right, funit, FALSE );
+      bool  stmt_head = (root_exp->parent->stmt->suppl.part.head == 1);
+
+      /* Handle the event */
+      switch( exp->op ) {
+        case EXP_OP_PEDGE :
+          {
+            if( reg_needed && (exp->suppl.part.eval_t == 0) ) {
+              rv = snprintf( str, 4096, "reg %s;\n", tname );
+              assert( rv < 4096 );
+              generator_insert_reg( str, FALSE );
+              exp->suppl.part.eval_t = 1;
+            }
+            rv = snprintf( str, 4096, " %s = (%s!==1'b1) & ((%s)===1'b1);", name, tname, event_str );
+            assert( rv < 4096 );
+            generator_add_cov_to_work_code( str );
+            rv = snprintf( str, 4096, " %s = %s;", tname, event_str );
+            assert( rv < 4096 );
+            if( stmt_head ) {
+              generator_add_cov_to_work_code( str );
+            } else {
+              generator_prepend_to_work_code( str );
+            }
+            generator_add_cov_to_work_code( "\n" );
+          }
+          break;
+
+        case EXP_OP_NEDGE :
+          {
+            if( reg_needed && (exp->suppl.part.eval_t == 0) ) {
+              rv = snprintf( str, 4096, "reg %s;\n", tname );
+              assert( rv < 4096 );
+              generator_insert_reg( str, FALSE );
+              exp->suppl.part.eval_t = 1;
+            }
+            rv = snprintf( str, 4096, " %s = (%s!==1'b0) & ((%s)===1'b0);", name, tname, event_str );
+            assert( rv < 4096 );
+            generator_add_cov_to_work_code( str );
+            rv = snprintf( str, 4096, " %s = %s;", tname, event_str );
+            assert( rv < 4096 );
+            if( stmt_head ) {
+              generator_add_cov_to_work_code( str );
+            } else {
+              generator_prepend_to_work_code( str );
+            }
+            generator_add_cov_to_work_code( "\n" );
+          }
+          break;
+
+        case EXP_OP_AEDGE :
+          {
+            if( reg_needed && (exp->suppl.part.eval_t == 0) ) {
+              int   number;
+              char* size = generator_gen_size( exp->right, funit, &number );
+              if( number >= 0 ) {
+                rv = snprintf( str, 4096, "reg [%d:0] %s;\n", (number - 1), tname );
+              } else {
+                rv = snprintf( str, 4096, "reg [((%s)-1):0] %s;\n", size, tname );
+              }
+              assert( rv < 4096 );
+              generator_insert_reg( str, FALSE );
+              free_safe( size, (strlen( size ) + 1) );
+              exp->suppl.part.eval_t = 1;
+            }
+            rv = snprintf( str, 4096, " %s = (%s!==(%s));", name, tname, event_str );
+            assert( rv < 4096 );
+            generator_add_cov_to_work_code( str );
+            rv = snprintf( str, 4096, " %s = %s;", tname, event_str );
+            assert( rv < 4096 );
+            generator_add_cov_to_work_code( str );
+            generator_add_cov_to_work_code( "\n" );
+          }
+          break;
+
+        default :
+          break;
+      }
+
+      /* Deallocate memory */
+      free_safe( event_str, (strlen( event_str ) + 1) );
+      free_safe( tname,     (strlen( tname )     + 1) );
+
+    }
 
   }
 

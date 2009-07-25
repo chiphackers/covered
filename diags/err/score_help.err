@@ -77,11 +77,12 @@ Usage:  covered score (-h | -t <top-level_module_name> [-vcd <dumpfile> | -lxt <
       +libext+.<extension>(+.<extension>)+
                                    Extensions of Verilog files to allow in scoring
 
-      -inline                             Outputs Verilog with inlined code coverage
-      -inline-metrics [l][t][m][c][f][a]  Specifies which coverage metrics should be inlined for scoring purposes.  Only these metrics
-                                            will be available for reporting and ranking.  Default is ltmcfa.
-      -inline-comb-depth <value>          Specifies the depth in an expression tree that combinational logic coverage will be scored for.
-                                            By default, combinational logic depth is infinite.
+      -inline                                Outputs Verilog with inlined code coverage
+      -inline-metrics [l][t][m][e][c][f][a]  Specifies which coverage metrics should be inlined for scoring purposes.  Only these metrics
+                                               will be available for reporting and ranking.  l=line, t=toggle, m=memory, e=logic events,
+                                               c=combinational logic, f=FSM, a=assertions.  Default is ltmecfa.
+      -inline-comb-depth <value>             Specifies the depth in an expression tree that combinational logic coverage will be scored for.
+                                               By default, combinational logic depth is infinite.
 
    Race Condition Options:
 

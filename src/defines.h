@@ -52,7 +52,7 @@
  Contains the CDD version number of all CDD files that this version of Covered can write
  and read.
 */
-#define CDD_VERSION        22
+#define CDD_VERSION        23
 
 /*!
  This contains the header information specified when executing this tool.
@@ -1716,6 +1716,7 @@ union isuppl_u {
     uint32 scored_comb   : 1;  /*!< Specifies that combinational logic coverage was scored and is available for reporting */
     uint32 scored_fsm    : 1;  /*!< Specifies that FSM coverage was scored and is available for reporting */
     uint32 scored_assert : 1;  /*!< Specifies that assertion coverage was scored and is available for reporting */
+    uint32 scored_events : 1;  /*!< Specifies that combinational logic event coverage was scored and is available for reporting */
   } part;
 };
 

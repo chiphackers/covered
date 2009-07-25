@@ -1,5 +1,5 @@
-5 16 fd81 4 ffffffff main
-8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (dut_and_proc) 2 -i (main.dut) 2 -vcd (merge8.11b.vcd) 2 -o (merge8.11b.cdd) 2 -v (merge8.11b.v) 2 -y (lib) 2 -D (DUMP)
+5 17 1fd01 4 ffffffff main
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (dut_and_proc) 2 -i (main.dut) 2 -vcd (merge8.11b.vcd) 2 -o (merge8.11b.cdd) 2 -v (merge8.11b.v) 2 -y (lib) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 15 main 0
 3 0 dut_and_proc "main.dut" 0 lib/dut_and_proc.v 1 11 1 
