@@ -15,7 +15,7 @@ wire error = (state[0] & state[1]) || (state[0] & state[2]) || (state[1] & state
 
 initial begin
 `ifdef DUMP
-	$dumpfile( "example2.vcd" );
+	$dumpfile( "example1.vcd" );
 	$dumpvars( 0, main );
 `endif
 	go = 1'b0;
