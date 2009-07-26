@@ -1701,22 +1701,22 @@ typedef union isuppl_u isuppl;
 union isuppl_u {
   uint32 all;
   struct {
-    uint32 scored        : 1;  /*!< Specifies if the design has been scored yet */
-    uint32 excl_assign   : 1;  /*!< Specifies if assign statements are being excluded from coverage */
-    uint32 excl_always   : 1;  /*!< Specifies if always statements are being excluded from coverage */
-    uint32 excl_init     : 1;  /*!< Specifies if initial statements are being excluded from coverage */
-    uint32 excl_final    : 1;  /*!< Specifies if final statements are being excluded from coverage */
-    uint32 excl_pragma   : 1;  /*!< Specifies if code encapsulated in coverage pragmas should be excluded from coverage */
-    uint32 assert_ovl    : 1;  /*!< Specifies that OVL assertions should be included for coverage */
-    uint32 vec_ul_size   : 2;  /*!< Specifies the bit size of a vector element (0=8 bits, 1=16-bits, 2=32-bits, 3=64-bits) */
-    uint32 inlined       : 1;  /*!< Specifies if this CDD is used with an inlined code coverage method */
-    uint32 scored_line   : 1;  /*!< Specifies that line coverage was scored and is available for reporting */
-    uint32 scored_toggle : 1;  /*!< Specifies that toggle coverage was scored and is available for reporting */
-    uint32 scored_memory : 1;  /*!< Specifies that memory coverage was scored and is available for reporting */
-    uint32 scored_comb   : 1;  /*!< Specifies that combinational logic coverage was scored and is available for reporting */
-    uint32 scored_fsm    : 1;  /*!< Specifies that FSM coverage was scored and is available for reporting */
-    uint32 scored_assert : 1;  /*!< Specifies that assertion coverage was scored and is available for reporting */
-    uint32 scored_events : 1;  /*!< Specifies that combinational logic event coverage was scored and is available for reporting */
+    uint32 scored        : 1;  /*!< Bit 0.    Specifies if the design has been scored yet */
+    uint32 excl_assign   : 1;  /*!< Bit 1.    Specifies if assign statements are being excluded from coverage */
+    uint32 excl_always   : 1;  /*!< Bit 2.    Specifies if always statements are being excluded from coverage */
+    uint32 excl_init     : 1;  /*!< Bit 3.    Specifies if initial statements are being excluded from coverage */
+    uint32 excl_final    : 1;  /*!< Bit 4.    Specifies if final statements are being excluded from coverage */
+    uint32 excl_pragma   : 1;  /*!< Bit 5.    Specifies if code encapsulated in coverage pragmas should be excluded from coverage */
+    uint32 assert_ovl    : 1;  /*!< Bit 6.    Specifies that OVL assertions should be included for coverage */
+    uint32 vec_ul_size   : 2;  /*!< Bit 8:7.  Specifies the bit size of a vector element (0=8 bits, 1=16-bits, 2=32-bits, 3=64-bits) */
+    uint32 inlined       : 1;  /*!< Bit 9.    Specifies if this CDD is used with an inlined code coverage method */
+    uint32 scored_line   : 1;  /*!< Bit 10.   Specifies that line coverage was scored and is available for reporting */
+    uint32 scored_toggle : 1;  /*!< Bit 11.   Specifies that toggle coverage was scored and is available for reporting */
+    uint32 scored_memory : 1;  /*!< Bit 12.   Specifies that memory coverage was scored and is available for reporting */
+    uint32 scored_comb   : 1;  /*!< Bit 13.   Specifies that combinational logic coverage was scored and is available for reporting */
+    uint32 scored_fsm    : 1;  /*!< Bit 14.   Specifies that FSM coverage was scored and is available for reporting */
+    uint32 scored_assert : 1;  /*!< Bit 15.   Specifies that assertion coverage was scored and is available for reporting */
+    uint32 scored_events : 1;  /*!< Bit 16.   Specifies that combinational logic event coverage was scored and is available for reporting */
   } part;
 };
 

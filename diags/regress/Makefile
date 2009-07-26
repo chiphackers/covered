@@ -108,7 +108,7 @@ DIAGS1        = add1              aedge1            aedge1.1          afunc1    
                 ifndef2           implicit2         implicit2.1       inc1              inc1.1 \
                 inc2              inc3              inc3.1            include1          include1.1 \
                 include2          include4          include5          initial1          inline1 \
-                inline1.1         inline2           instance1         instance1.1       instance1.2       instance2 \
+                inline1.1         inline2           inline3           instance1         instance1.1       instance1.2       instance2 \
                 instance3         instance4         instance4.1       instance4.2       instance5 \
                 instance6         instance6.1       instance6.2       instance7         int1 \
                 line1             localparam1       localparam1.1     localparam1.2     localparam1.3 \
@@ -538,12 +538,13 @@ endif
 
 # List of diagnostics that should not be run if we are running in inlined mode
 ifdef INLINE
-DIAGS         += assign4          example2          example2.1        example2.2        example2.3 \
-                 example2.4       example2.5
+DIAGS1        += assign4          example2          example2.1        example2.2        example2.3 \
+                 example2.4       example2.5        inline3.1         inline3.2         inline3.3 \
+                 inline3.4        inline3.5         inline3.6         inline3.7
 
 EXCLUDE       += bug2794588       case4.1           case5             casex2            casez3 \
-                 example1         exclude5.1        exclude5.3        mem5              param10.1 \
-                 param10.5        sbit_sel3.2       signed4.1         static_func4
+                 example1         exclude5.1        exclude5.3        inline3           mem5 \
+                 param10.1        param10.5         sbit_sel3.2       signed4.1         static_func4
 ifdef VPI
 EXCLUDE       += fork2            generate4         generate4.1       generate8
 endif

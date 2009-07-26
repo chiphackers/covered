@@ -369,83 +369,91 @@ void combination_get_tree_stats(
                (exp->op == EXP_OP_OR)   ||
                (exp->op == EXP_OP_LAND) ||
                (exp->op == EXP_OP_LOR)) && allow_multi_expr ) {
-            combination_multi_expr_calc( exp, ulid, FALSE, excluded, hit, excludes, total );
+            if( info_suppl.part.scored_comb == 1 ) {
+              combination_multi_expr_calc( exp, ulid, FALSE, excluded, hit, excludes, total );
+            }
           } else {
             if( !expression_is_static_only( exp ) ) {
               if( EXPR_IS_COMB( exp ) == 1 ) {
-                if( exp_op_info[exp->op].suppl.is_comb == AND_COMB ) {
-                  if( report_bitwise ) {
-                    tot_num = 3 * exp->value->width;
-                    num_hit = vector_get_eval_abc_count( exp->value );
+                if( info_suppl.part.scored_comb == 1 ) {
+                  if( exp_op_info[exp->op].suppl.is_comb == AND_COMB ) {
+                    if( report_bitwise ) {
+                      tot_num = 3 * exp->value->width;
+                      num_hit = vector_get_eval_abc_count( exp->value );
+                    } else {
+                      tot_num = 3;
+                      num_hit = exp->suppl.part.eval_01 +
+                                exp->suppl.part.eval_10 +
+                                exp->suppl.part.eval_11;
+                    }
+                  } else if( exp_op_info[exp->op].suppl.is_comb == OR_COMB ) {
+                    if( report_bitwise ) {
+                      tot_num = 3 * exp->value->width;
+                      num_hit = vector_get_eval_abc_count( exp->value );
+                    } else {
+                      tot_num = 3;
+                      num_hit = exp->suppl.part.eval_10 +
+                                exp->suppl.part.eval_01 +
+                                exp->suppl.part.eval_00;
+                    }
                   } else {
-                    tot_num = 3;
-                    num_hit = exp->suppl.part.eval_01 +
-                              exp->suppl.part.eval_10 +
-                              exp->suppl.part.eval_11;
+                    if( report_bitwise ) {
+                      tot_num = 4 * exp->value->width;
+                      num_hit = vector_get_eval_abcd_count( exp->value );
+                    } else {
+                      tot_num = 4;
+                      num_hit = exp->suppl.part.eval_00 +
+                                exp->suppl.part.eval_01 +
+                                exp->suppl.part.eval_10 +
+                                exp->suppl.part.eval_11;
+                    }
                   }
-                } else if( exp_op_info[exp->op].suppl.is_comb == OR_COMB ) {
-                  if( report_bitwise ) {
-                    tot_num = 3 * exp->value->width;
-                    num_hit = vector_get_eval_abc_count( exp->value );
+                  *total += tot_num;
+                  if( excluded ) {
+                    *hit      += tot_num;
+                    *excludes += tot_num;
                   } else {
-                    tot_num = 3;
-                    num_hit = exp->suppl.part.eval_10 +
-                              exp->suppl.part.eval_01 +
-                              exp->suppl.part.eval_00;
+                    *hit += num_hit;
                   }
-                } else {
-                  if( report_bitwise ) {
-                    tot_num = 4 * exp->value->width;
-                    num_hit = vector_get_eval_abcd_count( exp->value );
-                  } else {
-                    tot_num = 4;
-                    num_hit = exp->suppl.part.eval_00 +
-                              exp->suppl.part.eval_01 +
-                              exp->suppl.part.eval_10 +
-                              exp->suppl.part.eval_11;
+                  if( (num_hit != tot_num) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
+                    exp->ulid = *ulid;
+                    (*ulid)++;
                   }
-                }
-                *total += tot_num;
-                if( excluded ) {
-                  *hit      += tot_num;
-                  *excludes += tot_num;
-                } else {
-                  *hit += num_hit;
-                }
-                if( (num_hit != tot_num) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
-                  exp->ulid = *ulid;
-                  (*ulid)++;
                 }
               } else if( EXPR_IS_EVENT( exp ) == 1 ) {
-                (*total)++;
-                num_hit = ESUPPL_WAS_TRUE( exp->suppl );
-                if( excluded ) {
-                  (*hit)++;
-                  (*excludes)++;
-                } else {
-                  *hit += num_hit;
-                }
-                if( (num_hit != 1) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
-                  exp->ulid = *ulid;
-                  (*ulid)++;
+                if( info_suppl.part.scored_events == 1 ) {
+                  (*total)++;
+                  num_hit = ESUPPL_WAS_TRUE( exp->suppl );
+                  if( excluded ) {
+                    (*hit)++;
+                    (*excludes)++;
+                  } else {
+                    *hit += num_hit;
+                  }
+                  if( (num_hit != 1) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
+                    exp->ulid = *ulid;
+                    (*ulid)++;
+                  }
                 }
               } else {
-                if( report_bitwise ) {
-                  *total  = *total + (2 * exp->value->width);
-                  num_hit = vector_get_eval_ab_count( exp->value );
-                } else {
-                  *total  = *total + 2;
-                  num_hit = ESUPPL_WAS_TRUE( exp->suppl ) + ESUPPL_WAS_FALSE( exp->suppl );
-                }
-                if( excluded ) {
-                  *hit      += 2;
-                  *excludes += 2;
-                } else {
-                  *hit += num_hit;
-                }
-                if( (num_hit != 2) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
-                  exp->ulid = *ulid;
-                  (*ulid)++;
+                if( info_suppl.part.scored_comb == 1 ) {
+                  if( report_bitwise ) {
+                    *total  = *total + (2 * exp->value->width);
+                    num_hit = vector_get_eval_ab_count( exp->value );
+                  } else {
+                    *total  = *total + 2;
+                    num_hit = ESUPPL_WAS_TRUE( exp->suppl ) + ESUPPL_WAS_FALSE( exp->suppl );
+                  }
+                  if( excluded ) {
+                    *hit      += 2;
+                    *excludes += 2;
+                  } else {
+                    *hit += num_hit;
+                  }
+                  if( (num_hit != 2) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
+                    exp->ulid = *ulid;
+                    (*ulid)++;
+                  }
                 }
               }
             }

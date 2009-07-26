@@ -525,7 +525,7 @@ void report_gather_instance_stats(
                         &(root->stat->tog_cov_found) );
     }
 
-    if( report_combination && (info_suppl.part.scored_comb == 1) ) {
+    if( report_combination && ((info_suppl.part.scored_comb == 1) || (info_suppl.part.scored_events == 1)) ) {
       combination_get_stats( root->funit,
                              &(root->stat->comb_hit),
                              &(root->stat->comb_excluded),
@@ -611,7 +611,7 @@ static void report_gather_funit_stats(
                           &(head->funit->stat->tog_cov_found) );
       }
 
-      if( report_combination && (info_suppl.part.scored_comb == 1) ) {
+      if( report_combination && ((info_suppl.part.scored_comb == 1) || (info_suppl.part.scored_events == 1)) ) {
         combination_get_stats( head->funit,
                                &(head->funit->stat->comb_hit),
                                &(head->funit->stat->comb_excluded),
@@ -844,7 +844,7 @@ static void report_generate(
   }
 
   if( report_combination ) {
-    if( info_suppl.part.scored_comb ) {
+    if( info_suppl.part.scored_comb || info_suppl.part.scored_events ) {
       combination_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
     } else {
       print_output( "Combinational logic reporting requested when combinational logic coverage was not accumulated during scoring", WARNING, __FILE__, __LINE__ );
