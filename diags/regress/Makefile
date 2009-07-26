@@ -437,7 +437,7 @@ EXCLUDE      +=
 else
 ifeq ($(MAKECMDGOALS),verilator)
 DIAGS1       := $(filter $(basename $(basename $(notdir $(wildcard ../verilog/*.verilator.v)))), $(DIAGS1))
-EXCLUDE      += case4.1
+EXCLUDE      += aedge1            case4.1
 else
 EXCLUDE      += afunc1            afunc2            always_comb1      always_comb2      always_ff1 \
                 always_latch1     always_latch2     assert1           atask1            bit1 \

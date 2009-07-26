@@ -1,5 +1,5 @@
-5 16 fda1 101 ffffffff TOP
-8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (named_block1.vcd) 2 -o (named_block1.cdd) 2 -v (named_block1.verilator.v) 2 -i (TOP.v) 1 -ep 2 -D (DUMP)
+5 17 1fd21 101 ffffffff TOP
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (named_block1.vcd) 2 -o (named_block1.cdd) 2 -v (named_block1.verilator.v) 2 -i (TOP.v) 1 -ep 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 15 TOP 0
 3 0 main "TOP.v" 0 named_block1.verilator.v 1 34 1 
@@ -32,7 +32,7 @@
 4 14 11 0 0 14
 3 1 main.u$0 "TOP.v.u$0" 0 named_block1.verilator.v 13 26 1 
 2 15 14 14 14 f000f 32 0 1008 0 0 32 48 9 0
-2 16 14 14 14 6000a 32 69 1000 0 0 64 18 0 ffffffffffffffff 0 0 0 0
+2 16 14 14 14 6000a 32 69 1000 0 0 64 18 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
 2 17 14 14 14 6000f 32 11 10103c 15 16 1 18 0 1 1 1 0 0
 2 18 14 14 14 20011 32 39 10002e 17 0
 2 19 14 14 14 130017 1 3d 5002 0 0 1 18 0 1 0 0 0 0 u$1
@@ -75,7 +75,7 @@
 4 41 0 0 0 36
 3 1 main.u$2 "TOP.v.u$2" 0 named_block1.verilator.v 29 31 1 
 2 42 30 30 30 f0010 32 0 3008 0 0 32 48 63 0
-2 43 30 30 30 6000a 32 69 3000 0 0 64 18 0 ffffffffffffffff 0 0 0 0
+2 43 30 30 30 6000a 32 69 3000 0 0 64 18 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
 2 44 30 30 30 60010 32 11 10303c 42 43 1 18 0 1 1 1 0 0
 2 45 30 30 30 20012 32 39 10202e 44 0
 2 46 0 0 0 0 1 5a 3002 0 0 1 18 0 1 0 0 0 0
