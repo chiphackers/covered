@@ -2389,9 +2389,9 @@ static void generator_insert_subexp(
 
   /* Create expression string */
   if( net ) {
-    slen = 7 + strlen( lhs_str ) + 3 + strlen( val_str ) + 3;
+    slen = 8 + strlen( lhs_str ) + 3 + strlen( val_str ) + 3;
     str  = (char*)malloc_safe_nolimit( slen );
-    rv   = snprintf( str, slen, "assign %s = %s;\n", lhs_str, val_str );
+    rv   = snprintf( str, slen, " assign %s = %s;\n", lhs_str, val_str );
   } else {
     slen = strlen( lhs_str ) + 3 + strlen( val_str ) + 3;
     str  = (char*)malloc_safe_nolimit( slen );

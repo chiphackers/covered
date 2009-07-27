@@ -311,7 +311,7 @@ sub checkTest {
         }
         if( ($check1 == 0) || ($mode == 5) ) {
           if( $rm_cdd > 0 ) {
-        #    system( "rm -f ${test}.cdd" ) && die;
+            system( "rm -f ${test}.cdd" ) && die;
           }
           if( $rm_cdd > 1 ) {
             system( "rm -f ${test}a.cdd" ) && die;
