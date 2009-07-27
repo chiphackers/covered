@@ -63,6 +63,7 @@ void assertion_parse_attr(
 ) { PROFILE(ASSERTION_PARSE_ATTR);
 
   PROFILE_END;
+
 }
 
 /*!

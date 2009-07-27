@@ -1247,7 +1247,17 @@ void command_score(
         info_suppl.part.scored_fsm    = 1;
         info_suppl.part.scored_assert = 1;
         info_suppl.part.scored_events = 1;
+      } else if( (info_suppl.part.scored_line   == 0) && 
+                 (info_suppl.part.scored_toggle == 0) &&
+                 (info_suppl.part.scored_memory == 0) &&
+                 (info_suppl.part.scored_comb   == 0) &&
+                 (info_suppl.part.scored_fsm    == 0) &&
+                 (info_suppl.part.scored_assert == 0) &&
+                 (info_suppl.part.scored_events == 0) ) {
+        print_output( "No metrics were specified for scoring in the -inline-metrics option", FATAL, __FILE__, __LINE__ );
+        Throw 0;
       }
+ 
 
       if( output_db == NULL ) {
         output_db = strdup_safe( DFLT_OUTPUT_CDD );

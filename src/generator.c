@@ -704,8 +704,10 @@ static void generator_create_filename_list(
 
   while( funitl != NULL ) {
 
-    /* Only add modules that are not the $root "module" */
-    if( (funitl->funit->suppl.part.type == FUNIT_MODULE) && (strncmp( "$root", funitl->funit->name, 5 ) != 0) ) {
+    /* Only add modules that are not the $root "module" and are not assertion modules (if assertion coverage is off) */
+    if( (funitl->funit->suppl.part.type == FUNIT_MODULE)  &&
+        (strncmp( "$root", funitl->funit->name, 5 ) != 0) &&
+        ((info_suppl.part.scored_assert == 1) || !ovl_is_assertion_module( funitl->funit )) ) {
 
       fname_link* fnamel      = *head;
       const char* funit_fname = (funitl->funit->incl_fname != NULL) ? funitl->funit->incl_fname : funitl->funit->orig_fname;
