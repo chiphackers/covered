@@ -306,6 +306,8 @@ sub checkTest {
       if( (-e "${test}.cdd") || ($mode == 1) ) {
         if( ($mode != 5) && (($mode == 0) || (-e "${CDD_DIR}/${test}.cdd")) ) {
           $check1 = system( "./cdd_diff ${test}.cdd ${CDD_DIR}/${test}.cdd" );
+        } elsif( $mode == 6 ) {
+          $check1 = 1;
         } else {
           $check1 = 0;
         }

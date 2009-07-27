@@ -211,8 +211,8 @@ MERGE1        = merge1            merge3            merge4            merge5    
                 merge7.4          merge7.5          merge7.6          merge7.7          merge7.8 \
                 merge8            merge8.1          merge8.2          merge8.3          merge8.6 \
                 merge8.7          merge8.8          merge8.9          merge8.10         merge8.11 \
-                merge9            merge10           merge11           fsm2              rank1 \
-                rank1.1
+                merge9            merge10           merge11           merge12           fsm2 \
+                rank1             rank1.1
 
 MERGE3        = merge2            merge8.4          merge8.5
 
