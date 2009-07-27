@@ -516,20 +516,20 @@ endif
 
 # List of diagnostics that should not be run if we are using VPI
 ifdef VPI
-EXCLUDE       += err5.2           err5.3            err5.4            score_err1.14     score_err1.16
+EXCLUDE      += err5.2            err5.3            err5.4            score_err1.14     score_err1.16
 ifeq ($(MAKECMDGOALS),cver)
-EXCLUDE       +=
+EXCLUDE      +=
 else
 ifeq ($(MAKECMDGOALS),vcs)
-EXCLUDE       +=
+EXCLUDE      +=
 else
 ifeq ($(MAKECMDGOALS),veriwell)
-EXCLUDE       +=
+EXCLUDE      +=
 else
 ifeq ($(MAKECMDGOALS),vcomp)
-EXCLUDE       +=
+EXCLUDE      +=
 else
-EXCLUDE       += generate16.2     generate16.3      generate19        generate19.1      generate19.2
+EXCLUDE      += generate16.2      generate16.3      generate19        generate19.1      generate19.2
 endif
 endif
 endif
@@ -538,42 +538,43 @@ endif
 
 # List of diagnostics that should not be run if we are running in inlined mode
 ifdef INLINE
-DIAGS1        += assign4          example2          example2.1        example2.2        example2.3 \
-                 example2.4       example2.5        inline3.1         inline3.2         inline3.3 \
-                 inline3.4        inline3.6         inline3.7
+DIAGS1       += assign4           example2          example2.1        example2.3        example2.4 \
+                inline3.1         inline3.2         inline3.3         inline3.4         inline3.6 \
+                inline3.7
 #inline3.5
 
-EXCLUDE       += bug2794588       case4.1           case5             casex2            casez3 \
-                 example1         exclude5.1        exclude5.3        inline3           mem5 \
-                 param10.1        param10.5         sbit_sel3.2       signed4.1         static_func4
+EXCLUDE      += bug2794588        case4.1           case5             casex2            casez3 \
+                example1          exclude5.1        exclude5.3        inline3           mem5 \
+                param10.1         param10.5         sbit_sel3.2       signed4.1         static_func4
 ifdef VPI
-EXCLUDE       += fork2            generate4         generate4.1       generate8
+EXCLUDE      += fork2             generate4         generate4.1       generate8
 endif
 
 ifeq ($(MAKECMDGOALS),cver)
-EXCLUDE       += always15         define4           include1          include1.1        include2 \
-                 include4         include5          instance7         random1.2         real3.4 \
-                 real3.6          real6             sbit_sel2.1       timescale2.8
+EXCLUDE      += always15          define4           include1          include1.1        include2 \
+                include4          include5          instance7         random1.2         real3.4 \
+                real3.6           real6             sbit_sel2.1       timescale2.8
 else
 ifeq ($(MAKECMDGOALS),vcs)
-EXCLUDE       += afunc1           afunc2            for5              for5.1            for5.2 \
-                 for5.3           for5.4            for5.5            for5.6            for5.8 \
-                 for5.9           for5.10           for6              timescale2.8      urandom1 \
-                 urandom1.1       urandom1.2        urandom1.3        urandom2.1        urandom_range1.1 \
-                 urandom_range1.2
+EXCLUDE      += afunc1            afunc2            for5              for5.1            for5.2 \
+                for5.3            for5.4            for5.5            for5.6            for5.8 \
+                for5.9            for5.10           for6              timescale2.8      urandom1 \
+                urandom1.1        urandom1.2        urandom1.3        urandom2.1        urandom_range1.1 \
+                urandom_range1.2
 else
 ifeq ($(MAKECMDGOALS),veriwell)
-EXCLUDE       += always15         compx1            compx1.1          compx1.2          compx1.3 \
-                 concat7          define4           elsif1.4          elsif2.1          func1             func2 \
-                 ifelse1          include1          include1.1        include2          include4 \
-                 include5         lshift3.3         negate1           real3.3           real3.7           real5 \
-                 real5.10         real7             real8             rshift1.2         rshift2.2 \
-                 timescale1.16    timescale1.17     timescale1.18     timescale2.5      timescale2.8
+EXCLUDE      += always15          compx1            compx1.1          compx1.2          compx1.3 \
+                concat7           define4           elsif1.4          elsif2.1          func1 \
+                func2             ifelse1           include1          include1.1        include2 \
+                include4          include5          lshift3.3         negate1           real3.3 \
+                real3.7           real5             real5.10          real7             real8 \
+                rshift1.2         rshift2.2         timescale1.16     timescale1.17     timescale1.18 \
+                timescale2.5      timescale2.8
 else
 ifeq ($(MAKECMDGOALS),vcomp)
-EXCLUDE       +=
+EXCLUDE      +=
 else
-EXCLUDE       += case4.1          nested_block2     nested_block2.1   random4
+EXCLUDE      += case4.1           nested_block2     nested_block2.1   random4
 endif
 endif
 endif
