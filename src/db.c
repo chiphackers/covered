@@ -469,12 +469,15 @@ void db_read(
               /* Parse rest of line for general info */
               info_db_read( &rest_line );
   
-              /* If we are in report mode and this CDD file has not been written bow out now */
-              if( (info_suppl.part.scored == 0) && 
-                  ((read_mode == READ_MODE_REPORT_NO_MERGE) ||
-                   (read_mode == READ_MODE_REPORT_MOD_MERGE)) ) {
-                print_output( "Attempting to generate report on non-scored design.  Not supported.", FATAL, __FILE__, __LINE__ );
-                Throw 0;
+              /* If we are in report mode or merge mode and this CDD file has not been scored, bow out now */
+              if( info_suppl.part.scored == 0 ) {
+                if( (read_mode == READ_MODE_REPORT_NO_MERGE) || (read_mode == READ_MODE_REPORT_MOD_MERGE) ) {
+                  print_output( "Attempting to generate report on non-scored design.  Not supported.", FATAL, __FILE__, __LINE__ );
+                  Throw 0;
+                } else if( read_mode == READ_MODE_MERGE_NO_MERGE ) {
+                  print_output( "Attempting to merge CDD that is not scored.  Not supported.", FATAL, __FILE__, __LINE__ );
+                  Throw 0;
+                }
               }
           
             } else if( type == DB_TYPE_SCORE_ARGS ) {
