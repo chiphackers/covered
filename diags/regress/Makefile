@@ -552,8 +552,10 @@ endif
 
 ifeq ($(MAKECMDGOALS),cver)
 EXCLUDE      += always15          define4           include1          include1.1        include2 \
-                include4          include5          instance7         random1.2         real3.4 \
-                real3.6           real6             sbit_sel2.1       timescale2.8
+                include4          include5          inline3.1         inline3.2         inline3.3 \
+                inline3.4         inline3.5         inline3.6         inline3.7         instance7 \
+                random1.2         real3.4           real3.6           real6             sbit_sel2.1 \
+                timescale2.8
 else
 ifeq ($(MAKECMDGOALS),vcs)
 EXCLUDE      += afunc1            afunc2            for5              for5.1            for5.2 \
