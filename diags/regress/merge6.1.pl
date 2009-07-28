@@ -13,10 +13,10 @@ require "../verilog/regress_subs.pl";
 system( "mkdir -p merge6_1 merge6_2" ) && die;
 
 # Run all of the CDDs to be merged
-$retval = &run( "merge6.1a", "merge6_1", 1 ) || $retval;
+$retval = &run( "merge6.1a", "merge6_1", 0 ) || $retval;
 $retval = &run( "merge6.1b", "merge6_1", 0 ) || $retval;
-$retval = &run( "merge6.1c", "merge6_2", 1 ) || $retval;
-$retval = &run( "merge6.1d", "merge6_2", 0 ) || $retval;
+$retval = &run( "merge6.1a", "merge6_2", 1 ) || $retval;
+$retval = &run( "merge6.1b", "merge6_2", 1 ) || $retval;
 
 # Save the value of CHECK_MEM_CMD
 $ORIG_CHECK_MEM_CMD = $CHECK_MEM_CMD;

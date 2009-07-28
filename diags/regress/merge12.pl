@@ -6,13 +6,7 @@
 require "../verilog/regress_subs.pl";
 
 # Initialize the diagnostic environment
-&initialize( "merge12", 0, @ARGV );
-
-if( $DUMPTYPE eq "VCD" ) {
-  $check_type = 0;
-} else {
-  $check_type = 5;
-}
+&initialize( "merge12", 1, @ARGV );
 
 # Create unscored CDD
 &runScoreCommand( "-t merge12_dut -i main.dut -v merge12a.v -o merge12a.cdd -y lib" );
@@ -21,10 +15,8 @@ if( $DUMPTYPE eq "VCD" ) {
 &runCommand( "$MAKE DIAG=merge12b onemergerun" );
 
 # Merge scored CDDs with unscored CDD
-&runMergeCommand( "-o merge12.cdd merge12a.cdd merge12b.cdd" );
-&runReportCommand( "-d v -e -m ltcfamr -o merge12.rptM merge12.cdd" );
-&runReportCommand( "-d v -e -m ltcfamr -i -o merge12.rptI merge12.cdd" );
-&checkTest( "merge12", 1, $check_type );
+&runMergeCommand( "-o merge12.cdd merge12a.cdd merge12b.cdd 2> merge12.err" );
+&checkTest( "merge12", 1, 1 );
 
 # Remove the intermediate files
 &checkTest( "merge12a", 1, 6 );
