@@ -125,11 +125,18 @@
                 CDD file is also created in the current directory for the portion of the design being scored.  No scoring takes place with this option
                 specified.  See <a href="chapter.score.html#section.score.inline" title="9.9. Inlined Scoring">Section 9.9, &#8220;Inlined Scoring&#8221;</a> for more details.
               </td></tr><tr><td>
-                -inline-metrics [l][t][m][c][f][a]
+                -inline-comb-depth <span class="emphasis"><em>value</em></span>
+              </td><td>
+                Specifies the depth in an expression tree that combinational logic coverage will be scored for.  By default, combinational logic
+                depth is infinite (a value of 0).  Specifying a lower value will allow more performance improvements when using inlined scoring
+                techniques.
+              </td></tr><tr><td>
+                -inline-metrics [l][t][m][e][c][f][a]
               </td><td>
                 If the -inline option is specified, the metrics specified with this option will be inlined in the output Verilog files.  Only metrics
-                specified with this option will be available in generated reports.  By default all six metrics are inlined.  Reducing the needed metrics
-                will cause simulation performance to improve.
+                specified with this option will be available in generated reports.  By default all seven metrics are inlined ("e" specifies event
+                coverage which is a part of combinational logic coverage -- it is broken out to allow additional performance improvements).  Reducing
+                the needed metrics will cause simulation performance to improve.
               </td></tr><tr><td>
                 -lxt <span class="emphasis"><em>dumpfile</em></span>
               </td><td>
