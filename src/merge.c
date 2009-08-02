@@ -365,13 +365,20 @@ void command_merge(
       rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading CDD file \"%s\"", merge_in_head->str );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-      db_read( merge_in_head->str, READ_MODE_MERGE_NO_MERGE );
+      if( !db_read( merge_in_head->str, READ_MODE_MERGE_NO_MERGE ) ) {
 
-      /* If the currently read CDD didn't contain any merged CDDs it is a leaf CDD so mark it as such */
-      if( (db_list[curr_db]->leading_hier_num - curr_leading_hier_num) == 1 ) {
-        merge_in_head->suppl = 1;
+        /* The read in CDD was empty so mark it as such */
+        merge_in_head->suppl = 2;
+
+      } else {
+
+        /* If the currently read CDD didn't contain any merged CDDs it is a leaf CDD so mark it as such */
+        if( (db_list[curr_db]->leading_hier_num - curr_leading_hier_num) == 1 ) {
+          merge_in_head->suppl = 1;
+        }
+        curr_leading_hier_num = db_list[curr_db]->leading_hier_num;
+
       }
-      curr_leading_hier_num = db_list[curr_db]->leading_hier_num;
 
       /* Read in databases to merge */
       strl         = merge_in_head->next;
@@ -380,13 +387,20 @@ void command_merge(
         rv = snprintf( user_msg, USER_MSG_LENGTH, "Merging CDD file \"%s\"", strl->str );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-        db_read( strl->str, READ_MODE_MERGE_NO_MERGE );
+        if( !db_read( strl->str, READ_MODE_MERGE_NO_MERGE ) ) {
 
-        /* If we have not merged any CDD files from this CDD, this is a leaf CDD so mark it as such */
-        if( (db_list[curr_db]->leading_hier_num - curr_leading_hier_num) == 1 ) {
-          strl->suppl = 1;
+          /* The read in CDD was empty so mark it as such */
+          merge_in_head->suppl = 2;
+
+        } else {
+
+          /* If we have not merged any CDD files from this CDD, this is a leaf CDD so mark it as such */
+          if( (db_list[curr_db]->leading_hier_num - curr_leading_hier_num) == 1 ) {
+            strl->suppl = 1;
+          }
+          curr_leading_hier_num = db_list[curr_db]->leading_hier_num;
+
         }
-        curr_leading_hier_num = db_list[curr_db]->leading_hier_num;
 
         stop_merging = (strl == merge_in_cl_last);
         strl         = strl->next;

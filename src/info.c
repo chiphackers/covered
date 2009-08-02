@@ -30,6 +30,7 @@
 #include <string.h>
 #endif
 
+#include "db.h"
 #include "defines.h"
 #include "info.h"
 #include "link.h"
@@ -193,10 +194,12 @@ void info_db_write(
     str_link*    strl = merge_in_head;
     unsigned int i    = 0;
     while( strl != NULL ) {
-      if( (strcmp( strl->str, merged_file ) != 0) && (strl->suppl == 1) ) {
-        fprintf( file, "%d %s %s\n", DB_TYPE_MERGED_CDD, strl->str, db_list[curr_db]->leading_hierarchies[i++] );
-      } else {
-        i++;
+      if( strl->suppl < 2 ) {
+        if( (strcmp( strl->str, merged_file ) != 0) && (strl->suppl == 1) ) {
+          fprintf( file, "%d %s %s\n", DB_TYPE_MERGED_CDD, strl->str, db_list[curr_db]->leading_hierarchies[i++] );
+        } else {
+          i++;
+        }
       }
       strl = strl->next; 
     }
@@ -205,10 +208,12 @@ void info_db_write(
     unsigned int i    = 1; 
     assert( (db_list[curr_db]->leading_hier_num - 1) == merge_in_num );
     while( strl != NULL ) {
-      if( (strcmp( strl->str, merged_file ) != 0) && (strl->suppl == 1) ) {
-        fprintf( file, "%d %s %s\n", DB_TYPE_MERGED_CDD, strl->str, db_list[curr_db]->leading_hierarchies[i++] );
-      } else {
-        i++;
+      if( strl->suppl < 2 ) {
+        if( (strcmp( strl->str, merged_file ) != 0) && (strl->suppl == 1) ) {
+          fprintf( file, "%d %s %s\n", DB_TYPE_MERGED_CDD, strl->str, db_list[curr_db]->leading_hierarchies[i++] );
+        } else {
+          i++;
+        }
       }
       strl = strl->next;
     }
@@ -221,16 +226,22 @@ void info_db_write(
 /*!
  \throws anonymous Throw Throw Throw
 
- Reads information line from specified string and stores its information.
+ \return Returns TRUE if the CDD file read should continue; otherwise, stop reading in the current CDD.
+
+ Reads information line from specified string and stores its information, and creates a new database in
+ the database list.
 */
-void info_db_read(
-  /*@out@*/ char** line  /*!< Pointer to string containing information line to parse */
+bool info_db_read(
+  /*@out@*/ char** line,      /*!< Pointer to string containing information line to parse */
+            int    read_mode  /*!< Type of read being performed */
 ) { PROFILE(INFO_DB_READ);
 
   int          chars_read;  /* Number of characters scanned in from this line */
   uint32       scored;      /* Indicates if this file contains scored data */
   unsigned int version;     /* Contains CDD version from file */
   char         tmp[4096];   /* Temporary string */
+  isuppl       info   = info_suppl;
+  bool         retval = TRUE;
 
   /* Save off original scored value */
   scored = info_suppl.part.scored;
@@ -245,24 +256,40 @@ void info_db_read(
     }
 
     /*@-formattype -duplicatequals@*/
-    if( sscanf( *line, "%x %llu %x %s%n", &(info_suppl.all), &num_timesteps, &inline_comb_depth, tmp, &chars_read ) == 4 ) {
+    if( sscanf( *line, "%x %llu %x %s%n", &(info.all), &num_timesteps, &inline_comb_depth, tmp, &chars_read ) == 4 ) {
     /*@=formattype =duplicatequals@*/
 
       *line = *line + chars_read;
 
-      /* Set leading_hiers_differ to TRUE if this is not the first hierarchy and it differs from the first */
-      if( (db_list[curr_db]->leading_hier_num > 0) && (strcmp( db_list[curr_db]->leading_hierarchies[0], tmp ) != 0) ) {
-        db_list[curr_db]->leading_hiers_differ = TRUE;
-      }
+      /* If this CDD contains useful information, continue on */
+      if( (info.part.scored != 0) || (read_mode != READ_MODE_MERGE_NO_MERGE) ) {
 
-      /* Assign this hierarchy to the leading hierarchies array */
-      db_list[curr_db]->leading_hierarchies = (char**)realloc_safe( db_list[curr_db]->leading_hierarchies, (sizeof( char* ) * db_list[curr_db]->leading_hier_num), (sizeof( char* ) * (db_list[curr_db]->leading_hier_num + 1)) );
-      db_list[curr_db]->leading_hierarchies[db_list[curr_db]->leading_hier_num] = strdup_safe( tmp );
-      db_list[curr_db]->leading_hier_num++;
+        /* Create a new database element */
+        (void)db_create();
 
-      /* Set scored flag to correct value */
-      if( info_suppl.part.scored == 0 ) {
-        info_suppl.part.scored = scored;
+        /* Set leading_hiers_differ to TRUE if this is not the first hierarchy and it differs from the first */
+        if( (db_list[curr_db]->leading_hier_num > 0) && (strcmp( db_list[curr_db]->leading_hierarchies[0], tmp ) != 0) ) {
+          db_list[curr_db]->leading_hiers_differ = TRUE;
+        }
+
+        /* Assign this hierarchy to the leading hierarchies array */
+        db_list[curr_db]->leading_hierarchies = (char**)realloc_safe( db_list[curr_db]->leading_hierarchies, (sizeof( char* ) * db_list[curr_db]->leading_hier_num), (sizeof( char* ) * (db_list[curr_db]->leading_hier_num + 1)) );
+        db_list[curr_db]->leading_hierarchies[db_list[curr_db]->leading_hier_num] = strdup_safe( tmp );
+        db_list[curr_db]->leading_hier_num++;
+
+        /* Save off the info supplemental information */
+        info_suppl.all = info.all;
+
+        /* Set scored flag to correct value */
+        if( info_suppl.part.scored == 0 ) {
+          info_suppl.part.scored = scored;
+        }
+
+      } else {
+
+        merge_in_num--;
+        retval = FALSE;
+
       }
 
     } else {
@@ -280,6 +307,8 @@ void info_db_read(
   }
 
   PROFILE_END;
+
+  return( retval );
 
 }
 

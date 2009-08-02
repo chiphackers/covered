@@ -44,7 +44,7 @@ void db_write(
 );
 
 /*! \brief Reads contents of database file and stores into internal lists. */
-void db_read(
+bool db_read(
   const char* file,
   int         read_mode
 );

@@ -13,10 +13,10 @@ require "../verilog/regress_subs.pl";
 system( "mkdir -p merge6_1 merge6_2" ) && die;
 
 # Run all of the CDDs to be merged
-$retval = &run( "merge6.1a", "merge6_1", 0 ) || $retval;
-$retval = &run( "merge6.1b", "merge6_1", 0 ) || $retval;
-$retval = &run( "merge6.1a", "merge6_2", 1 ) || $retval;
-$retval = &run( "merge6.1b", "merge6_2", 1 ) || $retval;
+$retval = &run( "merge6.1a", "merge6.1a", "merge6_1", 1 ) || $retval;
+$retval = &run( "merge6.1b", "merge6.1b", "merge6_1", 0 ) || $retval;
+$retval = &run( "merge6.1c", "merge6.1a", "merge6_2", 1 ) || $retval;
+$retval = &run( "merge6.1d", "merge6.1b", "merge6_2", 0 ) || $retval;
 
 # Save the value of CHECK_MEM_CMD
 $ORIG_CHECK_MEM_CMD = $CHECK_MEM_CMD;
@@ -59,15 +59,15 @@ exit 0;
 
 sub run {
 
-  my( $bname, $odir, $d ) = @_;
+  my( $cfg, $vname, $odir, $d ) = @_;
   my( $retval )       = 0;
   my( $vpi_debug )    = "";
 
   # If we are using the VPI, run the score command and add the needed pieces to the simulation runs
   if( $USE_VPI == 1 ) {
-    &convertCfg( "vpi", 0, 0, "${bname}.cfg" );
-    &runScoreCommand( "-f ${bname}.cfg" );
-    $vpi_args = "+covered_cdd=${odir}/${bname}.cdd";
+    &convertCfg( "vpi", 0, 0, "${cfg}.cfg" );
+    &runScoreCommand( "-f ${cfg}.cfg" );
+    $vpi_args = "+covered_cdd=${odir}/${vname}.cdd";
     if( $COVERED_GFLAGS eq "-D" ) {
       $vpi_args .= " +covered_debug";
     }
@@ -77,23 +77,23 @@ sub run {
   if( $SIMULATOR eq "IV" ) {
     $def = ($d == 1) ? "-DTEST1" : "";
     if( $USE_VPI == 1 ) {
-      &runCommand( "iverilog $def -y lib -m ../../lib/covered.vpi ${bname}.v covered_vpi.v; ./a.out ${vpi_args}" );
+      &runCommand( "iverilog $def -y lib -m ../../lib/covered.vpi ${vname}.v covered_vpi.v; ./a.out ${vpi_args}" );
     } else {
-      &runCommand( "iverilog $def -DDUMP -y lib ${bname}.v; ./a.out" );
+      &runCommand( "iverilog $def -DDUMP -y lib ${vname}.v; ./a.out" );
     }
   } elsif( $SIMULATOR eq "CVER" ) {
     $def = ($d == 1) ? "+define+TEST1" : "";
     if( $USE_VPI == 1 ) {
-      &runCommand( "cver -q $def +libext+.v+ -y lib +loadvpi=../../lib/covered.cver.so:vpi_compat_bootstrap ${bname}.v covered_vpi.v ${vpi_args}" );
+      &runCommand( "cver -q $def +libext+.v+ -y lib +loadvpi=../../lib/covered.cver.so:vpi_compat_bootstrap ${vname}.v covered_vpi.v ${vpi_args}" );
     } else {
-      &runCommand( "cver -q $def +define+DUMP +libext+.v+ -y lib ${bname}.v" );
+      &runCommand( "cver -q $def +define+DUMP +libext+.v+ -y lib ${vname}.v" );
     }
   } elsif( $SIMULATOR eq "VCS" ) {
     $def = ($d == 1) ? "+define+TEST1" : "";
     if( $USE_VPI == 1 ) {
-      &runCommand( "vcs $def +v2k -sverilog +libext+.v+ -y lib +vpi -load ../../lib/covered.vcs.so:covered_register ${bname}.v covered_vpi.v; ./simv ${vpi_args}" );
+      &runCommand( "vcs $def +v2k -sverilog +libext+.v+ -y lib +vpi -load ../../lib/covered.vcs.so:covered_register ${vname}.v covered_vpi.v; ./simv ${vpi_args}" );
     } else {
-      &runCommand( "vcs $def +define+DUMP +v2k -sverilog +libext+.v+ -y lib ${bname}.v; ./simv" );
+      &runCommand( "vcs $def +define+DUMP +v2k -sverilog +libext+.v+ -y lib ${vname}.v; ./simv" );
     }
   } else {
     die "Illegal SIMULATOR value (${SIMULATOR})\n";
@@ -104,13 +104,13 @@ sub run {
     
     # Convert configuration file
     if( $DUMPTYPE eq "VCD" ) {
-      &convertCfg( "vcd", 0, 0, "${bname}.cfg" );
+      &convertCfg( "vcd", 0, 0, "${cfg}.cfg" );
     } elsif( $DUMPTYPE eq "LXT" ) {
-      &convertCfg( "lxt", 0, 0, "${bname}.cfg" );
+      &convertCfg( "lxt", 0, 0, "${cfg}.cfg" );
     }
     
     # Score CDD file
-    &runScoreCommand( "-f ${bname}.cfg -D DUMP" );
+    &runScoreCommand( "-f ${cfg}.cfg -D DUMP" );
   
   }
 

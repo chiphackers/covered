@@ -404,34 +404,38 @@ void db_write(
 /*!
  \throws anonymous info_db_read args_db_read Throw Throw Throw expression_db_read fsm_db_read race_db_read funit_db_read vsignal_db_read funit_db_merge funit_db_merge statement_db_read
 
+ \return Returns TRUE if the read in CDD created a database; otherwise, returns FALSE.
+
  Opens specified database file for reading.  Reads in each line from the
  file examining its contents and creating the appropriate type to store
  the specified information and stores it into the appropriate internal
  list.
 */
-void db_read(
+bool db_read(
   const char* file,      /*!< Name of database file to read contents from */
   int         read_mode  /*!< Specifies what to do with read data (see \ref read_modes for legal values) */
 ) { PROFILE(DB_READ);
 
-  FILE*        db_handle;            /* Pointer to database file being read */
-  int          type;                 /* Specifies object type */
-  func_unit    tmpfunit;             /* Temporary functional unit pointer */
-  char*        curr_line = NULL;     /* Pointer to current line being read from db */
-  unsigned int curr_line_size;       /* Allocated number of bytes for curr_line */
-  char*        rest_line;            /* Pointer to rest of the current line */
-  int          chars_read;           /* Number of characters currently read on line */
-  char         parent_scope[4096];   /* Scope of parent functional unit to the current instance */
-  char         back[4096];           /* Current functional unit instance name */
-  char         funit_scope[4096];    /* Current scope of functional unit instance */
-  char         funit_name[256];      /* Current name of functional unit instance */
-  char         funit_ofile[4096];    /* Current filename of functional unit instance */
-  char         funit_ifile[4096];    /* Current filename of functional unit instance */
-  funit_link*  foundfunit;           /* Found functional unit link */
-  funit_inst*  foundinst;            /* Found functional unit instance */
-  bool         merge_mode = FALSE;   /* If TRUE, we should currently be merging data */
-  func_unit*   parent_mod;           /* Pointer to parent module of this functional unit */
-  bool         inst_name_diff;       /* Specifies the read value of the name diff for the current instance */
+  FILE*        db_handle;              /* Pointer to database file being read */
+  int          type;                   /* Specifies object type */
+  func_unit    tmpfunit;               /* Temporary functional unit pointer */
+  char*        curr_line     = NULL;   /* Pointer to current line being read from db */
+  unsigned int curr_line_size;         /* Allocated number of bytes for curr_line */
+  char*        rest_line;              /* Pointer to rest of the current line */
+  int          chars_read;             /* Number of characters currently read on line */
+  char         parent_scope[4096];     /* Scope of parent functional unit to the current instance */
+  char         back[4096];             /* Current functional unit instance name */
+  char         funit_scope[4096];      /* Current scope of functional unit instance */
+  char         funit_name[256];        /* Current name of functional unit instance */
+  char         funit_ofile[4096];      /* Current filename of functional unit instance */
+  char         funit_ifile[4096];      /* Current filename of functional unit instance */
+  funit_link*  foundfunit;             /* Found functional unit link */
+  funit_inst*  foundinst;              /* Found functional unit instance */
+  bool         merge_mode    = FALSE;  /* If TRUE, we should currently be merging data */
+  func_unit*   parent_mod;             /* Pointer to parent module of this functional unit */
+  bool         inst_name_diff;         /* Specifies the read value of the name diff for the current instance */
+  bool         stop_reading  = FALSE;
+  bool         one_line_read = FALSE;
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
@@ -454,7 +458,9 @@ void db_read(
 
     Try {
 
-      while( util_readline( db_handle, &curr_line, &curr_line_size ) ) {
+      while( !stop_reading && util_readline( db_handle, &curr_line, &curr_line_size ) ) {
+
+        one_line_read = TRUE;
 
         Try {
 
@@ -464,20 +470,19 @@ void db_read(
 
             if( type == DB_TYPE_INFO ) {
           
-              (void)db_create();
-
               /* Parse rest of line for general info */
-              info_db_read( &rest_line );
+              stop_reading = !info_db_read( &rest_line, read_mode );
   
-              /* If we are in report mode or merge mode and this CDD file has not been scored, bow out now */
-              if( info_suppl.part.scored == 0 ) {
-                if( (read_mode == READ_MODE_REPORT_NO_MERGE) || (read_mode == READ_MODE_REPORT_MOD_MERGE) ) {
+              if( !stop_reading ) {
+
+                /* If we are in report mode or merge mode and this CDD file has not been scored, bow out now */
+                if( (info_suppl.part.scored == 0) &&
+                    ((read_mode == READ_MODE_REPORT_NO_MERGE) ||
+                     (read_mode == READ_MODE_REPORT_MOD_MERGE)) ) {
                   print_output( "Attempting to generate report on non-scored design.  Not supported.", FATAL, __FILE__, __LINE__ );
                   Throw 0;
-                } else if( read_mode == READ_MODE_MERGE_NO_MERGE ) {
-                  print_output( "Attempting to merge CDD that is not scored.  Not supported.", FATAL, __FILE__, __LINE__ );
-                  Throw 0;
                 }
+
               }
           
             } else if( type == DB_TYPE_SCORE_ARGS ) {
@@ -663,6 +668,11 @@ void db_read(
 
       }
 
+      /* If we ran into an issue with reading the CDD file, we will need to deallocate the line string */
+      if( stop_reading ) {
+        free_safe( curr_line, curr_line_size );
+      }
+
     } Catch_anonymous {
 
       unsigned int rv = fclose( db_handle );
@@ -717,12 +727,14 @@ void db_read(
 #endif
 
   /* Check to make sure that the CDD file contained valid information */
-  if( (db_size == 0) || (db_list[0]->inst_head == NULL) ) {
+  if( !stop_reading && !one_line_read ) {
     print_output( "CDD file was found to be empty", FATAL, __FILE__, __LINE__ );
     Throw 0;
   }
 
   PROFILE_END;
+
+  return( !stop_reading );
 
 }
 
@@ -736,38 +748,47 @@ void db_merge_instance_trees() { PROFILE(DB_MERGE_INSTANCE_TREES);
   inst_link*  instl = db_list[curr_db]->inst_head;
   bool        done  = FALSE;
 
-  /* Merge all root trees */
-  instl = db_list[curr_db]->inst_head;
-  while( instl != NULL ) {
-    if( strcmp( instl->inst->name, "$root" ) == 0 ) {
-      if( base == NULL ) {
-        base        = instl->inst;
-        instl->base = TRUE;
-      } else {
-        instl->ignore = instance_merge_two_trees( base, instl->inst );
-      }
-    }
-    instl = instl->next;
-  }
+  if( db_list != NULL ) {
 
-  /* Merge all other trees */
-  while( !done ) {
-    base  = NULL;
+    /* Merge all root trees */
     instl = db_list[curr_db]->inst_head;
     while( instl != NULL ) {
-      if( strcmp( instl->inst->name, "$root" ) != 0 ) {
-        if( !instl->ignore && !instl->base ) {
-          if( base == NULL ) {
-            base        = instl->inst;
-            instl->base = TRUE;
-          } else {
-            instl->ignore = instance_merge_two_trees( base, instl->inst );
-          }
+      if( strcmp( instl->inst->name, "$root" ) == 0 ) {
+        if( base == NULL ) {
+          base        = instl->inst;
+          instl->base = TRUE;
+        } else {
+          instl->ignore = instance_merge_two_trees( base, instl->inst );
         }
       }
       instl = instl->next;
     }
-    done = (base == NULL);
+
+    /* Merge all other trees */
+    while( !done ) {
+      base  = NULL;
+      instl = db_list[curr_db]->inst_head;
+      while( instl != NULL ) {
+        if( strcmp( instl->inst->name, "$root" ) != 0 ) {
+          if( !instl->ignore && !instl->base ) {
+            if( base == NULL ) {
+              base        = instl->inst;
+              instl->base = TRUE;
+            } else {
+              instl->ignore = instance_merge_two_trees( base, instl->inst );
+            }
+          }
+        }
+        instl = instl->next;
+      }
+      done = (base == NULL);
+    }
+
+  } else {
+
+    print_output( "Attempting to merge unscored CDDs", FATAL, __FILE__, __LINE__ );
+    Throw 0;
+
   }
 
   PROFILE_END;

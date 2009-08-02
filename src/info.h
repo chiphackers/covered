@@ -38,8 +38,9 @@ void info_db_write(
 );
 
 /*! \brief Reads info line from specified line and stores information. */
-void info_db_read(
-  char** line
+bool info_db_read(
+  char** line,
+  int    read_mode
 );
 
 /*! \brief Reads score args line from specified line and stores information. */

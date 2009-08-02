@@ -317,7 +317,7 @@ EXCLUDE      += afunc1            afunc2            always5.1         always_com
                 generate19.2      generate21        hier1.1 \
                 hier2             hier3             ifdef1.1          ifdef3            ifndef2 \
                 implicit2         inc1              inc1.1            inc2              inc3 \
-                inc3.1            instance7         int1              line1             localparam1 \
+                inc3.1            inline3           instance7         int1              line1             localparam1 \
                 localparam1.1     localparam1.2     localparam1.3     localparam2       localparam3 \
                 logic1            longint1          long_sig          marray1           marray1.1 \
                 marray1.2         marray1.3         marray2           marray2.1         marray2.2 \
@@ -391,7 +391,7 @@ EXCLUDE      += afunc1            afunc2            always5.1         always_com
                 generate19.2      generate21        hier1.1           hier2             hier3 \
                 hier3.1           hier3.2           hier3.3           hier3.4           hier4 \
                 ifndef1           ifndef2           implicit2.1       inc1              inc1.1 \
-                inc2              inc3              inc3.1            int1              line1 \
+                inc2              inc3              inc3.1            inline3           int1              line1 \
                 localparam1       localparam1.1     localparam1.2     localparam1.3     localparam2 \
                 localparam3       logic1            longint1          marray1           marray1.1 \
                 marray1.2         marray1.3         marray2           marray2.1         marray2.2 \
@@ -551,11 +551,11 @@ EXCLUDE      += fork2             generate4         generate4.1       generate8
 endif
 
 ifeq ($(MAKECMDGOALS),cver)
-EXCLUDE      += always15          define4           include1          include1.1        include2 \
-                include4          include5          inline3.1         inline3.2         inline3.3 \
-                inline3.4         inline3.5         inline3.6         inline3.7         instance7 \
-                random1.2         real3.4           real3.6           real6             sbit_sel2.1 \
-                timescale2.8
+EXCLUDE      += always15          define4           example2.4        include1          include1.1 \
+                include2          include4          include5          inline3.1         inline3.2 \
+                inline3.3         inline3.4         inline3.5         inline3.6         inline3.7 \
+                instance7         random1.2         real3.4           real3.6           real6 \
+                sbit_sel2.1       timescale2.8
 else
 ifeq ($(MAKECMDGOALS),vcs)
 EXCLUDE      += afunc1            afunc2            for5              for5.1            for5.2 \
