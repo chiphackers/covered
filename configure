@@ -2136,7 +2136,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=covered
- VERSION=covered-20090705
+ VERSION=covered-20090802
 
 
 cat >>confdefs.h <<_ACEOF

@@ -1,6 +1,44 @@
 Covered-Related NEWS
 ====================
 
+    * 8/2/2009
+
+Development release covered-20090802 made.  This development release adds several performance enhancements and bug
+fixes to the new inlined code coverage flow, including the following:
+
+  - Adding support for $random and $urandom system calls to inlined coverage.
+  - Includes all fixes made to the stable 0.7.5 release.
+  - Adding support for $value$plusargs system calls to inlined coverage.
+  - Fixing issue with generated IF statements.
+  - Added user documentation for inlined coverage flow and score options.
+  - Fixing issue with generated code interrupting comma-separated assign statements.
+  - Performed code simplification and performance improvement with the way statements were handled internally.
+  - Removed unnecessary calls to simulation functions when using inlined code coverage (this added a performance
+    penalty).
+  - Improved performance of inlined code generator for sizing generated signals.
+  - Fixed memory indexing issues related to memory coverage.
+  - Added support for static function and static ternary operators for inlined code coverage.
+  - Added code to differentiate functions used statically and not to do the right thing for inlined code coverage
+    accumulation.
+  - Added vcd_diff script which checks the dumpfile output from non-inlined and inlined design files to verify that the
+    inlined code generator does not change the result.  This check is now a part of all inlined regression runs.
+  - Made several performance improvements to the VCD file reader.  The reader is now 10-20% faster.
+  - Added support for Verilator regressions runs and ported a couple of diagnostics to Verilator format.
+  - Adding check to make sure that a CDD file without inlined mode set that reads a VCD file containing inlined coverage
+    data emits an error to the user and exits gracefully.
+  - Added -inline-comb-depth score option to allow the user to specify a shallower combinational coverage depth
+    to be generated -- improving inlined simulation and coverage performance.
+  - For Verilator runs, inserted pragmas around intermediate combinational logic expression signals to exclude them
+    from being output to VCD files.  This improves simulation and coverage performance for Verilator runs (other simulators
+    that have a VPI that automatically remove these signals from generating change callbacks).
+  - Performing code replace of some actual code with pre-calculated intermediate expression values for further simulation
+    performance improvements.
+  - Added "e" option to -inline-metrics which allows event coverage to be turned on/off independently of other
+    combinational logic coverage.  This allows further simulation and coverage performance improvements (especially for
+    Verilator runs).
+  - Added optimization that causes code generation to be skipped for assertion files when assertion coverage is not required.
+  - Full regressions now runs cleanly with all code changes.
+
     * 7/5/2009
 
 Development release covered-20090705 made.  This development branch adds support for a new type of code coverage scoring.
