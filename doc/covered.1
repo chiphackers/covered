@@ -118,8 +118,11 @@ Verilog hierarchical reference to the module that is at the top of the tree to b
 \fB\-inline\fR
 Creates a directory in the current directory called "covered/verilog" and outputs an instrumented version of the original Verilog design files that are to be covered.
 .TP
-\fB\-inline-metrics\fR \fI[l][t][m][c][f][a]\fR
-Specifies which coverage metrics should be inlined for scoring purposes.  Only these metrics will be available for reporting and ranking.  Default is ltmcfa (line, toggle, memory, combinational logic, FSM and assertion).
+\fB\-inline-comb-depth\fR \fIvalue\fR
+Specifies the depth in an expression tree that combinational logic coverage will be scored for.  By default, combinational logic depth is infinite (specified by a value of 0).
+.TP
+\fB\-inline-metrics\fR \fI[l][t][m][e][c][f][a]\fR
+Specifies which coverage metrics should be inlined for scoring purposes.  Only these metrics will be available for reporting and ranking.  Default is ltmecfa (line, toggle, memory, event, combinational logic, FSM and assertion).  Special note for Verilator users:  Use this option to avoid generating event coverage which will cause simulation slowdown and cause UNOPTFLAT warnings.
 .TP 
 \fB\-lxt\fR \fIfilename\fR
 Name of LXT2 dumpfile to score design with.  If this or the \-vcd option is not used, Covered will only create an initial CDD file from the design and will not attempt to score the design.
