@@ -267,7 +267,7 @@ void parse_and_score_dumpfile(
 #endif
 
     /* Read in contents of specified database file */
-    db_read( db, READ_MODE_NO_MERGE );
+    (void)db_read( db, READ_MODE_NO_MERGE );
   
     /* Bind expressions to signals/functional units */
     bind_perform( TRUE, 0 );

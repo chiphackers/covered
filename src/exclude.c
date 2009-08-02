@@ -1901,7 +1901,7 @@ void command_exclude(
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
-      db_read( exclude_cdd, READ_MODE_REPORT_NO_MERGE );
+      (void)db_read( exclude_cdd, READ_MODE_REPORT_NO_MERGE );
       bind_perform( TRUE, 0 );
 
       /* Apply the specified exclusion IDs */

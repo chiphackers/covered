@@ -1073,7 +1073,7 @@ static void rank_read_cdd(
     uint64     tmp_nums[CP_TYPE_NUM] = {0};
 
     /* Read in database */
-    db_read( cdd_name, READ_MODE_REPORT_NO_MERGE );
+    (void)db_read( cdd_name, READ_MODE_REPORT_NO_MERGE );
     bind_perform( TRUE, 0 );
 
     /* Calculate the num_cps array if we are the first or check our coverage points to verify that they match */
