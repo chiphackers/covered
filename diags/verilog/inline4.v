@@ -2,7 +2,7 @@
  Name:        inline4.v
  Author:      Trevor Williams  (phase1geo@gmail.com)
  Date:        08/03/2009
- Purpose:     
+ Purpose:     Verifies that whitespace following if block is handled correctly.
 */
 
 module main;

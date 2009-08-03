@@ -3098,6 +3098,9 @@ static void generator_insert_mem_cov(
     rv  = snprintf( str, slen, "wire %s %s = %s;", range, name, value );
     assert( rv < slen );
 
+    generator_prepend_to_work_code( "\n" );
+    generator_prepend_to_work_code( str );
+
   /* Otherwise, create the assignment string for a register and create the register */
   } else {
 
@@ -3117,11 +3120,11 @@ static void generator_insert_mem_cov(
     rv   = snprintf( str, slen, " %s = %s;", name, value );
     assert( rv < slen );
 
-  }
+    /* Append the line coverage assignment to the working buffer */
+    generator_add_cov_to_work_code( str );
+    generator_add_cov_to_work_code( "\n" );
 
-  /* Append the line coverage assignment to the working buffer */
-  generator_add_cov_to_work_code( str );
-  generator_add_cov_to_work_code( "\n" );
+  }
 
   /* Deallocate temporary memory */
   free_safe( idxstr, (strlen( idxstr ) + 1) );

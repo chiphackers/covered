@@ -540,7 +540,7 @@ endif
 ifdef INLINE
 DIAGS1       += assign4           example2          example2.1        example2.3        example2.4 \
                 inline3.1         inline3.2         inline3.3         inline3.4         inline3.5 \
-                inline3.6         inline3.7         inline4           inline5
+                inline3.6         inline3.7         inline4           inline5           inline6
 
 EXCLUDE      += bug2794588        case4.1           case5             casex2            casez3 \
                 example1          exclude5.1        exclude5.3        inline3           mem5 \
