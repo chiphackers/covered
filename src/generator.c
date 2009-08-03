@@ -1082,17 +1082,22 @@ void generator_add_to_work_code(
 
     long replace_offset = strlen( work_buffer );
 
-    /* If something is stored in the look-ahead buffer, add it to the work buffer first */
-    if( strlen( lahead_buffer ) > 0 ) {
+    /* Only append the look-ahead buffer contents if the string is coming from the code */
+    if( from_code ) {
 
-      assert( (strlen( work_buffer ) + strlen( lahead_buffer)) < 4095 );
-      strcat( work_buffer, lahead_buffer );
-      lahead_buffer[0] = '\0';
+      /* If something is stored in the look-ahead buffer, add it to the work buffer first */
+      if( strlen( lahead_buffer ) > 0 ) {
 
-    } else {
+        assert( (strlen( work_buffer ) + strlen( lahead_buffer)) < 4095 );
+        strcat( work_buffer, lahead_buffer );
+        lahead_buffer[0] = '\0';
 
-      /* Set the last_token index to the replace_offset */
-      last_token_index = replace_offset;
+      } else {
+
+        /* Set the last_token index to the replace_offset */
+        last_token_index = replace_offset;
+
+      }
 
     }
 
