@@ -3441,9 +3441,15 @@ void generator_hold_last_token() { PROFILE(GENERATOR_HOLD_LAST_TOKEN);
   /* Find the last token and store it into the look-ahead buffer */
   if( strlen( work_buffer ) > 0 ) {
 
-    strcpy( lahead_buffer, (work_buffer + last_token_index) );
-    work_buffer[last_token_index] = '\0';
-    replace_last.word_ptr = work_buffer + (last_token_index - 1);
+    /* Skip whitespace */
+    char* ptr = work_buffer + last_token_index;
+    while( (*ptr != '\0') && ((*ptr == ' ') || (*ptr == '\t') || (*ptr == '\r') || (*ptr == '\n')) ) ptr++;
+
+    if( *ptr != '\0' ) {
+      strcpy( lahead_buffer, ptr );
+      work_buffer[last_token_index] = '\0';
+      replace_last.word_ptr = work_buffer + (last_token_index - 1);
+    }
 
 #ifdef DEBUG_MODE
     if( debug_mode ) {
