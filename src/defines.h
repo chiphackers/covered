@@ -504,7 +504,7 @@
 
 /*!
  Returns the base type of the vector value if the expression is an EXP_OP_STATIC.  Legal
- values are DECIMAL, HEXIDECIMAL, OCTAL, BINARY, and QSTRING.
+ values are SIZED_DECIMAL, DECIMAL, HEXIDECIMAL, OCTAL, BINARY, and QSTRING.
 */
 #define ESUPPL_STATIC_BASE(x)        x.part.base
 
@@ -1056,6 +1056,7 @@ typedef enum exp_op_type_e {
 #define OCTAL			2	/*!< String in format [oO][0-7xXzZ_\?]+ */
 #define HEXIDECIMAL		3	/*!< String in format [hH][0-9a-fA-FxXzZ_\?]+ */
 #define QSTRING                 4       /*!< Quoted string */
+#define SIZED_DECIMAL           5       /*!< String in format [0-9]+'[dD][0-9]+ */
 
 /*! @} */
 

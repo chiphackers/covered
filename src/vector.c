@@ -2773,6 +2773,13 @@ char* vector_to_string(
     assert( rv < 20 );
     str = strdup_safe( width_str );
 
+  } else if( base == SIZED_DECIMAL ) {
+
+    char         width_str[50];
+    unsigned int rv = snprintf( width_str, 50, "%d'd%d", vec->width, vector_to_int( vec ) );
+    assert( rv < 20 );
+    str = strdup_safe( width_str );
+
   } else if( vec->suppl.part.data_type == VDATA_R64 ) {
 
     if( vec->value.r64->str != NULL ) {
@@ -2996,7 +3003,7 @@ void vector_from_string(
 
       if( sscanf( *str, "%d'%[sSdD]%[0-9]%n", &size, stype, value, &chars_read ) == 3 ) {
         bits_per_char = 10;
-        *base         = DECIMAL;
+        *base         = SIZED_DECIMAL;
         *str          = *str + chars_read;
       } else if( sscanf( *str, "%d'%[sSbB]%[01xXzZ_\?]%n", &size, stype, value, &chars_read ) == 3 ) {
         bits_per_char = 1;
@@ -3052,7 +3059,7 @@ void vector_from_string(
 
         /* Create vector */
         *vec = vector_create( size, VTYPE_VAL, VDATA_UL, TRUE );
-        if( *base == DECIMAL ) {
+        if( (*base == DECIMAL) || (*base == SIZED_DECIMAL) ) {
           (void)vector_from_uint64( *vec, ato64( value ) );
         } else {
           vector_set_static( *vec, value, bits_per_char ); 
