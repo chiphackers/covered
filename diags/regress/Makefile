@@ -571,10 +571,10 @@ EXCLUDE      += always15          compx1            compx1.1          compx1.2  
                 example2.1        example2.3        example2.4        func1             func2 \
                 ifelse1           include1          include1.1        include2          include4 \
                 include5          inline3.1         inline3.2         inline3.3         inline3.4 \
-                inline3.5         inline3.6         inline3.7         lshift3.3         negate1 \
-                real3.3           real3.7           real5             real5.10          real7 \
-                real8             rshift1.2         rshift2.2         timescale1.16     timescale1.17 \
-                timescale1.18     timescale2.5      timescale2.8
+                inline3.5         inline3.6         inline3.7         lshift3.3         inline5 \
+                inline7           negate1           real3.3           real3.7           real5 \
+                real5.10          real7             real8             rshift1.2         rshift2.2 \
+                timescale1.16     timescale1.17     timescale1.18     timescale2.5      timescale2.8
 else
 ifeq ($(MAKECMDGOALS),vcomp)
 EXCLUDE      +=

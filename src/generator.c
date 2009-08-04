@@ -3120,9 +3120,12 @@ static void generator_insert_mem_cov(
     rv   = snprintf( str, slen, " %s = %s;", name, value );
     assert( rv < slen );
 
-    /* Append the line coverage assignment to the working buffer */
-    generator_add_cov_to_work_code( str );
-    generator_add_cov_to_work_code( "\n" );
+    /* Write coverage should append to the working buffer */
+    if( write ) {
+      generator_add_cov_to_work_code( str );
+    } else {
+      (void)str_link_add( strdup_safe( str ), &work_head, &work_tail );
+    }
 
   }
 
