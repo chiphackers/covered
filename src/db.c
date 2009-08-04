@@ -3111,6 +3111,14 @@ void db_assign_symbol(
           if( sscanf( (name + (index + 1)), "%u_%u_%x$%s", &fline, &lline, &col, scope ) == 4 ) {
 
             char tscope[4096];
+            int  i;
+
+            /* Replace the '/' keyword with '.' in the scope */
+            for( i=0; i<strlen( scope ); i++ ) {
+              if( scope[i] == '/' ) {
+                scope[i] = '.';
+              }
+            }
 
             /* Get the relative instance that contains the expression */
             rv   = snprintf( tscope, 4096, "%s.%s", curr_inst->name, scope );
@@ -3174,6 +3182,14 @@ void db_assign_symbol(
           if( sscanf( (name + (index + 1)), "%u_%u_%x$%[^$]$%s", &fline, &lline, &col, mname, scope ) == 5 ) {
 
             char tscope[4096];
+            int  i;
+
+            /* Replace the '/' keyword with '.' in the scope */
+            for( i=0; i<strlen( scope ); i++ ) {
+              if( scope[i] == '/' ) {
+                scope[i] = '.';
+              }
+            }
 
             /* Get the relative instance that contains the expression */
             rv   = snprintf( tscope, 4096, "%s.%s", curr_inst->name, scope );
@@ -3217,6 +3233,14 @@ void db_assign_symbol(
           if( sscanf( (name + (index + 1)), "%u_%u_%x$%s", &fline, &lline, &col, scope ) == 4 ) {
 
             char tscope[4096];
+            int  i;
+
+            /* Replace the '/' keyword with '.' in the scope */
+            for( i=0; i<strlen( scope ); i++ ) {
+              if( scope[i] == '/' ) {
+                scope[i] = '.';
+              }
+            }
 
             /* Get the relative instance that contains the expression */
             rv   = snprintf( tscope, 4096, "%s.%s", curr_inst->name, scope );

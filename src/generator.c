@@ -230,9 +230,17 @@ static char* generator_get_relative_scope(
 
   char* back = strdup_safe( child->name );
   char* relative_scope;
+  int   i;
 
   scope_extract_scope( child->name, funit_top->funit->name, back );
   relative_scope = strdup_safe( back );
+
+  /* Replace the periods with a '/' character */
+  for( i=0; i<strlen( relative_scope ); i++ ) {
+    if( relative_scope[i] == '.' ) {
+      relative_scope[i] = '/';
+    }
+  }
 
   free_safe( back, (strlen( child->name ) + 1) );
 

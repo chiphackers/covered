@@ -579,7 +579,12 @@ else
 ifeq ($(MAKECMDGOALS),vcomp)
 EXCLUDE      +=
 else
+ifeq ($(MAKECMDGOALS),verilator)
+DIAGS1       := $(filter $(basename $(basename $(notdir $(wildcard ../verilog/*.verilator.v)))), $(DIAGS1))
+EXCLUDE      +=
+else
 EXCLUDE      += case4.1           nested_block2     nested_block2.1   random4
+endif
 endif
 endif
 endif
