@@ -730,7 +730,7 @@ void report_print_header(
       (info_suppl.part.excl_pragma == 1) ) {
     fprintf( ofile, "* CDD file excludes the following block types:\n" );
     if( info_suppl.part.excl_assign == 1 ) {
-      fprintf( ofile, "    assign - Continuous Assigments\n" );
+      fprintf( ofile, "    assign - Continuous Assignments\n" );
     }
     if( info_suppl.part.excl_always == 1 ) {
       fprintf( ofile, "    always - Always Statements\n" );
