@@ -6614,6 +6614,7 @@ case_item
           cstmt->stmt    = $4;
           cstmt->line    = @1.first_line;
           cstmt->ppfline = @1.ppfline;
+          cstmt->pplline = @1.pplline;
           cstmt->fcol    = @1.first_column;
           cstmt->lcol    = @1.last_column;
           $$ = cstmt;
@@ -6645,6 +6646,7 @@ case_item
           cstmt->stmt    = $4;
           cstmt->line    = @1.first_line;
           cstmt->ppfline = @1.ppfline;
+          cstmt->pplline = @1.pplline;
           cstmt->fcol    = @1.first_column;
           cstmt->lcol    = @1.last_column;
           $$ = cstmt;
@@ -6676,6 +6678,7 @@ case_item
           cstmt->stmt    = $3;
           cstmt->line    = @1.first_line;
           cstmt->ppfline = @1.ppfline;
+          cstmt->pplline = @1.pplline;
           cstmt->fcol    = @1.first_column;
           cstmt->lcol    = @1.last_column;
           $$ = cstmt;
