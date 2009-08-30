@@ -1298,7 +1298,7 @@ void command_score(
         print_output( "***  Scoring completed successfully!  ***\n", NORMAL, __FILE__, __LINE__ );
       }
       /*@-duplicatequals -formattype@*/
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "Dynamic memory allocated:   %llu bytes", largest_malloc_size );
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "Dynamic memory allocated:   %" FMT64 "u bytes", largest_malloc_size );
       assert( rv < USER_MSG_LENGTH );
       /*@=duplicatequals =formattype@*/
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );

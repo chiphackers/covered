@@ -1271,7 +1271,7 @@ void instance_only_db_read(
   int   chars_read;
   bool  name_diff;
 
-  if( sscanf( *line, "%s %d%n", scope, &name_diff, &chars_read ) == 2 ) {
+  if( sscanf( *line, "%s %d%n", scope, (int*)&name_diff, &chars_read ) == 2 ) {
 
     char*       back = strdup_safe( scope );
     char*       rest = strdup_safe( scope );
@@ -1331,7 +1331,7 @@ void instance_only_db_merge(
   int  chars_read;
   bool name_diff;
 
-  if( sscanf( *line, "%s %d%n", scope, &name_diff, &chars_read ) == 2 ) {
+  if( sscanf( *line, "%s %d%n", scope, (int*)&name_diff, &chars_read ) == 2 ) {
 
     char*       back = strdup_safe( scope );
     char*       rest = strdup_safe( scope );

@@ -1387,22 +1387,27 @@ typedef enum {
 typedef unsigned char uint8;
 #define UINT8(x) x
 #define ato8(x)  atoi(x)
+#define FMT8    "hh"
 #elif SIZEOF_SHORT == 1
 typedef unsigned short uint8;
 #define UINT8(x) x
 #define ato8(x)  atoi(x)
+#define FMT8     "h"
 #elif SIZEOF_INT == 1
 typedef unsigned int uint8;
 #define UINT8(x) x
 #define ato8(x)  atoi(x)
+#define FMT8     ""
 #elif SIZEOF_LONG == 1
 typedef unsigned long uint8;
 #define UINT8(x) x
 #define ato8(x)  atol(x)
+#define FMT8     "l"
 #elif SIZEOF_LONG_LONG == 1
 typedef unsigned long long uint8;
 #define UINT8(x) x ## LL
 #define ato8(x)  atoll(x)
+#define FMT8     "ll"
 #else
 #error "Unable to find an 8-bit data type"
 #endif
@@ -1414,22 +1419,27 @@ typedef unsigned long long uint8;
 typedef unsigned char uint16;
 #define UINT16(x) x
 #define ato16(x)  atoi(x)
+#define FMT16     "hh"
 #elif SIZEOF_SHORT == 2
 typedef unsigned short uint16;
 #define UINT16(x) x
 #define ato16(x)  atoi(x)
+#define FMT16     "h"
 #elif SIZEOF_INT == 2
 typedef unsigned int uint16;
 #define UINT16(x) x
 #define ato16(x)  atoi(x)
+#define FMT16     ""
 #elif SIZEOF_LONG == 2
 typedef unsigned long uint16;
 #define UINT16(x) x
 #define ato16(x)  atol(x)
+#define FMT16     "l"
 #elif SIZEOF_LONG_LONG == 2
 typedef unsigned long long uint16;
 #define UINT16(x) x ## LL
 #define ato16(x)  atoll(x)
+#define FMT16     "ll"
 #else
 #error "Unable to find a 16-bit data type"
 #endif
@@ -1441,22 +1451,27 @@ typedef unsigned long long uint16;
 typedef unsigned char uint32;
 #define UINT32(x) x
 #define ato32(x)  atoi(x)
+#define FMT32     "hh"
 #elif SIZEOF_SHORT == 4
 typedef unsigned short uint32;
 #define UINT32(x) x
 #define ato32(x)  atoi(x)
+#define FMT32     "h"
 #elif SIZEOF_INT == 4
 typedef unsigned int uint32;
 #define UINT32(x) x
 #define ato32(x)  atoi(x)
+#define FMT32     ""
 #elif SIZEOF_LONG == 4
 typedef unsigned long uint32;
 #define UINT32(x) x
 #define ato32(x)  atol(x)
+#define FMT32     "l"
 #elif SIZEOF_LONG_LONG == 4
 typedef unsigned long long uint32;
 #define UINT32(x) x ## LL
 #define ato32(x)  atoll(x)
+#define FMT32     "ll"
 #else
 #error "Unable to find a 32-bit data type"
 #endif
@@ -1480,26 +1495,31 @@ typedef char int64;
 typedef unsigned char uint64;
 #define UINT64(x) x
 #define ato64(x)  atoi(x)
+#define FMT64     "hh"
 #elif SIZEOF_SHORT == 8
 typedef short int64;
 typedef unsigned short uint64;
 #define UINT64(x) x
 #define ato64(x)  atoi(x)
+#define FMT64     "h"
 #elif SIZEOF_INT == 8
 typedef int int64;
 typedef unsigned int uint64;
 #define UINT64(x) x
 #define ato64(x)  atoi(x)
+#define FMT64     ""
 #elif SIZEOF_LONG == 8
 typedef long int64;
 typedef unsigned long uint64;
 #define UINT64(x) x
 #define ato64(x)  atol(x)
+#define FMT64     "l"
 #elif SIZEOF_LONG_LONG == 8
 typedef long long int64;
 typedef unsigned long long uint64;
 #define UINT64(x) x ## LL
 #define ato64(x)  atoll(x)
+#define FMT64     "ll"
 #else
 #error "Unable to find a 64-bit data type"
 #endif

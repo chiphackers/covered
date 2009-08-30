@@ -6066,7 +6066,7 @@ void expression_assign(
 #ifdef DEBUG_MODE
     if( debug_mode ) {
       if( ((dim != NULL) && dim->last) || (lhs->op == EXP_OP_SIG) ) {
-        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "        In expression_assign, lhs_op: %s, rhs_op: %s, lsb: %d, time: %llu, nb: %d",
+        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "        In expression_assign, lhs_op: %s, rhs_op: %s, lsb: %d, time: %" FMT64 "u, nb: %d",
                                     expression_string_op( lhs->op ), expression_string_op( rhs->op ), *lsb, time->full, nb );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, DEBUG, __FILE__, __LINE__ );

@@ -3407,7 +3407,7 @@ bool db_do_timestep(
     if( final ) {
       print_output( "Performing final timestep", DEBUG, __FILE__, __LINE__ );
     } else {
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Performing timestep #%lld", time );
+      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Performing timestep #%" FMT64 "u", time );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
     }
@@ -3425,7 +3425,7 @@ bool db_do_timestep(
     unsigned int rv;
     last_sim_update = time;
     /*@-formattype -duplicatequals@*/
-    printf( "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bPerforming timestep %10llu", time );
+    printf( "\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bPerforming timestep %10" FMT64 "u", time );
     /*@=formattype =duplicatequals@*/
     rv = fflush( stdout );
     assert( rv == 0 );

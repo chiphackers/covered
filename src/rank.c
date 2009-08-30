@@ -1383,7 +1383,7 @@ static void rank_perform(
 
   if( rank_verbose ) {
     /*@-duplicatequals -formattype@*/
-    rv = snprintf( user_msg, USER_MSG_LENGTH, "\nRanking %u CDD files with %llu coverage points (%llu line, %llu toggle, %llu memory, %llu logic, %llu FSM, %llu assertion)",
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "\nRanking %u CDD files with %" FMT64 "u coverage points (%" FMT64 "u line, %" FMT64 "u toggle, %" FMT64 "u memory, %" FMT64 "u logic, %" FMT64 "u FSM, %" FMT64 "u assertion)",
               comp_cdd_num, total, num_cps[CP_TYPE_LINE], num_cps[CP_TYPE_TOGGLE], num_cps[CP_TYPE_MEM], num_cps[CP_TYPE_LOGIC], num_cps[CP_TYPE_FSM], num_cps[CP_TYPE_ASSERT] );
     /*@=duplicatequals =formattype@*/
     assert( rv < USER_MSG_LENGTH );
@@ -1414,7 +1414,7 @@ static void rank_perform(
   if( rank_verbose ) {
     total_hitable = rank_count_cps( unranked_merged, total ); 
     /*@-duplicatequals +ignorequals@*/
-    rv = snprintf( user_msg, USER_MSG_LENGTH, "Ignoring %llu coverage points that were not hit by any CDD file", (total - total_hitable) );
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "Ignoring %" FMT64 "u coverage points that were not hit by any CDD file", (total - total_hitable) );
     /*@=duplicatequals =ignorequals@*/
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
@@ -1441,7 +1441,7 @@ static void rank_perform(
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     /*@-duplicatequals -formattype@*/
-    rv = snprintf( user_msg, USER_MSG_LENGTH, "  %llu points covered, %llu points remaining", ranked_cps, (total_hitable - ranked_cps) );
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "  %" FMT64 "u points covered, %" FMT64 "u points remaining", ranked_cps, (total_hitable - ranked_cps) );
     /*@=duplicatequals =formattype@*/
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
@@ -1478,7 +1478,7 @@ static void rank_perform(
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     /*@-duplicatequals -formattype@*/
-    rv = snprintf( user_msg, USER_MSG_LENGTH, "  %llu points covered, %llu points remaining", ranked_cps, (total_hitable - ranked_cps) );
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "  %" FMT64 "u points covered, %" FMT64 "u points remaining", ranked_cps, (total_hitable - ranked_cps) );
     /*@=duplicatequals =formattype@*/
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
@@ -1506,7 +1506,7 @@ static void rank_perform(
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     /*@-duplicatequals -formattype@*/
-    rv = snprintf( user_msg, USER_MSG_LENGTH, "  %llu points covered, %llu points remaining", ranked_cps, (total_hitable - ranked_cps) );
+    rv = snprintf( user_msg, USER_MSG_LENGTH, "  %" FMT64 "u points covered, %" FMT64 "u points remaining", ranked_cps, (total_hitable - ranked_cps) );
     /*@=duplicatequals =formattype@*/
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
@@ -1637,9 +1637,9 @@ static void rank_output(
 
         /* Figure out the largest number for the first column */
         /*@-duplicatequals -formattype@*/
-        rv = snprintf( str, 30, "%llu", total_timesteps );   col1 = strlen( str );
+        rv = snprintf( str, 30, "%" FMT64 "u", total_timesteps );   col1 = strlen( str );
         assert( rv < 30 );
-        rv = snprintf( str, 30, "%llu", ranked_timesteps );  col2 = strlen( str );
+        rv = snprintf( str, 30, "%" FMT64 "u", ranked_timesteps );  col2 = strlen( str );
         /*@=duplicatequals =formattype@*/
         assert( rv < 30 );
 
@@ -1789,7 +1789,7 @@ void command_rank(
       rank_output( comp_cdds, comp_cdd_num );
 
       /*@-duplicatequals -formattype@*/
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "Dynamic memory allocated:   %llu bytes", largest_malloc_size );
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "Dynamic memory allocated:   %" FMT64 "u bytes", largest_malloc_size );
       assert( rv < USER_MSG_LENGTH );
       /*@=duplicatequals =formattype@*/
       print_output( "", NORMAL, __FILE__, __LINE__ );

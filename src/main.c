@@ -246,7 +246,7 @@ int main( int argc, const char** argv ) {
 #ifdef TESTMODE
   /* Make sure that all of our allocate memory has been deallocated */
   if( test_mode ) {
-    printf( "curr_malloc_size: %lld\n", curr_malloc_size );
+    printf( "curr_malloc_size: %" FMT64 "d\n", curr_malloc_size );
     assert( curr_malloc_size == 0 );
   }
 #endif

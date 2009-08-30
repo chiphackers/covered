@@ -30,6 +30,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "db.h"
 #include "defines.h"
 #include "exclude.h"
 #include "func_iter.h"

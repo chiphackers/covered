@@ -191,7 +191,7 @@ PLI_INT32 covered_value_change_bin(
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change_bin, name: %s, time: %llu, value: %s",
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change_bin, name: %s, time: %" FMT64 "u, value: %s",
                                 obf_sig( vpi_get_str( vpiFullName, cb->obj ) ), (((uint64)cb->time->high << 32) | (uint64)cb->time->low), value.value.str );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -210,7 +210,7 @@ PLI_INT32 covered_value_change_bin(
 #else
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change_bin, name: %s, time: %llu, value: %s",
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change_bin, name: %s, time: %" FMT64 "u, value: %s",
                                 obf_sig( vpi_get_str( vpiFullName, cb->obj ) ), (((uint64)cb->time->high << 32) | (uint64)cb->time->low), cb->value->value.str );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -256,7 +256,7 @@ PLI_INT32 covered_value_change_real(
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change_real, name: %s, time: %llu, value: %.16f",
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change_real, name: %s, time: %" FMT64 "u, value: %.16f",
                                 obf_sig( vpi_get_str( vpiFullName, cb->obj ) ), (((uint64)cb->time->high << 32) | (uint64)cb->time->low), value.value.real );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -276,7 +276,7 @@ PLI_INT32 covered_value_change_real(
 #else
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change_real, name: %s, time: %llu, value: %.16f",
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In covered_value_change_real, name: %s, time: %" FMT64 "u, value: %.16f",
                                 obf_sig( vpi_get_str( vpiFullName, cb->obj ) ), (((uint64)cb->time->high << 32) | (uint64)cb->time->low), cb->value->value.real );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );

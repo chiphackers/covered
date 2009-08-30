@@ -645,7 +645,7 @@ int tcl_func_collect_uncovered_toggles(
     while( sigl != NULL ) {
       snprintf( tmp, 120, "{%d.%d %d.%d} %d",
                 (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 14),
-                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + (strlen( sigl->sig->name ) - 1) + 15),
+                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + ((int)strlen( sigl->sig->name ) - 1) + 15),
                 sigl->sig->suppl.part.excluded );
       Tcl_AppendElement( tcl, tmp );
       sigl = sigl->next;
@@ -701,7 +701,7 @@ int tcl_func_collect_covered_toggles(
     while( sigl != NULL ) {
       snprintf( tmp, 85, "%d.%d %d.%d",
                 (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 14),
-                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + (strlen( sigl->sig->name ) - 1) + 15) );
+                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + ((int)strlen( sigl->sig->name ) - 1) + 15) );
       Tcl_AppendElement( tcl, tmp );
       sigl = sigl->next;
     }
@@ -756,7 +756,7 @@ int tcl_func_collect_uncovered_memories(
     while( sigl != NULL ) {
       snprintf( tmp, 120, "%d.%d %d.%d %d",
                 (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 14),
-                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + (strlen( sigl->sig->name ) - 1) + 15),
+                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + ((int)strlen( sigl->sig->name ) - 1) + 15),
                 sigl->sig->suppl.part.excluded );
       Tcl_AppendElement( tcl, tmp );
       sigl = sigl->next;
@@ -812,7 +812,7 @@ int tcl_func_collect_covered_memories(
     while( sigl != NULL ) {
       snprintf( tmp, 120, "%d.%d %d.%d %d",
                 (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 14),
-                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + (strlen( sigl->sig->name ) - 1) + 15), 
+                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + ((int)strlen( sigl->sig->name ) - 1) + 15), 
                 sigl->sig->suppl.part.excluded );
       Tcl_AppendElement( tcl, tmp );
       sigl = sigl->next;
@@ -1224,7 +1224,7 @@ int tcl_func_collect_uncovered_fsms(
     i    = 0;
     while( sigl != NULL ) {
       snprintf( str, 85, "%d.%d %d.%d %d %d", (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 14),
-                                              (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + (strlen( sigl->sig->name ) - 1) + 15),
+                                              (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + ((int)strlen( sigl->sig->name ) - 1) + 15),
                                               expr_ids[i], excludes[i] );
       Tcl_AppendElement( tcl, str );
       sigl = sigl->next;
@@ -1290,7 +1290,7 @@ int tcl_func_collect_covered_fsms(
     i    = 0;
     while( sigl != NULL ) {
       snprintf( str, 85, "%d.%d %d.%d", (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 14),
-                                        (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + (strlen( sigl->sig->name ) - 1) + 15) );
+                                        (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + ((int)strlen( sigl->sig->name ) - 1) + 15) );
       Tcl_AppendElement( tcl, str );
       sigl = sigl->next;   
       i++;

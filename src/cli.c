@@ -576,7 +576,7 @@ static bool cli_parse_input(
         if( strncmp( "time", arg, 4 ) == 0 ) {
           if( perform ) {
             uint64 timestep;
-            if( sscanf( line, "%llu", &timestep ) != 1 ) {
+            if( sscanf( line, "%" FMT64 "u", &timestep ) != 1 ) {
               cli_print_error( "No timestep specified for goto command", perform );
               valid_cmd = FALSE;
             } else {
@@ -601,7 +601,7 @@ static bool cli_parse_input(
                 cli_print_error( "Unable to find signal in find expression", perform );
                 valid_cmd = FALSE;
               }
-            } else if( sscanf( line, "%d%n", id, &chars_read ) == 1 ) {
+            } else if( sscanf( line, "%d%n", &id, &chars_read ) == 1 ) {
               if( (funit = funit_find_by_id( id )) != NULL ) {
                 expl = exp_link_find( id, funit->exp_head );
                 assert( expl != NULL );
@@ -732,7 +732,7 @@ static bool cli_parse_input(
     } else if( strncmp( "time", arg, 4 ) == 0 ) {
 
       if( perform ) {
-        printf( "    TIME: %llu\n", time->full );
+        printf( "    TIME: %" FMT64 "u\n", time->full );
       }
 
     } else if( strncmp( "signal", arg, 6 ) == 0 ) {
@@ -1061,7 +1061,7 @@ void cli_execute(
       if( cli_debug_mode ) {
         if( !debug_mode && (cli_replay_index == history_index) ) {
           if( new_timestep ) {
-            printf( "  TIME: %llu\n", time->full );
+            printf( "  TIME: %" FMT64 "u\n", time->full );
           }
           cli_display_current_stmt( curr_stmt );
         }
