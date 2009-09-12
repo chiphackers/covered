@@ -14,7 +14,6 @@
 
 @SET_MAKE@
 
-
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
@@ -43,9 +42,6 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
-am__installdirs = "$(DESTDIR)$(tcldir)" "$(DESTDIR)$(cfgdir)"
-tclSCRIPT_INSTALL = $(INSTALL_SCRIPT)
-SCRIPTS = $(tcl_SCRIPTS)
 SOURCES =
 DIST_SOURCES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
@@ -54,8 +50,10 @@ am__vpath_adj = case $$p in \
     *) f=$$p;; \
   esac;
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
+am__installdirs = "$(DESTDIR)$(cfgdir)" "$(DESTDIR)$(tcldir)"
 cfgDATA_INSTALL = $(INSTALL_DATA)
-DATA = $(cfg_DATA)
+tclDATA_INSTALL = $(INSTALL_DATA)
+DATA = $(cfg_DATA) $(tcl_DATA)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -182,35 +180,35 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 use_tcltk = @use_tcltk@
 tcldir = $(datadir)/covered/scripts
-tcl_SCRIPTS = assert.tcl \
-              balloon.tcl \
-              banner.gif \
-              cdd_view.tcl \
-              checked.gif \
-              clear.gif \
-              comb.tcl \
-              cov_create.tcl \
-              cov_icon.gif \
-              exclude.tcl \
-              find.gif \
-              fsm.tcl \
-              gen_new.tcl \
-              gen_rank.tcl \
-              gen_report.tcl \
-              help.tcl \
-              left_arrow.gif \
-              main_view.tcl \
-              memory.tcl \
-              menu_create.tcl \
-              preferences.tcl \
-              process_file.tcl \
-              right_arrow.gif \
-              summary.tcl \
-              toggle.tcl \
-              unchecked.gif \
-              verilog.tcl \
-              viewer.tcl \
-              wizard.tcl
+tcl_DATA = assert.tcl \
+           balloon.tcl \
+           banner.gif \
+           cdd_view.tcl \
+           checked.gif \
+           clear.gif \
+           comb.tcl \
+           cov_create.tcl \
+           cov_icon.gif \
+           exclude.tcl \
+           find.gif \
+           fsm.tcl \
+           gen_new.tcl \
+           gen_rank.tcl \
+           gen_report.tcl \
+           help.tcl \
+           left_arrow.gif \
+           main_view.tcl \
+           memory.tcl \
+           menu_create.tcl \
+           preferences.tcl \
+           process_file.tcl \
+           right_arrow.gif \
+           summary.tcl \
+           toggle.tcl \
+           unchecked.gif \
+           verilog.tcl \
+           viewer.tcl \
+           wizard.tcl
 
 cfgdir = $(datadir)/covered
 cfg_DATA = .coveredrc
@@ -246,25 +244,6 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-install-tclSCRIPTS: $(tcl_SCRIPTS)
-	@$(NORMAL_INSTALL)
-	test -z "$(tcldir)" || $(MKDIR_P) "$(DESTDIR)$(tcldir)"
-	@list='$(tcl_SCRIPTS)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  if test -f $$d$$p; then \
-	    f=`echo "$$p" | sed 's|^.*/||;$(transform)'`; \
-	    echo " $(tclSCRIPT_INSTALL) '$$d$$p' '$(DESTDIR)$(tcldir)/$$f'"; \
-	    $(tclSCRIPT_INSTALL) "$$d$$p" "$(DESTDIR)$(tcldir)/$$f"; \
-	  else :; fi; \
-	done
-
-uninstall-tclSCRIPTS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(tcl_SCRIPTS)'; for p in $$list; do \
-	  f=`echo "$$p" | sed 's|^.*/||;$(transform)'`; \
-	  echo " rm -f '$(DESTDIR)$(tcldir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(tcldir)/$$f"; \
-	done
 install-cfgDATA: $(cfg_DATA)
 	@$(NORMAL_INSTALL)
 	test -z "$(cfgdir)" || $(MKDIR_P) "$(DESTDIR)$(cfgdir)"
@@ -281,6 +260,23 @@ uninstall-cfgDATA:
 	  f=$(am__strip_dir) \
 	  echo " rm -f '$(DESTDIR)$(cfgdir)/$$f'"; \
 	  rm -f "$(DESTDIR)$(cfgdir)/$$f"; \
+	done
+install-tclDATA: $(tcl_DATA)
+	@$(NORMAL_INSTALL)
+	test -z "$(tcldir)" || $(MKDIR_P) "$(DESTDIR)$(tcldir)"
+	@list='$(tcl_DATA)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  f=$(am__strip_dir) \
+	  echo " $(tclDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(tcldir)/$$f'"; \
+	  $(tclDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(tcldir)/$$f"; \
+	done
+
+uninstall-tclDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(tcl_DATA)'; for p in $$list; do \
+	  f=$(am__strip_dir) \
+	  echo " rm -f '$(DESTDIR)$(tcldir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(tcldir)/$$f"; \
 	done
 tags: TAGS
 TAGS:
@@ -317,9 +313,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(SCRIPTS) $(DATA)
+all-am: Makefile $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(tcldir)" "$(DESTDIR)$(cfgdir)"; do \
+	for dir in "$(DESTDIR)$(cfgdir)" "$(DESTDIR)$(tcldir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -364,7 +360,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-cfgDATA install-tclSCRIPTS
+install-data-am: install-cfgDATA install-tclDATA
 
 install-dvi: install-dvi-am
 
@@ -398,7 +394,7 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-cfgDATA uninstall-tclSCRIPTS
+uninstall-am: uninstall-cfgDATA uninstall-tclDATA
 
 .MAKE: install-am install-strip
 
@@ -408,11 +404,11 @@ uninstall-am: uninstall-cfgDATA uninstall-tclSCRIPTS
 	install-data-am install-dvi install-dvi-am install-exec \
 	install-exec-am install-html install-html-am install-info \
 	install-info-am install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip install-tclSCRIPTS \
+	install-ps install-ps-am install-strip install-tclDATA \
 	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
 	pdf-am ps ps-am uninstall uninstall-am uninstall-cfgDATA \
-	uninstall-tclSCRIPTS
+	uninstall-tclDATA
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
