@@ -1,14 +1,8 @@
 module main(input wire verilatorclock);
 /* verilator lint_off WIDTH */
-/* verilator lint_off COMBDLY */
+// /* verilator lint_off COMBDLY */
 reg	a;
 reg	b, c, d, e, f, g, h;
-
-always
-  begin
-   if ($time==5)
-   a <= b;
-  end
 
 always @(posedge c) d <= ~d;
 
@@ -42,6 +36,6 @@ initial begin
 	if ($time==121)
 	$finish;
 end
-/* verilator lint_on COMBDLY */
 /* verilator lint_on WIDTH */
+// /* verilator lint_on COMBDLY */
 endmodule
