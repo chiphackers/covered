@@ -1808,13 +1808,15 @@ void check_for_pragma(
 
         /* Remove trailing whitespace */
         ptr = value + (strlen( value ) - 1);
-        while( (ptr > value) && ((*ptr == ' ') || (*ptr == '\t')) ) {
+        while( (ptr >= value) && ((*ptr == ' ') || (*ptr == '\t') || (*ptr == '\n') || (*ptr == '\r') || (*ptr == '\b')) ) {
           *ptr = '\0';
           ptr--;
         }
 
         /* Save the file version information in the database */
-        db_add_file_version( yylloc.orig_fname, value );
+        if( value[0] != '\0' ) {
+          db_add_file_version( yylloc.orig_fname, value );
+        }
 
       }
 
