@@ -928,12 +928,13 @@ static void gen_item_resolve(
 
 #ifdef DEBUG_MODE 
     if( debug_mode ) {
-      char         str[USER_MSG_LENGTH];
+      char*        str = (char*)malloc_safe( USER_MSG_LENGTH );
       unsigned int rv;
       gen_item_stringify( gi, str, USER_MSG_LENGTH );
       rv = snprintf( user_msg, USER_MSG_LENGTH, "Resolving generate item, %s for inst: %s", str, obf_inst( inst->name ) );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+      free_safe( str, USER_MSG_LENGTH );
     }
 #endif
 
@@ -983,44 +984,47 @@ static void gen_item_resolve(
         break;
 
       case GI_TYPE_TFN :
-        if( gi->varname != NULL ) {
-          char         inst_name[4096];
-          vsignal*     genvar;
-          func_unit*   found_funit;
-          unsigned int rv;
-          if( !scope_find_signal( gi->varname, inst->funit, &genvar, &found_funit, 0 ) ) {
-            rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to find variable %s in module %s",
-                           obf_sig( gi->varname ), obf_funit( inst->funit->name ) );
-            assert( rv < USER_MSG_LENGTH );
-            print_output( user_msg, FATAL, __FILE__, __LINE__ );
-            Throw 0;
+        {
+          char* inst_name = (char*)malloc_safe( 4096 );
+          if( gi->varname != NULL ) {
+            vsignal*     genvar;
+            func_unit*   found_funit;
+            unsigned int rv;
+            if( !scope_find_signal( gi->varname, inst->funit, &genvar, &found_funit, 0 ) ) {
+              rv = snprintf( user_msg, USER_MSG_LENGTH, "Unable to find variable %s in module %s",
+                             obf_sig( gi->varname ), obf_funit( inst->funit->name ) );
+              assert( rv < USER_MSG_LENGTH );
+              print_output( user_msg, FATAL, __FILE__, __LINE__ );
+              Throw 0;
+            }
+            rv = snprintf( inst_name, 4096, "%s[%d]", gi->elem.inst->name, vector_to_int( genvar->value ) );
+            assert( rv < 4096 );
+            (void)instance_parse_add( &inst, inst->funit, gi->elem.inst->funit, inst_name, NULL, FALSE, TRUE, FALSE, TRUE );
+            rv = snprintf( inst_name, 4096, "%s.%s[%d]", inst->name, gi->elem.inst->name, vector_to_int( genvar->value ) );
+            assert( rv < 4096 );
+            if( (child = instance_find_scope( inst, inst_name, TRUE )) != NULL ) {
+              inst_parm_add_genvar( genvar, child );
+            }
+          } else {
+            char         inst_name[4096];
+            unsigned int rv;
+            (void)instance_parse_add( &inst, inst->funit, gi->elem.inst->funit, gi->elem.inst->name, NULL, FALSE, TRUE, FALSE, TRUE );
+            rv = snprintf( inst_name, 4096, "%s.%s", inst->name, gi->elem.inst->name );
+            assert( rv < 4096 );
+            child = instance_find_scope( inst, inst_name, TRUE );
           }
-          rv = snprintf( inst_name, 4096, "%s[%d]", gi->elem.inst->name, vector_to_int( genvar->value ) );
-          assert( rv < 4096 );
-          (void)instance_parse_add( &inst, inst->funit, gi->elem.inst->funit, inst_name, NULL, FALSE, TRUE, FALSE, TRUE );
-          rv = snprintf( inst_name, 4096, "%s.%s[%d]", inst->name, gi->elem.inst->name, vector_to_int( genvar->value ) );
-          assert( rv < 4096 );
-          if( (child = instance_find_scope( inst, inst_name, TRUE )) != NULL ) {
-            inst_parm_add_genvar( genvar, child );
+          free_safe( inst_name, 4096 );
+          if( child != NULL ) {
+            param_resolve_inst( child );
           }
-        } else {
-          char         inst_name[4096];
-          unsigned int rv;
-          (void)instance_parse_add( &inst, inst->funit, gi->elem.inst->funit, gi->elem.inst->name, NULL, FALSE, TRUE, FALSE, TRUE );
-          rv = snprintf( inst_name, 4096, "%s.%s", inst->name, gi->elem.inst->name );
-          assert( rv < 4096 );
-          child = instance_find_scope( inst, inst_name, TRUE );
+          if( child->funit->suppl.part.type != FUNIT_MODULE ) {
+            func_unit* parent_mod = funit_get_curr_module( child->funit );
+            funit_link_add( child->funit, &(parent_mod->tf_head), &(parent_mod->tf_tail) );
+            child->funit->parent = inst->funit;
+          }
+          gen_item_resolve( gi->next_true, child );
+          gen_item_resolve( gi->next_false, inst );
         }
-        if( child != NULL ) {
-          param_resolve_inst( child );
-        }
-        if( child->funit->suppl.part.type != FUNIT_MODULE ) {
-          func_unit* parent_mod = funit_get_curr_module( child->funit );
-          funit_link_add( child->funit, &(parent_mod->tf_head), &(parent_mod->tf_tail) );
-          child->funit->parent = inst->funit;
-        }
-        gen_item_resolve( gi->next_true, child );
-        gen_item_resolve( gi->next_false, inst );
         break;
 
       case GI_TYPE_BIND :
