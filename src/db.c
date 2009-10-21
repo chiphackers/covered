@@ -1473,14 +1473,16 @@ void db_add_override_param(
 #ifdef DEBUG_MODE
   if( debug_mode ) {
     unsigned int rv;
+    char*        exp_str = strdup_safe( expression_string( expr ) );
     if( param_name != NULL ) {
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_override_param, instance: %s, param_name: %s",
-                     obf_inst( inst_name ), obf_sig( param_name ) );
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_override_param, instance: %s, param_name: %s, expr: %s",
+                     obf_inst( inst_name ), obf_sig( param_name ), exp_str );
     } else {
-      rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_override_param, instance: %s", obf_inst( inst_name ) );
+      rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_add_override_param, instance: %s, expr: %s", obf_inst( inst_name ), exp_str );
     }
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    free_safe( exp_str, (strlen( exp_str ) + 1) );
   }
 #endif
 
