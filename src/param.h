@@ -63,7 +63,7 @@ mod_parm* mod_parm_add(
 );
 
 /*! \brief Outputs contents of module parameter list to standard output. */
-void mod_parm_display(
+int mod_parm_display(
   mod_parm* mparm
 );
 

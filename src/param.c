@@ -108,7 +108,7 @@ mod_parm* mod_parm_find(
 
   assert( name != NULL );
 
-  while( (parm != NULL) && ((parm->name == NULL) || (strcmp( parm->name, name ) != 0)) ) {
+  while( (parm != NULL) && ((parm->name == NULL) || (strcmp( parm->name, name ) != 0) || ((parm->suppl.part.type != PARAM_TYPE_DECLARED) && (parm->suppl.part.type != PARAM_TYPE_DECLARED_LOCAL))) ) {
     parm = parm->next;
   }
 
@@ -437,10 +437,12 @@ mod_parm* mod_parm_add(
 }
 
 /*!
+ \return Returns a value of 1 so that this may be called within an expression, if necessary.
+
  Outputs contents of specified module parameter to standard output.
  For debugging purposes only.
 */
-void mod_parm_display(
+int mod_parm_display(
   mod_parm* mparm  /*!< Pointer to module parameter list to display */
 ) {
 
@@ -475,6 +477,8 @@ void mod_parm_display(
     printf( "    " );  exp_link_display( mparm->exp_head );
     mparm = mparm->next;
   }
+
+  return( 1 );
 
 }
 

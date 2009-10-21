@@ -101,7 +101,8 @@ DIAGS1        = add1              aedge1            aedge1.1          afunc1    
                 generate15        generate15.1      generate15.2      generate15.3      generate15.4 \
                 generate15.5      generate16        generate16.1      generate16.2      generate16.3 \
                 generate17        generate18        generate19        generate19.1      generate19.2 \
-                generate21        generate22        hier1             hier1.1           hier2             hier3 \
+                generate21        generate22        generate24        hier1             hier1.1 \
+                hier2             hier3 \
                 hier3.1           hier3.2           hier3.3           hier3.4           hier4 \
                 if1               ifdef1            ifdef1.1          ifdef1.2          ifdef2.1 \
                 ifdef2.2          ifdef2.3          ifdef3            ifelse1           ifndef1 \
