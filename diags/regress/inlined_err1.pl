@@ -6,10 +6,10 @@
 
 require "../verilog/regress_subs.pl";
 
-if( ($SIMULATOR eq "IV") && (($DUMPTYPE eq "LXT") || ($DUMPTYPE eq "VCD")) ) {
+# Initialize the diagnostic environment
+&initialize( "inlined_err1", 1, @ARGV );
 
-  # Initialize the diagnostic environment
-  &initialize( "inlined_err1", 1, @ARGV );
+if( ($SIMULATOR eq "IV") && (($DUMPTYPE eq "LXT") || ($DUMPTYPE eq "VCD")) ) {
 
   # Perform initial score for inlined code coverage
   &runScoreCommand( "-t main -inline -v inlined_err1.v -o inlined_err1.cdd -D DUMP" );

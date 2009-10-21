@@ -316,7 +316,7 @@ EXCLUDE      += afunc1            afunc2            always5.1         always_com
                 generate14        generate15        generate15.1      generate15.2      generate15.3 \
                 generate15.4      generate15.5      generate16        generate16.1      generate16.2 \
                 generate16.3      generate17        generate18        generate19        generate19.1 \
-                generate19.2      generate21        hier1.1 \
+                generate19.2      generate21        generate22        generate24        hier1.1 \
                 hier2             hier3             ifdef1.1          ifdef3            ifndef2 \
                 implicit2         inc1              inc1.1            inc2              inc3 \
                 inc3.1            inline3           instance7         int1              line1             localparam1 \
@@ -390,7 +390,8 @@ EXCLUDE      += afunc1            afunc2            always5.1         always_com
                 generate14        generate15        generate15.1      generate15.2      generate15.3 \
                 generate15.4      generate15.5      generate16        generate16.1      generate16.2 \
                 generate16.3      generate17        generate18        generate19        generate19.1 \
-                generate19.2      generate21        hier1.1           hier2             hier3 \
+                generate19.2      generate21        generate22        generate24        hier1.1 \
+                hier2             hier3 \
                 hier3.1           hier3.2           hier3.3           hier3.4           hier4 \
                 ifndef1           ifndef2           implicit2.1       inc1              inc1.1 \
                 inc2              inc3              inc3.1            inline3           int1              line1 \
@@ -532,7 +533,8 @@ else
 ifeq ($(MAKECMDGOALS),vcomp)
 EXCLUDE      +=
 else
-EXCLUDE      += generate16.2      generate16.3      generate19        generate19.1      generate19.2
+EXCLUDE      += generate16.2      generate16.3      generate19        generate19.1      generate19.2 \
+                generate22        generate24
 endif
 endif
 endif
