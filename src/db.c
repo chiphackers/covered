@@ -2448,9 +2448,11 @@ statement* db_create_statement(
 
 #ifdef DEBUG_MODE
     if( debug_mode ) {
-      unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_create_statement, %s", expression_string( exp ) );
+      char*        exp_str = strdup_safe( expression_string( exp ) );
+      unsigned int rv      = snprintf( user_msg, USER_MSG_LENGTH, "In db_create_statement, %s", exp_str );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+      free_safe( exp_str, (strlen( exp_str ) + 1) );
     }
 #endif
 
