@@ -1180,13 +1180,8 @@ func_unit* db_add_instance(
 
   } else {
 
-    /* If the functional unit was found, use it instead of the intermediate one */
-    if( found_funit_link != NULL ) {
-      funit_dealloc( funit );
-      funit = found_funit_link->funit;
-
-    /* Otherwise, add new functional unit to functional unit list. */
-    } else {
+    /* Add new functional unit to functional unit list if we are not within a generate block. */
+    if( (found_funit_link == NULL) || (funit->suppl.part.type != FUNIT_MODULE) ) {
       funit_link_add( funit, &(db_list[curr_db]->funit_head), &(db_list[curr_db]->funit_tail) );
     }
 

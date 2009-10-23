@@ -976,6 +976,19 @@ static void gen_item_resolve(
       case GI_TYPE_INST :
         {
           funit_inst* tinst;
+          if( gi->elem.inst->funit->suppl.part.type == FUNIT_MODULE ) {
+            funit_link* found_funit_link;
+            if( ((found_funit_link = funit_link_find( gi->elem.inst->funit->name, gi->elem.inst->funit->suppl.part.type, db_list[curr_db]->funit_head )) != NULL) &&
+                (gi->elem.inst->funit != found_funit_link->funit) ) {
+              /* Make sure that any instances in the tree that point to the functional unit being replaced are pointing to the new functional unit */
+              int ignore = 0;
+              while( (tinst = inst_link_find_by_funit( gi->elem.inst->funit, db_list[curr_db]->inst_head, &ignore )) != NULL ) {
+                tinst->funit = found_funit_link->funit;
+              }
+              funit_dealloc( gi->elem.inst->funit );
+              gi->elem.inst->funit = found_funit_link->funit;
+            }
+          }
           if( (tinst = instance_copy( gi->elem.inst, inst, gi->elem.inst->name, gi->elem.inst->range, FALSE )) != NULL ) {
             param_resolve_inst( tinst );
           }
