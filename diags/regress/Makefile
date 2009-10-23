@@ -549,7 +549,7 @@ DIAGS1       += assign4           example2          example2.1        example2.3
                 inline7
 
 EXCLUDE      += bug2794588        case4.1           case5             casex2            casez3 \
-                example1          exclude5.1        exclude5.3        inline3           mem5 \
+                example1          exclude5.1        exclude5.3        inline1.2         inline3           mem5 \
                 merge6.1          param10.1         param10.5         sbit_sel3.2       signed4.1 \
                 static_func4
 ifdef VPI
