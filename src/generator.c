@@ -1102,8 +1102,21 @@ void generator_add_to_work_code(
 
       } else {
 
-        /* Set the last_token index to the replace_offset */
-        last_token_index = replace_offset;
+        if( work_buffer[0] == '\0' ) {
+
+          /* Set the last_token index */
+          last_token_index = 0;
+
+        } else {
+
+          /* Make sure any leading whitespace is included with a held token */
+          char* ptr = work_buffer + (strlen( work_buffer ) - 1);
+          while( (ptr > work_buffer) && ((*ptr == ' ') || (*ptr == '\t') || (*ptr == '\b')) ) ptr--;
+
+          /* Set the last_token index */
+          last_token_index = ptr - work_buffer;
+
+        }
 
       }
 
@@ -1222,6 +1235,12 @@ void generator_flush_work_code1(
   /* Clear replacement pointers */
   if( strlen( lahead_buffer ) == 0 ) {
     generator_clear_replace_ptrs();
+  } else {
+    char* ptr = lahead_buffer;
+    while( (*ptr != '\0') && ((*ptr == ' ') || (*ptr == '\t') || (*ptr == '\b')) ) ptr++;
+    if( *ptr == '\0' ) {
+      generator_clear_replace_ptrs();
+    }
   }
 
   PROFILE_END;
@@ -3462,7 +3481,7 @@ void generator_hold_last_token() { PROFILE(GENERATOR_HOLD_LAST_TOKEN);
 
     /* Skip whitespace */
     char* ptr = work_buffer + last_token_index;
-    while( (*ptr != '\0') && ((*ptr == ' ') || (*ptr == '\t') || (*ptr == '\r') || (*ptr == '\n')) ) ptr++;
+    // while( (*ptr != '\0') && ((*ptr == ' ') || (*ptr == '\t') || (*ptr == '\r') || (*ptr == '\n')) ) ptr++;
 
     if( *ptr != '\0' ) {
       strcpy( lahead_buffer, ptr );
