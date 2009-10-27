@@ -1,5 +1,5 @@
-5 17 1fd21 13 ffffffff TOP
-8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (add1.vcd) 2 -o (add1.cdd) 2 -v (add1.verilator.v) 2 -i (TOP.v) 1 -ep 2 -D (DUMP)
+5 17 1fda1 13 ffffffff TOP
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (add1.vcd) 2 -o (add1.cdd) 2 -v (add1.verilator.v) 2 -i (TOP.v) 1 -ep 1 -rP 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 15 TOP 0
 3 0 main "TOP.v" 0 add1.verilator.v 1 18 1 
@@ -38,7 +38,7 @@
 4 24 0 0 0 13
 3 1 main.u$1 "TOP.v.u$1" 0 add1.verilator.v 13 15 1 
 2 25 14 14 14 f0010 6 0 3008 0 0 32 48 a 0
-2 26 14 14 14 6000a 6 69 3000 0 0 64 18 0 ffffffff 0 0 0 0 0 ffffffff 0 0 0 0
+2 26 14 14 14 6000a 6 69 3000 0 0 64 18 0 ffffffffffffffff 0 0 0 0
 2 27 14 14 14 60010 6 14 10303c 25 26 1 18 0 1 1 1 0 0
 2 28 14 14 14 20012 6 39 10202e 27 0
 2 29 0 0 0 0 1 5a 3002 0 0 1 18 0 1 0 0 0 0

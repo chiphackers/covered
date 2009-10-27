@@ -1,22 +1,18 @@
 module main(input wire verilatorclock);
 
-reg	c, d;
+reg c, d;
 
-always @(posedge c) d <= ~d;
-
-initial begin
-	c = 1'b0;
-	d = 1'b0;
+always @(posedge c) begin
+  if( $time == 1 ) d <= 1'b0;
+  d <= ~d;
 end
 
 always @(posedge verilatorclock) begin
-		if (($time % 4)==0) 
-		c = ~c;
-end
-
-initial begin
-	if ($time==101)
-	$finish;
+  if( $time == 1 ) c <= 1'b0;
+  if( ($time % 4) == 1 ) 
+    c <= ~c;
+  if( $time == 101 )
+    $finish;
 end
 
 endmodule

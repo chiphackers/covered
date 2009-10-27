@@ -32,7 +32,6 @@ always @(posedge verilatorclock) begin
 end
 
 always @(posedge verilatorclock) begin
-  $display( "Time: %t", $time );
   if( $time == 1 )  f <= 1'b0;
   if( $time == 21 ) f <= 1'b1;
   if( $time == 121) $finish;

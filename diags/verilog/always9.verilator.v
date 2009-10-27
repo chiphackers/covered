@@ -46,17 +46,16 @@ always @(posedge verilatorclock)
      end
   end
 
-initial begin
-	reset = 1'b1;
-	addr  = 4'h0;
-	d[8]  = 1'b1;
-        wr    = 1'b0;
-	if ($time==21)
-	reset = 1'b0;
-	if ($time==41)
-	wr    = 1'b1;
-	if ($time==61)
-	$finish;
+always @(posedge verilatorclock) begin
+  if( $time == 1 ) begin
+    reset <= 1'b1;
+    addr  <= 4'h0;
+    d[8]  <= 1'b1;
+    wr    <= 1'b0;
+  end
+  if( $time == 21 ) reset <= 1'b0;
+  if( $time == 41 ) wr    <= 1'b1;
+  if( $time == 61 ) $finish;
 end
 
 endmodule

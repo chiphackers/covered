@@ -25,7 +25,6 @@ int main() {
     top->verilatorclock = (main_time % 2);   // Toggle clock
     top->eval();                   // Evaluate model
     tfp->dump( main_time );        // Create waveform trace for this timestamp
-    // cout << "Time: " << dec << main_time << endl;
     main_time++;                   // Time passes...
   }
 

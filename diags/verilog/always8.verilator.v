@@ -1,4 +1,4 @@
-module main;
+module main( input verilatorclock );
 
 /* verilator lint_off WIDTH */
 
@@ -18,12 +18,10 @@ always @(a)
     D:  b = "STUFF4";
   endcase
 
-initial begin
-	a = B;
-	if ($time==5)
-	a = D;
-	if ($time==11)
-	$finish;
+always @(posedge verilatorclock) begin
+  if( $time == 1 )  a <= B;
+  if( $time == 5 )  a <= D;
+  if( $time == 11 ) $finish;
 end
 
 /* verilator lint_on WIDTH */
