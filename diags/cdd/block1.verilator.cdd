@@ -1,5 +1,5 @@
-5 17 1fd21 7 ffffffff TOP
-8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (block1.vcd) 2 -o (block1.cdd) 2 -v (block1.verilator.v) 2 -i (TOP.v) 1 -ep 2 -D (DUMP)
+5 17 1fda1 7 ffffffff TOP
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (block1.vcd) 2 -o (block1.cdd) 2 -v (block1.verilator.v) 2 -i (TOP.v) 1 -ep 1 -rP 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 15 TOP 0
 3 0 main "TOP.v" 0 block1.verilator.v 1 20 1 
