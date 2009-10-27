@@ -478,6 +478,9 @@ sub convertCfg {
       $line =~ s/[0-9a-zA-Z_\.]+\.(vcd|dump)/covered_vpi.v/g;
     } elsif( ($type eq "inline") || ($type eq "inline -inline-comb-depth 1") ) {
       $line =~ s/[0-9a-zA-Z_\.]+\.(vcd|dump)//g;
+      if( $using_verilator == 1 ) {
+        $line .= " -inline-metrics ltmcfa";
+      }
     }
     print OFILE $line;
   }
