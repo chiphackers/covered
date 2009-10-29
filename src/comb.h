@@ -34,6 +34,8 @@ void combination_reset_counted_expr_tree( expression* exp );
 /*! \brief Calculates combination logic statistics for a single expression tree */
 void combination_get_tree_stats(
             expression*   exp,
+            bool          rpt_comb,
+            bool          rpt_event,
             int*          ulid,
             unsigned int  curr_depth,
             bool          excluded,
@@ -44,6 +46,8 @@ void combination_get_tree_stats(
 /*! \brief Calculates combination logic statistics for summary output */
 void combination_get_stats(
             func_unit*    funit,
+            bool          rpt_comb,
+            bool          rpt_event,
   /*@out@*/ unsigned int* hit,
   /*@out@*/ unsigned int* excluded,
   /*@out@*/ unsigned int* total

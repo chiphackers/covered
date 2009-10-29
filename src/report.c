@@ -81,6 +81,12 @@ bool report_toggle = TRUE;
 bool report_combination = TRUE;
 
 /*!
+ If set to a boolean value of TRUE, reports the logic event coverage for the specified database file;
+ otherwise, omits logic event coverage from the report output.
+*/
+bool report_event = TRUE;
+
+/*!
  If set to a boolean value of TRUE, reports the finite state machine coverage for the
  specified database file; otherwise, omits finite state machine coverage from the
  report output.
@@ -206,28 +212,28 @@ static void report_usage() {
   printf( "   -h                           Displays this help information.\n" );
   printf( "\n" );
   printf( "   Options:\n" );
-  printf( "      -m [l][t][c][f][r][a][m]  Type(s) of metrics to report.  l=line, t=toggle, c=combinational logic,\n" );
-  printf( "                                  f=FSM state/arc, r=race condition, a=assertion, m=memory.  Default is ltcf.\n" );
-  printf( "      -d (s|d|v)                Level of report detail (s=summary, d=detailed, v=verbose).\n" );
-  printf( "                                  Default is to display summary coverage information.\n" );
-  printf( "      -i                        Provides coverage information for instances instead of module/task/function.\n" );
-  printf( "      -c                        If '-d d' or '-d v' is specified, displays covered coverage points.\n" );
-  printf( "                                  Default is to display uncovered results.\n" );
-  printf( "      -e                        If '-d d' or '-d v' is specified, displays excluded coverage points.\n" );
-  printf( "                                  Default is to not display excluded coverage points.\n" );
-  printf( "      -o <filename>             File to output report information to.  Default is standard output.\n" );
-  printf( "      -w [<line_width>]         Causes expressions to be output to best-fit to the specified line\n" );
-  printf( "                                  width.  If the -w option is specified without a value, the default\n" );
-  printf( "                                  line width of %d is used.  If the -w option is not specified, all\n", DEFAULT_LINE_WIDTH );
-  printf( "                                  expressions are output in the format that the user specified in the\n" );
-  printf( "                                  Verilog source.\n" );
-  printf( "      -s                        Suppress outputting modules/instances that do not contain any coverage metrics.\n" );
-  printf( "      -b                        If combinational logic verbose output is reported and the expression is a\n" );
-  printf( "                                  vector operation, this option outputs the coverage information on a bitwise basis.\n" );
-  printf( "      -f <filename>             Name of file containing additional arguments to parse.\n" );
-  printf( "      -x                        Output exclusion identifiers if the '-d d' or '-d v' options are specified.  The\n" );
-  printf( "                                  identifiers can be used with the 'exclude' command for the purposes of\n" );
-  printf( "                                  excluding/including coverage points.\n" );
+  printf( "      -m [l][t][c][e][f][r][a][m]  Type(s) of metrics to report.  l=line, t=toggle, c=combinational logic,\n" );
+  printf( "                                     e=logic event, f=FSM state/arc, r=race condition, a=assertion, m=memory.  Default is ltcef.\n" );
+  printf( "      -d (s|d|v)                   Level of report detail (s=summary, d=detailed, v=verbose).\n" );
+  printf( "                                     Default is to display summary coverage information.\n" );
+  printf( "      -i                           Provides coverage information for instances instead of module/task/function.\n" );
+  printf( "      -c                           If '-d d' or '-d v' is specified, displays covered coverage points.\n" );
+  printf( "                                     Default is to display uncovered results.\n" );
+  printf( "      -e                           If '-d d' or '-d v' is specified, displays excluded coverage points.\n" );
+  printf( "                                     Default is to not display excluded coverage points.\n" );
+  printf( "      -o <filename>                File to output report information to.  Default is standard output.\n" );
+  printf( "      -w [<line_width>]            Causes expressions to be output to best-fit to the specified line\n" );
+  printf( "                                     width.  If the -w option is specified without a value, the default\n" );
+  printf( "                                     line width of %d is used.  If the -w option is not specified, all\n", DEFAULT_LINE_WIDTH );
+  printf( "                                     expressions are output in the format that the user specified in the\n" );
+  printf( "                                     Verilog source.\n" );
+  printf( "      -s                           Suppress outputting modules/instances that do not contain any coverage metrics.\n" );
+  printf( "      -b                           If combinational logic verbose output is reported and the expression is a\n" );
+  printf( "                                     vector operation, this option outputs the coverage information on a bitwise basis.\n" );
+  printf( "      -f <filename>                Name of file containing additional arguments to parse.\n" );
+  printf( "      -x                           Output exclusion identifiers if the '-d d' or '-d v' options are specified.  The\n" );
+  printf( "                                     identifiers can be used with the 'exclude' command for the purposes of\n" );
+  printf( "                                     excluding/including coverage points.\n" );
   printf( "\n" );
 
 }
@@ -248,6 +254,7 @@ static void report_parse_metrics(
   report_line        = FALSE;
   report_toggle      = FALSE;
   report_combination = FALSE;
+  report_event       = FALSE;
   report_fsm         = FALSE;
   report_race        = FALSE;
   report_assertion   = FALSE;
@@ -264,6 +271,8 @@ static void report_parse_metrics(
       case 'M' :  report_memory      = TRUE;  break;
       case 'c' :
       case 'C' :  report_combination = TRUE;  break;
+      case 'e' :
+      case 'E' :  report_event       = TRUE;  break;
       case 'f' :
       case 'F' :  report_fsm         = TRUE;  break;
       case 'a' :
@@ -525,8 +534,10 @@ void report_gather_instance_stats(
                         &(root->stat->tog_cov_found) );
     }
 
-    if( report_combination && ((info_suppl.part.scored_comb == 1) || (info_suppl.part.scored_events == 1)) ) {
+    if( (report_combination || report_event) && ((info_suppl.part.scored_comb == 1) || (info_suppl.part.scored_events == 1)) ) {
       combination_get_stats( root->funit,
+                             report_combination,
+                             report_event,
                              &(root->stat->comb_hit),
                              &(root->stat->comb_excluded),
                              &(root->stat->comb_total) );
@@ -611,8 +622,10 @@ static void report_gather_funit_stats(
                           &(head->funit->stat->tog_cov_found) );
       }
 
-      if( report_combination && ((info_suppl.part.scored_comb == 1) || (info_suppl.part.scored_events == 1)) ) {
+      if( (report_combination || report_event) && ((info_suppl.part.scored_comb == 1) || (info_suppl.part.scored_events == 1)) ) {
         combination_get_stats( head->funit,
+                               report_combination,
+                               report_event,
                                &(head->funit->stat->comb_hit),
                                &(head->funit->stat->comb_excluded),
                                &(head->funit->stat->comb_total) );
@@ -843,7 +856,7 @@ static void report_generate(
     }
   }
 
-  if( report_combination ) {
+  if( report_combination || report_event ) {
     if( info_suppl.part.scored_comb || info_suppl.part.scored_events ) {
       combination_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
     } else {

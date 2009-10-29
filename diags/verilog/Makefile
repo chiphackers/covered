@@ -192,8 +192,13 @@ else
 		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd $(SIM_PLUSARGS); \
 	fi
 endif
+ifdef USE_VERILATOR
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+else
+	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcefam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
+	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcefam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+endif
 else
 ifdef INLINE
 	@./convert_cfg inline 0 $(VERILATOR_SET) $(DIAG).cfg
@@ -235,8 +240,13 @@ endif
 endif
 endif
 	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
+ifdef USE_VERILATOR
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+else
+	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcefam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
+	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcefam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+endif
 endif
 	@rm -f $(DIAG).cfg
 ifdef USE_VERILATOR
@@ -293,8 +303,13 @@ else
 		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd $(SIM_PLUSARGS); \
 	fi
 endif
+ifdef USE_VERILATOR
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -b -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -i -b -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+else
+	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcefam -b -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
+	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcefam -i -b -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+endif
 else
 	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
 ifndef USE_CVER
@@ -303,8 +318,13 @@ ifndef USE_VERIWELL
 endif
 endif   
 	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
+ifdef USE_VERILATOR
 	$(COVERED) $(COVERED_GFLAG) report -b -e -d v -m ltcfam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -b -e -d v -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+else
+	$(COVERED) $(COVERED_GFLAG) report -b -e -d v -m ltcefam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
+	$(COVERED) $(COVERED_GFLAG) report -b -e -d v -m ltcefam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+endif
 endif
 	@rm -f $(DIAG).cfg
 	@./check_test $(DIAG) 1 $(CHK_CODE)
@@ -340,8 +360,13 @@ else
 		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd $(SIM_PLUSARGS); \
 	fi
 endif
+ifdef USE_VERILATOR
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfamr -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfamr -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+else
+	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcefamr -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
+	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcefamr -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+endif
 else
 	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
 ifndef USE_CVER
@@ -350,8 +375,13 @@ ifndef USE_VERIWELL
 endif
 endif
 	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
+ifdef USE_VERILATOR
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfamr -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfamr -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+else
+	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcefamr -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
+	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcefamr -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+endif
 endif
 	@rm -f $(DIAG).cfg
 	@./check_test $(DIAG) 1 $(CHK_CODE)
@@ -386,8 +416,13 @@ else
 		$(VERILOG_CMD) +covered_cdd=$(DIAG).cdd $(SIM_PLUSARGS); \
 	fi
 endif
+ifdef USE_VERILATOR
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+else
+	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcefam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
+	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcefam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+endif
 else
 	@$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
 ifndef USE_CVER
@@ -396,8 +431,13 @@ ifndef USE_VERIWELL
 endif
 endif
 	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
+ifdef USE_VERILATOR
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+else
+	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcefam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
+	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcefam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+endif
 endif
 	@rm -f $(DIAG).cfg
 	@./check_test $(DIAG) 0 $(CHK_CODE)
@@ -407,8 +447,13 @@ mergerun:
 	@$(MAKE) DIAG=$(DIAG)a onemergerun
 	@$(MAKE) DIAG=$(DIAG)b onemergerun
 	$(COVERED) $(COVERED_GFLAG) merge -o $(DIAG).cdd $(DIAG)a.cdd $(DIAG)b.cdd $(CHECKMEM)
+ifdef USE_VERILATOR
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+else
+	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcefam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
+	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcefam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+endif
 	@./check_test $(DIAG) 3 $(CHK_CODE)
 
 $(MERGELIST):
@@ -428,8 +473,13 @@ merge3run:
 	@$(MAKE) DIAG=$(DIAG)b onemergerun
 	@$(MAKE) DIAG=$(DIAG)c onemergerun
 	$(COVERED) $(COVERED_GFLAG) merge -o $(DIAG).cdd $(DIAG)a.cdd $(DIAG)b.cdd $(DIAG)c.cdd $(CHECKMEM)
+ifdef USE_VERILATOR
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+else
+	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcefam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
+	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcefam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
+endif
 	@./check_test $(DIAG) 4 $(CHK_CODE)
 
 $(MERGE3LIST):

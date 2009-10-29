@@ -39,6 +39,8 @@ void exclude_set_line_exclude(
             int        line,
             int        value,
             char*      reason,
+            bool       rpt_comb,
+            bool       rpt_event,
   /*@out@*/ statistic* stat
 );
 
@@ -74,6 +76,8 @@ void exclude_set_comb_exclude(
             int        uline_id,
             int        value,
             char*      reason,
+            bool       rpt_comb,
+            bool       rpt_event,
   /*@out@*/ statistic* stat
 );
 
@@ -112,6 +116,8 @@ void exclude_set_assert_exclude(
             int        expr_id,
             int        value,
             char*      reason,
+            bool       rpt_comb,
+            bool       rpt_event,
   /*@out@*/ statistic* stat
 );
 

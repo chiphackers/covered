@@ -38,7 +38,7 @@ $COVERED_RANK_GFLAGS = "";
 # Specifies the location of the check_mem script
 $CHECK_MEM = "./check_mem";
 
-# Specifies which simulator should be used for simulating the design (IV, CVER, VCS)
+# Specifies which simulator should be used for simulating the design (IV, CVER, VCS, VERILATOR, VERIWELL)
 $SIMULATOR = "IV";
 
 # Specifies the type of dumpfile that should be used by the score command (VCD, LXT)

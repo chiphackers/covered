@@ -116,9 +116,9 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
 Module/Task/Function                Filename                          Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   $root                             NA                                  0/   0/   0      100%
-  main                              always9.verilator.v                32/  26/  58       55%
+  main                              always9.verilator.v                30/  26/  56       54%
 ---------------------------------------------------------------------------------------------------------------------
-  Accumulated                                                          32/  26/  58       55%
+  Accumulated                                                          30/  26/  56       54%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: main, File: always9.verilator.v

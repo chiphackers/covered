@@ -325,6 +325,8 @@ static bool combination_is_expr_multi_node(
 */
 void combination_get_tree_stats(
             expression*   exp,         /*!< Pointer to expression tree to traverse */
+            bool          rpt_comb,    /*!< Report combinational coverage */
+            bool          rpt_event,   /*!< Report event coverage */
   /*@out@*/ int*          ulid,        /*!< Pointer to current underline ID */
             unsigned int  curr_depth,  /*!< Current search depth in given expression tree */
             bool          excluded,    /*!< Specifies that this expression should be excluded for hit information because one
@@ -343,8 +345,8 @@ void combination_get_tree_stats(
     excluded |= ESUPPL_EXCLUDED( exp->suppl );
 
     /* Calculate children */
-    combination_get_tree_stats( exp->left,  ulid, combination_calc_depth( exp, curr_depth, TRUE ),  excluded, hit, excludes, total );
-    combination_get_tree_stats( exp->right, ulid, combination_calc_depth( exp, curr_depth, FALSE ), excluded, hit, excludes, total );
+    combination_get_tree_stats( exp->left,  rpt_comb, rpt_event, ulid, combination_calc_depth( exp, curr_depth, TRUE ),  excluded, hit, excludes, total );
+    combination_get_tree_stats( exp->right, rpt_comb, rpt_event, ulid, combination_calc_depth( exp, curr_depth, FALSE ), excluded, hit, excludes, total );
 
     if( (!info_suppl.part.inlined || (curr_depth <= inline_comb_depth)) &&
         (((report_comb_depth == REPORT_DETAILED) && (curr_depth <= report_comb_depth)) ||
@@ -369,13 +371,13 @@ void combination_get_tree_stats(
                (exp->op == EXP_OP_OR)   ||
                (exp->op == EXP_OP_LAND) ||
                (exp->op == EXP_OP_LOR)) && allow_multi_expr ) {
-            if( info_suppl.part.scored_comb == 1 ) {
+            if( (info_suppl.part.scored_comb == 1) && rpt_comb ) {
               combination_multi_expr_calc( exp, ulid, FALSE, excluded, hit, excludes, total );
             }
           } else {
             if( !expression_is_static_only( exp ) ) {
               if( EXPR_IS_COMB( exp ) == 1 ) {
-                if( info_suppl.part.scored_comb == 1 ) {
+                if( (info_suppl.part.scored_comb == 1) && rpt_comb ) {
                   if( exp_op_info[exp->op].suppl.is_comb == AND_COMB ) {
                     if( report_bitwise ) {
                       tot_num = 3 * exp->value->width;
@@ -421,7 +423,7 @@ void combination_get_tree_stats(
                   }
                 }
               } else if( EXPR_IS_EVENT( exp ) == 1 ) {
-                if( info_suppl.part.scored_events == 1 ) {
+                if( (info_suppl.part.scored_events == 1) && rpt_event ) {
                   (*total)++;
                   num_hit = ESUPPL_WAS_TRUE( exp->suppl );
                   if( excluded ) {
@@ -436,7 +438,7 @@ void combination_get_tree_stats(
                   }
                 }
               } else {
-                if( info_suppl.part.scored_comb == 1 ) {
+                if( (info_suppl.part.scored_comb == 1) && rpt_comb ) {
                   if( report_bitwise ) {
                     *total  = *total + (2 * exp->value->width);
                     num_hit = vector_get_eval_ab_count( exp->value );
@@ -536,10 +538,12 @@ void combination_reset_counted_expr_tree(
  the coverage numbers for the specified expression tree.  Called by report function.
 */
 void combination_get_stats(
-            func_unit*    funit,     /*!< Pointer to functional unit to search */
-  /*@out@*/ unsigned int* hit,       /*!< Pointer to number of logical combinations hit during simulation */
-  /*@out@*/ unsigned int* excluded,  /*!< Pointer to number of excluded logical combinations */
-  /*@out@*/ unsigned int* total      /*!< Pointer to total number of logical combinations */
+            func_unit*    funit,      /*!< Pointer to functional unit to search */
+            bool          rpt_comb,   /*!< Report combinational coverage */
+            bool          rpt_event,  /*!< Report event coverage */
+  /*@out@*/ unsigned int* hit,        /*!< Pointer to number of logical combinations hit during simulation */
+  /*@out@*/ unsigned int* excluded,   /*!< Pointer to number of excluded logical combinations */
+  /*@out@*/ unsigned int* total       /*!< Pointer to total number of logical combinations */
 ) { PROFILE(COMBINATION_GET_STATS);
 
   func_iter  fi;    /* Functional unit iterator */
@@ -555,7 +559,7 @@ void combination_get_stats(
     /* Traverse statements in the given functional unit */
     while( (stmt = func_iter_get_next_statement( &fi )) != NULL ) {
       ulid = 1;
-      combination_get_tree_stats( stmt->exp, &ulid, 0, stmt->suppl.part.excluded, hit, excluded, total );
+      combination_get_tree_stats( stmt->exp, rpt_comb, rpt_event, &ulid, 0, stmt->suppl.part.excluded, hit, excluded, total );
     }
 
     /* Deallocate functional unit iterator */

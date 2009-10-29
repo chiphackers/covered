@@ -20,8 +20,13 @@ if( $SIMULATOR eq "IV" ) {
 }
 
 &runScoreCommand( "-t main -vcd report4.1.vcd -v report4.1.v -o report4.1.cdd" );
-&runReportCommand( "-d d -m ltcfam -o report4.1.rptM report4.1.cdd" );
-&runReportCommand( "-d d -m ltcfam -i -o report4.1.rptI report4.1.cdd" );
+if( $SIMULATOR eq "VERILATOR" ) {
+  &runReportCommand( "-d d -m ltcfam -o report4.1.rptM report4.1.cdd" );
+  &runReportCommand( "-d d -m ltcfam -i -o report4.1.rptI report4.1.cdd" );
+} else {
+  &runReportCommand( "-d d -m ltcefam -o report4.1.rptM report4.1.cdd" );
+  &runReportCommand( "-d d -m ltcefam -i -o report4.1.rptI report4.1.cdd" );
+}
 
 # Perform the file comparison checks
 if( $DUMPTYPE eq "VCD" ) { 

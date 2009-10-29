@@ -95,11 +95,13 @@ static bool exclude_is_parent_excluded(
  affected coverage information for this instance.
 */
 static void exclude_expr_assign_and_recalc(
-            expression* expr,      /*!< Pointer to expression that is being excluded/included */
-            func_unit*  funit,     /*!< Pointer to functional unit containing this expression */
-            bool        excluded,  /*!< Specifies if expression is being excluded or included */
-            bool        set_line,  /*!< Set to TRUE when this function is being called for line exclusion */
-  /*@out@*/ statistic*  stat       /*!< Pointer to statistics structure to update */
+            expression* expr,       /*!< Pointer to expression that is being excluded/included */
+            func_unit*  funit,      /*!< Pointer to functional unit containing this expression */
+            bool        excluded,   /*!< Specifies if expression is being excluded or included */
+            bool        set_line,   /*!< Set to TRUE when this function is being called for line exclusion */
+            bool        rpt_comb,   /*!< Combinational coverage is being reported */
+            bool        rpt_event,  /*!< Event coverage is being reported */
+  /*@out@*/ statistic*  stat        /*!< Pointer to statistics structure to update */
 ) { PROFILE(EXCLUDE_EXPR_ASSIGN_AND_RECALC);
 
   unsigned int comb_hit      = 0;  /* Total number of hit combinations within this tree */
@@ -136,12 +138,12 @@ static void exclude_expr_assign_and_recalc(
     /* Always recalculate combinational coverage */
     combination_reset_counted_expr_tree( expr );
     if( excluded ) {
-      combination_get_tree_stats( expr, &ulid, 0, exclude_is_parent_excluded( expr ), &comb_hit, &comb_excluded, &comb_total );
+      combination_get_tree_stats( expr, rpt_comb, rpt_event, &ulid, 0, exclude_is_parent_excluded( expr ), &comb_hit, &comb_excluded, &comb_total );
       stat->comb_hit      += (comb_total - comb_hit);
       stat->comb_excluded += (comb_total - comb_excluded);
     } else {
       expr->suppl.part.excluded = 0;
-      combination_get_tree_stats( expr, &ulid, 0, exclude_is_parent_excluded( expr ), &comb_hit, &comb_excluded, &comb_total );
+      combination_get_tree_stats( expr, rpt_comb, rpt_event, &ulid, 0, exclude_is_parent_excluded( expr ), &comb_hit, &comb_excluded, &comb_total );
       stat->comb_hit      -= (comb_total - comb_hit);
       stat->comb_excluded -= (comb_total - comb_excluded);
     }
@@ -367,11 +369,13 @@ bool exclude_is_line_excluded(
  of the expression and recalculating the summary coverage information.
 */
 void exclude_set_line_exclude(
-            func_unit* funit,   /*!< Pointer to functional unit */
-            int        line,    /*!< Line number of expression that needs to be set */
-            int        value,   /*!< Specifies if we should exclude (1) or include (0) the specified line */
-            char*      reason,  /*!< Reason for the exclusion if value is 1 */
-  /*@out@*/ statistic* stat     /*!< Pointer to statistics structure to update */
+            func_unit* funit,      /*!< Pointer to functional unit */
+            int        line,       /*!< Line number of expression that needs to be set */
+            int        value,      /*!< Specifies if we should exclude (1) or include (0) the specified line */
+            char*      reason,     /*!< Reason for the exclusion if value is 1 */
+            bool       rpt_comb,   /*!< Combinational coverage is being reported */
+            bool       rpt_event,  /*!< Event coverage is being reported */
+  /*@out@*/ statistic* stat        /*!< Pointer to statistics structure to update */
 ) { PROFILE(EXCLUDE_SET_LINE_EXCLUDE);
 
   func_iter  fi;    /* Functional unit iterator */
@@ -383,7 +387,7 @@ void exclude_set_line_exclude(
     while( ((stmt = func_iter_get_next_statement( &fi )) != NULL) && (stmt->exp->line != line) );
     if( stmt != NULL ) {
 
-      exclude_expr_assign_and_recalc( stmt->exp, funit, (value == 1), TRUE, stat );
+      exclude_expr_assign_and_recalc( stmt->exp, funit, (value == 1), TRUE, rpt_comb, rpt_event, stat );
 
       /* Handle the exclusion reason */
       if( value == 1 ) {
@@ -501,12 +505,14 @@ bool exclude_is_comb_excluded(
  of the expression and recalculating the summary coverage information.
 */
 void exclude_set_comb_exclude(
-            func_unit* funit,     /*!< Pointer to functional unit */
-            int        expr_id,   /*!< Expression ID of root expression to set exclude value for */
-            int        uline_id,  /*!< Underline ID of expression to set exclude value for */
-            int        value,     /*!< Specifies if we should exclude (1) or include (0) the specified line */
-            char*      reason,    /*!< Reason for the exclusion (if value is 1) */
-  /*@out@*/ statistic* stat       /*!< Pointer to statistic structure to update */
+            func_unit* funit,      /*!< Pointer to functional unit */
+            int        expr_id,    /*!< Expression ID of root expression to set exclude value for */
+            int        uline_id,   /*!< Underline ID of expression to set exclude value for */
+            int        value,      /*!< Specifies if we should exclude (1) or include (0) the specified line */
+            char*      reason,     /*!< Reason for the exclusion (if value is 1) */
+            bool       rpt_comb,   /*!< Combinational coverage is being reported */
+            bool       rpt_event,  /*!< Event coverage is being reported */
+  /*@out@*/ statistic* stat        /*!< Pointer to statistic structure to update */
 ) { PROFILE(EXCLUDE_SET_COMB_EXCLUDE);
 
   func_iter  fi;    /* Functional unit iterator */
@@ -524,7 +530,7 @@ void exclude_set_comb_exclude(
     if( (subexp = expression_find_uline_id( stmt->exp, uline_id )) != NULL ) {
 
       /* Exclude/include the expression and recalculate the summary information */
-      exclude_expr_assign_and_recalc( subexp, funit, (value == 1), FALSE, stat );
+      exclude_expr_assign_and_recalc( subexp, funit, (value == 1), FALSE, rpt_comb, rpt_event, stat );
 
       /* Handle the exclusion reason */
       if( value == 1 ) {
@@ -701,6 +707,8 @@ void exclude_set_assert_exclude(
             int        expr_id,    /*!< Expression ID of expression to set exclude value for */
             int        value,      /*!< Specifies if we should exclude (1) or include (0) the specified line */
             char*      reason,     /*!< Reason for the exclusion (if value is 1) */
+            bool       rpt_comb,   /*!< Combinational coverage is being reported */
+            bool       rpt_event,  /*!< Event coverage is being reported */
   /*@out@*/ statistic* stat        /*!< Pointer to statistic structure to update */
 ) { PROFILE(EXCLUDE_SET_ASSERT_EXCLUDE);
 
@@ -731,7 +739,7 @@ void exclude_set_assert_exclude(
     if( stmt->exp->id == expr_id ) {
 
       /* Exclude/include the assertion and recalculate the summary information */
-      exclude_expr_assign_and_recalc( stmt->exp, curr_child->funit, (value == 1), FALSE, stat );
+      exclude_expr_assign_and_recalc( stmt->exp, curr_child->funit, (value == 1), FALSE, rpt_comb, rpt_event, stat );
 
       /* Handle the exclusion reason */
       if( value == 1 ) {
