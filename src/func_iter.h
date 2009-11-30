@@ -30,13 +30,14 @@
  Structure for iterating through a functional unit and its unnamed scopes.
 */
 typedef struct func_iter_s {
-  unsigned int scopes;     /*!< The number of scopes iterated with this iteration (i.e., the allocated size of sls and sigs) */
-  stmt_link**  sls;        /*!< Pointer to array of statement links (sorted by line number) for the given functional unit */
-  unsigned int sl_num;     /*!< Specifies the current index in the sls array to process */
-  vsignal***   sigs;       /*!< Pointer to array of signal lists for the given functional unit */
-  unsigned int sig_num;    /*!< Specifies the current index in the sigs array to process */
-  vsignal**    curr_sigl;  /*!< Pointer to current signal in the given sigs array element */
-  func_unit*   funit;      /*!< Pointer to functional unit that this iterator represents */
+  unsigned int  scopes;    /*!< The number of scopes iterated with this iteration (i.e., the allocated size of sls and sigs) */
+  stmt_link**   sls;       /*!< Pointer to array of statement links (sorted by line number) for the given functional unit */
+  unsigned int  sl_num;    /*!< Specifies the current index in the sls array to process */
+  vsignal***    sigs;      /*!< Pointer to array of signal lists for the given functional unit */
+  unsigned int* sig_size;  /*!< Array of sigs array sizes stored in sigs */
+  unsigned int  sig_num;   /*!< Specifies the current index in the sigs array to process */
+  unsigned int  curr_sig;  /*!< Index of current signal in the current sigs array element */
+  func_unit*    funit;     /*!< Pointer to functional unit that this iterator represents */
 } func_iter;
 
 

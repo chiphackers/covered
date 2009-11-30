@@ -169,12 +169,13 @@ void sig_link_add(
   *sigs              = (vsignal**)realloc_safe( *sigs, (sizeof( vsignal* ) * (*sig_size)), (sizeof( vsignal* ) * (*sig_size + 1)) );
   (*sigs)[*sig_size] = sig;
 
-  if( rm_sig ) {
+  if( !rm_sig ) {
     if( *sig_no_rm_index == (*sig_size + 1) ) {
       *sig_no_rm_index = *sig_size;
     }
   } else {
     assert( *sig_no_rm_index == (*sig_size + 1) );
+    (*sig_no_rm_index)++;
   }
 
   (*sig_size)++;

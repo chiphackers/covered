@@ -51,7 +51,7 @@ void func_iter_display(
   if( fi->sigs != NULL ) {
     for( i=0; i<fi->sig_num; i++ ) {
       if( fi->sigs[i] != NULL ) {
-        printf( "  Name: %s\n", fi->sigs[i][0]->name );
+        sig_link_display( fi->sigs[i], fi->sig_size[i] );
       }
     }
   }
@@ -195,7 +195,8 @@ static void func_iter_add_sig_links(
   func_unit*  parent;  /* Pointer to parent module of this functional unit */
 
   /* Add the pointer */
-  fi->sigs[fi->sig_num] = funit->sigs;
+  fi->sigs[fi->sig_num]     = funit->sigs;
+  fi->sig_size[fi->sig_num] = funit->sig_size;
   fi->sig_num++;
 
   /* Get the parent module */
@@ -231,10 +232,11 @@ void func_iter_init(
   assert( funit != NULL );
 
   /* Count the number of scopes that are within the functional unit iterator */
-  fi->scopes  = func_iter_count_scopes( funit, inc_all );
-  fi->sls     = NULL;
-  fi->sigs    = NULL;
-  fi->sig_num = 0;
+  fi->scopes   = func_iter_count_scopes( funit, inc_all );
+  fi->sls      = NULL;
+  fi->sigs     = NULL;
+  fi->sig_size = NULL;
+  fi->sig_num  = 0;
 
   /* Add statement iterators */
   if( stmts ) {
@@ -245,11 +247,12 @@ void func_iter_init(
 
   /* Add signal lists */
   if( sigs ) {
-    fi->sigs      = (vsignal***)malloc_safe( sizeof( vsignal** ) * fi->scopes );
-    fi->sig_num   = 0;
+    fi->sigs     = (vsignal***)malloc_safe( sizeof( vsignal** ) * fi->scopes );
+    fi->sig_size = (int*)malloc_safe( sizeof( int ) * fi->scopes );
+    fi->sig_num  = 0;
     func_iter_add_sig_links( fi, funit, inc_all );
-    fi->sig_num   = 0;
-    fi->curr_sigl = fi->sigs[0];
+    fi->sig_num  = 0;
+    fi->curr_sig = 0;
   }
 
   PROFILE_END;
@@ -305,10 +308,10 @@ vsignal* func_iter_get_next_signal(
 
   assert( fi != NULL );
 
-  if( fi->curr_sigl != NULL ) {
+  if( fi->curr_sig < fi->sig_size[fi->sig_num] ) {
 
-    sig            = *(fi->curr_sigl);
-    fi->curr_sigl += sizeof( vsignal** );
+    sig = fi->sigs[fi->sig_num][fi->curr_sig];
+    fi->curr_sig++;
 
   } else {
 
@@ -317,11 +320,11 @@ vsignal* func_iter_get_next_signal(
     } while( (fi->sig_num < fi->scopes) && (fi->sigs[fi->sig_num] == NULL) );
 
     if( fi->sig_num < fi->scopes ) {
-      sig            = *(fi->sigs[fi->sig_num]);
-      fi->curr_sigl += sizeof( vsignal** );
+      sig          = fi->sigs[fi->sig_num][0];
+      fi->curr_sig = 1;
     } else {
-      sig           = NULL;
-      fi->curr_sigl = NULL;
+      sig          = NULL;
+      fi->curr_sig = 0;
     }
 
   }
@@ -344,24 +347,15 @@ void func_iter_dealloc(
   if( fi != NULL ) {
 
     /* Deallocate statement iterators */
-    if( fi->sls != NULL ) {
+    free_safe( fi->sls, (sizeof( stmt_link* ) * fi->scopes) );
+    fi->sls = NULL;
 
-      /* Deallocate array of statement iterators */
-      free_safe( fi->sls, (sizeof( stmt_link* ) * fi->scopes) );
+    /* Deallocate signal arrays */
+    free_safe( fi->sigs,     (sizeof( vsignal** ) * fi->scopes) );
+    free_safe( fi->sig_size, (sizeof( unsigned int ) * fi->scopes) );
 
-      fi->sls = NULL;
-
-    }
-
-    /* Deallocate signal array */
-    if( fi->sigs != NULL ) {
-
-      /* Deallocate array of signals */
-      free_safe( fi->sigs, (sizeof( vsignal** ) * fi->scopes) );
-
-      fi->sigs = NULL;
-
-    }
+    fi->sigs     = NULL;
+    fi->sig_size = NULL;
 
   }
 

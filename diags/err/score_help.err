@@ -83,6 +83,7 @@ Usage:  covered score (-h | -t <top-level_module_name> [-vcd <dumpfile> | -lxt <
                                                c=combinational logic, f=FSM, a=assertions.  Default is ltmecfa.
       -inline-comb-depth <value>             Specifies the depth in an expression tree that combinational logic coverage will be scored for.
                                                By default, combinational logic depth is infinite.
+      -inline-verilator                      If you are generating inlined coverage to be simulated with Verilator, this option is required.
 
    Race Condition Options:
 

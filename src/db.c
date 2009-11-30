@@ -744,14 +744,14 @@ void db_assign_inst_ids() { PROFILE(DB_ASSIGN_INST_IDS);
   inst_link* instl   = db_list[curr_db]->inst_head;
   int        curr_id = 0;
 
-  inst_link_display( db_list[curr_db]->inst_head );
+  // inst_link_display( db_list[curr_db]->inst_head );
 
   while( instl != NULL ) {
     instance_assign_ids( instl->inst, &curr_id );
     instl = instl->next;
   }
 
-  inst_link_display( db_list[curr_db]->inst_head );
+  // inst_link_display( db_list[curr_db]->inst_head );
 
   PROFILE_END;
 
@@ -1608,8 +1608,6 @@ void db_add_signal(
 
   /* Add signal to current module's signal list if it does not already exist */
   if( (sig = sig_link_find( name, curr_funit->sigs, curr_funit->sig_size )) == NULL ) {
-
-    printf( "NEED to create signal!!! :)\n" );
 
     /* Create the signal */
     if( (type == SSUPPL_TYPE_GENVAR) || (type == SSUPPL_TYPE_DECL_SREAL) ) {

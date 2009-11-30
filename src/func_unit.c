@@ -1436,9 +1436,6 @@ bool funit_is_one_signal_assigned(
 
   unsigned int i = 0;
 
-  printf( "In funit_is_one_signal_assigned, funit: %s\n", funit->name );
-  sig_link_display( funit->sigs, funit->sig_size );
-
   while( (i < funit->sig_size) && ((funit->sigs[i]->exp_size == 0) || !SIGNAL_ASSIGN_FROM_DUMPFILE( funit->sigs[i] )) ) i++;
 
   PROFILE_END;
