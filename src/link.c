@@ -349,9 +349,11 @@ void exp_link_display(
   unsigned int exp_size  /*!< Number of elements in the exps array */
 ) {
 
+  unsigned int i;
+
   printf( "Expression list:\n" );
 
-  for( unsigned int i=0; i<exp_size; i++ ) {
+  for( i=0; i<exp_size; i++ ) {
     printf( "  id: %d, op: %s, line: %u\n", exps[i]->id, expression_string_op( exps[i]->op ), exps[i]->line );
   }
 
@@ -366,9 +368,11 @@ void sig_link_display(
   unsigned int sig_size  /*!< Number of elements in signal array */
 ) {
 
+  unsigned int i;
+
   printf( "Signal list:\n" );
 
-  for( unsigned int i=0; i<sig_size; i++ ) {
+  for( i=0; i<sig_size; i++ ) {
     printf( "  name: %s\n", obf_sig( sigs[i]->name ) );
   }
 
@@ -722,9 +726,6 @@ void exp_link_remove(
             bool          recursive  /*!< If TRUE, recursively removes expression tree and expressions */
 ) { PROFILE(EXP_LINK_REMOVE);
 
-  exp_link* curr;  /* Pointer to current expression link */
-  exp_link* last;  /* Pointer to last expression link */
-
   unsigned int i = 0;
 
   assert( exp != NULL );
@@ -742,12 +743,13 @@ void exp_link_remove(
   while( (i < *exp_size) && ((*exps)[i]->id != exp->id) ) i++;
 
   /* If the expression was found, create a new array with the expression pointer removed. */
-  if( i < exp_size ) {
+  if( i < *exp_size ) {
 
     expression** new_exps = (expression**)malloc_safe( sizeof( expression* ) * (*exp_size - 1) );
     unsigned int k        = 0;
+    unsigned int j;
 
-    for( unsigned int j=0; j<*exp_size; j++ ) {
+    for( j=0; j<*exp_size; j++ ) {
       if( i != j ) {
         new_exps[k++] = (*exps)[j];
       }
@@ -976,7 +978,8 @@ void exp_link_delete_list(
 ) { PROFILE(EXP_LINK_DELETE_LIST);
 
   if( del_exp ) {
-    for( unsigned int i=0; i<exp_size; i++ ) {
+    unsigned int i;
+    for( i=0; i<exp_size; i++ ) {
       expression_dealloc( exps[i], TRUE );
     }
   }
@@ -999,7 +1002,8 @@ void sig_link_delete_list(
 ) { PROFILE(SIG_LINK_DELETE_LIST);
 
   if( del_sig ) {
-    for( unsigned int i=0; i<sig_size; i++ ) {
+    unsigned int i;
+    for( i=0; i<sig_size; i++ ) {
       if( i < sig_no_rm_index ) {
         vsignal_dealloc( sigs[i] );
       }
@@ -1021,7 +1025,9 @@ void fsm_link_delete_list(
   unsigned int fsm_size  /*!< Number of elements in the array */
 ) { PROFILE(FSM_LINK_DELETE_LIST);
 
-  for( unsigned int i=0; i<fsm_size; i++ ) {
+  unsigned int i;
+
+  for( i=0; i<fsm_size; i++ ) {
     fsm_dealloc( fsms[i] );
   }
 

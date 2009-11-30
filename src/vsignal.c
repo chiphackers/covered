@@ -71,8 +71,8 @@ static void vsignal_init(
   sig->suppl.part.col  = col;
   sig->value           = value;
   sig->line            = line;
-  sig->exp_head        = NULL;
-  sig->exp_tail        = NULL;
+  sig->exps            = NULL;
+  sig->exp_size        = 0;
 
   PROFILE_END;
 
@@ -131,7 +131,6 @@ void vsignal_create_vec(
 
   unsigned int i;     /* Loop iterator */
   vector*      vec;   /* Temporary vector used for getting a vector value */
-  exp_link*    expl;  /* Pointer to current expression in signal expression list */
 
   assert( sig != NULL );
   assert( sig->value != NULL );
@@ -177,12 +176,10 @@ void vsignal_create_vec(
     free_safe( vec, sizeof( vector ) );
 
     /* Iterate through expression list, setting the expression to this signal */
-    expl = sig->exp_head;
-    while( expl != NULL ) {
-      if( (expl->exp->op != EXP_OP_FUNC_CALL) && (expl->exp->op != EXP_OP_PASSIGN) ) {
-        expression_set_value( expl->exp, sig, NULL );
+    for( i=0; i<sig->exp_size; i++ ) {
+      if( (sig->exps[i]->op != EXP_OP_FUNC_CALL) && (sig->exps[i]->op != EXP_OP_PASSIGN) ) {
+        expression_set_value( sig->exps[i], sig, NULL );
       }
-      expl = expl->next;
     }
 
   }
@@ -201,7 +198,6 @@ vsignal* vsignal_duplicate(
 ) { PROFILE(VSIGNAL_DUPLICATE);
 
   vsignal*     new_sig;  /* Pointer to newly created vsignal */
-  exp_link*    expl;     /* Pointer to current expression link */
   unsigned int i;        /* Loop iterator */
 
   assert( sig != NULL );
@@ -213,8 +209,8 @@ vsignal* vsignal_duplicate(
   new_sig->udim_num  = sig->udim_num;
   new_sig->dim       = NULL;
   new_sig->line      = sig->line;
-  new_sig->exp_head  = NULL;
-  new_sig->exp_tail  = NULL;
+  new_sig->exps      = NULL;
+  new_sig->exp_size  = 0;
 
   /* Copy the dimension information */
   if( (sig->pdim_num + sig->udim_num) > 0 ) {
@@ -229,10 +225,8 @@ vsignal* vsignal_duplicate(
   vector_clone( sig->value, &(new_sig->value) );
 
   /* Copy the expression pointers */
-  expl = sig->exp_head;
-  while( expl != NULL ) {
-    exp_link_add( expl->exp, &(new_sig->exp_head), &(new_sig->exp_tail) );
-    expl = expl->next;
+  for( i=0; i<sig->exp_size; i++ ) {
+    exp_link_add( sig->exps[i], &(new_sig->exps), &(new_sig->exp_size) );
   }
 
   PROFILE_END;
@@ -360,7 +354,7 @@ void vsignal_db_read(
       print_output( "Internal error:  vsignal in database written before its functional unit", FATAL, __FILE__, __LINE__ );
       Throw 0;
     } else {
-      sig_link_add( sig, TRUE, &(curr_funit->sig_head), &(curr_funit->sig_tail) );
+      sig_link_add( sig, TRUE, &(curr_funit->sigs), &(curr_funit->sig_size), &(curr_funit->sig_no_rm_index) );
     }
 
   } else {
@@ -481,19 +475,18 @@ void vsignal_propagate(
   const sim_time* time  /*!< Current simulation time when signal changed */
 ) { PROFILE(VSIGNAL_PROPAGATE);
 
-  exp_link* curr_expr;  /* Pointer to current expression in signal list */
+  unsigned int i;
 
   /* Iterate through vsignal's expression list */
-  curr_expr = sig->exp_head;
-  while( curr_expr != NULL ) {
+  for( i=0; i<sig->exp_size; i++ ) {
+
+    expression* exp = sig->exps[i];
 
     /* Add to simulation queue if expression is a RHS, not a function call and not a port assignment */
-    if( (curr_expr->exp->op != EXP_OP_FUNC_CALL) &&
-        (curr_expr->exp->op != EXP_OP_PASSIGN) ) {
-      sim_expr_changed( curr_expr->exp, time );
+    if( (exp->op != EXP_OP_FUNC_CALL) &&
+        (exp->op != EXP_OP_PASSIGN) ) {
+      sim_expr_changed( exp, time );
     }
-
-    curr_expr = curr_expr->next;
 
   }
 
@@ -572,7 +565,7 @@ void vsignal_add_expression(
   expression* expr  /*!< Expression to add to list */
 ) { PROFILE(VSIGNAL_ADD_EXPRESSION);
 
-  exp_link_add( expr, &(sig->exp_head), &(sig->exp_tail) );
+  exp_link_add( expr, &(sig->exps), &(sig->exp_size) );
 
   PROFILE_END;
 
@@ -752,9 +745,9 @@ void vsignal_dealloc(
   /*@only@*/ vsignal* sig  /*!< Pointer to vsignal to deallocate */
 ) { PROFILE(VSIGNAL_DEALLOC);
 
-  exp_link* curr_expl;  /* Pointer to current expression link to set to NULL */
-
   if( sig != NULL ) {
+
+    unsigned int i;
 
     /* Free the signal name */
     free_safe( sig->name, (strlen( sig->name ) + 1) );
@@ -768,14 +761,13 @@ void vsignal_dealloc(
     sig->value = NULL;
 
     /* Free up memory for expression list */
-    curr_expl = sig->exp_head;
-    while( curr_expl != NULL ) {
-      curr_expl->exp->sig = NULL;
-      curr_expl = curr_expl->next;
+    for( i=0; i<sig->exp_size; i++ ) {
+      sig->exps[i]->sig = NULL;
     }
 
-    exp_link_delete_list( sig->exp_head, FALSE );
-    sig->exp_head = NULL;
+    exp_link_delete_list( sig->exps, sig->exp_size, FALSE );
+    sig->exps     = NULL;
+    sig->exp_size = 0;
 
     /* Finally free up the memory for this vsignal */
     free_safe( sig, sizeof( vsignal ) );

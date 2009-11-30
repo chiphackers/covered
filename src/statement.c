@@ -418,7 +418,6 @@ void statement_db_read(
   int        false_id;    /* ID of root expression that is associated with the next_false statement */
   int        head_id;
   statement* stmt;        /* Pointer to newly created statement */
-  exp_link*  expl;        /* Pointer to found expression link */
   stmt_link* stmtl;       /* Pointer to found statement link */
   int        chars_read;  /* Number of characters read from line */
   uint32     suppl;       /* Supplemental field value */
@@ -435,10 +434,10 @@ void statement_db_read(
     } else {
 
       /* Find associated root expression */
-      expl = exp_link_find( id, curr_funit->exp_head );
-      assert( expl != NULL );
+      expression* exp = exp_link_find( id, curr_funit->exps, curr_funit->exp_size );
+      assert( exp != NULL );
 
-      stmt = statement_create( expl->exp, curr_funit );
+      stmt = statement_create( exp, curr_funit );
       stmt->suppl.all = suppl;
 
       /*

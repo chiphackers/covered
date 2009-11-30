@@ -626,9 +626,6 @@ int tcl_func_collect_uncovered_toggles(
 ) { PROFILE(TCL_FUNC_COLLECT_UNCOVERED_TOGGLES);
 
   int        retval   = TCL_OK;  /* Return value for this function */
-  sig_link*  sig_head = NULL;    /* Pointer to head of signal list */
-  sig_link*  sig_tail = NULL;    /* Pointer to tail of signal list */
-  sig_link*  sigl;               /* Pointer to current signal link being evaluated */
   char       tmp[120];           /* Temporary string */
   int        start_line;         /* Starting line number */
   func_unit* funit;              /* Pointer to found functional unit */
@@ -639,20 +636,23 @@ int tcl_func_collect_uncovered_toggles(
   /* Find all signals that did not achieve 100% coverage */
   if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
 
-    toggle_collect( funit, 0, &sig_head, &sig_tail );
+    unsigned int i;
+    vsignal**    sigs            = NULL;
+    unsigned int sig_size        = 0;
+    unsigned int sig_no_rm_index = 1;
 
-    sigl = sig_head;
-    while( sigl != NULL ) {
+    toggle_collect( funit, 0, &sigs, &sig_size, &sig_no_rm_index );
+
+    for( i=0; i<sig_size; i++ ) {
       snprintf( tmp, 120, "{%d.%d %d.%d} %d",
-                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 14),
-                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + ((int)strlen( sigl->sig->name ) - 1) + 15),
-                sigl->sig->suppl.part.excluded );
+                (sigs[i]->line - (start_line - 1)), (sigs[i]->suppl.part.col + 14),
+                (sigs[i]->line - (start_line - 1)), (sigs[i]->suppl.part.col + ((int)strlen( sigs[i]->name ) - 1) + 15),
+                sigs[i]->suppl.part.excluded );
       Tcl_AppendElement( tcl, tmp );
-      sigl = sigl->next;
     }
 
     /* Deallocate signal list (without destroying signals) */
-    sig_link_delete_list( sig_head, FALSE );
+    sig_link_delete_list( sigs, sig_size, sig_no_rm_index, FALSE );
 
   } else {
 
@@ -682,9 +682,6 @@ int tcl_func_collect_covered_toggles(
 ) { PROFILE(TCL_FUNC_COLLECT_COVERED_TOGGLES);
 
   int        retval   = TCL_OK;  /* Return value for this function */
-  sig_link*  sig_head = NULL;    /* Pointer to head of signal list */
-  sig_link*  sig_tail = NULL;    /* Pointer to tail of signal list */
-  sig_link*  sigl;               /* Pointer to current signal being evaluated */
   char       tmp[85];            /* Temporary string */
   int        start_line;         /* Starting line number of this functional unit */
   func_unit* funit;              /* Pointer to found functional unit */
@@ -695,19 +692,22 @@ int tcl_func_collect_covered_toggles(
   /* Get the toggle information for all covered signals */
   if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
 
-    toggle_collect( funit, 1, &sig_head, &sig_tail );
+    vsignal**    sigs            = NULL;
+    unsigned int sig_size        = 0;
+    unsigned int sig_no_rm_index = 1;
+    unsigned int i;
 
-    sigl = sig_head;
-    while( sigl != NULL ) {
+    toggle_collect( funit, 1, &sigs, &sig_size, &sig_no_rm_index );
+
+    for( i=0; i<sig_size; i++ ) {
       snprintf( tmp, 85, "%d.%d %d.%d",
-                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 14),
-                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + ((int)strlen( sigl->sig->name ) - 1) + 15) );
+                (sigs[i]->line - (start_line - 1)), (sigs[i]->suppl.part.col + 14),
+                (sigs[i]->line - (start_line - 1)), (sigs[i]->suppl.part.col + ((int)strlen( sigs[i]->name ) - 1) + 15) );
       Tcl_AppendElement( tcl, tmp );
-      sigl = sigl->next;
     }
 
     /* Deallocate list of signals (without deallocating the signals themselves) */
-    sig_link_delete_list( sig_head, FALSE );
+    sig_link_delete_list( sigs, sig_size, sig_no_rm_index, FALSE );
 
   } else {
 
@@ -736,9 +736,6 @@ int tcl_func_collect_uncovered_memories(
 ) { PROFILE(TCL_FUNC_COLLECT_UNCOVERED_MEMORIES);
 
   int        retval   = TCL_OK;  /* Return value for this function */
-  sig_link*  sig_head = NULL;    /* Pointer to head of uncovered signal list */
-  sig_link*  sig_tail = NULL;    /* Pointer to tail of uncovered signal list */
-  sig_link*  sigl;               /* Pointer to current signal being evaluated */
   char       tmp[120];           /* Temporary string */
   int        start_line;         /* Starting line number of this functional unit */
   func_unit* funit;              /* Pointer to found functional unit */
@@ -748,22 +745,25 @@ int tcl_func_collect_uncovered_memories(
 
   if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
 
+    vsignal** sigs               = NULL;
+    unsigned int sig_size        = 0;
+    unsigned int sig_no_rm_index = 1;
+    unsigned int i;
+
     /* Get the memory information for all uncovered signals */
-    memory_collect( funit, 0, &sig_head, &sig_tail );
+    memory_collect( funit, 0, &sigs, &sig_size, &sig_no_rm_index );
 
     /* Populate uncovered_memories array */
-    sigl = sig_head;
-    while( sigl != NULL ) {
+    for( i=0; i<sig_size; i++ ) {
       snprintf( tmp, 120, "%d.%d %d.%d %d",
-                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 14),
-                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + ((int)strlen( sigl->sig->name ) - 1) + 15),
-                sigl->sig->suppl.part.excluded );
+                (sigs[i]->line - (start_line - 1)), (sigs[i]->suppl.part.col + 14),
+                (sigs[i]->line - (start_line - 1)), (sigs[i]->suppl.part.col + ((int)strlen( sigs[i]->name ) - 1) + 15),
+                sigs[i]->suppl.part.excluded );
       Tcl_AppendElement( tcl, tmp );
-      sigl = sigl->next;
     }
 
     /* Deallocate list of signals (without deallocating the signals themselves) */
-    sig_link_delete_list( sig_head, FALSE );
+    sig_link_delete_list( sigs, sig_size, sig_no_rm_index, FALSE );
 
   } else {
 
@@ -792,9 +792,6 @@ int tcl_func_collect_covered_memories(
 ) { PROFILE(TCL_FUNC_COLLECT_COVERED_MEMORIES);
 
   int        retval   = TCL_OK;  /* Return value for this function */
-  sig_link*  sig_head = NULL;    /* Pointer to head of covered signal list */
-  sig_link*  sig_tail = NULL;    /* Pointer to tail of covered signal list */
-  sig_link*  sigl;               /* Pointer to current signal being evaluated */
   char       tmp[120];           /* Temporary string */
   int        start_line;         /* Starting line number of this functional unit */
   func_unit* funit;              /* Pointer to found functional unit */
@@ -804,22 +801,25 @@ int tcl_func_collect_covered_memories(
 
   if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
 
+    vsignal**    sigs            = NULL;
+    unsigned int sig_size        = 0;
+    unsigned int sig_no_rm_index = 1;
+    unsigned int i;
+
     /* Get the memory information for all covered signals */
-    memory_collect( funit, 1, &sig_head, &sig_tail );
+    memory_collect( funit, 1, &sigs, &sig_size, &sig_no_rm_index );
 
     /* Populate covered_memories array */
-    sigl = sig_head;
-    while( sigl != NULL ) {
+    for( i=0; i<sig_size; i++ ) {
       snprintf( tmp, 120, "%d.%d %d.%d %d",
-                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 14),
-                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + ((int)strlen( sigl->sig->name ) - 1) + 15), 
-                sigl->sig->suppl.part.excluded );
+                (sigs[i]->line - (start_line - 1)), (sigs[i]->suppl.part.col + 14),
+                (sigs[i]->line - (start_line - 1)), (sigs[i]->suppl.part.col + ((int)strlen( sigs[i]->name ) - 1) + 15), 
+                sigs[i]->suppl.part.excluded );
       Tcl_AppendElement( tcl, tmp );
-      sigl = sigl->next;
     }
 
     /* Deallocate list of signals (without deallocating the signals themselves) */
-    sig_link_delete_list( sig_head, FALSE );
+    sig_link_delete_list( sigs, sig_size, sig_no_rm_index, FALSE );
 
   } else {
 
@@ -1203,42 +1203,37 @@ int tcl_func_collect_uncovered_fsms(
 ) { PROFILE(TCL_FUNC_COLLECT_UNCOVERED_FSMS);
 
   int        retval = TCL_OK;  /* Return value for this function */
-  sig_link*  sig_head;         /* Pointer to head of covered signals */
-  sig_link*  sig_tail;         /* Pointer to tail of covered signals */
-  sig_link*  sigl;             /* Pointer to current signal link being evaluated */
   char       str[85];          /* Temporary string container */
   int        start_line;       /* Starting line number of this module */
   int*       expr_ids;         /* Array containing the statement IDs of all uncovered FSM signals */
   int*       excludes;         /* Array containing exclude values of all uncovered FSM signals */
-  int        i;                /* Loop iterator */
   func_unit* funit;            /* Pointer to found functional unit */
 
   start_line = atoi( argv[2] );
 
   if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
 
-    fsm_collect( funit, 0, &sig_head, &sig_tail, &expr_ids, &excludes );
+    vsignal**    sigs            = NULL;
+    unsigned int sig_size        = 0;
+    unsigned int sig_no_rm_index = 1;
+    unsigned int i;
+
+    fsm_collect( funit, 0, &sigs, &sig_size, &sig_no_rm_index, &expr_ids, &excludes );
 
     /* Load uncovered FSMs into Tcl */
-    sigl = sig_head;
-    i    = 0;
-    while( sigl != NULL ) {
-      snprintf( str, 85, "%d.%d %d.%d %d %d", (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 14),
-                                              (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + ((int)strlen( sigl->sig->name ) - 1) + 15),
+    for( i=0; i<sig_size; i++ ) {
+      snprintf( str, 85, "%d.%d %d.%d %d %d", (sigs[i]->line - (start_line - 1)), (sigs[i]->suppl.part.col + 14),
+                                              (sigs[i]->line - (start_line - 1)), (sigs[i]->suppl.part.col + ((int)strlen( sigs[i]->name ) - 1) + 15),
                                               expr_ids[i], excludes[i] );
       Tcl_AppendElement( tcl, str );
-      sigl = sigl->next;
-      i++;
     }
 
     /* Deallocate memory */
-    sig_link_delete_list( sig_head, FALSE );
+    sig_link_delete_list( sigs, sig_size, sig_no_rm_index, FALSE );
 
     /* If the expr_ids array has one or more elements, deallocate the array */
-    if( i > 0 ) {
-      free_safe( expr_ids, (sizeof( int ) * i) );
-      free_safe( excludes, (sizeof( int ) * i) );
-    }
+    free_safe( expr_ids, (sizeof( int ) * sig_size) );
+    free_safe( excludes, (sizeof( int ) * sig_size) );
 
   } else {
 
@@ -1269,40 +1264,36 @@ int tcl_func_collect_covered_fsms(
 ) { PROFILE(TCL_FUNC_COLLECT_COVERED_FSMS);
 
   int        retval = TCL_OK;  /* Return value for this function */
-  sig_link*  sig_head;         /* Pointer to head of covered signals */
-  sig_link*  sig_tail;         /* Pointer to tail of covered signals */
-  sig_link*  sigl;             /* Pointer to current signal link being evaluated */
   char       str[85];          /* Temporary string container */
   int        start_line;       /* Starting line number of this module */
   int*       expr_ids;         /* Array containing the statement IDs of all uncovered FSM signals */
   int*       excludes;         /* Array containing exclude values of all uncovered FSM signals */
-  int        i;                /* Loop iterator */
   func_unit* funit;            /* Pointer to found functional unit */
 
   start_line = atoi( argv[2] );
 
   if( (funit = tcl_func_get_funit( tcl, argv[1] )) != NULL ) {
 
-    fsm_collect( funit, 1, &sig_head, &sig_tail, &expr_ids, &excludes );
+    vsignal**    sigs            = NULL;
+    unsigned int sig_size        = 0;
+    unsigned int sig_no_rm_index = 1;
+    unsigned int i;
+
+    fsm_collect( funit, 1, &sigs, &sig_size, &sig_no_rm_index, &expr_ids, &excludes );
 
     /* Load covered FSMs into Tcl */
-    sigl = sig_head;
-    i    = 0;
-    while( sigl != NULL ) {
-      snprintf( str, 85, "%d.%d %d.%d", (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 14),
-                                        (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + ((int)strlen( sigl->sig->name ) - 1) + 15) );
+    for( i=0; i<sig_size; i++ ) {
+      snprintf( str, 85, "%d.%d %d.%d", (sigs[i]->line - (start_line - 1)), (sigs[i]->suppl.part.col + 14),
+                                        (sigs[i]->line - (start_line - 1)), (sigs[i]->suppl.part.col + ((int)strlen( sigs[i]->name ) - 1) + 15) );
       Tcl_AppendElement( tcl, str );
-      sigl = sigl->next;   
-      i++;
     }
   
     /* Deallocate memory */
-    sig_link_delete_list( sig_head, FALSE );
+    sig_link_delete_list( sigs, sig_size, sig_no_rm_index, FALSE );
 
     /* If the expr_ids array has one or more elements, deallocate the array */
-    if( i > 0 ) {
-      free_safe( expr_ids, (sizeof( int ) * i) );
-    }
+    free_safe( expr_ids, (sizeof( int ) * sig_size) );
+    free_safe( excludes, (sizeof( int ) * sig_size) );
 
   } else {
 

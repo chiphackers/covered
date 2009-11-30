@@ -1218,28 +1218,21 @@ void instance_db_write(
       /* If we are in parse mode, re-issue expression IDs (we use the ulid field since it is not used in parse mode) */
       if( issue_ids && (root->funit != NULL) ) {
 
-        exp_link*   expl;
-        sig_link*   sigl;
+        unsigned int i;
 #ifndef VPI_ONLY
         gitem_link* gil;
 #endif
 
         /* First issue IDs to the expressions within the functional unit */
-        expl = root->funit->exp_head;
-        while( expl != NULL ) {
-          expl->exp->ulid = curr_expr_id;
-          curr_expr_id++;
-          expl = expl->next;
+        for( i=0; i<root->funit->exp_size; i++ ) {
+          root->funit->exps[i]->ulid = curr_expr_id++;
         }
 
         /* Only assign IDs to signals that are within a generated functional unit signal list */
-        sigl = root->funit->sig_head;
-        while( sigl != NULL ) {
-          if( sigl->rm_sig ) {
-            sigl->sig->id = curr_sig_id;
-            curr_sig_id++;
+        for( i=0; i<root->funit->sig_size; i++ ) {
+          if( i < root->funit->sig_no_rm_index ) {
+            root->funit->sigs[i]->id = curr_sig_id++;
           }
-          sigl = sigl->next;
         }
     
 #ifndef VPI_ONLY
@@ -1463,22 +1456,20 @@ void instance_remove_parms_with_expr(
 
   funit_inst* curr_child;  /* Pointer to current child instance to traverse */
   inst_parm*  iparm;       /* Pointer to current instance parameter */
-  exp_link*   expl;        /* Pointer to current expression link */
-  exp_link*   texpl;       /* Temporary pointer to current expression link */
 
   /* Search for the given expression within the given instance parameter */
   iparm = root->param_head;
   while( iparm != NULL ) {
     if( iparm->sig != NULL ) {
-      expl = iparm->sig->exp_head;
-      while( expl != NULL ) {
-        texpl = expl;
-        expl  = expl->next;
-        if( expression_find_expr( stmt->exp, texpl->exp ) ) {
+      unsigned int i = 0;
+      while( i < iparm->sig->exp_size ) {
+        if( expression_find_expr( stmt->exp, iparm->sig->exps[i] ) ) {
           if( iparm->mparm != NULL ) {
-            exp_link_remove( texpl->exp, &(iparm->mparm->exp_head), &(iparm->mparm->exp_tail), FALSE );
+            exp_link_remove( iparm->sig->exps[i], &(iparm->mparm->exps), &(iparm->mparm->exp_size), FALSE );
           }
-          exp_link_remove( texpl->exp, &(iparm->sig->exp_head), &(iparm->sig->exp_tail), FALSE );
+          exp_link_remove( iparm->sig->exps[i], &(iparm->sig->exps), &(iparm->sig->exp_size), FALSE );
+        } else {
+          i++;
         }
       }
     }

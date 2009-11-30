@@ -544,7 +544,8 @@ void report_gather_instance_stats(
     }
 
     if( report_fsm && (info_suppl.part.scored_fsm == 1) ) {
-      fsm_get_stats( root->funit->fsm_head,
+      fsm_get_stats( root->funit->fsms,
+                     root->funit->fsm_size,
                      &(root->stat->state_hit),
                      &(root->stat->state_total),
                      &(root->stat->arc_hit),
@@ -632,7 +633,8 @@ static void report_gather_funit_stats(
       }
 
       if( report_fsm && (info_suppl.part.scored_fsm == 1) ) {
-        fsm_get_stats( head->funit->fsm_head,
+        fsm_get_stats( head->funit->fsms,
+                       head->funit->fsm_size,
                        &(head->funit->stat->state_hit),
                        &(head->funit->stat->state_total),
                        &(head->funit->stat->arc_hit) ,

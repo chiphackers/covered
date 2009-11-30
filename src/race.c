@@ -522,37 +522,38 @@ static void race_check_one_block_assignment(
   func_unit* mod  /*!< Pointer to module containing signals to verify */
 ) { PROFILE(RACE_CHECK_ONE_BLOCK_ASSIGNMENT);
 
-  sig_link*  sigl;                /* Pointer to current signal */
-  exp_link*  expl;                /* Pointer to current expression */
-  statement* curr_stmt;           /* Pointer to current statement */
-  int        sig_stmt;            /* Index of base signal statement in statement block array */
-  bool       race_found = FALSE;  /* Specifies if at least one race condition was found for this signal */
-  bool       curr_race  = FALSE;  /* Set to TRUE if race condition was found in current iteration */
-  int        lval;                /* Left expression value */
-  int        rval;                /* Right expression value */
-  int        exp_dim;             /* Current expression dimension */
-  int        dim_lsb;             /* LSB of current dimension */
-  bool       dim_be;              /* Big endianness of current dimension */
-  int        dim_width;           /* Bit width of current dimension */
-  int        intval;              /* Integer value */
+  statement*   curr_stmt;           /* Pointer to current statement */
+  bool         race_found = FALSE;  /* Specifies if at least one race condition was found for this signal */
+  bool         curr_race  = FALSE;  /* Set to TRUE if race condition was found in current iteration */
+  int          lval;                /* Left expression value */
+  int          rval;                /* Right expression value */
+  int          exp_dim;             /* Current expression dimension */
+  int          dim_lsb;             /* LSB of current dimension */
+  bool         dim_be;              /* Big endianness of current dimension */
+  int          dim_width;           /* Bit width of current dimension */
+  int          intval;              /* Integer value */
+  unsigned int i;
 
-  sigl = mod->sig_head;
-  while( sigl != NULL ) {
+  for( i=0; i<mod->sig_size; i++ ) {
 
-    sig_stmt = -1;
+    vsignal* sig      = mod->sigs[i];
+    int      sig_stmt = -1;
 
     /* Skip checking the expressions of genvar signals */
-    if( (sigl->sig->suppl.part.type != SSUPPL_TYPE_GENVAR) && (sigl->sig->suppl.part.type != SSUPPL_TYPE_MEM) ) {
+    if( (sig->suppl.part.type != SSUPPL_TYPE_GENVAR) && (sig->suppl.part.type != SSUPPL_TYPE_MEM) ) {
+
+      unsigned int j;
 
       /* Iterate through expressions */
-      expl = sigl->sig->exp_head;
-      while( expl != NULL ) {
+      for( j=0; j<sig->exp_size; j++ ) {
+
+        expression* exp = sig->exps[j];
 					      
         /* Only look at expressions that are part of LHS and they are not part of a bit select */
-        if( (ESUPPL_IS_LHS( expl->exp->suppl ) == 1) && !expression_is_bit_select( expl->exp ) && expression_is_last_select( expl->exp ) ) {
+        if( (ESUPPL_IS_LHS( exp->suppl ) == 1) && !expression_is_bit_select( exp ) && expression_is_last_select( exp ) ) {
 
           /* Get head statement of current expression */
-          curr_stmt = race_get_head_statement( expl->exp );
+          curr_stmt = race_get_head_statement( exp );
 
           /* If the head statement is being ignored from race condition checking, skip the rest */
           if( (curr_stmt != NULL) && (curr_stmt->suppl.part.ignore_rc == 0) ) {
@@ -561,83 +562,83 @@ static void race_check_one_block_assignment(
             int     vwidth;
 
             /* Get current dimension of the given expression */
-            exp_dim = expression_get_curr_dimension( expl->exp );
+            exp_dim = expression_get_curr_dimension( exp );
   
             /* Calculate starting vector value bit and signal LSB/BE for LHS */
-            if( (ESUPPL_IS_ROOT( expl->exp->suppl ) == 0) &&
-                (expl->exp->parent->expr->op == EXP_OP_DIM) && (expl->exp->parent->expr->right == expl->exp) ) {
-              src    = expl->exp->parent->expr->left->value;
+            if( (ESUPPL_IS_ROOT( exp->suppl ) == 0) &&
+                (exp->parent->expr->op == EXP_OP_DIM) && (exp->parent->expr->right == exp) ) {
+              src    = exp->parent->expr->left->value;
               vwidth = src->width;
             } else {
               /* Get starting vector bit from signal itself */
-              src    = sigl->sig->value;
+              src    = sig->value;
               vwidth = src->width;
             }
-            if( sigl->sig->dim[exp_dim].lsb < sigl->sig->dim[exp_dim].msb ) {
-              dim_lsb = sigl->sig->dim[exp_dim].lsb;
+            if( sig->dim[exp_dim].lsb < sig->dim[exp_dim].msb ) {
+              dim_lsb = sig->dim[exp_dim].lsb;
               dim_be  = FALSE;
             } else {
-              dim_lsb = sigl->sig->dim[exp_dim].msb;
+              dim_lsb = sig->dim[exp_dim].msb;
               dim_be  = TRUE;
             }
-            dim_width = vsignal_calc_width_for_expr( expl->exp, sigl->sig );
+            dim_width = vsignal_calc_width_for_expr( exp, sig );
 
             /*
              If the signal was a part select, set the appropriate misc bits to indicate what
              bits have been assigned.
             */
-            switch( expl->exp->op ) {
+            switch( exp->op ) {
               case EXP_OP_SIG :
-                if( (ESUPPL_IS_ROOT( expl->exp->suppl ) == 0) && !expression_is_in_rassign( expl->exp ) ) {
-                  curr_race = vector_set_assigned( sigl->sig->value, (sigl->sig->value->width - 1), 0 );
+                if( (ESUPPL_IS_ROOT( exp->suppl ) == 0) && !expression_is_in_rassign( exp ) ) {
+                  curr_race = vector_set_assigned( sig->value, (sig->value->width - 1), 0 );
                 }
   	      break;
               case EXP_OP_SBIT_SEL :
-                if( expl->exp->left->op == EXP_OP_STATIC ) {
-                  intval = (vector_to_int( expl->exp->left->value ) - dim_lsb) * dim_width;
-                  if( (intval >= 0) && ((unsigned int)intval < expl->exp->value->width) ) {
+                if( exp->left->op == EXP_OP_STATIC ) {
+                  intval = (vector_to_int( exp->left->value ) - dim_lsb) * dim_width;
+                  if( (intval >= 0) && ((unsigned int)intval < exp->value->width) ) {
                     if( dim_be ) {
-                      int lsb = (vwidth - (intval + expl->exp->value->width));
-                      curr_race = vector_set_assigned( sigl->sig->value, ((expl->exp->value->width - 1) + lsb), lsb );
+                      int lsb = (vwidth - (intval + exp->value->width));
+                      curr_race = vector_set_assigned( sig->value, ((exp->value->width - 1) + lsb), lsb );
                     } else {
-                      curr_race = vector_set_assigned( sigl->sig->value, ((expl->exp->value->width - 1) + intval), intval );
+                      curr_race = vector_set_assigned( sig->value, ((exp->value->width - 1) + intval), intval );
                     }
                   } else {
                     curr_race = FALSE;
                   }
                 } else { 
-                  curr_race = vector_set_assigned( sigl->sig->value, (sigl->sig->value->width - 1), 0 );
+                  curr_race = vector_set_assigned( sig->value, (sig->value->width - 1), 0 );
                 }
   	      break;
               case EXP_OP_MBIT_SEL :
-                if( (expl->exp->left->op == EXP_OP_STATIC) && (expl->exp->right->op == EXP_OP_STATIC) ) {
-                  intval = ((dim_be ? vector_to_int( expl->exp->left->value ) : vector_to_int( expl->exp->right->value )) - dim_lsb) * dim_width;
+                if( (exp->left->op == EXP_OP_STATIC) && (exp->right->op == EXP_OP_STATIC) ) {
+                  intval = ((dim_be ? vector_to_int( exp->left->value ) : vector_to_int( exp->right->value )) - dim_lsb) * dim_width;
                   if( dim_be ) {
-                    int lsb = (vwidth - (intval + expl->exp->value->width));
-                    curr_race = vector_set_assigned( sigl->sig->value, ((expl->exp->value->width - 1) + lsb), lsb );
+                    int lsb = (vwidth - (intval + exp->value->width));
+                    curr_race = vector_set_assigned( sig->value, ((exp->value->width - 1) + lsb), lsb );
                   } else {
-                    curr_race = vector_set_assigned( sigl->sig->value, ((expl->exp->value->width - 1) + intval), intval );
+                    curr_race = vector_set_assigned( sig->value, ((exp->value->width - 1) + intval), intval );
                   }
                 } else {
-                  curr_race = vector_set_assigned( sigl->sig->value, (sigl->sig->value->width - 1), 0 );
+                  curr_race = vector_set_assigned( sig->value, (sig->value->width - 1), 0 );
                 }
 	        break;
               case EXP_OP_MBIT_POS :
-                if( expl->exp->left->op == EXP_OP_STATIC ) {
-                  lval = vector_to_int( expl->exp->left->value );
-                  rval = vector_to_int( expl->exp->right->value );
-                  curr_race = vector_set_assigned( sigl->sig->value, ((lval + rval) - sigl->sig->dim[exp_dim].lsb), (lval - sigl->sig->dim[exp_dim].lsb) );
+                if( exp->left->op == EXP_OP_STATIC ) {
+                  lval = vector_to_int( exp->left->value );
+                  rval = vector_to_int( exp->right->value );
+                  curr_race = vector_set_assigned( sig->value, ((lval + rval) - sig->dim[exp_dim].lsb), (lval - sig->dim[exp_dim].lsb) );
                 } else {
-                  curr_race = vector_set_assigned( sigl->sig->value, (sigl->sig->value->width - 1), 0 );
+                  curr_race = vector_set_assigned( sig->value, (sig->value->width - 1), 0 );
                 }
                 break;
               case EXP_OP_MBIT_NEG :
-                if( expl->exp->left->op == EXP_OP_STATIC ) {
-                  lval = vector_to_int( expl->exp->left->value );
-                  rval = vector_to_int( expl->exp->right->value );
-                  curr_race = vector_set_assigned( sigl->sig->value, ((lval + 1) - sigl->sig->dim[exp_dim].lsb), (((lval - rval) + 1) - sigl->sig->dim[exp_dim].lsb) );
+                if( exp->left->op == EXP_OP_STATIC ) {
+                  lval = vector_to_int( exp->left->value );
+                  rval = vector_to_int( exp->right->value );
+                  curr_race = vector_set_assigned( sig->value, ((lval + 1) - sig->dim[exp_dim].lsb), (((lval - rval) + 1) - sig->dim[exp_dim].lsb) );
                 } else {
-                  curr_race = vector_set_assigned( sigl->sig->value, (sigl->sig->value->width - 1), 0 );
+                  curr_race = vector_set_assigned( sig->value, (sig->value->width - 1), 0 );
                 }
                 break;
               default :
@@ -660,17 +661,17 @@ static void race_check_one_block_assignment(
                 assert( sig_stmt != -1 );
   
                 /* Check to see if current signal is also an input port */ 
-                if( (sigl->sig->suppl.part.type == SSUPPL_TYPE_INPUT_NET) ||
-                    (sigl->sig->suppl.part.type == SSUPPL_TYPE_INPUT_REG) ||
-                    (sigl->sig->suppl.part.type == SSUPPL_TYPE_INOUT_NET) ||
-                    (sigl->sig->suppl.part.type == SSUPPL_TYPE_INOUT_REG) || curr_race ) {
-                  race_handle_race_condition( expl->exp, mod, curr_stmt, NULL, RACE_TYPE_ASSIGN_IN_ONE_BLOCK2 );
+                if( (sig->suppl.part.type == SSUPPL_TYPE_INPUT_NET) ||
+                    (sig->suppl.part.type == SSUPPL_TYPE_INPUT_REG) ||
+                    (sig->suppl.part.type == SSUPPL_TYPE_INOUT_NET) ||
+                    (sig->suppl.part.type == SSUPPL_TYPE_INOUT_REG) || curr_race ) {
+                  race_handle_race_condition( exp, mod, curr_stmt, NULL, RACE_TYPE_ASSIGN_IN_ONE_BLOCK2 );
                   sb[sig_stmt].remove = TRUE;
                 }
   
               } else if( (sb[sig_stmt].stmt != curr_stmt) && curr_race ) {
   
-                race_handle_race_condition( expl->exp, mod, curr_stmt, sb[sig_stmt].stmt, RACE_TYPE_ASSIGN_IN_ONE_BLOCK1 );
+                race_handle_race_condition( exp, mod, curr_stmt, sb[sig_stmt].stmt, RACE_TYPE_ASSIGN_IN_ONE_BLOCK1 );
                 sb[sig_stmt].remove = TRUE;
                 race_found = TRUE;
   
@@ -682,13 +683,9 @@ static void race_check_one_block_assignment(
 
         }
 
-        expl = expl->next;
-
       }
 
     }
-
-    sigl = sigl->next;
 
   }
 

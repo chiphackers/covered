@@ -134,7 +134,7 @@ static void mod_parm_find_expr_and_remove(
     mod_parm_find_expr_and_remove( exp->right, parm );
 
     while( parm != NULL ) {
-      exp_link_remove( exp, &(parm->exp_head), &(parm->exp_tail), FALSE );
+      exp_link_remove( exp, &(parm->exps), &(parm->exp_size), FALSE );
       parm = parm->next;
     }
 
@@ -417,8 +417,8 @@ mod_parm* mod_parm_add(
       expr->suppl.part.owned = 1;
     }
   }
-  parm->exp_head              = NULL;
-  parm->exp_tail              = NULL;
+  parm->exps                  = NULL;
+  parm->exp_size              = 0;
   parm->sig                   = NULL;
   parm->next                  = NULL;
 
@@ -474,7 +474,7 @@ int mod_parm_display(
     if( mparm->sig != NULL ) {
       printf( "    " );  vsignal_display( mparm->sig );
     }
-    printf( "    " );  exp_link_display( mparm->exp_head );
+    printf( "    " );  exp_link_display( mparm->exps, mparm->exp_size );
     mparm = mparm->next;
   }
 
@@ -536,7 +536,6 @@ static inst_parm* inst_parm_add(
   int        sig_type;        /* Type of signal parameter to create */
   int        left_val  = 31;  /* Value of left (msb) static expression */
   int        right_val = 0;   /* Value of right (lsb) static expression */
-  exp_link*  expl;            /* Pointer to current expression link */
   
   assert( value != NULL );
   assert( ((msb == NULL) && (lsb == NULL)) || ((msb != NULL) && (lsb != NULL)) );
@@ -635,15 +634,14 @@ static inst_parm* inst_parm_add(
 
       /* Bind the module parameter expression list to this signal */
       if( mparm != NULL ) {
-        expl = mparm->exp_head;
-        while( expl != NULL ) {
-          expl->exp->sig = iparm->sig;
+        unsigned int i;
+        for( i=0; i<mparm->exp_size; i++ ) {
+          mparm->exps[i]->sig = iparm->sig;
           /* Set the expression's vector to this signal's vector if we are part of a generate expression */
-          if( expl->exp->suppl.part.gen_expr == 1 ) {
-            expression_set_value( expl->exp, iparm->sig, inst->funit );
+          if( mparm->exps[i]->suppl.part.gen_expr == 1 ) {
+            expression_set_value( mparm->exps[i], iparm->sig, inst->funit );
           }
-          exp_link_add( expl->exp, &(iparm->sig->exp_head), &(iparm->sig->exp_tail) );
-          expl = expl->next;
+          exp_link_add( mparm->exps[i], &(iparm->sig->exps), &(iparm->sig->exp_size) );
         }
       }
 
@@ -711,14 +709,11 @@ void inst_parm_bind(
   inst_parm* iparm  /*!< Pointer to instance parameter to bind */
 ) { PROFILE(INST_PARM_BIND);
 
-  exp_link* expl;  /* Pointer to current expression link in list */
-
   /* Bind the module parameter expression list to this signal */
   if( iparm->mparm != NULL ) {
-    expl = iparm->mparm->exp_head;
-    while( expl != NULL ) {
-      expl->exp->sig = iparm->sig;
-      expl = expl->next;
+    unsigned int i;
+    for( i=0; i<iparm->mparm->exp_size; i++ ) {
+      iparm->mparm->exps[i]->sig = iparm->sig;
     }
   }
 
@@ -830,7 +825,7 @@ static void param_find_and_set_expr_value(
   if( inst != NULL ) {
 
     icurr = inst->param_head;
-    while( (icurr != NULL) && ((icurr->mparm == NULL) || (exp_link_find( expr->id, icurr->mparm->exp_head ) == NULL)) ) {
+    while( (icurr != NULL) && ((icurr->mparm == NULL) || (exp_link_find( expr->id, icurr->mparm->exps, icurr->mparm->exp_size ) == NULL)) ) {
       icurr = icurr->next;
     }
 
@@ -857,7 +852,7 @@ static void param_find_and_set_expr_value(
       /* Cause expression/signal to point to each other */
       expr->sig = icurr->sig;
       
-      exp_link_add( expr, &(icurr->sig->exp_head), &(icurr->sig->exp_tail) );
+      exp_link_add( expr, &(icurr->sig->exps), &(icurr->sig->exp_size) );
 
     }
 
@@ -1306,7 +1301,7 @@ void mod_parm_dealloc(
     }
 
     /* Remove the expression list that this parameter is used in */
-    exp_link_delete_list( parm->exp_head, FALSE );
+    exp_link_delete_list( parm->exps, parm->exp_size, FALSE );
 
     /* Remove the parameter name */
     free_safe( parm->name, (strlen( parm->name ) + 1) );

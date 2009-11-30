@@ -44,9 +44,8 @@ static perf_stat* perf_gen_stats(
   func_unit* funit  /*!< Pointer to functional unit to generate performance statistics for */
 ) { PROFILE(PERF_GEN_STATS);
 
-  exp_link*  expl;   /* Pointer to current expression link */
-  perf_stat* pstat;  /* Pointer to newly created performance stat structure */
-  int        i;      /* Loop iterator */
+  perf_stat*   pstat;  /* Pointer to newly created performance stat structure */
+  unsigned int i;
 
   /* Create and initialize new perf_stat structure */
   pstat = (perf_stat*)malloc_safe( sizeof( perf_stat ) );
@@ -56,11 +55,9 @@ static perf_stat* perf_gen_stats(
   }
 
   /* Populate performance structure */
-  expl = funit->exp_head;
-  while( expl != NULL ) {
-    pstat->op_cnt[expl->exp->op]      += 1;
-    pstat->op_exec_cnt[expl->exp->op] += expl->exp->exec_num;
-    expl = expl->next;
+  for( i=0; i<funit->exp_size; i++ ) {
+    pstat->op_cnt[funit->exps[i]->op]      += 1;
+    pstat->op_exec_cnt[funit->exps[i]->op] += funit->exps[i]->exec_num;
   }
 
   PROFILE_END;

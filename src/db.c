@@ -1609,6 +1609,8 @@ void db_add_signal(
   /* Add signal to current module's signal list if it does not already exist */
   if( (sig = sig_link_find( name, curr_funit->sigs, curr_funit->sig_size )) == NULL ) {
 
+    printf( "NEED to create signal!!! :)\n" );
+
     /* Create the signal */
     if( (type == SSUPPL_TYPE_GENVAR) || (type == SSUPPL_TYPE_DECL_SREAL) ) {
       /* For genvars and shortreals, set the size to 32, automatically */

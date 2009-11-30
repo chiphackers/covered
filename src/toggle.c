@@ -118,7 +118,7 @@ void toggle_collect(
             func_unit*    funit,           /*!< Pointer to functional unit */
             int           cov,             /*!< Specifies to get uncovered (0) or covered (1) signals */
   /*@out@*/ vsignal***    sigs,            /*!< Pointer to head of list of covered/uncovered signals */
-  /*@out@*/ unsigned int* sig_size         /*!< Pointer to tail of list of covered/uncovered signals */
+  /*@out@*/ unsigned int* sig_size,        /*!< Pointer to tail of list of covered/uncovered signals */
   /*@out@*/ unsigned int* sig_no_rm_index  /*!< Pointer to starting index to not removing signals */
 ) { PROFILE(TOGGLE_COLLECT);
 

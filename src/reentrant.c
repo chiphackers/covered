@@ -40,32 +40,30 @@ static int reentrant_count_afu_bits(
   func_unit* funit  /*!< Pointer to current function to count the bits of */
 ) { PROFILE(REENTRANT_COUNT_AFU_BITS);
 
-  sig_link* sigl;      /* Pointer to current signal link */
-  exp_link* expl;      /* Pointer to current expression link */
-  int       bits = 0;  /* Number of bits in this functional unit and all parent functional units in the reentrant task/function */
+  int bits = 0;  /* Number of bits in this functional unit and all parent functional units in the reentrant task/function */
 
   if( (funit->suppl.part.type == FUNIT_ATASK) || (funit->suppl.part.type == FUNIT_AFUNCTION) || (funit->suppl.part.type == FUNIT_ANAMED_BLOCK) ) {
 
+    unsigned int i;
+
     /* Count the number of signal bits in this functional unit */
-    sigl = funit->sig_head;
-    while( sigl != NULL ) {
-      switch( sigl->sig->value->suppl.part.data_type ) {
-        case VDATA_UL  :  bits += (sigl->sig->value->width * 2) + 1;  break;
+    for( i=0; i<funit->sig_size; i++ ) {
+      vsignal* sig = funit->sigs[i];
+      switch( sig->value->suppl.part.data_type ) {
+        case VDATA_UL  :  bits += (sig->value->width * 2) + 1;  break;
         case VDATA_R64 :  bits += 64;  break;
         case VDATA_R32 :  bits += 32;  break;
         default        :  assert( 0 );  break;
       }
-      sigl = sigl->next;
     }
 
     /* Count the number of expression bits in this functional unit */
-    expl = funit->exp_head;
-    while( expl != NULL ) {
-      if( (EXPR_OWNS_VEC( expl->exp->op ) == 1) && (EXPR_IS_STATIC( expl->exp ) == 0) ) {
-        bits += (expl->exp->value->width * 2);
+    for( i=0; i<funit->exp_size; i++ ) {
+      expression* exp = funit->exps[i];
+      if( (EXPR_OWNS_VEC( exp->op ) == 1) && (EXPR_IS_STATIC( exp ) == 0) ) {
+        bits += (exp->value->width * 2);
       }
       bits += ((ESUPPL_BITS_TO_STORE % 2) == 0) ? ESUPPL_BITS_TO_STORE : (ESUPPL_BITS_TO_STORE + 1);
-      expl = expl->next;
     }
 
     /* If the current functional unit is a named block, gather the bits in the parent functional unit */
@@ -93,31 +91,31 @@ static void reentrant_store_data_bits(
 
   if( (funit->suppl.part.type == FUNIT_ATASK) || (funit->suppl.part.type == FUNIT_AFUNCTION) || (funit->suppl.part.type == FUNIT_ANAMED_BLOCK) ) {
 
-    sig_link* sigl = funit->sig_head;
-    exp_link* expl = funit->exp_head;
+    unsigned int i;
 
     /* Walk through the signal list in the reentrant functional unit, compressing and saving vector values */
-    while( sigl != NULL ) {
-      switch( sigl->sig->value->suppl.part.data_type ) {
+    for( i=0; i<funit->sig_size; i++ ) {
+      vsignal* sig = funit->sigs[i];
+      switch( sig->value->suppl.part.data_type ) {
         case VDATA_UL :
           {
             unsigned int i;
-            for( i=0; i<sigl->sig->value->width; i++ ) {
-              ulong* entry = sigl->sig->value->value.ul[UL_DIV(i)];
+            for( i=0; i<sig->value->width; i++ ) {
+              ulong* entry = sig->value->value.ul[UL_DIV(i)];
               ren->data[curr_bit>>3] |= (((entry[VTYPE_INDEX_VAL_VALL] >> UL_MOD(i)) & 0x1) << (curr_bit & 0x7));
               curr_bit++;
               ren->data[curr_bit>>3] |= (((entry[VTYPE_INDEX_VAL_VALH] >> UL_MOD(i)) & 0x1) << (curr_bit & 0x7));
               curr_bit++;
             }
-            ren->data[curr_bit>>3] |= sigl->sig->value->suppl.part.set << (curr_bit & 0x7);
+            ren->data[curr_bit>>3] |= sig->value->suppl.part.set << (curr_bit & 0x7);
             curr_bit++;
             /* Clear the set bit */
-            sigl->sig->value->suppl.part.set = 0;
+            sig->value->suppl.part.set = 0;
           }
           break;
         case VDATA_R64 :
           {
-            uint64       real_bits = sys_task_realtobits( sigl->sig->value->value.r64->val );
+            uint64       real_bits = sys_task_realtobits( sig->value->value.r64->val );
             unsigned int i;
             for( i=0; i<64; i++ ) {
               ren->data[curr_bit>>3] |= (real_bits & 0x1) << (curr_bit & 0x7);
@@ -128,7 +126,7 @@ static void reentrant_store_data_bits(
           break;
         case VDATA_R32 :
           {
-            uint64       real_bits = sys_task_realtobits( (double)sigl->sig->value->value.r32->val );
+            uint64       real_bits = sys_task_realtobits( (double)sig->value->value.r32->val );
             unsigned int i;
             for( i=0; i<32; i++ ) {
               ren->data[curr_bit>>3] |= (real_bits & 0x1) << (curr_bit & 0x7);
@@ -139,29 +137,29 @@ static void reentrant_store_data_bits(
           break;
         default :  assert( 0 );
       }
-      sigl = sigl->next;
     }
 
     /* Walk through expression list in the reentrant functional unit, compressing and saving vector and supplemental values */
-    while( expl != NULL ) {
-      unsigned int i;
-      if( (EXPR_OWNS_VEC( expl->exp->op ) == 1) && (EXPR_IS_STATIC( expl->exp ) == 0) ) {
-        switch( expl->exp->value->suppl.part.data_type ) {
+    for( i=0; i<funit->exp_size; i++ ) {
+      expression*  exp = funit->exps[i];
+      unsigned int j;
+      if( (EXPR_OWNS_VEC( exp->op ) == 1) && (EXPR_IS_STATIC( exp ) == 0) ) {
+        switch( exp->value->suppl.part.data_type ) {
           case VDATA_UL :
             {
-              for( i=0; i<expl->exp->value->width; i++ ) {
-                ulong* entry = expl->exp->value->value.ul[UL_DIV(i)];
-                ren->data[curr_bit>>3] |= (((entry[VTYPE_INDEX_VAL_VALL] >> UL_MOD(i)) & 0x1) << (curr_bit & 0x7));
+              for( j=0; j<exp->value->width; j++ ) {
+                ulong* entry = exp->value->value.ul[UL_DIV(j)];
+                ren->data[curr_bit>>3] |= (((entry[VTYPE_INDEX_VAL_VALL] >> UL_MOD(j)) & 0x1) << (curr_bit & 0x7));
                 curr_bit++;
-                ren->data[curr_bit>>3] |= (((entry[VTYPE_INDEX_VAL_VALH] >> UL_MOD(i)) & 0x1) << (curr_bit & 0x7));
+                ren->data[curr_bit>>3] |= (((entry[VTYPE_INDEX_VAL_VALH] >> UL_MOD(j)) & 0x1) << (curr_bit & 0x7));
                 curr_bit++;
               }
             }
             break;
           case VDATA_R64 :
             {
-              uint64 real_bits = sys_task_realtobits( expl->exp->value->value.r64->val );
-              for( i=0; i<64; i++ ) {
+              uint64 real_bits = sys_task_realtobits( exp->value->value.r64->val );
+              for( j=0; j<64; j++ ) {
                 ren->data[curr_bit>>3] |= (real_bits & 0x1) << (curr_bit & 0x7);
                 real_bits >>= 1;
                 curr_bit++;
@@ -170,8 +168,8 @@ static void reentrant_store_data_bits(
             break;
           case VDATA_R32 :
             {
-              uint64 real_bits = sys_task_realtobits( (double)expl->exp->value->value.r32->val );
-              for( i=0; i<32; i++ ) {
+              uint64 real_bits = sys_task_realtobits( (double)exp->value->value.r32->val );
+              for( j=0; j<32; j++ ) {
                 ren->data[curr_bit>>3] |= (real_bits & 0x1) << (curr_bit & 0x7);
                 real_bits >>= 1;
                 curr_bit++;
@@ -181,23 +179,22 @@ static void reentrant_store_data_bits(
           default :  assert( 0 );  break;
         }
       }
-      for( i=0; i<(((ESUPPL_BITS_TO_STORE % 2) == 0) ? ESUPPL_BITS_TO_STORE : (ESUPPL_BITS_TO_STORE + 1)); i++ ) {
-        switch( i ) {
-          case 0 :  ren->data[curr_bit>>3] |= (expl->exp->suppl.part.left_changed  << (curr_bit & 0x7));  break;
-          case 1 :  ren->data[curr_bit>>3] |= (expl->exp->suppl.part.right_changed << (curr_bit & 0x7));  break;
-          case 2 :  ren->data[curr_bit>>3] |= (expl->exp->suppl.part.eval_t        << (curr_bit & 0x7));  break;
-          case 3 :  ren->data[curr_bit>>3] |= (expl->exp->suppl.part.eval_f        << (curr_bit & 0x7));  break;
-          case 4 :  ren->data[curr_bit>>3] |= (expl->exp->suppl.part.prev_called   << (curr_bit & 0x7));  break;
+      for( j=0; j<(((ESUPPL_BITS_TO_STORE % 2) == 0) ? ESUPPL_BITS_TO_STORE : (ESUPPL_BITS_TO_STORE + 1)); j++ ) {
+        switch( j ) {
+          case 0 :  ren->data[curr_bit>>3] |= (exp->suppl.part.left_changed  << (curr_bit & 0x7));  break;
+          case 1 :  ren->data[curr_bit>>3] |= (exp->suppl.part.right_changed << (curr_bit & 0x7));  break;
+          case 2 :  ren->data[curr_bit>>3] |= (exp->suppl.part.eval_t        << (curr_bit & 0x7));  break;
+          case 3 :  ren->data[curr_bit>>3] |= (exp->suppl.part.eval_f        << (curr_bit & 0x7));  break;
+          case 4 :  ren->data[curr_bit>>3] |= (exp->suppl.part.prev_called   << (curr_bit & 0x7));  break;
         }
         curr_bit++;
       }
       /* Clear supplemental bits that have been saved off */
-      expl->exp->suppl.part.left_changed  = 0;
-      expl->exp->suppl.part.right_changed = 0;
-      expl->exp->suppl.part.eval_t        = 0;
-      expl->exp->suppl.part.eval_f        = 0;
-      expl->exp->suppl.part.prev_called   = 0;
-      expl = expl->next;
+      exp->suppl.part.left_changed  = 0;
+      exp->suppl.part.right_changed = 0;
+      exp->suppl.part.eval_t        = 0;
+      exp->suppl.part.eval_f        = 0;
+      exp->suppl.part.prev_called   = 0;
     }
 
     /* If the current functional unit is a named block, store the bits in the parent functional unit */
@@ -221,22 +218,19 @@ static void reentrant_restore_data_bits(
   expression*  expr       /*!< Pointer to expression to exclude from updating */
 ) { PROFILE(REENTRANT_RESTORE_DATA_BITS);
 
-  int i;  /* Loop iterator */
-
   if( (funit->suppl.part.type == FUNIT_ATASK) || (funit->suppl.part.type == FUNIT_AFUNCTION) || (funit->suppl.part.type == FUNIT_ANAMED_BLOCK) ) {
 
-    sig_link* sigl;
-    exp_link* expl;
+    unsigned int i;
+    unsigned int j;
 
     /* Walk through each bit in the compressed data array and assign it back to its signal */
-    sigl = funit->sig_head;
-    while( sigl != NULL ) {
-      switch( sigl->sig->value->suppl.part.data_type ) {
+    for( j=0; j<funit->sig_size; j++ ) {
+      vsignal* sig = funit->sigs[j];
+      switch( sig->value->suppl.part.data_type ) {
         case VDATA_UL :
           {
-            unsigned int i;
-            for( i=0; i<sigl->sig->value->width; i++ ) {
-              ulong* entry = sigl->sig->value->value.ul[UL_DIV(i)];
+            for( i=0; i<sig->value->width; i++ ) {
+              ulong* entry = sig->value->value.ul[UL_DIV(i)];
               if( UL_MOD(i) == 0 ) {
                 entry[VTYPE_INDEX_VAL_VALL] = 0;
                 entry[VTYPE_INDEX_VAL_VALH] = 0;
@@ -246,50 +240,46 @@ static void reentrant_restore_data_bits(
               entry[VTYPE_INDEX_VAL_VALH] |= (ulong)((ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1) << UL_MOD(i);
               curr_bit++;
             }
-            sigl->sig->value->suppl.part.set = (ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1;
+            sig->value->suppl.part.set = (ren->data[curr_bit>>3] >> (curr_bit & 0x7)) & 0x1;
             curr_bit++;
           }
           break;
         case VDATA_R64 :
           {
-            uint64       real_bits = 0;
-            unsigned int i;
+            uint64 real_bits = 0;
             for( i=0; i<64; i++ ) {
               real_bits |= (uint64)ren->data[curr_bit>>3] << (i - curr_bit);
               curr_bit++;
             }
-            sigl->sig->value->value.r64->val = sys_task_bitstoreal( real_bits );
+            sig->value->value.r64->val = sys_task_bitstoreal( real_bits );
           }
           break;
         case VDATA_R32 :
           {
-            uint64       real_bits = 0;
-            unsigned int i;
+            uint64 real_bits = 0;
             for( i=0; i<32; i++ ) {
               real_bits |= (uint64)ren->data[curr_bit>>3] << (i - curr_bit);
               curr_bit++;
             }
-            sigl->sig->value->value.r32->val = (float)sys_task_bitstoreal( real_bits );
+            sig->value->value.r32->val = (float)sys_task_bitstoreal( real_bits );
           }
           break;
         default :  assert( 0 );  break;
       }
-      sigl = sigl->next;
     }
 
     /* Walk through each bit in the compressed data array and assign it back to its expression */
-    expl = funit->exp_head;
-    while( expl != NULL ) {
-      if( expl->exp == expr ) {
+    for( j=0; j<funit->exp_size; j++ ) {
+      expression* exp = funit->exps[j];
+      if( exp == expr ) {
         curr_bit += (expr->value->width * 2);
       } else {
-        if( (EXPR_OWNS_VEC( expl->exp->op ) == 1) && (EXPR_IS_STATIC( expl->exp ) == 0) ) {
-          switch( expl->exp->value->suppl.part.data_type ) {
+        if( (EXPR_OWNS_VEC( exp->op ) == 1) && (EXPR_IS_STATIC( exp ) == 0) ) {
+          switch( exp->value->suppl.part.data_type ) {
             case VDATA_UL :
               {
-                unsigned int i;
-                for( i=0; i<expl->exp->value->width; i++ ) {
-                  ulong* entry = expl->exp->value->value.ul[UL_DIV(i)];
+                for( i=0; i<exp->value->width; i++ ) {
+                  ulong* entry = exp->value->value.ul[UL_DIV(i)];
                   if( UL_MOD(i) == 0 ) {
                     entry[VTYPE_INDEX_VAL_VALL] = 0;
                     entry[VTYPE_INDEX_VAL_VALH] = 0;
@@ -303,24 +293,22 @@ static void reentrant_restore_data_bits(
               break;
             case VDATA_R64 :
               {
-                uint64       real_bits = 0;
-                unsigned int i;
+                uint64 real_bits = 0;
                 for( i=0; i<64; i++ ) {
                   real_bits |= (uint64)ren->data[curr_bit>>3] << (i - curr_bit);
                   curr_bit++;
                 }
-                expl->exp->value->value.r64->val = sys_task_bitstoreal( real_bits );
+                exp->value->value.r64->val = sys_task_bitstoreal( real_bits );
               }
               break;
             case VDATA_R32 :
               {
-                uint64       real_bits = 0;
-                unsigned int i;
+                uint64 real_bits = 0;
                 for( i=0; i<32; i++ ) {
                   real_bits |= (uint64)ren->data[curr_bit>>3] << (i - curr_bit);
                   curr_bit++;
                 }
-                expl->exp->value->value.r32->val = (float)sys_task_bitstoreal( real_bits );
+                exp->value->value.r32->val = (float)sys_task_bitstoreal( real_bits );
               }
               break;
             default :  assert( 0 );
@@ -329,15 +317,14 @@ static void reentrant_restore_data_bits(
       }
       for( i=0; i<(((ESUPPL_BITS_TO_STORE % 2) == 0) ? ESUPPL_BITS_TO_STORE : (ESUPPL_BITS_TO_STORE + 1)); i++ ) {
         switch( i ) {
-          case 0 :  expl->exp->suppl.part.left_changed  = (ren->data[curr_bit>>3] >> (curr_bit & 0x7));  break;
-          case 1 :  expl->exp->suppl.part.right_changed = (ren->data[curr_bit>>3] >> (curr_bit & 0x7));  break;
-          case 2 :  expl->exp->suppl.part.eval_t        = (ren->data[curr_bit>>3] >> (curr_bit & 0x7));  break;
-          case 3 :  expl->exp->suppl.part.eval_f        = (ren->data[curr_bit>>3] >> (curr_bit & 0x7));  break;
-          case 4 :  expl->exp->suppl.part.prev_called   = (ren->data[curr_bit>>3] >> (curr_bit & 0x7));  break;
+          case 0 :  exp->suppl.part.left_changed  = (ren->data[curr_bit>>3] >> (curr_bit & 0x7));  break;
+          case 1 :  exp->suppl.part.right_changed = (ren->data[curr_bit>>3] >> (curr_bit & 0x7));  break;
+          case 2 :  exp->suppl.part.eval_t        = (ren->data[curr_bit>>3] >> (curr_bit & 0x7));  break;
+          case 3 :  exp->suppl.part.eval_f        = (ren->data[curr_bit>>3] >> (curr_bit & 0x7));  break;
+          case 4 :  exp->suppl.part.prev_called   = (ren->data[curr_bit>>3] >> (curr_bit & 0x7));  break;
         }
         curr_bit++;
       }
-      expl = expl->next;
     }
 
     /*

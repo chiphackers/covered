@@ -1000,12 +1000,12 @@ static void rank_gather_comp_cdd_cov(
   comp_cdd_cov* comp_cov
 ) { PROFILE(RANK_GATHER_COMP_CDD_COV);
 
-  sig_link*   sigl;   /* Pointer to signal link */
-  fsm_link*   fsml;   /* Pointer to FSM link */
   funit_inst* child;  /* Pointer to current child instance */
 
   /* Don't gather information for placeholder instances */
   if( inst->funit != NULL ) {
+
+    unsigned int i;
 
     /* Gather coverage information from expressions */
     if( !funit_is_unnamed( inst->funit ) ) {
@@ -1028,17 +1028,13 @@ static void rank_gather_comp_cdd_cov(
     }
 
     /* Gather coverage information from signals */
-    sigl = inst->funit->sig_head;
-    while( sigl != NULL ) {
-      rank_gather_signal_cov( sigl->sig, comp_cov );
-      sigl = sigl->next;
+    for( i=0; i<inst->funit->sig_size; i++ ) {
+      rank_gather_signal_cov( inst->funit->sigs[i], comp_cov );
     }
 
     /* Gather coverage information from FSMs */
-    fsml = inst->funit->fsm_head;
-    while( fsml != NULL ) {
-      rank_gather_fsm_cov( fsml->table->table, comp_cov );
-      fsml = fsml->next;
+    for( i=0; i<inst->funit->fsm_size; i++ ) {
+      rank_gather_fsm_cov( inst->funit->fsms[i]->table, comp_cov );
     }
 
   }

@@ -111,18 +111,16 @@ extern bool                  cli_debug_mode;
 
 
 /*!
- Pointer to head of expression list that contains all expressions that contain static (non-changing)
+ Pointer to expression array that contains all expressions that contain static (non-changing)
  values.  These expressions will be forced to be simulated, making sure that correct coverage numbers
  for expressions containing static values is maintained.
 */
-exp_link*  static_expr_head = NULL;
+expression** static_exprs = NULL;
 
 /*!
- Pointer to tail of expression list that contains all expressions that contain static (non-changing)
- values.  These expressions will be forced to be simulated, making sure that correct coverage numbers
- for expressions containing static values is maintained.
+ Contains the number of elements in the static_exprs array.
 */
-exp_link*  static_expr_tail = NULL;
+unsigned int static_expr_size = 0;
 
 /*!
  Head of list of all allocated threads.
@@ -886,8 +884,8 @@ void sim_kill_thread_with_funit(
 */
 static void sim_add_statics() { PROFILE(SIM_ADD_STATICS);
   
-  exp_link* curr;   /* Pointer to current expression link */
-  sim_time  time;   /* Current simulation time */
+  unsigned int i;
+  sim_time     time;   /* Current simulation time */
 
   /* Initialize the time to 0 */
   time.lo    = 0;
@@ -895,14 +893,13 @@ static void sim_add_statics() { PROFILE(SIM_ADD_STATICS);
   time.full  = 0;
   time.final = FALSE;
   
-  curr = static_expr_head;
-  while( curr != NULL ) {
-    sim_expr_changed( curr->exp, &time );
-    curr = curr->next;
+  for( i=0; i<static_expr_size; i++ ) {
+    sim_expr_changed( static_exprs[i], &time );
   }
   
-  exp_link_delete_list( static_expr_head, FALSE );
-  static_expr_head = static_expr_tail = NULL;
+  exp_link_delete_list( static_exprs, static_expr_size, FALSE );
+  static_exprs     = NULL;
+  static_expr_size = 0;
 
   PROFILE_END;
   
@@ -1298,7 +1295,7 @@ void sim_dealloc() { PROFILE(SIM_DEALLOC);
   delayed_head = delayed_tail = NULL;
 
   /* Deallocate all static expressions, if there are any */
-  exp_link_delete_list( static_expr_head, FALSE );
+  exp_link_delete_list( static_exprs, static_expr_size, FALSE );
 
   /* Deallocate the non-blocking assignment queue */
   free_safe( nba_queue, (sizeof( nonblock_assign ) * nba_queue_size) );
