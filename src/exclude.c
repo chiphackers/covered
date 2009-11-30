@@ -559,16 +559,13 @@ bool exclude_is_fsm_excluded(
   char*      to_state     /*!< String form of the to_state value */
 ) { PROFILE(EXCLUDE_IS_FSM_EXCLUDED);
 
-  fsm_link* curr_fsm;     /* Pointer to current FSM structure */
-  int       found_index;  /* Index of found state transition */
+  int          found_index;  /* Index of found state transition */
+  unsigned int i = 0;
 
   /* Find the corresponding table */
-  curr_fsm = funit->fsm_head;
-  while( (curr_fsm != NULL) && (curr_fsm->table->to_state->id != expr_id) ) {
-    curr_fsm = curr_fsm->next;
-  }
+  while( (i < funit->fsm_size) && (funit->fsms[i]->to_state->id != expr_id) ) i++;
 
-  if( curr_fsm != NULL ) {
+  if( i < funit->fsm_size ) {
 
     vector* from_vec;
     vector* to_vec;
@@ -579,7 +576,7 @@ bool exclude_is_fsm_excluded(
     vector_from_string( &to_state, FALSE, &to_vec, &to_base );
 
     /* Find the arc entry and perform the exclusion assignment and coverage recalculation */
-    found_index = arc_find_arc( curr_fsm->table->table, arc_find_from_state( curr_fsm->table->table, from_vec ), arc_find_to_state( curr_fsm->table->table, to_vec ) );
+    found_index = arc_find_arc( funit->fsms[i]->table, arc_find_from_state( funit->fsms[i]->table, from_vec ), arc_find_to_state( funit->fsms[i]->table, to_vec ) );
 
     /* Deallocate vectors */
     vector_dealloc( from_vec );
@@ -589,7 +586,7 @@ bool exclude_is_fsm_excluded(
 
   PROFILE_END;
 
-  return( (curr_fsm == NULL) || (found_index == -1) || (curr_fsm->table->table->arcs[found_index]->suppl.part.excluded == 1) );
+  return( (i == funit->fsm_size) || (found_index == -1) || (funit->fsms[i]->table->arcs[found_index]->suppl.part.excluded == 1) );
 
 }
 
@@ -607,15 +604,11 @@ void exclude_set_fsm_exclude(
   /*@out@*/ statistic* stat         /*!< Pointer to statistics structure to update */
 ) { PROFILE(EXCLUDE_SET_FSM_EXCLUDE);
 
-  fsm_link* curr_fsm;
-
+  unsigned int i = 0;
   /* Find the corresponding table */
-  curr_fsm = funit->fsm_head;
-  while( (curr_fsm != NULL) && (curr_fsm->table->to_state->id != expr_id) ) {
-    curr_fsm = curr_fsm->next;
-  }
+  while( (i < funit->fsm_size) && (funit->fsms[i]->to_state->id != expr_id) ) i++;
 
-  if( curr_fsm != NULL ) {
+  if( i < funit->fsm_size ) {
 
     vector* from_vec;
     vector* to_vec;
@@ -627,18 +620,18 @@ void exclude_set_fsm_exclude(
     vector_from_string( &to_state, FALSE, &to_vec, &to_base );
 
     /* Find the arc entry and perform the exclusion assignment and coverage recalculation */
-    if( (found_index = arc_find_arc( curr_fsm->table->table, arc_find_from_state( curr_fsm->table->table, from_vec ), arc_find_to_state( curr_fsm->table->table, to_vec ) )) != -1 ) {
+    if( (found_index = arc_find_arc( funit->fsms[i]->table, arc_find_from_state( funit->fsms[i]->table, from_vec ), arc_find_to_state( funit->fsms[i]->table, to_vec ) )) != -1 ) {
 
       /* Handle the exclusion and recalculate the summary values */
-      exclude_arc_assign_and_recalc( curr_fsm->table->table, found_index, (value == 1), stat );
+      exclude_arc_assign_and_recalc( funit->fsms[i]->table, found_index, (value == 1), stat );
  
       /* Handle the exclusion reason */
       if( value == 1 ) {
         if( reason != NULL ) {
-          exclude_add_exclude_reason( 'F', (curr_fsm->table->table->id + found_index), reason, funit );
+          exclude_add_exclude_reason( 'F', (funit->fsms[i]->table->id + found_index), reason, funit );
         }
       } else {
-        exclude_remove_exclude_reason( 'F', (curr_fsm->table->table->id + found_index), funit );
+        exclude_remove_exclude_reason( 'F', (funit->fsms[i]->table->id + found_index), funit );
       }
 
     }
@@ -664,7 +657,6 @@ bool exclude_is_assert_excluded(
 
   funit_inst* inst;        /* Pointer to found functional unit instance */
   funit_inst* curr_child;  /* Pointer to current child functional instance */
-  exp_link*   expl;        /* Pointer to current expression link */
   int         ignore = 0;  /* Number of instances to ignore */
   statement*  stmt;        /* Pointer to current statement */
 
@@ -714,7 +706,6 @@ void exclude_set_assert_exclude(
 
   funit_inst* inst;        /* Pointer to found functional unit instance */
   funit_inst* curr_child;  /* Pointer to current child functional instance */
-  exp_link*   expl;        /* Pointer to current expression link */
   int         ignore = 0;  /* Number of instances to ignore */
 
   /* Find the functional unit instance that matches the description */

@@ -389,7 +389,7 @@ static expression* fsm_arg_parse_value(
           Throw 0;
         }
         curr_expr_id++;
-        exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
+        exp_link_add( expr, &(mparm->exps), &(mparm->exp_size) );
 
       }
     } else if( sscanf( *str, "%[a-zA-Z0-9_]\[%d+:%d]%n", str_val, &msb, &lsb, &chars_read ) == 3 ) {
@@ -424,7 +424,7 @@ static expression* fsm_arg_parse_value(
           Throw 0;
         }
         curr_expr_id++;
-        exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
+        exp_link_add( expr, &(mparm->exps), &(mparm->exp_size) );
 
       }
     } else if( sscanf( *str, "%[a-zA-Z0-9_]\[%d-:%d]%n", str_val, &msb, &lsb, &chars_read ) == 3 ) {
@@ -459,7 +459,7 @@ static expression* fsm_arg_parse_value(
           Throw 0;
         }
         curr_expr_id++;
-        exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
+        exp_link_add( expr, &(mparm->exps), &(mparm->exp_size) );
 
       }
     } else if( sscanf( *str, "%[a-zA-Z0-9_]\[%d]%n", str_val, &lsb, &chars_read ) == 2 ) {
@@ -481,7 +481,7 @@ static expression* fsm_arg_parse_value(
           Throw 0;
         }
         curr_expr_id++;
-        exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
+        exp_link_add( expr, &(mparm->exps), &(mparm->exp_size) );
 
       }
     } else if( sscanf( *str, "%[a-zA-Z0-9_]%n", str_val, &chars_read ) == 1 ) {
@@ -491,7 +491,7 @@ static expression* fsm_arg_parse_value(
         /* Generate parameter expression */
         expr = expression_create( NULL, NULL, EXP_OP_PARAM, FALSE, curr_expr_id, 0, 0, 0, 0, 0, FALSE );
         curr_expr_id++;
-        exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
+        exp_link_add( expr, &(mparm->exps), &(mparm->exp_size) );
 
       }
     } else {
@@ -596,7 +596,7 @@ void fsm_arg_parse_attr(
 ) { PROFILE(FSM_ARG_PARSE_ATTR);
 
   attr_param* curr;               /* Pointer to current attribute parameter in list */
-  fsm_link*   fsml      = NULL;   /* Pointer to found FSM structure */
+  fsm*        table     = NULL;   /* Pointer to found FSM structure */
   int         index     = 1;      /* Current index number in list */
   bool        ignore    = FALSE;  /* Set to TRUE if we should ignore this attribute */
   expression* in_state  = NULL;   /* Pointer to input state */
@@ -612,10 +612,10 @@ void fsm_arg_parse_attr(
       if( curr->expr != NULL ) {
         ignore = TRUE;
       } else {
-        fsml = fsm_link_find( curr->name, funit->fsm_head );
+        table = fsm_link_find( curr->name, funit->fsms, funit->fsm_size );
       }
     } else if( (index == 2) && (strcmp( curr->name, "is" ) == 0) && (curr->expr != NULL) ) {
-      if( fsml == NULL ) {
+      if( table == NULL ) {
         int slen;
         tmp = str = vector_to_string( curr->expr->value, ESUPPL_STATIC_BASE( curr->expr->suppl ), FALSE );
         slen = strlen( tmp );
@@ -639,7 +639,7 @@ void fsm_arg_parse_attr(
         Throw 0;
       }
     } else if( (index == 2) && (strcmp( curr->name, "os" ) == 0) && (curr->expr != NULL) ) {
-      if( fsml == NULL ) {
+      if( table == NULL ) {
         int slen;
         tmp = str = vector_to_string( curr->expr->value, ESUPPL_STATIC_BASE( curr->expr->suppl ), FALSE );
         slen = strlen( tmp );
@@ -651,7 +651,7 @@ void fsm_arg_parse_attr(
             Throw 0;
           } else {
             (void)fsm_var_add( funit->name, out_state, out_state, curr->name, exclude );
-            fsml = fsm_link_find( curr->name, funit->fsm_head );
+            table = fsm_link_find( curr->name, funit->fsms, funit->fsm_size );
           }
         } Catch_anonymous {
           free_safe( tmp, (slen + 1) );
@@ -667,7 +667,7 @@ void fsm_arg_parse_attr(
       }
     } else if( (index == 3) && (strcmp( curr->name, "os" ) == 0) && (out_state == NULL) &&
                (in_state != NULL) && (curr->expr != NULL) ) {
-      if( fsml == NULL ) {
+      if( table == NULL ) {
         int slen;
         tmp = str = vector_to_string( curr->expr->value, ESUPPL_STATIC_BASE( curr->expr->suppl ), FALSE );
         slen = strlen( tmp );
@@ -679,7 +679,7 @@ void fsm_arg_parse_attr(
             Throw 0;
           } else {
             (void)fsm_var_add( funit->name, in_state, out_state, curr->name, exclude );
-            fsml = fsm_link_find( curr->name, funit->fsm_head );
+            table = fsm_link_find( curr->name, funit->fsms, funit->fsm_size );
           }
         } Catch_anonymous {
           free_safe( tmp, (slen + 1) );
@@ -694,14 +694,14 @@ void fsm_arg_parse_attr(
         Throw 0;
       }
     } else if( (index > 1) && (strcmp( curr->name, "trans" ) == 0) && (curr->expr != NULL) ) {
-      if( fsml == NULL ) {
+      if( table == NULL ) {
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Attribute FSM name (%s) has not been previously created, file: %s",
                                     obf_sig( curr->name ), obf_file( funit->orig_fname ) );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         Throw 0;
       } else {
-        fsm_arg_parse_trans( curr->expr, fsml->table, funit );
+        fsm_arg_parse_trans( curr->expr, table, funit );
       }
     } else {
       unsigned int rv;

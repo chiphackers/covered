@@ -152,8 +152,8 @@
 
 
 extern char         user_msg[USER_MSG_LENGTH];
-extern exp_link*    static_expr_head;
-extern exp_link*    static_expr_tail;
+extern expression** static_exprs;
+extern unsigned int static_expr_size;
 extern db**         db_list;
 extern unsigned int curr_db;
 extern bool         debug_mode;
@@ -1345,9 +1345,9 @@ void expression_find_rhs_sigs(
  values.
 */
 static void expression_find_params(
-            expression* expr,  /*!< Pointer to expression tree to search */
-  /*@out@*/ exp_link**  head,  /*!< Pointer to head of expression list containing expressions that use parameter values */
-  /*@out@*/ exp_link**  tail   /*!< Pointer to tail of expression list containing expressions that use parameter values */
+            expression*   expr,     /*!< Pointer to expression tree to search */
+  /*@out@*/ expression*** exps,     /*!< Pointer to expression array containing expressions that use parameter values */
+  /*@out@*/ unsigned int* exp_size  /*!< Pointer to number of elements in the exps array */
 ) { PROFILE(EXPRESSION_FIND_PARAMS);
 
   if( expr != NULL ) {
@@ -1358,12 +1358,12 @@ static void expression_find_params(
         (expr->op == EXP_OP_PARAM_MBIT)     ||
         (expr->op == EXP_OP_PARAM_MBIT_POS) ||
         (expr->op == EXP_OP_PARAM_MBIT_NEG) ) {
-      exp_link_add( expr, head, tail );
+      exp_link_add( expr, exps, exp_size );
     }
 
     /* Search children */
-    expression_find_params( expr->left,  head, tail );
-    expression_find_params( expr->right, head, tail );
+    expression_find_params( expr->left,  exps, exp_size );
+    expression_find_params( expr->right, exps, exp_size );
 
   }
 
@@ -1598,7 +1598,6 @@ void expression_db_read(
   expression*  left;        /* Pointer to current expression's left expression */
   int          chars_read;  /* Number of characters scanned in from line */
   vector*      vec;         /* Holders vector value of this expression */
-  exp_link*    expl;        /* Pointer to found expression in functional unit */
 
   if( sscanf( *line, "%d %u %u %u %x %x %x %x %d %d%n", &curr_expr_id, &linenum, &ppfline, &pplline, &column, &exec_num, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 10 ) {
 
@@ -1617,25 +1616,21 @@ void expression_db_read(
       /* Find right expression */
       if( right_id == 0 ) {
         right = NULL;
-      } else if( (expl = exp_link_find( right_id, curr_funit->exp_head )) == NULL ) {
+      } else if( (right = exp_link_find( right_id, curr_funit->exps, curr_funit->exp_size )) == NULL ) {
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  root expression (%d) found before leaf expression (%d) in database file", curr_expr_id, right_id );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         Throw 0;
-      } else {
-        right = expl->exp;
       }
 
       /* Find left expression */
       if( left_id == 0 ) {
         left = NULL;
-      } else if( (expl = exp_link_find( left_id, curr_funit->exp_head )) == NULL ) {
+      } else if( (left = exp_link_find( left_id, curr_funit->exps, curr_funit->exp_size )) == NULL ) {
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  root expression (%d) found before leaf expression (%d) in database file", curr_expr_id, left_id );
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         Throw 0;
-      } else {
-        left = expl->exp;
       }
 
       /* Create new expression */
@@ -1700,14 +1695,14 @@ void expression_db_read(
 
       }
 
-      exp_link_add( expr, &(curr_funit->exp_head), &(curr_funit->exp_tail) );
+      exp_link_add( expr, &(curr_funit->exps), &(curr_funit->exp_size) );
 
       /*
        If this expression is a constant expression, force the simulator to evaluate
        this expression and all parent expressions of it.
       */
       if( eval && EXPR_IS_STATIC( expr ) && (ESUPPL_IS_LHS( suppl ) == 0) ) {
-        exp_link_add( expr, &static_expr_head, &static_expr_tail );
+        exp_link_add( expr, &static_exprs, &static_expr_size );
       }
       
     }
@@ -6293,7 +6288,6 @@ void expression_dealloc(
 ) { PROFILE(EXPRESSION_DEALLOC);
 
   int        op;        /* Temporary operation holder */
-  exp_link*  tmp_expl;  /* Temporary pointer to expression list */
   statement* tmp_stmt;  /* Temporary pointer to statement */
 
   if( expr != NULL ) {
@@ -6332,7 +6326,7 @@ void expression_dealloc(
 
         /* Remove this expression from the attached signal's expression list (if the signal has not been deallocated yet) */
         if( expr->sig != NULL ) {
-          exp_link_remove( expr, &(expr->sig->exp_head), &(expr->sig->exp_tail), FALSE );
+          exp_link_remove( expr, &(expr->sig->exps), &(expr->sig->exp_size), FALSE );
         }
 
         bind_remove( expr->id, FALSE );
@@ -6348,7 +6342,7 @@ void expression_dealloc(
         } else {
 
           /* Remove this expression from the attached signal's expression list */
-          exp_link_remove( expr, &(expr->sig->exp_head), &(expr->sig->exp_tail), FALSE );
+          exp_link_remove( expr, &(expr->sig->exps), &(expr->sig->exp_size), FALSE );
 
           /* Clear the assigned bit of the attached signal */
           if( expression_is_assigned( expr ) ) {
@@ -6357,9 +6351,9 @@ void expression_dealloc(
 
             /* If this signal must be assigned, remove all statement blocks that reference this signal */
             if( (expr->sig->suppl.part.mba == 1) && !exp_only ) {
-              tmp_expl = expr->sig->exp_head;
-              while( tmp_expl != NULL ) {
-                if( (tmp_stmt = expression_get_root_statement( tmp_expl->exp )) != NULL ) {
+              unsigned int i;
+              for( i=0; i<expr->sig->exp_size; i++ ) {
+                if( (tmp_stmt = expression_get_root_statement( expr->sig->exps[i] )) != NULL ) {
 #ifdef DEBUG_MODE
                   if( debug_mode ) {
                     print_output( "Removing statement block because a statement block is being removed that assigns an MBA", DEBUG, __FILE__, __LINE__ );
@@ -6367,7 +6361,6 @@ void expression_dealloc(
 #endif
                   stmt_blk_add_to_remove_list( tmp_stmt );
                 }
-                tmp_expl = tmp_expl->next;
               }
             }
 
@@ -6381,7 +6374,7 @@ void expression_dealloc(
 
       /* Remove our expression from its signal, if we have one */
       if( expr->sig != NULL ) {
-        exp_link_remove( expr, &(expr->sig->exp_head), &(expr->sig->exp_tail), FALSE );
+        exp_link_remove( expr, &(expr->sig->exps), &(expr->sig->exp_size), FALSE );
       }
 
     }

@@ -485,16 +485,14 @@ static void combination_reset_counted_exprs(
   func_unit* funit  /*!< Pointer to functional unit to reset */
 ) { PROFILE(COMBINATION_RESET_COUNTED_EXPRS);
 
-  exp_link*   expl;   /* Pointer to current expression list */
-  funit_link* child;  /* Pointer to current child functional unit */
+  unsigned int i;
+  funit_link*  child;  /* Pointer to current child functional unit */
 
   assert( funit != NULL );
 
   /* Reset the comb_cntd bit in all expressions for the current functional unit */
-  expl = funit->exp_head;
-  while( expl != NULL ) {
-    expl->exp->suppl.part.comb_cntd = 1;
-    expl = expl->next;
+  for( i=0; i<funit->exp_size; i++ ) {
+    funit->exps[i]->suppl.part.comb_cntd = 1;
   }
 
   /* Do the same for all children functional units that are unnamed */
@@ -2924,7 +2922,6 @@ void combination_get_expression(
   /*@out@*/ unsigned int* exclude_size   /*!< Pointer to value that will be set to indicate the number of elements in excludes */
 ) { PROFILE(COMBINATION_GET_EXPRESSION);
 
-  exp_link*    expl;              /* Pointer to found signal link */
   unsigned int tmp;               /* Temporary integer (unused) */
   unsigned int i, j;              /* Loop iterators */
   char**       tmp_ulines;
@@ -2932,29 +2929,30 @@ void combination_get_expression(
   int          start     = 0;
   unsigned int uline_max = 20;
   func_unit*   funit;
+  expression*  exp;
 
   /* Find functional unit that contains this expression */
   funit = funit_find_by_id( expr_id );
   assert( funit != NULL );
 
   /* Find the expression itself */
-  expl = exp_link_find( expr_id, funit->exp_head );
-  assert( expl != NULL );
+  exp = exp_link_find( expr_id, funit->exps, funit->exp_size );
+  assert( exp != NULL );
 
   /* Generate line of code that missed combinational coverage */
-  codegen_gen_expr( expl->exp, funit, code, code_size );
+  codegen_gen_expr( exp, funit, code, code_size );
   *uline_groups = (int*)malloc_safe( sizeof( int ) * (*code_size) );
 
   /* Generate exclude information */
   *excludes     = NULL;
   *reasons      = NULL;
   *exclude_size = 0;
-  combination_get_exclude_list( expl->exp, funit_get_curr_module( funit ), excludes, reasons, exclude_size );
+  combination_get_exclude_list( exp, funit_get_curr_module( funit ), excludes, reasons, exclude_size );
 
   Try {
 
     /* Output underlining feature for missed expressions */
-    combination_underline_tree( expl->exp, 0, &tmp_ulines, &tmp_uline_size, &tmp, expl->exp->op, (*code_size == 1), funit );
+    combination_underline_tree( exp, 0, &tmp_ulines, &tmp_uline_size, &tmp, exp->op, (*code_size == 1), funit );
   
   } Catch_anonymous {
     unsigned int i;
@@ -3031,7 +3029,6 @@ void combination_get_coverage(
 ) { PROFILE(COMBINATION_GET_COVERAGE);
 
   func_unit*  funit;  /* Pointer to found functional unit */
-  exp_link*   expl;   /* Pointer to current expression link */
   expression* exp;    /* Pointer to found expression */
 
   /* Find the functional unit that contains this expression */
@@ -3039,11 +3036,11 @@ void combination_get_coverage(
   assert( funit != NULL );
 
   /* Find statement containing this expression */
-  expl = exp_link_find( exp_id, funit->exp_head );
-  assert( expl != NULL );
+  exp = exp_link_find( exp_id, funit->exps, funit->exp_size );
+  assert( exp != NULL );
 
   /* Now find the subexpression that matches the given underline ID */
-  exp = expression_find_uline_id( expl->exp, uline_id );
+  exp = expression_find_uline_id( exp, uline_id );
   assert( exp != NULL );
 
   combination_get_missed_expr( info, info_size, exp, 0, TRUE );

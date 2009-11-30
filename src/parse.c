@@ -163,6 +163,9 @@ void parse_design(
         }
       }
 
+      /* Number the instances */
+      db_assign_inst_ids();
+
       /* Perform all signal/expression binding */
       bind_perform( FALSE, 0 );
       fsm_var_bind();

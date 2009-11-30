@@ -30,6 +30,8 @@
 funit_inst* instance_create(
              func_unit*    funit,
              char*         inst_name,
+             unsigned int  ppfline,
+             int           fcol,
              bool          name_diff,
              bool          ignore,
              bool          gend_scope,
@@ -39,6 +41,12 @@ funit_inst* instance_create(
 /*! \brief Displays the current state of the instance tree */
 void instance_display_tree(
   funit_inst* root
+);
+
+/*! \brief Assign IDs to all instances */
+void instance_assign_ids(
+  funit_inst* root,
+  int*        curr_id
 );
 
 /*! \brief Builds full hierarchy from leaf node to root. */
@@ -99,6 +107,8 @@ bool instance_parse_add(
   func_unit*    parent,
   func_unit*    child,
   char*         inst_name,
+  unsigned int  ppfline,
+  int           fcol,
   vector_width* range,
   bool          resolve,
   bool          child_gend,

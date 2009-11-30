@@ -138,89 +138,63 @@ void stmt_link_add(
 }
 
 /*!
- Creates a new exp_link element with the value specified for expr.
- Sets next pointer of element to NULL, sets the tail element to point
- to the new element and sets the tail value to the new element.
+ Adds the given expression to the expression array.
 */
 void exp_link_add(
-            expression* expr,  /*!< Expression to add to specified expression list */
-  /*@out@*/ exp_link**  head,  /*!< Pointer to head exp_link element of list */
-  /*@out@*/ exp_link**  tail   /*!< Pointer to tail exp_link element of list */
+            expression*   expr,     /*!< Expression to add to specified expression list */
+  /*@out@*/ expression*** exps,     /*!< Pointer to expression array */
+  /*@out@*/ unsigned int* exp_size  /*!< Number of elements in the array */
 ) { PROFILE(EXP_LINK_ADD);
 
-  exp_link* tmp;  /* Temporary pointer to newly created exp_link element */
-
-  tmp = (exp_link*)malloc_safe( sizeof( exp_link ) );
-
-  tmp->exp  = expr;
-  tmp->next = NULL;
-
-  if( *head == NULL ) {
-    *head = *tail = tmp;
-  } else {
-    (*tail)->next = tmp;
-    *tail         = tmp;
-  }
+  /* Allocate the array, set the expression and bump the size */
+  *exps                  = (expression**)realloc_safe( *exps, (sizeof( expression* ) * (*exp_size)), (sizeof( expression* ) * (*exp_size + 1)) );
+  (*exps)[(*exp_size)++] = expr;
 
   PROFILE_END;
 
 }
 
 /*!
- Creates a new sig_link element with the value specified for sig.
- Sets next pointer of element to NULL, sets the tail element to point
- to the new element and sets the tail value to the new element.
+ Adds the given signal to the signal array.
 */
 void sig_link_add(
-            vsignal*   sig,     /*!< Signal to add to specified signal list */
-            bool       rm_sig,  /*!< Set to TRUE if signal should be deallocated when the sig_link is deallocated */
-  /*@out@*/ sig_link** head,    /*!< Pointer to head sig_link element of list */
-  /*@out@*/ sig_link** tail     /*!< Pointer to tail sig_link element of list */
+            vsignal*      sig,             /*!< Signal to add to specified signal list */
+            bool          rm_sig,          /*!< Set to TRUE if signal should be deallocated when the sig_link is deallocated */
+  /*@out@*/ vsignal***    sigs,            /*!< Pointer to signal array */
+  /*@out@*/ unsigned int* sig_size,        /*!< Pointer to tail sig_link element of list */
+  /*@out@*/ unsigned int* sig_no_rm_index  /*!< Pointer to index into sigs array that starts the no remove list */
 ) { PROFILE(SIG_LINK_ADD);
 
-  sig_link* tmp;   /* Temporary pointer to newly created sig_link element */
+  /* Add a new elements to the array */
+  *sigs              = (vsignal**)realloc_safe( *sigs, (sizeof( vsignal* ) * (*sig_size)), (sizeof( vsignal* ) * (*sig_size + 1)) );
+  (*sigs)[*sig_size] = sig;
 
-  tmp = (sig_link*)malloc_safe( sizeof( sig_link ) );
-
-  tmp->sig    = sig;
-  tmp->rm_sig = rm_sig;
-  tmp->next   = NULL;
-
-  if( *head == NULL ) {
-    *head = *tail = tmp;
+  if( rm_sig ) {
+    if( *sig_no_rm_index == (*sig_size + 1) ) {
+      *sig_no_rm_index = *sig_size;
+    }
   } else {
-    (*tail)->next = tmp;
-    *tail         = tmp;
+    assert( *sig_no_rm_index == (*sig_size + 1) );
   }
+
+  (*sig_size)++;
 
   PROFILE_END;
 
 }
 
 /*!
- Creates a new fsm_link element with the value specified for table.
- Sets next pointer of element to NULL, sets the tail element to point
- to the new element and sets the tail value to the new element.
+ Adds the given FSM table to the FSM array.
 */
 void fsm_link_add(
-            fsm*       table,  /*!< Pointer to FSM structure to store */
-  /*@out@*/ fsm_link** head,   /*!< Pointer to head of FSM list */
-  /*@out@*/ fsm_link** tail    /*!< Pointer to tail of FSM list */
+            fsm*          table,    /*!< Pointer to FSM structure to store */
+  /*@out@*/ fsm***        fsms,     /*!< Pointer to FSM array */
+  /*@out@*/ unsigned int* fsm_size  /*!< Pointer to number of elements in array */
 ) { PROFILE(FSM_LINK_ADD);
 
-  fsm_link* tmp;  /* Temporary pointer to newly created fsm_link element */
-
-  tmp = (fsm_link*)malloc_safe( sizeof( fsm_link ) );
-
-  tmp->table = table;
-  tmp->next  = NULL;
-
-  if( *head == NULL ) {
-    *head = *tail = tmp;
-  } else {
-    (*tail)->next = tmp;
-    *tail         = tmp;
-  }
+  /* Allocate new array */
+  *fsms                  = (fsm**)realloc_safe( *fsms, (sizeof( fsm* ) * (*fsm_size)), (sizeof( fsm* ) * (*fsm_size + 1)) );
+  (*fsms)[(*fsm_size)++] = table;
 
   PROFILE_END;
 
@@ -371,17 +345,14 @@ void stmt_link_display(
  to standard output.  This function is mainly used for debugging purposes.
 */
 void exp_link_display(
-  exp_link* head  /*!< Pointer to head of exp_link list */
+  expression** exps,     /*!< Pointer to expression array */
+  unsigned int exp_size  /*!< Number of elements in the exps array */
 ) {
-
-  exp_link* curr;    /* Pointer to current expression link */
 
   printf( "Expression list:\n" );
 
-  curr = head;
-  while( curr != NULL ) {
-    printf( "  id: %d, op: %s, line: %u\n", curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line );
-    curr = curr->next;
+  for( unsigned int i=0; i<exp_size; i++ ) {
+    printf( "  id: %d, op: %s, line: %u\n", exps[i]->id, expression_string_op( exps[i]->op ), exps[i]->line );
   }
 
 }
@@ -391,17 +362,14 @@ void exp_link_display(
  to standard output.  This function is mainly used for debugging purposes.
 */
 void sig_link_display(
-  sig_link* head  /*!< Pointer to head of sig_link list */
+  vsignal**    sigs,     /*!< Pointer to signal array */
+  unsigned int sig_size  /*!< Number of elements in signal array */
 ) {
-
-  sig_link* curr;    /* Pointer to current sig_link link to display */
 
   printf( "Signal list:\n" );
 
-  curr = head;
-  while( curr != NULL ) {
-    printf( "  name: %s\n", obf_sig( curr->sig->name ) );
-    curr = curr->next;
+  for( unsigned int i=0; i<sig_size; i++ ) {
+    printf( "  name: %s\n", obf_sig( sigs[i]->name ) );
   }
 
 }
@@ -526,21 +494,19 @@ stmt_link* stmt_link_find(
  a matching expression is found, the pointer to this element is returned.  If the specified
  expression could not be matched, the value of NULL is returned.
 */
-exp_link* exp_link_find(
-  int       id,   /*!< Expression ID to find */
-  exp_link* head  /*!< Pointer to head of exp_link list to search */
+expression* exp_link_find(
+  int          id,       /*!< Expression ID to find */
+  expression** exps,     /*!< Pointer to expression array to search */
+  unsigned int exp_size  /*!< Number of elements in the expression array */
 ) { PROFILE(EXP_LINK_FIND);
 
-  exp_link* curr;   /* Expression list iterator */
+  unsigned int i = 0;
 
-  curr = head;
-  while( (curr != NULL) && (curr->exp->id != id) ) {
-    curr = curr->next;
-  }
+  while( (i < exp_size) && (exps[i]->id != id) ) i++;
 
   PROFILE_END;
 
-  return( curr );
+  return( (i == exp_size) ? NULL : exps[i] );
 
 }
 
@@ -551,21 +517,19 @@ exp_link* exp_link_find(
  a matching signal is found, the pointer to this element is returned.  If the specified
  signal could not be matched, the value of NULL is returned.
 */
-sig_link* sig_link_find(
-  const char* name,  /*!< Name of signal to find */
-  sig_link*   head   /*!< Pointer to head of sig_link list to search */
+vsignal* sig_link_find(
+  const char*  name,     /*!< Name of signal to find */
+  vsignal**    sigs,     /*!< Pointer to signal array */
+  unsigned int sig_size  /*!< Number of elements in the signal array */
 ) { PROFILE(SIG_LINK_FIND);
 
-  sig_link* curr;    /* Pointer to current sig_link link */
+  unsigned int i = 0;
 
-  curr = head;
-  while( (curr != NULL) && !scope_compare( curr->sig->name, name ) ) {
-    curr = curr->next;
-  }
+  while( (i < sig_size) && !scope_compare( sigs[i]->name, name ) ) i++;
 
   PROFILE_END;
 
-  return( curr );
+  return( (i == sig_size) ? NULL : sigs[i] );
 
 }
 
@@ -576,21 +540,19 @@ sig_link* sig_link_find(
  a matching FSM is found, the pointer to this element is returned.  If the specified
  FSM structure could not be matched, the value of NULL is returned.
 */
-fsm_link* fsm_link_find(
-  const char* name,  /*!< Name of FSM structure to find */
-  fsm_link*   head   /*!< Pointer to head of fsm_link list to search */
+fsm* fsm_link_find(
+  const char*  name,     /*!< Name of FSM structure to find */
+  fsm**        fsms,     /*!< FSM array to search */
+  unsigned int fsm_size  /*!< Number of elements in the array */
 ) { PROFILE(FSM_LINK_FIND);
 
-  fsm_link* curr;  /* Pointer to current fsm_link element */
+  unsigned int i = 0;
 
-  curr = head;
-  while( (curr != NULL) && (strcmp( curr->table->name, name ) != 0) ) {
-    curr = curr->next;
-  }
+  while( (i < fsm_size) && (strcmp( fsms[i]->name, name ) != 0) ) i++;
 
   PROFILE_END;
 
-  return( curr );
+  return( (i == fsm_size) ? NULL : fsms[i] );
 
 }
 
@@ -754,51 +716,49 @@ void str_link_remove(
  a match is found, remove it from the list and deallocate the link memory.
 */
 void exp_link_remove(
-            expression* exp,       /*!< Pointer to expression to find and remove */
-  /*@out@*/ exp_link**  head,      /*!< Pointer to head of expression list */
-  /*@out@*/ exp_link**  tail,      /*!< Pointer to tail of expression list */
-            bool        recursive  /*!< If TRUE, recursively removes expression tree and expressions */
+            expression*   exp,       /*!< Pointer to expression to find and remove */
+  /*@out@*/ expression*** exps,      /*!< Pointer to expression array */
+  /*@out@*/ unsigned int* exp_size,  /*!< Pointer to number of elements in array */
+            bool          recursive  /*!< If TRUE, recursively removes expression tree and expressions */
 ) { PROFILE(EXP_LINK_REMOVE);
 
   exp_link* curr;  /* Pointer to current expression link */
   exp_link* last;  /* Pointer to last expression link */
+
+  unsigned int i = 0;
 
   assert( exp != NULL );
 
   /* If recursive mode is set, remove children first */
   if( recursive ) {
     if( (exp->left != NULL) && EXPR_LEFT_DEALLOCABLE( exp ) ) {
-      exp_link_remove( exp->left, head, tail, recursive );
+      exp_link_remove( exp->left, exps, exp_size, recursive );
     }
     if( (exp->right != NULL) && EXPR_RIGHT_DEALLOCABLE( exp ) ) {
-      exp_link_remove( exp->right, head, tail, recursive );
+      exp_link_remove( exp->right, exps, exp_size, recursive );
     }
   }
 
-  curr = *head;
-  last = NULL;
-  while( (curr != NULL) && (curr->exp->id != exp->id) ) {
-    last = curr;
-    curr = curr->next;
-    if( curr != NULL ) {
-      assert( curr->exp != NULL );
-    }
-  }
+  while( (i < *exp_size) && ((*exps)[i]->id != exp->id) ) i++;
 
-  if( curr != NULL ) {
+  /* If the expression was found, create a new array with the expression pointer removed. */
+  if( i < exp_size ) {
 
-    if( (curr == *head) && (curr == *tail) ) {
-      *head = *tail = NULL;
-    } else if( curr == *head ) {
-      *head = curr->next;
-    } else if( curr == *tail ) {
-      last->next = NULL;
-      *tail      = last;
-    } else {
-      last->next = curr->next;
+    expression** new_exps = (expression**)malloc_safe( sizeof( expression* ) * (*exp_size - 1) );
+    unsigned int k        = 0;
+
+    for( unsigned int j=0; j<*exp_size; j++ ) {
+      if( i != j ) {
+        new_exps[k++] = (*exps)[j];
+      }
     }
 
-    free_safe( curr, sizeof( exp_link ) );
+    /* Deallocate the old expression array */
+    free_safe( *exps, (sizeof( expression* ) * (*exp_size)) );
+
+    /* Adjust the new expression array information */
+    *exps = new_exps;
+    (*exp_size)--;
 
   }
 
@@ -1010,27 +970,19 @@ void stmt_link_delete_list(
  Deletes each element of the specified list.
 */
 void exp_link_delete_list(
-  exp_link* head,    /*!< Pointer to head exp_link element of list */
-  bool      del_exp  /*!< If set to TRUE, deallocates the expression; otherwise, leaves expression alone */
+  expression** exps,      /*!< Pointer to expression array */
+  unsigned int exp_size,  /*!< Number of elements in array */
+  bool         del_exp    /*!< If set to TRUE, deallocates the expression; otherwise, leaves expression alone */
 ) { PROFILE(EXP_LINK_DELETE_LIST);
 
-  exp_link* tmp;  /* Pointer to current expression link to remove */
-  
-  while( head != NULL ) {
-
-    tmp  = head;
-    head = head->next;
-    
-    /* Deallocate expression */
-    if( del_exp ) {
-      expression_dealloc( tmp->exp, TRUE );
-      tmp->exp = NULL;
+  if( del_exp ) {
+    for( unsigned int i=0; i<exp_size; i++ ) {
+      expression_dealloc( exps[i], TRUE );
     }
-    
-    /* Deallocate exp_link element itself */
-    free_safe( tmp, sizeof( exp_link ) );
-    
   }
+ 
+  /* Deallocate the array */
+  free_safe( exps, (sizeof( expression* ) * exp_size) );
 
   PROFILE_END;
 
@@ -1040,27 +992,22 @@ void exp_link_delete_list(
  Deletes each element of the specified list.
 */
 void sig_link_delete_list(
-  sig_link* head,    /*!< Pointer to head sig_link element of list */
-  bool      del_sig  /*!< If set to TRUE, deallocates the signal; otherwise, leaves signal alone */
+  vsignal**    sigs,             /*!< Pointer to signal array */
+  unsigned int sig_size,         /*!< Number of elements in signal array */
+  unsigned int sig_no_rm_index,  /*!< Starting index of signal to not deallocate the vsignal */
+  bool         del_sig           /*!< If set to TRUE, deallocates the signal; otherwise, leaves signal alone */
 ) { PROFILE(SIG_LINK_DELETE_LIST);
 
-  sig_link* tmp;   /* Temporary pointer to current link in list */
-
-  while( head != NULL ) {
-
-    tmp  = head;
-    head = tmp->next;
-
-    /* Deallocate signal */
-    if( del_sig && tmp->rm_sig ) {
-      vsignal_dealloc( tmp->sig );
-      tmp->sig = NULL;
+  if( del_sig ) {
+    for( unsigned int i=0; i<sig_size; i++ ) {
+      if( i < sig_no_rm_index ) {
+        vsignal_dealloc( sigs[i] );
+      }
     }
-
-    /* Deallocate sig_link element itself */
-    free_safe( tmp, sizeof( sig_link ) );
-
   }
+
+  /* Deallocate the array */
+  free_safe( sigs, (sizeof( vsignal* ) * sig_size) );
 
   PROFILE_END;
 
@@ -1070,24 +1017,16 @@ void sig_link_delete_list(
  Deletes each element of the specified list.
 */
 void fsm_link_delete_list(
-  fsm_link* head  /*!< Pointer to head fsm_link element of list */
+  fsm**        fsms,     /*!< FSM array */
+  unsigned int fsm_size  /*!< Number of elements in the array */
 ) { PROFILE(FSM_LINK_DELETE_LIST);
 
-  fsm_link* tmp;  /* Temporary pointer to current link in list */
-
-  while( head != NULL ) {
-
-    tmp  = head;
-    head = tmp->next;
-
-    /* Deallocate FSM structure */
-    fsm_dealloc( tmp->table );
-    tmp->table = NULL;
-
-    /* Deallocate fsm_link element itself */
-    free_safe( tmp, sizeof( fsm_link ) );
-
+  for( unsigned int i=0; i<fsm_size; i++ ) {
+    fsm_dealloc( fsms[i] );
   }
+
+  /* Deallocate fsm array */
+  free_safe( fsms, (sizeof( fsm* ) * fsm_size) );
 
   PROFILE_END;
 

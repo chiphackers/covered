@@ -66,41 +66,43 @@ static void funit_init(
   func_unit* funit  /*!< Pointer to functional unit to initialize */
 ) { PROFILE(FUNIT_INIT);
     
-  funit->suppl.all  = 0;
+  funit->suppl.all       = 0;
   funit->suppl.part.type = FUNIT_MODULE;
-  funit->name       = NULL;
-  funit->orig_fname = NULL;
-  funit->incl_fname = NULL;
-  funit->version    = NULL;
-  funit->start_line = 0;
-  funit->end_line   = 0;
-  funit->start_col  = 0;
-  funit->stat       = NULL;
-  funit->sig_head   = NULL;
-  funit->sig_tail   = NULL;
-  funit->exp_head   = NULL;
-  funit->exp_tail   = NULL;
-  funit->first_stmt = NULL;
-  funit->stmt_head  = NULL;
-  funit->stmt_tail  = NULL;
-  funit->fsm_head   = NULL;
-  funit->fsm_tail   = NULL;
-  funit->race_head  = NULL;
-  funit->race_tail  = NULL;
-  funit->param_head = NULL;
-  funit->param_tail = NULL;
-  funit->gitem_head = NULL;
-  funit->gitem_tail = NULL;
-  funit->tf_head    = NULL;
-  funit->tf_tail    = NULL;
-  funit->tdi_head   = NULL;
-  funit->tdi_tail   = NULL;
-  funit->ei_head    = NULL;
-  funit->ei_tail    = NULL;
-  funit->er_head    = NULL;
-  funit->er_tail    = NULL;
-  funit->parent     = NULL;
-  funit->elem.thr   = NULL;
+  funit->name            = NULL;
+  funit->id              = -1;
+  funit->orig_fname      = NULL;
+  funit->incl_fname      = NULL;
+  funit->version         = NULL;
+  funit->start_line      = 0;
+  funit->end_line        = 0;
+  funit->start_col       = 0;
+  funit->stat            = NULL;
+  funit->sigs            = NULL;
+  funit->sig_size        = 0;
+  funit->sig_no_rm_index = 1;
+  funit->exps            = NULL;
+  funit->exp_size        = 0;
+  funit->first_stmt      = NULL;
+  funit->stmt_head       = NULL;
+  funit->stmt_tail       = NULL;
+  funit->fsms            = NULL;
+  funit->fsm_size        = 0;
+  funit->race_head       = NULL;
+  funit->race_tail       = NULL;
+  funit->param_head      = NULL;
+  funit->param_tail      = NULL;
+  funit->gitem_head      = NULL;
+  funit->gitem_tail      = NULL;
+  funit->tf_head         = NULL;
+  funit->tf_tail         = NULL;
+  funit->tdi_head        = NULL;
+  funit->tdi_tail        = NULL;
+  funit->ei_head         = NULL;
+  funit->ei_tail         = NULL;
+  funit->er_head         = NULL;
+  funit->er_tail         = NULL;
+  funit->parent          = NULL;
+  funit->elem.thr        = NULL;
 
   PROFILE_END;
 
@@ -222,22 +224,20 @@ int funit_get_port_count(
   func_unit* funit  /*!< Pointer to functional unit to process */
 ) { PROFILE(FUNIT_GET_PORT_COUNT);
 
-  sig_link* sigl;          /* Pointer to current signal link to examine */
-  int       port_cnt = 0;  /* Return value for this function */
+  int          port_cnt = 0;  /* Return value for this function */
+  unsigned int i;
 
   assert( funit != NULL );
 
-  sigl = funit->sig_head;
-  while( sigl != NULL ) {
-    if( (sigl->sig->suppl.part.type == SSUPPL_TYPE_INPUT_NET)  ||
-        (sigl->sig->suppl.part.type == SSUPPL_TYPE_INPUT_REG)  ||
-        (sigl->sig->suppl.part.type == SSUPPL_TYPE_OUTPUT_NET) ||
-        (sigl->sig->suppl.part.type == SSUPPL_TYPE_OUTPUT_REG) ||
-        (sigl->sig->suppl.part.type == SSUPPL_TYPE_INOUT_NET)  ||
-        (sigl->sig->suppl.part.type == SSUPPL_TYPE_INOUT_REG) ) {
+  for( i=0; i<funit->sig_size; i++ ) {
+    if( (funit->sigs[i]->suppl.part.type == SSUPPL_TYPE_INPUT_NET)  ||
+        (funit->sigs[i]->suppl.part.type == SSUPPL_TYPE_INPUT_REG)  ||
+        (funit->sigs[i]->suppl.part.type == SSUPPL_TYPE_OUTPUT_NET) ||
+        (funit->sigs[i]->suppl.part.type == SSUPPL_TYPE_OUTPUT_REG) ||
+        (funit->sigs[i]->suppl.part.type == SSUPPL_TYPE_INOUT_NET)  ||
+        (funit->sigs[i]->suppl.part.type == SSUPPL_TYPE_INOUT_REG) ) {
       port_cnt++;
     }
-    sigl = sigl->next;
   }
 
   PROFILE_END;
@@ -307,7 +307,6 @@ vsignal* funit_find_signal(
 
   vsignal*    found_sig = NULL;  /* Pointer to the found signal */
   vsignal     sig;               /* Holder for signal to search for */
-  sig_link*   sigl;              /* Pointer to signal link */
 #ifndef VPI_ONLY
   gen_item*   gi;                /* Pointer to temporary generate item */
   gen_item*   found_gi;          /* Pointer to found generate item */
@@ -317,12 +316,9 @@ vsignal* funit_find_signal(
   sig.name = name;
 
   /* Search for signal in given functional unit signal list */
-  if( (sigl = sig_link_find( name, funit->sig_head )) != NULL ) {
-
-    found_sig = sigl->sig;
+  if( (found_sig = sig_link_find( name, funit->sigs, funit->sig_size )) == NULL ) {
 
 #ifndef VPI_ONLY
-  } else {
 
     /* If it was not found, search in the functional unit generate item list */
     gi = gen_item_create_sig( &sig );
@@ -410,14 +406,12 @@ void funit_size_elements(
   bool        alloc_exprs  /*!< Allocates vector data for all expressions if set to TRUE */
 ) { PROFILE(FUNIT_SIZE_ELEMENTS);
   
-  inst_parm*  curr_iparm;       /* Pointer to current instance parameter to evaluate */
-  exp_link*   curr_exp;         /* Pointer to current expression link to evaluate */
-  fsm_link*   curr_fsm;         /* Pointer to current FSM structure to evaluate */
+  inst_parm*   curr_iparm;       /* Pointer to current instance parameter to evaluate */
 #ifndef VPI_ONLY
-  gitem_link* curr_gi;          /* Pointer to current generate item link to evaluate */
+  gitem_link*  curr_gi;          /* Pointer to current generate item link to evaluate */
 #endif
-  sig_link*   curr_sig;         /* Pointer to current signal link to evaluate */
-  bool        resolve = FALSE;  /* If set to TRUE, perform one more parameter resolution */
+  bool         resolve = FALSE;  /* If set to TRUE, perform one more parameter resolution */
+  unsigned int i;
 
   assert( funit != NULL );
   assert( inst != NULL );
@@ -429,13 +423,12 @@ void funit_size_elements(
   curr_iparm = inst->param_head;
   while( curr_iparm != NULL ) {
     if( curr_iparm->mparm == NULL ) {
-      curr_exp = curr_iparm->sig->exp_head;
-      while( curr_exp != NULL ) {
-        if( curr_exp->exp->suppl.part.gen_expr == 0 ) {
-          expression_set_value( curr_exp->exp, curr_iparm->sig, funit );
+      for( i=0; i<curr_iparm->sig->exp_size; i++ ) {
+        expression* exp = curr_iparm->sig->exps[i];
+        if( exp->suppl.part.gen_expr == 0 ) {
+          expression_set_value( exp, curr_iparm->sig, funit );
           resolve = TRUE;
         }
-        curr_exp = curr_exp->next;
       }
     }
     curr_iparm = curr_iparm->next;
@@ -470,10 +463,8 @@ void funit_size_elements(
         param_set_sig_size( curr_iparm->mparm->sig, curr_iparm );
       } else {
         /* This parameter attaches to an expression tree */
-        curr_exp = curr_iparm->mparm->exp_head;
-        while( curr_exp != NULL ) {
-          expression_set_value( curr_exp->exp, curr_iparm->sig, funit );
-          curr_exp = curr_exp->next;
+        for( i=0; i<curr_iparm->mparm->exp_size; i++ ) {
+          expression_set_value( curr_iparm->mparm->exps[i], curr_iparm->sig, funit );
         }
       }
     }
@@ -481,10 +472,8 @@ void funit_size_elements(
   }
 
   /* Traverse through all signals, calculating and creating their vector values */
-  curr_sig = funit->sig_head;
-  while( curr_sig != NULL ) {
-    vsignal_create_vec( curr_sig->sig );
-    curr_sig = curr_sig->next;
+  for( i=0; i<funit->sig_size; i++ ) {
+    vsignal_create_vec( funit->sigs[i] );
   }
 
   /*
@@ -497,19 +486,18 @@ void funit_size_elements(
    signals.  Makes the assumption that all children expressions come
    before the root expression in the list (this is currently the case).
   */
-  curr_exp = funit->exp_head;
-  while( curr_exp != NULL ) {
-    if( ESUPPL_IS_ROOT( curr_exp->exp->suppl ) ) {
+  for( i=0; i<funit->exp_size; i++ ) {
+    expression* exp = funit->exps[i];
+    if( ESUPPL_IS_ROOT( exp->suppl ) ) {
       /* Perform an entire expression resize */
-      expression_resize( curr_exp->exp, funit, TRUE, alloc_exprs );
+      expression_resize( exp, funit, TRUE, alloc_exprs );
     }
-    if( (curr_exp->exp->sig != NULL) &&
-        (curr_exp->exp->op != EXP_OP_FUNC_CALL) &&
-        (curr_exp->exp->op != EXP_OP_PASSIGN) ) {
-      expression_set_value( curr_exp->exp, curr_exp->exp->sig, funit );
-      assert( curr_exp->exp->value->value.ul != NULL );
+    if( (exp->sig != NULL) &&
+        (exp->op != EXP_OP_FUNC_CALL) &&
+        (exp->op != EXP_OP_PASSIGN) ) {
+      expression_set_value( exp, exp->sig, funit );
+      assert( exp->value->value.ul != NULL );
     }
-    curr_exp = curr_exp->next;
   }
 
 #ifndef VPI_ONLY
@@ -529,10 +517,8 @@ void funit_size_elements(
      cannot be created until the state variable size can be calculated.
      Since this has been done now, size the FSMs.
     */
-    curr_fsm = funit->fsm_head;
-    while( curr_fsm != NULL ) {
-      fsm_create_tables( curr_fsm->table );
-      curr_fsm = curr_fsm->next;
+    for( i=0; i<funit->fsm_size; i++ ) {
+      fsm_create_tables( funit->fsms[i] );
     }
 
   }
@@ -557,11 +543,8 @@ void funit_db_write(
   bool        ids_issued    /*!< Specifies if IDs have been issued prior to calling this function */
 ) { PROFILE(FUNIT_DB_WRITE);
 
-  sig_link*       curr_sig;       /* Pointer to current functional unit sig_link element */
-  exp_link*       curr_exp;       /* Pointer to current functional unit exp_link element */
   stmt_link*      curr_stmt;      /* Statement list iterator */
   inst_parm*      curr_parm;      /* Pointer to current instance parameter */
-  fsm_link*       curr_fsm;       /* Pointer to current functional unit fsm_link element */
   race_blk*       curr_race;      /* Pointer to current race condition block */
 #ifndef VPI_ONLY
   gitem_link*     curr_gi;        /* Pointer to current gitem_link element */
@@ -570,6 +553,7 @@ void funit_db_write(
   char            modname[4096];  /* Name of module */
   char            tmp[4096];      /* Temporary string holder */
   str_link*       strl;           /* Pointer to string link */
+  unsigned int    i;
 
   if( funit->suppl.part.type != FUNIT_NO_SCORE ) {
 
@@ -636,10 +620,8 @@ void funit_db_write(
     }
 
     /* Now print all expressions in functional unit */
-    curr_exp = funit->exp_head;
-    while( curr_exp != NULL ) {
-      expression_db_write( curr_exp->exp, file, (inst != NULL), ids_issued );
-      curr_exp = curr_exp->next;
+    for( i=0; i<funit->exp_size; i++ ) {
+      expression_db_write( funit->exps[i], file, (inst != NULL), ids_issued );
     }
 
 #ifndef VPI_ONLY
@@ -654,12 +636,10 @@ void funit_db_write(
 #endif
 
     /* Now print all signals in functional unit */
-    curr_sig = funit->sig_head;
-    while( curr_sig != NULL ) {
-      if( curr_sig->rm_sig ) {
-        vsignal_db_write( curr_sig->sig, file );
+    for( i=0; i<funit->sig_size; i++ ) {
+      if( i < funit->sig_no_rm_index ) {
+        vsignal_db_write( funit->sigs[i], file );
       }
-      curr_sig = curr_sig->next; 
     }
 
     /* Now print all parameters in functional unit */
@@ -703,10 +683,8 @@ void funit_db_write(
 #endif
 
     /* Now print all FSM structures in functional unit */
-    curr_fsm = funit->fsm_head;
-    while( curr_fsm != NULL ) {
-      fsm_db_write( curr_fsm->table, file, ids_issued );
-      curr_fsm = curr_fsm->next;
+    for( i=0; i<funit->fsm_size; i++ ) {
+      fsm_db_write( funit->fsms[i], file, ids_issued );
     }
 
     /* Now print all race condition block structures in functional unit (if we are a module) */
@@ -816,16 +794,14 @@ void funit_db_merge(
   bool       same   /*!< Specifies if functional unit to be merged should match existing functional unit exactly or not */
 ) { PROFILE(FUNIT_DB_MERGE);
 
-  exp_link*    curr_base_exp;     /* Pointer to current expression in base functional unit expression list */
-  sig_link*    curr_base_sig;     /* Pointer to current signal in base functional unit signal list */
   stmt_link*   curr_base_stmt;    /* Statement list link */
-  fsm_link*    curr_base_fsm;     /* Pointer to current FSM in base functional unit FSM list */
   race_blk*    curr_base_race;    /* Pointer to current race condition block in base module list  */
   char*        curr_line = NULL;  /* Pointer to current line being read from CDD */
   unsigned int curr_line_size;    /* Number of bytes allocated for curr_line */
   char*        rest_line;         /* Pointer to rest of read line */
   int          type;              /* Specifies currently read CDD type */
   int          chars_read;        /* Number of characters read from current CDD line */
+  unsigned int i;
 
   assert( base != NULL );
   assert( base->name != NULL );
@@ -861,14 +837,13 @@ void funit_db_merge(
   }
 
   /* Handle all functional unit expressions */
-  curr_base_exp = base->exp_head;
-  while( curr_base_exp != NULL ) {
+  for( i=0; i<base->exp_size; i++ ) {
     if( util_readline( file, &curr_line, &curr_line_size ) ) {
       Try {
         if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
           rest_line = curr_line + chars_read;
           if( type == DB_TYPE_EXPRESSION ) {
-            expression_db_merge( curr_base_exp->exp, &rest_line, same );
+            expression_db_merge( base->exps[i], &rest_line, same );
           } else {
             print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
             Throw 0;
@@ -885,18 +860,16 @@ void funit_db_merge(
       print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
       Throw 0;
     }
-    curr_base_exp = curr_base_exp->next;
   }
 
   /* Handle all functional unit signals */
-  curr_base_sig = base->sig_head;
-  while( curr_base_sig != NULL ) {
+  for( i=0; i<base->sig_size; i++ ) {
     if( util_readline( file, &curr_line, &curr_line_size ) ) {
       Try {
         if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
           rest_line = curr_line + chars_read;
           if( type == DB_TYPE_SIGNAL ) {
-            vsignal_db_merge( curr_base_sig->sig, &rest_line, same );
+            vsignal_db_merge( base->sigs[i], &rest_line, same );
           } else {
             print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
             Throw 0;
@@ -913,7 +886,6 @@ void funit_db_merge(
       print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
       Throw 0;
     }
-    curr_base_sig = curr_base_sig->next;
   }
 
   /* Since statements don't get merged, we will just read these lines in */
@@ -943,14 +915,13 @@ void funit_db_merge(
   }
 
   /* Handle all functional unit FSMs */
-  curr_base_fsm = base->fsm_head;
-  while( curr_base_fsm != NULL ) {
+  for( i=0; i<base->fsm_size; i++ ) {
     if( util_readline( file, &curr_line, &curr_line_size ) ) {
       Try {
         if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
           rest_line = curr_line + chars_read;
           if( type == DB_TYPE_FSM ) {
-            fsm_db_merge( curr_base_fsm->table, &rest_line );
+            fsm_db_merge( base->fsms[i], &rest_line );
           } else {
             print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
             Throw 0;
@@ -967,7 +938,6 @@ void funit_db_merge(
       print_output( "Databases being merged are incompatible.", FATAL, __FILE__, __LINE__ );
       Throw 0;
     }
-    curr_base_fsm = curr_base_fsm->next;
   }
 
   /* Since race condition blocks don't get merged, we will just read these lines in */
@@ -1014,46 +984,29 @@ void funit_merge(
   func_unit* other   /*!< Other functional unit that will be merged */
 ) { PROFILE(FUNIT_MERGE);
 
-  exp_link*       curr_base_exp;   /* Pointer to current expression in base functional unit expression list */
-  exp_link*       curr_other_exp;  /* Pointer to current expression in other functional unit expression list */
-  sig_link*       curr_base_sig;   /* Pointer to current signal in base functional unit signal list */
-  sig_link*       curr_other_sig;  /* Pointer to current signal in other functional unit signal list */
-  fsm_link*       curr_base_fsm;   /* Pointer to current FSM in base functional unit FSM list */
-  fsm_link*       curr_other_fsm;  /* Pointer to current FSM in other functional unit FSM list */
   exclude_reason* curr_other_er;
+  unsigned int    i;
 
   assert( base != NULL );
   assert( base->name != NULL );
 
   /* Handle all functional unit expressions */
-  curr_base_exp  = base->exp_head;
-  curr_other_exp = other->exp_head;
-  while( (curr_base_exp != NULL) && (curr_other_exp != NULL) ) {
-    expression_merge( curr_base_exp->exp, curr_other_exp->exp );
-    curr_base_exp  = curr_base_exp->next;
-    curr_other_exp = curr_other_exp->next;
+  assert( base->exp_size == other->exp_size );
+  for( i=0; i<base->exp_size; i++ ) {
+    expression_merge( base->exps[i], other->exps[i] );
   }
-  assert( (curr_base_exp == NULL) && (curr_other_exp == NULL) );
 
   /* Handle all functional unit signals */
-  curr_base_sig  = base->sig_head;
-  curr_other_sig = other->sig_head;
-  while( (curr_base_sig != NULL) && (curr_other_sig != NULL) ) {
-    vsignal_merge( curr_base_sig->sig, curr_other_sig->sig );
-    curr_base_sig  = curr_base_sig->next;
-    curr_other_sig = curr_other_sig->next;
+  assert( base->sig_size == other->sig_size );
+  for( i=0; i<base->sig_size; i++ ) {
+    vsignal_merge( base->sigs[i], other->sigs[i] );
   }
-  assert( (curr_base_sig == NULL) && (curr_other_exp == NULL) );
 
   /* Handle all functional unit FSMs */
-  curr_base_fsm  = base->fsm_head;
-  curr_other_fsm = other->fsm_head;
-  while( (curr_base_fsm != NULL) && (curr_other_fsm != NULL) ) {
-    fsm_merge( curr_base_fsm->table, curr_other_fsm->table );
-    curr_base_fsm  = curr_base_fsm->next;
-    curr_other_fsm = curr_other_fsm->next;
+  assert( base->fsm_size == other->fsm_size );
+  for( i=0; i<base->fsm_size; i++ ) {
+    fsm_merge( base->fsms[i], other->fsms[i] );
   }
-  assert( (curr_base_fsm == NULL) && (curr_other_fsm == NULL) );
 
   /* Handle all functional unit exclusion reasons */
   curr_other_er = other->er_head;
@@ -1111,12 +1064,12 @@ func_unit* funit_find_by_id(
   int id  /*!< Expression/statement ID to search for */
 ) { PROFILE(FUNIT_FIND_BY_ID);
 
-  funit_link* funitl;       /* Temporary pointer to functional unit link */
-  exp_link*   expl = NULL;  /* Temporary pointer to expression link */
+  funit_link* funitl;      /* Temporary pointer to functional unit link */
+  expression* exp = NULL;  /* Temporary pointer to expression link */
 
   funitl = db_list[curr_db]->funit_head;
-  while( (funitl != NULL) && (expl == NULL) ) {
-    if( (expl = exp_link_find( id, funitl->funit->exp_head )) == NULL ) {
+  while( (funitl != NULL) && (exp == NULL) ) {
+    if( (exp = exp_link_find( id, funitl->funit->exps, funitl->funit->exp_size )) == NULL ) {
       funitl = funitl->next;
     }
   }
@@ -1135,26 +1088,24 @@ bool funit_is_top_module(
   func_unit* funit  /*!< Pointer to functional unit to check */
 ) { PROFILE(FUNIT_IS_TOP_MODULE);
 
-  bool      retval = FALSE;  /* Return value for this function */
-  sig_link* sigl;            /* Pointer to current signal link */
+  bool retval = FALSE;  /* Return value for this function */
 
   assert( funit != NULL );
 
   /* Only check the signal list if we are a MODULE type */
   if( funit->suppl.part.type == FUNIT_MODULE ) {
 
-    sigl = funit->sig_head;
-    while( (sigl != NULL) &&
-           (sigl->sig->suppl.part.type != SSUPPL_TYPE_INPUT_NET)  &&
-           (sigl->sig->suppl.part.type != SSUPPL_TYPE_INPUT_REG)  &&
-           (sigl->sig->suppl.part.type != SSUPPL_TYPE_OUTPUT_NET) &&
-           (sigl->sig->suppl.part.type != SSUPPL_TYPE_OUTPUT_REG) &&
-           (sigl->sig->suppl.part.type != SSUPPL_TYPE_INOUT_NET)  &&
-           (sigl->sig->suppl.part.type != SSUPPL_TYPE_INOUT_REG) ) {
-      sigl = sigl->next;
-    }
+    unsigned int i = 0;
 
-    retval = (sigl == NULL);
+    while( (i < funit->sig_size) &&
+           (funit->sigs[i]->suppl.part.type != SSUPPL_TYPE_INPUT_NET)  &&
+           (funit->sigs[i]->suppl.part.type != SSUPPL_TYPE_INPUT_REG)  &&
+           (funit->sigs[i]->suppl.part.type != SSUPPL_TYPE_OUTPUT_NET) &&
+           (funit->sigs[i]->suppl.part.type != SSUPPL_TYPE_OUTPUT_REG) &&
+           (funit->sigs[i]->suppl.part.type != SSUPPL_TYPE_INOUT_NET)  &&
+           (funit->sigs[i]->suppl.part.type != SSUPPL_TYPE_INOUT_REG) ) i++;
+
+    retval = (i == funit->sig_size);
 
   }
 
@@ -1240,14 +1191,12 @@ bool funit_is_child_of( func_unit* parent, func_unit* child ) { PROFILE(FUNIT_IS
 */
 void funit_display_signals( func_unit* funit ) { PROFILE(FUNIT_DISPLAY_SIGNALS);
 
-  sig_link* sigl;  /* Pointer to current signal link element */
+  unsigned int i;
 
   printf( "%s => %s", get_funit_type( funit->suppl.part.type ), obf_funit( funit->name ) );
 
-  sigl = funit->sig_head;
-  while( sigl != NULL ) {
-    vsignal_display( sigl->sig );
-    sigl = sigl->next;
+  for( i=0; i<funit->sig_size; i++ ) {
+    vsignal_display( funit->sigs[i] );
   }
 
   PROFILE_END;
@@ -1262,14 +1211,12 @@ void funit_display_signals( func_unit* funit ) { PROFILE(FUNIT_DISPLAY_SIGNALS);
 */
 void funit_display_expressions( func_unit* funit ) { PROFILE(FUNIT_DISPLAY_EXPRESSIONS);
 
-  exp_link* expl;    /* Pointer to current expression link element */
+  unsigned int i;
 
   printf( "%s => %s", get_funit_type( funit->suppl.part.type ), obf_funit( funit->name ) );
 
-  expl = funit->exp_head;
-  while( expl != NULL ) {
-    expression_display( expl->exp );
-    expl = expl->next;
+  for( i=0; i<funit->exp_size; i++ ) {
+    expression_display( funit->exps[i] );
   }
 
   PROFILE_END;
@@ -1451,25 +1398,25 @@ void funit_output_dumpvars(
   const char* scope   /*!< Instance scope */
 ) { PROFILE(FUNIT_OUTPUT_DUMPVARS);
 
-  sig_link* sigl  = funit->sig_head;
-  bool      first = TRUE;
+  bool         first = TRUE;
+  unsigned int i;
 
-  while( sigl != NULL ) {
-    if( (sigl->sig->suppl.part.assigned == 0) &&
-        (sigl->sig->suppl.part.type != SSUPPL_TYPE_PARAM)      &&
-        (sigl->sig->suppl.part.type != SSUPPL_TYPE_PARAM_REAL) &&
-        (sigl->sig->suppl.part.type != SSUPPL_TYPE_ENUM)       &&
-        (sigl->sig->suppl.part.type != SSUPPL_TYPE_MEM)        &&
-        (sigl->sig->suppl.part.type != SSUPPL_TYPE_GENVAR)     &&
-        (sigl->sig->suppl.part.type != SSUPPL_TYPE_EVENT) ) {
+  for( i=0; i<funit->sig_size; i++ ) {
+    vsignal* sig = funit->sigs[i];
+    if( (sig->suppl.part.assigned == 0) &&
+        (sig->suppl.part.type != SSUPPL_TYPE_PARAM)      &&
+        (sig->suppl.part.type != SSUPPL_TYPE_PARAM_REAL) &&
+        (sig->suppl.part.type != SSUPPL_TYPE_ENUM)       &&
+        (sig->suppl.part.type != SSUPPL_TYPE_MEM)        &&
+        (sig->suppl.part.type != SSUPPL_TYPE_GENVAR)     &&
+        (sig->suppl.part.type != SSUPPL_TYPE_EVENT) ) {
       if( first ) {
         first = FALSE;
-        fprintf( vfile, "  $dumpvars( 1, %s.%s", scope, sigl->sig->name );
+        fprintf( vfile, "  $dumpvars( 1, %s.%s", scope, sig->name );
       } else {
-        fprintf( vfile, ",\n                %s.%s", scope, sigl->sig->name );
+        fprintf( vfile, ",\n                %s.%s", scope, sig->name );
       }
     }
-    sigl = sigl->next;
   } 
 
   if( !first ) {
@@ -1487,15 +1434,13 @@ bool funit_is_one_signal_assigned(
   func_unit* funit  /*!< Pointer to functional unit to check */
 ) { PROFILE(FUNIT_IS_ONE_SIGNAL_ASSIGNED);
 
-  sig_link* sigl = funit->sig_head;
+  unsigned int i = 0;
 
-  while( (sigl != NULL) && ((sigl->sig->exp_head == NULL) || !SIGNAL_ASSIGN_FROM_DUMPFILE( sigl->sig )) ) {
-    sigl = sigl->next;
-  }
+  while( (i < funit->sig_size) && ((funit->sigs[i]->exp_size == 0) || !SIGNAL_ASSIGN_FROM_DUMPFILE( funit->sigs[i] )) ) i++;
 
   PROFILE_END;
 
-  return( sigl != NULL );
+  return( i < funit->sig_size );
 
 }
 
@@ -1518,19 +1463,20 @@ static void funit_clean(
     curr_funit = funit;
 
     /* Free signal list */
-    sig_link_delete_list( funit->sig_head, TRUE );
-    funit->sig_head = NULL;
-    funit->sig_tail = NULL;
+    sig_link_delete_list( funit->sigs, funit->sig_size, funit->sig_no_rm_index, TRUE );
+    funit->sigs            = NULL;
+    funit->sig_size        = 0;
+    funit->sig_no_rm_index = 1;
 
     /* Free FSM list */
-    fsm_link_delete_list( funit->fsm_head );
-    funit->fsm_head = NULL;
-    funit->fsm_tail = NULL;
+    fsm_link_delete_list( funit->fsms, funit->fsm_size );
+    funit->fsms     = NULL;
+    funit->fsm_size = 0;
 
     /* Free expression list */
-    exp_link_delete_list( funit->exp_head, TRUE );
-    funit->exp_head = NULL;
-    funit->exp_tail = NULL;
+    exp_link_delete_list( funit->exps, funit->exp_size, TRUE );
+    funit->exps     = NULL;
+    funit->exp_size = 0;
 
     /* Free statement list */
     stmt_link_delete_list( funit->stmt_head );

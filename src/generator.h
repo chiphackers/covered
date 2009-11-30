@@ -207,5 +207,21 @@ void generator_handle_event_trigger(
 /*! \brief Removes the last token in the work buffer and holds onto it. */
 void generator_hold_last_token();
 
+/*! \brief Inserts the COVERED_INST_ID parameter into the work buffer at the current point. */
+void generator_insert_inst_id_param(
+  bool preport
+);
+
+/*! \brief Inserts the COVERED_INST_ID parameter value for an instantiation. */
+void generator_insert_inst_id_value(
+  bool only_override
+);
+
+/*! \brief Called when a new module instantiation is made in the design. */
+void generator_instance(
+  unsigned int first_line,
+  int          first_column
+);
+
 #endif
 

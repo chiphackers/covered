@@ -27,6 +27,7 @@
 #include "func_unit.h"
 #include "generator.h"
 #include "gen_item.h"
+#include "instance.h"
 #include "link.h"
 #include "ovl.h"
 #include "param.h"
@@ -144,6 +145,11 @@ bool handle_funit_as_assert = FALSE;
 static func_iter fiter;
 
 /*!
+ Pointer to the current functional unit instance.
+*/
+static funit_inst* curr_inst;
+
+/*!
  Pointer to current statement (needs to be set to NULL at the beginning of each module).
 */
 static statement* curr_stmt;
@@ -184,6 +190,11 @@ static unsigned int last_token_index;
  Look-ahead buffer that stores last parsed token.
 */
 static char lahead_buffer[4096];
+
+/*!
+ Current instance ID.
+*/
+static int curr_inst_id;
 
 
 static char* generator_gen_size(
@@ -563,6 +574,14 @@ void generator_push_funit(
 
   funit_link* tmp_head = NULL;
   funit_link* tmp_tail = NULL;
+  funit_inst* inst;
+  int         ignore   = 0;
+
+  /* Find the instance for this functional unit */
+  inst      = instance_find_by_funit( curr_inst, funit, &ignore );
+  funit->id = inst->id;
+
+  printf( "PUSHED funit: %s, %d, inst: %p\n", funit->name, funit->id, inst );
 
   /* Create a functional unit link */
   funit_link_add( funit, &tmp_head, &tmp_tail );
@@ -962,6 +981,11 @@ void generator_init_funit(
   func_unit* funit  /*!< Pointer to current functional unit */
 ) { PROFILE(GENERATOR_INIT_FUNIT);
 
+  int ignore = 0;
+
+  /* Capture the current instance */
+  curr_inst = inst_link_find_by_funit( funit, db_list[curr_db]->inst_head, &ignore );
+
   /* Deallocate the functional unit iterator */
   func_iter_dealloc( &fiter );
 
@@ -1114,7 +1138,11 @@ void generator_add_to_work_code(
           while( (ptr > work_buffer) && ((*ptr == ' ') || (*ptr == '\t') || (*ptr == '\b')) ) ptr--;
 
           /* Set the last_token index */
-          last_token_index = ptr - work_buffer;
+          if( ptr == work_buffer ) {
+            last_token_index = 0;
+          } else {
+            last_token_index = (ptr + 1) - work_buffer;
+          }
 
         }
 
@@ -1445,28 +1473,40 @@ void generator_insert_line_cov_with_stmt(
   if( (stmt != NULL) && ((info_suppl.part.scored_line && !handle_funit_as_assert) || (handle_funit_as_assert && ovl_is_coverage_point( stmt->exp ))) ) {
 
     char         str[4096];
-    char         sig[4096];
     unsigned int rv;
     str_link*    tmp_head = NULL;
     str_link*    tmp_tail = NULL;
-    char*        scope    = generator_get_relative_scope( stmt->funit ); 
 
-    if( scope[0] == '\0' ) {
-      rv = snprintf( sig, 4096, " \\covered$L%u_%u_%x ", stmt->exp->ppfline, stmt->exp->pplline, stmt->exp->col.all );
+    if( info_suppl.part.verilator ) {
+
+      printf( "stmt->funit: %s, %d\n", stmt->funit->name, stmt->funit->id );
+      rv = snprintf( str, 4096, " $c( \"covered_line( (\", COVERED_INST_ID, \" + %d), %u );\" )%c", stmt->funit->id, (stmt->exp->id - stmt->funit->exps[0]->id), (semicolon ? ';' : ',') );
+      assert( rv < 4096 );
+
     } else {
-      rv = snprintf( sig, 4096, " \\covered$L%u_%u_%x$%s ", stmt->exp->ppfline, stmt->exp->pplline, stmt->exp->col.all, scope );
+
+      char  sig[4096];
+      char* scope    = generator_get_relative_scope( stmt->funit ); 
+
+      if( scope[0] == '\0' ) {
+        rv = snprintf( sig, 4096, " \\covered$L%u_%u_%x ", stmt->exp->ppfline, stmt->exp->pplline, stmt->exp->col.all );
+      } else {
+        rv = snprintf( sig, 4096, " \\covered$L%u_%u_%x$%s ", stmt->exp->ppfline, stmt->exp->pplline, stmt->exp->col.all, scope );
+      }
+      assert( rv < 4096 );
+      free_safe( scope, (strlen( scope ) + 1) );
+
+      /* Create the register */
+      rv = snprintf( str, 4096, "reg %s;\n", sig );
+      assert( rv < 4096 );
+      generator_insert_reg( str, FALSE );
+
+      /* Prepend the line coverage assignment to the working buffer */
+      rv = snprintf( str, 4096, " %s = 1'b1%c", sig, (semicolon ? ';' : ',') );
+      assert( rv < 4096 );
+
     }
-    assert( rv < 4096 );
-    free_safe( scope, (strlen( scope ) + 1) );
 
-    /* Create the register */
-    rv = snprintf( str, 4096, "reg %s;\n", sig );
-    assert( rv < 4096 );
-    generator_insert_reg( str, FALSE );
-
-    /* Prepend the line coverage assignment to the working buffer */
-    rv = snprintf( str, 4096, " %s = 1'b1%c", sig, (semicolon ? ';' : ',') );
-    assert( rv < 4096 );
     (void)str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
     if( work_head == NULL ) {
       work_head = work_tail = tmp_head;
@@ -3368,20 +3408,21 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
 
   if( (info_suppl.part.scored_fsm == 1) && !handle_funit_as_assert && !generator_is_static_function_only( curr_funit ) ) {
 
-    fsm_link*    fsml = curr_funit->fsm_head;
-    unsigned int id   = 1;
+    unsigned int i;
 
-    while( fsml != NULL ) {
+    for( i=0; i<curr_funit->fsm_size; i++ ) {
 
-      if( fsml->table->from_state->id == fsml->table->to_state->id ) {
+      fsm* table = curr_funit->fsms[i];
+
+      if( table->from_state->id == table->to_state->id ) {
 
         int   number;
-        char* size = generator_gen_size( fsml->table->from_state, curr_funit, &number );
-        char* exp  = codegen_gen_expr_one_line( fsml->table->from_state, curr_funit, FALSE );
+        char* size = generator_gen_size( table->from_state, curr_funit, &number );
+        char* exp  = codegen_gen_expr_one_line( table->from_state, curr_funit, FALSE );
         if( number >= 0 ) {
-          fprintf( curr_ofile, "wire [%d:0] \\covered$F%u = %s;\n", (number - 1), id, exp );
+          fprintf( curr_ofile, "wire [%d:0] \\covered$F%u = %s;\n", (number - 1), (i + 1), exp );
         } else {
-          fprintf( curr_ofile, "wire [(%s)-1:0] \\covered$F%u = %s;\n", ((size != NULL) ? size : "1"), id, exp );
+          fprintf( curr_ofile, "wire [(%s)-1:0] \\covered$F%u = %s;\n", ((size != NULL) ? size : "1"), (i + 1), exp );
         }
         free_safe( size, (strlen( size ) + 1) );
         free_safe( exp, (strlen( exp ) + 1) );
@@ -3390,22 +3431,22 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
 
         int   from_number;
         int   to_number;
-        char* fsize = generator_gen_size( fsml->table->from_state, curr_funit, &from_number );
-        char* fexp  = codegen_gen_expr_one_line( fsml->table->from_state, curr_funit, FALSE );
-        char* tsize = generator_gen_size( fsml->table->to_state, curr_funit, &to_number );
-        char* texp  = codegen_gen_expr_one_line( fsml->table->to_state, curr_funit, FALSE );
+        char* fsize = generator_gen_size( table->from_state, curr_funit, &from_number );
+        char* fexp  = codegen_gen_expr_one_line( table->from_state, curr_funit, FALSE );
+        char* tsize = generator_gen_size( table->to_state, curr_funit, &to_number );
+        char* texp  = codegen_gen_expr_one_line( table->to_state, curr_funit, FALSE );
         if( from_number >= 0 ) {
           if( to_number >= 0 ) {
-            fprintf( curr_ofile, "wire [%d:0] \\covered$F%u = {%s,%s};\n", ((from_number + to_number) - 1), id, fexp, texp );
+            fprintf( curr_ofile, "wire [%d:0] \\covered$F%u = {%s,%s};\n", ((from_number + to_number) - 1), (i + 1), fexp, texp );
           } else {
-            fprintf( curr_ofile, "wire [(%d+(%s))-1:0] \\covered$F%u = {%s,%s};\n", from_number, ((tsize != NULL) ? tsize : "1"), id, fexp, texp );
+            fprintf( curr_ofile, "wire [(%d+(%s))-1:0] \\covered$F%u = {%s,%s};\n", from_number, ((tsize != NULL) ? tsize : "1"), (i + 1), fexp, texp );
           }
         } else {
           if( to_number >= 0 ) {
-            fprintf( curr_ofile, "wire [((%s)+%d)-1:0] \\covered$F%u = {%s,%s};\n", ((fsize != NULL) ? fsize : "1"), to_number, id, fexp, texp );
+            fprintf( curr_ofile, "wire [((%s)+%d)-1:0] \\covered$F%u = {%s,%s};\n", ((fsize != NULL) ? fsize : "1"), to_number, (i + 1), fexp, texp );
           } else {
             fprintf( curr_ofile, "wire [((%s)+(%s))-1:0] \\covered$F%u = {%s,%s};\n",
-                     ((fsize != NULL) ? fsize : "1"), ((tsize != NULL) ? tsize : "1"), id, fexp, texp );
+                     ((fsize != NULL) ? fsize : "1"), ((tsize != NULL) ? tsize : "1"), (i + 1), fexp, texp );
           }
         }
         free_safe( fsize, (strlen( fsize ) + 1) );
@@ -3414,9 +3455,6 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
         free_safe( texp,  (strlen( texp )  + 1) );
 
       }
-
-      fsml = fsml->next;
-      id++;
 
     }
 
@@ -3499,6 +3537,92 @@ void generator_hold_last_token() { PROFILE(GENERATOR_HOLD_LAST_TOKEN);
 #endif
 
   }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Inserts the COVERED_INST_ID parameter into the inlined code.  This functionality is only needed when
+ running in Verilator mode at the moment.
+*/
+void generator_insert_inst_id_param(
+  bool preport  /*!< Set to TRUE if the parameter is being inserted prior to the port listed */
+) { PROFILE(GENERATOR_INSERT_INST_ID_PARAM);
+
+  if( info_suppl.part.verilator ) {
+    if( !funit_top->funit->suppl.part.inst_id_added ) {
+      generator_add_cov_to_work_code( "parameter COVERED_INST_ID = 0" );
+      if( preport ) {
+        generator_add_cov_to_work_code( ", " );
+      } else {
+        generator_add_cov_to_work_code( ";" );
+        generator_add_cov_to_work_code( "\n" );
+      }
+      funit_top->funit->suppl.part.inst_id_added = 1;
+    }
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Inserts the instance ID parameter value for an instantiation.  Currently this is only valid for
+ Verilator mode.
+*/
+void generator_insert_inst_id_value(
+  bool only_override  /*!< Set to TRUE if this is the only parameter override specified for this instantiation. */
+) { PROFILE(GENERATOR_INSERT_INST_ID);
+
+  if( info_suppl.part.verilator ) {
+
+    char str[40];
+
+    generator_hold_last_token();
+
+    if( only_override ) {
+      generator_add_cov_to_work_code( " #(" );
+    }
+
+    if( curr_inst->id != curr_inst_id ) {
+      unsigned int rv = snprintf( str, 40, "(COVERED_INST_ID + %u)", (curr_inst_id - curr_inst->id) );
+      assert( rv < 40 );
+    } else {
+      strncpy( str, "COVERED_INST_ID", 40 );
+    }
+    generator_add_cov_to_work_code( str );
+
+    if( only_override ) {
+      generator_add_cov_to_work_code( ")" );
+    } else {
+      generator_add_cov_to_work_code( ", " );
+    }
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Figures out the instance ID to use for this instantiation.
+*/
+void generator_instance(
+  unsigned int first_line,   /*!< First line of instantiation */
+  int          first_column  /*!< First column of instantiation */
+) { PROFILE(GENERATOR_INSTANCE);
+
+  funit_inst* child_inst = curr_inst->child_head;
+
+  while( (child_inst != NULL) && (child_inst->suppl.gend_scope || (child_inst->ppfline != first_line) || (child_inst->fcol != first_column)) ) {
+    child_inst = child_inst->next;
+  }
+
+  assert( child_inst != NULL );
+
+  /* Set the instance_id to be used for parameter override */
+  curr_inst_id = child_inst->id;
 
   PROFILE_END;
 

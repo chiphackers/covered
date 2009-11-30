@@ -115,10 +115,11 @@ void toggle_get_stats(
  or uncovered.  When a signal is found that meets the requirements, signal is added to the signal list.
 */
 void toggle_collect(
-            func_unit*  funit,     /*!< Pointer to functional unit */
-            int         cov,       /*!< Specifies to get uncovered (0) or covered (1) signals */
-  /*@out@*/ sig_link**  sig_head,  /*!< Pointer to head of list of covered/uncovered signals */
-  /*@out@*/ sig_link**  sig_tail   /*!< Pointer to tail of list of covered/uncovered signals */
+            func_unit*    funit,           /*!< Pointer to functional unit */
+            int           cov,             /*!< Specifies to get uncovered (0) or covered (1) signals */
+  /*@out@*/ vsignal***    sigs,            /*!< Pointer to head of list of covered/uncovered signals */
+  /*@out@*/ unsigned int* sig_size         /*!< Pointer to tail of list of covered/uncovered signals */
+  /*@out@*/ unsigned int* sig_no_rm_index  /*!< Pointer to starting index to not removing signals */
 ) { PROFILE(TOGGLE_COLLECT);
 
   func_iter    fi;     /* Functional unit iterator */
@@ -149,7 +150,7 @@ void toggle_collect(
       if( ((cov == 1) && (hit01 == sig->value->width) && (hit10 == sig->value->width)) ||
           ((cov == 0) && ((hit01 < sig->value->width) || (hit10 < sig->value->width))) ) {
 
-        sig_link_add( sig, TRUE, sig_head, sig_tail );
+        sig_link_add( sig, TRUE, sigs, sig_size, sig_no_rm_index );
           
       }
 

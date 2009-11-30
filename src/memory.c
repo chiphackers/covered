@@ -499,10 +499,11 @@ void memory_get_coverage(
  in the given signal list.
 */
 void memory_collect(
-            func_unit* funit,  /*!< Pointer to functional unit */
-            int        cov,    /*!< Set to 0 to get uncovered memories or 1 to get covered memories */
-  /*@out@*/ sig_link** head,   /*!< Pointer to head of signal list containing retrieved signals */
-  /*@out@*/ sig_link** tail    /*!< Pointer to tail of signal list containing retrieved signals */
+            func_unit*    funit,           /*!< Pointer to functional unit */
+            int           cov,             /*!< Set to 0 to get uncovered memories or 1 to get covered memories */
+  /*@out@*/ vsignal***    sigs,            /*!< Pointer to signal array containing retrieved signals */
+  /*@out@*/ unsigned int* sig_size,        /*!< Pointer to tail of signal list containing retrieved signals */
+  /*@out@*/ unsigned int* sig_no_rm_index  /*!< Pointer to starting index to being removing signal */
 ) { PROFILE(MEMORY_COLLECT);
 
   func_iter    fi;             /* Functional unit iterator */
@@ -530,7 +531,7 @@ void memory_collect(
       if( ((cov == 1) && (wr_hit > 0) && (rd_hit > 0) && (hit01 == tog_total) && (hit10 == tog_total)) ||
           ((cov == 0) && ((wr_hit == 0) || (rd_hit == 0) || (hit01 < tog_total) || (hit10 < tog_total))) ) {
 
-        sig_link_add( sig, TRUE, head, tail );
+        sig_link_add( sig, TRUE, sigs, sig_size, sig_no_rm_index );
 
       }
 

@@ -51,7 +51,7 @@ void func_iter_display(
   if( fi->sigs != NULL ) {
     for( i=0; i<fi->sig_num; i++ ) {
       if( fi->sigs[i] != NULL ) {
-        printf( "  Name: %s\n", fi->sigs[i]->sig->name );
+        printf( "  Name: %s\n", fi->sigs[i][0]->name );
       }
     }
   }
@@ -195,7 +195,7 @@ static void func_iter_add_sig_links(
   func_unit*  parent;  /* Pointer to parent module of this functional unit */
 
   /* Add the pointer */
-  fi->sigs[fi->sig_num] = funit->sig_head;
+  fi->sigs[fi->sig_num] = funit->sigs;
   fi->sig_num++;
 
   /* Get the parent module */
@@ -245,7 +245,7 @@ void func_iter_init(
 
   /* Add signal lists */
   if( sigs ) {
-    fi->sigs      = (sig_link**)malloc_safe( sizeof( sig_link* ) * fi->scopes );
+    fi->sigs      = (vsignal***)malloc_safe( sizeof( vsignal** ) * fi->scopes );
     fi->sig_num   = 0;
     func_iter_add_sig_links( fi, funit, inc_all );
     fi->sig_num   = 0;
@@ -307,8 +307,8 @@ vsignal* func_iter_get_next_signal(
 
   if( fi->curr_sigl != NULL ) {
 
-    sig           = fi->curr_sigl->sig;
-    fi->curr_sigl = fi->curr_sigl->next;
+    sig            = *(fi->curr_sigl);
+    fi->curr_sigl += sizeof( vsignal** );
 
   } else {
 
@@ -317,8 +317,8 @@ vsignal* func_iter_get_next_signal(
     } while( (fi->sig_num < fi->scopes) && (fi->sigs[fi->sig_num] == NULL) );
 
     if( fi->sig_num < fi->scopes ) {
-      sig           = fi->sigs[fi->sig_num]->sig;
-      fi->curr_sigl = fi->sigs[fi->sig_num]->next;
+      sig            = *(fi->sigs[fi->sig_num]);
+      fi->curr_sigl += sizeof( vsignal** );
     } else {
       sig           = NULL;
       fi->curr_sigl = NULL;
@@ -357,7 +357,7 @@ void func_iter_dealloc(
     if( fi->sigs != NULL ) {
 
       /* Deallocate array of signals */
-      free_safe( fi->sigs, (sizeof( sig_link* ) * fi->scopes) );
+      free_safe( fi->sigs, (sizeof( vsignal** ) * fi->scopes) );
 
       fi->sigs = NULL;
 

@@ -40,10 +40,11 @@ void toggle_get_stats(
 
 /*! \brief Collects all toggle expressions that match the specified coverage indication. */
 void toggle_collect(
-            func_unit*  funit,
-            int         cov,
-  /*@out@*/ sig_link**  sig_head,
-  /*@out@*/ sig_link**  sig_tail
+            func_unit*    funit,
+            int           cov,
+  /*@out@*/ vsignal***    sigs,
+  /*@out@*/ unsigned int* sig_size,
+  /*@out@*/ unsigned int* size_no_rm_index
 );
 
 /*! \brief Gets toggle coverage information for a single signal in the specified functional unit */

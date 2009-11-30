@@ -1738,6 +1738,7 @@ union isuppl_u {
     uint32 scored_fsm    : 1;  /*!< Bit 14.   Specifies that FSM coverage was scored and is available for reporting */
     uint32 scored_assert : 1;  /*!< Bit 15.   Specifies that assertion coverage was scored and is available for reporting */
     uint32 scored_events : 1;  /*!< Bit 16.   Specifies that combinational logic event coverage was scored and is available for reporting */
+    uint32 verilator     : 1;  /*!< Bit 17.   Specifies that the CDD was generated for use with the Verilator simulator */
   } part;
 };
 
@@ -1820,13 +1821,14 @@ typedef union usuppl_u usuppl;
 union usuppl_u {
   uint8 all;                      /*!< Allows us to set all bits in the suppl field */
   struct {
-    uint8 type      : 3;          /*!< Bits 0:2.  Mask = 1.  Specifies the functional unit type (see \ref func_unit_types for legal values) */
-    uint8 etype     : 1;          /*!< Bit 3.     Mask = 0.  Set to 0 if elem should be treated as a thread pointer; set to 1 if elem should
+    uint8 type          : 3;      /*!< Bits 0:2.  Mask = 1.  Specifies the functional unit type (see \ref func_unit_types for legal values) */
+    uint8 etype         : 1;      /*!< Bit 3.     Mask = 0.  Set to 0 if elem should be treated as a thread pointer; set to 1 if elem should
                                        be treated as a thread list pointer. */
-    uint8 included  : 1;          /*!< Bit 4.     Mask = 1.  Set to 1 if the current functional unit has been included into a file via the
+    uint8 included      : 1;      /*!< Bit 4.     Mask = 1.  Set to 1 if the current functional unit has been included into a file via the
                                        `include preprocessor command */
-    uint8 staticf   : 1;          /*!< Bit 5.     Mask = 1.  Set to 1 if this functional unit is used as a static function */
-    uint8 normalf   : 1;          /*!< Bit 6.     Mask = 1.  Set to 1 if this functional unit is used as a normal function */
+    uint8 staticf       : 1;      /*!< Bit 5.     Mask = 1.  Set to 1 if this functional unit is used as a static function */
+    uint8 normalf       : 1;      /*!< Bit 6.     Mask = 1.  Set to 1 if this functional unit is used as a normal function */
+    uint8 inst_id_added : 1;      /*!< Bit 7.     Mask = 0.  Set to 1 if the instance ID parameter has been added to this functional unit */
   } part;
 };
 
@@ -1853,16 +1855,13 @@ struct fsm_s;
 struct fsm_table_arc_s;
 struct fsm_table_s;
 struct statement_s;
-struct sig_link_s;
 struct stmt_iter_s;
-struct exp_link_s;
 struct stmt_link_s;
 struct stmt_loop_link_s;
 struct statistic_s;
 struct mod_parm_s;
 struct inst_parm_s;
 struct fsm_arc_s;
-struct fsm_link_s;
 struct race_blk_s;
 struct func_unit_s;
 struct funit_link_s;
@@ -1992,19 +1991,9 @@ typedef struct fsm_table_s fsm_table;
 typedef struct statement_s statement;
 
 /*!
- Renaming signal link structure for convenience.
-*/
-typedef struct sig_link_s sig_link;
-
-/*!
  Renaming statement iterator structure for convenience.
 */
 typedef struct stmt_iter_s stmt_iter;
-
-/*!
- Renaming expression link structure for convenience.
-*/
-typedef struct exp_link_s exp_link;
 
 /*!
  Renaming statement link structure for convenience.
@@ -2035,11 +2024,6 @@ typedef struct inst_parm_s inst_parm;
  Renaming FSM arc structure for convenience.
 */
 typedef struct fsm_arc_s fsm_arc;
-
-/*!
- Renaming fsm_link structure for convenience.
-*/
-typedef struct fsm_link_s fsm_link;
 
 /*!
  Renaming race_blk structure for convenience.
@@ -2440,8 +2424,8 @@ struct vsignal_s {
   unsigned int pdim_num;             /*!< Number of packed dimensions in pdim array */
   unsigned int udim_num;             /*!< Number of unpacked dimensions in pdim array */
   dim_range*   dim;                  /*!< Unpacked/packed dimension array */
-  exp_link*    exp_head;             /*!< Head pointer to list of expressions */
-  exp_link*    exp_tail;             /*!< Tail pointer to list of expressions */
+  expression** exps;                 /*!< Expression array */
+  unsigned int exp_size;             /*!< Number of elements in the expression array */
 };
 
 /*!
@@ -2532,28 +2516,11 @@ struct statement_s {
 };
 
 /*!
- Linked list element that stores a signal.
-*/
-struct sig_link_s {
-  vsignal*  sig;                     /*!< Pointer to signal in list */
-  sig_link* next;                    /*!< Pointer to next signal link element in list */
-  bool      rm_sig;                  /*!< Set to TRUE to indicate that the signal should be removed when deallocated */
-};
-
-/*!
  Statement link iterator.
 */
 struct stmt_iter_s {
   stmt_link* curr;                   /*!< Pointer to current statement link */
   stmt_link* last;                   /*!< Two-way pointer to next/previous statement link */
-};
-
-/*!
- Expression link element.  Stores pointer to an expression.
-*/
-struct exp_link_s {
-  expression* exp;                   /*!< Pointer to expression */
-  exp_link*   next;                  /*!< Pointer to next expression element in list */
 };
 
 /*!
@@ -2629,8 +2596,8 @@ struct mod_parm_s {
   bool         is_signed;            /*!< Specifies if the module parameter was labeled as signed */
   expression*  expr;                 /*!< Expression tree containing value of parameter */
   psuppl       suppl;                /*!< Supplemental field */
-  exp_link*    exp_head;             /*!< Pointer to head of expression list for dependents */
-  exp_link*    exp_tail;             /*!< Pointer to tail of expression list for dependents */
+  expression** exps;                 /*!< Array of expressions for dependents */
+  unsigned int exp_size;             /*!< Number of elements in the expression array */
   vsignal*     sig;                  /*!< Pointer to associated signal (if one is available) */
   char*        inst_name;            /*!< Stores name of instance that will have this parameter overriden (only valid for parameter overridding) */
   mod_parm*    next;                 /*!< Pointer to next module parameter in list */
@@ -2656,14 +2623,6 @@ struct fsm_arc_s {
 };
 
 /*!
- Linked list element that stores an FSM structure.
-*/
-struct fsm_link_s {
-  fsm*      table;                   /*!< Pointer to FSM structure to store */
-  fsm_link* next;                    /*!< Pointer to next element in fsm_link list */
-};
-
-/*!
  Contains information for storing race condition information
 */
 struct race_blk_s {
@@ -2679,6 +2638,7 @@ struct race_blk_s {
 struct func_unit_s {
   usuppl          suppl;             /*!< Supplemental field */
   char*           name;              /*!< Functional unit name */
+  int             id;                /*!< Functional unit unique ID */
   char*           orig_fname;        /*!< File name where functional unit exists */
   char*           incl_fname;        /*!< File name where functional unit was included into */
   char*           version;           /*!< Version information for functional unit (if one exists) */
@@ -2688,15 +2648,16 @@ struct func_unit_s {
   int             ts_unit;           /*!< Timescale unit value */
   uint64          timescale;         /*!< Timescale for this functional unit contents */
   statistic*      stat;              /*!< Pointer to functional unit coverage statistics structure */
-  sig_link*       sig_head;          /*!< Head pointer to list of signals in this functional unit */
-  sig_link*       sig_tail;          /*!< Tail pointer to list of signals in this functional unit */
-  exp_link*       exp_head;          /*!< Head pointer to list of expressions in this functional unit */
-  exp_link*       exp_tail;          /*!< Tail pointer to list of expressions in this functional unit */
+  vsignal**       sigs;              /*!< Array of signal pointers that belong to this functional unit */
+  unsigned int    sig_size;          /*!< Number of elements in the sigs array */
+  unsigned int    sig_no_rm_index;   /*!< Index in sigs array that begins the list of signals that should not be deallocated */
+  expression**    exps;              /*!< Array of expression pointers that belong to this functional unit */
+  unsigned int    exp_size;          /*!< Number of elements in the exps array */
   statement*      first_stmt;        /*!< Pointer to first head statement in this functional unit (for tasks/functions only) */
   stmt_link*      stmt_head;         /*!< Head pointer to list of statements in this functional unit */
   stmt_link*      stmt_tail;         /*!< Tail pointer to list of statements in this functional unit */
-  fsm_link*       fsm_head;          /*!< Head pointer to list of FSMs in this functional unit */
-  fsm_link*       fsm_tail;          /*!< Tail pointer to list of FSMs in this functional unit */
+  fsm**           fsms;              /*!< Array of FSM pointers that belong to this functional unit */
+  unsigned int    fsm_size;          /*!< Number of elements in the fsms array */
   race_blk*       race_head;         /*!< Head pointer to list of race condition blocks in this functional unit if we are a module */
   race_blk*       race_tail;         /*!< Tail pointer to list of race condition blocks in this functional unit if we are a module */
   mod_parm*       param_head;        /*!< Head pointer to list of parameters in this functional unit if we are a module */
@@ -2841,6 +2802,9 @@ struct case_gitem_s {
 */
 struct funit_inst_s {
   char*         name;                /*!< Instance name of this functional unit instance */
+  int           id;                  /*!< Unique ID for this instance */
+  unsigned int  ppfline;             /*!< First line of instantiation from preprocessor */
+  int           fcol;                /*!< First column of instantiation */
   struct {
     uint8 name_diff : 1;             /*!< If set to TRUE, means that this instance name is not accurate due to merging */
     uint8 ignore    : 1;             /*!< If set to TRUE, causes this instance to not be written to the CDD file (used

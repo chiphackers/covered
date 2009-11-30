@@ -85,10 +85,11 @@ void memory_get_coverage(
 
 /*! \brief Collects all signals that are memories and match the given coverage metric for the given functional unit */
 void memory_collect(
-            func_unit* funit,
-            int        cov,
-  /*@out@*/ sig_link** head,
-  /*@out@*/ sig_link** tail
+            func_unit*    funit,
+            int           cov,
+  /*@out@*/ vsignal***    sigs,
+  /*@out@*/ unsigned int* sig_size,
+  /*@out@*/ unsigned int* sig_no_rm_index
 );
 
 /*! \brief Generates report output for line coverage. */

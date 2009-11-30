@@ -146,17 +146,6 @@ param_oride* param_oride_head = NULL;
 param_oride* param_oride_tail = NULL;
 
 /*!
- Pointer to head of signal list
-*/
-sig_link* dummy_head    = NULL;
-
-/*!
- Pointer to tail of signal list
-*/
-sig_link* dummy_tail    = NULL;
-
-
-/*!
  Specifies if the current variable list is handled by Covered or not.
 */
 bool curr_handled = TRUE;
@@ -249,7 +238,6 @@ int yydebug = 1;
   statement*      state;
   static_expr*    statexp;
   str_link*       strlink;
-  exp_link*       explink;
   case_statement* case_stmt;
   attr_param*     attr_parm;
   exp_bind*       expbind;
@@ -700,6 +688,7 @@ module
     {
       if( !parse_mode ) {
         generator_flush_all;
+        generator_insert_inst_id_param( FALSE );
         generator_push_reg_insert();
       }
     }
@@ -731,7 +720,13 @@ module_parameter_port_list_opt
         }
       }
     }
-    '(' module_parameter_port_list ')'
+    '('
+    {
+      if( !parse_mode ) {
+        generator_insert_inst_id_param( TRUE );
+      }
+    }
+    module_parameter_port_list ')'
     {
       if( parse_mode ) {
         if( !parser_check_generation( GENERATION_2001 ) ) {
@@ -3317,10 +3312,16 @@ module_item
       }
     }
   /* Handles instantiations of modules and user-defined primitives. */
-  | attribute_list_opt IDENTIFIER parameter_value_opt gate_instance_list ';'
+  | attribute_list_opt IDENTIFIER
+    {
+      if( !parse_mode ) {
+        generator_instance( @2.ppfline, @2.first_column );
+      }
+    }
+    parameter_value_opt gate_instance_list ';'
     {
       if( parse_mode ) {
-        str_link*    tmp  = $4;
+        str_link*    tmp  = $5;
         str_link*    curr = tmp;
         param_oride* po;
         if( ignore_mode == 0 ) {
@@ -3335,7 +3336,7 @@ module_item
                 }
                 free_safe( po, sizeof( param_oride ) );
               }
-              (void)db_add_instance( curr->str, $2, FUNIT_MODULE, curr->range );
+              (void)db_add_instance( curr->str, $2, FUNIT_MODULE, @2.ppfline, @2.first_column, curr->range );
               curr = curr->next;
             }
           } Catch_anonymous {
@@ -6099,6 +6100,10 @@ begin_end_block
           ignore_mode++;
         }
         generate_top_mode--;
+      } else {
+        func_unit* funit = db_get_tfn_by_position( @1.first_line, @1.first_column );
+        assert( funit != NULL );
+        generator_push_funit( funit );
       }
     }
     block_item_decls_opt statement_list
@@ -6127,6 +6132,7 @@ begin_end_block
         FREE_TEXT( $1 );
         generate_top_mode++;
       } else {
+        generator_pop_funit();
         $$ = NULL;  /* TBD */
       }
     }
@@ -7719,7 +7725,13 @@ defparam_assign
 
  /* Parameter override */
 parameter_value_opt
-  : '#' '(' { param_mode++; in_static_expr = TRUE; } expression_list { param_mode--; in_static_expr = FALSE; } ')'
+  : '#' '(' { param_mode++; in_static_expr = TRUE; } expression_list { param_mode--; in_static_expr = FALSE; }
+    {
+      if( !parse_mode ) {
+        generator_insert_inst_id_value( FALSE );
+      }
+    }
+    ')'
     {
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
@@ -7727,7 +7739,13 @@ parameter_value_opt
         }
       }
     }
-  | '#' '(' parameter_value_byname_list ')'
+  | '#' '(' parameter_value_byname_list
+    {
+      if( !parse_mode ) {
+        generator_insert_inst_id_value( FALSE );
+      }
+    }
+    ')'
   | '#' DEC_NUMBER
     {
       FREE_TEXT( $2 );
@@ -7737,6 +7755,11 @@ parameter_value_opt
       VLerror( "Syntax error in parameter value assignment list" );
     }
   |
+    {
+      if( !parse_mode ) {
+        generator_insert_inst_id_value( TRUE );
+      }
+    }
   ;
 
 parameter_value_byname_list

@@ -958,8 +958,8 @@ static void gen_item_resolve(
 
       case GI_TYPE_SIG :
         gitem_link_add( gen_item_create_sig( gi->elem.sig ), &(inst->gitem_head), &(inst->gitem_tail) );
-        if( sig_link_find( gi->elem.sig->name, inst->funit->sig_head ) == NULL ) {
-          sig_link_add( gi->elem.sig, FALSE, &(inst->funit->sig_head), &(inst->funit->sig_tail) );
+        if( sig_link_find( gi->elem.sig->name, inst->funit->sigs, inst->funit->sig_size ) == NULL ) {
+          sig_link_add( gi->elem.sig, FALSE, &(inst->funit->sigs), &(inst->funit->sig_size), &(inst->funit->sig_no_rm_index) );
         }
         gen_item_resolve( gi->next_true, inst );
         break;
@@ -1012,7 +1012,7 @@ static void gen_item_resolve(
             }
             rv = snprintf( inst_name, 4096, "%s[%d]", gi->elem.inst->name, vector_to_int( genvar->value ) );
             assert( rv < 4096 );
-            (void)instance_parse_add( &inst, inst->funit, gi->elem.inst->funit, inst_name, NULL, FALSE, TRUE, FALSE, TRUE );
+            (void)instance_parse_add( &inst, inst->funit, gi->elem.inst->funit, inst_name, gi->elem.inst->ppfline, gi->elem.inst->fcol, NULL, FALSE, TRUE, FALSE, TRUE );
             rv = snprintf( inst_name, 4096, "%s.%s[%d]", inst->name, gi->elem.inst->name, vector_to_int( genvar->value ) );
             assert( rv < 4096 );
             if( (child = instance_find_scope( inst, inst_name, TRUE )) != NULL ) {
@@ -1021,7 +1021,7 @@ static void gen_item_resolve(
           } else {
             char         inst_name[4096];
             unsigned int rv;
-            (void)instance_parse_add( &inst, inst->funit, gi->elem.inst->funit, gi->elem.inst->name, NULL, FALSE, TRUE, FALSE, TRUE );
+            (void)instance_parse_add( &inst, inst->funit, gi->elem.inst->funit, gi->elem.inst->name, gi->elem.inst->ppfline, gi->elem.inst->fcol, NULL, FALSE, TRUE, FALSE, TRUE );
             rv = snprintf( inst_name, 4096, "%s.%s", inst->name, gi->elem.inst->name );
             assert( rv < 4096 );
             child = instance_find_scope( inst, inst_name, TRUE );

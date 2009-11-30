@@ -49,6 +49,9 @@ bool db_read(
   int         read_mode
 );
 
+/*! \brief Assigns instance IDs to all non-generated instances. */
+void db_assign_inst_ids();
+
 /*! \brief Merges the current instance trees */
 void db_merge_instance_trees();
 
@@ -115,6 +118,8 @@ func_unit* db_add_instance(
   char*         scope,
   char*         name,
   int           type,
+  unsigned int  ppfline,
+  int           fcol,
   vector_width* range
 );
 

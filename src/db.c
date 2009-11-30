@@ -574,7 +574,7 @@ bool db_read(
                   /* Attempt to add it to the last instance tree */
                   if( (db_list[curr_db]->inst_tail == NULL) ||
                       !instance_read_add( &(db_list[curr_db]->inst_tail->inst), parent_scope, curr_funit, back ) ) {
-                    (void)inst_link_add( instance_create( curr_funit, funit_scope, inst_name_diff, FALSE, FALSE, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
+                    (void)inst_link_add( instance_create( curr_funit, funit_scope, 0, 0, inst_name_diff, FALSE, FALSE, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
                   }
 
                 }
@@ -704,7 +704,7 @@ bool db_read(
       /* Attempt to add it to the last instance tree */
       if( (db_list[curr_db]->inst_tail == NULL) ||
           !instance_read_add( &(db_list[curr_db]->inst_tail->inst), parent_scope, curr_funit, back ) ) {
-        (void)inst_link_add( instance_create( curr_funit, funit_scope, inst_name_diff, FALSE, FALSE, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
+        (void)inst_link_add( instance_create( curr_funit, funit_scope, 0, 0, inst_name_diff, FALSE, FALSE, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
       }
 
     }
@@ -735,6 +735,25 @@ bool db_read(
   PROFILE_END;
 
   return( !stop_reading );
+
+}
+
+/*! \brief Assigns instance IDs to all non-generated instances. */
+void db_assign_inst_ids() { PROFILE(DB_ASSIGN_INST_IDS);
+
+  inst_link* instl   = db_list[curr_db]->inst_head;
+  int        curr_id = 0;
+
+  inst_link_display( db_list[curr_db]->inst_head );
+
+  while( instl != NULL ) {
+    instance_assign_ids( instl->inst, &curr_id );
+    instl = instl->next;
+  }
+
+  inst_link_display( db_list[curr_db]->inst_head );
+
+  PROFILE_END;
 
 }
 
@@ -1115,10 +1134,12 @@ void db_output_dumpvars(
  Add functional unit node to tree if there are no problems in doing so.
 */
 func_unit* db_add_instance(
-  char*         scope,  /*!< Name of functional unit instance being added */
-  char*         name,   /*!< Name of functional unit being instantiated */
-  int           type,   /*!< Type of functional unit being instantiated */
-  vector_width* range   /*!< Optional range (used for arrays of instances) */
+  char*         scope,    /*!< Name of functional unit instance being added */
+  char*         name,     /*!< Name of functional unit being instantiated */
+  int           type,     /*!< Type of functional unit being instantiated */
+  unsigned int  ppfline,  /*!< First line of instantiation from preprocessor */
+  int           fcol,     /*!< First column of instantiation */
+  vector_width* range     /*!< Optional range (used for arrays of instances) */
 ) { PROFILE(DB_ADD_INSTANCE);
 
   func_unit*  funit = NULL;      /* Pointer to functional unit */
@@ -1166,13 +1187,13 @@ func_unit* db_add_instance(
       Throw 0;
     }
 
-    if( (last_gi == NULL) || (last_gi->suppl.part.type != GI_TYPE_INST) || !instance_parse_add( &last_gi->elem.inst, curr_funit, found_funit_link->funit, scope, range, FALSE, TRUE, FALSE, FALSE ) ) {
+    if( (last_gi == NULL) || (last_gi->suppl.part.type != GI_TYPE_INST) || !instance_parse_add( &last_gi->elem.inst, curr_funit, found_funit_link->funit, scope, ppfline, fcol, range, FALSE, TRUE, FALSE, FALSE ) ) {
       inst_link* instl = db_list[curr_db]->inst_head;
-      while( (instl != NULL) && !instance_parse_add( &instl->inst, curr_funit, found_funit_link->funit, scope, range, FALSE, FALSE, FALSE, FALSE ) ) {
+      while( (instl != NULL) && !instance_parse_add( &instl->inst, curr_funit, found_funit_link->funit, scope, ppfline, fcol, range, FALSE, FALSE, FALSE, FALSE ) ) {
         instl = instl->next;
       }
       if( instl == NULL ) {
-        (void)inst_link_add( instance_create( found_funit_link->funit, scope, FALSE, FALSE, FALSE, range ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
+        (void)inst_link_add( instance_create( found_funit_link->funit, scope, ppfline, fcol, FALSE, FALSE, FALSE, range ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
       }
     }
 
@@ -1187,7 +1208,7 @@ func_unit* db_add_instance(
 
     /* If we are currently within a generate block, create a generate item for this instance to resolve it later */
     if( generate_top_mode > 0 ) {
-      last_gi = gen_item_create_inst( instance_create( funit, scope, FALSE, FALSE, FALSE, range ) );
+      last_gi = gen_item_create_inst( instance_create( funit, scope, ppfline, fcol, FALSE, FALSE, FALSE, range ) );
       if( curr_gi_block != NULL ) {
         db_gen_item_connect( curr_gi_block, last_gi );
       } else {
@@ -1198,11 +1219,11 @@ func_unit* db_add_instance(
     /* Add the instance to the instance tree in the proper place */
     {
       inst_link* instl = db_list[curr_db]->inst_head;
-      while( (instl != NULL) && !instance_parse_add( &instl->inst, curr_funit, funit, scope, range, FALSE, FALSE, (generate_top_mode > 0), (generate_expr_mode > 0) ) ) {
+      while( (instl != NULL) && !instance_parse_add( &instl->inst, curr_funit, funit, scope, ppfline, fcol, range, FALSE, FALSE, (generate_top_mode > 0), (generate_expr_mode > 0) ) ) {
         instl = instl->next;
       }
       if( instl == NULL ) {
-        (void)inst_link_add( instance_create( funit, scope, FALSE, (generate_top_mode > 0), (generate_expr_mode > 0), range ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
+        (void)inst_link_add( instance_create( funit, scope, ppfline, fcol, FALSE, (generate_top_mode > 0), (generate_expr_mode > 0), range ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
       }
     }
 
@@ -1330,7 +1351,7 @@ bool db_add_function_task_namedblock(
   Try {
 
     /* Add this as an instance so we can get scope */
-    if( (tf = db_add_instance( name, full_name, type, NULL )) != NULL ) {
+    if( (tf = db_add_instance( name, full_name, type, start_line, start_column, NULL )) != NULL ) {
 
       /* Get parent */
       parent = funit_get_curr_module( curr_funit );
@@ -1572,10 +1593,10 @@ void db_add_signal(
   bool       handled     /*!< Specifies if this signal is handled by Covered or not */
 ) { PROFILE(DB_ADD_SIGNAL);
 
-  vsignal*     sig = NULL;  /* Container for newly created signal */
-  sig_link*    sigl;        /* Pointer to found signal link */
-  unsigned int i;           /* Loop iterator */
-  int          j   = 0;     /* Loop iterator */
+  vsignal*     sig   = NULL;  /* Container for newly created signal */
+  unsigned int i;
+  int          j     = 0;
+  bool         found = TRUE;
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
@@ -1586,7 +1607,7 @@ void db_add_signal(
 #endif
 
   /* Add signal to current module's signal list if it does not already exist */
-  if( (sigl = sig_link_find( name, curr_funit->sig_head )) == NULL ) {
+  if( (sig = sig_link_find( name, curr_funit->sigs, curr_funit->sig_size )) == NULL ) {
 
     /* Create the signal */
     if( (type == SSUPPL_TYPE_GENVAR) || (type == SSUPPL_TYPE_DECL_SREAL) ) {
@@ -1600,11 +1621,17 @@ void db_add_signal(
       sig = vsignal_create( name, type, 1, line, col );
     }
 
-  /* If the signal has currently existed, check to see if the signal is unsized, and, if so, size it now */
-  } else if( sigl->sig->suppl.part.implicit_size ) {
+    /* Specify that this signal was not originally found */
+    found = FALSE;
 
-    sig = sigl->sig;
+  /* If the signal has currently existed, check to see if the signal is unsized, and, if so, size it now */
+  } else if( sig->suppl.part.implicit_size ) {
+
     sig->suppl.part.implicit_size = 0;
+
+  } else {
+
+    sig = NULL;
 
   }
 
@@ -1662,7 +1689,7 @@ void db_add_signal(
   }
 
   /* Only do the following if the signal was not previously found */
-  if( sigl == NULL ) {
+  if( !found ) {
 
     /* Add the signal to either the functional unit or a generate item */
     if( (generate_top_mode > 0) && (type != SSUPPL_TYPE_GENVAR) ) {
@@ -1674,7 +1701,7 @@ void db_add_signal(
       }
     } else {
       /* Add signal to current module's signal list */
-      sig_link_add( sig, TRUE, &(curr_funit->sig_head), &(curr_funit->sig_tail) );
+      sig_link_add( sig, TRUE, &(curr_funit->sigs), &(curr_funit->sig_size), &(curr_funit->sig_no_rm_index) );
     }
 
     /* Indicate if signal must be assigned by simulated results or not */
@@ -1969,18 +1996,9 @@ gen_item* db_get_curr_gen_block() { PROFILE(DB_GET_CURR_GEN_BLOCK);
 */
 int db_curr_signal_count() { PROFILE(DB_CURR_SIGNAL_COUNT);
 
-  int       sig_cnt = 0;  /* Holds number of signals in the current functional unit */
-  sig_link* sigl;         /* Pointer to current signal link */
-
-  sigl = curr_funit->sig_head;
-  while( sigl != NULL ) {
-    sig_cnt++;
-    sigl = sigl->next;
-  }
-
   PROFILE_END;
 
-  return( sig_cnt );
+  return( curr_funit->sig_size );
 
 }
 
@@ -2279,7 +2297,7 @@ void db_add_expression(
       db_add_expression( root->left );
 
       /* Now add this expression to the list. */
-      exp_link_add( root, &(curr_funit->exp_head), &(curr_funit->exp_tail) );
+      exp_link_add( root, &(curr_funit->exps), &(curr_funit->exp_size) );
 
     }
 
@@ -2582,7 +2600,7 @@ void db_remove_statement_from_current_funit(
     }
 
     /* Remove expression from current module expression list and delete expressions */
-    exp_link_remove( stmt->exp, &(curr_funit->exp_head), &(curr_funit->exp_tail), TRUE );
+    exp_link_remove( stmt->exp, &(curr_funit->exps), &(curr_funit->exp_size), TRUE );
 
     /* Remove this statement link from the current module's stmt_link list */
     stmt_link_unlink( stmt, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
@@ -3110,7 +3128,6 @@ void db_assign_symbol(
           unsigned int lline;
           unsigned int col;
           char         scope[4096];
-          exp_link*    expl;
           funit_inst*  inst = curr_inst;
 
           /* Extract the line, first column and funit scope information from name */
@@ -3140,40 +3157,31 @@ void db_assign_symbol(
 
           if( inst != NULL ) {
 
+            unsigned int i = 0;
             /* Search the matching expression */
-            expl = inst->funit->exp_head;
-            while( (expl != NULL) &&
-                   ((expl->exp->ppfline != fline) || (expl->exp->col.all != col) || (expl->exp->pplline != lline) || !ESUPPL_IS_ROOT( expl->exp->suppl ) || (expl->exp->op == EXP_OP_FORK)) ) {
-              expl = expl->next;
-            }
+            while( (i < inst->funit->exp_size) &&
+                   ((inst->funit->exps[i]->ppfline != fline)       ||
+                    (inst->funit->exps[i]->col.all != col)         ||
+                    (inst->funit->exps[i]->pplline != lline)       ||
+                    !ESUPPL_IS_ROOT( inst->funit->exps[i]->suppl ) ||
+                    (inst->funit->exps[i]->op == EXP_OP_FORK)) ) i++;
   
-            assert( expl != NULL );
-            exp = expl->exp;
+            assert( i < inst->funit->exp_size );
 
             /* Add the expression to the symtable */
-            symtable_add_expression( symbol, exp, type );
+            symtable_add_expression( symbol, inst->funit->exps[i], type );
 
           }
 
         } else if( type == 'F' ) {
 
-          fsm_link*    fsml;
           unsigned int id;
-          unsigned int count = 1;
 
           rv = sscanf( (name + (index + 1)), "%u", &id );
           assert( rv == 1 );
 
-          /* Find the matching FSM table */
-          fsml = curr_inst->funit->fsm_head;
-          while( (fsml != NULL) && (count != id ) ) {
-            fsml = fsml->next;
-            count++;
-          }
-          assert( fsml != NULL );
-
           /* Add the FSM table to the symtable */
-          symtable_add_fsm( symbol, fsml->table, msb, lsb );
+          symtable_add_fsm( symbol, curr_inst->funit->fsms[id], msb, lsb );
 
         } else if( (type == 'w') || (type == 'W') || (type == 'r') || (type == 'R') ) {
 
@@ -3182,7 +3190,6 @@ void db_assign_symbol(
           unsigned int col;
           char         scope[4096];
           char         mname[4096];
-          exp_link*    expl;
           funit_inst*  inst = curr_inst;
 
           if( sscanf( (name + (index + 1)), "%u_%u_%x$%[^$]$%s", &fline, &lline, &col, mname, scope ) == 5 ) {
@@ -3211,18 +3218,18 @@ void db_assign_symbol(
 
           if( inst != NULL ) {
 
-            /* Search the matching expression */
-            expl = inst->funit->exp_head;
-            while( (expl != NULL) && 
-                   ((expl->exp->ppfline != fline) || (expl->exp->col.all != col) || (expl->exp->pplline != lline)) ) {
-              expl = expl->next;
-            }
+            unsigned int i = 0;
 
-            assert( expl != NULL );
-            exp = expl->exp;
+            /* Search the matching expression */
+            while( (i < inst->funit->exp_size) && 
+                   ((inst->funit->exps[i]->ppfline != fline) ||
+                    (inst->funit->exps[i]->col.all != col)   ||
+                    (inst->funit->exps[i]->pplline != lline)) ) i++;
+
+            assert( i < inst->funit->exp_size );
 
             /* Add the expression to the symtable */
-            symtable_add_memory( symbol, exp, type, msb );
+            symtable_add_memory( symbol, inst->funit->exps[i], type, msb );
 
           }
 
@@ -3232,7 +3239,6 @@ void db_assign_symbol(
           unsigned int lline;
           unsigned int col;
           char         scope[4096];
-          exp_link*    expl;
           funit_inst*  inst = curr_inst;
 
           /* Extract the line and column (and possibly instance) information */
@@ -3262,15 +3268,17 @@ void db_assign_symbol(
 
           if( inst != NULL ) {
 
-            /* Search the matching expression */
-            expl = inst->funit->exp_head;
-            while( (expl != NULL) &&
-                   ((expl->exp->ppfline != fline) || (expl->exp->col.all != col) || (expl->exp->pplline != lline) || (expl->exp->op == EXP_OP_FORK)) ) {
-              expl = expl->next;
-            }
+            unsigned int i = 0;
 
-            assert( expl != NULL );
-            exp = expl->exp;
+            /* Search the matching expression */
+            while( (i < inst->funit->exp_size) &&
+                   ((inst->funit->exps[i]->ppfline != fline) ||
+                    (inst->funit->exps[i]->col.all != col)   ||
+                    (inst->funit->exps[i]->pplline != lline) ||
+                    (inst->funit->exps[i]->op == EXP_OP_FORK)) ) i++;
+
+            assert( i < inst->funit->exp_size );
+            exp = inst->funit->exps[i];
 
             /* If the found expression's parent is an AEDGE, use that expression instead */
             if( (ESUPPL_IS_ROOT( exp->suppl ) == 0) && (exp->parent->expr->op == EXP_OP_AEDGE) ) {
@@ -3288,7 +3296,6 @@ void db_assign_symbol(
         
     } else if( info_suppl.part.scored_toggle == 1 ) {
 
-      sig_link*  sigl;
       vsignal*   sig;
       func_unit* found_funit;
 
@@ -3304,13 +3311,8 @@ void db_assign_symbol(
       }
 
       /* Find the signal that matches the specified signal name */
-      if( ((sigl = sig_link_find( name, curr_instance->funit->sig_head )) != NULL) ||
+      if( ((sig = sig_link_find( name, curr_instance->funit->sigs, curr_instance->funit->sig_size )) != NULL) ||
           scope_find_signal( name, curr_instance->funit, &sig, &found_funit, 0 ) ) {
-
-        /* If the signal exists in the current scope, assign the signal pointer to our temporary pointer */
-        if( sigl != NULL ) {
-          sig = sigl->sig;
-        }
 
         /* Only add the symbol if we are not going to generate this value ourselves */
         if( SIGNAL_ASSIGN_FROM_DUMPFILE( sig ) ) {

@@ -146,7 +146,7 @@ fsm_var* fsm_var_add(
       }
       in_state->table  = table;
       out_state->table = table;
-      fsm_link_add( table, &(funitl->funit->fsm_head), &(funitl->funit->fsm_tail) );
+      fsm_link_add( table, &(funitl->funit->fsms), &(funitl->funit->fsm_size) );
     } else {
       assert( funitl != NULL );
     }
@@ -231,7 +231,7 @@ static void fsm_var_add_expr(
 
   if( expr != NULL ) {
 
-    if( exp_link_find( expr->id, funit->exp_head ) == NULL ) {
+    if( exp_link_find( expr->id, funit->exps, funit->exp_size ) == NULL ) {
 
       /* Set the global curr_funit to the expression's functional unit */
       curr_funit = funit;
@@ -241,7 +241,7 @@ static void fsm_var_add_expr(
       db_add_expression( expr->left );
 
       /* Now add this expression to the list. */
-      exp_link_add( expr, &(funit->exp_head), &(funit->exp_tail) );
+      exp_link_add( expr, &(funit->exps), &(funit->exp_size) );
 
       /* Now clear the curr_funit */
       curr_funit = NULL;
@@ -294,7 +294,7 @@ static bool fsm_var_bind_stmt(
       fv->table       = fsm_create( fv->ivar, fv->ovar, fv->exclude );
       fv->ivar->table = fv->table;
       fv->ovar->table = fv->table;
-      fsm_link_add( fv->table, &(funitl->funit->fsm_head), &(funitl->funit->fsm_tail) );
+      fsm_link_add( fv->table, &(funitl->funit->fsms), &(funitl->funit->fsm_size) );
       fsm_var_remove( fv );
     }
 

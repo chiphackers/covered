@@ -251,6 +251,7 @@ static void score_usage() {
   printf( "                                               c=combinational logic, f=FSM, a=assertions.  Default is ltmecfa.\n" );
   printf( "      -inline-comb-depth <value>             Specifies the depth in an expression tree that combinational logic coverage will be scored for.\n" );
   printf( "                                               By default, combinational logic depth is infinite.\n" );
+  printf( "      -inline-verilator                      If you are generating inlined coverage to be simulated with Verilator, this option is required.\n" );
   printf( "\n" );
   printf( "   Race Condition Options:\n" );
   printf( "\n" );
@@ -615,6 +616,10 @@ static bool score_parse_args(
       } else {
         Throw 0;
       }
+
+    } else if( strncmp( "-inline-verilator", argv[i], 17 ) == 0 ) {
+
+      info_suppl.part.verilator = 1;
 
     } else if( strncmp( "-inline", argv[i], 7 ) == 0 ) {
 

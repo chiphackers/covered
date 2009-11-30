@@ -79,14 +79,14 @@ static void instance_display_tree_helper(
     char* piname = scope_gen_printable( root->name );
     char* pfname = scope_gen_printable( root->funit->name );
     /*@-formatcode@*/
-    printf( "%s%s (%s) - %p (ign: %hhu, gend: %hhu)\n", prefix, piname, pfname, root, root->suppl.ignore, root->suppl.gend_scope );
+    printf( "%s%s [%d] (%s) - %p (ign: %hhu, gend: %hhu)\n", prefix, piname, root->id, pfname, root, root->suppl.ignore, root->suppl.gend_scope );
     /*@=formatcode@*/
     free_safe( piname, (strlen( piname ) + 1) );
     free_safe( pfname, (strlen( pfname ) + 1) );
   } else {
     char* piname = scope_gen_printable( root->name );
     /*@-formatcode@*/
-    printf( "%s%s () - %p (ign: %hhu, gend: %hhu)\n", prefix, piname, root, root->suppl.ignore, root->suppl.gend_scope );
+    printf( "%s%s [%d] () - %p (ign: %hhu, gend: %hhu)\n", prefix, piname, root->id, root, root->suppl.ignore, root->suppl.gend_scope );
     /*@=formatcode@*/
     free_safe( piname, (strlen( piname ) + 1) );
   }
@@ -130,6 +130,8 @@ void instance_display_tree(
 funit_inst* instance_create(
   func_unit*    funit,       /*!< Pointer to functional unit to store in this instance */
   char*         inst_name,   /*!< Instantiated name of this instance */
+  unsigned int  ppfline,     /*!< First line of instance from preprocessor */
+  int           fcol,        /*!< First column of instantiation */
   bool          name_diff,   /*!< Specifies if the inst_name provided is not accurate due to merging */
   bool          ignore,      /*!< Specifies that this instance is just a placeholder, not to be written to CDD */
   bool          gend_scope,  /*!< Specifies if this instance is a generated scope */
@@ -141,6 +143,9 @@ funit_inst* instance_create(
   new_inst                   = (funit_inst*)malloc_safe( sizeof( funit_inst ) );
   new_inst->funit            = funit;
   new_inst->name             = strdup_safe( inst_name );
+  new_inst->id               = -1;
+  new_inst->ppfline          = ppfline;
+  new_inst->fcol             = fcol;
   new_inst->suppl.name_diff  = name_diff;
   new_inst->suppl.ignore     = ignore;
   new_inst->suppl.gend_scope = gend_scope;
@@ -172,6 +177,32 @@ funit_inst* instance_create(
   PROFILE_END;
 
   return( new_inst );
+
+}
+
+/*!
+ Assign ID numbers to all instances in the design.
+*/
+void instance_assign_ids(
+  funit_inst* root,    /*!< Pointer to the current instance to assign an ID to */
+  int*        curr_id  /*!< Pointer to current ID */
+) { PROFILE(INSTANCE_ASSIGN_IDS);
+
+  if( root != NULL ) {
+
+    /* Assign ID to the current instance */
+    root->id = (*curr_id)++;
+
+    /* Assign children first */
+    funit_inst* child = root->child_head;
+    while( child != NULL ) {
+      instance_assign_ids( child, curr_id );
+      child = child->next;
+    }
+
+  }
+
+  PROFILE_END;
 
 }
 
@@ -417,17 +448,15 @@ vsignal* instance_find_signal_by_exclusion_id(
   if( root != NULL ) {
 
     if( (root->funit != NULL) &&
-        (root->funit->sig_head != NULL) &&
-        (root->funit->sig_head->sig->id <= id) &&
-        (root->funit->sig_tail->sig->id >= id) ) {
+        (root->funit->sigs != NULL) &&
+        (root->funit->sigs[0]->id <= id) &&
+        (root->funit->sigs[root->funit->sig_size-1]->id >= id) ) {
 
-      sig_link* sigl = root->funit->sig_head;
+      unsigned int i = 0;
 
-      while( (sigl != NULL) && (sigl->sig->id != id) ) {
-        sigl = sigl->next;
-      }
-      assert( sigl->sig != NULL );
-      sig          = sigl->sig;
+      while( (i < root->funit->sig_size) && (root->funit->sigs[i]->id != id) ) i++;
+      assert( i < root->funit->sig_size );
+      sig          = root->funit->sigs[i];
       *found_funit = root->funit;
 
     } else {
@@ -465,17 +494,15 @@ expression* instance_find_expression_by_exclusion_id(
 
     assert( root->funit != NULL );
  
-    if( (root->funit->exp_head != NULL) && 
-        (root->funit->exp_head->exp->id <= id) && 
-        (root->funit->exp_tail->exp->id >= id) ) {
+    if( (root->funit->exps != NULL) && 
+        (root->funit->exps[0]->id <= id) && 
+        (root->funit->exps[root->funit->exp_size-1]->id >= id) ) {
 
-      exp_link* expl = root->funit->exp_head;
+      unsigned int i = 0;
 
-      while( (expl != NULL) && (expl->exp->id != id) ) {
-        expl = expl->next;           
-      }
-      assert( expl->exp != NULL );
-      exp          = expl->exp;
+      while( (i < root->funit->exp_size) && (root->funit->exps[i]->id != id) ) i++;
+      assert( i < root->funit->exp_size );
+      exp          = root->funit->exps[i];
       *found_funit = root->funit;
 
     } else {
@@ -510,17 +537,14 @@ int instance_find_fsm_arc_index_by_exclusion_id(
 
   if( root != NULL ) {
 
-    fsm_link* fsml;
+    unsigned int i = 0;
 
     assert( root->funit != NULL );
   
-    fsml = root->funit->fsm_head;
-    while( (fsml != NULL) && ((arc_index = arc_find_arc_by_exclusion_id( fsml->table->table, id )) == -1) ) {
-      fsml = fsml->next;
-    }
+    while( (i < root->funit->fsm_size) && ((arc_index = arc_find_arc_by_exclusion_id( root->funit->fsms[i]->table, id )) == -1) ) i++;
 
     if( arc_index != -1 ) {
-      *found_fsm   = fsml->table->table;
+      *found_fsm   = root->funit->fsms[i]->table;
       *found_funit = root->funit;
     } else {
       funit_inst* child = root->child_head;
@@ -548,6 +572,8 @@ static funit_inst* instance_add_child(
   funit_inst*   inst,          /*!< Pointer to instance to add child instance to */
   func_unit*    child,         /*!< Pointer to child functional unit to create instance for */
   char*         name,          /*!< Name of instance to add */
+  unsigned int  ppfline,       /*!< First line of instantiation from preprocessor */
+  int           fcol,          /*!< First column of instantiation */
   vector_width* range,         /*!< For arrays of instances, contains the range of the instance array */
   bool          resolve,       /*!< Set to TRUE if newly added instance should be immediately resolved */
   bool          ignore_child,  /*!< Set to TRUE if the child to be added should not be written to a CDD file */
@@ -566,7 +592,7 @@ static funit_inst* instance_add_child(
   if( (new_inst == NULL) || (new_inst->suppl.ignore && ignore_child) ) {
 
     /* Generate new instance */
-    new_inst = instance_create( child, name, FALSE, ignore_child, gend_scope, range );
+    new_inst = instance_create( child, name, ppfline, fcol, FALSE, ignore_child, gend_scope, range );
 
     /* Add new instance to inst child instance list */
     if( inst->child_head == NULL ) {
@@ -626,7 +652,8 @@ static funit_inst* instance_copy_helper(
   assert( name      != NULL );
 
   /* Add new child instance */
-  new_inst = instance_add_child( to_inst, from_inst->funit, name, range, resolve, (from_inst->suppl.ignore && from_inst->suppl.gend_scope && !is_root), from_inst->suppl.gend_scope );
+  new_inst = instance_add_child( to_inst, from_inst->funit, name, from_inst->ppfline, from_inst->fcol, range, resolve,
+                                 (from_inst->suppl.ignore && from_inst->suppl.gend_scope && !is_root), from_inst->suppl.gend_scope );
 
   /* Do not add children if no child instance was created */
   if( new_inst != NULL ) {
@@ -684,6 +711,8 @@ bool instance_parse_add(
   func_unit*    parent,        /*!< Pointer to parent functional unit of specified child */
   func_unit*    child,         /*!< Pointer to child functional unit to add */
   char*         inst_name,     /*!< Name of new functional unit instance */
+  unsigned int  ppfline,       /*!< First line of instantiation from the preprocessor */
+  int           fcol,          /*!< First column of instantiation */
   vector_width* range,         /*!< For array of instances, specifies the name range */
   bool          resolve,       /*!< If set to TRUE, resolve any added instance */
   bool          child_gend,    /*!< If set to TRUE, specifies that child is a generated instance and should only be added once */
@@ -699,7 +728,7 @@ bool instance_parse_add(
 
   if( *root == NULL ) {
 
-    *root = instance_create( child, inst_name, FALSE, ignore_child, gend_scope, range );
+    *root = instance_create( child, inst_name, ppfline, fcol, FALSE, ignore_child, gend_scope, range );
 
   } else {
 
@@ -728,7 +757,7 @@ bool instance_parse_add(
 
       ignore = 0;
       while( (ignore >= 0) && ((inst = instance_find_by_funit( *root, parent, &ignore )) != NULL) ) {
-        cinst = instance_add_child( inst, child, inst_name, range, resolve, ignore_child, gend_scope );
+        cinst = instance_add_child( inst, child, inst_name, ppfline, fcol, range, resolve, ignore_child, gend_scope );
         i++;
         ignore = (child_gend && (cinst != NULL)) ? -1 : i;
       }
@@ -802,7 +831,7 @@ bool instance_resolve_inst(
       assert( rv < slen );
 
       /* Add the instance */
-      (void)instance_parse_add( &root, ((curr->parent == NULL) ? NULL : curr->parent->funit), curr->funit, new_name, NULL, TRUE, FALSE, FALSE, FALSE );
+      (void)instance_parse_add( &root, ((curr->parent == NULL) ? NULL : curr->parent->funit), curr->funit, new_name, curr->ppfline, curr->fcol, NULL, TRUE, FALSE, FALSE, FALSE );
 
     }
 
@@ -909,7 +938,7 @@ bool instance_read_add(
 
   if( *root == NULL ) {
 
-    *root = instance_create( child, inst_name, FALSE, FALSE, FALSE, NULL );
+    *root = instance_create( child, inst_name, 0, 0, FALSE, FALSE, FALSE, NULL );
 
   } else {
 
@@ -918,7 +947,7 @@ bool instance_read_add(
     if( (inst = instance_find_scope( *root, parent, FALSE )) != NULL ) {
 
       /* Create new instance */
-      new_inst = instance_create( child, inst_name, FALSE, FALSE, FALSE, NULL );
+      new_inst = instance_create( child, inst_name, 0, 0, FALSE, FALSE, FALSE, NULL );
 
       if( inst->child_head == NULL ) {
         inst->child_head = new_inst;
@@ -1282,7 +1311,7 @@ void instance_only_db_read(
     scope_extract_back( scope, back, rest ); 
 
     /* Create "placeholder" instance */
-    child = instance_create( NULL, back, name_diff, FALSE, FALSE, NULL );
+    child = instance_create( NULL, back, 0, 0, name_diff, FALSE, FALSE, NULL );
 
     /* If we are the top-most instance, just add ourselves to the instance link list */
     if( rest[0] == '\0' ) {
@@ -1342,7 +1371,7 @@ void instance_only_db_merge(
     scope_extract_back( scope, back, rest );
 
     /* Create "placeholder" instance */
-    child = instance_create( NULL, back, name_diff, FALSE, FALSE, NULL );
+    child = instance_create( NULL, back, 0, 0, name_diff, FALSE, FALSE, NULL );
 
     /* If we are the top-most instance, just add ourselves to the instance link list */
     if( rest[0] == '\0' ) {

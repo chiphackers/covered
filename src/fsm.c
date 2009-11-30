@@ -211,13 +211,13 @@ void fsm_db_read(
             func_unit* funit  /*!< Pointer to current functional unit */
 ) { PROFILE(FSM_DB_READ);
 
-  int        iexp_id;        /* Input expression ID */
-  int        oexp_id;        /* Output expression ID */
-  exp_link*  iexpl;          /* Pointer to found state variable */
-  exp_link*  oexpl;          /* Pointer to found state variable */
-  int        chars_read;     /* Number of characters read from sscanf */
-  fsm*       table;          /* Pointer to newly created FSM structure from CDD */
-  int        is_table;       /* Holds value of is_table entry of FSM output */
+  int         iexp_id;        /* Input expression ID */
+  int         oexp_id;        /* Output expression ID */
+  expression* iexp;
+  expression* oexp;
+  int         chars_read;     /* Number of characters read from sscanf */
+  fsm*        table;          /* Pointer to newly created FSM structure from CDD */
+  int         is_table;       /* Holds value of is_table entry of FSM output */
  
   if( sscanf( *line, "%d %d %d%n", &iexp_id, &oexp_id, &is_table, &chars_read ) == 3 ) {
 
@@ -231,11 +231,11 @@ void fsm_db_read(
     } else {
 
       /* Find specified signal */
-      if( ((iexpl = exp_link_find( iexp_id, funit->exp_head )) != NULL) &&
-          ((oexpl = exp_link_find( oexp_id, funit->exp_head )) != NULL) ) {
+      if( ((iexp = exp_link_find( iexp_id, funit->exps, funit->exp_size )) != NULL) &&
+          ((oexp = exp_link_find( oexp_id, funit->exps, funit->exp_size )) != NULL) ) {
 
         /* Create new FSM */
-        table = fsm_create( iexpl->exp, oexpl->exp, FALSE );
+        table = fsm_create( iexp, oexp, FALSE );
 
         /*
          If the input state variable is the same as the output state variable, create the new expression now.
@@ -248,9 +248,9 @@ void fsm_db_read(
             Throw 0;
           }
           vector_dealloc( table->from_state->value );
-          bind_append_fsm_expr( table->from_state, iexpl->exp, funit );
+          bind_append_fsm_expr( table->from_state, iexp, funit );
         } else {
-          table->from_state = iexpl->exp;
+          table->from_state = iexp;
         }
 
         /* Set input/output expression tables to point to this FSM */
@@ -270,7 +270,7 @@ void fsm_db_read(
         }
 
         /* Add fsm to current functional unit */
-        fsm_link_add( table, &(funit->fsm_head), &(funit->fsm_tail) );
+        fsm_link_add( table, &(funit->fsms), &(funit->fsm_size) );
  
       } else {
 
@@ -427,20 +427,19 @@ void fsm_vcd_assign(
  information to the specified pointers.
 */
 void fsm_get_stats(
-            fsm_link* table,        /*!< Pointer to FSM to get statistics from */
-  /*@out@*/ int*      state_hit,    /*!< Number of states reached in this FSM */
-  /*@out@*/ int*      state_total,  /*!< Total number of states within this FSM */
-  /*@out@*/ int*      arc_hit,      /*!< Number of arcs reached in this FSM */
-  /*@out@*/ int*      arc_total,    /*!< Total number of arcs within this FSM */
-  /*@out@*/ int*      arc_excluded  /*!< Total number of excluded arcs */
+            fsm**        table,        /*!< Pointer to FSM array to get statistics from */
+            unsigned int table_size,   /*!< Number of elements in table array */
+  /*@out@*/ int*         state_hit,    /*!< Number of states reached in this FSM */
+  /*@out@*/ int*         state_total,  /*!< Total number of states within this FSM */
+  /*@out@*/ int*         arc_hit,      /*!< Number of arcs reached in this FSM */
+  /*@out@*/ int*         arc_total,    /*!< Total number of arcs within this FSM */
+  /*@out@*/ int*         arc_excluded  /*!< Total number of excluded arcs */
 ) { PROFILE(FSM_GET_STATS);
 
-  fsm_link* curr;   /* Pointer to current FSM in table list */
+  unsigned int i;
 
-  curr = table;
-  while( curr != NULL ) {
-    arc_get_stats( curr->table->table, state_hit, state_total, arc_hit, arc_total, arc_excluded );
-    curr = curr->next;
+  for( i=0; i<table_size; i++ ) {
+    arc_get_stats( table[i]->table, state_hit, state_total, arc_hit, arc_total, arc_excluded );
   }
 
   PROFILE_END;
@@ -489,12 +488,13 @@ void fsm_get_inst_summary(
  containing this signal for each signal found (if expr_id is a non-negative value).
 */
 static void fsm_gather_signals(
-            expression* expr,         /*!< Pointer to expression to get signals from */
-  /*@out@*/ sig_link**  head,         /*!< Pointer to head of signal list to populate */
-  /*@out@*/ sig_link**  tail,         /*!< Pointer to tail of signal list to populate */
-            int         expr_id,      /*!< Expression ID of the statement containing this expression */
-  /*@out@*/ int**       expr_ids,     /*!< Pointer to expression ID array */
-  /*@out@*/ int*        expr_id_size  /*!< Number of elements currently stored in expr_ids array */
+            expression*   expr,             /*!< Pointer to expression to get signals from */
+  /*@out@*/ vsignal***    sigs,             /*!< Pointer to head of signal list to populate */
+  /*@out@*/ unsigned int* sig_size,         /*!< Pointer to tail of signal list to populate */
+  /*@out@*/ unsigned int* sig_no_rm_index,  /*!< Pointer to starting index of signals to not remove */
+            int           expr_id,          /*!< Expression ID of the statement containing this expression */
+  /*@out@*/ int**         expr_ids,         /*!< Pointer to expression ID array */
+  /*@out@*/ int*          expr_id_size      /*!< Number of elements currently stored in expr_ids array */
 ) { PROFILE(FSM_GATHER_SIGNALS);
 
   if( expr != NULL ) {
@@ -502,7 +502,7 @@ static void fsm_gather_signals(
     if( expr->sig != NULL ) {
 
       /* Add this signal to the list */
-      sig_link_add( expr->sig, TRUE, head, tail );
+      sig_link_add( expr->sig, TRUE, sigs, sig_size, sig_no_rm_index );
 
       /* Add specified expression ID to the expression IDs array, if needed */
       if( expr_id >= 0 ) {
@@ -513,8 +513,8 @@ static void fsm_gather_signals(
 
     } else {
 
-      fsm_gather_signals( expr->left,  head, tail, expr_id, expr_ids, expr_id_size );
-      fsm_gather_signals( expr->right, head, tail, expr_id, expr_ids, expr_id_size );
+      fsm_gather_signals( expr->left,  sigs, sig_size, sig_no_rm_index, expr_id, expr_ids, expr_id_size );
+      fsm_gather_signals( expr->right, sigs, sig_size, sig_no_rm_index, expr_id, expr_ids, expr_id_size );
 
     }
 
@@ -529,23 +529,25 @@ static void fsm_gather_signals(
  Used by the GUI for verbose FSM output.
 */
 void fsm_collect(
-            func_unit* funit,     /*!< Pointer to functional unit */
-            int        cov,       /*!< Specifies if we are attempting to get uncovered (0) or covered (1) FSMs */
-  /*@out@*/ sig_link** sig_head,  /*!< Pointer to the head of the signal list of covered FSM output states */
-  /*@out@*/ sig_link** sig_tail,  /*!< Pointer to the tail of the signal list of covered FSM output states */
-  /*@out@*/ int**      expr_ids,  /*!< Pointer to array of expression IDs for each uncovered signal */
-  /*@out@*/ int**      excludes   /*!< Pointer to array of exclude values for each uncovered signal */
+            func_unit*    funit,            /*!< Pointer to functional unit */
+            int           cov,              /*!< Specifies if we are attempting to get uncovered (0) or covered (1) FSMs */
+  /*@out@*/ vsignal***    sigs,             /*!< Pointer to the signal array of covered FSM output states */
+  /*@out@*/ unsigned int* sig_size,         /*!< Pointer to number of elements in sigs array */
+  /*@out@*/ unsigned int* sig_no_rm_index,  /*!< Pointer to index of first element that should not be removed */
+  /*@out@*/ int**         expr_ids,         /*!< Pointer to array of expression IDs for each uncovered signal */
+  /*@out@*/ int**         excludes          /*!< Pointer to array of exclude values for each uncovered signal */
 ) { PROFILE(FSM_COLLECT);
 
-  fsm_link* curr_fsm;  /* Pointer to current FSM link being evaluated */
-  int       size = 0;  /* Number of expressions IDs stored in expr_ids array */
+  int          size = 0;  /* Number of expressions IDs stored in expr_ids array */
+  unsigned int i;
 
   /* Initialize list pointers */
-  *sig_tail = *sig_head = NULL;
+  *sigs            = NULL;
+  *sig_size        = 0;
+  *sig_no_rm_index = 1;
   *expr_ids = *excludes = NULL;
 
-  curr_fsm = funit->fsm_head;
-  while( curr_fsm != NULL ) {
+  for( i=0; i<funit->fsm_size; i++ ) {
 
     /* Get the state and arc statistics */
     int state_hit    = 0;
@@ -553,7 +555,7 @@ void fsm_collect(
     int arc_hit      = 0;
     int arc_total    = 0;
     int arc_excluded = 0;
-    arc_get_stats( curr_fsm->table->table, &state_hit, &state_total, &arc_hit, &arc_total, &arc_excluded );
+    arc_get_stats( funit->fsms[i]->table, &state_hit, &state_total, &arc_hit, &arc_total, &arc_excluded );
 
     /* Allocate some more memory for the excluded array */
     *excludes = (int*)realloc_safe( *excludes, (sizeof( int ) * size), (sizeof( int ) * (size + 1)) );
@@ -561,17 +563,15 @@ void fsm_collect(
     /* If the total number of arcs is not known, consider this FSM as uncovered */
     if( (cov == 0) && ((arc_total == -1) || (arc_total != arc_hit)) ) {
       (*excludes)[size] = 0;
-      fsm_gather_signals( curr_fsm->table->to_state, sig_head, sig_tail, curr_fsm->table->to_state->id, expr_ids, &size );
+      fsm_gather_signals( funit->fsms[i]->to_state, sigs, sig_size, sig_no_rm_index, funit->fsms[i]->to_state->id, expr_ids, &size );
     } else {
-      if( (cov == 0) && arc_are_any_excluded( curr_fsm->table->table ) ) {
-        fsm_gather_signals( curr_fsm->table->to_state, sig_head, sig_tail, curr_fsm->table->to_state->id, expr_ids, &size );
+      if( (cov == 0) && arc_are_any_excluded( funit->fsms[i]->table ) ) {
+        fsm_gather_signals( funit->fsms[i]->to_state, sigs, sig_size, sig_no_rm_index, funit->fsms[i]->to_state->id, expr_ids, &size );
         (*excludes)[size] = 1;
       } else if( cov == 1 ) {
-        fsm_gather_signals( curr_fsm->table->to_state, sig_head, sig_tail, -1, expr_ids, &size );
+        fsm_gather_signals( funit->fsms[i]->to_state, sigs, sig_size, sig_no_rm_index, -1, expr_ids, &size );
       }
     }
-
-    curr_fsm = curr_fsm->next;
 
   }
 
@@ -609,31 +609,27 @@ void fsm_get_coverage(
   /*@out@*/ unsigned int* output_size          /*!< Pointer to the number of elements stored in the output state array */
 ) { PROFILE(FSM_GET_COVERAGE);
 
-  fsm_link* curr_fsm;     /* Pointer to current FSM link */
-  int*      tmp_ids;      /* Temporary integer array */
-  int*      tmp;          /* Temporary integer array */
-  char**    tmp_reasons;  /* Temporary reason array */
+  int*         tmp_ids;      /* Temporary integer array */
+  int*         tmp;          /* Temporary integer array */
+  char**       tmp_reasons;  /* Temporary reason array */
+  unsigned int i = 0;
 
-  curr_fsm = funit->fsm_head;
-  while( (curr_fsm != NULL) && (curr_fsm->table->to_state->id != expr_id) ) {
-    curr_fsm = curr_fsm->next; 
-  }
-
-  assert( curr_fsm != NULL );
+  while( (i < funit->fsm_size) && (funit->fsms[i]->to_state->id != expr_id) ) i++;
+  assert( i < funit->fsm_size );
 
   /* Get state information */
-  arc_get_states( total_fr_states, total_fr_state_num, total_to_states, total_to_state_num, curr_fsm->table->table, TRUE, TRUE ); 
-  arc_get_states( hit_fr_states,   hit_fr_state_num,   hit_to_states,   hit_to_state_num,   curr_fsm->table->table, TRUE, FALSE );
+  arc_get_states( total_fr_states, total_fr_state_num, total_to_states, total_to_state_num, funit->fsms[i]->table, TRUE, TRUE ); 
+  arc_get_states( hit_fr_states,   hit_fr_state_num,   hit_to_states,   hit_to_state_num,   funit->fsms[i]->table, TRUE, FALSE );
 
   /* Get state transition information */
-  arc_get_transitions( total_from_arcs, total_to_arcs, total_ids, excludes, reasons,      total_arc_num, curr_fsm->table->table, funit, TRUE, TRUE );
-  arc_get_transitions( hit_from_arcs,   hit_to_arcs,   &tmp_ids,  &tmp,     &tmp_reasons, hit_arc_num,   curr_fsm->table->table, funit, TRUE, FALSE );
+  arc_get_transitions( total_from_arcs, total_to_arcs, total_ids, excludes, reasons,      total_arc_num, funit->fsms[i]->table, funit, TRUE, TRUE );
+  arc_get_transitions( hit_from_arcs,   hit_to_arcs,   &tmp_ids,  &tmp,     &tmp_reasons, hit_arc_num,   funit->fsms[i]->table, funit, TRUE, FALSE );
 
   /* Get input state code */
-  codegen_gen_expr( curr_fsm->table->from_state, NULL, input_state, input_size );
+  codegen_gen_expr( funit->fsms[i]->from_state, NULL, input_state, input_size );
 
   /* Get output state code */
-  codegen_gen_expr( curr_fsm->table->to_state, NULL, output_state, output_size );
+  codegen_gen_expr( funit->fsms[i]->to_state, NULL, output_state, output_size );
 
   /* Deallocate unused state information */
   if( *hit_arc_num > 0 ) {
@@ -1046,28 +1042,27 @@ static void fsm_display_verbose(
   func_unit* funit   /*!< Pointer to functional unit containing the FSMs to display */
 ) { PROFILE(FSM_DISPLAY_VERBOSE);
 
-  fsm_link*    head;         /* Pointer to current FSM link */
   char**       icode;        /* Verilog output of input state variable expression */
   unsigned int icode_depth;  /* Number of valid entries in the icode array */
   char**       ocode;        /* Verilog output of output state variable expression */
   unsigned int ocode_depth;  /* Number of valid entries in the ocode array */
-  unsigned int i;            /* Loop iterator */
+  unsigned int i;
+  unsigned int j;
 
-  head = funit->fsm_head;
-  while( head != NULL ) {
+  for( j=0; j<funit->fsm_size; j++ ) {
 
     bool found_exclusion;
 
-    if( head->table->from_state->id == head->table->to_state->id ) {
-      codegen_gen_expr( head->table->to_state, NULL, &ocode, &ocode_depth );
+    if( funit->fsms[j]->from_state->id == funit->fsms[j]->to_state->id ) {
+      codegen_gen_expr( funit->fsms[j]->to_state, NULL, &ocode, &ocode_depth );
       fprintf( ofile, "      FSM input/output state (%s)\n\n", ocode[0] );
       for( i=0; i<ocode_depth; i++ ) {
         free_safe( ocode[i], (strlen( ocode[i] ) + 1) );
       }
       free_safe( ocode, (sizeof( char* ) * ocode_depth) );
     } else {
-      codegen_gen_expr( head->table->from_state, NULL, &icode, &icode_depth );
-      codegen_gen_expr( head->table->to_state,   NULL, &ocode, &ocode_depth );
+      codegen_gen_expr( funit->fsms[j]->from_state, NULL, &icode, &icode_depth );
+      codegen_gen_expr( funit->fsms[j]->to_state,   NULL, &ocode, &ocode_depth );
       fprintf( ofile, "      FSM input state (%s), output state (%s)\n\n", icode[0], ocode[0] );
       for( i=0; i<icode_depth; i++ ) {
         free_safe( icode[i], (strlen( icode[i] ) + 1) );
@@ -1079,17 +1074,15 @@ static void fsm_display_verbose(
       free_safe( ocode, (sizeof( char* ) * ocode_depth) );
     }
 
-    fsm_display_state_verbose( ofile, head->table );
-    found_exclusion = fsm_display_arc_verbose( ofile, head->table, funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
+    fsm_display_state_verbose( ofile, funit->fsms[j] );
+    found_exclusion = fsm_display_arc_verbose( ofile, funit->fsms[j], funit, (report_covered ? RPT_TYPE_HIT : RPT_TYPE_MISS) );
     if( report_exclusions && found_exclusion ) {
-      (void)fsm_display_arc_verbose( ofile, head->table, funit, RPT_TYPE_EXCL );
+      (void)fsm_display_arc_verbose( ofile, funit->fsms[j], funit, RPT_TYPE_EXCL );
     }
 
-    if( head->next != NULL ) {
+    if( (j + 1) < funit->fsm_size ) {
       fprintf( ofile, "      - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n" );
     }
-
-    head = head->next;
 
   }
 

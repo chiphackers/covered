@@ -384,7 +384,7 @@ static bool bind_param(
       }
 
       /* Link the expression to the module parameter */
-      exp_link_add( exp, &(found_parm->exp_head), &(found_parm->exp_tail) );
+      exp_link_add( exp, &(found_parm->exps), &(found_parm->exp_size) );
 
       /* Indicate that we have successfully bound */
       retval = TRUE;
@@ -425,7 +425,6 @@ bool bind_signal(
   vsignal*     found_sig;      /* Pointer to found signal in design for the given name */
   func_unit*   found_funit;    /* Pointer to found functional unit containing given signal */
   statement*   stmt;           /* Pointer to root statement for the given expression */
-  exp_link*    expl;           /* Pointer to current expression link */
   unsigned int rv;             /* Return value from snprintf calls */
 
   /* Skip signal binding if the name is not local and we are binding locally */
@@ -464,7 +463,7 @@ bool bind_signal(
         found_sig->dim        = (dim_range*)malloc_safe( sizeof( dim_range ) * 1 );
         found_sig->dim[0].msb = 0;
         found_sig->dim[0].lsb = 0;
-        sig_link_add( found_sig, TRUE, &(funit_exp->sig_head), &(funit_exp->sig_tail) );
+        sig_link_add( found_sig, TRUE, &(funit_exp->sigs), &(funit_exp->sig_size), &(funit_exp->sig_no_rm_index) );
 
       /* Otherwise, don't attempt to bind the signal */
       } else {
@@ -498,7 +497,7 @@ bool bind_signal(
       if( !clear_assigned ) {
 
         /* Add expression to signal expression list */
-        exp_link_add( exp, &(found_sig->exp_head), &(found_sig->exp_tail) );
+        exp_link_add( exp, &(found_sig->exps), &(found_sig->exp_size) );
 
         /* Set expression to point at signal */
         exp->sig = found_sig;
@@ -566,9 +565,9 @@ bool bind_signal(
          "won't be assigned", we need to remove all statement blocks that contain this signal from coverage consideration.
         */
         if( (found_sig->suppl.part.assigned == 0) && (found_sig->suppl.part.mba == 1) ) {
-          expl = found_sig->exp_head;
-          while( expl != NULL ) {
-            if( (stmt = expression_get_root_statement( expl->exp )) != NULL ) {
+          unsigned int i;
+          for( i=0; i<found_sig->exp_size; i++ ) {
+            if( (stmt = expression_get_root_statement( found_sig->exps[i] )) != NULL ) {
 #ifdef DEBUG_MODE
               if( debug_mode ) {
                 unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block %d, line %d because it needed to be assigned but would not be",
@@ -579,7 +578,6 @@ bool bind_signal(
 #endif
               stmt_blk_add_to_remove_list( stmt );
             }
-            expl = expl->next;
           }
         }
 
@@ -611,10 +609,9 @@ static void bind_task_function_ports(
   func_unit*  funit_exp  /*!< Pointer to functional unit containing the given expression */
 ) { PROFILE(BIND_TASK_FUNCTION_PORTS);
 
-  sig_link* sigl;            /* Pointer to current signal link to examine */
-  int       i;               /* Loop iterator */
-  bool      found;           /* Specifies if we have found a matching port */
-  char      sig_name[4096];  /* Hierarchical path to matched port signal */
+  int  i;               /* Loop iterator */
+  bool found;           /* Specifies if we have found a matching port */
+  char sig_name[4096];  /* Hierarchical path to matched port signal */
 
   assert( funit != NULL );
 
@@ -629,27 +626,28 @@ static void bind_task_function_ports(
     /* Otherwise, we have found an expression to bind to a port */
     } else {
 
+      unsigned int j = 0;
+
       assert( expr->op == EXP_OP_PASSIGN );
 
       /* Find the port that matches our order */
       found = FALSE;
       i     = 0;
-      sigl  = funit->sig_head;
-      while( (sigl != NULL) && !found ) {
-        if( (sigl->sig->suppl.part.type == SSUPPL_TYPE_INPUT_NET)  ||
-            (sigl->sig->suppl.part.type == SSUPPL_TYPE_INPUT_REG)  ||
-            (sigl->sig->suppl.part.type == SSUPPL_TYPE_OUTPUT_NET) ||
-            (sigl->sig->suppl.part.type == SSUPPL_TYPE_OUTPUT_REG) ||
-            (sigl->sig->suppl.part.type == SSUPPL_TYPE_INOUT_NET)  ||
-            (sigl->sig->suppl.part.type == SSUPPL_TYPE_INOUT_REG) ) {
+      while( (j < funit->sig_size) && !found ) {
+        if( (funit->sigs[j]->suppl.part.type == SSUPPL_TYPE_INPUT_NET)  ||
+            (funit->sigs[j]->suppl.part.type == SSUPPL_TYPE_INPUT_REG)  ||
+            (funit->sigs[j]->suppl.part.type == SSUPPL_TYPE_OUTPUT_NET) ||
+            (funit->sigs[j]->suppl.part.type == SSUPPL_TYPE_OUTPUT_REG) ||
+            (funit->sigs[j]->suppl.part.type == SSUPPL_TYPE_INOUT_NET)  ||
+            (funit->sigs[j]->suppl.part.type == SSUPPL_TYPE_INOUT_REG) ) {
           if( i == *order ) {
             found = TRUE;
           } else {
             i++;
-            sigl = sigl->next;
+            j++;
           }
         } else {
-          sigl = sigl->next;
+          j++;
         }
       }
 
@@ -657,17 +655,17 @@ static void bind_task_function_ports(
        If we found our signal to bind to, do it now; otherwise, just skip ahead (the error will be handled by
        the calling function.
       */
-      if( sigl != NULL ) {
+      if( j < funit->sig_size ) {
 
         /* Create signal name to bind */
-        unsigned int rv = snprintf( sig_name, 4096, "%s.%s", name, sigl->sig->name );
+        unsigned int rv = snprintf( sig_name, 4096, "%s.%s", name, funit->sigs[j]->name );
         assert( rv < 4096 );
 
         /* Add the signal to the binding list */
         bind_add( 0, sig_name, expr, funit_exp, FALSE );
 
         /* Specify that this vector will be assigned by Covered and not the dumpfile */
-        sigl->sig->suppl.part.assigned = 1;
+        funit->sigs[j]->suppl.part.assigned = 1;
 
         /* Increment the port order number */
         (*order)++;
@@ -703,7 +701,7 @@ static bool bind_task_function_namedblock(
 ) { PROFILE(BIND_TASK_FUNCTION_NAMEDBLOCK);
 
   bool       retval = FALSE;  /* Return value for this function */
-  sig_link*  sigl;            /* Temporary signal link holder */
+  vsignal*   sig;             /* Temporary signal link holder */
   func_unit* found_funit;     /* Pointer to found task/function functional unit */
   char       rest[4096];      /* Temporary string */
   char       back[4096];      /* Temporary string */
@@ -740,18 +738,18 @@ static bool bind_task_function_namedblock(
         if( type == FUNIT_FUNCTION ) {
 
           scope_extract_back( found_funit->name, back, rest );
-          sigl = sig_link_find( back, found_funit->sig_head );
+          sig = sig_link_find( back, found_funit->sigs, found_funit->sig_size );
 
-          assert( sigl != NULL );
+          assert( sig != NULL );
 
           /* Add expression to signal expression list */
-          exp_link_add( exp, &(sigl->sig->exp_head), &(sigl->sig->exp_tail) );
+          exp_link_add( exp, &(sig->exps), &(sig->exp_size) );
 
           /* Set expression to point at signal */
-          exp->sig = sigl->sig;
+          exp->sig = sig;
 
           /* Make sure that our vector type matches that of the found signal */
-          exp->value->suppl.part.data_type = sigl->sig->value->suppl.part.data_type;
+          exp->value->suppl.part.data_type = sig->value->suppl.part.data_type;
 
         }
 

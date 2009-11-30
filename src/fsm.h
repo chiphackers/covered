@@ -85,12 +85,13 @@ void fsm_vcd_assign(
 
 /*! \brief Gathers statistics about the current FSM */
 void fsm_get_stats(
-            fsm_link* table,
-  /*@out@*/ int*      state_hit,
-  /*@out@*/ int*      state_total,
-  /*@out@*/ int*      arc_hit,
-  /*@out@*/ int*      arc_total,
-  /*@out@*/ int*      arc_excluded
+            fsm**        table,
+            unsigned int table_size,
+  /*@out@*/ int*         state_hit,
+  /*@out@*/ int*         state_total,
+  /*@out@*/ int*         arc_hit,
+  /*@out@*/ int*         arc_total,
+  /*@out@*/ int*         arc_excluded
 );
 
 /*! \brief Retrieves the FSM summary information for the specified functional unit. */
@@ -111,12 +112,13 @@ void fsm_get_inst_summary(
 
 /*! \brief Retrieves covered or uncovered FSMs from the specified functional unit. */
 void fsm_collect(
-            func_unit* funit,
-            int        cov,
-  /*@out@*/ sig_link** sig_head,
-  /*@out@*/ sig_link** sig_tail,
-  /*@out@*/ int**      expr_ids,
-  /*@out@*/ int**      excludes
+            func_unit*    funit,
+            int           cov,
+  /*@out@*/ vsignal***    sigs,
+  /*@out@*/ unsigned int* sig_size,
+  /*@out@*/ unsigned int* sig_no_rm_index,
+  /*@out@*/ int**         expr_ids,
+  /*@out@*/ int**         excludes
 );
 
 /*! \brief Collects all coverage information for the specified FSM */

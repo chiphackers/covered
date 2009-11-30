@@ -405,15 +405,14 @@ static bool cli_display_expression(
     char**       code       = NULL;  /* Code to output */
     unsigned int code_depth = 0;     /* Number of elements in code array */
     unsigned int i;                  /* Loop iterator */
-    exp_link*    expl;               /* Pointer to found expression */
+    expression*  exp;                /* Pointer to found expression */
 
     /* Find the expression */
-    expl = exp_link_find( id, funit->exp_head );
-    assert( expl != NULL );
-    assert( expl->exp != NULL );
+    exp = exp_link_find( id, funit->exps, funit->exp_size );
+    assert( exp != NULL );
 
     /* Output the expression */
-    codegen_gen_expr( expl->exp, funit, &code, &code_depth );
+    codegen_gen_expr( exp, funit, &code, &code_depth );
     assert( code_depth > 0 );
     for( i=0; i<code_depth; i++ ) {
       printf( "    %s\n", code[i] );
@@ -423,7 +422,7 @@ static bool cli_display_expression(
 
     /* Output the expression value */
     printf( "\n  " );
-    expression_display( expl->exp );
+    expression_display( exp );
 
   } else {
 
@@ -589,7 +588,6 @@ static bool cli_parse_input(
           if( perform ) {
             vsignal*   sig;
             func_unit* funit;
-            exp_link*  expl;
             int        id;
             int        base;
             if( sscanf( line, "%s%n", arg, &chars_read ) == 1 ) {
@@ -603,9 +601,9 @@ static bool cli_parse_input(
               }
             } else if( sscanf( line, "%d%n", &id, &chars_read ) == 1 ) {
               if( (funit = funit_find_by_id( id )) != NULL ) {
-                expl = exp_link_find( id, funit->exp_head );
-                assert( expl != NULL );
-                cli_goto_vec1 = expl->exp->value;
+                expression* exp = exp_link_find( id, funit->exps, funit->exp_size );
+                assert( exp != NULL );
+                cli_goto_vec1 = exp->value;
               } else {
                 cli_print_error( "Unable to find expression ID in find expression", perform );
                 valid_cmd = FALSE;
