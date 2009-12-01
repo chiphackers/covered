@@ -3136,12 +3136,14 @@ void db_assign_symbol(
             char tscope[4096];
             int  i;
 
+#ifdef OBSOLETE
             /* Replace the '/' keyword with '.' in the scope */
             for( i=0; i<strlen( scope ); i++ ) {
               if( scope[i] == '/' ) {
                 scope[i] = '.';
               }
             }
+#endif
 
             /* Get the relative instance that contains the expression */
             rv   = snprintf( tscope, 4096, "%s.%s", curr_inst->name, scope );
@@ -3165,7 +3167,7 @@ void db_assign_symbol(
                     (inst->funit->exps[i]->pplline != lline)       ||
                     !ESUPPL_IS_ROOT( inst->funit->exps[i]->suppl ) ||
                     (inst->funit->exps[i]->op == EXP_OP_FORK)) ) i++;
-  
+
             assert( i < inst->funit->exp_size );
 
             /* Add the expression to the symtable */
@@ -3181,7 +3183,7 @@ void db_assign_symbol(
           assert( rv == 1 );
 
           /* Add the FSM table to the symtable */
-          symtable_add_fsm( symbol, curr_inst->funit->fsms[id], msb, lsb );
+          symtable_add_fsm( symbol, curr_inst->funit->fsms[id-1], msb, lsb );
 
         } else if( (type == 'w') || (type == 'W') || (type == 'r') || (type == 'R') ) {
 
@@ -3197,12 +3199,14 @@ void db_assign_symbol(
             char tscope[4096];
             int  i;
 
+#ifdef OBSOLETE
             /* Replace the '/' keyword with '.' in the scope */
             for( i=0; i<strlen( scope ); i++ ) {
               if( scope[i] == '/' ) {
                 scope[i] = '.';
               }
             }
+#endif
 
             /* Get the relative instance that contains the expression */
             rv   = snprintf( tscope, 4096, "%s.%s", curr_inst->name, scope );
@@ -3247,12 +3251,14 @@ void db_assign_symbol(
             char tscope[4096];
             int  i;
 
+#ifdef obsolete
             /* Replace the '/' keyword with '.' in the scope */
             for( i=0; i<strlen( scope ); i++ ) {
               if( scope[i] == '/' ) {
                 scope[i] = '.';
               }
             }
+#endif
 
             /* Get the relative instance that contains the expression */
             rv   = snprintf( tscope, 4096, "%s.%s", curr_inst->name, scope );

@@ -65,6 +65,11 @@ void generator_push_reg_insert();
 /*! \brief Pops the head of the register insertion stack. */
 void generator_pop_reg_insert();
 
+/*! \brief Sets the given functional unit instance ID to the current instance. */
+void generator_set_inst_id(
+  func_unit* funit
+);
+
 /*! \brief Pushes the given functional unit onto the functional unit stack. */
 void generator_push_funit(
   func_unit* funit

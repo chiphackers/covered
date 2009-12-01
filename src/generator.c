@@ -239,19 +239,21 @@ static char* generator_get_relative_scope(
   func_unit* child  /*!< Pointer to child functional unit */
 ) { PROFILE(GENERATOR_GET_RELATIVE_SCOPE);
 
-  char* back = strdup_safe( child->name );
+  char* back   = strdup_safe( child->name );
   char* relative_scope;
   int   i;
 
   scope_extract_scope( child->name, funit_top->funit->name, back );
   relative_scope = strdup_safe( back );
 
+#ifdef OBSOLETE
   /* Replace the periods with a '/' character */
   for( i=0; i<strlen( relative_scope ); i++ ) {
     if( relative_scope[i] == '.' ) {
       relative_scope[i] = '/';
     }
   }
+#endif
 
   free_safe( back, (strlen( child->name ) + 1) );
 
@@ -566,6 +568,24 @@ static void generator_insert_reg(
 }
 
 /*!
+ Sets the given functional unit's instance ID to the current instance.
+*/
+void generator_set_inst_id(
+  func_unit* funit  /*!< Pointer to the functional unit to set the ID of */
+) { PROFILE(GENERATOR_SET_INST_ID);
+
+  funit_inst* inst;
+  int         ignore   = 0;
+
+  /* Find the instance for this functional unit */
+  inst      = instance_find_by_funit( curr_inst, funit, &ignore );
+  funit->id = inst->id;
+
+  PROFILE_END;
+
+}
+
+/*!
  Pushes the given functional unit to the top of the functional unit stack.
 */
 void generator_push_funit(
@@ -574,14 +594,9 @@ void generator_push_funit(
 
   funit_link* tmp_head = NULL;
   funit_link* tmp_tail = NULL;
-  funit_inst* inst;
-  int         ignore   = 0;
 
-  /* Find the instance for this functional unit */
-  inst      = instance_find_by_funit( curr_inst, funit, &ignore );
-  funit->id = inst->id;
-
-  printf( "PUSHED funit: %s, %d, inst: %p\n", funit->name, funit->id, inst );
+  /* Set the instance ID to this functional unit */
+  generator_set_inst_id( funit );
 
   /* Create a functional unit link */
   funit_link_add( funit, &tmp_head, &tmp_tail );
@@ -858,6 +873,8 @@ static void generator_dealloc_filename_list(
 static void generator_output_funits(
   fname_link* head  /*!< Pointer to the head of the filename list */
 ) { PROFILE(GENERATOR_OUTPUT_FUNIT);
+
+  // inst_link_display( db_list[curr_db]->inst_head );
 
   while( head != NULL ) {
 
@@ -3606,6 +3623,36 @@ void generator_insert_inst_id_value(
 }
 
 /*!
+ \return Returns a pointer to the functional unit instance that matches the given positional information
+         (and is not a generated scope).
+*/
+static funit_inst* generator_find_inst_by_position(
+  funit_inst*  root,
+  unsigned int first_line,
+  int          first_column
+) { PROFILE(GENERATOR_FIND_INST_BY_POSITION);
+
+  funit_inst* inst = NULL;
+
+  assert( root != NULL );
+
+  if( !root->suppl.gend_scope && (root->ppfline == first_line) && (root->fcol == first_column) ) {
+    inst = root;
+  } else {
+    funit_inst* child = root->child_head;
+    while( (child != NULL) && (inst == NULL) ) {
+      inst  = generator_find_inst_by_position( child, first_line, first_column );
+      child = child->next;
+    }
+  }
+
+  PROFILE_END;
+
+  return( inst );
+
+}
+
+/*!
  Figures out the instance ID to use for this instantiation.
 */
 void generator_instance(
@@ -3613,16 +3660,12 @@ void generator_instance(
   int          first_column  /*!< First column of instantiation */
 ) { PROFILE(GENERATOR_INSTANCE);
 
-  funit_inst* child_inst = curr_inst->child_head;
+  funit_inst* inst = generator_find_inst_by_position( curr_inst, first_line, first_column );
 
-  while( (child_inst != NULL) && (child_inst->suppl.gend_scope || (child_inst->ppfline != first_line) || (child_inst->fcol != first_column)) ) {
-    child_inst = child_inst->next;
-  }
-
-  assert( child_inst != NULL );
+  assert( inst != NULL );
 
   /* Set the instance_id to be used for parameter override */
-  curr_inst_id = child_inst->id;
+  curr_inst_id = inst->id;
 
   PROFILE_END;
 

@@ -6101,9 +6101,10 @@ begin_end_block
         }
         generate_top_mode--;
       } else {
-        func_unit* funit = db_get_tfn_by_position( @1.first_line, @1.first_column );
-        assert( funit != NULL );
-        generator_push_funit( funit );
+        func_unit* funit;
+        if( (funit = db_get_tfn_by_position( @1.first_line, @1.first_column )) != NULL ) {
+          generator_set_inst_id( funit );
+        }
       }
     }
     block_item_decls_opt statement_list
@@ -6132,7 +6133,6 @@ begin_end_block
         FREE_TEXT( $1 );
         generate_top_mode++;
       } else {
-        generator_pop_funit();
         $$ = NULL;  /* TBD */
       }
     }
