@@ -3636,11 +3636,15 @@ static funit_inst* generator_find_inst_by_position(
 
   assert( root != NULL );
 
+  printf( "In generator_find_inst_by_position, root: %s, gend_scope: %d, ppfline: %u, first_line: %u, fcol: %u, first_column: %u\n",
+          root->name, root->suppl.gend_scope, root->ppfline, first_line, root->fcol, first_column );
+
   if( !root->suppl.gend_scope && (root->ppfline == first_line) && (root->fcol == first_column) ) {
     inst = root;
   } else {
     funit_inst* child = root->child_head;
     while( (child != NULL) && (inst == NULL) ) {
+      printf( "HERE!\n" );
       inst  = generator_find_inst_by_position( child, first_line, first_column );
       child = child->next;
     }
@@ -3660,7 +3664,12 @@ void generator_instance(
   int          first_column  /*!< First column of instantiation */
 ) { PROFILE(GENERATOR_INSTANCE);
 
-  funit_inst* inst = generator_find_inst_by_position( curr_inst, first_line, first_column );
+  funit_inst* inst;
+
+  printf( "curr_inst: %p\n", curr_inst );
+  inst_link_display( db_list[curr_db]->inst_head );
+
+  inst = generator_find_inst_by_position( curr_inst, first_line, first_column );
 
   assert( inst != NULL );
 

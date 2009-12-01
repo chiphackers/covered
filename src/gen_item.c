@@ -989,7 +989,7 @@ static void gen_item_resolve(
               gi->elem.inst->funit = found_funit_link->funit;
             }
           }
-          if( (tinst = instance_copy( gi->elem.inst, inst, gi->elem.inst->name, gi->elem.inst->range, FALSE )) != NULL ) {
+          if( (tinst = instance_copy( gi->elem.inst, inst, gi->elem.inst->name, gi->elem.inst->ppfline, gi->elem.inst->fcol, gi->elem.inst->range, FALSE )) != NULL ) {
             param_resolve_inst( tinst );
           }
           gen_item_resolve( gi->next_true, inst );

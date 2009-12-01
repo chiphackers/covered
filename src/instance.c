@@ -79,14 +79,14 @@ static void instance_display_tree_helper(
     char* piname = scope_gen_printable( root->name );
     char* pfname = scope_gen_printable( root->funit->name );
     /*@-formatcode@*/
-    printf( "%s%s [%d] (%s) - %p (ign: %hhu, gend: %hhu)\n", prefix, piname, root->id, pfname, root, root->suppl.ignore, root->suppl.gend_scope );
+    printf( "%s%s [%d, %u, %u] (%s) - %p (ign: %hhu, gend: %hhu)\n", prefix, piname, root->id, root->ppfline, root->fcol, pfname, root, root->suppl.ignore, root->suppl.gend_scope );
     /*@=formatcode@*/
     free_safe( piname, (strlen( piname ) + 1) );
     free_safe( pfname, (strlen( pfname ) + 1) );
   } else {
     char* piname = scope_gen_printable( root->name );
     /*@-formatcode@*/
-    printf( "%s%s [%d] () - %p (ign: %hhu, gend: %hhu)\n", prefix, piname, root->id, root, root->suppl.ignore, root->suppl.gend_scope );
+    printf( "%s%s [%d, %u, %u] () - %p (ign: %hhu, gend: %hhu)\n", prefix, piname, root->id, root->ppfline, root->fcol, root, root->suppl.ignore, root->suppl.gend_scope );
     /*@=formatcode@*/
     free_safe( piname, (strlen( piname ) + 1) );
   }
@@ -639,6 +639,8 @@ static funit_inst* instance_copy_helper(
   funit_inst*   from_inst,  /*!< Pointer to instance tree to copy */
   funit_inst*   to_inst,    /*!< Pointer to instance to copy tree to */
   char*         name,       /*!< Instance name of current instance being copied */
+  unsigned int  ppfline,    /*!< First line of instantiation from the preprocessor */
+  int           fcol,       /*!< First column of instantiation */
   vector_width* range,      /*!< For arrays of instances, indicates the array range */
   bool          resolve,    /*!< Set to TRUE if newly added instance should be immediately resolved */
   bool          is_root     /*!< Set to TRUE if the from_inst is the root instance */
@@ -652,7 +654,7 @@ static funit_inst* instance_copy_helper(
   assert( name      != NULL );
 
   /* Add new child instance */
-  new_inst = instance_add_child( to_inst, from_inst->funit, name, from_inst->ppfline, from_inst->fcol, range, resolve,
+  new_inst = instance_add_child( to_inst, from_inst->funit, name, ppfline, fcol, range, resolve,
                                  (from_inst->suppl.ignore && from_inst->suppl.gend_scope && !is_root), from_inst->suppl.gend_scope );
 
   /* Do not add children if no child instance was created */
@@ -661,7 +663,7 @@ static funit_inst* instance_copy_helper(
     /* Iterate through rest of current child's list of children */
     curr = from_inst->child_head;
     while( curr != NULL ) {
-      (void)instance_copy_helper( curr, new_inst, curr->name, curr->range, resolve, FALSE );
+      (void)instance_copy_helper( curr, new_inst, curr->name, curr->ppfline, curr->fcol, curr->range, resolve, FALSE );
       curr = curr->next;
     }
 
@@ -683,13 +685,15 @@ funit_inst* instance_copy(
   funit_inst*   from_inst,  /*!< Pointer to instance tree to copy */
   funit_inst*   to_inst,    /*!< Pointer to instance to copy tree to */
   char*         name,       /*!< Instance name of current instance being copied */
+  unsigned int  ppfline,    /*!< First line of instantiation from the preprocessor */
+  int           fcol,       /*!< First column of instantiation */
   vector_width* range,      /*!< For arrays of instances, indicates the array range */
   bool          resolve     /*!< Set to TRUE if newly added instance should be immediately resolved */
 ) { PROFILE(INSTANCE_COPY);
 
   funit_inst* new_inst;
 
-  new_inst = instance_copy_helper( from_inst, to_inst, name, range, resolve, TRUE );
+  new_inst = instance_copy_helper( from_inst, to_inst, name, ppfline, fcol, range, resolve, TRUE );
 
   PROFILE_END;
 
@@ -748,7 +752,7 @@ bool instance_parse_add(
 
       ignore = 0;
       while( (ignore >= 0) && ((inst = instance_find_by_funit( *root, parent, &ignore )) != NULL) ) {
-        (void)instance_copy( cinst, inst, inst_name, range, resolve );
+        (void)instance_copy( cinst, inst, inst_name, ppfline, fcol, range, resolve );
         i++;
         ignore = child_gend ? -1 : i;
       }

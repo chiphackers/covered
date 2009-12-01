@@ -3315,6 +3315,7 @@ module_item
   | attribute_list_opt IDENTIFIER
     {
       if( !parse_mode ) {
+        printf( "Looking for instance %s\n", $2 );
         generator_instance( @2.ppfline, @2.first_column );
       }
     }

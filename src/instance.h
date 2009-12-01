@@ -97,6 +97,8 @@ funit_inst* instance_copy(
   funit_inst*   from_inst,
   funit_inst*   to_inst,
   char*         name,
+  unsigned int  ppfline,
+  int           fcol,
   vector_width* range,
   bool          resolve
 );
