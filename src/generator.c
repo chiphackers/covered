@@ -573,42 +573,6 @@ static void generator_insert_reg(
 }
 
 /*!
- Inserts the COVERED_INST_ID parameter into the generated Verilog and adds
- instance overriding to the Covered top-level file.
-*/
-void generator_add_inst_id(
-  func_unit* funit  /*!< Pointer to the functional unit to set the ID of */
-) { PROFILE(GENERATOR_ADD_INST_ID);
-
-  /* Insert the parameter */
-  generator_add_cov_to_work_code( " parameter COVERED_INST_ID = 0;" );
-
-  /* Add the parameter override (defparam) call to the top-level include file */
-  
-
-  PROFILE_END;
-
-}
-
-/*!
- Sets the given functional unit's instance ID to the current instance.
-*/
-void generator_set_inst_id(
-  func_unit* funit  /*!< Pointer to the functional unit to set the ID of */
-) { PROFILE(GENERATOR_SET_INST_ID);
-
-  funit_inst* inst;
-  int         ignore   = 0;
-
-  /* Find the instance for this functional unit */
-  inst      = instance_find_by_funit( curr_inst, funit, &ignore );
-  funit->id = inst->id;
-
-  PROFILE_END;
-
-}
-
-/*!
  Pushes the given functional unit to the top of the functional unit stack.
 */
 void generator_push_funit(
@@ -617,9 +581,6 @@ void generator_push_funit(
 
   funit_link* tmp_head = NULL;
   funit_link* tmp_tail = NULL;
-
-  /* Set the instance ID to this functional unit */
-  generator_set_inst_id( funit );
 
   /* Create a functional unit link */
   funit_link_add( funit, &tmp_head, &tmp_tail );
@@ -956,67 +917,6 @@ static void generator_output_funits(
 }
 
 /*!
- Writes the current instance tree to the parameter override file for instance IDs.
-*/
-static void generator_write_inst_id_overrides(
-  funit_inst* root,  /*!< Pointer to root instance to generate for */
-  FILE*       ofile  /*!< Pointer to file to write to */
-) { PROFILE(GENERATOR_WRITE_INST_ID_OVERRIDES);
-
-  if( root != NULL ) {
-
-    funit_inst* child;
-
-    /* Output ourselves */
-    if( root->funit != NULL ) {
-      char str[4096];
-      instance_gen_scope( str, root, FALSE );
-      fprintf( ofile, "  defparam %s.COVERED_INST_ID%d = %d;\n", str, root->funit->id, root->id );
-    }
-    
-    /* Output children */
-    child = root->child_head;
-    while( child != NULL ) {
-      generator_write_inst_id_overrides( child, ofile );
-      child = child->next;
-    }
-
-  }
-
-  PROFILE_END;
-
-}
-
-/*!
- Creates the parameter override file and populates it with the instance ID information.
-*/
-static void generator_create_inst_id_overrides() { PROFILE(GENERATOR_CREATE_INST_ID_OVERRIDES);
-
-  FILE* ofile;
-
-  if( (ofile = fopen( "covered/verilog/covered_inst_id.v", "w" )) != NULL ) {
-
-    inst_link* instl = db_list[curr_db]->inst_head;
-
-    while( instl != NULL ) {
-      generator_write_inst_id_overrides( instl->inst, ofile );
-      instl = instl->next;
-    }
-
-    fclose( ofile );
-
-  } else {
-
-    print_output( "Unable to open covered/verilog/covered_inst_id.v for writing", FATAL, __FILE__, __LINE__ );
-    Throw 0;
-
-  }
-
-  PROFILE_END;
-
-}
-
-/*!
  Outputs the covered portion of the design to the covered/verilog directory.
 */
 void generator_output() { PROFILE(GENERATOR_OUTPUT);
@@ -1064,9 +964,6 @@ void generator_output() { PROFILE(GENERATOR_OUTPUT);
 
   /* Iterate through the covered files, generating coverage output along with the design information */
   generator_output_funits( fname_head );
-
-  /* Create the parameter override file */
-  generator_create_inst_id_overrides();
 
   /* Deallocate memory from filename list */
   generator_dealloc_filename_list( fname_head );
@@ -3648,51 +3545,24 @@ void generator_hold_last_token() { PROFILE(GENERATOR_HOLD_LAST_TOKEN);
 }
 
 /*!
- \return Returns a pointer to the functional unit instance that matches the given positional information
-         (and is not a generated scope).
-*/
-static void generator_find_and_assign_inst_id_by_position(
-  funit_inst*  root,
-  unsigned int first_line,
-  int          first_column
-) { PROFILE(GENERATOR_FIND_INST_BY_POSITION);
-
-  assert( root != NULL );
-
-  /* If the current instance matches the given position, output this to the override file */
-  if( (root->funit != NULL) && (root->funit->start_line == first_line) && (root->funit->start_col == first_column) ) {
-    char scope[4096];
-    scope[0] = '\0';
-    instance_gen_scope( scope, root, FALSE );
-    fprintf( generator_toplevel, "  defparam %s = %u;\n", scope, root->id );
-  }
-
-  /* Iterate through children */
-  funit_inst* child = root->child_head;
-  while( child != NULL ) {
-    generator_find_and_assign_inst_id_by_position( child, first_line, first_column );
-    child = child->next;
-  }
-
-  PROFILE_END;
-
-}
-
-/*!
- Inserts the COVERED_INST_ID parameter into the inlined code.  This functionality is only needed when
- running in Verilator mode at the moment.
+ Inserts an instance ID parameter for the given functional unit.
 */
 void generator_insert_inst_id_param(
-  bool preport  /*!< Set to TRUE if the parameter is being inserted prior to the port listed */
+  func_unit* funit,   /*!< Pointer to functional unit to add */
+  bool       preport  /*!< Set to TRUE if the parameter is being inserted prior to the port listed */
 ) { PROFILE(GENERATOR_INSERT_INST_ID_PARAM);
 
   if( info_suppl.part.verilator ) {
 
     /* Insert the parameter into the Verilog stream */
-    if( !funit_top->funit->suppl.part.inst_id_added ) {
+    if( !funit->suppl.part.inst_id_added ) {
+
       char         str[128];
-      unsigned int rv = snprintf( str, 128, "parameter COVERED_INST_ID%d = 0", funit_top->funit->id );
+      unsigned int rv = snprintf( str, 128, "parameter COVERED_INST_ID%d = 0", funit->id );
+
       assert( rv < 128 );
+
+      generator_add_cov_to_work_code( " " );
       generator_add_cov_to_work_code( str );
       if( preport ) {
         generator_add_cov_to_work_code( ", " );
@@ -3700,7 +3570,83 @@ void generator_insert_inst_id_param(
         generator_add_cov_to_work_code( ";" );
         generator_add_cov_to_work_code( "\n" );
       }
-      funit_top->funit->suppl.part.inst_id_added = 1;
+
+      /* Specify that the instance ID was added */
+      funit->suppl.part.inst_id_added = 1;
+
+    }
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Writes the current instance tree to the parameter override file for instance IDs.
+*/
+static void generator_write_inst_id_overrides(
+  funit_inst* root  /*!< Pointer to root instance to generate for */
+) { PROFILE(GENERATOR_WRITE_INST_ID_OVERRIDES);
+
+  if( root != NULL ) {
+
+    funit_inst* child;
+
+    /* Output ourselves */
+    if( (root->funit != NULL) && (strcmp( root->name, "$root" ) != 0) && (root->funit->suppl.part.type != FUNIT_NO_SCORE) && !root->suppl.ignore ) {
+
+      char         str1[4096];
+      char         str2[128];
+      unsigned int rv;
+
+      /* Get the hierarchical reference */
+      str1[0] = '\0';
+      instance_gen_scope( str1, root, FALSE );
+
+      /* Insert the code */
+      rv = snprintf( str2, 128, "defparam %s.COVERED_INST_ID%d = %d;", str1, root->funit->id, root->id );
+      assert( rv < 128 );
+      generator_add_cov_to_work_code( str2 );
+      generator_add_cov_to_work_code( "\n" );
+
+    }
+    
+    /* Output children */
+    child = root->child_head;
+    while( child != NULL ) {
+      generator_write_inst_id_overrides( child );
+      child = child->next;
+    }
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Creates the parameter override file and populates it with the instance ID information.
+*/
+void generator_insert_inst_id_overrides() { PROFILE(GENERATOR_CREATE_INST_ID_OVERRIDES);
+
+  if( info_suppl.part.verilator ) {
+
+    funit_inst* top_inst;
+
+    /* Get the top-most module */
+    instance_get_leading_hierarchy( db_list[curr_db]->inst_tail->inst, NULL, &top_inst );
+
+    /* If the current functional unit is the same as the top-most functional unit, insert the overrides */
+    if( top_inst->funit == curr_funit ) {
+    
+      inst_link*  instl = db_list[curr_db]->inst_head;
+
+      while( instl != NULL ) {
+        generator_write_inst_id_overrides( instl->inst );
+        instl = instl->next;
+      }
+
     }
 
   }

@@ -393,7 +393,7 @@ void funit_link_display(
 
   curr = head;
   while( curr != NULL ) {
-    printf( "  name: %s, type: %s\n", obf_funit( curr->funit->name ), get_funit_type( curr->funit->suppl.part.type ) );
+    printf( "  name: %s, type: %s, id: %d\n", obf_funit( curr->funit->name ), get_funit_type( curr->funit->suppl.part.type ), curr->funit->id );
     curr = curr->next;
   }
 

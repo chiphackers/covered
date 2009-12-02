@@ -163,9 +163,6 @@ void parse_design(
         }
       }
 
-      /* Number the instances */
-      db_assign_ids();
-
       /* Perform all signal/expression binding */
       bind_perform( FALSE, 0 );
       fsm_var_bind();
@@ -213,6 +210,7 @@ void parse_design(
 
     /* Generate the needed Verilog if specified */
     if( info_suppl.part.inlined ) {
+      db_assign_ids();
       generator_output();
     }
 

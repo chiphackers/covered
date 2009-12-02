@@ -214,8 +214,12 @@ void generator_hold_last_token();
 
 /*! \brief Inserts the COVERED_INST_ID parameter into the work buffer at the current point. */
 void generator_insert_inst_id_param(
-  bool preport
+  func_unit* funit,
+  bool       preport
 );
+
+/*! \brief Inserts instance ID parameter overrides */
+void generator_insert_inst_id_overrides();
 
 #endif
 
