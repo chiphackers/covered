@@ -3552,7 +3552,7 @@ void generator_insert_inst_id_param(
   bool       preport  /*!< Set to TRUE if the parameter is being inserted prior to the port listed */
 ) { PROFILE(GENERATOR_INSERT_INST_ID_PARAM);
 
-  if( info_suppl.part.verilator ) {
+//  if( info_suppl.part.verilator ) {
 
     /* Insert the parameter into the Verilog stream */
     if( !funit->suppl.part.inst_id_added ) {
@@ -3576,7 +3576,7 @@ void generator_insert_inst_id_param(
 
     }
 
-  }
+//  }
 
   PROFILE_END;
 
@@ -3586,7 +3586,8 @@ void generator_insert_inst_id_param(
  Writes the current instance tree to the parameter override file for instance IDs.
 */
 static void generator_write_inst_id_overrides(
-  funit_inst* root  /*!< Pointer to root instance to generate for */
+  funit_inst* root,                 /*!< Pointer to root instance to generate for */
+  int         hier_chars_to_ignore  /*!< Number of characters in the scope name to ignore from output */
 ) { PROFILE(GENERATOR_WRITE_INST_ID_OVERRIDES);
 
   if( root != NULL ) {
@@ -3605,7 +3606,7 @@ static void generator_write_inst_id_overrides(
       instance_gen_scope( str1, root, FALSE );
 
       /* Insert the code */
-      rv = snprintf( str2, 128, "defparam %s.COVERED_INST_ID%d = %d;", str1, root->funit->id, root->id );
+      rv = snprintf( str2, 128, "defparam %s%cCOVERED_INST_ID%d = %d;", (str1 + hier_chars_to_ignore), ((strlen( str1 ) <= hier_chars_to_ignore) ? ' ' : '.'), root->funit->id, root->id );
       assert( rv < 128 );
       generator_add_cov_to_work_code( str2 );
       generator_add_cov_to_work_code( "\n" );
@@ -3615,7 +3616,7 @@ static void generator_write_inst_id_overrides(
     /* Output children */
     child = root->child_head;
     while( child != NULL ) {
-      generator_write_inst_id_overrides( child );
+      generator_write_inst_id_overrides( child, hier_chars_to_ignore );
       child = child->next;
     }
 
@@ -3630,26 +3631,28 @@ static void generator_write_inst_id_overrides(
 */
 void generator_insert_inst_id_overrides() { PROFILE(GENERATOR_CREATE_INST_ID_OVERRIDES);
 
-  if( info_suppl.part.verilator ) {
+//  if( info_suppl.part.verilator ) {
 
     funit_inst* top_inst;
+    char        leading_hier[4096];
 
     /* Get the top-most module */
-    instance_get_leading_hierarchy( db_list[curr_db]->inst_tail->inst, NULL, &top_inst );
+    leading_hier[0] = '\0';
+    instance_get_leading_hierarchy( db_list[curr_db]->inst_tail->inst, leading_hier, &top_inst );
 
     /* If the current functional unit is the same as the top-most functional unit, insert the overrides */
     if( top_inst->funit == curr_funit ) {
     
-      inst_link*  instl = db_list[curr_db]->inst_head;
+      inst_link* instl = db_list[curr_db]->inst_head;
 
       while( instl != NULL ) {
-        generator_write_inst_id_overrides( instl->inst );
+        generator_write_inst_id_overrides( instl->inst, ((strlen( leading_hier ) == 0) ? 0 : (strlen( leading_hier ) + 1)) );
         instl = instl->next;
       }
 
     }
 
-  }
+//  }
 
   PROFILE_END;
 

@@ -2188,8 +2188,7 @@ begin_end_id
         }
       } else {
         generator_flush_work_code;
-        FREE_TEXT( $2 );
-        $$ = NULL;
+        $$ = $2;
       }
     }
   |
@@ -6104,6 +6103,22 @@ begin_end_block
         func_unit* funit;
         if( (funit = db_get_tfn_by_position( @1.first_line, @1.first_column )) != NULL ) {
           generator_hold_last_token();
+          if( $1 == NULL ) {
+            char         str[50];
+            char*        back;
+            char*        rest;
+            unsigned int rv;
+            back = strdup_safe( funit->name );
+            rest = strdup_safe( funit->name );
+            scope_extract_back( funit->name, back, rest );
+            rv = snprintf( str, 50, " : %s", back );
+            assert( rv < 50 );
+            generator_add_to_hold_code( str, __FILE__, __LINE__ );
+            free_safe( back, (strlen( funit->name ) + 1) );
+            free_safe( rest, (strlen( funit->name ) + 1) );
+          } else {
+            FREE_TEXT( $1 );
+          }
           generator_insert_inst_id_param( funit, FALSE );
           generator_flush_work_code;
         }
