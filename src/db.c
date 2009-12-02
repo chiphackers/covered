@@ -738,20 +738,26 @@ bool db_read(
 
 }
 
-/*! \brief Assigns instance IDs to all non-generated instances. */
-void db_assign_inst_ids() { PROFILE(DB_ASSIGN_INST_IDS);
+/*! \brief Assigns instance IDs to all instances. */
+void db_assign_ids() { PROFILE(DB_ASSIGN_IDS);
 
-  inst_link* instl   = db_list[curr_db]->inst_head;
-  int        curr_id = 0;
+  inst_link*  instl  = db_list[curr_db]->inst_head;
+  funit_link* funitl = db_list[curr_db]->funit_head;
+  int         curr_id;
 
-  // inst_link_display( db_list[curr_db]->inst_head );
-
+  /* Number the instances */
+  curr_id = 0;
   while( instl != NULL ) {
     instance_assign_ids( instl->inst, &curr_id );
     instl = instl->next;
   }
 
-  // inst_link_display( db_list[curr_db]->inst_head );
+  /* Number the functional units */
+  curr_id = 0;
+  while( funitl != NULL ) {
+    funitl->funit->id = curr_id++;
+    funitl = funitl->next;
+  }
 
   PROFILE_END;
 

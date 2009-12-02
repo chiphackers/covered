@@ -49,8 +49,8 @@ bool db_read(
   int         read_mode
 );
 
-/*! \brief Assigns instance IDs to all non-generated instances. */
-void db_assign_inst_ids();
+/*! \brief Assigns instance/functional unit IDs to all non-generated instances. */
+void db_assign_ids();
 
 /*! \brief Merges the current instance trees */
 void db_merge_instance_trees();

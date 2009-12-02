@@ -2655,6 +2655,7 @@ generate_item
         free_safe( rest, (strlen( funit->name ) + 1) );
         generator_push_funit( funit );
         generator_push_reg_insert();
+        generator_insert_inst_id_param( FALSE );
       }
     }
     generate_item_list_opt end_gen_block K_end
@@ -2700,6 +2701,7 @@ generate_item
         generator_push_funit( funit );
         generator_flush_work_code;
         generator_push_reg_insert();
+        generator_insert_inst_id_param( FALSE );
       }
       FREE_TEXT( $4 );
     }
@@ -2755,6 +2757,7 @@ generate_item
         generator_push_funit( funit );
         generator_flush_work_code;
         generator_push_reg_insert();
+        generator_insert_inst_id_param( FALSE );
       }
       FREE_TEXT( $13 );
     }
@@ -3312,17 +3315,10 @@ module_item
       }
     }
   /* Handles instantiations of modules and user-defined primitives. */
-  | attribute_list_opt IDENTIFIER
-    {
-      if( !parse_mode ) {
-        printf( "Looking for instance %s\n", $2 );
-        generator_instance( @2.ppfline, @2.first_column );
-      }
-    }
-    parameter_value_opt gate_instance_list ';'
+  | attribute_list_opt IDENTIFIER parameter_value_opt gate_instance_list ';'
     {
       if( parse_mode ) {
-        str_link*    tmp  = $5;
+        str_link*    tmp  = $4;
         str_link*    curr = tmp;
         param_oride* po;
         if( ignore_mode == 0 ) {
@@ -6104,7 +6100,7 @@ begin_end_block
       } else {
         func_unit* funit;
         if( (funit = db_get_tfn_by_position( @1.first_line, @1.first_column )) != NULL ) {
-          generator_set_inst_id( funit );
+          generator_insert_inst_id_param( FALSE );
         }
       }
     }
@@ -7729,7 +7725,7 @@ parameter_value_opt
   : '#' '(' { param_mode++; in_static_expr = TRUE; } expression_list { param_mode--; in_static_expr = FALSE; }
     {
       if( !parse_mode ) {
-        generator_insert_inst_id_value( FALSE );
+        generator_add_cov_to_work_code( "," );
       }
     }
     ')'
@@ -7743,7 +7739,7 @@ parameter_value_opt
   | '#' '(' parameter_value_byname_list
     {
       if( !parse_mode ) {
-        generator_insert_inst_id_value( FALSE );
+        generator_add_cov_to_work_code( "," );
       }
     }
     ')'
@@ -7756,11 +7752,6 @@ parameter_value_opt
       VLerror( "Syntax error in parameter value assignment list" );
     }
   |
-    {
-      if( !parse_mode ) {
-        generator_insert_inst_id_value( TRUE );
-      }
-    }
   ;
 
 parameter_value_byname_list

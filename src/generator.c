@@ -196,6 +196,11 @@ static char lahead_buffer[4096];
 */
 static int curr_inst_id;
 
+/*!
+ File containing the instance ID overrides (included in top-most functional unit).
+*/
+FILE* generator_toplevel;
+
 
 static char* generator_gen_size(
   expression* exp,
@@ -568,6 +573,24 @@ static void generator_insert_reg(
 }
 
 /*!
+ Inserts the COVERED_INST_ID parameter into the generated Verilog and adds
+ instance overriding to the Covered top-level file.
+*/
+void generator_add_inst_id(
+  func_unit* funit  /*!< Pointer to the functional unit to set the ID of */
+) { PROFILE(GENERATOR_ADD_INST_ID);
+
+  /* Insert the parameter */
+  generator_add_cov_to_work_code( " parameter COVERED_INST_ID = 0;" );
+
+  /* Add the parameter override (defparam) call to the top-level include file */
+  
+
+  PROFILE_END;
+
+}
+
+/*!
  Sets the given functional unit's instance ID to the current instance.
 */
 void generator_set_inst_id(
@@ -933,6 +956,67 @@ static void generator_output_funits(
 }
 
 /*!
+ Writes the current instance tree to the parameter override file for instance IDs.
+*/
+static void generator_write_inst_id_overrides(
+  funit_inst* root,  /*!< Pointer to root instance to generate for */
+  FILE*       ofile  /*!< Pointer to file to write to */
+) { PROFILE(GENERATOR_WRITE_INST_ID_OVERRIDES);
+
+  if( root != NULL ) {
+
+    funit_inst* child;
+
+    /* Output ourselves */
+    if( root->funit != NULL ) {
+      char str[4096];
+      instance_gen_scope( str, root, FALSE );
+      fprintf( ofile, "  defparam %s.COVERED_INST_ID%d = %d;\n", str, root->funit->id, root->id );
+    }
+    
+    /* Output children */
+    child = root->child_head;
+    while( child != NULL ) {
+      generator_write_inst_id_overrides( child, ofile );
+      child = child->next;
+    }
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Creates the parameter override file and populates it with the instance ID information.
+*/
+static void generator_create_inst_id_overrides() { PROFILE(GENERATOR_CREATE_INST_ID_OVERRIDES);
+
+  FILE* ofile;
+
+  if( (ofile = fopen( "covered/verilog/covered_inst_id.v", "w" )) != NULL ) {
+
+    inst_link* instl = db_list[curr_db]->inst_head;
+
+    while( instl != NULL ) {
+      generator_write_inst_id_overrides( instl->inst, ofile );
+      instl = instl->next;
+    }
+
+    fclose( ofile );
+
+  } else {
+
+    print_output( "Unable to open covered/verilog/covered_inst_id.v for writing", FATAL, __FILE__, __LINE__ );
+    Throw 0;
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  Outputs the covered portion of the design to the covered/verilog directory.
 */
 void generator_output() { PROFILE(GENERATOR_OUTPUT);
@@ -980,6 +1064,9 @@ void generator_output() { PROFILE(GENERATOR_OUTPUT);
 
   /* Iterate through the covered files, generating coverage output along with the design information */
   generator_output_funits( fname_head );
+
+  /* Create the parameter override file */
+  generator_create_inst_id_overrides();
 
   /* Deallocate memory from filename list */
   generator_dealloc_filename_list( fname_head );
@@ -1497,7 +1584,8 @@ void generator_insert_line_cov_with_stmt(
     if( info_suppl.part.verilator ) {
 
       printf( "stmt->funit: %s, %d\n", stmt->funit->name, stmt->funit->id );
-      rv = snprintf( str, 4096, " $c( \"covered_line( (\", COVERED_INST_ID, \" + %d), %u );\" )%c", stmt->funit->id, (stmt->exp->id - stmt->funit->exps[0]->id), (semicolon ? ';' : ',') );
+      rv = snprintf( str, 4096, " $c( \"covered_line( \", COVERED_INST_ID%d, \", %u );\" )%c",
+                     stmt->funit->id, (stmt->exp->id - stmt->funit->exps[0]->id), (semicolon ? ';' : ',') );
       assert( rv < 4096 );
 
     } else {
@@ -3560,6 +3648,37 @@ void generator_hold_last_token() { PROFILE(GENERATOR_HOLD_LAST_TOKEN);
 }
 
 /*!
+ \return Returns a pointer to the functional unit instance that matches the given positional information
+         (and is not a generated scope).
+*/
+static void generator_find_and_assign_inst_id_by_position(
+  funit_inst*  root,
+  unsigned int first_line,
+  int          first_column
+) { PROFILE(GENERATOR_FIND_INST_BY_POSITION);
+
+  assert( root != NULL );
+
+  /* If the current instance matches the given position, output this to the override file */
+  if( (root->funit != NULL) && (root->funit->start_line == first_line) && (root->funit->start_col == first_column) ) {
+    char scope[4096];
+    scope[0] = '\0';
+    instance_gen_scope( scope, root, FALSE );
+    fprintf( generator_toplevel, "  defparam %s = %u;\n", scope, root->id );
+  }
+
+  /* Iterate through children */
+  funit_inst* child = root->child_head;
+  while( child != NULL ) {
+    generator_find_and_assign_inst_id_by_position( child, first_line, first_column );
+    child = child->next;
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  Inserts the COVERED_INST_ID parameter into the inlined code.  This functionality is only needed when
  running in Verilator mode at the moment.
 */
@@ -3568,8 +3687,13 @@ void generator_insert_inst_id_param(
 ) { PROFILE(GENERATOR_INSERT_INST_ID_PARAM);
 
   if( info_suppl.part.verilator ) {
+
+    /* Insert the parameter into the Verilog stream */
     if( !funit_top->funit->suppl.part.inst_id_added ) {
-      generator_add_cov_to_work_code( "parameter COVERED_INST_ID = 0" );
+      char         str[128];
+      unsigned int rv = snprintf( str, 128, "parameter COVERED_INST_ID%d = 0", funit_top->funit->id );
+      assert( rv < 128 );
+      generator_add_cov_to_work_code( str );
       if( preport ) {
         generator_add_cov_to_work_code( ", " );
       } else {
@@ -3578,43 +3702,6 @@ void generator_insert_inst_id_param(
       }
       funit_top->funit->suppl.part.inst_id_added = 1;
     }
-  }
-
-  PROFILE_END;
-
-}
-
-/*!
- Inserts the instance ID parameter value for an instantiation.  Currently this is only valid for
- Verilator mode.
-*/
-void generator_insert_inst_id_value(
-  bool only_override  /*!< Set to TRUE if this is the only parameter override specified for this instantiation. */
-) { PROFILE(GENERATOR_INSERT_INST_ID);
-
-  if( info_suppl.part.verilator ) {
-
-    char str[40];
-
-    generator_hold_last_token();
-
-    if( only_override ) {
-      generator_add_cov_to_work_code( " #(" );
-    }
-
-    if( curr_inst->id != curr_inst_id ) {
-      unsigned int rv = snprintf( str, 40, "(COVERED_INST_ID + %u)", (curr_inst_id - curr_inst->id) );
-      assert( rv < 40 );
-    } else {
-      strncpy( str, "COVERED_INST_ID", 40 );
-    }
-    generator_add_cov_to_work_code( str );
-
-    if( only_override ) {
-      generator_add_cov_to_work_code( ")" );
-    } else {
-      generator_add_cov_to_work_code( ", " );
-    }
 
   }
 
@@ -3622,60 +3709,3 @@ void generator_insert_inst_id_value(
 
 }
 
-/*!
- \return Returns a pointer to the functional unit instance that matches the given positional information
-         (and is not a generated scope).
-*/
-static funit_inst* generator_find_inst_by_position(
-  funit_inst*  root,
-  unsigned int first_line,
-  int          first_column
-) { PROFILE(GENERATOR_FIND_INST_BY_POSITION);
-
-  funit_inst* inst = NULL;
-
-  assert( root != NULL );
-
-  printf( "In generator_find_inst_by_position, root: %s, gend_scope: %d, ppfline: %u, first_line: %u, fcol: %u, first_column: %u\n",
-          root->name, root->suppl.gend_scope, root->ppfline, first_line, root->fcol, first_column );
-
-  if( !root->suppl.gend_scope && (root->ppfline == first_line) && (root->fcol == first_column) ) {
-    inst = root;
-  } else {
-    funit_inst* child = root->child_head;
-    while( (child != NULL) && (inst == NULL) ) {
-      printf( "HERE!\n" );
-      inst  = generator_find_inst_by_position( child, first_line, first_column );
-      child = child->next;
-    }
-  }
-
-  PROFILE_END;
-
-  return( inst );
-
-}
-
-/*!
- Figures out the instance ID to use for this instantiation.
-*/
-void generator_instance(
-  unsigned int first_line,   /*!< First line of instantiation */
-  int          first_column  /*!< First column of instantiation */
-) { PROFILE(GENERATOR_INSTANCE);
-
-  funit_inst* inst;
-
-  printf( "curr_inst: %p\n", curr_inst );
-  inst_link_display( db_list[curr_db]->inst_head );
-
-  inst = generator_find_inst_by_position( curr_inst, first_line, first_column );
-
-  assert( inst != NULL );
-
-  /* Set the instance_id to be used for parameter override */
-  curr_inst_id = inst->id;
-
-  PROFILE_END;
-
-}
