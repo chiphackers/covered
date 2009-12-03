@@ -252,18 +252,23 @@ void instance_gen_verilator_scope(
     instance_gen_verilator_scope( scope, leaf->parent );
 
     if( scope[0] != '\0' ) {
-      char name[256];
-      int  index;
+      char         name[256];
+      int          index;
+      char         index_str[30];
+      unsigned int rv;
       strcat( scope, "__DOT__" );
       if( sscanf( leaf->name, "%[^[][%d]", name, &index ) == 2 ) {
-        char         index_str[30];
-        unsigned int rv;
         strcat( scope, name );
         strcat( scope, "__BRA__" );
         rv = snprintf( index_str, 30, "%d", index );
         assert( rv < 30 );
         strcat( scope, index_str );
         strcat( scope, "__KET__" );
+      } else if( sscanf( leaf->name, "u$%d", &index ) == 1 ) {
+        strcat( scope, "u__024" );
+        rv = snprintf( index_str, 30, "%d", index );
+        assert( rv < 30 );
+        strcat( scope, index_str );
       } else {
         strcat( scope, leaf->name );
       }
