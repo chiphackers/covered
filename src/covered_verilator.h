@@ -7,10 +7,6 @@ extern "C" {
   int db_read( const char*, int );
   void bind_perform( int, int );
 }
-#else
-extern void db_add_line_coverage( uint32_t, uint32_t );
-extern int db_read( const char*, int );
-extern void bind_perform( int, int );
 #endif
 
 inline void covered_line( uint32_t inst_index, uint32_t expr_index ) {
