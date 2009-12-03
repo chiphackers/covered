@@ -146,6 +146,18 @@ void info_set_vector_elem_size() { PROFILE(INFO_SET_VECTOR_ELEM_SIZE);
 }
 
 /*!
+ Sets the scored bit in the information supplemental field.
+*/
+void info_set_scored() { PROFILE(INFO_SET_SCORED);
+
+  /* Indicate that this CDD contains scored information */
+  info_suppl.part.scored = 1;
+
+  PROFILE_END;
+
+}
+
+/*!
  Writes information line to specified file.
 */
 void info_db_write(

@@ -290,7 +290,7 @@ PLI_INT32 covered_end_of_sim( p_cb_data cb ) { PROFILE(COVERED_END_OF_SIM);
   (void)db_do_timestep( 0, TRUE );
 
   /* Indicate that this CDD contains scored information */
-  info_suppl.part.scored = 1;
+  info_set_scored();
 
   /* Write contents to database file */
   Try {

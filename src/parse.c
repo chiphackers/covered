@@ -305,7 +305,7 @@ void parse_and_score_dumpfile(
 #endif
 
     /* Indicate that this CDD contains scored information */
-    info_suppl.part.scored = 1;
+    info_set_scored();
 
     /* Write contents to database file */
     db_write( db, FALSE, FALSE );

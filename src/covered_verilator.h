@@ -19,6 +19,7 @@ extern "C" {
   void db_write( const char*, int, int );
   void db_close();
   void bind_perform( int, int );
+  void info_set_scored();
 }
 #endif
 
@@ -45,6 +46,9 @@ inline void covered_initialize( const char* cdd_name ) {
 }
 
 inline void covered_close( const char* cdd_name ) {
+
+  /* Set the scored bit */
+  info_set_scored();
 
   /* Write contents to database file */
   Try {

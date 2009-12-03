@@ -247,7 +247,13 @@ ifndef LXT
 endif
 endif
 endif
+ifndef USE_VERILATOR
 	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
+else
+ifndef INLINE
+	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
+endif
+endif
 ifdef USE_VERILATOR
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)

@@ -32,6 +32,9 @@ void score_add_args(
   /*@null@*/ const char* arg2
 );
 
+/*! \brief Sets the scored bit in the information field. */
+void info_set_scored();
+
 /*! \brief Writes info line to specified CDD file. */
 void info_db_write(
   FILE* file
