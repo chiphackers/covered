@@ -56,6 +56,12 @@ void instance_gen_scope(
   bool        flatten
 );
 
+/*! \brief Builds Verilator-flattened hierarchy from leaf node to (root - 1). */
+void instance_gen_verilator_scope(
+  char*       scope,
+  funit_inst* leaf
+);
+
 /*! \brief Finds specified scope in functional unit instance tree. */
 funit_inst* instance_find_scope(
   funit_inst* root,
@@ -136,6 +142,13 @@ void instance_get_leading_hierarchy(
             funit_inst*  root,
   /*@out@*/ char*        leading_hierarchy,
   /*@out@*/ funit_inst** top_inst
+);
+
+/*! \brief Gets the Verilator leading hierarchy scope for a particular instance tree */
+void instance_get_verilator_leading_hierarchy(
+                 funit_inst*  root,
+  /*@out null@*/ char*        leading_hierarchy,
+  /*@out@*/      funit_inst** top_inst
 );
 
 /*! \brief Performs complex instance tree merging for two instance trees. */

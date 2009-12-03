@@ -353,6 +353,7 @@ void db_write(
       info_db_write( db_handle );
 
       instl = db_list[curr_db]->inst_head;
+      inst_link_display( instl );
       while( instl != NULL ) {
 
         /* Only output the given instance tree if it is not ignored */
@@ -3527,6 +3528,21 @@ void db_check_dumpfile_scopes() { PROFILE(DB_CHECK_DUMPFILE_SCOPES);
     }
 
   }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Gathers line coverage for the specified expression.
+*/
+void db_add_line_coverage(
+  uint32 inst_index,  /*!< Index of instance to lookup */
+  uint32 expr_index   /*!< Index of expression to set */
+) { PROFILE(DB_ADD_LINE_COVERAGE);
+
+  /* TBD */
+  printf( "Here!\n" );
 
   PROFILE_END;
 

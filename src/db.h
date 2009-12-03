@@ -402,5 +402,13 @@ bool db_do_timestep(
            correct for the covered design. */
 void db_check_dumpfile_scopes();
 
+/*!
+ Gathers line coverage for the specified expression.
+*/
+void db_add_line_coverage(
+  uint32 inst_index,
+  uint32 expr_index
+);
+
 #endif
 

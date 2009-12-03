@@ -689,7 +689,6 @@ module
     {
       if( !parse_mode ) {
         generator_insert_inst_id_param( db_get_curr_funit(), FALSE );
-        generator_insert_inst_id_overrides();
         generator_flush_all;
         generator_push_reg_insert();
       }
@@ -699,6 +698,8 @@ module
       if( parse_mode ) {
         db_end_module( @10.first_line );
       } else {
+        generator_hold_last_token();
+        generator_insert_inst_id_overrides();
         generator_pop_reg_insert();
         generator_pop_funit();
       }

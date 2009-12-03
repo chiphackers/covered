@@ -238,6 +238,46 @@ void instance_gen_scope(
 }
 
 /*!
+ Recreates the Verilator flattened scope for the given instance.
+*/
+void instance_gen_verilator_scope(
+  char*       scope,
+  funit_inst* leaf
+) { PROFILE(INSTANCE_GEN_VERILATOR_SCOPE);
+
+  /* Do not look at the first scope (TOP) */
+  if( leaf != NULL ) {
+
+    /* Call parent instance first */
+    instance_gen_verilator_scope( scope, leaf->parent );
+
+    if( scope[0] != '\0' ) {
+      char name[256];
+      int  index;
+      strcat( scope, "__DOT__" );
+      if( sscanf( leaf->name, "%[^[][%d]", name, &index ) == 2 ) {
+        char         index_str[30];
+        unsigned int rv;
+        strcat( scope, name );
+        strcat( scope, "__BRA__" );
+        rv = snprintf( index_str, 30, "%d", index );
+        assert( rv < 30 );
+        strcat( scope, index_str );
+        strcat( scope, "__KET__" );
+      } else {
+        strcat( scope, leaf->name );
+      }
+    } else {
+      strcpy( scope, leaf->name );
+    }
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  \return Returns TRUE if the given instance name and instance match.  If the specified instance is
          a part of an array of instances and the base name matches the base name of inst_name, we
          also check to make sure that the index of inst_name falls within the legal range of this
@@ -1076,6 +1116,43 @@ void instance_get_leading_hierarchy(
       root = root->child_head;
       if( leading_hierarchy != NULL ) {
         strcat( leading_hierarchy, "." );
+        strcat( leading_hierarchy, root->name );
+      }
+      *top_inst = root;
+    } while( (root != NULL) && (root->funit == NULL) );
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Retrieves the leading hierarchy string for a Verilator signal
+ given the specified instance tree.
+
+ \note
+ This function requires that the leading_hierarchy string be previously allocated and initialized
+ to the NULL string.
+*/
+void instance_get_verilator_leading_hierarchy(
+                 funit_inst*  root,               /*!< Pointer to instance tree to get information from */
+  /*@out null@*/ char*        leading_hierarchy,  /*!< Leading hierarchy to first populated instance */
+  /*@out@*/      funit_inst** top_inst            /*!< Pointer to first populated instance */
+) { PROFILE(INSTANCE_GET_VERILATOR_LEADING_HIERARCHY);
+
+  if( leading_hierarchy != NULL ) {
+    strcat( leading_hierarchy, root->name );
+  }
+
+  *top_inst = root;
+
+  if( root->funit == NULL ) {
+
+    do {
+      root = root->child_head;
+      if( leading_hierarchy != NULL ) {
+        strcat( leading_hierarchy, "__DOT__" );
         strcat( leading_hierarchy, root->name );
       }
       *top_inst = root;

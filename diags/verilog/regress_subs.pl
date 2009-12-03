@@ -447,6 +447,11 @@ sub convertCfg {
   my( $type, $dumponly, $using_verilator, $file ) = @_;
   my( $tmpline ) = "";
 
+  my( $basename );
+  if( $file =~ /(.*)\.cfg/ ) {
+    $basename = $1;
+  }
+
   open( OFILE, ">${file}" ) || die "Can't open ${file} for writing!\n";
   open( IFILE, "../regress/${file}" ) || die "Can't open ../regress/${file} for reading!\n";
 
@@ -461,10 +466,6 @@ sub convertCfg {
       }
       $line = $tmpline;
     } elsif( $using_verilator == 1 ) {
-      my( $basename );
-      if( $file =~ /(.*)\.cfg/ ) {
-        $basename = $1;
-      }
       $line =~ s/-v\s+$basename.v/-v $basename.verilator.v/;
       if( $line =~ /-i\s+/ ) {
         $line =~ s/-i\s+main/-i TOP.v/;
@@ -479,7 +480,7 @@ sub convertCfg {
     } elsif( ($type eq "inline") || ($type eq "inline -inline-comb-depth 1") ) {
       $line =~ s/[0-9a-zA-Z_\.]+\.(vcd|dump)//g;
       if( $using_verilator == 1 ) {
-        $line .= " -inline-metrics ltmcfa -inline-verilator";
+        $line .= " -inline-metrics ltmcfa -inline-verilator V$basename";
       }
     }
     print OFILE $line;

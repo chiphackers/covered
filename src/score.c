@@ -141,6 +141,11 @@ str_link* race_ignore_mod_tail = NULL;
 */
 unsigned int inline_comb_depth = 0xffffffff;
 
+/*!
+ Verilator prefix to use when generating code.
+*/
+char* verilator_prefix = NULL;
+
 
 extern int64     largest_malloc_size;
 extern int64     curr_malloc_size;
@@ -251,7 +256,8 @@ static void score_usage() {
   printf( "                                               c=combinational logic, f=FSM, a=assertions.  Default is ltmecfa.\n" );
   printf( "      -inline-comb-depth <value>             Specifies the depth in an expression tree that combinational logic coverage will be scored for.\n" );
   printf( "                                               By default, combinational logic depth is infinite.\n" );
-  printf( "      -inline-verilator                      If you are generating inlined coverage to be simulated with Verilator, this option is required.\n" );
+  printf( "      -inline-verilator <prefix>             If you are generating inlined coverage to be simulated with Verilator, this option is required.\n" );
+  printf( "                                               The value of <prefix> is the value that is used as the Verilator prefix value.\n" );
   printf( "\n" );
   printf( "   Race Condition Options:\n" );
   printf( "\n" );
@@ -619,7 +625,17 @@ static bool score_parse_args(
 
     } else if( strncmp( "-inline-verilator", argv[i], 17 ) == 0 ) {
 
-      info_suppl.part.verilator = 1;
+      if( check_option_value( argc, argv, i ) ) {
+        i++;
+        if( verilator_prefix != NULL ) {
+          print_output( "Only one -inline-verilator <prefix> option may be present on the command-line.  Using first value...", WARNING, __FILE__, __LINE__ );
+        } else {
+          verilator_prefix = strdup_safe( argv[i] );
+        }
+        info_suppl.part.verilator = 1;
+      } else {
+        Throw 0;
+      }
 
     } else if( strncmp( "-inline", argv[i], 7 ) == 0 ) {
 
@@ -1351,6 +1367,7 @@ void command_score(
   free_safe( timescale, (strlen( timescale ) + 1) );
   free_safe( pragma_coverage_name, (strlen( pragma_coverage_name ) + 1) );
   free_safe( pragma_racecheck_name, (strlen( pragma_racecheck_name ) + 1) );
+  free_safe( verilator_prefix, (strlen( verilator_prefix ) + 1) );
 
   if( error ) {
     Throw 0;

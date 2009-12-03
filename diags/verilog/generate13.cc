@@ -1,6 +1,7 @@
 #include <verilated.h>             // Defines common routines
 #include "Vgenerate13.h"           // From Verilating "add1.v"
 #include <SpTraceVcdC.h>           // Trace file format header (from SystemPerl)
+#include "covered_verilator.h"
 
 Vgenerate13 *top;                  // Instantiation of module
 
@@ -18,6 +19,10 @@ int main() {
   SpTraceVcdCFile* tfp = new SpTraceVcdCFile;
   top->trace( tfp, 99 );           // Trace 99 levels of hierarchy
   tfp->open( "generate13.vcd" );   // Open the dump file
+
+#ifdef COVERED_INLINED
+  covered_initialize( "generate13.cdd" );
+#endif
 
   top->verilatorclock = 0;
 

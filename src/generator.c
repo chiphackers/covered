@@ -52,6 +52,7 @@ extern func_unit*     curr_funit;
 extern int            generate_mode;
 extern isuppl         info_suppl;
 extern unsigned int   inline_comb_depth;
+extern char*          verilator_prefix;
 
 
 struct fname_link_s;
@@ -190,17 +191,6 @@ static unsigned int last_token_index;
  Look-ahead buffer that stores last parsed token.
 */
 static char lahead_buffer[4096];
-
-/*!
- Current instance ID.
-*/
-static int curr_inst_id;
-
-/*!
- File containing the instance ID overrides (included in top-most functional unit).
-*/
-FILE* generator_toplevel;
-
 
 static char* generator_gen_size(
   expression* exp,
@@ -917,6 +907,65 @@ static void generator_output_funits(
 }
 
 /*!
+ Generates the included header file for Verilator simulation.
+*/
+void generator_create_verilator_header() { PROFILE(GENERATOR_CREATE_VERILATOR_HEADER);
+
+  if( info_suppl.part.verilator ) {
+
+    FILE* ofile;
+
+    if( (ofile = fopen( "covered/include/covered.h", "w" )) != NULL ) {
+
+      inst_link* instl;
+
+      fprintf( ofile, "#ifndef __COVERED_H__\n" );
+      fprintf( ofile, "#define __COVERED_H__\n" );
+      fprintf( ofile, "\n" );
+      fprintf( ofile, "class %s;\n", verilator_prefix );
+      fprintf( ofile, "\n" );
+      fprintf( ofile, "extern void db_add_line_coverage( uint32_t, uint32_t );\n" );
+      fprintf( ofile, "extern bool db_read( const char*, int );\n" );
+      fprintf( ofile, "extern void bind_perform( bool, int );\n" );
+      fprintf( ofile, "\n" );
+      fprintf( ofile, "inline void covered_line( uint32_t inst_index, uint32_t expr_index ) {\n" );
+      fprintf( ofile, "  db_add_line_coverage( inst_index, expr_index );\n" );
+      fprintf( ofile, "}\n" );
+      fprintf( ofile, "\n" );
+      fprintf( ofile, "inline void covered_initialize( %s* top, const char* cdd_name ) {\n", verilator_prefix );
+      fprintf( ofile, "\n" );
+      fprintf( ofile, "  // try {\n" );
+      fprintf( ofile, "    db_read( cdd_name, %d );\n", READ_MODE_NO_MERGE );
+      fprintf( ofile, "  // } catch() {\n" );
+      fprintf( ofile, "    // TBD - Throw Exception Here\n" );
+      fprintf( ofile, "  // }\n" );
+      fprintf( ofile, "\n" );
+      fprintf( ofile, "  // try {\n" );
+      fprintf( ofile, "    bind_perform( %d, 0 );\n", TRUE );
+      fprintf( ofile, "  // } catch() {\n" );
+      fprintf( ofile, "    // TBD - Throw Exception Here\n" );
+      fprintf( ofile, "  // }\n" );
+      fprintf( ofile, "\n" );
+      fprintf( ofile, "}\n" );
+      fprintf( ofile, "\n" );
+      fprintf( ofile, "#endif\n" );
+
+      fclose( ofile );
+
+    } else {
+
+      print_output( "Unable to open covered/include/covered.h for writing", FATAL, __FILE__, __LINE__ );
+      Throw 0;
+
+    }
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  Outputs the covered portion of the design to the covered/verilog directory.
 */
 void generator_output() { PROFILE(GENERATOR_OUTPUT);
@@ -951,6 +1000,22 @@ void generator_output() { PROFILE(GENERATOR_OUTPUT);
     Throw 0;
   }
 
+  /* If the "covered/include" directory exists, remove it */
+  if( directory_exists( "covered/include" ) ) {
+    if( system( "rm -rf covered/include" ) != 0 ) {
+      print_output( "Unable to remove \"covered/include\" directory", FATAL, __FILE__, __LINE__ );
+      Throw 0;
+    }
+  }
+
+  /* Create the covered/include directory */
+  /*@-shiftimplementation@*/
+  if( mkdir( "covered/include", (S_IRWXU | S_IRWXG | S_IRWXO) ) != 0 ) {
+  /*@=shiftimplementation@*/
+    print_output( "Unable to create \"covered/include\" directory", FATAL, __FILE__, __LINE__ );
+    Throw 0;
+  }
+
   /* Initialize the work_buffer and hold_buffer arrays */
   work_buffer[0] = '\0';
   hold_buffer[0] = '\0';
@@ -970,6 +1035,9 @@ void generator_output() { PROFILE(GENERATOR_OUTPUT);
 
   /* Deallocate the functional unit iterator */
   func_iter_dealloc( &fiter );
+
+  /* Output the header file */
+  generator_create_verilator_header();
 
   PROFILE_END;
 
@@ -3558,7 +3626,7 @@ void generator_insert_inst_id_param(
     if( !funit->suppl.part.inst_id_added ) {
 
       char         str[128];
-      unsigned int rv = snprintf( str, 128, "parameter COVERED_INST_ID%d = 0", funit->id );
+      unsigned int rv = snprintf( str, 128, "reg [31:0] COVERED_INST_ID%d /* verilator public */", funit->id );
 
       assert( rv < 128 );
 
@@ -3593,31 +3661,68 @@ static void generator_write_inst_id_overrides(
   if( root != NULL ) {
 
     funit_inst* child;
+    bool        recursive = TRUE;
 
     /* Output ourselves */
-    if( (root->funit != NULL) && (strcmp( root->name, "$root" ) != 0) && (root->funit->suppl.part.type != FUNIT_NO_SCORE) && !root->suppl.ignore ) {
+    if( (root->funit != NULL) && (strcmp( root->name, "$root" ) != 0) ) {
 
-      char         str1[4096];
-      char         str2[128];
-      unsigned int rv;
+      /* Don't continue the current tree if it is marked as a no score instance or it is to be ignored */
+      if( (root->funit->suppl.part.type != FUNIT_NO_SCORE) && !root->suppl.ignore ) {
 
-      /* Get the hierarchical reference */
-      str1[0] = '\0';
-      instance_gen_scope( str1, root, FALSE );
+        char         str1[4096];
+        char         str2[4096];
+        unsigned int rv;
 
-      /* Insert the code */
-      rv = snprintf( str2, 128, "defparam %s%cCOVERED_INST_ID%d = %d;", (str1 + hier_chars_to_ignore), ((strlen( str1 ) <= hier_chars_to_ignore) ? ' ' : '.'), root->funit->id, root->id );
-      assert( rv < 128 );
-      generator_add_cov_to_work_code( str2 );
-      generator_add_cov_to_work_code( "\n" );
+        if( info_suppl.part.verilator ) {
+
+          /* Get the hierarchical reference */
+          str1[0] = '\0';
+          instance_gen_verilator_scope( str1, root );
+
+          printf( "verilator scope: %s, hier_chars_to_ignore: %d\n", str1, hier_chars_to_ignore );
+
+          /* Insert the code */
+          rv = snprintf( str2, 4096, "%s%sCOVERED_INST_ID%d = %d;",
+                         ((strlen( str1 ) == hier_chars_to_ignore) ? "" : (str1 + (hier_chars_to_ignore + 7))),
+                         ((strlen( str1 ) == hier_chars_to_ignore) ? "" : "__DOT__"),
+                         root->funit->id, root->id );
+          assert( rv < 4096 );
+
+        } else {
+
+          /* Get the hierarchical reference */
+          str1[0] = '\0';
+          instance_gen_scope( str1, root, FALSE );
+
+          /* Insert the code */
+          rv = snprintf( str2, 4096, "%s%sCOVERED_INST_ID%d = %d;",
+                         ((strlen( str1 ) == hier_chars_to_ignore) ? "" : (str1 + (hier_chars_to_ignore + 1))),
+                         ((strlen( str1 ) == hier_chars_to_ignore) ? "" : "."),
+                         root->funit->id, root->id );
+          assert( rv < 4096 );
+
+        }
+
+        generator_add_cov_to_work_code( str2 );
+        generator_add_cov_to_work_code( "\n" );
+
+      } else {
+
+        recursive = FALSE;
+
+      }
 
     }
-    
-    /* Output children */
-    child = root->child_head;
-    while( child != NULL ) {
-      generator_write_inst_id_overrides( child, hier_chars_to_ignore );
-      child = child->next;
+
+    if( recursive ) {
+
+      /* Output children */
+      child = root->child_head;
+      while( child != NULL ) {
+        generator_write_inst_id_overrides( child, hier_chars_to_ignore );
+        child = child->next;
+      }
+
     }
 
   }
@@ -3629,12 +3734,41 @@ static void generator_write_inst_id_overrides(
 /*!
  Creates the parameter override file and populates it with the instance ID information.
 */
-void generator_insert_inst_id_overrides() { PROFILE(GENERATOR_CREATE_INST_ID_OVERRIDES);
+void generator_insert_inst_id_overrides() { PROFILE(GENERATOR_INSERT_INST_ID_OVERRIDES);
 
-//  if( info_suppl.part.verilator ) {
+  funit_inst* top_inst;
+  char        leading_hier[4096];
 
-    funit_inst* top_inst;
-    char        leading_hier[4096];
+  if( info_suppl.part.verilator ) {
+
+    /* Get the top-most module */
+    leading_hier[0] = '\0';
+    instance_get_verilator_leading_hierarchy( db_list[curr_db]->inst_tail->inst, leading_hier, &top_inst );
+
+    /* If the current functional unit is the same as the top-most functional unit, insert the overrides */
+    if( top_inst->funit == curr_funit ) {
+
+      inst_link* instl = db_list[curr_db]->inst_head;
+
+      generator_add_cov_to_work_code( "`systemc_header" );
+      generator_add_cov_to_work_code( "\n" );
+      generator_add_cov_to_work_code( "#include \"covered_verilator.h\"" );
+      generator_add_cov_to_work_code( "\n" );
+      generator_add_cov_to_work_code( "`systemc_ctor" );
+      generator_add_cov_to_work_code( "\n" );
+
+      while( instl != NULL ) {
+        generator_write_inst_id_overrides( instl->inst, strlen( leading_hier ) );
+        instl = instl->next;
+      }
+
+      generator_add_cov_to_work_code( "\n" );
+      generator_add_cov_to_work_code( "`verilog" );
+      generator_add_cov_to_work_code( "\n" );
+
+    }
+
+  } else {
 
     /* Get the top-most module */
     leading_hier[0] = '\0';
@@ -3642,17 +3776,23 @@ void generator_insert_inst_id_overrides() { PROFILE(GENERATOR_CREATE_INST_ID_OVE
 
     /* If the current functional unit is the same as the top-most functional unit, insert the overrides */
     if( top_inst->funit == curr_funit ) {
-    
+
       inst_link* instl = db_list[curr_db]->inst_head;
 
+      generator_add_cov_to_work_code( "initial begin" );
+      generator_add_cov_to_work_code( "\n" );
+
       while( instl != NULL ) {
-        generator_write_inst_id_overrides( instl->inst, ((strlen( leading_hier ) == 0) ? 0 : (strlen( leading_hier ) + 1)) );
+        generator_write_inst_id_overrides( instl->inst, strlen( leading_hier ) );
         instl = instl->next;
       }
 
+      generator_add_cov_to_work_code( "end" );
+      generator_add_cov_to_work_code( "\n" );
+
     }
 
-//  }
+  }
 
   PROFILE_END;
 

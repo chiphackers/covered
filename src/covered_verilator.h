@@ -1,35 +1,17 @@
 #ifndef __COVERED_VERILATOR_H__
 #define __COVERED_VERILATOR_H__
 
-/*
- Copyright (c) 2006-2009 Trevor Williams
+extern void db_add_line_coverage( uint32_t, uint32_t );
+extern int db_read( const char*, int );
+extern void bind_perform( int, int );
 
- This program is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by the Free Software
- Foundation; either version 2 of the License, or (at your option) any later version.
-
- This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- See the GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License along with this program;
- if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/
-
-#include "db.h"
-
-/*!
- Called from Verilog $c call which gathers line coverage for the given expression in
- the given instance.
-*/
-inline void covered_line(
-  unsigned inst_index,
-  unsigned expr_index
-) {
-
+inline void covered_line( uint32_t inst_index, uint32_t expr_index ) {
   db_add_line_coverage( inst_index, expr_index );
+}
 
+inline void covered_initialize( const char* cdd_name ) {
+  db_read( cdd_name, 0 );
+  bind_perform( 1, 0 );
 }
 
 #endif
-
