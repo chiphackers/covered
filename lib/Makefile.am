@@ -18,6 +18,7 @@ libcovered_a_SOURCES = ../src/arc.c \
                        ../src/func_iter.c \
                        ../src/func_unit.c \
                        ../src/genprof.c \
+                       ../src/globals.c \
                        ../src/info.c \
                        ../src/instance.c \
                        ../src/link.c \

@@ -60,14 +60,15 @@ am_libcovered_a_OBJECTS = arc.$(OBJEXT) assertion.$(OBJEXT) \
 	binding.$(OBJEXT) codegen.$(OBJEXT) db.$(OBJEXT) \
 	enumerate.$(OBJEXT) expr.$(OBJEXT) fsm.$(OBJEXT) \
 	func_iter.$(OBJEXT) func_unit.$(OBJEXT) genprof.$(OBJEXT) \
-	info.$(OBJEXT) instance.$(OBJEXT) link.$(OBJEXT) \
-	obfuscate.$(OBJEXT) ovl.$(OBJEXT) param.$(OBJEXT) \
-	parser_misc.$(OBJEXT) profiler.$(OBJEXT) race.$(OBJEXT) \
-	reentrant.$(OBJEXT) scope.$(OBJEXT) search.$(OBJEXT) \
-	sim.$(OBJEXT) stat.$(OBJEXT) statement.$(OBJEXT) \
-	static.$(OBJEXT) stmt_blk.$(OBJEXT) struct_union.$(OBJEXT) \
-	symtable.$(OBJEXT) sys_tasks.$(OBJEXT) tree.$(OBJEXT) \
-	util.$(OBJEXT) vector.$(OBJEXT) vsignal.$(OBJEXT)
+	globals.$(OBJEXT) info.$(OBJEXT) instance.$(OBJEXT) \
+	link.$(OBJEXT) obfuscate.$(OBJEXT) ovl.$(OBJEXT) \
+	param.$(OBJEXT) parser_misc.$(OBJEXT) profiler.$(OBJEXT) \
+	race.$(OBJEXT) reentrant.$(OBJEXT) scope.$(OBJEXT) \
+	search.$(OBJEXT) sim.$(OBJEXT) stat.$(OBJEXT) \
+	statement.$(OBJEXT) static.$(OBJEXT) stmt_blk.$(OBJEXT) \
+	struct_union.$(OBJEXT) symtable.$(OBJEXT) sys_tasks.$(OBJEXT) \
+	tree.$(OBJEXT) util.$(OBJEXT) vector.$(OBJEXT) \
+	vsignal.$(OBJEXT)
 libcovered_a_OBJECTS = $(am_libcovered_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(libexecdir)"
 PROGRAMS = $(libexec_PROGRAMS)
@@ -237,6 +238,7 @@ libcovered_a_SOURCES = ../src/arc.c \
                        ../src/func_iter.c \
                        ../src/func_unit.c \
                        ../src/genprof.c \
+                       ../src/globals.c \
                        ../src/info.c \
                        ../src/instance.c \
                        ../src/link.c \
@@ -373,6 +375,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/func_iter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/func_unit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/genprof.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/globals.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/info.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/instance.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/link.Po@am__quote@
@@ -565,6 +568,20 @@ genprof.obj: ../src/genprof.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../src/genprof.c' object='genprof.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o genprof.obj `if test -f '../src/genprof.c'; then $(CYGPATH_W) '../src/genprof.c'; else $(CYGPATH_W) '$(srcdir)/../src/genprof.c'; fi`
+
+globals.o: ../src/globals.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT globals.o -MD -MP -MF $(DEPDIR)/globals.Tpo -c -o globals.o `test -f '../src/globals.c' || echo '$(srcdir)/'`../src/globals.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/globals.Tpo $(DEPDIR)/globals.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../src/globals.c' object='globals.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o globals.o `test -f '../src/globals.c' || echo '$(srcdir)/'`../src/globals.c
+
+globals.obj: ../src/globals.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT globals.obj -MD -MP -MF $(DEPDIR)/globals.Tpo -c -o globals.obj `if test -f '../src/globals.c'; then $(CYGPATH_W) '../src/globals.c'; else $(CYGPATH_W) '$(srcdir)/../src/globals.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/globals.Tpo $(DEPDIR)/globals.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='../src/globals.c' object='globals.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o globals.obj `if test -f '../src/globals.c'; then $(CYGPATH_W) '../src/globals.c'; else $(CYGPATH_W) '$(srcdir)/../src/globals.c'; fi`
 
 info.o: ../src/info.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT info.o -MD -MP -MF $(DEPDIR)/info.Tpo -c -o info.o `test -f '../src/info.c' || echo '$(srcdir)/'`../src/info.c
