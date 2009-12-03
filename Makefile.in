@@ -230,7 +230,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 use_tcltk = @use_tcltk@
 EXTRA_DIST = ChangeLog.bak depcomp release.in ChangeLog AUTHORS COPYING INSTALL NEWS README TODO
-SUBDIRS = scripts src lib doc
+SUBDIRS = scripts src lib/run lib/vpi doc
 AUTOMAKE_OPTIONS = foreign
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive

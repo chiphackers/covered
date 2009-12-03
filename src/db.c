@@ -58,6 +58,7 @@
 #include "vsignal.h"
 
 
+#ifndef RUNLIB
 extern char*       top_module;
 extern str_link*   no_score_head;
 extern char        user_msg[USER_MSG_LENGTH];
@@ -401,6 +402,7 @@ void db_write(
   PROFILE_END;
 
 }
+#endif /* RUNLIB */
 
 /*!
  \throws anonymous info_db_read args_db_read Throw Throw Throw expression_db_read fsm_db_read race_db_read funit_db_read vsignal_db_read funit_db_merge funit_db_merge statement_db_read
@@ -739,6 +741,7 @@ bool db_read(
 
 }
 
+#ifndef RUNLIB
 /*! \brief Assigns instance IDs to all instances. */
 void db_assign_ids() { PROFILE(DB_ASSIGN_IDS);
 
@@ -3547,3 +3550,4 @@ void db_add_line_coverage(
   PROFILE_END;
 
 }
+#endif /* RUNLIB */

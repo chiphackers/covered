@@ -7466,7 +7466,7 @@ $as_echo "$shared" >&6; }
 
 
 
-ac_config_files="$ac_config_files Makefile src/Makefile lib/Makefile scripts/Makefile doc/Makefile doc/docbook/Makefile"
+ac_config_files="$ac_config_files Makefile src/Makefile lib/vpi/Makefile lib/run/Makefile scripts/Makefile doc/Makefile doc/docbook/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -8183,7 +8183,8 @@ do
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
-    "lib/Makefile") CONFIG_FILES="$CONFIG_FILES lib/Makefile" ;;
+    "lib/vpi/Makefile") CONFIG_FILES="$CONFIG_FILES lib/vpi/Makefile" ;;
+    "lib/run/Makefile") CONFIG_FILES="$CONFIG_FILES lib/run/Makefile" ;;
     "scripts/Makefile") CONFIG_FILES="$CONFIG_FILES scripts/Makefile" ;;
     "doc/Makefile") CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
     "doc/docbook/Makefile") CONFIG_FILES="$CONFIG_FILES doc/docbook/Makefile" ;;
