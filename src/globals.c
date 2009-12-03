@@ -22,7 +22,12 @@
 
 #include "defines.h"
 
+bool                     report_gui                  = FALSE;
 int                      timestep_update             = 0;
+bool                     report_covered              = FALSE;
+bool                     flag_use_line_width         = FALSE;
+int                      line_width                  = DEFAULT_LINE_WIDTH;
+bool                     report_instance             = FALSE;
 int                      flag_race_check             = WARNING;
 tnode*                   def_table                   = NULL;
 int                      fork_depth                  = -1;
@@ -41,20 +46,11 @@ str_link*                merge_in_head               = NULL;
 str_link*                merge_in_tail               = NULL;
 char*                    cdd_message                 = NULL;
 char*                    merged_file                 = NULL;
+bool                     flag_output_exclusion_ids   = FALSE;
+bool                     report_exclusions           = FALSE;
 str_link*                race_ignore_mod_head        = NULL;
 str_link*                race_ignore_mod_tail        = NULL;
 bool                     instance_specified          = FALSE;
 unsigned int             inline_comb_depth           = 0xffffffff;
 int                      merge_er_value              = MERGE_ER_NONE;
 str_link*                gen_mod_head                = NULL;
-
-/*!
- \param msg  Message to output to standard output
-
- Outputs the given message to standard output using the vpi_printf function.
-*/
-void vpi_print_output( const char* msg ) {
-
-  vpi_printf( "covered VPI: %s\n", msg );
-
-}

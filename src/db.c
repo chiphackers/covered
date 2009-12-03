@@ -58,7 +58,6 @@
 #include "vsignal.h"
 
 
-#ifndef RUNLIB
 extern char*       top_module;
 extern str_link*   no_score_head;
 extern char        user_msg[USER_MSG_LENGTH];
@@ -298,6 +297,7 @@ void db_close() { PROFILE(DB_CLOSE);
 
 }
 
+#ifndef RUNLIB
 /*!
  \return Returns TRUE if the top module specified in the -t option is the top-level module
          of the simulation; otherwise, returns FALSE.
@@ -322,6 +322,7 @@ bool db_check_for_top_module() { PROFILE(DB_CHECK_FOR_TOP_MODULE);
   return( retval );
 
 }
+#endif /* RUNLIB */
 
 /*!
  \throws anonymous Throw Throw instance_db_write
@@ -354,7 +355,6 @@ void db_write(
       info_db_write( db_handle );
 
       instl = db_list[curr_db]->inst_head;
-      inst_link_display( instl );
       while( instl != NULL ) {
 
         /* Only output the given instance tree if it is not ignored */
@@ -402,7 +402,6 @@ void db_write(
   PROFILE_END;
 
 }
-#endif /* RUNLIB */
 
 /*!
  \throws anonymous info_db_read args_db_read Throw Throw Throw expression_db_read fsm_db_read race_db_read funit_db_read vsignal_db_read funit_db_merge funit_db_merge statement_db_read
@@ -543,12 +542,16 @@ bool db_read(
 
             } else if( type == DB_TYPE_EXCLUDE ) {
 
+#ifndef RUNLIB
               /* Parse rest of line for exclude info */
               if( merge_mode ) {
                 exclude_db_merge( curr_funit, &rest_line );
               } else {
                 exclude_db_read( &rest_line, curr_funit );
               }
+#else
+              assert( 0 );  /* I don't believe that we should ever get here with RUNLIB */
+#endif /* RUNLIB */
 
             } else if( type == DB_TYPE_RACE ) {
 
@@ -594,8 +597,10 @@ bool db_read(
                 /* Parse rest of the line for an instance-only structure */
                 if( !merge_mode ) {
                   instance_only_db_read( &rest_line );
+#ifndef RUNLIB
                 } else {
                   instance_only_db_merge( &rest_line );
+#endif /* RUNLIB */
                 }
 
                 /* Specify that the current functional unit does not exist */
@@ -608,6 +613,7 @@ bool db_read(
 
                 /* Now finish reading functional unit line */
                 funit_db_read( &tmpfunit, funit_scope, &inst_name_diff, &rest_line );
+#ifndef RUNLIB
                 if( (read_mode == READ_MODE_MERGE_INST_MERGE) &&
                     ((foundinst = inst_link_find_by_scope( funit_scope, db_list[curr_db]->inst_head, FALSE )) != NULL) ) {
                   merge_mode = TRUE;
@@ -619,6 +625,7 @@ bool db_read(
                   curr_funit = foundfunit->funit;
                   funit_db_merge( foundfunit->funit, db_handle, FALSE );
                 } else {
+#endif /* RUNLIB */
                   curr_funit             = funit_create();
                   curr_funit->name       = strdup_safe( funit_name );
                   curr_funit->suppl.all  = tmpfunit.suppl.all;
@@ -632,7 +639,9 @@ bool db_read(
                     parent_mod         = scope_get_parent_module( db_list[curr_db]->inst_tail->inst, funit_scope );
                     funit_link_add( curr_funit, &(parent_mod->tf_head), &(parent_mod->tf_tail) );
                   }
+#ifndef RUNLIB
                 }
+#endif /* RUNLIB */
   
                 /* Set global functional unit, if it has been found */
                 if( (curr_funit != NULL) && (strncmp( curr_funit->name, "$root", 5 ) == 0) ) {
@@ -857,6 +866,7 @@ void db_merge_funits() { PROFILE(DB_MERGE_FUNITS);
   PROFILE_END;
 
 }
+#endif /* RUNLIB */
 
 /*!
  \return Returns scaled version of input value.
@@ -884,6 +894,7 @@ uint64 db_scale_to_precision(
 
 }
 
+#ifndef RUNLIB
 /*!
  \return Returns a scope name for an unnamed scope.  Only called for parsing purposes.
 */
@@ -903,6 +914,7 @@ char* db_create_unnamed_scope() { PROFILE(DB_CREATE_UNNAMED_SCOPE);
   return( name );
 
 }
+#endif /* RUNLIB */
 
 /*!
  \return Returns TRUE if the given scope is an unnamed scope name; otherwise, returns FALSE.
@@ -919,6 +931,7 @@ bool db_is_unnamed_scope(
 
 }
 
+#ifndef RUNLIB
 #ifndef VPI_ONLY
 /*!
  Sets the global timescale unit and precision variables.
@@ -3535,6 +3548,7 @@ void db_check_dumpfile_scopes() { PROFILE(DB_CHECK_DUMPFILE_SCOPES);
   PROFILE_END;
 
 }
+#endif /* RUNLIB */
 
 /*!
  Gathers line coverage for the specified expression.
@@ -3550,4 +3564,3 @@ void db_add_line_coverage(
   PROFILE_END;
 
 }
-#endif /* RUNLIB */

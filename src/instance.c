@@ -180,6 +180,7 @@ funit_inst* instance_create(
 
 }
 
+#ifndef RUNLIB
 /*!
  Assign ID numbers to all instances in the design.
 */
@@ -281,6 +282,7 @@ void instance_gen_verilator_scope(
   PROFILE_END;
 
 }
+#endif /* RUNLIB */
 
 /*!
  \return Returns TRUE if the given instance name and instance match.  If the specified instance is
@@ -426,6 +428,7 @@ funit_inst* instance_find_by_funit(
 
 }
 
+#ifndef RUNLIB
 /*!
  Recursively searches the given instance tree, setting match_inst and matches if a matched functional unit name was found.
 */
@@ -964,6 +967,7 @@ void instance_resolve(
   PROFILE_END;
 
 }
+#endif /* RUNLIB */
 
 /*!
  \return Returns TRUE if instance was added to the specified functional unit instance tree; otherwise,
@@ -1024,6 +1028,7 @@ bool instance_read_add(
 
 }
 
+#ifndef RUNLIB
 /*!
  \return Returns TRUE if the two trees were successfully merged.
 
@@ -1272,6 +1277,7 @@ bool instance_merge_two_trees(
   return( retval );
 
 }
+#endif /* RUNLIB */
 
 /*!
  \throws anonymous gen_item_assign_expr_ids instance_db_write funit_db_write
@@ -1301,13 +1307,14 @@ void instance_db_write(
 
       assert( scope != NULL );
 
+#ifndef RUNLIB
       /* If we are in parse mode, re-issue expression IDs (we use the ulid field since it is not used in parse mode) */
       if( issue_ids && (root->funit != NULL) ) {
 
         unsigned int i;
 #ifndef VPI_ONLY
         gitem_link* gil;
-#endif
+#endif /* VPI_ONLY */
 
         /* First issue IDs to the expressions within the functional unit */
         for( i=0; i<root->funit->exp_size; i++ ) {
@@ -1328,9 +1335,10 @@ void instance_db_write(
           gen_item_assign_ids( gil->gi, root->funit );
           gil = gil->next;
         }
-#endif
+#endif /* VPI_ONLY */
 
       }
+#endif /* RUNLIB */
 
       /* Display root functional unit */
       funit_db_write( root->funit, scope, root->suppl.name_diff, file, curr, issue_ids );
@@ -1428,6 +1436,7 @@ void instance_only_db_read(
 
 }
 
+#ifndef RUNLIB
 /*!
  Merges instance-only constructs from two CDD files.
 */
@@ -1572,6 +1581,7 @@ void instance_remove_parms_with_expr(
   PROFILE_END;
 
 }
+#endif /* RUNLIB */
 
 /*!
  Deallocates all memory allocated for the given instance.
@@ -1595,13 +1605,15 @@ void instance_dealloc_single(
       free_safe( inst->range, sizeof( vector_width ) );
     }
 
+#ifndef RUNLIB
     /* Deallocate memory for instance parameter list */
     inst_parm_dealloc( inst->param_head, TRUE );
 
 #ifndef VPI_ONLY
     /* Deallocate memory for generate item list */
     gitem_link_delete_list( inst->gitem_head, FALSE );
-#endif
+#endif /* VPI_ONLY */
+#endif /* RUNLIB */
 
     /* Free up memory for this functional unit instance */
     free_safe( inst, sizeof( funit_inst ) );
@@ -1612,6 +1624,7 @@ void instance_dealloc_single(
 
 }
 
+#ifndef RUNLIB
 /*!
  Outputs dumpvars to the specified file.
 */
@@ -1639,6 +1652,7 @@ void instance_output_dumpvars(
   PROFILE_END;
 
 }
+#endif /* RUNLIB */
 
 /*!
  Recursively traverses instance tree, deallocating heap memory used to store the
@@ -1734,4 +1748,3 @@ void instance_dealloc(
   PROFILE_END;
 
 }
-

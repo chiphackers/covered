@@ -118,6 +118,7 @@ vsignal* vsignal_create(
 
 }
 
+#ifndef RUNLIB
 /*!
  \throws anonymous expression_set_value
 
@@ -234,6 +235,7 @@ vsignal* vsignal_duplicate(
   return( new_sig );
 
 }
+#endif /* RUNLIB */
 
 /*!
  Prints the vsignal information for the specified vsignal to the
@@ -368,6 +370,7 @@ void vsignal_db_read(
 
 }
 
+#ifndef RUNLIB
 /*!
  \throws anonymous vector_db_merge Throw Throw
 
@@ -686,6 +689,7 @@ vsignal* vsignal_from_string(
   return( sig );
 
 }
+#endif /* RUNLIB */
 
 /*!
  \return Returns width of the given expression that is bound to the given signal.
@@ -720,6 +724,7 @@ int vsignal_calc_width_for_expr(
 
 }
 
+#ifndef RUNLIB
 /*!
  \return Returns the LSB of the given signal for the given expression.
 */
@@ -736,6 +741,7 @@ int vsignal_calc_lsb_for_expr(
   return( width );
 
 }
+#endif /* RUNLIB */
 
 /*!
  Deallocates all malloc'ed memory back to the heap for the specified
@@ -777,4 +783,3 @@ void vsignal_dealloc(
   PROFILE_END;
 
 }
-

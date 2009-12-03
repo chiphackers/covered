@@ -119,6 +119,7 @@ static race_blk* race_blk_create(
 
 }
 
+#ifndef RUNLIB
 /*!
  \return Returns TRUE if the specified to_find statement was found in the statement block specified
          by curr; otherwise, returns FALSE.
@@ -825,6 +826,7 @@ void race_check_modules() { PROFILE(RACE_CHECK_MODULES);
   PROFILE_END;
 
 }
+#endif /* RUNLIB */
 
 /*!
  Writes contents of specified race condition block to the specified output stream.
@@ -897,6 +899,7 @@ void race_db_read(
 
 }
 
+#ifndef RUNLIB
 /*!
  Iterates through specified race condition block list, totaling the number of race conditions found as
  well as tallying each type of race condition.
@@ -1080,6 +1083,7 @@ void race_collect_lines(
   PROFILE_END;
 
 }
+#endif /* RUNLIB */
 
 /*!
  Recursively deallocates the specified race condition block list.
@@ -1101,4 +1105,3 @@ void race_blk_delete_list(
   PROFILE_END;
 
 }
-

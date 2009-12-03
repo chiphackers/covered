@@ -180,6 +180,7 @@ void bind_append_fsm_expr(
 
 }
 
+#ifndef RUNLIB
 /*!
  Displays to standard output the current state of the binding list (debug purposes only).
 */
@@ -229,6 +230,7 @@ void bind_display_list() {
   }
 
 }
+#endif /* RUNLIB */
 
 /*!
  Removes the binding containing the expression ID of id.  This needs to
@@ -289,6 +291,7 @@ void bind_remove(
 
 }
 
+#ifndef RUNLIB
 /*!
  \return Returns the name of the signal to be bound with the given expression (if one exists);
          otherwise, returns NULL if no match was found.
@@ -398,6 +401,7 @@ static bool bind_param(
   return( retval );
 
 }
+#endif /* RUNLIB */
 
 /*!
  \return Returns TRUE if bind occurred successfully; otherwise, returns FALSE.
@@ -524,6 +528,7 @@ bool bind_signal(
           expression_set_value( exp, found_sig, funit_exp );
         }
 
+#ifndef RUNLIB
         /*
          Create a non-blocking assignment handler for the given expression if the attached signal is a memory
          and the expression is assignable on the LHS of a non-blocking assignment operator.  Only perform this
@@ -535,9 +540,11 @@ bool bind_signal(
             expression_create_nba( exp, found_sig, nba_exp->right->value );
           }
         }
+#endif /* RUNLIB */
 
       }
 
+#ifndef RUNLIB
       if( !cdd_reading ) {
 
         /* Check to see if this signal should be assigned by Covered or the dumpfile */
@@ -575,13 +582,14 @@ bool bind_signal(
                 assert( rv < USER_MSG_LENGTH );
                 print_output( user_msg, DEBUG, __FILE__, __LINE__ );
               }
-#endif
+#endif /* DEBUG_MODE */
               stmt_blk_add_to_remove_list( stmt );
             }
           }
         }
 
       }
+#endif /* RUNLIB */
 
     }
 
@@ -597,6 +605,7 @@ bool bind_signal(
 
 }
 
+#ifndef RUNLIB
 /*!
  Binds a given task/function call port parameter to the matching signal in the specified
  task/function.
@@ -679,6 +688,7 @@ static void bind_task_function_ports(
   PROFILE_END;
 
 }
+#endif /* RUNLIB */
 
 /*!
  \return Returns TRUE if there were no errors in binding the specified expression to the needed
@@ -753,6 +763,7 @@ static bool bind_task_function_namedblock(
 
         }
 
+#ifndef RUNLIB
         /* If this is a function or task, bind the ports as well */
         if( ((type == FUNIT_FUNCTION) || (type == FUNIT_TASK)) && !cdd_reading ) {
 
@@ -770,6 +781,7 @@ static bool bind_task_function_namedblock(
           }
 
         }
+#endif
 
       }
 
@@ -827,10 +839,14 @@ void bind_perform(
           if( curr_eb->type == 0 ) {
 
             /* Attempt to bind the expression to a parameter; otherwise, bind to a signal */
+#ifndef RUNLIB
             if( !(bound = bind_param( curr_eb->name, curr_eb->exp, curr_eb->funit, curr_eb->line, (pass == 0) )) ) {
+#endif /* RUNLIB */
               bound = bind_signal( curr_eb->name, curr_eb->exp, curr_eb->funit, FALSE, cdd_reading,
                                    (curr_eb->clear_assigned > 0), curr_eb->line, (pass == 0) );
+#ifndef RUNLIB
             }
+#endif /* RUNLIB */
 
             /* If an FSM expression is attached, size it now */
             if( curr_eb->fsm != NULL ) {
@@ -872,6 +888,7 @@ void bind_perform(
         */
         if( !bound && (curr_eb->clear_assigned == 0) && (pass == 1) ) {
           if( (tmp_stmt = expression_get_root_statement( curr_eb->exp )) != NULL ) {
+#ifndef RUNLIB
 #ifdef DEBUG_MODE
             if( debug_mode ) {
               unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block containing line %d in file \"%s\", because it was unbindable",
@@ -879,8 +896,11 @@ void bind_perform(
               assert( rv < USER_MSG_LENGTH );
               print_output( user_msg, DEBUG, __FILE__, __LINE__ );
             }
-#endif        
+#endif /* DEBUG_MODE */
             stmt_blk_add_to_remove_list( tmp_stmt );
+#else
+            assert( 0 );  /* I don't believe that we should ever get here when running with the RUNLIB */
+#endif /* RUNLIB */
           }
         }
 
@@ -894,6 +914,7 @@ void bind_perform(
       }
 
 #ifndef VPI_ONLY
+#ifndef RUNLIB
       /* If we are in parse mode, resolve all parameters and arrays of instances now */
       if( !cdd_reading && (pass == 0) ) {
         inst_link* instl = db_list[curr_db]->inst_head;
@@ -902,7 +923,8 @@ void bind_perform(
           instl = instl->next;
         }
       }
-#endif
+#endif /* RUNLIB */
+#endif /* VPI_ONLY */
 
     }
 

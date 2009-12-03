@@ -155,6 +155,7 @@ statement* statement_create(
 
 }
 
+#ifndef RUNLIB
 /*!
  Displays the current contents of the statement loop list for debug purposes only.
 */
@@ -178,6 +179,7 @@ void statement_queue_display() {
   }
 
 }
+#endif /* RUNLIB */
 
 /*!
  Creates a new statement loop link for the specified parameters and adds this
@@ -276,6 +278,7 @@ static void statement_queue_compare(
 
 }
 
+#ifndef RUNLIB
 /*!
  \throws anonymous expression_resize statement_size_elements statement_size_elements statement_size_elements
 
@@ -310,6 +313,7 @@ void statement_size_elements(
   PROFILE_END;
 
 }
+#endif /* RUNLIB */
     
 /*!
  Recursively writes the contents of the specified statement tree (and its
@@ -339,6 +343,7 @@ void statement_db_write(
 
 }
 
+#ifndef RUNLIB
 /*!
  Traverses specified statement tree, outputting all statements within that tree.
 */
@@ -400,6 +405,7 @@ void statement_db_write_expr_tree(
   PROFILE_END;
 
 }
+#endif /* RUNLIB */
 
 /*!
  \throws anonymous Throw Throw
@@ -498,6 +504,7 @@ void statement_db_read(
       /* Add the statement to the functional unit list */
       stmt_link_add( stmt, TRUE, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
 
+#ifndef RUNLIB
       /*
        Possibly add statement to presimulation queue (if the current functional unit is a task
        or function, do not add this to the presimulation queue (this will be added when the expression
@@ -507,6 +514,7 @@ void statement_db_read(
         sim_time tmp_time = {0,0,0,FALSE};
         (void)sim_add_thread( NULL, stmt, curr_funit, &tmp_time );
       }
+#endif /* RUNLIB */
 
     }
 
@@ -521,6 +529,7 @@ void statement_db_read(
 
 }
 
+#ifndef RUNLIB
 /*!
  \throws anonymous statement_assign_expr_ids statement_assign_expr_ids statement_assign_expr_ids expression_assign_expr_ids
 
@@ -988,6 +997,7 @@ void statement_dealloc_recursive(
   PROFILE_END;
   
 }
+#endif /* RUNLIB */
 
 /*!
  Deallocates specified statement from heap memory.  Does not

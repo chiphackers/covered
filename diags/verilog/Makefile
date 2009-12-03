@@ -12,10 +12,11 @@ VG_LOG_PREFIX = mem_check
 VG_EXEC       = valgrind
 VG_FLAGS      = --tool=memcheck --leak-check=yes --show-reachable=yes --num-callers=15 --log-file=$(VG_LOG_PREFIX) --suppressions=vg_supp -v
 
-COVERED_SRC   = ../../src
-COVERED_LIB   = ../../lib
-COVERED       = $(COVERED_SRC)/covered
-COVERED_GFLAG = -D
+COVERED_SRC         = ../../src
+COVERED_VPILIB      = ../../lib/vpi
+COVERED_RUNLIB      = ../../lib/run
+COVERED             = $(COVERED_SRC)/covered
+COVERED_GFLAG       = -D
 COVERED_SCORE_GFLAG = -P
 
 ifeq ($(COVERED_GFLAG),-D)
@@ -60,7 +61,7 @@ SIM_PLUSARGS = +option1 +option2 +optionB=00000001001000110100010101100111100010
 IVERILOG       = iverilog
 IVERILOG_FLAGS = -cconfig_file -I./include -DRUNTEST
 ifdef VPI
-IVERILOG_FLAGS += -m ../../lib/covered.vpi
+IVERILOG_FLAGS += -m ../../lib/vpi/covered.vpi
 else
 IVERILOG_FLAGS += -DDUMP
 endif
@@ -71,7 +72,7 @@ IVERILOG_INTER = vvp
 VCS       = vcs
 VCS_FLAGS = +librescan +libext+.v+.vlib+ -y ./covered/verilog -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 +v2k -sverilog -ntb_opts dtm -PP +vcs+lic+wait -v2k_generate
 ifdef VPI
-VCS_FLAGS += +vpi -load ../../lib/covered.vcs.so:covered_register
+VCS_FLAGS += +vpi -load ../../lib/vpi/covered.vcs.so:covered_register
 ifeq ($(PROCESSOR),x86_64)
 VCS_FLAGS += -full64
 endif
@@ -84,7 +85,7 @@ VCS_EXEC  = ./simv $(SIM_PLUSARGS)
 CVER      = cver
 CVER_FLAGS = -q +librescan +libext+.v+.vlib+ -y ./covered/verilog -y ./lib -y ./ovl +incdir+./ovl +incdir+./include +define+RUNTEST +define+OVL_VERILOG +define+OVL_COVER_ON +define+OVL_COVER_DEFAULT=15 $(SIM_PLUSARGS)
 ifdef VPI
-CVER_FLAGS += +loadvpi=../../lib/covered.cver.so:vpi_compat_bootstrap
+CVER_FLAGS += +loadvpi=../../lib/vpi/covered.cver.so:vpi_compat_bootstrap
 else
 CVER_FLAGS += +define+DUMP
 endif
@@ -106,7 +107,7 @@ VERILATOR       = verilator
 # VERILATOR_FLAGS = --cc --trace --Mdir $(DIAG) -Wno-UNOPTFLAT -Wno-WIDTH --exe $(DIAG).cc
 VERILATOR_FLAGS = --cc --trace --Mdir $(DIAG) -Wno-WIDTH --exe $(DIAG).cc
 VERILATOR_EXEC1 = cd $(DIAG); make -f V$(basename $(DIAG)).mk USER_CPPFLAGS=-I../../../src; ./V$(basename $(DIAG)); cp $(DIAG).vcd ..
-VERILATOR_EXEC2 = cd $(DIAG); make -f V$(basename $(DIAG)).mk USER_CPPFLAGS="-I../../../src -DCOVERED_INLINED" LIBS="-L../../../lib -lcovered"; ./V$(basename $(DIAG)); cp $(DIAG).vcd ..
+VERILATOR_EXEC2 = cd $(DIAG); make -f V$(basename $(DIAG)).mk USER_CPPFLAGS="-I../../../src -DCOVERED_INLINED" LIBS="-L../../../lib/run -lcovered"; ./V$(basename $(DIAG)); cp $(DIAG).vcd ..
 
 ifdef USE_VERILATOR
 VERILOG        = $(VERILATOR)
@@ -658,8 +659,11 @@ $(NOSIMERRLIST):
 	fi
 
 covered:
+ifdef USE_VERILATOR
+	cd $(COVERED_RUNLIB); $(MAKE)
+endif
 ifdef VPI
-	cd $(COVERED_LIB); $(MAKE)
+	cd $(COVERED_VPILIB); $(MAKE)
 endif
 	cd $(COVERED_SRC); $(MAKE)
 

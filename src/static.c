@@ -66,6 +66,7 @@ extern func_unit* curr_funit;
 extern int        curr_expr_id;
 
 
+#ifndef RUNLIB
 /*!
  \param stexp  Pointer to static expression.
  \param op     Unary static expression operation.
@@ -469,6 +470,7 @@ void static_expr_calc_lsb_and_width_pre(
   PROFILE_END;
 
 }
+#endif /* RUNLIB */
 
 /*!
  \param left        Pointer to static expression on left of vector.

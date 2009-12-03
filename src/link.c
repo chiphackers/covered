@@ -230,6 +230,7 @@ void funit_link_add(
   
 }
 
+#ifndef RUNLIB
 #ifndef VPI_ONLY
 /*!
  Creates a new gitem_link element with the value specified for generate item.
@@ -260,6 +261,7 @@ void gitem_link_add(
 
 }
 #endif /* VPI_ONLY */
+#endif /* RUNLIB */
 
 /*!
  \return Returns pointer to newly allocated instance link.
@@ -298,6 +300,7 @@ inst_link* inst_link_add(
 
 /**************************************************************************************/
 
+#ifndef RUNLIB
 /*!
  Displays the string contents of the str_link list pointed to by head
  to standard output.  This function is mainly used for debugging purposes.
@@ -420,6 +423,7 @@ void gitem_link_display(
 
 }
 #endif /* VPI_ONLY */
+#endif /* RUNLIB */
 
 /*!
  Displays the contents of the inst_link list pointed to by head
@@ -538,6 +542,7 @@ vsignal* sig_link_find(
 
 }
 
+#ifndef RUNLIB
 /*!
  \return Returns the pointer to the found fsm_link, or NULL if the search was unsuccessful.
 
@@ -613,6 +618,7 @@ gitem_link* gitem_link_find(
 
 }
 #endif /* VPI_ONLY */
+#endif /* RUNLIB */
 
 /*!
  \return Returns the pointer to the found funit_inst or NULL if the search was unsuccessful.
@@ -670,6 +676,7 @@ funit_inst* inst_link_find_by_funit(
 
 /**************************************************************************************/
 
+#ifndef RUNLIB
 /*!
  Searches specified list for string that matches the specified string.  If
  a match is found, remove it from the list and deallocate the link memory.
@@ -715,6 +722,7 @@ void str_link_remove(
   PROFILE_END;
 
 }
+#endif /* RUNLIB */
 
 /*!
  Searches specified list for expression that matches the specified expression.  If
@@ -774,6 +782,7 @@ void exp_link_remove(
 
 }
 
+#ifndef RUNLIB
 #ifndef VPI_ONLY
 /*!
  Deletes specified generate item from the given list, adjusting the head and
@@ -865,6 +874,7 @@ void funit_link_remove(
   PROFILE_END;
 
 }
+#endif /* RUNLIB */
 
 /**************************************************************************************/
 
@@ -898,6 +908,7 @@ void str_link_delete_list(
 
 }
 
+#ifndef RUNLIB
 /*!
  Iterates through given statement list searching for the given statement.  When
  the statement link is found that matches, removes that link from the list and repairs
@@ -938,6 +949,7 @@ void stmt_link_unlink(
   PROFILE_END;
 
 }
+#endif /* RUNLIB */
 
 /*!
  Deletes each element of the specified list.
@@ -1072,6 +1084,7 @@ void funit_link_delete_list(
 
 }
 
+#ifndef RUNLIB
 #ifndef VPI_ONLY
 /*!
  Deletes each element of the specified list.
@@ -1100,6 +1113,7 @@ void gitem_link_delete_list(
 
 }
 #endif /* VPI_ONLY */
+#endif /* RUNLIB */
 
 /*!
  Deletes each element of the specified list.
@@ -1126,4 +1140,3 @@ void inst_link_delete_list(
   PROFILE_END;
 
 }
-

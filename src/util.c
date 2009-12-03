@@ -181,49 +181,62 @@ void print_output(
       break;
     case WARNING:
       if( !output_suppressed && !warnings_suppressed ) {
+#ifndef RUNLIB
         if( report_gui ) {
           unsigned int rv = snprintf( tmpmsg, USER_MSG_LENGTH, "WARNING!  %s\n", msg );
           assert( rv < USER_MSG_LENGTH );
 #ifndef VPI_ONLY
 #ifdef HAVE_TCLTK
           Tcl_SetResult( interp, tmpmsg, TCL_VOLATILE );
-#endif
-#endif
+#endif /* HAVE_TCLTK */
+#endif /* VPI_ONLY */
         } else {
+#endif /* RUNLIB */
           fprintf( outf, "    WARNING!  %s\n", msg );
+#ifndef RUNLIB
         }
+#endif /* RUNLIB */
       } else if( debug_mode ) {
+#ifndef RUNLIB
         if( report_gui ) {
           unsigned int rv = snprintf( tmpmsg, USER_MSG_LENGTH, "WARNING!  %s (file: %s, line: %d)\n", msg, file, line );
           assert( rv < USER_MSG_LENGTH );
 #ifndef VPI_ONLY
 #ifdef HAVE_TCLTK
           Tcl_SetResult( interp, tmpmsg, TCL_VOLATILE );
-#endif
-#endif
+#endif /* HAVE_TCLTK */
+#endif /* VPI_ONLY */
         } else {
+#endif /* RUNLIB */
           fprintf( outf, "    WARNING!  %s (file: %s, line: %d)\n", msg, obf_file( file ), line );
+#ifndef RUNLIB
         }
+#endif /* RUNLIB */
       }
       break;
     case WARNING_WRAP:
       if( (!output_suppressed && !warnings_suppressed) || debug_mode ) {
+#ifndef RUNLIB
         if( report_gui ) {
           unsigned int rv = snprintf( tmpmsg, USER_MSG_LENGTH, "              %s\n", msg );
           assert( rv < USER_MSG_LENGTH );
 #ifndef VPI_ONLY
 #ifdef HAVE_TCLTK
           Tcl_AppendElement( interp, tmpmsg );
-#endif
-#endif
+#endif /* HAVE_TCLTK */
+#endif /* VPI_ONLY */
         } else {
+#endif /* RUNLIB */
           fprintf( outf, "              %s\n", msg );
+#ifndef RUNLIB
         }
+#endif /* RUNLIB */
       }
       break; 
     case FATAL:
       (void)fflush( stdout );
       if( debug_mode ) {
+#ifndef RUNLIB
         if( report_gui ) {
           unsigned int rv = snprintf( tmpmsg, USER_MSG_LENGTH, "%s (file: %s, line: %d)\n", msg, file, line );
           assert( rv < USER_MSG_LENGTH );
@@ -231,12 +244,16 @@ void print_output(
 #ifdef HAVE_TCLTK
           Tcl_SetResult( interp, tmpmsg, TCL_VOLATILE );
           fprintf( stderr, "ERROR!  %s (file: %s, line: %d)\n", msg, obf_file( file ), line );
-#endif
-#endif
+#endif /* HAVE_TCLTK */
+#endif /* VPI_ONLY */
         } else {
+#endif /* RUNLIB */
           fprintf( stderr, "ERROR!  %s (file: %s, line: %d)\n", msg, obf_file( file ), line );
+#ifndef RUNLIB
         }
+#endif /* RUNLIB */
       } else {
+#ifndef RUNLIB
         if( report_gui ) {
           unsigned int rv = snprintf( tmpmsg, USER_MSG_LENGTH, "%s\n", msg );
           assert( rv < USER_MSG_LENGTH );
@@ -244,25 +261,32 @@ void print_output(
 #ifdef HAVE_TCLTK
           Tcl_SetResult( interp, tmpmsg, TCL_VOLATILE );
           fprintf( stderr, "ERROR!  %s\n", msg );
-#endif
-#endif
+#endif /* HAVE_TCLTK */
+#endif /* VPI_ONLY */
         } else {
+#endif /* RUNLIB */
           fprintf( stderr, "ERROR!  %s\n", msg );
+#ifndef RUNLIB
         }
+#endif
       }
       break;
     case FATAL_WRAP:
+#ifndef RUNLIB
       if( report_gui ) {
         unsigned int rv = snprintf( tmpmsg, USER_MSG_LENGTH, "%s\n", msg );
         assert( rv < USER_MSG_LENGTH );
 #ifndef VPI_ONLY
 #ifdef HAVE_TCLTK
         Tcl_AppendElement( interp, tmpmsg );
-#endif
-#endif
+#endif /* HAVE_TCLTK */
+#endif /* VPI_ONLY */
       } else { 
+#endif /* RUNLIB */
         fprintf( stderr, "        %s\n", msg );
+#ifndef RUNLIB
       }
+#endif /* RUNLIB */
       break;
     default:  break;
   }
@@ -1836,4 +1860,3 @@ int calc_num_bits_to_store(
   return( bits );
 
 }
-

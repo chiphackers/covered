@@ -23,7 +23,7 @@ int main() {
   tfp->open( "generate13.vcd" );   // Open the dump file
 
 #ifdef COVERED_INLINED
-  covered_initialize( "generate13.cdd" );
+  covered_initialize( "../generate13.cdd" );
 #endif
 
   top->verilatorclock = 0;
@@ -36,6 +36,10 @@ int main() {
   }
 
   top->final();                    // Done simulating
+
+#ifdef COVERED_INLINED
+  covered_close( "../generate13.cdd");
+#endif
 
   tfp->close();
 

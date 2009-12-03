@@ -100,6 +100,7 @@ static func_unit* scope_find_funit_from_scope(
 
 }
 
+#ifndef RUNLIB
 /*!
  \param name         Name of parameter to find in design
  \param curr_funit   Pointer to current functional unit to start searching in
@@ -189,6 +190,7 @@ bool scope_find_param(
   return( *found_parm != NULL );
 
 }
+#endif /* RUNLIB */
 
 /*!
  \param name         Name of signal to find in design
@@ -420,4 +422,3 @@ func_unit* scope_get_parent_module(
   return( inst->funit );
 
 }
-

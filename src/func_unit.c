@@ -130,6 +130,7 @@ func_unit* funit_create() { PROFILE(FUNIT_CREATE);
 
 }
 
+#ifndef RUNLIB
 /*!
  \return Returns a pointer to the module that contains the specified functional unit.
 
@@ -172,6 +173,7 @@ const func_unit* funit_get_curr_module_safe(
   return( funit );
 
 }
+#endif /* RUNLIB */
 
 /*!
  \return Returns a pointer to the function that contains the specified functional unit if
@@ -195,6 +197,7 @@ func_unit* funit_get_curr_function(
 
 }
 
+#ifndef RUNLIB
 /*!
  \return Returns a pointer to the function that contains the specified functional unit if
          one exists; otherwise, returns NULL.
@@ -246,25 +249,6 @@ int funit_get_port_count(
 
 }
 
-#ifdef OBSOLETE
-/*!
- \return Returns pointer to found functional unit that exists at the given file position.
-*/
-func_unit* funit_find_by_position( 
-  func_unit*   parent,
-  unsigned int first_line,
-  unsigned int first_column
-) { PROFILE(FUNIT_FIND_BY_POSITION);
-
-  func_unit* funit;
-
-  PROFILE_END;
-
-  return( funit );
-
-}
-#endif
-
 /*!
  \return Returns a pointer to the module parameter structure that contains the specified
          parameter name if it exists; otherwise, returns NULL.
@@ -292,6 +276,7 @@ mod_parm* funit_find_param(
   return( mparm );
 
 }
+#endif /* RUNLIB */
 
 /*!
  \return Returns a pointer to the found signal in the given functional unit; otherwise,
@@ -308,10 +293,12 @@ vsignal* funit_find_signal(
   vsignal*    found_sig = NULL;  /* Pointer to the found signal */
   vsignal     sig;               /* Holder for signal to search for */
 #ifndef VPI_ONLY
+#ifndef RUNLIB
   gen_item*   gi;                /* Pointer to temporary generate item */
   gen_item*   found_gi;          /* Pointer to found generate item */
   gitem_link* gil;               /* Pointer to found generate item link */
-#endif
+#endif /* RUNLIB */
+#endif /* VPI_ONLY */
 
   sig.name = name;
 
@@ -319,7 +306,7 @@ vsignal* funit_find_signal(
   if( (found_sig = sig_link_find( name, funit->sigs, funit->sig_size )) == NULL ) {
 
 #ifndef VPI_ONLY
-
+#ifndef RUNLIB
     /* If it was not found, search in the functional unit generate item list */
     gi = gen_item_create_sig( &sig );
 
@@ -329,7 +316,8 @@ vsignal* funit_find_signal(
 
     /* Deallocate temporary generate item */
     gen_item_dealloc( gi, FALSE );
-#endif
+#endif /* RUNLIB */
+#endif /* VPI_ONLY */
 
   }
 
@@ -339,6 +327,7 @@ vsignal* funit_find_signal(
 
 }
 
+#ifndef RUNLIB
 /*!
  Searches all statement blocks in the given functional unit that have expressions that call
  the functional unit containing the given statement as its first statement.
@@ -526,6 +515,7 @@ void funit_size_elements(
   PROFILE_END;
     
 }
+#endif /* RUNLIB */
 
 /*!
  \throws anonymous funit_size_elements
@@ -588,11 +578,13 @@ void funit_db_write(
       strcpy( modname, tmp );
     }
 
+#ifndef RUNLIB
     /* Size all elements in this functional unit and calculate timescale if we are in parse mode */
     if( inst != NULL ) {
       funit_size_elements( funit, inst, TRUE, FALSE );
       funit->timescale = db_scale_to_precision( (uint64)1, funit );
     }
+#endif /* RUNLIB */
   
     /*@-duplicatequals -formattype@*/
     fprintf( file, "%d %x %s \"%s\" %d %s %u %u %" FMT64 "u %s\n",
@@ -624,6 +616,7 @@ void funit_db_write(
       expression_db_write( funit->exps[i], file, (inst != NULL), ids_issued );
     }
 
+#ifndef RUNLIB
 #ifndef VPI_ONLY
     /* Now print all expressions within generated statements in functional unit */
     if( inst != NULL ) {
@@ -633,7 +626,8 @@ void funit_db_write(
         curr_gi = curr_gi->next;
       }
     }
-#endif
+#endif /* VPI_ONLY */
+#endif /* RUNLIB */
 
     /* Now print all signals in functional unit */
     for( i=0; i<funit->sig_size; i++ ) {
@@ -642,6 +636,7 @@ void funit_db_write(
       }
     }
 
+#ifndef RUNLIB
     /* Now print all parameters in functional unit */
     if( inst != NULL ) {
       curr_parm = inst->param_head;
@@ -660,7 +655,8 @@ void funit_db_write(
         curr_gi = curr_gi->next;
       }
     }
-#endif
+#endif /* VPI_ONLY */
+#endif /* RUNLIB */
 
     /* Now print all statements in functional unit */
     curr_stmt = funit->stmt_head;
@@ -671,6 +667,7 @@ void funit_db_write(
       curr_stmt = curr_stmt->next;
     }
 
+#ifndef RUNLIB
 #ifndef VPI_ONLY
     /* Now print any generated statements in the current instance */
     if( inst != NULL ) {
@@ -680,7 +677,8 @@ void funit_db_write(
         curr_gi = curr_gi->next;
       }
     }
-#endif
+#endif /* VPI_ONLY */
+#endif /* RUNLIB */
 
     /* Now print all FSM structures in functional unit */
     for( i=0; i<funit->fsm_size; i++ ) {
@@ -696,12 +694,14 @@ void funit_db_write(
       }
     }
 
+#ifndef RUNLIB
     /* Now print all of the exclusion reasons in the functional unit */
     curr_er = funit->er_head;
     while( curr_er != NULL ) {
       exclude_db_write( curr_er, file );
       curr_er = curr_er->next;
     }
+#endif
 
   }
 
@@ -780,6 +780,7 @@ void funit_version_db_read(
 
 }
 
+#ifndef RUNLIB
 /*!
  \throws anonymous fsm_db_merge Throw Throw expression_db_merge vsignal_db_merge
 
@@ -1114,6 +1115,7 @@ bool funit_is_top_module(
   return( retval );
 
 }
+#endif /* RUNLIB */
 
 /*!
  \param funit  Pointer to functional unit to check.
@@ -1147,6 +1149,7 @@ bool funit_is_unnamed( func_unit* funit ) { PROFILE(FUNIT_IS_UNNAMED);
 
 }
 
+#ifndef RUNLIB
 /*!
  \param parent  Potential parent functional unit to check for relationship to child
  \param child   Potential child functional unit to check for relationship to parent
@@ -1443,6 +1446,7 @@ bool funit_is_one_signal_assigned(
   return( i < funit->sig_size );
 
 }
+#endif /* RUNLIB */
 
 /*!
  Deallocates functional unit contents: name and filename strings.
@@ -1483,29 +1487,34 @@ static void funit_clean(
     funit->stmt_head = NULL;
     funit->stmt_tail = NULL;
 
+#ifndef RUNLIB
     /* Free parameter list */
     mod_parm_dealloc( funit->param_head, TRUE );
     funit->param_head = NULL;
     funit->param_tail = NULL;
+#endif /* RUNLIB */
 
     /* Free race condition block list */
     race_blk_delete_list( funit->race_head );
     funit->race_head = NULL;
     funit->race_tail = NULL;
 
+#ifndef RUNLIB
 #ifndef VPI_ONLY
     /* Free generate item list */
     gitem_link_delete_list( funit->gitem_head, TRUE );
     funit->gitem_head = NULL;
     funit->gitem_tail = NULL;
-#endif
+#endif /* VPI_ONLY */
 
     /* Free statistic structure */
     statistic_dealloc( funit->stat );
+#endif /* RUNLIB */
 
     /* Free tf elements */
     funit_link_delete_list( &(funit->tf_head), &(funit->tf_tail), FALSE );
 
+#ifndef RUNLIB
     /* Free typedef items */
     tdi = funit->tdi_head;
     while( tdi != NULL ) {
@@ -1532,6 +1541,7 @@ static void funit_clean(
 
     /* Free enumerated elements */
     enumerate_dealloc_list( funit );
+#endif
 
     /* Free functional unit name */
     free_safe( funit->name, (strlen( funit->name ) + 1) );
@@ -1591,4 +1601,3 @@ void funit_dealloc(
   PROFILE_END;
 
 }
-

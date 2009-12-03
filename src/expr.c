@@ -267,7 +267,9 @@ static bool expression_op_func__value_plusargs( expression*, thread*, const sim_
 static bool expression_op_func__signed( expression*, thread*, const sim_time* );
 static bool expression_op_func__unsigned( expression*, thread*, const sim_time* );
 
+#ifndef RUNLIB
 static void expression_assign( expression*, expression*, int*, thread*, const sim_time*, bool eval_lhs, bool nb );
+#endif /* RUNLIB */
 
 /*!
  Array containing static information about expression operation types.  NOTE:  This structure MUST be
@@ -481,6 +483,7 @@ static void expression_create_tmp_vecs(
 
 }
 
+#ifndef RUNLIB
 /*!
  Allocates a non-blocking assignment structure to the given expression and initializes it.
 */
@@ -538,6 +541,7 @@ expression* expression_is_nba_lhs(
   return( (exp->op == EXP_OP_NASSIGN) ? exp : NULL );
 
 }
+#endif /* RUNLIB */
 
 /*!
  \throws anonymous Throw
@@ -912,6 +916,7 @@ void expression_set_value(
 
 }
 
+#ifndef RUNLIB
 /*!
  Recursively sets the signed bit for all parent expressions if both the left and
  right expressions have the signed bit set.  This function is called by the bind()
@@ -1178,6 +1183,7 @@ void expression_resize(
   PROFILE_END;
 
 }
+#endif /* RUNLIB */
 
 /*!
  \return Returns expression ID for this expression.
@@ -1205,6 +1211,7 @@ int expression_get_id(
 
 }
 
+#ifndef RUNLIB
 /*!
  \return Returns the line number of the first line in this expression.
 */
@@ -1252,6 +1259,7 @@ expression* expression_get_last_line_expr(
   return( last );
 
 }
+#endif /* RUNLIB */
 
 /*!
  \return Returns the dimension index for the given expression
@@ -1289,6 +1297,7 @@ unsigned int expression_get_curr_dimension(
 
 }
 
+#ifndef RUNLIB
 /*!
  Recursively parses specified expression list in search of RHS signals.
  When a signal name is found, it is added to the signal name list specified
@@ -1438,6 +1447,7 @@ bool expression_contains_expr_calling_stmt(
   return( retval );
 
 }
+#endif /* RUNLIB */
 
 /*!
  \return Returns a pointer to the root statement of the specified expression if one exists;
@@ -1467,6 +1477,7 @@ statement* expression_get_root_statement(
 
 }
 
+#ifndef RUNLIB
 /*!
  \throws anonymous expression_resize expression_assign_expr_ids expression_assign_expr_ids
 
@@ -1495,6 +1506,7 @@ void expression_assign_expr_ids(
   PROFILE_END;
 
 }
+#endif /* RUNLIB */
 
 /*!
  This function recursively displays the expression information for the specified
@@ -1544,6 +1556,7 @@ void expression_db_write(
 
 }
 
+#ifndef RUNLIB
 /*!
  Recursively iterates through the specified expression tree, outputting the expressions
  to the specified file.
@@ -1569,6 +1582,7 @@ void expression_db_write_tree(
   PROFILE_END;
 
 }
+#endif /* RUNLIB */
 
 /*!
  \throws anonymous expression_create Throw Throw Throw Throw Throw vector_db_read
@@ -1697,6 +1711,7 @@ void expression_db_read(
 
       exp_link_add( expr, &(curr_funit->exps), &(curr_funit->exp_size) );
 
+#ifndef RUNLIB
       /*
        If this expression is a constant expression, force the simulator to evaluate
        this expression and all parent expressions of it.
@@ -1704,6 +1719,7 @@ void expression_db_read(
       if( eval && EXPR_IS_STATIC( expr ) && (ESUPPL_IS_LHS( suppl ) == 0) ) {
         exp_link_add( expr, &static_exprs, &static_expr_size );
       }
+#endif /* RUNLIB */
       
     }
 
@@ -1718,6 +1734,7 @@ void expression_db_read(
 
 }
 
+#ifndef RUNLIB
 /*!
  \throws anonymous Throw vector_db_merge
 
@@ -1817,6 +1834,7 @@ void expression_merge(
   PROFILE_END;
 
 }
+#endif /* RUNLIB */
 
 /*!
  \return Returns a non-writable string that contains the user-readable name of the
@@ -1834,6 +1852,7 @@ const char* expression_string_op(
 
 }
 
+#ifndef RUNLIB
 /*!
  Returns a pointer to user_msg that will contain a user-friendly string version of
  the given expression
@@ -1914,6 +1933,7 @@ void expression_display(
   printf( "\n" );
 
 }
+#endif /* RUNLIB */
 
 /*!
  This function sets the true/false indicators in the expression supplemental field as
@@ -2080,6 +2100,7 @@ bool expression_op_func__xor_a(
 ) { PROFILE(EXPRESSION_OP_FUNC__XOR_A);
 
   bool    retval;                                /* Return value for this function */
+#ifndef RUNLIB
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
 
@@ -2098,6 +2119,9 @@ bool expression_op_func__xor_a(
 
   /* Fourth, assign the new value to the left expression */
   expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE, FALSE );
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -2141,6 +2165,7 @@ bool expression_op_func__multiply_a(
 ) { PROFILE(EXPRESSION_OP_FUNC__MULTIPLY_A);
 
   bool    retval;                                /* Return value for this function */
+#ifndef RUNLIB
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
 
@@ -2174,6 +2199,9 @@ bool expression_op_func__multiply_a(
       break;
     default :  assert( 0 );  break;
   }
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -2219,6 +2247,7 @@ bool expression_op_func__divide_a(
 ) { PROFILE(EXPRESSION_OP_FUNC__DIVIDE_A);
 
   bool    retval = FALSE;                        /* Return value for this function */
+#ifndef RUNLIB
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
   
@@ -2252,6 +2281,9 @@ bool expression_op_func__divide_a(
       break;
     default :  assert( 0 );  break;
   }
+#else
+  assert( 0 );
+#endif /* RUNLIB */
   
   PROFILE_END;
 
@@ -2297,6 +2329,7 @@ bool expression_op_func__mod_a(
 ) { PROFILE(EXPRESSION_OP_FUNC__MOD_A);
 
   bool    retval;                                /* Return value for this function */
+#ifndef RUNLIB
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
 
@@ -2315,6 +2348,9 @@ bool expression_op_func__mod_a(
 
   /* Finally, assign the new value to the left expression */
   expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE, FALSE );
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -2359,6 +2395,7 @@ bool expression_op_func__add_a(
 ) { PROFILE(EXPRESSION_OP_FUNC__ADD_A);
   
   bool    retval;                                /* Return value for this function */
+#ifndef RUNLIB
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
 
@@ -2393,6 +2430,9 @@ bool expression_op_func__add_a(
       break;
     default :  assert( 0 );  break;
   }
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -2440,6 +2480,7 @@ bool expression_op_func__sub_a(
 ) { PROFILE(EXPRESSION_OP_FUNC__SUB_A);
 
   bool    retval;                                /* Return value for this function */
+#ifndef RUNLIB
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
 
@@ -2475,6 +2516,9 @@ bool expression_op_func__sub_a(
       break;
     default :  assert( 0 );  break;
   }
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -2519,6 +2563,7 @@ bool expression_op_func__and_a(
 ) { PROFILE(EXPRESSION_OP_FUNC__AND_A);
 
   bool    retval;                                /* Return value for this function */
+#ifndef RUNLIB
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
 
@@ -2538,6 +2583,9 @@ bool expression_op_func__and_a(
 
   /* Finally, assign the new value to the left expression */
   expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE, FALSE );
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -2582,6 +2630,7 @@ bool expression_op_func__or_a(
 ) { PROFILE(EXPRESSION_OP_FUNC__OR_A);
 
   bool    retval;                                /* Return value for this function */
+#ifndef RUNLIB
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
 
@@ -2601,6 +2650,9 @@ bool expression_op_func__or_a(
 
   /* Finally, assign the new value to the left expression */
   expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE, FALSE );
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -2767,6 +2819,7 @@ bool expression_op_func__lshift_a(
 ) { PROFILE(EXPRESSION_OP_FUNC__LSHIFT_A);
   
   bool    retval;                                /* Return value for this function */
+#ifndef RUNLIB
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
   
@@ -2785,6 +2838,9 @@ bool expression_op_func__lshift_a(
 
   /* Finally, assign the new value to the left expression */
   expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE, FALSE );
+#else
+  assert( 0 );
+#endif /* RUNLIB */
   
   PROFILE_END;
   
@@ -2828,6 +2884,7 @@ bool expression_op_func__rshift_a(
 ) { PROFILE(EXPRESSION_OP_FUNC__RSHIFT_A);
 
   bool    retval;                                /* Return value for this function */
+#ifndef RUNLIB
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
 
@@ -2846,6 +2903,9 @@ bool expression_op_func__rshift_a(
 
   /* Finally, assign the new value to the left expression */
   expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE, FALSE );
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -2889,6 +2949,7 @@ bool expression_op_func__arshift_a(
 ) { PROFILE(EXPRESSION_OP_FUNC__ARSHIFT_A);
 
   bool    retval;                                /* Return value for this function */
+#ifndef RUNLIB
   vector* tmp    = &(expr->elem.tvecs->vec[0]);  /* Temporary pointer to temporary vector */
   int     intval = 0;                            /* Integer value */
 
@@ -2907,6 +2968,9 @@ bool expression_op_func__arshift_a(
 
   /* Finally, assign the new value to the left expression */
   expression_assign( expr->left, expr, &intval, thr, ((thr == NULL) ? time : &(thr->curr_time)), FALSE, FALSE );
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -2945,6 +3009,7 @@ bool expression_op_func__random(
   const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__RANDOM);
 
+#ifndef RUNLIB
   long rand;
 
   /* If $random contains a seed parameter, get it */
@@ -2972,6 +3037,9 @@ bool expression_op_func__random(
   
   /* Convert it to a vector and store it */
   (void)vector_from_int( expr->value, (int)rand ); 
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -3028,10 +3096,14 @@ bool expression_op_func__srandom(
   /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__SRANDOM);
 
+#ifndef RUNLIB
   assert( (expr->left != NULL) && (expr->left->op == EXP_OP_SASSIGN) );
 
   /* Get the seed value and set it */
   sys_task_srandom( (long)vector_to_int( expr->left->value ) );
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -3053,6 +3125,7 @@ bool expression_op_func__urandom(
   unsigned long rand;
   bool          retval;
 
+#ifndef RUNLIB
   /* If $random contains a seed parameter, get it */
   if( (expr->left != NULL) && (expr->left->op == EXP_OP_SASSIGN) ) {
 
@@ -3078,6 +3151,9 @@ bool expression_op_func__urandom(
 
   /* Convert it to a vector and store it */
   retval = vector_from_uint64( expr->value, (uint64)rand );
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -3102,6 +3178,7 @@ bool expression_op_func__urandom_range(
   unsigned long rand;
   bool          retval;
 
+#ifndef RUNLIB
   if( (plist == NULL) || ((plist->op != EXP_OP_PLIST) && (plist->op != EXP_OP_SASSIGN)) ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$urandom_range called without any parameters specified (file: %s, line: %u)", thr->funit->orig_fname, expr->line );
     assert( rv < USER_MSG_LENGTH );
@@ -3133,6 +3210,9 @@ bool expression_op_func__urandom_range(
 
   /* Convert it to a vector and store it */
   retval = vector_from_uint64( expr->value, (uint64)rand );
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -3155,6 +3235,7 @@ bool expression_op_func__realtobits(
   uint64      u64;
   bool        retval;
 
+#ifndef RUNLIB
   /* Check to make sure that there is exactly one parameter */ 
   if( (left == NULL) || (left->op != EXP_OP_SASSIGN) ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$realtobits called with incorrect number of parameters (file: %s, line: %u)", thr->funit->orig_fname, expr->line );
@@ -3176,6 +3257,9 @@ bool expression_op_func__realtobits(
 
   /* Convert and store the data */
   retval = vector_from_uint64( expr->value, sys_task_realtobits( left->value->value.r64->val ) );
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -3198,6 +3282,7 @@ bool expression_op_func__bitstoreal(
   uint64      u64;
   bool        retval;
 
+#ifndef RUNLIB
   /* Check to make sure that there is exactly one parameter */
   if( (left == NULL) || (left->op != EXP_OP_SASSIGN) ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$bitstoreal called with incorrect number of parameters (file: %s, line: %u)", thr->funit->orig_fname, expr->line );
@@ -3216,6 +3301,9 @@ bool expression_op_func__bitstoreal(
 
   /* Convert and store the data */
   retval = vector_from_real64( expr->value, sys_task_bitstoreal( vector_to_uint64( left->value ) ) );
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
  
@@ -3238,6 +3326,7 @@ bool expression_op_func__shortrealtobits(
   uint64      u64;
   bool        retval;
 
+#ifndef RUNLIB
   /* Check to make sure that there is exactly one parameter */
   if( (left == NULL) || (left->op != EXP_OP_SASSIGN) ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$shortrealtobits called with incorrect number of parameters (file: %s, line: %u)", thr->funit->orig_fname, expr->line );
@@ -3259,6 +3348,9 @@ bool expression_op_func__shortrealtobits(
 
   /* Convert and store the data */
   retval = vector_from_uint64( expr->value, sys_task_shortrealtobits( left->value->value.r64->val ) );
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -3281,6 +3373,7 @@ bool expression_op_func__bitstoshortreal(
   uint64      u64;
   bool        retval;
 
+#ifndef RUNLIB
   /* Check to make sure that there is exactly one parameter */
   if( (left == NULL) || (left->op != EXP_OP_SASSIGN) ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$bitstoshortreal called with incorrect number of parameters (file: %s, line: %u)", thr->funit->orig_fname, expr->line );
@@ -3299,6 +3392,9 @@ bool expression_op_func__bitstoshortreal(
 
   /* Convert and store the data */
   retval = vector_from_real64( expr->value, sys_task_bitstoshortreal( vector_to_uint64( left->value ) ) );
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -3321,6 +3417,7 @@ bool expression_op_func__itor(
   uint64      u64;
   bool        retval;
 
+#ifndef RUNLIB
   /* Check to make sure that there is exactly one parameter */
   if( (left == NULL) || (left->op != EXP_OP_SASSIGN) ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$itor called with incorrect number of parameters (file: %s, line: %u)", thr->funit->orig_fname, expr->line );
@@ -3339,6 +3436,9 @@ bool expression_op_func__itor(
 
   /* Convert and store the data */
   retval = vector_from_real64( expr->value, sys_task_itor( vector_to_int( left->value ) ) );
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -3361,6 +3461,7 @@ bool expression_op_func__rtoi(
   uint64      u64;
   bool        retval;
 
+#ifndef RUNLIB
   /* Check to make sure that there is exactly one parameter */
   if( (left == NULL) || (left->op != EXP_OP_SASSIGN) ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "$rtoi called with incorrect number of parameters (file: %s, line: %u)", thr->funit->orig_fname, expr->line );
@@ -3382,6 +3483,9 @@ bool expression_op_func__rtoi(
 
   /* Convert and store the data */
   retval = vector_from_int( expr->value, sys_task_rtoi( left->value->value.r64->val ) );
+#else
+  assert( 0 );
+#endif
 
   PROFILE_END;
 
@@ -3402,6 +3506,7 @@ bool expression_op_func__test_plusargs(
 
   bool retval = FALSE;
 
+#ifndef RUNLIB
   /* Only evaluate this expression if it has not been evaluated yet */
   if( expr->exec_num == 0 ) {
 
@@ -3436,6 +3541,9 @@ bool expression_op_func__test_plusargs(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -3456,6 +3564,7 @@ bool expression_op_func__value_plusargs(
 
   bool retval = FALSE;
 
+#ifndef RUNLIB
   /* Only evaluate this expression if it has not been evaluated yet */
   if( expr->exec_num == 0 ) {
 
@@ -3511,6 +3620,9 @@ bool expression_op_func__value_plusargs(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -4512,6 +4624,7 @@ bool expression_op_func__delay(
 
   bool retval = FALSE;  /* Return value for this function */
 
+#ifndef RUNLIB
   /* Clear the evaluated TRUE indicator */
   expr->suppl.part.eval_t = 0;
 
@@ -4542,6 +4655,9 @@ bool expression_op_func__delay(
     }
 
   }
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -4560,12 +4676,16 @@ bool expression_op_func__trigger(
   const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__TRIGGER);
 
+#ifndef RUNLIB
   /* Indicate that we have triggered */
   expr->sig->value->value.ul[0][VTYPE_INDEX_SIG_VALL] = 1;
   expr->sig->value->value.ul[0][VTYPE_INDEX_SIG_VALH] = 0;
 
   /* Propagate event */
   vsignal_propagate( expr->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -4684,6 +4804,7 @@ bool expression_op_func__assign(
   const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__BASSIGN);
 
+#ifndef RUNLIB
   bool nb = (expr->op == EXP_OP_NASSIGN);
 
   /* Perform assignment */
@@ -4732,6 +4853,9 @@ bool expression_op_func__assign(
 
   /* Gather coverage information */
   expression_set_tf_preclear( expr, TRUE );
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -4752,6 +4876,7 @@ bool expression_op_func__func_call(
 
   bool retval;  /* Return value for this function */
 
+#ifndef RUNLIB
   /* First, simulate the function */
   sim_thread( sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit, time ), ((thr == NULL) ? time : &(thr->curr_time)) );
 
@@ -4772,6 +4897,9 @@ bool expression_op_func__func_call(
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
   vector_set_unary_evals( expr->value );
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -4790,10 +4918,14 @@ bool expression_op_func__task_call(
   const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__TASK_CALL);
 
+#ifndef RUNLIB
   (void)sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit, time );
 
   /* Gather coverage information */
   vector_set_unary_evals( expr->value );
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -4814,6 +4946,7 @@ bool expression_op_func__nb_call(
 
   bool retval = FALSE;  /* Return value for this function */
 
+#ifndef RUNLIB
   /* Add the thread to the active queue */
   thread* tmp = sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit, time );
 
@@ -4823,6 +4956,9 @@ bool expression_op_func__nb_call(
     retval = TRUE;
 
   }
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -4841,10 +4977,14 @@ bool expression_op_func__fork(
   const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__FORK);
 
+#ifndef RUNLIB
   (void)sim_add_thread( thr, expr->elem.funit->first_stmt, expr->elem.funit, time );
 
   /* Gather coverage information */
   expression_set_tf_preclear( expr, TRUE );
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -4883,12 +5023,16 @@ bool expression_op_func__disable(
   /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__DISABLE);
 
+#ifndef RUNLIB
   sim_kill_thread_with_funit( expr->elem.funit );
 
   /* Gather coverage information */
   expression_set_tf_preclear( expr, TRUE );
 
   PROFILE_END;
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   return( TRUE );
 
@@ -4988,6 +5132,7 @@ bool expression_op_func__passign(
   bool retval = FALSE;  /* Return value for this function */
   int  intval = 0;      /* Integer value */
 
+#ifndef RUNLIB
   /* If the current thread is running an automatic function, create a reentrant structure for it */
   if( (thr != NULL) && (thr->ren == NULL) &&
       ((thr->funit->suppl.part.type == FUNIT_AFUNCTION) ||
@@ -5027,6 +5172,9 @@ bool expression_op_func__passign(
 
   /* Gather coverage information */
   expression_set_tf_preclear( expr, retval );
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -5204,6 +5352,7 @@ bool expression_op_func__iinc(
   const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__IINC);
 
+#ifndef RUNLIB
   /* Perform increment */
   expr->elem.tvecs->index = 0;
   if( expr->left->sig != NULL ) {
@@ -5229,6 +5378,9 @@ bool expression_op_func__iinc(
 
   /* Propagate value change */
   vsignal_propagate( expr->left->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -5247,6 +5399,7 @@ bool expression_op_func__pinc(
   const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__PINC);
 
+#ifndef RUNLIB
   /* Copy the left-hand value to our expression */
   switch( expr->left->value->suppl.part.data_type ) {
     case VDATA_UL  :  (void)vector_set_value_ulong( expr->value, expr->left->value->value.ul, expr->left->value->width );  break;
@@ -5272,6 +5425,9 @@ bool expression_op_func__pinc(
 
   /* Propagate value change */
   vsignal_propagate( expr->left->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -5290,6 +5446,7 @@ bool expression_op_func__idec(
   const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__IDEC);
 
+#ifndef RUNLIB
   /* Perform decrement */
   expr->elem.tvecs->index = 0;
   if( expr->left->sig != NULL ) {
@@ -5315,6 +5472,9 @@ bool expression_op_func__idec(
 
   /* Propagate value change */
   vsignal_propagate( expr->left->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -5333,6 +5493,7 @@ bool expression_op_func__pdec(
   const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__PDEC);
 
+#ifndef RUNLIB
   /* Copy the left-hand value to our expression */
   switch( expr->left->value->suppl.part.data_type ) {
     case VDATA_UL  :  (void)vector_set_value_ulong( expr->value, expr->left->value->value.ul, expr->left->value->width );  break;
@@ -5359,6 +5520,9 @@ bool expression_op_func__pdec(
 
   /* Propagate value change */
   vsignal_propagate( expr->left->sig, ((thr == NULL) ? time : &(thr->curr_time)) );
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -5380,6 +5544,7 @@ bool expression_op_func__dly_assign(
   bool retval;      /* Return value for this function */
   int  intval = 0;  /* Integer value */
 
+#ifndef RUNLIB
   /* If we are the first statement in the queue, perform the dly_op manually */
   if( thr->suppl.part.exec_first && (expr->right->left->op == EXP_OP_DELAY) ) {
     (void)expression_op_func__dly_op( expr->right, thr, time );
@@ -5394,6 +5559,9 @@ bool expression_op_func__dly_assign(
     expr->suppl.part.eval_t = 0;
     retval = FALSE;
   }
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -5535,7 +5703,11 @@ bool expression_op_func__finish(
   /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__FINISH);
 
+#ifndef RUNLIB
   sim_finish();
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -5554,7 +5726,11 @@ bool expression_op_func__stop(
   /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__STOP);
 
+#ifndef RUNLIB
   sim_stop();
+#else
+  assert( 0 );
+#endif /* RUNLIB */
 
   PROFILE_END;
 
@@ -5597,10 +5773,12 @@ bool expression_operate(
     /* Call expression operation */
     retval = exp_op_info[expr->op].func( expr, thr, time );
 
+#ifndef RUNLIB
     /* If this expression is attached to an FSM, perform the FSM calculation now */
     if( expr->table != NULL ) {
       fsm_table_set( expr, time );
     }
+#endif /* RUNLIB */
 
     /* Specify that we have executed this expression */
     (expr->exec_num)++;
@@ -5636,6 +5814,7 @@ void expression_operate_recursively(
     expression_operate_recursively( expr->left,  funit, sizing );
     expression_operate_recursively( expr->right, funit, sizing );
     
+#ifndef RUNLIB
     if( sizing ) {
 
       /*
@@ -5652,6 +5831,7 @@ void expression_operate_recursively(
       expression_resize( expr, funit, FALSE, TRUE );
     
     }
+#endif /* RUNLIB */
     
     /* Perform operation */
     (void)expression_operate( expr, NULL, &time );
@@ -5669,6 +5849,7 @@ void expression_operate_recursively(
 
 }
 
+#ifndef RUNLIB
 /*!
  Assigns data from a dumpfile to the given expression's coverage bits according to the
  given action and the expression itself.
@@ -5821,6 +6002,7 @@ bool expression_is_static_only(
   return( expression_is_static_only_helper( expr, NULL ) ); 
 
 }
+#endif /* RUNLIB */
 
 /*!
  \return Returns TRUE if specified expression is on the LHS of a blocking assignment operator.
@@ -5866,6 +6048,7 @@ static bool expression_is_assigned(
 
 }
 
+#ifndef RUNLIB
 /*!
  \return Returns TRUE if the specifies expression belongs in a single or mult-bit select expression
 */
@@ -5893,6 +6076,7 @@ bool expression_is_bit_select(
   return( retval );
 
 }
+#endif /* RUNLIB */
 
 /*!
  \return Returns TRUE if the specified expression is the last (most right-hand) part/bit select of a signal;
@@ -5915,6 +6099,7 @@ bool expression_is_last_select(
 
 }
 
+#ifndef RUNLIB
 /*!
  \return Returns a pointer to the first dimensional select of a memory.
 */
@@ -6278,6 +6463,7 @@ void expression_assign(
   PROFILE_END;
 
 }
+#endif /* RUNLIB */
 
 /*!
  Deallocates all heap memory allocated with the malloc routine.
@@ -6312,7 +6498,9 @@ void expression_dealloc(
             print_output( user_msg, DEBUG, __FILE__, __LINE__ );
           }
 #endif
+#ifndef RUNLIB
           stmt_blk_add_to_remove_list( expr->elem.funit->first_stmt );
+#endif /* RUNLIB */
         } else {
           bind_remove( expr->id, FALSE );
         }
@@ -6359,7 +6547,9 @@ void expression_dealloc(
                     print_output( "Removing statement block because a statement block is being removed that assigns an MBA", DEBUG, __FILE__, __LINE__ );
                   }
 #endif
+#ifndef RUNLIB
                   stmt_blk_add_to_remove_list( tmp_stmt );
+#endif /* RUNLIB */
                 }
               }
             }
@@ -6428,4 +6618,3 @@ void expression_dealloc(
   PROFILE_END;
 
 }
-

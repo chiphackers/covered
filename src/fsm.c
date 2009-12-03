@@ -91,6 +91,7 @@ fsm* fsm_create(
 
 }
 
+#ifndef RUNLIB
 /*!
  Adds new FSM arc structure to specified FSMs arc list.
 */
@@ -164,6 +165,7 @@ void fsm_create_tables(
   PROFILE_END;
 
 }
+#endif /* RUNLIB */
 
 /*!
  Outputs the contents of the specified FSM to the specified CDD file.
@@ -294,6 +296,7 @@ void fsm_db_read(
 
 }
 
+#ifndef RUNLIB
 /*!
  \throws anonymous arc_db_merge Throw
 
@@ -1277,6 +1280,7 @@ void fsm_report(
   PROFILE_END;
 
 }
+#endif /* RUNLIB */
 
 /*!
  Deallocates all allocated memory for the specified FSM structure.

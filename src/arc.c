@@ -143,6 +143,7 @@
 int curr_arc_id = 1;
 
 
+#ifndef RUNLIB
 /*!
  Displays the given state transition arcs in a human-readable format.
 */
@@ -281,6 +282,7 @@ int arc_find_arc_by_exclusion_id(
   return( index );
 
 }
+#endif /* RUNLIB */
 
 /*!
  \return Returns a pointer to the newly created arc transition structure.
@@ -311,6 +313,7 @@ fsm_table* arc_create() { PROFILE(ARC_CREATE);
 
 }
 
+#ifndef RUNLIB
 /*!
  If specified arcs array has not been created yet (value is set to NULL),
  allocate enough memory in the arc array to hold width number of state transitions.
@@ -510,6 +513,7 @@ void arc_get_stats(
   PROFILE_END;
 
 }
+#endif /* RUNLIB */
 
 /*!
  Writes the specified arcs array to the specified CDD output file.  An arc array
@@ -656,6 +660,7 @@ void arc_db_read(
 
 }
 
+#ifndef RUNLIB
 /*!
  \throws anonymous Throw arc_db_read
 
@@ -853,6 +858,7 @@ bool arc_are_any_excluded(
   return( i < table->num_arcs );
 
 }
+#endif /* RUNLIB */
 
 /*!
  Deallocates all allocated memory for the specified state transition
@@ -892,4 +898,3 @@ void arc_dealloc(
   PROFILE_END;
 
 }
-
