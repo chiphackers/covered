@@ -130,7 +130,7 @@ void instance_resolve(
 );
 
 /*! \brief Adds new instance to specified instance tree during CDD read. */
-bool instance_read_add(
+funit_inst* instance_read_add(
   funit_inst** root,
   char*        parent,
   func_unit*   child,
@@ -167,7 +167,7 @@ void instance_db_write(
 );
 
 /*! \brief Reads in and handles an instance-only line from the database */
-void instance_only_db_read(
+funit_inst* instance_only_db_read(
   char** line
 );
 

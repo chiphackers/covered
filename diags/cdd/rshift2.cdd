@@ -1,22 +1,22 @@
-5 17 1fd01 4 ffffffff *
-8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (rshift2.vcd) 2 -o (rshift2.cdd) 2 -v (rshift2.v) 2 -D (DUMP)
+5 18 1fd81 4 0 ffffffff *
+8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (rshift2.vcd) 2 -o (rshift2.cdd) 2 -v (rshift2.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 3 0 main "main" 0 rshift2.v 11 30 1 
 2 1 15 15 15 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 u$0
-1 a 1 13 107000b 1 0 79 0 80 17 0 ffffffff 0 8800 0 0 0 ffffffff 0 0 0 0 0 ffff 0 0 8800 0
+1 a 1 13 107000b 1 0 79 0 80 17 0 ffffffffffffffff 0 8800 0 0 0 ffff 0 0 8800 0
 4 1 1 0 0 1
 3 1 main.u$0 "main.u$0" 0 rshift2.v 15 19 1 
-2 2 16 16 16 f0013 1 0 61004 0 0 75 16 0 0 0 0 0 0
+2 2 16 16 16 f0013 1 0 61004 0 0 75 16 0 0 0 0
 2 3 16 16 16 6000d 1 0 21000 0 0 5 16 15 c
-2 4 16 16 16 60013 1 31 1000 2 3 80 18 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffff 17ff 8800 0 0
-2 5 16 16 16 50014 1 26 1000 4 0 80 18 0 ffffffff ffffffff 0 0 0 0 ffffffff ffffffff 0 0 0 0 ffff 17ff 8800 0 0
+2 4 16 16 16 60013 1 31 1000 2 3 80 18 0 ffffffffffffffff ffffffffffffffff 0 0 0 0 ffff 17ff 8800 0 0
+2 5 16 16 16 50014 1 26 1000 4 0 80 18 0 ffffffffffffffff ffffffffffffffff 0 0 0 0 ffff 17ff 8800 0 0
 2 6 16 16 16 10001 0 1 1410 0 0 80 1 a
 2 7 16 16 16 10014 1 37 12 5 6
 2 8 17 17 17 20002 1 0 1008 0 0 32 48 5 0
 2 9 17 17 17 10002 2 2c 900a 8 0 32 18 0 ffffffff 0 0 0 0
 2 10 18 18 18 a000b 1 0 1008 0 0 32 48 40 0
 2 11 18 18 18 50005 1 1 1010 0 0 80 1 a
-2 12 18 18 18 5000b 1 10 1010 10 11 80 18 0 ffffffff ffff17ff 8800 0 0 0 ffffffff ffffffff 0 0 0 0 ffff ffff 0 0 0
+2 12 18 18 18 5000b 1 10 1010 10 11 80 18 0 ffffffffffffffff ffffffffffff17ff 8800 0 0 0 ffff ffff 0 0 0
 2 13 18 18 18 10001 0 1 1410 0 0 80 1 a
 2 14 18 18 18 1000b 1 37 32 12 13
 4 7 11 9 9 7

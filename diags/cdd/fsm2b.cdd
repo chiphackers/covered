@@ -1,5 +1,5 @@
-5 17 1fd01 37 ffffffff main
-8 /Users/trevorw/projects/covered/diags/verilog 2 -t (fsm) 2 -i (main.fsm) 2 -vcd (fsm2b.vcd) 2 -o (fsm2b.cdd) 2 -y (lib) 2 -v (fsm2b.v) 2 -F (fsm=state,next_state) 2 -D (DUMP)
+5 18 1fd81 37 0 ffffffff main
+8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (fsm) 2 -i (main.fsm) 2 -vcd (fsm2b.vcd) 2 -o (fsm2b.cdd) 2 -y (lib) 2 -v (fsm2b.v) 2 -F (fsm=state,next_state) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 15 main 0
 3 0 fsm "main.fsm" 0 lib/fsm.v 1 37 1 

@@ -1,7 +1,7 @@
-5 17 1fd01 4 ffffffff main2
-8 /Users/trevorw/projects/covered/diags/verilog 2 -t (level2a) 2 -i (main2.level_foo) 2 -vcd (merge8.7a.vcd) 2 -o (merge8.7a.cdd) 2 -v (merge8.7a.v) 2 -y (lib) 2 -D (DUMP) 2 -v (merge8.7b.v)
-12 /Users/trevorw/projects/covered/diags/verilog/merge8.7a.cdd main2
-12 /Users/trevorw/projects/covered/diags/verilog/merge8.7b.cdd main1
+5 18 1fd81 4 0 ffffffff main2
+8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (level2a) 2 -i (main2.level_foo) 2 -vcd (merge8.7a.vcd) 2 -o (merge8.7a.cdd) 2 -v (merge8.7a.v) 2 -y (lib) 2 -D (DUMP) 2 -v (merge8.7b.v)
+12 /home/bryce3/trevorw/devel/covered/diags/verilog/merge8.7a.cdd main2
+12 /home/bryce3/trevorw/devel/covered/diags/verilog/merge8.7b.cdd main1
 3 0 $root "$root" 0 NA 0 0 1 
 15 main2 1
 3 0 level2a "main2.level_foo" 1 lib/level2a.v 1 14 1 

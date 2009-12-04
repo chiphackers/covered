@@ -1,0 +1,60 @@
+5 18 1fda1 13 0 ffffffff TOP
+8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (generate12.vcd) 2 -o (generate12.cdd) 2 -v (generate12.verilator.v) 2 -i (TOP.v) 1 -ep 1 -rP 2 -D (DUMP)
+3 0 $root "$root" 0 NA 0 0 1 
+15 TOP 0
+3 0 main "TOP.v" 0 generate12.verilator.v 8 18 1 
+2 1 14 14 14 11001e c 1 300c 0 0 1 1 verilatorclock
+2 2 14 14 14 9001e 12 27 300a 1 0 1 18 0 1 0 0 0 0
+2 3 15 15 15 f0010 6 0 3008 0 0 32 48 b 0
+2 4 15 15 15 6000a 6 69 3000 0 0 64 18 0 ffffffffffffffff 0 0 0 0
+2 5 15 15 15 60010 6 11 10303c 3 4 1 18 0 1 1 1 0 0
+2 6 15 15 15 20012 6 39 10002e 5 0
+2 7 0 0 0 0 1 5a 3002 0 0 1 18 0 1 0 0 0 0
+1 verilatorclock 1 8 13 1 0 0 0 1 17 1 1 0 1 1 0
+4 7 26 2 2 2
+4 2 1 6 0 2
+4 6 4 7 2 2
+3 0 foo "TOP.v.f1" 0 generate12.verilator.v 22 34 1 
+1 A 3 0 c0000 1 0 31 0 32 17 2 0 0 0 0 0
+3 1 foo.U[0] "TOP.v.f1.U[0]" 0 generate12.verilator.v 29 31 1 
+1 i 4 27 30c0009 1 0 31 0 32 17 0 0 0 0 0 0
+3 0 bar "TOP.v.f1.U[0].b" 0 generate12.verilator.v 38 42 1 
+2 8 40 40 40 a000d 1 0 21004 0 0 1 16 0 0
+2 9 40 40 40 60006 0 1 1410 0 0 1 1 a
+2 10 40 40 40 6000d 1 48 16 8 9
+1 a 5 40 1070006 1 0 0 0 1 17 0 1 0 0 0 0
+4 10 7 0 0 10
+3 1 foo.U[1] "TOP.v.f1.U[1]" 0 generate12.verilator.v 29 31 1 
+1 i 6 27 30c0009 1 0 31 0 32 17 1 0 0 1 0 0
+3 0 bar "TOP.v.f1.U[1].b" 0 generate12.verilator.v 38 42 1 
+2 11 40 40 40 a000d 1 0 21004 0 0 1 16 0 0
+2 12 40 40 40 60006 0 1 1410 0 0 1 1 a
+2 13 40 40 40 6000d 1 48 16 11 12
+1 a 7 40 1070006 1 0 0 0 1 17 0 1 0 0 0 0
+4 13 7 0 0 13
+3 0 foo "TOP.v.f2" 0 generate12.verilator.v 22 34 1 
+1 A 9 0 c0000 1 0 31 0 32 17 3 0 0 0 0 0
+3 1 foo.U[0] "TOP.v.f2.U[0]" 0 generate12.verilator.v 29 31 1 
+1 i 10 27 30c0009 1 0 31 0 32 17 0 0 0 3 3 0
+3 0 bar "TOP.v.f2.U[0].b" 0 generate12.verilator.v 38 42 1 
+2 14 40 40 40 a000d 1 0 21004 0 0 1 16 0 0
+2 15 40 40 40 60006 0 1 1410 0 0 1 1 a
+2 16 40 40 40 6000d 1 48 16 14 15
+1 a 11 40 1070006 1 0 0 0 1 17 0 1 0 0 0 0
+4 16 7 0 0 16
+3 1 foo.U[1] "TOP.v.f2.U[1]" 0 generate12.verilator.v 29 31 1 
+1 i 12 27 30c0009 1 0 31 0 32 17 1 0 0 3 3 0
+3 0 bar "TOP.v.f2.U[1].b" 0 generate12.verilator.v 38 42 1 
+2 17 40 40 40 a000d 1 0 21004 0 0 1 16 0 0
+2 18 40 40 40 60006 0 1 1410 0 0 1 1 a
+2 19 40 40 40 6000d 1 48 16 17 18
+1 a 13 40 1070006 1 0 0 0 1 17 0 1 0 0 0 0
+4 19 7 0 0 19
+3 1 foo.U[2] "TOP.v.f2.U[2]" 0 generate12.verilator.v 29 31 1 
+1 i 14 27 30c0009 1 0 31 0 32 17 2 0 0 3 3 0
+3 0 bar "TOP.v.f2.U[2].b" 0 generate12.verilator.v 38 42 1 
+2 20 40 40 40 a000d 1 0 21004 0 0 1 16 0 0
+2 21 40 40 40 60006 0 1 1410 0 0 1 1 a
+2 22 40 40 40 6000d 1 48 16 20 21
+1 a 15 40 1070006 1 0 0 0 1 17 0 1 0 0 0 0
+4 22 7 0 0 22

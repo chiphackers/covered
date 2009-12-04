@@ -1,14 +1,14 @@
-5 17 1fd01 5 ffffffff *
-8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (unary2.vcd) 2 -o (unary2.cdd) 2 -v (unary2.v) 2 -D (DUMP)
+5 18 1fd81 5 0 ffffffff *
+8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (unary2.vcd) 2 -o (unary2.cdd) 2 -v (unary2.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 3 0 main "main" 0 unary2.v 10 37 1 
 2 1 15 15 15 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 u$0
-1 a 1 12 107000b 1 0 79 0 80 17 0 ffffffff 0 ffff0000 0 0 0 ffffffff 0 ffff0000 0 0 0 ffff 0 0 0 0
+1 a 1 12 107000b 1 0 79 0 80 17 0 ffffffffffffffff 0 ffff0000ffff0000 0 0 0 ffff 0 0 0 0
 1 b 2 13 107000b 1 0 0 0 1 17 0 1 0 1 0 0
 1 c 3 13 107000e 1 0 0 0 1 17 0 1 0 1 1 0
 4 1 1 0 0 1
 3 1 main.u$0 "main.u$0" 0 unary2.v 15 28 1 
-2 2 16 16 16 5001e 1 0 61008 0 0 80 16 ffff 0 ffff 0 ffff 0
+2 2 16 16 16 5001e 1 0 61008 0 0 80 16 ffff0000ffff 0 ffff 0
 2 3 16 16 16 10001 0 1 1410 0 0 80 1 a
 2 4 16 16 16 1001e 1 37 1a 2 3
 2 5 17 17 17 50008 1 0 21004 0 0 1 16 0 0
@@ -29,7 +29,7 @@
 2 20 21 21 21 10007 1 37 3a 18 19
 2 21 22 22 22 20002 1 0 1008 0 0 32 48 5 0
 2 22 22 22 22 10002 2 2c 900a 21 0 32 18 0 ffffffff 0 0 0 0
-2 23 23 23 23 5001e 1 0 61008 0 0 80 16 ffffffff 0 ffffffff 0 ffff 0
+2 23 23 23 23 5001e 1 0 61008 0 0 80 16 ffffffffffffffff 0 ffff 0
 2 24 23 23 23 10001 0 1 1410 0 0 80 1 a
 2 25 23 23 23 1001e 1 37 1a 23 24
 2 26 24 24 24 60006 1 1 1008 0 0 80 1 a

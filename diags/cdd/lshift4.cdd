@@ -1,19 +1,19 @@
-5 17 1fd01 4 ffffffff *
-8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (lshift4.vcd) 2 -o (lshift4.cdd) 2 -v (lshift4.v) 2 -D (DUMP)
+5 18 1fd81 4 0 ffffffff *
+8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (lshift4.vcd) 2 -o (lshift4.cdd) 2 -v (lshift4.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 3 0 main "main" 0 lshift4.v 10 29 1 
 2 1 14 14 14 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 u$0
-1 a 1 12 107000b 1 0 63 0 64 17 0 ffffffff 0 11111110 0 0 0 ffffffff 0 11111111 0 0
+1 a 1 12 107000b 1 0 63 0 64 17 0 ffffffffffffffff 0 1111111111111110 0 0
 4 1 1 0 0 1
 3 1 main.u$0 "main.u$0" 0 lshift4.v 14 18 1 
-2 2 15 15 15 50049 1 0 21000 0 0 64 16 aaaaaaaa 66666666 aaaaaaaa 66666666
+2 2 15 15 15 50049 1 0 21000 0 0 64 16 aaaaaaaaaaaaaaaa 6666666666666666
 2 3 15 15 15 10001 0 1 1410 0 0 64 1 a
 2 4 15 15 15 10049 1 37 12 2 3
 2 5 16 16 16 20002 1 0 1008 0 0 32 48 5 0
 2 6 16 16 16 10002 2 2c 900a 5 0 32 18 0 ffffffff 0 0 0 0
 2 7 17 17 17 a000a 1 0 1008 0 0 32 48 1 0
 2 8 17 17 17 50005 1 1 1010 0 0 64 1 a
-2 9 17 17 17 5000a 1 f 1010 7 8 64 18 0 ffffffff 22222223 11111110 0 0 0 ffffffff 22222222 11111111 0 0
+2 9 17 17 17 5000a 1 f 1010 7 8 64 18 0 ffffffffffffffff 2222222222222223 1111111111111110 0 0
 2 10 17 17 17 10001 0 1 1410 0 0 64 1 a
 2 11 17 17 17 1000a 1 37 32 9 10
 4 4 11 6 6 4

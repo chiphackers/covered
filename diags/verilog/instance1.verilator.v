@@ -19,7 +19,7 @@ always @(posedge verilatorclock) begin
   end
   else if( $time == 17 ) $finish;
 end
-/* coverage off */
+/* coverage on */
 
 depth1 inst0( a, b );
 

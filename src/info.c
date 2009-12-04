@@ -172,11 +172,12 @@ void info_db_write(
   info_set_vector_elem_size();
 
   /*@-formattype -duplicatequals@*/
-  fprintf( file, "%d %x %" FMT32 "x %" FMT64 "u %x %s\n",
+  fprintf( file, "%d %x %" FMT32 "x %" FMT64 "u %u %x %s\n",
            DB_TYPE_INFO,
            CDD_VERSION,
            info_suppl.all,
            num_timesteps,
+           db_list[curr_db]->inst_num,
            inline_comb_depth,
            db_list[curr_db]->leading_hierarchies[0] );
   /*@=formattype =duplicatequals@*/
@@ -254,6 +255,7 @@ bool info_db_read(
   char         tmp[4096];   /* Temporary string */
   isuppl       info   = info_suppl;
   bool         retval = TRUE;
+  unsigned int inst_num;
 
   /* Save off original scored value */
   scored = info_suppl.part.scored;
@@ -268,7 +270,7 @@ bool info_db_read(
     }
 
     /*@-formattype -duplicatequals@*/
-    if( sscanf( *line, "%" FMT32 "x %" FMT64 "u %x %s%n", &(info.all), &num_timesteps, &inline_comb_depth, tmp, &chars_read ) == 4 ) {
+    if( sscanf( *line, "%" FMT32 "x %" FMT64 "u %u %x %s%n", &(info.all), &num_timesteps, &inst_num, &inline_comb_depth, tmp, &chars_read ) == 5 ) {
     /*@=formattype =duplicatequals@*/
 
       *line = *line + chars_read;
@@ -278,6 +280,12 @@ bool info_db_read(
 
         /* Create a new database element */
         (void)db_create();
+
+        /* Set the instance number if this CDD has not been scored yet */
+        if( !info.part.scored && info.part.inlined ) {
+          db_list[curr_db]->inst_num = inst_num;
+          db_list[curr_db]->insts    = (funit_inst**)malloc_safe( sizeof( funit_inst* ) * inst_num );
+        }
 
         /* Set leading_hiers_differ to TRUE if this is not the first hierarchy and it differs from the first */
         if( (db_list[curr_db]->leading_hier_num > 0) && (strcmp( db_list[curr_db]->leading_hierarchies[0], tmp ) != 0) ) {

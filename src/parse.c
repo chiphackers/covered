@@ -205,12 +205,14 @@ void parse_design(
       score_generate_top_dumpvars_module( dumpvars_file );
     }
 
+    /* Assign instance IDs */
+    db_assign_ids();
+
     /* Write contents to baseline database file. */
     db_write( output_db, TRUE, TRUE );
 
     /* Generate the needed Verilog if specified */
     if( info_suppl.part.inlined ) {
-      db_assign_ids();
       generator_output();
     }
 

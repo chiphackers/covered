@@ -117,19 +117,38 @@ void expression_merge(
 );
 
 /*! \brief Returns user-readable name of specified expression operation. */
-const char* expression_string_op( int op );
+const char* expression_string_op(
+  int op
+);
 
 /*! \brief Returns user-readable version of the supplied expression. */
-char* expression_string( expression* exp );
+char* expression_string(
+  expression* exp
+);
 
 /*! \brief Displays the specified expression information. */
-void expression_display( expression* expr );
+void expression_display(
+  expression* expr
+);
 
 /*! \brief Performs operation specified by parameter expression. */
-bool expression_operate( expression* expr, thread* thr, const sim_time* time );
+bool expression_operate(
+  expression*     expr,
+  thread*         thr,
+  const sim_time* time
+);
 
 /*! \brief Performs recursive expression operation (parse mode only). */
-void expression_operate_recursively( expression* expr, func_unit* funit, bool sizing );
+void expression_operate_recursively(
+  expression* expr,
+  func_unit*  funit,
+  bool        sizing
+);
+
+/*! \brief Sets line coverage for the given expression */
+void expression_set_line_coverage(
+  expression* exp
+);
 
 /*! \brief Assigns a value to an expression's coverage data from a dumpfile */
 void expression_vcd_assign(

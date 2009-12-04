@@ -973,15 +973,22 @@ static void generator_create_verilator_inst_ids() { PROFILE(GENERATOR_CREATE_VER
   if( info_suppl.part.verilator ) {
 
     FILE*        ofile;
-    char         cmd[512];
+    char         hfile[256];
     unsigned int rv;
 
-    /* Copy the covered_verilator.h file to the covered/include directory */
-    rv = snprintf( cmd, 512, "cp %s/include/covered_verilator.h covered/include", INSTALL_DIR ); 
-    if( system( cmd ) != 0 ) {
-      print_output( "Unable to perform copy covered_verilator.h file to covered/include", FATAL, __FILE__, __LINE__ );
-      Throw 0;
-    }    
+    rv = snprintf( hfile, 256, "%s/include/covered_verilator.h", INSTALL_DIR );
+    assert( rv < 256 );
+
+    /* If the file exists, copy the covered_verilator.h file to the covered/include directory */
+    if( file_exists( hfile ) ) {
+      char cmd[512];
+      rv = snprintf( cmd, 512, "cp %s covered/include", hfile ); 
+      assert( rv < 512 );
+      if( system( cmd ) != 0 ) {
+        print_output( "Unable to perform copy covered_verilator.h file to covered/include", FATAL, __FILE__, __LINE__ );
+        Throw 0;
+      }
+    }
 
     /* Create the instance ID override file */
     if( (ofile = fopen( "covered/include/covered_inst_ids.h", "w" )) != NULL ) {

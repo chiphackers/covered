@@ -191,14 +191,20 @@ void instance_assign_ids(
 
   if( root != NULL ) {
 
-    /* Assign ID to the current instance */
-    root->id = (*curr_id)++;
+    bool stop_recursive = ((root->funit != NULL) && (root->funit->suppl.part.type == FUNIT_NO_SCORE)) || root->suppl.ignore;
+
+    /* Only create an instance ID if this will be written to the CDD file */
+    if( (root->funit == NULL) || !stop_recursive ) {
+      root->id = (*curr_id)++;
+    }
 
     /* Assign children first */
-    funit_inst* child = root->child_head;
-    while( child != NULL ) {
-      instance_assign_ids( child, curr_id );
-      child = child->next;
+    if( !stop_recursive ) {
+      funit_inst* child = root->child_head;
+      while( child != NULL ) {
+        instance_assign_ids( child, curr_id );
+        child = child->next;
+      }
     }
 
   }
@@ -970,28 +976,27 @@ void instance_resolve(
 #endif /* RUNLIB */
 
 /*!
- \return Returns TRUE if instance was added to the specified functional unit instance tree; otherwise,
-         returns FALSE (indicates that the instance is from a different hierarchy).
+ \return Returns a pointer to the instance that was added if it was added; otherwise, returns NULL (indicates
+         that the instance is from a different hierarchy).
 
  Adds the child functional unit to the child functional unit pointer list located in
  the functional unit specified by the scope of parent in the functional unit instance
  tree pointed to by root.  This function is used by the db_read
  function during the CDD reading stage.
 */ 
-bool instance_read_add(
+funit_inst* instance_read_add(
   funit_inst** root,      /*!< Pointer to root instance of functional unit instance tree */
   char*        parent,    /*!< String scope of parent instance */
   func_unit*   child,     /*!< Pointer to child functional unit to add to specified parent's child list */
   char*        inst_name  /*!< Instance name of this child functional unit instance */
 ) { PROFILE(INSTANCE_READ_ADD);
 
-  bool        retval = TRUE;  /* Return value for this function */
-  funit_inst* inst;           /* Temporary pointer to functional unit instance to add to */
-  funit_inst* new_inst;       /* Pointer to new functional unit instance to add */
+  funit_inst* inst;             /* Temporary pointer to functional unit instance to add to */
+  funit_inst* new_inst = NULL;  /* Pointer to new functional unit instance to add */
 
   if( *root == NULL ) {
 
-    *root = instance_create( child, inst_name, 0, 0, FALSE, FALSE, FALSE, NULL );
+    *root = new_inst = instance_create( child, inst_name, 0, 0, FALSE, FALSE, FALSE, NULL );
 
   } else {
 
@@ -1013,18 +1018,13 @@ bool instance_read_add(
       /* Set parent pointer of new instance */
       new_inst->parent = inst;
 
-    } else {
-
-      /* Unable to find parent of this child, needs to be added to a different instance tree */
-      retval = FALSE;
-
     }
  
   }
 
   PROFILE_END;
 
-  return( retval );
+  return( new_inst );
 
 }
 
@@ -1288,11 +1288,11 @@ bool instance_merge_two_trees(
  the value of scope to NULL.
 */
 void instance_db_write(
-  funit_inst* root,        /*!< Root of functional unit instance tree to write */
-  FILE*       file,        /*!< Output file to display contents to */
-  char*       scope,       /*!< Scope of this functional unit */
-  bool        parse_mode,  /*!< Specifies if we are parsing or scoring */
-  bool        issue_ids    /*!< Specifies that we need to issue expression and signal IDs */
+  funit_inst*   root,        /*!< Root of functional unit instance tree to write */
+  FILE*         file,        /*!< Output file to display contents to */
+  char*         scope,       /*!< Scope of this functional unit */
+  bool          parse_mode,  /*!< Specifies if we are parsing or scoring */
+  bool          issue_ids    /*!< Specifies that we need to issue expression and signal IDs */
 ) { PROFILE(INSTANCE_DB_WRITE);
 
   bool stop_recursive = FALSE;
@@ -1377,21 +1377,23 @@ void instance_db_write(
 }
 
 /*!
+ \return Returns a pointer to the allocated instance.
+
  Parses an instance-only database line and adds a "placeholder" instance in the instance tree.
 */
-void instance_only_db_read(
+funit_inst* instance_only_db_read(
   char** line  /*!< Pointer to line being read from database file */
 ) { PROFILE(INSTANCE_ONLY_DB_READ);
 
-  char  scope[4096];
-  int   chars_read;
-  bool  name_diff;
+  char        scope[4096];
+  int         chars_read;
+  bool        name_diff;
+  funit_inst* child = NULL;
 
   if( sscanf( *line, "%s %d%n", scope, (int*)&name_diff, &chars_read ) == 2 ) {
 
-    char*       back = strdup_safe( scope );
-    char*       rest = strdup_safe( scope );
-    funit_inst* child;
+    char* back = strdup_safe( scope );
+    char* rest = strdup_safe( scope );
 
     *line += chars_read;
 
@@ -1433,6 +1435,8 @@ void instance_only_db_read(
   }
 
   PROFILE_END;
+
+  return( child );
 
 }
 

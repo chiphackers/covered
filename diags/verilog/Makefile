@@ -107,7 +107,11 @@ VERILATOR       = verilator
 # VERILATOR_FLAGS = --cc --trace --Mdir $(DIAG) -Wno-UNOPTFLAT -Wno-WIDTH --exe $(DIAG).cc
 VERILATOR_FLAGS = --cc --trace --Mdir $(DIAG) -Wno-WIDTH --exe $(DIAG).cc
 VERILATOR_EXEC1 = cd $(DIAG); make -f V$(basename $(DIAG)).mk; ./V$(basename $(DIAG)); cp $(DIAG).vcd ..
+ifdef INLINE
 VERILATOR_EXEC2 = cd $(DIAG); make -f V$(basename $(DIAG)).mk USER_CPPFLAGS="-I../../../src -I../covered/include -DCOVERED_INLINED" LIBS="-L../../../lib/run -lcovered"; ./V$(basename $(DIAG)); cp $(DIAG).vcd ..
+else
+VERILATOR_EXEC2 = $(VERILATOR_EXEC1)
+endif
 
 ifdef USE_VERILATOR
 VERILOG        = $(VERILATOR)

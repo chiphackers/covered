@@ -1,5 +1,5 @@
-5 17 1fd01 3 ffffffff *
-8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (report4.2.vcd) 2 -v (report4.2.v) 2 -o (report4.2.cdd)
+5 18 1fd81 3 0 ffffffff *
+8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (report4.2.vcd) 2 -v (report4.2.v) 2 -o (report4.2.cdd)
 3 0 $root "$root" 0 NA 0 0 1 
 3 0 main "main" 0 report4.2.v 8 26 1 
 2 1 12 12 12 360036 1 1 1004 0 0 1 1 d

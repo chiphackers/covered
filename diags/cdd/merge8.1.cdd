@@ -1,7 +1,7 @@
-5 17 1fd01 4 ffffffff main
-8 /Users/trevorw/projects/covered/diags/verilog 2 -t (adder4) 2 -i (main.adder) 2 -vcd (merge8.1a.vcd) 2 -o (merge8.1a.cdd) 2 -v (merge8.1a.v) 2 -y (lib) 2 -D (DUMP) 2 -v (merge8.1b.v)
-12 /Users/trevorw/projects/covered/diags/verilog/merge8.1a.cdd main
-12 /Users/trevorw/projects/covered/diags/verilog/merge8.1b.cdd main.adder
+5 18 1fd81 4 0 ffffffff main
+8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (adder4) 2 -i (main.adder) 2 -vcd (merge8.1a.vcd) 2 -o (merge8.1a.cdd) 2 -v (merge8.1a.v) 2 -y (lib) 2 -D (DUMP) 2 -v (merge8.1b.v)
+12 /home/bryce3/trevorw/devel/covered/diags/verilog/merge8.1a.cdd main
+12 /home/bryce3/trevorw/devel/covered/diags/verilog/merge8.1b.cdd main.adder
 3 0 $root "$root" 0 NA 0 0 1 
 15 main 0
 3 0 adder4 "main.adder" 0 lib/adder4.v 1 22 1 

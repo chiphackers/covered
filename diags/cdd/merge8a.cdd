@@ -1,5 +1,5 @@
-5 17 1fd01 3 ffffffff main
-8 /Users/trevorw/projects/covered/diags/verilog 2 -t (foo) 2 -i (main.m1) 2 -vcd (merge8.vcd) 2 -o (merge8a.cdd) 2 -v (merge8a.v) 2 -D (DUMP)
+5 18 1fd81 3 0 ffffffff main
+8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (foo) 2 -i (main.m1) 2 -vcd (merge8.vcd) 2 -o (merge8a.cdd) 2 -v (merge8a.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 15 main 0
 3 0 foo "main.m1" 0 merge8a.v 30 37 1 

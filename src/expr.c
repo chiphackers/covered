@@ -5849,6 +5849,19 @@ void expression_operate_recursively(
 
 }
 
+/*!
+ Sets line coverage for the given expression.
+*/
+void expression_set_line_coverage(
+  expression* exp
+) { PROFILE(EXPRESSION_SET_LINE_COVERAGE);
+
+  exp->exec_num++;
+
+  PROFILE_END;
+
+}
+
 #ifndef RUNLIB
 /*!
  Assigns data from a dumpfile to the given expression's coverage bits according to the

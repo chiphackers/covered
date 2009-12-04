@@ -255,9 +255,10 @@ void db_close() { PROFILE(DB_CLOSE);
     }
 
     /* Deallocate the insts array */
-    free_safe( db_list[i]->insts, (sizeof( funit_inst* ) * db_list[i]->inst_num) );
-    db_list[i]->insts    = NULL;
-    db_list[i]->inst_num = 0;
+    if( db_list[i]->insts != NULL ) {
+      free_safe( db_list[i]->insts, (sizeof( funit_inst* ) * db_list[i]->inst_num) );
+      db_list[i]->insts = NULL;
+    }
 
     /* Deallocate all information regarding hierarchies */
     for( j=0; j<db_list[i]->leading_hier_num; j++ ) {
@@ -445,6 +446,7 @@ bool db_read(
   bool         inst_name_diff;         /* Specifies the read value of the name diff for the current instance */
   bool         stop_reading  = FALSE;
   bool         one_line_read = FALSE;
+  unsigned int inst_index    = 0;
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
@@ -581,13 +583,22 @@ bool db_read(
               
                 if( (read_mode != READ_MODE_MERGE_INST_MERGE) || !merge_mode ) {
 
+                  funit_inst* inst;
+
                   /* Get the scope of the parent module */
                   scope_extract_back( funit_scope, back, parent_scope );
 
                   /* Attempt to add it to the last instance tree */
                   if( (db_list[curr_db]->inst_tail == NULL) ||
-                      !instance_read_add( &(db_list[curr_db]->inst_tail->inst), parent_scope, curr_funit, back ) ) {
-                    (void)inst_link_add( instance_create( curr_funit, funit_scope, 0, 0, inst_name_diff, FALSE, FALSE, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
+                      ((inst = instance_read_add( &(db_list[curr_db]->inst_tail->inst), parent_scope, curr_funit, back )) == NULL) ) {
+                    inst = instance_create( curr_funit, funit_scope, 0, 0, inst_name_diff, FALSE, FALSE, NULL );
+                    (void)inst_link_add( inst, &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
+                  }
+
+                  /* Add the instance to the instance array */
+                  if( (info_suppl.part.scored == 0) && (info_suppl.part.inlined == 1) ) {
+                    assert( inst_index < db_list[curr_db]->inst_num );
+                    db_list[curr_db]->insts[inst_index++] = inst;
                   }
 
                 }
@@ -603,7 +614,10 @@ bool db_read(
 
                 /* Parse rest of the line for an instance-only structure */
                 if( !merge_mode ) {
-                  instance_only_db_read( &rest_line );
+                  funit_inst* inst = instance_only_db_read( &rest_line );
+                  if( (info_suppl.part.scored == 0) && (info_suppl.part.inlined == 1) ) {
+                    db_list[curr_db]->insts[inst_index++] = inst;
+                  }
 #ifndef RUNLIB
                 } else {
                   instance_only_db_merge( &rest_line );
@@ -717,13 +731,22 @@ bool db_read(
 
     if( (read_mode != READ_MODE_MERGE_INST_MERGE) || !merge_mode ) {
 
+      funit_inst* inst;
+
       /* Get the scope of the parent module */
       scope_extract_back( funit_scope, back, parent_scope );
 
       /* Attempt to add it to the last instance tree */
       if( (db_list[curr_db]->inst_tail == NULL) ||
-          !instance_read_add( &(db_list[curr_db]->inst_tail->inst), parent_scope, curr_funit, back ) ) {
-        (void)inst_link_add( instance_create( curr_funit, funit_scope, 0, 0, inst_name_diff, FALSE, FALSE, NULL ), &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
+          ((inst = instance_read_add( &(db_list[curr_db]->inst_tail->inst), parent_scope, curr_funit, back )) == NULL) ) {
+        inst = instance_create( curr_funit, funit_scope, 0, 0, inst_name_diff, FALSE, FALSE, NULL );
+        (void)inst_link_add( inst, &(db_list[curr_db]->inst_head), &(db_list[curr_db]->inst_tail) );
+      }
+
+      /* Add the instance to the instance array */
+      if( (info_suppl.part.scored == 0) && (info_suppl.part.inlined == 1) ) {
+        assert( inst_index < db_list[curr_db]->inst_num );
+        db_list[curr_db]->insts[inst_index++] = inst;
       }
 
     }
@@ -744,6 +767,12 @@ bool db_read(
     printf( "-----------------------------------\n" );
   }
 #endif
+
+  /* Just make sure that that the number of instances read matches what we expect */
+  if( (info_suppl.part.scored == 0) && (info_suppl.part.inlined == 1) ) {
+    // printf( "db_list->inst_num: %u, inst_index: %u\n", db_list[curr_db]->inst_num, inst_index );
+    assert( db_list[curr_db]->inst_num == inst_index );
+  }
 
   /* Check to make sure that the CDD file contained valid information */
   if( !stop_reading && !one_line_read ) {
@@ -771,6 +800,7 @@ void db_assign_ids() { PROFILE(DB_ASSIGN_IDS);
     instance_assign_ids( instl->inst, &curr_id );
     instl = instl->next;
   }
+  db_list[curr_db]->inst_num = curr_id;
 
   /* Number the functional units */
   curr_id = 0;
@@ -3046,6 +3076,9 @@ void db_set_vcd_scope(
   const char* scope  /*!< Current VCD scope */
 ) { PROFILE(DB_SET_VCD_SCOPE);
 
+  char tmp_scope[4096];
+  int  tmp_index;
+
 #ifdef DEBUG_MODE
   if( debug_mode ) {
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In db_set_vcd_scope, scope: %s", obf_inst( scope ) );
@@ -3058,7 +3091,20 @@ void db_set_vcd_scope(
 
   /* Create a new scope item */
   curr_inst_scope = (char**)realloc_safe( curr_inst_scope, (sizeof( char* ) * curr_inst_scope_size), (sizeof( char* ) * (curr_inst_scope_size + 1)) );
-  curr_inst_scope[curr_inst_scope_size] = strdup_safe( scope );
+
+  /* If this is a Verilator run and the scope refers to a generated scope, we need to switch the parenthesis to brackets */
+  if( sscanf( scope, "%[^(](%d)", tmp_scope, &tmp_index ) == 2 ) {
+    char         index_str[30];
+    unsigned int rv;
+    strcat( tmp_scope, "[" );
+    rv = snprintf( index_str, 30, "%d", tmp_index );
+    assert( rv < 30 );
+    strcat( tmp_scope, index_str );
+    strcat( tmp_scope, "]" );
+    curr_inst_scope[curr_inst_scope_size] = strdup_safe( tmp_scope );
+  } else {
+    curr_inst_scope[curr_inst_scope_size] = strdup_safe( scope );
+  }
   curr_inst_scope_size++;
 
   /* Synchronize the current instance to the value of curr_inst_scope */
@@ -3628,7 +3674,7 @@ void db_add_line_coverage(
 ) { PROFILE(DB_ADD_LINE_COVERAGE);
 
   /* Perform line coverage on the given expression */
-  expression_vcd_assign( db_list[curr_db]->insts[inst_index]->funit->exps[expr_index], 'L', NULL );
+  expression_set_line_coverage( db_list[curr_db]->insts[inst_index]->funit->exps[expr_index] );
 
   PROFILE_END;
 

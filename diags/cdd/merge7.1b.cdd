@@ -1,5 +1,5 @@
-5 17 1fd01 3 ffffffff main
-8 /Users/trevorw/projects/covered/diags/verilog 2 -t (dut_and) 2 -i (main.dut) 2 -vcd (merge7.1b.vcd) 2 -o (merge7.1b.cdd) 2 -v (merge7.1b.v) 2 -y (lib) 2 -D (DUMP)
+5 18 1fd81 3 0 ffffffff main
+8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (dut_and) 2 -i (main.dut) 2 -vcd (merge7.1b.vcd) 2 -o (merge7.1b.cdd) 2 -v (merge7.1b.v) 2 -y (lib) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 15 main 0
 3 0 dut_and "main.dut" 0 lib/dut_and.v 1 9 1 
@@ -12,4 +12,4 @@
 1 b 2 4 8 1 0 0 0 1 17 1 1 0 0 0 0
 1 c 3 5 8 1 0 0 0 1 17 1 1 0 0 0 0
 4 5 f 5 5 5
-13 T 1 1248541024 The output variable a is not being used
+13 T 1 1259959692 The output variable a is not being used

@@ -19,10 +19,6 @@ initial begin
         $finish;
 end
 
-`systemc_implementation
-int x = 0;
-`verilog
-
 endmodule
 
 //-------------------------------------
