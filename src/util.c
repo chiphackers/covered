@@ -21,7 +21,7 @@
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
+#endif /* HAVE_CONFIG_H */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -34,17 +34,19 @@
 #include <ctype.h>
 #ifdef HAVE_STRING_H
 #include <string.h>
-#endif
+#endif /* HAVE_STRING_H */
+#ifndef RUNLIB
 #ifndef VPI_ONLY
 #ifdef HAVE_TCLTK
 #include <tcl.h>
 #include <tk.h> 
-#endif
-#endif
+#endif /* HAVE_TCLTK */
+#endif /* VPI_ONLY */
+#endif /* RUNLIB */
 
 #ifdef HAVE_MPATROL
 #include <mpdebug.h>
-#endif
+#endif /* HAVE_MPATROL */
 
 #include "defines.h"
 #include "util.h"
@@ -55,19 +57,21 @@
 
 extern bool        report_gui;
 extern bool        flag_use_command_line_debug;
+#ifndef RUNLIB
 #ifndef VPI_ONLY
 #ifdef DEBUG_MODE
 #define CLI_DEBUG_MODE_EXISTS 1
 extern bool        cli_debug_mode;
-#endif
+#endif /* DEBUG_MODE */
 #ifdef HAVE_TCLTK
 extern Tcl_Interp* interp;
-#endif
-#endif
+#endif /* HAVE_TCLTK */
+#endif /* VPI_ONLY */
+#endif /* RUNLIB */
 
 #ifndef CLI_DEBUG_MODE_EXISTS
 static bool cli_debug_mode = FALSE;
-#endif
+#endif /* CLI_DEBUG_MODE_EXISTS */
 
 /*!
  If set to TRUE, suppresses all non-fatal error messages from being displayed.
