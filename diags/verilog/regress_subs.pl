@@ -259,7 +259,7 @@ sub runCommand {
 #          mode 2:  Skipped diagnostic (no check but increment PASSED count)
 #          mode 3:  Finish run (removes all *.done files if FAILED count == 0)
 #          mode 4:  Finish run but leave *.done files
-#          mode 5:  Run report file diagnostic error check (for use with LXT/VPI dump verification)
+#          mode 5:  Run report file diagnostic error check (for use with inlined or LXT/VPI dump verification)
 #          mode 6:  Remove CDD files only (that match)
 sub checkTest {
  

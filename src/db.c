@@ -3673,6 +3673,8 @@ void db_add_line_coverage(
   uint32 expr_index   /*!< Index of expression to set */
 ) { PROFILE(DB_ADD_LINE_COVERAGE);
 
+  printf( "In db_add_line_coverage, inst_index: %u, expr_index: %u\n", inst_index, expr_index );
+
   /* Perform line coverage on the given expression */
   expression_set_line_coverage( db_list[curr_db]->insts[inst_index]->funit->exps[expr_index] );
 
