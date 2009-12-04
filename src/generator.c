@@ -906,58 +906,100 @@ static void generator_output_funits(
 
 }
 
-/*!
- Generates the included header file for Verilator simulation.
-*/
-void generator_create_verilator_header() { PROFILE(GENERATOR_CREATE_VERILATOR_HEADER);
+static void generator_write_verilator_inst_ids(
+  funit_inst* root,
+  char*       parent_name,
+  FILE*       ofile
+) { PROFILE(GENERATOR_WRITE_VERILATOR_INST_IDS);
 
-  if( info_suppl.part.verilator ) {
+  assert( root != NULL );
 
-    FILE* ofile;
+  if( ((root->funit == NULL) || (root->funit->suppl.part.type != FUNIT_NO_SCORE)) && !root->suppl.ignore ) {
 
-    if( (ofile = fopen( "covered/include/covered.h", "w" )) != NULL ) {
+    funit_inst* child = root->child_head;
+    char        child_name[4096];
 
-      inst_link* instl;
+    strcpy( child_name, parent_name );
 
-      fprintf( ofile, "#ifndef __COVERED_H__\n" );
-      fprintf( ofile, "#define __COVERED_H__\n" );
-      fprintf( ofile, "\n" );
-      fprintf( ofile, "class %s;\n", verilator_prefix );
-      fprintf( ofile, "\n" );
-      fprintf( ofile, "extern void db_add_line_coverage( uint32_t, uint32_t );\n" );
-      fprintf( ofile, "extern bool db_read( const char*, int );\n" );
-      fprintf( ofile, "extern void bind_perform( bool, int );\n" );
-      fprintf( ofile, "\n" );
-      fprintf( ofile, "inline void covered_line( uint32_t inst_index, uint32_t expr_index ) {\n" );
-      fprintf( ofile, "  db_add_line_coverage( inst_index, expr_index );\n" );
-      fprintf( ofile, "}\n" );
-      fprintf( ofile, "\n" );
-      fprintf( ofile, "inline void covered_initialize( %s* top, const char* cdd_name ) {\n", verilator_prefix );
-      fprintf( ofile, "\n" );
-      fprintf( ofile, "  // try {\n" );
-      fprintf( ofile, "    db_read( cdd_name, %d );\n", READ_MODE_NO_MERGE );
-      fprintf( ofile, "  // } catch() {\n" );
-      fprintf( ofile, "    // TBD - Throw Exception Here\n" );
-      fprintf( ofile, "  // }\n" );
-      fprintf( ofile, "\n" );
-      fprintf( ofile, "  // try {\n" );
-      fprintf( ofile, "    bind_perform( %d, 0 );\n", TRUE );
-      fprintf( ofile, "  // } catch() {\n" );
-      fprintf( ofile, "    // TBD - Throw Exception Here\n" );
-      fprintf( ofile, "  // }\n" );
-      fprintf( ofile, "\n" );
-      fprintf( ofile, "}\n" );
-      fprintf( ofile, "\n" );
-      fprintf( ofile, "#endif\n" );
+    if( strcmp( "TOP", root->name ) != 0 ) {
 
-      fclose( ofile );
+      char         name[256];
+      char         index_str[30];
+      int          index;
+      unsigned int rv;
 
-    } else {
+      if( sscanf( root->name, "%[^[][%d]", name, &index ) == 2 ) {
+        strcat( child_name, name );
+        strcat( child_name, "__BRA__" );
+        rv = snprintf( index_str, 30, "%d", index );
+        assert( rv < 30 );
+        strcat( child_name, index_str );
+        strcat( child_name, "__KET__" );
+      } else if( sscanf( root->name, "u$%d", &index ) == 1 ) {
+        strcat( child_name, "u__024" );
+        rv = snprintf( index_str, 30, "%d", index );
+        assert( rv < 30 );
+        strcat( child_name, index_str );
+      } else {
+        strcat( child_name, root->name );
+      }
 
-      print_output( "Unable to open covered/include/covered.h for writing", FATAL, __FILE__, __LINE__ );
-      Throw 0;
+      if( (root->funit == NULL) || (root->funit->suppl.part.type == FUNIT_MODULE) ) {
+        strcat( child_name, "->" );
+      } else {
+        strcat( child_name, "__DOT__" );
+      }
+
+      /* Output the line to the file */
+      if( root->funit != NULL ) {
+        fprintf( ofile, "  %sCOVERED_INST_ID%d = %d;\n", child_name, root->funit->id, root->id );
+      }
 
     }
+
+    while( child != NULL ) {
+      generator_write_verilator_inst_ids( child, child_name, ofile );
+      child = child->next;
+    }
+
+  }
+
+  PROFILE_END;
+
+}
+
+static void generator_create_verilator_inst_ids() { PROFILE(GENERATOR_CREATE_VERILATOR_INST_IDS);
+
+  FILE* ofile;
+
+  if( (ofile = fopen( "covered/include/covered_inst_ids.h", "w" )) != NULL ) {
+
+    char str[50];
+
+    fprintf( ofile, "#define COVERED_TOP %s\n", verilator_prefix );
+    fprintf( ofile, "\n" );
+    fprintf( ofile, "inline void covered_assign_inst_ids( COVERED_TOP* top ) {\n" );
+    fprintf( ofile, "\n" );
+
+    strncpy( str, "  top->", 50 );
+
+    inst_link* instl = db_list[curr_db]->inst_head;
+    while( instl != NULL ) {
+      if( strcmp( instl->inst->name, "$root" ) != 0 ) {
+        generator_write_verilator_inst_ids( instl->inst, str, ofile );
+      }
+      instl = instl->next;
+    }
+
+    fprintf( ofile, "\n" );
+    fprintf( ofile, "}\n" );
+
+    fclose( ofile );
+
+  } else {
+
+    print_output( "Unable to write covered/include/covered_inst_ids.h", FATAL, __FILE__, __LINE__ );
+    Throw 0;
 
   }
 
@@ -1037,7 +1079,7 @@ void generator_output() { PROFILE(GENERATOR_OUTPUT);
   func_iter_dealloc( &fiter );
 
   /* Output the header file */
-  generator_create_verilator_header();
+  generator_create_verilator_inst_ids();
 
   PROFILE_END;
 
@@ -3736,39 +3778,20 @@ static void generator_write_inst_id_overrides(
 */
 void generator_insert_inst_id_overrides() { PROFILE(GENERATOR_INSERT_INST_ID_OVERRIDES);
 
-  funit_inst* top_inst;
-  char        leading_hier[4096];
-
   if( info_suppl.part.verilator ) {
 
-    /* Get the top-most module */
-    leading_hier[0] = '\0';
-    instance_get_verilator_leading_hierarchy( db_list[curr_db]->inst_tail->inst, leading_hier, &top_inst );
-
-    /* If the current functional unit is the same as the top-most functional unit, insert the overrides */
-    if( top_inst->funit == curr_funit ) {
-
-      inst_link* instl = db_list[curr_db]->inst_head;
-
-      generator_add_cov_to_work_code( "`systemc_header" );
-      generator_add_cov_to_work_code( "\n" );
-      generator_add_cov_to_work_code( "#include \"covered_verilator.h\"" );
-      generator_add_cov_to_work_code( "\n" );
-      generator_add_cov_to_work_code( "`systemc_ctor" );
-      generator_add_cov_to_work_code( "\n" );
-
-      while( instl != NULL ) {
-        generator_write_inst_id_overrides( instl->inst, strlen( leading_hier ) );
-        instl = instl->next;
-      }
-
-      generator_add_cov_to_work_code( "\n" );
-      generator_add_cov_to_work_code( "`verilog" );
-      generator_add_cov_to_work_code( "\n" );
-
-    }
+    generator_add_cov_to_work_code( "`systemc_imp_header" );
+    generator_add_cov_to_work_code( "\n" );
+    generator_add_cov_to_work_code( "#include \"covered_verilator.h\"" );
+    generator_add_cov_to_work_code( "\n" );
+    generator_add_cov_to_work_code( "`verilog" );
+    generator_add_cov_to_work_code( "\n" );
 
   } else {
+
+    funit_inst* top_inst;
+    char        leading_hier[4096];
+    static int  foobar = 0;
 
     /* Get the top-most module */
     leading_hier[0] = '\0';

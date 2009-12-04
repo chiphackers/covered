@@ -2,6 +2,7 @@
 #include "Vgenerate13.h"           // From Verilating "add1.v"
 #include <SpTraceVcdC.h>           // Trace file format header (from SystemPerl)
 #ifdef COVERED_INLINED
+#include "Vgenerate13_main.h"
 #include "covered_verilator.h"
 #endif
 
@@ -23,7 +24,7 @@ int main() {
   tfp->open( "generate13.vcd" );   // Open the dump file
 
 #ifdef COVERED_INLINED
-  covered_initialize( "../generate13.cdd" );
+  covered_initialize( top, "../generate13.cdd" );
 #endif
 
   top->verilatorclock = 0;

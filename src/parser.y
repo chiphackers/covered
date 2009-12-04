@@ -7743,13 +7743,7 @@ defparam_assign
 
  /* Parameter override */
 parameter_value_opt
-  : '#' '(' { param_mode++; in_static_expr = TRUE; } expression_list { param_mode--; in_static_expr = FALSE; }
-    {
-      if( !parse_mode ) {
-        generator_add_cov_to_work_code( "," );
-      }
-    }
-    ')'
+  : '#' '(' { param_mode++; in_static_expr = TRUE; } expression_list { param_mode--; in_static_expr = FALSE; } ')'
     {
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
@@ -7757,13 +7751,7 @@ parameter_value_opt
         }
       }
     }
-  | '#' '(' parameter_value_byname_list
-    {
-      if( !parse_mode ) {
-        generator_add_cov_to_work_code( "," );
-      }
-    }
-    ')'
+  | '#' '(' parameter_value_byname_list ')'
   | '#' DEC_NUMBER
     {
       FREE_TEXT( $2 );

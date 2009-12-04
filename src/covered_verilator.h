@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "cexcept.h"
+#include "covered_inst_ids.h"
 
 /*!
  This will define the exception type that gets thrown (Covered does not care about this value)
@@ -27,7 +28,7 @@ inline void covered_line( uint32_t inst_index, uint32_t expr_index ) {
   db_add_line_coverage( inst_index, expr_index );
 }
 
-inline void covered_initialize( const char* cdd_name ) {
+inline void covered_initialize( COVERED_TOP* top, const char* cdd_name ) {
 
   Try {
     db_read( cdd_name, 0 );
@@ -42,6 +43,9 @@ inline void covered_initialize( const char* cdd_name ) {
     fprintf( stderr, "Covered Error!\n" );
     exit( 1 );
   }
+
+  /* Assign instance IDs */
+  covered_assign_inst_ids( top );
 
 }
 

@@ -3559,7 +3559,7 @@ void db_add_line_coverage(
 ) { PROFILE(DB_ADD_LINE_COVERAGE);
 
   /* TBD */
-  printf( "Here!\n" );
+  printf( "Here! %u, %u\n", inst_index, expr_index );
 
   PROFILE_END;
 
