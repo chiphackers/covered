@@ -3107,16 +3107,18 @@ struct profiler_s {
  Represents a single design database.
 */
 struct db_s {
-  char*       top_module;            /*!< Name of top-most module in the design */
-  char**      leading_hierarchies;   /*!< Specifies the Verilog hierarchy leading up to the DUT (taken from the -i value) */
-  int         leading_hier_num;      /*!< Specifies the number of hierarchies stored in the leading_hierarchies array */
-  bool        leading_hiers_differ;  /*!< Set to TRUE if more than one leading hierarchy exists and it differs with the first leading hierarchy */
-  inst_link*  inst_head;             /*!< Pointer to head of instance tree list */
-  inst_link*  inst_tail;             /*!< Pointer to tail of instance tree list */
-  funit_link* funit_head;            /*!< Pointer to head of functional unit list */
-  funit_link* funit_tail;            /*!< Pointer to tail of functional unit list */
-  str_link*   fver_head;             /*!< Pointer to head of file version list */
-  str_link*   fver_tail;             /*!< Pointer to head of file version list */
+  char*        top_module;            /*!< Name of top-most module in the design */
+  char**       leading_hierarchies;   /*!< Specifies the Verilog hierarchy leading up to the DUT (taken from the -i value) */
+  int          leading_hier_num;      /*!< Specifies the number of hierarchies stored in the leading_hierarchies array */
+  bool         leading_hiers_differ;  /*!< Set to TRUE if more than one leading hierarchy exists and it differs with the first leading hierarchy */
+  inst_link*   inst_head;             /*!< Pointer to head of instance tree list */
+  inst_link*   inst_tail;             /*!< Pointer to tail of instance tree list */
+  funit_inst** insts;                 /*!< Array of instances (for inlined coverage) */
+  unsigned int inst_num;              /*!< Number of elements in the insts array */
+  funit_link*  funit_head;            /*!< Pointer to head of functional unit list */
+  funit_link*  funit_tail;            /*!< Pointer to tail of functional unit list */
+  str_link*    fver_head;             /*!< Pointer to head of file version list */
+  str_link*    fver_tail;             /*!< Pointer to head of file version list */
 };
 
 /*!

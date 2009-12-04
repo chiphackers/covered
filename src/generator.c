@@ -970,36 +970,70 @@ static void generator_write_verilator_inst_ids(
 
 static void generator_create_verilator_inst_ids() { PROFILE(GENERATOR_CREATE_VERILATOR_INST_IDS);
 
-  FILE* ofile;
+  if( info_suppl.part.verilator ) {
 
-  if( (ofile = fopen( "covered/include/covered_inst_ids.h", "w" )) != NULL ) {
+    FILE*        ofile;
+    char         cmd[512];
+    unsigned int rv;
 
-    char str[50];
+    /* Copy the covered_verilator.h file to the covered/include directory */
+    rv = snprintf( cmd, 512, "cp %s/include/covered_verilator.h covered/include", INSTALL_DIR ); 
+    if( system( cmd ) != 0 ) {
+      print_output( "Unable to perform copy covered_verilator.h file to covered/include", FATAL, __FILE__, __LINE__ );
+      Throw 0;
+    }    
 
-    fprintf( ofile, "#define COVERED_TOP %s\n", verilator_prefix );
-    fprintf( ofile, "\n" );
-    fprintf( ofile, "inline void covered_assign_inst_ids( COVERED_TOP* top ) {\n" );
-    fprintf( ofile, "\n" );
+    /* Create the instance ID override file */
+    if( (ofile = fopen( "covered/include/covered_inst_ids.h", "w" )) != NULL ) {
 
-    strncpy( str, "  top->", 50 );
+      char str[50];
 
-    inst_link* instl = db_list[curr_db]->inst_head;
-    while( instl != NULL ) {
-      if( strcmp( instl->inst->name, "$root" ) != 0 ) {
-        generator_write_verilator_inst_ids( instl->inst, str, ofile );
+      fprintf( ofile, "#ifndef __COVERED_INST_IDS_H__\n" );
+      fprintf( ofile, "#define __COVERED_INST_IDS_H__\n" );
+      fprintf( ofile, "\n" );
+      fprintf( ofile, "/*\n" );
+      fprintf( ofile, " Copyright (c) 2006-2009 Trevor Williams\n" );
+      fprintf( ofile, "\n" );
+      fprintf( ofile, " This program is free software; you can redistribute it and/or modify\n" );
+      fprintf( ofile, " it under the terms of the GNU General Public License as published by the Free Software\n" );
+      fprintf( ofile, " Foundation; either version 2 of the License, or (at your option) any later version.\n" );
+      fprintf( ofile, "\n" );
+      fprintf( ofile, " This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;\n" );
+      fprintf( ofile, " without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n" );
+      fprintf( ofile, " See the GNU General Public License for more details.\n" );
+      fprintf( ofile, "\n" );
+      fprintf( ofile, " You should have received a copy of the GNU General Public License along with this program;\n" );
+      fprintf( ofile, " if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.\n" );
+      fprintf( ofile, "*/\n" );
+      fprintf( ofile, "\n" );
+      fprintf( ofile, "#define COVERED_TOP %s\n", verilator_prefix );
+      fprintf( ofile, "\n" );
+      fprintf( ofile, "inline void covered_assign_inst_ids( COVERED_TOP* top ) {\n" );
+      fprintf( ofile, "\n" );
+
+      strncpy( str, "  top->", 50 );
+
+      inst_link* instl = db_list[curr_db]->inst_head;
+      while( instl != NULL ) {
+        if( strcmp( instl->inst->name, "$root" ) != 0 ) {
+          generator_write_verilator_inst_ids( instl->inst, str, ofile );
+        }
+        instl = instl->next;
       }
-      instl = instl->next;
+
+      fprintf( ofile, "\n" );
+      fprintf( ofile, "}\n" );
+      fprintf( ofile, "\n" );
+      fprintf( ofile, "#endif\n" );
+
+      fclose( ofile );
+
+    } else {
+
+      print_output( "Unable to write covered/include/covered_inst_ids.h", FATAL, __FILE__, __LINE__ );
+      Throw 0;
+
     }
-
-    fprintf( ofile, "\n" );
-    fprintf( ofile, "}\n" );
-
-    fclose( ofile );
-
-  } else {
-
-    print_output( "Unable to write covered/include/covered_inst_ids.h", FATAL, __FILE__, __LINE__ );
-    Throw 0;
 
   }
 
@@ -3781,6 +3815,8 @@ void generator_insert_inst_id_overrides() { PROFILE(GENERATOR_INSERT_INST_ID_OVE
   if( info_suppl.part.verilator ) {
 
     generator_add_cov_to_work_code( "`systemc_imp_header" );
+    generator_add_cov_to_work_code( "\n" );
+    generator_add_cov_to_work_code( "#define COVERED_METRICS_ONLY" );
     generator_add_cov_to_work_code( "\n" );
     generator_add_cov_to_work_code( "#include \"covered_verilator.h\"" );
     generator_add_cov_to_work_code( "\n" );

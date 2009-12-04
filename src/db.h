@@ -402,6 +402,16 @@ bool db_do_timestep(
            correct for the covered design. */
 void db_check_dumpfile_scopes();
 
+/*! \brief Called before simulation begins to open the CDD file for coverage. */
+bool db_verilator_initialize(
+  const char* cdd_name
+);
+
+/*! \brief Called after simulation has completed to write the database contents to the CDD. */
+bool db_verilator_close(
+  const char* cdd_name
+);
+
 /*!
  Gathers line coverage for the specified expression.
 */

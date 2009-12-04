@@ -212,6 +212,8 @@ db* db_create() { PROFILE(DB_CREATE);
   new_db                       = (db*)malloc_safe( sizeof( db ) );
   new_db->inst_head            = NULL;
   new_db->inst_tail            = NULL;
+  new_db->insts                = NULL;
+  new_db->inst_num             = 0;
   new_db->funit_head           = NULL;
   new_db->funit_tail           = NULL;
   new_db->fver_head            = NULL;
@@ -251,6 +253,11 @@ void db_close() { PROFILE(DB_CLOSE);
       funit_link_delete_list( &(db_list[i]->funit_head), &(db_list[i]->funit_tail), TRUE );
 
     }
+
+    /* Deallocate the insts array */
+    free_safe( db_list[i]->insts, (sizeof( funit_inst* ) * db_list[i]->inst_num) );
+    db_list[i]->insts    = NULL;
+    db_list[i]->inst_num = 0;
 
     /* Deallocate all information regarding hierarchies */
     for( j=0; j<db_list[i]->leading_hier_num; j++ ) {
@@ -3551,6 +3558,68 @@ void db_check_dumpfile_scopes() { PROFILE(DB_CHECK_DUMPFILE_SCOPES);
 #endif /* RUNLIB */
 
 /*!
+ \return Returns TRUE if the given CDD file was read in without error.
+
+ Reads the given CDD file and prepares the database for coverage accummulation.
+*/
+bool db_verilator_initialize(
+  const char* cdd_name  /*!< Name of CDD file to open for coverage */
+) { PROFILE(DB_VERILATOR_INITIALIZE);
+
+  bool retval = TRUE;
+
+  Try {
+    db_read( cdd_name, 0 );
+  } Catch_anonymous {
+    retval = FALSE;
+  }
+
+  if( retval ) {
+    Try {
+      bind_perform( 1, 0 );
+    } Catch_anonymous {
+      retval = FALSE;
+    }
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
+ \return Returns TRUE if the given CDD file was written without error.
+
+ Writes the database to the given CDD filename and deallocates all memory
+ associated with the database.
+*/
+bool db_verilator_close(
+  const char* cdd_name  /*!< Name of CDD file to write */
+) { PROFILE(DB_VERILATOR_CLOSE);
+
+  bool retval = TRUE;
+
+  /* Set the scored bit */
+  info_set_scored();
+
+  /* Write contents to database file */
+  Try {
+    db_write( cdd_name, 0, 0 );
+  } Catch_anonymous {
+    retval = FALSE;
+  }
+
+  /* Close the database regardless of error */
+  db_close();
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
  Gathers line coverage for the specified expression.
 */
 void db_add_line_coverage(
@@ -3558,8 +3627,8 @@ void db_add_line_coverage(
   uint32 expr_index   /*!< Index of expression to set */
 ) { PROFILE(DB_ADD_LINE_COVERAGE);
 
-  /* TBD */
-  printf( "Here! %u, %u\n", inst_index, expr_index );
+  /* Perform line coverage on the given expression */
+  expression_vcd_assign( db_list[curr_db]->insts[inst_index]->funit->exps[expr_index], 'L', NULL );
 
   PROFILE_END;
 

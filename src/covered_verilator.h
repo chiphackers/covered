@@ -1,45 +1,49 @@
 #ifndef __COVERED_VERILATOR_H__
 #define __COVERED_VERILATOR_H__
 
+/*
+ Copyright (c) 2006-2009 Trevor Williams
+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 2 of the License, or (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ See the GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License along with this program;
+ if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
-#include "cexcept.h"
+
+#ifndef COVERED_METRICS_ONLY
 #include "covered_inst_ids.h"
-
-/*!
- This will define the exception type that gets thrown (Covered does not care about this value)
-*/
-define_exception_type(int);
-
-extern struct exception_context the_exception_context[1];
+#endif
 
 #ifdef __cplusplus
 extern "C" {
+  int  db_verilator_initialize( const char* );
+  int  db_verilator_close( const char* );
   void db_add_line_coverage( uint32_t, uint32_t );
-  int db_read( const char*, int );
-  void db_write( const char*, int, int );
-  void db_close();
-  void bind_perform( int, int );
-  void info_set_scored();
 }
-#endif
+#endif /* __cplusplus */
+
+#ifdef COVERED_METRICS_ONLY
 
 inline void covered_line( uint32_t inst_index, uint32_t expr_index ) {
   db_add_line_coverage( inst_index, expr_index );
 }
 
+#else /* COVERED_METRICS_ONLY */
+
 inline void covered_initialize( COVERED_TOP* top, const char* cdd_name ) {
 
-  Try {
-    db_read( cdd_name, 0 );
-  } Catch_anonymous {
-    fprintf( stderr, "Covered Error!\n" );
-    exit( 1 );
-  }
-
-  Try {
-    bind_perform( 1, 0 );
-  } Catch_anonymous {
+  if( db_verilator_initialize( cdd_name ) ) {
+    covered_assign_inst_ids( top );
+  } else {
     fprintf( stderr, "Covered Error!\n" );
     exit( 1 );
   }
@@ -51,20 +55,13 @@ inline void covered_initialize( COVERED_TOP* top, const char* cdd_name ) {
 
 inline void covered_close( const char* cdd_name ) {
 
-  /* Set the scored bit */
-  info_set_scored();
-
-  /* Write contents to database file */
-  Try {
-    db_write( cdd_name, 0, 0 );
-  } Catch_anonymous {
+  if( !db_verilator_close( cdd_name ) ) {
     fprintf( stderr, "Covered Error!\n" );
     exit( 1 );
   }
 
-  /* Close the database */
-  db_close();
-
 }
+
+#endif /* COVERED_METRICS_ONLY */
 
 #endif

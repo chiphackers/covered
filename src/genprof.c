@@ -973,6 +973,8 @@ profiler profiles[NUM_PROFILES] = {
   {"db_set_symbol_string", NULL, 0, 0, 0, TRUE},
   {"db_do_timestep", NULL, 0, 0, 0, TRUE},
   {"db_check_dumpfile_scopes", NULL, 0, 0, 0, TRUE},
+  {"db_verilator_initialize", NULL, 0, 0, 0, TRUE},
+  {"db_verilator_close", NULL, 0, 0, 0, TRUE},
   {"db_add_line_coverage", NULL, 0, 0, 0, TRUE},
   {"vlerror", NULL, 0, 0, 0, TRUE},
   {"vlwarn", NULL, 0, 0, 0, TRUE},
