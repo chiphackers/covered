@@ -1,4 +1,4 @@
-5 17 1fd01 4 ffffffff *
+5 18 1fd81 4 0 ffffffff *
 8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (timescale1.16.vcd) 2 -o (timescale1.16.cdd) 2 -v (timescale1.16.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 100000000000 
 3 0 main "main" 0 timescale1.16.v 10 29 1000000000 

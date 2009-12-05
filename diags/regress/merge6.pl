@@ -75,19 +75,19 @@ sub run {
   # Simulate the design
   if( $SIMULATOR eq "IV" ) {
     if( $USE_VPI == 1 ) {
-      &runCommand( "iverilog -y lib -m ../../lib/covered.vpi ${bname}.v covered_vpi.v; ./a.out ${vpi_args}" );
+      &runCommand( "iverilog -y lib -m ../../lib/vpi/covered.vpi ${bname}.v covered_vpi.v; ./a.out ${vpi_args}" );
     } else {
       &runCommand( "iverilog -DDUMP -y lib ${bname}.v; ./a.out" );
     }
   } elsif( $SIMULATOR eq "CVER" ) {
     if( $USE_VPI == 1 ) {
-      &runCommand( "cver -q +libext+.v+ -y lib +loadvpi=../../lib/covered.cver.so:vpi_compat_bootstrap ${bname}.v covered_vpi.v ${vpi_args}" );
+      &runCommand( "cver -q +libext+.v+ -y lib +loadvpi=../../lib/vpi/covered.cver.so:vpi_compat_bootstrap ${bname}.v covered_vpi.v ${vpi_args}" );
     } else {
       &runCommand( "cver -q +define+DUMP +libext+.v+ -y lib ${bname}.v" );
     }
   } elsif( $SIMULATOR eq "VCS" ) {
     if( $USE_VPI == 1 ) {
-      &runCommand( "vcs +v2k -sverilog +libext+.v+ -y lib +vpi -load ../../lib/covered.vcs.so:covered_register ${bname}.v covered_vpi.v; ./simv ${vpi_args}" );
+      &runCommand( "vcs +v2k -sverilog +libext+.v+ -y lib +vpi -load ../../lib/vpi/covered.vcs.so:covered_register ${bname}.v covered_vpi.v; ./simv ${vpi_args}" );
     } else {
       &runCommand( "vcs +define+DUMP +v2k -sverilog +libext+.v+ -y lib ${bname}.v; ./simv" );
     }

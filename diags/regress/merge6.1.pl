@@ -77,21 +77,21 @@ sub run {
   if( $SIMULATOR eq "IV" ) {
     $def = ($d == 1) ? "-DTEST1" : "";
     if( $USE_VPI == 1 ) {
-      &runCommand( "iverilog $def -y lib -m ../../lib/covered.vpi ${vname}.v covered_vpi.v; ./a.out ${vpi_args}" );
+      &runCommand( "iverilog $def -y lib -m ../../lib/vpi/covered.vpi ${vname}.v covered_vpi.v; ./a.out ${vpi_args}" );
     } else {
       &runCommand( "iverilog $def -DDUMP -y lib ${vname}.v; ./a.out" );
     }
   } elsif( $SIMULATOR eq "CVER" ) {
     $def = ($d == 1) ? "+define+TEST1" : "";
     if( $USE_VPI == 1 ) {
-      &runCommand( "cver -q $def +libext+.v+ -y lib +loadvpi=../../lib/covered.cver.so:vpi_compat_bootstrap ${vname}.v covered_vpi.v ${vpi_args}" );
+      &runCommand( "cver -q $def +libext+.v+ -y lib +loadvpi=../../lib/vpi/covered.cver.so:vpi_compat_bootstrap ${vname}.v covered_vpi.v ${vpi_args}" );
     } else {
       &runCommand( "cver -q $def +define+DUMP +libext+.v+ -y lib ${vname}.v" );
     }
   } elsif( $SIMULATOR eq "VCS" ) {
     $def = ($d == 1) ? "+define+TEST1" : "";
     if( $USE_VPI == 1 ) {
-      &runCommand( "vcs $def +v2k -sverilog +libext+.v+ -y lib +vpi -load ../../lib/covered.vcs.so:covered_register ${vname}.v covered_vpi.v; ./simv ${vpi_args}" );
+      &runCommand( "vcs $def +v2k -sverilog +libext+.v+ -y lib +vpi -load ../../lib/vpi/covered.vcs.so:covered_register ${vname}.v covered_vpi.v; ./simv ${vpi_args}" );
     } else {
       &runCommand( "vcs $def +define+DUMP +v2k -sverilog +libext+.v+ -y lib ${vname}.v; ./simv" );
     }
