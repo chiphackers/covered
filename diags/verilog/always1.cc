@@ -1,6 +1,10 @@
 #include <verilated.h>             // Defines common routines
 #include "Valways1.h"                 // From Verilating "add1.v"
 #include <SpTraceVcdC.h>           // Trace file format header (from SystemPerl)
+#ifdef COVERED_INLINED
+#include "Valways1_main.h"
+#include "covered_verilator.h"
+#endif
 
 Valways1 *top;                        // Instantiation of module
 
@@ -19,6 +23,10 @@ int main() {
   top->trace( tfp, 99 );           // Trace 99 levels of hierarchy
   tfp->open( "always1.vcd" );         // Open the dump file
 
+#ifdef COVERED_INLINED
+  covered_initialize( top, "../always1.cdd" );
+#endif
+
   top->verilatorclock = 0;
 
   while( !Verilated::gotFinish() ) {
@@ -29,6 +37,10 @@ int main() {
   }
 
   top->final();                    // Done simulating
+
+#ifdef COVERED_INLINED
+  covered_close( "../always1.cdd");
+#endif
 
   tfp->close();
 

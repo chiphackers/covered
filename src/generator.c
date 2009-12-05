@@ -1631,9 +1631,6 @@ void generator_insert_line_cov_with_stmt(
 
     if( info_suppl.part.verilator ) {
 
-      printf( "stmt->funit: %s, funit->id: %d, stmt id: %u, first stmt id: %u\n",
-              stmt->funit->name, stmt->funit->id, expression_get_id( stmt->exp, TRUE ), expression_get_id( stmt->funit->exps[0], TRUE ) );
-
       rv = snprintf( str, 4096, " $c( \"covered_line( \", COVERED_INST_ID%d, \", %u );\" )%c",
                      stmt->funit->id,
                      (expression_get_id( stmt->exp, TRUE ) - expression_get_id( stmt->funit->exps[0], TRUE )),

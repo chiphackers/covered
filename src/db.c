@@ -3668,16 +3668,24 @@ bool db_verilator_close(
 /*!
  Gathers line coverage for the specified expression.
 */
-void db_add_line_coverage(
+bool db_add_line_coverage(
   uint32 inst_index,  /*!< Index of instance to lookup */
   uint32 expr_index   /*!< Index of expression to set */
 ) { PROFILE(DB_ADD_LINE_COVERAGE);
 
-  printf( "In db_add_line_coverage, inst_index: %u, expr_index: %u\n", inst_index, expr_index );
+  bool retval = TRUE;
 
   /* Perform line coverage on the given expression */
-  expression_set_line_coverage( db_list[curr_db]->insts[inst_index]->funit->exps[expr_index] );
+  if( db_list != NULL ) {
+    expression_set_line_coverage( db_list[curr_db]->insts[inst_index]->funit->exps[expr_index] );
+  } else {
+    print_output( "Attempting to gather coverage without calling covered_initialize(...)", FATAL, __FILE__, __LINE__ );
+    retval = FALSE;
+  }
 
   PROFILE_END;
 
+  return( retval );
+
 }
+

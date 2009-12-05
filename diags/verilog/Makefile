@@ -51,7 +51,7 @@ CHK_CODE      = 0
 endif
 endif
 ifdef INLINE
-#CHK_CODE      = 5
+CHK_CODE      = 5
 TOPDIR        = covered/verilog/
 endif
 

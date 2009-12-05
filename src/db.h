@@ -415,7 +415,7 @@ bool db_verilator_close(
 /*!
  Gathers line coverage for the specified expression.
 */
-void db_add_line_coverage(
+bool db_add_line_coverage(
   uint32 inst_index,
   uint32 expr_index
 );

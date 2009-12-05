@@ -25,16 +25,21 @@
 
 #ifdef __cplusplus
 extern "C" {
-  int  db_verilator_initialize( const char* );
-  int  db_verilator_close( const char* );
-  void db_add_line_coverage( uint32_t, uint32_t );
+  int db_verilator_initialize( const char* );
+  int db_verilator_close( const char* );
+  int db_add_line_coverage( uint32_t, uint32_t );
 }
 #endif /* __cplusplus */
 
 #ifdef COVERED_METRICS_ONLY
 
 inline void covered_line( uint32_t inst_index, uint32_t expr_index ) {
-  db_add_line_coverage( inst_index, expr_index );
+
+  if( !db_add_line_coverage( inst_index, expr_index ) ) {
+    fprintf( stderr, "Covered Error!\n" );
+    exit( 1 );
+  }
+
 }
 
 #else /* COVERED_METRICS_ONLY */
