@@ -3603,6 +3603,7 @@ void db_check_dumpfile_scopes() { PROFILE(DB_CHECK_DUMPFILE_SCOPES);
 }
 #endif /* RUNLIB */
 
+#ifdef RUNLIB
 /*!
  \return Returns TRUE if the given CDD file was read in without error.
 
@@ -3688,4 +3689,4 @@ bool db_add_line_coverage(
   return( retval );
 
 }
-
+#endif /* RUNLIB */
