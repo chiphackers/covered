@@ -213,7 +213,7 @@ void parse_design(
 
     /* Generate the needed Verilog if specified */
     if( info_suppl.part.inlined ) {
-      generator_output();
+      generator_output( output_db );
     }
 
   } Catch_anonymous {

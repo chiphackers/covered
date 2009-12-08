@@ -1,13 +1,6 @@
 #include <verilated.h>             // Defines common routines
 #include "Vgenerate12.h"           // From Verilating "add1.v"
 #include <SpTraceVcdC.h>           // Trace file format header (from SystemPerl)
-#ifdef COVERED_INLINED
-#include "Vgenerate12_main.h"
-#include "Vgenerate12_foo__A2.h"
-#include "Vgenerate12_foo__A3.h"
-#include "Vgenerate12_bar.h"
-#include "covered_verilator.h"
-#endif
 
 Vgenerate12 *top;                  // Instantiation of module
 
@@ -42,7 +35,7 @@ int main() {
   top->final();                    // Done simulating
 
 #ifdef COVERED_INLINED
-  covered_close( "../generate12.cdd");
+  covered_close( "../generate12.cdd" );
 #endif
 
   tfp->close();

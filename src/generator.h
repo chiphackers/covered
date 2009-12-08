@@ -89,7 +89,9 @@ char* generator_create_expr_name(
 );
 
 /*! \brief Generates Verilog containing coverage instrumentation */
-void generator_output();
+void generator_output(
+  const char* output_db
+);
 
 /*! \brief Initializes and resets the functional unit iterator. */
 void generator_init_funit(
@@ -212,10 +214,9 @@ void generator_handle_event_trigger(
 /*! \brief Removes the last token in the work buffer and holds onto it. */
 void generator_hold_last_token();
 
-/*! \brief Inserts the COVERED_INST_ID parameter into the work buffer at the current point. */
-void generator_insert_inst_id_param(
-  func_unit* funit,
-  bool       preport
+/*! \brief Inserts the COVERED_INST_ID register into the work buffer at the current point. */
+void generator_insert_inst_id_reg(
+  func_unit* funit
 );
 
 /*! \brief Inserts instance ID parameter overrides */

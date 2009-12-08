@@ -19,10 +19,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifndef COVERED_METRICS_ONLY
-#include "covered_inst_ids.h"
-#endif
-
 #ifdef __cplusplus
 extern "C" {
   int db_verilator_initialize( const char* );
@@ -30,8 +26,6 @@ extern "C" {
   int db_add_line_coverage( uint32_t, uint32_t );
 }
 #endif /* __cplusplus */
-
-#ifdef COVERED_METRICS_ONLY
 
 inline void covered_line( uint32_t inst_index, uint32_t expr_index ) {
 
@@ -42,19 +36,14 @@ inline void covered_line( uint32_t inst_index, uint32_t expr_index ) {
 
 }
 
-#else /* COVERED_METRICS_ONLY */
+#ifndef COVERED_METRICS_ONLY
 
-inline void covered_initialize( COVERED_TOP* top, const char* cdd_name ) {
+inline void covered_initialize_db( const char* cdd_name ) {
 
-  if( db_verilator_initialize( cdd_name ) ) {
-    covered_assign_inst_ids( top );
-  } else {
+  if( !db_verilator_initialize( cdd_name ) ) {
     fprintf( stderr, "Covered Error!\n" );
     exit( 1 );
   }
-
-  /* Assign instance IDs */
-  covered_assign_inst_ids( top );
 
 }
 
@@ -69,4 +58,4 @@ inline void covered_close( const char* cdd_name ) {
 
 #endif /* COVERED_METRICS_ONLY */
 
-#endif
+#endif /* __COVERED_VERILATOR_H__ */

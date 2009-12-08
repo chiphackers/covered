@@ -19,6 +19,10 @@ int main() {
   top->trace( tfp, 99 );           // Trace 99 levels of hierarchy
   tfp->open( "concat9.vcd" );      // Open the dump file
 
+#ifdef COVERED_INLINED
+  covered_initialize( top, "../concat9.cdd" );
+#endif
+
   top->verilatorclock = 0;
 
   while( !Verilated::gotFinish() ) {
@@ -29,6 +33,10 @@ int main() {
   }
 
   top->final();                    // Done simulating
+
+#ifdef COVERED_INLINED
+  covered_close( "../concat9.cdd" );
+#endif
 
   tfp->close();
 

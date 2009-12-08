@@ -627,7 +627,7 @@ description
         /* If this is not an automatic function, place all intermediate signals within the function */
         if( ((funit = db_get_tfn_by_position( @5.first_line, @5.first_column )) != NULL) && generator_is_static_function( funit ) ) {
           generator_push_funit( funit );
-          generator_insert_inst_id_param( funit, FALSE );
+          generator_insert_inst_id_reg( funit );
           generator_push_reg_insert();
         }
       }
@@ -688,8 +688,8 @@ module
     module_port_list_opt ';'
     {
       if( !parse_mode ) {
-        generator_insert_inst_id_param( db_get_curr_funit(), FALSE );
         generator_flush_all;
+        generator_insert_inst_id_reg( db_get_curr_funit() );
         generator_push_reg_insert();
       }
     }
@@ -723,13 +723,7 @@ module_parameter_port_list_opt
         }
       }
     }
-    '('
-    {
-      if( !parse_mode ) {
-        generator_insert_inst_id_param( db_get_curr_funit(), TRUE );
-      }
-    }
-    module_parameter_port_list ')'
+    '(' module_parameter_port_list ')'
     {
       if( parse_mode ) {
         if( !parser_check_generation( GENERATION_2001 ) ) {
@@ -2656,7 +2650,7 @@ generate_item
         free_safe( back, (strlen( funit->name ) + 1) );
         free_safe( rest, (strlen( funit->name ) + 1) );
         generator_push_funit( funit );
-        generator_insert_inst_id_param( db_get_curr_funit(), FALSE );
+        generator_insert_inst_id_reg( db_get_curr_funit() );
         generator_push_reg_insert();
       }
     }
@@ -2701,7 +2695,7 @@ generate_item
         func_unit* funit = db_get_tfn_by_position( @4.first_line, @4.first_column );
         assert( funit != NULL );
         generator_push_funit( funit );
-        generator_insert_inst_id_param( funit, FALSE );
+        generator_insert_inst_id_reg( funit );
         generator_flush_work_code;
         generator_push_reg_insert();
       }
@@ -2757,8 +2751,8 @@ generate_item
         func_unit* funit = db_get_tfn_by_position( @13.first_line, @13.first_column );
         assert( funit != NULL );
         generator_push_funit( funit );
-        generator_insert_inst_id_param( funit, FALSE );
         generator_flush_work_code;
+        generator_insert_inst_id_reg( funit );
         generator_push_reg_insert();
       }
       FREE_TEXT( $13 );
@@ -3682,7 +3676,7 @@ module_item
         // generator_flush_work_code;
         if( ((funit = db_get_tfn_by_position( @6.first_line, @6.first_column )) != NULL) && generator_is_static_function( funit ) ) {
           generator_push_funit( funit );
-          generator_insert_inst_id_param( funit, FALSE );
+          generator_insert_inst_id_reg( funit );
           generator_push_reg_insert();
         }
         generator_add_to_hold_code( " begin", __FILE__, __LINE__ );
@@ -6120,7 +6114,7 @@ begin_end_block
           } else {
             FREE_TEXT( $1 );
           }
-          generator_insert_inst_id_param( funit, FALSE );
+          generator_insert_inst_id_reg( funit );
           generator_flush_work_code;
         }
       }

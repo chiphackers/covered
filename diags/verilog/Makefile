@@ -108,7 +108,7 @@ VERILATOR       = verilator
 VERILATOR_FLAGS = --cc --trace --Mdir $(DIAG) -Wno-WIDTH --exe $(DIAG).cc
 VERILATOR_EXEC1 = cd $(DIAG); make -f V$(basename $(DIAG)).mk; ./V$(basename $(DIAG)); cp $(DIAG).vcd ..
 ifdef INLINE
-VERILATOR_EXEC2 = cd $(DIAG); make -f V$(basename $(DIAG)).mk USER_CPPFLAGS="-I../../../src -I../covered/include -DCOVERED_INLINED" LIBS="-L../../../lib/run -lcovered"; ./V$(basename $(DIAG)); cp $(DIAG).vcd ..
+VERILATOR_EXEC2 = cd $(DIAG); make -f V$(basename $(DIAG)).mk USER_CPPFLAGS="-I../../../src -DCOVERED_INLINED" LIBS="-L../../../lib/run -lcovered"; ./V$(basename $(DIAG)); cp $(DIAG).vcd ..
 else
 VERILATOR_EXEC2 = $(VERILATOR_EXEC1)
 endif
@@ -251,13 +251,7 @@ ifndef LXT
 endif
 endif
 endif
-ifndef USE_VERILATOR
 	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
-else
-ifndef INLINE
-	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
-endif
-endif
 ifdef USE_VERILATOR
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -o $(DIAG).rptM $(DIAG).cdd $(CHECKMEM)
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcfam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
@@ -272,7 +266,7 @@ ifdef USE_VERILATOR
 	@mv $(DIAG).rptM $(DIAG).verilator.rptM
 	@mv $(DIAG).rptI $(DIAG).verilator.rptI
 	@./check_test $(DIAG).verilator 1 $(CHK_CODE)
-	@rm -rf $(DIAG)
+#	@rm -rf $(DIAG)
 else
 	@./check_test $(DIAG) 1 $(CHK_CODE)
 endif

@@ -19,6 +19,10 @@ int main() {
   top->trace( tfp, 99 );           // Trace 99 levels of hierarchy
   tfp->open( "always14.vcd" );         // Open the dump file
 
+#ifdef COVERED_INLINED
+  covered_initialize( top, "../always14.cdd" );
+#endif
+
   top->gend_clock = 0;
 
   while( !Verilated::gotFinish() ) {
@@ -30,6 +34,10 @@ int main() {
   }
 
   top->final();                    // Done simulating
+
+#ifdef COVERED_INLINED
+  covered_close( "../always14.cdd" );
+#endif
 
   tfp->close();
 

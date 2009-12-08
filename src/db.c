@@ -3678,6 +3678,7 @@ bool db_add_line_coverage(
 
   /* Perform line coverage on the given expression */
   if( db_list != NULL ) {
+    printf( "In db_add_line_coverage, inst_index: %u, expr_index: %u\n", inst_index, expr_index );
     expression_set_line_coverage( db_list[curr_db]->insts[inst_index]->funit->exps[expr_index] );
   } else {
     print_output( "Attempting to gather coverage without calling covered_initialize(...)", FATAL, __FILE__, __LINE__ );

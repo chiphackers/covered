@@ -1,9 +1,6 @@
 #include <verilated.h>             // Defines common routines
 #include "Vinstance1.h"           // From Verilating "add1.v"
 #include <SpTraceVcdC.h>           // Trace file format header (from SystemPerl)
-#ifdef COVERED_INLINED
-#include "covered_verilator.h"
-#endif
 
 Vinstance1 *top;                  // Instantiation of module
 
@@ -23,7 +20,7 @@ int main() {
   tfp->open( "instance1.vcd" );   // Open the dump file
 
 #ifdef COVERED_INLINED
-  covered_initialize( "../instance1.cdd" );
+  covered_initialize( top, "../instance1.cdd" );
 #endif
 
   top->verilatorclock = 0;
@@ -38,7 +35,7 @@ int main() {
   top->final();                    // Done simulating
 
 #ifdef COVERED_INLINED
-  covered_close( "../instance1.cdd");
+  covered_close( "../instance1.cdd" );
 #endif
 
   tfp->close();
