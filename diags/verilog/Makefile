@@ -266,7 +266,7 @@ ifdef USE_VERILATOR
 	@mv $(DIAG).rptM $(DIAG).verilator.rptM
 	@mv $(DIAG).rptI $(DIAG).verilator.rptI
 	@./check_test $(DIAG).verilator 1 $(CHK_CODE)
-#	@rm -rf $(DIAG)
+	@rm -rf $(DIAG)
 else
 	@./check_test $(DIAG) 1 $(CHK_CODE)
 endif
