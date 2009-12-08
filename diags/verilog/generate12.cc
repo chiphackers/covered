@@ -1,5 +1,8 @@
 #include <verilated.h>             // Defines common routines
 #include "Vgenerate12.h"           // From Verilating "add1.v"
+#ifdef COVERED_INLINED
+#include "Vgenerate12_main.h"
+#endif
 #include <SpTraceVcdC.h>           // Trace file format header (from SystemPerl)
 
 Vgenerate12 *top;                  // Instantiation of module

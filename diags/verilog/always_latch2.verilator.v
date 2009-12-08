@@ -12,9 +12,9 @@ reg a, b, c;
 always_latch
   a <= b & c;
 
-initial begin
-        if ($time==11);
-        $finish;
-end
+/* coverage off */
+always @(posedge verilatorclock)
+  if( $time == 11 ) $finish;
+/* coverage on */
 /* verilator lint_on COMBDLY */
 endmodule

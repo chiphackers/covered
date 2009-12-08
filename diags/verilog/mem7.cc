@@ -1,5 +1,8 @@
 #include <verilated.h>             // Defines common routines
 #include "Vmem7.h"                 // From Verilating "mem7.v"
+#ifdef COVERED_INLINED
+#include "Vmem7_main.h"
+#endif
 #include <SpTraceVcdC.h>           // Trace file format header (from SystemPerl)
 
 Vmem7 *top;                        // Instantiation of module

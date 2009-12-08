@@ -1,5 +1,8 @@
 #include <verilated.h>             // Defines common routines
 #include "Vblock1.h"               // From Verilating "block1.v"
+#ifdef COVERED_INLINED
+#include "Vblock1_main.h"
+#endif
 #include <SpTraceVcdC.h>           // Trace file format header (from SystemPerl)
 
 Vblock1 *top;                      // Instantiation of module

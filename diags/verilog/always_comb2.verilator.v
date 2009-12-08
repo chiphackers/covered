@@ -11,9 +11,9 @@ reg a, b, c;
 always_comb
   a = b & c;
 
-initial begin
-        if ($time==11);
-        $finish;
-end
+/* coverage off */
+always @(posedge verilatorclock)
+  if( $time == 11 ) $finish;
+/* coverage on */
 
 endmodule

@@ -5,21 +5,22 @@
  Simulators:  VERILATOR
 */
 
-module main;
+module main( input verilatorclock );
 
 reg signed [39:0] a;
 reg [31:0] b;
 
-initial begin
-	a = 40'h8000000000;
-	if ($time==5);
-	b = 32'd1;
-	a = a >>> b;
-	if ($time==11);
-	b[20] = 1'bx;
-	a = a >>> b;
-	if ($time==15);
-	$finish;
+always @(posedge verilatorclock) begin
+  if( $time == 1 ) a <= 40'h8000000000;
+  if( $time == 5 ) begin
+    b <= 32'd1;
+    a <= a >>> b;
+  end
+  if( $time == 11 ) begin
+    b[20] <= 1'bx;
+    a     <= a >>> b;
+  end
+  if( $time == 15 ) $finish;
 end
 
 endmodule

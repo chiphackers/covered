@@ -1,5 +1,8 @@
 #include <verilated.h>             // Defines common routines
 #include "Vaedge1.h"                 // From Verilating 					//"aedge1.1.verilator.v"
+#ifdef COVERED_INLINED
+#include "Vaedge1_main.h"
+#endif
 #include <SpTraceVcdC.h>           // Trace file format header (from SystemPerl)
 
 Vaedge1 *top;                        // Instantiation of module

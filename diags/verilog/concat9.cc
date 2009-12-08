@@ -1,5 +1,8 @@
 #include <verilated.h>             // Defines common routines
 #include "Vconcat9.h"              // From Verilating "concat9.v"
+#ifdef COVERED_INLINED
+#include "Vconcat9_main.h"
+#endif
 #include <SpTraceVcdC.h>           // Trace file format header (from SystemPerl)
 
 Vconcat9 *top;                     // Instantiation of module

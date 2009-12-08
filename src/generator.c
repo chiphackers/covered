@@ -53,6 +53,7 @@ extern int            generate_mode;
 extern isuppl         info_suppl;
 extern unsigned int   inline_comb_depth;
 extern char*          verilator_prefix;
+extern bool           test_mode;
 
 
 struct fname_link_s;
@@ -3739,8 +3740,11 @@ void generator_insert_inst_id_overrides() { PROFILE(GENERATOR_INSERT_INST_ID_OVE
     if( top_inst->funit == curr_funit ) {
 
       /* Create initialization function */
-      generator_add_cov_to_work_code( "`systemc_imp_header" );
-      rv = snprintf( leading_hier, 4096, "#include \"%s.h\"", verilator_prefix );
+      generator_add_cov_to_work_code( "`systemc_header" );
+      generator_add_cov_to_work_code( "\n" );
+      generator_add_cov_to_work_code( "#include \"covered_verilator.h\"" );
+      generator_add_cov_to_work_code( "\n" );
+      rv = snprintf( leading_hier, 4096, "void covered_initialize( %s* top, const char* cdd_name );", verilator_prefix );
       assert( rv < 4096 );
       generator_add_cov_to_work_code( leading_hier );
       generator_add_cov_to_work_code( "\n" );
@@ -3758,18 +3762,21 @@ void generator_insert_inst_id_overrides() { PROFILE(GENERATOR_INSERT_INST_ID_OVE
       generator_add_cov_to_work_code( "}" );
       generator_add_cov_to_work_code( "\n" );
 
-    }
+    } else {
 
-    generator_add_cov_to_work_code( "`systemc_imp_header" );
-    generator_add_cov_to_work_code( "\n" );
-
-    if( top_inst->funit != curr_funit ) {
-      generator_add_cov_to_work_code( "#define COVERED_METRICS_ONLY" );
+      generator_add_cov_to_work_code( "`systemc_imp_header" );
       generator_add_cov_to_work_code( "\n" );
+
+      if( top_inst->funit != curr_funit ) {
+        generator_add_cov_to_work_code( "#define COVERED_METRICS_ONLY" );
+        generator_add_cov_to_work_code( "\n" );
+      }
+
+      generator_add_cov_to_work_code( "#include \"covered_verilator.h\"" );
+      generator_add_cov_to_work_code( "\n" );
+
     }
 
-    generator_add_cov_to_work_code( "#include \"covered_verilator.h\"" );
-    generator_add_cov_to_work_code( "\n" );
     generator_add_cov_to_work_code( "`verilog" );
     generator_add_cov_to_work_code( "\n" );
 

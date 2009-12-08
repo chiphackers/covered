@@ -8,21 +8,20 @@ always_comb
     d = e & f;
   end
 
-initial begin
-	if ($time==101);
-	$finish;
-end
+/* coverage off */
+always @(posedge verilatorclock)
+  if( $time == 101 ) $finish;
+/* coverage on */
 
-initial begin
-	if ($time==11);
-	b = 1'b0;
-	c = 1'b1;
-        e = 1'b1;
-        f = 1'b0;
-	if ($time==21);
-	c = 1'b0;
-	if ($time==31);
-	f = 1'b1;
+always @(posedge verilatorclock) begin
+  if( $time == 11 ) begin
+    b <= 1'b0;
+    c <= 1'b1;
+    e <= 1'b1;
+    f <= 1'b0;
+  end
+  if( $time == 21 ) c <= 1'b0;
+  if( $time == 31 ) f <= 1'b1;
 end
 
 endmodule

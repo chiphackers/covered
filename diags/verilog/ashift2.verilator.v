@@ -9,9 +9,9 @@ always @(a)
    c = (4'h2 >>> 3);
   end
 
-initial begin
-        if ($time==11);
-        $finish;
-end
+/* coverage off */
+always @(posedge verilatorclock)
+  if( $time == 11 ) $finish;
+/* coverage on */
 
 endmodule

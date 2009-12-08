@@ -1,5 +1,8 @@
 #include <verilated.h>             // Defines common routines
 #include "Vassign1.h"              // From Verilating "assign1.v"
+#ifdef COVERED_INLINED
+#include "Vassign1_main.h"
+#endif
 #include <SpTraceVcdC.h>           // Trace file format header (from SystemPerl)
 
 Vassign1 *top;                     // Instantiation of module

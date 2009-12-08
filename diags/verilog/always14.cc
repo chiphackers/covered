@@ -1,5 +1,8 @@
 #include <verilated.h>             // Defines common routines
 #include "Valways14.h"                 // From Verilating 						//"always14.verilator.v"
+#ifdef COVERED_INLINED
+#include "Valways14_main.h"
+#endif
 #include <SpTraceVcdC.h>           // Trace file format header (from SystemPerl)
 
 Valways14 *top;                        // Instantiation of module

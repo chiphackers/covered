@@ -1,5 +1,8 @@
 #include <verilated.h>             // Defines common routines
 #include "Vinstance1.h"           // From Verilating "add1.v"
+#ifdef COVERED_INLINED
+#include "Vinstance1_main.h"
+#endif
 #include <SpTraceVcdC.h>           // Trace file format header (from SystemPerl)
 
 Vinstance1 *top;                  // Instantiation of module
