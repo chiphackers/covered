@@ -3389,11 +3389,13 @@ module_item
           ignore_mode++;
         }
       } else {
-        generator_add_cov_to_work_code( " begin" );
-        block_depth++;
-        generator_flush_work_code;
-        (void)generator_insert_comb_cov( @2.ppfline, @2.first_column, FALSE, FALSE, FALSE );
-        (void)generator_insert_line_cov( @2.ppfline, ((@2.last_line - @2.first_line) + @2.ppfline), @2.first_column, (@2.last_column - 1), TRUE );
+        if( !info_suppl.part.verilator ) {
+          generator_add_cov_to_work_code( " begin" );
+          block_depth++;
+          generator_flush_work_code;
+          (void)generator_insert_comb_cov( @2.ppfline, @2.first_column, FALSE, FALSE, FALSE );
+          (void)generator_insert_line_cov( @2.ppfline, ((@2.last_line - @2.first_line) + @2.ppfline), @2.first_column, (@2.last_column - 1), TRUE );
+        }
       }
     }
     statement
@@ -3432,10 +3434,11 @@ module_item
           }
         }
       } else {
-        generator_add_cov_to_work_code( " end " );
-        block_depth--;
+        if( !info_suppl.part.verilator ) {
+          generator_add_cov_to_work_code( " end " );
+          block_depth--;
+        }
         generator_flush_work_code;
-        // generator_flush_all;
       }
     }
   | attribute_list_opt
@@ -3447,11 +3450,13 @@ module_item
           ignore_mode++;
         }
       } else {
-        generator_add_cov_to_work_code( " begin" );
-        block_depth++;
-        generator_flush_work_code;
-        (void)generator_insert_comb_cov( @2.ppfline, @2.first_column, FALSE, FALSE, FALSE );
-        (void)generator_insert_line_cov( @2.ppfline, ((@2.last_line - @2.first_line) + @2.ppfline), @2.first_column, (@2.last_column - 1), TRUE );
+        if( !info_suppl.part.verilator ) {
+          generator_add_cov_to_work_code( " begin" );
+          block_depth++;
+          generator_flush_work_code;
+          (void)generator_insert_comb_cov( @2.ppfline, @2.first_column, FALSE, FALSE, FALSE );
+          (void)generator_insert_line_cov( @2.ppfline, ((@2.last_line - @2.first_line) + @2.ppfline), @2.first_column, (@2.last_column - 1), TRUE );
+        }
       }
     }
     statement
@@ -3490,10 +3495,11 @@ module_item
           }
         }
       } else {
-        generator_add_cov_to_work_code( " end " );
-        block_depth--;
+        if( !info_suppl.part.verilator ) {
+          generator_add_cov_to_work_code( " end " );
+          block_depth--;
+        }
         generator_flush_work_code;
-        // generator_flush_all;
       }
     }
   | attribute_list_opt
@@ -3505,11 +3511,13 @@ module_item
           ignore_mode++;
         }
       } else {
-        generator_add_cov_to_work_code( " begin" );
-        block_depth++;
-        generator_flush_work_code;
-        (void)generator_insert_comb_cov( @2.ppfline, @2.first_column, FALSE, FALSE, FALSE );
-        (void)generator_insert_line_cov( @2.ppfline, ((@2.last_line - @2.first_line) + @2.ppfline), @2.first_column, (@2.last_column - 1), TRUE );
+        if( !info_suppl.part.verilator ) {
+          generator_add_cov_to_work_code( " begin" );
+          block_depth++;
+          generator_flush_work_code;
+          (void)generator_insert_comb_cov( @2.ppfline, @2.first_column, FALSE, FALSE, FALSE );
+          (void)generator_insert_line_cov( @2.ppfline, ((@2.last_line - @2.first_line) + @2.ppfline), @2.first_column, (@2.last_column - 1), TRUE );
+        }
       }
     }
     statement
@@ -3532,10 +3540,11 @@ module_item
           }
         }
       } else {
-        generator_add_cov_to_work_code( " end " );
-        block_depth--;
+        if( !info_suppl.part.verilator ) {
+          generator_add_cov_to_work_code( " end " );
+          block_depth--;
+        }
         generator_flush_work_code;
-        // generator_flush_all;
       }
     }
   | attribute_list_opt
@@ -3562,7 +3571,6 @@ module_item
         }
       } else {
         generator_flush_work_code;
-      //  generator_flush_all;
       }
     }
   | attribute_list_opt
@@ -3589,7 +3597,6 @@ module_item
           }
         }
       } else {
-        // generator_flush_hold_code;
         generator_flush_work_code;
       }
     }
@@ -3640,7 +3647,6 @@ module_item
         }
       } else {
         generator_flush_work_code;
-        //generator_flush_all;
       }
     }
   | attribute_list_opt
@@ -3673,7 +3679,6 @@ module_item
     {
       if( !parse_mode ) {
         func_unit* funit;
-        // generator_flush_work_code;
         if( ((funit = db_get_tfn_by_position( @6.first_line, @6.first_column )) != NULL) && generator_is_static_function( funit ) ) {
           generator_push_funit( funit );
           generator_insert_inst_id_reg( funit );
@@ -3713,7 +3718,6 @@ module_item
           generator_pop_funit();
         }
         generator_flush_work_code;
-        // generator_flush_all;
       }
     }
   | K_generate
@@ -3732,7 +3736,6 @@ module_item
         }
       } else {
         generator_flush_work_code;
-        // generator_flush_all;
         generate_mode = 1;
       }
     }
