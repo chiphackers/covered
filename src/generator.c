@@ -1560,11 +1560,14 @@ void generator_insert_line_cov_with_stmt(
 
     if( info_suppl.part.verilator ) {
 
-      rv = snprintf( str, 4096, " $c( \"covered_line( \", COVERED_INST_ID%d, \", %u );\" )%c",
-                     stmt->funit->id,
-                     (expression_get_id( stmt->exp, TRUE ) - expression_get_id( stmt->funit->exps[0], TRUE )),
-                     (semicolon ? ';' : ',') );
-      assert( rv < 4096 );
+      /* If the statement is not a head statement or not an event, add the line */
+      if( !stmt->suppl.part.head || ((stmt->exp->op != EXP_OP_EOR) && (stmt->exp->op != EXP_OP_PEDGE) && (stmt->exp->op != EXP_OP_NEDGE) && (stmt->exp->op != EXP_OP_AEDGE)) ) {
+        rv = snprintf( str, 4096, " $c( \"covered_line( \", COVERED_INST_ID%d, \", %u );\" )%c",
+                       stmt->funit->id,
+                       (expression_get_id( stmt->exp, TRUE ) - expression_get_id( stmt->funit->exps[0], TRUE )),
+                       (semicolon ? ';' : ',') );
+        assert( rv < 4096 );
+      }
 
     } else {
 

@@ -3377,7 +3377,6 @@ module_item
         }
       } else {
         generator_flush_work_code;
-        // generator_flush_hold_code;
       }
     }
   | attribute_list_opt
@@ -3392,7 +3391,9 @@ module_item
         if( !info_suppl.part.verilator ) {
           generator_add_cov_to_work_code( " begin" );
           block_depth++;
-          generator_flush_work_code;
+        }
+        generator_flush_work_code;
+        if( !info_suppl.part.verilator ) {
           (void)generator_insert_comb_cov( @2.ppfline, @2.first_column, FALSE, FALSE, FALSE );
           (void)generator_insert_line_cov( @2.ppfline, ((@2.last_line - @2.first_line) + @2.ppfline), @2.first_column, (@2.last_column - 1), TRUE );
         }
@@ -3450,10 +3451,10 @@ module_item
           ignore_mode++;
         }
       } else {
+        generator_add_cov_to_work_code( " begin" );
+        block_depth++;
+        generator_flush_work_code;
         if( !info_suppl.part.verilator ) {
-          generator_add_cov_to_work_code( " begin" );
-          block_depth++;
-          generator_flush_work_code;
           (void)generator_insert_comb_cov( @2.ppfline, @2.first_column, FALSE, FALSE, FALSE );
           (void)generator_insert_line_cov( @2.ppfline, ((@2.last_line - @2.first_line) + @2.ppfline), @2.first_column, (@2.last_column - 1), TRUE );
         }
@@ -3495,10 +3496,8 @@ module_item
           }
         }
       } else {
-        if( !info_suppl.part.verilator ) {
-          generator_add_cov_to_work_code( " end " );
-          block_depth--;
-        }
+        generator_add_cov_to_work_code( " end " );
+        block_depth--;
         generator_flush_work_code;
       }
     }
@@ -3514,7 +3513,9 @@ module_item
         if( !info_suppl.part.verilator ) {
           generator_add_cov_to_work_code( " begin" );
           block_depth++;
-          generator_flush_work_code;
+        }
+        generator_flush_work_code;
+        if( !info_suppl.part.verilator ) {
           (void)generator_insert_comb_cov( @2.ppfline, @2.first_column, FALSE, FALSE, FALSE );
           (void)generator_insert_line_cov( @2.ppfline, ((@2.last_line - @2.first_line) + @2.ppfline), @2.first_column, (@2.last_column - 1), TRUE );
         }
