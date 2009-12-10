@@ -1,5 +1,5 @@
-5 18 1fd81 7 0 ffffffff *
-8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (urandom1.vcd) 2 -o (urandom1.cdd) 2 -v (urandom1.v) 2 -D (DUMP)
+5 18 1fd01 7 0 ffffffff *
+8 /home/trevorw/projects/devel/covered/diags/verilog 2 -t (main) 2 -vcd (urandom1.vcd) 2 -o (urandom1.cdd) 2 -v (urandom1.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 3 0 main "main" 0 urandom1.v 8 28 1 
 2 1 12 12 12 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 u$0
@@ -9,7 +9,7 @@
 3 1 main.u$0 "main.u$0" 0 urandom1.v 12 17 1 
 2 2 13 13 13 10003 1 3d 5002 0 0 1 18 0 1 0 0 0 0 u$1
 4 2 11 0 0 2
-3 1 main.u$0.u$1 "main.u$0.u$1" 0 urandom1.v 0 16 1 
+3 1 main.u$0.u$1 "main.u$0.u$1" 0 urandom1.v 13 16 1 
 2 3 13 13 13 80008 1 0 1004 0 0 32 48 0 0
 2 4 13 13 13 60006 0 1 1410 0 0 32 33 i
 2 5 13 13 13 60008 1 37 400016 3 4

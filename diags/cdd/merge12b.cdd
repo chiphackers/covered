@@ -1,5 +1,5 @@
-5 18 1fd81 3 0 ffffffff main
-8 /Users/trevorw/projects/covered/diags/verilog 2 -t (merge12_dut) 2 -i (main.dut) 2 -vpi (covered_vpi.v) 2 -o (merge12b.cdd) 2 -v (merge12b.v) 2 -y (./lib) 2 -D (DUMP)
+5 18 1fd01 3 0 ffffffff main
+8 /home/trevorw/projects/devel/covered/diags/verilog 2 -t (merge12_dut) 2 -i (main.dut) 2 -vcd (merge12b.vcd) 2 -o (merge12b.cdd) 2 -v (merge12b.v) 2 -y (./lib) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 15 main 0
 3 0 merge12_dut "main.dut" 0 ./lib/merge12_dut.v 1 13 1 

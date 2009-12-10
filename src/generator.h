@@ -222,5 +222,11 @@ void generator_insert_inst_id_reg(
 /*! \brief Inserts instance ID parameter overrides */
 void generator_insert_inst_id_overrides();
 
+/*! \brief Handles statements that might be in fork..join blocks */
+void generator_handle_parallel_statement(
+  unsigned int first_line,
+  unsigned int first_column
+);
+
 #endif
 

@@ -3802,3 +3802,39 @@ void generator_insert_inst_id_overrides() { PROFILE(GENERATOR_INSERT_INST_ID_OVE
 
 }
 
+/*!
+ Handles a statement that might be a part of a fork..join block, placing a begin..end around the block.
+*/
+void generator_handle_parallel_statement(
+  unsigned int first_line,  /*!< First line of statement */
+  unsigned int first_column  /*!< First column of statement */
+) { PROFILE(GENERATOR_HANDLE_PARALLEL_STATEMENT);
+
+  if( (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
+
+    func_unit*   funit = db_get_tfn_by_position( first_line, first_column );
+    char*        str;
+    char*        back;
+    char*        rest;
+    unsigned int rv;
+    unsigned int size;
+
+    assert( funit != NULL );
+
+    back = strdup_safe( funit->name );
+    rest = strdup_safe( funit->name );
+    scope_extract_back( funit->name, back, rest );
+
+    size = strlen( back ) + 11;
+    str  = (char*)malloc_safe( size );
+    rv   = snprintf( str, size, " begin : %s ", back );
+    assert( rv < size );
+
+    generator_prepend_to_work_code( str );
+    generator_add_cov_to_work_code( " end " );
+
+  }
+
+  PROFILE_END;
+
+}

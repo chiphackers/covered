@@ -4792,10 +4792,7 @@ statement
   : K_assign { ignore_mode++; } lavalue '=' expression ';' { ignore_mode--; }
     {
       if( !parse_mode ) {
-        if( (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
-          generator_prepend_to_work_code( " begin " );
-          generator_add_cov_to_work_code( " end " );
-        }
+        generator_handle_parallel_statement( @1.first_line, @1.first_column );
         generator_flush_work_code;
       }
       $$ = NULL;
@@ -4803,10 +4800,7 @@ statement
   | K_deassign { ignore_mode++; } lavalue ';' { ignore_mode--; }
     {
       if( !parse_mode ) {
-        if( (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
-          generator_prepend_to_work_code( " begin " );
-          generator_add_cov_to_work_code( " end " );
-        }
+        generator_handle_parallel_statement( @1.first_line, @1.first_column );
         generator_flush_work_code;
       }
       $$ = NULL;
@@ -4814,10 +4808,7 @@ statement
   | K_force { ignore_mode++; } lavalue '=' expression ';' { ignore_mode--; }
     {
       if( !parse_mode ) {
-        if( (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
-          generator_prepend_to_work_code( " begin " );
-          generator_add_cov_to_work_code( " end " );
-        }
+        generator_handle_parallel_statement( @1.first_line, @1.first_column );
         generator_flush_work_code;
       }
       $$ = NULL;
@@ -4825,10 +4816,7 @@ statement
   | K_release { ignore_mode++; } lavalue ';' { ignore_mode--; }
     {
       if( !parse_mode ) {
-        if( (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
-          generator_prepend_to_work_code( " begin " );
-          generator_add_cov_to_work_code( " end " );
-        }
+        generator_handle_parallel_statement( @1.first_line, @1.first_column );
         generator_flush_work_code;
       }
       $$ = NULL;
@@ -4872,6 +4860,7 @@ statement
   | K_fork
     {
       if( !parse_mode ) {
+        generator_handle_parallel_statement( @1.first_line, @1.first_column );
         generator_flush_work_code;
       }
     }
@@ -4923,6 +4912,10 @@ statement
         if( block_depth > 0 ) {
           (void)generator_insert_line_cov( @1.ppfline, ((@2.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@2.last_column - 1), TRUE );
         }
+        if( (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
+          generator_prepend_to_work_code( " begin " );
+          generator_add_cov_to_work_code( " end " );
+        }
         generator_flush_work_code;
         $$ = NULL;
       }
@@ -4946,6 +4939,10 @@ statement
         generator_handle_event_trigger( $2, @1.ppfline, @1.first_column, ((@2.last_line - @1.first_line) + @1.ppfline), (@2.last_column - 1) );
         if( block_depth > 0 ) {
           (void)generator_insert_line_cov( @1.ppfline, ((@2.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@2.last_column - 1), TRUE );
+        }
+        if( (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
+          generator_prepend_to_work_code( " begin " );
+          generator_add_cov_to_work_code( " end " );
         }
         generator_flush_work_code;
         $$ = NULL;
@@ -6040,6 +6037,30 @@ fork_statement
         } else {
           ignore_mode++;
         }
+      } else {
+        func_unit* funit;
+        if( (funit = db_get_tfn_by_position( @1.first_line, @1.first_column )) != NULL ) {
+          generator_hold_last_token();
+          if( $1 == NULL ) {
+            char         str[50];
+            char*        back;
+            char*        rest;
+            unsigned int rv;
+            back = strdup_safe( funit->name );
+            rest = strdup_safe( funit->name );
+            scope_extract_back( funit->name, back, rest );
+            rv = snprintf( str, 50, " : %s", back );
+            assert( rv < 50 );
+            generator_add_cov_to_work_code( str );
+            generator_flush_work_code;
+            free_safe( back, (strlen( funit->name ) + 1) );
+            free_safe( rest, (strlen( funit->name ) + 1) );
+          } else {
+            FREE_TEXT( $1 );
+          }
+          generator_insert_inst_id_reg( funit );
+          generator_flush_work_code;
+        }
       }
     }
     block_item_decls_opt statement_list dec_fork_depth
@@ -6210,7 +6231,16 @@ statement_list
     }
   | statement
     {
-      $$ = $1;
+      if( parse_mode ) {
+        $$ = $1;
+      } else {
+        if( (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
+          func_unit* funit = db_get_tfn_by_position( @1.first_line, @1.first_column );
+          assert( funit != NULL );
+          FOOBAR
+        }
+        $$ = NULL;
+      }
     }
   /* This rule is not in the LRM but seems to be supported by several simulators */
   | statement_list ';'
