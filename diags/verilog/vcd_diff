@@ -207,15 +207,19 @@ sub vcd_parse_def_scope {
 
     $type = $1;
     $id   = $2;
-        
+
     # For now we will let any type slide
     if( $curr_scope ne "" ) {
       $mapped_name = $map->{SCOPE}{$curr_scope}{$id};
       if( ($num == 1) && ($mapped_name ne "") ) {
         $id = $mapped_name;
       }
-      $db->{$num}{PARENT}{"$curr_scope.$id"} = $curr_scope;
-      $curr_scope .= ".$id";
+      if( ($num != 0) || ($mapped_name ne "") || !($id =~ /^u\$\d+$/) ) {
+        $db->{$num}{PARENT}{"$curr_scope.$id"} = $curr_scope;
+        $curr_scope .= ".$id";
+      } else {
+        $db->{$num}{UNNAMED}{"$curr_scope"}++;
+      }
     } else {
       $curr_scope = $id;
     }
@@ -257,7 +261,11 @@ sub vcd_parse_def {
       } elsif( substr( $keyword, 1 ) eq "scope" ) {
         &vcd_parse_def_scope( $num, $line );
       } elsif( substr( $keyword, 1 ) eq "upscope" ) {
-        $curr_scope = $db->{$num}{PARENT}{$curr_scope};
+        if( $db->{$num}{UNNAMED}{$curr_scope} > 0 ) {
+          $db->{$num}{UNNAMED}{$curr_scope}--;
+        } else {
+          $curr_scope = $db->{$num}{PARENT}{$curr_scope};
+        }
       } elsif( substr( $keyword, 1 ) eq "enddefinitions" ) {
         $enddef_found = 1;
       } else {
