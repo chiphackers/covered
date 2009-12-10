@@ -177,6 +177,15 @@ gitem_link* save_gi_tail = NULL;
 */
 int generate_block_index = 0;
 
+/*!
+ Starting line number of last parsed FOR keyword.
+*/
+unsigned int for_start_line = 0;
+
+/*!
+ Starting column of last parsed FOR keyword.
+*/
+unsigned int for_start_col = 0;
 
 /*!
  Macro to free a text variable type.  Sets the pointer to NULL so that the pointer is re-deallocated.
@@ -8689,7 +8698,7 @@ inc_for_depth
         func_unit* funit = db_get_curr_funit();
         if( ignore_mode == 0 ) {
           Try {
-            assert( db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, scope, funit->orig_fname, funit->incl_fname, 0, 0 ) );
+            assert( db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, scope, funit->orig_fname, funit->incl_fname, for_start_line, for_start_col ) );
           } Catch_anonymous {
             error_count++;
             ignore_mode++;
@@ -8698,6 +8707,21 @@ inc_for_depth
         block_depth++;
         $$ = db_get_curr_funit();
       } else {
+        func_unit*   funit = db_get_tfn_by_position( for_start_line, for_start_col );
+        char         str[50];
+        char*        back;
+        char*        rest;
+        unsigned int rv;
+        assert( funit != NULL );
+        back = strdup_safe( funit->name );
+        rest = strdup_safe( funit->name );
+        scope_extract_back( funit->name, back, rest );
+        rv = snprintf( str, 50, " begin : %s", back );
+        assert( rv < 50 );
+        generator_add_to_hold_code( str, __FILE__, __LINE__ );
+        free_safe( back, (strlen( funit->name ) + 1) );
+        free_safe( rest, (strlen( funit->name ) + 1) );
+        generator_insert_inst_id_reg( funit );
         block_depth++;
         $$ = NULL;
       }
@@ -8709,6 +8733,9 @@ dec_for_depth
   :
     {
       block_depth--;
+      if( !parse_mode ) {
+        generator_add_to_hold_code( " end ", __FILE__, __LINE__ );      
+      }
     }
   ;
 

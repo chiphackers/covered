@@ -177,9 +177,11 @@ static void symtable_add_sym_sig(
     new_ss->next = symtab->entry.sig;
   }
 
+  assert( (symtab->entry_type == 0) || (symtab->entry_type == 1) );
+
   /* Populate symtab entry */
   symtab->entry.sig  = new_ss;
-  symtab->entry_type = 0;
+  symtab->entry_type = 1;
 
   PROFILE_END;
 
@@ -208,9 +210,11 @@ static void symtable_add_sym_exp(
     new_se->next = symtab->entry.exp;
   }
 
+  assert( (symtab->entry_type == 0) || (symtab->entry_type == 2) );
+
   /* Populate symtab entry */
   symtab->entry.exp  = new_se;
-  symtab->entry_type = 1;
+  symtab->entry_type = 2;
 
   PROFILE_END;
 
@@ -224,9 +228,11 @@ static void symtable_add_sym_fsm(
   fsm*        table    /*!< Pointer to FSM table that will be stored in symtable list */
 ) { PROFILE(SYMTABLE_ADD_SYM_FSM);
 
+  assert( (symtab->entry_type == 0) || (symtab->entry_type == 3) );
+
   /* Populate symtab entry */
   symtab->entry.table = table;
-  symtab->entry_type  = 2;
+  symtab->entry_type  = 3;
 
   PROFILE_END;
 
@@ -505,19 +511,19 @@ void symtable_assign(
 
   for( i=0; i<postsim_size; i++ ) {
     curr = timestep_tab[i];
-    if( curr->entry_type == 0 ) {
+    if( curr->entry_type == 1 ) {
       sym_sig* sig = curr->entry.sig;
       while( sig != NULL ) {
         vsignal_vcd_assign( sig->sig, curr->value, sig->msb, sig->lsb, time );
         sig = sig->next;
       }
-    } else if( curr->entry_type == 1 ) {
+    } else if( curr->entry_type == 2 ) {
       sym_exp* exp = curr->entry.exp;
       while( exp != NULL ) {
         expression_vcd_assign( exp->exp, exp->action, curr->value );
         exp = exp->next;
       }
-    } else {
+    } else if( curr->entry_type == 3 ) {
       fsm_vcd_assign( curr->entry.table, curr->value );
     }
     curr->value[0] = '\0';
@@ -547,7 +553,7 @@ void symtable_dealloc(
       free_safe( symtab->value, symtab->size );
     }
 
-    if( symtab->entry_type == 0 ) {
+    if( symtab->entry_type == 1 ) {
 
       sym_sig* curr;
       sym_sig* tmp;
@@ -560,7 +566,7 @@ void symtable_dealloc(
         curr = tmp;
       }
 
-    } else if( symtab->entry_type == 1 ) {
+    } else if( symtab->entry_type == 2 ) {
 
       sym_exp* curr;
       sym_exp* tmp;

@@ -67,6 +67,8 @@ extern isuppl       info_suppl;
 extern bool         flag_conservative;
 extern bool         parse_mode;
 extern int          block_depth;
+extern unsigned int for_start_line;
+extern unsigned int for_start_col;
 
 /*!
  Contains state before entering exclusive block.
@@ -900,6 +902,10 @@ WSPACE [ \t\b\f]+
   }
   yylloc.first_column = yylloc.last_column;
   yylloc.last_column += strlen( yytext );
+  if( rc == K_for ) {
+    for_start_line = yylloc.ppfline;
+    for_start_col  = yylloc.first_column;
+  }
   if( !parse_mode ) {
     if( (rc != K_begin) && (rc != K_end) ) {
       if( rc == K_endmodule ) {

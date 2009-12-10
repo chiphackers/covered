@@ -955,7 +955,10 @@ static void generator_write_verilator_inst_ids(
     }
 
     /* Output the line to the file */
-    if( root->funit != NULL ) {
+    if( (root->funit != NULL) &&
+        ((root->funit->suppl.part.type == FUNIT_MODULE) ||
+         (root->funit->suppl.part.type == FUNIT_NAMED_BLOCK) ||
+         (root->funit->suppl.part.type == FUNIT_ANAMED_BLOCK)) ) {
       char str[4096];
       snprintf( str, 4096, "%sCOVERED_INST_ID%d = %d;", child_name, root->funit->id, root->id );
       generator_add_cov_to_work_code( str );
@@ -3665,24 +3668,14 @@ static void generator_write_inst_id_overrides(
       /* Don't continue the current tree if it is marked as a no score instance or it is to be ignored */
       if( (root->funit->suppl.part.type != FUNIT_NO_SCORE) && !root->suppl.ignore ) {
 
-        char         str1[4096];
-        char         str2[4096];
-        unsigned int rv;
+        /* Only override modules and named blocks (tasks and functions will not have an ID to override) */
+        if( (root->funit->suppl.part.type == FUNIT_MODULE) ||
+            (root->funit->suppl.part.type == FUNIT_NAMED_BLOCK) ||
+            (root->funit->suppl.part.type == FUNIT_ANAMED_BLOCK) ) {
 
-        if( info_suppl.part.verilator ) {
-
-          /* Get the hierarchical reference */
-          str1[0] = '\0';
-          instance_gen_verilator_scope( str1, root );
-
-          /* Insert the code */
-          rv = snprintf( str2, 4096, "%s%sCOVERED_INST_ID%d = %d;",
-                         ((strlen( str1 ) == hier_chars_to_ignore) ? "" : (str1 + (hier_chars_to_ignore + 7))),
-                         ((strlen( str1 ) == hier_chars_to_ignore) ? "" : "__DOT__"),
-                         root->funit->id, root->id );
-          assert( rv < 4096 );
-
-        } else {
+          char         str1[4096];
+          char         str2[4096];
+          unsigned int rv;
 
           /* Get the hierarchical reference */
           str1[0] = '\0';
@@ -3695,10 +3688,10 @@ static void generator_write_inst_id_overrides(
                          root->funit->id, root->id );
           assert( rv < 4096 );
 
-        }
+          generator_add_cov_to_work_code( str2 );
+          generator_add_cov_to_work_code( "\n" );
 
-        generator_add_cov_to_work_code( str2 );
-        generator_add_cov_to_work_code( "\n" );
+        }
 
       } else {
 
