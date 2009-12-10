@@ -2730,7 +2730,7 @@ struct symtable_s {
     sym_exp*   exp;                  /*!< Pointer to expression symtable entry */
     fsm*       table;                /*!< Pointer to FSM table symtable entry */
   } entry;
-  char         entry_type;           /*!< Specifies if this entry represents a signal (0), expression (1) or fsm (2) */
+  char         entry_type;           /*!< Specifies if this entry represents a signal (1), expression (2) or fsm (3) */
   char*        value;                /*!< String representation of last current value */
   unsigned int size;                 /*!< Number of bytes allowed storage for value */
   symtable*    table[94];            /*!< Array of symbol tables for next level (only enough for printable characters) */
