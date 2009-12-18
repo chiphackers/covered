@@ -301,29 +301,6 @@ static bool merge_parse_args(
 
     /* Set the last command-line pointer to the current tail */
     merge_in_cl_last = merge_in_tail;
-
-    /* Make sure that we have at least 2 files to merge */
-    strl = merge_in_head;
-    while( strl != NULL ) {
-      merge_in_num++;
-      strl = strl->next;
-    }
-
-    /* Check to make sure that the user specified at least two files to merge */
-    if( merge_in_num < 2 ) {
-      print_output( "Must specify at least two CDD files to merge", FATAL, __FILE__, __LINE__ );
-      Throw 0;
-    }
-
-    /*
-     If no -o option was specified and no merge files were specified, don't presume that the first file found in
-     the directory will be that file.
-    */
-    if( merged_file == NULL ) {
-      print_output( "Must specify the -o option or a specific CDD file for containing the merged results", FATAL, __FILE__, __LINE__ );
-      Throw 0;
-    }
-
   }
 
   /* Deallocate the temporary lists */
@@ -331,6 +308,38 @@ static bool merge_parse_args(
   str_link_delete_list( dir_head );
 
   return( help_found );
+}
+
+/*!
+ Check number of merged files.
+*/
+void merge_check() { PROFILE(MERGE_CHECK);
+
+  str_link* strl;
+
+  /* Make sure that we have at least 2 files to merge */
+  strl = merge_in_head;
+  while( strl != NULL ) {
+    merge_in_num++;
+    strl = strl->next;
+  }
+
+  /* Check to make sure that the user specified at least two files to merge */
+  if( merge_in_num < 2 ) {
+    print_output( "Must specify at least two CDD files to merge", FATAL, __FILE__, __LINE__ );
+    Throw 0;
+  }
+
+  /*
+   If no -o option was specified and no merge files were specified, don't presume that the first file found in
+   the directory will be that file.
+  */
+  if( merged_file == NULL ) {
+    print_output( "Must specify the -o option or a specific CDD file for containing the merged results", FATAL, __FILE__, __LINE__ );
+    Throw 0;
+  }
+
+  PROFILE_END;
 
 }
 
@@ -360,6 +369,9 @@ void command_merge(
 
     /* Parse score command-line */
     if( !merge_parse_args( argc, last_arg, argv ) ) {
+
+      /* Check if merge could be executed */
+      merge_check();
 
       /* Read in base database */
       rv = snprintf( user_msg, USER_MSG_LENGTH, "Reading CDD file \"%s\"", merge_in_head->str );

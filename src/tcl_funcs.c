@@ -2995,7 +2995,8 @@ void tcl_func_initialize(
   const char* user_home,  /*!< Name of user's home directory (used to store configuration file information to) */
   const char* home,       /*!< Name of Tcl script home directory (from running the configure script) */
   const char* version,    /*!< Current version of Covered being run */
-  const char* browser     /*!< Name of browser executable to use for displaying help information */
+  const char* browser,    /*!< Name of browser executable to use for displaying help information */
+  const char* input_cdd   /*!< Name of input CDD file (if it exists) */
 ) { PROFILE(TCL_FUNC_INITIALIZE);
  
   Tcl_CreateCommand( tcl, "tcl_func_get_race_reason_msgs",         (Tcl_CmdProc*)(tcl_func_get_race_reason_msgs),         0, 0 );
@@ -3061,6 +3062,11 @@ void tcl_func_initialize(
   /* Set BROWSER variable to locate browser to use for help pages if one has been specified */
   if( browser != NULL ) {
     Tcl_SetVar( tcl, "BROWSER", browser, TCL_GLOBAL_ONLY );
+  }
+
+  /* Set the input CDD file if it exists */
+  if( input_cdd != NULL ) {
+    Tcl_SetVar( tcl, "input_cdd", input_cdd, TCL_GLOBAL_ONLY );
   }
 
 }

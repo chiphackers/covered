@@ -282,10 +282,10 @@ bool info_db_read(
         (void)db_create();
 
         /* Set the instance number if this CDD has not been scored yet */
-        if( !info.part.scored && info.part.inlined ) {
+        // if( !info.part.scored && info.part.inlined ) {
           db_list[curr_db]->inst_num = inst_num;
           db_list[curr_db]->insts    = (funit_inst**)malloc_safe( sizeof( funit_inst* ) * inst_num );
-        }
+        // }
 
         /* Set leading_hiers_differ to TRUE if this is not the first hierarchy and it differs from the first */
         if( (db_list[curr_db]->leading_hier_num > 0) && (strcmp( db_list[curr_db]->leading_hierarchies[0], tmp ) != 0) ) {

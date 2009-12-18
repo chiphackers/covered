@@ -6234,11 +6234,6 @@ statement_list
       if( parse_mode ) {
         $$ = $1;
       } else {
-        if( (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
-          func_unit* funit = db_get_tfn_by_position( @1.first_line, @1.first_column );
-          assert( funit != NULL );
-          FOOBAR
-        }
         $$ = NULL;
       }
     }

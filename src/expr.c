@@ -1852,7 +1852,6 @@ const char* expression_string_op(
 
 }
 
-#ifndef RUNLIB
 /*!
  Returns a pointer to user_msg that will contain a user-friendly string version of
  the given expression
@@ -1870,6 +1869,7 @@ char* expression_string(
 
 }
 
+#ifndef RUNLIB
 /*!
  Displays contents of the specified expression to standard output.  This function
  is called by the funit_display function.

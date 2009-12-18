@@ -51,7 +51,7 @@ CHK_CODE      = 0
 endif
 endif
 ifdef INLINE
-CHK_CODE      = 5
+# CHK_CODE      = 5
 TOPDIR        = covered/verilog/
 endif
 
@@ -220,6 +220,7 @@ ifeq ($(dir $(TOP)),covered/verilog/)
 ifndef LXT
 ifdef USE_VERILATOR
 	$(VERILOG) $(VERILOG_FLAGS) $(DIAG).verilator.v
+	cp $(DIAG).cdd $(DIAG).keep.cdd
 else
 	$(VERILOG) $(VERILOG_FLAGS) $(DIAG).v
 endif
@@ -260,7 +261,7 @@ else
 	$(COVERED) $(COVERED_GFLAG) report -d v -e -m ltcefam -i -o $(DIAG).rptI $(DIAG).cdd $(CHECKMEM)
 endif
 endif
-	@rm -f $(DIAG).cfg
+#	@rm -f $(DIAG).cfg
 ifdef USE_VERILATOR
 	@mv $(DIAG).cdd  $(DIAG).verilator.cdd
 	@mv $(DIAG).rptM $(DIAG).verilator.rptM

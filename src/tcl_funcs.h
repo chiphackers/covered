@@ -41,7 +41,8 @@ void tcl_func_initialize(
   const char* user_home,
   const char* home,
   const char* version,
-  const char* browser
+  const char* browser,
+  const char* input_cdd
 );
 
 #endif

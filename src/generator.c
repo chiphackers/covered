@@ -54,6 +54,9 @@ extern isuppl         info_suppl;
 extern unsigned int   inline_comb_depth;
 extern char*          verilator_prefix;
 extern bool           test_mode;
+extern int*           fork_block_depth;
+extern int            fork_depth;
+extern int            block_depth;
 
 
 struct fname_link_s;
