@@ -26,6 +26,9 @@
 #ifdef CVER
 #include "cv_vpi_user.h"
 #endif
+#ifdef NCV
+#include "vpi_user_cds.h"
+#endif
 
 #include "binding.h"
 #include "db.h"
@@ -841,6 +844,11 @@ void covered_register() { PROFILE(COVERED_REGISTER);
   tf_data.sizetf    = 0;
   tf_data.user_data = "$covered_sim";
   vpi_register_systf( &tf_data );
+
+  if (vpi_chk_error(NULL)) {
+    vpi_printf( "Error occured while setting up user %s\n", "defined system tasks and functions." );
+    return;
+  }
 
   PROFILE_END;
 

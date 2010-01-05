@@ -129,6 +129,28 @@ if test "$want_vcs" = yes; then
   fi
 fi
 
+AC_ARG_WITH([ncv],
+[AC_HELP_STRING([--with-ncv=NCV_INCLUDE_DIR],
+                [Create covered.ncv.so file for the NCVerilog simulator with the specified include directory @<:@@:>@])],
+[if test "${withval}" = no; then
+  want_ncv=no
+elif test "${withval}" = yes; then
+  want_ncv=yes
+else
+  AC_CHECK_HEADER([$withval/vpi_user.h],
+    [want_ncv=yes
+     ncv_prefix="${withval}"],AC_MSG_ERROR([Invalid include directory specified in --with-ncv]))
+fi],
+[want_ncv=no])
+if test "$want_ncv" = yes; then
+  if test "$build_cygwin" = yes; then
+    AC_MSG_ERROR([Cygwin version of NCVerilog library is not available])
+  else
+    AC_SUBST([NCVLIB], ['covered.ncv.so'])
+    AC_SUBST([NCVINC], ["${ncv_prefix}"])
+  fi
+fi
+
 AC_ARG_WITH([cver],
 [AC_HELP_STRING([--with-cver=CVER_INCLUDE_DIR],
                 [Create covered.cver.so file for the CVER simulator with the specified include directory @<:@@:>@])],

@@ -1,9 +1,9 @@
-libexec_PROGRAMS = $(IVLIB) $(VCSLIB) $(CVERLIB)
+libexec_PROGRAMS = $(IVLIB) $(VCSLIB) $(NCVLIB) $(CVERLIB)
 
 if BUILD_CYGWIN
 EXTRA_PROGRAMS = covered.vpi covered.cver.dll
 else
-EXTRA_PROGRAMS = covered.vpi covered.vcs.so covered.cver.so
+EXTRA_PROGRAMS = covered.vpi covered.vcs.so covered.ncv.so covered.cver.so
 endif
 
 noinst_LIBRARIES = libcovered.a
@@ -56,6 +56,9 @@ else
 covered.vcs.so: vpi.vcs.o libcovered.a
 	$(CC) @shared@ @rdynamic@ vpi.vcs.o -L. -lcovered -o covered.vcs.so
 
+covered.ncv.so: vpi.ncv.o libcovered.a
+	$(CC) @shared@ @rdynamic@ vpi.ncv.o -L. -lcovered -o covered.ncv.so
+
 covered.cver.so: vpi.cver.o libcovered.a
 	$(CC) @shared@ @rdynamic@ vpi.cver.o -L. -lcovered -o covered.cver.so
 endif
@@ -65,6 +68,9 @@ covered.vpi: vpi.iv.o libcovered.a
 
 vpi.vcs.o: ../../src/vpi.c
 	$(CC) @PICFLAG@ -g -DVCS -DNOIV $(DEBUGDEF) $(PROFILEDEF) -I$(VCSINC) -I.. -c -o vpi.vcs.o ../../src/vpi.c
+
+vpi.ncv.o: ../../src/vpi.c
+	$(CC) @PICFLAG@ -g -DNCV -DNOIV $(DEBUGDEF) $(PROFILEDEF) -I$(NCVINC) -I.. -c -o vpi.ncv.o ../../src/vpi.c
 
 vpi.cver.o: ../../src/vpi.c
 	$(CC) @PICFLAG@ -g -DCVER -DNOIV $(DEBUGDEF) $(PROFILEDEF) -I$(CVERINC) -I.. -c -o vpi.cver.o ../../src/vpi.c

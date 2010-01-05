@@ -727,6 +727,8 @@ IVDIR
 IVINC
 VCSLIB
 VCSINC
+NCVLIB
+NCVINC
 CVERLIB
 CVERINC
 PICFLAG
@@ -1352,6 +1354,9 @@ Optional Packages:
   --with-vcs=VCS_INCLUDE_DIR
                           Create covered.vcs.so file for the VCS simulator
                           with the specified include directory []
+  --with-ncv=NCV_INCLUDE_DIR
+                          Create covered.ncv.so file for the NCVerilog
+                          simulator with the specified include directory []
   --with-cver=CVER_INCLUDE_DIR
                           Create covered.cver.so file for the CVER simulator
                           with the specified include directory []
@@ -8287,6 +8292,170 @@ echo "$as_me: error: Cygwin version of VCS library is not available" >&2;}
 fi
 
 
+# Check whether --with-ncv was given.
+if test "${with_ncv+set}" = set; then
+  withval=$with_ncv; if test "${withval}" = no; then
+  want_ncv=no
+elif test "${withval}" = yes; then
+  want_ncv=yes
+else
+  as_ac_Header=`echo "ac_cv_header_$withval/vpi_user.h" | $as_tr_sh`
+if { as_var=$as_ac_Header; eval "test \"\${$as_var+set}\" = set"; }; then
+  { echo "$as_me:$LINENO: checking for $withval/vpi_user.h" >&5
+echo $ECHO_N "checking for $withval/vpi_user.h... $ECHO_C" >&6; }
+if { as_var=$as_ac_Header; eval "test \"\${$as_var+set}\" = set"; }; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+fi
+ac_res=`eval echo '${'$as_ac_Header'}'`
+	       { echo "$as_me:$LINENO: result: $ac_res" >&5
+echo "${ECHO_T}$ac_res" >&6; }
+else
+  # Is the header compilable?
+{ echo "$as_me:$LINENO: checking $withval/vpi_user.h usability" >&5
+echo $ECHO_N "checking $withval/vpi_user.h usability... $ECHO_C" >&6; }
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+$ac_includes_default
+#include <$withval/vpi_user.h>
+_ACEOF
+rm -f conftest.$ac_objext
+if { (ac_try="$ac_compile"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_compile") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest.$ac_objext; then
+  ac_header_compiler=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_header_compiler=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+{ echo "$as_me:$LINENO: result: $ac_header_compiler" >&5
+echo "${ECHO_T}$ac_header_compiler" >&6; }
+
+# Is the header present?
+{ echo "$as_me:$LINENO: checking $withval/vpi_user.h presence" >&5
+echo $ECHO_N "checking $withval/vpi_user.h presence... $ECHO_C" >&6; }
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <$withval/vpi_user.h>
+_ACEOF
+if { (ac_try="$ac_cpp conftest.$ac_ext"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_cpp conftest.$ac_ext") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } >/dev/null && {
+	 test -z "$ac_c_preproc_warn_flag$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       }; then
+  ac_header_preproc=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+  ac_header_preproc=no
+fi
+
+rm -f conftest.err conftest.$ac_ext
+{ echo "$as_me:$LINENO: result: $ac_header_preproc" >&5
+echo "${ECHO_T}$ac_header_preproc" >&6; }
+
+# So?  What about this header?
+case $ac_header_compiler:$ac_header_preproc:$ac_c_preproc_warn_flag in
+  yes:no: )
+    { echo "$as_me:$LINENO: WARNING: $withval/vpi_user.h: accepted by the compiler, rejected by the preprocessor!" >&5
+echo "$as_me: WARNING: $withval/vpi_user.h: accepted by the compiler, rejected by the preprocessor!" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $withval/vpi_user.h: proceeding with the compiler's result" >&5
+echo "$as_me: WARNING: $withval/vpi_user.h: proceeding with the compiler's result" >&2;}
+    ac_header_preproc=yes
+    ;;
+  no:yes:* )
+    { echo "$as_me:$LINENO: WARNING: $withval/vpi_user.h: present but cannot be compiled" >&5
+echo "$as_me: WARNING: $withval/vpi_user.h: present but cannot be compiled" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $withval/vpi_user.h:     check for missing prerequisite headers?" >&5
+echo "$as_me: WARNING: $withval/vpi_user.h:     check for missing prerequisite headers?" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $withval/vpi_user.h: see the Autoconf documentation" >&5
+echo "$as_me: WARNING: $withval/vpi_user.h: see the Autoconf documentation" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $withval/vpi_user.h:     section \"Present But Cannot Be Compiled\"" >&5
+echo "$as_me: WARNING: $withval/vpi_user.h:     section \"Present But Cannot Be Compiled\"" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $withval/vpi_user.h: proceeding with the preprocessor's result" >&5
+echo "$as_me: WARNING: $withval/vpi_user.h: proceeding with the preprocessor's result" >&2;}
+    { echo "$as_me:$LINENO: WARNING: $withval/vpi_user.h: in the future, the compiler will take precedence" >&5
+echo "$as_me: WARNING: $withval/vpi_user.h: in the future, the compiler will take precedence" >&2;}
+
+    ;;
+esac
+{ echo "$as_me:$LINENO: checking for $withval/vpi_user.h" >&5
+echo $ECHO_N "checking for $withval/vpi_user.h... $ECHO_C" >&6; }
+if { as_var=$as_ac_Header; eval "test \"\${$as_var+set}\" = set"; }; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  eval "$as_ac_Header=\$ac_header_preproc"
+fi
+ac_res=`eval echo '${'$as_ac_Header'}'`
+	       { echo "$as_me:$LINENO: result: $ac_res" >&5
+echo "${ECHO_T}$ac_res" >&6; }
+
+fi
+if test `eval echo '${'$as_ac_Header'}'` = yes; then
+  want_ncv=yes
+     ncv_prefix="${withval}"
+else
+  { { echo "$as_me:$LINENO: error: Invalid include directory specified in --with-ncv" >&5
+echo "$as_me: error: Invalid include directory specified in --with-ncv" >&2;}
+   { (exit 1); exit 1; }; }
+fi
+
+
+fi
+else
+  want_ncv=no
+fi
+
+if test "$want_ncv" = yes; then
+  if test "$build_cygwin" = yes; then
+    { { echo "$as_me:$LINENO: error: Cygwin version of NCVerilog library is not available" >&5
+echo "$as_me: error: Cygwin version of NCVerilog library is not available" >&2;}
+   { (exit 1); exit 1; }; }
+  else
+    NCVLIB='covered.ncv.so'
+
+    NCVINC="${ncv_prefix}"
+
+  fi
+fi
+
+
 # Check whether --with-cver was given.
 if test "${with_cver+set}" = set; then
   withval=$with_cver; if test "${withval}" = no; then
@@ -13161,6 +13330,8 @@ IVDIR!$IVDIR$ac_delim
 IVINC!$IVINC$ac_delim
 VCSLIB!$VCSLIB$ac_delim
 VCSINC!$VCSINC$ac_delim
+NCVLIB!$NCVLIB$ac_delim
+NCVINC!$NCVINC$ac_delim
 CVERLIB!$CVERLIB$ac_delim
 CVERINC!$CVERINC$ac_delim
 PICFLAG!$PICFLAG$ac_delim
@@ -13171,7 +13342,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 25; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 27; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

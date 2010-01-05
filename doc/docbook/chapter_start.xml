@@ -356,7 +356,7 @@
       <title>Compiling for Icarus Verilog</title>
       <para>
         If you are compiling an Icarus Verilog simulation, simply add
-        <emphasis role="bold"><code>-m /usr/local/libexec/covered.vpi covered_vpi.v</code></emphasis> to the command-line.
+        <emphasis role="bold"><code>-m <emphasis>tool_install_root</emphasis>/libexec/covered.vpi covered_vpi.v</code></emphasis> to the command-line.
       </para>
     </sect2>
 
@@ -364,7 +364,7 @@
       <title>Compiling for Cver</title>
       <para>
         If you are compiling a Cver simulation, simply add
-        <emphasis role="bold"><code>+loadvpi=/usr/local/libexec/covered.cver.so:vpi_compat_bootstrap covered_vpi.v</code></emphasis>
+        <emphasis role="bold"><code>+loadvpi=<emphasis>tool_install_root</emphasis>/libexec/covered.cver.so:vpi_compat_bootstrap covered_vpi.v</code></emphasis>
         to the command-line.
       </para>
     </sect2>
@@ -373,8 +373,26 @@
       <title>Compiling for VCS</title>
       <para>
         If you are compiling a VCS simulation, simply add
-        <emphasis role="bold"><code>+vpi -load /usr/local/libexec/covered.vcs.so:covered_register covered_vpi.v</code></emphasis> to
+        <emphasis role="bold"><code>+vpi -load <emphasis>tool_install_root</emphasis>/libexec/covered.vcs.so:covered_register covered_vpi.v</code></emphasis> to
         the command-line.
+      </para>
+    </sect2>
+
+    <sect2 id="section.start.vpi.ncv">
+      <title>Compiling for NC-Verilog</title>
+      <para>
+        If you are compiling a NC-Verilog simulation, switch to NC-Verilog's irun command to load the covered shared object:
+        <emphasis role="bold"><code>-loadvpi <emphasis>tool_install_root</emphasis>/libexec/covered.ncv.so:covered_register</code></emphasis> and enable all
+        access with <emphasis role="bold"><code>-access +rwc</code></emphasis>.
+      </para>
+      <para>
+        You can hardcode the $covered_sim call into your RTL or you can run it dynamically using the CLI, by adding the 
+        <emphasis role="bold"><code>-input input.tcl</code></emphasis> switch to irun.  Where the input.tcl file looks like the following and tb.dut is
+        the coverage instance:
+      </para>
+      <para><programlisting><![CDATA[
+        call -systf {$covered_sim} {"scored.cdd"} tb.dut
+        run]]></programlisting>
       </para>
     </sect2>
   </sect1>
