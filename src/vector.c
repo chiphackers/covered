@@ -1559,13 +1559,14 @@ bool vector_set_coverage_and_assign_ulong(
         if( (fvall != (tvall & mask)) || (fvalh != (tvalh & mask)) ) {
           ulong tvalx = tvalh & ~tvall & entry[VTYPE_INDEX_SIG_MISC];
           ulong xval  = entry[VTYPE_INDEX_SIG_XHOLD];
+          ulong xmask = mask & ~tvalh;
           if( prev_set == 1 ) {
             entry[VTYPE_INDEX_SIG_TOG01] |= ((~tvalh & ~tvall) | (tvalx & ~xval)) & (~fvalh &  fvall) & mask;
             entry[VTYPE_INDEX_SIG_TOG10] |= ((~tvalh &  tvall) | (tvalx &  xval)) & (~fvalh & ~fvall) & mask;
           }
-          entry[VTYPE_INDEX_SIG_VALL]  = (tvall & ~mask) | fvall;
-          entry[VTYPE_INDEX_SIG_VALH]  = (tvalh & ~mask) | fvalh;
-          entry[VTYPE_INDEX_SIG_XHOLD] = (xval  & ~mask) | (tvall & mask);
+          entry[VTYPE_INDEX_SIG_VALL]  = (tvall & ~mask)  | fvall;
+          entry[VTYPE_INDEX_SIG_VALH]  = (tvalh & ~mask)  | fvalh;
+          entry[VTYPE_INDEX_SIG_XHOLD] = (xval  & ~xmask) | (tvall & xmask);
           entry[VTYPE_INDEX_SIG_MISC] |= ~fvalh & mask;
           changed = TRUE;
         }
@@ -1582,12 +1583,13 @@ bool vector_set_coverage_and_assign_ulong(
         if( (fvall != (tvall & mask)) || (fvalh != (tvalh & mask)) ) {
           ulong tvalx = tvalh & ~tvall & entry[VTYPE_INDEX_MEM_MISC];
           ulong xval  = entry[VTYPE_INDEX_MEM_XHOLD];
+          ulong xmask = mask & ~tvalh;
           entry[VTYPE_INDEX_MEM_TOG01] |= ((~tvalh & ~tvall) | (tvalx & ~xval)) & (~fvalh &  fvall) & mask;
           entry[VTYPE_INDEX_MEM_TOG10] |= ((~tvalh &  tvall) | (tvalx &  xval)) & (~fvalh & ~fvall) & mask;
           entry[VTYPE_INDEX_MEM_WR]    |= mask;
-          entry[VTYPE_INDEX_MEM_VALL]   = (tvall & ~mask) | fvall;
-          entry[VTYPE_INDEX_MEM_VALH]   = (tvalh & ~mask) | fvalh;
-          entry[VTYPE_INDEX_MEM_XHOLD]  = (xval  & ~mask) | (tvall & mask);
+          entry[VTYPE_INDEX_MEM_VALL]   = (tvall & ~mask)  | fvall;
+          entry[VTYPE_INDEX_MEM_VALH]   = (tvalh & ~mask)  | fvalh;
+          entry[VTYPE_INDEX_MEM_XHOLD]  = (xval  & ~xmask) | (tvall & xmask);
           entry[VTYPE_INDEX_MEM_MISC]  |= ~fvalh & mask;
           changed = TRUE;
         }
