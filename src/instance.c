@@ -546,9 +546,8 @@ expression* instance_find_expression_by_exclusion_id(
     
   if( root != NULL ) {
 
-    assert( root->funit != NULL );
- 
-    if( (root->funit->exps != NULL) && 
+    if( (root->funit != NULL) &&
+        (root->funit->exps != NULL) && 
         (root->funit->exps[0]->id <= id) && 
         (root->funit->exps[root->funit->exp_size-1]->id >= id) ) {
 
@@ -593,9 +592,9 @@ int instance_find_fsm_arc_index_by_exclusion_id(
 
     unsigned int i = 0;
 
-    assert( root->funit != NULL );
-  
-    while( (i < root->funit->fsm_size) && ((arc_index = arc_find_arc_by_exclusion_id( root->funit->fsms[i]->table, id )) == -1) ) i++;
+    if( root->funit != NULL ) {
+      while( (i < root->funit->fsm_size) && ((arc_index = arc_find_arc_by_exclusion_id( root->funit->fsms[i]->table, id )) == -1) ) i++;
+    }
 
     if( arc_index != -1 ) {
       *found_fsm   = root->funit->fsms[i]->table;
