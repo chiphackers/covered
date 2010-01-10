@@ -1,5 +1,5 @@
-5 18 1fd81 4 0 ffffffff *
-8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (trior.vcd) 2 -o (trior.cdd) 2 -v (trior.v) 2 -D (DUMP)
+5 18 1fd81 4 3 ffffffff *
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (trior.vcd) 2 -o (trior.cdd) 2 -v (trior.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 3 0 main "main" 0 trior.v 1 26 1 
 2 1 8 8 8 f000f 2 1 100c 0 0 1 1 e

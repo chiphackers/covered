@@ -1,5 +1,5 @@
-5 18 1fd81 4 0 ffffffff *
-8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (param10.5.vcd) 2 -o (param10.5.cdd) 2 -v (param10.5.v) 2 -D (DUMP)
+5 18 1fd81 4 12 ffffffff *
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (param10.5.vcd) 2 -o (param10.5.cdd) 2 -v (param10.5.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 3 0 main "main" 0 param10.5.v 1 16 1 
 1 car 1 0 c0000 1 0 31 0 32 17 6 0 0 0 0 0

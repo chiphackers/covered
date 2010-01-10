@@ -1,9 +1,9 @@
-5 18 1fd81 35 0 ffffffff *
-8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (rshift1.3.vcd) 2 -o (rshift1.3.cdd) 2 -v (rshift1.3.v) 2 -D (DUMP)
+5 18 1fd81 35 5 ffffffff *
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (rshift1.3.vcd) 2 -o (rshift1.3.cdd) 2 -v (rshift1.3.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 3 0 main "main" 0 rshift1.3.v 10 31 1 
 2 1 14 14 14 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 u$0
-1 a 1 12 107000b 1 0 31 0 32 17 0 ffffffff 0 0 ffffffff 0
+1 a 1 12 107000b 1 0 31 0 32 17 0 ffffffff 0 1fffffff ffffffff 0
 4 1 1 0 0 1
 3 1 main.u$0 "main.u$0" 0 rshift1.3.v 14 20 1 
 2 2 15 15 15 50028 1 0 21000 0 0 32 16 aaaaaaaa 66666666

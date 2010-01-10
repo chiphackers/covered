@@ -1,5 +1,5 @@
-5 18 1fd81 5 0 ffffffff main.foo
-8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (fooman) 2 -i (main.foo.foo) 2 -vcd (instance4.2.vcd) 2 -o (instance4.2.cdd) 2 -v (instance4.2.v) 2 -D (DUMP)
+5 18 1fd81 5 4 ffffffff main.foo
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (fooman) 2 -i (main.foo.foo) 2 -vcd (instance4.2.vcd) 2 -o (instance4.2.cdd) 2 -v (instance4.2.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 15 main 0
 15 main.foo 0

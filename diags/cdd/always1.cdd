@@ -1,5 +1,5 @@
-5 18 1fd81 45 0 ffffffff *
-8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (always1.vcd) 2 -o (always1.cdd) 2 -v (always1.v) 2 -D (DUMP)
+5 18 1fd81 45 5 ffffffff *
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (always1.vcd) 2 -o (always1.cdd) 2 -v (always1.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 3 0 main "main" 0 always1.v 1 48 1 
 2 1 7 7 7 20006 18 3d 5002 0 0 1 18 0 1 0 0 0 0 u$0

@@ -1,5 +1,5 @@
-5 18 1fda1 4 0 ffffffff *
-8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (exclude9.5.vcd) 2 -o (exclude9.5.cdd) 2 -v (exclude9.5.v) 1 -ep 2 -D (DUMP)
+5 18 1fda1 4 4 ffffffff *
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (exclude9.5.vcd) 2 -o (exclude9.5.cdd) 2 -v (exclude9.5.v) 1 -ep 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 3 0 main "main" 0 exclude9.5.v 10 31 1 
 2 1 16 16 16 8000c 1 3d 5002 0 0 1 18 0 1 0 0 0 0 u$0
