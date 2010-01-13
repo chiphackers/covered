@@ -1,4 +1,4 @@
-5 17 1fd81 3 ffffffff *
+5 18 1fd81 3 21 ffffffff *
 8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (generate8.2.vcd) 2 -o (generate8.2.cdd) 2 -v (generate8.2.v) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 3 0 main "main" 0 generate8.2.v 1 27 1 

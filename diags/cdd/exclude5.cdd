@@ -1,4 +1,4 @@
-5 17 1fd83 4 ffffffff *
+5 18 1fd83 4 5 ffffffff *
 8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (exclude5.vcd) 2 -o (exclude5.cdd) 2 -v (exclude5.v) 1 -ec 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 3 0 main "main" 0 exclude5.v 1 31 1 
