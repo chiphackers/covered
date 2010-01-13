@@ -1037,7 +1037,6 @@ void expression_resize(
       case EXP_OP_SRANDOM        :
       case EXP_OP_SURANDOM       :
       case EXP_OP_SURAND_RANGE   :
-      case EXP_OP_SCLOG2         :
         break;
 
       /* These operations should always be set to a width 1 */
@@ -1078,6 +1077,14 @@ void expression_resize(
         if( (expr->value->width != 1) || (expr->value->value.ul == NULL) ) {
           assert( expr->value->value.ul == NULL );
           expression_create_value( expr, 1, alloc );
+        }
+        break;
+
+      /* These operations should always be set to a width of 32 */
+      case EXP_OP_SCLOG2 :
+        if( (expr->value->width != 32) || (expr->value->value.ul == NULL) ) {
+          assert( expr->value->value.ul == NULL );
+          expression_create_value( expr, 32, alloc );
         }
         break;
 
