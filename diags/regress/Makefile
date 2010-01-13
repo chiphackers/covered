@@ -44,18 +44,19 @@ DIAGS1        = add1              aedge1            aedge1.1          afunc1    
                 ashift2           ashift3           ashift4           assert1           assign1 \
                 assign2           assign2.1         assign2.2         assign2.3         assign2.4 \
                 assign2.5         assign2.6         assign2.7         assign2.8         assign2.9 \
-                assign3.2A        assign5           atask1            bassign1          bassign2          bassign3 \
-                block1            bit1              bug2794588        byte1             case1           case1.1 \
-                case1.2           case1.3           case2             case3             case3.1 \
-                case3.2           case3.3           case3.4           case4             case4.1 \
-                case5             case6             casex1            casex1.1          casex1.2 \
-                casex1.3          casex1.4          casex2            casex3            casez1 \
-                casez1.1          casez1.2          casez1.3          casez1.4          casez2 \
-                casez3            casez4            casez5            ceq1              char1 \
-                clog2             clog2.1           clog2.2           clog2.3           clog2.4 \
-                cne1              compx1            compx1.1          compx1.2          compx1.3 \
-                concat1           concat2           concat3           concat4.1         concat4.2 \
-                concat5           concat6           concat7           concat8           concat9           cond1 \
+                assign3.2A        assign5           atask1            bassign1          bassign2 \
+                bassign3          block1            bit1              bug2794588        byte1 \
+                case1             case1.1           case1.2           case1.3           case2 \
+                case3             case3.1           case3.2           case3.3           case3.4 \
+                case4             case4.1           case5             case6             casex1 \
+                casex1.1          casex1.2          casex1.3          casex1.4          casex2 \
+                casex3            casez1            casez1.1          casez1.2          casez1.3 \
+                casez1.4          casez2            casez3            casez4            casez5 \
+                ceq1              char1             clog2             clog2.1           clog2.2 \
+                clog2.3           clog2.4           cne1              compx1            compx1.1 \
+                compx1.2          compx1.3          concat1           concat2           concat3 \
+                concat4.1         concat4.2         concat5           concat6           concat7 \
+                concat8           concat9           concat10          cond1 \
                 cond2             cond3             cond3.1           cond3.2           cond3.3 \
                 dec1              dec1.1            dec2              dec3              dec3.1 \
                 delay1            delay2            define1           define1.1         define1.2 \

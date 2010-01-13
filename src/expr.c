@@ -6295,10 +6295,10 @@ void expression_assign(
         if( lhs->sig->suppl.part.assigned == 1 ) {
           if( nb ) {
             if( lhs->suppl.part.nba == 1 ) {
-              sim_add_nonblock_assign( lhs->elem.dim_nba->nba, 0, (lhs->value->width - 1), *lsb, ((*lsb + rhs->value->width) - 1) );
+              sim_add_nonblock_assign( lhs->elem.dim_nba->nba, 0, (lhs->value->width - 1), *lsb, (rhs->value->width - 1) );
             }
           } else {
-            bool changed = vector_part_select_push( lhs->sig->value, 0, (lhs->value->width - 1), rhs->value, *lsb, ((*lsb + rhs->value->width) - 1), rhs->value->suppl.part.is_signed );
+            bool changed = vector_part_select_push( lhs->sig->value, 0, (lhs->value->width - 1), rhs->value, *lsb, (rhs->value->width - 1), rhs->value->suppl.part.is_signed );
             lhs->sig->value->suppl.part.set = 1;
 #ifdef DEBUG_MODE
             if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -6333,10 +6333,10 @@ void expression_assign(
           if( dim->last && (dim->curr_lsb != -1) ) {
             if( nb ) {
               if( lhs->suppl.part.nba == 1 ) {
-                sim_add_nonblock_assign( lhs->elem.dim_nba->nba, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), *lsb, ((*lsb + rhs->value->width) - 1) );
+                sim_add_nonblock_assign( lhs->elem.dim_nba->nba, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), *lsb, (rhs->value->width - 1) );
               }
             } else {
-              changed = vector_part_select_push( lhs->sig->value, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), rhs->value, *lsb, ((*lsb + rhs->value->width) - 1), FALSE );
+              changed = vector_part_select_push( lhs->sig->value, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), rhs->value, *lsb, (rhs->value->width - 1), FALSE );
               lhs->sig->value->suppl.part.set = 1;
 #ifdef DEBUG_MODE
               if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -6368,10 +6368,10 @@ void expression_assign(
           if( dim->last && (dim->curr_lsb != -1) ) {
             if( nb ) {
               if( lhs->suppl.part.nba == 1 ) {
-                sim_add_nonblock_assign( lhs->elem.dim_nba->nba, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), *lsb, ((*lsb + rhs->value->width) - 1) );
+                sim_add_nonblock_assign( lhs->elem.dim_nba->nba, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), *lsb, (rhs->value->width - 1) );
               }
             } else {
-              changed = vector_part_select_push( lhs->sig->value, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), rhs->value, *lsb, ((*lsb + rhs->value->width) - 1), FALSE );
+              changed = vector_part_select_push( lhs->sig->value, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), rhs->value, *lsb, (rhs->value->width - 1), FALSE );
               lhs->sig->value->suppl.part.set = 1;
 #ifdef DEBUG_MODE
               if( debug_mode && (!flag_use_command_line_debug || cli_debug_mode) ) {
@@ -6404,7 +6404,7 @@ void expression_assign(
           if( assign ) {
             if( nb ) {
               if( lhs->suppl.part.nba == 1 ) {
-                sim_add_nonblock_assign( lhs->elem.dim_nba->nba, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), *lsb, ((*lsb + rhs->value->width) - 1) );
+                sim_add_nonblock_assign( lhs->elem.dim_nba->nba, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), *lsb, (rhs->value->width - 1) );
               }
             } else {
               bool changed = vector_set_value( lhs->value, rhs->value->value.ul, intval2, *lsb, 0 );
@@ -6439,7 +6439,7 @@ void expression_assign(
           if( assign ) {
             if( nb ) {
               if( lhs->suppl.part.nba == 1 ) {
-                sim_add_nonblock_assign( lhs->elem.dim_nba->nba, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), *lsb, ((*lsb + rhs->value->width) - 1) );
+                sim_add_nonblock_assign( lhs->elem.dim_nba->nba, dim->curr_lsb, ((dim->curr_lsb + lhs->value->width) - 1), *lsb, (rhs->value->width - 1) );
               }
             } else {
               bool changed = vector_set_value( lhs->value, rhs->value->value.ul, intval2, *lsb, 0 );
