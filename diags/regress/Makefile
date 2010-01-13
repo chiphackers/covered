@@ -52,6 +52,7 @@ DIAGS1        = add1              aedge1            aedge1.1          afunc1    
                 casex1.3          casex1.4          casex2            casex3            casez1 \
                 casez1.1          casez1.2          casez1.3          casez1.4          casez2 \
                 casez3            casez4            casez5            ceq1              char1 \
+                clog2             clog2.1           clog2.2           clog2.3           clog2.4 \
                 cne1              compx1            compx1.1          compx1.2          compx1.3 \
                 concat1           concat2           concat3           concat4.1         concat4.2 \
                 concat5           concat6           concat7           concat8           concat9           cond1 \

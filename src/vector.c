@@ -5181,6 +5181,79 @@ bool vector_op_list(
 }
 
 /*!
+ \return Returns TRUE if the new value differs from the old value; otherwise, returns FALSE.
+
+ Performs clog2 operation.
+*/
+bool vector_op_clog2(
+  vector*       tgt,  /*!< Pointer to vector to store results in */
+  const vector* src   /*! Pointer to value to perform operation on */
+) { PROFILE(VECTOR_OP_CLOG2);
+
+  bool  retval;
+  ulong vall = 0;
+  ulong valh = 0;
+
+  if( vector_is_unknown( src ) ) {
+
+    retval = vector_set_to_x( tgt );
+
+  } else {
+
+    switch( src->suppl.part.data_type ) {
+      case VDATA_UL :
+        {
+          unsigned int size     = UL_SIZE(src->width);
+          unsigned int num_ones = 0;
+          while( size > 0 ) {
+            ulong i = src->value.ul[--size][VTYPE_INDEX_VAL_VALL];
+            while( i != 0 ) {
+              vall++;
+              num_ones += (i & 0x1);
+              i >>= 1;
+            }
+            if( vall != 0 ) {
+              vall += (size * UL_BITS);
+              if( num_ones == 1 ) {
+                while( (size > 0) && (src->value.ul[--size][VTYPE_INDEX_VAL_VALL] == 0) );
+                if( size == 0 ) {
+                  vall--;
+                }
+              }
+              break;
+            }
+          }
+        }
+        break;
+      case VDATA_R64 :
+      case VDATA_R32 :
+        {
+          uint64       i        = vector_to_uint64( src ) - 1;
+          unsigned int num_ones = 0;
+          while( i != 0 ) {
+            vall++;
+            num_ones += (i & 0x1);
+            i >>= 1;
+          }
+          if( num_ones == 1 ) {
+            vall--;
+          }
+        }
+        break;
+      default :  assert( 0 );  break;
+    } 
+
+    retval = vector_set_coverage_and_assign_ulong( tgt, &vall, &valh, 0, (tgt->width - 1) );
+
+  }
+
+  PROFILE_END;
+
+  return( retval );
+
+}
+
+/*!
  Deallocates the value structure for the given vector.
 */
 void vector_dealloc_value(

@@ -266,6 +266,7 @@ static bool expression_op_func__test_plusargs( expression*, thread*, const sim_t
 static bool expression_op_func__value_plusargs( expression*, thread*, const sim_time* );
 static bool expression_op_func__signed( expression*, thread*, const sim_time* );
 static bool expression_op_func__unsigned( expression*, thread*, const sim_time* );
+static bool expression_op_func__clog2( expression*, thread*, const sim_time* );
 
 #ifndef RUNLIB
 static void expression_assign( expression*, expression*, int*, thread*, const sim_time*, bool eval_lhs, bool nb );
@@ -396,7 +397,8 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",         "",               
                                            {"STESTARGS",      "$test$plusargs",   expression_op_func__test_plusargs,   {0, 1, NOT_COMB,   1, 1, 0, 0, 0, 0} },
                                            {"SVALARGS",       "$value$plusargs",  expression_op_func__value_plusargs,  {0, 1, NOT_COMB,   1, 1, 0, 0, 0, 0} },
                                            {"SSIGNED",        "$signed",          expression_op_func__signed,          {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
-                                           {"SUNSIGNED",      "$unsigned",        expression_op_func__unsigned,        {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} }
+                                           {"SUNSIGNED",      "$unsigned",        expression_op_func__unsigned,        {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
+                                           {"SCLOG2",         "$clog2",           expression_op_func__clog2,           {0, 1, NOT_COMB,   0, 0, 0, 0, 0, 0} },
  };
 
 
@@ -735,7 +737,7 @@ expression* expression_create(
       expression_create_value( new_expr, 64, data );
 
     /* $random, $urandom, $urandom_range, $shortrealtobits and $bitstoshortreal expressions are always 32-bits wide */
-    } else if( (op == EXP_OP_SRANDOM) || (op == EXP_OP_SURANDOM) || (op == EXP_OP_SURAND_RANGE) || (op == EXP_OP_SSR2B) || (op == EXP_OP_SB2SR) ) {
+    } else if( (op == EXP_OP_SRANDOM) || (op == EXP_OP_SURANDOM) || (op == EXP_OP_SURAND_RANGE) || (op == EXP_OP_SSR2B) || (op == EXP_OP_SB2SR) || (op == EXP_OP_SCLOG2) ) {
 
       expression_create_value( new_expr, 32, data );
 
@@ -1035,6 +1037,7 @@ void expression_resize(
       case EXP_OP_SRANDOM        :
       case EXP_OP_SURANDOM       :
       case EXP_OP_SURAND_RANGE   :
+      case EXP_OP_SCLOG2         :
         break;
 
       /* These operations should always be set to a width 1 */
@@ -3665,6 +3668,26 @@ bool expression_op_func__unsigned(
   PROFILE_END;
 
   return( TRUE );
+
+}
+
+/*!
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a $clog2 system task call.
+*/
+bool expression_op_func__clog2(
+               expression*     expr,  /*!< Pointer to expression to perform operation on */
+  /*@unused@*/ thread*         thr,   /*!< Pointer to thread containing this expression */
+  /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
+) { PROFILE(EXPRESSION_OP_FUNC__CLOG2);
+
+  /* Perform the operation */
+  bool retval = vector_op_clog2( expr->value, expr->left->value );
+
+  PROFILE_END;
+
+  return( retval );
 
 }
 

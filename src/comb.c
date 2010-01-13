@@ -1227,6 +1227,7 @@ static void combination_underline_tree(
             case EXP_OP_PDEC         :  *size = l_size + 2;           strcpy( code_fmt, "%s  "                   );  break;
             case EXP_OP_SSIGNED      :  *size = l_size + 11;          strcpy( code_fmt, "         %s  "          );  break;
             case EXP_OP_SUNSIGNED    :  *size = l_size + 13;          strcpy( code_fmt, "           %s  "        );  break;
+            case EXP_OP_SCLOG2       :  *size = l_size + 10;          strcpy( code_fmt, "        %s  "           );  break;
             case EXP_OP_SRANDOM      :  *size = l_size + 11;          strcpy( code_fmt, "         %s  "          );  break;
             case EXP_OP_SURANDOM     :  *size = l_size + 12;          strcpy( code_fmt, "          %s  "         );  break;
             case EXP_OP_SURAND_RANGE :  *size = l_size + 18;          strcpy( code_fmt, "                %s  "   );  break;

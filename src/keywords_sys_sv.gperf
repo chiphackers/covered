@@ -28,11 +28,12 @@
 %}
 struct keyword_sys_sv { char *name; int type; };
 %%
-bitstoshortreal S_bitstoshortreal
-shortrealtobits S_shortrealtobits
-srandom,        S_srandom
-urandom,        S_urandom
-urandom_range,  S_urandom_range
+bitstoshortreal, S_bitstoshortreal
+clog2,           S_clog2
+shortrealtobits, S_shortrealtobits
+srandom,         S_srandom
+urandom,         S_urandom
+urandom_range,   S_urandom_range
 %%
 
 int lexer_keyword_sys_sv_code(

@@ -1021,6 +1021,10 @@ static void codegen_gen_expr1(
             codegen_create_expr( code, code_depth, expr->line, "$unsigned( ", left_code, left_code_depth, expr->left, " )",
                                  NULL, 0, NULL, NULL );
             break;
+          case EXP_OP_SCLOG2 :
+            codegen_create_expr( code, code_depth, expr->line, "$clog2( ", left_code, left_code_depth, expr->left, " )",
+                                 NULL, 0, NULL, NULL );
+            break;
           case EXP_OP_SRANDOM  :
             codegen_create_expr( code, code_depth, expr->line, "$random( ", left_code, left_code_depth, expr->left, " )",
                                  NULL, 0, NULL, NULL );

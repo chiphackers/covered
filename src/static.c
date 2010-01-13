@@ -219,7 +219,7 @@ static_expr* static_expr_gen(
           (op == EXP_OP_LSHIFT) || (op == EXP_OP_RSHIFT)   || (op == EXP_OP_LIST)   || (op == EXP_OP_FUNC_CALL) ||
           (op == EXP_OP_GE)     || (op == EXP_OP_LE)       || (op == EXP_OP_EQ)     || (op == EXP_OP_GT)        ||
           (op == EXP_OP_LT)     || (op == EXP_OP_SBIT_SEL) || (op == EXP_OP_LAND)   || (op == EXP_OP_LOR)       ||
-          (op == EXP_OP_NE)     || (op == EXP_OP_PLIST) );
+          (op == EXP_OP_NE)     || (op == EXP_OP_PLIST)    || (op == EXP_OP_SCLOG2) );
 
   if( (right != NULL) && (left != NULL) ) {
 
@@ -320,6 +320,31 @@ static_expr* static_expr_gen(
 
     /* Make sure that we bind this later */
     bind_add( FUNIT_FUNCTION, func_name, right->exp, curr_funit, TRUE );
+
+  } else if( op == EXP_OP_SCLOG2 ) {
+
+    assert( right == NULL );
+    assert( left  != NULL );
+
+    right      = (static_expr*)malloc_safe( sizeof( static_expr ) );
+    right->exp = NULL;
+
+    if( left->exp == NULL ) {
+      unsigned int val      = left->num;
+      unsigned int num_ones = 0;
+      right->num = 0;
+      while( val != 0 ) {
+        right->num++;
+        num_ones += (val & 0x1);
+        val >>= 1;
+      }
+      if( num_ones == 1 ) {
+        right->num--;
+      }
+    } else {
+      right->exp = expression_create( NULL, left->exp, op, FALSE, curr_expr_id, line, ppfline, pplline, first, last, TRUE );
+      curr_expr_id++;
+    }
 
   }
 

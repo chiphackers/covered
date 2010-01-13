@@ -624,6 +624,12 @@ bool vector_op_list(
   const vector* right
 );
 
+/*! \brief Performs clog2 operation. */
+bool vector_op_clog2(
+  vector*       tgt,
+  const vector* src
+);
+
 /*! \brief Deallocates the value structure for the given vector. */
 void vector_dealloc_value(
   vector* vec
