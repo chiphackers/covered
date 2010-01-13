@@ -56,7 +56,8 @@ DIAGS1        = add1              aedge1            aedge1.1          afunc1    
                 clog2.3           clog2.4           clog2.5           cne1              compx1 \
                 compx1.1          compx1.2          compx1.3          concat1           concat2 \
                 concat3           concat4.1         concat4.2         concat5           concat6 \
-                concat7           concat8           concat9           concat10          cond1 \
+                concat7           concat8           concat9           concat10          concat10.1 \
+                concat10.2        cond1 \
                 cond2             cond3             cond3.1           cond3.2           cond3.3 \
                 dec1              dec1.1            dec2              dec3              dec3.1 \
                 delay1            delay2            define1           define1.1         define1.2 \
