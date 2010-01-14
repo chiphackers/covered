@@ -35,6 +35,9 @@
 /*! Shortcut for the generator_flush_all1 function call */
 #define generator_flush_all generator_flush_all1( __FILE__, __LINE__ )
 
+/*! Shortcut for the generator_flush_held_token call */
+#define generator_flush_held_token generator_flush_held_token1( __FILE__, __LINE__ )
+
 /*! Shortcut for the generator_add_to_work_code function for code coming from Covered */
 #define generator_add_cov_to_work_code(x) generator_add_to_work_code(x, 0, 0, FALSE, __FILE__, __LINE__ )
 
@@ -213,6 +216,12 @@ void generator_handle_event_trigger(
 
 /*! \brief Removes the last token in the work buffer and holds onto it. */
 void generator_hold_last_token();
+
+/*! \brief Flushes the held token to the work buffer. */
+void generator_flush_held_token1(
+  const char* file,
+  int         line
+);
 
 /*! \brief Inserts the COVERED_INST_ID register into the work buffer at the current point. */
 void generator_insert_inst_id_reg(

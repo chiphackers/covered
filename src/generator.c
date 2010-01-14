@@ -3635,6 +3635,36 @@ void generator_hold_last_token() { PROFILE(GENERATOR_HOLD_LAST_TOKEN);
 }
 
 /*!
+ Flushes the held token (if a token is being held).
+*/
+void generator_flush_held_token1(
+  /*@unused@*/ const char* file,  /*!< File name that called this function */
+  /*@unused@*/ int         line   /*!< Line number of code that called this function */
+) { PROFILE(GENERATOR_FLUSH_HELD_TOKEN);
+
+  /* If something is stored in the look-ahead buffer, add it to the work buffer first */
+  if( strlen( lahead_buffer ) > 0 ) {
+
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Flushing held token (file: %s, line: %u)", file, line );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+//    generator_display();
+  }
+#endif
+
+    assert( (strlen( work_buffer ) + strlen( lahead_buffer)) < 4095 );
+    strcat( work_buffer, lahead_buffer );
+    lahead_buffer[0] = '\0';
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
  Inserts an instance ID parameter for the given functional unit.
 */
 void generator_insert_inst_id_reg(
@@ -3806,12 +3836,12 @@ void generator_insert_inst_id_overrides() { PROFILE(GENERATOR_INSERT_INST_ID_OVE
 }
 
 /*!
- Handles a statement that might be a part of a fork..join block, placing a begin..end around the block.
+ Begins a statement that might be a part of a fork..join block, placing a "begin" prior to the block.
 */
-void generator_handle_parallel_statement(
+void generator_begin_parallel_statement(
   unsigned int first_line,  /*!< First line of statement */
   unsigned int first_column  /*!< First column of statement */
-) { PROFILE(GENERATOR_HANDLE_PARALLEL_STATEMENT);
+) { PROFILE(GENERATOR_BEGIN_PARALLEL_STATEMENT);
 
   if( (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
 
@@ -3828,12 +3858,32 @@ void generator_handle_parallel_statement(
     rest = strdup_safe( funit->name );
     scope_extract_back( funit->name, back, rest );
 
+    printf( "Adding begin in generator_handle_parallel_statement\n" );
+
     size = strlen( back ) + 11;
     str  = (char*)malloc_safe( size );
     rv   = snprintf( str, size, " begin : %s ", back );
     assert( rv < size );
 
     generator_prepend_to_work_code( str );
+
+    free_safe( back, (strlen( funit->name ) + 1) );
+    free_safe( rest, (strlen( funit->name ) + 1) );
+    free_safe( str,  size );
+
+  }
+
+  PROFILE_END;
+
+}
+
+/*!
+ Ends a statement that might be a part of a fork..join block, placing an "end" after the block.
+*/
+void generator_end_parallel_statement() { PROFILE(GENERATOR_END_PARALLEL_STATEMENT);
+
+  if( (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
+
     generator_add_cov_to_work_code( " end " );
 
   }
