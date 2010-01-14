@@ -1,5 +1,5 @@
-5 18 1fda1 13 0 ffffffff TOP
-8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (main) 2 -vcd (concat9.vcd) 2 -o (concat9.cdd) 2 -v (concat9.verilator.v) 2 -i (TOP.v) 1 -ep 1 -rP 2 -D (DUMP)
+5 18 1fda1 13 3 ffffffff TOP
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (concat9.vcd) 2 -o (concat9.cdd) 2 -v (concat9.verilator.v) 2 -i (TOP.v) 1 -ep 1 -rP 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 15 TOP 0
 3 0 main "TOP.v" 0 concat9.verilator.v 8 22 1 
