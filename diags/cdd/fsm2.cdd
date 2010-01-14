@@ -1,4 +1,4 @@
-5 18 1fd81 37 0 ffffffff main
+5 18 1fd81 37 4 ffffffff main
 8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (fsm) 2 -i (main.fsm) 2 -vcd (fsm2a.vcd) 2 -o (fsm2a.cdd) 2 -y (lib) 2 -v (fsm2a.v) 2 -F (fsm=state,next_state) 2 -D (DUMP) 2 -v (fsm2b.v)
 12 /home/bryce3/trevorw/devel/covered/diags/verilog/fsm2a.cdd main
 12 /home/bryce3/trevorw/devel/covered/diags/verilog/fsm2b.cdd main

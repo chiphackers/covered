@@ -1,4 +1,4 @@
-5 18 1fd81 3 0 ffffffff main_a
+5 18 1fd81 3 3 ffffffff main_a
 8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (adder1) 2 -i (main_a.adder) 2 -vcd (merge_err2.1a.vcd) 2 -v (merge_err2.1a.v) 2 -y (lib) 2 -D (DUMP) 2 -o (merge_err2.1a.cdd)
 12 /home/bryce3/trevorw/devel/covered/diags/verilog/merge_err2.1a.cdd main_a
 12 /home/bryce3/trevorw/devel/covered/diags/verilog/merge_err2.1a.cdd main_a

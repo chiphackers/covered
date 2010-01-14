@@ -1,4 +1,4 @@
-5 18 1fd81 3 0 ffffffff main3
+5 18 1fd81 3 3 ffffffff main3
 8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (dut_and) 2 -i (main3.dut) 2 -vcd (merge2c.vcd) 2 -o (merge2c.cdd) 2 -v (merge2c.v) 2 -y (./lib) 2 -D (DUMP)
 3 0 $root "$root" 0 NA 0 0 1 
 15 main3 0

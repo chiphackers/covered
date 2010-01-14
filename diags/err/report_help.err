@@ -1,5 +1,5 @@
 
-Usage:  covered report (-h | -view | [<options>] <database_file>)
+Usage:  covered report (-h | -view [<database_file>] | [<options>] <database_file>)
 
    -view                        Uses the graphical report viewer for viewing reports.  If this
                                  option is not specified, the text report will be generated.

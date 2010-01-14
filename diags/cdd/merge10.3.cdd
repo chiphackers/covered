@@ -1,4 +1,4 @@
-5 18 1fd81 4 0 ffffffff main.mlevel.l1.l2b
+5 18 1fd81 4 6 ffffffff main.mlevel.l1.l2b
 8 /home/bryce3/trevorw/devel/covered/diags/verilog 2 -t (level3b) 2 -i (main.mlevel.l1.l2b.l3b) 2 -vcd (merge10.vcd) 2 -v (merge10.v) 2 -y (lib) 2 -o (merge10h.cdd) 2 -D (DUMP) 2 -e (level3a) 2 -e (level3b) 2 -e (level2a) 2 -e (level2b) 2 -e (level1)
 12 /home/bryce3/trevorw/devel/covered/diags/verilog/merge10h.cdd main.mlevel.l1.l2b
 12 /home/bryce3/trevorw/devel/covered/diags/verilog/merge10g.cdd main.mlevel.l1.l2b
