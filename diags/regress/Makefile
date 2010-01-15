@@ -261,22 +261,22 @@ NOSIMLIST     = gen1              gen1.1            gen1.3            gen1.4    
                 gen31.2           gen32.2           gen33.2           gen34.2           gen35.2 \
                 gen36.2           gen37.2           gen38.2           gen39.2           gen40.2
 
-NOSIMERRLIST  = bug2791651        comment1          enum2             err4              err4.1          expand5 \
-                for7              for7.1            fsm_err1          func3             func3.1 \
-                func3.2           func3.3           func3.4           func3.5           func3.6 \
-                gen1.2            gen2              gen3              gen4              gen5 \
-                gen6              gen7              gen8              gen9              gen10 \
-                gen11             gen12             gen13             gen14             gen15 \
-                gen16             gen17             gen18             gen19.2           gen20.2 \
-                gen21.2           gen22.2           gen23.2           gen24.2           gen25 \
-                gen25.1           gen26             gen26.1           gen27             gen27.1 \
-                gen28             gen28.1           gen29             gen29.1           gen30 \
-                gen30.1           gen31             gen31.1           gen32             gen32.1 \
-                gen33             gen33.1           gen34             gen34.1           gen35 \
-                gen35.1           gen36             gen36.1           gen37             gen37.1 \
-                gen38             gen38.1           gen39             gen39.1           gen40 \
-                gen40.1           generate20        generate20.1      include_err       score_env2 \
-                score_err1.4      score_err1.5 \
+NOSIMERRLIST  = bug2791651        clog2.6           clog2.7           comment1          enum2 \
+                err4              err4.1            expand5           for7              for7.1 \
+                fsm_err1          func3             func3.1           func3.2           func3.3 \
+                func3.4           func3.5           func3.6           gen1.2            gen2 \
+                gen3              gen4              gen5              gen6              gen7 \
+                gen8              gen9              gen10             gen11             gen12 \
+                gen13             gen14             gen15             gen16             gen17 \
+                gen18             gen19.2           gen20.2           gen21.2           gen22.2 \
+                gen23.2           gen24.2           gen25             gen25.1           gen26 \
+                gen26.1           gen27             gen27.1           gen28             gen28.1 \
+                gen29             gen29.1           gen30             gen30.1           gen31 \
+                gen31.1           gen32             gen32.1           gen33             gen33.1 \
+                gen34             gen34.1           gen35             gen35.1           gen36 \
+                gen36.1           gen37             gen37.1           gen38             gen38.1 \
+                gen39             gen39.1           gen40             gen40.1           generate20 \
+                generate20.1      include_err       score_env2        score_err1.4      score_err1.5 \
                 score_err1.6      score_err1.7      score_err1.8      score_err1.9      score_err1.10 \
                 score_err1.11     score_err1.12     score_err1.13     score_err1.14     score_err1.16 \
                 score_err1.17     score_err1.18     score_err1.19     score_err1.20     score_err1.21 \

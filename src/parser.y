@@ -8099,13 +8099,17 @@ parameter_assign
     {
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
-          /* If the size was not set by the user, the left number will be set to 0 but we need to change this to 31 */
-          assert( curr_prange.dim != NULL );
-          if( curr_prange.dim[0].implicit ) {
-            db_add_declared_param( curr_signed, NULL, NULL, $1, $4, FALSE );
+          if( $4 != NULL ) {
+            /* If the size was not set by the user, the left number will be set to 0 but we need to change this to 31 */
+            assert( curr_prange.dim != NULL );
+            if( curr_prange.dim[0].implicit ) {
+              db_add_declared_param( curr_signed, NULL, NULL, $1, $4, FALSE );
+            } else {
+              db_add_declared_param( curr_signed, curr_prange.dim[0].left, curr_prange.dim[0].right, $1, $4, FALSE );
+              curr_prange.exp_dealloc = FALSE;
+            }
           } else {
-            db_add_declared_param( curr_signed, curr_prange.dim[0].left, curr_prange.dim[0].right, $1, $4, FALSE );
-            curr_prange.exp_dealloc = FALSE;
+            VLerror( "Parameter assignment contains unsupported constructs on the right-hand side" );
           }
         }
       }
@@ -8127,13 +8131,17 @@ localparam_assign
     {
       if( parse_mode ) {
         if( ignore_mode == 0 ) {
-          /* If the size was not set by the user, the left number will be set to 0 but we need to change this to 31 */
-          assert( curr_prange.dim != NULL );
-          if( curr_prange.dim[0].implicit ) {
-            db_add_declared_param( curr_signed, NULL, NULL, $1, $3, TRUE );
+          if( $3 != NULL ) {
+            /* If the size was not set by the user, the left number will be set to 0 but we need to change this to 31 */
+            assert( curr_prange.dim != NULL );
+            if( curr_prange.dim[0].implicit ) {
+              db_add_declared_param( curr_signed, NULL, NULL, $1, $3, TRUE );
+            } else {
+              db_add_declared_param( curr_signed, curr_prange.dim[0].left, curr_prange.dim[0].right, $1, $3, TRUE );
+              curr_prange.exp_dealloc = FALSE;
+            }
           } else {
-            db_add_declared_param( curr_signed, curr_prange.dim[0].left, curr_prange.dim[0].right, $1, $3, TRUE );
-            curr_prange.exp_dealloc = FALSE;
+            VLerror( "Localparam assignment contains unsupported constructs on the right-hand side" );
           }
         }
       }

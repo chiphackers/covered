@@ -1,3 +1,5 @@
 ERROR!  Exponential power operator found in block that is specified to not allow Verilog-2001 syntax,
         File: gen7.v, Line: 3, Column: 22
+ERROR!  Parameter assignment contains unsupported constructs on the right-hand side,
+        File: gen7.v, Line: 3, Column: 22
 ERROR!  Error in parsing design
