@@ -1820,16 +1820,16 @@ typedef union usuppl_u usuppl;
  Supplemental field for a functional unit structure.
 */
 union usuppl_u {
-  uint8 all;                      /*!< Allows us to set all bits in the suppl field */
+  uint8 all;                 /*!< Allows us to set all bits in the suppl field */
   struct {
-    uint8 type          : 3;      /*!< Bits 0:2.  Mask = 1.  Specifies the functional unit type (see \ref func_unit_types for legal values) */
-    uint8 etype         : 1;      /*!< Bit 3.     Mask = 0.  Set to 0 if elem should be treated as a thread pointer; set to 1 if elem should
-                                                             be treated as a thread list pointer. */
-    uint8 included      : 1;      /*!< Bit 4.     Mask = 1.  Set to 1 if the current functional unit has been included into a file via the
-                                                             `include preprocessor command */
-    uint8 staticf       : 1;      /*!< Bit 5.     Mask = 1.  Set to 1 if this functional unit is used as a static function */
-    uint8 normalf       : 1;      /*!< Bit 6.     Mask = 1.  Set to 1 if this functional unit is used as a normal function */
-    uint8 inst_id_added : 1;      /*!< Bit 7.     Mask = 0.  Set to 1 if the instance ID parameter has been added to this functional unit */
+    uint8 type     : 3;      /*!< Bits 0:2.  Mask = 1.  Specifies the functional unit type (see \ref func_unit_types for legal values) */
+    uint8 etype    : 1;      /*!< Bit 3.     Mask = 0.  Set to 0 if elem should be treated as a thread pointer; set to 1 if elem should
+                                                        be treated as a thread list pointer. */
+    uint8 included : 1;      /*!< Bit 4.     Mask = 1.  Set to 1 if the current functional unit has been included into a file via the
+                                                        `include preprocessor command */
+    uint8 staticf  : 1;      /*!< Bit 5.     Mask = 1.  Set to 1 if this functional unit is used as a static function */
+    uint8 normalf  : 1;      /*!< Bit 6.     Mask = 1.  Set to 1 if this functional unit is used as a normal function */
+    uint8 fork     : 1;      /*!< Bit 7.     Mask = 0.  Set to 1 if the functional unit is used for forking */
   } part;
 };
 

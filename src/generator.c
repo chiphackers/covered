@@ -3699,7 +3699,7 @@ static void generator_write_inst_id_overrides(
     if( (root->funit != NULL) && (strcmp( root->name, "$root" ) != 0) ) {
 
       /* Don't continue the current tree if it is marked as a no score instance or it is to be ignored */
-      if( (root->funit->suppl.part.type != FUNIT_NO_SCORE) && !root->suppl.ignore ) {
+      if( (root->funit->suppl.part.type != FUNIT_NO_SCORE) && !root->suppl.ignore && !root->funit->suppl.part.fork ) {
 
         /* Only override modules and named blocks (tasks and functions will not have an ID to override) */
         if( (root->funit->suppl.part.type == FUNIT_MODULE) ||
@@ -3839,37 +3839,47 @@ void generator_insert_inst_id_overrides() { PROFILE(GENERATOR_INSERT_INST_ID_OVE
  Begins a statement that might be a part of a fork..join block, placing a "begin" prior to the block.
 */
 void generator_begin_parallel_statement(
-  unsigned int first_line,  /*!< First line of statement */
+  unsigned int first_line,   /*!< First line of statement */
   unsigned int first_column  /*!< First column of statement */
 ) { PROFILE(GENERATOR_BEGIN_PARALLEL_STATEMENT);
 
   if( (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
 
-    func_unit*   funit = db_get_tfn_by_position( first_line, first_column );
-    char*        str;
-    char*        back;
-    char*        rest;
-    unsigned int rv;
-    unsigned int size;
+    func_unit* funit = db_get_tfn_by_position( first_line, first_column );
 
     assert( funit != NULL );
 
-    back = strdup_safe( funit->name );
-    rest = strdup_safe( funit->name );
-    scope_extract_back( funit->name, back, rest );
+    /* If the block is not specified for forking, add the instance ID */
+    if( funit->suppl.part.fork == 0 ) {
 
-    printf( "Adding begin in generator_handle_parallel_statement\n" );
+      char*        str;
+      char*        back;
+      char*        rest;
+      unsigned int rv;
+      unsigned int size;
+      char         cstr[128];
 
-    size = strlen( back ) + 11;
-    str  = (char*)malloc_safe( size );
-    rv   = snprintf( str, size, " begin : %s ", back );
-    assert( rv < size );
+      rv = snprintf( cstr, 128, " reg [31:0] COVERED_INST_ID%d /* verilator public */;", funit->id );
+      assert( rv < 128 );
 
-    generator_prepend_to_work_code( str );
+      generator_prepend_to_work_code( cstr );
 
-    free_safe( back, (strlen( funit->name ) + 1) );
-    free_safe( rest, (strlen( funit->name ) + 1) );
-    free_safe( str,  size );
+      back = strdup_safe( funit->name );
+      rest = strdup_safe( funit->name );
+      scope_extract_back( funit->name, back, rest );
+
+      size = strlen( back ) + 11;
+      str  = (char*)malloc_safe( size );
+      rv   = snprintf( str, size, " begin : %s ", back );
+      assert( rv < size );
+
+      generator_prepend_to_work_code( str );
+
+      free_safe( back, (strlen( funit->name ) + 1) );
+      free_safe( rest, (strlen( funit->name ) + 1) );
+      free_safe( str,  size );
+
+    }
 
   }
 
@@ -3880,11 +3890,20 @@ void generator_begin_parallel_statement(
 /*!
  Ends a statement that might be a part of a fork..join block, placing an "end" after the block.
 */
-void generator_end_parallel_statement() { PROFILE(GENERATOR_END_PARALLEL_STATEMENT);
+void generator_end_parallel_statement(
+  unsigned int first_line,   /*!< First line of statement */
+  unsigned int first_column  /*!< First column of statement */
+) { PROFILE(GENERATOR_END_PARALLEL_STATEMENT);
 
   if( (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
 
-    generator_add_cov_to_work_code( " end " );
+    func_unit* funit = db_get_tfn_by_position( first_line, first_column );
+
+    assert( funit != NULL );
+
+    if( funit->suppl.part.fork == 0 ) {
+      generator_add_cov_to_work_code( " end " );
+    }
 
   }
 

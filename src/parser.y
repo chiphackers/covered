@@ -4825,7 +4825,7 @@ statement
     {
       if( !parse_mode ) {
         generator_begin_parallel_statement( @1.first_line, @1.first_column );
-        generator_end_parallel_statement();
+        generator_end_parallel_statement( @1.first_line, @1.first_column );
         generator_flush_work_code;
       }
       $$ = NULL;
@@ -4834,7 +4834,7 @@ statement
     {
       if( !parse_mode ) {
         generator_begin_parallel_statement( @1.first_line, @1.first_column );
-        generator_end_parallel_statement();
+        generator_end_parallel_statement( @1.first_line, @1.first_column );
         generator_flush_work_code;
       }
       $$ = NULL;
@@ -4843,7 +4843,7 @@ statement
     {
       if( !parse_mode ) {
         generator_begin_parallel_statement( @1.first_line, @1.first_column );
-        generator_end_parallel_statement();
+        generator_end_parallel_statement( @1.first_line, @1.first_column );
         generator_flush_work_code;
       }
       $$ = NULL;
@@ -4852,19 +4852,12 @@ statement
     {
       if( !parse_mode ) {
         generator_begin_parallel_statement( @1.first_line, @1.first_column );
-        generator_end_parallel_statement();
+        generator_end_parallel_statement( @1.first_line, @1.first_column );
         generator_flush_work_code;
       }
       $$ = NULL;
     }
-  | K_begin
-    {
-      if( !parse_mode ) {
-        generator_begin_parallel_statement( @1.first_line, @1.first_column );
-        generator_flush_work_code;
-      }
-    }
-    inc_block_depth begin_end_block dec_block_depth K_end
+  | K_begin inc_block_depth begin_end_block dec_block_depth K_end
     { PROFILE(PARSER_STATEMENT_BEGIN_A);
       if( parse_mode ) {
         expression* exp;
@@ -4872,11 +4865,11 @@ statement
         char        back[4096];
         char        rest[4096];
         if( ignore_mode == 0 ) {
-          db_end_function_task_namedblock( @6.first_line );
-          if( $4 != NULL ) {
-            scope_extract_back( $4->name, back, rest );
+          db_end_function_task_namedblock( @5.first_line );
+          if( $3 != NULL ) {
+            scope_extract_back( $3->name, back, rest );
             exp  = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, (@1.last_column - 1), NULL, in_static_expr );
-            exp->elem.funit      = $4;
+            exp->elem.funit      = $3;
             exp->suppl.part.type = ETYPE_FUNIT;
             exp->name            = strdup_safe( back );
             stmt = db_create_statement( exp );
@@ -4896,7 +4889,8 @@ statement
           }
         }
       } else {
-        generator_end_parallel_statement();
+        generator_begin_parallel_statement( @1.first_line, @1.first_column );
+        generator_end_parallel_statement( @1.first_line, @1.first_column );
         generator_flush_work_code;
         $$ = NULL;
       }
@@ -4934,7 +4928,7 @@ statement
           $$ = NULL;
         }
       } else {
-        generator_end_parallel_statement();
+        generator_end_parallel_statement( @1.first_line, @1.first_column );
         generator_flush_work_code;
         $$ = NULL;
       }
@@ -5023,7 +5017,7 @@ statement
           }
         }
       } else {
-        generator_end_parallel_statement();
+        generator_end_parallel_statement( @1.first_line, @1.first_column );
         generator_flush_work_code;
         $$ = NULL;
       }
@@ -6114,7 +6108,7 @@ fork_statement
           }
           generator_insert_inst_id_reg( funit );
           generator_flush_held_token;
-          generator_flush_work_code;
+          // generator_flush_work_code;
         }
       }
     }
@@ -6231,21 +6225,21 @@ begin_end_block
           }
           $$ = NULL;
         }
-        FREE_TEXT( $1 );
         generate_top_mode++;
       } else {
-        $$ = NULL;  /* TBD */
+        $$ = NULL;
       }
+      FREE_TEXT( $1 );
     }
   | begin_end_id
     {
       if( parse_mode ) {
-        FREE_TEXT( $1 );
         ignore_mode++;
         $$ = NULL;
       } else {
-        $$ = NULL;  /* TBD */
+        $$ = NULL;
       }
+      FREE_TEXT( $1 );
     }
   ;
 

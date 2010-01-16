@@ -2462,6 +2462,9 @@ statement* db_parallelize_statement(
     scope = db_create_unnamed_scope();
     if( db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, scope, curr_funit->orig_fname, curr_funit->incl_fname, stmt->exp->line, stmt->exp->col.part.first ) ) {
 
+      /* Specify that the block was used for forking */
+      curr_funit->suppl.part.fork = 1;
+
       /* Create a thread block for this statement block */
       stmt->suppl.part.head      = 1;
       stmt->suppl.part.is_called = 1;
