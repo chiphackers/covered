@@ -962,8 +962,9 @@ static void generator_write_verilator_inst_ids(
         ((root->funit->suppl.part.type == FUNIT_MODULE) ||
          (root->funit->suppl.part.type == FUNIT_NAMED_BLOCK) ||
          (root->funit->suppl.part.type == FUNIT_ANAMED_BLOCK)) ) {
-      char str[4096];
-      snprintf( str, 4096, "%sCOVERED_INST_ID%d = %d;", child_name, root->funit->id, root->id );
+      char         str[4096];
+      unsigned int rv = snprintf( str, 4096, "%sCOVERED_INST_ID%d = %d;", child_name, root->funit->id, root->id );
+      assert( rv < 4096 );
       generator_add_cov_to_work_code( str );
       generator_add_cov_to_work_code( "\n" );
     }
@@ -1568,7 +1569,7 @@ void generator_insert_line_cov_with_stmt(
 
       /* If the statement is not a head statement or not an event, add the line */
       if( !stmt->suppl.part.head || ((stmt->exp->op != EXP_OP_EOR) && (stmt->exp->op != EXP_OP_PEDGE) && (stmt->exp->op != EXP_OP_NEDGE) && (stmt->exp->op != EXP_OP_AEDGE)) ) {
-        rv = snprintf( str, 4096, " $c( \"covered_line( \", COVERED_INST_ID%d, \", %u );\" )%c",
+        rv = snprintf( str, 4096, " $c( \"covered_line( \", COVERED_INST_ID%d, \", %d );\" )%c",
                        stmt->funit->id,
                        (expression_get_id( stmt->exp, TRUE ) - expression_get_id( stmt->funit->exps[0], TRUE )),
                        (semicolon ? ';' : ',') );
@@ -1971,11 +1972,11 @@ static char* generator_gen_size(
 
   if( exp != NULL ) {
 
-    char*        lexp = NULL;
-    char*        rexp = NULL;
+    char*        lexp    = NULL;
+    char*        rexp    = NULL;
     unsigned int rv;
-    int          lnumber;
-    int          rnumber;
+    int          lnumber = 0;
+    int          rnumber = 0;
 
     switch( exp->op ) {
       case EXP_OP_STATIC :

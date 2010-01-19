@@ -2778,7 +2778,7 @@ char* vector_to_string(
   } else if( base == SIZED_DECIMAL ) {
 
     char         width_str[50];
-    unsigned int rv = snprintf( width_str, 50, "%d'd%d", vec->width, vector_to_int( vec ) );
+    unsigned int rv = snprintf( width_str, 50, "%u'd%d", vec->width, vector_to_int( vec ) );
     assert( rv < 20 );
     str = strdup_safe( width_str );
 

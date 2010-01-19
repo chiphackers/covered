@@ -171,7 +171,7 @@ void info_db_write(
   /* Calculate vector element size */
   info_set_vector_elem_size();
 
-  /*@-formattype -duplicatequals@*/
+  /*@-formattype -formatcode -duplicatequals@*/
   fprintf( file, "%d %x %" FMT32 "x %" FMT64 "u %u %x %s\n",
            DB_TYPE_INFO,
            CDD_VERSION,
@@ -180,7 +180,7 @@ void info_db_write(
            db_list[curr_db]->inst_num,
            inline_comb_depth,
            db_list[curr_db]->leading_hierarchies[0] );
-  /*@=formattype =duplicatequals@*/
+  /*@=formattype =formatcode =duplicatequals@*/
 
   /* Display score arguments */
   fprintf( file, "%d %s", DB_TYPE_SCORE_ARGS, score_run_path );
@@ -269,9 +269,9 @@ bool info_db_read(
       Throw 0;
     }
 
-    /*@-formattype -duplicatequals@*/
+    /*@-formattype -formatcode -duplicatequals@*/
     if( sscanf( *line, "%" FMT32 "x %" FMT64 "u %u %x %s%n", &(info.all), &num_timesteps, &inst_num, &inline_comb_depth, tmp, &chars_read ) == 5 ) {
-    /*@=formattype =duplicatequals@*/
+    /*@=formattype =formatcode =duplicatequals@*/
 
       *line = *line + chars_read;
 

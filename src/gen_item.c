@@ -1029,11 +1029,11 @@ static void gen_item_resolve(
           free_safe( inst_name, 4096 );
           if( child != NULL ) {
             param_resolve_inst( child );
-          }
-          if( child->funit->suppl.part.type != FUNIT_MODULE ) {
-            func_unit* parent_mod = funit_get_curr_module( child->funit );
-            funit_link_add( child->funit, &(parent_mod->tf_head), &(parent_mod->tf_tail) );
-            child->funit->parent = inst->funit;
+            if( child->funit->suppl.part.type != FUNIT_MODULE ) {
+              func_unit* parent_mod = funit_get_curr_module( child->funit );
+              funit_link_add( child->funit, &(parent_mod->tf_head), &(parent_mod->tf_tail) );
+              child->funit->parent = inst->funit;
+            }
           }
           gen_item_resolve( gi->next_true, child );
           gen_item_resolve( gi->next_false, inst );

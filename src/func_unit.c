@@ -586,7 +586,7 @@ void funit_db_write(
     }
 #endif /* RUNLIB */
   
-    /*@-duplicatequals -formattype@*/
+    /*@-duplicatequals -formattype -formatcode@*/
     fprintf( file, "%d %x %s \"%s\" %d %s %u %u %" FMT64 "u %s\n",
       DB_TYPE_FUNIT,
       (funit->suppl.all & FUNIT_MASK),
@@ -599,7 +599,7 @@ void funit_db_write(
       funit->timescale,
       (funit->suppl.part.included ? funit->incl_fname : "")
     );
-    /*@=duplicatequals =formattype@*/
+    /*@=duplicatequals =formattype =formatcode@*/
 
     /* Figure out if a file version exists for this functional unit */
     if( (funit->version == NULL) && ((strl = str_link_find( funit->orig_fname, db_list[curr_db]->fver_head )) != NULL) ) {
@@ -725,11 +725,11 @@ void funit_db_read(
   int  chars_read;   /* Number of characters currently read */
   int  params;       /* Number of parameters in string that were parsed */
 
-  /*@-duplicatequals -formattype@*/
+  /*@-duplicatequals -formattype -formatcode@*/
   if( (params = sscanf( *line, "%" FMT8 "x %s \"%[^\"]\" %d %s %u %u %" FMT64 "u%n", 
                         &(funit->suppl.all), funit->name, scope, (int*)name_diff, funit->orig_fname,
                         &(funit->start_line), &(funit->end_line), &(funit->timescale), &chars_read )) == 8 ) {
-  /*@=duplicatequals =formattype@*/
+  /*@=duplicatequals =formattype =formatcode@*/
 
     *line = *line + chars_read;
 

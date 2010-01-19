@@ -731,8 +731,7 @@ void parser_handle_case_statement(
 
   if( cs_expr != NULL ) {
     cs_expr->parent->expr = NULL;
-    expr    = db_create_expression( cs_expr, c_expr, case_op, FALSE, cs_expr->line, cs_expr->ppfline, cs_expr->pplline, 0, 0, NULL, FALSE );
-    ppfline += (cs_expr->line - line);
+    expr = db_create_expression( cs_expr, c_expr, case_op, FALSE, cs_expr->line, cs_expr->ppfline, cs_expr->pplline, 0, 0, NULL, FALSE );
   } else {
     expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, FALSE, line, ppfline, pplline, 0, 0, NULL, FALSE );
   }

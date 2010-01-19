@@ -1199,8 +1199,8 @@ vsignal* exclude_find_signal(
   /*@out@*/ func_unit** found_funit  /*!< Pointer to functional unit containing found signal */
 ) { PROFILE(EXCLUDE_FIND_SIGNAL);
 
-  inst_link* instl;  /* Pointer to current instance link */
-  vsignal*   sig;    /* Pointer to found signal */
+  inst_link* instl;       /* Pointer to current instance link */
+  vsignal*   sig = NULL;  /* Pointer to found signal */
 
   instl = db_list[curr_db]->inst_head;
   while( (instl != NULL) && ((sig = instance_find_signal_by_exclusion_id( instl->inst, id, found_funit )) == NULL) ) {
@@ -1225,8 +1225,8 @@ expression* exclude_find_expression(
   /*@out@*/ func_unit** found_funit  /*!< Pointer to functional unit containing found expression */
 ) { PROFILE(EXCLUDE_FIND_EXPRESSION);
 
-  inst_link*  instl;  /* Pointer to current instance link */
-  expression* exp;    /* Pointer to found expression */
+  inst_link*  instl;       /* Pointer to current instance link */
+  expression* exp = NULL;  /* Pointer to found expression */
 
   instl = db_list[curr_db]->inst_head;
   while( (instl != NULL) && ((exp = instance_find_expression_by_exclusion_id( instl->inst, id, found_funit )) == NULL) ) {
@@ -1253,7 +1253,7 @@ int exclude_find_fsm_arc(
 ) { PROFILE(EXCLUDE_FIND_FSM_ARC);
 
   inst_link* instl;  /* Pointer to current instance link */
-  int arc_index;
+  int        arc_index = -1;
 
   instl = db_list[curr_db]->inst_head;
   while( (instl != NULL) && ((arc_index = instance_find_fsm_arc_index_by_exclusion_id( instl->inst, id, found_fsm, found_funit )) == -1) ) {

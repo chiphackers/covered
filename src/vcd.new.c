@@ -258,20 +258,20 @@ static void vcd_parse_def_var(
   Try {
 
     /* Get the value type */
-    if( (tok = vcd_get_token( vcd )) != T_STRING ) { printf( "A\n" );  Throw 0; }
+    if( vcd_get_token( vcd ) != T_STRING ) { Throw 0; }
     if( strncmp( "real", vcd_yytext, 4 ) == 0 ) { found_real = TRUE; }
 
     /* Get the size */
-    if( (tok = vcd_get_token( vcd )) != T_STRING ) { printf( "B\n" );  Throw 0; }
+    if( vcd_get_token( vcd ) != T_STRING ) { Throw 0; }
     size = atoi( vcd_yytext );
       
     /* Get the ID code */
-    if( (tok = vcd_get_token( vcd )) == T_EOF ) { printf( "C\n" );  Throw 0; }
+    if( vcd_get_token( vcd ) == T_EOF ) { Throw 0; }
     assert( vcd_yylen <= 256 );
     strcpy( id_code, vcd_yytext );
      
     /* Get the ref */
-    if( (tok = vcd_get_token( vcd )) != T_STRING ) { printf( "D %s\n", vcd_yytext );  Throw 0; }
+    if( (tok = vcd_get_token( vcd )) != T_STRING ) { Throw 0; }
     assert( vcd_yylen <= 256 );
     strcpy( ref, vcd_yytext );
 
@@ -287,12 +287,12 @@ static void vcd_parse_def_var(
 
       if( tok != T_END ) {
 
-        if( tok != T_STRING ) { printf( "E\n" ); Throw 0; }
+        if( tok != T_STRING ) { Throw 0; }
         if( sscanf( vcd_yytext, "\[%d:%d]", &msb, &lsb ) != 2 ) {
-          if( sscanf( vcd_yytext, "\[%d]", &lsb ) != 1 ) { printf( "F\n" ); Throw 0; }
+          if( sscanf( vcd_yytext, "\[%d]", &lsb ) != 1 ) { Throw 0; }
           msb = lsb;
         }
-        if( (tok = vcd_get_token( vcd )) != T_END ) { printf( "A\n" );  Throw 0; }
+        if( vcd_get_token( vcd ) != T_END ) { Throw 0; }
 
       } else if( sscanf( ref, "%[a-zA-Z0-9_]\[%s].", reftmp, tmp ) == 2 ) {
 
@@ -305,7 +305,7 @@ static void vcd_parse_def_var(
         strcpy( ref, reftmp );
 
         if( sscanf( tmp, "%d:%d", &msb, &lsb ) != 2 ) {
-          if( sscanf( tmp, "%d", &lsb ) != 1 ) { printf( "F\n" ); Throw 0; }
+          if( sscanf( tmp, "%d", &lsb ) != 1 ) { Throw 0; }
           msb = lsb;
         }
 
@@ -434,7 +434,7 @@ static void vcd_parse_sim_vector(
   int tok;
   int sym_start;
 
-  if( (tok = vcd_append_token( vcd, sym_start )) == T_EOF ) { Throw 0; }
+  if( vcd_append_token( vcd, sym_start ) == T_EOF ) { Throw 0; }
 
   db_set_symbol_string( (vcd_yytext + sym_start), (vcd_yytext + 1) );
 
@@ -455,7 +455,7 @@ static void vcd_parse_sim_real(
   int tok;
   int sym_start;
 
-  if( (tok = vcd_append_token( vcd, sym_start )) == T_EOF ) { Throw 0; }
+  if( vcd_append_token( vcd, sym_start ) == T_EOF ) { Throw 0; }
 
   db_set_symbol_string( (vcd_yytext + sym_start), (vcd_yytext + 1) );
 

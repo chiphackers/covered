@@ -2381,7 +2381,7 @@ static void combination_multi_vars(
           case EXP_OP_OR   :  tmp = strdup_safe( "        ^^^^^^^^^^^^^ - |" );   break;
           case EXP_OP_LAND :  tmp = strdup_safe( "        ^^^^^^^^^^^^^ - &&" );  break;
           case EXP_OP_LOR  :  tmp = strdup_safe( "        ^^^^^^^^^^^^^ - ||" );  break;
-          default          :  break;
+          default          :  assert( 0 );  break;
         }
         size = strlen( tmp ) + (eid_size - 1) + 5;
         gen_char_string( spaces, ' ', (eid_size - 1) );
@@ -2397,7 +2397,7 @@ static void combination_multi_vars(
           case EXP_OP_OR   :  (*info)[1] = strdup_safe( "        ^^^^^^^^^^^^^ - |" );   break;
           case EXP_OP_LAND :  (*info)[1] = strdup_safe( "        ^^^^^^^^^^^^^ - &&" );  break;
           case EXP_OP_LOR  :  (*info)[1] = strdup_safe( "        ^^^^^^^^^^^^^ - ||" );  break;
-          default          :  break;
+          default          :  assert( 0 );  break;
         }
       }
 

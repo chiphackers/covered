@@ -1616,35 +1616,35 @@ char* timer_to_string(
 #else
   /* If the time is less than a minute, output the seconds and milliseconds */
   if( tm->total < 10 ) {
-    /*@-duplicatequals -formattype@*/
+    /*@-duplicatequals -formattype -formatcode@*/
     unsigned int rv = snprintf( str, 33, "0.00000%1" FMT64 "u seconds", tm->total );
-    /*@=duplicatequals =formattype@*/
+    /*@=duplicatequals =formattype =formatcode@*/
     assert( rv < 33 );
   } else if( tm->total < 100 ) {
-    /*@-duplicatequals -formattype@*/
+    /*@-duplicatequals -formattype -formatcode@*/
     unsigned int rv = snprintf( str, 33, "0.0000%1" FMT64 "u seconds", (tm->total / 10) ); 
-    /*@=duplicatequals =formattype@*/
+    /*@=duplicatequals =formattype =formatcode@*/
     assert( rv < 33 );
   } else if( tm->total < 1000 ) {
-    /*@-duplicatequals -formattype@*/
+    /*@-duplicatequals -formattype -formatcode@*/
     unsigned int rv = snprintf( str, 33, "0.000%1" FMT64 "u seconds", (tm->total / 100) );
-    /*@=duplicatequals =formattype@*/
+    /*@=duplicatequals =formattype =formatcode@*/
     assert( rv < 33 );
   } else if( tm->total < 60000000 ) {
-    /*@-duplicatequals -formattype@*/
+    /*@-duplicatequals -formattype -formatcode@*/
     unsigned int rv = snprintf( str, 33, "%2" FMT64 "u.%03" FMT64 "u seconds", (tm->total / 1000000), ((tm->total % 1000000) / 1000) );
-    /*@=duplicatequals =formattype@*/
+    /*@=duplicatequals =formattype =formatcode@*/
     assert( rv < 33 );
   } else if( tm->total < 3600000000LL ) {
-    /*@-duplicatequals -formattype@*/
+    /*@-duplicatequals -formattype -formatcode@*/
     unsigned int rv = snprintf( str, 33, "%2" FMT64 "u minutes, %2" FMT64 "u seconds", (tm->total / 60000000), ((tm->total % 60000000) / 1000000) );
-    /*@=duplicatequals =formattype@*/
+    /*@=duplicatequals =formattype =formatcode@*/
     assert( rv < 33 );
   } else {
-    /*@-duplicatequals -formattype@*/
+    /*@-duplicatequals -formattype -formatcode@*/
     unsigned int rv = snprintf( str, 33, "%2llu hours, %2llu minutes, %2" FMT64 "u seconds", 
                                 (tm->total / 3600000000LL), ((tm->total % 3600000000LL) / 60000000), ((tm->total % 60000000) / 1000000) );
-    /*@=duplicatequals =formattype@*/
+    /*@=duplicatequals =formattype =formatcode@*/
     assert( rv < 33 );
   }
 #endif

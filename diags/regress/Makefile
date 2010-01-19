@@ -595,7 +595,8 @@ ifeq ($(MAKECMDGOALS),verilator)
 DIAGS1       := $(filter $(basename $(basename $(notdir $(wildcard ../verilog/*.verilator.v)))), $(DIAGS1))
 EXCLUDE      +=
 else
-EXCLUDE      += case4.1           disable1          nested_block2     nested_block2.1   random4
+EXCLUDE      += case4.1           func1             func2             nested_block2     nested_block2.1 \
+                random4
 endif
 endif
 endif

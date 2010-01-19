@@ -529,13 +529,13 @@ static inst_parm* inst_parm_add(
   funit_inst*  inst        /*!< Pointer to current functional unit instance */
 ) { PROFILE(INST_PARM_ADD);
 
-  inst_parm* iparm;           /* Temporary pointer to instance parameter */
-  int        sig_width;       /* Width of this parameter signal */
-  int        sig_lsb;         /* LSB of this parameter signal */
-  int        sig_be;          /* Big endianness of this parameter signal */
-  int        sig_type;        /* Type of signal parameter to create */
-  int        left_val  = 31;  /* Value of left (msb) static expression */
-  int        right_val = 0;   /* Value of right (lsb) static expression */
+  inst_parm* iparm     = NULL;  /* Temporary pointer to instance parameter */
+  int        sig_width;         /* Width of this parameter signal */
+  int        sig_lsb;           /* LSB of this parameter signal */
+  int        sig_be;            /* Big endianness of this parameter signal */
+  int        sig_type;          /* Type of signal parameter to create */
+  int        left_val  = 31;    /* Value of left (msb) static expression */
+  int        right_val = 0;     /* Value of right (lsb) static expression */
   
   assert( value != NULL );
   assert( ((msb == NULL) && (lsb == NULL)) || ((msb != NULL) && (lsb != NULL)) );

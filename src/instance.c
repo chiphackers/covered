@@ -79,14 +79,14 @@ static void instance_display_tree_helper(
     char* piname = scope_gen_printable( root->name );
     char* pfname = scope_gen_printable( root->funit->name );
     /*@-formatcode@*/
-    printf( "%s%s [%d, %u, %u] (%s) - %p (ign: %hhu, gend: %hhu)\n", prefix, piname, root->id, root->ppfline, root->fcol, pfname, root, root->suppl.ignore, root->suppl.gend_scope );
+    printf( "%s%s [%d, %u, %d] (%s) - %p (ign: %hhu, gend: %hhu)\n", prefix, piname, root->id, root->ppfline, root->fcol, pfname, root, root->suppl.ignore, root->suppl.gend_scope );
     /*@=formatcode@*/
     free_safe( piname, (strlen( piname ) + 1) );
     free_safe( pfname, (strlen( pfname ) + 1) );
   } else {
     char* piname = scope_gen_printable( root->name );
     /*@-formatcode@*/
-    printf( "%s%s [%d, %u, %u] () - %p (ign: %hhu, gend: %hhu)\n", prefix, piname, root->id, root->ppfline, root->fcol, root, root->suppl.ignore, root->suppl.gend_scope );
+    printf( "%s%s [%d, %u, %d] () - %p (ign: %hhu, gend: %hhu)\n", prefix, piname, root->id, root->ppfline, root->fcol, root, root->suppl.ignore, root->suppl.gend_scope );
     /*@=formatcode@*/
     free_safe( piname, (strlen( piname ) + 1) );
   }
