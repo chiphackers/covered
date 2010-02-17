@@ -1597,7 +1597,8 @@ static void combination_unary(
     hit   = ESUPPL_WAS_FALSE( exp->suppl ) + ESUPPL_WAS_TRUE( exp->suppl );
   }
 
-  if( (hit != tot) || (exp->suppl.part.excluded && show_excluded) ) {
+  if( ((hit != tot) && !ESUPPL_EXCLUDED( exp->suppl )) ||
+      (ESUPPL_EXCLUDED( exp->suppl ) && show_excluded) ) {
 
     char         spaces[30];
     unsigned int eid_size;
@@ -1697,7 +1698,8 @@ static void combination_event(
 
   assert( exp != NULL );
 
-  if( !ESUPPL_WAS_TRUE( exp->suppl ) || (exp->suppl.part.excluded && show_excluded) ) {
+  if( (!ESUPPL_WAS_TRUE( exp->suppl ) && !ESUPPL_EXCLUDED( exp->suppl )) ||
+      (ESUPPL_EXCLUDED( exp->suppl ) && show_excluded) ) {
 
     char         spaces[30];
     unsigned int rv;
@@ -1807,7 +1809,8 @@ static void combination_two_vars(
     }
   }
 
-  if( (hit != total) || (exp->suppl.part.excluded && show_excluded) ) {
+  if( ((hit != total) && !ESUPPL_EXCLUDED( exp->suppl )) ||
+      (ESUPPL_EXCLUDED( exp->suppl ) && show_excluded) ) {
 
     char         spaces[30];
     unsigned int eid_size;
@@ -2330,7 +2333,8 @@ static void combination_multi_vars(
     /* Calculate hit and total values for this sub-expression */
     combination_multi_expr_calc( exp, &ulid, FALSE, FALSE, &hit, &excluded, &total );
 
-    if( (hit != total) || (exp->suppl.part.excluded && show_excluded) ) {
+    if( ((hit != total) && !ESUPPL_EXCLUDED( exp->suppl )) ||
+        (ESUPPL_EXCLUDED( exp->suppl ) && show_excluded) ) {
 
       unsigned int rv;
       unsigned int slen1;
