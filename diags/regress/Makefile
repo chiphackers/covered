@@ -123,13 +123,14 @@ DIAGS1        = add1              aedge1            aedge1.1          afunc1    
                 lshift2.3         lshift3           lshift3.1         lshift3.2         lshift3.3 \
                 lshift4           lshift4.1         lshift4.2         lshift4.3         lshift5 \
                 marray1           marray1.1         marray1.2         marray1.3         marray2 \
-                marray2.1         marray2.2         marray2.3         mbit_sel1         mbit_sel2 \
-                mbit_sel3         mbit_sel3.1       mbit_sel4         mbit_sel4.1       mbit_sel4.2 \
-                mbit_sel4.3       mbit_sel5         mbit_sel5.1       mbit_sel5.2       mbit_sel5.3 \
-                mbit_sel5.4       mbit_sel6         mbit_sel6.1       mbit_sel6.2       mbit_sel6.3 \
-                mbit_sel6.4       mbit_sel7         mbit_sel9         mbit_sel9.1       mbit_sel9.2 \
-                mem1              mem2              mem3              mem4              mem4.1 \
-                mem5              mem6              mem6.1            mem6.2            mem6.3            mem6.4 \
+                marray2.1         marray2.2         marray2.3         mbit_sel1         mbit_sel1.1 \
+                mbit_sel2         mbit_sel3         mbit_sel3.1       mbit_sel4         mbit_sel4.1 \
+                mbit_sel4.2       mbit_sel4.3       mbit_sel5         mbit_sel5.1       mbit_sel5.2 \
+                mbit_sel5.3       mbit_sel5.4       mbit_sel5.5       mbit_sel6         mbit_sel6.1 \
+                mbit_sel6.2       mbit_sel6.3       mbit_sel6.4       mbit_sel6.5       mbit_sel7 \
+                mbit_sel9         mbit_sel9.1       mbit_sel9.2       mem1              mem2 \
+                mem3              mem4              mem4.1            mem5              mem6 \
+                mem6.1            mem6.2            mem6.3            mem6.4 \
                 mod1              monitor1          monitor1.1        msg1              mult1 \
                 mult2             multi_exp1        multi_exp1.1      multi_exp1.2      multi_exp1.3 \
                 multi_exp1.4      multi_exp1.5      multi_exp1.6      multi_exp1.7      multi_exp1.8 \
@@ -324,13 +325,14 @@ EXCLUDE      += afunc1            afunc2            always5.1         always_com
                 generate19.2      generate21        generate22        generate24        hier1.1 \
                 hier2             hier3             ifdef1.1          ifdef3            ifndef2 \
                 implicit2         inc1              inc1.1            inc2              inc3 \
-                inc3.1            inline3           instance7         int1              line1             localparam1 \
-                localparam1.1     localparam1.2     localparam1.3     localparam2       localparam3 \
-                logic1            longint1          long_sig          marray1           marray1.1 \
-                marray1.2         marray1.3         marray2           marray2.1         marray2.2 \
-                marray2.3         mbit_sel5         mbit_sel5.1       mbit_sel5.2       mbit_sel5.3 \
-                mbit_sel5.4       mbit_sel6         mbit_sel6.1       mbit_sel6.2       mbit_sel6.3 \
-                mbit_sel6.4       mem3              mem4              mem4.1            mem5 \
+                inc3.1            inline3           instance7         int1              line1 \
+                localparam1       localparam1.1     localparam1.2     localparam1.3     localparam2 \
+                localparam3       logic1            longint1          long_sig          marray1 \
+                marray1.1         marray1.2         marray1.3         marray2           marray2.1 \
+                marray2.2         marray2.3         mbit_sel1         mbit_sel1.1       mbit_sel5 \
+                mbit_sel5.1       mbit_sel5.2       mbit_sel5.3       mbit_sel5.4       mbit_sel5.5 \
+                mbit_sel6         mbit_sel6.1       mbit_sel6.2       mbit_sel6.3       mbit_sel6.4 \
+                mbit_sel6.5       mem3              mem4              mem4.1            mem5 \
                 nand1             nor1              op_assign1        ovl1              ovl1.1 \
                 ovl1.2            ovl1.3            param8.2          param10.1         param10.5 \
                 param12           param12.1         port2             profile_err1      real1.1 \
@@ -404,10 +406,11 @@ EXCLUDE      += afunc1            afunc2            always5.1         always_com
                 localparam1       localparam1.1     localparam1.2     localparam1.3     localparam2 \
                 localparam3       logic1            longint1          marray1           marray1.1 \
                 marray1.2         marray1.3         marray2           marray2.1         marray2.2 \
-                marray2.3         mbit_sel5         mbit_sel5.1       mbit_sel5.2       mbit_sel5.3 \
-                mbit_sel5.4       mbit_sel6         mbit_sel6.1       mbit_sel6.2       mbit_sel6.3 \
-                mbit_sel6.4       mem2              mem3              mem4              mem4.1 \
-                mem5              mem6              mem6.3            named_block2      nand1             nor1 \
+                marray2.3         mbit_sel1         mbit_sel1.1       mbit_sel5         mbit_sel5.1 \
+                mbit_sel5.2       mbit_sel5.3       mbit_sel5.4       mbit_sel5.5       mbit_sel6 \
+                mbit_sel6.1       mbit_sel6.2       mbit_sel6.3       mbit_sel6.4       mbit_sel6.5 \
+                mem2              mem3              mem4              mem4.1            mem5 \
+                mem6              mem6.3            named_block2      nand1             nor1 \
                 null_stmt2        null_stmt2.1      op_assign1        ovl1              ovl1.1            ovl1.2 \
                 ovl1.3            param7            param8            param8.1          param8.2 \
                 param9.1          param9.2          param10           param10.1         param10.2 \

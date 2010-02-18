@@ -4256,50 +4256,31 @@ bool expression_op_func__sbit(
   /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__SBIT);
 
-  bool     retval;                                                                        /* Return value for this function */
-  exp_dim* dim = (expr->suppl.part.nba == 0) ? expr->elem.dim : expr->elem.dim_nba->dim;  /* Pointer to current dimension information */
+  bool     retval;
+  exp_dim* dim    = (expr->suppl.part.nba == 0) ? expr->elem.dim : expr->elem.dim_nba->dim;
   int      curr_lsb;
+  int      intval = (vector_to_int( expr->left->value ) - dim->dim_lsb) * dim->dim_width;
+  int      prev_lsb;
+  int      vwidth;
 
-  /* If the part select is known, calculate the vector */
-  if( !vector_is_unknown( expr->left->value ) ) {
-
-    int intval = (vector_to_int( expr->left->value ) - dim->dim_lsb) * dim->dim_width;
-    int prev_lsb;
-    int vwidth;
-
-    /* Calculate starting bit position and width */
-    if( (ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr) ) {
-      vwidth   = expr->parent->expr->left->value->width;
-      prev_lsb = expr->parent->expr->left->elem.dim->curr_lsb;
-    } else {
-      vwidth   = expr->sig->value->width;
-      prev_lsb = 0;
-    }
-
-    /* Calculate current LSB */
-    if( intval < 0 ) {
-      curr_lsb = -1;
-    } else {
-      if( dim->dim_be ) {
-        curr_lsb = ((intval >  vwidth) || (prev_lsb == -1)) ? -1 : (prev_lsb + (vwidth - (intval + (int)expr->value->width)));
-      } else {
-        curr_lsb = ((intval >= vwidth) || (prev_lsb == -1)) ? -1 : (prev_lsb + intval);
-      }
-    }
-
+  /* Calculate starting bit position and width */
+  if( (ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr) ) {
+    vwidth   = expr->parent->expr->left->value->width;
+    prev_lsb = expr->parent->expr->left->elem.dim->curr_lsb;
   } else {
+    vwidth   = expr->sig->value->width;
+    prev_lsb = 0;
+  }
 
-    curr_lsb = -1;
-
+  if( dim->dim_be ) {
+    curr_lsb = (prev_lsb + (vwidth - (intval + (int)expr->value->width)));
+  } else {
+    curr_lsb = (prev_lsb + intval);
   }
 
   /* If we are the last dimension to be calculated, perform the bit pull */
   if( dim->last ) {
-    if( curr_lsb == -1 ) {
-      retval = vector_set_to_x( expr->value );
-    } else {
-      retval = vector_part_select_pull( expr->value, expr->sig->value, curr_lsb, ((curr_lsb + expr->value->width) - 1), TRUE );
-    }
+    retval = vector_part_select_pull( expr->value, expr->sig->value, curr_lsb, ((curr_lsb + expr->value->width) - 1), TRUE );
   } else {
     retval = (dim->curr_lsb != curr_lsb);
   }
@@ -4345,21 +4326,14 @@ bool expression_op_func__mbit(
 
   /* Calculate the LSB and MSB and copy the bit range */
   intval = ((dim->dim_be ? vector_to_int( expr->left->value ) : vector_to_int( expr->right->value )) - dim->dim_lsb) * dim->dim_width;
-  assert( intval >= 0 );
   if( dim->dim_be ) {
-    assert( intval <= vwidth );
-    curr_lsb = (prev_lsb == -1) ? -1 : (prev_lsb + (vwidth - (intval + (int)expr->value->width)));
+    curr_lsb = (prev_lsb + (vwidth - (intval + (int)expr->value->width)));
   } else {
-    assert( intval < vwidth );
-    curr_lsb = (prev_lsb == -1) ? -1 : (prev_lsb + intval);
+    curr_lsb = (prev_lsb + intval);
   }
 
   if( dim->last ) {
-    if( curr_lsb == -1 ) {
-      retval = vector_set_to_x( expr->value );
-    } else {
-      retval = vector_part_select_pull( expr->value, expr->sig->value, curr_lsb, ((curr_lsb + expr->value->width) - 1), TRUE );
-    }
+    retval = vector_part_select_pull( expr->value, expr->sig->value, curr_lsb, ((curr_lsb + expr->value->width) - 1), TRUE );
   } else {
     retval = (curr_lsb != dim->curr_lsb);
   }
@@ -5226,40 +5200,22 @@ bool expression_op_func__mbit_pos(
   bool     retval   = FALSE;  /* Return value for this function */
   exp_dim* dim      = (expr->suppl.part.nba == 0) ? expr->elem.dim : expr->elem.dim_nba->dim;
   int      curr_lsb = 0;
+  int      vwidth;
+  int      intval   = (vector_to_int( expr->left->value ) - dim->dim_lsb) * dim->dim_width;
+  int      prev_lsb = ((ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr)) ? expr->parent->expr->left->elem.dim->curr_lsb : 0;
 
-  /* If the left expression is known, perform the part selection */
-  if( !vector_is_unknown( expr->left->value ) ) {
-
-    int vwidth;
-    int intval   = (vector_to_int( expr->left->value ) - dim->dim_lsb) * dim->dim_width;
-    int prev_lsb = ((ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr)) ? expr->parent->expr->left->elem.dim->curr_lsb : 0;
-
-    /* Calculate starting bit position */
-    if( (ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr) ) {
-      vwidth = expr->parent->expr->left->value->width;
-    } else {
-      vwidth = expr->sig->value->width;
-    }
-
-    assert( intval >= 0 );
-    assert( (intval < 0) || ((unsigned int)intval < expr->sig->value->width) );
-
-    curr_lsb = (prev_lsb == -1) ? -1 : (prev_lsb + intval);
-
-  /* Otherwise, set our value to X */
+  /* Calculate starting bit position */
+  if( (ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr) ) {
+    vwidth = expr->parent->expr->left->value->width;
   } else {
-
-    dim->curr_lsb = -1;
-
+    vwidth = expr->sig->value->width;
   }
+
+  curr_lsb = (prev_lsb + intval);
 
   /* If this is the last dimension, perform the assignment */
   if( dim->last ) {
-    if( curr_lsb == -1 ) {
-      retval = vector_set_to_x( expr->value );
-    } else {
-      retval = vector_part_select_pull( expr->value, expr->sig->value, curr_lsb, ((curr_lsb + vector_to_int( expr->right->value )) - 1), TRUE );
-    }
+    retval = vector_part_select_pull( expr->value, expr->sig->value, curr_lsb, ((curr_lsb + vector_to_int( expr->right->value )) - 1), TRUE );
   } else {
     retval = (dim->curr_lsb != curr_lsb);
   }
@@ -5287,47 +5243,29 @@ bool expression_op_func__mbit_neg(
   /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__MBIT_NEG);
 
-  bool     retval = FALSE;  /* Return value for this function */
-  exp_dim* dim    = (expr->suppl.part.nba == 0) ? expr->elem.dim : expr->elem.dim_nba->dim;
+  bool     retval   = FALSE;  /* Return value for this function */
+  exp_dim* dim      = (expr->suppl.part.nba == 0) ? expr->elem.dim : expr->elem.dim_nba->dim;
   int      curr_lsb;
+  int      vwidth;
+  int      intval1  = vector_to_int( expr->left->value ) - dim->dim_lsb;
+  int      intval2  = vector_to_int( expr->right->value );
+  int      prev_lsb = ((ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr)) ? expr->parent->expr->left->elem.dim->curr_lsb : 0;
 
-  /* If the left expression is known, perform the part selection */
-  if( !vector_is_unknown( expr->left->value ) ) {
-
-    int vwidth;
-    int intval1  = vector_to_int( expr->left->value ) - dim->dim_lsb;
-    int intval2  = vector_to_int( expr->right->value );
-    int prev_lsb = ((ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr)) ? expr->parent->expr->left->elem.dim->curr_lsb : 0;
-
-    /* Calculate starting bit position */
-    if( (ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr) ) {
-      vwidth = expr->parent->expr->left->value->width;
-    } else {
-      vwidth = expr->sig->value->width;
-    }
-
-    intval1 = vector_to_int( expr->left->value ) - dim->dim_lsb;
-    intval2 = vector_to_int( expr->right->value );
-
-    assert( (intval1 < 0) || ((unsigned int)intval1 < expr->sig->value->width) );
-    assert( ((intval1 - intval2) + 1) >= 0 );
-
-    curr_lsb = (prev_lsb == -1) ? -1 : (prev_lsb + ((intval1 - intval2) + 1));
-
-  /* Otherwise, set our expression value to X */
+  /* Calculate starting bit position */
+  if( (ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->parent->expr->op == EXP_OP_DIM) && (expr->parent->expr->right == expr) ) {
+    vwidth = expr->parent->expr->left->value->width;
   } else {
-
-    curr_lsb = -1;
-
+    vwidth = expr->sig->value->width;
   }
+
+  intval1 = vector_to_int( expr->left->value ) - dim->dim_lsb;
+  intval2 = vector_to_int( expr->right->value );
+
+  curr_lsb = (prev_lsb + ((intval1 - intval2) + 1));
 
   /* If this is the last dimension, perform the assignment */
   if( dim->last ) { 
-    if( curr_lsb == -1 ) {
-      retval = vector_set_to_x( expr->value );
-    } else { 
-      retval = vector_part_select_pull( expr->value, expr->sig->value, curr_lsb, ((curr_lsb + vector_to_int( expr->right->value )) - 1), TRUE );
-    } 
+    retval = vector_part_select_pull( expr->value, expr->sig->value, curr_lsb, ((curr_lsb + vector_to_int( expr->right->value )) - 1), TRUE );
   } else {
     retval = (dim->curr_lsb != curr_lsb);
   }

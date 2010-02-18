@@ -1195,6 +1195,37 @@ void vector_display_value_ulong(
 }
 
 /*!
+ Displays the binary value of the specified ulong values to standard output.
+*/
+static void vector_display_value_ulongs(
+  ulong* vall,  /*!< Array of lower values */
+  ulong* valh,  /*!< Array of upper values */
+  int    width  /*!< Number of bits to display */
+) {
+
+  int i, j;  /* Loop iterator */
+  int bits_left = UL_MOD(width - 1);
+
+  printf( "value: %d'b", width );
+  
+  for( i=UL_SIZE(width); i--; ) {
+    for( j=bits_left; j>=0; j-- ) {
+      if( ((valh[i] >> (unsigned int)j) & 0x1) == 0 ) {
+        printf( "%lu", ((vall[i] >> (unsigned int)j) & 0x1) );
+      } else {
+        if( ((vall[i] >> (unsigned int)j) & 0x1) == 0 ) {
+          printf( "x" );
+        } else {
+          printf( "z" );
+        }
+      }
+    }
+    bits_left = (UL_BITS - 1);
+  }
+  
+}
+
+/*!
  Outputs the specified ulong value array to standard output as described by the
  width parameter.
 */
@@ -1681,78 +1712,122 @@ static void vector_lshift_ulong(
   ulong*        vall,  /*!< Pointer to intermediate value array containing lower bits of shifted value */
   ulong*        valh,  /*!< Pointer to intermediate value array containing upper bits of shifted value */
   int           lsb,   /*!< LSB offset */
-  int           msb    /*!< MSB offset */
+  int           msb,   /*!< MSB offset */
+  bool          xfill  /*!< If set to TRUE, causes lower bits to be X filled */
 ) { PROFILE(VECTOR_LSHIFT_ULONG);
 
-  unsigned int diff = UL_DIV(msb) - UL_DIV(vec->width - 1);
+  int          from_msb = (msb - lsb);
+  unsigned int diff     = UL_DIV(msb) - UL_DIV(from_msb);
 
   if( UL_DIV(lsb) == UL_DIV(msb) ) {
 
+    int   i;
+    ulong uset = xfill ? ~UL_LMASK(lsb) : 0;
+    
     vall[diff] = (vec->value.ul[0][VTYPE_INDEX_VAL_VALL] << (unsigned int)lsb);
-    valh[diff] = (vec->value.ul[0][VTYPE_INDEX_VAL_VALH] << (unsigned int)lsb);
+    valh[diff] = (vec->value.ul[0][VTYPE_INDEX_VAL_VALH] << (unsigned int)lsb) | uset;
 
-  } else if( UL_MOD(lsb) == 0 ) {
-
-    int i;
-
-    for( i=UL_DIV(vec->width - 1); i>=0; i-- ) {
-      vall[i+diff] = vec->value.ul[i][VTYPE_INDEX_VAL_VALL];
-      valh[i+diff] = vec->value.ul[i][VTYPE_INDEX_VAL_VALH];
-    }
-
-    for( i=(UL_DIV(lsb) - 1); i>=0; i-- ) {
+    for( i=(diff-1); i>=0; i-- ) {
       vall[i] = 0;
-      valh[i] = 0;
-    }
-
-  } else if( UL_MOD(msb) > UL_MOD(vec->width - 1) ) {
-
-    unsigned int mask_bits1  = UL_MOD(vec->width);
-    unsigned int shift_bits1 = UL_MOD(msb) - UL_MOD(vec->width - 1);
-    ulong        mask1       = UL_SET >> (UL_BITS - mask_bits1);
-    ulong        mask2       = UL_SET << (UL_BITS - shift_bits1);
-    ulong        mask3       = ~mask2;
-    int          i;
-
-    vall[UL_DIV(msb)] = (vec->value.ul[UL_DIV(vec->width-1)][VTYPE_INDEX_VAL_VALL] & mask1) << shift_bits1;
-    valh[UL_DIV(msb)] = (vec->value.ul[UL_DIV(vec->width-1)][VTYPE_INDEX_VAL_VALH] & mask1) << shift_bits1;
-
-    for( i=(UL_DIV(vec->width - 1) - 1); i>=0; i-- ) {
-      vall[i+diff+1] |= ((vec->value.ul[i][VTYPE_INDEX_VAL_VALL] & mask2) >> (UL_BITS - shift_bits1));
-      valh[i+diff+1] |= ((vec->value.ul[i][VTYPE_INDEX_VAL_VALH] & mask2) >> (UL_BITS - shift_bits1));
-      vall[i+diff]    = ((vec->value.ul[i][VTYPE_INDEX_VAL_VALL] & mask3) << shift_bits1);
-      valh[i+diff]    = ((vec->value.ul[i][VTYPE_INDEX_VAL_VALH] & mask3) << shift_bits1);
-    }
-
-    for( i=(UL_DIV(lsb) - 1); i>=0; i-- ) {
-      vall[i] = 0;
-      valh[i] = 0;
+      valh[i] = xfill ? UL_SET : 0;
     }
 
   } else {
+  
+    int  i;
+    bool use_vec = msb > (vec->width - 1);
+    int  hindex  = use_vec ? UL_DIV(vec->width - 1) : UL_DIV(msb);
+    
+    /* Transfer the vector value to the val array */
+    for( i=0; i<=hindex; i++ ) {
+      vall[i] = vec->value.ul[i][VTYPE_INDEX_VAL_VALL];
+      valh[i] = vec->value.ul[i][VTYPE_INDEX_VAL_VALH];
+    }
+    
+    if( use_vec ) {
 
-    unsigned int mask_bits1  = UL_MOD(vec->width - 1);
-    unsigned int shift_bits1 = mask_bits1 - UL_MOD(msb);
-    ulong        mask1       = UL_SET << mask_bits1;
-    ulong        mask2       = UL_SET >> (UL_BITS - shift_bits1);
-    ulong        mask3       = ~mask2;
-    int          i;
+      ulong uset1 = xfill ? ~UL_HMASK(vec->width - 1) : 0;
+      ulong uset2 = xfill ? UL_SET : 0;
+            
+      valh[i-1] = valh[i-1] | uset1;
 
-    vall[UL_DIV(msb)] = (vec->value.ul[UL_DIV(vec->width-1)][VTYPE_INDEX_VAL_VALL] & mask1) >> shift_bits1;
-    valh[UL_DIV(msb)] = (vec->value.ul[UL_DIV(vec->width-1)][VTYPE_INDEX_VAL_VALH] & mask1) >> shift_bits1;
-
-    for( i=UL_DIV(vec->width - 1); i>=0; i-- ) {
-      vall[(i+diff)-1]  = ((vec->value.ul[i][VTYPE_INDEX_VAL_VALL] & mask2) << (UL_BITS - shift_bits1));
-      valh[(i+diff)-1]  = ((vec->value.ul[i][VTYPE_INDEX_VAL_VALH] & mask2) << (UL_BITS - shift_bits1));
-      if( i > 0 ) {
-        vall[(i+diff)-1] |= ((vec->value.ul[i-1][VTYPE_INDEX_VAL_VALL] & mask3) >> shift_bits1);
-        valh[(i+diff)-1] |= ((vec->value.ul[i-1][VTYPE_INDEX_VAL_VALH] & mask3) >> shift_bits1);
+      for( ; i<=UL_DIV(msb); i++ ) {
+        vall[i] = 0;
+        valh[i] = uset2;
       }
+
     }
 
-    for( i=(UL_DIV(lsb) - 1); i>=0; i-- ) {
-      vall[i] = 0;
-      valh[i] = 0;
+    if( UL_MOD(lsb) == 0 ) {
+
+      int i;
+    
+      for( i=UL_DIV(from_msb); i>=0; i-- ) {
+        vall[i+diff] = vall[i];
+        valh[i+diff] = valh[i];
+      }
+
+      for( i=(diff-1); i>=0; i-- ) {
+        vall[i] = 0;
+        valh[i] = xfill ? UL_SET : 0;
+      }
+
+    } else if( UL_MOD(msb) > UL_MOD(from_msb) ) {
+
+      unsigned int mask_bits1  = UL_MOD(from_msb + 1);
+      unsigned int shift_bits1 = UL_MOD(msb) - UL_MOD(from_msb);
+      ulong        mask1       = UL_SET >> (UL_BITS - mask_bits1);
+      ulong        mask2       = UL_SET << (UL_BITS - shift_bits1);
+      ulong        mask3       = ~mask2;
+      ulong        uset        = xfill ? ~UL_LMASK(lsb) : 0;
+      int          i;
+      
+      vall[UL_DIV(msb)] = (vall[UL_DIV(from_msb)] & mask1) << shift_bits1;
+      valh[UL_DIV(msb)] = (valh[UL_DIV(from_msb)] & mask1) << shift_bits1;
+
+      for( i=(UL_DIV(from_msb) - 1); i>=0; i-- ) {
+        vall[i+diff+1] |= ((vall[i] & mask2) >> (UL_BITS - shift_bits1));
+        valh[i+diff+1] |= ((valh[i] & mask2) >> (UL_BITS - shift_bits1));
+        vall[i+diff]    = ((vall[i] & mask3) << shift_bits1);
+        valh[i+diff]    = ((valh[i] & mask3) << shift_bits1);
+      }
+
+      valh[diff] |= uset;
+
+      for( i=(diff - 1); i>=0; i-- ) {
+        vall[i] = 0;
+        valh[i] = xfill ? UL_SET : 0;
+      }
+
+    } else {
+
+      unsigned int mask_bits1  = UL_MOD(from_msb);
+      unsigned int shift_bits1 = mask_bits1 - UL_MOD(msb);
+      ulong        mask1       = UL_SET << mask_bits1;
+      ulong        mask2       = UL_SET >> (UL_BITS - shift_bits1);
+      ulong        mask3       = ~mask2;
+      ulong        uset        = xfill ? ~UL_LMASK(lsb) : 0;
+      int          i;
+            
+      vall[UL_DIV(msb)] = (vall[UL_DIV(from_msb)] & mask3) >> shift_bits1;
+      valh[UL_DIV(msb)] = (valh[UL_DIV(from_msb)] & mask3) >> shift_bits1;
+
+      for( i=UL_DIV(from_msb); i>=0; i-- ) {
+        vall[(i+diff)-1] = ((vall[i] & mask2) << (UL_BITS - shift_bits1));
+        valh[(i+diff)-1] = ((valh[i] & mask2) << (UL_BITS - shift_bits1));
+        if( i > 0 ) {
+          vall[(i+diff)-1] |= ((vall[i-1] & mask3) >> shift_bits1);
+          valh[(i+diff)-1] |= ((valh[i-1] & mask3) >> shift_bits1);
+        }
+      }
+
+      valh[diff-1] |= uset;
+
+      for( i=(diff - 2); i>=0; i-- ) {
+        vall[i] = 0;
+        valh[i] = xfill ? UL_SET : 0;
+      }
+      
     }
 
   }
@@ -1770,75 +1845,102 @@ static void vector_rshift_ulong(
   ulong*        vall,  /*!< Pointer to intermediate value array containing lower bits of shifted value */
   ulong*        valh,  /*!< Pointer to intermediate value array containing upper bits of shifted value */
   int           lsb,   /*!< LSB of vec range to shift */
-  int           msb    /*!< MSB of vec range to shift */
+  int           msb,   /*!< MSB of vec range to shift */
+  bool          xfill  /*!< Set to TRUE if the upper bits should be X filled or not */
 ) { PROFILE(VECTOR_RSHIFT_ULONG);
 
-  int          diff   = UL_DIV(lsb);
-  unsigned int rwidth = (msb - lsb) + 1;
-
-  if( lsb > msb ) {
+  int          adj_lsb = (lsb < 0) ? 0 : lsb;
+  int          diff    = UL_DIV(adj_lsb);
+  unsigned int rwidth  = (msb - adj_lsb) + 1;
+  
+  if( adj_lsb > msb ) {
 
     unsigned int i;
 
     for( i=0; i<UL_SIZE( vec->width ); i++ ) {
       vall[i] = 0;
-      valh[i] = 0;
+      valh[i] = xfill ? UL_SET : 0;
     }
 
-  } else if( UL_DIV(lsb) == UL_DIV(msb) ) {
+  } else if( lsb < 0 ) {
 
-    unsigned int i;
-
-    vall[0] = (vec->value.ul[diff][VTYPE_INDEX_VAL_VALL] >> UL_MOD(lsb));
-    valh[0] = (vec->value.ul[diff][VTYPE_INDEX_VAL_VALH] >> UL_MOD(lsb));
-
-    for( i=1; i<=UL_DIV(vec->width); i++ ) {
-      vall[i] = 0;
-      valh[i] = 0;
-    }
-
-  } else if( UL_MOD(lsb) == 0 ) {
-
-    unsigned int i;
-    ulong        lmask = UL_HMASK(msb);
-
-    for( i=diff; i<UL_DIV(msb); i++ ) {
-      vall[i-diff] = vec->value.ul[i][VTYPE_INDEX_VAL_VALL];
-      valh[i-diff] = vec->value.ul[i][VTYPE_INDEX_VAL_VALH];
-    }
-    vall[i-diff] = vec->value.ul[i][VTYPE_INDEX_VAL_VALL] & lmask;
-    valh[i-diff] = vec->value.ul[i][VTYPE_INDEX_VAL_VALH] & lmask;
-
-    for( i=((i-diff)+1); i<UL_DIV(vec->width); i++ ) {
-      vall[i] = 0;
-      valh[i] = 0;
-    }
+    /* First, left shift the data */
+    vector_lshift_ulong( vec, vall, valh, (0 - lsb), (msb + (0 - lsb)), xfill ); 
 
   } else {
 
-    unsigned int shift_bits = UL_MOD(lsb);
-    ulong        mask1      = UL_SET << shift_bits;
-    ulong        mask2      = ~mask1;
-    ulong        mask3      = UL_SET >> ((UL_BITS - 1) - UL_MOD(msb - lsb));
-    unsigned int hindex     = UL_DIV(vec->width - 1);
-    unsigned int i;
-
-    for( i=0; i<=UL_DIV(rwidth - 1); i++ ) {
-      vall[i]  = (vec->value.ul[i+diff][VTYPE_INDEX_VAL_VALL] & mask1) >> shift_bits;
-      valh[i]  = (vec->value.ul[i+diff][VTYPE_INDEX_VAL_VALH] & mask1) >> shift_bits;
-      if( (i+diff+1) <= hindex ) {
-        vall[i] |= (vec->value.ul[i+diff+1][VTYPE_INDEX_VAL_VALL] & mask2) << (UL_BITS - shift_bits);
-        valh[i] |= (vec->value.ul[i+diff+1][VTYPE_INDEX_VAL_VALH] & mask2) << (UL_BITS - shift_bits);
-      }
+    bool use_vec = msb > (vec->width - 1);
+    int  hindex  = use_vec ? UL_DIV(vec->width - 1) : UL_DIV(msb);
+    int  i;
+    int  start_i;
+    
+    /* Transfer the vector value to the val array */
+    for( i=0; i<=hindex; i++ ) {
+      vall[i] = vec->value.ul[i][VTYPE_INDEX_VAL_VALL];
+      valh[i] = vec->value.ul[i][VTYPE_INDEX_VAL_VALH];
     }
+    
+    if( use_vec ) {
 
-    vall[i-1] &= mask3;
-    valh[i-1] &= mask3;
+      ulong uset1 = xfill ? ~UL_HMASK(vec->width - 1) : 0;
+      ulong uset2 = xfill ? UL_SET : 0;
+            
+      valh[i-1] = valh[i-1] | uset1;
+      
+      for( ; i<=UL_DIV(msb); i++ ) {
+        vall[i] = 0;
+        valh[i] = uset2;
+      }
 
-    // Bit-fill with zeroes
-    for( ; i<=hindex; i++ ) {
-      vall[i] = 0;
-      valh[i] = 0;
+    }
+    
+    if( UL_DIV(adj_lsb) == UL_DIV(msb) ) {
+
+      vall[0] = (vall[diff] >> UL_MOD(adj_lsb));
+      valh[0] = (valh[diff] >> UL_MOD(adj_lsb));
+      start_i = 1;
+
+    } else if( UL_MOD(adj_lsb) == 0 ) {
+
+      unsigned int i;
+      ulong        lmask = UL_HMASK(msb);
+
+      for( i=diff; i<UL_DIV(msb); i++ ) {
+        vall[i-diff] = vall[i];
+        valh[i-diff] = valh[i];
+      }
+      vall[i-diff] = vall[i] & lmask;
+      valh[i-diff] = valh[i] & lmask;
+      start_i      = (i - diff) + 1;
+
+    } else {
+
+      unsigned int shift_bits = UL_MOD(adj_lsb);
+      ulong        mask1      = UL_SET << shift_bits;
+      ulong        mask2      = ~mask1;
+      ulong        mask3      = UL_SET >> ((UL_BITS - 1) - UL_MOD(msb - adj_lsb));
+      unsigned int hindex     = UL_DIV(msb);
+      unsigned int i;
+
+      for( i=0; i<=UL_DIV(rwidth - 1); i++ ) {
+        vall[i]  = (vall[i+diff] & mask1) >> shift_bits;
+        valh[i]  = (valh[i+diff] & mask1) >> shift_bits;
+        if( (i+diff+1) <= hindex ) {
+          vall[i] |= (vall[i+diff+1] & mask2) << (UL_BITS - shift_bits);
+          valh[i] |= (valh[i+diff+1] & mask2) << (UL_BITS - shift_bits);
+        }
+      }
+
+      vall[i-1] &= mask3;
+      valh[i-1] &= mask3;
+      start_i    = i;
+
+    }
+        
+    /* Bit-fill with zeroes or X */
+    for( ; start_i<=UL_SIZE( vec->width ); start_i++ ) {
+      vall[start_i] = 0;
+      valh[start_i] = xfill ? UL_SET : 0;
     }
 
   }
@@ -1948,7 +2050,7 @@ bool vector_part_select_pull(
         ulong vall[UL_DIV(MAX_BIT_WIDTH)];
 
         /* Perform shift operation */
-        vector_rshift_ulong( src, vall, valh, lsb, msb );
+        vector_rshift_ulong( src, vall, valh, lsb, msb, TRUE );
 
         /* If the src vector is of type MEM, set the MEM_RD bit in the source's supplemental field */
         if( set_mem_rd ) {
@@ -2019,11 +2121,11 @@ bool vector_part_select_push(
           /* Left-shift the source vector to match up with target LSB */
           if( src_lsb < tgt_lsb ) {
             diff = (tgt_lsb - src_lsb);
-            vector_lshift_ulong( src, vall, valh, diff, ((src_msb - src_lsb) + diff) );
+            vector_lshift_ulong( src, vall, valh, diff, ((src_msb - src_lsb) + diff), FALSE );
           /* Otherwise, right-shift the source vector to match up */
           } else {
             diff = (src_lsb - tgt_lsb);
-            vector_rshift_ulong( src, vall, valh, diff, ((src_msb - src_lsb) + diff) );
+            vector_rshift_ulong( src, vall, valh, diff, ((src_msb - src_lsb) + diff), FALSE );
           }
 
           /* Now apply the sign extension, if necessary */
@@ -3797,10 +3899,6 @@ bool vector_op_eq(
 
   bool retval;  /* Return value for this function */
 
-  // printf( "In vector_op_eq...\n" );
-  // printf( "  left:  " );  vector_display( left );
-  // printf( "  right: " );  vector_display( right );
-
   if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
 
     retval = vector_set_to_x( tgt );
@@ -4189,7 +4287,7 @@ bool vector_op_lshift(
         {
           ulong vall[UL_DIV(MAX_BIT_WIDTH)];
           ulong valh[UL_DIV(MAX_BIT_WIDTH)];
-          vector_lshift_ulong( left, vall, valh, shift_val, ((left->width + shift_val) - 1) );
+          vector_lshift_ulong( left, vall, valh, shift_val, ((left->width + shift_val) - 1), FALSE );
           retval = vector_set_coverage_and_assign_ulong( tgt, vall, valh, 0, (tgt->width - 1) );
         }
         break;
@@ -4231,7 +4329,7 @@ bool vector_op_rshift(
         {
           ulong vall[UL_DIV(MAX_BIT_WIDTH)];
           ulong valh[UL_DIV(MAX_BIT_WIDTH)];
-          vector_rshift_ulong( left, vall, valh, shift_val, (left->width - 1) );
+          vector_rshift_ulong( left, vall, valh, shift_val, (left->width - 1), FALSE );
           retval = vector_set_coverage_and_assign_ulong( tgt, vall, valh, 0, (tgt->width - 1) );
         }
         break;
@@ -4276,7 +4374,7 @@ bool vector_op_arshift(
           ulong        signl, signh;
           unsigned int msb = left->width - 1;
 
-          vector_rshift_ulong( left, vall, valh, shift_val, msb );
+          vector_rshift_ulong( left, vall, valh, shift_val, msb, FALSE );
           if( left->suppl.part.is_signed ) {
             vector_get_sign_extend_vector_ulong( left, &signl, &signh );
             vector_sign_extend_ulong( vall, valh, signl, signh, (msb - shift_val), tgt->width );
