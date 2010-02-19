@@ -356,7 +356,8 @@ EXCLUDE      += afunc1            afunc2            always5.1         always_com
                 value_plusargs6   value_plusargs7   value_plusargs8   value_plusargs8.1
 else
 ifeq ($(MAKECMDGOALS),vcs)
-EXCLUDE      += always5.1         assign1           assign2.8         example           example1 \
+EXCLUDE      += always5.1         assign1           assign2.8         clog2             clog2.1 \
+                clog2.2           clog2.3           clog2.4           clog2.5           example           example1 \
                 fsm1              fsm1.1            fsm1.2            fsm1.3            fsm1.4 \
                 fsm6              fsm7              fsm7.1            fsm7.2            fsm7.3 \
                 fsm7.4            fsm7.5            fsm8              fsm8.1            fsm8.2 \
