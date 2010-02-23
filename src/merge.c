@@ -359,7 +359,7 @@ void command_merge(
   /* Output header information */
   rv = snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
   assert( rv < USER_MSG_LENGTH );
-  print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+  print_output( user_msg, HEADER, __FILE__, __LINE__ );
 
   Try {
 

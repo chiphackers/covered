@@ -74,7 +74,7 @@
       Covered is initiated with the following command:
     </p><p>
       <code class="code">
-        covered (-h | -v | [-P [<span class="emphasis"><em>filename</em></span>]] [-B] [-D|-Q]) (score|merge|report|rank) <span class="emphasis"><em>command_options</em></span>)
+        covered (-h | -v | [-P [<span class="emphasis"><em>filename</em></span>]] [-B] [-D|-T|-Q]) (score|merge|report|rank) <span class="emphasis"><em>command_options</em></span>)
       </code>
     </p><p>
       The -v command (described below) is mutually exclusive from the rest of the commands and has the highest priority. 
@@ -87,6 +87,10 @@
       The -Q option suppresses all normal user output from standard output. The only output that will not be suppressed 
       are messages to standard error.  This option may be used with any of the Covered commands to achieve this effect. 
       By default, normal user output is sent to standard output.
+    </p><p>
+      The -T option suppresses all normal user output from standard output with the exception of the Covered header banner,
+      warning messages.  This type of output is a bit more informative than output generated with the -Q option but not as
+      much as running without any output limiters.
     </p><p>
       The -D option outputs debug information to standard output. Its effect overrides the -Q option.  This option may be 
       used in conjunction with any other Covered command for the purposes of debugging tool failures.  By default, debug 
@@ -117,6 +121,11 @@
               -Q
             </td><td>
               Quiet mode. Suppresses user output to screen. Use in conjunction with a command.
+            </td></tr><tr><td>
+              -T
+            </td><td>
+              Terse mode.  Causes all output to be suppressed with the exception of warning messages and the Covered header information.
+              Use in conjunction with a command.
             </td></tr><tr><td>
               -D
             </td><td>

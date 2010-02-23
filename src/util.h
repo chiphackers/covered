@@ -55,8 +55,13 @@
 #endif
 
 
-/*! \brief Sets error suppression to specified value */
-void set_output_suppression(
+/*! \brief Sets quiet output variable to specified value */
+void set_quiet(
+  bool value
+);
+
+/*! \brief Sets terse output variable to specified value */
+void set_terse(
   bool value
 );
 

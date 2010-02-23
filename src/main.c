@@ -63,15 +63,15 @@ static void usage() {
   printf( "\n" );
 #ifdef DEBUG_MODE
 #ifdef PROFILER
-  printf( "Usage:  covered (-h | -v | (-D | -Q) (-P [<file>]) (-B) <command> <command_options>))\n" );
+  printf( "Usage:  covered (-h | -v | (-D | -T | -Q) (-P [<file>]) (-B) <command> <command_options>))\n" );
 #else
-  printf( "Usage:  covered (-h | -v | (-D | -Q) (-B) <command> <command_options>))\n" );
+  printf( "Usage:  covered (-h | -v | (-D | -T | -Q) (-B) <command> <command_options>))\n" );
 #endif
 #else
 #ifdef PROFILER
-  printf( "Usage:  covered (-h | -v | (-Q) (-P [<file>]) (-B) <command> <command_options>))\n" );
+  printf( "Usage:  covered (-h | -v | (-T | -Q) (-P [<file>]) (-B) <command> <command_options>))\n" );
 #else
-  printf( "Usage:  covered (-h | -v | (-Q) (-B) <command> <command_options>))\n" );
+  printf( "Usage:  covered (-h | -v | (-T | -Q) (-B) <command> <command_options>))\n" );
 #endif
 #endif
   printf( "\n" );
@@ -82,6 +82,7 @@ static void usage() {
 #ifdef PROFILER
   printf( "      -P [<file>]             Profile.  Generate profiling information file from command.  Default output file is covered.prof\n" );
 #endif
+  printf( "      -T                      Terse mode.  Causes all output except for header information and warnings to be suppressed\n" );
   printf( "      -Q                      Quiet mode.  Causes all output to be suppressed\n" );
   printf( "      -B                      Obfuscate.  Obfuscates design-sensitive names in all user-readable output\n" );
   printf( "      -v                      Version.  Display current Covered version\n" );
@@ -120,7 +121,8 @@ int main( int argc, const char** argv ) {
   init_exception_context( the_exception_context );
 
   /* Initialize error suppression value */
-  set_output_suppression( FALSE );
+  set_quiet( FALSE );
+  set_terse( FALSE );
   set_debug( FALSE );
 #ifdef TESTMODE
   set_testmode();
@@ -152,7 +154,11 @@ int main( int argc, const char** argv ) {
 
           if( strncmp( "-Q", argv[curr_arg], 2 ) == 0 ) {
   
-            set_output_suppression( TRUE );
+            set_quiet( TRUE );
+
+          } else if( strncmp( "-T", argv[curr_arg], 2 ) == 0 ) {
+
+            set_terse( TRUE );
 
           } else if( strncmp( "-D", argv[curr_arg], 2 ) == 0 ) {
 

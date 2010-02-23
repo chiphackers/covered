@@ -195,6 +195,12 @@
 */
 #define DEBUG        6
 
+/*!
+ Indicates that the specified message is header information that should
+ be displayed if the -Q global flag is not specified.
+*/
+#define HEADER       7
+
 /*! @} */
 
 /*!

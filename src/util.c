@@ -79,9 +79,14 @@ static bool cli_debug_mode = FALSE;
 #endif /* CLI_DEBUG_MODE_EXISTS */
 
 /*!
- If set to TRUE, suppresses all non-fatal error messages from being displayed.
+ If set to TRUE, suppresses all non-warning/fatal error messages from being displayed.
 */
-bool output_suppressed;
+bool quiet_mode;
+
+/*!
+ If set to TRUE, suppresses all normal messages from being displayed.
+*/
+bool terse_mode;
 
 /*!
  If set to TRUE, suppresses all warnings from being displayed.
@@ -123,13 +128,24 @@ static const char* funit_types[FUNIT_TYPES+1] = { "module", "named block", "func
 
 
 /*!
- Sets the global variable output_suppressed to the specified value.
+ Sets the global quiet_mode variable to the specified value.
 */
-void set_output_suppression(
+void set_quiet(
   bool value  /*!< Boolean value of suppression */
 ) {
 
-  output_suppressed = value;
+  quiet_mode = value;
+
+}
+
+/*!
+ Set the global terse_mode variable to the given value.
+*/
+void set_terse(
+  bool value  /*!< Boolean value of terse mode */
+) {
+
+  terse_mode = value;
 
 }
 
@@ -179,8 +195,17 @@ void print_output(
 #endif
       }
       break;
+    case HEADER:
+      if( !quiet_mode || terse_mode || debug_mode ) {
+#ifdef VPI_ONLY
+        vpi_print_output( msg );
+#else
+        printf( "%s\n", msg );
+#endif
+      }
+      break;
     case NORMAL:
-      if( !output_suppressed || debug_mode ) {
+      if( (!quiet_mode && !terse_mode) || debug_mode ) {
 #ifdef VPI_ONLY
         vpi_print_output( msg );
 #else
@@ -189,7 +214,7 @@ void print_output(
       }
       break;
     case WARNING:
-      if( !output_suppressed && !warnings_suppressed ) {
+      if( (!quiet_mode || terse_mode) && !warnings_suppressed ) {
 #ifndef RUNLIB
         if( interp != NULL ) {
           unsigned int rv = snprintf( tmpmsg, USER_MSG_LENGTH, "WARNING!  %s\n", msg );
@@ -224,7 +249,7 @@ void print_output(
       }
       break;
     case WARNING_WRAP:
-      if( (!output_suppressed && !warnings_suppressed) || debug_mode ) {
+      if( ((!quiet_mode || terse_mode) && !warnings_suppressed) || debug_mode ) {
 #ifndef RUNLIB
         if( interp != NULL ) {
           unsigned int rv = snprintf( tmpmsg, USER_MSG_LENGTH, "              %s\n", msg );
