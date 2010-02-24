@@ -16,9 +16,9 @@
 */
 
 /*!
- \file     parser.c
+ \file     gen_parser.c
  \author   Trevor Williams  (phase1geo@gmail.com)
- \date     12/14/2001
+ \date     2/23/2010
 */
 
 #ifdef HAVE_CONFIG_H
@@ -369,6 +369,9 @@ int yydebug = 1;
   /* A degenerate source file can be completely empty. */
 main 
   : source_file 
+    {
+      generator_output( $1 );
+    }
   |
   ;
 
@@ -378,124 +381,162 @@ main
 attribute_list_opt
   : K_PSTAR attribute_list K_STARP
     {
+      $$ = generator_build( 3, strdup_safe( "(*" ), $2, strdup_safe( "*)" ) );
     }
   | K_PSTAR K_STARP
     {
+      $$ = strdup_safe( "(* *)" );
     }
   |
+    {
+      $$ = NULL;
+    }
   ;
 
 attribute_list
   : attribute_list ',' attribute
     {
+      $$ = generator_build( 3, $1, strdup_safe( "," ), $3 );
     } 
   | attribute
     {
+      $$ = $1;
     }
   ;
 
 attribute
   : IDENTIFIER
     {
+      $$ = $1;
     }
   | IDENTIFIER '=' expression
     {
+      $$ = generator_build( 3, $1, strdup_safe( "=" ), $3 );
     }
   ;
 
 source_file 
   : description 
+    {
+      $$ = $1;
+    }
   | source_file description
+    {
+      $$ = generator_build( 2, $1, $2 );
+    }
   ;
 
 description
   : module
     {
+      $$ = $1;
     }
   | udp_primitive
     {
+      $$ = $1;
     }
   | KK_attribute '(' IDENTIFIER ',' STRING ',' STRING ')'
     {
+      $$ = generator_build( 7, strdup_safe( "$attribute(" ), $3, strdup_safe( "," ), $5, strdup_safe( "," ), $7, strdup_safe( ")" ) );
     }
   | typedef_decl
     {
+      $$ = $1;
     }
   | net_type signed_opt range_opt list_of_variables ';'
     {
+      $$ = generator_build( 6, $1, $2, $3, $4, strdup_safe( ";" ), "\n" );
     }
   | net_type signed_opt range_opt
     net_decl_assigns ';'
     {
+      $$ = generator_build( 6, $1, $2, $3, $4, strdup_safe( ";" ), "\n" );
     }
   | net_type drive_strength
     net_decl_assigns ';'
     {
+      $$ = generator_build( 5, $1, $2, $3, strdup_safe( ";" ), "\n" );
     }
   | K_trireg charge_strength_opt range_opt delay3_opt
     list_of_variables ';'
     {
+      $$ = generator_build( 7, strdup_safe( "trireg" ), $2, $3, $4, R5, strdup_safe( ";" ), "\n" );
     }
   | gatetype gate_instance_list ';'
     {
+      $$ = generator_buildln( 3, $1, $2, strdup_safe( ";" ) );
     }
   | gatetype delay3 gate_instance_list ';'
     {
+      $$ = generator_buildln( 4, $1, $2, $3, strdup_safe( ";" ) );
     }
   | gatetype drive_strength gate_instance_list ';'
     {
+      $$ = generator_buildln( 4, $1, $2, $3, strdup_safe( ";" ) );
     }
   | gatetype drive_strength delay3 gate_instance_list ';'
     {
+      $$ = generator_buildln( 5, $1, $2, $3, $4, strdup_safe( ";" ) );
     }
   | K_pullup gate_instance_list ';'
     {
+      $$ = generator_buildln( 3, strdup_safe( "pullup" ), $2, strdup_safe( ";" ) );
     }
   | K_pulldown gate_instance_list ';'
     {
+      $$ = generator_buildln( 3, strdup_safe( "pulldown" ), $2, strdup_safe( ";" ) );
     }
   | K_pullup '(' dr_strength1 ')' gate_instance_list ';'
     {
+      $$ = generator_buildln( 5, strdup_safe( "pullup(" ), $3, strdup_safe( ")" ), $5, strdup_safe( ";" ) );
     }
   | K_pulldown '(' dr_strength0 ')' gate_instance_list ';'
     {
+      $$ = generator_buildln( 5, strdup_safe( "pulldown(" ), $3, strdup_safe( ")" ), $5, strdup_safe( ";" ) );
     }
   | block_item_decl
     {
+      $$ = $1;
     }
   | K_event list_of_variables ';'
     {
-      // generator_handle_event_type( @1.ppfline, @1.first_column );
+      /* Events are handled as regs with the generator */
+      $$ = generator_build( 4, strdup_safe( "reg" ), $2, strdup_safe( ";" ), "\n" );
     }
   | K_task automatic_opt IDENTIFIER ';'
     task_item_list_opt statement_or_null
     K_endtask
     {
+      func_unit* funit = db_get_tfn_by_position( @3.first_line, @3.first_column );
+      $$ = generator_build( 10, strdup_safe( "task" ), $2, $3, strdup_safe( ";" ), "\n", $5, generator_inst_id_reg( funit ), $6, strdup_safe( "endtask" ), "\n" );
     }
   | K_function automatic_opt signed_opt range_or_type_opt IDENTIFIER ';'
     function_item_list
     statement
     K_endfunction
     {
-      func_unit* funit;
-      generator_flush_work_code;
+      func_unit* funit = db_get_tfn_by_position( @5.first_line, @5.first_column );
       /* If this is not an automatic function, place all intermediate signals within the function */
-      if( ((funit = db_get_tfn_by_position( @5.first_line, @5.first_column )) != NULL) && generator_is_static_function( funit ) ) {
-        generator_push_funit( funit );
-        generator_insert_inst_id_reg( funit );
-        generator_push_reg_insert();
+      if( generator_is_static_function( funit ) ) {
+        $$ = generator_build( 12, strdup_safe( "function" ), $2, $3, $4, $5, strdup_safe( ";" ), "\n", $7,
+                             (generator_is_static_function( funit ) ? generator_inst_id_reg( funit ) : NULL), $8, strdup_safe( "endfunction" ), "\n" );
       }
     }
   | error ';'
     {
       VLerror( "Invalid $root item" );
+      FREE_TEXT( $1 );
+      $$ = NULL;
     }
   | K_function error K_endfunction
     {
       VLerror( "Syntax error in function description" );
+      FREE_TEXT( $2 );
+      $$ = NULL;
     }
   | enumeration list_of_names ';'
     {
+      $$ = generator_build( 4, $1, $2, strdup_safe( ";" ), "\n" );
     }
   ;
 
@@ -505,33 +546,52 @@ module
     module_port_list_opt ';'
     module_item_list_opt K_endmodule
     {
-      // generator_insert_inst_id_overrides();
+      $$ = generator_build( 9, $1, $2, $3, $4, $5, strdup_safe( ";" ), $7, generator_inst_id_overrides(), strdup_safe( "endmodule" ) );
     }
   | attribute_list_opt K_module IGNORE I_endmodule
+    {
+      $$ = generator_build( 4, $1, strdup_safe( "module" ), $3, strdup_safe( "endmodule" ) );
+    }
   | attribute_list_opt K_macromodule IGNORE I_endmodule
+    {
+      $$ = generator_build( 4, $1, strdup_safe( "macromodule" ), $3, strdup_safe( "endmodule" ) );
+    }
   ;
 
 module_start
   : K_module
+    {
+      $$ = strdup_safe( "module" );
+    }
   | K_macromodule
+    {
+      $$ = strdup_safe( "macromodule" );
+    }
   ;
 
 module_parameter_port_list_opt
   : '#' '(' module_parameter_port_list ')'
     {
+      $$ = generator_build( 3, strdup_safe( "#(" ), $2, strdup_safe( ")" ) );
     }
   |
+    {
+      $$ = NULL;
+    }
   ;
 
 module_parameter_port_list
   : K_parameter signed_opt range_opt parameter_assign
     {
+      $$ = generator_build( 4, strdup_safe( "parameter" ), $2, $3, $4 );
     }
   | module_parameter_port_list ',' parameter_assign
     {
+      $$ = generator_build( 3, $1, strdup_safe( "," ), $3 );
     }
   | module_parameter_port_list ',' K_parameter signed_opt range_opt parameter_assign
     {
+      $$ = generator_build( 6, $1, strdup_safe( "," ), strdup_safe( "parameter" ), $4, $5, $6 );
     }
   ;
 
@@ -545,6 +605,9 @@ module_port_list_opt
       $$ = generator_build( 3, strdup_safe( "(" ), $2, strdup_safe( ")" ) );
     }
   |
+    {
+      $$ = NULL;
+    }
   ;
 
   /* Verilog-2001 syntax for declaring all ports within module port list */
@@ -691,418 +754,171 @@ static_expr_port_list
   ;
 
 static_unary_op
-  : '~'    { $$ = EXP_OP_UINV;  }
-  | '!'    { $$ = EXP_OP_UNOT;  }
-  | '&'    { $$ = EXP_OP_UAND;  }
-  | '|'    { $$ = EXP_OP_UOR;   }
-  | '^'    { $$ = EXP_OP_UXOR;  }
-  | K_NAND { $$ = EXP_OP_UNAND; }
-  | K_NOR  { $$ = EXP_OP_UNOR;  }
-  | K_NXOR { $$ = EXP_OP_UNXOR; }
+  : '~'    { $$ = strdup_safe( "~" );  }
+  | '!'    { $$ = strdup_safe( "!" );  }
+  | '&'    { $$ = strdup_safe( "&" );  }
+  | '|'    { $$ = strdup_safe( "|" );  }
+  | '^'    { $$ = strdup_safe( "^" );  }
+  | K_NAND { $$ = strdup_safe( "~&" ); }
+  | K_NOR  { $$ = strdup_safe( "~|" ); }
+  | K_NXOR { $$ = strdup_safe( "~^" ); }
   ;
 
 static_expr
   : static_expr_primary
     {
-      if( parse_mode ) {
-        $$ = $1;
-      } else {
-        $$ = NULL;
-      }
+      $$ = $1;
     }
   | '+' static_expr_primary %prec UNARY_PREC
     {
-      if( parse_mode ) {
-        static_expr* tmp = $2;
-        if( tmp != NULL ) {
-          if( tmp->exp == NULL ) {
-            tmp->num = 0 + tmp->num;
-          }
-        }
-        $$ = tmp;
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 2, strdup_safe( "+" ), $2 );
     }
   | '-' static_expr_primary %prec UNARY_PREC
     {
-      if( parse_mode ) {
-        static_expr* tmp = $2;
-        if( tmp != NULL ) {
-          if( tmp->exp == NULL ) {
-            tmp->num = 0 - tmp->num;
-          }
-        }
-        $$ = tmp;
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 2, strdup_safe( "-" ), $2 );
     }
   | static_unary_op static_expr_primary %prec UNARY_PREC
     {
-      if( parse_mode ) {
-        $$ = parser_create_unary_se( $2, $1, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, @1.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 2, $1, $2 );
     }
   | static_expr '^' static_expr
     {
-      if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_XOR, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "^" ), $3 );
     }
   | static_expr '*' static_expr
     {
-      if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_MULTIPLY, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "*" ), $3 );
     }
   | static_expr '/' static_expr
     {
-      if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_DIVIDE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "/" ), $3 );
     }
   | static_expr '%' static_expr
     {
-      if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_MOD, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "%" ), $3 );
     }
   | static_expr '+' static_expr
     {
-      if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_ADD, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "+" ), $3 );
     }
   | static_expr '-' static_expr
     {
-      if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_SUBTRACT, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "-" ), $3 );
     }
   | static_expr '&' static_expr
     {
-      if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_AND, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "&" ), $3 );
     }
   | static_expr '|' static_expr
     {
-      if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_OR, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "|" ), $3 );
     }
   | static_expr K_NOR static_expr
     {
-      if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_NOR, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "~|" ), $3 );
     }
   | static_expr K_NAND static_expr
     {
-      if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_NAND, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "~&" ), $3 );
     }
   | static_expr K_NXOR static_expr
     {
-      if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_NXOR, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "~^" ), $3 );
     }
   | static_expr K_LS static_expr
     {
-      if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_LSHIFT, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "<<" ), $3 );
     }
   | static_expr K_RS static_expr
     {
-      if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_RSHIFT, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( ">>" ), $3 );
     }
   | static_expr K_GE static_expr
     {
-      if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_GE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( ">=" ), $3 );
     }
   | static_expr K_LE static_expr
     {
-      if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_LE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "<=" ), $3 );
     }
   | static_expr K_EQ static_expr
     {
-      if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_EQ, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "==" ), $3 );
     }
   | static_expr K_NE static_expr
     {
-      if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_NE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "!=" ), $3 );
     }
   | static_expr '>' static_expr
     {
-      if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_GT, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( ">" ), $3 );
     }
   | static_expr '<' static_expr
     {
-      if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_LT, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "<" ), $3 );
     }
   | static_expr K_LAND static_expr
     {
-      if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_LAND, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "&&" ), $3 );
     }
   | static_expr K_LOR static_expr
     {
-      if( parse_mode ) {
-        $$ = static_expr_gen( $3, $1, EXP_OP_LOR, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "||" ), $3 );
     }
   | static_expr K_POW static_expr
     {
-      if( parse_mode ) {
-        if( !parser_check_generation( GENERATION_2001 ) ) {
-          VLerror( "Exponential power operation found in block that is specified to not allow Verilog-2001 syntax" );
-          static_expr_dealloc( $1, TRUE );
-          static_expr_dealloc( $3, TRUE );
-          $$ = NULL;
-        } else {
-          $$ = static_expr_gen( $3, $1, EXP_OP_EXPONENT, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL );
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "**" ), $3 );
     }
   | static_expr '?' static_expr ':' static_expr
     {
-      if( parse_mode ) {
-        $$ = static_expr_gen_ternary( $1, $5, $3, @1.first_line, @1.ppfline, @5.pplline, @1.first_column, (@5.last_column - 1) );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 5, $1, strdup_safe( "?" ), $3, strdup_safe( ":" ), $5 );
     }
   ;
 
 static_expr_primary
   : number
-    { PROFILE(PARSER_STATIC_EXPR_PRIMARY_A);
-      if( parse_mode ) {
-        static_expr* tmp;
-        if( (ignore_mode == 0) && ($1.vec != NULL) ) {
-          tmp = (static_expr*)malloc_safe( sizeof( static_expr ) );
-          if( vector_is_unknown( $1.vec ) ) {
-            Try {
-              tmp->exp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, (@1.last_column - 1), NULL, TRUE );
-              tmp->exp->suppl.part.base = $1.base;
-            } Catch_anonymous {
-              error_count++;
-            }
-            vector_dealloc( tmp->exp->value );
-            tmp->exp->value = $1.vec;
-          } else {
-            tmp->num = vector_to_int( $1.vec );
-            tmp->exp = NULL;
-            vector_dealloc( $1.vec );
-          }
-          $$ = tmp;
-        } else {
-          vector_dealloc( $1.vec );
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+    {
+      $$ = $1;
     }
   | REALTIME
     {
-      if( parse_mode ) {
-        static_expr* tmp;
-        if( (ignore_mode == 0) && ($1 != NULL) ) {
-          tmp = (static_expr*)malloc_safe( sizeof( static_expr ) );
-          Try {
-            tmp->exp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, (@1.last_column - 1), NULL, TRUE );
-          } Catch_anonymous {
-            error_count++;
-          }
-          vector_dealloc( tmp->exp->value );
-          tmp->exp->value = $1;
-          $$ = tmp;
-        } else {
-          vector_dealloc( $1 );
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = $1;
     }
   | IDENTIFIER
-    { PROFILE(PARSER_STATIC_EXPR_PRIMARY_B);
-      if( parse_mode ) {
-        static_expr* tmp;
-        if( ignore_mode == 0 ) {
-          tmp = (static_expr*)malloc_safe( sizeof( static_expr ) );
-          tmp->num = -1;
-          Try {
-            tmp->exp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, (@1.last_column - 1), $1, TRUE );
-          } Catch_anonymous {
-            error_count++;
-          }
-          $$ = tmp;
-        } else {
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
-      FREE_TEXT( $1 );
+    {
+      $$ = $1;
     }
   | '(' static_expr ')'
     {
-      if( parse_mode ) {
-        $$ = $2;
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, strdup_safe( "(" ), $2, strdup_safe( ")" ) );
     }
   | IDENTIFIER '(' static_expr_port_list ')'
     {
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          $$ = static_expr_gen( NULL, $3, EXP_OP_FUNC_CALL, @1.first_line, @1.ppfline, @4.pplline, @1.first_column, (@4.last_column - 1), $1 );
-        } else {
-          static_expr_dealloc( $3, TRUE );
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
-      FREE_TEXT( $1 );
+      $$ = generator_build( 4, $1, strdup_safe( "(" ), $3, strdup_safe( ")" ) );
     }
   | IDENTIFIER '[' static_expr ']'
     {
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) { 
-          $$ = static_expr_gen( NULL, $3, EXP_OP_SBIT_SEL, @1.first_line, @1.ppfline, @4.pplline, @1.first_column, (@4.last_column - 1), $1 );
-        } else {
-          static_expr_dealloc( $3, TRUE );
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
-      FREE_TEXT( $1 );
+      $$ = generator_build( 4, $1, strdup_safe( "[" ), $3, strdup_safe( "]" ) );
     }
-  | S_ignore
+  | SYSCALL
     {
-      if( parse_mode ) {
-        stmt_blk_specify_removal_reason( LOGIC_RM_SYSFUNC, @1.orig_fname, @1.first_line, __FILE__, __LINE__ );
-      }
-      $$ = NULL;
-    }
-  | S_allow
-    {
-      if( parse_mode ) {
-        $$ = parser_create_syscall_se( EXP_OP_NOOP, 0, 0, 0, 0, 0 );
-      } else {
-        $$ = NULL;
-      }
-    }
-  | S_random
-    {
-      if( parse_mode ) {
-        $$ = parser_create_syscall_se( EXP_OP_SRANDOM, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, @1.last_column );
-      } else {
-        $$ = NULL;
-      }
-    }
-  | S_urandom
-    {
-      if( parse_mode ) {
-        $$ = parser_create_syscall_se( EXP_OP_SURANDOM, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, @1.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = $1;
     }
   | S_clog2 '(' static_expr ')'
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($3 != NULL) ) {
-          $$ = static_expr_gen( NULL, $3, EXP_OP_SCLOG2, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, (@4.last_column - 1), NULL );
-        } else {
-          static_expr_dealloc( $3, TRUE );
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, strdup_safe( "$clog2(" ), $3, strdup_safe( ")" ) );
     }
   ;
 
 unary_op
-  : '~'     { $$ = EXP_OP_UINV;   }
-  | '!'     { $$ = EXP_OP_UNOT;   }
-  | '&'     { $$ = EXP_OP_UAND;   }
-  | '|'     { $$ = EXP_OP_UOR;    }
-  | '^'     { $$ = EXP_OP_UXOR;   }
-  | K_NAND  { $$ = EXP_OP_UNAND;  }
-  | K_NOR   { $$ = EXP_OP_UNOR;   }
-  | K_NXOR  { $$ = EXP_OP_UNXOR;  }
+  : '~'     { $$ = strdup_safe( "~" );  }
+  | '!'     { $$ = strdup_safe( "!" );  }
+  | '&'     { $$ = strdup_safe( "&" );  }
+  | '|'     { $$ = strdup_safe( "|" );  }
+  | '^'     { $$ = strdup_safe( "^" );  }
+  | K_NAND  { $$ = strdup_safe( "~&" ); }
+  | K_NOR   { $$ = strdup_safe( "~|" ); }
+  | K_NXOR  { $$ = strdup_safe( "~^" ); }
   ;
 
 expression
@@ -1112,35 +928,15 @@ expression
     }
   | '+' expr_primary %prec UNARY_PREC
     {
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          $2->value->suppl.part.is_signed = 1;
-          $2->col.part.first = @1.first_column;
-          $$ = $2;
-        } else {
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 2, strdup_safe( "+" ), $2 );
     }
   | '-' expr_primary %prec UNARY_PREC
     {
-      if( parse_mode ) {
-        if( ($$ = parser_create_unary_exp( $2, EXP_OP_NEGATE, @1.first_line, @1.ppfline, @2.pplline, @1.first_column, @2.last_column )) != NULL ) {
-          $$->value->suppl.part.is_signed = 1;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 2, strdup_safe( "-" ), $2 );
     }
   | unary_op expr_primary %prec UNARY_PREC
     {
-      if( parse_mode ) {
-        $$ = parser_create_unary_exp( $2, $1, @1.first_line, @1.ppfline, @2.pplline, @1.first_column, @2.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 2, $1, $2 );
     }
   | '+' error %prec UNARY_PREC
     {
@@ -1184,260 +980,112 @@ expression
     }
   | expression '^' expression
     {
-      if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_XOR, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "^" ), $3 );
     }
   | expression '*' expression
     {
-      if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_MULTIPLY, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "*" ), $3 );
     }
   | expression '/' expression
     {
-      if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_DIVIDE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "/" ), $3 );
     }
   | expression '%' expression
     {
-      if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_MOD, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "%" ), $3 );
     }
   | expression '+' expression
     {
-      if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_ADD, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "+" ), $3 );
     }
   | expression '-' expression
     {
-      if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_SUBTRACT, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "-" ), $3 );
     }
   | expression '&' expression
     {
-      if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_AND, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "&" ), $3 );
     }
   | expression '|' expression
     {
-      if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_OR, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "|" ), $3 );
     }
   | expression K_NAND expression
     {
-      if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_NAND, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "~&" ), $3 );
     }
   | expression K_NOR expression
     {
-      if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_NOR, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "~|" ), $3 );
     }
   | expression K_NXOR expression
     {
-      if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_NXOR, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "~^" ), $3 );
     }
   | expression '<' expression
     {
-      if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LT, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "<" ), $3 );
     }
   | expression '>' expression
     {
-      if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_GT, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( ">" ), $3 );
     }
   | expression K_LS expression
     {
-      if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LSHIFT, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "<<" ), $3 );
     }
   | expression K_RS expression
     {
-      if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_RSHIFT, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( ">>" ), $3 );
     }
   | expression K_EQ expression
     {
-      if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_EQ, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "==" ), $3 );
     }
   | expression K_CEQ expression
     {
-      if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_CEQ, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "===" ), $3 );
     }
   | expression K_LE expression
     {
-      if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "<=" ), $3 );
     }
   | expression K_GE expression
     {
-      if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_GE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( ">=" ), $3 );
     }
   | expression K_NE expression
     {
-      if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_NE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "!=" ), $3 );
     }
   | expression K_CNE expression
     {
-      if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_CNE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "!==" ), $3 );
     }
   | expression K_LOR expression
     {
-      if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LOR, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "||" ), $3 );
     }
   | expression K_LAND expression
     {
-      if( parse_mode ) {
-        $$ = parser_create_binary_exp( $1, $3, EXP_OP_LAND, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "&&" ), $3 );
     }
   | expression K_POW expression
     {
-      if( parse_mode ) {
-        if( !parser_check_generation( GENERATION_2001 ) ) {
-          VLerror( "Exponential power operator found in block that is specified to not allow Verilog-2001 syntax" );
-          expression_dealloc( $1, FALSE );
-          expression_dealloc( $3, FALSE );
-          $$ = NULL;
-        } else {
-          $$ = parser_create_binary_exp( $1, $3, EXP_OP_EXPONENT, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "**" ), $3 );
     }
   | expression K_LSS expression
     {
-      if( parse_mode ) {
-        if( !parser_check_generation( GENERATION_2001 ) ) {
-          VLerror( "Arithmetic left shift operation found in block that is specified to not allow Verilog-2001 syntax" );
-          expression_dealloc( $1, FALSE );
-          expression_dealloc( $3, FALSE );
-          $$ = NULL;
-        } else {
-          $$ = parser_create_binary_exp( $1, $3, EXP_OP_ALSHIFT, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "<<<" ), $3 );
     }
   | expression K_RSS expression
     {
-      if( parse_mode ) {
-        if( !parser_check_generation( GENERATION_2001 ) ) {
-          VLerror( "Arithmetic right shift operation found in block that is specified to not allow Verilog-2001 syntax" );
-          expression_dealloc( $1, FALSE );
-          expression_dealloc( $3, FALSE );
-          $$ = NULL;
-        } else {
-          $$ = parser_create_binary_exp( $1, $3, EXP_OP_ARSHIFT, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( ">>>" ), $3 );
     }
   | expression '?' expression ':' expression
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($5 != NULL) ) {
-          Try {
-            expression* csel = db_create_expression( $5, $3, EXP_OP_COND_SEL, lhs_mode, $3->line, $3->ppfline, $5->pplline, @1.first_column, (@3.last_column - 1), NULL, in_static_expr );
-            $$ = db_create_expression( csel, $1, EXP_OP_COND, lhs_mode, @1.first_line, @1.ppfline, @5.pplline, @1.first_column, (@5.last_column - 1), NULL, in_static_expr );
-          } Catch_anonymous {
-            error_count++;
-            $$ = NULL;
-          }
-        } else {
-          expression_dealloc( $1, FALSE );
-          expression_dealloc( $3, FALSE );
-          expression_dealloc( $5, FALSE );
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 5, $1, strdup_safe( "?" ), $3, strdup_safe( ":" ), $5 );
     }
-  ;
-
-syscall_wo_parms_op
-  : S_random          { $$ = EXP_OP_SRANDOM;  }
-  | S_urandom         { $$ = EXP_OP_SURANDOM; }
-  | S_time            { $$ = EXP_OP_STIME;    }
   ;
 
 syscall_w_parms_op
@@ -1463,413 +1111,95 @@ syscall_w_parms_op_32
   ;
 
 pre_op_and_assign_op
-  : K_INC             { $$ = EXP_OP_IINC; }
-  | K_DEC             { $$ = EXP_OP_IDEC; }
+  : K_INC             { $$ = strdup_safe( "++" ); }
+  | K_DEC             { $$ = strdup_safe( "--" ); }
   ;
 
 post_op_and_assign_op
-  : K_INC             { $$ = EXP_OP_PINC; }
-  | K_DEC             { $$ = EXP_OP_PDEC; }
+  : K_INC             { $$ = strdup_safe( "++" ); }
+  | K_DEC             { $$ = strdup_safe( "--" ); }
   ;
 
 expr_primary
   : number
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($1.vec != NULL) ) {
-          Try {
-            $$ = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, (@1.last_column - 1), NULL, in_static_expr );
-            $$->suppl.part.base = $1.base;
-            vector_dealloc( $$->value );
-            $$->value = $1.vec;
-          } Catch_anonymous {
-            error_count++;
-            $$ = NULL;
-          }
-        } else {
-          vector_dealloc( $1.vec );
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = $1;
     }
   | REALTIME
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($1 != NULL) ) {
-          Try {
-            $$ = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, (@1.last_column - 1), NULL, in_static_expr );
-            vector_dealloc( $$->value );
-            $$->value = $1;
-          } Catch_anonymous {
-            error_count++;
-            $$ = NULL;
-          }
-        } else {
-          vector_dealloc( $1 );
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = $1;
     }
   | STRING
     {
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          Try {
-            $$ = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, (@1.last_column - 1), NULL, in_static_expr );
-            $$->suppl.part.base = $1.base;
-            vector_dealloc( $$->value );
-            $$->value = $1.vec;
-          } Catch_anonymous {
-            error_count++;
-            $$ = NULL;
-          }
-        } else {
-          vector_dealloc( $1.vec );
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = $1;
     }
   | identifier
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($1 != NULL) ) {
-          Try {
-            $$ = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, (@1.last_column - 1), $1, in_static_expr );
-          } Catch_anonymous {
-            error_count++;
-            $$ = NULL;
-          }
-        } else {
-          $$ = NULL;
-        }
-        FREE_TEXT( $1 );
-      } else {
-        $$ = NULL;
-      }
+      $$ = $1;
     }
   | identifier post_op_and_assign_op
     {
-      if( parse_mode ) {
-        $$ = parser_create_op_and_assign_exp( $1, $2, @1.first_line, @1.ppfline, @2.pplline, @1.first_column, @1.last_column, @2.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 2, $1, $2 );
     }
   | pre_op_and_assign_op identifier
     {
-      if( parse_mode ) {
-        $$ = parser_create_op_and_assign_exp( $2, $1, @1.first_line, @1.ppfline, @2.pplline, @1.first_column, @1.last_column, @2.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 2, $1, $2 );
     }
-  | S_ignore
+  | SYSCALL
     {
-      if( parse_mode ) {
-        stmt_blk_specify_removal_reason( LOGIC_RM_SYSFUNC, @1.orig_fname, @1.first_line, __FILE__, __LINE__ );
-      }
-      $$ = NULL;
-    }
-  | S_allow
-    {
-      if( parse_mode ) {
-        $$ = parser_create_syscall_exp( EXP_OP_NOOP, 0, 0, 0, 0, 0 );
-      } else {
-        $$ = NULL;
-      }
-    }
-  | syscall_wo_parms_op
-    {
-      if( parse_mode ) {
-        $$ = parser_create_syscall_exp( $1, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, @1.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = $1;
     }
   | identifier index_expr
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($1 != NULL) && ($2 != NULL) ) {
-          db_bind_expr_tree( $2, $1 );
-          $2->line           = @1.first_line;
-          $2->col.part.first = @1.first_column;
-          $$ = $2;
-        } else {
-          expression_dealloc( $2, FALSE );
-          $$ = NULL;
-        }
-        FREE_TEXT( $1 );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 2, $1, $2 );
     }
   | identifier index_expr post_op_and_assign_op
     {
-      if( parse_mode ) {
-        $$ = parser_create_op_and_assign_w_dim_exp( $1, $3, $2, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, $2, $3 );
     }
   | pre_op_and_assign_op identifier index_expr
     {
-      if( parse_mode ) {
-        $$ = parser_create_op_and_assign_w_dim_exp( $2, $1, $3, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, @3.last_column );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, $2, $3 );
     }
   | identifier '(' expression_port_list ')'
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL ) ) {
-          Try {
-            $$ = db_create_expression( NULL, $3, EXP_OP_FUNC_CALL, lhs_mode, @1.first_line, @1.ppfline, @4.pplline, @1.first_column, (@4.last_column - 1), $1, in_static_expr );
-          } Catch_anonymous {
-            error_count++;
-            $$ = NULL;
-          }
-        } else {
-          expression_dealloc( $3, FALSE );
-          $$ = NULL;
-        }
-        FREE_TEXT( $1 );
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 4, $1, strdup_safe( "(" ), $3, strdup_safe( ")" );
     }
-  | S_ignore '(' ignore_more expression_port_list ignore_less ')'
+  | SYSCALL '(' expression_port_list ')'
     {
-      if( parse_mode ) {
-        stmt_blk_specify_removal_reason( LOGIC_RM_SYSFUNC, @1.orig_fname, @1.first_line, __FILE__, __LINE__ );
-      }
-      $$ = NULL;
-    }
-  | S_allow '(' ignore_more expression_port_list ignore_less ')'
-    {
-      if( parse_mode ) {
-        $$ = parser_create_syscall_exp( EXP_OP_NOOP, 0, 0, 0, 0, 0 );
-      } else {
-        $$ = NULL;
-      }
-    }
-  | syscall_w_parms_op '(' expression_systask_list ')'
-    {
-      if( parse_mode ) {
-        $$ = parser_create_syscall_w_params_exp( $1, $3, @1.first_line, @1.ppfline, @4.pplline, @1.first_column, @4.last_column );
-      } else {
-        $$ = NULL;
-      }
-    }
-  | syscall_w_parms_op_64 '(' expression_systask_list ')'
-    {
-      if( parse_mode ) {
-        if( ($$ = parser_create_syscall_w_params_exp( $1, $3, @1.first_line, @1.ppfline, @4.pplline, @1.first_column, @4.last_column )) != NULL ) {
-          $$->value->suppl.part.data_type = VDATA_R64;
-        }
-      } else {
-        $$ = NULL;
-      }
-    }
-  | syscall_w_parms_op_32 '(' expression_systask_list ')'
-    {
-      if( parse_mode ) {
-        if( ($$ = parser_create_syscall_w_params_exp( $1, $3, @1.first_line, @1.ppfline, @4.pplline, @1.first_column, @4.last_column )) != NULL ) {
-          $$->value->suppl.part.data_type = VDATA_R32;
-        }
-      } else {
-        $$ = NULL;
-      }
-    }
-  | S_clog2 '(' expression ')'
-    {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($3 != NULL) ) {
-          Try {
-            $$ = db_create_expression( NULL, $3, EXP_OP_SCLOG2, lhs_mode, @1.first_line, @1.ppfline, @4.pplline, @1.first_column, (@4.last_column - 1), NULL, in_static_expr );
-          } Catch_anonymous {
-            expression_dealloc( $3, FALSE );
-            error_count++;
-            $$ = NULL;
-          }
-        } else {
-          expression_dealloc( $3, FALSE );
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 4, $1, strdup_safe( "(" ), $3, strdup_safe( ")" ) );
     }
   | '(' expression ')'
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($2 != NULL) ) {
-          $2->suppl.part.parenthesis = 1;
-          $2->col.part.first = @1.first_column;
-          $2->col.part.last  = @3.first_column;
-          $$ = $2;
-        } else {
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, strdup_safe( "(" ), $2, strdup_safe( ")" ) );
     }
   | '{' expression_list '}'
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($2 != NULL) ) {
-          Try {
-            $$ = db_create_expression( $2, NULL, EXP_OP_CONCAT, lhs_mode, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL, in_static_expr );
-          } Catch_anonymous {
-            error_count++;
-            $$ = NULL;
-          }
-        } else {
-          expression_dealloc( $2, FALSE );
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, strdup_safe( "{" ), $2, strdup_safe( "}" ) );
     }
   | '{' expression '{' expression_list '}' '}'
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($2 != NULL) && ($4 != NULL) ) {
-          Try {
-            $$ = db_create_expression( $4, $2, EXP_OP_EXPAND, lhs_mode, @1.first_line, @1.ppfline, @6.pplline, @1.first_column, (@6.last_column - 1), NULL, in_static_expr );
-          } Catch_anonymous {
-            error_count++;
-            $$ = NULL;
-          }
-        } else {
-          expression_dealloc( $2, FALSE );
-          expression_dealloc( $4, FALSE );
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 5, strdup_safe( "{" ), $2, strdup_safe( "{" ), $4, strdup_safe( "}}" ) );
     }
   ;
 
   /* Expression lists are used in concatenations and parameter overrides */
 expression_list
   : expression_list ',' expression
-    { PROFILE(PARSER_EXPRESSION_LIST_A);
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          if( param_mode == 0 ) {
-            if( $3 != NULL ) {
-              Try {
-                $$ = db_create_expression( $3, $1, EXP_OP_LIST, lhs_mode, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL, in_static_expr );
-              } Catch_anonymous {
-                error_count++;
-                $$ = NULL;
-              }
-            } else {
-              $$ = $1;
-            }
-          } else {
-            if( $3 != NULL ) {
-              param_oride* po = (param_oride*)malloc_safe( sizeof( param_oride ) );
-              po->name = NULL;
-              po->expr = $3;
-              po->next = NULL;
-              if( param_oride_head == NULL ) {
-                param_oride_head = param_oride_tail = po;
-              } else {
-                param_oride_tail->next = po;
-                param_oride_tail       = po;
-              }
-            }
-            $$ = NULL;
-          }
-        } else {
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
-      PROFILE_END;
+    {
+      $$ = generator_build( 3, $1, strdup_safe( "," ), $3 );
     }
   | expression
-    { PROFILE(PARSER_EXPRESSION_LIST_B);
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          if( param_mode == 0 ) {
-            $$ = $1;
-          } else {
-            if( $1 != NULL ) {
-              param_oride* po = (param_oride*)malloc_safe( sizeof( param_oride ) );
-              po->name = NULL;
-              po->expr = $1;
-              po->next = NULL;
-              if( param_oride_head == NULL ) {
-                param_oride_head = param_oride_tail = po;
-              } else {
-                param_oride_tail->next = po;
-                param_oride_tail       = po;
-              }
-            }
-            $$ = NULL;
-          }
-        } else {
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
-      PROFILE_END;
+    {
+      $$ = $1;
     }
   |
-    { PROFILE(PARSER_EXPRESSION_LIST_C);
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && (param_mode == 1) ) {
-          param_oride* po = (param_oride*)malloc_safe( sizeof( param_oride ) );
-          po->name = NULL;
-          po->expr = NULL;
-          po->next = NULL;
-          if( param_oride_head == NULL ) {
-            param_oride_head = param_oride_tail = po;
-          } else {
-            param_oride_tail->next = po;
-            param_oride_tail       = po;
-          }
-        }
-        $$ = NULL;
-      } else {
-        $$ = NULL;
-      }
-      PROFILE_END;
+    {
+      $$ = NULL;
     }
   | expression_list ','
-    { PROFILE(PARSER_EXPRESSION_LIST_D);
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && (param_mode == 1) ) {
-          param_oride* po = (param_oride*)malloc_safe( sizeof( param_oride ) );
-          po->name = NULL;
-          po->expr = NULL;
-          po->next = NULL;
-          if( param_oride_head == NULL ) {
-            param_oride_head = param_oride_tail = po;
-          } else {
-            param_oride_tail->next = po;
-            param_oride_tail       = po;
-          }
-        }
-        $$ = $1;
-      } else {
-        $$ = NULL;
-      }
-      PROFILE_END;
+    {
+      $$ = generator_build( 2, $1, strdup_safe( "," ) );
     }
   ;
 
@@ -1877,42 +1207,11 @@ expression_list
 expression_port_list
   : expression_port_list ',' expression
     {
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          if( $3 != NULL ) {
-            Try {
-              expression* tmp = db_create_expression( $3, NULL, EXP_OP_PASSIGN, lhs_mode, @3.first_line, @3.ppfline, @3.pplline, @3.first_column, (@3.last_column - 1), NULL, in_static_expr );
-              $$ = db_create_expression( tmp, $1, EXP_OP_PLIST, lhs_mode, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL, in_static_expr );
-            } Catch_anonymous {
-              error_count++;
-              $$ = NULL;
-            }
-          } else {
-            $$ = $1;
-          }
-        } else {
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "," ), $3 );
     }
   | expression
     {
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          Try {
-            $$ = db_create_expression( $1, NULL, EXP_OP_PASSIGN, lhs_mode, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, (@1.last_column - 1), NULL, in_static_expr );
-          } Catch_anonymous {
-            error_count++;
-            $$ = NULL;
-          }
-        } else {
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = $1;
     }
   ;
 
@@ -1920,159 +1219,55 @@ expression_port_list
 expression_systask_list
   : expression_systask_list ',' expression
     {
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          if( $3 != NULL ) {
-            Try {
-              expression* tmp = db_create_expression( $3, NULL, EXP_OP_SASSIGN, lhs_mode, @3.first_line, @3.ppfline, @3.pplline, @3.first_column, (@3.last_column - 1), NULL, in_static_expr );
-              $$ = db_create_expression( tmp, $1, EXP_OP_PLIST, lhs_mode, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, (@3.last_column - 1), NULL, in_static_expr );
-            } Catch_anonymous {
-              expression_dealloc( $3, FALSE );
-              error_count++;
-              $$ = NULL;
-            }
-          } else {
-            $$ = $1;
-          }
-        } else {
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "," ), $3 );
     }
   | expression
     {
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          Try {
-            $$ = db_create_expression( $1, NULL, EXP_OP_SASSIGN, lhs_mode, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, (@1.last_column - 1), NULL, in_static_expr );
-          } Catch_anonymous {
-            expression_dealloc( $1, FALSE );
-            error_count++;
-            $$ = NULL;
-          }
-        } else {
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = $1;
     }
   ;
 
 begin_end_id
   : ':' IDENTIFIER
     {
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          $$ = $2;
-        } else {
-          FREE_TEXT( $2 );
-          $$ = NULL;
-        }
-      } else {
-        generator_flush_work_code;
-        $$ = $2;
-      }
+      $$ = generator_build( 2, strdup_safe( ":" ), $2 );
     }
   |
     {
-      char* scope = db_create_unnamed_scope();
-      if( parse_mode ) {
-        $$ = scope;
-      } else {
-        $$ = NULL;
-        free_safe( scope, (strlen( scope ) + 1) );
-      }
+      $$ = NULL;
     }
   ;
 
 identifier
   : IDENTIFIER
     {
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          $$ = $1;
-        } else {
-          FREE_TEXT( $1 );
-          $$ = NULL;
-        }
-      } else {
-        FREE_TEXT( $1 );
-        $$ = NULL;
-      }
+      $$ = $1;
     }
   | identifier '.' IDENTIFIER
-    { PROFILE(PARSER_IDENTIFIER_A);
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          unsigned int len = strlen( $1 ) + strlen( $3 ) + 2;
-          char*        str = (char*)malloc_safe( len );
-          unsigned int rv  = snprintf( str, len, "%s.%s", $1, $3 );
-          assert( rv < len );
-          $$ = str;
-        } else {
-          $$ = NULL;
-        }
-        FREE_TEXT( $1 );
-      } else {
-        $$ = NULL;
-      }
-      FREE_TEXT( $3 );
+    {
+      $$ = generator_build( $1, strdup_safe( "." ), $3 );
     }
   ;
 
 list_of_variables
   : IDENTIFIER
     {
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          db_add_signal( $1, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @1.first_line, @1.first_column, curr_handled );
-        }
-      }
-      FREE_TEXT( $1 );
+      $$ = $1;
     }
-  | IDENTIFIER { curr_packed = FALSE; } range
+  | IDENTIFIER range
     {
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          curr_packed = TRUE;
-          if( !parser_check_generation( GENERATION_SV ) ) {
-            VLerror( "Unpacked array specified for net type in block that was specified to not allow SystemVerilog syntax" );
-          } else {
-            db_add_signal( $1, curr_sig_type, &curr_prange, &curr_urange, curr_signed, curr_mba, @1.first_line, @1.first_column, curr_handled );
-          }
-        }
-      }
-      FREE_TEXT( $1 );
+      $$ = generator_build( 2, $1, $2 );
     }
   | list_of_variables ',' IDENTIFIER
     {
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          db_add_signal( $3, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @3.first_line, @3.first_column, curr_handled );
-        }
-      }
-      FREE_TEXT( $3 );
+      $$ = generator_build( 3, $1, strdup_safe( "," ), $3 );
     }
   | list_of_variables ',' IDENTIFIER range
     {
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          if( !parser_check_generation( GENERATION_SV ) ) {
-            VLerror( "Unpacked array specified for net type in block that was specified to not allow SystemVerilog syntax" );
-          } else {
-            db_add_signal( $3, curr_sig_type, &curr_prange, &curr_urange, curr_signed, curr_mba, @3.first_line, @3.first_column, curr_handled );
-          }
-        }
-      }
-      FREE_TEXT( $3 );
+      $$ = generator_build( 4, $1, strdup_safe( "," ), $3, $4 );
     }
   ;
 
-  /* I don't know what to do with UDPs.  This is included to allow designs that contain
-     UDPs to pass parsing. */
 udp_primitive
   : K_primitive IDENTIFIER '(' udp_port_list ')' ';'
       udp_port_decls
@@ -2080,29 +1275,26 @@ udp_primitive
       udp_body
     K_endprimitive
     {
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          /* We will treat primitives like regular modules */
-          db_add_module( $2, @1.orig_fname, @1.incl_fname, @1.first_line, @1.first_column );
-          db_end_module( @10.first_line );
-        }
-      }
-      FREE_TEXT( $2 );
+      $$ = generator_build( 11, strdup_safe( "primitive" ), $2, strdup_safe( "(" ), $4, strdup_safe( ");" ), "\n", $7, $8, $9, strdup_safe( "endprimitive" ), "\n" );
     }
   | K_primitive IGNORE K_endprimitive
+    {
+      $$ = generator_build( 4, strdup_safe( "primitive" ), $2, strdup_safe( "endprimitive" ), "\n" );
+    }
   ;
 
 udp_port_list
   : IDENTIFIER
     {
-      FREE_TEXT( $1 );
+      $$ = $1;
     }
   | udp_port_list ',' IDENTIFIER
     {
-      FREE_TEXT( $3 );
+      $$ = generator_build( 3, $1, strdup_safe( "," ), $3 );
     }
   ;
 
+  /* START_HERE */
 udp_port_decls
   : udp_port_decl
   | udp_port_decls udp_port_decl
