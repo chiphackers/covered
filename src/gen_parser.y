@@ -512,15 +512,15 @@ description
     }
   | K_function automatic_opt signed_opt range_or_type_opt IDENTIFIER ';'
     function_item_list
+    {
+      generator_create_tmp_regs();
+    }
     statement
     K_endfunction
     {
       func_unit* funit = db_get_tfn_by_position( @5.first_line, @5.first_column );
-      /* If this is not an automatic function, place all intermediate signals within the function */
-      if( generator_is_static_function( funit ) ) {
-        $$ = generator_build( 12, strdup_safe( "function" ), $2, $3, $4, $5, strdup_safe( ";" ), "\n", $7,
-                             (generator_is_static_function( funit ) ? generator_inst_id_reg( funit ) : NULL), $8, strdup_safe( "endfunction" ), "\n" );
-      }
+      $$ = generator_build( 12, strdup_safe( "function" ), $2, $3, $4, $5, strdup_safe( ";" ), "\n", $7,
+                            (generator_is_static_function( funit ) ? generator_inst_id_reg( funit ) : NULL), $8, strdup_safe( "endfunction" ), "\n" );
     }
   | error ';'
     {
@@ -1294,36 +1294,47 @@ udp_port_list
     }
   ;
 
-  /* START_HERE */
 udp_port_decls
   : udp_port_decl
+    {
+      $$ = $1;
+    }
   | udp_port_decls udp_port_decl
+    {
+      $$ = generator_build( 2, $1, $2 );
+    }
   ;
 
 udp_port_decl
-  : K_input ignore_more list_of_variables ignore_less ';'
+  : K_input list_of_variables ';'
+    {
+      $$ = generator_build( 4, strdup_safe( "input" ), $2, strdup_safe( ";" ), "\n" );
+    }
   | K_output IDENTIFIER ';'
     {
-      FREE_TEXT( $2 );
+      $$ = generator_build( 4, strdup_safe( "output" ), $2, strdup_safe( ";" ), "\n" );
     }
   | K_reg IDENTIFIER ';'
     {
-      FREE_TEXT( $2 );
+      $$ = generator_build( 4, strdup_safe( "reg", $2, strdup_safe( ";" ), "\n" );
     }
   ;
 
 udp_init_opt
   : udp_initial
+    {
+      $$ = $1;
+    }
   |
+    {
+      $$ = NULL;
+    }
   ;
 
 udp_initial
   : K_initial IDENTIFIER '=' number ';'
     {
-      if( parse_mode ) {
-        vector_dealloc( $4.vec );
-      }
-      FREE_TEXT( $2 );
+      $$ = generator_build( 6, strdup_safe( "initial" ), $2, strdup_safe( "=" ), $4, strdup_safe( ";" ), "\n" );
     }
   ;
 
@@ -1331,178 +1342,129 @@ udp_body
   : K_table { lex_start_udp_table(); }
       udp_entry_list
     K_endtable { lex_end_udp_table(); }
+    {
+      $$ = generator_build( 4, $1, $3, $4, "\n" );
+    }
   ;
 
 udp_entry_list
   : udp_comb_entry_list
+    {
+      $$ = $1;
+    }
   | udp_sequ_entry_list
+    {
+      $$ = $1;
+    }
   ;
 
 udp_comb_entry_list
   : udp_comb_entry
+    {
+      $$ = $1;
+    }
   | udp_comb_entry_list udp_comb_entry
+    {
+      $$ = generator_build( 2, $1, $2 );
+    }
   ;
 
 udp_comb_entry
   : udp_input_list ':' udp_output_sym ';'
+    {
+      $$ = generator_build( 5, $1, strdup_safe( ":" ), $3, strdup_safe( ";" ), "\n" );
+    }
   ;
 
 udp_input_list
   : udp_input_sym
+    {
+      $$ = $1;
+    }
   | udp_input_list udp_input_sym
+    {
+      $$ = generator_build( 2, $1, $2 );
+    }
   ;
 
 udp_input_sym
-  : '0'
-  | '1'
-  | 'x'
-  | '?'
-  | 'b'
-  | '*'
-  | '%'
-  | 'f'
-  | 'F'
-  | 'l'
-  | 'h'
-  | 'B'
-  | 'r'
-  | 'R'
-  | 'M'
-  | 'n'
-  | 'N'
-  | 'p'
-  | 'P'
-  | 'Q'
-  | '_'
-  | '+'
+  : '0' { $$ = strdup_safe( "0" ); }
+  | '1' { $$ = strdup_safe( "1" ); }
+  | 'x' { $$ = strdup_safe( "x" ); }
+  | '?' { $$ = strdup_safe( "?" ); }
+  | 'b' { $$ = strdup_safe( "b" ); }
+  | '*' { $$ = strdup_safe( "*" ); }
+  | '%' { $$ = strdup_safe( "%" ); }
+  | 'f' { $$ = strdup_safe( "f" ); }
+  | 'F' { $$ = strdup_safe( "F" ); }
+  | 'l' { $$ = strdup_safe( "l" ); }
+  | 'h' { $$ = strdup_safe( "h" ); }
+  | 'B' { $$ = strdup_safe( "B" ); }
+  | 'r' { $$ = strdup_safe( "r" ); }
+  | 'R' { $$ = strdup_safe( "R" ); }
+  | 'M' { $$ = strdup_safe( "M" ); }
+  | 'n' { $$ = strdup_safe( "n" ); }
+  | 'N' { $$ = strdup_safe( "N" ); }
+  | 'p' { $$ = strdup_safe( "p" ); }
+  | 'P' { $$ = strdup_safe( "P" ); }
+  | 'Q' { $$ = strdup_safe( "Q" ); }
+  | '_' { $$ = strdup_safe( "_" ); }
+  | '+' { $$ = strdup_safe( "+" ); }
   ;
 
 udp_output_sym
-  : '0'
-  | '1'
-  | 'x'
-  | '-'
+  : '0' { $$ = strdup_safe( "0" ); }
+  | '1' { $$ = strdup_safe( "1" ); }
+  | 'x' { $$ = strdup_safe( "x" ); }
+  | '-' { $$ = strdup_safe( "-" ); }
   ;
 
 udp_sequ_entry_list
   : udp_sequ_entry
+    {
+      $$ = $1;
+    }
   | udp_sequ_entry_list udp_sequ_entry
+    {
+      $$ = generator_build( 2, $1, $2 );
+    }
   ;
 
 udp_sequ_entry
   : udp_input_list ':' udp_input_sym ':' udp_output_sym ';'
+    {
+      $$ = generator_build( 7, $1, strdup_safe( ":" ), $3, strdup_safe( ":" ), $5, strdup_safe( ";" ), "\n" );
+    }
   ;
 
 op_and_assign_op
-  : K_ADD_A  { $$ = EXP_OP_ADD_A; }
-  | K_SUB_A  { $$ = EXP_OP_SUB_A; }
-  | K_MLT_A  { $$ = EXP_OP_MLT_A; }
-  | K_DIV_A  { $$ = EXP_OP_DIV_A; }
-  | K_MOD_A  { $$ = EXP_OP_MOD_A; }
-  | K_AND_A  { $$ = EXP_OP_AND_A; }
-  | K_OR_A   { $$ = EXP_OP_OR_A;  }
-  | K_XOR_A  { $$ = EXP_OP_XOR_A; }
-  | K_LS_A   { $$ = EXP_OP_LS_A;  }
-  | K_RS_A   { $$ = EXP_OP_RS_A;  }
-  | K_ALS_A  { $$ = EXP_OP_ALS_A; }
-  | K_ARS_A  { $$ = EXP_OP_ARS_A; }
+  : K_ADD_A  { $$ = strdup_safe( "+=" ); }
+  | K_SUB_A  { $$ = strdup_safe( "-=" ); }
+  | K_MLT_A  { $$ = strdup_safe( "*=" ); }
+  | K_DIV_A  { $$ = strdup_safe( "/=" ); }
+  | K_MOD_A  { $$ = strdup_safe( "%=" ); }
+  | K_AND_A  { $$ = strdup_safe( "&=" ); }
+  | K_OR_A   { $$ = strdup_safe( "|=" );  }
+  | K_XOR_A  { $$ = strdup_safe( "^=" ); }
+  | K_LS_A   { $$ = strdup_safe( "<<=" );  }
+  | K_RS_A   { $$ = strdup_safe( ">>=" );  }
+  | K_ALS_A  { $$ = strdup_safe( "<<<=" ); }
+  | K_ARS_A  { $$ = strdup_safe( ">>>=" ); }
   ;
 
  /* This statement type can be found in FOR statements in generate blocks */
 generate_passign
   : IDENTIFIER '=' static_expr
     {
-      if( parse_mode ) {
-        expression* expr = NULL;
-        expression* expl = NULL;
-        if( ignore_mode == 0 ) {
-          if( $3 != NULL ) {
-            Try {
-              expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, (@1.last_column - 1), $1, in_static_expr );
-              expr = db_create_expr_from_static( $3, @3.first_line, @3.ppfline, @3.pplline, @3.first_column, (@3.last_column - 1) );
-              expr = db_create_expression( expr, expl, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL, in_static_expr );
-              if( generate_varname == NULL ) {
-                generate_varname = $1;
-              } else {
-                FREE_TEXT( $1 );
-              }
-            } Catch_anonymous {
-              error_count++;
-            }
-            $$ = expr;
-          } else {
-            FREE_TEXT( $1 );
-            $$ = NULL;
-          }
-        } else {
-          FREE_TEXT( $1 );
-          static_expr_dealloc( $3, TRUE );
-          $$ = NULL;
-        }
-      } else {
-        FREE_TEXT( $1 );
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "=" ), $3 );
     }
   | IDENTIFIER op_and_assign_op static_expr
     {
-      if( parse_mode ) {
-        expression* expr = NULL;
-        expression* expl = NULL;
-        if( ignore_mode == 0 ) {
-          if( $3 != NULL ) {
-            Try {
-              expr = db_create_expr_from_static( $3, @3.first_line, @3.ppfline, @3.pplline, @3.first_column, (@3.last_column - 1) );
-              expl = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, (@1.last_column - 1), $1, in_static_expr );
-              expr = db_create_expression( expr, expl, $2, FALSE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL, in_static_expr );
-              if( generate_varname == NULL ) {
-                generate_varname = $1;
-              } else {
-                FREE_TEXT( $1 );
-              }
-            } Catch_anonymous {
-              error_count++;
-            }
-            $$ = expr;
-          } else {
-            FREE_TEXT( $1 );
-            $$ = NULL;
-          }
-        } else {
-          FREE_TEXT( $1 );
-          static_expr_dealloc( $3, TRUE );
-          $$ = NULL;
-        }
-      } else {
-        FREE_TEXT( $1 );
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, $1, $2, $3 );
     }
   | IDENTIFIER post_op_and_assign_op
     {
-      if( parse_mode ) {
-        expression* expr = NULL;
-        if( ignore_mode == 0 ) {
-          Try {
-            expr = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, (@1.last_column - 1), $1, in_static_expr );
-            expr = db_create_expression( NULL, expr, $2, FALSE, @1.first_line, @1.ppfline, @2.pplline, @1.first_column, (@2.last_column - 1), NULL, in_static_expr );
-            if( generate_varname == NULL ) {
-              generate_varname = $1;
-            } else {
-              FREE_TEXT( $1 );
-            }
-          } Catch_anonymous {
-            error_count++;
-          }
-          $$ = expr;
-        } else {
-          FREE_TEXT( $1 );
-          $$ = NULL;
-        }
-      } else {
-        FREE_TEXT( $1 );
-        $$ = NULL;
-      }
+      $$ = generator_build( 2, $1, $2 );
     }
   ;
 
@@ -1521,18 +1483,7 @@ generate_item_list_opt
 generate_item_list
   : generate_item_list generate_item
     {
-      if( parse_mode ) {
-        if( $1 == NULL ) {
-          $$ = $2;
-        } else if( $2 == NULL ) {
-          $$ = $1;
-        } else {
-          db_gen_item_connect( $1, $2 );
-          $$ = $1;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 2, $1, $2 );
     }
   | generate_item
     {
@@ -1540,47 +1491,14 @@ generate_item_list
     }
   ;
 
-start_gen_block
-  :
-    {
-      if( !parse_mode ) {
-        generator_add_cov_to_work_code( " begin" );
-        generator_flush_work_code;
-      }
-    }
-  ;
-
-end_gen_block
-  :
-    {
-      if( !parse_mode ) {
-        generator_add_to_hold_code( " end ", __FILE__, __LINE__ );
-      }
-    }
-  ;
-
 gen_if_body
   : generate_item K_else generate_item
     {
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          $$.gitem1 = $1;
-          $$.gitem2 = $3;
-        }
-      } else {
-        $$.gitem1 = NULL;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "else" ), $3 );
     }
   | generate_item %prec less_than_K_else
     {
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          $$.gitem1 = $1;
-          $$.gitem2 = NULL;
-        }
-      } else {
-        $$.gitem1 = NULL;
-      }
+      $$ = $1;
     }
   ;
 
@@ -1588,365 +1506,72 @@ gen_if_body
 generate_item
   : module_item
     {
-      if( parse_mode ) {
-        $$ = db_get_curr_gen_block();
-      } else {
-        generator_flush_work_code;
-        $$ = NULL;
-      }
+      $$ = $1;
     }
-  | K_begin start_gen_block
+  | K_begin generate_item_list_opt end_gen_block K_end
     {
-      if( parse_mode ) {
-        generate_expr_mode++;
-        if( ignore_mode == 0 ) {
-          char* name = db_create_unnamed_scope();
-          Try {
-            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, name, @1.orig_fname, @1.incl_fname, @1.first_line, @1.first_column ) ) {
-              ignore_mode++;
-            } else {
-              gen_item* gi = db_get_curr_gen_block();
-              assert( gi != NULL );
-              gitem_link_add( gi, &save_gi_head, &save_gi_tail );
-            }
-          } Catch_anonymous {
-            error_count++;
-            ignore_mode++;
-          }
-          free_safe( name, (strlen( name ) + 1) );
-        }
-        generate_expr_mode--;
-      } else {
-        char         str[50];
-        char*        back;
-        char*        rest;
-        unsigned int rv;
-        func_unit*   funit = db_get_tfn_by_position( @1.first_line, @1.first_column );
-        assert( funit != NULL );
-        back = strdup_safe( funit->name );
-        rest = strdup_safe( funit->name );
-        scope_extract_back( funit->name, back, rest );
-        rv = snprintf( str, 50, " : %s", back );
-        assert( rv < 50 );
-        generator_add_to_hold_code( str, __FILE__, __LINE__ );
-        free_safe( back, (strlen( funit->name ) + 1) );
-        free_safe( rest, (strlen( funit->name ) + 1) );
-        generator_push_funit( funit );
-        generator_insert_inst_id_reg( db_get_curr_funit() );
-        generator_push_reg_insert();
-      }
+      char         str[50];
+      char*        back;
+      char*        rest;
+      unsigned int rv;
+      func_unit*   funit = db_get_tfn_by_position( @1.first_line, @1.first_column );
+      assert( funit != NULL );
+      back = strdup_safe( funit->name );
+      rest = strdup_safe( funit->name );
+      scope_extract_back( funit->name, back, rest );
+      rv = snprintf( str, 50, " : %s", back );
+      assert( rv < 50 );
+      free_safe( back, (strlen( funit->name ) + 1) );
+      free_safe( rest, (strlen( funit->name ) + 1) );
+      $$ = generator_build( 9, strdup_safe( "begin" ), strdup_safe( str ), "\n", generator_inst_id_reg( funit ), "\n", generator_temp_regs(), $2, strdup_safe( "end" ), "\n" );
     }
-    generate_item_list_opt end_gen_block K_end
+  | K_begin ':' IDENTIFIER generate_item_list_opt K_end
     {
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          db_end_function_task_namedblock( @6.first_line );
-        } else {
-          ignore_mode--;
-        }
-        db_gen_item_connect_true( save_gi_tail->gi, $4 );
-        $$ = save_gi_tail->gi;
-        gitem_link_remove( save_gi_tail->gi, &save_gi_head, &save_gi_tail );
-      } else {
-        generator_pop_funit();
-        generator_pop_reg_insert();
-        generator_flush_work_code;
-        $$ = NULL;
-      }
+      func_unit* funit = db_get_tfn_by_position( @3.first_line, @3.first_column );
+      assert( funit != NULL );
+      $$ = generator_build( 9, strdup_safe( "begin : " ), $3, "\n", generator_inst_id_reg( funit ), "\n", generator_temp_regs(), $4, strdup_safe( "end" ), "\n" );
     }
-  | K_begin start_gen_block ':' IDENTIFIER
+  | K_for '(' generate_passign ';' static_expr ';' generate_passign ')' K_begin ':' IDENTIFIER generate_item_list_opt K_end
     {
-      if( parse_mode ) {
-        generate_expr_mode++;
-        if( ignore_mode == 0 ) {
-          Try {
-            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $4, @4.orig_fname, @4.incl_fname, @4.first_line, @4.first_column ) ) {
-              ignore_mode++;
-            } else {
-              gen_item* gi = db_get_curr_gen_block();
-              assert( gi != NULL );
-              gitem_link_add( gi, &save_gi_head, &save_gi_tail );
-            }
-          } Catch_anonymous {
-            error_count++;
-            ignore_mode++;
-          }
-        }
-        generate_expr_mode--;
-      } else {
-        func_unit* funit = db_get_tfn_by_position( @4.first_line, @4.first_column );
-        assert( funit != NULL );
-        generator_push_funit( funit );
-        generator_insert_inst_id_reg( funit );
-        generator_flush_work_code;
-        generator_push_reg_insert();
-      }
-      FREE_TEXT( $4 );
+      func_unit* funit = db_get_tfn_by_position( @11.first_line, @11.first_column );
+      assert( funit != NULL );
+      $$ = generator_build( 17, strdup_safe( "for(" ), $3, strdup_safe( ";" ), $5, strdup_safe( ";" ), $7, strdup_safe( ")" ), "\n", strdup_safe( "begin : " ), $11, "\n",
+                            generator_inst_id_reg( funit ), "\n", generator_temp_regs(), $13, strdup_safe( "end" ), "\n" );
     }
-    generate_item_list_opt end_gen_block K_end
+  | K_if '(' static_expr ')' gen_if_body
     {
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          db_end_function_task_namedblock( @8.first_line );
-        } else {
-          ignore_mode--;
-        }
-        db_gen_item_connect_true( save_gi_tail->gi, $6 );
-        $$ = save_gi_tail->gi;
-        gitem_link_remove( save_gi_tail->gi, &save_gi_head, &save_gi_tail );
-      } else {
-        generator_pop_funit();
-        generator_pop_reg_insert();
-        generator_flush_work_code;
-        $$ = NULL;
-      }
+      $$ = generator_build( 4, strdup_safe( "if(" ), $3, strdup_safe( ")" ), $5 );
     }
-  | K_for
-    {
-      if( parse_mode ) {
-        generate_expr_mode++;
-      }
-    }
-    '(' generate_passign ';' static_expr ';' generate_passign ')'
-    K_begin start_gen_block ':' IDENTIFIER
-    {
-      if( parse_mode ) {
-        generate_for_mode++;
-        if( ignore_mode == 0 ) {
-          Try {
-            if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $13, @13.orig_fname, @13.incl_fname, @13.first_line, @13.first_column ) ) {
-              ignore_mode++;
-            } else {
-              gen_item* gi = db_get_curr_gen_block();
-              assert( gi != NULL );
-              gi->varname = generate_varname;
-              generate_varname = NULL;
-              gitem_link_add( gi, &save_gi_head, &save_gi_tail );
-            }
-          } Catch_anonymous {
-            error_count++;
-            ignore_mode++;
-          }
-        }
-        generate_expr_mode--;
-      } else {
-        func_unit* funit = db_get_tfn_by_position( @13.first_line, @13.first_column );
-        assert( funit != NULL );
-        generator_push_funit( funit );
-        generator_flush_work_code;
-        generator_insert_inst_id_reg( funit );
-        generator_push_reg_insert();
-      }
-      FREE_TEXT( $13 );
-    }
-    generate_item_list_opt end_gen_block K_end
-    {
-      if( parse_mode ) {
-        gen_item*   gi1;
-        gen_item*   gi2;
-        gen_item*   gi3;
-        if( ignore_mode == 0 ) {
-          db_end_function_task_namedblock( @17.first_line );
-        } else {
-          ignore_mode--;
-        }
-        generate_for_mode--;
-        generate_expr_mode++;
-        if( (ignore_mode == 0) && ($4 != NULL) && ($6 != NULL) && ($8 != NULL) && ($15 != NULL) ) {
-          block_depth++;
-          /* Create first statement */
-          db_add_expression( $4 );
-          gi1 = db_get_curr_gen_block();
-          /* Create second statement and attach it to the first statement */
-          db_add_expression( db_create_expr_from_static( $6, @6.first_line, @6.ppfline, @6.pplline, @6.first_column, (@6.last_column - 1)) );
-          gi2 = db_get_curr_gen_block();
-          db_gen_item_connect( gi1, gi2 );
-          /* Add genvar to the new scope */
-          /* Connect next_true of gi2 to the new scope */
-          db_gen_item_connect_true( gi2, save_gi_tail->gi );
-          /* Connect the generate block to the new scope */
-          db_gen_item_connect_true( save_gi_tail->gi, $15 );
-          /* Create third statement and attach it to the generate block */
-          db_add_expression( $8 );
-          gi3 = db_get_curr_gen_block();
-          db_gen_item_connect_false( save_gi_tail->gi, gi3 );
-          gitem_link_remove( save_gi_tail->gi, &save_gi_head, &save_gi_tail );
-          gi2->suppl.part.conn_id = gi_conn_id;
-          db_gen_item_connect( gi3, gi2 );
-          block_depth--;
-          $$ = gi1;
-        } else {
-          expression_dealloc( $4, FALSE );
-          static_expr_dealloc( $6, TRUE );
-          expression_dealloc( $8, TRUE );
-          /* TBD - Deallocate generate block */
-          $$ = NULL;
-        }
-        generate_expr_mode--;
-      } else {
-        generator_pop_funit();
-        generator_pop_reg_insert();
-        generator_flush_work_code;
-        $$ = NULL;
-      }
-    }
-  | K_if inc_gen_expr_mode '(' static_expr ')' dec_gen_expr_mode gen_if_body
-    {
-      if( parse_mode ) {
-        expression* expr;
-        gen_item*   gi1;
-        if( (ignore_mode == 0) && ($4 != NULL) && ($7.gitem1 != NULL) ) {
-          generate_expr_mode++;
-          expr = db_create_expr_from_static( $4, @4.first_line, @4.ppfline, @4.pplline, @4.first_column, (@4.last_column - 1) );
-          Try {
-            expr = db_create_expression( expr, NULL, EXP_OP_IF, FALSE, @1.first_line, @1.ppfline, @5.pplline, @1.first_column, (@5.last_column - 1), NULL, in_static_expr );
-          } Catch_anonymous {
-            error_count++;
-          }
-          db_add_expression( expr );
-          gi1 = db_get_curr_gen_block();
-          db_gen_item_connect_true( gi1, $7.gitem1 );
-          if( $7.gitem2 != NULL ) {
-            db_gen_item_connect_false( gi1, $7.gitem2 );
-          }
-          generate_expr_mode--;
-          $$ = gi1;
-        } else {
-          static_expr_dealloc( $4, TRUE );
-          gen_item_dealloc( $7.gitem1, TRUE );
-          gen_item_dealloc( $7.gitem2, TRUE );
-          $$ = NULL;
-        }
-      } else {
-        generator_flush_work_code;
-        $$ = NULL;
-      }
-    }
-  | K_case inc_gen_expr_mode '(' static_expr ')' inc_block_depth_only generate_case_items dec_block_depth_only dec_gen_expr_mode K_endcase
+  | K_case '(' static_expr ')' generate_case_items K_endcase
     { 
-      if( parse_mode ) {
-        expression* expr      = NULL;
-        expression* c_expr;
-        gen_item*   stmt      = NULL;
-        gen_item*   last_stmt = NULL;
-        case_gitem* c_stmt    = $7;
-        case_gitem* tc_stmt;
-        if( (ignore_mode == 0) && ($4 != NULL) ) {
-          generate_expr_mode++;
-          c_expr = db_create_expr_from_static( $4, @4.first_line, @4.ppfline, @4.pplline, @4.first_column, (@4.last_column - 1) );
-          while( c_stmt != NULL ) {
-            Try {
-              if( (c_stmt->expr != NULL) && (c_stmt->expr->op == EXP_OP_LIST) ) {
-                parser_handle_generate_case_statement_list( c_stmt->expr, c_expr, c_stmt->gi, c_stmt->line, &last_stmt );
-              } else {
-                parser_handle_generate_case_statement( c_stmt->expr, c_expr, c_stmt->gi, c_stmt->line, &last_stmt );
-              }
-            } Catch_anonymous {
-              error_count++;
-              break;
-            }
-            tc_stmt   = c_stmt;
-            c_stmt    = c_stmt->prev;
-            free_safe( tc_stmt, sizeof( case_gitem ) );
-          }
-          if( last_stmt != NULL ) {
-            last_stmt->elem.expr->suppl.part.owned = 1;
-          }
-          generate_expr_mode--;
-          $$ = last_stmt;
-        } else {
-          static_expr_dealloc( $4, FALSE );
-          while( c_stmt != NULL ) {
-            expression_dealloc( c_stmt->expr, FALSE );
-            tc_stmt = c_stmt;
-            c_stmt  = c_stmt->prev;
-            free_safe( tc_stmt, sizeof( case_gitem ) );
-          }
-          $$ = NULL;
-        }
-      } else {
-        generator_flush_work_code;
-        $$ = NULL;
-      }
+      $$ = generator_build( 6, strdup_safe( "case(" ), $3, strdup_safe( ")" ), $5, strdup_safe( "endcase" ), "\n" );
     }
   ;
 
 generate_case_item
-  : expression_list ':' dec_gen_expr_mode generate_item inc_gen_expr_mode
-    { PROFILE(PARSER_GENERATE_CASE_ITEM_A);
-      if( parse_mode ) {
-        case_gitem* cstmt;
-        if( ignore_mode == 0 ) {
-          cstmt = (case_gitem*)malloc_safe( sizeof( case_gitem ) );
-          cstmt->prev = NULL;
-          cstmt->expr = $1;
-          cstmt->gi   = $4;
-          cstmt->line = @1.first_line;
-          $$ = cstmt;
-        } else {
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+  : expression_list ':' generate_item
+    {
+      $$ = generator_build( 3, $1, strdup_safe( ":" ), $3 );
     }
-  | K_default ':' dec_gen_expr_mode generate_item inc_gen_expr_mode
-    { PROFILE(PARSER_GENERATE_CASE_ITEM_B);
-      if( parse_mode ) {
-        case_gitem* cstmt;
-        if( ignore_mode == 0 ) {
-          cstmt = (case_gitem*)malloc_safe( sizeof( case_gitem ) );
-          cstmt->prev = NULL;
-          cstmt->expr = NULL;
-          cstmt->gi   = $4;
-          cstmt->line = @1.first_line;
-          $$ = cstmt;
-        } else {
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+  | K_default ':' generate_item
+    {
+      $$ = generator_build( 2, strdup_safe( "default : " ), $3 );
     }
-  | K_default dec_gen_expr_mode generate_item inc_gen_expr_mode
-    { PROFILE(PARSER_GENERATE_CASE_ITEM_C);
-      if( parse_mode ) {
-        case_gitem* cstmt;
-        if( ignore_mode == 0 ) {
-          cstmt = (case_gitem*)malloc_safe( sizeof( case_gitem ) );
-          cstmt->prev = NULL;
-          cstmt->expr = NULL;
-          cstmt->gi   = $3;
-          cstmt->line = @1.first_line;
-          $$ = cstmt;
-        } else {
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+  | K_default generate_item
+    {
+      $$ = generator_build( 2, strdup_safe( "default" ), $2 );
     }
-  | error ignore_more dec_gen_expr_mode ':' generate_item ignore_less inc_gen_expr_mode
+  | error ':' generate_item
     {
       VLerror( "Illegal generate case expression" );
+      FREE_TEXT( $3 );
     }
   ;
 
 generate_case_items
   : generate_case_items generate_case_item
     {
-      if( parse_mode ) {
-        case_gitem* list = $1;
-        case_gitem* curr = $2;
-        if( ignore_mode == 0 ) {
-          curr->prev = list;
-          $$ = curr;
-        } else {
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 2, $1, $2 );
     }
   | generate_case_item
     {
@@ -1957,979 +1582,262 @@ generate_case_items
   /* This is the start of a module body */
 module_item_list_opt
   : module_item_list
+    {
+      $$ = $1;
+    }
   |
+    {
+      $$ = NULL;
+    }
   ;
 
 module_item_list
   : module_item_list module_item
+    {
+      $$ = generator_build( 2, $1, $2 );
+    }
   | module_item
+    {
+      $$ = $1;
+    }
   ;
 
 module_item
   : attribute_list_opt
     net_type signed_opt range_opt list_of_variables ';'
     {
-      if( !parse_mode ) {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
+      $$ = generator_build( 7, $1, $2, $3, $4, $5, strdup_safe( ";" ), "\n" );
     }
   | attribute_list_opt
     net_type signed_opt range_opt net_decl_assigns ';'
     {
-      if( !parse_mode ) {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
+      $$ = generator_build( 7, $1, $2, $3, $4, $5, strdup_safe( ";" ), "\n" );
     }
   | attribute_list_opt
-    net_type drive_strength
+    net_type drive_strength net_decl_assigns ';'
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($2 == 1) ) {
-          parser_implicitly_set_curr_range( 0, 0, TRUE );
-        }
-        curr_signed = FALSE;
-      }
-    }
-    net_decl_assigns ';'
-    {
-      if( !parse_mode ) {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
+      $$ = generator_build( 6, $1, $2, $3, $4, strdup_safe( ";" ), "\n" );
     }
   | attribute_list_opt
-    TYPEDEF_IDENTIFIER
+    TYPEDEF_IDENTIFIER register_variable_list ';'
     {
-      if( parse_mode ) {
-        curr_mba     = FALSE;
-        curr_signed  = $2->is_signed;
-        curr_handled = $2->is_handled;
-        parser_copy_range_to_curr_range( $2->prange, TRUE );
-        parser_copy_range_to_curr_range( $2->urange, FALSE );
-      }
+      $$ = generator_build( 5, $1, $2, $3, strdup_safe( ";" ), "\n" );
     }
-    register_variable_list ';'
+  | attribute_list_opt
+    port_type signed_opt range_opt list_of_variables ';'
     {
-      if( !parse_mode ) {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
+      $$ = generator_build( 7, $1, $2, $3, $4, $5, strdup_safe( ";" ), "\n" );
     }
-  | attribute_list_opt port_type signed_opt range_opt
+  | attribute_list_opt
+    port_type net_type signed_opt range_opt list_of_variables ';'
     {
-      if( parse_mode ) {
-        curr_mba     = FALSE;
-        curr_handled = TRUE;
-        if( generate_top_mode > 0 ) {
-          ignore_mode++;
-          VLerror( "Port declaration not allowed within a generate block" );
-        }
-      }
+      $$ = generator_build( 8, $1, $2, $3, $4, $5, $6, strdup_safe( ";" ), "\n" );
     }
-    list_of_variables ';'
+  | attribute_list_opt
+    K_output var_type signed_opt range_opt list_of_variables ';'
     {
-      if( parse_mode ) {
-        if( generate_top_mode > 0 ) {
-          ignore_mode--;
-        }
-      } else {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
+      $$ = generator_build( 8, $1, strdup_safe( "output" ), $3, $4, $5, $6, strdup_safe( ";" ), "\n" );
     }
-  /* Handles Verilog-2001 port of type:  input wire [m:l] <list>; */
-  | attribute_list_opt port_type net_type signed_opt range_opt
+  | attribute_list_opt
+    port_type signed_opt range_opt error ';'
     {
-      if( parse_mode ) {
-        if( !parser_check_generation( GENERATION_2001 ) ) {
-          VLerror( "ANSI-C port declaration used in a block that is specified to not allow Verilog-2001 syntax" );
-          ignore_mode++;
-        } else {
-          curr_mba     = FALSE;
-          curr_handled = TRUE;
-          if( generate_top_mode > 0 ) {
-            ignore_mode++;
-            VLerror( "Port declaration not allowed within a generate block" );
-          }
-        }
-      }
+      VLerror( "Invalid variable list in port declaration" );
+      FREE_TEXT( generator_build( 5, $1, $2, $3, $4, $5 ) );
     }
-    list_of_variables ';'
+  | attribute_list_opt
+    K_trireg charge_strength_opt range_opt delay3_opt list_of_variables ';'
     {
-      if( parse_mode ) {
-        if( !parser_check_generation( GENERATION_2001 ) || (generate_top_mode > 0) ) {
-          ignore_mode--;
-        }
-      } else {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
+      $$ = generator_build( 8, $1, strdup_safe( "trireg" ), $3, $4, $5, $6, strdup_safe( ";" ), "\n" );
     }
-  | attribute_list_opt K_output var_type signed_opt range_opt
+  | attribute_list_opt
+    gatetype gate_instance_list ';'
     {
-      if( parse_mode ) {
-        if( !parser_check_generation( GENERATION_2001 ) ) {
-          VLerror( "ANSI-C port declaration used in a block that is specified to not allow Verilog-2001 syntax" );
-          ignore_mode++;
-        } else {
-          curr_mba      = FALSE;
-          curr_handled  = TRUE;
-          curr_sig_type = SSUPPL_TYPE_OUTPUT_REG;
-          if( generate_top_mode > 0 ) {
-            ignore_mode++;
-            VLerror( "Port declaration not allowed within a generate block" );
-          }
-        }
-      }
+      $$ = generator_build( 5, $1, $2, $3, strdup_safe( ";" ), "\n" );
     }
-    list_of_variables ';'
+  | attribute_list_opt
+    gatetype delay3 gate_instance_list ';'
     {
-      if( parse_mode ) {
-        if( !parser_check_generation( GENERATION_2001 ) || (generate_top_mode > 0) ) {
-          ignore_mode--;
-        }
-      } else {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
-    }
-  | attribute_list_opt port_type signed_opt range_opt error ';'
-    {
-      if( parse_mode ) {
-        if( generate_top_mode > 0 ) {
-          VLerror( "Port declaration not allowed within a generate block" );
-        } else {
-          VLerror( "Invalid variable list in port declaration" );
-        }
-      }
-    }
-  | attribute_list_opt K_trireg charge_strength_opt range_opt delay3_opt
-    {
-      if( parse_mode ) {
-        curr_mba      = FALSE;
-        curr_signed   = FALSE;
-        curr_handled  = TRUE;
-        curr_sig_type = SSUPPL_TYPE_DECL_REG;
-        if( generate_top_mode > 0 ) {
-          ignore_mode++;
-          VLerror( "Port declaration not allowed within a generate block" );
-        }
-      }
-    }
-    list_of_variables ';'
-    {
-      if( parse_mode ) {
-        if( generate_top_mode > 0 ) {
-          ignore_mode--;
-        }
-      } else {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
-    }
-  | attribute_list_opt gatetype gate_instance_list ';'
-    {
-      if( parse_mode ) {
-        str_link_delete_list( $3 );
-      } else {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
-    }
-  | attribute_list_opt gatetype delay3 gate_instance_list ';'
-    {
-      if( parse_mode ) {
-        str_link_delete_list( $4 );
-      } else {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
+      $$ = generator_build( 6, $1, $2, $3, $4, strdup_safe( ";" ), "\n" );
     }
   | attribute_list_opt gatetype drive_strength gate_instance_list ';'
     {
-      if( parse_mode ) {
-        str_link_delete_list( $4 );
-      } else {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
+      $$ = generator_build( 6, $1, $2, $3, $4, strdup_safe( ";" ), "\n" );
     }
   | attribute_list_opt gatetype drive_strength delay3 gate_instance_list ';'
     {
-      if( parse_mode ) {
-        str_link_delete_list( $5 );
-      } else {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
+      $$ = generator_build( 7, $1, $2, $3, $4, $5, strdup_safe( ";" ), "\n" );
     }
   | attribute_list_opt K_pullup gate_instance_list ';'
     {
-      if( parse_mode ) {
-        str_link_delete_list( $3 );
-      } else {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
     }
   | attribute_list_opt K_pulldown gate_instance_list ';'
     {
-      if( parse_mode ) {
-        str_link_delete_list( $3 );
-      } else {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
     }
   | attribute_list_opt K_pullup '(' dr_strength1 ')' gate_instance_list ';'
     {
-      if( parse_mode ) {
-        str_link_delete_list( $6 );
-      } else {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
     }
   | attribute_list_opt K_pulldown '(' dr_strength0 ')' gate_instance_list ';'
     {
-      if( parse_mode ) {
-        str_link_delete_list( $6 );
-      } else {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
     }
   | block_item_decl
     {
-      if( !parse_mode ) {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
+      $$ = $1;
     }
   | attribute_list_opt K_defparam defparam_assign_list ';'
     {
-      if( parse_mode ) {
-        unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Defparam found but not used, file: %s, line: %u.  Please use -P option to specify",
-                                    obf_file( @1.orig_fname ), @1.first_line );
-        assert( rv < USER_MSG_LENGTH );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      } else {
-        generator_flush_all;
-      }
+      $$ = generator_build( 5, $1, strdup_safe( "defparam" ), $3, strdup_safe( ";" ), "\n" );
     }
-  | attribute_list_opt K_event
+  | attribute_list_opt K_event list_of_variables ';'
     {
-      if( parse_mode ) {
-        curr_mba      = TRUE;
-        curr_signed   = FALSE;
-        curr_sig_type = SSUPPL_TYPE_EVENT;
-        curr_handled  = TRUE;
-        parser_implicitly_set_curr_range( 0, 0, TRUE );
-      } else {
-        generator_handle_event_type( @2.ppfline, @2.first_column );
-      }
-    }
-    list_of_variables ';'
-    {
-      if( !parse_mode ) {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
+      $$ = generator_build( 5, $1, strdup_safe( "reg" ), $3, strdup_safe( ";" ), "\n" );
     }
   /* Handles instantiations of modules and user-defined primitives. */
   | attribute_list_opt IDENTIFIER parameter_value_opt gate_instance_list ';'
     {
-      if( parse_mode ) {
-        str_link*    tmp  = $4;
-        str_link*    curr = tmp;
-        param_oride* po;
-        if( ignore_mode == 0 ) {
-          Try {
-            while( curr != NULL ) {
-              while( param_oride_head != NULL ){
-                po               = param_oride_head;
-                param_oride_head = po->next;
-                db_add_override_param( curr->str, po->expr, po->name );
-                if( po->name != NULL ) {
-                  free_safe( po->name, (strlen( po->name ) + 1) );
-                }
-                free_safe( po, sizeof( param_oride ) );
-              }
-              (void)db_add_instance( curr->str, $2, FUNIT_MODULE, @2.ppfline, @2.first_column, curr->range );
-              curr = curr->next;
-            }
-          } Catch_anonymous {
-            error_count++;
-          }
-          str_link_delete_list( tmp );
-          param_oride_head = NULL;
-          param_oride_tail = NULL;
-        }
+      $$ = generator_build( 6, $1, $2, $3, $4, strdup_safe( ";" ), "\n" );
+    }
+  | attribute_list_opt K_assign drive_strength_opt delay3_opt assign_list ';'
+    {
+      $$ = generator_build( 7, $1, strdup_safe( "assign" ), $3, $4, $5, strdup_safe( ";" ), "\n" );
+    }
+  | attribute_list_opt K_always statement
+    {
+      $$ = generator_build( 3, $1, strdup_safe( "always" ), $3 );
+    }
+  | attribute_list_opt K_always_comb statement
+    {
+      if( !info_suppl.part.verilator ) {
+        $$ = generator_build( 8, $1, strdup_safe( "always_comb" ), strdup_safe( "begin" ),
+                              generator_line_cov( @2.ppfline, ((@2.last_line - @2.first_line) + @2.ppfline), @2.first_column, (@2.last_column - 1), TRUE ),
+                              generator_comb_cov( @2.ppfline, @2.first_column, FALSE, FALSE, FALSE ), $3, strdup_safe( "end" ), "\n" );
       } else {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
-      FREE_TEXT( $2 );
-    }
-  | attribute_list_opt
-    K_assign drive_strength_opt { ignore_mode++; } delay3_opt { ignore_mode--; } assign_list ';'
-    {
-      if( !parse_mode ) {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
+        $$ = generator_build( 3, $1, strdup_safe( "always_comb" ), $3 );
       }
     }
-  | attribute_list_opt
-    K_always statement
+  | attribute_list_opt K_always_latch statement
     {
-      if( parse_mode ) {
-        statement* stmt = $3;
-        if( stmt != NULL ) {
-          if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
-            stmt->suppl.part.head = 1;
-            if( info_suppl.part.inlined && info_suppl.part.scored_line ) {
-              stmt->exp->exec_num = 1;
-            }
-            db_add_statement( stmt, stmt );
-          } else {
-            db_remove_statement( stmt );
-          }
-        }
+      if( !info_suppl.part.verilator ) {
+        $$ = generator_build( 8, $1, strdup_safe( "always_latch" ), strdup_safe( "begin" ),
+                              generator_line_cov( @2.ppfline, ((@2.last_line - @2.first_line) + @2.ppfline), @2.first_column, (@2.last_column - 1), TRUE ),
+                              generator_comb_cov( @2.ppfline, @2.first_column, FALSE, FALSE, FALSE ), $3, strdup_safe( "end" ), "\n" );
       } else {
-        generator_flush_work_code;
+        $$ = generator_build( 3, $1, strdup_safe( "always_latch" ), $3 );
       }
     }
-  | attribute_list_opt
-    K_always_comb
+  | attribute_list_opt K_always_ff statement
     {
-      if( parse_mode ) {
-        if( !parser_check_generation( GENERATION_SV ) ) {
-          VLerror( "always_comb syntax found in block that is specified to not allow SystemVerilog syntax" );
-          ignore_mode++;
-        }
+      if( !info_suppl.part.verilator ) {
+        $$ = generator_build( 8, $1, strdup_safe( "always_ff" ), strdup_safe( "begin" ),
+                              generator_line_cov( @2.ppfline, ((@2.last_line - @2.first_line) + @2.ppfline), @2.first_column, (@2.last_column - 1), TRUE ),
+                              generator_comb_cov( @2.ppfline, @2.first_column, FALSE, FALSE, FALSE ), $3, strdup_safe( "end" ), "\n" );
       } else {
-        if( !info_suppl.part.verilator ) {
-          generator_add_cov_to_work_code( " begin" );
-          block_depth++;
-        }
-        generator_flush_work_code;
-        if( !info_suppl.part.verilator ) {
-          (void)generator_insert_comb_cov( @2.ppfline, @2.first_column, FALSE, FALSE, FALSE );
-          (void)generator_insert_line_cov( @2.ppfline, ((@2.last_line - @2.first_line) + @2.ppfline), @2.first_column, (@2.last_column - 1), TRUE );
-        }
+        $$ = generator_build( 3, $1, strdup_safe( "always_ff" ), $3 );
       }
     }
-    statement
+  | attribute_list_opt K_initial statement
     {
-      if( parse_mode ) {
-        statement*  stmt;
-        expression* slist;
-        if( !parser_check_generation( GENERATION_SV ) ) {
-          ignore_mode--;
-        } else {
-          if( $4 != NULL ) {
-            if( (slist = db_create_sensitivity_list( $4 )) == NULL ) {
-              VLerror( "Empty implicit event expression for the specified always_comb statement" );
-            } else {
-              Try {
-                slist = db_create_expression( slist, NULL, EXP_OP_ALWAYS_COMB, lhs_mode, @2.first_line, @2.ppfline, @2.pplline, @2.first_column, (@2.last_column - 1), NULL, in_static_expr );
-              } Catch_anonymous {
-                error_count++;
-              }
-              stmt = db_create_statement( slist );
-              if( !db_statement_connect( stmt, $4 ) ) {
-                db_remove_statement( stmt );
-                db_remove_statement( $4 );
-              } else {
-                if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
-                  stmt->suppl.part.head = 1;
-                  if( info_suppl.part.inlined && info_suppl.part.scored_line ) {
-                    stmt->exp->exec_num = 1;
-                  }
-                  db_add_statement( stmt, stmt );
-                } else {
-                  db_remove_statement( stmt );
-                }
-              }
-            }
-          }
-        }
-      } else {
-        if( !info_suppl.part.verilator ) {
-          generator_add_cov_to_work_code( " end " );
-          block_depth--;
-        }
-        generator_flush_work_code;
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "initial" ), $3 );
     }
-  | attribute_list_opt
-    K_always_latch
+  | attribute_list_opt K_final statement
     {
-      if( parse_mode ) {
-        if( !parser_check_generation( GENERATION_SV ) ) {
-          VLerror( "always_latch syntax found in block that is specified to not allow SystemVerilog syntax" );
-          ignore_mode++;
-        }
-      } else {
-        generator_add_cov_to_work_code( " begin" );
-        block_depth++;
-        generator_flush_work_code;
-        if( !info_suppl.part.verilator ) {
-          (void)generator_insert_comb_cov( @2.ppfline, @2.first_column, FALSE, FALSE, FALSE );
-          (void)generator_insert_line_cov( @2.ppfline, ((@2.last_line - @2.first_line) + @2.ppfline), @2.first_column, (@2.last_column - 1), TRUE );
-        }
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "final" ), $3 );
     }
-    statement
+  | attribute_list_opt K_task automatic_opt IDENTIFIER ';' task_item_list_opt statement_or_null K_endtask
     {
-      if( parse_mode ) {
-        statement*  stmt;
-        expression* slist;
-        if( !parser_check_generation( GENERATION_SV ) ) {
-          ignore_mode--;
-        } else {
-          if( $4 != NULL ) {
-            if( (slist = db_create_sensitivity_list( $4 )) == NULL ) {
-              VLerror( "Empty implicit event expression for the specified always_latch statement" );
-            } else {
-              Try {
-                slist = db_create_expression( slist, NULL, EXP_OP_ALWAYS_LATCH, lhs_mode, @2.first_line, @2.ppfline, @2.pplline, @2.first_column, (@2.last_column - 1), NULL, in_static_expr );
-              } Catch_anonymous {
-                error_count++;
-              }
-              stmt  = db_create_statement( slist );
-              if( !db_statement_connect( stmt, $4 ) ) {
-                db_remove_statement( stmt );
-                db_remove_statement( $4 );
-              } else {
-                if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
-                  stmt->suppl.part.head = 1;
-                  if( info_suppl.part.inlined && info_suppl.part.scored_line ) {
-                    stmt->exp->exec_num = 1;
-                  }
-                  db_add_statement( stmt, stmt );
-                } else {
-                  db_remove_statement( stmt );
-                }
-              }
-            }
-          }
-        }
-      } else {
-        generator_add_cov_to_work_code( " end " );
-        block_depth--;
-        generator_flush_work_code;
-      }
+      $$ = generator_build( 10, $1, strdup_safe( "task" ), $3, $4, strdup_safe( ";" ), "\n", $6, $7, strdup_safe( "endtask" ), "\n" );
     }
-  | attribute_list_opt
-    K_always_ff
-    {
-      if( parse_mode ) {
-        if( !parser_check_generation( GENERATION_SV ) ) {
-          VLerror( "always_ff syntax found in block that is specified to not allow SystemVerilog syntax" );
-          ignore_mode++;
-        }
-      } else {
-        if( !info_suppl.part.verilator ) {
-          generator_add_cov_to_work_code( " begin" );
-          block_depth++;
-        }
-        generator_flush_work_code;
-        if( !info_suppl.part.verilator ) {
-          (void)generator_insert_comb_cov( @2.ppfline, @2.first_column, FALSE, FALSE, FALSE );
-          (void)generator_insert_line_cov( @2.ppfline, ((@2.last_line - @2.first_line) + @2.ppfline), @2.first_column, (@2.last_column - 1), TRUE );
-        }
-      }
-    }
-    statement
-    {
-      if( parse_mode ) {
-        statement* stmt = $4;
-        if( !parser_check_generation( GENERATION_SV ) ) {
-          ignore_mode--;
-        } else {
-          if( stmt != NULL ) {
-            if( db_statement_connect( stmt, stmt ) && (info_suppl.part.excl_always == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
-              stmt->suppl.part.head = 1;
-              if( info_suppl.part.inlined && info_suppl.part.scored_line ) {
-                stmt->exp->exec_num = 1;
-              }
-              db_add_statement( stmt, stmt );
-            } else {
-              db_remove_statement( stmt );
-            }
-          }
-        }
-      } else {
-        if( !info_suppl.part.verilator ) {
-          generator_add_cov_to_work_code( " end " );
-          block_depth--;
-        }
-        generator_flush_work_code;
-      }
-    }
-  | attribute_list_opt
-    K_initial
-    {
-      if( !parse_mode ) {
-        generator_flush_work_code;
-      }
-    }
-    statement
-    {
-      if( parse_mode ) {
-        statement* stmt = $4;
-        if( stmt != NULL ) {
-          if( (info_suppl.part.excl_init == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
-            stmt->suppl.part.head = 1;
-            if( info_suppl.part.inlined && info_suppl.part.scored_line ) {
-              stmt->exp->exec_num = 1;
-            }
-            db_add_statement( stmt, stmt );
-          } else {
-            db_remove_statement( stmt );
-          }
-        }
-      } else {
-        generator_flush_work_code;
-      }
-    }
-  | attribute_list_opt
-    K_final
-    {
-      if( !parse_mode ) {
-        generator_flush_work_code;
-      }
-    }
-    statement
-    {
-      if( parse_mode ) {
-        statement* stmt = $4;
-        if( stmt != NULL ) {
-          if( (info_suppl.part.excl_final == 0) && (stmt->exp->op != EXP_OP_NOOP) ) {
-            stmt->suppl.part.head  = 1;
-            stmt->suppl.part.final = 1;
-            if( info_suppl.part.inlined && info_suppl.part.scored_line ) {
-              stmt->exp->exec_num = 1;
-            }
-            db_add_statement( stmt, stmt );
-          } else {
-            db_remove_statement( stmt );
-          }
-        }
-      } else {
-        generator_flush_work_code;
-      }
-    }
-  | attribute_list_opt
-    K_task automatic_opt IDENTIFIER ';'
-    {
-      if( parse_mode ) {
-        if( generate_for_mode > 0 ) {
-          VLerror( "Task definition not allowed within a generate loop" );
-          ignore_mode++;
-        }
-        if( ignore_mode == 0 ) {
-          Try {
-            if( !db_add_function_task_namedblock( ($3 ? FUNIT_ATASK : FUNIT_TASK), $4, @4.orig_fname, @4.incl_fname, @4.first_line, @4.first_column ) ) {
-              ignore_mode++;
-            }
-          } Catch_anonymous {
-            error_count++;
-            ignore_mode++;
-          }
-        }
-        generate_top_mode--;
-      }
-      FREE_TEXT( $4 );
-    }
-    task_item_list_opt statement_or_null
-    {
-      if( parse_mode ) {
-        statement* stmt = $8;
-        if( ignore_mode == 0 ) {
-          if( stmt == NULL ) {
-            stmt = db_create_statement( db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, @8.first_line, @8.ppfline, @8.pplline, @8.first_column, (@8.last_column - 1), NULL, in_static_expr ) );
-          }
-          stmt->suppl.part.head      = 1;
-          stmt->suppl.part.is_called = 1;
-          db_add_statement( stmt, stmt );
-        }
-      }
-    }
-    K_endtask
-    {
-      if( parse_mode ) {
-        generate_top_mode++;
-        if( ignore_mode == 0 ) {
-          db_end_function_task_namedblock( @10.first_line );
-        } else {
-          ignore_mode--;
-        }
-      } else {
-        generator_flush_work_code;
-      }
-    }
-  | attribute_list_opt
-    K_function automatic_opt signed_opt range_or_type_opt IDENTIFIER ';'
-    {
-      if( parse_mode ) {
-        if( generate_for_mode > 0 ) {
-          VLerror( "Function definition not allowed within a generate loop" );
-          ignore_mode++;
-        }
-        if( ignore_mode == 0 ) {
-          Try {
-            if( db_add_function_task_namedblock( ($3 ? FUNIT_AFUNCTION : FUNIT_FUNCTION), $6, @6.orig_fname, @6.incl_fname, @6.first_line, @6.first_column ) ) {
-              generate_top_mode--;
-              db_add_signal( $6, curr_sig_type, &curr_prange, NULL, curr_signed, FALSE, @6.first_line, @6.first_column, TRUE );
-              generate_top_mode++;
-            } else {
-              ignore_mode++;
-            }
-          } Catch_anonymous {
-            error_count++;
-            ignore_mode++;
-          }
-        }
-        generate_top_mode--;
-      }
-      FREE_TEXT( $6 );
-    }
+  | attribute_list_opt K_function automatic_opt signed_opt range_or_type_opt IDENTIFIER ';'
     function_item_list
     {
-      if( !parse_mode ) {
-        func_unit* funit;
-        if( ((funit = db_get_tfn_by_position( @6.first_line, @6.first_column )) != NULL) && generator_is_static_function( funit ) ) {
-          generator_push_funit( funit );
-          generator_insert_inst_id_reg( funit );
-          generator_push_reg_insert();
-        }
-        generator_add_to_hold_code( " begin", __FILE__, __LINE__ );
-        block_depth++;
-      }
+      generator_create_tmp_regs();
     }
     statement
-    {
-      if( parse_mode ) {
-        statement* stmt = $11;
-        if( (ignore_mode == 0) && (stmt != NULL) ) {
-          stmt->suppl.part.head      = 1;
-          stmt->suppl.part.is_called = 1;
-          db_add_statement( stmt, stmt );
-        }
-      } else {
-        generator_add_to_hold_code( " end ", __FILE__, __LINE__ );
-        block_depth--;
-      }
-    }
     K_endfunction
     {
-      if( parse_mode ) {
-        generate_top_mode++;
-        if( ignore_mode == 0 ) {
-          db_end_function_task_namedblock( @13.first_line );
-        } else {
-          ignore_mode--;
-        }
-      } else {
-        func_unit* funit;
-        if( ((funit = db_get_tfn_by_position( @6.first_line, @6.first_column )) != NULL) && generator_is_static_function( funit ) ) {
-          generator_pop_reg_insert();
-          generator_pop_funit();
-        }
-        generator_flush_work_code;
-      }
+      func_unit* funit = db_get_tfn_by_position( @6.first_line, @6.first_column );
+      $$ = generator_build( 15, strdup_safe( "function" ), $2, $3, $4, $5, $6, strdup_safe( ";" ), "\n", $8,
+                            (generator_is_static_function( funit ) ? generator_inst_id_reg( funit ) : NULL), "\n", generator_tmp_regs(), $10, strdup_safe( "endfunction" ), "\n" );
     }
-  | K_generate
+  | K_generate generate_item_list_opt K_endgenerate
     {
-      if( parse_mode ) {
-        if( !parser_check_generation( GENERATION_2001 ) ) {
-          VLerror( "Generate syntax found in block that is specified to not allow Verilog-2001 syntax" );
-          ignore_mode++;
-        } else {
-          if( generate_mode == 0 ) {
-            generate_mode = 1;
-            generate_top_mode = 1;
-          } else {
-            VLerror( "Found generate keyword inside of a generate block" );
-          }
-        }
-      } else {
-        generator_flush_work_code;
-        generate_mode = 1;
-      }
+      $$ = generator_build( 4, strdup_safe( "generate" ), $2, strdup_safe( "endgenerate" ), "\n" );
     }
-    generate_item_list_opt
-    K_endgenerate
+  | K_genvar list_of_variables ';'
     {
-      if( parse_mode ) {
-        generate_mode = 0;
-        generate_top_mode = 0;
-        if( !parser_check_generation( GENERATION_2001 ) ) {
-          ignore_mode--;
-        } else {
-          db_add_gen_item_block( $3 );
-        }
-      } else {
-        generate_mode = 0;
-      }
+      $$ = generator_build( 4, strdup_safe( "genvar" ), $2, strdup_safe( ";" ), "\n" );
     }
-  | K_genvar
+  | attribute_list_opt K_specify specify_item_list K_endspecify
     {
-      if( parse_mode ) {
-        if( !parser_check_generation( GENERATION_2001 ) ) {
-          VLerror( "Genvar syntax found in block that is specified to not allow Verilog-2001 syntax" );
-          ignore_mode++;
-        } else {
-          curr_signed   = FALSE;
-          curr_mba      = TRUE;
-          curr_handled  = TRUE;
-          curr_sig_type = SSUPPL_TYPE_GENVAR;
-          parser_implicitly_set_curr_range( 31, 0, TRUE );
-        }
-      }
+      $$ = generator_build( 5, $1, strdup_safe( "specify" ), $3, strdup_safe( "endspecify" ), "\n" );
     }
-    list_of_variables ';'
+  | attribute_list_opt K_specify K_endspecify
     {
-      if( parse_mode ) {
-        if( !parser_check_generation( GENERATION_2001 ) ) {
-          ignore_mode--;
-        }
-      } else {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
+      $$ = generator_build( 3, $1, strdup_safe( "specify endspecify" ), "\n" );
     }
-  | attribute_list_opt
-    K_specify
+  | attribute_list_opt K_specify error K_endspecify
     {
-      if( parse_mode ) {
-        if( generate_top_mode > 0 ) {
-          VLerror( "Specify block not allowed within a generate block" );
-        }
-      }
+      VLerror( "Invalid specify syntax" );
+      $$ = NULL;
     }
-    ignore_more specify_item_list ignore_less K_endspecify
-    {
-      if( !parse_mode ) {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
-    }
-  | attribute_list_opt
-    K_specify
-    {
-      if( parse_mode ) {
-        if( generate_top_mode > 0 ) {
-          VLerror( "Specify block not allowed within a generate block" );
-        }
-      }
-    }
-    K_endspecify
-    {
-      if( !parse_mode ) {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
-    }
-  | attribute_list_opt
-    K_specify
-    {
-      if( parse_mode ) {
-        if( generate_top_mode > 0 ) {
-          VLerror( "Specify block not allowed within a generate block" );
-        }
-      }
-    }
-    error K_endspecify
   | error ';'
     {
       VLerror( "Invalid module item.  Did you forget an initial or always?" );
+      $$ = NULL;
     }
-  | attribute_list_opt
-    K_assign error '=' { ignore_mode++; } expression { ignore_mode--; } ';'
+  | attribute_list_opt K_assign error '=' expression ';'
     {
       VLerror( "Syntax error in left side of continuous assignment" );
+      $$ = NULL;
     }
-  | attribute_list_opt
-    K_assign error ';'
+  | attribute_list_opt K_assign error ';'
     {
       VLerror( "Syntax error in continuous assignment" );
+      $$ = NULL;
     }
-  | attribute_list_opt
-    K_function error K_endfunction
+  | attribute_list_opt K_function error K_endfunction
     {
-      if( generate_for_mode > 0 ) {
-        VLerror( "Function definition not allowed within generate block" );
-      }
       VLerror( "Syntax error in function description" );
+      $$ = NULL;
     }
-  | attribute_list_opt
-    enumeration list_of_names ';'
+  | attribute_list_opt enumeration list_of_names ';'
     {
-      if( parse_mode ) {
-        str_link* strl = $3;
-        while( strl != NULL ) {
-          db_add_signal( strl->str, SSUPPL_TYPE_DECL_REG, &curr_prange, NULL, curr_signed, FALSE, strl->suppl, strl->suppl2, TRUE );
-          strl = strl->next;
-        }
-        str_link_delete_list( $3 );
-      } else {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
+      $$ = generator_build( 4, $1, $2, strdup_safe( ";" ), "\n" );
     }
-  | attribute_list_opt
-    typedef_decl
+  | attribute_list_opt typedef_decl
     {
-      if( !parse_mode ) {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
+      $$ = generator_build( 3, $1, $2, "\n" );
     }
   /* SystemVerilog assertion - we don't currently support these and I don't want to worry about how to parse them either */
-  | attribute_list_opt
-    IDENTIFIER ':' K_assert ';'
+  | attribute_list_opt IDENTIFIER ':' K_assert ';'
     {
-      if( !parse_mode ) {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
-      FREE_TEXT( $2 );
+      $$ = generator_build( 4, $1, $2, strdup_safe( ": assert;" ), "\n" );
     }
   /* SystemVerilog property - we don't currently support these but crudely parse them */
   | attribute_list_opt
     K_property K_endproperty
     {
-      if( !parse_mode ) {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
+      $$ = NULL;  /* TBD */
     }
   /* SystemVerilog sequence - we don't currently support these but crudely will parse them */
   | attribute_list_opt
     K_sequence K_endsequence
     {
-      if( !parse_mode ) {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
+      $$ = NULL;  /* TBD */
     }
   /* SystemVerilog program block - we don't currently support these but crudely will parse them */
   | attribute_list_opt
     K_program K_endprogram
     {
-      if( !parse_mode ) {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
+      $$ = NULL;  /* TBD */
     }
   | KK_attribute '(' IDENTIFIER ',' STRING ',' STRING ')' ';'
     {
-      if( !parse_mode ) {
-        if( generate_mode ) {
-          generator_flush_work_code;
-        } else {
-          generator_flush_all;
-        }
-      }
-      FREE_TEXT( $3 );
-      vector_dealloc( $5.vec );
-      vector_dealloc( $7.vec );
+      $$ = generator_build( strdup_safe( 8, "$attribute(" ), $3, strdup_safe( "," ), $5, strdup_safe( "," ), $7, strdup_safe( ");" ), "\n" );
     } 
   | KK_attribute '(' error ')' ';'
     {
       VLerror( "Syntax error in $attribute parameter list" );
+      $$ = NULL;
     }
   ;
 
@@ -2943,1278 +1851,268 @@ for_initialization
 for_condition
   : expression
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($1 != NULL) ) {
-          $1->suppl.part.for_cntrl = 2;
-          $$ = db_create_statement( $1 );
-        } else {
-          $$ = NULL;
-        }
-      } else {
-        $$ = generator_insert_line_cov( @1.ppfline, ((@1.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@1.last_column - 1), TRUE );
-      }
+      $$ = generator_build( 2, generator_line_cov( @1.ppfline, ((@1.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@1.last_column - 1), TRUE ), $1 );
     }
   ;
 
   /* TBD - In the SystemVerilog BNF, there are more options available for this rule -- but we don't current support them */
 data_type
   : integer_vector_type signed_opt range_opt
+    {
+      $$ = generator_build( 3, $1, $2, $3 );
+    }
   | integer_atom_type signed_opt
+    {
+      $$ = generator_build( 2, $1, $2 );
+    }
   | struct_union '{' struct_union_member_list '}' range_opt
+    {
+      $$ = generator_build( 5, $1, strdup_safe( "{" ), $3, strdup_safe( "}" ), $5 );
+    }
   | struct_union K_packed signed_opt '{' struct_union_member_list '}' range_opt
+    {
+      $$ = generator_build( 7, $1, strdup_safe( "packed" ), $3, strdup_safe( "{" ), $5, strdup_safe( "}" ), $7 );
+    }
   | K_event
     {
-      if( parse_mode ) {
-        curr_mba      = TRUE;
-        curr_signed   = FALSE;
-        curr_sig_type = SSUPPL_TYPE_EVENT;
-        curr_handled  = TRUE;
-        parser_implicitly_set_curr_range( 0, 0, TRUE );
-      } else {
-        generator_handle_event_type( @1.ppfline, @1.first_column );
-      }
+      $$ = strdup_safe( "reg" );
     }
   ;
 
 data_type_opt
   : data_type
     {
-      $$ = 1;
+      $$ = $1;
     }
   |
     {
-      $$ = 0;
+      $$ = NULL;
     }
   ;
 
   /* TBD - Not sure what this should return at this point */
 struct_union
-  : K_struct
-  | K_union
-  | K_union K_tagged
+  : K_struct         { $$ = strdup_safe( "struct" );       }
+  | K_union          { $$ = strdup_safe( "union" );        }
+  | K_union K_tagged { $$ = strdup_safe( "union tagged" ); }
   ;
 
 struct_union_member_list
   : attribute_list_opt data_type_or_void list_of_variables ';'
+    {
+      $$ = generator_build( 5, $1, $2, $3, strdup_safe( ";" ), "\n" );
+    }
   | struct_union_member_list ',' attribute_list_opt data_type_or_void list_of_variables ';'
+    {
+      $$ = generator_build( 7, $1, strdup_safe( "," ), $3, $4, $5, strdup_safe( ";" ), "\n" );
+    }
   |
+    {
+      $$ = NULL;
+    }
   ;
 
 data_type_or_void
   : data_type
+    {
+      $$ = $1;
+    }
   | K_void 
+    {
+      $$ = strdup_safe( "void" );
+    }
   ;
 
 integer_vector_type
-  : K_bit
-    {
-      if( parse_mode ) {
-        curr_mba      = FALSE;
-        curr_handled  = TRUE;
-        curr_sig_type = SSUPPL_TYPE_DECL_REG;
-      }
-    }
-  | K_logic
-    {
-      if( parse_mode ) {
-        curr_mba      = FALSE;
-        curr_handled  = TRUE;
-        curr_sig_type = SSUPPL_TYPE_DECL_REG;
-      }
-    }
-  | K_reg
-    {
-      if( parse_mode ) {
-        curr_mba      = FALSE;
-        curr_handled  = TRUE;
-        curr_sig_type = SSUPPL_TYPE_DECL_REG;
-      }
-    }
+  : K_bit   { $$ = strdup_safe( "bit" );   }
+  | K_logic { $$ = strdup_safe( "logic" ); }
+  | K_reg   { $$ = strdup_safe( "reg" );   }
   ;
 
 integer_atom_type
-  : K_byte
-    {
-      if( parse_mode ) {
-        curr_mba      = FALSE;
-        curr_handled  = TRUE;
-        curr_sig_type = SSUPPL_TYPE_DECL_REG;
-        parser_implicitly_set_curr_range( 7, 0, TRUE );
-      }
-    }
-  | K_char
-    {
-      if( parse_mode ) {
-        curr_mba      = FALSE;
-        curr_handled  = TRUE;
-        curr_sig_type = SSUPPL_TYPE_DECL_REG;
-        parser_implicitly_set_curr_range( 7, 0, TRUE );
-      }
-    }
-  | K_shortint
-    {
-      if( parse_mode ) {
-        curr_mba      = FALSE;
-        curr_handled  = TRUE;
-        curr_sig_type = SSUPPL_TYPE_DECL_REG;
-        parser_implicitly_set_curr_range( 15, 0, TRUE );
-      }
-    }
-  | K_int
-    {
-      if( parse_mode ) {
-        curr_mba      = FALSE;
-        curr_handled  = TRUE;
-        curr_sig_type = SSUPPL_TYPE_DECL_REG;
-        parser_implicitly_set_curr_range( 31, 0, TRUE );
-      }
-    }
-  | K_integer
-    {
-      if( parse_mode ) {
-        curr_mba      = FALSE;
-        curr_handled  = TRUE;
-        curr_sig_type = SSUPPL_TYPE_DECL_REG;
-        parser_implicitly_set_curr_range( 31, 0, TRUE );
-      }
-    }
-  | K_longint
-    {
-      if( parse_mode ) {
-        curr_mba      = FALSE;
-        curr_handled  = TRUE;
-        curr_sig_type = SSUPPL_TYPE_DECL_REG;
-        parser_implicitly_set_curr_range( 63, 0, TRUE );
-      }
-    }
-  | K_time
-    {
-      if( parse_mode ) {
-        curr_mba      = FALSE;
-        curr_handled  = TRUE;
-        curr_sig_type = SSUPPL_TYPE_DECL_REG;
-        parser_implicitly_set_curr_range( 63, 0, TRUE );
-      }
-    }
+  : K_byte     { $$ = strdup_safe( "byte" );     }
+  | K_char     { $$ = strdup_safe( "char" );     }
+  | K_shortint { $$ = strdup_safe( "shortint" ); }
+  | K_int      { $$ = strdup_safe( "int" );      }
+  | K_integer  { $$ = strdup_safe( "integer" );  }
+  | K_longint  { $$ = strdup_safe( "longint" );  }
+  | K_time     { $$ = strdup_safe( "time" );     }
   ;
 
 expression_assignment_list
   : data_type_opt IDENTIFIER '=' expression
     {
-      if( parse_mode ) {
-        expression* tmp = NULL;
-        statement*  stmt;
-        if( (ignore_mode == 0) && ($4 != NULL) ) {
-          Try {
-            if( ($1 == 1) && !parser_check_generation( GENERATION_SV ) ) {
-              VLerror( "Variables declared in FOR initialization block that is specified to not allow SystemVerilog syntax" );
-            } else if( ($1 == 1) || (db_find_signal( $2, TRUE ) == NULL) ) {
-              db_add_signal( $2, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @2.first_line, @2.first_column, TRUE );
-            }
-            tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @2.first_line, @2.ppfline, @2.pplline, @2.first_column, (@2.last_column - 1), $2, in_static_expr );
-          } Catch_anonymous {
-            error_count++;
-          }
-          Try {
-            tmp = db_create_expression( $4, tmp, EXP_OP_BASSIGN, FALSE, @2.first_line, @2.ppfline, @4.pplline, @2.first_column, (@4.last_column - 1), NULL, in_static_expr );
-            tmp->suppl.part.for_cntrl = 1;
-          } Catch_anonymous {
-            error_count++;
-          }
-          stmt = db_create_statement( tmp );
-          $$ = stmt;
-        } else {
-          expression_dealloc( $4, FALSE );
-          $$ = NULL;
-        }
-      } else {
-        (void)generator_insert_line_cov( @2.ppfline, ((@4.last_line - @2.first_line) + @2.ppfline), @2.first_column, (@4.last_column - 1), TRUE );
-        $$ = NULL;
-      }
-      FREE_TEXT( $2 );
+      $$ = generator_build( 5, generator_line_cov( @2.ppfline, ((@4.last_line - @2.first_line) + @2.ppfline), @2.first_column, (@4.last_column - 1), TRUE ),
+                            $1, $2, strdup_safe( "=" ), $4 );
     }
   | expression_assignment_list ',' data_type_opt IDENTIFIER '=' expression
     {
-      if( parse_mode ) {
-        expression* tmp = NULL;
-        statement*  stmt;
-        if( (ignore_mode == 0) && ($1 != NULL) && ($6 != NULL) ) {
-          Try {
-            if( ($3 == 1) && !parser_check_generation( GENERATION_SV ) ) {
-              VLerror( "Variables declared in FOR initialization block that is specified to not allow SystemVerilog syntax" );
-            } else if( ($3 == 1) || (db_find_signal( $4, TRUE ) == NULL) ) {
-              db_add_signal( $4, curr_sig_type, &curr_prange, NULL, curr_signed, curr_mba, @4.first_line, @4.first_column, TRUE );
-            }
-            tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @4.first_line, @4.ppfline, @4.pplline, @4.first_column, (@4.last_column - 1), $4, in_static_expr );
-          } Catch_anonymous {
-            error_count++;
-          }
-          Try {
-            tmp = db_create_expression( $6, tmp, EXP_OP_BASSIGN, FALSE, @4.first_line, @4.ppfline, @6.pplline, @4.first_column, (@6.last_column - 1), NULL, in_static_expr );
-            tmp->suppl.part.for_cntrl = 1;
-          } Catch_anonymous {
-            error_count++;
-          }
-          stmt = db_create_statement( tmp );
-          if( !db_statement_connect( $1, stmt ) ) {
-            db_remove_statement( stmt );
-          }
-        } else {
-          expression_dealloc( $6, FALSE );
-        }
-        $$ = $1;
-      } else {
-        (void)generator_insert_line_cov( @4.ppfline, ((@6.last_line - @4.first_line) + @4.ppfline), @4.first_column, (@6.last_column - 1), TRUE );
-        $$ = NULL;
-      }
-      FREE_TEXT( $4 );
+      $$ = generator_build( 7, generator_line_cov( @4.ppfline, ((@6.last_line - @4.first_line) + @4.ppfline), @4.first_column, (@6.last_column - 1), TRUE ),
+                            $1, strdup_safe( "," ), $3, $4, strdup_safe( "=" ), $6 );
     }
   ;
 
 passign
   : lpvalue '=' expression
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-          Try {
-            expression* tmp = db_create_expression( $3, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL, in_static_expr );
-            tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
-            $$ = db_create_statement( tmp );
-          } Catch_anonymous {
-            error_count++;
-            $$ = NULL;
-          }
-        } else {
-          expression_dealloc( $1, FALSE );
-          expression_dealloc( $3, FALSE );
-          $$ = NULL;
-        }
-      } else {
-        if( for_mode == 0 ) {
-          if( block_depth == 0 ) {
-            generator_prepend_to_work_code( " begin " );
-            generator_flush_work_code;
-          }
-          block_depth++;
-          (void)generator_insert_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE );
-          $$ = NULL;
-        } else {
-          $$ = generator_find_statement( @1.ppfline, @1.first_column );
-        }
-      }
+      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE ),
+                            $1, strdup_safe( "=" ), $3 );
     }
   | lpvalue K_ADD_A expression
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-          if( !parser_check_generation( GENERATION_SV ) ) {
-            VLerror( "+= operation found in block that is specified to not allow SystemVerilog syntax" );
-            expression_dealloc( $1, FALSE );
-            expression_dealloc( $3, FALSE );
-            $$ = NULL;
-          } else {
-            expression* tmp = NULL;
-            Try {
-              tmp = db_create_expression( $3, $1, EXP_OP_ADD_A, FALSE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL, in_static_expr );
-              tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
-            } Catch_anonymous {
-              error_count++;
-            }
-            $$ = db_create_statement( tmp );
-          }
-        } else {
-          expression_dealloc( $1, FALSE );
-          expression_dealloc( $3, FALSE );
-          $$ = NULL;
-        }
-      } else {
-        if( for_mode == 0 ) {
-          if( block_depth == 0 ) {
-            generator_prepend_to_work_code( " begin " );
-            generator_flush_work_code;
-          }
-          block_depth++;
-          (void)generator_insert_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE );
-          $$ = NULL;
-        } else {
-          $$ = generator_find_statement( @1.ppfline, @1.first_column );
-        }
-      }
+      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                            $1, strdup_safe( "+=" ), $3 );
     }
   | lpvalue K_SUB_A expression
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-          if( !parser_check_generation( GENERATION_SV ) ) {
-            VLerror( "-= operation found in block that is specified to not allow SystemVerilog syntax" );
-            expression_dealloc( $1, FALSE );
-            expression_dealloc( $3, FALSE );
-            $$ = NULL;
-          } else {
-            expression* tmp = NULL;
-            Try {
-              tmp = db_create_expression( $3, $1, EXP_OP_SUB_A, FALSE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL, in_static_expr );
-              tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
-            } Catch_anonymous {
-              error_count++;
-            }
-            $$ = db_create_statement( tmp );
-          }
-        } else {
-          expression_dealloc( $1, FALSE );
-          expression_dealloc( $3, FALSE );
-          $$ = NULL;
-        }
-      } else {
-        if( for_mode == 0 ) {
-          if( block_depth == 0 ) {
-            generator_prepend_to_work_code( " begin " );
-            generator_flush_work_code;
-          }
-          block_depth++;
-          (void)generator_insert_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE );
-          $$ = NULL;
-        } else {
-          $$ = generator_find_statement( @1.ppfline, @1.first_column );
-        }
-      }
+      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                            $1, strdup_safe( "-=" ), $3 );
     }
   | lpvalue K_MLT_A expression
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-          if( !parser_check_generation( GENERATION_SV ) ) {
-            VLerror( "*= operation found in block that is specified to not allow SystemVerilog syntax" );
-            expression_dealloc( $1, FALSE );
-            expression_dealloc( $3, FALSE );
-            $$ = NULL;
-          } else {
-            expression* tmp = NULL;
-            Try {
-              tmp = db_create_expression( $3, $1, EXP_OP_MLT_A, FALSE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL, in_static_expr );
-              tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
-            } Catch_anonymous {
-              error_count++;
-            }
-            $$ = db_create_statement( tmp );
-          }
-        } else {
-          expression_dealloc( $1, FALSE );
-          expression_dealloc( $3, FALSE );
-          $$ = NULL;
-        }
-      } else {
-        if( for_mode == 0 ) {
-          if( block_depth == 0 ) {
-            generator_prepend_to_work_code( " begin " );
-            generator_flush_work_code;
-          }
-          block_depth++;
-          (void)generator_insert_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE );
-          $$ = NULL;
-        } else {
-          $$ = generator_find_statement( @1.ppfline, @1.first_column );
-        }
-      }
+      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                            $1, strdup_safe( "*=" ), $3 );
     }
   | lpvalue K_DIV_A expression
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-          if( !parser_check_generation( GENERATION_SV ) ) {
-            VLerror( "/= operation found in block that is specified to not allow SystemVerilog syntax" );
-            expression_dealloc( $1, FALSE );
-            expression_dealloc( $3, FALSE );
-            $$ = NULL;
-          } else {
-            expression* tmp = NULL;
-            Try {
-              tmp = db_create_expression( $3, $1, EXP_OP_DIV_A, FALSE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL, in_static_expr );
-              tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
-            } Catch_anonymous {
-              error_count++;
-            }
-            $$ = db_create_statement( tmp );
-          }
-        } else {
-          expression_dealloc( $1, FALSE );
-          expression_dealloc( $3, FALSE );
-          $$ = NULL;
-        }
-      } else {
-        if( for_mode == 0 ) {
-          if( block_depth == 0 ) {
-            generator_prepend_to_work_code( " begin " );
-            generator_flush_work_code;
-          }
-          block_depth++;
-          (void)generator_insert_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE );
-          $$ = NULL;
-        } else {
-          $$ = generator_find_statement( @1.ppfline, @1.first_column );
-        }
-      }
+      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                            $1, strdup_safe( "/=" ), $3 );
     }
   | lpvalue K_MOD_A expression
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-          if( !parser_check_generation( GENERATION_SV ) ) {
-            VLerror( "%= operation found in block that is specified to not allow SystemVerilog syntax" );
-            expression_dealloc( $1, FALSE );
-            expression_dealloc( $3, FALSE );
-            $$ = NULL;
-          } else {
-            expression* tmp = NULL;
-            Try {
-              tmp = db_create_expression( $3, $1, EXP_OP_MOD_A, FALSE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL, in_static_expr );
-              tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
-            } Catch_anonymous {
-              error_count++;
-            }
-            $$ = db_create_statement( tmp );
-          }
-        } else {
-          expression_dealloc( $1, FALSE );
-          expression_dealloc( $3, FALSE );
-          $$ = NULL;
-        }
-      } else {
-        if( for_mode == 0 ) {
-          if( block_depth == 0 ) {
-            generator_prepend_to_work_code( " begin " );
-            generator_flush_work_code;
-          }
-          block_depth++;
-          (void)generator_insert_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE );
-          $$ = NULL;
-        } else {
-          $$ = generator_find_statement( @1.ppfline, @1.first_column );
-        }
-      }
+      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                            $1, strdup_safe( "%=" ), $3 );
     }
   | lpvalue K_AND_A expression
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-          if( !parser_check_generation( GENERATION_SV ) ) {
-            VLerror( "&= operation found in block that is specified to not allow SystemVerilog syntax" );
-            expression_dealloc( $1, FALSE );
-            expression_dealloc( $3, FALSE );
-            $$ = NULL;
-          } else {
-            expression* tmp = NULL;
-            Try {
-              tmp = db_create_expression( $3, $1, EXP_OP_AND_A, FALSE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL, in_static_expr );
-              tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
-            } Catch_anonymous {
-              error_count++;
-            }
-            $$ = db_create_statement( tmp );
-          }
-        } else {
-          expression_dealloc( $1, FALSE );
-          expression_dealloc( $3, FALSE );
-          $$ = NULL;
-        }
-      } else {
-        if( for_mode == 0 ) {
-          if( block_depth == 0 ) {
-            generator_prepend_to_work_code( " begin " );
-            generator_flush_work_code;
-          }
-          block_depth++;
-          (void)generator_insert_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE );
-          $$ = NULL;
-        } else {
-          $$ = generator_find_statement( @1.ppfline, @1.first_column );
-        }
-      }
+      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                            $1, strdup_safe( "&=" ), $3 );
     }
   | lpvalue K_OR_A expression
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-          if( !parser_check_generation( GENERATION_SV ) ) {
-            VLerror( "|= operation found in block that is specified to not allow SystemVerilog syntax" );
-            expression_dealloc( $1, FALSE );
-            expression_dealloc( $3, FALSE );
-            $$ = NULL;
-          } else {
-            expression* tmp = NULL;
-            Try {
-              tmp = db_create_expression( $3, $1, EXP_OP_OR_A, FALSE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL, in_static_expr );
-              tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
-            } Catch_anonymous {
-              error_count++;
-            }
-            $$ = db_create_statement( tmp );
-          }
-        } else {
-          expression_dealloc( $1, FALSE );
-          expression_dealloc( $3, FALSE );
-          $$ = NULL;
-        }
-      } else {
-        if( for_mode == 0 ) {
-          if( block_depth == 0 ) {
-            generator_prepend_to_work_code( " begin " );
-            generator_flush_work_code;
-          }
-          block_depth++;
-          (void)generator_insert_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE );
-          $$ = NULL;
-        } else {
-          $$ = generator_find_statement( @1.ppfline, @1.first_column );
-        }
-      }
+      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                            $1, strdup_safe( "|=" ), $3 );
     }
   | lpvalue K_XOR_A expression
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-          if( !parser_check_generation( GENERATION_SV ) ) {
-            VLerror( "^= operation found in block that is specified to not allow SystemVerilog syntax" );
-            expression_dealloc( $1, FALSE );
-            expression_dealloc( $3, FALSE );
-            $$ = NULL;
-          } else {
-            expression* tmp = NULL;
-            Try {
-              tmp = db_create_expression( $3, $1, EXP_OP_XOR_A, FALSE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL, in_static_expr );
-              tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
-            } Catch_anonymous {
-              expression_dealloc( $1, FALSE );
-              expression_dealloc( $3, FALSE );
-              error_count++;
-            }
-            $$ = db_create_statement( tmp );
-          }
-        } else {
-          expression_dealloc( $1, FALSE );
-          expression_dealloc( $3, FALSE );
-          $$ = NULL;
-        }
-      } else {
-        if( for_mode == 0 ) {
-          if( block_depth == 0 ) {
-            generator_prepend_to_work_code( " begin " );
-            generator_flush_work_code;
-          }
-          block_depth++;
-          (void)generator_insert_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE );
-          $$ = NULL;
-        } else {
-          $$ = generator_find_statement( @1.ppfline, @1.first_column );
-        }
-      }
+      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                            $1, strdup_safe( "^=" ), $3 );
     }
   | lpvalue K_LS_A expression
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-          if( !parser_check_generation( GENERATION_SV ) ) {
-            VLerror( "<<= operation found in block that is specified to not allow SystemVerilog syntax" );
-            expression_dealloc( $1, FALSE );
-            expression_dealloc( $3, FALSE );
-            $$ = NULL;
-          } else {
-            expression* tmp = NULL;
-            Try {
-              tmp = db_create_expression( $3, $1, EXP_OP_LS_A, FALSE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL, in_static_expr );
-              tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
-            } Catch_anonymous {
-              expression_dealloc( $1, FALSE );
-              expression_dealloc( $3, FALSE );
-              error_count++;
-            }
-            $$ = db_create_statement( tmp );
-          }
-        } else {
-          expression_dealloc( $1, FALSE );
-          expression_dealloc( $3, FALSE );
-          $$ = NULL;
-        }
-      } else {
-        if( for_mode == 0 ) {
-          if( block_depth == 0 ) {
-            generator_prepend_to_work_code( " begin " );
-            generator_flush_work_code;
-          }
-          block_depth++;
-          (void)generator_insert_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE );
-          $$ = NULL;
-        } else {
-          $$ = generator_find_statement( @1.ppfline, @1.first_column );
-        }
-      }
+      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                            $1, strdup_safe( "<<=" ), $3 );
     }
   | lpvalue K_RS_A expression
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-          if( !parser_check_generation( GENERATION_SV ) ) {
-            VLerror( ">>= operation found in block that is specified to not allow SystemVerilog syntax" );
-            expression_dealloc( $1, FALSE );
-            expression_dealloc( $3, FALSE );
-            $$ = NULL;
-          } else {
-            expression* tmp = NULL;
-            Try {
-              tmp = db_create_expression( $3, $1, EXP_OP_RS_A, FALSE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL, in_static_expr );
-              tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
-            } Catch_anonymous {
-              expression_dealloc( $1, FALSE );
-              expression_dealloc( $3, FALSE );
-              error_count++;
-            }
-            $$ = db_create_statement( tmp );
-          }
-        } else {
-          expression_dealloc( $1, FALSE );
-          expression_dealloc( $3, FALSE );
-          $$ = NULL;
-        }
-      } else {
-        if( for_mode == 0 ) {
-          if( block_depth == 0 ) {
-            generator_prepend_to_work_code( " begin " );
-            generator_flush_work_code;
-          }
-          block_depth++;
-          (void)generator_insert_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE );
-          $$ = NULL;
-        } else {
-          $$ = generator_find_statement( @1.ppfline, @1.first_column );
-        }
-      }
+      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                            $1, strdup_safe( ">>=" ), $3 );
     }
   | lpvalue K_ALS_A expression
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-          if( !parser_check_generation( GENERATION_SV ) ) {
-            VLerror( "<<<= operation found in block that is specified to not allow SystemVerilog syntax" );
-            expression_dealloc( $1, FALSE );
-            expression_dealloc( $3, FALSE );
-            $$ = NULL;
-          } else {
-            expression* tmp = NULL;
-            Try {
-              tmp = db_create_expression( $3, $1, EXP_OP_ALS_A, FALSE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL, in_static_expr );
-              tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
-            } Catch_anonymous {
-              expression_dealloc( $1, FALSE );
-              expression_dealloc( $3, FALSE );
-              error_count++;
-            }
-            $$ = db_create_statement( tmp );
-          }
-        } else {
-          expression_dealloc( $1, FALSE );
-          expression_dealloc( $3, FALSE );
-          $$ = NULL;
-        }
-      } else {
-        if( for_mode == 0 ) {
-          if( block_depth == 0 ) {
-            generator_prepend_to_work_code( " begin " );
-            generator_flush_work_code;
-          }
-          block_depth++;
-          (void)generator_insert_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE );
-          $$ = NULL;
-        } else {
-          $$ = generator_find_statement( @1.ppfline, @1.first_column );
-        }
-      }
+      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                            $1, strdup_safe( "<<<=" ), $3 );
     }
   | lpvalue K_ARS_A expression
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-          if( !parser_check_generation( GENERATION_SV ) ) {
-            VLerror( ">>>= operation found in block that is specified to not allow SystemVerilog syntax" );
-            expression_dealloc( $1, FALSE );
-            expression_dealloc( $3, FALSE );
-            $$ = NULL;
-          } else {
-            expression* tmp = NULL;
-            Try {
-              tmp = db_create_expression( $3, $1, EXP_OP_ARS_A, FALSE, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL, in_static_expr );
-              tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
-            } Catch_anonymous {
-              expression_dealloc( $1, FALSE );
-              expression_dealloc( $3, FALSE );
-              error_count++;
-            }
-            $$ = db_create_statement( tmp );
-          }
-        } else {
-          expression_dealloc( $1, FALSE );
-          expression_dealloc( $3, FALSE );
-          $$ = NULL;
-        }
-      } else {
-        if( for_mode == 0 ) {
-          if( block_depth == 0 ) {
-            generator_prepend_to_work_code( " begin " );
-            generator_flush_work_code;
-          }
-          block_depth++;
-          (void)generator_insert_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE );
-          $$ = NULL;
-        } else {
-          $$ = generator_find_statement( @1.ppfline, @1.first_column );
-        }
-      }
+      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                            $1, strdup_safe( ">>>=" ), $3 );
     }
   | lpvalue K_INC
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($1 != NULL) ) {
-          if( !parser_check_generation( GENERATION_SV ) ) {
-            VLerror( "Increment (++) operation found in block that is specified to not allow SystemVerilog syntax" );
-            expression_dealloc( $1, FALSE );
-            $$ = NULL;
-          } else {
-            expression* tmp = NULL;
-            Try {
-              tmp = db_create_expression( NULL, $1, EXP_OP_PINC, FALSE, @1.first_line, @1.ppfline, @2.pplline, @1.first_column, (@2.last_column - 1), NULL, in_static_expr );
-              tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
-            } Catch_anonymous {
-              expression_dealloc( $1, FALSE );
-              error_count++;
-            }
-            $$ = db_create_statement( tmp );
-          }
-        } else {
-          expression_dealloc( $1, FALSE );
-          $$ = NULL;
-        }
-      } else {
-        if( for_mode == 0 ) {
-          if( block_depth == 0 ) {
-            generator_prepend_to_work_code( " begin " );
-            generator_flush_work_code;
-          }
-          block_depth++;
-          (void)generator_insert_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE );
-          $$ = NULL;
-        } else {
-          $$ = generator_find_statement( @1.ppfline, @1.first_column );
-        }
-      }
+      $$ = generator_build( 3, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                            $1, strdup_safe( "++" ) );
     }
   | lpvalue K_DEC
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($1 != NULL) ) {
-          if( !parser_check_generation( GENERATION_SV ) ) {
-            VLerror( "Decrement (--) operation found in block that is specified to not allow SystemVerilog syntax" );
-            expression_dealloc( $1, FALSE );
-            $$ = NULL;
-          } else {
-            expression* tmp = NULL;
-            Try {
-              tmp = db_create_expression( NULL, $1, EXP_OP_PDEC, FALSE, @1.first_line, @1.ppfline, @2.pplline, @1.first_column, (@2.last_column - 1), NULL, in_static_expr );
-              tmp->suppl.part.for_cntrl = (for_mode > 0) ? 3 : 0;
-            } Catch_anonymous {
-              expression_dealloc( $1, FALSE );
-              error_count++;
-            }
-            $$ = db_create_statement( tmp );
-          }
-        } else {
-          expression_dealloc( $1, FALSE );
-          $$ = NULL;
-        }
-      } else {
-        if( for_mode == 0 ) {
-          if( block_depth == 0 ) {
-            generator_prepend_to_work_code( " begin " );
-            generator_flush_work_code;
-          }
-          block_depth++;
-          (void)generator_insert_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE );
-          $$ = NULL;
-        } else {
-          $$ = generator_find_statement( @1.ppfline, @1.first_column );
-        }
-      }
+      $$ = generator_build( 3, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                            $1, strdup_safe( "--" ) );
     }
   ;
 
 if_body
-  : inc_block_depth statement_or_null dec_block_depth %prec less_than_K_else
+  : statement_or_null %prec less_than_K_else
     {
-      $$.stmt1 = $2;
-      $$.stmt2 = NULL;
-      if( !parse_mode ) {
-        generator_hold_last_token();
-      }
+      $$ = $1;
     }
-  | inc_block_depth statement_or_null dec_block_depth K_else inc_block_depth statement_or_null dec_block_depth
+  | statement_or_null K_else statement_or_null
     {
-      $$.stmt1 = $2;
-      $$.stmt2 = $6;
+      $$ = generator_build( 3, $1, strdup_safe( "else" ), $3 );
     }
   ;
 
 statement
-  : K_assign { ignore_mode++; } lavalue '=' expression ';' { ignore_mode--; }
+  : K_assign lavalue '=' expression ';'
     {
-      if( !parse_mode ) {
-        generator_begin_parallel_statement( @1.first_line, @1.first_column );
-        generator_end_parallel_statement( @1.first_line, @1.first_column );
-        generator_flush_work_code;
-      }
-      $$ = NULL;
+      $$ = generator_build( 6, strdup_safe( "assign" ), $2, strdup_safe( "=" ), $4, strdup_safe( ";" ), "\n" );
     }
-  | K_deassign { ignore_mode++; } lavalue ';' { ignore_mode--; }
+  | K_deassign lavalue ';'
     {
-      if( !parse_mode ) {
-        generator_begin_parallel_statement( @1.first_line, @1.first_column );
-        generator_end_parallel_statement( @1.first_line, @1.first_column );
-        generator_flush_work_code;
-      }
-      $$ = NULL;
+      $$ = generator_build( 4, strdup_safe( "deassign" ), $2, strdup_safe( ";" ), "\n" );
     }
-  | K_force { ignore_mode++; } lavalue '=' expression ';' { ignore_mode--; }
+  | K_force lavalue '=' expression ';'
     {
-      if( !parse_mode ) {
-        generator_begin_parallel_statement( @1.first_line, @1.first_column );
-        generator_end_parallel_statement( @1.first_line, @1.first_column );
-        generator_flush_work_code;
-      }
-      $$ = NULL;
+      $$ = generator_build( 6, strdup_safe( "force" ), $2, strdup_safe( "=" ), $4, strdup_safe( ";" ), "\n" );
     }
-  | K_release { ignore_mode++; } lavalue ';' { ignore_mode--; }
+  | K_release lavalue ';'
     {
-      if( !parse_mode ) {
-        generator_begin_parallel_statement( @1.first_line, @1.first_column );
-        generator_end_parallel_statement( @1.first_line, @1.first_column );
-        generator_flush_work_code;
-      }
-      $$ = NULL;
+      $$ = generator_build( 4, strdup_safe( "release" ), $2, strdup_safe( ";" ), "\n" );
     }
-  | K_begin inc_block_depth begin_end_block dec_block_depth K_end
-    { PROFILE(PARSER_STATEMENT_BEGIN_A);
-      if( parse_mode ) {
-        expression* exp;
-        statement*  stmt;
-        char        back[4096];
-        char        rest[4096];
-        if( ignore_mode == 0 ) {
-          db_end_function_task_namedblock( @5.first_line );
-          if( $3 != NULL ) {
-            scope_extract_back( $3->name, back, rest );
-            exp  = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, (@1.last_column - 1), NULL, in_static_expr );
-            exp->elem.funit      = $3;
-            exp->suppl.part.type = ETYPE_FUNIT;
-            exp->name            = strdup_safe( back );
-            stmt = db_create_statement( exp );
-            $$   = stmt;
-          } else {
-            $$ = NULL;
-          }
-        } else {
-          if( ignore_mode > 0 ) {
-            ignore_mode--;
-          }
-          if( ignore_mode == 0 ) {
-            /* If there is no body to the begin..end block, replace the block with a NOOP */
-            exp  = db_create_expression( NULL, NULL, EXP_OP_NOOP, FALSE, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, (@1.last_column - 1), NULL, in_static_expr );
-            stmt = db_create_statement( exp );
-            $$   = stmt;
-          }
-        }
-      } else {
-        generator_begin_parallel_statement( @1.first_line, @1.first_column );
-        generator_end_parallel_statement( @1.first_line, @1.first_column );
-        generator_flush_work_code;
-        $$ = NULL;
-      }
-    }
-  | K_fork
+  | K_begin begin_end_block K_end
     {
-      if( !parse_mode ) {
-        generator_begin_parallel_statement( @1.first_line, @1.first_column );
-        generator_flush_work_code;
-      }
+      $$ = generator_build( 4, strdup_safe( "begin" ), $2, strdup_safe( "end" ), "\n" );
     }
-    inc_fork_depth fork_statement K_join
-    { PROFILE(PARSER_STATEMENT_FORK_A);
-      if( parse_mode ) {
-        expression* exp;
-        statement*  stmt;
-        char        back[4096];
-        char        rest[4096];
-        if( ignore_mode == 0 ) {
-          db_end_function_task_namedblock( @5.first_line );
-          if( $4 != NULL ) {
-            scope_extract_back( $4->name, back, rest );
-            exp  = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, (@1.last_column - 1), NULL, in_static_expr );
-            exp->elem.funit      = $4;
-            exp->suppl.part.type = ETYPE_FUNIT;
-            exp->name            = strdup_safe( back );
-            stmt = db_create_statement( exp );
-            $$   = stmt;
-          } else {
-            ignore_mode--;
-            $$ = NULL;
-          }
-        } else {
-          ignore_mode--;
-          $$ = NULL;
-        }
-      } else {
-        generator_end_parallel_statement( @1.first_line, @1.first_column );
-        generator_flush_work_code;
-        $$ = NULL;
-      }
+  | K_fork fork_statement K_join
+    {
+      $$ = generator_build( 4, strdup_safe( "fork" ), $2, strdup_safe( "join" ), "\n" );
     }
   | K_disable identifier ';'
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($2 != NULL) ) {
-          expression* exp = NULL;
-          Try {
-            exp = db_create_expression( NULL, NULL, EXP_OP_DISABLE, FALSE, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, (@2.last_column - 1), $2, in_static_expr );
-          } Catch_anonymous {
-            error_count++;
-          }
-          $$ = db_create_statement( exp );
-        } else {
-          $$ = NULL;
-        } 
-      } else {
-        if( block_depth > 0 ) {
-          (void)generator_insert_line_cov( @1.ppfline, ((@2.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@2.last_column - 1), TRUE );
-        }
-        if( (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
-          generator_prepend_to_work_code( " begin " );
-          generator_add_cov_to_work_code( " end " );
-        }
-        generator_flush_work_code;
-        $$ = NULL;
-      }
-      FREE_TEXT( $2 );
+      $$ = generator_build( 5, generator_line_cov( @1.ppfline, ((@2.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@2.last_column - 1), TRUE ),
+                            strdup_safe( "disable" ), $2, strdup_safe( ";" ), "\n" );
     }
   | K_TRIGGER IDENTIFIER ';'
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($2 != NULL) ) {
-          expression* exp = NULL;
-          Try {
-            exp = db_create_expression( NULL, NULL, EXP_OP_TRIGGER, FALSE, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, (@2.last_column - 1), $2, in_static_expr );
-          } Catch_anonymous {
-            error_count++;
-          }
-          $$ = db_create_statement( exp );
-        } else {
-          $$ = NULL;
-        }
-      } else {
-        generator_handle_event_trigger( $2, @1.ppfline, @1.first_column, ((@2.last_line - @1.first_line) + @1.ppfline), (@2.last_column - 1) );
-        if( block_depth > 0 ) {
-          (void)generator_insert_line_cov( @1.ppfline, ((@2.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@2.last_column - 1), TRUE );
-        }
-        if( (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
-          generator_prepend_to_work_code( " begin " );
-          generator_add_cov_to_work_code( " end " );
-        }
-        generator_flush_work_code;
-        $$ = NULL;
-      }
-      FREE_TEXT( $2 );
+      $$ = generator_build( 8, generator_line_cov( @1.ppfline, ((@2.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@2.last_column - 1), TRUE ),
+                            $1, strdup_safe( "= (" ), $1, strdup_safe( "=== 1'bx) ? 1'b0 : ~" ), $1, strdup_safe( ";" ), "\n" );
     }
-  | K_forever
+  | K_forever statement
     {
-      if( !parse_mode ) {
-        generator_begin_parallel_statement( @1.first_line, @1.first_column );
-        generator_flush_work_code;
-      }
+      $$ = generator_build( 2, strdup_safe( "forever" ), $2 );
     }
-    inc_block_depth statement dec_block_depth
+  | K_repeat '(' expression ')' statement
     {
-      if( parse_mode ) {
-        if( $4 != NULL ) {
-          expression* expr;
-          statement*  stmt;
-          Try {
-            expr = db_create_expression( NULL, NULL, EXP_OP_FOREVER, FALSE, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, (@1.last_column - 1), NULL, in_static_expr );
-          } Catch_anonymous {
-            error_count++;
-          }
-          stmt = db_create_statement( expr );
-          if( db_statement_connect( $4, $4 ) ) {
-            db_connect_statement_false( stmt, $4 );
-            $$ = stmt;
-          } else {
-            db_remove_statement( stmt );
-            db_remove_statement( $4 );
-            $$ = NULL;
-          }
-        }
-      } else {
-        generator_end_parallel_statement( @1.first_line, @1.first_column );
-        generator_flush_work_code;
-        $$ = NULL;
-      }
+      $$ = generator_build( 6, generator_line_cov( @1.ppfline, ((@4.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@4.last_column - 1), TRUE ),
+                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                            strdup_safe( "repeat(" ), $3, strdup_safe( ")" ), $5 );
     }
-  | K_repeat '(' expression ')'
+  | cond_specifier_opt K_case '(' expression ')' case_body K_endcase
     {
-      if( !parse_mode ) {
-        (void)generator_insert_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE );
-        if( block_depth > 0 ) {
-          (void)generator_insert_line_cov( @1.ppfline, ((@4.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@4.last_column - 1), TRUE );
-        }
-        generator_flush_work_code;
-      }
-    }
-    inc_block_depth statement dec_block_depth
-    {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($3 != NULL) && ($7 != NULL) ) {
-          vector*     vec  = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
-          expression* expr = NULL;
-          statement*  stmt;
-          Try {
-            expr = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, (@1.last_column - 1), NULL, in_static_expr );
-            (void)vector_from_int( vec, 0x0 );
-            assert( expr->value->value.ul == NULL );
-            free_safe( expr->value, sizeof( vector ) );
-            expr->value = vec;
-          } Catch_anonymous {
-            error_count++;
-          }
-          Try {
-            expr = db_create_expression( $3, expr, EXP_OP_REPEAT, FALSE, @1.first_line, @1.ppfline, @4.pplline, @1.first_column, (@4.last_column - 1), NULL, in_static_expr );
-          } Catch_anonymous {
-            error_count++;
-          }
-          stmt = db_create_statement( expr );
-          db_connect_statement_true( stmt, $7 );
-          stmt->conn_id = stmt_conn_id;   /* This will cause the STOP bit to be set for all statements connecting to stmt */
-          assert( db_statement_connect( $7, stmt ) );
-          $$ = stmt;
-        } else {
-          expression_dealloc( $3, FALSE );
-          db_remove_statement( $7 );
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;  /* TBD */
-      }
-    }
-  | cond_specifier_opt K_case '(' expression ')'
-    {
-      if( !parse_mode ) {
-        generator_insert_case_comb_cov( @4.ppfline, @4.first_column );
-      }
-    }
-    case_body K_endcase
-    {
-      if( parse_mode ) {
-        expression*     expr      = NULL;
-        expression*     c_expr    = $4;
-        statement*      stmt      = NULL;
-        statement*      last_stmt = NULL;
-        case_statement* c_stmt    = $7;
-        case_statement* tc_stmt;
-        if( (ignore_mode == 0) && ($4 != NULL) ) {
-          if( c_stmt == NULL ) {
-            VLerror( "Illegal case expression" );
-            expression_dealloc( c_expr, FALSE );
-            $$ = NULL;
-          } else {
-            while( c_stmt != NULL ) {
-              Try {
-                if( (c_stmt->expr != NULL) && (c_stmt->expr->op == EXP_OP_LIST) ) {
-                  parser_handle_case_statement_list( EXP_OP_CASE, c_stmt->expr, c_expr, c_stmt->stmt, c_stmt->line, c_stmt->ppfline, c_stmt->pplline, &last_stmt );
-                } else {
-                  parser_handle_case_statement( EXP_OP_CASE, c_stmt->expr, c_expr, c_stmt->stmt, c_stmt->line, c_stmt->ppfline, c_stmt->pplline, &last_stmt );
-                }
-              } Catch_anonymous {
-                error_count++;
-              }
-              tc_stmt   = c_stmt;
-              c_stmt    = c_stmt->prev;
-              free_safe( tc_stmt, sizeof( case_statement ) );
-            }
-            if( last_stmt != NULL ) {
-              last_stmt->exp->suppl.part.owned = 1;
-            }
-            $$ = last_stmt;
-          }
-        } else {
-          expression_dealloc( $4, FALSE );
-          while( c_stmt != NULL ) {
-            expression_dealloc( c_stmt->expr, FALSE );
-            db_remove_statement( c_stmt->stmt );
-            tc_stmt = c_stmt;
-            c_stmt  = c_stmt->prev;
-            free_safe( tc_stmt, sizeof( case_statement ) );
-          }
-          $$ = NULL;
-        }
-      } else {
-        generator_flush_work_code;
-        $$ = NULL;
-      }
+      $$ = generator_build( 8, generator_case_comb_cov( @4.ppfline, @4.first_column ),
+                            $1, strdup_safe( "case(" ), $4, strdup_safe( ")" ), $6, strdup_safe( "endcase" ), "\n" );
     }
   | cond_specifier_opt K_casex '(' expression ')'
     {
-      if( !parse_mode ) {
-        generator_insert_case_comb_cov( @4.ppfline, @4.first_column );
-      }
-    }
-    case_body K_endcase
-    {
-      if( parse_mode ) {
-        expression*     expr      = NULL;
-        expression*     c_expr    = $4;
-        statement*      stmt      = NULL;
-        statement*      last_stmt = NULL;
-        case_statement* c_stmt    = $7;
-        case_statement* tc_stmt;
-        if( (ignore_mode == 0) && ($4 != NULL) ) {
-          if( c_stmt == NULL ) {
-            VLerror( "Illegal casex expression" );
-            expression_dealloc( c_expr, FALSE );
-            $$ = NULL;
-          } else {
-            while( c_stmt != NULL ) {
-              Try {
-                if( (c_stmt->expr != NULL) && (c_stmt->expr->op == EXP_OP_LIST) ) {
-                  parser_handle_case_statement_list( EXP_OP_CASEX, c_stmt->expr, c_expr, c_stmt->stmt, c_stmt->line, c_stmt->ppfline, c_stmt->pplline, &last_stmt );
-                } else {
-                  parser_handle_case_statement( EXP_OP_CASEX, c_stmt->expr, c_expr, c_stmt->stmt, c_stmt->line, c_stmt->ppfline, c_stmt->pplline, &last_stmt );
-                }
-              } Catch_anonymous {
-                error_count++;
-              }
-              tc_stmt   = c_stmt;
-              c_stmt    = c_stmt->prev;
-              free_safe( tc_stmt, sizeof( case_statement ) );
-            }
-            if( last_stmt != NULL ) {
-              last_stmt->exp->suppl.part.owned = 1;
-            }
-            $$ = last_stmt;
-          }
-        } else {
-          expression_dealloc( $4, FALSE );
-          while( c_stmt != NULL ) {
-            expression_dealloc( c_stmt->expr, FALSE );
-            db_remove_statement( c_stmt->stmt );
-            tc_stmt = c_stmt;
-            c_stmt  = c_stmt->prev;
-            free_safe( tc_stmt, sizeof( case_statement ) );
-          }
-          $$ = NULL;
-        }
-      } else {
-        generator_flush_work_code;
-        $$ = NULL;
-      }
+      $$ = generator_build( 8, generator_case_comb_cov( @4.ppfline, @4.first_column ),
+                            $1, strdup_safe( "casex(" ), $4, strdup_safe( ")" ), $6, strdup_safe( "endcase" ), "\n" );
     }
   | cond_specifier_opt K_casez '(' expression ')'
     {
-      if( !parse_mode ) {
-        generator_insert_case_comb_cov( @4.ppfline, @4.first_column );
-      }
+      $$ = generator_build( 8, generator_case_comb_cov( @4.ppfline, @4.first_column ),
+                            $1, strdup_safe( "casez(" ), $4, strdup_safe( ")" ), $6, strdup_safe( "endcase" ), "\n" );
     }
-    case_body K_endcase
+  | cond_specifier_opt K_if '(' expression ')' if_body
     {
-      if( parse_mode ) {
-        expression*     expr      = NULL;
-        expression*     c_expr    = $4;
-        statement*      stmt      = NULL;
-        statement*      last_stmt = NULL;
-        case_statement* c_stmt    = $7;
-        case_statement* tc_stmt;
-        if( (ignore_mode == 0) && ($4 != NULL) ) {
-          if( c_stmt == NULL ) {
-            VLerror( "Illegal casez expression" );
-            expression_dealloc( c_expr, FALSE );
-            $$ = NULL;
-          } else {
-            while( c_stmt != NULL ) {
-              Try {
-                if( (c_stmt->expr != NULL) && (c_stmt->expr->op == EXP_OP_LIST) ) {
-                  parser_handle_case_statement_list( EXP_OP_CASEZ, c_stmt->expr, c_expr, c_stmt->stmt, c_stmt->line, c_stmt->ppfline, c_stmt->pplline, &last_stmt );
-                } else {
-                  parser_handle_case_statement( EXP_OP_CASEZ, c_stmt->expr, c_expr, c_stmt->stmt, c_stmt->line, c_stmt->ppfline, c_stmt->pplline, &last_stmt );
-                }
-              } Catch_anonymous {
-                error_count++;
-              }
-              tc_stmt   = c_stmt;
-              c_stmt    = c_stmt->prev;
-              free_safe( tc_stmt, sizeof( case_statement ) );
-            }
-            if( last_stmt != NULL ) {
-              last_stmt->exp->suppl.part.owned = 1;
-            }
-            $$ = last_stmt;
-          }
-        } else {
-          expression_dealloc( $4, FALSE );
-          while( c_stmt != NULL ) {
-            expression_dealloc( c_stmt->expr, FALSE );
-            db_remove_statement( c_stmt->stmt );
-            tc_stmt = c_stmt;
-            c_stmt  = c_stmt->prev;
-            free_safe( tc_stmt, sizeof( case_statement ) );
-          }
-          $$ = NULL;
-        }
-      } else {
-        generator_flush_work_code;
-        $$ = NULL;
-      }
+      $$ = generator_build( 7, generator_line_cov( @2.ppfline, ((@5.last_line - @2.first_line) + @2.ppfline), @2.first_column, (@5.last_column - 1), TRUE ),
+                            generator_comb_cov( @2.ppfline, @2.first_column, FALSE, TRUE, FALSE ),
+                            $1, strdup_safe( "if(" ), $4, strdup_safe( ")" ), $6 );
     }
-  | cond_specifier_opt K_if '(' expression ')'
-    {
-      if( !parse_mode ) {
-        (void)generator_insert_comb_cov( @2.ppfline, @2.first_column, FALSE, TRUE, FALSE );
-        if( block_depth > 0 ) {
-          (void)generator_insert_line_cov( @2.ppfline, ((@5.last_line - @2.first_line) + @2.ppfline), @2.first_column, (@5.last_column - 1), TRUE );
-        }
-      }
-    }
-    if_body
-    {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($4 != NULL) ) {
-          expression* tmp = NULL;
-          Try {
-            tmp = db_create_expression( $4, NULL, EXP_OP_IF, FALSE, @2.first_line, @2.ppfline, @5.pplline, @2.first_column, (@5.last_column - 1), NULL, in_static_expr );
-          } Catch_anonymous {
-            error_count++;
-          }
-          if( ($$ = db_create_statement( tmp )) != NULL ) {
-            db_connect_statement_true( $$, $7.stmt1 );
-            if( $7.stmt2 != NULL ) {
-              db_connect_statement_false( $$, $7.stmt2 );
-            }
-          }
-        } else {
-          db_remove_statement( $7.stmt1 );
-          db_remove_statement( $7.stmt2 );
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
-    }
-  | cond_specifier_opt K_if '(' error ')' { ignore_mode++; } if_statement_error { ignore_mode--; }
+  | cond_specifier_opt K_if '(' error ')' if_statement_error
     {
       VLerror( "Illegal conditional if expression" );
       $$ = NULL;
     }
+  /* START_HERE */
   | K_for inc_for_depth '(' for_initialization ';' for_condition ';' passign ')'
     {
       for_mode--;
@@ -4225,8 +2123,8 @@ statement
         generator_insert_comb_cov_with_stmt( $6, FALSE, TRUE );
       }
     }
-    statement dec_for_depth
-    { PROFILE(PARSER_STATEMENT_FOR_A);
+    statement
+    {
       if( parse_mode ) {
         expression* exp;
         statement*  stmt;
@@ -7244,38 +5142,45 @@ specify_edge_path_decl
 specify_edge_path
   : '(' K_posedge specify_path_identifiers spec_polarity K_EG IDENTIFIER ')'
     {
-      FREE_TEXT( $6 );
     }
   | '(' K_posedge specify_path_identifiers spec_polarity K_EG '(' expr_primary polarity_operator expression ')' ')'
+    {
+    }
   | '(' K_posedge specify_path_identifiers spec_polarity K_SG IDENTIFIER ')'
     {
-      FREE_TEXT( $6 );
     }
   | '(' K_posedge specify_path_identifiers spec_polarity K_SG '(' expr_primary polarity_operator expression ')' ')'
+    {
+    }
   | '(' K_negedge specify_path_identifiers spec_polarity K_EG IDENTIFIER ')'
     {
-      FREE_TEXT( $6 );
     }
   | '(' K_negedge specify_path_identifiers spec_polarity K_EG '(' expr_primary polarity_operator expression ')' ')'
+    {
+    }
   | '(' K_negedge specify_path_identifiers spec_polarity K_SG IDENTIFIER ')'
     {
-      FREE_TEXT( $6 );
     }
   | '(' K_negedge specify_path_identifiers spec_polarity K_SG '(' expr_primary polarity_operator expression ')' ')'
+    {
+    }
   ;
 
 polarity_operator
-  : K_PO_POS
-  | K_PO_NEG
-  | ':'
+  : K_PO_POS { $$ = strdup_safe( "+:" ); }
+  | K_PO_NEG { $$ = strdup_safe( "-:" ); }
+  | ':'      { $$ = strdup_safe( ":" );  }
   ;
 
 specify_delay_value_list
   : delay_value
     {
-      assert( $1 == NULL );
+      $$ = $1;
     }
   | specify_delay_value_list ',' delay_value
+    {
+      $$ = generator_build( 3, $1, strdup_safe( "," ), $3 );
+    }
   ;
 
  /*
@@ -7283,18 +5188,16 @@ specify_delay_value_list
   them but otherwise ignores them (we will not bother displaying the warning messages).
  */
 cond_specifier_opt
-  : K_unique
-  | K_priority
-  |
+  : K_unique   { $$ = strdup_safe( "unique" );   }
+  | K_priority { $$ = strdup_safe( "priority" ); }
+  |            { $$ = NULL;                      }
   ;
 
  /* SystemVerilog enumeration syntax */
 enumeration
   : K_enum enum_var_type_range_opt '{' enum_variable_list '}'
     {
-      if( parse_mode ) {
-        db_end_enum_list();
-      }
+      $$ = generator_build( 5, strdup_safe( "enum" ), $2, strdup_safe( "{" ), $4, strdup_safe( "}" ) );
     }
   ;
 
@@ -7302,59 +5205,24 @@ enumeration
 enum_var_type_range_opt
   : TYPEDEF_IDENTIFIER range_opt
     {
-      if( parse_mode ) {
-        assert( curr_prange.dim != NULL );
-        if( !$1->is_sizeable && !curr_prange.dim[0].implicit ) { 
-          VLerror( "Packed dimensions are not allowed for this type" );
-        } else {
-          if( $1->is_sizeable && !curr_prange.dim[0].implicit ) {
-            /* TBD - Need to multiply the size of the typedef with the size of the curr_range */
-          } else {
-            parser_copy_range_to_curr_range( $1->prange, TRUE );
-          }
-        }
-      }
+      $$ = generator_build( 2, $1, $2 );
     }
   | K_reg range_opt
+    {
+      $$ = generator_build( 2, $1, $2 );
+    }
   | K_logic range_opt
-  | K_int
     {
-      if( parse_mode ) {
-        parser_implicitly_set_curr_range( 31, 0, TRUE );
-      }
+      $$ = generator_build( 2, $1, $2 );
     }
-  | K_integer
-    {
-      if( parse_mode ) {
-        parser_implicitly_set_curr_range( 31, 0, TRUE );
-      }
-    }
-  | K_shortint
-    {
-      if( parse_mode ) {
-        parser_implicitly_set_curr_range( 15, 0, TRUE );
-      }
-    }
-  | K_longint
-    {
-      if( parse_mode ) {
-        parser_implicitly_set_curr_range( 63, 0, TRUE );
-      }
-    }
-  | K_byte
-    {
-      if( parse_mode ) {
-        parser_implicitly_set_curr_range( 7, 0, TRUE );
-      }
-    }
+  | K_int      { $$ = strdup_safe( "int" );      }
+  | K_integer  { $$ = strdup_safe( "integer" );  }
+  | K_shortint { $$ = strdup_safe( "shortint" ); }
+  | K_longint  { $$ = strdup_safe( "longing" );  }
+  | K_byte     { $$ = strdup_safe( "byte" );     }
   | range_opt
     {
-      if( parse_mode ) {
-        assert( curr_prange.dim != NULL );
-        if( curr_prange.dim[0].implicit ) {
-          parser_implicitly_set_curr_range( 31, 0, TRUE );
-        }
-      }
+      $$ = $1;
     }
   ;
 
@@ -7362,83 +5230,33 @@ enum_var_type_range_opt
 enum_variable
   : IDENTIFIER
     {
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          db_add_signal( $1, SSUPPL_TYPE_ENUM, &curr_prange, NULL, curr_signed, FALSE, @1.first_line, @1.first_column, TRUE );
-          Try {
-            db_add_enum( db_find_signal( $1, FALSE ), NULL );
-          } Catch_anonymous {
-            error_count++;
-          }
-        }
-      }
-      FREE_TEXT( $1 );
+      $$ = $1;
     }
   | IDENTIFIER '=' static_expr
     {
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          db_add_signal( $1, SSUPPL_TYPE_ENUM, &curr_prange, NULL, curr_signed, FALSE, @1.first_line, @1.first_column, TRUE );
-          Try {
-            db_add_enum( db_find_signal( $1, FALSE ), $3 );
-          } Catch_anonymous {
-            error_count++;
-          }
-        }
-      }
-      FREE_TEXT( $1 );
+      $$ = generator_build( 3, $1, strdup_safe( "=" ), $3 );
     }
   ;
 
 enum_variable_list
   : enum_variable_list ',' enum_variable
+    {
+      $$ = generator_build( 3, $1, strdup_safe( "," ), $3 );
+    }
   | enum_variable
+    {
+      $$ = $1;
+    }
   ;
 
 list_of_names
   : IDENTIFIER
-    { PROFILE(PARSER_LIST_OF_NAMES_A);
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          str_link* strl = (str_link*)malloc_safe( sizeof( str_link ) );
-          strl->str    = $1;
-          strl->str2   = NULL;
-          strl->suppl  = @1.first_line;
-          strl->suppl2 = @1.first_column;
-          strl->next   = NULL;
-          $$ = strl;
-        } else {
-          FREE_TEXT( $1 );
-          $$ = NULL;
-        }
-      } else {
-        FREE_TEXT( $1 );
-        $$ = NULL;
-      }
+    {
+      $$ = $1;
     }
   | list_of_names ',' IDENTIFIER
-    { PROFILE(PARSER_LIST_OF_NAMES_B);
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          str_link* strl = (str_link*)malloc_safe( sizeof( str_link ) );
-          str_link* strt = $1;
-          strl->str    = $3;
-          strl->str2   = NULL;
-          strl->suppl  = @3.first_line;
-          strl->suppl2 = @3.first_column;
-          strl->next   = NULL;
-          while( strt->next != NULL ) strt = strt->next;
-          strt->next = strl;
-          $$ = $1; 
-        } else {
-          str_link_delete_list( $1 );
-          FREE_TEXT( $3 );
-          $$ = NULL;
-        }
-      } else {
-        FREE_TEXT( $3 );
-        $$ = NULL;
-      }
+    {
+      $$ = generator_build( 3, $1, strdup_safe( "," ), $3 );
     }
   ;
 
@@ -7446,166 +5264,37 @@ list_of_names
 typedef_decl
   : K_typedef enumeration IDENTIFIER ';'
     {
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          assert( curr_prange.dim != NULL );
-          db_add_typedef( $3, curr_signed, curr_handled, TRUE, parser_copy_curr_range( TRUE ), parser_copy_curr_range( FALSE ) );
-        }
-      }
-      FREE_TEXT( $3 );
+      $$ = generator_build( 5, strdup_safe( "typedef" ), $2, $3, strdup_safe( ";" ), "\n" );
     }
   | K_typedef net_type_sign_range_opt IDENTIFIER ';'
     {
-      if( parse_mode ) {
-        if( ignore_mode == 0 ) {
-          assert( curr_prange.dim != NULL );
-          db_add_typedef( $3, curr_signed, curr_handled, TRUE, parser_copy_curr_range( TRUE ), parser_copy_curr_range( FALSE ) );
-        }
-      }
-      FREE_TEXT( $3 );
+      $$ = generator_build( 5, strdup_safe( "typedef" ), $2, $3, strdup_safe( ";" ), "\n" );
     }
   ;
 
 single_index_expr
   : '[' expression ']'
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($2 != NULL) ) {
-          Try {
-            $$ = db_create_expression( NULL, $2, EXP_OP_SBIT_SEL, lhs_mode, @1.first_line, @1.ppfline, @3.pplline, @1.first_column, (@3.last_column - 1), NULL, in_static_expr );
-          } Catch_anonymous {
-            error_count++;
-          }
-        } else {
-          expression_dealloc( $2, FALSE );
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 3, strdup_safe( "[" ), $2, strdup_safe( "]" ) );
     }
   | '[' expression ':' expression ']'
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($2 != NULL) && ($4 != NULL) ) {
-          Try {
-            $$ = db_create_expression( $4, $2, EXP_OP_MBIT_SEL, lhs_mode, @1.first_line, @1.ppfline, @5.pplline, @1.first_column, (@5.last_column - 1), NULL, in_static_expr );
-          } Catch_anonymous {
-            error_count++;
-          }
-        } else {
-          expression_dealloc( $2, FALSE );
-          expression_dealloc( $4, FALSE );
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 5, strdup_safe( "[" ), $2, strdup_safe( ":" ), $4, strdup_safe( "]" ) );
     }
   | '[' expression K_PO_POS static_expr ']'
     {
-      if( parse_mode ) {
-        if( !parser_check_generation( GENERATION_2001 ) ) {
-          VLerror( "Indexed vector part select found in block that is specified to not allow Verilog-2001 syntax" );
-          expression_dealloc( $2, FALSE );
-          static_expr_dealloc( $4, FALSE );
-          $$ = NULL;
-        } else {
-          if( (ignore_mode == 0) && ($2 != NULL) && ($4 != NULL) ) {
-            if( $4->exp == NULL ) {
-              Try {
-                expression* tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, (@1.last_column - 1), NULL, in_static_expr );
-                vector_dealloc( tmp->value );
-                tmp->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
-                (void)vector_from_int( tmp->value, $4->num );
-                $$ = db_create_expression( tmp, $2, EXP_OP_MBIT_POS, lhs_mode, @1.first_line, @1.ppfline, @5.pplline, @1.first_column, (@5.last_column - 1), NULL, in_static_expr );
-              } Catch_anonymous {
-                error_count++;
-                $$ = NULL;
-              }
-            } else {
-              Try {
-                $$ = db_create_expression( $4->exp, $2, EXP_OP_MBIT_POS, lhs_mode, @1.first_line, @1.ppfline, @5.pplline, @1.first_column, (@5.last_column - 1), NULL, in_static_expr );
-              } Catch_anonymous {
-                error_count++;
-                $$ = NULL;
-              }
-            }
-            free_safe( $4, sizeof( static_expr ) );
-          } else {
-            expression_dealloc( $2, FALSE );
-            static_expr_dealloc( $4, FALSE );
-            $$ = NULL;
-          }
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 5, strdup_safe( "[" ), $2, strdup_safe( "+:" ), $4, strdup_safe( "]" ) );
     }
   | '[' expression K_PO_NEG static_expr ']'
     {
-      if( parse_mode ) {
-        expression* tmp = NULL;
-        if( !parser_check_generation( GENERATION_2001 ) ) {
-          VLerror( "Indexed vector part select found in block that is specified to not allow Verilog-2001 syntax" );
-          expression_dealloc( $2, FALSE );
-          static_expr_dealloc( $4, FALSE );
-          $$ = NULL;
-        } else {
-          if( (ignore_mode == 0) && ($2 != NULL) && ($4 != NULL) ) {
-            if( $4->exp == NULL ) {
-              Try {
-                tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.ppfline, @1.pplline, @1.first_column, (@1.last_column - 1), NULL, in_static_expr );
-              } Catch_anonymous {
-                error_count++;
-              }
-              vector_dealloc( tmp->value );
-              tmp->value = vector_create( 32, VTYPE_VAL, VDATA_UL, TRUE );
-              (void)vector_from_int( tmp->value, $4->num );
-              Try {
-                tmp = db_create_expression( tmp, $2, EXP_OP_MBIT_NEG, lhs_mode, @1.first_line, @1.ppfline, @5.pplline, @1.first_column, (@5.last_column - 1), NULL, in_static_expr );
-              } Catch_anonymous {
-                error_count++;
-              }
-            } else {
-              Try {
-                tmp = db_create_expression( $4->exp, $2, EXP_OP_MBIT_NEG, lhs_mode, @1.first_line, @1.ppfline, @5.pplline, @1.first_column, (@5.last_column - 1), NULL, in_static_expr );
-              } Catch_anonymous {
-                error_count++;
-              }
-            }
-            free_safe( $4, sizeof( static_expr ) );
-            $$ = tmp;
-          } else {
-            expression_dealloc( $2, FALSE );
-            static_expr_dealloc( $4, FALSE );
-            $$ = NULL;
-          }
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 5, strdup_safe( "[" ), $2, strdup_safe( "-:" ), $4, strdup_safe( "]" ) );
     }
   ;
 
 index_expr
   : index_expr single_index_expr
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($1 != NULL) && ($2 != NULL) ) {
-          Try {
-            $$ = db_create_expression( $2, $1, EXP_OP_DIM, lhs_mode, @1.first_line, @1.ppfline, @2.pplline, @1.first_column, (@2.last_column - 1), NULL, in_static_expr );
-          } Catch_anonymous {
-            error_count++;
-          }
-        } else {
-          expression_dealloc( $1, FALSE );
-          expression_dealloc( $2, FALSE );
-          $$ = NULL;
-        }
-      } else {
-        $$ = NULL;
-      }
+      $$ = generator_build( 2, $1, $2 );
     }
   | single_index_expr
     {
@@ -7613,169 +5302,3 @@ index_expr
     }
   ;
 
-ignore_more
-  :
-    {
-      if( parse_mode ) {
-        ignore_mode++;
-      }
-    }
-  ;
-  
-ignore_less
-  :
-    {
-      if( parse_mode ) {
-        ignore_mode--;
-      }
-    }
-  ;
-
-start_lhs
-  :
-    {
-      if( parse_mode ) {
-        lhs_mode = TRUE;
-      }
-    }
-  ;
-
-end_lhs
-  :
-    {
-      if( parse_mode ) {
-        lhs_mode = FALSE;
-      }
-    }
-  ;
-
-inc_fork_depth
-  :
-    {
-      fork_depth++;
-      fork_block_depth = (int*)realloc_safe( fork_block_depth, (sizeof( int ) * fork_depth), ((fork_depth + 1) * sizeof( int )) );
-      fork_block_depth[fork_depth] = block_depth;
-    }
-  ;
-
-dec_fork_depth
-  :
-    {
-      fork_depth--;
-      fork_block_depth = (int*)realloc_safe( fork_block_depth, (sizeof( int ) * (fork_depth + 2)), ((fork_depth + 1) * sizeof( int )) );
-    }
-  ;
-
-inc_block_depth
-  :
-    {
-      block_depth++;
-      if( !parse_mode ) {
-        generator_add_cov_to_work_code( " begin" );
-        generator_flush_work_code;
-      }
-    }
-  ;
-
-dec_block_depth
-  :
-    {
-      block_depth--;
-      if( !parse_mode ) {
-        generator_add_to_hold_code( " end ", __FILE__, __LINE__ );
-      }
-    }
-  ;
-
-inc_block_depth_only
-  :
-    {
-      block_depth++;
-    }
-  ;
-
-dec_block_depth_only
-  :
-    {
-      block_depth--;
-    }
-  ;
-
-dec_block_depth_flush
-  :
-    {
-      block_depth--;
-      if( !parse_mode ) {
-        generator_flush_work_code;
-      }
-    }
-  ;
-
-inc_for_depth
-  :
-    {
-      char* scope;
-      for_mode++;
-      scope = db_create_unnamed_scope();
-      if( parse_mode ) {
-        func_unit* funit = db_get_curr_funit();
-        if( ignore_mode == 0 ) {
-          Try {
-            assert( db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, scope, funit->orig_fname, funit->incl_fname, for_start_line, for_start_col ) );
-          } Catch_anonymous {
-            error_count++;
-            ignore_mode++;
-          }
-        }
-        block_depth++;
-        $$ = db_get_curr_funit();
-      } else {
-        func_unit*   funit = db_get_tfn_by_position( for_start_line, for_start_col );
-        char         str[50];
-        char*        back;
-        char*        rest;
-        unsigned int rv;
-        assert( funit != NULL );
-        back = strdup_safe( funit->name );
-        rest = strdup_safe( funit->name );
-        scope_extract_back( funit->name, back, rest );
-        rv = snprintf( str, 50, " begin : %s", back );
-        assert( rv < 50 );
-        generator_add_to_hold_code( str, __FILE__, __LINE__ );
-        free_safe( back, (strlen( funit->name ) + 1) );
-        free_safe( rest, (strlen( funit->name ) + 1) );
-        generator_insert_inst_id_reg( funit );
-        block_depth++;
-        $$ = NULL;
-      }
-      free_safe( scope, (strlen( scope ) + 1) );
-    }
-  ;
-
-dec_for_depth
-  :
-    {
-      block_depth--;
-      if( !parse_mode ) {
-        generator_add_to_hold_code( " end ", __FILE__, __LINE__ );      
-      }
-    }
-  ;
-
-inc_gen_expr_mode
-  :
-    {
-      if( parse_mode ) {
-        generate_expr_mode++;
-      }
-    }
-  ;
-
-dec_gen_expr_mode
-  : 
-    {
-      if( parse_mode ) {
-        generate_expr_mode--;
-      }
-    }
-  ;
