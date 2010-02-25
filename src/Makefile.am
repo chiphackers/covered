@@ -19,6 +19,7 @@ covered_SOURCES = arc.c \
 		  func_unit.c \
                   genprof.c \
                   gen_item.c \
+                  gen_parser.c \
                   generator.c \
 		  info.c \
 		  instance.c \
@@ -78,6 +79,9 @@ AM_CPPFLAGS=-DINSTALL_DIR=\"@datadir@/covered\" $(TCLTK_CPPFLAGS) $(DEBUGDEF) $(
 parser.h parser.c: $(srcdir)/parser.y
 	bison --verbose -t -p VL -d -o parser.c $(srcdir)/parser.y
 
+gen_parser.h gen_parser.c: $(srcdir)/gen_parser.y
+	bison --verbose -t -p GEN -d -o gen_parser.c $(srcdir)/gen_parser.y
+
 static_parser.h static_parser.c: $(srcdir)/static_parser.y
 	bison --verbose -t -p SE -d -o static_parser.c $(srcdir)/static_parser.y
 	
@@ -122,6 +126,8 @@ CLEANFILES = pplexer.c \
              keywords_sys_sv.c \
              parser.c \
              parser.h \
+             gen_parser.c \
+             gen_parser.h \
              parser.output \
              static_parser.c \
              static_parser.h \

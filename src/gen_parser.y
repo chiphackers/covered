@@ -236,36 +236,11 @@ int yydebug = 1;
 %}
 
 %union {
-  bool            logical;
-  char*           text;
-  int	          integer;
-  const_value     num;
-  exp_op_type     optype;
-  vector*         realtime;
-  vsignal*        sig;
-  expression*     expr;
-  statement*      state;
-  static_expr*    statexp;
-  str_link*       strlink;
-  case_statement* case_stmt;
-  attr_param*     attr_parm;
-  exp_bind*       expbind;
-  port_info*      portinfo;
-  gen_item*       gitem;
-  case_gitem*     case_gi;
-  typedef_item*   typdef;
-  func_unit*      funit;
-  stmt_pair       stmtpair;
-  gitem_pair      gitempair;
+  char* text;
 };
 
-%token <text>     IDENTIFIER
-%token <typdef>   TYPEDEF_IDENTIFIER
-%token <text>     PATHPULSE_IDENTIFIER
-%token <text>     DEC_NUMBER BASE_NUMBER
-%token <realtime> REALTIME
-%token <num>      STRING
-%token IGNORE
+%token <text> IDENTIFIER TYPEDEF_IDENTIFIER PATHPULSE_IDENTIFIER DEC_NUMBER BASE_NUMBER REALTIME STRING IGNORE SYSCALL
+%token <text> K_assert
 %token K_LE K_GE K_EG K_EQ K_NE K_CEQ K_CNE K_LS K_LSS K_RS K_RSS K_SG
 %token K_ADD_A K_SUB_A K_MLT_A K_DIV_A K_MOD_A K_AND_A K_OR_A K_XOR_A K_LS_A K_RS_A K_ALS_A K_ARS_A K_INC K_DEC K_POW
 %token K_PO_POS K_PO_NEG K_STARP K_PSTAR
@@ -304,7 +279,7 @@ int yydebug = 1;
 %token K_unique K_priority K_do
 %token K_always_comb K_always_latch K_always_ff
 %token K_typedef K_type K_enum K_union K_struct K_packed
-%token K_assert K_assume K_property K_endproperty K_cover K_sequence K_endsequence K_expect
+%token K_assume K_property K_endproperty K_cover K_sequence K_endsequence K_expect
 %token K_program K_endprogram K_final K_void K_return K_continue K_break K_extern K_interface K_endinterface
 %token K_class K_endclass K_extends K_package K_endpackage K_timeunit K_timeprecision K_ref K_bind K_const
 %token K_new K_static K_protected K_local K_rand K_randc K_randcase K_constraint K_import K_export K_scalared K_chandle
@@ -316,32 +291,39 @@ int yydebug = 1;
 
 %token KK_attribute
 
-%type <num>       number
-%type <logical>   automatic_opt block_item_decls_opt
-%type <integer>   net_type net_type_sign_range_opt var_type data_type_opt
-%type <text>      identifier begin_end_id
-%type <statexp>   static_expr static_expr_primary static_expr_port_list
-%type <expr>      expr_primary expression_list expression expression_port_list expression_systask_list
-%type <expr>      lavalue lpvalue
-%type <expr>      event_control event_expression_list event_expression
-%type <expr>      delay_value delay_value_simple
-%type <expr>      delay1 delay3 delay3_opt
-%type <expr>      generate_passign index_expr single_index_expr
-%type <state>     statement statement_list statement_or_null for_condition
-%type <state>     if_statement_error
-%type <state>     passign for_initialization
-%type <state>     expression_assignment_list
-%type <strlink>   gate_instance gate_instance_list list_of_names
-%type <funit>     begin_end_block fork_statement inc_for_depth
-%type <attr_parm> attribute attribute_list
-%type <portinfo>  port_declaration list_of_port_declarations
-%type <gitem>     generate_item generate_item_list generate_item_list_opt
-%type <case_stmt> case_items case_item case_body
-%type <case_gi>   generate_case_items generate_case_item
-%type <optype>    static_unary_op unary_op syscall_wo_parms_op syscall_w_parms_op syscall_w_parms_op_64 syscall_w_parms_op_32
-%type <optype>    pre_op_and_assign_op post_op_and_assign_op op_and_assign_op
-%type <stmtpair>  if_body
-%type <gitempair> gen_if_body
+%type <text> number
+%type <text> automatic_opt block_item_decls_opt
+%type <text> net_type net_type_sign_range_opt var_type data_type_opt
+%type <text> identifier begin_end_id
+%type <text> static_expr static_expr_primary static_expr_port_list
+%type <text> expr_primary expression_list expression expression_port_list expression_systask_list
+%type <text> lavalue lpvalue
+%type <text> event_control event_expression_list event_expression
+%type <text> delay_value delay_value_simple
+%type <text> delay1 delay3 delay3_opt
+%type <text> generate_passign index_expr single_index_expr
+%type <text> statement statement_list statement_or_null for_condition
+%type <text> if_statement_error
+%type <text> passign for_initialization
+%type <text> expression_assignment_list
+%type <text> gate_instance gate_instance_list list_of_names
+%type <text> begin_end_block fork_statement inc_for_depth
+%type <text> generate_item generate_item_list generate_item_list_opt
+%type <text> case_items case_item case_body
+%type <text> generate_case_items generate_case_item
+%type <text> static_unary_op unary_op syscall_wo_parms_op syscall_w_parms_op syscall_w_parms_op_64 syscall_w_parms_op_32
+%type <text> pre_op_and_assign_op post_op_and_assign_op op_and_assign_op
+%type <text> if_body
+%type <text> gen_if_body
+%type <text> attribute_list_opt attribute_list attribute source_file description module module_start module_parameter_port_list_opt module_parameter_port_list
+%type <text> module_port_list_opt list_of_port_declarations port_declaration udp_primitive typedef_decl signed_opt range_opt list_of_variables
+%type <text> net_decl_assigns drive_strength charge_strength_opt gatetype dr_strength1 dr_strength0 block_item_decl task_item_list_opt
+%type <text> range_or_type_opt function_item_list enumeration module_item_list_opt parameter_assign list_of_ports port_type port_opt port port_reference
+%type <text> port_reference_list range udp_port_list udp_port_decls udp_init_opt udp_body udp_port_decl udp_initial udp_entry_list
+%type <text> udp_comb_entry_list udp_sequ_entry_list udp_comb_entry udp_input_list udp_output_sym udp_input_sym udp_sequ_entry module_item module_item_list
+%type <text> register_variable_list defparam_assign_list parameter_value_opt drive_strength_opt assign_list specify_item_list struct_union
+%type <text> integer_vector_type data_type integer_atom_type struct_union_member_list data_type_or_void cond_specifier_opt
+FOOBAR
 
 %token K_TAND
 %right '?' ':'
@@ -520,18 +502,16 @@ description
     {
       func_unit* funit = db_get_tfn_by_position( @5.first_line, @5.first_column );
       $$ = generator_build( 12, strdup_safe( "function" ), $2, $3, $4, $5, strdup_safe( ";" ), "\n", $7,
-                            (generator_is_static_function( funit ) ? generator_inst_id_reg( funit ) : NULL), $8, strdup_safe( "endfunction" ), "\n" );
+                            (generator_is_static_function( funit ) ? generator_inst_id_reg( funit ) : NULL), $9, strdup_safe( "endfunction" ), "\n" );
     }
   | error ';'
     {
       VLerror( "Invalid $root item" );
-      FREE_TEXT( $1 );
       $$ = NULL;
     }
   | K_function error K_endfunction
     {
       VLerror( "Syntax error in function description" );
-      FREE_TEXT( $2 );
       $$ = NULL;
     }
   | enumeration list_of_names ';'
@@ -572,7 +552,7 @@ module_start
 module_parameter_port_list_opt
   : '#' '(' module_parameter_port_list ')'
     {
-      $$ = generator_build( 3, strdup_safe( "#(" ), $2, strdup_safe( ")" ) );
+      $$ = generator_build( 3, strdup_safe( "#(" ), $3, strdup_safe( ")" ) );
     }
   |
     {
@@ -634,21 +614,21 @@ port_declaration
     }
   | attribute_list_opt K_output var_type signed_opt range_opt IDENTIFIER
     {
-      $$ = generator_build( 6, $1, $2, $3, $4, $5, $6 );
+      $$ = generator_build( 6, $1, strdup_safe( "output" ), $3, $4, $5, $6 );
     }
   /* We just need to parse the static register assignment as this signal will get its value from the dumpfile */
   | attribute_list_opt K_output var_type signed_opt range_opt IDENTIFIER '=' static_expr
     {
-      $$ = generator_build( 8, $1, $2, $3, $4, $5, $6, strdup_safe( "=" ), $8 );
+      $$ = generator_build( 8, $1, strdup_safe( "output" ), $3, $4, $5, $6, strdup_safe( "=" ), $8 );
     }
   | attribute_list_opt port_type net_type_sign_range_opt error
     {
-      FREE_TEXT( generator_build( 4, $1, $2, $3, $4 ) );
+      FREE_TEXT( generator_build( 3, $1, $2, $3 ) );
       $$ = NULL;
     }
   | attribute_list_opt K_output var_type signed_opt range_opt error
     {
-      FREE_TEXT( generator_build( 6, $1, $2, $3, $4, $5, $6 ) );
+      FREE_TEXT( generator_build( 4, $1, $3, $4, $5 ) );
       $$ = NULL;
     }
   ;
@@ -684,7 +664,7 @@ port
     }
   | '.' IDENTIFIER '(' port_reference ')'
     {
-      $$ = generator_build( 5, strdup_safe( "." ), $1, strdup_safe( "(" ), $4, strdup_safe( ")" ) );
+      $$ = generator_build( 5, strdup_safe( "." ), $2, strdup_safe( "(" ), $4, strdup_safe( ")" ) );
     }
   | '{' port_reference_list '}'
     {
@@ -1343,7 +1323,7 @@ udp_body
       udp_entry_list
     K_endtable { lex_end_udp_table(); }
     {
-      $$ = generator_build( 4, $1, $3, $4, "\n" );
+      $$ = generator_build( 4, strdup_safe( "table" ), $3, strdup_safe( "endtable" ), "\n" );
     }
   ;
 
@@ -1536,7 +1516,7 @@ generate_item
       func_unit* funit = db_get_tfn_by_position( @11.first_line, @11.first_column );
       assert( funit != NULL );
       $$ = generator_build( 17, strdup_safe( "for(" ), $3, strdup_safe( ";" ), $5, strdup_safe( ";" ), $7, strdup_safe( ")" ), "\n", strdup_safe( "begin : " ), $11, "\n",
-                            generator_inst_id_reg( funit ), "\n", generator_temp_regs(), $13, strdup_safe( "end" ), "\n" );
+                            generator_inst_id_reg( funit ), "\n", generator_temp_regs(), $12, strdup_safe( "end" ), "\n" );
     }
   | K_if '(' static_expr ')' gen_if_body
     {
@@ -1642,7 +1622,7 @@ module_item
     port_type signed_opt range_opt error ';'
     {
       VLerror( "Invalid variable list in port declaration" );
-      FREE_TEXT( generator_build( 5, $1, $2, $3, $4, $5 ) );
+      FREE_TEXT( generator_build( 4, $1, $2, $3, $4 ) );
     }
   | attribute_list_opt
     K_trireg charge_strength_opt range_opt delay3_opt list_of_variables ';'
@@ -1755,7 +1735,7 @@ module_item
     K_endfunction
     {
       func_unit* funit = db_get_tfn_by_position( @6.first_line, @6.first_column );
-      $$ = generator_build( 15, strdup_safe( "function" ), $2, $3, $4, $5, $6, strdup_safe( ";" ), "\n", $8,
+      $$ = generator_build( 14, strdup_safe( "function" ), $3, $4, $5, $6, strdup_safe( ";" ), "\n", $8,
                             (generator_is_static_function( funit ) ? generator_inst_id_reg( funit ) : NULL), "\n", generator_tmp_regs(), $10, strdup_safe( "endfunction" ), "\n" );
     }
   | K_generate generate_item_list_opt K_endgenerate
@@ -2074,7 +2054,7 @@ statement
   | K_TRIGGER IDENTIFIER ';'
     {
       $$ = generator_build( 8, generator_line_cov( @1.ppfline, ((@2.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@2.last_column - 1), TRUE ),
-                            $1, strdup_safe( "= (" ), $1, strdup_safe( "=== 1'bx) ? 1'b0 : ~" ), $1, strdup_safe( ";" ), "\n" );
+                            $2, strdup_safe( "= (" ), $2, strdup_safe( "=== 1'bx) ? 1'b0 : ~" ), $2, strdup_safe( ";" ), "\n" );
     }
   | K_forever statement
     {
@@ -2091,12 +2071,12 @@ statement
       $$ = generator_build( 8, generator_case_comb_cov( @4.ppfline, @4.first_column ),
                             $1, strdup_safe( "case(" ), $4, strdup_safe( ")" ), $6, strdup_safe( "endcase" ), "\n" );
     }
-  | cond_specifier_opt K_casex '(' expression ')'
+  | cond_specifier_opt K_casex '(' expression ')' case_body K_endcase
     {
       $$ = generator_build( 8, generator_case_comb_cov( @4.ppfline, @4.first_column ),
                             $1, strdup_safe( "casex(" ), $4, strdup_safe( ")" ), $6, strdup_safe( "endcase" ), "\n" );
     }
-  | cond_specifier_opt K_casez '(' expression ')'
+  | cond_specifier_opt K_casez '(' expression ')' case_body K_endcase
     {
       $$ = generator_build( 8, generator_case_comb_cov( @4.ppfline, @4.first_column ),
                             $1, strdup_safe( "casez(" ), $4, strdup_safe( ")" ), $6, strdup_safe( "endcase" ), "\n" );
@@ -2188,7 +2168,7 @@ statement
       $$ = generator_build( 6, generator_line_cov( @1.ppfline, ((@2.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@2.last_column - 1), TRUE ),
                             strdup_safe( "@* begin" ), "\n",
                             generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
-                            $2, strdup_safe( "end" ) ); 
+                            $3, strdup_safe( "end" ) ); 
     }
   | passign ';'
     {

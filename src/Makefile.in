@@ -52,8 +52,8 @@ am_covered_OBJECTS = arc.$(OBJEXT) assertion.$(OBJEXT) attr.$(OBJEXT) \
 	enumerate.$(OBJEXT) exclude.$(OBJEXT) expr.$(OBJEXT) \
 	fsm.$(OBJEXT) fsm_arg.$(OBJEXT) fsm_var.$(OBJEXT) \
 	func_iter.$(OBJEXT) func_unit.$(OBJEXT) genprof.$(OBJEXT) \
-	gen_item.$(OBJEXT) generator.$(OBJEXT) info.$(OBJEXT) \
-	instance.$(OBJEXT) keywords_1995.$(OBJEXT) \
+	gen_item.$(OBJEXT) gen_parser.$(OBJEXT) generator.$(OBJEXT) \
+	info.$(OBJEXT) instance.$(OBJEXT) keywords_1995.$(OBJEXT) \
 	keywords_2001.$(OBJEXT) keywords_sv.$(OBJEXT) \
 	keywords_sys_1995.$(OBJEXT) keywords_sys_2001.$(OBJEXT) \
 	keywords_sys_sv.$(OBJEXT) pplexer.$(OBJEXT) lexer.$(OBJEXT) \
@@ -231,6 +231,7 @@ covered_SOURCES = arc.c \
 		  func_unit.c \
                   genprof.c \
                   gen_item.c \
+                  gen_parser.c \
                   generator.c \
 		  info.c \
 		  instance.c \
@@ -296,6 +297,8 @@ CLEANFILES = pplexer.c \
              keywords_sys_sv.c \
              parser.c \
              parser.h \
+             gen_parser.c \
+             gen_parser.h \
              parser.output \
              static_parser.c \
              static_parser.h \
@@ -385,6 +388,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/func_iter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/func_unit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gen_item.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gen_parser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/generator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/genprof.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/info.Po@am__quote@
@@ -634,6 +638,9 @@ uninstall-am: uninstall-binPROGRAMS
 
 parser.h parser.c: $(srcdir)/parser.y
 	bison --verbose -t -p VL -d -o parser.c $(srcdir)/parser.y
+
+gen_parser.h gen_parser.c: $(srcdir)/gen_parser.y
+	bison --verbose -t -p GEN -d -o gen_parser.c $(srcdir)/gen_parser.y
 
 static_parser.h static_parser.c: $(srcdir)/static_parser.y
 	bison --verbose -t -p SE -d -o static_parser.c $(srcdir)/static_parser.y
