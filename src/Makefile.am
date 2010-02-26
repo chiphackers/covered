@@ -20,7 +20,7 @@ covered_SOURCES = arc.c \
                   genprof.c \
                   gen_item.c \
                   gen_parser.c \
-                  generator.c \
+                  generator.new.c \
 		  info.c \
 		  instance.c \
 		  keywords_1995.c \

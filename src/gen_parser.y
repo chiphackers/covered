@@ -37,7 +37,7 @@
 #include "expr.h"
 #include "func_unit.h"
 #include "gen_item.h"
-#include "generator.h"
+#include "generator.new.h"
 #include "link.h"
 #include "obfuscate.h"
 #include "parser_func.h"
@@ -61,131 +61,6 @@ extern int    curr_sig_type;
 extern void lex_start_udp_table();
 extern void lex_end_udp_table();
 
-/* TBD - We won't be needing these later */
-extern int ignore_mode;
-extern sig_range curr_prange;
-extern sig_range curr_urange;
-extern bool curr_signed;
-extern bool lhs_mode;
-
-
-/*!
- Specifies whether we are running to parse (TRUE) or to generate inline coverage code (FALSE).
-*/
-bool parse_mode = TRUE;
-
-/*!
- If set to a value > 0, specifies that we are parsing a parameter expression
-*/
-int param_mode = 0;
-
-/*!
- If set to a value > 0, specifies that we are parsing an attribute
-*/
-int attr_mode = 0;
-
-/*!
- If set to a value > 0, specifies that we are parsing the control block of a for loop.
-*/
-int for_mode = 0;
-
-/*!
- If set to a value > 0, specifies that we are parsing a generate block
-*/
-int generate_mode = 0;
-
-/*!
- If set to a value > 0, specifies that we are parsing the top-most level of structures in a generate block.
-*/
-int  generate_top_mode = 0;
-
-/*!
- If set to a value > 0, specifies that we are parsing the body of a generate loop
-*/
-int  generate_for_mode = 0;
-
-/*!
- If set to a value > 0, specifies that we are creating generate expressions
-*/
-int  generate_expr_mode = 0;
-
-/*!
- Points to current generate variable name.
-*/
-char* generate_varname = NULL;
-
-/*!
- Array storing the depth that a given fork block is at.
-*/
-int* fork_block_depth;
-
-/*!
- Current fork depth position in the fork_block_depth array.
-*/
-int  fork_depth  = -1;
-
-/*!
- Specifies the current block depth (for embedded blocks).
-*/
-int  block_depth = 0; 
-
-/*!
- Set to TRUE if we are currently parsing a static expression.
-*/
-bool in_static_expr = FALSE;
-
-
-/*!
- Pointer to head of parameter override list.
-*/
-param_oride* param_oride_head = NULL;
-
-/*!
- Pointer to tail of parameter override list.
-*/
-param_oride* param_oride_tail = NULL;
-
-/*!
- Specifies if the current variable list is handled by Covered or not.
-*/
-bool curr_handled = TRUE;
-
-/*!
- Specifies if current signal must be assigned or not (by Covered).
-*/
-bool curr_mba = FALSE;
-
-/*!
- Specifies if current range should be flagged as packed or not.
-*/
-bool curr_packed = TRUE;
-
-/*!
- Pointer to head of stack structure that stores the contents of generate
- items that we want to refer to later.
-*/
-gitem_link* save_gi_head = NULL;
-
-/*!
- Pointer to tail of stack structure that stores the contents of generate
- items that we want to refer to later.
-*/
-gitem_link* save_gi_tail = NULL;
-
-/*!
- Generate block index.
-*/
-int generate_block_index = 0;
-
-/*!
- Starting line number of last parsed FOR keyword.
-*/
-unsigned int for_start_line = 0;
-
-/*!
- Starting column of last parsed FOR keyword.
-*/
-unsigned int for_start_col = 0;
 
 /*!
  Macro to free a text variable type.  Sets the pointer to NULL so that the pointer is re-deallocated.
@@ -307,11 +182,11 @@ int yydebug = 1;
 %type <text> passign for_initialization
 %type <text> expression_assignment_list
 %type <text> gate_instance gate_instance_list list_of_names
-%type <text> begin_end_block fork_statement inc_for_depth
+%type <text> begin_end_block fork_statement
 %type <text> generate_item generate_item_list generate_item_list_opt
 %type <text> case_items case_item case_body
 %type <text> generate_case_items generate_case_item
-%type <text> static_unary_op unary_op syscall_wo_parms_op syscall_w_parms_op syscall_w_parms_op_64 syscall_w_parms_op_32
+%type <text> static_unary_op unary_op
 %type <text> pre_op_and_assign_op post_op_and_assign_op op_and_assign_op
 %type <text> if_body
 %type <text> gen_if_body
@@ -322,8 +197,12 @@ int yydebug = 1;
 %type <text> port_reference_list range udp_port_list udp_port_decls udp_init_opt udp_body udp_port_decl udp_initial udp_entry_list
 %type <text> udp_comb_entry_list udp_sequ_entry_list udp_comb_entry udp_input_list udp_output_sym udp_input_sym udp_sequ_entry module_item module_item_list
 %type <text> register_variable_list defparam_assign_list parameter_value_opt drive_strength_opt assign_list specify_item_list struct_union
-%type <text> integer_vector_type data_type integer_atom_type struct_union_member_list data_type_or_void cond_specifier_opt
-FOOBAR
+%type <text> integer_vector_type data_type integer_atom_type struct_union_member_list data_type_or_void cond_specifier_opt block_item_decls unsigned_opt
+%type <text> parameter_assign_decl localparam_assign_decl assign register_variable task_item_list task_item net_decl_assign charge_strength defparam_assign
+%type <text> parameter_value_byname_list parameter_value_byname port_name_list function_item parameter_assign_list localparam_assign_list localparam_assign
+%type <text> port_name specify_item specparam_list specify_simple_path_decl specify_edge_path_decl spec_reference_event spec_notifier_opt specparam
+%type <text> specify_simple_path specify_delay_value_list specify_path_identifiers spec_polarity spec_notifier specify_edge_path polarity_operator
+%type <text> enum_var_type_range_opt enum_variable_list enum_variable
 
 %token K_TAND
 %right '?' ':'
@@ -442,39 +321,39 @@ description
   | K_trireg charge_strength_opt range_opt delay3_opt
     list_of_variables ';'
     {
-      $$ = generator_build( 7, strdup_safe( "trireg" ), $2, $3, $4, R5, strdup_safe( ";" ), "\n" );
+      $$ = generator_build( 7, strdup_safe( "trireg" ), $2, $3, $4, $5, strdup_safe( ";" ), "\n" );
     }
   | gatetype gate_instance_list ';'
     {
-      $$ = generator_buildln( 3, $1, $2, strdup_safe( ";" ) );
+      $$ = generator_build( 4, $1, $2, strdup_safe( ";" ), "\n" );
     }
   | gatetype delay3 gate_instance_list ';'
     {
-      $$ = generator_buildln( 4, $1, $2, $3, strdup_safe( ";" ) );
+      $$ = generator_build( 4, $1, $2, $3, strdup_safe( ";" ), "\n" );
     }
   | gatetype drive_strength gate_instance_list ';'
     {
-      $$ = generator_buildln( 4, $1, $2, $3, strdup_safe( ";" ) );
+      $$ = generator_build( 4, $1, $2, $3, strdup_safe( ";" ), "\n" );
     }
   | gatetype drive_strength delay3 gate_instance_list ';'
     {
-      $$ = generator_buildln( 5, $1, $2, $3, $4, strdup_safe( ";" ) );
+      $$ = generator_build( 5, $1, $2, $3, $4, strdup_safe( ";" ), "\n" );
     }
   | K_pullup gate_instance_list ';'
     {
-      $$ = generator_buildln( 3, strdup_safe( "pullup" ), $2, strdup_safe( ";" ) );
+      $$ = generator_build( 3, strdup_safe( "pullup" ), $2, strdup_safe( ";" ), "\n" );
     }
   | K_pulldown gate_instance_list ';'
     {
-      $$ = generator_buildln( 3, strdup_safe( "pulldown" ), $2, strdup_safe( ";" ) );
+      $$ = generator_build( 3, strdup_safe( "pulldown" ), $2, strdup_safe( ";" ), "\n" );
     }
   | K_pullup '(' dr_strength1 ')' gate_instance_list ';'
     {
-      $$ = generator_buildln( 5, strdup_safe( "pullup(" ), $3, strdup_safe( ")" ), $5, strdup_safe( ";" ) );
+      $$ = generator_build( 5, strdup_safe( "pullup(" ), $3, strdup_safe( ")" ), $5, strdup_safe( ";" ), "\n" );
     }
   | K_pulldown '(' dr_strength0 ')' gate_instance_list ';'
     {
-      $$ = generator_buildln( 5, strdup_safe( "pulldown(" ), $3, strdup_safe( ")" ), $5, strdup_safe( ";" ) );
+      $$ = generator_build( 5, strdup_safe( "pulldown(" ), $3, strdup_safe( ")" ), $5, strdup_safe( ";" ), "\n" );
     }
   | block_item_decl
     {
@@ -623,12 +502,10 @@ port_declaration
     }
   | attribute_list_opt port_type net_type_sign_range_opt error
     {
-      FREE_TEXT( generator_build( 3, $1, $2, $3 ) );
       $$ = NULL;
     }
   | attribute_list_opt K_output var_type signed_opt range_opt error
     {
-      FREE_TEXT( generator_build( 4, $1, $3, $4, $5 ) );
       $$ = NULL;
     }
   ;
@@ -1068,28 +945,6 @@ expression
     }
   ;
 
-syscall_w_parms_op
-  : S_random          { $$ = EXP_OP_SRANDOM;      }
-  | S_urandom         { $$ = EXP_OP_SURANDOM;     }
-  | S_urandom_range   { $$ = EXP_OP_SURAND_RANGE; }
-  | S_realtobits      { $$ = EXP_OP_SR2B;         }
-  | S_rtoi            { $$ = EXP_OP_SR2I;         }
-  | S_shortrealtobits { $$ = EXP_OP_SSR2B;        }
-  | S_testargs        { $$ = EXP_OP_STESTARGS;    }
-  | S_valargs         { $$ = EXP_OP_SVALARGS;     }
-  | S_signed          { $$ = EXP_OP_SSIGNED;      }
-  | S_unsigned        { $$ = EXP_OP_SUNSIGNED;    }
-  ;
-
-syscall_w_parms_op_64
-  : S_bitstoreal      { $$ = EXP_OP_SB2R;   }
-  | S_itor            { $$ = EXP_OP_SI2R;   }
-  ;
-
-syscall_w_parms_op_32
-  : S_bitstoshortreal { $$ = EXP_OP_SB2SR;  }
-  ;
-
 pre_op_and_assign_op
   : K_INC             { $$ = strdup_safe( "++" ); }
   | K_DEC             { $$ = strdup_safe( "--" ); }
@@ -1143,7 +998,7 @@ expr_primary
     }
   | identifier '(' expression_port_list ')'
     {
-      $$ = generator_build( 4, $1, strdup_safe( "(" ), $3, strdup_safe( ")" );
+      $$ = generator_build( 4, $1, strdup_safe( "(" ), $3, strdup_safe( ")" ) );
     }
   | SYSCALL '(' expression_port_list ')'
     {
@@ -1225,7 +1080,7 @@ identifier
     }
   | identifier '.' IDENTIFIER
     {
-      $$ = generator_build( $1, strdup_safe( "." ), $3 );
+      $$ = generator_build( 3, $1, strdup_safe( "." ), $3 );
     }
   ;
 
@@ -1296,7 +1151,7 @@ udp_port_decl
     }
   | K_reg IDENTIFIER ';'
     {
-      $$ = generator_build( 4, strdup_safe( "reg", $2, strdup_safe( ";" ), "\n" );
+      $$ = generator_build( 4, strdup_safe( "reg" ), $2, strdup_safe( ";" ), "\n" );
     }
   ;
 
@@ -1488,7 +1343,7 @@ generate_item
     {
       $$ = $1;
     }
-  | K_begin generate_item_list_opt end_gen_block K_end
+  | K_begin generate_item_list_opt K_end
     {
       char         str[50];
       char*        back;
@@ -1622,7 +1477,7 @@ module_item
     port_type signed_opt range_opt error ';'
     {
       VLerror( "Invalid variable list in port declaration" );
-      FREE_TEXT( generator_build( 4, $1, $2, $3, $4 ) );
+      $$ = NULL;
     }
   | attribute_list_opt
     K_trireg charge_strength_opt range_opt delay3_opt list_of_variables ';'
@@ -1649,15 +1504,19 @@ module_item
     }
   | attribute_list_opt K_pullup gate_instance_list ';'
     {
+      $$ = generator_build( 5, $1, strdup_safe( "pullup" ), $3, strdup_safe( ";" ), "\n" );
     }
   | attribute_list_opt K_pulldown gate_instance_list ';'
     {
+      $$ = generator_build( 5, $1, strdup_safe( "pulldown" ), $3, strdup_safe( ";" ), "\n" );
     }
   | attribute_list_opt K_pullup '(' dr_strength1 ')' gate_instance_list ';'
     {
+      $$ = generator_build( 7, $1, strdup_safe( "pullup(" ), $4, strdup_safe( ")" ), $6, strdup_safe( ";" ), "\n" );
     }
   | attribute_list_opt K_pulldown '(' dr_strength0 ')' gate_instance_list ';'
     {
+      $$ = generator_build( 7, $1, strdup_safe( "pulldown(" ), $4, strdup_safe( ")" ), $6, strdup_safe( ";" ), "\n" );
     }
   | block_item_decl
     {
@@ -1812,7 +1671,7 @@ module_item
     }
   | KK_attribute '(' IDENTIFIER ',' STRING ',' STRING ')' ';'
     {
-      $$ = generator_build( strdup_safe( 8, "$attribute(" ), $3, strdup_safe( "," ), $5, strdup_safe( "," ), $7, strdup_safe( ");" ), "\n" );
+      $$ = generator_build( 8, strdup_safe( "$attribute(" ), $3, strdup_safe( "," ), $5, strdup_safe( "," ), $7, strdup_safe( ");" ), "\n" );
     } 
   | KK_attribute '(' error ')' ';'
     {
@@ -2094,11 +1953,11 @@ statement
     }
   | K_for '(' for_initialization ';' for_condition ';' passign ')' statement
     {
-      $$ = generator_build( 14, generator_comb_cov( @5.ppline, @5.first_column, ),
+      $$ = generator_build( 15, generator_comb_cov( @5.ppfline, @5.first_column, FALSE, TRUE, FALSE ),
                             strdup_safe( "for(" ), $3, strdup_safe( ";" ), $5, strdup_safe( ";" ), $7, strup_safe( ") begin" ), "\n", $9,
-                            generator_line_cov( ... ),
-                            generator_comb_cov( ... ),
-                            generator_comb_cov( ... ), strdup_safe( "end" ) );
+                            generator_line_cov( @7.ppfline, @7.pplline, @1.first_column, (@1.last_column - 1), TRUE ),
+                            generator_comb_cov( @7.ppfline, @7.first_column, FALSE, TRUE, FALSE ),
+                            generator_comb_cov( @5.ppfline, @5.first_column, FALSE, TRUE, FALSE ), strdup_safe( "end" ), "\n" );
     }
   | K_for '(' for_initialization ';' for_condition ';' error ')' statement
     {
@@ -2119,39 +1978,16 @@ statement
                             strdup_safe( "while(" ), $3, strdup_safe( ") begin" ), "\n", $5,
                             generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, TRUE ) );
     }
-  | K_while '(' error ')' inc_block_depth statement dec_block_depth
+  | K_while '(' error ')' statement
     {
       $$ = NULL;
     }
-  | K_do inc_block_depth statement dec_block_depth_flush K_while '(' expression ')' ';'
+  | K_do statement K_while '(' expression ')' ';'
     {
-      if( parse_mode ) {
-        if( (ignore_mode == 0) && ($3 != NULL) && ($7 != NULL) ) {
-          expression* expr = NULL;
-          statement*  stmt;
-          Try {
-            expr = db_create_expression( $7, NULL, EXP_OP_WHILE, FALSE, @5.first_line, @5.ppfline, @8.pplline, @5.first_column, (@8.last_column - 1), NULL, in_static_expr );
-          } Catch_anonymous {
-            error_count++;
-          }
-          if( (stmt = db_create_statement( expr )) != NULL ) {
-            assert( db_statement_connect( $3, stmt ) );
-            db_connect_statement_true( stmt, $3 );
-            stmt->suppl.part.stop_true = 1;  /* Set STOP bit for the TRUE path */
-          }
-          $$ = $3;
-        } else {
-          expression_dealloc( $7, FALSE );
-          db_remove_statement( $3 );
-          $$ = NULL;
-        }
-      } else {
-        generator_prepend_to_work_code( " end " );
-        (void)generator_insert_line_cov( @5.ppfline, ((@8.last_line - @5.first_line) + @5.ppfline), @5.first_column, (@8.last_column - 1), TRUE );
-        (void)generator_insert_comb_cov( @5.ppfline, @5.first_column, FALSE, TRUE, FALSE );
-        generator_flush_work_code;
-        $$ = NULL;
-      }
+      $$ = generator_build( 12, strdup_safe( "do" ), strdup_safe( "begin" ), "\n", $2, strdup_safe( "end" ), "\n",
+                            generator_line_cov( @3.ppfline, ((@3.last_line - @3.first_line) + @3.ppfline), @3.first_column, (@3.last_column - 1), TRUE ),
+                            generator_comb_cov( @3.ppfline, @3.first_column, FALSE, TRUE, FALSE ),
+                            strdup_safe( "while(" ), $5, strdup_safe( ");" ), "\n" );
     }
   | delay1 statement_or_null
     {
@@ -2544,17 +2380,9 @@ case_item
     {
       $$ = generator_build( 5, strdup_safe( "default : begin" ), "\n", $3, strdup_safe( "end" ), "\n" );
     }
-  | K_default 
+  | K_default statement_or_null
     {
-      if( !parse_mode ) {
-        generator_add_cov_to_work_code( " begin" );
-        block_depth++;
-        generator_flush_work_code;
-      }
-    }
-    statement_or_null
-    {
-      $$ = generator_build( strdup_safe( "default begin" ), "\n", $2, strdup_safe( "end" ), "\n" );
+      $$ = generator_build( 5, strdup_safe( "default begin" ), "\n", $2, strdup_safe( "end" ), "\n" );
     }
   | error ':' statement_or_null
     {
@@ -2923,19 +2751,19 @@ drive_strength
     }
   | '(' dr_strength0 ',' K_highz1 ')'
     {
-      $$ = generator_build( 5, strdup_safe( "(" ), $2, strdup_safe( "," ), $4, strdup_safe( ")" ) );
+      $$ = generator_build( 3, strdup_safe( "(" ), $2, strdup_safe( ", highz1 )" ) );
     }
   | '(' dr_strength1 ',' K_highz0 ')'
     {
-      $$ = generator_build( 5, strdup_safe( "(" ), $2, strdup_safe( "," ), $4, strdup_safe( ")" ) );
+      $$ = generator_build( 3, strdup_safe( "(" ), $2, strdup_safe( ", highz0 )" ) );
     }
   | '(' K_highz1 ',' dr_strength0 ')'
     {
-      $$ = generator_build( 5, strdup_safe( "(" ), $2, strdup_safe( "," ), $4, strdup_safe( ")" ) );
+      $$ = generator_build( 3, strdup_safe( "( highz1," ), $4, strdup_safe( ")" ) );
     }
   | '(' K_highz0 ',' dr_strength1 ')'
     {
-      $$ = generator_build( 5, strdup_safe( "(" ), $2, strdup_safe( "," ), $4, strdup_safe( ")" ) );
+      $$ = generator_build( 3, strdup_safe( "( highz0," ), $4, strdup_safe( ")" ) );
     }
   ;
 
@@ -3064,6 +2892,9 @@ parameter_value_opt
       $$ = NULL;
     }
   |
+    {
+      $$ = NULL;
+    }
   ;
 
 parameter_value_byname_list
@@ -3245,6 +3076,7 @@ port_name
     }
   | '.' IDENTIFIER '(' error ')'
     {
+      FREE_TEXT( $2 );
       $$ = NULL;
     }
   | '.' IDENTIFIER '(' ')'
@@ -3568,11 +3400,11 @@ enum_var_type_range_opt
     }
   | K_reg range_opt
     {
-      $$ = generator_build( 2, $1, $2 );
+      $$ = generator_build( 2, strdup_safe( "reg" ), $2 );
     }
   | K_logic range_opt
     {
-      $$ = generator_build( 2, $1, $2 );
+      $$ = generator_build( 2, strdup_safe( "logic" ), $2 );
     }
   | K_int      { $$ = strdup_safe( "int" );      }
   | K_integer  { $$ = strdup_safe( "integer" );  }
