@@ -26,7 +26,7 @@
 #include "expr.h"
 #include "func_iter.h"
 #include "func_unit.h"
-#include "generator.h"
+#include "generator.new.h"
 #include "gen_item.h"
 #include "instance.h"
 #include "link.h"
@@ -916,12 +916,16 @@ static void generator_output_funits(
 }
 
 /*!
+ \return Returns a string containing all of the Verilator instance ID overrides.
+
  Writes the instance ID assignments for Verilator simulation.
 */
-static void generator_write_verilator_inst_ids(
+static char* generator_verilator_inst_ids(
   funit_inst* root,        /*!< Pointer to root instance in instance tree to parse */
   char*       parent_name  /*!< Verilator version of parent's scope */
 ) { PROFILE(GENERATOR_WRITE_VERILATOR_INST_IDS);
+
+  char* inst_str = NULL;
 
   assert( root != NULL );
 
@@ -966,18 +970,19 @@ static void generator_write_verilator_inst_ids(
       char         str[4096];
       unsigned int rv = snprintf( str, 4096, "%sCOVERED_INST_ID%d = %d;", child_name, root->funit->id, root->id );
       assert( rv < 4096 );
-      generator_add_cov_to_work_code( str );
-      generator_add_cov_to_work_code( "\n" );
+      inst_str = generator_build( 2, strdup_safe( str ), "\n" );
     }
 
     while( child != NULL ) {
-      generator_write_verilator_inst_ids( child, child_name );
+      inst_str = generator_build( 2, inst_str, generator_verilator_inst_ids( child, child_name ) );
       child = child->next;
     }
 
   }
 
   PROFILE_END;
+
+  return( inst_str );
 
 }
 
@@ -1552,16 +1557,19 @@ static statement* generator_find_case_statement(
 }
 
 /*!
+ \return Returns a string containing the line coverage information.
+
  Inserts line coverage information for the given statement.
 */
-void generator_insert_line_cov_with_stmt(
+char* generator_line_cov_with_stmt(
   statement* stmt,      /*!< Pointer to statement to generate line coverage for */
   bool       semicolon  /*!< Specifies if a semicolon (TRUE) or a comma (FALSE) should be appended to the created line */
 ) { PROFILE(GENERATOR_INSERT_LINE_COV_WITH_STMT);
 
+  char str[4096];
+
   if( (stmt != NULL) && ((info_suppl.part.scored_line && !handle_funit_as_assert) || (handle_funit_as_assert && ovl_is_coverage_point( stmt->exp ))) ) {
 
-    char         str[4096];
     unsigned int rv;
     str_link*    tmp_head = NULL;
     str_link*    tmp_tail = NULL;
@@ -1601,17 +1609,11 @@ void generator_insert_line_cov_with_stmt(
 
     }
 
-    (void)str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
-    if( work_head == NULL ) {
-      work_head = work_tail = tmp_head;
-    } else {
-      tmp_tail->next = work_head;
-      work_head      = tmp_head;
-    }
-
   }
 
   PROFILE_END;
+
+  return( strdup_safe( str ) );
 
 }
 
@@ -1620,7 +1622,7 @@ void generator_insert_line_cov_with_stmt(
 
  Inserts line coverage information in string queues.
 */
-statement* generator_insert_line_cov(
+char* generator_line_cov(
                unsigned int first_line,    /*!< First line to create line coverage for */
   /*@unused@*/ unsigned int last_line,     /*!< Last line to create line coverage for */
                unsigned int first_column,  /*!< First column of statement */
@@ -1628,25 +1630,28 @@ statement* generator_insert_line_cov(
                bool         semicolon      /*!< Set to TRUE to create a semicolon after the line assignment; otherwise, adds a comma */
 ) { PROFILE(GENERATOR_INSERT_LINE_COV);
 
-  statement* stmt = NULL;
+  statement* stmt;
+  char*      str = NULL;
 
   if( ((stmt = generator_find_statement( first_line, first_column )) != NULL) && !generator_is_static_function_only( stmt->funit ) &&
       ((info_suppl.part.scored_line && !handle_funit_as_assert) || (handle_funit_as_assert && ovl_is_coverage_point( stmt->exp ))) ) {
 
-    generator_insert_line_cov_with_stmt( stmt, semicolon );
+    str = generator_line_cov_with_stmt( stmt, semicolon );
 
   }
 
   PROFILE_END;
 
-  return( stmt );
+  return( str );
 
 }
 
 /*!
+ \return Returns a string containing the event coverage information.
+
  Handles the insertion of event-type combinational logic code.
 */
-void generator_insert_event_comb_cov(
+char* generator_event_comb_cov(
   expression* exp,        /*!< Pointer to expression to output */
   func_unit*  funit,      /*!< Pointer to functional unit containing the expression */
   bool        reg_needed  /*!< If set to TRUE, instantiates needed registers */
@@ -1657,6 +1662,7 @@ void generator_insert_event_comb_cov(
   unsigned int rv;
   expression*  root_exp = exp;
   char*        scope    = generator_get_relative_scope( funit );
+  char*        cov_str  = NULL;
 
   /* Find the root event of this expression tree */
   while( (ESUPPL_IS_ROOT( root_exp->suppl ) == 0) && (EXPR_IS_EVENT( root_exp->parent->expr ) == 1) ) {
@@ -1688,8 +1694,7 @@ void generator_insert_event_comb_cov(
     /* Create assignment and append it to the working code list */
     rv = snprintf( str, 4096, "%s = 1'b1;", name );
     assert( rv < 4096 );
-    generator_add_cov_to_work_code( str );
-    generator_add_cov_to_work_code( "\n" );
+    cov_str = generator_build( 2, strdup_safe( str ), "\n" );
 
   /*
    Otherwise, we need to save off the state of the temporary event variable and compare it after the event statement
@@ -1713,15 +1718,10 @@ void generator_insert_event_comb_cov(
           }
           rv = snprintf( str, 4096, " %s = (%s!==1'b1) & ((%s)===1'b1);", name, tname, event_str );
           assert( rv < 4096 );
-          generator_add_cov_to_work_code( str );
+          cov_str = strdup_safe( str );
           rv = snprintf( str, 4096, " %s = %s;", tname, event_str );
           assert( rv < 4096 );
-          if( stmt_head ) {
-            generator_add_cov_to_work_code( str );
-          } else {
-            generator_prepend_to_work_code( str );
-          }
-          generator_add_cov_to_work_code( "\n" );
+          cov_str = generator_build( 3, cov_str, strdup_safe( str ), "\n" );
         }
         break;
 
@@ -1735,15 +1735,10 @@ void generator_insert_event_comb_cov(
           }
           rv = snprintf( str, 4096, " %s = (%s!==1'b0) & ((%s)===1'b0);", name, tname, event_str );
           assert( rv < 4096 );
-          generator_add_cov_to_work_code( str );
+          cov_str = strdup_safe( str );
           rv = snprintf( str, 4096, " %s = %s;", tname, event_str );
           assert( rv < 4096 );
-          if( stmt_head ) {
-            generator_add_cov_to_work_code( str );
-          } else {
-            generator_prepend_to_work_code( str );
-          }
-          generator_add_cov_to_work_code( "\n" );
+          cov_str = generator_build( 3, cov_str, strdup_safe( str ), "\n" );
         }
         break;
 
@@ -1764,11 +1759,10 @@ void generator_insert_event_comb_cov(
           }
           rv = snprintf( str, 4096, " %s = (%s!==(%s));", name, tname, event_str );
           assert( rv < 4096 );
-          generator_add_cov_to_work_code( str );
+          cov_str = strdup_safe( str );
           rv = snprintf( str, 4096, " %s = %s;", tname, event_str );
           assert( rv < 4096 );
-          generator_add_cov_to_work_code( str );
-          generator_add_cov_to_work_code( "\n" );
+          cov_str = generator_build( 3, cov_str, strdup_safe( str ), "\n" );
         }
         break;
 
@@ -1784,12 +1778,16 @@ void generator_insert_event_comb_cov(
 
   PROFILE_END;
 
+  return( cov_str );
+
 }
 
 /*!
+ \return Returns string containing combinational coverage for the given unary expression.
+
  Inserts combinational logic coverage code for a unary expression.
 */
-static void generator_insert_unary_comb_cov(
+static char* generator_unary_comb_cov(
   expression*  exp,        /*!< Pointer to expression to output */
   func_unit*   funit,      /*!< Pointer to functional unit containing this expression */
   bool         net,        /*!< Set to TRUE if this expression is a net */
@@ -1834,19 +1832,22 @@ static void generator_insert_unary_comb_cov(
     rv = snprintf( str, 4096, "%s%s = (%s > 0);\n", prefix, sig, sigr );
   }
   assert( rv < 4096 );
-  (void)str_link_add( strdup_safe( str ), &comb_head, &comb_tail );
 
   /* Deallocate temporary memory */
   free_safe( sigr, (strlen( sigr ) + 1) );
 
   PROFILE_END;
 
+  return( strdup_safe( str ) );
+
 }
 
 /*!
+ \return Returns string containing combinational coverage information.
+
  Inserts AND/OR/OTHER-style combinational logic coverage code.
 */
-static void generator_insert_comb_comb_cov(
+static char* generator_comb_comb_cov(
   expression* exp,        /*!< Pointer to expression to output */
   func_unit*  funit,      /*!< Pointer to functional unit containing this expression */
   bool        net,        /*!< Set to TRUE if this expression is a net */
@@ -1901,13 +1902,14 @@ static void generator_insert_comb_comb_cov(
     }
   }
   assert( rv < 4096 );
-  (void)str_link_add( strdup_safe( str ), &comb_head, &comb_tail );
 
   /* Deallocate memory */
   free_safe( sigl, (strlen( sigl ) + 1) );
   free_safe( sigr, (strlen( sigr ) + 1) );
 
   PROFILE_END;
+
+  return( strdup_safe( str ) );
 
 }
 
@@ -2494,9 +2496,11 @@ static void generator_create_exp(
 #endif
 
 /*!
+ \return Returns the string from the given subexpression.
+
  Generates temporary subexpression for the given expression (not recursively)
 */
-static void generator_insert_subexp(
+static char* generator_subexp(
   expression* exp,         /*!< Pointer to the current expression */
   func_unit*  funit,       /*!< Pointer to the functional unit that exp exists in */
   bool        net,         /*!< If TRUE, specifies that we are generating for a net */
@@ -2506,7 +2510,7 @@ static void generator_insert_subexp(
 
   char*        lhs_str  = NULL;
   char*        val_str;
-  char*        str;
+  char*        str      = NULL;
   unsigned int slen;
   unsigned int rv;
   unsigned int i;
@@ -2567,9 +2571,6 @@ static void generator_insert_subexp(
   }
   assert( rv < slen );
 
-  /* Prepend the string to the register/working code */
-  (void)str_link_add( str, &comb_head, &comb_tail );
-
   /* Deallocate memory */
   free_safe( lhs_str, (strlen( lhs_str ) + 1) );
   free_safe( val_str, (strlen( val_str ) + 1) );
@@ -2579,12 +2580,14 @@ static void generator_insert_subexp(
 
   PROFILE_END;
 
+  return( str );
+
 }
 
 /*!
  Recursively inserts the combinational logic coverage code for the given expression tree.
 */
-static void generator_insert_comb_cov_helper2(
+static char* generator_comb_cov_helper2(
   expression*  exp,           /*!< Pointer to expression tree to operate on */
   func_unit*   funit,         /*!< Pointer to current functional unit */
   exp_op_type  parent_op,     /*!< Parent expression operation (originally should be set to the same operation as exp) */
@@ -2595,6 +2598,8 @@ static void generator_insert_comb_cov_helper2(
   bool         reg_needed,    /*!< If set to TRUE, registers are created as needed; otherwise, they are omitted */
   bool         replace_exp    /*!< If set to TRUE, will allow this expression to replace the original */
 ) { PROFILE(GENERATOR_INSERT_COMB_COV_HELPER2);
+
+  char* cov_str = NULL;
 
   if( exp != NULL ) {
 
@@ -2607,17 +2612,18 @@ static void generator_insert_comb_cov_helper2(
                                (!EXPR_IS_EVENT( exp ) && !EXPR_IS_COMB( exp ) && expr_cov_needed));
 
     /* Generate children expression trees (depth first search) */
-    generator_insert_comb_cov_helper2( exp->left,  funit, exp->op, depth, (expr_cov_needed & EXPR_IS_COMB( exp )), net, FALSE, reg_needed, (child_replace_exp && !EXPR_IS_OP_AND_ASSIGN( exp )) );
-    generator_insert_comb_cov_helper2( exp->right, funit, exp->op, depth, (expr_cov_needed & EXPR_IS_COMB( exp )), net, FALSE, reg_needed, child_replace_exp );
+    cov_str = generator_build( 2,
+                               generator_comb_cov_helper2( exp->left,  funit, exp->op, depth, (expr_cov_needed & EXPR_IS_COMB( exp )), net, FALSE, reg_needed, (child_replace_exp && !EXPR_IS_OP_AND_ASSIGN( exp )) ),
+                               generator_comb_cov_helper2( exp->right, funit, exp->op, depth, (expr_cov_needed & EXPR_IS_COMB( exp )), net, FALSE, reg_needed, child_replace_exp ) );
 
     /* Generate event combinational logic type */
     if( EXPR_IS_EVENT( exp ) ) {
       if( info_suppl.part.scored_events == 1 ) {
         if( expr_cov_needed ) {
-          generator_insert_event_comb_cov( exp, funit, reg_needed );
+          cov_str = generator_build( 2, cov_str, generator_event_comb_cov( exp, funit, reg_needed ) );
         }
         if( force_subexp || generator_expr_needs_to_be_substituted( exp ) ) {
-          generator_insert_subexp( exp, funit, net, reg_needed, (replace_exp && !EXPR_IS_OP_AND_ASSIGN( exp )) );
+          cov_str = generator_build( 2, cov_str, generator_subexp( exp, funit, net, reg_needed, (replace_exp && !EXPR_IS_OP_AND_ASSIGN( exp )) ) );
         }
       }
 
@@ -2625,10 +2631,10 @@ static void generator_insert_comb_cov_helper2(
     } else if( EXPR_IS_COMB( exp ) ) {
       if( info_suppl.part.scored_comb == 1 ) {
         if( !root && (expr_cov_needed || force_subexp || generator_expr_needs_to_be_substituted( exp )) ) {
-          generator_insert_subexp( exp, funit, net, reg_needed, replace_exp );
+          cov_str = generator_build( 2, cov_str, generator_subexp( exp, funit, net, reg_needed, replace_exp ) );
         }
         if( expr_cov_needed ) {
-          generator_insert_comb_comb_cov( exp, funit, net, reg_needed );
+          cov_str = generator_build( 2, cov_str, generator_comb_comb_cov( exp, funit, net, reg_needed ) );
         }
       }
 
@@ -2636,10 +2642,10 @@ static void generator_insert_comb_cov_helper2(
     } else {
       if( info_suppl.part.scored_comb == 1 ) {
         if( expr_cov_needed || force_subexp || generator_expr_needs_to_be_substituted( exp ) ) {
-          generator_insert_subexp( exp, funit, net, reg_needed, (replace_exp && !EXPR_IS_OP_AND_ASSIGN( exp )) );
+          cov_str = generator_build( 2, cov_str, generator_subexp( exp, funit, net, reg_needed, (replace_exp && !EXPR_IS_OP_AND_ASSIGN( exp )) ) );
         }
         if( expr_cov_needed ) {
-          generator_insert_unary_comb_cov( exp, funit, net, reg_needed );
+          cov_str = generator_build( 2, cov_str, generator_unary_comb_cov( exp, funit, net, reg_needed ) );
         }
       }
 
@@ -2649,12 +2655,16 @@ static void generator_insert_comb_cov_helper2(
 
   PROFILE_END;
 
+  return( cov_str );
+
 }
 
 /*!
+ \return Returns combinational coverage string.
+
  Recursively inserts the combinational logic coverage code for the given expression tree.
 */
-static void generator_insert_comb_cov_helper(
+static char* generator_comb_cov_helper(
   expression*  exp,        /*!< Pointer to expression tree to operate on */
   func_unit*   funit,      /*!< Pointer to current functional unit */
   exp_op_type  parent_op,  /*!< Parent expression operation (originally should be set to the same operation as exp) */
@@ -2664,24 +2674,11 @@ static void generator_insert_comb_cov_helper(
 ) { PROFILE(GENERATOR_INSERT_COMB_COV_HELPER);
 
   /* Generate the code */
-  generator_insert_comb_cov_helper2( exp, funit, parent_op, 0, FALSE, net, root, reg_needed, ((ESUPPL_IS_ROOT( exp->suppl ) == 1) || !EXPR_IS_EVENT( exp->parent->expr )) );
+  char* cov_str = generator_comb_cov_helper2( exp, funit, parent_op, 0, FALSE, net, root, reg_needed, ((ESUPPL_IS_ROOT( exp->suppl ) == 1) || !EXPR_IS_EVENT( exp->parent->expr )) );
 
-  /* Output the generated code */
-  if( comb_head != NULL ) {
+  PROFILE_END;
 
-    /* Prepend to the working list */
-    if( work_head == NULL ) {
-      work_head = comb_head;
-      work_tail = comb_tail;
-    } else {
-      comb_tail->next = work_head;
-      work_head       = comb_head;
-    }
-
-    /* Clear the comb head/tail pointers for reuse */
-    comb_head = comb_tail = NULL;
-
-  }
+  return( cov_str );
 
 }
 
@@ -3037,9 +3034,11 @@ static char* generator_get_lhs_lsb(
 }
 
 /*!
+ \return Returns string containing memory coverage information.
+
  Inserts memory coverage for the given expression.
 */
-static void generator_insert_mem_cov(
+static char* generator_mem_cov(
   expression* exp,    /*!< Pointer to expression accessing memory signal */
   func_unit*  funit,  /*!< Pointer to functional unit containing the given expression */
   bool        net,    /*!< If TRUE, creates the signal name for a net; otherwise, creates the signal name for a register */
@@ -3052,11 +3051,12 @@ static void generator_insert_mem_cov(
   char         name[4096];
   char         range[4096];
   unsigned int rv;
-  char*        idxstr = generator_gen_mem_index( exp, funit, expression_get_curr_dimension( exp ) );
+  char*        idxstr  = generator_gen_mem_index( exp, funit, expression_get_curr_dimension( exp ) );
   char*        value;
   char*        str;
   char         num[50];
-  char*        scope  = generator_get_relative_scope( funit );
+  char*        scope   = generator_get_relative_scope( funit );
+  char*        cov_str = NULL;
 
   /* Figure out the size to store the number of dimensions */
   strcpy( num, "32" );
@@ -3107,7 +3107,7 @@ static void generator_insert_mem_cov(
     }
 
     /* Prepend the index */
-    (void)str_link_add( str, &tmp_head, &tmp_tail );
+    cov_str = str;
 
     /* Generate size needed to store memory element */
     size = generator_gen_size( exp, funit, &number );
@@ -3153,7 +3153,7 @@ static void generator_insert_mem_cov(
         free_safe( rhs_str, (strlen( rhs_str ) + 1) );
 
         /* Prepend the expression */
-        (void)str_link_add( value, &tmp_head, &tmp_tail );
+        cov_str = generator_build( 2, cov_str, value );
 
         /* Specify that the expression has been placed */
         rhs->suppl.part.eval_t = 1;
@@ -3194,14 +3194,6 @@ static void generator_insert_mem_cov(
 
       memstr = codegen_gen_expr_one_line( first_exp, funit, FALSE );
 
-    }
-
-    /* Prepend the temporary list to the working list */
-    if( work_head == NULL ) {
-      work_head = work_tail = tmp_head;
-    } else {
-      tmp_tail->next = work_head;
-      work_head      = tmp_head;
     }
 
     /* Create name */
@@ -3259,8 +3251,7 @@ static void generator_insert_mem_cov(
     rv  = snprintf( str, slen, "wire %s %s = %s;", range, name, value );
     assert( rv < slen );
 
-    generator_prepend_to_work_code( "\n" );
-    generator_prepend_to_work_code( str );
+    cov_str = generator_build( 3, cov_str, strdup_safe( str ), "\n" );
 
   /* Otherwise, create the assignment string for a register and create the register */
   } else {
@@ -3282,11 +3273,14 @@ static void generator_insert_mem_cov(
     assert( rv < slen );
 
     /* Write coverage should append to the working buffer */
+    cov_str = generator_build( 2, cov_str, strdup_safe( str ) );
+#ifdef OBSOLETE
     if( write ) {
       generator_add_cov_to_work_code( str );
     } else {
       (void)str_link_add( strdup_safe( str ), &work_head, &work_tail );
     }
+#endif
 
   }
 
@@ -3298,13 +3292,17 @@ static void generator_insert_mem_cov(
 
   PROFILE_END;
 
+  return( cov_str );
+
 }
 
 /*!
+ \return Returns string containing memory coverage information.
+
  Traverses the specified expression tree searching for memory accesses.  If any are found, the appropriate
  coverage code is inserted into the output buffers.
 */
-static void generator_insert_mem_cov_helper(
+static char* generator_mem_cov_helper(
   expression* exp,           /*!< Pointer to current expression */
   func_unit*  funit,         /*!< Pointer to functional unit containing the expression */
   bool        net,           /*!< Specifies if the code generator should produce code for a net or a register */
@@ -3313,47 +3311,50 @@ static void generator_insert_mem_cov_helper(
   expression* rhs            /*!< Set to the RHS expression if the root expression was a non-blocking assignment */
 ) { PROFILE(GENERATOR_INSERT_MEM_COV_HELPER);
 
+  char* cov_str = NULL;
+
   if( exp != NULL ) {
 
     /* Generate code to perform memory write/read access */
     if( (exp->sig != NULL) && (exp->sig->suppl.part.type == SSUPPL_TYPE_MEM) && (exp->elem.dim != NULL) && exp->elem.dim->last ) {
       if( ((exp->suppl.part.lhs == 1) || do_write) && !do_read ) {
-        generator_insert_mem_cov( exp, funit, net, TRUE, rhs );
+        cov_str = generator_mem_cov( exp, funit, net, TRUE, rhs );
       }
       if( (exp->suppl.part.lhs == 0) || do_read ) {
-        generator_insert_mem_cov( exp, funit, net, FALSE, rhs );
+        cov_str = generator_build( 2, cov_str, generator_mem_cov( exp, funit, net, FALSE, rhs ) );
       }
     }
 
-    /* Get memory coverage for left expression */
-    generator_insert_mem_cov_helper( exp->left,
+    /* Get memory coverage for left and right expressions */
+    cov_str = generator_build( 3, cov_str,
+                               generator_mem_cov_helper( exp->left,
                                      funit,
                                      net,
                                      ((exp->op == EXP_OP_SBIT_SEL) || (exp->op == EXP_OP_MBIT_SEL) || (exp->op == EXP_OP_MBIT_POS) ||
                                       (exp->op == EXP_OP_MBIT_NEG) || do_read),
                                      FALSE,
-                                     rhs );
-
-    /* Get memory coverage for right expression */
-    generator_insert_mem_cov_helper( exp->right,
+                                     rhs ),
+                               generator_mem_cov_helper( exp->right,
                                      funit,
                                      net,
                                      ((exp->op == EXP_OP_MBIT_SEL) || do_read),
                                      ((exp->op == EXP_OP_SASSIGN) && (exp->parent->expr != NULL) && ((exp->parent->expr->op == EXP_OP_SRANDOM) || (exp->parent->expr->op == EXP_OP_SURANDOM))),
-                                     rhs );
+                                     rhs ) );
 
   }
 
   PROFILE_END;
 
+  return( cov_str );
+
 }
 
 /*!
- \return Returns a pointer to the statement inserted (or NULL if no statement was inserted).
+ \return Returns string containing combinational coverage.
 
  Insert combinational logic coverage code for the given expression (by file position).
 */
-statement* generator_insert_comb_cov(
+char* generator_comb_cov(
   unsigned int first_line,    /*!< First line of expression to generate for */
   unsigned int first_column,  /*!< First column of expression to generate for */
   bool         net,           /*!< If set to TRUE, generate code for a net; otherwise, generate code for a variable */
@@ -3361,7 +3362,8 @@ statement* generator_insert_comb_cov(
   bool         save_stmt      /*!< If set to TRUE, saves the found statement to the statement stack */
 ) { PROFILE(GENERATOR_INSERT_COMB_COV);
 
-  statement* stmt = NULL;
+  statement* stmt    = NULL;
+  char*      cov_str = NULL;
 
   /* Insert combinational logic code coverage if it is specified on the command-line to do so and the statement exists */
   if( ((info_suppl.part.scored_comb == 1) || (info_suppl.part.scored_memory == 1) || (info_suppl.part.scored_events == 1)) &&
@@ -3369,12 +3371,12 @@ statement* generator_insert_comb_cov(
 
     /* Generate combinational coverage */
     if( (info_suppl.part.scored_comb == 1) || (info_suppl.part.scored_events) ) {
-      generator_insert_comb_cov_helper( (use_right ? stmt->exp->right : stmt->exp), stmt->funit, (use_right ? stmt->exp->right->op : stmt->exp->op), net, TRUE, TRUE );
+      cov_str = generator_comb_cov_helper( (use_right ? stmt->exp->right : stmt->exp), stmt->funit, (use_right ? stmt->exp->right->op : stmt->exp->op), net, TRUE, TRUE );
     }
 
     /* Generate memory coverage */
     if( info_suppl.part.scored_memory == 1 ) {
-      generator_insert_mem_cov_helper( stmt->exp, stmt->funit, net, FALSE, FALSE, ((stmt->exp->op == EXP_OP_NASSIGN) ? stmt->exp->right : NULL) );
+      cov_str = generator_build( 2, cov_str, generator_mem_cov_helper( stmt->exp, stmt->funit, net, FALSE, FALSE, ((stmt->exp->op == EXP_OP_NASSIGN) ? stmt->exp->right : NULL) ) );
     }
 
     /* Clear the comb_cntd bits in the expression tree */
@@ -3399,18 +3401,19 @@ statement* generator_insert_comb_cov(
 
   PROFILE_END;
 
-  return( stmt );
+  return( cov_str );
 
 }
 
 /*!
- \return Returns a pointer to the inserted statement (or NULL if no statement was inserted).
+ \return Returns string containing combinational coverage.
 
  Inserts combinational coverage information from statement stack (and pop stack).
 */
-statement* generator_insert_comb_cov_from_stmt_stack() { PROFILE(GENERATOR_INSERT_COMB_COV_FROM_STMT_STACK);
+char* generator_comb_cov_from_stmt_stack() { PROFILE(GENERATOR_INSERT_COMB_COV_FROM_STMT_STACK);
 
-  statement* stmt = NULL;
+  statement* stmt    = NULL;
+  char*      cov_str = NULL;
 
   if( ((info_suppl.part.scored_comb == 1) || (info_suppl.part.scored_events == 1)) && !handle_funit_as_assert ) {
 
@@ -3425,7 +3428,7 @@ statement* generator_insert_comb_cov_from_stmt_stack() { PROFILE(GENERATOR_INSER
 
     /* Generate combinational coverage information */
     if( !generator_is_static_function_only( stmt->funit ) ) {
-      generator_insert_comb_cov_helper( exp, stmt->funit, exp->op, FALSE, TRUE, FALSE );
+      cov_str = generator_comb_cov_helper( exp, stmt->funit, exp->op, FALSE, TRUE, FALSE );
     }
 
     /* Clear the comb_cntd bits in the expression tree */
@@ -3439,18 +3442,22 @@ statement* generator_insert_comb_cov_from_stmt_stack() { PROFILE(GENERATOR_INSER
 
   PROFILE_END;
 
-  return( stmt );
+  return( cov_str );
 
 }
 
 /*!
+ \return Returns string containing combinational coverage information.
+
  Inserts combinational coverage information for the given statement.
 */
-void generator_insert_comb_cov_with_stmt(
+char* generator_comb_cov_with_stmt(
   statement* stmt,       /*!< Pointer to statement to generate combinational logic coverage for */
   bool       use_right,  /*!< Specifies if the right expression should be used in the statement */
   bool       reg_needed  /*!< If TRUE, instantiate necessary registers */
 ) { PROFILE(GENERATOR_INSERT_COMB_COV_WITH_STMT);
+
+  char* cov_str = NULL;
 
   if( ((info_suppl.part.scored_comb == 1) || (info_suppl.part.scored_events == 1)) &&
       !handle_funit_as_assert && (stmt != NULL) && !generator_is_static_function_only( stmt->funit ) ) {
@@ -3458,7 +3465,7 @@ void generator_insert_comb_cov_with_stmt(
     expression* exp = use_right ? stmt->exp->right : stmt->exp;
 
     /* Insert combinational coverage */
-    generator_insert_comb_cov_helper( exp, stmt->funit, exp->op, FALSE, TRUE, reg_needed );
+    cov_str = generator_comb_cov_helper( exp, stmt->funit, exp->op, FALSE, TRUE, reg_needed );
 
     /* Clear the comb_cntd bits in the expression tree */
     generator_clear_comb_cntd( exp );
@@ -3467,24 +3474,29 @@ void generator_insert_comb_cov_with_stmt(
 
   PROFILE_END;
 
+  return( cov_str );
+
 }
 
 /*!
+ \return Returns combinational logic string.
+
  Handles combinational logic for an entire case block (and its case items -- not the case item logic blocks).
 */
-void generator_insert_case_comb_cov(
+char* generator_case_comb_cov(
   unsigned int first_line,   /*!< First line number of first statement in case block */
   unsigned int first_column  /*!< First column of first statement in case block */
 ) { PROFILE(GENERATOR_INSERT_CASE_COMB_COV);
 
   statement* stmt;
+  char*      cov_str = NULL;
 
   /* Insert combinational logic code coverage if it is specified on the command-line to do so and the statement exists */
   if( ((info_suppl.part.scored_comb == 1) || (info_suppl.part.scored_events == 1)) &&
       !handle_funit_as_assert && ((stmt = generator_find_case_statement( first_line, first_column )) != NULL) &&
       !generator_is_static_function_only( stmt->funit ) ) {
 
-    generator_insert_comb_cov_helper( stmt->exp->left, stmt->funit, stmt->exp->left->op, FALSE, TRUE, TRUE );
+    cov_str = generator_comb_cov_helper( stmt->exp->left, stmt->funit, stmt->exp->left->op, FALSE, TRUE, TRUE );
 
     /* Clear the comb_cntd bits in the expression tree */
     generator_clear_comb_cntd( stmt->exp->left );
@@ -3492,6 +3504,8 @@ void generator_insert_case_comb_cov(
   }
 
   PROFILE_END;
+
+  return( cov_str );
 
 }
 
@@ -3753,13 +3767,16 @@ static void generator_write_inst_id_overrides(
 }
 
 /*!
+ \return Returns the string that contains the instance ID overrides.
+
  Creates the parameter override file and populates it with the instance ID information.
 */
-void generator_insert_inst_id_overrides() { PROFILE(GENERATOR_INSERT_INST_ID_OVERRIDES);
+char* generator_inst_id_overrides() { PROFILE(GENERATOR_INSERT_INST_ID_OVERRIDES);
 
   funit_inst*  top_inst;
   char         leading_hier[4096];
   unsigned int rv;
+  char*        inst_str;
 
   /* Get the top-most module */
   leading_hier[0] = '\0';
@@ -3770,45 +3787,33 @@ void generator_insert_inst_id_overrides() { PROFILE(GENERATOR_INSERT_INST_ID_OVE
     if( top_inst->funit == curr_funit ) {
 
       /* Create initialization function */
-      generator_add_cov_to_work_code( "`systemc_header" );
-      generator_add_cov_to_work_code( "\n" );
-      generator_add_cov_to_work_code( "#include \"covered_verilator.h\"" );
-      generator_add_cov_to_work_code( "\n" );
       rv = snprintf( leading_hier, 4096, "void covered_initialize( %s* top, const char* cdd_name );", verilator_prefix );
       assert( rv < 4096 );
-      generator_add_cov_to_work_code( leading_hier );
-      generator_add_cov_to_work_code( "\n" );
-      generator_add_cov_to_work_code( "`systemc_implementation" );
-      generator_add_cov_to_work_code( "\n" );
+      inst_str = generator_build( 6, strdup_safe( "`systemc_header" ), "\n", strdup_safe( "#include \"covered_verilator.h\"" ), "\n",
+                                  strdup_safe( leading_hier ), "\n" );
+
       rv = snprintf( leading_hier, 4096, "void covered_initialize( %s* top, const char* cdd_name ) {", verilator_prefix );
       assert( rv < 4096 );
-      generator_add_cov_to_work_code( leading_hier );
-      generator_add_cov_to_work_code( "\n" );
+      inst_str = generator_build( 5, inst_str, strdup_safe( "`systemc_implementation" ), "\n", strdup_safe( leading_hier ), "\n" );
+
       rv = snprintf( leading_hier, 4096, "covered_initialize_db( \"../%s\" );", output_db );
       assert( rv < 4096 );
-      generator_add_cov_to_work_code( leading_hier );
-      generator_add_cov_to_work_code( "\n" );
-      generator_write_verilator_inst_ids( top_inst, "top->" );
-      generator_add_cov_to_work_code( "}" );
-      generator_add_cov_to_work_code( "\n" );
+      inst_str = generator_build( 6, inst_str, strdup_safe( leading_hier ), "\n", generator_verilator_inst_ids( top_inst, "top->" ),
+                                  strdup_safe( "}" ), "\n" );
 
     } else {
 
-      generator_add_cov_to_work_code( "`systemc_imp_header" );
-      generator_add_cov_to_work_code( "\n" );
+      inst_str = generator_build( 2, strdup_safe( "`systemc_imp_header" ), "\n" );
 
       if( top_inst->funit != curr_funit ) {
-        generator_add_cov_to_work_code( "#define COVERED_METRICS_ONLY" );
-        generator_add_cov_to_work_code( "\n" );
+        inst_str = generator_build( 3, inst_str, strdup_safe( "#define COVERED_METRICS_ONLY" ), "\n" );
       }
 
-      generator_add_cov_to_work_code( "#include \"covered_verilator.h\"" );
-      generator_add_cov_to_work_code( "\n" );
+      inst_str = generator_build( 3, inst_str, strdup_safe( "#include \"covered_verilator.h\"" ), "\n" );
 
     }
 
-    generator_add_cov_to_work_code( "`verilog" );
-    generator_add_cov_to_work_code( "\n" );
+    inst_str = generator_build( 3, inst_str, strdup_safe( "`verilog" ), "\n" );
 
   } else {
 
@@ -3817,22 +3822,22 @@ void generator_insert_inst_id_overrides() { PROFILE(GENERATOR_INSERT_INST_ID_OVE
 
       inst_link* instl = db_list[curr_db]->inst_head;
 
-      generator_add_cov_to_work_code( "initial begin" );
-      generator_add_cov_to_work_code( "\n" );
+      inst_str = generator_build( 2, strdup_safe( "initial begin" ), "\n" );
 
       while( instl != NULL ) {
-        generator_write_inst_id_overrides( instl->inst, strlen( leading_hier ) );
+        inst_str = generator_build( 2, inst_str, generator_inst_id_overrides( instl->inst, strlen( leading_hier ) ) );
         instl = instl->next;
       }
 
-      generator_add_cov_to_work_code( "end" );
-      generator_add_cov_to_work_code( "\n" );
+      inst_str = generator_build( 3, inst_str, strdup_safe( "end" ), "\n" );
 
     }
 
   }
 
   PROFILE_END;
+
+  return( inst_str );
 
 }
 
@@ -3922,7 +3927,7 @@ char* generator_build(
 ) { PROFILE(GENERATOR_BUILD);
 
   va_list ap;
-  char*   str;
+  char*   str = NULL;
   int     len = 0;
   int     i;
 
@@ -3930,32 +3935,41 @@ char* generator_build(
   va_start( ap, args );
   for( i=0; i<args; i++ ) {
     char* arg = va_arg( ap, char* );
-    if( arg[0] == '\n' ) {
-      /* TBD - We may want to represent the string as a string list */
-      len += 1;
-    } else {
-      len += strlen( arg ) + 1;
+    if( arg != NULL ) {
+      if( arg[0] == '\n' ) {
+        /* TBD - We may want to represent the string as a string list */
+        len += 1;
+      } else {
+        len += strlen( arg ) + 1;
+      }
     }
   }
   va_end( ap );
 
-  /* Allocate memory for the string */
-  str = (char*)malloc_safe_nolimit( len );
+  /* If the length is more than a character, allocate the memory */
+  if( len > 0 ) {
 
-  /* Now let's build that string... */
-  va_start( ap, args );
-  for( i=0; i<args; i++ ) {
-    char* arg = va_arg( ap, char* );
-    if( arg[0] == '\n' ) {
-      /* TBD - We may want to represent the string as a string list */
-      strcat( str, "\n" );
-    } else {
-      strcat( str, arg );
-      strcat( str, " " );
-      free_safe( arg, (strlen( arg ) + 1) );
+    /* Allocate memory for the string */
+    str = (char*)malloc_safe_nolimit( len );
+
+    /* Now let's build that string... */
+    va_start( ap, args );
+    for( i=0; i<args; i++ ) {
+      char* arg = va_arg( ap, char* );
+      if( arg != NULL ) {
+        if( arg[0] == '\n' ) {
+          /* TBD - We may want to represent the string as a string list */
+          strcat( str, "\n" );
+        } else {
+          strcat( str, arg );
+          strcat( str, " " );
+          free_safe( arg, (strlen( arg ) + 1) );
+        }
+      }
     }
+    va_end( ap );
+
   }
-  va_end( ap );
 
   PROFILE_END;
 

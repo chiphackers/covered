@@ -1645,7 +1645,7 @@ statement* generator_insert_line_cov(
 /*!
  Handles the insertion of event-type combinational logic code.
 */
-void generator_insert_event_comb_cov(
+void generator_event_comb_cov(
   expression* exp,        /*!< Pointer to expression to output */
   func_unit*  funit,      /*!< Pointer to functional unit containing the expression */
   bool        reg_needed  /*!< If set to TRUE, instantiates needed registers */

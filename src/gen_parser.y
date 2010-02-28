@@ -1954,7 +1954,7 @@ statement
   | K_for '(' for_initialization ';' for_condition ';' passign ')' statement
     {
       $$ = generator_build( 15, generator_comb_cov( @5.ppfline, @5.first_column, FALSE, TRUE, FALSE ),
-                            strdup_safe( "for(" ), $3, strdup_safe( ";" ), $5, strdup_safe( ";" ), $7, strup_safe( ") begin" ), "\n", $9,
+                            strdup_safe( "for(" ), $3, strdup_safe( ";" ), $5, strdup_safe( ";" ), $7, strdup_safe( ") begin" ), "\n", $9,
                             generator_line_cov( @7.ppfline, @7.pplline, @1.first_column, (@1.last_column - 1), TRUE ),
                             generator_comb_cov( @7.ppfline, @7.first_column, FALSE, TRUE, FALSE ),
                             generator_comb_cov( @5.ppfline, @5.first_column, FALSE, TRUE, FALSE ), strdup_safe( "end" ), "\n" );

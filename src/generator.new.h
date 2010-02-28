@@ -149,14 +149,14 @@ statement* generator_find_statement(
   unsigned int first_column
 );
 
-/*! \brief Inserts line coverage for the given statement. */
-void generator_insert_line_cov_with_stmt(
+/*! \brief Creates line coverage string for the given statement. */
+char* generator_line_cov_with_stmt(
   statement* stmt,
   bool       semicolon
 );
 
 /*! \brief Inserts line coverage information. */
-statement* generator_insert_line_cov(
+char* generator_line_cov(
   unsigned int first_line,
   unsigned int last_line,
   unsigned int first_column,
@@ -165,14 +165,14 @@ statement* generator_insert_line_cov(
 );
 
 /*! \brief Inserts event combinational coverage for a specific expression. */
-void generator_insert_event_comb_cov(
+char* generator_event_comb_cov(
   expression* exp,
   func_unit*  funit,
   bool        reg_needed
 );
 
 /*! \brief Inserts combinational logic coverage information. */
-statement* generator_insert_comb_cov(
+char* generator_comb_cov(
   unsigned int first_line,
   unsigned int first_column,
   bool         net,
@@ -181,23 +181,23 @@ statement* generator_insert_comb_cov(
 );
 
 /*! \brief Inserts combinational logic coverage information from the current top of the statement stack. */
-statement* generator_insert_comb_cov_from_stmt_stack();
+char* generator_comb_cov_from_stmt_stack();
 
 /*! \brief Inserts combinational logic coverage for the given statement. */
-void generator_insert_comb_cov_with_stmt(
+char* generator_comb_cov_with_stmt(
   statement* stmt,
   bool       use_right,
   bool       reg_needed
 );
 
 /*! \brief Inserts code for handling combinational logic coverage for case blocks. */
-void generator_insert_case_comb_cov(
+char* generator_case_comb_cov(
   unsigned int first_line,
   unsigned int first_column
 );
 
 /*! \brief Inserts FSM coverage code into module */
-void generator_insert_fsm_cov();
+char* generator_fsm_cov();
 
 /*! \brief Changes event type to reg type if we are performing combinational logic coverage. */
 void generator_handle_event_type(
@@ -228,8 +228,8 @@ char* generator_inst_id_reg(
   func_unit* funit
 );
 
-/*! \brief Inserts instance ID parameter overrides */
-void generator_insert_inst_id_overrides();
+/*! \brief Creates instance ID parameter override string */
+char* generator_inst_id_overrides();
 
 /*! \brief Handles statements that might be in a fork..join block */
 void generator_begin_parallel_statement(
