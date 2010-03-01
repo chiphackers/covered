@@ -249,5 +249,16 @@ char* generator_build(
   ...
 );
 
+/*! \brief Returns the temporary register list to the calling function and pops it from the stack.
+char* generator_tmp_regs();
+
+/*! \brief Adds a new temporary register string to the stack */
+void generator_create_tmp_regs();
+
+/*! \brief Wrapper around the VLerror handler for the generator parser */
+void GENerror(
+  const char* str
+);
+
 #endif
 

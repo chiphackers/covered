@@ -32,6 +32,7 @@
 #include "link.h"
 #include "ovl.h"
 #include "param.h"
+#include "parser_misc.h"
 #include "profiler.h"
 #include "util.h"
 
@@ -84,6 +85,11 @@ struct reg_insert_s {
   reg_insert* next;        /*!< Pointer to the next reg_insert structure in the stack */
 };
 
+
+/*!
+ Pointer to the top of the temporary register string stack.
+*/
+str_link* tmp_regs_top = NULL;
 
 /*!
  Pointer to functional unit stack.
@@ -532,39 +538,22 @@ static void generator_insert_reg(
   bool        tmp_reg  /*!< Set to TRUE if the added register/wire is an intermediate signal */
 ) { PROFILE(GENERATOR_INSERT_REG);
 
-  str_link* tmp_head = NULL;
-  str_link* tmp_tail = NULL;
+  assert( tmp_regs_top != NULL );
 
-  assert( reg_top != NULL );
+  /* Add the register */
+  tmp_regs_top->str = generator_build( 3, tmp_regs_top->str, strdup_safe( str ), "\n" );
 
   /* If the signal is an intermediate signal, turn tracing off for this signal */
   if( tmp_reg ) {
-    (void)str_link_add( strdup_safe( "/* verilator tracing_off */\n" ), &tmp_head, &tmp_tail );
+    tmp_regs_top->str = generator_build( 3, tmp_regs_top->str, strdup_safe( "/* verilator tracing_off */" ), "\n" );
   }
 
   /* Create string link */
-  (void)str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
+  tmp_regs_top->str = generator_build( 3, tmp_regs_top->str, strdup_safe( str ), "\n" );
 
   /* If the signal is an intermediate signal, turn tracing back on for this signal */
   if( tmp_reg ) {
-    (void)str_link_add( strdup_safe( "/* verilator tracing_on */\n" ), &tmp_head, &tmp_tail );
-  }
-
-  /* Insert it at the insertion point */
-  if( reg_top->ptr == NULL ) {
-    tmp_tail->next = hold_head;
-    if( hold_head == NULL ) {
-      hold_head = tmp_head;
-      hold_tail = tmp_tail;
-    } else {
-      hold_head = tmp_head;
-    }
-  } else {
-    tmp_tail->next     = reg_top->ptr->next;
-    reg_top->ptr->next = tmp_head;
-    if( hold_tail == reg_top->ptr ) {
-      hold_tail = tmp_tail;
-    }
+    tmp_regs_top->str = generator_build( 3, tmp_regs_top->str, strdup_safe( "/* verilator tracing_on */" ), "\n" );
   }
 
   PROFILE_END;
@@ -3974,5 +3963,58 @@ char* generator_build(
   PROFILE_END;
 
   return( str );
+
+}
+
+/*!
+ \return Returns a string containing all of the temporary registers for the current scope.
+*/
+char* generator_tmp_regs() { PROFILE(GENERATOR_TMP_REGS);
+
+  char*     str;
+  str_link* strl = tmp_regs_top;
+
+  /* Grab the string connected to the tail */
+  str = tmp_regs_top->str;
+
+  /* Adjust the tail and delete the old one */
+  tmp_regs_top = tmp_regs_top->next;
+  free_safe( strl, sizeof( str_link ) );
+
+  PROFILE_END;
+
+  return( str );
+
+}
+
+/*!
+ Adds a new temporary register string to the stack.
+*/
+void generator_create_tmp_regs() { PROFILE(GENERATOR_CREATE_TMP_REGS);
+
+  str_link* strl;
+
+  /* Allocate the memory and initialize */
+  strl       = (str_link*)malloc_safe( sizeof( str_link ) );
+  strl->str  = NULL;
+  strl->next = tmp_regs_top;
+
+  /* Point the top of the stack to the new string link */
+  tmp_regs_top = strl;
+
+  PROFILE_END;
+
+}
+
+/*!
+ Wrapper around the VLerror function (reuses the same error handler as the normal parser).
+*/
+void GENerror(
+  const char* str  /*!< Error string to output */
+) { PROFILE(GENERROR);
+
+  VLerror( str );
+
+  PROFILE_END;
 
 }

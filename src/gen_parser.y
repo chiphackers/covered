@@ -385,12 +385,12 @@ description
     }
   | error ';'
     {
-      VLerror( "Invalid $root item" );
+      GENerror( "Invalid $root item" );
       $$ = NULL;
     }
   | K_function error K_endfunction
     {
-      VLerror( "Syntax error in function description" );
+      GENerror( "Syntax error in function description" );
       $$ = NULL;
     }
   | enumeration list_of_names ';'
@@ -797,43 +797,43 @@ expression
     }
   | '+' error %prec UNARY_PREC
     {
-      VLerror( "Operand of signed positive + is not a primary expression" );
+      GENerror( "Operand of signed positive + is not a primary expression" );
     }
   | '-' error %prec UNARY_PREC
     {
-      VLerror( "Operand of signed negative - is not a primary expression" );
+      GENerror( "Operand of signed negative - is not a primary expression" );
     }
   | '~' error %prec UNARY_PREC
     {
-      VLerror( "Operand of unary ~ is not a primary expression" );
+      GENerror( "Operand of unary ~ is not a primary expression" );
     }
   | '&' error %prec UNARY_PREC
     {
-      VLerror( "Operand of reduction & is not a primary expression" );
+      GENerror( "Operand of reduction & is not a primary expression" );
     }
   | '!' error %prec UNARY_PREC
     {
-      VLerror( "Operand of unary ! is not a primary expression" );
+      GENerror( "Operand of unary ! is not a primary expression" );
     }
   | '|' error %prec UNARY_PREC
     {
-      VLerror( "Operand of reduction | is not a primary expression" );
+      GENerror( "Operand of reduction | is not a primary expression" );
     }
   | '^' error %prec UNARY_PREC
     {
-      VLerror( "Operand of reduction ^ is not a primary expression" );
+      GENerror( "Operand of reduction ^ is not a primary expression" );
     }
   | K_NAND error %prec UNARY_PREC
     {
-      VLerror( "Operand of reduction ~& is not a primary expression" );
+      GENerror( "Operand of reduction ~& is not a primary expression" );
     }
   | K_NOR error %prec UNARY_PREC
     {
-      VLerror( "Operand of reduction ~| is not a primary expression" );
+      GENerror( "Operand of reduction ~| is not a primary expression" );
     }
   | K_NXOR error %prec UNARY_PREC
     {
-      VLerror( "Operand of reduction ~^ is not a primary expression" );
+      GENerror( "Operand of reduction ~^ is not a primary expression" );
     }
   | expression '^' expression
     {
@@ -1358,20 +1358,20 @@ generate_item
       assert( rv < 50 );
       free_safe( back, (strlen( funit->name ) + 1) );
       free_safe( rest, (strlen( funit->name ) + 1) );
-      $$ = generator_build( 9, strdup_safe( "begin" ), strdup_safe( str ), "\n", generator_inst_id_reg( funit ), "\n", generator_temp_regs(), $2, strdup_safe( "end" ), "\n" );
+      $$ = generator_build( 9, strdup_safe( "begin" ), strdup_safe( str ), "\n", generator_inst_id_reg( funit ), "\n", generator_tmp_regs(), $2, strdup_safe( "end" ), "\n" );
     }
   | K_begin ':' IDENTIFIER generate_item_list_opt K_end
     {
       func_unit* funit = db_get_tfn_by_position( @3.first_line, @3.first_column );
       assert( funit != NULL );
-      $$ = generator_build( 9, strdup_safe( "begin : " ), $3, "\n", generator_inst_id_reg( funit ), "\n", generator_temp_regs(), $4, strdup_safe( "end" ), "\n" );
+      $$ = generator_build( 9, strdup_safe( "begin : " ), $3, "\n", generator_inst_id_reg( funit ), "\n", generator_tmp_regs(), $4, strdup_safe( "end" ), "\n" );
     }
   | K_for '(' generate_passign ';' static_expr ';' generate_passign ')' K_begin ':' IDENTIFIER generate_item_list_opt K_end
     {
       func_unit* funit = db_get_tfn_by_position( @11.first_line, @11.first_column );
       assert( funit != NULL );
       $$ = generator_build( 17, strdup_safe( "for(" ), $3, strdup_safe( ";" ), $5, strdup_safe( ";" ), $7, strdup_safe( ")" ), "\n", strdup_safe( "begin : " ), $11, "\n",
-                            generator_inst_id_reg( funit ), "\n", generator_temp_regs(), $12, strdup_safe( "end" ), "\n" );
+                            generator_inst_id_reg( funit ), "\n", generator_tmp_regs(), $12, strdup_safe( "end" ), "\n" );
     }
   | K_if '(' static_expr ')' gen_if_body
     {
@@ -1398,7 +1398,7 @@ generate_case_item
     }
   | error ':' generate_item
     {
-      VLerror( "Illegal generate case expression" );
+      GENerror( "Illegal generate case expression" );
       FREE_TEXT( $3 );
     }
   ;
@@ -1476,7 +1476,7 @@ module_item
   | attribute_list_opt
     port_type signed_opt range_opt error ';'
     {
-      VLerror( "Invalid variable list in port declaration" );
+      GENerror( "Invalid variable list in port declaration" );
       $$ = NULL;
     }
   | attribute_list_opt
@@ -1615,27 +1615,27 @@ module_item
     }
   | attribute_list_opt K_specify error K_endspecify
     {
-      VLerror( "Invalid specify syntax" );
+      GENerror( "Invalid specify syntax" );
       $$ = NULL;
     }
   | error ';'
     {
-      VLerror( "Invalid module item.  Did you forget an initial or always?" );
+      GENerror( "Invalid module item.  Did you forget an initial or always?" );
       $$ = NULL;
     }
   | attribute_list_opt K_assign error '=' expression ';'
     {
-      VLerror( "Syntax error in left side of continuous assignment" );
+      GENerror( "Syntax error in left side of continuous assignment" );
       $$ = NULL;
     }
   | attribute_list_opt K_assign error ';'
     {
-      VLerror( "Syntax error in continuous assignment" );
+      GENerror( "Syntax error in continuous assignment" );
       $$ = NULL;
     }
   | attribute_list_opt K_function error K_endfunction
     {
-      VLerror( "Syntax error in function description" );
+      GENerror( "Syntax error in function description" );
       $$ = NULL;
     }
   | attribute_list_opt enumeration list_of_names ';'
@@ -1675,7 +1675,7 @@ module_item
     } 
   | KK_attribute '(' error ')' ';'
     {
-      VLerror( "Syntax error in $attribute parameter list" );
+      GENerror( "Syntax error in $attribute parameter list" );
       $$ = NULL;
     }
   ;
@@ -1948,7 +1948,7 @@ statement
     }
   | cond_specifier_opt K_if '(' error ')' if_statement_error
     {
-      VLerror( "Illegal conditional if expression" );
+      GENerror( "Illegal conditional if expression" );
       $$ = NULL;
     }
   | K_for '(' for_initialization ';' for_condition ';' passign ')' statement
@@ -2095,7 +2095,7 @@ statement
     }
   | error ';'
     {
-      VLerror( "Illegal statement" );
+      GENerror( "Illegal statement" );
       $$ = NULL;
     }
   ;
@@ -2299,73 +2299,73 @@ block_item_decl
     }
   | attribute_list_opt K_reg error ';'
     {
-      VLerror( "Syntax error in reg variable list" );
+      GENerror( "Syntax error in reg variable list" );
       $$ = NULL;
     }
   | attribute_list_opt K_bit error ';'
     {
-      VLerror( "Syntax error in bit variable list" );
+      GENerror( "Syntax error in bit variable list" );
       $$ = NULL;
     }
   | attribute_list_opt K_byte error ';'
     {
-      VLerror( "Syntax error in byte variable list" );
+      GENerror( "Syntax error in byte variable list" );
       $$ = NULL;
     }
   | attribute_list_opt K_logic error ';'
     {
-      VLerror( "Syntax error in logic variable list" );
+      GENerror( "Syntax error in logic variable list" );
       $$ = NULL;
     }
   | attribute_list_opt K_char error ';'
     {
-      VLerror( "Syntax error in char variable list" );
+      GENerror( "Syntax error in char variable list" );
       $$ = NULL;
     }
   | attribute_list_opt K_shortint error ';'
     {
-      VLerror( "Syntax error in shortint variable list" );
+      GENerror( "Syntax error in shortint variable list" );
       $$ = NULL;
     }
   | attribute_list_opt K_integer error ';'
     {
-      VLerror( "Syntax error in integer variable list" );
+      GENerror( "Syntax error in integer variable list" );
       $$ = NULL;
     }
   | attribute_list_opt K_int error ';'
     {
-      VLerror( "Syntax error in int variable list" );
+      GENerror( "Syntax error in int variable list" );
       $$ = NULL;
     }
   | attribute_list_opt K_longint error ';'
     {
-      VLerror( "Syntax error in longint variable list" );
+      GENerror( "Syntax error in longint variable list" );
       $$ = NULL;
     }
   | attribute_list_opt K_time error ';'
     {
-      VLerror( "Syntax error in time variable list" );
+      GENerror( "Syntax error in time variable list" );
       $$ = NULL;
     }
   | attribute_list_opt K_real error ';'
     {
-      VLerror( "Syntax error in real variable list" );
+      GENerror( "Syntax error in real variable list" );
       $$ = NULL;
     }
   | attribute_list_opt K_realtime error ';'
     {
-      VLerror( "Syntax error in realtime variable list" );
+      GENerror( "Syntax error in realtime variable list" );
       $$ = NULL;
     }
   | attribute_list_opt K_parameter error ';'
     {
-      VLerror( "Syntax error in parameter variable list" );
+      GENerror( "Syntax error in parameter variable list" );
       $$ = NULL;
     }
   | attribute_list_opt K_localparam error ';'
     {
       if( parser_check_generation( GENERATION_2001 ) ) {
-        VLerror( "Syntax error in localparam list" );
+        GENerror( "Syntax error in localparam list" );
       }
       $$ = NULL;
     }
@@ -2386,7 +2386,7 @@ case_item
     }
   | error ':' statement_or_null
     {
-      VLerror( "Illegal case expression" );
+      GENerror( "Illegal case expression" );
       $$ = NULL;
     }
   ;
@@ -2792,7 +2792,7 @@ event_control
     }
   | '@' '(' error ')'
     {
-      VLerror( "Illegal event control expression" );
+      GENerror( "Illegal event control expression" );
       $$ = NULL;
     }
   ;
@@ -2888,7 +2888,7 @@ parameter_value_opt
     }
   | '#' error
     {
-      VLerror( "Syntax error in parameter value assignment list" );
+      GENerror( "Syntax error in parameter value assignment list" );
       $$ = NULL;
     }
   |
@@ -3086,7 +3086,7 @@ port_name
   | '.' IDENTIFIER
     {
       if( !parser_check_generation( GENERATION_SV ) ) {
-        VLerror( "Implicit .name port list item found in block that is specified to not allow SystemVerilog syntax" );
+        GENerror( "Implicit .name port list item found in block that is specified to not allow SystemVerilog syntax" );
         $$ = NULL;
       } else {
         $$ = generator_build( 2, strdup_safe( "." ), $2 );
@@ -3095,7 +3095,7 @@ port_name
   | K_PS
     {
       if( !parser_check_generation( GENERATION_SV ) ) {
-        VLerror( "Implicit .* port list item found in block that is specified to not allow SystemVerilog syntax" );
+        GENerror( "Implicit .* port list item found in block that is specified to not allow SystemVerilog syntax" );
         $$ = NULL;
       } else {
         $$ = strdup_safe( ".*" );

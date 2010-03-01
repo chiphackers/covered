@@ -512,7 +512,7 @@ void score_parse_define( const char* def ) { PROFILE(SCORE_PARSE_DEFINE);
     ptr++;
     define_macro( tmp, ptr );
   } else {
-    define_macro( tmp, "1" );
+    define_macro( tmp, "" );
   }
 
   /* Deallocate memory */

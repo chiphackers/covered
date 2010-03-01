@@ -509,7 +509,7 @@ static void def_finish() { PROFILE(DEF_FINISH);
       define_text = NULL;
       define_cnt  = 0;
     } else {
-      define_macro( def_name, "1" );
+      define_macro( def_name, "" );
     }
 
     def_name[0] = 0;

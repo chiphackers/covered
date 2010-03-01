@@ -57,17 +57,17 @@ DIAGS1        = add1              aedge1            aedge1.1          afunc1    
                 compx1.1          compx1.2          compx1.3          concat1           concat2 \
                 concat3           concat4.1         concat4.2         concat5           concat6 \
                 concat7           concat8           concat9           concat10          concat10.1 \
-                concat10.2        cond1 \
-                cond2             cond3             cond3.1           cond3.2           cond3.3 \
-                dec1              dec1.1            dec2              dec3              dec3.1 \
-                delay1            delay2            define1           define1.1         define1.2 \
-                define2           define2.1         define3           define4           define5 \
-                define6           define6.1         delay3            disable1          disable1.1 \
-                disable2          disable2.1        disable3          display1          div1 \
-                dly_assign1       dly_assign1.1     dly_assign1.2     dly_assign1.3     dly_assign1.4 \
-                dly_assign2       dly_assign2.1     do_while1         do_while1.1       do_while2 \
-                elsif1            elsif1.1          elsif1.2          elsif1.3          elsif1.4 \
-                elsif2            elsif2.1          elsif3            endian1           endian2         endian3 \
+                concat10.2        cond1             cond2             cond3             cond3.1 \
+                cond3.2           cond3.3           dec1              dec1.1            dec2 \
+                dec3              dec3.1            delay1            delay2            define1 \
+                define1.1         define1.2         define2           define2.1         define3 \
+                define4           define5           define6           define6.1         define7 \
+                delay3            disable1          disable1.1        disable2          disable2.1 \
+                disable3          display1          div1              dly_assign1       dly_assign1.1 \
+                dly_assign1.2     dly_assign1.3     dly_assign1.4     dly_assign2       dly_assign2.1 \
+                do_while1         do_while1.1       do_while2         elsif1            elsif1.1 \
+                elsif1.2          elsif1.3          elsif1.4          elsif2            elsif2.1 \
+                elsif3            endian1           endian2           endian3 \
                 endian4           enum1             enum1.1           enum1.2           enum1.3 \
                 enum2.1           event1            event1.1          event2            example \
                 example1          exclude1          exclude2          exclude3          exclude4 \
