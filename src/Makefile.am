@@ -19,6 +19,7 @@ covered_SOURCES = arc.c \
 		  func_unit.c \
                   genprof.c \
                   gen_item.c \
+                  gen_lexer.c \
                   gen_parser.c \
                   generator.new.c \
 		  info.c \
@@ -90,6 +91,9 @@ pplexer.c: $(srcdir)/pplexer.l
 
 lexer.c:  $(srcdir)/lexer.l
 	flex -PVL -olexer.c $(srcdir)/lexer.l
+
+gen_lexer.c:  $(srcdir)/lexer.l
+	flex -PGEN -ogen_lexer.c $(srcdir)/lexer.l
 
 static_lexer.c: $(srcdir)/static_lexer.l
 	flex -PSE -ostatic_lexer.c $(srcdir)/static_lexer.l

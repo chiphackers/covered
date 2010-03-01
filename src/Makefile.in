@@ -52,7 +52,7 @@ am_covered_OBJECTS = arc.$(OBJEXT) assertion.$(OBJEXT) attr.$(OBJEXT) \
 	enumerate.$(OBJEXT) exclude.$(OBJEXT) expr.$(OBJEXT) \
 	fsm.$(OBJEXT) fsm_arg.$(OBJEXT) fsm_var.$(OBJEXT) \
 	func_iter.$(OBJEXT) func_unit.$(OBJEXT) genprof.$(OBJEXT) \
-	gen_item.$(OBJEXT) gen_parser.$(OBJEXT) \
+	gen_item.$(OBJEXT) gen_lexer.$(OBJEXT) gen_parser.$(OBJEXT) \
 	generator.new.$(OBJEXT) info.$(OBJEXT) instance.$(OBJEXT) \
 	keywords_1995.$(OBJEXT) keywords_2001.$(OBJEXT) \
 	keywords_sv.$(OBJEXT) keywords_sys_1995.$(OBJEXT) \
@@ -232,6 +232,7 @@ covered_SOURCES = arc.c \
 		  func_unit.c \
                   genprof.c \
                   gen_item.c \
+                  gen_lexer.c \
                   gen_parser.c \
                   generator.new.c \
 		  info.c \
@@ -389,6 +390,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/func_iter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/func_unit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gen_item.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gen_lexer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gen_parser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/generator.new.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/genprof.Po@am__quote@
@@ -651,6 +653,9 @@ pplexer.c: $(srcdir)/pplexer.l
 
 lexer.c:  $(srcdir)/lexer.l
 	flex -PVL -olexer.c $(srcdir)/lexer.l
+
+gen_lexer.c:  $(srcdir)/lexer.l
+	flex -PGEN -ogen_lexer.c $(srcdir)/lexer.l
 
 static_lexer.c: $(srcdir)/static_lexer.l
 	flex -PSE -ostatic_lexer.c $(srcdir)/static_lexer.l
