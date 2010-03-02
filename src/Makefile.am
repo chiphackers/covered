@@ -3,6 +3,7 @@ covered_SOURCES = arc.c \
                   assertion.c \
                   attr.c \
                   parser.c \
+                  gen_parser.c \
                   static_parser.c \
 		  binding.c \
                   cli.c \
@@ -19,8 +20,6 @@ covered_SOURCES = arc.c \
 		  func_unit.c \
                   genprof.c \
                   gen_item.c \
-                  gen_lexer.c \
-                  gen_parser.c \
                   generator.new.c \
 		  info.c \
 		  instance.c \
@@ -32,6 +31,7 @@ covered_SOURCES = arc.c \
                   keywords_sys_sv.c \
                   pplexer.c \
 		  lexer.c \
+                  gen_lexer.c \
 		  line.c \
                   link.c \
 		  lxt.c \
@@ -93,7 +93,7 @@ lexer.c:  $(srcdir)/lexer.l
 	flex -PVL -olexer.c $(srcdir)/lexer.l
 
 gen_lexer.c:  $(srcdir)/lexer.l
-	flex -PGEN -ogen_lexer.c $(srcdir)/lexer.l
+	flex -PGEN -DGENERATOR -ogen_lexer.c $(srcdir)/lexer.l
 
 static_lexer.c: $(srcdir)/static_lexer.l
 	flex -PSE -ostatic_lexer.c $(srcdir)/static_lexer.l

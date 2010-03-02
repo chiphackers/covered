@@ -47,30 +47,30 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_covered_OBJECTS = arc.$(OBJEXT) assertion.$(OBJEXT) attr.$(OBJEXT) \
-	parser.$(OBJEXT) static_parser.$(OBJEXT) binding.$(OBJEXT) \
-	cli.$(OBJEXT) codegen.$(OBJEXT) comb.$(OBJEXT) db.$(OBJEXT) \
-	enumerate.$(OBJEXT) exclude.$(OBJEXT) expr.$(OBJEXT) \
-	fsm.$(OBJEXT) fsm_arg.$(OBJEXT) fsm_var.$(OBJEXT) \
-	func_iter.$(OBJEXT) func_unit.$(OBJEXT) genprof.$(OBJEXT) \
-	gen_item.$(OBJEXT) gen_lexer.$(OBJEXT) gen_parser.$(OBJEXT) \
+	parser.$(OBJEXT) gen_parser.$(OBJEXT) static_parser.$(OBJEXT) \
+	binding.$(OBJEXT) cli.$(OBJEXT) codegen.$(OBJEXT) \
+	comb.$(OBJEXT) db.$(OBJEXT) enumerate.$(OBJEXT) \
+	exclude.$(OBJEXT) expr.$(OBJEXT) fsm.$(OBJEXT) \
+	fsm_arg.$(OBJEXT) fsm_var.$(OBJEXT) func_iter.$(OBJEXT) \
+	func_unit.$(OBJEXT) genprof.$(OBJEXT) gen_item.$(OBJEXT) \
 	generator.new.$(OBJEXT) info.$(OBJEXT) instance.$(OBJEXT) \
 	keywords_1995.$(OBJEXT) keywords_2001.$(OBJEXT) \
 	keywords_sv.$(OBJEXT) keywords_sys_1995.$(OBJEXT) \
 	keywords_sys_2001.$(OBJEXT) keywords_sys_sv.$(OBJEXT) \
-	pplexer.$(OBJEXT) lexer.$(OBJEXT) line.$(OBJEXT) \
-	link.$(OBJEXT) lxt.$(OBJEXT) lxt2_read.$(OBJEXT) \
-	main.$(OBJEXT) memory.$(OBJEXT) merge.$(OBJEXT) \
-	obfuscate.$(OBJEXT) ovl.$(OBJEXT) param.$(OBJEXT) \
-	parse.$(OBJEXT) parser_func.$(OBJEXT) parser_misc.$(OBJEXT) \
-	perf.$(OBJEXT) profiler.$(OBJEXT) race.$(OBJEXT) \
-	rank.$(OBJEXT) reentrant.$(OBJEXT) report.$(OBJEXT) \
-	scope.$(OBJEXT) score.$(OBJEXT) search.$(OBJEXT) sim.$(OBJEXT) \
-	stat.$(OBJEXT) static.$(OBJEXT) static_lexer.$(OBJEXT) \
-	statement.$(OBJEXT) stmt_blk.$(OBJEXT) struct_union.$(OBJEXT) \
-	symtable.$(OBJEXT) sys_tasks.$(OBJEXT) tcl_funcs.$(OBJEXT) \
-	toggle.$(OBJEXT) tree.$(OBJEXT) util.$(OBJEXT) \
-	vcd.new.$(OBJEXT) vcd_keywords.$(OBJEXT) vector.$(OBJEXT) \
-	vsignal.$(OBJEXT)
+	pplexer.$(OBJEXT) lexer.$(OBJEXT) gen_lexer.$(OBJEXT) \
+	line.$(OBJEXT) link.$(OBJEXT) lxt.$(OBJEXT) \
+	lxt2_read.$(OBJEXT) main.$(OBJEXT) memory.$(OBJEXT) \
+	merge.$(OBJEXT) obfuscate.$(OBJEXT) ovl.$(OBJEXT) \
+	param.$(OBJEXT) parse.$(OBJEXT) parser_func.$(OBJEXT) \
+	parser_misc.$(OBJEXT) perf.$(OBJEXT) profiler.$(OBJEXT) \
+	race.$(OBJEXT) rank.$(OBJEXT) reentrant.$(OBJEXT) \
+	report.$(OBJEXT) scope.$(OBJEXT) score.$(OBJEXT) \
+	search.$(OBJEXT) sim.$(OBJEXT) stat.$(OBJEXT) static.$(OBJEXT) \
+	static_lexer.$(OBJEXT) statement.$(OBJEXT) stmt_blk.$(OBJEXT) \
+	struct_union.$(OBJEXT) symtable.$(OBJEXT) sys_tasks.$(OBJEXT) \
+	tcl_funcs.$(OBJEXT) toggle.$(OBJEXT) tree.$(OBJEXT) \
+	util.$(OBJEXT) vcd.new.$(OBJEXT) vcd_keywords.$(OBJEXT) \
+	vector.$(OBJEXT) vsignal.$(OBJEXT)
 covered_OBJECTS = $(am_covered_OBJECTS)
 am__DEPENDENCIES_1 =
 covered_DEPENDENCIES = $(am__DEPENDENCIES_1)
@@ -216,6 +216,7 @@ covered_SOURCES = arc.c \
                   assertion.c \
                   attr.c \
                   parser.c \
+                  gen_parser.c \
                   static_parser.c \
 		  binding.c \
                   cli.c \
@@ -232,8 +233,6 @@ covered_SOURCES = arc.c \
 		  func_unit.c \
                   genprof.c \
                   gen_item.c \
-                  gen_lexer.c \
-                  gen_parser.c \
                   generator.new.c \
 		  info.c \
 		  instance.c \
@@ -245,6 +244,7 @@ covered_SOURCES = arc.c \
                   keywords_sys_sv.c \
                   pplexer.c \
 		  lexer.c \
+                  gen_lexer.c \
 		  line.c \
                   link.c \
 		  lxt.c \
@@ -655,7 +655,7 @@ lexer.c:  $(srcdir)/lexer.l
 	flex -PVL -olexer.c $(srcdir)/lexer.l
 
 gen_lexer.c:  $(srcdir)/lexer.l
-	flex -PGEN -ogen_lexer.c $(srcdir)/lexer.l
+	flex -PGEN -DGENERATOR -ogen_lexer.c $(srcdir)/lexer.l
 
 static_lexer.c: $(srcdir)/static_lexer.l
 	flex -PSE -ostatic_lexer.c $(srcdir)/static_lexer.l

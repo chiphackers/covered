@@ -54,7 +54,6 @@ extern int    delay_expr_type;
 extern int    stmt_conn_id;
 extern int    gi_conn_id;
 extern isuppl info_suppl;
-extern char*  file_version;
 extern int    curr_sig_type;
 
 /* Functions from lexer */
@@ -2612,6 +2611,7 @@ module_item
         }
       }
       generate_top_mode--;
+      FREE_TEXT( $4 );
     }
     task_item_list_opt statement_or_null
     {
@@ -2656,6 +2656,7 @@ module_item
         }
       }
       generate_top_mode--;
+      FREE_TEXT( $6 );
     }
     function_item_list statement
     {

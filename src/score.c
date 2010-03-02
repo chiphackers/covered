@@ -146,16 +146,28 @@ unsigned int inline_comb_depth = 0xffffffff;
 */
 char* verilator_prefix = NULL;
 
+/*!
+ Holds the name of the file specified in a `line or \#line preprocessor directive.
+*/
+char* directive_filename = NULL;
+
+/*!
+ Specifies the keyword of the coverage on/off pragma.
+*/
+char* pragma_coverage_name = NULL;
+
+/*!
+ Specifies the keyword of the racecheck on/off pragma.
+*/
+char* pragma_racecheck_name = NULL;
+
 
 extern int64     largest_malloc_size;
 extern int64     curr_malloc_size;
 extern str_link* use_files_head;
 extern char      user_msg[USER_MSG_LENGTH];
-extern char*     directive_filename;
 extern bool      debug_mode;
 extern isuppl    info_suppl;
-extern char*     pragma_coverage_name;
-extern char*     pragma_racecheck_name;
 extern char      score_run_path[4096];
 extern bool      warnings_suppressed;
 extern str_link* sim_plusargs_head;

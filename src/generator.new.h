@@ -257,7 +257,7 @@ void generator_create_tmp_regs();
 
 /*! \brief Wrapper around the VLerror handler for the generator parser */
 void GENerror(
-  const char* str
+  char* str
 );
 
 #endif

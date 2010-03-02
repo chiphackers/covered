@@ -54,7 +54,6 @@ extern int    delay_expr_type;
 extern int    stmt_conn_id;
 extern int    gi_conn_id;
 extern isuppl info_suppl;
-extern char*  file_version;
 extern int    curr_sig_type;
 
 /* Functions from lexer */

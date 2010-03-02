@@ -30,18 +30,26 @@
 #include "db.h"
 #include "defines.h"
 #include "gen_item.h"
-#include "generator.h"
+#include "generator.new.h"
 #include "keywords.h"
 #include "link.h"
 #include "obfuscate.h"
 #include "parser_misc.h"
+#ifdef GENERATOR
+#include "gen_parser.h"
+#else
 #include "parser.h"
+#endif
 #include "tree.h"
 #include "util.h"
 #include "vsignal.h"
 #include "vector.h"
 
+#ifdef GENERATOR
+#define yylval GENlval
+#else
 #define yylval VLlval
+#endif
 #define YYDEBUG 1
 #define YYERROR_VERBOSE 1
 
@@ -68,6 +76,10 @@ extern bool         flag_conservative;
 extern int          block_depth;
 extern unsigned int for_start_line;
 extern unsigned int for_start_col;
+extern char*        directive_filename;
+extern char*        pragma_coverage_name;
+extern char*        pragma_racecheck_name;
+
 
 /*!
  Contains state before entering exclusive block.
@@ -101,35 +113,15 @@ static int last_keyword = 0;
 static tnode* found_modules = NULL;
 
 /*!
- Holds the name of the file specified in a `line or \#line preprocessor directive.
-*/
-char* directive_filename = NULL;
-
-/*!
  Specifies if the current file was previously parsed.  If it was, we need to ignore
  all globally declared stuff.
 */
 static bool file_prev_parsed;
 
 /*!
- Specifies the keyword of the coverage on/off pragma.
-*/
-char* pragma_coverage_name = NULL;
-
-/*!
- Specifies the keyword of the racecheck on/off pragma.
-*/
-char* pragma_racecheck_name = NULL;
-
-/*!
  Saves file version information (if found) for the current file.
 */
-char* file_version = NULL;
-
-/*!
- Tracks the last block_depth value.
-*/
-int last_depth = -1;
+static char* file_version = NULL;
 
 /*@-unreachable@*/
 %}
@@ -533,8 +525,12 @@ WSPACE [ \t\b\f]+
   char* tmpstr;
   tmpstr = strdup_safe( yytext );
   tmpstr[ str_len - 1 ] = '\0';
+ #ifdef GENERATOR
+  yylval.text = tmpstr;
+ #else
   vector_from_string( &tmpstr, TRUE, &(yylval.num.vec), &(yylval.num.base) );
   free_safe( tmpstr, (str_len + 1) );
+ #endif
   yylloc.last_column += 1;
   BEGIN( state_enter );
   return STRING;
@@ -772,9 +768,16 @@ WSPACE [ \t\b\f]+
   if( (rc == IDENTIFIER) && parser_check_generation( GENERATION_SV ) ) {
     rc = lexer_keyword_sv_code( yytext, yyleng );
     if( (rc == IDENTIFIER) && (ignore_mode == 0) ) {
+ #ifdef GENERATOR
+      if( db_find_typedef( yytext ) != NULL ) {
+        yylval.text = strdup_safe( yytext );
+        rc = TYPEDEF_IDENTIFIER;
+      }
+ #else
       if( (yylval.typdef = db_find_typedef( yytext )) != NULL ) {
         rc = TYPEDEF_IDENTIFIER;
       }
+ #endif
     }
   }
   yylloc.first_column = yylloc.last_column;
@@ -906,6 +909,9 @@ WSPACE [ \t\b\f]+
   double       rtime;
   unsigned int slen = strlen( yytext );
   char*        stmp = strdup_safe( yytext );
+ #ifdef GENERATOR
+  yylval.text = stmp;
+ #else
   yylval.realtime = (vector*)malloc_safe( sizeof( vector ) );
   if( sscanf( remove_underscores( stmp ), "%lf", &rtime ) == 1 ) {
     vector_init_r64( yylval.realtime, (rv64*)malloc_safe( sizeof( rv64 ) ), rtime, yytext, TRUE, VTYPE_VAL );
@@ -913,6 +919,7 @@ WSPACE [ \t\b\f]+
     assert( 0 );
   }
   free_safe( stmp, (slen + 1) );
+ #endif
   yylloc.first_column = yylloc.last_column;
   yylloc.last_column += strlen( yytext );
   return REALTIME;
@@ -923,6 +930,9 @@ WSPACE [ \t\b\f]+
   double       rtime;
   unsigned int slen = strlen( yytext );
   char*        stmp = strdup_safe( yytext );
+ #ifdef GENERATOR
+  yylval.text = stmp;
+ #else
   yylval.realtime = (vector*)malloc_safe( sizeof( vector ) );
   if( sscanf( remove_underscores( stmp ), "%lf", &rtime ) == 1 ) {
     vector_init_r64( yylval.realtime, (rv64*)malloc_safe( sizeof( rv64 ) ), rtime, yytext, TRUE, VTYPE_VAL );
@@ -930,6 +940,7 @@ WSPACE [ \t\b\f]+
     assert( 0 );
   }
   free_safe( stmp, (slen + 1) );
+ #endif
   yylloc.first_column = yylloc.last_column;
   yylloc.last_column += strlen( yytext );
   return REALTIME;
@@ -1025,6 +1036,8 @@ WSPACE [ \t\b\f]+
 
 /*@=unreachable@*/
 
+#ifndef GENERATOR
+
 /*!
  Called at the start of UDP table parsing.
 */
@@ -1097,6 +1110,7 @@ void lex_end_import_export() {
 
 }
 
+#endif
 
 /*!
  Parses and handles a line directive that is in the CPP format.
@@ -1165,7 +1179,7 @@ static void line_directive2() { PROFILE(LINE_DIRECTIVE2);
 /*!
  Parses either the time unit or time precision token.
 */
-void process_timescale_token(
+static void process_timescale_token(
   char* token,  /*!< User-specified timescale token (either unit or precision information) */
   char* type,   /*!< String specifying timescale token type ("unit" or "precision") */
   int*  value,  /*!< Integer value to store shift information in */
@@ -1212,6 +1226,8 @@ void process_timescale_token(
   PROFILE_END;
 
 }
+
+#ifndef GENERATOR
 
 /*!
  Processes a text string into timescale information.
@@ -1282,8 +1298,8 @@ void process_timescale(
 
 }
 
+#endif
 
-  
 /*!
  \return Returns 0 if we should continue to parse or 1 if we should stop.
 
@@ -1410,6 +1426,8 @@ static int yywrap() { PROFILE(LEXER_YYWRAP);
 
 }
 
+#ifndef GENERATOR
+
 /*!
  This function initializes the whole process. The first file is
  opened, and the lexer is initialized.  The include stack is cleared
@@ -1486,6 +1504,8 @@ void reset_lexer(
 
 }
 
+#else
+
 /*!
  This function initializes the whole process. The first file is
  opened, and the lexer is initialized.  The include stack is cleared
@@ -1551,12 +1571,13 @@ void reset_lexer_for_generation(
 
 }
 
+#endif
 
 /*!
  Checks the comment for pragma information in the given comment block and takes
  the appropriate action.
 */
-void check_for_pragma(
+static void check_for_pragma(
   char* comment  /*!< User-provided comment taken from a comment block */
 ) { PROFILE(CHECK_FOR_PRAGMA);
 

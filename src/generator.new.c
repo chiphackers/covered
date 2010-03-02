@@ -875,7 +875,7 @@ static void generator_output_funits(
 
       /* Parse the original code and output inline coverage code */
       reset_lexer_for_generation( head->filename, "covered/verilog" );
-      (void)VLparse();
+      (void)GENparse();
 
       /* Flush the work and hold buffers */
       generator_flush_all;
@@ -4010,7 +4010,7 @@ void generator_create_tmp_regs() { PROFILE(GENERATOR_CREATE_TMP_REGS);
  Wrapper around the VLerror function (reuses the same error handler as the normal parser).
 */
 void GENerror(
-  const char* str  /*!< Error string to output */
+  char* str  /*!< Error string to output */
 ) { PROFILE(GENERROR);
 
   VLerror( str );
