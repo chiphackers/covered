@@ -22,7 +22,11 @@
 #include "keywords.h"
 #include "defines.h"
 #include "vsignal.h"
+#ifdef GENERATOR
+#include "gen_parser.h"
+#else
 #include "parser.h"
+#endif
 #include "profiler.h"
 
 #ifdef GENERATOR
