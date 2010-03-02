@@ -57,20 +57,20 @@ am_covered_OBJECTS = arc.$(OBJEXT) assertion.$(OBJEXT) attr.$(OBJEXT) \
 	keywords_1995.$(OBJEXT) keywords_2001.$(OBJEXT) \
 	keywords_sv.$(OBJEXT) keywords_sys_1995.$(OBJEXT) \
 	keywords_sys_2001.$(OBJEXT) keywords_sys_sv.$(OBJEXT) \
-	pplexer.$(OBJEXT) lexer.$(OBJEXT) gen_lexer.$(OBJEXT) \
-	line.$(OBJEXT) link.$(OBJEXT) lxt.$(OBJEXT) \
-	lxt2_read.$(OBJEXT) main.$(OBJEXT) memory.$(OBJEXT) \
-	merge.$(OBJEXT) obfuscate.$(OBJEXT) ovl.$(OBJEXT) \
-	param.$(OBJEXT) parse.$(OBJEXT) parser_func.$(OBJEXT) \
-	parser_misc.$(OBJEXT) perf.$(OBJEXT) profiler.$(OBJEXT) \
-	race.$(OBJEXT) rank.$(OBJEXT) reentrant.$(OBJEXT) \
-	report.$(OBJEXT) scope.$(OBJEXT) score.$(OBJEXT) \
-	search.$(OBJEXT) sim.$(OBJEXT) stat.$(OBJEXT) static.$(OBJEXT) \
-	static_lexer.$(OBJEXT) statement.$(OBJEXT) stmt_blk.$(OBJEXT) \
-	struct_union.$(OBJEXT) symtable.$(OBJEXT) sys_tasks.$(OBJEXT) \
-	tcl_funcs.$(OBJEXT) toggle.$(OBJEXT) tree.$(OBJEXT) \
-	util.$(OBJEXT) vcd.new.$(OBJEXT) vcd_keywords.$(OBJEXT) \
-	vector.$(OBJEXT) vsignal.$(OBJEXT)
+	gen_keywords_1995.$(OBJEXT) pplexer.$(OBJEXT) lexer.$(OBJEXT) \
+	gen_lexer.$(OBJEXT) line.$(OBJEXT) link.$(OBJEXT) \
+	lxt.$(OBJEXT) lxt2_read.$(OBJEXT) main.$(OBJEXT) \
+	memory.$(OBJEXT) merge.$(OBJEXT) obfuscate.$(OBJEXT) \
+	ovl.$(OBJEXT) param.$(OBJEXT) parse.$(OBJEXT) \
+	parser_func.$(OBJEXT) parser_misc.$(OBJEXT) perf.$(OBJEXT) \
+	profiler.$(OBJEXT) race.$(OBJEXT) rank.$(OBJEXT) \
+	reentrant.$(OBJEXT) report.$(OBJEXT) scope.$(OBJEXT) \
+	score.$(OBJEXT) search.$(OBJEXT) sim.$(OBJEXT) stat.$(OBJEXT) \
+	static.$(OBJEXT) static_lexer.$(OBJEXT) statement.$(OBJEXT) \
+	stmt_blk.$(OBJEXT) struct_union.$(OBJEXT) symtable.$(OBJEXT) \
+	sys_tasks.$(OBJEXT) tcl_funcs.$(OBJEXT) toggle.$(OBJEXT) \
+	tree.$(OBJEXT) util.$(OBJEXT) vcd.new.$(OBJEXT) \
+	vcd_keywords.$(OBJEXT) vector.$(OBJEXT) vsignal.$(OBJEXT)
 covered_OBJECTS = $(am_covered_OBJECTS)
 am__DEPENDENCIES_1 =
 covered_DEPENDENCIES = $(am__DEPENDENCIES_1)
@@ -242,6 +242,7 @@ covered_SOURCES = arc.c \
                   keywords_sys_1995.c \
                   keywords_sys_2001.c \
                   keywords_sys_sv.c \
+                  gen_keywords_1995.c \
                   pplexer.c \
 		  lexer.c \
                   gen_lexer.c \
@@ -290,6 +291,7 @@ INCLUDES = -I..
 AM_CPPFLAGS = -DINSTALL_DIR=\"@datadir@/covered\" $(TCLTK_CPPFLAGS) $(DEBUGDEF) $(PROFILEDEF) $(TESTMODEDEF)
 CLEANFILES = pplexer.c \
              lexer.c \
+             gen_lexer.c \
              static_lexer.c \
              keywords_1995.c \
              keywords_sys_1995.c \
@@ -297,6 +299,7 @@ CLEANFILES = pplexer.c \
              keywords_sys_2001.c \
              keywords_sv.c \
              keywords_sys_sv.c \
+             gen_keywords_1995.c \
              parser.c \
              parser.h \
              gen_parser.c \
@@ -390,6 +393,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/func_iter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/func_unit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gen_item.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gen_keywords_1995.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gen_lexer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gen_parser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/generator.new.Po@am__quote@
@@ -661,7 +665,11 @@ static_lexer.c: $(srcdir)/static_lexer.l
 	flex -PSE -ostatic_lexer.c $(srcdir)/static_lexer.l
 
 keywords_1995.c:  keywords_1995.gperf
-	gperf -o -i 7 -C -k 1-3,$$ -L ANSI-C -H keyword_hash_1995 -N check_identifier_1995 -t $(srcdir)/keywords_1995.gperf > keywords_1995.c || (rm -f keywords_1995.c ; false)
+	gperf -o -i 7 -C -k 1-3,$$ -L ANSI-C -H keyword_hash_1995 -N vl_check_identifier_1995 -t $(srcdir)/keywords_1995.gperf > keywords_1995.c || (rm -f keywords_1995.c ; false)
+
+gen_keywords_1995.c:  keywords_1995.gperf
+	echo "#define GENERATOR" > gen_keywords_1995.c
+	gperf -o -i 7 -C -k 1-3,$$ -L ANSI-C -H keyword_hash_1995 -N gen_check_identifier_1995 -t $(srcdir)/keywords_1995.gperf >> gen_keywords_1995.c || (rm -f gen_keywords_1995.c ; false)
 
 keywords_sys_1995.c:  keywords_sys_1995.gperf
 	gperf -o -i 7 -C -k 1-3,$$ -L ANSI-C -H keyword_hash_sys_1995 -N check_identifier_sys_1995 -t $(srcdir)/keywords_sys_1995.gperf > keywords_sys_1995.c || (rm -f keywords_sys_1995.c ; false)

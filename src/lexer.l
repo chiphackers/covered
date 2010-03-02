@@ -47,8 +47,10 @@
 
 #ifdef GENERATOR
 #define yylval GENlval
+#define lexer_keyword_1995_code gen_lexer_keyword_1995_code
 #else
 #define yylval VLlval
+#define lexer_keyword_1995_code vl_lexer_keyword_1995_code
 #endif
 #define YYDEBUG 1
 #define YYERROR_VERBOSE 1

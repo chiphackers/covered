@@ -29,6 +29,7 @@ covered_SOURCES = arc.c \
                   keywords_sys_1995.c \
                   keywords_sys_2001.c \
                   keywords_sys_sv.c \
+                  gen_keywords_1995.c \
                   pplexer.c \
 		  lexer.c \
                   gen_lexer.c \
@@ -99,7 +100,11 @@ static_lexer.c: $(srcdir)/static_lexer.l
 	flex -PSE -ostatic_lexer.c $(srcdir)/static_lexer.l
 
 keywords_1995.c:  keywords_1995.gperf
-	gperf -o -i 7 -C -k 1-3,$$ -L ANSI-C -H keyword_hash_1995 -N check_identifier_1995 -t $(srcdir)/keywords_1995.gperf > keywords_1995.c || (rm -f keywords_1995.c ; false)
+	gperf -o -i 7 -C -k 1-3,$$ -L ANSI-C -H keyword_hash_1995 -N vl_check_identifier_1995 -t $(srcdir)/keywords_1995.gperf > keywords_1995.c || (rm -f keywords_1995.c ; false)
+
+gen_keywords_1995.c:  keywords_1995.gperf
+	echo "#define GENERATOR" > gen_keywords_1995.c
+	gperf -o -i 7 -C -k 1-3,$$ -L ANSI-C -H keyword_hash_1995 -N gen_check_identifier_1995 -t $(srcdir)/keywords_1995.gperf >> gen_keywords_1995.c || (rm -f gen_keywords_1995.c ; false)
 
 keywords_sys_1995.c:  keywords_sys_1995.gperf
 	gperf -o -i 7 -C -k 1-3,$$ -L ANSI-C -H keyword_hash_sys_1995 -N check_identifier_sys_1995 -t $(srcdir)/keywords_sys_1995.gperf > keywords_sys_1995.c || (rm -f keywords_sys_1995.c ; false)
@@ -121,6 +126,7 @@ vcd_keywords.c:  vcd_keywords.gperf
 
 CLEANFILES = pplexer.c \
              lexer.c \
+             gen_lexer.c \
              static_lexer.c \
              keywords_1995.c \
              keywords_sys_1995.c \
@@ -128,6 +134,7 @@ CLEANFILES = pplexer.c \
              keywords_sys_2001.c \
              keywords_sv.c \
              keywords_sys_sv.c \
+             gen_keywords_1995.c \
              parser.c \
              parser.h \
              gen_parser.c \
