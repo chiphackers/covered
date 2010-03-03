@@ -874,7 +874,9 @@ WSPACE [ \t\b\f]+
   if( flag_conservative && ((rc == S_random) || (rc == S_urandom) || (rc == S_urandom_range)) ) {
     rc = S_ignore;
   }
+ #ifdef GENERATOR
   yylval.text = strdup_safe( yytext );
+ #endif
   yylloc.first_column = yylloc.last_column;
   yylloc.last_column += strlen( yytext );
   return( rc ); 

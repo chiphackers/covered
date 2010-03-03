@@ -373,12 +373,19 @@ description
   | K_function automatic_opt signed_opt range_or_type_opt IDENTIFIER ';'
     function_item_list
     {
-      generator_create_tmp_regs();
+      func_unit* funit;
+      if( ((funit = db_get_tfn_by_position( @5.first_line, @5.first_column )) != NULL) && generator_is_static_function( funit ) ) {
+        generator_create_tmp_regs();
+        generator_push_funit( funit );
+      }
     }
     statement
     K_endfunction
     {
       func_unit* funit = db_get_tfn_by_position( @5.first_line, @5.first_column );
+      if( generator_is_static_function( funit ) ) {
+        generator_pop_funit( funit );
+      }
       $$ = generator_build( 12, strdup_safe( "function" ), $2, $3, $4, $5, strdup_safe( ";" ), "\n", $7,
                             (generator_is_static_function( funit ) ? generator_inst_id_reg( funit ) : NULL), $9, strdup_safe( "endfunction" ), "\n" );
     }
@@ -409,7 +416,8 @@ module
     module_port_list_opt ';'
     module_item_list_opt K_endmodule
     {
-      $$ = generator_build( 9, $1, $2, $3, $5, $6, strdup_safe( ";" ), $8, generator_inst_id_overrides(), strdup_safe( "endmodule" ) );
+      generator_pop_funit();
+      $$ = generator_build( 11, $1, $2, $3, $5, $6, strdup_safe( ";" ), generator_inst_id_reg( db_get_curr_funit() ), generator_tmp_regs(), $8, generator_inst_id_overrides(), strdup_safe( "endmodule" ) );
     }
   | attribute_list_opt K_module IGNORE I_endmodule
     {
@@ -424,7 +432,6 @@ module
 module_start
   : K_module
     {
-      printf( "module, first_line: %d, first_column: %d\n", @1.first_line, @1.first_column );
       $$ = strdup_safe( "module" );
     }
   | K_macromodule
@@ -1348,7 +1355,13 @@ generate_item
     {
       $$ = $1;
     }
-  | K_begin generate_item_list_opt K_end
+  | K_begin
+    {
+      func_unit* funit = db_get_tfn_by_position( @1.first_line, @1.first_column );
+      assert( funit != NULL );
+      generator_push_funit( funit );
+    }
+    generate_item_list_opt K_end
     {
       char         str[50];
       char*        back;
@@ -1363,20 +1376,34 @@ generate_item
       assert( rv < 50 );
       free_safe( back, (strlen( funit->name ) + 1) );
       free_safe( rest, (strlen( funit->name ) + 1) );
-      $$ = generator_build( 9, strdup_safe( "begin" ), strdup_safe( str ), "\n", generator_inst_id_reg( funit ), "\n", generator_tmp_regs(), $2, strdup_safe( "end" ), "\n" );
+      generator_pop_funit();
+      $$ = generator_build( 9, strdup_safe( "begin" ), strdup_safe( str ), "\n", generator_inst_id_reg( funit ), "\n", generator_tmp_regs(), $3, strdup_safe( "end" ), "\n" );
     }
-  | K_begin ':' IDENTIFIER generate_item_list_opt K_end
+  | K_begin ':' IDENTIFIER
+    {
+      func_unit* funit = db_get_tfn_by_position( @1.first_line, @1.first_column );
+      assert( funit != NULL );
+      generator_push_funit( funit );
+    }
+    generate_item_list_opt K_end
     {
       func_unit* funit = db_get_tfn_by_position( @3.first_line, @3.first_column );
       assert( funit != NULL );
-      $$ = generator_build( 9, strdup_safe( "begin : " ), $3, "\n", generator_inst_id_reg( funit ), "\n", generator_tmp_regs(), $4, strdup_safe( "end" ), "\n" );
+      generator_pop_funit();
+      $$ = generator_build( 9, strdup_safe( "begin : " ), $3, "\n", generator_inst_id_reg( funit ), "\n", generator_tmp_regs(), $5, strdup_safe( "end" ), "\n" );
     }
-  | K_for '(' generate_passign ';' static_expr ';' generate_passign ')' K_begin ':' IDENTIFIER generate_item_list_opt K_end
+  | K_for '(' generate_passign ';' static_expr ';' generate_passign ')' K_begin ':' IDENTIFIER
+    {
+      func_unit* funit = db_get_tfn_by_position( @11.first_line, @11.first_column );
+      assert( funit != NULL );
+      generator_push_funit( funit );
+    }
+    generate_item_list_opt K_end
     {
       func_unit* funit = db_get_tfn_by_position( @11.first_line, @11.first_column );
       assert( funit != NULL );
       $$ = generator_build( 17, strdup_safe( "for(" ), $3, strdup_safe( ";" ), $5, strdup_safe( ";" ), $7, strdup_safe( ")" ), "\n", strdup_safe( "begin : " ), $11, "\n",
-                            generator_inst_id_reg( funit ), "\n", generator_tmp_regs(), $12, strdup_safe( "end" ), "\n" );
+                            generator_inst_id_reg( funit ), "\n", generator_tmp_regs(), $13, strdup_safe( "end" ), "\n" );
     }
   | K_if '(' static_expr ')' gen_if_body
     {
@@ -1593,12 +1620,17 @@ module_item
   | attribute_list_opt K_function automatic_opt signed_opt range_or_type_opt IDENTIFIER ';'
     function_item_list
     {
+      func_unit* funit = db_get_tfn_by_position( @6.first_line, @6.first_column );
+      assert( funit != NULL );
+      generator_push_funit( funit );
       generator_create_tmp_regs();
     }
     statement
     K_endfunction
     {
       func_unit* funit = db_get_tfn_by_position( @6.first_line, @6.first_column );
+      assert( funit != NULL );
+      generator_pop_funit();
       $$ = generator_build( 14, strdup_safe( "function" ), $3, $4, $5, $6, strdup_safe( ";" ), "\n", $8,
                             (generator_is_static_function( funit ) ? generator_inst_id_reg( funit ) : NULL), "\n", generator_tmp_regs(), $10, strdup_safe( "endfunction" ), "\n" );
     }
@@ -2109,6 +2141,21 @@ fork_statement
   : begin_end_id block_item_decls_opt statement_list
     {
       func_unit* funit = db_get_tfn_by_position( @1.first_line, @1.first_column );
+      assert( funit != NULL );
+      if( $1 == NULL ) {
+        char         str[50];
+        char*        back;
+        char*        rest;
+        unsigned int rv;
+        back = strdup_safe( funit->name );
+        rest = strdup_safe( funit->name );
+        scope_extract_back( funit->name, back, rest );
+        rv = snprintf( str, 50, " : %s", back );
+        assert( rv < 50 );
+        $1 = generator_build( 1, strdup_safe( str ) );
+        free_safe( back, (strlen( funit->name ) + 1) );
+        free_safe( rest, (strlen( funit->name ) + 1) );
+      }
       $$ = generator_build( 4, $1, generator_inst_id_reg( funit ), $2, $3 );
     }
   |
@@ -2121,10 +2168,41 @@ begin_end_block
   : begin_end_id block_item_decls_opt statement_list
     {
       func_unit* funit = db_get_tfn_by_position( @1.first_line, @1.first_column );
-      $$ = generator_build( 4, $1, generator_inst_id_reg( funit ), $2, $3 );
+      assert( funit != NULL );
+      if( $1 == NULL ) {
+        char         str[50];
+        char*        back;
+        char*        rest;
+        unsigned int rv;
+        back = strdup_safe( funit->name );
+        rest = strdup_safe( funit->name );
+        scope_extract_back( funit->name, back, rest );
+        rv = snprintf( str, 50, " : %s", back );
+        assert( rv < 50 );
+        $1 = generator_build( 1, strdup_safe( str ) );
+        free_safe( back, (strlen( funit->name ) + 1) );
+        free_safe( rest, (strlen( funit->name ) + 1) );
+      }
+      $$ = generator_build( 5, $1, "\n", generator_inst_id_reg( funit ), $2, $3 );
     }
   | begin_end_id
     {
+      if( $1 == NULL ) {
+        char         str[50];
+        char*        back;
+        char*        rest;
+        unsigned int rv;
+        func_unit*   funit = db_get_tfn_by_position( @1.first_line, @1.first_column );
+        assert( funit != NULL );
+        back = strdup_safe( funit->name );
+        rest = strdup_safe( funit->name );
+        scope_extract_back( funit->name, back, rest );
+        rv = snprintf( str, 50, " : %s", back );
+        assert( rv < 50 );
+        $1 = generator_build( 1, strdup_safe( str ) );
+        free_safe( back, (strlen( funit->name ) + 1) );
+        free_safe( rest, (strlen( funit->name ) + 1) );
+      }
       $$ = $1;
     }
   ;

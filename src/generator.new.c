@@ -215,34 +215,6 @@ static char* generator_gen_size(
 );
 
 /*!
- Outputs the current state of the code lists to standard output (for debugging purposes only).
-*/
-void generator_display() { PROFILE(GENERATOR_DISPLAY);
-
-  str_link* strl;
-
-  printf( "----------------------------------------------------------------\n" );
-  printf( "Holding code list (%p %p):\n", hold_head, hold_tail );
-  strl = hold_head;
-  while( strl != NULL ) {
-    printf( "    %s\n", strl->str );
-    strl = strl->next;
-  }
-  printf( "Holding buffer:\n  [%s]\n", hold_buffer );
-
-  printf( "Working code list (%p %p):\n", work_head, work_tail );
-  strl = work_head;
-  while( strl != NULL ) {
-    printf( "    %s\n", strl->str );
-    strl = strl->next;
-  }
-  printf( "Working buffer:\n  [%s]\n", work_buffer );
-
-  PROFILE_END;
-
-}
-
-/*!
  \return Returns allocated string containing the difference in scope between the current functional unit
          and the specified child functional unit.
 */
@@ -539,9 +511,6 @@ static void generator_insert_reg(
 ) { PROFILE(GENERATOR_INSERT_REG);
 
   assert( tmp_regs_top != NULL );
-
-  /* Add the register */
-  tmp_regs_top->str = generator_build( 3, tmp_regs_top->str, strdup_safe( str ), "\n" );
 
   /* If the signal is an intermediate signal, turn tracing off for this signal */
   if( tmp_reg ) {
@@ -1243,7 +1212,6 @@ void generator_add_to_work_code(
                                   str, first_line, first_column, from_code, file, line );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-      generator_display();
     }
 #endif
 
@@ -1314,7 +1282,6 @@ void generator_flush_work_code1(
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Flushing work code (file: %s, line: %u)", file, line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-//    generator_display();
   }
 #endif
 
@@ -1378,7 +1345,6 @@ void generator_add_to_hold_code(
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Adding to hold code [%s] (file: %s, line: %u)", str, file, line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-//    generator_display();
   }
 #endif
 
@@ -1588,7 +1554,7 @@ char* generator_line_cov_with_stmt(
       free_safe( scope, (strlen( scope ) + 1) );
 
       /* Create the register */
-      rv = snprintf( str, 4096, "reg %s;\n", sig );
+      rv = snprintf( str, 4096, "reg %s;", sig );
       assert( rv < 4096 );
       generator_insert_reg( str, FALSE );
 
@@ -1669,7 +1635,7 @@ char* generator_event_comb_cov(
 
   /* Create register */
   if( reg_needed ) {
-    rv = snprintf( str, 4096, "reg %s;\n", name );
+    rv = snprintf( str, 4096, "reg %s;", name );
     assert( rv < 4096 );
     generator_insert_reg( str, FALSE );
   }
@@ -1700,7 +1666,7 @@ char* generator_event_comb_cov(
       case EXP_OP_PEDGE :
         {
           if( reg_needed && (exp->suppl.part.eval_t == 0) ) {
-            rv = snprintf( str, 4096, "reg %s;\n", tname );
+            rv = snprintf( str, 4096, "reg %s;", tname );
             assert( rv < 4096 );
             generator_insert_reg( str, FALSE );
             exp->suppl.part.eval_t = 1;
@@ -1717,7 +1683,7 @@ char* generator_event_comb_cov(
       case EXP_OP_NEDGE :
         {
           if( reg_needed && (exp->suppl.part.eval_t == 0) ) {
-            rv = snprintf( str, 4096, "reg %s;\n", tname );
+            rv = snprintf( str, 4096, "reg %s;", tname );
             assert( rv < 4096 );
             generator_insert_reg( str, FALSE );
             exp->suppl.part.eval_t = 1;
@@ -1737,9 +1703,9 @@ char* generator_event_comb_cov(
             int   number;
             char* size = generator_gen_size( exp->right, funit, &number );
             if( number >= 0 ) {
-              rv = snprintf( str, 4096, "reg [%d:0] %s;\n", (number - 1), tname );
+              rv = snprintf( str, 4096, "reg [%d:0] %s;", (number - 1), tname );
             } else {
-              rv = snprintf( str, 4096, "reg [((%s)-1):0] %s;\n", size, tname );
+              rv = snprintf( str, 4096, "reg [((%s)-1):0] %s;", size, tname );
             }
             assert( rv < 4096 );
             generator_insert_reg( str, FALSE );
@@ -1808,7 +1774,7 @@ static char* generator_unary_comb_cov(
   } else {
     prefix[0] = '\0';
     if( reg_needed ) {
-      rv = snprintf( str, 4096, "reg %s;\n", sig );
+      rv = snprintf( str, 4096, "reg %s;", sig );
       assert( rv < 4096 );
       generator_insert_reg( str, FALSE );
     }
@@ -1816,9 +1782,9 @@ static char* generator_unary_comb_cov(
 
   /* Prepend the coverage assignment to the working buffer */
   if( exp->value->suppl.part.is_signed == 1 ) {
-    rv = snprintf( str, 4096, "%s%s = (%s != 0);\n", prefix, sig, sigr );
+    rv = snprintf( str, 4096, "%s%s = (%s != 0);", prefix, sig, sigr );
   } else {
-    rv = snprintf( str, 4096, "%s%s = (%s > 0);\n", prefix, sig, sigr );
+    rv = snprintf( str, 4096, "%s%s = (%s > 0);", prefix, sig, sigr );
   }
   assert( rv < 4096 );
 
@@ -1827,7 +1793,7 @@ static char* generator_unary_comb_cov(
 
   PROFILE_END;
 
-  return( strdup_safe( str ) );
+  return( generator_build( 2, strdup_safe( str ), "\n" ) );
 
 }
 
@@ -1871,7 +1837,7 @@ static char* generator_comb_comb_cov(
     strcpy( prefix, "wire [1:0] " );
   } else if( reg_needed ) {
     prefix[0] = '\0';
-    rv = snprintf( str, 4096, "reg [1:0] %s;\n", sig );
+    rv = snprintf( str, 4096, "reg [1:0] %s;", sig );
     assert( rv < 4096 );
     generator_insert_reg( str, FALSE );
   }
@@ -1879,15 +1845,15 @@ static char* generator_comb_comb_cov(
   /* Prepend the coverage assignment to the working buffer */
   if( exp->left->value->suppl.part.is_signed == 1 ) {
     if( exp->right->value->suppl.part.is_signed == 1 ) {
-      rv = snprintf( str, 4096, "%s%s = {(%s != 0),(%s != 0)};\n", prefix, sig, sigl, sigr );
+      rv = snprintf( str, 4096, "%s%s = {(%s != 0),(%s != 0)};", prefix, sig, sigl, sigr );
     } else {
-      rv = snprintf( str, 4096, "%s%s = {(%s != 0),(%s > 0)};\n", prefix, sig, sigl, sigr );
+      rv = snprintf( str, 4096, "%s%s = {(%s != 0),(%s > 0)};", prefix, sig, sigl, sigr );
     }
   } else {
     if( exp->right->value->suppl.part.is_signed == 1 ) {
-      rv = snprintf( str, 4096, "%s%s = {(%s > 0),(%s != 0)};\n", prefix, sig, sigl, sigr );
+      rv = snprintf( str, 4096, "%s%s = {(%s > 0),(%s != 0)};", prefix, sig, sigl, sigr );
     } else {
-      rv = snprintf( str, 4096, "%s%s = {(%s > 0),(%s > 0)};\n", prefix, sig, sigl, sigr );
+      rv = snprintf( str, 4096, "%s%s = {(%s > 0),(%s > 0)};", prefix, sig, sigl, sigr );
     }
   }
   assert( rv < 4096 );
@@ -1898,7 +1864,7 @@ static char* generator_comb_comb_cov(
 
   PROFILE_END;
 
-  return( strdup_safe( str ) );
+  return( generator_build( 2, strdup_safe( str ), "\n" ) );
 
 }
 
@@ -2211,13 +2177,13 @@ static char* generator_create_lhs(
       char tmp[50];
       rv = snprintf( tmp, 50, "%d", (number - 1) );
       assert( rv < 50 );
-      slen = 6 + strlen( tmp ) + 4 + strlen( name ) + 3;
+      slen = 6 + strlen( tmp ) + 4 + strlen( name ) + 2;
       str  = (char*)malloc_safe( slen );
-      rv   = snprintf( str, slen, "wire [%s:0] %s;\n", tmp, name );
+      rv   = snprintf( str, slen, "wire [%s:0] %s;", tmp, name );
     } else {
-      slen = 7 + ((size != NULL) ? strlen( size ) : 1) + 7 + strlen( name ) + 3;
+      slen = 7 + ((size != NULL) ? strlen( size ) : 1) + 7 + strlen( name ) + 2;
       str  = (char*)malloc_safe_nolimit( slen );
-      rv   = snprintf( str, slen, "wire [(%s)-1:0] %s;\n", ((size != NULL) ? size : "1"), name );
+      rv   = snprintf( str, slen, "wire [(%s)-1:0] %s;", ((size != NULL) ? size : "1"), name );
     }
 
   /* Create sized register string */
@@ -2228,23 +2194,23 @@ static char* generator_create_lhs(
       rv = snprintf( tmp, 50, "%d", (number - 1) );
       assert( rv < 50 );
       if( exp->value->suppl.part.is_signed == 1 ) {
-        slen = 30 + strlen( name ) + 20 + strlen( tmp ) + 4 + strlen( name ) + 10;
+        slen = 30 + strlen( name ) + 20 + strlen( tmp ) + 4 + strlen( name ) + 9;
         str  = (char*)malloc_safe( slen );
-        rv   = snprintf( str, slen, "`ifdef V1995_COV_MODE\ninteger %s;\n`else\nreg signed [%s:0] %s;\n`endif\n", name, tmp, name );
+        rv   = snprintf( str, slen, "`ifdef V1995_COV_MODE\ninteger %s;\n`else\nreg signed [%s:0] %s;\n`endif", name, tmp, name );
       } else {
         slen = 5 + strlen( tmp ) + 4 + strlen( name ) + 3;
         str  = (char*)malloc_safe( slen );
-        rv   = snprintf( str, slen, "reg [%s:0] %s;\n", tmp, name );
+        rv   = snprintf( str, slen, "reg [%s:0] %s;", tmp, name );
       }
     } else {
       if( exp->value->suppl.part.is_signed == 1 ) {
-        slen = 30 + strlen( name ) + 21 + ((size != NULL) ? strlen( size ) : 1) + 7 + strlen( name ) + 10;
+        slen = 30 + strlen( name ) + 21 + ((size != NULL) ? strlen( size ) : 1) + 7 + strlen( name ) + 9;
         str  = (char*)malloc_safe_nolimit( slen );
-        rv   = snprintf( str, slen, "`ifdef V1995_COV_MODE\ninteger %s;\n`else\nreg signed [(%s-1):0] %s;\n`endif\n", name, ((size != NULL) ? size : "1"), name );
+        rv   = snprintf( str, slen, "`ifdef V1995_COV_MODE\ninteger %s;\n`else\nreg signed [(%s-1):0] %s;\n`endif", name, ((size != NULL) ? size : "1"), name );
       } else {
         slen = 6 + ((size != NULL) ? strlen( size ) : 1) + 7 + strlen( name ) + 3;
         str  = (char*)malloc_safe_nolimit( slen );
-        rv   = snprintf( str, slen, "reg [(%s)-1:0] %s;\n", ((size != NULL) ? size : "1"), name );
+        rv   = snprintf( str, slen, "reg [(%s)-1:0] %s;", ((size != NULL) ? size : "1"), name );
       }
     }
 
@@ -2552,11 +2518,11 @@ static char* generator_subexp(
   if( net ) {
     slen = 8 + strlen( lhs_str ) + 3 + strlen( val_str ) + 3;
     str  = (char*)malloc_safe_nolimit( slen );
-    rv   = snprintf( str, slen, " assign %s = %s;\n", lhs_str, val_str );
+    rv   = snprintf( str, slen, " assign %s = %s;", lhs_str, val_str );
   } else {
     slen = strlen( lhs_str ) + 3 + strlen( val_str ) + 3;
     str  = (char*)malloc_safe_nolimit( slen );
-    rv   = snprintf( str, slen, "%s = %s;\n", lhs_str, val_str );
+    rv   = snprintf( str, slen, "%s = %s;", lhs_str, val_str );
   }
   assert( rv < slen );
 
@@ -2569,7 +2535,7 @@ static char* generator_subexp(
 
   PROFILE_END;
 
-  return( str );
+  return( generator_build( 2, str, "\n" ) );
 
 }
 
@@ -3083,7 +3049,7 @@ static char* generator_mem_cov(
       unsigned int slen = 6 + strlen( num ) + 7 + strlen( iname ) + 3;
 
       str = (char*)malloc_safe( slen );
-      rv  = snprintf( str, slen, "reg [(%s)-1:0] %s;\n", num, iname );
+      rv  = snprintf( str, slen, "reg [(%s)-1:0] %s;", num, iname );
       assert( rv < slen );
       generator_insert_reg( str, FALSE );
       free_safe( str, (strlen( str ) + 1) );
@@ -3126,9 +3092,9 @@ static char* generator_mem_cov(
         size = generator_gen_size( rhs, funit, &number );
 
         if( number >= 0 ) {
-          rv = snprintf( rhs_reg, 4096, "reg [%d:0] %s;\n", (number - 1), ename );
+          rv = snprintf( rhs_reg, 4096, "reg [%d:0] %s;", (number - 1), ename );
         } else {
-          rv = snprintf( rhs_reg, 4096, "reg [(%s)-1:0] %s;\n", size, ename );
+          rv = snprintf( rhs_reg, 4096, "reg [(%s)-1:0] %s;", size, ename );
         }
         assert( rv < 4096 );
         generator_insert_reg( rhs_reg, TRUE );
@@ -3248,7 +3214,7 @@ static char* generator_mem_cov(
     unsigned int slen = 3 + 1 + strlen( range ) + 1 + strlen( name ) + 3;
 
     str = (char*)malloc_safe( slen );
-    rv  = snprintf( str, slen, "reg %s %s;\n", range, name );
+    rv  = snprintf( str, slen, "reg %s %s;", range, name );
     assert( rv < slen );
 
     /* Add the register to the register list */
@@ -3517,9 +3483,9 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
         char* size = generator_gen_size( table->from_state, curr_funit, &number );
         char* exp  = codegen_gen_expr_one_line( table->from_state, curr_funit, FALSE );
         if( number >= 0 ) {
-          fprintf( curr_ofile, "wire [%d:0] \\covered$F%u = %s;\n", (number - 1), (i + 1), exp );
+          fprintf( curr_ofile, "wire [%d:0] \\covered$F%u = %s;", (number - 1), (i + 1), exp );
         } else {
-          fprintf( curr_ofile, "wire [(%s)-1:0] \\covered$F%u = %s;\n", ((size != NULL) ? size : "1"), (i + 1), exp );
+          fprintf( curr_ofile, "wire [(%s)-1:0] \\covered$F%u = %s;", ((size != NULL) ? size : "1"), (i + 1), exp );
         }
         free_safe( size, (strlen( size ) + 1) );
         free_safe( exp, (strlen( exp ) + 1) );
@@ -3534,15 +3500,15 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
         char* texp  = codegen_gen_expr_one_line( table->to_state, curr_funit, FALSE );
         if( from_number >= 0 ) {
           if( to_number >= 0 ) {
-            fprintf( curr_ofile, "wire [%d:0] \\covered$F%u = {%s,%s};\n", ((from_number + to_number) - 1), (i + 1), fexp, texp );
+            fprintf( curr_ofile, "wire [%d:0] \\covered$F%u = {%s,%s};", ((from_number + to_number) - 1), (i + 1), fexp, texp );
           } else {
-            fprintf( curr_ofile, "wire [(%d+(%s))-1:0] \\covered$F%u = {%s,%s};\n", from_number, ((tsize != NULL) ? tsize : "1"), (i + 1), fexp, texp );
+            fprintf( curr_ofile, "wire [(%d+(%s))-1:0] \\covered$F%u = {%s,%s};", from_number, ((tsize != NULL) ? tsize : "1"), (i + 1), fexp, texp );
           }
         } else {
           if( to_number >= 0 ) {
-            fprintf( curr_ofile, "wire [((%s)+%d)-1:0] \\covered$F%u = {%s,%s};\n", ((fsize != NULL) ? fsize : "1"), to_number, (i + 1), fexp, texp );
+            fprintf( curr_ofile, "wire [((%s)+%d)-1:0] \\covered$F%u = {%s,%s};", ((fsize != NULL) ? fsize : "1"), to_number, (i + 1), fexp, texp );
           } else {
-            fprintf( curr_ofile, "wire [((%s)+(%s))-1:0] \\covered$F%u = {%s,%s};\n",
+            fprintf( curr_ofile, "wire [((%s)+(%s))-1:0] \\covered$F%u = {%s,%s};",
                      ((fsize != NULL) ? fsize : "1"), ((tsize != NULL) ? tsize : "1"), (i + 1), fexp, texp );
           }
         }
@@ -3629,7 +3595,6 @@ void generator_hold_last_token() { PROFILE(GENERATOR_HOLD_LAST_TOKEN);
       unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Holding last token [%s]", lahead_buffer );
       assert( rv < USER_MSG_LENGTH );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-      generator_display();
     }
 #endif
 
@@ -3655,7 +3620,6 @@ void generator_flush_held_token1(
     unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Flushing held token (file: %s, line: %u)", file, line );
     assert( rv < USER_MSG_LENGTH );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-//    generator_display();
   }
 #endif
 
@@ -3677,12 +3641,12 @@ char* generator_inst_id_reg(
 ) { PROFILE(GENERATOR_INST_ID_PARAM);
 
   char         str[128];
-  unsigned int rv = snprintf( str, 128, " reg [31:0] COVERED_INST_ID%d /* verilator public */;", funit->id );
+  unsigned int rv = snprintf( str, 128, "reg [31:0] COVERED_INST_ID%d /* verilator public */;", funit->id );
   assert( rv < 128 );
 
   PROFILE_END;
 
-  return( strdup_safe( str ) );
+  return( generator_build( 2, strdup_safe( str ), "\n" ) );
 
 }
 
