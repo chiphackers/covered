@@ -99,7 +99,10 @@ lexer.c:  $(srcdir)/lexer.l
 	flex -PVL -olexer.c $(srcdir)/lexer.l
 
 gen_lexer.c:  $(srcdir)/lexer.l
-	flex -PGEN -DGENERATOR -ogen_lexer.c $(srcdir)/lexer.l
+	echo "#define GENERATOR" > gen_lexer.c
+	flex -PGEN -ogen_lexer.c.tmp $(srcdir)/lexer.l
+	cat gen_lexer.c.tmp >> gen_lexer.c
+	rm -f gen_lexer.c.tmp
 
 static_lexer.c: $(srcdir)/static_lexer.l
 	flex -PSE -ostatic_lexer.c $(srcdir)/static_lexer.l

@@ -47,10 +47,20 @@
 
 #ifdef GENERATOR
 #define yylval GENlval
-#define lexer_keyword_1995_code gen_lexer_keyword_1995_code
+#define lexer_keyword_1995_code     gen_lexer_keyword_1995_code
+#define lexer_keyword_2001_code     gen_lexer_keyword_2001_code
+#define lexer_keyword_sv_code       gen_lexer_keyword_sv_code
+#define lexer_keyword_sys_1995_code gen_lexer_keyword_sys_1995_code
+#define lexer_keyword_sys_2001_code gen_lexer_keyword_sys_2001_code
+#define lexer_keyword_sys_sv_code   gen_lexer_keyword_sys_sv_code
 #else
 #define yylval VLlval
-#define lexer_keyword_1995_code vl_lexer_keyword_1995_code
+#define lexer_keyword_1995_code     vl_lexer_keyword_1995_code
+#define lexer_keyword_2001_code     vl_lexer_keyword_2001_code
+#define lexer_keyword_sv_code       vl_lexer_keyword_sv_code
+#define lexer_keyword_sys_1995_code vl_lexer_keyword_sys_1995_code
+#define lexer_keyword_sys_2001_code vl_lexer_keyword_sys_2001_code
+#define lexer_keyword_sys_sv_code   vl_lexer_keyword_sys_sv_code
 #endif
 #define YYDEBUG 1
 #define YYERROR_VERBOSE 1

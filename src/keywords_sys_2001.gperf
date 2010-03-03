@@ -25,6 +25,14 @@
 #include "parser.h"
 #include "profiler.h"
 
+#ifdef GENERATOR
+#define lexer_keyword_sys_2001_code gen_lexer_keyword_sys_2001_code
+#define check_identifier_sys_2001   gen_check_identifier_sys_2001
+#else
+#define lexer_keyword_sys_2001_code vl_lexer_keyword_sys_2001_code
+#define check_identifier_sys_2001   vl_check_identifier_sys_2001
+#endif
+
 %}
 struct keyword_sys_2001 { char *name; int type; };
 %%

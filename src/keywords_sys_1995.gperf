@@ -22,8 +22,21 @@
 #include "keywords.h"
 #include "defines.h"
 #include "vsignal.h"
+#ifdef GENERATOR
+#include "gen_parser.h"
+#else
 #include "parser.h"
+#endif
 #include "profiler.h"
+
+#ifdef GENERATOR
+#define lexer_keyword_sys_1995_code gen_lexer_keyword_sys_1995_code
+#define check_identifier_sys_1995   gen_check_identifier_sys_1995
+#else
+#define lexer_keyword_sys_1995_code vl_lexer_keyword_sys_1995_code
+#define check_identifier_sys_1995   vl_check_identifier_sys_1995
+#endif
+
 
 %}
 struct keyword_sys_1995 { char *name; int type; };
