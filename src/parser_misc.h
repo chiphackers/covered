@@ -45,7 +45,11 @@ struct vlltype {
 
 /* This for compatibility with new and older bison versions. */
 #ifndef yylloc
-# define yylloc VLlloc
+#ifdef GENERATOR
+#define yylloc GENlloc
+#else
+#define yylloc VLlloc
+#endif
 #endif
 extern YYLTYPE yylloc;
 

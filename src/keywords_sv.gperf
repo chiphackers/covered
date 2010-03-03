@@ -146,7 +146,7 @@ with,          K_with
 within,        K_within 
 %%
 
-int lexer_keyword_sv_code( const char* str, int length ) { PROFILE(LEXER_KEYWORD_SV_CODE);
+int lexer_keyword_sv_code( const char* str, int length ) {
 
   const struct keyword_sv* rc   = check_identifier_sv(str, length);
   int                      type = IDENTIFIER;
@@ -154,8 +154,6 @@ int lexer_keyword_sv_code( const char* str, int length ) { PROFILE(LEXER_KEYWORD
   if( rc != 0 ) {
     type = rc->type;
   }
-
-  PROFILE_END;
 
   return( type );
 

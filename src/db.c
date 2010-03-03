@@ -1033,8 +1033,10 @@ func_unit* db_get_tfn_by_position(
   funit_link* funitl = NULL;
   func_unit*  funit;
 
+  printf( "curr_funit: %p\n", curr_funit );
   funitl = curr_funit->tf_head;
   while( (funitl != NULL) &&
+         printf( "%s, start_line: %d, first_line: %d, start_col: %d, first_column: %d\n", funitl->funit->name, funitl->funit->start_line, first_line, funitl->funit->start_col, first_column ) &&
          ((funitl->funit->start_line != first_line) || (funitl->funit->start_col != first_column)) ) {
     funitl = funitl->next;
   }

@@ -22,7 +22,11 @@
 #include "keywords.h"
 #include "defines.h"
 #include "vsignal.h"
+#ifdef GENERATOR
+#include "gen_parser.h"
+#else
 #include "parser.h"
+#endif
 #include "profiler.h"
 
 #ifdef GENERATOR
@@ -68,16 +72,18 @@ value$plusargs, S_valargs
 int lexer_keyword_sys_2001_code(
   const char* str,
   int         length
-) { PROFILE(LEXER_KEYWORD_SYS_2001_CODE);
+) {
 
   const struct keyword_sys_2001* rc   = check_identifier_sys_2001(str, length);
   int                            type = S_ignore;
 
   if( rc != 0 ) {
+#ifdef GENERATOR
+    type = SYSCALL;
+#else
     type = rc->type;
+#endif
   }
-
-  PROFILE_END;
 
   return( type );
 

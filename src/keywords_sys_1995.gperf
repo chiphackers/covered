@@ -101,12 +101,15 @@ write,          S_allow
 int lexer_keyword_sys_1995_code(
   const char* str,
   int         length
-) { PROFILE(LEXER_KEYWORD_SYS_1995_CODE);
+) {
 
   const struct keyword_sys_1995* rc   = check_identifier_sys_1995(str, length);
   int                            type = S_ignore;
 
   if( rc != 0 ) {
+#ifdef GENERATOR
+    type = SYSCALL;
+#else
     type = rc->type;
     if( type == S_dumpfile ) {
 #ifdef TESTMODE
@@ -115,9 +118,8 @@ int lexer_keyword_sys_1995_code(
       type = S_allow;
 #endif
     }
+#endif
   }
-
-  PROFILE_END;
 
   return( type );
 

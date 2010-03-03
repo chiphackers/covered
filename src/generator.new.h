@@ -44,6 +44,9 @@
 /*! Shortcut for the generator_add_to_work_code function for code coming from original file */
 #define generator_add_orig_to_work_code(x, y, z) generator_add_to_work_code(x, y, z, TRUE, __FILE__, __LINE__ )
 
+/*! Shortcut for the generator_build function */
+#define generator_build(x, ...) generator_build1( __FILE__, __LINE__, x, __VA_ARGS__ )
+
 
 /*! \brief Outputs the current state of the code generator to standard output for debugging purposes. */
 void generator_display();
@@ -244,8 +247,10 @@ void generator_end_parallel_statement(
 );
 
 /*! \brief Generates a long string from an arbitrary number of strings */
-char* generator_build(
-  int args,
+char* generator_build1(
+  const char* file,
+  int         line,
+  int         args,
   ...
 );
 

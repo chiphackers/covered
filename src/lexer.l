@@ -532,7 +532,7 @@ WSPACE [ \t\b\f]+
   yylloc.last_line++;
   return 0;
  }
-<CSTRING>\"   { PROFILE(LEXER_CSTRING_A);
+<CSTRING>\"   {
   int   str_len = strlen( yytext );
   char* tmpstr;
   tmpstr = strdup_safe( yytext );
@@ -771,7 +771,7 @@ WSPACE [ \t\b\f]+
  }
 
   /* Keyword and signal identifiers */
-<PARSE>[a-zA-Z_][a-zA-Z0-9$_]*(\[[^]]*\]\.[a-zA-Z_][a-zA-Z0-9$_]*)* { PROFILE(LEXER_KEYWORD_A);
+<PARSE>[a-zA-Z_][a-zA-Z0-9$_]*(\[[^]]*\]\.[a-zA-Z_][a-zA-Z0-9$_]*)* {
   str_link* foundmod;
   int       rc   = lexer_keyword_1995_code( yytext, yyleng );
   if( (rc == IDENTIFIER) && parser_check_generation( GENERATION_2001 ) ) {
@@ -845,7 +845,7 @@ WSPACE [ \t\b\f]+
  }
 
   /* Signal names starting with a '\' character */
-<PARSE>\\[^ \t\b\f\r\n]+  { PROFILE(LEXER_ESCAPED_NAME);
+<PARSE>\\[^ \t\b\f\r\n]+  {
   yylloc.first_column = yylloc.last_column;
   yylloc.last_column += strlen( yytext );
   {
@@ -859,7 +859,7 @@ WSPACE [ \t\b\f]+
  }
 
   /* System call lines -- we ignore this information */
-<PARSE>\$([a-zA-Z0-9$_]+)   { PROFILE(LEXER_SYSTEM_CALL);
+<PARSE>\$([a-zA-Z0-9$_]+)   {
   int rc = lexer_keyword_sys_1995_code( (yytext + 1), (yyleng - 1) );
   if( (rc == S_ignore) && parser_check_generation( GENERATION_2001 ) ) {
     rc = lexer_keyword_sys_2001_code( (yytext + 1), (yyleng - 1) );
@@ -871,6 +871,7 @@ WSPACE [ \t\b\f]+
   if( flag_conservative && ((rc == S_random) || (rc == S_urandom) || (rc == S_urandom_range)) ) {
     rc = S_ignore;
   }
+  yylval.text = strdup_safe( yytext );
   yylloc.first_column = yylloc.last_column;
   yylloc.last_column += strlen( yytext );
   return( rc ); 
@@ -1127,7 +1128,7 @@ void lex_end_import_export() {
 /*!
  Parses and handles a line directive that is in the CPP format.
 */
-static void line_directive() { PROFILE(LINE_DIRECTIVE);
+static void line_directive() {
 
   char* qt1;
   char* qt2;
@@ -1149,14 +1150,12 @@ static void line_directive() { PROFILE(LINE_DIRECTIVE);
   yylloc.first_line = strtoul( qt2, 0, 0 );
   yylloc.last_line = yylloc.first_line;
 
-  PROFILE_END;
-  
 }
 
 /*!
  Parses and handles a line directive in the Verilog-2001 format.
 */
-static void line_directive2() { PROFILE(LINE_DIRECTIVE2);
+static void line_directive2() {
 
   char* cp;
   char* qt1;
@@ -1184,8 +1183,6 @@ static void line_directive2() { PROFILE(LINE_DIRECTIVE2);
   
   yylloc.orig_fname = directive_filename;
 
-  PROFILE_END;
-  
 }
 
 /*!
@@ -1196,7 +1193,7 @@ static void process_timescale_token(
   char* type,   /*!< String specifying timescale token type ("unit" or "precision") */
   int*  value,  /*!< Integer value to store shift information in */
   bool  report  /*!< If set to TRUE, calls VLerror with appropriate error information */
-) { PROFILE(PROCESS_TIMESCALE_TOKEN);
+) {
 
   int  i      = 3;            /* Loop iterator */
   char msg[USER_MSG_LENGTH];  /* Error message container */
@@ -1235,8 +1232,6 @@ static void process_timescale_token(
     }
   }
 
-  PROFILE_END;
-
 }
 
 #ifndef GENERATOR
@@ -1247,7 +1242,7 @@ static void process_timescale_token(
 void process_timescale(
   const char* txt,    /*!< String containing timescale information */
   bool        report  /*!< If set to TRUE, reports any error information to the VLerror function */
-) { PROFILE(PROCESS_TIMESCALE);
+) {
 
   char*        str;             /* String version of text minus spaces */
   unsigned int i;               /* Loop iterator */
@@ -1306,8 +1301,6 @@ void process_timescale(
   /* Finally, deallocate memory */
   free_safe( str, (strlen( txt ) + 1) );
 
-  PROFILE_END;
-
 }
 
 #endif
@@ -1319,7 +1312,7 @@ void process_timescale(
  ends.  Here I pop the include stack and resume the previous file.  If
  there is no previous file, then the main input is ended.
 */
-static int yywrap() { PROFILE(LEXER_YYWRAP);
+static int yywrap() {
 
   int retval = 0;
   str_link*    curr;
@@ -1432,8 +1425,6 @@ static int yywrap() { PROFILE(LEXER_YYWRAP);
     BEGIN( PARSE );
   }
 
-  PROFILE_END;
-  
   return( retval );
 
 }
@@ -1447,7 +1438,7 @@ static int yywrap() { PROFILE(LEXER_YYWRAP);
 */
 void reset_lexer(
   str_link* file_list_head  /*!< Pointer to list of files to process */
-) { PROFILE(RESET_LEXER);
+) {
 
   FILE*        out;
   str_link*    curr = file_list_head;
@@ -1512,8 +1503,6 @@ void reset_lexer(
   /* Set start state to allow parsing */
   BEGIN( PARSE );
 
-  PROFILE_END;
-
 }
 
 #else
@@ -1526,7 +1515,7 @@ void reset_lexer(
 void reset_lexer_for_generation(
   char*       in_fname,  /*!< Name of file to read */
   const char* out_dir    /*!< Output directory name */
-) { PROFILE(RESET_LEXER_FOR_GENERATION);
+) {
 
   FILE*        out;
   unsigned int rv;
@@ -1579,8 +1568,6 @@ void reset_lexer_for_generation(
   /* Set start state to allow parsing */
   BEGIN( PARSE );
 
-  PROFILE_END;
-
 }
 
 #endif
@@ -1591,7 +1578,7 @@ void reset_lexer_for_generation(
 */
 static void check_for_pragma(
   char* comment  /*!< User-provided comment taken from a comment block */
-) { PROFILE(CHECK_FOR_PRAGMA);
+) {
 
   if( comment != NULL ) {
 
@@ -1664,8 +1651,6 @@ static void check_for_pragma(
     free_safe( value, str_len );
 
   }
-
-  PROFILE_END;
 
 }
 

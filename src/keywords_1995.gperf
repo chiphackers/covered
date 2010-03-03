@@ -147,7 +147,7 @@ xor,            K_xor
 int lexer_keyword_1995_code(
   const char* str,
   int         length
-) { PROFILE(LEXER_KEYWORD_1995_CODE);
+) {
 
   const struct keyword_1995* rc   = check_identifier_1995(str, length);
   int                        type = IDENTIFIER;
@@ -155,8 +155,6 @@ int lexer_keyword_1995_code(
   if( rc != 0 ) {
     type = rc->type;
   }
-
-  PROFILE_END;
 
   return( type );
 

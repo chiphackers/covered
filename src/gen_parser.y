@@ -400,11 +400,16 @@ description
 
 module
   : attribute_list_opt module_start IDENTIFIER 
+    {
+      db_find_and_set_curr_funit( $3, FUNIT_MODULE );
+      generator_init_funit( db_get_curr_funit() );
+      generator_push_funit( db_get_curr_funit() );
+    }
     module_parameter_port_list_opt
     module_port_list_opt ';'
     module_item_list_opt K_endmodule
     {
-      $$ = generator_build( 9, $1, $2, $3, $4, $5, strdup_safe( ";" ), $7, generator_inst_id_overrides(), strdup_safe( "endmodule" ) );
+      $$ = generator_build( 9, $1, $2, $3, $5, $6, strdup_safe( ";" ), $8, generator_inst_id_overrides(), strdup_safe( "endmodule" ) );
     }
   | attribute_list_opt K_module IGNORE I_endmodule
     {
@@ -419,6 +424,7 @@ module
 module_start
   : K_module
     {
+      printf( "module, first_line: %d, first_column: %d\n", @1.first_line, @1.first_column );
       $$ = strdup_safe( "module" );
     }
   | K_macromodule

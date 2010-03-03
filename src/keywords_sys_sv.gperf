@@ -51,16 +51,18 @@ urandom_range,   S_urandom_range
 int lexer_keyword_sys_sv_code(
   const char* str,
   int         length
-) { PROFILE(LEXER_KEYWORD_SYS_SV_CODE);
+) {
 
   const struct keyword_sys_sv* rc   = check_identifier_sys_sv(str, length);
   int                          type = S_ignore;
 
   if( rc != 0 ) {
+#ifdef GENERATOR
+    type = SYSCALL;
+#else
     type = rc->type;
+#endif
   }
-
-  PROFILE_END;
 
   return( type );
 

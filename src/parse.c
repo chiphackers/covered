@@ -196,6 +196,7 @@ void parse_design(
     /* Deallocate module list */
     str_link_delete_list( modlist_head );
     modlist_head = modlist_tail = NULL;
+    printf( "Setting modlist_head to NULL!\n" );
 
     /* Output the dumpvars module, if specified. */
     if( dumpvars_file != NULL ) {

@@ -49,7 +49,7 @@ version,        T_VERSION
 int vcd_keyword_code(
   const char* str,
   int         length
-) { PROFILE(VCD_KEYWORD_CODE);
+) {
 
   const struct vcd_keyword* rc   = vcd_check_identifier( str, length );
   int                       type = T_UNKNOWN;
@@ -57,8 +57,6 @@ int vcd_keyword_code(
   if( rc != 0 ) {
     type = rc->type;
   }
-
-  PROFILE_END;
 
   return( type );
 

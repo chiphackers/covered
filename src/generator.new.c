@@ -1084,6 +1084,9 @@ void generator_init_funit(
   /* Calculate if we need to handle this functional unit as an assertion or not */
   handle_funit_as_assert = (info_suppl.part.scored_assert == 1) && ovl_is_assertion_module( funit );
 
+  /* Create a temporary register container */
+  generator_create_tmp_regs();
+
   PROFILE_END;
 
 }
@@ -3689,10 +3692,12 @@ char* generator_inst_id_reg(
 /*!
  Writes the current instance tree to the parameter override file for instance IDs.
 */
-static void generator_write_inst_id_overrides(
+static char* generator_inst_id_overrides_helper(
   funit_inst* root,                 /*!< Pointer to root instance to generate for */
   int         hier_chars_to_ignore  /*!< Number of characters in the scope name to ignore from output */
-) { PROFILE(GENERATOR_WRITE_INST_ID_OVERRIDES);
+) { PROFILE(GENERATOR_INST_ID_OVERRIDES_HELPER);
+
+  char* cov_str = NULL;
 
   if( root != NULL ) {
 
@@ -3725,8 +3730,7 @@ static void generator_write_inst_id_overrides(
                          root->funit->id, root->id );
           assert( rv < 4096 );
 
-          generator_add_cov_to_work_code( str2 );
-          generator_add_cov_to_work_code( "\n" );
+          cov_str = generator_build( 2, strdup_safe( str2 ), "\n" );
 
         }
 
@@ -3743,8 +3747,8 @@ static void generator_write_inst_id_overrides(
       /* Output children */
       child = root->child_head;
       while( child != NULL ) {
-        generator_write_inst_id_overrides( child, hier_chars_to_ignore );
-        child = child->next;
+        cov_str = generator_build( 2, cov_str, generator_inst_id_overrides_helper( child, hier_chars_to_ignore ) );
+        child   = child->next;
       }
 
     }
@@ -3753,6 +3757,8 @@ static void generator_write_inst_id_overrides(
 
   PROFILE_END;
 
+  return( cov_str );
+
 }
 
 /*!
@@ -3760,7 +3766,7 @@ static void generator_write_inst_id_overrides(
 
  Creates the parameter override file and populates it with the instance ID information.
 */
-char* generator_inst_id_overrides() { PROFILE(GENERATOR_INSERT_INST_ID_OVERRIDES);
+char* generator_inst_id_overrides() { PROFILE(GENERATOR_INST_ID_OVERRIDES);
 
   funit_inst*  top_inst;
   char         leading_hier[4096];
@@ -3814,7 +3820,7 @@ char* generator_inst_id_overrides() { PROFILE(GENERATOR_INSERT_INST_ID_OVERRIDES
       inst_str = generator_build( 2, strdup_safe( "initial begin" ), "\n" );
 
       while( instl != NULL ) {
-        inst_str = generator_build( 2, inst_str, generator_inst_id_overrides( instl->inst, strlen( leading_hier ) ) );
+        inst_str = generator_build( 2, inst_str, generator_inst_id_overrides_helper( instl->inst, strlen( leading_hier ) ) );
         instl = instl->next;
       }
 
@@ -3910,8 +3916,10 @@ void generator_end_parallel_statement(
  \return Returns a string containing all of the specified elements.
  Creates
 */
-char* generator_build(
-  int args,
+char* generator_build1(
+  const char* file,  /*!< Name of file that this function was called from */
+  int         line,  /*!< Line number of file that this function was called from */
+  int         args,  /*!< Number of arguments to get from the rest of this function */
   ...
 ) { PROFILE(GENERATOR_BUILD);
 
@@ -3919,6 +3927,29 @@ char* generator_build(
   char*   str = NULL;
   int     len = 0;
   int     i;
+
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    snprintf( user_msg, USER_MSG_LENGTH, "In generator_build1, file: %s, line: %d, args: %d", file, line, args );
+    va_start( ap, args );
+    for( i=0; i<args; i++ ) {
+      char* arg = va_arg( ap, char* );
+      if( arg != NULL ) {
+        if( arg[0] == '\n' ) {
+          strncat( user_msg, ", @\\n@", USER_MSG_LENGTH );
+        } else {
+          strncat( user_msg, ", @", USER_MSG_LENGTH );
+          strncat( user_msg, arg, USER_MSG_LENGTH );
+          strncat( user_msg, "@", USER_MSG_LENGTH );
+        }
+      } else {
+        strncat( user_msg, ", @@", USER_MSG_LENGTH );
+      }
+    }
+    va_end( ap );
+    print_output( user_msg, DEBUG, file, line );
+  }
+#endif
 
   /* First, get the length of the string */
   va_start( ap, args );
@@ -3939,7 +3970,8 @@ char* generator_build(
   if( len > 0 ) {
 
     /* Allocate memory for the string */
-    str = (char*)malloc_safe_nolimit( len );
+    str    = (char*)malloc_safe_nolimit( len + 1 );
+    str[0] = '\0';
 
     /* Now let's build that string... */
     va_start( ap, args );
