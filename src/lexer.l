@@ -516,6 +516,9 @@ WSPACE [ \t\b\f]+
 <PARSE>\"            {
   yylloc.first_column = yylloc.last_column;
   yylloc.last_column += 1;
+ #ifdef GENERATOR
+  yymore();
+ #endif
   state_enter         = YY_START;
   BEGIN( CSTRING );
  }
@@ -536,10 +539,10 @@ WSPACE [ \t\b\f]+
   int   str_len = strlen( yytext );
   char* tmpstr;
   tmpstr = strdup_safe( yytext );
-  tmpstr[ str_len - 1 ] = '\0';
  #ifdef GENERATOR
   yylval.text = tmpstr;
  #else
+  tmpstr[ str_len - 1 ] = '\0';
   vector_from_string( &tmpstr, TRUE, &(yylval.num.vec), &(yylval.num.base) );
   free_safe( tmpstr, (str_len + 1) );
  #endif
@@ -1315,6 +1318,9 @@ void process_timescale(
 static int yywrap() {
 
   int retval = 0;
+
+#ifndef GENERATOR
+
   str_link*    curr;
   str_link*    tmpm;
   char*        fname = NULL;
@@ -1424,6 +1430,12 @@ static int yywrap() {
   } else {
     BEGIN( PARSE );
   }
+
+#else
+
+  retval = 1;
+
+#endif
 
   return( retval );
 

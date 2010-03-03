@@ -877,9 +877,6 @@ static void generator_output_funits(
       reset_lexer_for_generation( head->filename, "covered/verilog" );
       (void)GENparse();
 
-      /* Flush the work and hold buffers */
-      generator_flush_all;
-
       /* Close the output file */
       rv = fclose( curr_ofile );
       assert( rv == 0 );
@@ -4050,3 +4047,22 @@ void GENerror(
   PROFILE_END;
 
 }
+
+/*!
+ Outputs the specified string to the output file and deallocates the memory for the string.
+ This is called after an entire file has been parsed.
+*/
+void generator_write_to_file(
+  char* str
+) { PROFILE(GENERATOR_WRITE_TO_FILE);
+
+  /* Output the string to the opened output file */
+  fprintf( curr_ofile, "%s", str );
+
+  /* Deallocate the string */
+  free_safe( str, (strlen( str ) + 1) );
+
+  PROFILE_END;
+
+}
+

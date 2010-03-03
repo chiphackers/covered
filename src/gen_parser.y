@@ -230,7 +230,7 @@ int yydebug = 1;
 main 
   : source_file 
     {
-      generator_output( $1 );
+      generator_write_to_file( $1 );
     }
   |
   ;

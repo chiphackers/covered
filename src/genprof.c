@@ -544,6 +544,7 @@ profiler profiles[NUM_PROFILES] = {
   {"generator_tmp_regs", NULL, 0, 0, 0, TRUE},
   {"generator_create_tmp_regs", NULL, 0, 0, 0, TRUE},
   {"generror", NULL, 0, 0, 0, TRUE},
+  {"generator_write_to_file", NULL, 0, 0, 0, TRUE},
   {"score_add_args", NULL, 0, 0, 0, FALSE},
   {"info_set_vector_elem_size", NULL, 0, 0, 0, TRUE},
   {"info_set_scored", NULL, 0, 0, 0, TRUE},

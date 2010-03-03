@@ -265,5 +265,10 @@ void GENerror(
   char* str
 );
 
+/*! \brief Outputs the current string to the output file */
+void generator_write_to_file(
+  char* str
+);
+
 #endif
 
