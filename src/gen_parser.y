@@ -607,7 +607,13 @@ number
     }
   | DEC_NUMBER BASE_NUMBER
     {
-      $$ = generator_build( 2, $1, $2 );
+      int          len = strlen( $1 ) + strlen( $2 ) + 1;
+      char*        str = (char*)malloc_safe( len );
+      unsigned int rv  = snprintf( str, len, "%s%s", $1, $2 );
+      assert( rv < len );
+      FREE_TEXT( $1 );
+      FREE_TEXT( $2 );
+      $$ = str;
     }
   ;
 
@@ -1909,10 +1915,19 @@ passign
 if_body
   : statement_or_null %prec less_than_K_else
     {
+      if( $1[0] != ';' ) {
+        $$ = generator_build( 5, strdup_safe( "begin" ), "\n", $1, strdup_safe( "end" ), "\n" );
+      }
       $$ = $1;
     }
   | statement_or_null K_else statement_or_null
     {
+      if( $1[0] != ';' ) {
+        $1 = generator_build( 5, strdup_safe( "begin" ), "\n", $1, strdup_safe( "end" ), "\n" );
+      }
+      if( $3[0] != ';' ) {
+        $3 = generator_build( 5, strdup_safe( "begin" ), "\n", $3, strdup_safe( "end" ), "\n" );
+      }
       $$ = generator_build( 3, $1, strdup_safe( "else" ), $3 );
     }
   ;
@@ -2028,11 +2043,17 @@ statement
     }
   | delay1 statement_or_null
     {
+      if( $2[0] != ';' ) {
+        $2 = generator_build( 5, strdup_safe( "begin" ), "\n", $2, strdup_safe( "end" ), "\n" );
+      }
       $$ = generator_build( 3, generator_line_cov( @1.ppfline, ((@1.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@1.last_column - 1), TRUE ),
                             $1, $2 );
     }
   | event_control statement_or_null
     {
+      if( $2[0] != ';' ) {
+        $2 = generator_build( 5, strdup_safe( "begin" ), "\n", $2, strdup_safe( "end" ), "\n" );
+      }
       $$ = generator_build( 4, generator_line_cov( @1.ppfline, ((@1.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@1.last_column - 1), TRUE ),
                             generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ), $1, $2 );
     }
@@ -2457,15 +2478,24 @@ block_item_decl
 case_item
   : expression_list ':' statement_or_null
     {
-      $$ = generator_build( 6, $1, strdup_safe( ": begin" ), "\n", $3, strdup_safe( "end" ), "\n" );
+      if( $3[0] != ';' ) {
+        $3 = generator_build( 5, strdup_safe( "begin" ), "\n", $3, strdup_safe( "end" ), "\n" );
+      }
+      $$ = generator_build( 3, $1, strdup_safe( ":" ), $3 );
     }
   | K_default ':' statement_or_null
     {
-      $$ = generator_build( 5, strdup_safe( "default : begin" ), "\n", $3, strdup_safe( "end" ), "\n" );
+      if( $3[0] != ';' ) {
+        $3 = generator_build( 5, strdup_safe( "begin" ), "\n", $3, strdup_safe( "end" ), "\n" );
+      }
+      $$ = generator_build( 2, strdup_safe( "default :" ), $3 );
     }
   | K_default statement_or_null
     {
-      $$ = generator_build( 5, strdup_safe( "default begin" ), "\n", $2, strdup_safe( "end" ), "\n" );
+      if( $2[0] != ';' ) {
+        $2 = generator_build( 5, strdup_safe( "begin" ), "\n", $2, strdup_safe( "end" ), "\n" );
+      }
+      $$ = generator_build( 2, strdup_safe( "default" ), $2 );
     }
   | error ':' statement_or_null
     {
@@ -2871,6 +2901,10 @@ event_control
     }
   | '@' '(' event_expression_list ')'
     {
+      @$.first_line   = @3.first_line;
+      @$.last_line    = @3.last_line;
+      @$.first_column = @3.first_column;
+      @$.last_column  = @3.last_column;
       $$ = generator_build( 3, strdup_safe( "@(" ), $3, strdup_safe( ")" ) );
     }
   | '@' '(' error ')'

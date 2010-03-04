@@ -2198,7 +2198,7 @@ static char* generator_create_lhs(
         str  = (char*)malloc_safe( slen );
         rv   = snprintf( str, slen, "`ifdef V1995_COV_MODE\ninteger %s;\n`else\nreg signed [%s:0] %s;\n`endif", name, tmp, name );
       } else {
-        slen = 5 + strlen( tmp ) + 4 + strlen( name ) + 3;
+        slen = 5 + strlen( tmp ) + 4 + strlen( name ) + 2;
         str  = (char*)malloc_safe( slen );
         rv   = snprintf( str, slen, "reg [%s:0] %s;", tmp, name );
       }
@@ -2208,7 +2208,7 @@ static char* generator_create_lhs(
         str  = (char*)malloc_safe_nolimit( slen );
         rv   = snprintf( str, slen, "`ifdef V1995_COV_MODE\ninteger %s;\n`else\nreg signed [(%s-1):0] %s;\n`endif", name, ((size != NULL) ? size : "1"), name );
       } else {
-        slen = 6 + ((size != NULL) ? strlen( size ) : 1) + 7 + strlen( name ) + 3;
+        slen = 6 + ((size != NULL) ? strlen( size ) : 1) + 7 + strlen( name ) + 2;
         str  = (char*)malloc_safe_nolimit( slen );
         rv   = snprintf( str, slen, "reg [(%s)-1:0] %s;", ((size != NULL) ? size : "1"), name );
       }
@@ -2516,11 +2516,11 @@ static char* generator_subexp(
 
   /* Create expression string */
   if( net ) {
-    slen = 8 + strlen( lhs_str ) + 3 + strlen( val_str ) + 3;
+    slen = 8 + strlen( lhs_str ) + 3 + strlen( val_str ) + 2;
     str  = (char*)malloc_safe_nolimit( slen );
     rv   = snprintf( str, slen, " assign %s = %s;", lhs_str, val_str );
   } else {
-    slen = strlen( lhs_str ) + 3 + strlen( val_str ) + 3;
+    slen = strlen( lhs_str ) + 3 + strlen( val_str ) + 2;
     str  = (char*)malloc_safe_nolimit( slen );
     rv   = snprintf( str, slen, "%s = %s;", lhs_str, val_str );
   }
@@ -3323,6 +3323,8 @@ char* generator_comb_cov(
   /* Insert combinational logic code coverage if it is specified on the command-line to do so and the statement exists */
   if( ((info_suppl.part.scored_comb == 1) || (info_suppl.part.scored_memory == 1) || (info_suppl.part.scored_events == 1)) &&
       !handle_funit_as_assert && ((stmt = generator_find_statement( first_line, first_column )) != NULL) && !generator_is_static_function_only( stmt->funit ) ) {
+
+    printf( "HERE!\n" );
 
     /* Generate combinational coverage */
     if( (info_suppl.part.scored_comb == 1) || (info_suppl.part.scored_events) ) {
