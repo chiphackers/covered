@@ -254,7 +254,7 @@ char* generator_build1(
   ...
 );
 
-/*! \brief Returns the temporary register list to the calling function and pops it from the stack.
+/*! \brief Returns the temporary register list to the calling function and pops it from the stack. */
 char* generator_tmp_regs();
 
 /*! \brief Adds a new temporary register string to the stack */

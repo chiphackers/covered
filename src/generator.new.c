@@ -2552,10 +2552,11 @@ static char* generator_comb_cov_helper2(
   bool         root,          /*!< Set to TRUE only for the "root" expression in the tree */
   bool         reg_needed,    /*!< If set to TRUE, registers are created as needed; otherwise, they are omitted */
   bool         replace_exp    /*!< If set to TRUE, will allow this expression to replace the original */
-) { PROFILE(GENERATOR_INSERT_COMB_COV_HELPER2);
+) { PROFILE(GENERATOR_COMB_COV_HELPER2);
 
   char* cov_str = NULL;
 
+  
   if( exp != NULL ) {
 
     int  depth             = parent_depth + ((exp->op != parent_op) ? 1 : 0);
@@ -2571,10 +2572,14 @@ static char* generator_comb_cov_helper2(
                                generator_comb_cov_helper2( exp->left,  funit, exp->op, depth, (expr_cov_needed & EXPR_IS_COMB( exp )), net, FALSE, reg_needed, (child_replace_exp && !EXPR_IS_OP_AND_ASSIGN( exp )) ),
                                generator_comb_cov_helper2( exp->right, funit, exp->op, depth, (expr_cov_needed & EXPR_IS_COMB( exp )), net, FALSE, reg_needed, child_replace_exp ) );
 
+    printf( "In generator_comb_cov_helper2, exp: %s\n", expression_string( exp ) );
+    
     /* Generate event combinational logic type */
     if( EXPR_IS_EVENT( exp ) ) {
+      printf( "EVENT!\n" );
       if( info_suppl.part.scored_events == 1 ) {
         if( expr_cov_needed ) {
+          printf( "HERE :) :) :)\n" );
           cov_str = generator_build( 2, cov_str, generator_event_comb_cov( exp, funit, reg_needed ) );
         }
         if( force_subexp || generator_expr_needs_to_be_substituted( exp ) ) {
@@ -3893,24 +3898,30 @@ char* generator_build1(
 
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "In generator_build1, file: %s, line: %d, args: %d", file, line, args );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In generator_build1, file: %s, line: %d, args: %d", file, line, args );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
     va_start( ap, args );
     for( i=0; i<args; i++ ) {
       char* arg = va_arg( ap, char* );
       if( arg != NULL ) {
         if( arg[0] == '\n' ) {
-          strncat( user_msg, ", @\\n@", USER_MSG_LENGTH );
+          rv = snprintf( user_msg, USER_MSG_LENGTH, "%2d * \\n", i );
+          assert( rv < USER_MSG_LENGTH );
+          print_output( user_msg, DEBUG, __FILE__, __LINE__ );
         } else {
-          strncat( user_msg, ", @", USER_MSG_LENGTH );
-          strncat( user_msg, arg, USER_MSG_LENGTH );
-          strncat( user_msg, "@", USER_MSG_LENGTH );
+          rv = snprintf( user_msg, USER_MSG_LENGTH, "%2d * %s", i, arg );
+          assert( rv < USER_MSG_LENGTH );
+          print_output( user_msg, DEBUG, __FILE__, __LINE__ );
         }
       } else {
-        strncat( user_msg, ", @@", USER_MSG_LENGTH );
+        rv = snprintf( user_msg, USER_MSG_LENGTH, "%2d *", i );
+        assert( rv < USER_MSG_LENGTH );
+        print_output( user_msg, DEBUG, __FILE__, __LINE__ );
       }
     }
     va_end( ap );
-    print_output( user_msg, DEBUG, file, line );
+    print_output( "", DEBUG, __FILE__, __LINE__ );
   }
 #endif
 
@@ -3971,11 +3982,11 @@ char* generator_tmp_regs() { PROFILE(GENERATOR_TMP_REGS);
 
   /* Grab the string connected to the tail */
   str = tmp_regs_top->str;
-
+  
   /* Adjust the tail and delete the old one */
   tmp_regs_top = tmp_regs_top->next;
   free_safe( strl, sizeof( str_link ) );
-
+  
   PROFILE_END;
 
   return( str );

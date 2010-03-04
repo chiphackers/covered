@@ -417,7 +417,9 @@ module
     module_item_list_opt K_endmodule
     {
       generator_pop_funit();
-      $$ = generator_build( 11, $1, $2, $3, $5, $6, strdup_safe( ";" ), generator_inst_id_reg( db_get_curr_funit() ), generator_tmp_regs(), $8, generator_inst_id_overrides(), strdup_safe( "endmodule" ) );
+      $$ = generator_build( 12, $1, $2, $3, $5, $6, strdup_safe( ";" ), "\n",
+                            generator_inst_id_reg( db_get_curr_funit() ), generator_tmp_regs(), $8,
+                            generator_inst_id_overrides(), strdup_safe( "endmodule" ) );
     }
   | attribute_list_opt K_module IGNORE I_endmodule
     {
@@ -2054,6 +2056,7 @@ statement
       if( $2[0] != ';' ) {
         $2 = generator_build( 5, strdup_safe( "begin" ), "\n", $2, strdup_safe( "end" ), "\n" );
       }
+      printf( "event_control ppfline: %d, first_column: %d\n", @1.ppfline, @1.first_column );
       $$ = generator_build( 4, generator_line_cov( @1.ppfline, ((@1.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@1.last_column - 1), TRUE ),
                             generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ), $1, $2 );
     }
@@ -2903,6 +2906,8 @@ event_control
     {
       @$.first_line   = @3.first_line;
       @$.last_line    = @3.last_line;
+      @$.ppfline      = @3.ppfline;
+      @$.pplline      = @3.pplline;
       @$.first_column = @3.first_column;
       @$.last_column  = @3.last_column;
       $$ = generator_build( 3, strdup_safe( "@(" ), $3, strdup_safe( ")" ) );
