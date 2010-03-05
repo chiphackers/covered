@@ -150,6 +150,13 @@ void inst_link_display(
   stmt_link* head
 );
 
+/*! \brief Finds specified statement in the given stmt_link list. */
+stmt_link* stmt_link_find_by_position(
+  unsigned int first_line,
+  unsigned int first_column,
+  stmt_link*   head
+);
+
 /*! \brief Finds specified expression in the given exp_link list. */
 /*@null@*/ expression* exp_link_find(
   int          id,

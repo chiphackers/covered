@@ -1432,24 +1432,18 @@ statement* generator_find_statement(
 
 //  printf( "In generator_find_statement, line: %d, column: %d\n", first_line, first_column );
 
-  if( (curr_stmt == NULL) || (curr_stmt->exp->ppfline < first_line) ||
-      ((curr_stmt->exp->ppfline == first_line) && (curr_stmt->exp->col.part.first < first_column)) ) {
+  if( (curr_stmt == NULL) || (curr_stmt->exp->ppfline != first_line) || (curr_stmt->exp->col.part.first != first_column) ) {
 
-//    func_iter_display( &fiter );
-
-    /* Attempt to find the expression with the given position */
-    while( ((curr_stmt = func_iter_get_next_statement( &fiter )) != NULL) &&
-//           printf( "  statement %s %d %u\n", expression_string( curr_stmt->exp ), curr_stmt->exp->col.part.first, curr_stmt->exp->ppfline ) &&
-           ((curr_stmt->exp->ppfline < first_line) || 
-            ((curr_stmt->exp->ppfline == first_line) && (curr_stmt->exp->col.part.first < first_column)) ||
-            (curr_stmt->exp->op == EXP_OP_FORK)) );
+    stmt_link* stmtl = stmt_link_find_by_position( first_line, first_column, curr_funit->stmt_head );
 
     /* If we couldn't find it in the func_iter, look for it in the generate list */
-    if( curr_stmt == NULL ) {
+    if( stmtl == NULL ) {
       statement* gen_stmt = generate_find_stmt_by_position( curr_funit, first_line, first_column );
       if( gen_stmt != NULL ) {
         curr_stmt = gen_stmt;
       }
+    } else {
+      curr_stmt = stmtl->stmt;
     }
 
   }
@@ -1480,21 +1474,11 @@ static statement* generator_find_case_statement(
 
 //  printf( "In generator_find_case_statement, line: %d, column: %d\n", first_line, first_column );
 
-  if( (curr_stmt == NULL) || (curr_stmt->exp->left == NULL) || (curr_stmt->exp->left->ppfline < first_line) ||
-      ((curr_stmt->exp->left->ppfline == first_line) && (curr_stmt->exp->left->col.part.first < first_column)) ) {
+  if( (curr_stmt == NULL) || (curr_stmt->exp->left == NULL) || (curr_stmt->exp->left->ppfline != first_line) || (curr_stmt->exp->left->col.part.first != first_column) ) {
 
-//    if( curr_stmt->exp->left != NULL ) {
-//      printf( "curr_stmt->exp->left: %s\n", expression_string( curr_stmt->exp->left ) );
-//    }
-//    func_iter_display( &fiter );
+    stmt_link* stmtl = stmt_link_find_by_position( first_line, first_column, curr_funit->stmt_head );
 
-
-    /* Attempt to find the expression with the given position */
-    while( ((curr_stmt = func_iter_get_next_statement( &fiter )) != NULL) && 
-//           printf( "  statement %s %d %u\n", expression_string( curr_stmt->exp ), curr_stmt->exp->col.part.first, curr_stmt->exp->ppfline ) &&
-           ((curr_stmt->exp->left == NULL) ||
-            (curr_stmt->exp->left->ppfline < first_line) ||
-            ((curr_stmt->exp->left->ppfline == first_line) && (curr_stmt->exp->left->col.part.first < first_column))) );
+    curr_stmt = (stmtl != NULL) ? stmtl->stmt : NULL;
 
   }
 

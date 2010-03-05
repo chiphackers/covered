@@ -611,6 +611,7 @@ profiler profiles[NUM_PROFILES] = {
   {"inst_link_add", NULL, 0, 0, 0, TRUE},
   {"str_link_find", NULL, 0, 0, 0, TRUE},
   {"stmt_link_find", NULL, 0, 0, 0, TRUE},
+  {"stmt_link_find_by_position", NULL, 0, 0, 0, TRUE},
   {"exp_link_find", NULL, 0, 0, 0, TRUE},
   {"sig_link_find", NULL, 0, 0, 0, TRUE},
   {"fsm_link_find", NULL, 0, 0, 0, TRUE},
