@@ -511,7 +511,7 @@ stmt_link* stmt_link_find_by_position(
 
   stmt_link* curr = head;
 
-  while( (curr != NULL) && (curr->stmt->exp->ppfline != first_line) && (curr->stmt->exp->col.part.first != first_column) ) {
+  while( (curr != NULL) && ((curr->stmt->exp->ppfline != first_line) || (curr->stmt->exp->col.part.first != first_column)) ) {
     curr = curr->next;
   }
 

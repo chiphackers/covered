@@ -386,6 +386,9 @@ description
       if( generator_is_static_function( funit ) ) {
         generator_pop_funit( funit );
       }
+      if( (strncmp( $9, "begin ", 6 ) != 0) && ($9[0] != ';') ) {
+        $9 = generator_build( 5, strdup_safe( "begin" ), "\n", $9, strdup_safe( "end" ), "\n" );
+      }
       $$ = generator_build( 12, strdup_safe( "function" ), $2, $3, $4, $5, strdup_safe( ";" ), "\n", $7,
                             (generator_is_static_function( funit ) ? generator_inst_id_reg( funit ) : NULL), $9, strdup_safe( "endfunction" ), "\n" );
     }
@@ -1581,6 +1584,9 @@ module_item
     }
   | attribute_list_opt K_always statement
     {
+      if( (strncmp( $3, "begin ", 6 ) != 0) && ($3[0] != ';') ) {
+        $3 = generator_build( 5, strdup_safe( "begin" ), "\n", $3, strdup_safe( "end" ), "\n" );
+      }
       $$ = generator_build( 3, $1, strdup_safe( "always" ), $3 );
     }
   | attribute_list_opt K_always_comb statement
@@ -1615,10 +1621,16 @@ module_item
     }
   | attribute_list_opt K_initial statement
     {
+      if( (strncmp( $3, "begin ", 6 ) != 0) && ($3[0] != ';') ) {
+        $3 = generator_build( 5, strdup_safe( "begin" ), "\n", $3, strdup_safe( "end" ), "\n" );
+      }
       $$ = generator_build( 3, $1, strdup_safe( "initial" ), $3 );
     }
   | attribute_list_opt K_final statement
     {
+      if( (strncmp( $3, "begin ", 6 ) != 0) && ($3[0] != ';') ) {
+        $3 = generator_build( 5, strdup_safe( "begin" ), "\n", $3, strdup_safe( "end" ), "\n" );
+      }
       $$ = generator_build( 3, $1, strdup_safe( "final" ), $3 );
     }
   | attribute_list_opt K_task automatic_opt IDENTIFIER ';' task_item_list_opt statement_or_null K_endtask
@@ -1639,6 +1651,9 @@ module_item
       func_unit* funit = db_get_tfn_by_position( @6.first_line, @6.first_column );
       assert( funit != NULL );
       generator_pop_funit();
+      if( (strncmp( $10, "begin ", 6 ) != 0) && ($10[0] != ';') ) {
+        $10 = generator_build( 5, strdup_safe( "begin" ), "\n", $10, strdup_safe( "end" ), "\n" );
+      }
       $$ = generator_build( 14, strdup_safe( "function" ), $3, $4, $5, $6, strdup_safe( ";" ), "\n", $8,
                             (generator_is_static_function( funit ) ? generator_inst_id_reg( funit ) : NULL), "\n", generator_tmp_regs(), $10, strdup_safe( "endfunction" ), "\n" );
     }
@@ -1918,7 +1933,7 @@ if_body
   : statement_or_null %prec less_than_K_else
     {
       if( $1[0] != ';' ) {
-        $$ = generator_build( 5, strdup_safe( "begin" ), "\n", $1, strdup_safe( "end" ), "\n" );
+        $1 = generator_build( 5, strdup_safe( "begin" ), "\n", $1, strdup_safe( "end" ), "\n" );
       }
       $$ = $1;
     }
@@ -1967,14 +1982,20 @@ statement
   | K_TRIGGER IDENTIFIER ';'
     {
       $$ = generator_build( 8, generator_line_cov( @1.ppfline, ((@2.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@2.last_column - 1), TRUE ),
-                            $2, strdup_safe( "= (" ), $2, strdup_safe( "=== 1'bx) ? 1'b0 : ~" ), $2, strdup_safe( ";" ), "\n" );
+                            $2, strdup_safe( "= (" ), strdup_safe( $2 ), strdup_safe( "=== 1'bx) ? 1'b0 : ~" ), strdup_safe( $2 ), strdup_safe( ";" ), "\n" );
     }
   | K_forever statement
     {
+      if( (strncmp( $2, "begin ", 6 ) != 0) && ($2[0] != ';') ) {
+        $2 = generator_build( 5, strdup_safe( "begin" ), "\n", $2, strdup_safe( "end" ), "\n" );
+      }
       $$ = generator_build( 2, strdup_safe( "forever" ), $2 );
     }
   | K_repeat '(' expression ')' statement
     {
+      if( (strncmp( $5, "begin ", 6 ) != 0) && ($5[0] != ';') ) {
+        $5 = generator_build( 5, strdup_safe( "begin" ), "\n", $5, strdup_safe( "end" ), "\n" );
+      }
       $$ = generator_build( 6, generator_line_cov( @1.ppfline, ((@4.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@4.last_column - 1), TRUE ),
                             generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
                             strdup_safe( "repeat(" ), $3, strdup_safe( ")" ), $5 );
@@ -2007,11 +2028,14 @@ statement
     }
   | K_for '(' for_initialization ';' for_condition ';' passign ')' statement
     {
-      $$ = generator_build( 15, generator_comb_cov( @5.ppfline, @5.first_column, FALSE, TRUE, FALSE ),
-                            strdup_safe( "for(" ), $3, strdup_safe( ";" ), $5, strdup_safe( ";" ), $7, strdup_safe( ") begin" ), "\n", $9,
+      if( (strncmp( $9, "begin ", 6 ) != 0) && ($9[0] != ';') ) {
+        $9 = generator_build( 5, strdup_safe( "begin" ), "\n", $9, strdup_safe( "end" ), "\n" );
+      }
+      $$ = generator_build( 13, generator_comb_cov( @5.ppfline, @5.first_column, FALSE, TRUE, FALSE ),
+                            strdup_safe( "for(" ), $3, strdup_safe( ";" ), $5, strdup_safe( ";" ), $7, strdup_safe( ")" ), "\n", $9,
                             generator_line_cov( @7.ppfline, @7.pplline, @1.first_column, (@1.last_column - 1), TRUE ),
                             generator_comb_cov( @7.ppfline, @7.first_column, FALSE, TRUE, FALSE ),
-                            generator_comb_cov( @5.ppfline, @5.first_column, FALSE, TRUE, FALSE ), strdup_safe( "end" ), "\n" );
+                            generator_comb_cov( @5.ppfline, @5.first_column, FALSE, TRUE, FALSE ) );
     }
   | K_for '(' for_initialization ';' for_condition ';' error ')' statement
     {
@@ -2027,9 +2051,12 @@ statement
     }
   | K_while '(' expression ')' statement
     {
-      $$ = generator_build( 8, generator_line_cov( @1.ppfline, ((@3.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@3.last_column - 1), TRUE ),
+      if( (strncmp( $5, "begin ", 6 ) != 0) && ($5[0] != ';') ) {
+        $5 = generator_build( 5, strdup_safe( "begin" ), "\n", $5, strdup_safe( "end" ), "\n" );
+      }
+      $$ = generator_build( 7, generator_line_cov( @1.ppfline, ((@3.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@3.last_column - 1), TRUE ),
                             generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, TRUE ),
-                            strdup_safe( "while(" ), $3, strdup_safe( ") begin" ), "\n", $5,
+                            strdup_safe( "while(" ), $3, strdup_safe( ")" ), $5,
                             generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, TRUE ) );
     }
   | K_while '(' error ')' statement
@@ -2038,7 +2065,10 @@ statement
     }
   | K_do statement K_while '(' expression ')' ';'
     {
-      $$ = generator_build( 12, strdup_safe( "do" ), strdup_safe( "begin" ), "\n", $2, strdup_safe( "end" ), "\n",
+      if( (strncmp( $2, "begin ", 6 ) != 0) && ($2[0] != ';') ) {
+        $2 = generator_build( 5, strdup_safe( "begin" ), "\n", $2, strdup_safe( "end" ), "\n" );
+      }
+      $$ = generator_build( 8, strdup_safe( "do" ), $2,
                             generator_line_cov( @3.ppfline, ((@3.last_line - @3.first_line) + @3.ppfline), @3.first_column, (@3.last_column - 1), TRUE ),
                             generator_comb_cov( @3.ppfline, @3.first_column, FALSE, TRUE, FALSE ),
                             strdup_safe( "while(" ), $5, strdup_safe( ");" ), "\n" );
@@ -2189,7 +2219,13 @@ fork_statement
   ;
 
 begin_end_block
-  : begin_end_id block_item_decls_opt statement_list
+  : begin_end_id
+    {
+      func_unit* funit = db_get_tfn_by_position( @1.first_line, @1.first_column );
+      assert( funit != NULL );
+      generator_push_funit( funit );
+    }
+    block_item_decls_opt statement_list
     {
       func_unit* funit = db_get_tfn_by_position( @1.first_line, @1.first_column );
       assert( funit != NULL );
@@ -2207,7 +2243,8 @@ begin_end_block
         free_safe( back, (strlen( funit->name ) + 1) );
         free_safe( rest, (strlen( funit->name ) + 1) );
       }
-      $$ = generator_build( 5, $1, "\n", generator_inst_id_reg( funit ), $2, $3 );
+      generator_pop_funit();
+      $$ = generator_build( 5, $1, "\n", generator_inst_id_reg( funit ), $3, $4 );
     }
   | begin_end_id
     {

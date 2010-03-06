@@ -226,7 +226,7 @@ static char* generator_get_relative_scope(
   char* relative_scope;
   int   i;
 
-  scope_extract_scope( child->name, funit_top->funit->name, back );
+  scope_extract_scope( child->name, curr_funit->name, back );
   relative_scope = strdup_safe( back );
 
 #ifdef OBSOLETE
@@ -1430,11 +1430,13 @@ statement* generator_find_statement(
   unsigned int first_column  /*!< First column of statement to find */
 ) { PROFILE(GENERATOR_FIND_STATEMENT);
 
-//  printf( "In generator_find_statement, line: %d, column: %d\n", first_line, first_column );
+//  printf( "In generator_find_statement, line: %d, column: %d, funit_top: %s\n", first_line, first_column, funit_top->funit->name );
 
   if( (curr_stmt == NULL) || (curr_stmt->exp->ppfline != first_line) || (curr_stmt->exp->col.part.first != first_column) ) {
 
-    stmt_link* stmtl = stmt_link_find_by_position( first_line, first_column, curr_funit->stmt_head );
+    stmt_link* stmtl = stmt_link_find_by_position( first_line, first_column, funit_top->funit->stmt_head );
+
+//    stmt_link_display( funit_top->funit->stmt_head );
 
     /* If we couldn't find it in the func_iter, look for it in the generate list */
     if( stmtl == NULL ) {
@@ -1476,7 +1478,7 @@ static statement* generator_find_case_statement(
 
   if( (curr_stmt == NULL) || (curr_stmt->exp->left == NULL) || (curr_stmt->exp->left->ppfline != first_line) || (curr_stmt->exp->left->col.part.first != first_column) ) {
 
-    stmt_link* stmtl = stmt_link_find_by_position( first_line, first_column, curr_funit->stmt_head );
+    stmt_link* stmtl = stmt_link_find_by_position( first_line, first_column, funit_top->funit->stmt_head );
 
     curr_stmt = (stmtl != NULL) ? stmtl->stmt : NULL;
 
@@ -2556,14 +2558,10 @@ static char* generator_comb_cov_helper2(
                                generator_comb_cov_helper2( exp->left,  funit, exp->op, depth, (expr_cov_needed & EXPR_IS_COMB( exp )), net, FALSE, reg_needed, (child_replace_exp && !EXPR_IS_OP_AND_ASSIGN( exp )) ),
                                generator_comb_cov_helper2( exp->right, funit, exp->op, depth, (expr_cov_needed & EXPR_IS_COMB( exp )), net, FALSE, reg_needed, child_replace_exp ) );
 
-    printf( "In generator_comb_cov_helper2, exp: %s\n", expression_string( exp ) );
-    
     /* Generate event combinational logic type */
     if( EXPR_IS_EVENT( exp ) ) {
-      printf( "EVENT!\n" );
       if( info_suppl.part.scored_events == 1 ) {
         if( expr_cov_needed ) {
-          printf( "HERE :) :) :)\n" );
           cov_str = generator_build( 2, cov_str, generator_event_comb_cov( exp, funit, reg_needed ) );
         }
         if( force_subexp || generator_expr_needs_to_be_substituted( exp ) ) {
@@ -3312,8 +3310,6 @@ char* generator_comb_cov(
   /* Insert combinational logic code coverage if it is specified on the command-line to do so and the statement exists */
   if( ((info_suppl.part.scored_comb == 1) || (info_suppl.part.scored_memory == 1) || (info_suppl.part.scored_events == 1)) &&
       !handle_funit_as_assert && ((stmt = generator_find_statement( first_line, first_column )) != NULL) && !generator_is_static_function_only( stmt->funit ) ) {
-
-    printf( "HERE!\n" );
 
     /* Generate combinational coverage */
     if( (info_suppl.part.scored_comb == 1) || (info_suppl.part.scored_events) ) {
