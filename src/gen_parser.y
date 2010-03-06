@@ -61,9 +61,14 @@ extern void lex_start_udp_table();
 extern void lex_end_udp_table();
 
 /*!
+ The current block depth.
+*/
+static int block_depth = 0;
+
+/*!
  Specifies if we are currently in a fork statement (> 0) or not.
 */
-static unsigned fork_mode = 0;
+static int fork_depth = -1;
 
 /*!
  Macro to free a text variable type.  Sets the pointer to NULL so that the pointer is re-deallocated.
@@ -1424,9 +1429,9 @@ generate_item
     {
       $$ = generator_build( 4, strdup_safe( "if(" ), $3, strdup_safe( ")" ), $5 );
     }
-  | K_case '(' static_expr ')' generate_case_items K_endcase
+  | K_case '(' static_expr ')' inc_block_depth generate_case_items dec_block_depth K_endcase
     { 
-      $$ = generator_build( 6, strdup_safe( "case(" ), $3, strdup_safe( ")" ), $5, strdup_safe( "endcase" ), "\n" );
+      $$ = generator_build( 6, strdup_safe( "case(" ), $3, strdup_safe( ")" ), $6, strdup_safe( "endcase" ), "\n" );
     }
   ;
 
@@ -1938,22 +1943,22 @@ passign
   ;
 
 if_body
-  : statement_or_null %prec less_than_K_else
+  : inc_block_depth statement_or_null dec_block_depth %prec less_than_K_else
     {
-      if( (strncmp( $1, "begin ", 6 ) != 0) && ($1[0] != ';') ) {
-        $1 = generator_build( 5, strdup_safe( "begin" ), "\n", $1, strdup_safe( "end" ), "\n" );
+      if( (strncmp( $2, "begin ", 6 ) != 0) && ($2[0] != ';') ) {
+        $2 = generator_build( 5, strdup_safe( "begin" ), "\n", $2, strdup_safe( "end" ), "\n" );
       }
-      $$ = $1;
+      $$ = $2;
     }
-  | statement_or_null K_else statement_or_null
+  | inc_block_depth statement_or_null dec_block_depth K_else inc_block_depth statement_or_null dec_block_depth
     {
-      if( (strncmp( $1, "begin ", 6 ) != 0) && ($1[0] != ';') ) {
-        $1 = generator_build( 5, strdup_safe( "begin" ), "\n", $1, strdup_safe( "end" ), "\n" );
+      if( (strncmp( $2, "begin ", 6 ) != 0) && ($2[0] != ';') ) {
+        $2 = generator_build( 5, strdup_safe( "begin" ), "\n", $2, strdup_safe( "end" ), "\n" );
       }
-      if( (strncmp( $3, "begin ", 6 ) != 0) && ($3[0] != ';') ) {
-        $3 = generator_build( 5, strdup_safe( "begin" ), "\n", $3, strdup_safe( "end" ), "\n" );
+      if( (strncmp( $6, "begin ", 6 ) != 0) && ($6[0] != ';') ) {
+        $6 = generator_build( 5, strdup_safe( "begin" ), "\n", $6, strdup_safe( "end" ), "\n" );
       }
-      $$ = generator_build( 3, $1, strdup_safe( "else" ), $3 );
+      $$ = generator_build( 3, $2, strdup_safe( "else" ), $6 );
     }
   ;
 
@@ -1974,18 +1979,13 @@ statement
     {
       $$ = generator_build( 4, strdup_safe( "release" ), $2, strdup_safe( ";" ), "\n" );
     }
-  | K_begin begin_end_block K_end
+  | K_begin inc_block_depth begin_end_block dec_block_depth K_end
     {
-      $$ = generator_build( 4, strdup_safe( "begin" ), $2, strdup_safe( "end" ), "\n" );
+      $$ = generator_build( 4, strdup_safe( "begin" ), $3, strdup_safe( "end" ), "\n" );
     }
-  | K_fork
+  | K_fork inc_fork_depth fork_statement dec_fork_depth K_join
     {
-      fork_mode++;
-    }
-    fork_statement K_join
-    {
-      fork_mode--;
-      $$ = generator_build( 4, strdup_safe( "fork" ), $2, strdup_safe( "join" ), "\n" );
+      $$ = generator_build( 4, strdup_safe( "fork" ), $3, strdup_safe( "join" ), "\n" );
     }
   | K_disable identifier ';'
     {
@@ -1997,21 +1997,21 @@ statement
       $$ = generator_build( 8, generator_line_cov( @1.ppfline, ((@2.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@2.last_column - 1), TRUE ),
                             $2, strdup_safe( "= (" ), strdup_safe( $2 ), strdup_safe( "=== 1'bx) ? 1'b0 : ~" ), strdup_safe( $2 ), strdup_safe( ";" ), "\n" );
     }
-  | K_forever statement
+  | K_forever inc_block_depth statement dec_block_depth
     {
-      if( (strncmp( $2, "begin ", 6 ) != 0) && ($2[0] != ';') ) {
-        $2 = generator_build( 5, strdup_safe( "begin" ), "\n", $2, strdup_safe( "end" ), "\n" );
+      if( (strncmp( $3, "begin ", 6 ) != 0) && ($3[0] != ';') ) {
+        $3 = generator_build( 5, strdup_safe( "begin" ), "\n", $3, strdup_safe( "end" ), "\n" );
       }
-      $$ = generator_build( 2, strdup_safe( "forever" ), $2 );
+      $$ = generator_build( 2, strdup_safe( "forever" ), $3 );
     }
-  | K_repeat '(' expression ')' statement
+  | K_repeat '(' expression ')' inc_block_depth statement dec_block_depth
     {
-      if( (strncmp( $5, "begin ", 6 ) != 0) && ($5[0] != ';') ) {
-        $5 = generator_build( 5, strdup_safe( "begin" ), "\n", $5, strdup_safe( "end" ), "\n" );
+      if( (strncmp( $6, "begin ", 6 ) != 0) && ($6[0] != ';') ) {
+        $6 = generator_build( 5, strdup_safe( "begin" ), "\n", $6, strdup_safe( "end" ), "\n" );
       }
       $$ = generator_build( 6, generator_line_cov( @1.ppfline, ((@4.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@4.last_column - 1), TRUE ),
                             generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
-                            strdup_safe( "repeat(" ), $3, strdup_safe( ")" ), $5 );
+                            strdup_safe( "repeat(" ), $3, strdup_safe( ")" ), $6 );
     }
   | cond_specifier_opt K_case '(' expression ')' case_body K_endcase
     {
@@ -2062,29 +2062,29 @@ statement
     {
       $$ = NULL;
     }
-  | K_while '(' expression ')' statement
+  | K_while '(' expression ')' inc_block_depth statement dec_block_depth
     {
-      if( (strncmp( $5, "begin ", 6 ) != 0) && ($5[0] != ';') ) {
-        $5 = generator_build( 5, strdup_safe( "begin" ), "\n", $5, strdup_safe( "end" ), "\n" );
+      if( (strncmp( $6, "begin ", 6 ) != 0) && ($6[0] != ';') ) {
+        $6 = generator_build( 5, strdup_safe( "begin" ), "\n", $6, strdup_safe( "end" ), "\n" );
       }
       $$ = generator_build( 7, generator_line_cov( @1.ppfline, ((@3.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@3.last_column - 1), TRUE ),
                             generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, TRUE ),
-                            strdup_safe( "while(" ), $3, strdup_safe( ")" ), $5,
+                            strdup_safe( "while(" ), $3, strdup_safe( ")" ), $6,
                             generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, TRUE ) );
     }
-  | K_while '(' error ')' statement
+  | K_while '(' error ')' inc_block_depth statement dec_block_depth
     {
       $$ = NULL;
     }
-  | K_do statement K_while '(' expression ')' ';'
+  | K_do inc_block_depth statement dec_block_depth K_while '(' expression ')' ';'
     {
-      if( (strncmp( $2, "begin ", 6 ) != 0) && ($2[0] != ';') ) {
-        $2 = generator_build( 5, strdup_safe( "begin" ), "\n", $2, strdup_safe( "end" ), "\n" );
+      if( (strncmp( $3, "begin ", 6 ) != 0) && ($3[0] != ';') ) {
+        $3 = generator_build( 5, strdup_safe( "begin" ), "\n", $3, strdup_safe( "end" ), "\n" );
       }
-      $$ = generator_build( 8, strdup_safe( "do" ), $2,
-                            generator_line_cov( @3.ppfline, ((@3.last_line - @3.first_line) + @3.ppfline), @3.first_column, (@3.last_column - 1), TRUE ),
-                            generator_comb_cov( @3.ppfline, @3.first_column, FALSE, TRUE, FALSE ),
-                            strdup_safe( "while(" ), $5, strdup_safe( ");" ), "\n" );
+      $$ = generator_build( 8, strdup_safe( "do" ), $3,
+                            generator_line_cov( @6.ppfline, ((@6.last_line - @6.first_line) + @6.ppfline), @6.first_column, (@6.last_column - 1), TRUE ),
+                            generator_comb_cov( @6.ppfline, @6.first_column, FALSE, TRUE, FALSE ),
+                            strdup_safe( "while(" ), $7, strdup_safe( ");" ), "\n" );
     }
   | delay1 statement_or_null
     {
@@ -2553,11 +2553,11 @@ case_items
   ;
 
 case_body
-  : case_items
+  : inc_block_depth case_items dec_block_depth
     {
-      $$ = $1;
+      $$ = $2;
     }
-  | error
+  | inc_block_depth error dec_block_depth
     {
       $$ = NULL;
     }
@@ -3646,6 +3646,34 @@ index_expr
   | single_index_expr
     {
       $$ = $1;
+    }
+  ;
+
+inc_block_depth
+  :
+    {
+      block_depth++;
+    }
+  ;
+
+dec_block_depth
+  :
+    {
+      block_depth--;
+    }
+  ;
+
+inc_fork_depth
+  :
+    {
+      fork_depth++;
+    }
+  ;
+
+dec_fork_depth
+  :
+    {
+      fork_depth--;
     }
   ;
 
