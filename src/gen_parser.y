@@ -60,6 +60,10 @@ extern int    curr_sig_type;
 extern void lex_start_udp_table();
 extern void lex_end_udp_table();
 
+/*!
+ Specifies if we are currently in a fork statement (> 0) or not.
+*/
+static unsigned fork_mode = 0;
 
 /*!
  Macro to free a text variable type.  Sets the pointer to NULL so that the pointer is re-deallocated.
@@ -784,9 +788,9 @@ static_expr_primary
     {
       $$ = $1;
     }
-  | S_clog2 '(' static_expr ')'
+  | SYSCALL '(' static_expr ')'
     {
-      $$ = generator_build( 3, strdup_safe( "$clog2(" ), $3, strdup_safe( ")" ) );
+      $$ = generator_build( 4, $1, strdup_safe( "(" ), $3, strdup_safe( ")" ) );
     }
   ;
 
@@ -1578,9 +1582,13 @@ module_item
     {
       $$ = generator_build( 6, $1, $2, $3, $4, strdup_safe( ";" ), "\n" );
     }
-  | attribute_list_opt K_assign drive_strength_opt delay3_opt assign_list ';'
+  | attribute_list_opt K_assign drive_strength_opt delay3_opt
     {
-      $$ = generator_build( 7, $1, strdup_safe( "assign" ), $3, $4, $5, strdup_safe( ";" ), "\n" );
+      generator_create_tmp_regs();
+    }
+    assign_list ';'
+    {
+      $$ = generator_build( 8, generator_tmp_regs(), $1, strdup_safe( "assign" ), $3, $4, $6, strdup_safe( ";" ), "\n" );
     }
   | attribute_list_opt K_always statement
     {
@@ -1932,17 +1940,17 @@ passign
 if_body
   : statement_or_null %prec less_than_K_else
     {
-      if( $1[0] != ';' ) {
+      if( (strncmp( $1, "begin ", 6 ) != 0) && ($1[0] != ';') ) {
         $1 = generator_build( 5, strdup_safe( "begin" ), "\n", $1, strdup_safe( "end" ), "\n" );
       }
       $$ = $1;
     }
   | statement_or_null K_else statement_or_null
     {
-      if( $1[0] != ';' ) {
+      if( (strncmp( $1, "begin ", 6 ) != 0) && ($1[0] != ';') ) {
         $1 = generator_build( 5, strdup_safe( "begin" ), "\n", $1, strdup_safe( "end" ), "\n" );
       }
-      if( $3[0] != ';' ) {
+      if( (strncmp( $3, "begin ", 6 ) != 0) && ($3[0] != ';') ) {
         $3 = generator_build( 5, strdup_safe( "begin" ), "\n", $3, strdup_safe( "end" ), "\n" );
       }
       $$ = generator_build( 3, $1, strdup_safe( "else" ), $3 );
@@ -1970,8 +1978,13 @@ statement
     {
       $$ = generator_build( 4, strdup_safe( "begin" ), $2, strdup_safe( "end" ), "\n" );
     }
-  | K_fork fork_statement K_join
+  | K_fork
     {
+      fork_mode++;
+    }
+    fork_statement K_join
+    {
+      fork_mode--;
       $$ = generator_build( 4, strdup_safe( "fork" ), $2, strdup_safe( "join" ), "\n" );
     }
   | K_disable identifier ';'
@@ -2075,7 +2088,7 @@ statement
     }
   | delay1 statement_or_null
     {
-      if( $2[0] != ';' ) {
+      if( (strncmp( $2, "begin ", 6 ) != 0) && ($2[0] != ';') ) {
         $2 = generator_build( 5, strdup_safe( "begin" ), "\n", $2, strdup_safe( "end" ), "\n" );
       }
       $$ = generator_build( 3, generator_line_cov( @1.ppfline, ((@1.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@1.last_column - 1), TRUE ),
@@ -2083,12 +2096,11 @@ statement
     }
   | event_control statement_or_null
     {
-      if( $2[0] != ';' ) {
-        $2 = generator_build( 5, strdup_safe( "begin" ), "\n", $2, strdup_safe( "end" ), "\n" );
+      if( $2[0] == ';' ) {
+        FREE_TEXT( $2 );
       }
-      printf( "event_control ppfline: %d, first_column: %d\n", @1.ppfline, @1.first_column );
-      $$ = generator_build( 4, generator_line_cov( @1.ppfline, ((@1.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@1.last_column - 1), TRUE ),
-                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ), $1, $2 );
+      $$ = generator_build( 8, generator_line_cov( @1.ppfline, ((@1.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@1.last_column - 1), TRUE ),
+                            $1, strdup_safe( "begin" ), "\n", generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ), $2, strdup_safe( "end" ), "\n" );
     }
   | '@' '*' statement_or_null
     {
@@ -2171,6 +2183,7 @@ statement
     }
   | identifier ';'
     {
+      printf( "HERE W\n" );
       $$ = generator_build( 4, generator_line_cov( @1.ppfline, ((@1.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@1.last_column - 1), TRUE ),
                             $1, strdup_safe( ";" ), "\n" );
     }
@@ -2248,22 +2261,6 @@ begin_end_block
     }
   | begin_end_id
     {
-      if( $1 == NULL ) {
-        char         str[50];
-        char*        back;
-        char*        rest;
-        unsigned int rv;
-        func_unit*   funit = db_get_tfn_by_position( @1.first_line, @1.first_column );
-        assert( funit != NULL );
-        back = strdup_safe( funit->name );
-        rest = strdup_safe( funit->name );
-        scope_extract_back( funit->name, back, rest );
-        rv = snprintf( str, 50, " : %s", back );
-        assert( rv < 50 );
-        $1 = generator_build( 1, strdup_safe( str ) );
-        free_safe( back, (strlen( funit->name ) + 1) );
-        free_safe( rest, (strlen( funit->name ) + 1) );
-      }
       $$ = $1;
     }
   ;
@@ -2518,21 +2515,21 @@ block_item_decl
 case_item
   : expression_list ':' statement_or_null
     {
-      if( $3[0] != ';' ) {
+      if( (strncmp( $3, "begin ", 6 ) != 0) && ($3[0] != ';') ) {
         $3 = generator_build( 5, strdup_safe( "begin" ), "\n", $3, strdup_safe( "end" ), "\n" );
       }
       $$ = generator_build( 3, $1, strdup_safe( ":" ), $3 );
     }
   | K_default ':' statement_or_null
     {
-      if( $3[0] != ';' ) {
+      if( (strncmp( $3, "begin ", 6 ) != 0) && ($3[0] != ';') ) {
         $3 = generator_build( 5, strdup_safe( "begin" ), "\n", $3, strdup_safe( "end" ), "\n" );
       }
       $$ = generator_build( 2, strdup_safe( "default :" ), $3 );
     }
   | K_default statement_or_null
     {
-      if( $2[0] != ';' ) {
+      if( (strncmp( $2, "begin ", 6 ) != 0) && ($2[0] != ';') ) {
         $2 = generator_build( 5, strdup_safe( "begin" ), "\n", $2, strdup_safe( "end" ), "\n" );
       }
       $$ = generator_build( 2, strdup_safe( "default" ), $2 );

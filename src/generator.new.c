@@ -1430,13 +1430,13 @@ statement* generator_find_statement(
   unsigned int first_column  /*!< First column of statement to find */
 ) { PROFILE(GENERATOR_FIND_STATEMENT);
 
-//  printf( "In generator_find_statement, line: %d, column: %d, funit_top: %s\n", first_line, first_column, funit_top->funit->name );
+  printf( "In generator_find_statement, line: %d, column: %d, funit_top: %s\n", first_line, first_column, funit_top->funit->name );
 
   if( (curr_stmt == NULL) || (curr_stmt->exp->ppfline != first_line) || (curr_stmt->exp->col.part.first != first_column) ) {
 
     stmt_link* stmtl = stmt_link_find_by_position( first_line, first_column, funit_top->funit->stmt_head );
 
-//    stmt_link_display( funit_top->funit->stmt_head );
+    stmt_link_display( funit_top->funit->stmt_head );
 
     /* If we couldn't find it in the func_iter, look for it in the generate list */
     if( stmtl == NULL ) {
@@ -1450,11 +1450,11 @@ statement* generator_find_statement(
 
   }
 
-//  if( (curr_stmt != NULL) && (curr_stmt->exp->ppfline == first_line) && (curr_stmt->exp->col.part.first == first_column) && (curr_stmt->exp->op != EXP_OP_FORK) ) {
-//    printf( "  FOUND (%s %x)!\n", expression_string( curr_stmt->exp ), curr_stmt->exp->col.part.first );
-//  } else {
-//    printf( "  NOT FOUND!\n" );
-//  }
+  if( (curr_stmt != NULL) && (curr_stmt->exp->ppfline == first_line) && (curr_stmt->exp->col.part.first == first_column) && (curr_stmt->exp->op != EXP_OP_FORK) ) {
+    printf( "  FOUND (%s %x)!\n", expression_string( curr_stmt->exp ), curr_stmt->exp->col.part.first );
+  } else {
+    printf( "  NOT FOUND!\n" );
+  }
 
   PROFILE_END;
 
@@ -1478,7 +1478,10 @@ static statement* generator_find_case_statement(
 
   if( (curr_stmt == NULL) || (curr_stmt->exp->left == NULL) || (curr_stmt->exp->left->ppfline != first_line) || (curr_stmt->exp->left->col.part.first != first_column) ) {
 
-    stmt_link* stmtl = stmt_link_find_by_position( first_line, first_column, funit_top->funit->stmt_head );
+    stmt_link* stmtl = funit_top->funit->stmt_head;
+    while( (stmtl != NULL) && ((stmtl->stmt->exp->left == NULL) || (stmtl->stmt->exp->left->ppfline != first_line) || (stmtl->stmt->exp->left->col.part.first != first_column)) ) {
+      stmtl = stmtl->next;
+    }
 
     curr_stmt = (stmtl != NULL) ? stmtl->stmt : NULL;
 
@@ -1574,9 +1577,12 @@ char* generator_line_cov(
   statement* stmt;
   char*      str = NULL;
 
-  if( ((stmt = generator_find_statement( first_line, first_column )) != NULL) && !generator_is_static_function_only( stmt->funit ) &&
+  if( ((stmt = generator_find_statement( first_line, first_column )) != NULL) &&
+      printf( "statement: %s\n", expression_string( stmt->exp ) ) &&
+      !generator_is_static_function_only( stmt->funit ) &&
       ((info_suppl.part.scored_line && !handle_funit_as_assert) || (handle_funit_as_assert && ovl_is_coverage_point( stmt->exp ))) ) {
 
+    printf( "HERE X!\n" );
     str = generator_line_cov_with_stmt( stmt, semicolon );
 
   }
@@ -1740,7 +1746,8 @@ static char* generator_unary_comb_cov(
   char*        sigr;
   char         str[4096];
   unsigned int rv;
-  char*        scope = generator_get_relative_scope( funit );
+  char*        scope   = generator_get_relative_scope( funit );
+  char*        cov_str = NULL;
 
   /* Create signal */
   if( scope[0] == '\0' ) {
@@ -1777,9 +1784,15 @@ static char* generator_unary_comb_cov(
   /* Deallocate temporary memory */
   free_safe( sigr, (strlen( sigr ) + 1) );
 
+  if( net ) {
+    generator_insert_reg( str, FALSE );
+  } else {
+    cov_str = generator_build( 2, strdup_safe( str ), "\n" );
+  }
+
   PROFILE_END;
 
-  return( generator_build( 2, strdup_safe( str ), "\n" ) );
+  return( cov_str );
 
 }
 
@@ -1804,6 +1817,7 @@ static char* generator_comb_comb_cov(
   str_link*    tmp_head = NULL;
   str_link*    tmp_tail = NULL;
   char*        scope    = generator_get_relative_scope( funit );
+  char*        cov_str  = NULL;
 
   /* Create signal */
   if( scope[0] == '\0' ) {
@@ -1848,9 +1862,15 @@ static char* generator_comb_comb_cov(
   free_safe( sigl, (strlen( sigl ) + 1) );
   free_safe( sigr, (strlen( sigr ) + 1) );
 
+  if( net ) {
+    generator_insert_reg( str, FALSE );
+  } else {
+    cov_str = generator_build( 2, strdup_safe( str ), "\n" );
+  }
+
   PROFILE_END;
 
-  return( generator_build( 2, strdup_safe( str ), "\n" ) );
+  return( cov_str );
 
 }
 
@@ -2457,6 +2477,7 @@ static char* generator_subexp(
   unsigned int i;
   str_link*    tmp_head = NULL;
   str_link*    tmp_tail = NULL;
+  char*        cov_str  = NULL;
 
   /* Create LHS portion of assignment */
   lhs_str = generator_create_lhs( exp, funit, net, reg_needed );
@@ -2505,12 +2526,16 @@ static char* generator_subexp(
     slen = 8 + strlen( lhs_str ) + 3 + strlen( val_str ) + 2;
     str  = (char*)malloc_safe_nolimit( slen );
     rv   = snprintf( str, slen, " assign %s = %s;", lhs_str, val_str );
+    assert( rv < slen );
+    generator_insert_reg( str, FALSE );
+    free_safe( str, slen );
   } else {
     slen = strlen( lhs_str ) + 3 + strlen( val_str ) + 2;
     str  = (char*)malloc_safe_nolimit( slen );
     rv   = snprintf( str, slen, "%s = %s;", lhs_str, val_str );
+    assert( rv < slen );
+    cov_str = generator_build( 2, str, "\n" );
   }
-  assert( rv < slen );
 
   /* Deallocate memory */
   free_safe( lhs_str, (strlen( lhs_str ) + 1) );
@@ -2521,7 +2546,7 @@ static char* generator_subexp(
 
   PROFILE_END;
 
-  return( generator_build( 2, str, "\n" ) );
+  return( cov_str );
 
 }
 
@@ -2988,7 +3013,7 @@ static char* generator_mem_cov(
   expression* rhs     /*!< If the root expression is a non-blocking assignment, this pointer will point to the RHS
                            expression that is required to extract memory coverage.  If this pointer is NULL, handle
                            memory coverage normally. */
-) { PROFILE(GENERATOR_INSERT_MEM_COV);
+) { PROFILE(GENERATOR_MEM_COV);
 
   char         name[4096];
   char         range[4096];
@@ -3031,6 +3056,8 @@ static char* generator_mem_cov(
       rv  = snprintf( str, slen, "wire [(%s)-1:0] %s = %s;", num, iname, idxstr );
       assert( rv < slen );
 
+      generator_insert_reg( str, FALSE );
+
     } else {
 
       unsigned int slen = 6 + strlen( num ) + 7 + strlen( iname ) + 3;
@@ -3046,10 +3073,9 @@ static char* generator_mem_cov(
       rv   = snprintf( str, slen, " %s = %s;", iname, idxstr );
       assert( rv < slen );
 
-    }
+      cov_str = str;
 
-    /* Prepend the index */
-    cov_str = str;
+    }
 
     /* Generate size needed to store memory element */
     size = generator_gen_size( exp, funit, &number );
@@ -3193,7 +3219,7 @@ static char* generator_mem_cov(
     rv  = snprintf( str, slen, "wire %s %s = %s;", range, name, value );
     assert( rv < slen );
 
-    cov_str = generator_build( 3, cov_str, strdup_safe( str ), "\n" );
+    generator_insert_reg( str, FALSE );
 
   /* Otherwise, create the assignment string for a register and create the register */
   } else {
@@ -3215,7 +3241,7 @@ static char* generator_mem_cov(
     assert( rv < slen );
 
     /* Write coverage should append to the working buffer */
-    cov_str = generator_build( 2, cov_str, strdup_safe( str ) );
+    cov_str = generator_build( 3, cov_str, strdup_safe( str ), "\n" );
 #ifdef OBSOLETE
     if( write ) {
       generator_add_cov_to_work_code( str );
@@ -3251,7 +3277,7 @@ static char* generator_mem_cov_helper(
   bool        do_read,       /*!< If TRUE, performs memory read access for any memories found in the expression tree (by default, set it to FALSE) */
   bool        do_write,      /*!< If TRUE, performs memory write access for any memories found in the expression tree (by default, set it to FALSE) */
   expression* rhs            /*!< Set to the RHS expression if the root expression was a non-blocking assignment */
-) { PROFILE(GENERATOR_INSERT_MEM_COV_HELPER);
+) { PROFILE(GENERATOR_MEM_COV_HELPER);
 
   char* cov_str = NULL;
 
@@ -3302,7 +3328,7 @@ char* generator_comb_cov(
   bool         net,           /*!< If set to TRUE, generate code for a net; otherwise, generate code for a variable */
   bool         use_right,     /*!< If set to TRUE, use right-hand expression */
   bool         save_stmt      /*!< If set to TRUE, saves the found statement to the statement stack */
-) { PROFILE(GENERATOR_INSERT_COMB_COV);
+) { PROFILE(GENERATOR_COMB_COV);
 
   statement* stmt    = NULL;
   char*      cov_str = NULL;
