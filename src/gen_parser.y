@@ -66,6 +66,11 @@ extern void lex_end_udp_table();
 static int block_depth = 0;
 
 /*!
+ Array storing the depth that a given fork block is at.
+*/
+static int* fork_block_depth = NULL;
+
+/*!
  Specifies if we are currently in a fork statement (> 0) or not.
 */
 static int fork_depth = -1;
@@ -3667,6 +3672,8 @@ inc_fork_depth
   :
     {
       fork_depth++;
+      fork_block_depth = (int*)realloc_safe( fork_block_depth, (sizeof( int ) * fork_depth), ((fork_depth + 1) * sizeof( int )) );
+      fork_block_depth[fork_depth] = block_depth;
     }
   ;
 
@@ -3674,6 +3681,7 @@ dec_fork_depth
   :
     {
       fork_depth--;
+      fork_block_depth = (int*)realloc_safe( fork_block_depth, (sizeof( int ) * (fork_depth + 2)), ((fork_depth + 1) * sizeof( int )) );
     }
   ;
 
