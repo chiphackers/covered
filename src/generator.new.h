@@ -200,7 +200,7 @@ char* generator_case_comb_cov(
 );
 
 /*! \brief Inserts FSM coverage code into module */
-char* generator_fsm_cov();
+char* generator_fsm_covs();
 
 /*! \brief Changes event type to reg type if we are performing combinational logic coverage. */
 void generator_handle_event_type(

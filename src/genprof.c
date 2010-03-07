@@ -529,7 +529,7 @@ profiler profiles[NUM_PROFILES] = {
   {"generator_insert_comb_cov_from_stmt_stack", NULL, 0, 0, 0, TRUE},
   {"generator_insert_comb_cov_with_stmt", NULL, 0, 0, 0, TRUE},
   {"generator_insert_case_comb_cov", NULL, 0, 0, 0, TRUE},
-  {"generator_insert_fsm_covs", NULL, 0, 0, 0, TRUE},
+  {"generator_fsm_covs", NULL, 0, 0, 0, TRUE},
   {"generator_handle_event_type", NULL, 0, 0, 0, TRUE},
   {"generator_handle_event_trigger", NULL, 0, 0, 0, TRUE},
   {"generator_hold_last_token", NULL, 0, 0, 0, TRUE},

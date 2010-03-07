@@ -285,11 +285,16 @@ bool generator_is_static_function(
   func_unit* funit  /*!< Pointer to functional unit to check */
 ) { PROFILE(GENERATOR_IS_STATIC_FUNCTION);
 
-  func_unit* func = funit_get_curr_function( funit );
+  bool retval = FALSE;
+
+  if( funit != NULL ) {
+    func_unit* func = funit_get_curr_function( funit );
+    retval = (func != NULL) && (func->suppl.part.staticf == 1);
+  }
 
   PROFILE_END;
 
-  return( (func != NULL) && (func->suppl.part.staticf == 1) );
+  return( retval );
 
 }
 
@@ -1430,13 +1435,13 @@ statement* generator_find_statement(
   unsigned int first_column  /*!< First column of statement to find */
 ) { PROFILE(GENERATOR_FIND_STATEMENT);
 
-  printf( "In generator_find_statement, line: %d, column: %d, funit_top: %s\n", first_line, first_column, funit_top->funit->name );
+//  printf( "In generator_find_statement, line: %d, column: %d, funit_top: %s\n", first_line, first_column, funit_top->funit->name );
 
   if( (curr_stmt == NULL) || (curr_stmt->exp->ppfline != first_line) || (curr_stmt->exp->col.part.first != first_column) ) {
 
     stmt_link* stmtl = stmt_link_find_by_position( first_line, first_column, funit_top->funit->stmt_head );
 
-    stmt_link_display( funit_top->funit->stmt_head );
+//    stmt_link_display( funit_top->funit->stmt_head );
 
     /* If we couldn't find it in the func_iter, look for it in the generate list */
     if( stmtl == NULL ) {
@@ -1450,11 +1455,11 @@ statement* generator_find_statement(
 
   }
 
-  if( (curr_stmt != NULL) && (curr_stmt->exp->ppfline == first_line) && (curr_stmt->exp->col.part.first == first_column) && (curr_stmt->exp->op != EXP_OP_FORK) ) {
-    printf( "  FOUND (%s %x)!\n", expression_string( curr_stmt->exp ), curr_stmt->exp->col.part.first );
-  } else {
-    printf( "  NOT FOUND!\n" );
-  }
+//  if( (curr_stmt != NULL) && (curr_stmt->exp->ppfline == first_line) && (curr_stmt->exp->col.part.first == first_column) && (curr_stmt->exp->op != EXP_OP_FORK) ) {
+//    printf( "  FOUND (%s %x)!\n", expression_string( curr_stmt->exp ), curr_stmt->exp->col.part.first );
+//  } else {
+//    printf( "  NOT FOUND!\n" );
+//  }
 
   PROFILE_END;
 
@@ -1578,11 +1583,9 @@ char* generator_line_cov(
   char*      str = NULL;
 
   if( ((stmt = generator_find_statement( first_line, first_column )) != NULL) &&
-      printf( "statement: %s\n", expression_string( stmt->exp ) ) &&
       !generator_is_static_function_only( stmt->funit ) &&
       ((info_suppl.part.scored_line && !handle_funit_as_assert) || (handle_funit_as_assert && ovl_is_coverage_point( stmt->exp ))) ) {
 
-    printf( "HERE X!\n" );
     str = generator_line_cov_with_stmt( stmt, semicolon );
 
   }
@@ -3480,7 +3483,11 @@ char* generator_case_comb_cov(
 /*!
  Inserts FSM coverage at the end of the module for the current module.
 */
-void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
+char* generator_fsm_covs() { PROFILE(GENERATOR_FSM_COVS);
+
+  char*        cov_str = NULL;
+  int          slen;
+  unsigned int rv;
 
   if( (info_suppl.part.scored_fsm == 1) && !handle_funit_as_assert && !generator_is_static_function_only( curr_funit ) ) {
 
@@ -3489,6 +3496,12 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
     for( i=0; i<curr_funit->fsm_size; i++ ) {
 
       fsm* table = curr_funit->fsms[i];
+      char idxstr[30];
+      char numstr[30];
+
+      /* Get the string value of the index */
+      rv = snprintf( idxstr, 30, "%d", (i + 1) );
+      assert( rv < 30 );
 
       if( table->from_state->id == table->to_state->id ) {
 
@@ -3496,9 +3509,16 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
         char* size = generator_gen_size( table->from_state, curr_funit, &number );
         char* exp  = codegen_gen_expr_one_line( table->from_state, curr_funit, FALSE );
         if( number >= 0 ) {
-          fprintf( curr_ofile, "wire [%d:0] \\covered$F%u = %s;", (number - 1), (i + 1), exp );
+          rv      = snprintf( numstr, 30, "%d", (number - 1) );  assert( rv < 30 );
+          slen    = 6 + strlen( numstr ) + 14 + strlen( idxstr ) + 3 + strlen( exp ) + 2;
+          cov_str = (char*)malloc_safe( slen );
+          rv      = snprintf( cov_str, slen, "wire [%d:0] \\covered$F%u = %s;", (number - 1), (i + 1), exp );
+          assert( rv < slen );
         } else {
-          fprintf( curr_ofile, "wire [(%s)-1:0] \\covered$F%u = %s;", ((size != NULL) ? size : "1"), (i + 1), exp );
+          slen    = 7 + strlen( (size != NULL) ? size : "1" ) + 17 + strlen( idxstr ) + 3 + strlen( exp ) + 2;
+          cov_str = (char*)malloc_safe( slen );
+          rv      = snprintf( cov_str, slen, "wire [(%s)-1:0] \\covered$F%u = %s;", ((size != NULL) ? size : "1"), (i + 1), exp );
+          assert( rv < slen );
         }
         free_safe( size, (strlen( size ) + 1) );
         free_safe( exp, (strlen( exp ) + 1) );
@@ -3513,16 +3533,27 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
         char* texp  = codegen_gen_expr_one_line( table->to_state, curr_funit, FALSE );
         if( from_number >= 0 ) {
           if( to_number >= 0 ) {
-            fprintf( curr_ofile, "wire [%d:0] \\covered$F%u = {%s,%s};", ((from_number + to_number) - 1), (i + 1), fexp, texp );
+            rv      = snprintf( numstr, 30, "%d", ((from_number + to_number) - 1) );  assert( rv < 30 );
+            slen    = 6 + strlen( numstr ) + 14 + strlen( idxstr ) + 4 + strlen( fexp ) + 1 + strlen( texp ) + 3;
+            cov_str = (char*)malloc_safe( slen );
+            rv      = snprintf( cov_str, slen, "wire [%d:0] \\covered$F%u = {%s,%s};", ((from_number + to_number) - 1), (i + 1), fexp, texp );
           } else {
-            fprintf( curr_ofile, "wire [(%d+(%s))-1:0] \\covered$F%u = {%s,%s};", from_number, ((tsize != NULL) ? tsize : "1"), (i + 1), fexp, texp );
+            rv      = snprintf( numstr, 30, "%d", from_number );  assert( rv < 30 );
+            slen    = 7 + strlen( numstr ) + 2 + strlen( (tsize != NULL) ? tsize : "1" ) + 18 + strlen( idxstr ) + 4 + strlen( fexp ) + 1 + strlen( texp ) + 3;
+            cov_str = (char*)malloc_safe( slen );
+            rv      = snprintf( cov_str, slen, "wire [(%d+(%s))-1:0] \\covered$F%u = {%s,%s};", from_number, ((tsize != NULL) ? tsize : "1"), (i + 1), fexp, texp );
           }
         } else {
           if( to_number >= 0 ) {
-            fprintf( curr_ofile, "wire [((%s)+%d)-1:0] \\covered$F%u = {%s,%s};", ((fsize != NULL) ? fsize : "1"), to_number, (i + 1), fexp, texp );
+            rv      = snprintf( numstr, 30, "%d", to_number );  assert( rv < 30 );
+            slen    = 8 + strlen( (fsize != NULL) ? fsize : "1" ) + 2 + strlen( numstr ) + 17 + strlen( idxstr ) + 4 + strlen( fexp ) + 1 + strlen( texp ) + 3;
+            cov_str = (char*)malloc_safe( slen );
+            rv      = snprintf( cov_str, slen, "wire [((%s)+%d)-1:0] \\covered$F%u = {%s,%s};", ((fsize != NULL) ? fsize : "1"), to_number, (i + 1), fexp, texp );
           } else {
-            fprintf( curr_ofile, "wire [((%s)+(%s))-1:0] \\covered$F%u = {%s,%s};",
-                     ((fsize != NULL) ? fsize : "1"), ((tsize != NULL) ? tsize : "1"), (i + 1), fexp, texp );
+            slen    = 8 + strlen( (fsize != NULL) ? fsize : "1" ) + 3 + strlen( (tsize != NULL) ? tsize : "1" ) + 18 + strlen( idxstr ) + 4 + strlen( fexp ) + 1 + strlen( texp ) + 3;
+            cov_str = (char*)malloc_safe( slen );
+            rv      = snprintf( cov_str, slen, "wire [((%s)+(%s))-1:0] \\covered$F%u = {%s,%s};",
+                                ((fsize != NULL) ? fsize : "1"), ((tsize != NULL) ? tsize : "1"), (i + 1), fexp, texp );
           }
         }
         free_safe( fsize, (strlen( fsize ) + 1) );
@@ -3537,6 +3568,8 @@ void generator_insert_fsm_covs() { PROFILE(GENERATOR_INSERT_FSM_COVS);
   }
 
   PROFILE_END;
+
+  return( cov_str );
 
 }
 
@@ -3653,13 +3686,18 @@ char* generator_inst_id_reg(
   func_unit* funit  /*!< Pointer to functional unit to add */
 ) { PROFILE(GENERATOR_INST_ID_PARAM);
 
-  char         str[128];
-  unsigned int rv = snprintf( str, 128, "reg [31:0] COVERED_INST_ID%d /* verilator public */;", funit->id );
-  assert( rv < 128 );
+  char* cov_str = NULL;
+
+  if( funit != NULL ) {
+    char         str[128];
+    unsigned int rv = snprintf( str, 128, "reg [31:0] COVERED_INST_ID%d /* verilator public */;", funit->id );
+    assert( rv < 128 );
+    cov_str = generator_build( 2, strdup_safe( str ), "\n" );
+  }
 
   PROFILE_END;
 
-  return( generator_build( 2, strdup_safe( str ), "\n" ) );
+  return( cov_str );
 
 }
 
@@ -3745,7 +3783,7 @@ char* generator_inst_id_overrides() { PROFILE(GENERATOR_INST_ID_OVERRIDES);
   funit_inst*  top_inst;
   char         leading_hier[4096];
   unsigned int rv;
-  char*        inst_str;
+  char*        inst_str = NULL;
 
   /* Get the top-most module */
   leading_hier[0] = '\0';

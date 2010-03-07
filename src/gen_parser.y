@@ -76,6 +76,67 @@ static int* fork_block_depth = NULL;
 static int fork_depth = -1;
 
 /*!
+ \return Returns the name of the fork..join block that this statement represents (if it does).
+
+ Checks to see if the current statement is a fork..join block, and if it is pushes
+ the functional unit on the stack and returns the block name.
+*/
+static char* generator_handle_push_funit(
+  unsigned int first_line,   /*!< First line of statement to check */
+  unsigned int first_column  /*!< First column of statement to check */
+) {
+
+  char* cov_str = NULL;
+
+  if( (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
+    func_unit* funit;
+    if( (funit = db_get_tfn_by_position( first_line, first_column )) != NULL ) {
+      char         str[50];
+      char*        back;
+      char*        rest;
+      unsigned int rv;
+      assert( funit != NULL );
+      back = strdup_safe( funit->name );
+      rest = strdup_safe( funit->name );
+      scope_extract_back( funit->name, back, rest );
+      rv = snprintf( str, 50, " : %s", back );
+      assert( rv < 50 );
+      free_safe( back, (strlen( funit->name ) + 1) );
+      free_safe( rest, (strlen( funit->name ) + 1) );
+      generator_push_funit( funit );
+      cov_str = generator_build( 3, strdup_safe( "begin" ), strdup_safe( str ), "\n" );
+    }
+  }
+
+  return( cov_str );
+
+}
+
+/*!
+ \return Returns the "end" string if we are handling a fork..join block statement.
+
+ Pops the current functional unit if we are handling a fork..join block.
+*/
+static char* generator_handle_pop_funit(
+  unsigned int first_line,   /*!< First line of statement to check */
+  unsigned int first_column  /*!< First column of statement to check */
+) {
+
+  char* cov_str = NULL;
+
+  if( (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
+    if( db_get_tfn_by_position( first_line, first_column ) != NULL ) {
+      generator_pop_funit();
+      cov_str = generator_build( 2, strdup_safe( "end" ), "\n" );
+    }
+  }
+
+  return( cov_str );
+
+}
+
+
+/*!
  Macro to free a text variable type.  Sets the pointer to NULL so that the pointer is re-deallocated.
  x = pointer to the variable.
 */
@@ -378,11 +439,22 @@ description
       $$ = generator_build( 4, strdup_safe( "reg" ), $2, strdup_safe( ";" ), "\n" );
     }
   | K_task automatic_opt IDENTIFIER ';'
-    task_item_list_opt statement_or_null
+    task_item_list_opt
+    {
+      func_unit* funit;
+      if( (funit = db_get_tfn_by_position( @3.first_line, @3.first_column )) != NULL ) {
+        generator_create_tmp_regs();
+        generator_push_funit( funit );
+      }
+    }
+    statement_or_null
     K_endtask
     {
-      func_unit* funit = db_get_tfn_by_position( @3.first_line, @3.first_column );
-      $$ = generator_build( 10, strdup_safe( "task" ), $2, $3, strdup_safe( ";" ), "\n", $5, generator_inst_id_reg( funit ), $6, strdup_safe( "endtask" ), "\n" );
+      func_unit* funit;
+      if( (funit = db_get_tfn_by_position( @3.first_line, @3.first_column )) != NULL ) {
+        generator_pop_funit();
+      }
+      $$ = generator_build( 10, strdup_safe( "task" ), $2, $3, strdup_safe( ";" ), "\n", $5, generator_inst_id_reg( funit ), $7, strdup_safe( "endtask" ), "\n" );
     }
   | K_function automatic_opt signed_opt range_or_type_opt IDENTIFIER ';'
     function_item_list
@@ -397,7 +469,7 @@ description
     K_endfunction
     {
       func_unit* funit = db_get_tfn_by_position( @5.first_line, @5.first_column );
-      if( generator_is_static_function( funit ) ) {
+      if( (funit != NULL) && generator_is_static_function( funit ) ) {
         generator_pop_funit( funit );
       }
       if( (strncmp( $9, "begin ", 6 ) != 0) && ($9[0] != ';') ) {
@@ -434,17 +506,17 @@ module
     module_item_list_opt K_endmodule
     {
       generator_pop_funit();
-      $$ = generator_build( 12, $1, $2, $3, $5, $6, strdup_safe( ";" ), "\n",
-                            generator_inst_id_reg( db_get_curr_funit() ), generator_tmp_regs(), $8,
-                            generator_inst_id_overrides(), strdup_safe( "endmodule" ) );
+      $$ = generator_build( 14, $1, $2, $3, $5, $6, strdup_safe( ";" ), "\n",
+                            generator_inst_id_reg( db_get_curr_funit() ), generator_tmp_regs(), $8, generator_fsm_covs(),
+                            generator_inst_id_overrides(), strdup_safe( "endmodule" ), "\n" );
     }
   | attribute_list_opt K_module IGNORE I_endmodule
     {
-      $$ = generator_build( 4, $1, strdup_safe( "module" ), $3, strdup_safe( "endmodule" ) );
+      $$ = generator_build( 5, $1, strdup_safe( "module" ), $3, strdup_safe( "endmodule" ), "\n" );
     }
   | attribute_list_opt K_macromodule IGNORE I_endmodule
     {
-      $$ = generator_build( 4, $1, strdup_safe( "macromodule" ), $3, strdup_safe( "endmodule" ) );
+      $$ = generator_build( 5, $1, strdup_safe( "macromodule" ), $3, strdup_safe( "endmodule" ), "\n" );
     }
   ;
 
@@ -1658,17 +1730,19 @@ module_item
   | attribute_list_opt K_function automatic_opt signed_opt range_or_type_opt IDENTIFIER ';'
     function_item_list
     {
-      func_unit* funit = db_get_tfn_by_position( @6.first_line, @6.first_column );
-      assert( funit != NULL );
-      generator_push_funit( funit );
-      generator_create_tmp_regs();
+      func_unit* funit;
+      if( (funit  = db_get_tfn_by_position( @6.first_line, @6.first_column )) != NULL ) {
+        generator_push_funit( funit );
+        generator_create_tmp_regs();
+      }
     }
     statement
     K_endfunction
     {
-      func_unit* funit = db_get_tfn_by_position( @6.first_line, @6.first_column );
-      assert( funit != NULL );
-      generator_pop_funit();
+      func_unit* funit;
+      if( (funit = db_get_tfn_by_position( @6.first_line, @6.first_column )) != NULL ) {
+        generator_pop_funit();
+      }
       if( (strncmp( $10, "begin ", 6 ) != 0) && ($10[0] != ';') ) {
         $10 = generator_build( 5, strdup_safe( "begin" ), "\n", $10, strdup_safe( "end" ), "\n" );
       }
@@ -1994,13 +2068,17 @@ statement
     }
   | K_disable identifier ';'
     {
-      $$ = generator_build( 5, generator_line_cov( @1.ppfline, ((@2.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@2.last_column - 1), TRUE ),
+      $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
+      $$ = generator_build( 6, $$, generator_line_cov( @1.ppfline, ((@2.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@2.last_column - 1), TRUE ),
                             strdup_safe( "disable" ), $2, strdup_safe( ";" ), "\n" );
+      $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
   | K_TRIGGER IDENTIFIER ';'
     {
-      $$ = generator_build( 8, generator_line_cov( @1.ppfline, ((@2.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@2.last_column - 1), TRUE ),
+      $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
+      $$ = generator_build( 9, $$, generator_line_cov( @1.ppfline, ((@2.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@2.last_column - 1), TRUE ),
                             $2, strdup_safe( "= (" ), strdup_safe( $2 ), strdup_safe( "=== 1'bx) ? 1'b0 : ~" ), strdup_safe( $2 ), strdup_safe( ";" ), "\n" );
+      $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
   | K_forever inc_block_depth statement dec_block_depth
     {
@@ -2014,30 +2092,40 @@ statement
       if( (strncmp( $6, "begin ", 6 ) != 0) && ($6[0] != ';') ) {
         $6 = generator_build( 5, strdup_safe( "begin" ), "\n", $6, strdup_safe( "end" ), "\n" );
       }
-      $$ = generator_build( 6, generator_line_cov( @1.ppfline, ((@4.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@4.last_column - 1), TRUE ),
+      $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
+      $$ = generator_build( 7, $$, generator_line_cov( @1.ppfline, ((@4.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@4.last_column - 1), TRUE ),
                             generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
                             strdup_safe( "repeat(" ), $3, strdup_safe( ")" ), $6 );
+      $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
   | cond_specifier_opt K_case '(' expression ')' case_body K_endcase
     {
-      $$ = generator_build( 8, generator_case_comb_cov( @4.ppfline, @4.first_column ),
+      $$ = generator_handle_push_funit( @2.first_line, @2.first_column );
+      $$ = generator_build( 9, $$, generator_case_comb_cov( @4.ppfline, @4.first_column ),
                             $1, strdup_safe( "case(" ), $4, strdup_safe( ")" ), $6, strdup_safe( "endcase" ), "\n" );
+      $$ = generator_build( 2, $$, generator_handle_pop_funit( @2.first_line, @2.first_column ) );
     }
   | cond_specifier_opt K_casex '(' expression ')' case_body K_endcase
     {
-      $$ = generator_build( 8, generator_case_comb_cov( @4.ppfline, @4.first_column ),
+      $$ = generator_handle_push_funit( @2.first_line, @2.first_column );
+      $$ = generator_build( 9, $$, generator_case_comb_cov( @4.ppfline, @4.first_column ),
                             $1, strdup_safe( "casex(" ), $4, strdup_safe( ")" ), $6, strdup_safe( "endcase" ), "\n" );
+      $$ = generator_build( 2, $$, generator_handle_pop_funit( @2.first_line, @2.first_column ) );
     }
   | cond_specifier_opt K_casez '(' expression ')' case_body K_endcase
     {
-      $$ = generator_build( 8, generator_case_comb_cov( @4.ppfline, @4.first_column ),
+      $$ = generator_handle_push_funit( @2.first_line, @2.first_column );
+      $$ = generator_build( 9, $$, generator_case_comb_cov( @4.ppfline, @4.first_column ),
                             $1, strdup_safe( "casez(" ), $4, strdup_safe( ")" ), $6, strdup_safe( "endcase" ), "\n" );
+      $$ = generator_build( 2, $$, generator_handle_pop_funit( @2.first_line, @2.first_column ) );
     }
   | cond_specifier_opt K_if '(' expression ')' if_body
     {
-      $$ = generator_build( 7, generator_line_cov( @2.ppfline, ((@5.last_line - @2.first_line) + @2.ppfline), @2.first_column, (@5.last_column - 1), TRUE ),
+      $$ = generator_handle_push_funit( @2.first_line, @2.first_column );
+      $$ = generator_build( 8, $$, generator_line_cov( @2.ppfline, ((@5.last_line - @2.first_line) + @2.ppfline), @2.first_column, (@5.last_column - 1), TRUE ),
                             generator_comb_cov( @2.ppfline, @2.first_column, FALSE, TRUE, FALSE ),
                             $1, strdup_safe( "if(" ), $4, strdup_safe( ")" ), $6 );
+      $$ = generator_build( 2, $$, generator_handle_pop_funit( @2.first_line, @2.first_column ) );
     }
   | cond_specifier_opt K_if '(' error ')' if_statement_error
     {
@@ -2049,11 +2137,13 @@ statement
       if( (strncmp( $9, "begin ", 6 ) != 0) && ($9[0] != ';') ) {
         $9 = generator_build( 5, strdup_safe( "begin" ), "\n", $9, strdup_safe( "end" ), "\n" );
       }
-      $$ = generator_build( 13, generator_comb_cov( @5.ppfline, @5.first_column, FALSE, TRUE, FALSE ),
+      $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
+      $$ = generator_build( 14, $$, generator_comb_cov( @5.ppfline, @5.first_column, FALSE, TRUE, FALSE ),
                             strdup_safe( "for(" ), $3, strdup_safe( ";" ), $5, strdup_safe( ";" ), $7, strdup_safe( ")" ), "\n", $9,
                             generator_line_cov( @7.ppfline, @7.pplline, @1.first_column, (@1.last_column - 1), TRUE ),
                             generator_comb_cov( @7.ppfline, @7.first_column, FALSE, TRUE, FALSE ),
                             generator_comb_cov( @5.ppfline, @5.first_column, FALSE, TRUE, FALSE ) );
+      $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
   | K_for '(' for_initialization ';' for_condition ';' error ')' statement
     {
@@ -2072,10 +2162,12 @@ statement
       if( (strncmp( $6, "begin ", 6 ) != 0) && ($6[0] != ';') ) {
         $6 = generator_build( 5, strdup_safe( "begin" ), "\n", $6, strdup_safe( "end" ), "\n" );
       }
-      $$ = generator_build( 7, generator_line_cov( @1.ppfline, ((@3.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@3.last_column - 1), TRUE ),
+      $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
+      $$ = generator_build( 8, $$, generator_line_cov( @1.ppfline, ((@3.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@3.last_column - 1), TRUE ),
                             generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, TRUE ),
                             strdup_safe( "while(" ), $3, strdup_safe( ")" ), $6,
                             generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, TRUE ) );
+      $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
   | K_while '(' error ')' inc_block_depth statement dec_block_depth
     {
@@ -2086,91 +2178,122 @@ statement
       if( (strncmp( $3, "begin ", 6 ) != 0) && ($3[0] != ';') ) {
         $3 = generator_build( 5, strdup_safe( "begin" ), "\n", $3, strdup_safe( "end" ), "\n" );
       }
-      $$ = generator_build( 8, strdup_safe( "do" ), $3,
+      $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
+      $$ = generator_build( 9, $$, strdup_safe( "do" ), $3,
                             generator_line_cov( @6.ppfline, ((@6.last_line - @6.first_line) + @6.ppfline), @6.first_column, (@6.last_column - 1), TRUE ),
                             generator_comb_cov( @6.ppfline, @6.first_column, FALSE, TRUE, FALSE ),
                             strdup_safe( "while(" ), $7, strdup_safe( ");" ), "\n" );
+      $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
   | delay1 statement_or_null
     {
       if( (strncmp( $2, "begin ", 6 ) != 0) && ($2[0] != ';') ) {
         $2 = generator_build( 5, strdup_safe( "begin" ), "\n", $2, strdup_safe( "end" ), "\n" );
       }
-      $$ = generator_build( 3, generator_line_cov( @1.ppfline, ((@1.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@1.last_column - 1), TRUE ),
+      $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
+      $$ = generator_build( 4, $$, generator_line_cov( @1.ppfline, ((@1.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@1.last_column - 1), TRUE ),
                             $1, $2 );
+      $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
   | event_control statement_or_null
     {
       if( $2[0] == ';' ) {
         FREE_TEXT( $2 );
       }
-      $$ = generator_build( 8, generator_line_cov( @1.ppfline, ((@1.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@1.last_column - 1), TRUE ),
+      $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
+      $$ = generator_build( 9, $$, generator_line_cov( @1.ppfline, ((@1.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@1.last_column - 1), TRUE ),
                             $1, strdup_safe( "begin" ), "\n", generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ), $2, strdup_safe( "end" ), "\n" );
+      $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
   | '@' '*' statement_or_null
     {
-      $$ = generator_build( 6, generator_line_cov( @1.ppfline, ((@2.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@2.last_column - 1), TRUE ),
+      $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
+      $$ = generator_build( 7, $$, generator_line_cov( @1.ppfline, ((@2.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@2.last_column - 1), TRUE ),
                             strdup_safe( "@* begin" ), "\n",
                             generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
-                            $3, strdup_safe( "end" ) ); 
+                            $3, strdup_safe( "end" ) );
+      $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) ); 
     }
   | passign ';'
     {
-      $$ = generator_build( 4, generator_line_cov( @1.ppfline, ((@1.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@1.last_column - 1), TRUE ),
+      $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
+      $$ = generator_build( 5, $$, generator_line_cov( @1.ppfline, ((@1.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@1.last_column - 1), TRUE ),
                             $1, strdup_safe( ";" ), "\n" );
+      $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
   | lpvalue K_LE expression ';'
     {
-      $$ = generator_build( 7, generator_line_cov( @1.ppfline, ((@3.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@3.last_column - 1), TRUE ),
+      $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
+      $$ = generator_build( 8, $$, generator_line_cov( @1.ppfline, ((@3.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@3.last_column - 1), TRUE ),
                             generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE ),
                             $1, strdup_safe( "<=" ), $3, strdup_safe( ";" ), "\n" );
+      $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
   | lpvalue '=' delay1 expression ';'
     {
-      $$ = generator_build( 8, generator_line_cov( @1.ppfline, ((@4.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@4.last_column - 1), TRUE ),
+      $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
+      $$ = generator_build( 9, $$, generator_line_cov( @1.ppfline, ((@4.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@4.last_column - 1), TRUE ),
                             generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE ),
                             $1, strdup_safe( "=" ), $3, $4, strdup_safe( ";" ), "\n" );
+      $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
     /* We don't handle the non-blocking assignments ourselves, so we can just ignore the delay here */
   | lpvalue K_LE delay1 expression ';'
     {
-      $$ = generator_build( 8, generator_line_cov( @1.ppfline, ((@4.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@4.last_column - 1), TRUE ),
+      $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
+      $$ = generator_build( 8, $$, generator_line_cov( @1.ppfline, ((@4.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@4.last_column - 1), TRUE ),
                             generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE ),
                             $1, strdup_safe( "<=" ), $3, $4, strdup_safe( ";" ), "\n" );
+      $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
   | lpvalue '=' event_control expression ';'
     {
-      $$ = generator_build( 8, generator_line_cov( @1.ppfline, ((@4.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@4.last_column - 1), TRUE ),
+      $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
+      $$ = generator_build( 9, $$,
+                            generator_line_cov( @1.ppfline, ((@4.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@4.last_column - 1), TRUE ),
                             generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE ),
                             $1, strdup_safe( "=" ), $3, $4, strdup_safe( ";" ), "\n" );
+      $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
     /* We don't handle the non-blocking assignments ourselves, so we can just ignore the delay here */
   | lpvalue K_LE event_control expression ';'
     {
-      $$ = generator_build( 8, generator_line_cov( @1.ppfline, ((@4.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@4.last_column - 1), TRUE ),
+      $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
+      $$ = generator_build( 9, $$,
+                            generator_line_cov( @1.ppfline, ((@4.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@4.last_column - 1), TRUE ),
                             generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE ),
                             $1, strdup_safe( "<=" ), $3, $4, strdup_safe( ";" ), "\n" );
+      $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
   | lpvalue '=' K_repeat '(' expression ')' event_control expression ';'
     {
-      $$ = generator_build( 10, generator_line_cov( @1.ppfline, ((@8.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@8.last_column - 1), TRUE ),
+      $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
+      $$ = generator_build( 11, $$,
+                            generator_line_cov( @1.ppfline, ((@8.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@8.last_column - 1), TRUE ),
                             generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE ),
                             $1, strdup_safe( "= repeat(" ), $5, strdup_safe( ")" ), $7, $8, strdup_safe( ";" ), "\n" );
+      $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
     /* We don't handle the non-blocking assignments ourselves, so we can just ignore the delay here */
   | lpvalue K_LE K_repeat '(' expression ')' event_control expression ';'
     {
-      $$ = generator_build( 10, generator_line_cov( @1.ppfline, ((@8.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@8.last_column - 1), TRUE ),
+      $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
+      $$ = generator_build( 11, $$,
+                            generator_line_cov( @1.ppfline, ((@8.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@8.last_column - 1), TRUE ),
                             generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE ),
                             $1, strdup_safe( "<= repeat(" ), $5, strdup_safe( ")" ), $7, $8, strdup_safe( ";" ), "\n" );
+      $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
   | K_wait '(' expression ')' statement_or_null
     {
-      $$ = generator_build( 10, generator_line_cov( @1.ppfline, ((@4.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@4.last_column - 1), TRUE ),
+      $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
+      $$ = generator_build( 11, $$,
+                            generator_line_cov( @1.ppfline, ((@4.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@4.last_column - 1), TRUE ),
                             generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE ),
                             strdup_safe( "wait(" ), $3, strdup_safe( ") begin" ), "\n",
                             generator_event_comb_cov( @1.ppfline, @1.first_column, TRUE ),
                             generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE ), strdup_safe( "end" ), "\n" );
+      $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
   | SYSCALL '(' expression_systask_list ')' ';'
     {
@@ -2182,15 +2305,20 @@ statement
     }
   | identifier '(' expression_port_list ')' ';'
     {
-      $$ = generator_build( 7, generator_line_cov( @1.ppfline, ((@4.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@4.last_column - 1), TRUE ),
+      $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
+      $$ = generator_build( 8, $$,
+                            generator_line_cov( @1.ppfline, ((@4.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@4.last_column - 1), TRUE ),
                             generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
                             $1, strdup_safe( "(" ), $3, strdup_safe( ");" ), "\n" );
+      $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
   | identifier ';'
     {
-      printf( "HERE W\n" );
-      $$ = generator_build( 4, generator_line_cov( @1.ppfline, ((@1.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@1.last_column - 1), TRUE ),
+      $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
+      $$ = generator_build( 5, $$,
+                            generator_line_cov( @1.ppfline, ((@1.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@1.last_column - 1), TRUE ),
                             $1, strdup_safe( ";" ), "\n" );
+      $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
    /* Immediate SystemVerilog assertions are parsed but not performed -- we will not exclude a block that contains one */
   | K_assert ';'
@@ -2239,29 +2367,31 @@ fork_statement
 begin_end_block
   : begin_end_id
     {
-      func_unit* funit = db_get_tfn_by_position( @1.first_line, @1.first_column );
-      assert( funit != NULL );
-      generator_push_funit( funit );
+      func_unit* funit;
+      if( (funit = db_get_tfn_by_position( @1.first_line, @1.first_column )) != NULL ) {
+        generator_push_funit( funit );
+      }
     }
     block_item_decls_opt statement_list
     {
-      func_unit* funit = db_get_tfn_by_position( @1.first_line, @1.first_column );
-      assert( funit != NULL );
-      if( $1 == NULL ) {
-        char         str[50];
-        char*        back;
-        char*        rest;
-        unsigned int rv;
-        back = strdup_safe( funit->name );
-        rest = strdup_safe( funit->name );
-        scope_extract_back( funit->name, back, rest );
-        rv = snprintf( str, 50, " : %s", back );
-        assert( rv < 50 );
-        $1 = generator_build( 1, strdup_safe( str ) );
-        free_safe( back, (strlen( funit->name ) + 1) );
-        free_safe( rest, (strlen( funit->name ) + 1) );
+      func_unit* funit;
+      if( (funit = db_get_tfn_by_position( @1.first_line, @1.first_column )) != NULL ) {
+        if( $1 == NULL ) {
+          char         str[50];
+          char*        back;
+          char*        rest;
+          unsigned int rv;
+          back = strdup_safe( funit->name );
+          rest = strdup_safe( funit->name );
+          scope_extract_back( funit->name, back, rest );
+          rv = snprintf( str, 50, " : %s", back );
+          assert( rv < 50 );
+          $1 = generator_build( 1, strdup_safe( str ) );
+          free_safe( back, (strlen( funit->name ) + 1) );
+          free_safe( rest, (strlen( funit->name ) + 1) );
+        }
+        generator_pop_funit();
       }
-      generator_pop_funit();
       $$ = generator_build( 5, $1, "\n", generator_inst_id_reg( funit ), $3, $4 );
     }
   | begin_end_id
