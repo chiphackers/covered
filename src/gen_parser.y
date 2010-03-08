@@ -443,7 +443,7 @@ description
     {
       func_unit* funit;
       if( (funit = db_get_tfn_by_position( @3.first_line, @3.first_column )) != NULL ) {
-        generator_create_tmp_regs();
+        // generator_create_tmp_regs();
         generator_push_funit( funit );
       }
     }
@@ -1723,15 +1723,27 @@ module_item
       }
       $$ = generator_build( 3, $1, strdup_safe( "final" ), $3 );
     }
-  | attribute_list_opt K_task automatic_opt IDENTIFIER ';' task_item_list_opt statement_or_null K_endtask
+  | attribute_list_opt K_task automatic_opt IDENTIFIER ';' task_item_list_opt
     {
-      $$ = generator_build( 10, $1, strdup_safe( "task" ), $3, $4, strdup_safe( ";" ), "\n", $6, $7, strdup_safe( "endtask" ), "\n" );
+      func_unit* funit;
+      if( (funit = db_get_tfn_by_position( @4.first_line, @4.first_column )) != NULL ) {
+        generator_push_funit( funit );
+        // generator_create_tmp_regs();
+      }
+    }
+    statement_or_null K_endtask
+    {
+      func_unit* funit;
+      if( (funit = db_get_tfn_by_position( @4.first_line, @4.first_column )) != NULL ) {
+        generator_pop_funit();
+      }
+      $$ = generator_build( 10, $1, strdup_safe( "task" ), $3, $4, strdup_safe( ";" ), "\n", $6, $8, strdup_safe( "endtask" ), "\n" );
     }
   | attribute_list_opt K_function automatic_opt signed_opt range_or_type_opt IDENTIFIER ';'
     function_item_list
     {
       func_unit* funit;
-      if( (funit  = db_get_tfn_by_position( @6.first_line, @6.first_column )) != NULL ) {
+      if( (funit = db_get_tfn_by_position( @6.first_line, @6.first_column )) != NULL ) {
         generator_push_funit( funit );
         generator_create_tmp_regs();
       }
@@ -1742,12 +1754,14 @@ module_item
       func_unit* funit;
       if( (funit = db_get_tfn_by_position( @6.first_line, @6.first_column )) != NULL ) {
         generator_pop_funit();
+        if( (strncmp( $10, "begin ", 6 ) != 0) && ($10[0] != ';') ) {
+          $10 = generator_build( 5, strdup_safe( "begin" ), "\n", $10, strdup_safe( "end" ), "\n" );
+        }
+        $$ = generator_build( 14, strdup_safe( "function" ), $3, $4, $5, $6, strdup_safe( ";" ), "\n", $8,
+                              (generator_is_static_function( funit ) ? generator_inst_id_reg( funit ) : NULL), "\n", generator_tmp_regs(), $10, strdup_safe( "endfunction" ), "\n" );
+      } else {
+        $$ = generator_build( 11, strdup_safe( "function" ), $3, $4, $5, $6, strdup_safe( ";" ), "\n", $8, $10, strdup_safe( "endfunction" ), "\n" );
       }
-      if( (strncmp( $10, "begin ", 6 ) != 0) && ($10[0] != ';') ) {
-        $10 = generator_build( 5, strdup_safe( "begin" ), "\n", $10, strdup_safe( "end" ), "\n" );
-      }
-      $$ = generator_build( 14, strdup_safe( "function" ), $3, $4, $5, $6, strdup_safe( ";" ), "\n", $8,
-                            (generator_is_static_function( funit ) ? generator_inst_id_reg( funit ) : NULL), "\n", generator_tmp_regs(), $10, strdup_safe( "endfunction" ), "\n" );
     }
   | K_generate generate_item_list_opt K_endgenerate
     {

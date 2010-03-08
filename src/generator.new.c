@@ -3949,7 +3949,7 @@ char* generator_build1(
     for( i=0; i<args; i++ ) {
       char* arg = va_arg( ap, char* );
       if( arg != NULL ) {
-        if( arg[0] == '\n' ) {
+        if( strcmp( arg, "\n" ) == 0 ) {
           rv = snprintf( user_msg, USER_MSG_LENGTH, "%2d * \\n", i );
           assert( rv < USER_MSG_LENGTH );
           print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -3974,7 +3974,7 @@ char* generator_build1(
   for( i=0; i<args; i++ ) {
     char* arg = va_arg( ap, char* );
     if( arg != NULL ) {
-      if( arg[0] == '\n' ) {
+      if( strcmp( arg, "\n" ) == 0 ) {
         /* TBD - We may want to represent the string as a string list */
         len += 1;
       } else {
@@ -3996,7 +3996,7 @@ char* generator_build1(
     for( i=0; i<args; i++ ) {
       char* arg = va_arg( ap, char* );
       if( arg != NULL ) {
-        if( arg[0] == '\n' ) {
+        if( strcmp( arg, "\n" ) == 0 ) {
           /* TBD - We may want to represent the string as a string list */
           strcat( str, "\n" );
         } else {
