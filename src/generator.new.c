@@ -71,6 +71,14 @@ struct fname_link_s {
   fname_link* next;        /*!< Pointer to next filename list */
 };
 
+struct funit_str_s;
+typedef struct funit_str_s funit_str;
+struct funit_str_s {
+  char*      str;    /*!< String containing inserted temporary registers for the given functional unit */
+  func_unit* funit;  /*!< Functional unit that will contain the given string */
+  funit_str* next;   /*!< Pointer to the next element in the funit_str list */
+};
+
 struct replace_info_s;
 typedef struct replace_info_s replace_info;
 struct replace_info_s {
@@ -89,7 +97,7 @@ struct reg_insert_s {
 /*!
  Pointer to the top of the temporary register string stack.
 */
-str_link* tmp_regs_top = NULL;
+funit_str* tmp_regs_top = NULL;
 
 /*!
  Pointer to functional unit stack.
@@ -226,7 +234,9 @@ static char* generator_get_relative_scope(
   char* relative_scope;
   int   i;
 
-  scope_extract_scope( child->name, curr_funit->name, back );
+  assert( tmp_regs_top != NULL );
+  
+  scope_extract_scope( child->name, tmp_regs_top->funit->name, back );
   relative_scope = strdup_safe( back );
 
 #ifdef OBSOLETE
@@ -4021,15 +4031,15 @@ char* generator_build1(
 */
 char* generator_tmp_regs() { PROFILE(GENERATOR_TMP_REGS);
 
-  char*     str;
-  str_link* strl = tmp_regs_top;
+  char*      str;
+  funit_str* fstr = tmp_regs_top;
 
   /* Grab the string connected to the tail */
   str = tmp_regs_top->str;
   
   /* Adjust the tail and delete the old one */
   tmp_regs_top = tmp_regs_top->next;
-  free_safe( strl, sizeof( str_link ) );
+  free_safe( fstr, sizeof( funit_str ) );
   
   PROFILE_END;
 
@@ -4042,15 +4052,16 @@ char* generator_tmp_regs() { PROFILE(GENERATOR_TMP_REGS);
 */
 void generator_create_tmp_regs() { PROFILE(GENERATOR_CREATE_TMP_REGS);
 
-  str_link* strl;
+  funit_str* fstr;
 
   /* Allocate the memory and initialize */
-  strl       = (str_link*)malloc_safe( sizeof( str_link ) );
-  strl->str  = NULL;
-  strl->next = tmp_regs_top;
+  fstr        = (funit_str*)malloc_safe( sizeof( funit_str ) );
+  fstr->str   = NULL;
+  fstr->funit = funit_top->funit;
+  fstr->next  = tmp_regs_top;
 
   /* Point the top of the stack to the new string link */
-  tmp_regs_top = strl;
+  tmp_regs_top = fstr;
 
   PROFILE_END;
 

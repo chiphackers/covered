@@ -14,7 +14,7 @@ reg a;
 initial begin
 	`DELAY
 	a = 1'b0;
-	#10;
+	#5;
 	a = 1'b1;
 end
 

@@ -461,8 +461,8 @@ description
     {
       func_unit* funit;
       if( ((funit = db_get_tfn_by_position( @5.first_line, @5.first_column )) != NULL) && generator_is_static_function( funit ) ) {
-        generator_create_tmp_regs();
         generator_push_funit( funit );
+        generator_create_tmp_regs();
       }
     }
     statement
@@ -498,8 +498,8 @@ module
   : attribute_list_opt module_start IDENTIFIER 
     {
       db_find_and_set_curr_funit( $3, FUNIT_MODULE );
-      generator_init_funit( db_get_curr_funit() );
       generator_push_funit( db_get_curr_funit() );
+      generator_init_funit( db_get_curr_funit() );
     }
     module_parameter_port_list_opt
     module_port_list_opt ';'
@@ -2148,15 +2148,29 @@ statement
     }
   | K_for '(' for_initialization ';' for_condition ';' passign ')' statement
     {
+      char         str[50];
+      char*        back;
+      char*        rest;
+      unsigned int rv;
+      func_unit*   funit = db_get_tfn_by_position( @1.first_line, @1.first_column );
+      assert( funit != NULL );
+      back = strdup_safe( funit->name );
+      rest = strdup_safe( funit->name );
+      scope_extract_back( funit->name, back, rest );
+      rv = snprintf( str, 50, " : %s", back );
+      assert( rv < 50 );
+      free_safe( back, (strlen( funit->name ) + 1) );
+      free_safe( rest, (strlen( funit->name ) + 1) );
       if( (strncmp( $9, "begin ", 6 ) != 0) && ($9[0] != ';') ) {
         $9 = generator_build( 5, strdup_safe( "begin" ), "\n", $9, strdup_safe( "end" ), "\n" );
       }
       $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
-      $$ = generator_build( 14, $$, generator_comb_cov( @5.ppfline, @5.first_column, FALSE, TRUE, FALSE ),
+      $$ = generator_build( 20, $$, generator_comb_cov( @5.ppfline, @5.first_column, FALSE, TRUE, FALSE ),
+                            strdup_safe( "begin" ), strdup_safe( str ), "\n", generator_inst_id_reg( funit ),
                             strdup_safe( "for(" ), $3, strdup_safe( ";" ), $5, strdup_safe( ";" ), $7, strdup_safe( ")" ), "\n", $9,
                             generator_line_cov( @7.ppfline, @7.pplline, @1.first_column, (@1.last_column - 1), TRUE ),
                             generator_comb_cov( @7.ppfline, @7.first_column, FALSE, TRUE, FALSE ),
-                            generator_comb_cov( @5.ppfline, @5.first_column, FALSE, TRUE, FALSE ) );
+                            generator_comb_cov( @5.ppfline, @5.first_column, FALSE, TRUE, FALSE ), strdup_safe( "end" ), "\n" );
       $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
   | K_for '(' for_initialization ';' for_condition ';' error ')' statement

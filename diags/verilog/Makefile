@@ -213,9 +213,7 @@ else
 endif
 else
 ifdef INLINE
-	@./convert_cfg inline 0 $(VERILATOR_SET) $(DIAG).cfg
-	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
-	@./convert_cfg $(CFG_CMD) 1 $(VERILATOR_SET) $(DIAG).cfg
+	rm -rf covered
 ifeq ($(dir $(TOP)),covered/verilog/)
 ifndef LXT
 ifdef USE_VERILATOR
@@ -235,6 +233,9 @@ ifdef USE_VERILATOR
 endif
 endif
 endif
+	@./convert_cfg inline 0 $(VERILATOR_SET) $(DIAG).cfg
+	$(COVERED) $(COVERED_GFLAG) $(COVERED_SCORE_GFLAG) score -f $(DIAG).cfg -D DUMP $(CHECKMEM)
+	@./convert_cfg $(CFG_CMD) 1 $(VERILATOR_SET) $(DIAG).cfg
 else
 	@./convert_cfg $(CFG_CMD) 0 $(VERILATOR_SET) $(DIAG).cfg
 endif
