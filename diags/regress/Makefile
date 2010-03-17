@@ -81,7 +81,8 @@ DIAGS1        = add1              aedge1            aedge1.1          afunc1    
                 exclude12.3       exclude12.4       exclude12.5       exclude12.6 \
                 exclude13         exclude14         expand1           expand2           expand3 \
                 expand4           expand4.1         expand4.2         expand4.3         expand4.4 \
-                exponent1         final1            fdisplay1         finish1           fmonitor1 \
+                expand6           expand6.1         expand6.2         expand6.3         exponent1 \
+                final1            fdisplay1         finish1           fmonitor1 \
                 for1              for2              for3              for5              for5.1 \
                 for5.2            for5.3            for5.4            for5.5            for5.6 \
                 for5.8            for5.9            for5.10           for6              forever1 \

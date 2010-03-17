@@ -1061,7 +1061,7 @@ profiler profiles[NUM_PROFILES] = {
   {"vcd_parse_sim_real", NULL, 0, 0, 0, TRUE},
   {"vcd_parse_sim", NULL, 0, 0, 0, TRUE},
   {"vcd_parse", NULL, 0, 0, 0, TRUE},
-  {"vector_init", NULL, 0, 0, 0, TRUE},
+  {"vector_init_ulong", NULL, 0, 0, 0, TRUE},
   {"vector_int_r64", NULL, 0, 0, 0, TRUE},
   {"vector_int_r32", NULL, 0, 0, 0, TRUE},
   {"vector_create", NULL, 0, 0, 0, TRUE},

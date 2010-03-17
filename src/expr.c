@@ -586,7 +586,7 @@ static void expression_create_value(
   /* Otherwise, create a ulong vector */
   } else {
 
-    if( (data == TRUE) || ((exp->suppl.part.gen_expr == 1) && (width > 0)) ) {
+    if( ((data == TRUE) || (exp->suppl.part.gen_expr == 1)) && (width > 0) ) {
 
       vector* vec = NULL;
 
@@ -1548,7 +1548,7 @@ void expression_db_write(
 
   if( ESUPPL_OWNS_VEC( expr->suppl ) ) {
     fprintf( file, " " );
-    if( parse_mode && EXPR_OWNS_VEC( expr->op ) && (expr->value->suppl.part.owns_data == 0) ) {
+    if( parse_mode && EXPR_OWNS_VEC( expr->op ) && (expr->value->suppl.part.owns_data == 0) && (expr->value->width > 0) ) {
       expr->value->suppl.part.owns_data = 1;
     }
     vector_db_write( expr->value, file, (expr->op == EXP_OP_STATIC), FALSE );
@@ -4361,12 +4361,18 @@ bool expression_op_func__expand(
   /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__EXPAND);
 
-  /* Perform expansion operation */
-  bool retval = vector_op_expand( expr->value, expr->left->value, expr->right->value );
+  bool retval = FALSE;
 
-  /* Gather coverage information */
-  expression_set_tf_preclear( expr, retval );
-  vector_set_unary_evals( expr->value );
+  if( expr->value->width > 0 ) {
+
+    /* Perform expansion operation */
+    retval = vector_op_expand( expr->value, expr->left->value, expr->right->value );
+
+    /* Gather coverage information */
+    expression_set_tf_preclear( expr, retval );
+    vector_set_unary_evals( expr->value );
+
+  }
 
   PROFILE_END;
 
@@ -4385,12 +4391,18 @@ bool expression_op_func__list(
   /*@unused@*/ const sim_time* time   /*!< Pointer to current simulation time */
 ) { PROFILE(EXPRESSION_OP_FUNC__LIST);
 
-  /* Perform list operation */
-  bool retval = vector_op_list( expr->value, expr->left->value, expr->right->value );
+  bool retval = FALSE;
 
-  /* Gather coverage information */
-  expression_set_tf_preclear( expr, retval );
-  vector_set_unary_evals( expr->value );
+  if( expr->value->width > 0 ) {
+
+    /* Perform list operation */
+    retval = vector_op_list( expr->value, expr->left->value, expr->right->value );
+
+    /* Gather coverage information */
+    expression_set_tf_preclear( expr, retval );
+    vector_set_unary_evals( expr->value );
+
+  }
 
   PROFILE_END;
 

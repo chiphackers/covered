@@ -75,13 +75,13 @@ void vector_init_ulong(
   bool    owns_value,  /*!< Set to TRUE if this vector is responsible for deallocating the given value array */
   int     width,       /*!< Bit width of specified vector */
   int     type         /*!< Type of vector to initialize this to */
-) { PROFILE(VECTOR_INIT);
+) { PROFILE(VECTOR_INIT_ULONG);
 
   vec->width                = width;
   vec->suppl.all            = 0;
   vec->suppl.part.type      = type;
   vec->suppl.part.data_type = VDATA_UL;
-  vec->suppl.part.owns_data = owns_value;
+  vec->suppl.part.owns_data = owns_value & (width > 0);
   vec->value.ul             = value;
 
   if( value != NULL ) {
@@ -201,15 +201,13 @@ vector* vector_create(
 
   vector* new_vec;  /* Pointer to newly created vector */
 
-  assert( width > 0 );
-
   new_vec = (vector*)malloc_safe( sizeof( vector ) );
 
   switch( data_type ) {
     case VDATA_UL :
       {
         ulong** value = NULL;
-        if( data == TRUE ) {
+        if( (data == TRUE) && (width > 0) ) {
           int          num  = vector_type_sizes[type];
           unsigned int size = UL_SIZE(width);
           unsigned int i;
@@ -376,7 +374,6 @@ void vector_db_write(
   uint8 mask;   /* Mask value for vector values */
 
   assert( vec != NULL );
-  assert( vec->width > 0 );
 
   /* Calculate vector data mask */
   mask = write_data ? 0xff : 0xfc;
@@ -398,6 +395,8 @@ void vector_db_write(
 
   /* Only write our data if we own it */
   if( vec->suppl.part.owns_data == 1 ) {
+
+    assert( vec->width > 0 );
 
     /* Output value based on data type */
     switch( vec->suppl.part.data_type ) {
@@ -5244,7 +5243,7 @@ bool vector_op_list(
         unsigned int i;
         unsigned int pos    = right->width;
         unsigned int lwidth = left->width;
-        unsigned int rsize  = UL_SIZE( pos );
+        unsigned int rsize  = (pos == 0) ? 0 : UL_SIZE( pos );
 
         /* Load right vector directly */
         for( i=0; i<rsize; i++ ) {
@@ -5360,7 +5359,7 @@ void vector_dealloc_value(
 
   switch( vec->suppl.part.data_type ) {
     case VDATA_UL :
-      {
+      if( vec->width > 0 ) {
         unsigned int i;
         unsigned int size = UL_SIZE( vec->width );
 
