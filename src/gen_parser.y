@@ -2165,12 +2165,14 @@ statement
         $9 = generator_build( 5, strdup_safe( "begin" ), "\n", $9, strdup_safe( "end" ), "\n" );
       }
       $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
+      generator_push_funit( funit );
       $$ = generator_build( 20, $$, generator_comb_cov( @5.ppfline, @5.first_column, FALSE, TRUE, FALSE ),
                             strdup_safe( "begin" ), strdup_safe( str ), "\n", generator_inst_id_reg( funit ),
                             strdup_safe( "for(" ), $3, strdup_safe( ";" ), $5, strdup_safe( ";" ), $7, strdup_safe( ")" ), "\n", $9,
                             generator_line_cov( @7.ppfline, @7.pplline, @1.first_column, (@1.last_column - 1), TRUE ),
                             generator_comb_cov( @7.ppfline, @7.first_column, FALSE, TRUE, FALSE ),
                             generator_comb_cov( @5.ppfline, @5.first_column, FALSE, TRUE, FALSE ), strdup_safe( "end" ), "\n" );
+      generator_pop_funit();
       $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
   | K_for '(' for_initialization ';' for_condition ';' error ')' statement

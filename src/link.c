@@ -147,7 +147,7 @@ void exp_link_add(
 ) { PROFILE(EXP_LINK_ADD);
 
   /* Allocate the array, set the expression and bump the size */
-  *exps                  = (expression**)realloc_safe( *exps, (sizeof( expression* ) * (*exp_size)), (sizeof( expression* ) * (*exp_size + 1)) );
+  *exps                  = (expression**)realloc_safe_nolimit( *exps, (sizeof( expression* ) * (*exp_size)), (sizeof( expression* ) * (*exp_size + 1)) );
   (*exps)[(*exp_size)++] = expr;
 
   PROFILE_END;
@@ -166,7 +166,7 @@ void sig_link_add(
 ) { PROFILE(SIG_LINK_ADD);
 
   /* Add a new elements to the array */
-  *sigs              = (vsignal**)realloc_safe( *sigs, (sizeof( vsignal* ) * (*sig_size)), (sizeof( vsignal* ) * (*sig_size + 1)) );
+  *sigs              = (vsignal**)realloc_safe_nolimit( *sigs, (sizeof( vsignal* ) * (*sig_size)), (sizeof( vsignal* ) * (*sig_size + 1)) );
   (*sigs)[*sig_size] = sig;
 
   if( !rm_sig ) {
@@ -194,7 +194,7 @@ void fsm_link_add(
 ) { PROFILE(FSM_LINK_ADD);
 
   /* Allocate new array */
-  *fsms                  = (fsm**)realloc_safe( *fsms, (sizeof( fsm* ) * (*fsm_size)), (sizeof( fsm* ) * (*fsm_size + 1)) );
+  *fsms                  = (fsm**)realloc_safe_nolimit( *fsms, (sizeof( fsm* ) * (*fsm_size)), (sizeof( fsm* ) * (*fsm_size + 1)) );
   (*fsms)[(*fsm_size)++] = table;
 
   PROFILE_END;
