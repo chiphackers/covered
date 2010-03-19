@@ -872,8 +872,8 @@ static void codegen_gen_expr1(
                                  NULL, 0, NULL, NULL );
             break;
           case EXP_OP_EXPAND   :
-            codegen_create_expr( code, code_depth, expr->line, "{", left_code, left_code_depth, expr->left, "{",
-                                 right_code, right_code_depth, expr->right, "}}" );
+            codegen_create_expr( code, code_depth, expr->line, (inline_exp ? "{1'b0,{" : "{"), left_code, left_code_depth, expr->left, "{",
+                                 right_code, right_code_depth, expr->right, (inline_exp ? "}}}" : "}}") );
             break;
           case EXP_OP_LIST     :
           case EXP_OP_PLIST    :

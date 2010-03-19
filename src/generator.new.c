@@ -2005,7 +2005,7 @@ static char* generator_gen_size(
         lexp = generator_mbit_gen_value( exp->left, funit, &lnumber );
         rexp = generator_gen_size( exp->right, funit, &rnumber );
         if( (lexp == NULL) && (rexp == NULL) ) {
-          *number = lnumber * rnumber;
+          *number = (lnumber * rnumber) + 1;
         } else {
           unsigned int slen;
           if( lexp == NULL ) {
@@ -2013,9 +2013,9 @@ static char* generator_gen_size(
           } else if( rexp == NULL ) {
             rexp = convert_int_to_str( rnumber );
           }
-          slen = 1 + strlen( lexp ) + 3 + strlen( rexp ) + 2;
+          slen = 3 + strlen( lexp ) + 3 + strlen( rexp ) + 6;
           size = (char*)malloc_safe( slen );
-          rv   = snprintf( size, slen, "(%s)*(%s)", lexp, rexp );
+          rv   = snprintf( size, slen, "(((%s)*(%s))+1)", lexp, rexp );
           assert( rv < slen );
           free_safe( lexp, (strlen( lexp ) + 1) );
           free_safe( rexp, (strlen( rexp ) + 1) );
@@ -2252,222 +2252,6 @@ static char* generator_create_lhs(
   return( name );
 
 }
-
-#ifdef OBSOLETE
-/*!
- Concatenates the given string values and appends them to the working code buffer.
-*/
-static void generator_concat_code(
-               char* lhs,     /*!< LHS string */
-  /*@null@*/   char* before,  /*!< Optional string that precedes the left subexpression string array */
-  /*@null@*/   char* lstr,    /*!< String array from left subexpression */
-  /*@null@*/   char* middle,  /*!< Optional string that is placed in-between the left and right subexpression array strings */
-  /*@null@*/   char* rstr,    /*!< String array from right subexpression */
-  /*@null@*/   char* after,   /*!< Optional string that is placed after the right subpexression string array */
-  /*@unused@*/ bool  net      /*!< If TRUE, specifies that this subexpression exists in net logic */
-) { PROFILE(GENERATOR_CONCAT_CODE);
-
-  str_link*    tmp_head = NULL;
-  str_link*    tmp_tail = NULL;
-  char         str[4096];
-  unsigned int i;
-  unsigned int rv;
-
-  /* Prepend the coverage assignment to the working buffer */
-  rv = snprintf( str, 4096, "%s = ", lhs );
-  assert( rv < 4096 );
-  if( before != NULL ) {
-    if( (strlen( str ) + strlen( before )) < 4095 ) {
-      strcat( str, before );
-    } else {
-      (void)str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
-      strcpy( str, before );
-    }
-  }
-  if( lstr != NULL ) {
-    if( (strlen( str ) + strlen( lstr )) < 4095 ) {
-      strcat( str, lstr );
-    } else {
-      (void)str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
-      if( strlen( lstr ) < 4095 ) {
-        strcpy( str, lstr );
-      } else {
-        (void)str_link_add( strdup_safe( lstr ), &tmp_head, &tmp_tail );
-        str[0] = '\0';
-      }
-    }
-  }
-  if( middle != NULL ) {
-    if( (strlen( str ) + strlen( middle )) < 4095 ) {
-      strcat( str, middle );
-    } else {
-      (void)str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
-      strcpy( str, middle );
-    }
-  }
-  if( rstr != NULL ) {
-    if( (strlen( str ) + strlen( rstr )) < 4095 ) {
-      strcat( str, rstr );
-    } else {
-      (void)str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
-      if( strlen( rstr ) < 4095 ) {
-        strcpy( str, lstr );
-      } else {
-        (void)str_link_add( strdup_safe( rstr ), &tmp_head, &tmp_tail );
-        str[0] = '\0';
-      }
-    }
-  }
-  if( after != NULL ) {
-    if( (strlen( str ) + strlen( after )) < 4095 ) {
-      strcat( str, after );
-    } else {
-      (void)str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
-      strcpy( str, after );
-    }
-  }
-  if( (strlen( str ) + 1) < 4095 ) {
-    strcat( str, ";" );
-  } else {
-    (void)str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
-    strcpy( str, ";" );
-  }
-  (void)str_link_add( strdup_safe( str ), &tmp_head, &tmp_tail );
-      
-  /* Prepend to the working list */
-  if( work_head == NULL ) {
-    work_head = work_tail = tmp_head;
-  } else {
-    tmp_tail->next = work_head;
-    work_head      = tmp_head;
-  }
-
-  PROFILE_END;
-
-}
-#endif
-
-#ifdef OBSOLETE
-/*!
- Generates the combinational logic temporary expression string for the given expression.
-*/
-static void generator_create_exp(
-  expression* exp,   /*!< Pointer to the expression to generation the expression for */
-  char*       lhs,   /*!< String for left-hand-side of temporary expression */
-  char*       lstr,  /*!< String for left side of RHS expression */
-  char*       rstr,  /*!< String for right side of RHS expression */
-  bool        net    /*!< Set to TRUE if we are generating for a net; set to FALSE for a register */
-) { PROFILE(GENERATOR_CREATE_EXP);
-
-  switch( exp->op ) {
-    case EXP_OP_XOR        :  generator_concat_code( lhs, NULL, lstr, " ^ ", rstr, NULL, net );  break;
-    case EXP_OP_MULTIPLY   :  generator_concat_code( lhs, NULL, lstr, " * ", rstr, NULL, net );  break;
-    case EXP_OP_DIVIDE     :  generator_concat_code( lhs, NULL, lstr, " / ", rstr, NULL, net );  break;
-    case EXP_OP_MOD        :  generator_concat_code( lhs, NULL, lstr, " % ", rstr, NULL, net );  break;
-    case EXP_OP_ADD        :  generator_concat_code( lhs, NULL, lstr, " + ", rstr, NULL, net );  break;
-    case EXP_OP_SUBTRACT   :  generator_concat_code( lhs, NULL, lstr, " - ", rstr, NULL, net );  break;
-    case EXP_OP_AND        :  generator_concat_code( lhs, NULL, lstr, " & ", rstr, NULL, net );  break;
-    case EXP_OP_OR         :  generator_concat_code( lhs, NULL, lstr, " | ", rstr, NULL, net );  break;
-    case EXP_OP_NAND       :  generator_concat_code( lhs, NULL, lstr, " ~& ", rstr, NULL, net );  break;
-    case EXP_OP_NOR        :  generator_concat_code( lhs, NULL, lstr, " ~| ", rstr, NULL, net );  break;
-    case EXP_OP_NXOR       :  generator_concat_code( lhs, NULL, lstr, " ~^ ", rstr, NULL, net );  break;
-    case EXP_OP_LT         :  generator_concat_code( lhs, NULL, lstr, " < ", rstr, NULL, net );  break;
-    case EXP_OP_GT         :  generator_concat_code( lhs, NULL, lstr, " > ", rstr, NULL, net );  break;
-    case EXP_OP_LSHIFT     :  generator_concat_code( lhs, NULL, lstr, " << ", rstr, NULL, net );  break;
-    case EXP_OP_RSHIFT     :  generator_concat_code( lhs, NULL, lstr, " >> ", rstr, NULL, net );  break;
-    case EXP_OP_EQ         :  generator_concat_code( lhs, NULL, lstr, " == ", rstr, NULL, net );  break;
-    case EXP_OP_CEQ        :  generator_concat_code( lhs, NULL, lstr, " === ", rstr, NULL, net );  break;
-    case EXP_OP_LE         :  generator_concat_code( lhs, NULL, lstr, " <= ", rstr, NULL, net );  break;
-    case EXP_OP_GE         :  generator_concat_code( lhs, NULL, lstr, " >= ", rstr, NULL, net );  break;
-    case EXP_OP_NE         :  generator_concat_code( lhs, NULL, lstr, " != ", rstr, NULL, net );  break;
-    case EXP_OP_CNE        :  generator_concat_code( lhs, NULL, lstr, " !== ", rstr, NULL, net );  break;
-    case EXP_OP_LOR        :  generator_concat_code( lhs, NULL, lstr, " || ", rstr, NULL, net );  break;
-    case EXP_OP_LAND       :  generator_concat_code( lhs, NULL, lstr, " && ", rstr, NULL, net );  break;
-    case EXP_OP_UINV       :  generator_concat_code( lhs, NULL, NULL, "~", rstr, NULL, net );  break;
-    case EXP_OP_UAND       :  generator_concat_code( lhs, NULL, NULL, "&", rstr, NULL, net );  break;
-    case EXP_OP_UNOT       :  generator_concat_code( lhs, NULL, NULL, "!", rstr, NULL, net );  break;
-    case EXP_OP_UOR        :  generator_concat_code( lhs, NULL, NULL, "|", rstr, NULL, net );  break;
-    case EXP_OP_UXOR       :  generator_concat_code( lhs, NULL, NULL, "^", rstr, NULL, net );  break;
-    case EXP_OP_UNAND      :  generator_concat_code( lhs, NULL, NULL, "~&", rstr, NULL, net );  break;
-    case EXP_OP_UNOR       :  generator_concat_code( lhs, NULL, NULL, "~|", rstr, NULL, net );  break;
-    case EXP_OP_UNXOR      :  generator_concat_code( lhs, NULL, NULL, "~^", rstr, NULL, net );  break;
-    case EXP_OP_ALSHIFT    :  generator_concat_code( lhs, NULL, lstr, " <<< ", rstr, NULL, net );  break;
-    case EXP_OP_ARSHIFT    :  generator_concat_code( lhs, NULL, lstr, " >>> ", rstr, NULL, net );  break;
-    case EXP_OP_EXPONENT   :  generator_concat_code( lhs, NULL, lstr, " ** ", rstr, NULL, net );  break;
-    case EXP_OP_NEGATE     :  generator_concat_code( lhs, NULL, NULL, "-", rstr, NULL, net );  break;
-    case EXP_OP_CASE       :  generator_concat_code( lhs, NULL, lstr, " == ", rstr, NULL, net );  break;
-    case EXP_OP_CASEX      :  generator_concat_code( lhs, NULL, lstr, " === ", rstr, NULL, net );  break;
-    case EXP_OP_CASEZ      :  generator_concat_code( lhs, NULL, lstr, " === ", rstr, NULL, net );  break;  /* TBD */
-    case EXP_OP_CONCAT     :  generator_concat_code( lhs, NULL, NULL, "{", rstr, "}", net );  break;
-    case EXP_OP_EXPAND     :  generator_concat_code( lhs, "{", lstr, "{", rstr, "}}", net );  break;
-    case EXP_OP_LIST       :  generator_concat_code( lhs, NULL, lstr, ",", rstr, NULL, net );  break;
-    case EXP_OP_COND       :  generator_concat_code( lhs, NULL, lstr, " ? ", rstr, NULL, net );  break;
-    case EXP_OP_COND_SEL   :  generator_concat_code( lhs, NULL, lstr, " : ", rstr, NULL, net );  break;
-    case EXP_OP_SIG        :
-    case EXP_OP_PARAM      :  generator_concat_code( lhs, exp->name, NULL, NULL, NULL, NULL, net );  break;
-    case EXP_OP_DIM        :  generator_concat_code( lhs, NULL, lstr, NULL, rstr, NULL, net );  break;
-    case EXP_OP_FUNC_CALL  :
-      {
-        unsigned int slen = strlen( exp->name ) + 2;
-        char*        str  = (char*)malloc_safe( slen );
-        unsigned int rv   = snprintf( str, slen, "%s(", exp->name );
-        assert( rv < slen );
-        generator_concat_code( lhs, str, lstr, ")", NULL, NULL, net );
-        free_safe( str, slen );
-      }
-      break;
-    case EXP_OP_SBIT_SEL   :
-    case EXP_OP_PARAM_SBIT :
-      {
-        unsigned int slen = strlen( exp->name ) + 2;
-        char*        str  = (char*)malloc_safe( slen );
-        unsigned int rv   = snprintf( str, slen, "%s[", exp->name );
-        assert( rv < slen );
-        generator_concat_code( lhs, str, lstr, "]", NULL, NULL, net );
-        free_safe( str, slen );
-      }
-      break;
-    case EXP_OP_MBIT_SEL   :
-    case EXP_OP_PARAM_MBIT :
-      {
-        unsigned int slen = strlen( exp->name ) + 2;
-        char*        str  = (char*)malloc_safe( slen );
-        unsigned int rv   = snprintf( str, slen, "%s[", exp->name );
-        assert( rv < slen );
-        generator_concat_code( lhs, str, lstr, ":", rstr, "]", net );
-        free_safe( str, slen );
-      }
-      break;
-    case EXP_OP_MBIT_POS       :
-    case EXP_OP_PARAM_MBIT_POS :
-      {
-        unsigned int slen = strlen( exp->name ) + 2;
-        char*        str  = (char*)malloc_safe( slen );
-        unsigned int rv   = snprintf( str, slen, "%s[", exp->name );
-        assert( rv < slen );
-        generator_concat_code( lhs, str, lstr, "+:", rstr, "]", net );
-        free_safe( str, slen );
-      }
-      break;
-    case EXP_OP_MBIT_NEG       :
-    case EXP_OP_PARAM_MBIT_NEG :
-      { 
-        unsigned int slen = strlen( exp->name ) + 2;
-        char*        str  = (char*)malloc_safe( slen );
-        unsigned int rv   = snprintf( str, slen, "%s[", exp->name );
-        assert( rv < slen );
-        generator_concat_code( lhs, str, lstr, "-:", rstr, "]", net );
-        free_safe( str, slen );
-      }
-      break;
-    default :
-      break;
-  }
-
-  PROFILE_END;
-
-}
-#endif
 
 /*!
  \return Returns the string from the given subexpression.

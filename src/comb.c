@@ -438,7 +438,8 @@ void combination_get_tree_stats(
                   }
                 }
               } else {
-                if( (info_suppl.part.scored_comb == 1) && rpt_comb ) {
+                if( (info_suppl.part.scored_comb == 1) && rpt_comb &&
+                    ((exp->op != EXP_OP_EXPAND) || (exp->value->width > 0)) ) {
                   if( report_bitwise ) {
                     *total  = *total + (2 * exp->value->width);
                     num_hit = vector_get_eval_ab_count( exp->value );
