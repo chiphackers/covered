@@ -185,7 +185,8 @@ int yydebug = 1;
 %}
 
 %union {
-  char* text;
+  char*    text;
+  str_cov* text_cov;
 };
 
 %token <text> IDENTIFIER TYPEDEF_IDENTIFIER PATHPULSE_IDENTIFIER DEC_NUMBER BASE_NUMBER REALTIME STRING IGNORE SYSCALL
@@ -240,43 +241,42 @@ int yydebug = 1;
 
 %token KK_attribute
 
-%type <text> number
-%type <text> automatic_opt block_item_decls_opt
-%type <text> net_type net_type_sign_range_opt var_type data_type_opt
-%type <text> identifier begin_end_id
-%type <text> static_expr static_expr_primary static_expr_port_list
-%type <text> expr_primary expression_list expression expression_port_list expression_systask_list
-%type <text> lavalue lpvalue
-%type <text> event_control event_expression_list event_expression
-%type <text> delay_value delay_value_simple
-%type <text> delay1 delay3 delay3_opt
-%type <text> generate_passign index_expr single_index_expr
-%type <text> statement statement_list statement_or_null for_condition
-%type <text> if_statement_error
-%type <text> passign for_initialization
-%type <text> expression_assignment_list
-%type <text> gate_instance gate_instance_list list_of_names
-%type <text> begin_end_block fork_statement
-%type <text> generate_item generate_item_list generate_item_list_opt
-%type <text> case_items case_item case_body
-%type <text> generate_case_items generate_case_item
-%type <text> static_unary_op unary_op
-%type <text> pre_op_and_assign_op post_op_and_assign_op op_and_assign_op
-%type <text> if_body
-%type <text> gen_if_body
-%type <text> attribute_list_opt attribute_list attribute source_file description module module_start module_parameter_port_list_opt module_parameter_port_list
-%type <text> module_port_list_opt list_of_port_declarations port_declaration udp_primitive typedef_decl signed_opt range_opt list_of_variables
-%type <text> net_decl_assigns drive_strength charge_strength_opt gatetype dr_strength1 dr_strength0 block_item_decl task_item_list_opt
-%type <text> range_or_type_opt function_item_list enumeration module_item_list_opt parameter_assign list_of_ports port_type port_opt port port_reference
-%type <text> port_reference_list range udp_port_list udp_port_decls udp_init_opt udp_body udp_port_decl udp_initial udp_entry_list
-%type <text> udp_comb_entry_list udp_sequ_entry_list udp_comb_entry udp_input_list udp_output_sym udp_input_sym udp_sequ_entry module_item module_item_list
-%type <text> register_variable_list defparam_assign_list parameter_value_opt drive_strength_opt assign_list specify_item_list struct_union
-%type <text> integer_vector_type data_type integer_atom_type struct_union_member_list data_type_or_void cond_specifier_opt block_item_decls unsigned_opt
-%type <text> parameter_assign_decl localparam_assign_decl assign register_variable task_item_list task_item net_decl_assign charge_strength defparam_assign
-%type <text> parameter_value_byname_list parameter_value_byname port_name_list function_item parameter_assign_list localparam_assign_list localparam_assign
-%type <text> port_name specify_item specparam_list specify_simple_path_decl specify_edge_path_decl spec_reference_event spec_notifier_opt specparam
-%type <text> specify_simple_path specify_delay_value_list specify_path_identifiers spec_polarity spec_notifier specify_edge_path polarity_operator
-%type <text> enum_var_type_range_opt enum_variable_list enum_variable
+%type <text>     number
+%type <text>     automatic_opt block_item_decls_opt
+%type <text>     net_type net_type_sign_range_opt var_type data_type_opt
+%type <text>     identifier begin_end_id
+%type <text>     static_expr static_expr_primary static_expr_port_list
+%type <text>     expr_primary expression_list expression expression_port_list expression_systask_list
+%type <text>     lavalue lpvalue
+%type <text>     event_control event_expression_list event_expression
+%type <text>     delay_value delay_value_simple
+%type <text>     delay1 delay3 delay3_opt
+%type <text>     generate_passign index_expr single_index_expr
+%type <text>     statement statement_list statement_or_null
+%type <text>     if_statement_error
+%type <text_cov> passign for_initialization for_condition expression_assignment_list
+%type <text>     gate_instance gate_instance_list list_of_names
+%type <text>     begin_end_block fork_statement
+%type <text>     generate_item generate_item_list generate_item_list_opt
+%type <text>     case_items case_item case_body
+%type <text>     generate_case_items generate_case_item
+%type <text>     static_unary_op unary_op
+%type <text>     pre_op_and_assign_op post_op_and_assign_op op_and_assign_op
+%type <text>     if_body
+%type <text>     gen_if_body
+%type <text>     attribute_list_opt attribute_list attribute source_file description module module_start module_parameter_port_list_opt module_parameter_port_list
+%type <text>     module_port_list_opt list_of_port_declarations port_declaration udp_primitive typedef_decl signed_opt range_opt list_of_variables
+%type <text>     net_decl_assigns drive_strength charge_strength_opt gatetype dr_strength1 dr_strength0 block_item_decl task_item_list_opt
+%type <text>     range_or_type_opt function_item_list enumeration module_item_list_opt parameter_assign list_of_ports port_type port_opt port port_reference
+%type <text>     port_reference_list range udp_port_list udp_port_decls udp_init_opt udp_body udp_port_decl udp_initial udp_entry_list
+%type <text>     udp_comb_entry_list udp_sequ_entry_list udp_comb_entry udp_input_list udp_output_sym udp_input_sym udp_sequ_entry module_item module_item_list
+%type <text>     register_variable_list defparam_assign_list parameter_value_opt drive_strength_opt assign_list specify_item_list struct_union
+%type <text>     integer_vector_type data_type integer_atom_type struct_union_member_list data_type_or_void cond_specifier_opt block_item_decls unsigned_opt
+%type <text>     parameter_assign_decl localparam_assign_decl assign register_variable task_item_list task_item net_decl_assign charge_strength defparam_assign
+%type <text>     parameter_value_byname_list parameter_value_byname port_name_list function_item parameter_assign_list localparam_assign_list localparam_assign
+%type <text>     port_name specify_item specparam_list specify_simple_path_decl specify_edge_path_decl spec_reference_event spec_notifier_opt specparam
+%type <text>     specify_simple_path specify_delay_value_list specify_path_identifiers spec_polarity spec_notifier specify_edge_path polarity_operator
+%type <text>     enum_var_type_range_opt enum_variable_list enum_variable
 
 %token K_TAND
 %right '?' ':'
@@ -1856,7 +1856,7 @@ for_initialization
 for_condition
   : expression
     {
-      $$ = generator_build( 2, generator_line_cov( @1.ppfline, ((@1.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@1.last_column - 1), TRUE ), $1 );
+      $$ = generator_build2( generator_line_cov( @1.ppfline, ((@1.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@1.last_column - 1), TRUE ), $1 );
     }
   ;
 
@@ -1947,91 +1947,92 @@ integer_atom_type
 expression_assignment_list
   : data_type_opt IDENTIFIER '=' expression
     {
-      $$ = generator_build( 5, generator_line_cov( @2.ppfline, ((@4.last_line - @2.first_line) + @2.ppfline), @2.first_column, (@4.last_column - 1), TRUE ),
-                            $1, $2, strdup_safe( "=" ), $4 );
+      $$ = generator_build2( generator_line_cov( @2.ppfline, ((@4.last_line - @2.first_line) + @2.ppfline), @2.first_column, (@4.last_column - 1), TRUE ),
+                             generator_build( 4, $1, $2, strdup_safe( "=" ), $4 ) );
     }
   | expression_assignment_list ',' data_type_opt IDENTIFIER '=' expression
     {
-      $$ = generator_build( 7, generator_line_cov( @4.ppfline, ((@6.last_line - @4.first_line) + @4.ppfline), @4.first_column, (@6.last_column - 1), TRUE ),
-                            $1, strdup_safe( "," ), $3, $4, strdup_safe( "=" ), $6 );
+      $$ = generator_build2( generator_build( 2, $1->cov, generator_line_cov( @4.ppfline, ((@6.last_line - @4.first_line) + @4.ppfline), @4.first_column, (@6.last_column - 1), TRUE ) ),
+                             generator_build( 6, $1->str, strdup_safe( "," ), $3, $4, strdup_safe( "=" ), $6 ) );
+      generator_destroy2( $1 );
     }
   ;
 
 passign
   : lpvalue '=' expression
     {
-      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE ),
-                            $1, strdup_safe( "=" ), $3 );
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE ),
+                             generator_build( 3, $1, strdup_safe( "=" ), $3 ) );
     }
   | lpvalue K_ADD_A expression
     {
-      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
-                            $1, strdup_safe( "+=" ), $3 );
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                             generator_build( 3, $1, strdup_safe( "+=" ), $3 ) );
     }
   | lpvalue K_SUB_A expression
     {
-      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
-                            $1, strdup_safe( "-=" ), $3 );
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                             generator_build( 3, $1, strdup_safe( "-=" ), $3 ) );
     }
   | lpvalue K_MLT_A expression
     {
-      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
-                            $1, strdup_safe( "*=" ), $3 );
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                             generator_build( 3, $1, strdup_safe( "*=" ), $3 ) );
     }
   | lpvalue K_DIV_A expression
     {
-      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
-                            $1, strdup_safe( "/=" ), $3 );
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                             generator_build( 3, $1, strdup_safe( "/=" ), $3 ) );
     }
   | lpvalue K_MOD_A expression
     {
-      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
-                            $1, strdup_safe( "%=" ), $3 );
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                             generator_build( 3, $1, strdup_safe( "%=" ), $3 ) );
     }
   | lpvalue K_AND_A expression
     {
-      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
-                            $1, strdup_safe( "&=" ), $3 );
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                             generator_build( 3, $1, strdup_safe( "&=" ), $3 ) );
     }
   | lpvalue K_OR_A expression
     {
-      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
-                            $1, strdup_safe( "|=" ), $3 );
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                             generator_build( 3, $1, strdup_safe( "|=" ), $3 ) );
     }
   | lpvalue K_XOR_A expression
     {
-      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
-                            $1, strdup_safe( "^=" ), $3 );
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                             generator_build( 3, $1, strdup_safe( "^=" ), $3 ) );
     }
   | lpvalue K_LS_A expression
     {
-      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
-                            $1, strdup_safe( "<<=" ), $3 );
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                             generator_build( 3, $1, strdup_safe( "<<=" ), $3 ) );
     }
   | lpvalue K_RS_A expression
     {
-      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
-                            $1, strdup_safe( ">>=" ), $3 );
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                             generator_build( 3, $1, strdup_safe( ">>=" ), $3 ) );
     }
   | lpvalue K_ALS_A expression
     {
-      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
-                            $1, strdup_safe( "<<<=" ), $3 );
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                             generator_build( 3, $1, strdup_safe( "<<<=" ), $3 ) );
     }
   | lpvalue K_ARS_A expression
     {
-      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
-                            $1, strdup_safe( ">>>=" ), $3 );
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                             generator_build( 3, $1, strdup_safe( ">>>=" ), $3 ) );
     }
   | lpvalue K_INC
     {
-      $$ = generator_build( 3, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
-                            $1, strdup_safe( "++" ) );
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                             generator_build( 2, $1, strdup_safe( "++" ) ) );
     }
   | lpvalue K_DEC
     {
-      $$ = generator_build( 3, generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
-                            $1, strdup_safe( "--" ) );
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                             generator_build( 2, $1, strdup_safe( "--" ) ) );
     }
   ;
 
@@ -2146,7 +2147,7 @@ statement
       GENerror( "Illegal conditional if expression" );
       $$ = NULL;
     }
-  | K_for '(' for_initialization ';' for_condition ';' passign ')' statement
+  | K_for inc_for_depth '(' for_initialization ';' for_condition ';' passign ')' statement
     {
       char         str[50];
       char*        back;
@@ -2161,31 +2162,35 @@ statement
       assert( rv < 50 );
       free_safe( back, (strlen( funit->name ) + 1) );
       free_safe( rest, (strlen( funit->name ) + 1) );
-      if( (strncmp( $9, "begin ", 6 ) != 0) && ($9[0] != ';') ) {
-        $9 = generator_build( 5, strdup_safe( "begin" ), "\n", $9, strdup_safe( "end" ), "\n" );
+      if( (strncmp( $10, "begin ", 6 ) != 0) && ($10[0] != ';') ) {
+        $10 = generator_build( 5, strdup_safe( "begin" ), "\n", $10, strdup_safe( "end" ), "\n" );
       }
-      $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
-      generator_push_funit( funit );
-      $$ = generator_build( 20, $$, generator_comb_cov( @5.ppfline, @5.first_column, FALSE, TRUE, FALSE ),
+      $$ = generator_build( 22, generator_comb_cov( @6.ppfline, @6.first_column, FALSE, TRUE, FALSE ),
                             strdup_safe( "begin" ), strdup_safe( str ), "\n", generator_inst_id_reg( funit ),
-                            strdup_safe( "for(" ), $3, strdup_safe( ";" ), $5, strdup_safe( ";" ), $7, strdup_safe( ")" ), "\n", $9,
-                            generator_line_cov( @7.ppfline, @7.pplline, @1.first_column, (@1.last_column - 1), TRUE ),
-                            generator_comb_cov( @7.ppfline, @7.first_column, FALSE, TRUE, FALSE ),
-                            generator_comb_cov( @5.ppfline, @5.first_column, FALSE, TRUE, FALSE ), strdup_safe( "end" ), "\n" );
+                            $4->cov, $6->cov, $8->cov,
+                            strdup_safe( "for(" ), $4->str, strdup_safe( ";" ), $6->str, strdup_safe( ";" ), $8->str, strdup_safe( ")" ), "\n", $10,
+                            generator_line_cov( @8.ppfline, @8.pplline, @1.first_column, (@1.last_column - 1), TRUE ),
+                            generator_comb_cov( @8.ppfline, @8.first_column, FALSE, TRUE, FALSE ),
+                            generator_comb_cov( @6.ppfline, @6.first_column, FALSE, TRUE, FALSE ), strdup_safe( "end" ), "\n" );
+      generator_destroy2( $4 );
+      generator_destroy2( $6 );
+      generator_destroy2( $8 );
       generator_pop_funit();
-      $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
-  | K_for '(' for_initialization ';' for_condition ';' error ')' statement
+  | K_for inc_for_depth '(' for_initialization ';' for_condition ';' error ')' statement
     {
       $$ = NULL;
+      generator_pop_funit();
     }
-  | K_for '(' for_initialization ';' error ';' passign ')' statement
+  | K_for inc_for_depth '(' for_initialization ';' error ';' passign ')' statement
     {
       $$ = NULL;
+      generator_pop_funit();
     }
-  | K_for '(' error ')' statement
+  | K_for inc_for_depth '(' error ')' statement
     {
       $$ = NULL;
+      generator_pop_funit();
     }
   | K_while '(' expression ')' inc_block_depth statement dec_block_depth
     {
@@ -2247,8 +2252,9 @@ statement
   | passign ';'
     {
       $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
-      $$ = generator_build( 5, $$, generator_line_cov( @1.ppfline, ((@1.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@1.last_column - 1), TRUE ),
-                            $1, strdup_safe( ";" ), "\n" );
+      $$ = generator_build( 6, $$, generator_line_cov( @1.ppfline, ((@1.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@1.last_column - 1), TRUE ),
+                            $1->cov, $1->str, strdup_safe( ";" ), "\n" );
+      generator_destroy2( $1 );
       $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
   | lpvalue K_LE expression ';'
@@ -2372,6 +2378,7 @@ fork_statement
     {
       func_unit* funit = db_get_tfn_by_position( @1.first_line, @1.first_column );
       assert( funit != NULL );
+      printf( "In fork_statement, funit: %s\n", funit->name );
       if( $1 == NULL ) {
         char         str[50];
         char*        back;
@@ -3845,3 +3852,12 @@ dec_fork_depth
     }
   ;
 
+inc_for_depth
+  :
+    {
+      func_unit* funit = db_get_tfn_by_position( @$.first_line, (@$.first_column - 3) );
+      printf( "In inc_for_depth, first_line: %d, first_column: %d\n", @$.first_line, (@$.first_column - 3) );
+      assert( funit != NULL );
+      generator_push_funit( funit );
+    }
+  ;

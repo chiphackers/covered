@@ -1918,6 +1918,7 @@ struct stmt_pair_s;
 struct gitem_pair_s;
 struct dim_and_nba_s;
 struct nonblock_assign_s;
+struct str_cov_s;
 
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION TYPEDEFS  */
@@ -2258,6 +2259,11 @@ typedef struct dim_and_nba_s dim_and_nba;
  Renaming nonblock_assign_s structure for convenience.
 */
 typedef struct nonblock_assign_s nonblock_assign;
+
+/*!
+ Renaming str_cov_s structure for convenience.
+*/
+typedef struct str_cov_s str_cov;
 
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION DEFINITIONS  */
@@ -3194,6 +3200,14 @@ struct nonblock_assign_s {
     uint8         is_signed : 1;        /*!< Specifies if value is signed */
     uint8         added     : 1;        /*!< Set to 1 if this nonblocking assignment has been added to the simulation queue */
   } suppl;                              /*!< Supplemental field */
+};
+
+/*!
+ Structure that is used to hold inlined code coverage information including the original code and the coverage code.
+*/
+struct str_cov_s {
+  char*           cov;                  /*!< Coverage string */
+  char*           str;                  /*!< Code string */
 };
 
 /*!

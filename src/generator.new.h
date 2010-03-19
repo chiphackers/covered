@@ -254,6 +254,17 @@ char* generator_build1(
   ...
 );
 
+/*! \brief Generates a code/coverage structure from the given strings */
+str_cov* generator_build2(
+  char* cov,
+  char* str
+);
+
+/*! \brief Deallocates the given code/coverage structure */
+void generator_destroy2(
+  str_cov*
+);
+
 /*! \brief Returns the temporary register list to the calling function and pops it from the stack. */
 char* generator_tmp_regs();
 

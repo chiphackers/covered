@@ -3811,6 +3811,39 @@ char* generator_build1(
 }
 
 /*!
+ Allocates and populates a string/coverage structure.
+*/
+str_cov* generator_build2(
+  char* cov,  /*!< Coverage string */
+  char* str   /*!< Code string */
+) { PROFILE(GENERATOR_BUILD2);
+
+  str_cov* sc = (str_cov*)malloc_safe( sizeof( str_cov ) );
+
+  sc->cov = cov;
+  sc->str = str;
+
+  PROFILE_END;
+
+  return( sc );
+
+}
+
+/*!
+ Deallocates a string/coverage structure.
+*/
+void generator_destroy2(
+  str_cov* sc  /*!< Pointer to str_cov structure */
+) { PROFILE(GENERATOR_DESTROY2);
+
+  /* Deallocate the str_cov structure */
+  free_safe( sc, sizeof( str_cov ) );
+
+  PROFILE_END;
+
+}
+
+/*!
  \return Returns a string containing all of the temporary registers for the current scope.
 */
 char* generator_tmp_regs() { PROFILE(GENERATOR_TMP_REGS);
