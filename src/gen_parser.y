@@ -1684,7 +1684,7 @@ module_item
       if( !info_suppl.part.verilator ) {
         $$ = generator_build( 8, $1, strdup_safe( "always_comb" ), strdup_safe( "begin" ),
                               generator_line_cov( @2.ppfline, ((@2.last_line - @2.first_line) + @2.ppfline), @2.first_column, (@2.last_column - 1), TRUE ),
-                              generator_comb_cov( @2.ppfline, @2.first_column, FALSE, FALSE, FALSE ), $3, strdup_safe( "end" ), "\n" );
+                              generator_comb_cov( @2.ppfline, @2.first_column, FALSE, FALSE, FALSE, TRUE ), $3, strdup_safe( "end" ), "\n" );
       } else {
         $$ = generator_build( 3, $1, strdup_safe( "always_comb" ), $3 );
       }
@@ -1694,7 +1694,7 @@ module_item
       if( !info_suppl.part.verilator ) {
         $$ = generator_build( 8, $1, strdup_safe( "always_latch" ), strdup_safe( "begin" ),
                               generator_line_cov( @2.ppfline, ((@2.last_line - @2.first_line) + @2.ppfline), @2.first_column, (@2.last_column - 1), TRUE ),
-                              generator_comb_cov( @2.ppfline, @2.first_column, FALSE, FALSE, FALSE ), $3, strdup_safe( "end" ), "\n" );
+                              generator_comb_cov( @2.ppfline, @2.first_column, FALSE, FALSE, FALSE, TRUE ), $3, strdup_safe( "end" ), "\n" );
       } else {
         $$ = generator_build( 3, $1, strdup_safe( "always_latch" ), $3 );
       }
@@ -1704,7 +1704,7 @@ module_item
       if( !info_suppl.part.verilator ) {
         $$ = generator_build( 8, $1, strdup_safe( "always_ff" ), strdup_safe( "begin" ),
                               generator_line_cov( @2.ppfline, ((@2.last_line - @2.first_line) + @2.ppfline), @2.first_column, (@2.last_column - 1), TRUE ),
-                              generator_comb_cov( @2.ppfline, @2.first_column, FALSE, FALSE, FALSE ), $3, strdup_safe( "end" ), "\n" );
+                              generator_comb_cov( @2.ppfline, @2.first_column, FALSE, FALSE, FALSE, TRUE ), $3, strdup_safe( "end" ), "\n" );
       } else {
         $$ = generator_build( 3, $1, strdup_safe( "always_ff" ), $3 );
       }
@@ -1856,7 +1856,10 @@ for_initialization
 for_condition
   : expression
     {
-      $$ = generator_build2( generator_line_cov( @1.ppfline, ((@1.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@1.last_column - 1), TRUE ), $1 );
+      $$ = generator_build2( generator_build( 2, 
+                               generator_line_cov( @1.ppfline, ((@1.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@1.last_column - 1), TRUE ),
+                               generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE, TRUE ) ),
+                             $1 );
     }
   ;
 
@@ -1961,77 +1964,77 @@ expression_assignment_list
 passign
   : lpvalue '=' expression
     {
-      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE ),
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE, TRUE ),
                              generator_build( 3, $1, strdup_safe( "=" ), $3 ) );
     }
   | lpvalue K_ADD_A expression
     {
-      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE, TRUE ),
                              generator_build( 3, $1, strdup_safe( "+=" ), $3 ) );
     }
   | lpvalue K_SUB_A expression
     {
-      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE, TRUE ),
                              generator_build( 3, $1, strdup_safe( "-=" ), $3 ) );
     }
   | lpvalue K_MLT_A expression
     {
-      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE, TRUE ),
                              generator_build( 3, $1, strdup_safe( "*=" ), $3 ) );
     }
   | lpvalue K_DIV_A expression
     {
-      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE, TRUE ),
                              generator_build( 3, $1, strdup_safe( "/=" ), $3 ) );
     }
   | lpvalue K_MOD_A expression
     {
-      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE, TRUE ),
                              generator_build( 3, $1, strdup_safe( "%=" ), $3 ) );
     }
   | lpvalue K_AND_A expression
     {
-      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE, TRUE ),
                              generator_build( 3, $1, strdup_safe( "&=" ), $3 ) );
     }
   | lpvalue K_OR_A expression
     {
-      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE, TRUE ),
                              generator_build( 3, $1, strdup_safe( "|=" ), $3 ) );
     }
   | lpvalue K_XOR_A expression
     {
-      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE, TRUE ),
                              generator_build( 3, $1, strdup_safe( "^=" ), $3 ) );
     }
   | lpvalue K_LS_A expression
     {
-      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE, TRUE ),
                              generator_build( 3, $1, strdup_safe( "<<=" ), $3 ) );
     }
   | lpvalue K_RS_A expression
     {
-      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE, TRUE ),
                              generator_build( 3, $1, strdup_safe( ">>=" ), $3 ) );
     }
   | lpvalue K_ALS_A expression
     {
-      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE, TRUE ),
                              generator_build( 3, $1, strdup_safe( "<<<=" ), $3 ) );
     }
   | lpvalue K_ARS_A expression
     {
-      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE, TRUE ),
                              generator_build( 3, $1, strdup_safe( ">>>=" ), $3 ) );
     }
   | lpvalue K_INC
     {
-      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE, TRUE ),
                              generator_build( 2, $1, strdup_safe( "++" ) ) );
     }
   | lpvalue K_DEC
     {
-      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+      $$ = generator_build2( generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE, TRUE ),
                              generator_build( 2, $1, strdup_safe( "--" ) ) );
     }
   ;
@@ -2109,7 +2112,7 @@ statement
       }
       $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
       $$ = generator_build( 7, $$, generator_line_cov( @1.ppfline, ((@4.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@4.last_column - 1), TRUE ),
-                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE, TRUE ),
                             strdup_safe( "repeat(" ), $3, strdup_safe( ")" ), $6 );
       $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
@@ -2138,7 +2141,7 @@ statement
     {
       $$ = generator_handle_push_funit( @2.first_line, @2.first_column );
       $$ = generator_build( 8, $$, generator_line_cov( @2.ppfline, ((@5.last_line - @2.first_line) + @2.ppfline), @2.first_column, (@5.last_column - 1), TRUE ),
-                            generator_comb_cov( @2.ppfline, @2.first_column, FALSE, TRUE, FALSE ),
+                            generator_comb_cov( @2.ppfline, @2.first_column, FALSE, TRUE, FALSE, TRUE ),
                             $1, strdup_safe( "if(" ), $4, strdup_safe( ")" ), $6 );
       $$ = generator_build( 2, $$, generator_handle_pop_funit( @2.first_line, @2.first_column ) );
     }
@@ -2165,13 +2168,12 @@ statement
       if( (strncmp( $10, "begin ", 6 ) != 0) && ($10[0] != ';') ) {
         $10 = generator_build( 5, strdup_safe( "begin" ), "\n", $10, strdup_safe( "end" ), "\n" );
       }
-      $$ = generator_build( 22, generator_comb_cov( @6.ppfline, @6.first_column, FALSE, TRUE, FALSE ),
-                            strdup_safe( "begin" ), strdup_safe( str ), "\n", generator_inst_id_reg( funit ),
+      $$ = generator_build( 21, strdup_safe( "begin" ), strdup_safe( str ), "\n", generator_inst_id_reg( funit ),
                             $4->cov, $6->cov, $8->cov,
                             strdup_safe( "for(" ), $4->str, strdup_safe( ";" ), $6->str, strdup_safe( ";" ), $8->str, strdup_safe( ")" ), "\n", $10,
                             generator_line_cov( @8.ppfline, @8.pplline, @1.first_column, (@1.last_column - 1), TRUE ),
-                            generator_comb_cov( @8.ppfline, @8.first_column, FALSE, TRUE, FALSE ),
-                            generator_comb_cov( @6.ppfline, @6.first_column, FALSE, TRUE, FALSE ), strdup_safe( "end" ), "\n" );
+                            generator_comb_cov( @8.ppfline, @8.first_column, FALSE, TRUE, FALSE, FALSE ),
+                            generator_comb_cov( @6.ppfline, @6.first_column, FALSE, TRUE, FALSE, FALSE ), strdup_safe( "end" ), "\n" );
       generator_destroy2( $4 );
       generator_destroy2( $6 );
       generator_destroy2( $8 );
@@ -2199,9 +2201,9 @@ statement
       }
       $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
       $$ = generator_build( 8, $$, generator_line_cov( @1.ppfline, ((@3.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@3.last_column - 1), TRUE ),
-                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, TRUE ),
+                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, TRUE, TRUE ),
                             strdup_safe( "while(" ), $3, strdup_safe( ")" ), $6,
-                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, TRUE ) );
+                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, TRUE, FALSE ) );
       $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
   | K_while '(' error ')' inc_block_depth statement dec_block_depth
@@ -2216,7 +2218,7 @@ statement
       $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
       $$ = generator_build( 9, $$, strdup_safe( "do" ), $3,
                             generator_line_cov( @6.ppfline, ((@6.last_line - @6.first_line) + @6.ppfline), @6.first_column, (@6.last_column - 1), TRUE ),
-                            generator_comb_cov( @6.ppfline, @6.first_column, FALSE, TRUE, FALSE ),
+                            generator_comb_cov( @6.ppfline, @6.first_column, FALSE, TRUE, FALSE, TRUE ),
                             strdup_safe( "while(" ), $7, strdup_safe( ");" ), "\n" );
       $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
@@ -2237,7 +2239,7 @@ statement
       }
       $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
       $$ = generator_build( 9, $$, generator_line_cov( @1.ppfline, ((@1.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@1.last_column - 1), TRUE ),
-                            $1, strdup_safe( "begin" ), "\n", generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ), $2, strdup_safe( "end" ), "\n" );
+                            $1, strdup_safe( "begin" ), "\n", generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE, TRUE ), $2, strdup_safe( "end" ), "\n" );
       $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
   | '@' '*' statement_or_null
@@ -2245,7 +2247,7 @@ statement
       $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
       $$ = generator_build( 7, $$, generator_line_cov( @1.ppfline, ((@2.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@2.last_column - 1), TRUE ),
                             strdup_safe( "@* begin" ), "\n",
-                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE, TRUE ),
                             $3, strdup_safe( "end" ) );
       $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) ); 
     }
@@ -2261,7 +2263,7 @@ statement
     {
       $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
       $$ = generator_build( 8, $$, generator_line_cov( @1.ppfline, ((@3.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@3.last_column - 1), TRUE ),
-                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE ),
+                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE, TRUE ),
                             $1, strdup_safe( "<=" ), $3, strdup_safe( ";" ), "\n" );
       $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
@@ -2269,7 +2271,7 @@ statement
     {
       $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
       $$ = generator_build( 9, $$, generator_line_cov( @1.ppfline, ((@4.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@4.last_column - 1), TRUE ),
-                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE ),
+                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE, TRUE ),
                             $1, strdup_safe( "=" ), $3, $4, strdup_safe( ";" ), "\n" );
       $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
@@ -2278,7 +2280,7 @@ statement
     {
       $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
       $$ = generator_build( 8, $$, generator_line_cov( @1.ppfline, ((@4.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@4.last_column - 1), TRUE ),
-                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE ),
+                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE, TRUE ),
                             $1, strdup_safe( "<=" ), $3, $4, strdup_safe( ";" ), "\n" );
       $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
@@ -2287,7 +2289,7 @@ statement
       $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
       $$ = generator_build( 9, $$,
                             generator_line_cov( @1.ppfline, ((@4.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@4.last_column - 1), TRUE ),
-                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE ),
+                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE, TRUE ),
                             $1, strdup_safe( "=" ), $3, $4, strdup_safe( ";" ), "\n" );
       $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
@@ -2297,7 +2299,7 @@ statement
       $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
       $$ = generator_build( 9, $$,
                             generator_line_cov( @1.ppfline, ((@4.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@4.last_column - 1), TRUE ),
-                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE ),
+                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE, TRUE ),
                             $1, strdup_safe( "<=" ), $3, $4, strdup_safe( ";" ), "\n" );
       $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
@@ -2306,7 +2308,7 @@ statement
       $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
       $$ = generator_build( 11, $$,
                             generator_line_cov( @1.ppfline, ((@8.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@8.last_column - 1), TRUE ),
-                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE ),
+                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE, TRUE ),
                             $1, strdup_safe( "= repeat(" ), $5, strdup_safe( ")" ), $7, $8, strdup_safe( ";" ), "\n" );
       $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
@@ -2316,7 +2318,7 @@ statement
       $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
       $$ = generator_build( 11, $$,
                             generator_line_cov( @1.ppfline, ((@8.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@8.last_column - 1), TRUE ),
-                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE ),
+                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE, TRUE ),
                             $1, strdup_safe( "<= repeat(" ), $5, strdup_safe( ")" ), $7, $8, strdup_safe( ";" ), "\n" );
       $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
@@ -2325,10 +2327,10 @@ statement
       $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
       $$ = generator_build( 11, $$,
                             generator_line_cov( @1.ppfline, ((@4.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@4.last_column - 1), TRUE ),
-                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE ),
+                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE, TRUE ),
                             strdup_safe( "wait(" ), $3, strdup_safe( ") begin" ), "\n",
                             generator_event_comb_cov( @1.ppfline, @1.first_column, TRUE ),
-                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE ), strdup_safe( "end" ), "\n" );
+                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE, TRUE ), strdup_safe( "end" ), "\n" );
       $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
   | SYSCALL '(' expression_systask_list ')' ';'
@@ -2344,7 +2346,7 @@ statement
       $$ = generator_handle_push_funit( @1.first_line, @1.first_column );
       $$ = generator_build( 8, $$,
                             generator_line_cov( @1.ppfline, ((@4.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@4.last_column - 1), TRUE ),
-                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE ),
+                            generator_comb_cov( @1.ppfline, @1.first_column, FALSE, FALSE, FALSE, TRUE ),
                             $1, strdup_safe( "(" ), $3, strdup_safe( ");" ), "\n" );
       $$ = generator_build( 2, $$, generator_handle_pop_funit( @1.first_line, @1.first_column ) );
     }
@@ -2816,7 +2818,7 @@ assign_list
 assign
   : lavalue '=' expression
     {
-      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, TRUE, TRUE, FALSE ), $1, strdup_safe( "=" ), $3 );
+      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, TRUE, TRUE, FALSE, TRUE ), $1, strdup_safe( "=" ), $3 );
     }
   ;
 
@@ -3041,12 +3043,12 @@ net_decl_assigns
 net_decl_assign
   : IDENTIFIER '=' expression
     {
-      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, TRUE, TRUE, FALSE ),
+      $$ = generator_build( 4, generator_comb_cov( @1.ppfline, @1.first_column, TRUE, TRUE, FALSE, TRUE ),
                             $1, strdup_safe( "=" ), $3 ); 
     }
   | delay1 IDENTIFIER '=' expression
     {
-      $$ = generator_build( 5, generator_comb_cov( @1.ppfline, @1.first_column, TRUE, TRUE, FALSE ),
+      $$ = generator_build( 5, generator_comb_cov( @1.ppfline, @1.first_column, TRUE, TRUE, FALSE, TRUE ),
                             $1, $2, strdup_safe( "=" ), $4 );
     }
   ;

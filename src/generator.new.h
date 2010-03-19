@@ -180,7 +180,8 @@ char* generator_comb_cov(
   unsigned int first_column,
   bool         net,
   bool         use_right,
-  bool         save_stmt
+  bool         save_stmt,
+  bool         reg_needed
 );
 
 /*! \brief Inserts combinational logic coverage information from the current top of the statement stack. */

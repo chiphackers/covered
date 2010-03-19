@@ -3124,7 +3124,8 @@ char* generator_comb_cov(
   unsigned int first_column,  /*!< First column of expression to generate for */
   bool         net,           /*!< If set to TRUE, generate code for a net; otherwise, generate code for a variable */
   bool         use_right,     /*!< If set to TRUE, use right-hand expression */
-  bool         save_stmt      /*!< If set to TRUE, saves the found statement to the statement stack */
+  bool         save_stmt,     /*!< If set to TRUE, saves the found statement to the statement stack */
+  bool         reg_needed     /*!< If set to TRUE, creates registers for temporary variables */
 ) { PROFILE(GENERATOR_COMB_COV);
 
   statement* stmt    = NULL;
@@ -3136,7 +3137,7 @@ char* generator_comb_cov(
 
     /* Generate combinational coverage */
     if( (info_suppl.part.scored_comb == 1) || (info_suppl.part.scored_events) ) {
-      cov_str = generator_comb_cov_helper( (use_right ? stmt->exp->right : stmt->exp), stmt->funit, (use_right ? stmt->exp->right->op : stmt->exp->op), net, TRUE, TRUE );
+      cov_str = generator_comb_cov_helper( (use_right ? stmt->exp->right : stmt->exp), stmt->funit, (use_right ? stmt->exp->right->op : stmt->exp->op), net, TRUE, reg_needed );
     }
 
     /* Generate memory coverage */
