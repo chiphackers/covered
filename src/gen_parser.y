@@ -253,8 +253,8 @@ int yydebug = 1;
 %type <text>     delay1 delay3 delay3_opt
 %type <text>     generate_passign index_expr single_index_expr
 %type <text>     statement statement_list statement_or_null
-%type <text>     if_statement_error
-%type <text_cov> passign for_initialization for_condition expression_assignment_list
+%type <text>     if_statement_error for_condition
+%type <text_cov> passign for_initialization expression_assignment_list
 %type <text>     gate_instance gate_instance_list list_of_names
 %type <text>     begin_end_block fork_statement
 %type <text>     generate_item generate_item_list generate_item_list_opt
@@ -1856,10 +1856,7 @@ for_initialization
 for_condition
   : expression
     {
-      $$ = generator_build2( generator_build( 2, 
-                               generator_line_cov( @1.ppfline, ((@1.last_line - @1.first_line) + @1.ppfline), @1.first_column, (@1.last_column - 1), TRUE ),
-                               generator_comb_cov( @1.ppfline, @1.first_column, FALSE, TRUE, FALSE, TRUE ) ),
-                             $1 );
+      $$ = $1;
     }
   ;
 
@@ -2155,6 +2152,8 @@ statement
       char         str[50];
       char*        back;
       char*        rest;
+      char*        for_cond_comb1 = generator_comb_cov( @6.ppfline, @6.first_column, FALSE, FALSE, FALSE, TRUE );
+      char*        for_cond_comb2 = (for_cond_comb1 != NULL) ? strdup_safe( for_cond_comb1 ) : NULL;
       unsigned int rv;
       func_unit*   funit = db_get_tfn_by_position( @1.first_line, @1.first_column );
       assert( funit != NULL );
@@ -2168,14 +2167,14 @@ statement
       if( (strncmp( $10, "begin ", 6 ) != 0) && ($10[0] != ';') ) {
         $10 = generator_build( 5, strdup_safe( "begin" ), "\n", $10, strdup_safe( "end" ), "\n" );
       }
-      $$ = generator_build( 21, strdup_safe( "begin" ), strdup_safe( str ), "\n", generator_inst_id_reg( funit ),
-                            $4->cov, $6->cov, $8->cov,
-                            strdup_safe( "for(" ), $4->str, strdup_safe( ";" ), $6->str, strdup_safe( ";" ), $8->str, strdup_safe( ")" ), "\n", $10,
-                            generator_line_cov( @8.ppfline, @8.pplline, @1.first_column, (@1.last_column - 1), TRUE ),
-                            generator_comb_cov( @8.ppfline, @8.first_column, FALSE, TRUE, FALSE, FALSE ),
-                            generator_comb_cov( @6.ppfline, @6.first_column, FALSE, TRUE, FALSE, FALSE ), strdup_safe( "end" ), "\n" );
+      $$ = generator_build( 23, strdup_safe( "begin" ), strdup_safe( str ), "\n", generator_inst_id_reg( funit ),
+                            $4->cov,
+                            generator_line_cov( @6.ppfline, ((@6.last_line - @6.first_line) + @6.ppfline), @6.first_column, (@6.last_column - 1), TRUE ),
+                            strdup_safe( "for(" ), $4->str, strdup_safe( ";" ), $6, strdup_safe( ";" ), $8->str, strdup_safe( ") begin" ), "\n",
+                            for_cond_comb1, $10,
+                            generator_line_cov( @8.ppfline, ((@8.last_line - @8.first_line) + @8.ppfline), @8.first_column, (@8.last_column - 1), TRUE ),
+                            $8->cov, strdup_safe( "end" ), "\n", for_cond_comb2, strdup_safe( "end" ), "\n" );
       generator_destroy2( $4 );
-      generator_destroy2( $6 );
       generator_destroy2( $8 );
       generator_pop_funit();
     }
