@@ -3857,8 +3857,8 @@ inc_for_depth
   :
     {
       func_unit* funit = db_get_tfn_by_position( @$.first_line, (@$.first_column - 3) );
-      printf( "In inc_for_depth, first_line: %d, first_column: %d\n", @$.first_line, (@$.first_column - 3) );
       assert( funit != NULL );
+      printf( "In inc_for_depth, first_line: %d, first_column: %d, funit->name: %s\n", @$.first_line, (@$.first_column - 3), funit->name );
       generator_push_funit( funit );
     }
   ;

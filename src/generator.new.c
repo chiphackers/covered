@@ -1445,13 +1445,13 @@ statement* generator_find_statement(
   unsigned int first_column  /*!< First column of statement to find */
 ) { PROFILE(GENERATOR_FIND_STATEMENT);
 
-  // printf( "In generator_find_statement, line: %d, column: %d, funit_top: %s\n", first_line, first_column, funit_top->funit->name );
+  printf( "In generator_find_statement, line: %d, column: %d, funit_top: %s\n", first_line, first_column, funit_top->funit->name );
 
   if( (curr_stmt == NULL) || (curr_stmt->exp->ppfline != first_line) || (curr_stmt->exp->col.part.first != first_column) ) {
 
     stmt_link* stmtl = stmt_link_find_by_position( first_line, first_column, funit_top->funit->stmt_head );
 
-    // stmt_link_display( funit_top->funit->stmt_head );
+    stmt_link_display( funit_top->funit->stmt_head );
 
     /* If we couldn't find it in the func_iter, look for it in the generate list */
     if( stmtl == NULL ) {
@@ -1465,11 +1465,11 @@ statement* generator_find_statement(
 
   }
 
-  // if( (curr_stmt != NULL) && (curr_stmt->exp->ppfline == first_line) && (curr_stmt->exp->col.part.first == first_column) && (curr_stmt->exp->op != EXP_OP_FORK) ) {
-  //   printf( "  FOUND (%s %x)!\n", expression_string( curr_stmt->exp ), curr_stmt->exp->col.part.first );
-  // } else {
-  //   printf( "  NOT FOUND!\n" );
-  // }
+  if( (curr_stmt != NULL) && (curr_stmt->exp->ppfline == first_line) && (curr_stmt->exp->col.part.first == first_column) && (curr_stmt->exp->op != EXP_OP_FORK) ) {
+    printf( "  FOUND (%s %x)!\n", expression_string( curr_stmt->exp ), curr_stmt->exp->col.part.first );
+  } else {
+    printf( "  NOT FOUND!\n" );
+  }
 
   PROFILE_END;
 
