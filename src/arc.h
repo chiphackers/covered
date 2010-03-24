@@ -109,7 +109,9 @@ void arc_get_states(
   unsigned int*    to_state_size,
   const fsm_table* table,
   bool             hit,
-  bool             any
+  bool             any,
+  unsigned int     fr_width,
+  unsigned int     to_width
 );
 
 /*! \brief Outputs arc array state transition values to specified output stream. */
@@ -123,7 +125,9 @@ void arc_get_transitions(
             const fsm_table* table,
             func_unit*       funit,
             bool             hit,
-            bool             any
+            bool             any,
+            unsigned int     fr_width,
+            unsigned int     to_width
 );
 
 /*! \brief Specifies if any state transitions have been excluded from coverage. */

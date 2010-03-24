@@ -2831,17 +2831,23 @@ static void vector_set_static(
  value to change vector into.
 */
 char* vector_to_string(
-  vector* vec,      /*!< Pointer to vector to convert */
-  int     base,     /*!< Base type of vector value */
-  bool    show_all  /*!< Set to TRUE causes all bits in vector to be displayed (otherwise, only significant bits are displayed) */
+  vector*      vec,       /*!< Pointer to vector to convert */
+  int          base,      /*!< Base type of vector value */
+  bool         show_all,  /*!< Set to TRUE causes all bits in vector to be displayed (otherwise, only significant bits are displayed) */
+  unsigned int width      /*!< If set to a value greater than 0, uses this width to output instead of the supplied vector */
 ) { PROFILE(VECTOR_TO_STRING);
 
   char* str = NULL;  /* Pointer to allocated string */
 
+  /* Calculate the width to output */
+  if( (width == 0) || (vec->width < width) ) {
+    width = vec->width;
+  }
+
   if( base == QSTRING ) {
 
     int i, j;
-    int vec_size = ((vec->width - 1) >> 3) + 2;
+    int vec_size = ((width - 1) >> 3) + 2;
     int pos      = 0;
 
     /* Allocate memory for string from the heap */
@@ -2850,8 +2856,8 @@ char* vector_to_string(
     switch( vec->suppl.part.data_type ) {
       case VDATA_UL :
         {
-          int offset = (((vec->width >> 3) & (UL_MOD_VAL >> 3)) == 0) ? SIZEOF_LONG : ((vec->width >> 3) & (UL_MOD_VAL >> 3));
-          for( i=UL_SIZE(vec->width); i--; ) {
+          int offset = (((width >> 3) & (UL_MOD_VAL >> 3)) == 0) ? SIZEOF_LONG : ((width >> 3) & (UL_MOD_VAL >> 3));
+          for( i=UL_SIZE(width); i--; ) {
             ulong val = vec->value.ul[i][VTYPE_INDEX_VAL_VALL]; 
             for( j=(offset - 1); j>=0; j-- ) {
               str[pos] = (val >> ((unsigned int)j * 8)) & 0xff;
@@ -2879,7 +2885,7 @@ char* vector_to_string(
   } else if( base == SIZED_DECIMAL ) {
 
     char         width_str[50];
-    unsigned int rv = snprintf( width_str, 50, "%u'd%d", vec->width, vector_to_int( vec ) );
+    unsigned int rv = snprintf( width_str, 50, "%u'd%d", width, vector_to_int( vec ) );
     assert( rv < 20 );
     str = strdup_safe( width_str );
 
@@ -2913,24 +2919,24 @@ char* vector_to_string(
     unsigned int group     = 1;
     char         type_char = 'b';
     char         width_str[20];
-    int          vec_size  = ((vec->width - 1) >> 3) + 2;
+    int          vec_size  = ((width - 1) >> 3) + 2;
     int          pos       = 0;
 
     switch( base ) {
       case BINARY :  
-        vec_size  = (vec->width + 1);
+        vec_size  = (width + 1);
         group     = 1;
         type_char = 'b';
         break;
       case OCTAL :  
-        vec_size  = ((vec->width % 3) == 0) ? ((vec->width / 3) + 1)
-                                            : ((vec->width / 3) + 2);
+        vec_size  = ((width % 3) == 0) ? ((width / 3) + 1)
+                                       : ((width / 3) + 2);
         group     = 3;
         type_char = 'o';
         break;
       case HEXIDECIMAL :  
-        vec_size  = ((vec->width % 4) == 0) ? ((vec->width / 4) + 1)
-                                            : ((vec->width / 4) + 2);
+        vec_size  = ((width % 4) == 0) ? ((width / 4) + 1)
+                                       : ((width / 4) + 2);
         group     = 4;
         type_char = 'h';
         break;
@@ -2948,7 +2954,7 @@ char* vector_to_string(
         {
           ulong value = 0;
           int    i;
-          for( i=(vec->width - 1); i>=0; i-- ) {
+          for( i=(width - 1); i>=0; i-- ) {
             ulong* entry = vec->value.ul[UL_DIV(i)];
             if( ((entry[VTYPE_INDEX_VAL_VALH] >> UL_MOD(i)) & 0x1) == 1 ) {
               value = ((entry[VTYPE_INDEX_VAL_VALL] >> UL_MOD(i)) & 0x1) + 16;
@@ -2993,14 +2999,14 @@ char* vector_to_string(
 
     tmp[pos] = '\0';
 
-    rv = snprintf( width_str, 20, "%u", vec->width );
+    rv = snprintf( width_str, 20, "%u", width );
     assert( rv < 20 );
     str_size = strlen( width_str ) + 2 + strlen( tmp ) + 1 + vec->suppl.part.is_signed;
     str      = (char*)malloc_safe( str_size );
     if( vec->suppl.part.is_signed == 0 ) {
-      rv = snprintf( str, str_size, "%u'%c%s", vec->width, type_char, tmp );
+      rv = snprintf( str, str_size, "%u'%c%s", width, type_char, tmp );
     } else {
-      rv = snprintf( str, str_size, "%u's%c%s", vec->width, type_char, tmp );
+      rv = snprintf( str, str_size, "%u's%c%s", width, type_char, tmp );
     }
     assert( rv < str_size );
 

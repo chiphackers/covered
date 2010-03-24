@@ -264,7 +264,7 @@ static char* ovl_get_coverage_point(
   assert( stmt->exp->left->right->op == EXP_OP_STATIC );
   assert( ESUPPL_STATIC_BASE( stmt->exp->left->right->suppl ) == QSTRING );
 
-  cpoint = vector_to_string( stmt->exp->left->right->value, ESUPPL_STATIC_BASE( stmt->exp->left->right->suppl ), FALSE );
+  cpoint = vector_to_string( stmt->exp->left->right->value, ESUPPL_STATIC_BASE( stmt->exp->left->right->suppl ), FALSE, 0 );
 
   PROFILE_END;
 

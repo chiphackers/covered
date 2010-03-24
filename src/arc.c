@@ -148,7 +148,9 @@ int curr_arc_id = 1;
  Displays the given state transition arcs in a human-readable format.
 */
 /*@unused@*/ static void arc_display(
-  const fsm_table* table  /*!< Pointer to state transition arc array to display */
+  const fsm_table* table,     /*!< Pointer to state transition arc array to display */
+  unsigned int     fr_width,  /*!< Width of "from" state */
+  unsigned int     to_width   /*!< Width of "to" state */
 ) {
 
   unsigned int i;  /* Loop iterator */
@@ -157,8 +159,8 @@ int curr_arc_id = 1;
 
   for( i=0; i<table->num_arcs; i++ ) {
 
-    char* lvec = vector_to_string( table->fr_states[table->arcs[i]->from], HEXIDECIMAL, TRUE );
-    char* rvec = vector_to_string( table->to_states[table->arcs[i]->to],   HEXIDECIMAL, TRUE );
+    char* lvec = vector_to_string( table->fr_states[table->arcs[i]->from], HEXIDECIMAL, TRUE, fr_width );
+    char* rvec = vector_to_string( table->to_states[table->arcs[i]->to],   HEXIDECIMAL, TRUE, to_width );
 
     printf( "       entry %u: ", i );
 
@@ -725,7 +727,9 @@ void arc_get_states(
   /*@out@*/ unsigned int*    to_state_size,  /*!< Pointer to number of elements stored in states array */
             const fsm_table* table,          /*!< Pointer to FSM table */
             bool             hit,            /*!< Specifies if hit or missed transitions should be gathered */
-            bool             any             /*!< Specifies if we should gather any transition or only the type specified by hit */
+            bool             any,            /*!< Specifies if we should gather any transition or only the type specified by hit */
+            unsigned int     fr_width,       /*!< Width of "from" FSM state to output */
+            unsigned int     to_width        /*!< Width of "to" FSM state to output */
 ) { PROFILE(ARC_GET_STATES);
 
   unsigned int i, j;  /* Loop iterator */
@@ -753,7 +757,7 @@ void arc_get_states(
     }
     if( state_hit == hit ) {
       *fr_states                     = (char**)realloc_safe( *fr_states, (sizeof( char* ) * (*fr_state_size)), (sizeof( char* ) * ((*fr_state_size) + 1)) );
-      (*fr_states)[(*fr_state_size)] = vector_to_string( table->fr_states[i], HEXIDECIMAL, TRUE );
+      (*fr_states)[(*fr_state_size)] = vector_to_string( table->fr_states[i], HEXIDECIMAL, TRUE, fr_width );
       (*fr_state_size)++;
     }
   }
@@ -768,7 +772,7 @@ void arc_get_states(
     }
     if( state_hit == hit ) {
       *to_states                     = (char**)realloc_safe( *to_states, (sizeof( char* ) * (*to_state_size)), (sizeof( char* ) * ((*to_state_size) + 1)) );
-      (*to_states)[(*to_state_size)] = vector_to_string( table->to_states[i], HEXIDECIMAL, TRUE );
+      (*to_states)[(*to_state_size)] = vector_to_string( table->to_states[i], HEXIDECIMAL, TRUE, to_width );
       (*to_state_size)++;
     }
   }
@@ -792,7 +796,9 @@ void arc_get_transitions(
             const fsm_table* table,        /*!< Pointer to FSM table */
             func_unit*       funit,        /*!< Pointer to functional unit containing this FSM */
             bool             hit,          /*!< Specifies if hit or missed transitions should be gathered */
-            bool             any           /*!< Specifies if all arc transitions or just the ones that meet the hit criteria should be gathered */
+            bool             any,          /*!< Specifies if all arc transitions or just the ones that meet the hit criteria should be gathered */
+            unsigned int     fr_width,     /*!< Width of "from" FSM state to output */
+            unsigned int     to_width      /*!< Width of "to" FSM state to output */
 ) { PROFILE(ARC_GET_TRANSITIONS);
 
   unsigned int i;  /* Loop iterator */
@@ -818,8 +824,8 @@ void arc_get_transitions(
       *ids                        = (int*)realloc_safe( *ids, (sizeof( int ) * (*arc_size)), (sizeof( int ) * (*arc_size + 1)) );
       *excludes                   = (int*)realloc_safe( *excludes, (sizeof( int ) * (*arc_size)), (sizeof( int ) * (*arc_size + 1)) );
       *reasons                    = (char**)realloc_safe( *reasons, (sizeof( char* ) * (*arc_size)), (sizeof( char* ) * (*arc_size + 1)) );
-      (*from_states)[(*arc_size)] = vector_to_string( table->fr_states[table->arcs[i]->from], HEXIDECIMAL, TRUE );
-      (*to_states)[(*arc_size)]   = vector_to_string( table->to_states[table->arcs[i]->to],   HEXIDECIMAL, TRUE );
+      (*from_states)[(*arc_size)] = vector_to_string( table->fr_states[table->arcs[i]->from], HEXIDECIMAL, TRUE, fr_width );
+      (*to_states)[(*arc_size)]   = vector_to_string( table->to_states[table->arcs[i]->to],   HEXIDECIMAL, TRUE, to_width );
       (*ids)[(*arc_size)]         = table->id + i;
       (*excludes)[(*arc_size)]    = table->arcs[i]->suppl.part.excluded;
 

@@ -534,7 +534,7 @@ static void fsm_arg_parse_trans(
   assert( expr != NULL );
 
   /* Convert expression value to a string */
-  tmp = str = vector_to_string( expr->value, ESUPPL_STATIC_BASE( expr->suppl ), FALSE );
+  tmp = str = vector_to_string( expr->value, ESUPPL_STATIC_BASE( expr->suppl ), FALSE, 0 );
 
   Try {
 
@@ -617,7 +617,7 @@ void fsm_arg_parse_attr(
     } else if( (index == 2) && (strcmp( curr->name, "is" ) == 0) && (curr->expr != NULL) ) {
       if( table == NULL ) {
         int slen;
-        tmp = str = vector_to_string( curr->expr->value, ESUPPL_STATIC_BASE( curr->expr->suppl ), FALSE );
+        tmp = str = vector_to_string( curr->expr->value, ESUPPL_STATIC_BASE( curr->expr->suppl ), FALSE, 0 );
         slen = strlen( tmp );
         Try {
           if( (in_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
@@ -641,7 +641,7 @@ void fsm_arg_parse_attr(
     } else if( (index == 2) && (strcmp( curr->name, "os" ) == 0) && (curr->expr != NULL) ) {
       if( table == NULL ) {
         int slen;
-        tmp = str = vector_to_string( curr->expr->value, ESUPPL_STATIC_BASE( curr->expr->suppl ), FALSE );
+        tmp = str = vector_to_string( curr->expr->value, ESUPPL_STATIC_BASE( curr->expr->suppl ), FALSE, 0 );
         slen = strlen( tmp );
         Try {
           if( (out_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
@@ -669,7 +669,7 @@ void fsm_arg_parse_attr(
                (in_state != NULL) && (curr->expr != NULL) ) {
       if( table == NULL ) {
         int slen;
-        tmp = str = vector_to_string( curr->expr->value, ESUPPL_STATIC_BASE( curr->expr->suppl ), FALSE );
+        tmp = str = vector_to_string( curr->expr->value, ESUPPL_STATIC_BASE( curr->expr->suppl ), FALSE, 0 );
         slen = strlen( tmp );
         Try {
           if( (out_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
@@ -705,7 +705,7 @@ void fsm_arg_parse_attr(
       }
     } else {
       unsigned int rv;
-      tmp = vector_to_string( curr->expr->value, ESUPPL_STATIC_BASE( curr->expr->suppl ), FALSE );
+      tmp = vector_to_string( curr->expr->value, ESUPPL_STATIC_BASE( curr->expr->suppl ), FALSE, 0 );
       rv = snprintf( user_msg, USER_MSG_LENGTH, "Invalid covered_fsm attribute parameter (%s=%s), file: %s",
                      curr->name, tmp, obf_file( funit->orig_fname ) );
       assert( rv < USER_MSG_LENGTH );

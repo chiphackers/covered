@@ -960,7 +960,7 @@ static void combination_underline_tree(
       
       } else {
 
-        tmpstr = vector_to_string( exp->value, ESUPPL_STATIC_BASE( exp->suppl ), FALSE );
+        tmpstr = vector_to_string( exp->value, ESUPPL_STATIC_BASE( exp->suppl ), FALSE, 0 );
         *size  = strlen( tmpstr );
         free_safe( tmpstr, (strlen( tmpstr ) + 1) );
 

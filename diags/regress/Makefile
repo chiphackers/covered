@@ -92,7 +92,7 @@ DIAGS1        = add1              aedge1            aedge1.1          afunc1    
                 fsm7              fsm7.1            fsm7.2            fsm7.3            fsm7.4 \
                 fsm7.5            fsm8              fsm8.1            fsm8.2            fsm8.3 \
                 fsm9              fsm9.1            fsm9.2            fsm10             fsm10.1 \
-                fsm10.2           fsm11             fstrobe1          func1             func2 \
+                fsm10.2           fsm11             fsm12             fstrobe1          func1             func2 \
                 func5             fwrite1           gate1             gate1.1           generate1 \
                 generate1.1       generate2         generate2.1       generate3         generate3.1 \
                 generate4         generate4.1       generate5         generate5.1       generate5.2 \
@@ -389,7 +389,7 @@ EXCLUDE      += afunc1            afunc2            always5.1         always_com
                 fsm7.1            fsm7.2            fsm7.3            fsm7.4            fsm7.5 \
                 fsm8              fsm8.1            fsm8.2            fsm8.3            fsm9 \
                 fsm9.1            fsm9.2            fsm10.1           fsm10.2           fsm11 \
-                generate1         generate1.1       generate2         generate2.1       generate3 \
+                fsm12             generate1         generate1.1       generate2         generate2.1       generate3 \
                 generate3.1       generate4         generate4.1       generate5         generate5.1 \
                 generate5.2       generate5.3       generate6         generate7         generate7.1 \
                 generate7.2       generate8         generate8.1       generate8.2       generate8.3 \

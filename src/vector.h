@@ -316,9 +316,10 @@ bool vector_from_real64(
 
 /*! \brief Converts vector into a string value in specified format. */
 char* vector_to_string(
-  vector* vec, 
-  int     base,
-  bool    show_all
+  vector*      vec, 
+  int          base,
+  bool         show_all,
+  unsigned int width
 );
 
 /*! \brief Converts a string to a preallocated vector. */

@@ -393,7 +393,7 @@ static void codegen_gen_expr1(
           } else if( ESUPPL_STATIC_BASE( expr->suppl ) == QSTRING ) {
 
             unsigned int slen;
-            tmpstr = vector_to_string( expr->value, QSTRING, FALSE );
+            tmpstr = vector_to_string( expr->value, QSTRING, FALSE, 0 );
             slen   = strlen( tmpstr ) + 3;
             (*code)[0] = (char*)malloc_safe( slen );
             rv = snprintf( (*code)[0], slen, "\"%s\"", tmpstr );
@@ -402,7 +402,7 @@ static void codegen_gen_expr1(
 
           } else { 
 
-            (*code)[0] = vector_to_string( expr->value, ESUPPL_STATIC_BASE( expr->suppl ), FALSE );
+            (*code)[0] = vector_to_string( expr->value, ESUPPL_STATIC_BASE( expr->suppl ), FALSE, 0 );
 
           }
    

@@ -3535,7 +3535,7 @@ bool expression_op_func__test_plusargs(
     }
 
     /* Get argument to search for */
-    arg = vector_to_string( left->value, QSTRING, TRUE );
+    arg = vector_to_string( left->value, QSTRING, TRUE, 0 );
 
     /* Scan the simulation argument list for matching values */
     scratchl = sys_task_test_plusargs( arg );
@@ -3594,7 +3594,7 @@ bool expression_op_func__value_plusargs(
     }
 
     /* Get the first argument string value */
-    arg = vector_to_string( left->left->value, QSTRING, TRUE );
+    arg = vector_to_string( left->left->value, QSTRING, TRUE, 0 );
 
     /* Scan the simulation argument list for matching values */
     if( (scratchl = sys_task_value_plusargs( arg, left->right->value )) == 1 ) {
