@@ -1,6 +1,38 @@
 Covered-Related NEWS
 ====================
 
+    * 3/24/2010
+
+Stable release covered-0.7.8 made.  This release is primarily a bug fix release, but it does contain a few new
+minor features and Verilog language enhancements.  Here are the details:
+
+  - Fixed bug 2912587.  Using the -f option with the merge command was causing errors.
+  - Fixed bug 2912679.  If the GUI was invoked (i.e., covered report -view) and an error in command-line parsing
+    occurred, Covered segfaulted.
+  - Added ability to specify the CDD on the report command-line when starting the GUI (i.e., covered report -view foobar.cdd)
+    which will automatically load the specified CDD files into the GUI on startup.  Feature request 2912698.
+  - Fixed bug 2925756.  An expression surrounded by the parenthesis could cause a segmentation fault when parsing.
+  - Support has been added for NC-Verilog VPI usage.
+  - Fixed bug 2926579.  Changing from a known value to an X value should cause no change in toggle coverage;
+    however, when we transition back to a known value and it differs from the previously known value, we record
+    a toggle coverage change.  Example:  0 -> X -> 0 (no change in coverage), 0 -> X -> 1 (change in coverage).
+  - Fixed bug 2927285.  Segmentation faults could occur when excluding FSM and combinational logic cases.
+  - Added support for the $clog system function call.
+  - Fixed bug 2929948.  Assignments to a concatentation of signals could lead to segmentation fault.
+  - Fixed issue in the LXT2 reader that resulted in a memory leak.
+  - Fixed bug 2933112.  Added full support for out-of-bounds assignment.
+  - Added new -T global option that provides a "terse" output which outputs the Covered header and warnings/errors
+    only (less output than using none of the global output verbosity options).  Feature request 2952492.
+  - Fixed bug 2960887.  Adds support for creating a definition which contains no user value (i.e., `define FOO).
+    Covered was incorrectly assigning a value of 1 to these types of defines.
+  - Fixed bug 2958529.  Zero width replications are now supported by Covered (i.e., {0{a & b}})
+  - Fixed bug 2974860.  Fixed issue with FSM state input/output variables being output to an ASCII report file
+    correctly.
+  - Added ability to allow the "trans" parameter to Covered FSM attributes to contain additional characters
+    after it.  Some simulators don't like Verilog attributes having the same name for multiple parameters.
+    Feature request 2976039.
+  - User guide has been updated per these changes.
+
     * 8/2/2009
 
 Development release covered-20090802 made.  This development release adds several performance enhancements and bug
