@@ -693,7 +693,7 @@ void fsm_arg_parse_attr(
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         Throw 0;
       }
-    } else if( (index > 1) && (strcmp( curr->name, "trans" ) == 0) && (curr->expr != NULL) ) {
+    } else if( (index > 1) && (strncmp( curr->name, "trans", 5 ) == 0) && (curr->expr != NULL) ) {
       if( table == NULL ) {
         unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "Attribute FSM name (%s) has not been previously created, file: %s",
                                     obf_sig( curr->name ), obf_file( funit->orig_fname ) );
