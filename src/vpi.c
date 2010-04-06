@@ -143,6 +143,22 @@ void add_sym_values_to_sim() { PROFILE(ADD_SYM_VALUES_TO_SIM);
 }
 
 /*!
+*/
+PLI_INT32 covered_rosynch(
+  p_cb_data cb
+) { PROFILE(COVERED_ROSYNCH);
+
+#ifdef DEBUG_MODE
+  if( debug_mode ) {
+    print_output( "In covered_rosynch!", DEBUG, __FILE__, __LINE__ );
+  }
+#endif
+
+  PROFILE_END;
+
+}
+
+/*!
  \return Returns 0.
 
  This callback function is called whenever a signal changes within the simulator.  It places
@@ -172,6 +188,19 @@ PLI_INT32 covered_value_change_bin(
   if( (cb->time->low  != (PLI_INT32)(last_time & 0xffffffff)) || (cb->time->high != (PLI_INT32)((last_time >> 32) & 0xffffffff)) ) {
     if( !db_do_timestep( last_time, FALSE ) ) {
       vpi_control( vpiFinish, EXIT_SUCCESS );
+    } else {
+      p_cb_data new_cb;
+      new_cb             = (p_cb_data)malloc( sizeof( s_cb_data ) );
+      new_cb->reason     = cbReadOnlySynch;
+      new_cb->cb_rtn     = covered_rosynch;
+      new_cb->obj        = NULL;
+      new_cb->time       = (p_vpi_time)malloc( sizeof( s_vpi_time ) );
+      new_cb->time->type = vpiSimTime;
+      new_cb->time->high = 0;
+      new_cb->time->low  = 0;
+      new_cb->value      = NULL;
+      new_cb->user_data  = NULL;
+      vpi_register_cb( new_cb );
     }
   }
   last_time = ((uint64)cb->time->high << 32) | (uint64)cb->time->low;
@@ -191,6 +220,19 @@ PLI_INT32 covered_value_change_bin(
   if( (cb->time->low  != (PLI_INT32)(last_time & 0xffffffff)) || (cb->time->high != (PLI_INT32)((last_time >> 32) & 0xffffffff)) ) {
     if( !db_do_timestep( last_time, FALSE ) ) {
       vpi_control( vpiFinish, EXIT_SUCCESS );
+    } else {
+      p_cb_data new_cb;
+      new_cb             = (p_cb_data)malloc( sizeof( s_cb_data ) );
+      new_cb->reason     = cbReadOnlySynch;
+      new_cb->cb_rtn     = covered_rosynch;
+      new_cb->obj        = NULL;
+      new_cb->time       = (p_vpi_time)malloc( sizeof( s_vpi_time ) );
+      new_cb->time->type = vpiSimTime;
+      new_cb->time->high = 0;
+      new_cb->time->low  = 0;
+      new_cb->value      = NULL;
+      new_cb->user_data  = NULL;
+      vpi_register_cb( new_cb );
     }
   }
   last_time = ((uint64)cb->time->high << 32) | (uint64)cb->time->low;
@@ -237,6 +279,19 @@ PLI_INT32 covered_value_change_real(
   if( (cb->time->low  != (PLI_INT32)(last_time & 0xffffffff)) || (cb->time->high != (PLI_INT32)((last_time >> 32) & 0xffffffff)) ) {
     if( !db_do_timestep( last_time, FALSE ) ) {
       vpi_control( vpiFinish, EXIT_SUCCESS );
+    } else {
+      p_cb_data new_cb;
+      new_cb             = (p_cb_data)malloc( sizeof( s_cb_data ) );
+      new_cb->reason     = cbReadOnlySynch;
+      new_cb->cb_rtn     = covered_rosynch;
+      new_cb->obj        = NULL;
+      new_cb->time       = (p_vpi_time)malloc( sizeof( s_vpi_time ) );
+      new_cb->time->type = vpiSimTime;
+      new_cb->time->high = 0;
+      new_cb->time->low  = 0;
+      new_cb->value      = NULL;
+      new_cb->user_data  = NULL;
+      vpi_register_cb( new_cb );
     }
   }
   last_time = ((uint64)cb->time->high << 32) | (uint64)cb->time->low;
@@ -257,6 +312,19 @@ PLI_INT32 covered_value_change_real(
   if( (cb->time->low  != (PLI_INT32)(last_time & 0xffffffff)) || (cb->time->high != (PLI_INT32)((last_time >> 32) & 0xffffffff)) ) {
     if( !db_do_timestep( last_time, FALSE ) ) {
       vpi_control( vpiFinish, EXIT_SUCCESS );
+    } else {
+      p_cb_data new_cb;
+      new_cb             = (p_cb_data)malloc( sizeof( s_cb_data ) );
+      new_cb->reason     = cbReadOnlySynch;
+      new_cb->cb_rtn     = covered_rosynch;
+      new_cb->obj        = NULL;
+      new_cb->time       = (p_vpi_time)malloc( sizeof( s_vpi_time ) );
+      new_cb->time->type = vpiSimTime;
+      new_cb->time->high = 0;
+      new_cb->time->low  = 0;
+      new_cb->value      = NULL;
+      new_cb->user_data  = NULL;
+      vpi_register_cb( new_cb );
     }
   }
   last_time = ((uint64)cb->time->high << 32) | (uint64)cb->time->low;
@@ -274,7 +342,9 @@ PLI_INT32 covered_value_change_real(
 
 /*!
 */
-PLI_INT32 covered_end_of_sim( p_cb_data cb ) { PROFILE(COVERED_END_OF_SIM);
+PLI_INT32 covered_end_of_sim(
+  p_cb_data cb
+) { PROFILE(COVERED_END_OF_SIM);
 
   p_vpi_time final_time;
 
@@ -723,6 +793,19 @@ PLI_INT32 covered_sim_calltf( char* name ) {
 
   systf_handle = vpi_handle( vpiSysTfCall, NULL );
   arg_iterator = vpi_iterate( vpiArgument, systf_handle );
+
+  /* Create callback that will get run at the end of the time slot */
+  cb             = (p_cb_data)malloc( sizeof( s_cb_data ) );
+  cb->reason     = cbReadOnlySynch;
+  cb->cb_rtn     = covered_rosynch;
+  cb->obj        = NULL;
+  cb->time       = (p_vpi_time)malloc( sizeof( s_vpi_time ) );
+  cb->time->type = vpiSimTime;
+  cb->time->high = 0;
+  cb->time->low  = 0;
+  cb->value      = NULL;
+  cb->user_data  = NULL;
+  vpi_register_cb( cb );
 
   /* Create callback that will handle the end of simulation */
   cb            = (p_cb_data)malloc( sizeof( s_cb_data ) );

@@ -7,25 +7,29 @@
 
 module main;
 
-reg a, b, c, d;
+reg  clock;
+reg  a, reset;
+wire b;
 
-initial begin
-	a = 1'b0;
-	b = 1'b0;
-	c = 1'b0;
-	d = 1'b0;
-	#5;
-	if(a&&(b||c))
-	  d = 1'b1;
-end
+always @(posedge clock) a <= reset ? 1'b0 : b;
+
+assign b = ~a;
 
 initial begin
 `ifdef DUMP
         $dumpfile( "test.vcd" );
         $dumpvars( 0, main );
 `endif
-        #10;
+	reset = 1'b1;
+	#5;
+	reset = 1'b0;
+        #20;
         $finish;
+end
+
+initial begin
+	clock = 1'b0;
+	forever #(2) clock = ~clock;
 end
 
 endmodule
