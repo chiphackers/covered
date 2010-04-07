@@ -143,18 +143,38 @@ void add_sym_values_to_sim() { PROFILE(ADD_SYM_VALUES_TO_SIM);
 }
 
 /*!
+ \return Returns 0.
+ 
+ This callback function is called at the end of a simulation timestep prior to the
+ non-blocking assignments.  It helps mark the difference between blocking assignments
+ and non-blocking assignments.
 */
 PLI_INT32 covered_rosynch(
   p_cb_data cb
 ) { PROFILE(COVERED_ROSYNCH);
 
+  static sim_time curr_time;
+  
 #ifdef DEBUG_MODE
   if( debug_mode ) {
-    print_output( "In covered_rosynch!", DEBUG, __FILE__, __LINE__ );
+    unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "In covered_rosynch, %llu", last_time );
+    assert( rv < USER_MSG_LENGTH );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   }
 #endif
 
+  /* Perform the current timestep with the blocking assignments */
+  curr_time.lo    = (last_time & 0xffffffffLL);
+  curr_time.hi    = ((last_time >> 32) & 0xffffffffLL);
+  curr_time.full  = last_time;
+  curr_time.final = FALSE;
+
+  /* Assign all stored values in current post-timestep to stored signals */
+  symtable_assign( &curr_time );
+
   PROFILE_END;
+  
+  return( 0 );
 
 }
 
@@ -902,13 +922,6 @@ PLI_INT32 covered_sim_calltf( char* name ) {
 
   /* Add all of the sym_value structures to the simulation core */
   add_sym_values_to_sim();
-
-  /* If we are Cver or VCS, perform an initial 0 timestep since this will not get called */
-//#ifdef NOIV
-//  if( !db_do_timestep( 0, FALSE ) ) {
-//    vpi_control( vpiFinish, EXIT_SUCCESS );
-//  }
-//#endif
 
   PROFILE_END;
 
