@@ -922,6 +922,9 @@ PLI_INT32 covered_sim_calltf( char* name ) {
 
   /* Add all of the sym_value structures to the simulation core */
   add_sym_values_to_sim();
+  
+  /* Perform initial time 0 */
+  db_do_timestep( 0, FALSE );
 
   PROFILE_END;
 
