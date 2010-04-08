@@ -1,3 +1,18 @@
+################################################################################################
+# Copyright (c) 2006-2010 Trevor Williams                                                      #
+#                                                                                              #
+# This program is free software; you can redistribute it and/or modify                         #
+# it under the terms of the GNU General Public License as published by the Free Software       #
+# Foundation; either version 2 of the License, or (at your option) any later version.          #
+#                                                                                              #
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;    #
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    #
+# See the GNU General Public License for more details.                                         #
+#                                                                                              #
+# You should have received a copy of the GNU General Public License along with this program;   #
+# if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. #
+################################################################################################
+
 set rank_img_checked   [image create photo -file [file join $HOME scripts checked.gif]]
 set rank_img_unchecked [image create photo -file [file join $HOME scripts unchecked.gif]]
 
@@ -411,19 +426,19 @@ proc create_rank_cdds_source {w} {
   global rankgen_sel rankgen_fname
 
   # Create the upper widget frame for this pane
-  frame $w
+  ttk::frame $w
 
   # Create upper widgets
-  frame $w.f
-  frame $w.f.fu
-  frame $w.f.fc
-  frame $w.f.fl
-  radiobutton $w.f.fc.rb_opts -anchor w -text "Create CDD ranking by interactively selecting options" -variable rankgen_sel -value "options" \
+  ttk::frame $w.f
+  ttk::frame $w.f.fu
+  ttk::frame $w.f.fc
+  ttk::frame $w.f.fl
+  ttk::radiobutton $w.f.fc.rb_opts -text "Create CDD ranking by interactively selecting options" -variable rankgen_sel -value "options" \
     -command "handle_rank_cdds_source $w"
-  radiobutton $w.f.fc.rb_file -anchor w -text "Create CDD ranking by using option file" -variable rankgen_sel -value "file" \
+  ttk::radiobutton $w.f.fc.rb_file -text "Create CDD ranking by using option file" -variable rankgen_sel -value "file" \
     -command "handle_rank_cdds_source $w"
-  entry  $w.f.fc.e -state disabled -textvariable rankgen_fname -validate all -vcmd "handle_rank_cdds_source $w %P 1"
-  button $w.f.fc.b -text "Browse..." -state disabled -command {
+  ttk::entry  $w.f.fc.e -state disabled -textvariable rankgen_fname -validate all -validatecommand "handle_rank_cdds_source $w %P 1"
+  ttk::button $w.f.fc.b -text "Browse..." -state disabled -command {
     set fname [tk_getOpenFile -title "Select a Rank Command Option File" -parent .rankwin]
     if {$fname ne ""} {
       set rankgen_fname $fname
@@ -440,16 +455,16 @@ proc create_rank_cdds_source {w} {
   pack $w.f.fl -fill both -expand 1
 
   # Create button frame
-  frame $w.bf
+  ttk::frame $w.bf
   help_button $w.bf.help chapter.gui.rank section.gui.rank.select
-  button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
-  button $w.bf.next   -width 10 -text "Next" -command "
+  ttk::button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
+  ttk::button $w.bf.next   -width 10 -text "Next" -command "
     setup_cdd_rank_options $w
     goto_next_pane $w
   "
-  pack $w.bf.help   -side right -pady 3
-  pack $w.bf.cancel -side right -padx 3 -pady 3
-  pack $w.bf.next   -side right -padx 3 -pady 3
+  pack $w.bf.help   -side right -padx 4 -pady 4
+  pack $w.bf.cancel -side right -padx 4 -pady 4
+  pack $w.bf.next   -side right -padx 4 -pady 4
 
   # Pack top-level frames
   pack $w.f  -fill both -expand yes
@@ -535,31 +550,31 @@ proc create_rank_cdds_options {w} {
   global names_only rank_verbose
 
   # Create top-most frame
-  frame $w
+  ttk::frame $w
 
   # Create output filename frame
-  frame  $w.ff
-  label  $w.ff.l -text "Output ranking report name:"
-  entry  $w.ff.e -textvariable rank_filename -validate all
-  button $w.ff.b -text "Browse..." -command "handle_rank_cdds_filename_browse $w"
+  ttk::frame  $w.ff
+  ttk::label  $w.ff.l -text "Output ranking report name:"
+  ttk::entry  $w.ff.e -textvariable rank_filename -validate all
+  ttk::button $w.ff.b -text "Browse..." -command "handle_rank_cdds_filename_browse $w"
   pack   $w.ff.l -side left  -padx 3 -pady 3
   pack   $w.ff.e -side left  -padx 3 -pady 3 -fill x -expand 1
   pack   $w.ff.b -side right -padx 3 -pady 3
 
   # Create weight selection frame
-  labelframe $w.wf -text "Coverage metric weighting"
-  checkbutton $w.wf.cb_l -text "Consider line coverage with weight:"                -anchor w -variable weight_line   -command "handle_weight_entry_state $w.wf.e_l"
-  checkbutton $w.wf.cb_t -text "Consider toggle coverage with weight:"              -anchor w -variable weight_toggle -command "handle_weight_entry_state $w.wf.e_t"
-  checkbutton $w.wf.cb_m -text "Consider memory coverage with weight:"              -anchor w -variable weight_memory -command "handle_weight_entry_state $w.wf.e_m"
-  checkbutton $w.wf.cb_c -text "Consider combinational logic coverage with weight:" -anchor w -variable weight_comb   -command "handle_weight_entry_state $w.wf.e_c"
-  checkbutton $w.wf.cb_f -text "Consider FSM coverage with weight:"                 -anchor w -variable weight_fsm    -command "handle_weight_entry_state $w.wf.e_f"
-  checkbutton $w.wf.cb_a -text "Consider assertion coverage with weight:"           -anchor w -variable weight_assert -command "handle_weight_entry_state $w.wf.e_a"
-  entry       $w.wf.e_l  -textvariable weight_line_num   -width 10 -state disabled -validate all -vcmd { check_weight_value $weight_line_num }
-  entry       $w.wf.e_t  -textvariable weight_toggle_num -width 10 -state disabled -validate all -vcmd { check_weight_value $weight_toggle_num }
-  entry       $w.wf.e_m  -textvariable weight_memory_num -width 10 -state disabled -validate all -vcmd { check_weight_value $weight_memory_num }
-  entry       $w.wf.e_c  -textvariable weight_comb_num   -width 10 -state disabled -validate all -vcmd { check_weight_value $weight_comb_num }
-  entry       $w.wf.e_f  -textvariable weight_fsm_num    -width 10 -state disabled -validate all -vcmd { check_weight_value $weight_fsm_num }
-  entry       $w.wf.e_a  -textvariable weight_assert_num -width 10 -state disabled -validate all -vcmd { check_weight_value $weight_assert_num }
+  ttk::labelframe $w.wf -text "Coverage metric weighting"
+  ttk::checkbutton $w.wf.cb_l -text "Consider line coverage with weight:"                -variable weight_line   -command "handle_weight_entry_state $w.wf.e_l"
+  ttk::checkbutton $w.wf.cb_t -text "Consider toggle coverage with weight:"              -variable weight_toggle -command "handle_weight_entry_state $w.wf.e_t"
+  ttk::checkbutton $w.wf.cb_m -text "Consider memory coverage with weight:"              -variable weight_memory -command "handle_weight_entry_state $w.wf.e_m"
+  ttk::checkbutton $w.wf.cb_c -text "Consider combinational logic coverage with weight:" -variable weight_comb   -command "handle_weight_entry_state $w.wf.e_c"
+  ttk::checkbutton $w.wf.cb_f -text "Consider FSM coverage with weight:"                 -variable weight_fsm    -command "handle_weight_entry_state $w.wf.e_f"
+  ttk::checkbutton $w.wf.cb_a -text "Consider assertion coverage with weight:"           -variable weight_assert -command "handle_weight_entry_state $w.wf.e_a"
+  ttk::entry       $w.wf.e_l  -textvariable weight_line_num   -width 10 -state disabled -validate all -validatecommand { check_weight_value $weight_line_num }
+  ttk::entry       $w.wf.e_t  -textvariable weight_toggle_num -width 10 -state disabled -validate all -validatecommand { check_weight_value $weight_toggle_num }
+  ttk::entry       $w.wf.e_m  -textvariable weight_memory_num -width 10 -state disabled -validate all -validatecommand { check_weight_value $weight_memory_num }
+  ttk::entry       $w.wf.e_c  -textvariable weight_comb_num   -width 10 -state disabled -validate all -validatecommand { check_weight_value $weight_comb_num }
+  ttk::entry       $w.wf.e_f  -textvariable weight_fsm_num    -width 10 -state disabled -validate all -validatecommand { check_weight_value $weight_fsm_num }
+  ttk::entry       $w.wf.e_a  -textvariable weight_assert_num -width 10 -state disabled -validate all -validatecommand { check_weight_value $weight_assert_num }
 
   grid $w.wf.cb_l -row 0 -column 0 -sticky news -padx 3 -pady 3
   grid $w.wf.e_l  -row 0 -column 1 -sticky news -padx 3 -pady 3
@@ -575,27 +590,27 @@ proc create_rank_cdds_options {w} {
   grid $w.wf.e_a  -row 5 -column 1 -sticky news -padx 3 -pady 3
 
   # Create names-only frame
-  frame $w.nof
-  checkbutton $w.nof.cb -text "Generate ranking report displaying only the names of the CDD files in the order they should be run" -variable names_only -anchor w
+  ttk::frame $w.nof
+  ttk::checkbutton $w.nof.cb -text "Generate ranking report displaying only the names of the CDD files in the order they should be run" -variable names_only
   pack $w.nof.cb -side left -fill x
 
   # Create verbose frame
-  frame $w.verbose
-  checkbutton $w.verbose.cb -text "Display verbose information when running rank command" -variable rank_verbose -anchor w
+  ttk::frame $w.verbose
+  ttk::checkbutton $w.verbose.cb -text "Display verbose information when running rank command" -variable rank_verbose
   pack $w.verbose.cb -side left -fill x
 
   # Create button frame
-  frame  $w.bf
+  ttk::frame  $w.bf
   help_button $w.bf.help chapter.gui.rank section.gui.rank.options
-  button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
-  button $w.bf.next   -width 10 -text "Next"   -command "goto_next_pane $w"
-  button $w.bf.prev   -width 10 -text "Back"   -command "goto_prev_pane $w"
-  pack   $w.bf.help   -side right -pady 3
-  pack   $w.bf.cancel -side right -padx 3 -pady 3
-  pack   $w.bf.next   -side right -padx 3 -pady 3
-  pack   $w.bf.prev   -side left  -padx 3 -pady 3
+  ttk::button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
+  ttk::button $w.bf.next   -width 10 -text "Next"   -command "goto_next_pane $w"
+  ttk::button $w.bf.prev   -width 10 -text "Back"   -command "goto_prev_pane $w"
+  pack   $w.bf.help   -side right -padx 4 -pady 4
+  pack   $w.bf.cancel -side right -padx 4 -pady 4
+  pack   $w.bf.next   -side right -padx 4 -pady 4
+  pack   $w.bf.prev   -side left  -padx 4 -pady 4
 
-  $w.ff.e configure -vcmd "handle_rank_cdds_filename $w"
+  $w.ff.e configure -validatecommand "handle_rank_cdds_filename $w"
 
   # Pack top-level frames
   pack $w.ff      -padx 3 -pady 3 -fill x
@@ -830,11 +845,11 @@ proc create_rank_cdds_files {w} {
   global rank_view tablelistopts
 
   # Create top-most frame
-  frame $w
+  ttk::frame $w
 
   # Create filename frame
-  frame     $w.f
-  frame     $w.f.t
+  ttk::frame     $w.f
+  ttk::frame     $w.f.t
   tablelist::tablelist $w.f.t.lb -columns {0 "Required" center 0 "CDD Filename"} -selectmode extended \
     -xscrollcommand "$w.f.t.hb set" -yscrollcommand "$w.f.t.vb set" -stretch {1} -movablerows 1 \
     -editendcommand rank_files_edit_end_cmd
@@ -842,8 +857,8 @@ proc create_rank_cdds_files {w} {
     $w.f.t.lb configure -$key $value
   }
   $w.f.t.lb columnconfigure 0 -name required -editable 1 -editwindow checkbutton -formatcommand empty_string
-  scrollbar $w.f.t.hb -orient horizontal -command "$w.f.t.lb xview" -takefocus 0
-  scrollbar $w.f.t.vb -command "$w.f.t.lb yview" -takefocus 0
+  ttk::scrollbar $w.f.t.hb -orient horizontal -command "$w.f.t.lb xview" -takefocus 0
+  ttk::scrollbar $w.f.t.vb -command "$w.f.t.lb yview" -takefocus 0
   grid rowconfigure    $w.f.t 0 -weight 1
   grid columnconfigure $w.f.t 0 -weight 1
   grid $w.f.t.lb -row 0 -column 0 -sticky news
@@ -851,13 +866,13 @@ proc create_rank_cdds_files {w} {
   grid $w.f.t.hb -row 1 -column 0 -sticky ew
 
   # Create top button frame
-  frame  $w.f.b
-  button $w.f.b.addfile -text "Add CDD File(s)"             -command "handle_rank_cdds_add_files $w"
-  button $w.f.b.adddir  -text "Add CDDs from Directory"     -command "handle_rank_cdds_add_dir $w"
-  button $w.f.b.addcur  -text "Add Currently Opened"        -command "handle_rank_cdds_add_curr $w"     -state disabled
-  button $w.f.b.addreq  -text "Add Required CDD File(s)"    -command "handle_rank_cdds_add_req_cdd $w"
-  button $w.f.b.addreqs -text "Add Required CDDs from List" -command "handle_rank_cdds_add_req_list $w"
-  button $w.f.b.delete  -text "Delete"                      -command "handle_rank_cdds_delete_files $w" -state disabled
+  ttk::frame  $w.f.b
+  ttk::button $w.f.b.addfile -text "Add CDD File(s)"             -command "handle_rank_cdds_add_files $w"
+  ttk::button $w.f.b.adddir  -text "Add CDDs from Directory"     -command "handle_rank_cdds_add_dir $w"
+  ttk::button $w.f.b.addcur  -text "Add Currently Opened"        -command "handle_rank_cdds_add_curr $w"     -state disabled
+  ttk::button $w.f.b.addreq  -text "Add Required CDD File(s)"    -command "handle_rank_cdds_add_req_cdd $w"
+  ttk::button $w.f.b.addreqs -text "Add Required CDDs from List" -command "handle_rank_cdds_add_req_list $w"
+  ttk::button $w.f.b.delete  -text "Delete"                      -command "handle_rank_cdds_delete_files $w" -state disabled
   pack   $w.f.b.addfile -fill x -padx 3 -pady 3
   pack   $w.f.b.adddir  -fill x -padx 3 -pady 3
   pack   $w.f.b.addcur  -fill x -padx 3 -pady 3
@@ -869,13 +884,13 @@ proc create_rank_cdds_files {w} {
   pack $w.f.b -side right -fill y
 
   # Create miscellaneous frame
-  frame $w.m
-  label $w.m.l
+  ttk::frame $w.m
+  ttk::label $w.m.l
   pack $w.m.l -side left -pady 4
 
   # Create save frame
-  frame  $w.save
-  button $w.save.b1 -text "Save Options to File..." -command {
+  ttk::frame  $w.save
+  ttk::button $w.save.b1 -text "Save Options to File..." -command {
     set rank_sname [tk_getSaveFile -title "Save Rank Command Options to File..." -initialfile $rank_sname -parent .rankwin]
     if {$rank_sname ne ""} {
       if {[catch {set fp [open $rank_sname "w"]}]} {
@@ -887,20 +902,20 @@ proc create_rank_cdds_files {w} {
       close $fp
     }
   }
-  button $w.save.b2 -text "Save Required CDDs to File..." -state disabled -command "save_required_cdds_to_file $w"
+  ttk::button $w.save.b2 -text "Save Required CDDs to File..." -state disabled -command "save_required_cdds_to_file $w"
   pack $w.save.b1 -side left  -pady 4
   pack $w.save.b2 -side right -pady 4
 
   # Create button frame
-  frame  $w.bf
+  ttk::frame  $w.bf
   help_button $w.bf.help chapter.gui.rank section.gui.rank.files
-  button $w.bf.cancel   -width 10 -text "Cancel"   -command "destroy [winfo toplevel $w]"
-  button $w.bf.generate -width 10 -text "Generate" -state disabled -command "generate_rank_cdd_file $w"
-  button $w.bf.prev     -width 10 -text "Back"     -command "goto_prev_pane $w"
-  pack   $w.bf.help     -side right -pady 3
-  pack   $w.bf.cancel   -side right -padx 3 -pady 3
-  pack   $w.bf.generate -side right -padx 3 -pady 3
-  pack   $w.bf.prev     -side left  -padx 3 -pady 3
+  ttk::button $w.bf.cancel   -width 10 -text "Cancel"   -command "destroy [winfo toplevel $w]"
+  ttk::button $w.bf.generate -width 10 -text "Generate" -state disabled -command "generate_rank_cdd_file $w"
+  ttk::button $w.bf.prev     -width 10 -text "Back"     -command "goto_prev_pane $w"
+  pack   $w.bf.help     -side right -padx 4 -pady 4
+  pack   $w.bf.cancel   -side right -padx 4 -pady 4
+  pack   $w.bf.generate -side right -padx 4 -pady 4
+  pack   $w.bf.prev     -side left  -padx 4 -pady 4
   
   # Pack top-level frames
   pack $w.f    -padx 3 -pady 3 -fill both -expand yes
@@ -925,13 +940,13 @@ proc create_rank_cdds_output {w} {
   global rank_filename
 
   # Create top-most frame
-  frame $w
+  ttk::frame $w
 
   # Create output textbox and associated scrollbars
-  frame     $w.f
+  ttk::frame     $w.f
   text      $w.f.t -state disabled -xscrollcommand "$w.f.hb set" -yscrollcommand "$w.f.vb set" -wrap none
-  scrollbar $w.f.vb -command "$w.f.t yview" -takefocus 0
-  scrollbar $w.f.hb -orient horizontal -command "$w.f.t.xview" -takefocus 0
+  ttk::scrollbar $w.f.vb -command "$w.f.t yview" -takefocus 0
+  ttk::scrollbar $w.f.hb -orient horizontal -command "$w.f.t.xview" -takefocus 0
   grid rowconfigure    $w.f 0 -weight 1
   grid columnconfigure $w.f 0 -weight 1
   grid $w.f.t  -row 0 -column 0 -sticky news
@@ -939,18 +954,18 @@ proc create_rank_cdds_output {w} {
   grid $w.f.hb -row 1 -column 0 -sticky ew
   
   # Create viewer button
-  frame  $w.view
-  button $w.view.b -text "View the ranking report in the GUI" -state disabled -command { viewer_show rank {CDD Ranking Report} $rank_filename }
+  ttk::frame  $w.view
+  ttk::button $w.view.b -text "View the ranking report in the GUI" -state disabled -command { viewer_show rank {CDD Ranking Report} $rank_filename }
   pack   $w.view.b -pady 3
   
   # Create button bar
-  frame  $w.bf
+  ttk::frame  $w.bf
   help_button $w.bf.help chapter.gui.rank section.gui.rank.output
-  button $w.bf.finish -width 10 -text "Finish" -command "destroy [winfo toplevel $w]"
-  button $w.bf.prev   -width 10 -text "Back"   -command "goto_prev_pane $w"
-  pack   $w.bf.help   -side right -pady 3
-  pack   $w.bf.finish -side right -padx 3 -pady 3
-  pack   $w.bf.prev   -side left  -padx 3 -pady 3
+  ttk::button $w.bf.finish -width 10 -text "Finish" -command "destroy [winfo toplevel $w]"
+  ttk::button $w.bf.prev   -width 10 -text "Back"   -command "goto_prev_pane $w"
+  pack   $w.bf.help   -side right -padx 4 -pady 4
+  pack   $w.bf.finish -side right -padx 4 -pady 4
+  pack   $w.bf.prev   -side left  -padx 4 -pady 4
 
   # Pack frames
   pack $w.f    -fill both -expand 1

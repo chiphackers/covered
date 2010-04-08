@@ -1,3 +1,18 @@
+################################################################################################
+# Copyright (c) 2006-2010 Trevor Williams                                                      #
+#                                                                                              #
+# This program is free software; you can redistribute it and/or modify                         #
+# it under the terms of the GNU General Public License as published by the Free Software       #
+# Foundation; either version 2 of the License, or (at your option) any later version.          #
+#                                                                                              #
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;    #
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    #
+# See the GNU General Public License for more details.                                         #
+#                                                                                              #
+# You should have received a copy of the GNU General Public License along with this program;   #
+# if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. #
+################################################################################################
+
 # Highlight color values (this will need to be configurable via the preferences window
 set vlog_hl_mode            on
 set vlog_hl_ppkeyword_color ForestGreen
@@ -48,28 +63,35 @@ proc load_verilog {fname pp} {
   set cwd [pwd]
 
   # Set current working directory to the score directory
-  cd [tcl_func_get_score_path]
+  if {[catch "cd [tcl_func_get_score_path]" eid]} {
 
-  if {[catch {set fileText $fileContent($fname)}]} {
-    if {$pp} {
-      set tmpname [tcl_func_preprocess_verilog $fname]
-    } else {
-      set tmpname $fname
+    tk_messageBox -default ok -icon error -message $eid -parent . -type ok
+    set retval 0
+
+  } else {
+
+    if {[catch {set fileText $fileContent($fname)}]} {
+      if {$pp} {
+        set tmpname [tcl_func_preprocess_verilog $fname]
+      } else {
+        set tmpname $fname
+      }
+      if {[catch {set fp [open $tmpname "r"]}]} {
+        tk_messageBox -message "File $fname Not Found!" -title "No File" -icon error
+        set retval 0
+      }
+      set fileContent($fname) [read $fp]
+      close $fp
+      if {$pp} {
+        file delete -force $tmpname
+      }
+      postprocess_verilog $fname
     }
-    if {[catch {set fp [open $tmpname "r"]}]} {
-      tk_messageBox -message "File $fname Not Found!" -title "No File" -icon error
-      set retval 0
-    }
-    set fileContent($fname) [read $fp]
-    close $fp
-    if {$pp} {
-      file delete -force $tmpname
-    }
-    postprocess_verilog $fname
+
+    # Return current working directory
+    cd $cwd
+
   }
-
-  # Return current working directory
-  cd $cwd
 
   return $retval
 

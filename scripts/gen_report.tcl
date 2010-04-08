@@ -1,4 +1,17 @@
-#!/usr/bin/env wish
+################################################################################################
+# Copyright (c) 2006-2010 Trevor Williams                                                      #
+#                                                                                              #
+# This program is free software; you can redistribute it and/or modify                         #
+# it under the terms of the GNU General Public License as published by the Free Software       #
+# Foundation; either version 2 of the License, or (at your option) any later version.          #
+#                                                                                              #
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;    #
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    #
+# See the GNU General Public License for more details.                                         #
+#                                                                                              #
+# You should have received a copy of the GNU General Public License along with this program;   #
+# if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. #
+################################################################################################
 
 set rsel_wsel  0
 set rsel_width "105"
@@ -260,19 +273,19 @@ proc create_report_generation_source {w} {
   global rptgen_sel rptgen_fname
   
   # Create the upper widget frame for this pane
-  frame $w
+  ttk::frame $w
   
   # Create upper widgets
-  frame $w.f
-  frame $w.f.fu
-  frame $w.f.fc
-  frame $w.f.fl
-  radiobutton $w.f.fc.rb_opts -anchor w -text "Create report by interactively selecting options" -variable rptgen_sel -value "options" \
+  ttk::frame $w.f
+  ttk::frame $w.f.fu
+  ttk::frame $w.f.fc
+  ttk::frame $w.f.fl
+  ttk::radiobutton $w.f.fc.rb_opts -text "Create report by interactively selecting options" -variable rptgen_sel -value "options" \
      -command "handle_report_generation_source $w"
-  radiobutton $w.f.fc.rb_file -anchor w -text "Create report by using option file" -variable rptgen_sel -value "file" \
+  ttk::radiobutton $w.f.fc.rb_file -text "Create report by using option file" -variable rptgen_sel -value "file" \
      -command "handle_report_generation_source $w"
-  entry  $w.f.fc.e -state disabled -textvariable rptgen_fname -validate all -vcmd "handle_report_generation_source $w %P 1"
-  button $w.f.fc.b -text "Browse..." -state disabled -command {
+  ttk::entry  $w.f.fc.e -state disabled -textvariable rptgen_fname -validate all -validatecommand "handle_report_generation_source $w %P 1"
+  ttk::button $w.f.fc.b -text "Browse..." -state disabled -command {
     set fname [tk_getOpenFile -title "Select a Report Command Option File" -parent .rselwin]
     if {$fname ne ""} {
       set rptgen_fname $fname
@@ -289,16 +302,16 @@ proc create_report_generation_source {w} {
   pack $w.f.fl -fill both -expand 1
   
   # Create button frame
-  frame $w.bf
+  ttk::frame $w.bf
   help_button $w.bf.help chapter.gui.genreport section.gui.genreport.select
-  button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
-  button $w.bf.next -width 10 -text "Next" -command "
+  ttk::button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
+  ttk::button $w.bf.next -width 10 -text "Next" -command "
     setup_report_selection_options
     goto_next_pane $w
   "
-  pack $w.bf.help   -side right -pady 3
-  pack $w.bf.cancel -side right -padx 3 -pady 3
-  pack $w.bf.next   -side right -padx 3 -pady 3
+  pack $w.bf.help   -side right -padx 4 -pady 4
+  pack $w.bf.cancel -side right -padx 4 -pady 4
+  pack $w.bf.next   -side right -padx 4 -pady 4
   
   # Pack top-level frames
   pack $w.f  -fill both -expand yes
@@ -318,31 +331,31 @@ proc create_report_generation_options {w} {
   set rsel_fname "[file rootname $cdd_name].rpt"
   set rsel_sname ""
 
-  frame $w
+  ttk::frame $w
 
-  frame      $w.f
-  labelframe $w.f.misc -labelanchor nw -text "Set ASCII Report Generation Options" -padx 4 -pady 6
+  ttk::frame      $w.f
+  ttk::labelframe $w.f.misc -labelanchor nw -text "Set ASCII Report Generation Options"
 
   # Create width area
-  checkbutton $w.f.misc.width_val -text "Limit line width to:" -variable rsel_wsel -anchor w -command "
+  ttk::checkbutton $w.f.misc.width_val -text "Limit line width to:" -variable rsel_wsel -command "
     if {$rsel_wsel == 0} {
       $w.f.misc.width_w configure -state disabled
     } else {
       $w.f.misc.width_w configure -state normal
     }
   "
-  entry $w.f.misc.width_w -textvariable rsel_width -width 3 -validate key -vcmd {string is int %P} -invalidcommand bell -state disabled
-  label $w.f.misc.width_lbl -text "characters" -anchor w
+  ttk::entry $w.f.misc.width_w -textvariable rsel_width -width 3 -validate key -validatecommand {string is int %P} -invalidcommand bell -state disabled
+  ttk::label $w.f.misc.width_lbl -text "characters" -anchor w
   
   # Create empty module/instance suppression area
-  checkbutton $w.f.misc.sup_val -text "Suppress modules/instances from output if they contain no coverage information" \
-                                        -variable rsel_sup -onvalue "-s" -offvalue "None" -anchor w
+  ttk::checkbutton $w.f.misc.sup_val -text "Suppress modules/instances from output if they contain no coverage information" \
+                                        -variable rsel_sup -onvalue "-s" -offvalue "None"
 
   # Create bitwise vector combinational logic output
-  checkbutton $w.f.misc.bw_val -text "Output combinational logic vector operations in bitwise format" -variable rsel_bw -onvalue "-b" -offvalue "None" -anchor w
+  ttk::checkbutton $w.f.misc.bw_val -text "Output combinational logic vector operations in bitwise format" -variable rsel_bw -onvalue "-b" -offvalue "None"
 
   # Create checkbutton for showing exclusion IDs
-  checkbutton $w.f.misc.eid_val -text "Show exclusion IDs in detailed/verbose output" -variable rsel_eid -onvalue 1 -offvalue 0 -anchor w
+  ttk::checkbutton $w.f.misc.eid_val -text "Show exclusion IDs in detailed/verbose output" -variable rsel_eid -onvalue 1 -offvalue 0
 
   grid $w.f.misc.width_val -row 0 -column 0 -sticky news -pady 4
   grid $w.f.misc.width_w   -row 0 -column 1 -sticky news -pady 4
@@ -352,32 +365,32 @@ proc create_report_generation_options {w} {
   grid $w.f.misc.eid_val   -row 3 -column 0 -columnspan 3 -sticky nw -pady 4
 
   # Create and pack detail selection area
-  labelframe  $w.f.sdv -text "Level of Detail" -labelanchor nw -padx 4 -pady 6
-  radiobutton $w.f.sdv.s -text "Summary"  -variable rsel_sdv -value "s" -anchor w
-  radiobutton $w.f.sdv.d -text "Detailed" -variable rsel_sdv -value "d" -anchor w
-  radiobutton $w.f.sdv.v -text "Verbose"  -variable rsel_sdv -value "v" -anchor w
+  ttk::labelframe  $w.f.sdv -text "Level of Detail" -labelanchor nw
+  ttk::radiobutton $w.f.sdv.s -text "Summary"  -variable rsel_sdv -value "s"
+  ttk::radiobutton $w.f.sdv.d -text "Detailed" -variable rsel_sdv -value "d"
+  ttk::radiobutton $w.f.sdv.v -text "Verbose"  -variable rsel_sdv -value "v"
 
   pack $w.f.sdv.s -anchor w
   pack $w.f.sdv.d -anchor w
   pack $w.f.sdv.v -anchor w
 
   # Create module/instance selection area
-  labelframe  $w.f.mi -text "Accumulate By" -labelanchor nw -padx 4 -pady 6
-  radiobutton $w.f.mi.m -text "Module"   -variable rsel_mi -value "None" -anchor w
-  radiobutton $w.f.mi.i -text "Instance" -variable rsel_mi -value "-i" -anchor w
+  ttk::labelframe  $w.f.mi -text "Accumulate By" -labelanchor nw
+  ttk::radiobutton $w.f.mi.m -text "Module"   -variable rsel_mi -value "None"
+  ttk::radiobutton $w.f.mi.i -text "Instance" -variable rsel_mi -value "-i"
 
   pack $w.f.mi.m -anchor w
   pack $w.f.mi.i -anchor w
 
   # Create metric selection area
-  labelframe  $w.f.metric -text "Show Metrics" -labelanchor nw -padx 4 -pady 6
-  checkbutton $w.f.metric.l -text "Line"            -variable rsel_l -onvalue "l" -offvalue "None" -anchor w
-  checkbutton $w.f.metric.t -text "Toggle"          -variable rsel_t -onvalue "t" -offvalue "None" -anchor w
-  checkbutton $w.f.metric.m -text "Memory"          -variable rsel_m -onvalue "m" -offvalue "None" -anchor w
-  checkbutton $w.f.metric.c -text "Logic"           -variable rsel_c -onvalue "c" -offvalue "None" -anchor w
-  checkbutton $w.f.metric.f -text "FSM"             -variable rsel_f -onvalue "f" -offvalue "None" -anchor w
-  checkbutton $w.f.metric.a -text "Assertion"       -variable rsel_a -onvalue "a" -offvalue "None" -anchor w
-  checkbutton $w.f.metric.r -text "Race Conditions" -variable rsel_r -onvalue "r" -offvalue "None" -anchor w
+  ttk::labelframe  $w.f.metric -text "Show Metrics" -labelanchor nw
+  ttk::checkbutton $w.f.metric.l -text "Line"            -variable rsel_l -onvalue "l" -offvalue "None"
+  ttk::checkbutton $w.f.metric.t -text "Toggle"          -variable rsel_t -onvalue "t" -offvalue "None"
+  ttk::checkbutton $w.f.metric.m -text "Memory"          -variable rsel_m -onvalue "m" -offvalue "None"
+  ttk::checkbutton $w.f.metric.c -text "Logic"           -variable rsel_c -onvalue "c" -offvalue "None"
+  ttk::checkbutton $w.f.metric.f -text "FSM"             -variable rsel_f -onvalue "f" -offvalue "None"
+  ttk::checkbutton $w.f.metric.a -text "Assertion"       -variable rsel_a -onvalue "a" -offvalue "None"
+  ttk::checkbutton $w.f.metric.r -text "Race Conditions" -variable rsel_r -onvalue "r" -offvalue "None"
 
   pack $w.f.metric.l -anchor w
   pack $w.f.metric.t -anchor w
@@ -388,10 +401,10 @@ proc create_report_generation_options {w} {
   pack $w.f.metric.r -anchor w
 
   # Create covered/uncovered selection area
-  labelframe  $w.f.cue   -text "Coverage Type" -labelanchor nw -padx 4 -pady 6
-  radiobutton $w.f.cue.u -text "Uncovered" -variable rsel_cu -value "None" -anchor w
-  radiobutton $w.f.cue.c -text "Covered"   -variable rsel_cu -value "-c" -anchor w
-  checkbutton $w.f.cue.e -text "Excluded" -variable rsel_excl -onvalue 1 -offvalue 0 -anchor w
+  ttk::labelframe  $w.f.cue   -text "Coverage Type" -labelanchor nw
+  ttk::radiobutton $w.f.cue.u -text "Uncovered" -variable rsel_cu -value "None"
+  ttk::radiobutton $w.f.cue.c -text "Covered"   -variable rsel_cu -value "-c"
+  ttk::checkbutton $w.f.cue.e -text "Excluded" -variable rsel_excl -onvalue 1 -offvalue 0
 
   pack $w.f.cue.u -anchor w
   pack $w.f.cue.c -anchor w
@@ -406,8 +419,8 @@ proc create_report_generation_options {w} {
   grid $w.f.cue    -row 3 -column 0               -sticky news -pady 4 -padx 6
   
   # Create save frame
-  frame $w.save
-  button $w.save.b -text "Save Options to File..." -command {
+  ttk::frame $w.save
+  ttk::button $w.save.b -text "Save Options to File..." -command {
     set rsel_sname [tk_getSaveFile -title "Save Report Options to File..." -initialfile $rsel_sname -parent .rselwin]
     if {$rsel_sname ne ""} {
       if {[catch {set fp [open $rsel_sname "w"]}]} {
@@ -420,10 +433,10 @@ proc create_report_generation_options {w} {
   pack $w.save.b -pady 4
 
   # Create filename frame
-  frame  $w.fname
-  label  $w.fname.lbl -text "Output report to file:" -anchor e
-  entry  $w.fname.e -textvariable rsel_fname
-  button $w.fname.b -text "Browse..." -anchor e -command {
+  ttk::frame  $w.fname
+  ttk::label  $w.fname.lbl -text "Output report to file:" -anchor e
+  ttk::entry  $w.fname.e -textvariable rsel_fname
+  ttk::button $w.fname.b -text "Browse..." -command {
     set rsel_fname [tk_getSaveFile -filetypes $rpt_file_types -initialfile $rsel_fname -title "Save Generated Report As" -parent .rselwin]
   }
   grid columnconfigure $w.fname 1 -weight 1
@@ -432,20 +445,20 @@ proc create_report_generation_options {w} {
   grid $w.fname.b   -row 0 -column 2 -sticky ew -pady 4
 
   # Allow the user to specify if they would like to view the report after it is generated
-  frame $w.view
-  checkbutton $w.view.cb -text "View the report in the GUI after it is created" -variable rsel_view -anchor w
+  ttk::frame $w.view
+  ttk::checkbutton $w.view.cb -text "View the report in the GUI after it is created" -variable rsel_view
   pack $w.view.cb -side left -pady 4
 
   # Create button frame
-  frame  $w.bf
-  button $w.bf.back   -width 10 -text "Back" -command "goto_prev_pane $w"
-  button $w.bf.create -width 10 -text "Create" -command "create_report $w"
-  button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
+  ttk::frame  $w.bf
+  ttk::button $w.bf.back   -width 10 -text "Back" -command "goto_prev_pane $w"
+  ttk::button $w.bf.create -width 10 -text "Create" -command "create_report $w"
+  ttk::button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
   help_button $w.bf.help chapter.gui.genreport section.gui.genreport.options
-  pack $w.bf.help   -side right -pady 3
-  pack $w.bf.cancel -side right -padx 3 -pady 3
-  pack $w.bf.create -side right -padx 3 -pady 3
-  pack $w.bf.back   -side left  -padx 3 -pady 3
+  pack $w.bf.help   -side right -padx 4 -pady 4
+  pack $w.bf.cancel -side right -padx 4 -pady 4
+  pack $w.bf.create -side right -padx 4 -pady 4
+  pack $w.bf.back   -side left  -padx 4 -pady 4
 
   # Now pack all of the frames
   pack $w.f     -fill both -side top

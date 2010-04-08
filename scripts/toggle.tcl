@@ -1,3 +1,18 @@
+################################################################################################
+# Copyright (c) 2006-2010 Trevor Williams                                                      #
+#                                                                                              #
+# This program is free software; you can redistribute it and/or modify                         #
+# it under the terms of the GNU General Public License as published by the Free Software       #
+# Foundation; either version 2 of the License, or (at your option) any later version.          #
+#                                                                                              #
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;    #
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    #
+# See the GNU General Public License for more details.                                         #
+#                                                                                              #
+# You should have received a copy of the GNU General Public License along with this program;   #
+# if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. #
+################################################################################################
+
 set sig_name         ""
 set curr_toggle_ptr  ""
 set toggle_geometry  ""
@@ -47,19 +62,19 @@ proc create_toggle_window {signal} {
     toplevel .togwin
     wm title .togwin "Toggle Coverage - Verbose"
 
-    frame .togwin.f -relief raised -borderwidth 1
+    ttk::frame .togwin.f -relief raised -borderwidth 1
 
     # Add toggle information
-    label .togwin.f.l_01 -anchor w -text "Toggle 0->1"
-    label .togwin.f.l_10 -anchor w -text "Toggle 1->0"
-    text  .togwin.f.t -height 2 -width 40 -xscrollcommand ".togwin.f.hb set" -wrap none -spacing1 2 -spacing3 3
-    scrollbar .togwin.f.hb -orient horizontal -command ".togwin.f.t xview"
+    ttk::label     .togwin.f.l_01 -anchor w -text "Toggle 0->1"
+    ttk::label     .togwin.f.l_10 -anchor w -text "Toggle 1->0"
+    text           .togwin.f.t -height 2 -width 40 -xscrollcommand ".togwin.f.hb set" -wrap none -spacing1 2 -spacing3 3
+    ttk::scrollbar .togwin.f.hb -orient horizontal -command ".togwin.f.t xview"
 
     # Create bottom information bar
-    label .togwin.f.info -anchor e
+    ttk::label .togwin.f.info -anchor e
 
     # Create exclude checkbutton
-    checkbutton .togwin.f.excl -text "Exclude" -variable toggle_excluded -command {
+    ttk::checkbutton .togwin.f.excl -text "Exclude" -variable toggle_excluded -command {
       set toggle_reason ""
       if {$exclude_reasons_enabled == 1 && $toggle_excluded == 1} {
         set toggle_reason [get_exclude_reason .togwin]
@@ -78,17 +93,17 @@ proc create_toggle_window {signal} {
     set_balloon .togwin.f.excl "If set, excludes this signal from toggle coverage consideration"
 
     # Create bottom button bar
-    frame .togwin.bf -relief raised -borderwidth 1
-    button .togwin.bf.close -text "Close" -width 10 -command {
+    ttk::frame .togwin.bf -relief raised -borderwidth 1
+    ttk::button .togwin.bf.close -text "Close" -width 10 -command {
       rm_pointer curr_toggle_ptr
       destroy .togwin
     }
     help_button .togwin.bf.help chapter.gui.toggle ""
-    button .togwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -relief flat -command {
+    ttk::button .togwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -command {
       display_toggle $prev_toggle_index
     }
     set_balloon .togwin.bf.prev "Click to view the previous uncovered signal in this window"
-    button .togwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -relief flat -command {
+    ttk::button .togwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -command {
       display_toggle $next_toggle_index
     }
     set_balloon .togwin.bf.next "Click to view the next uncovered signal in this window"
@@ -96,8 +111,8 @@ proc create_toggle_window {signal} {
     # Pack the buttons into the button frame
     pack .togwin.bf.prev  -side left
     pack .togwin.bf.next  -side left
-    pack .togwin.bf.help  -side right -pady 4
-    pack .togwin.bf.close -side right -padx 8 -pady 4
+    pack .togwin.bf.help  -side right -padx 4 -pady 4
+    pack .togwin.bf.close -side right -padx 4 -pady 4
 
     # Pack the widgets into the bottom frame
     grid rowconfigure    .togwin.f 3 -weight 1

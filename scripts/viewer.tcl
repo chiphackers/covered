@@ -1,3 +1,18 @@
+################################################################################################
+# Copyright (c) 2006-2010 Trevor Williams                                                      #
+#                                                                                              #
+# This program is free software; you can redistribute it and/or modify                         #
+# it under the terms of the GNU General Public License as published by the Free Software       #
+# Foundation; either version 2 of the License, or (at your option) any later version.          #
+#                                                                                              #
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;    #
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    #
+# See the GNU General Public License for more details.                                         #
+#                                                                                              #
+# You should have received a copy of the GNU General Public License along with this program;   #
+# if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. #
+################################################################################################
+
 set viewer_start_search_index 1.0
 
 proc viewer_show {type title fname} {
@@ -14,7 +29,7 @@ proc viewer_show {type title fname} {
     wm title $win "Covered - $title - $fname"
 
     # Create search button frame
-    frame  $win.top
+    ttk::frame  $win.top
     frame  $win.top.search -borderwidth 1 -relief ridge -bg white
     label  $win.top.search.f -image [image create photo -file [file join $HOME scripts find.gif]] -bg white -relief flat -borderwidth 0
     bind   $win.top.search.f <ButtonPress-1> "perform_search $win.text.t $win.top.search.e $win.info viewer_start_search_index"
@@ -35,10 +50,10 @@ proc viewer_show {type title fname} {
     pack $win.top.search -side right
 
     # Create text box frame
-    frame     $win.text
+    ttk::frame     $win.text
     text      $win.text.t -xscrollcommand "$win.text.hb set" -yscrollcommand "$win.text.vb set" -wrap none
-    scrollbar $win.text.vb -command "$win.text.t yview"
-    scrollbar $win.text.hb -orient horizontal -command "$win.text.t xview"
+    ttk::scrollbar $win.text.vb -command "$win.text.t yview"
+    ttk::scrollbar $win.text.hb -orient horizontal -command "$win.text.t xview"
     grid rowconfigure    $win.text 0 -weight 1
     grid columnconfigure $win.text 0 -weight 1
     grid $win.text.t  -row 0 -column 0 -sticky news
@@ -46,7 +61,7 @@ proc viewer_show {type title fname} {
     grid $win.text.hb -row 1 -column 0 -sticky ew
 
     # Create information bar frame
-    label $win.info -anchor w
+    ttk::label $win.info -anchor w
    
     # Pack the top-level widgets
     pack $win.top  -fill x

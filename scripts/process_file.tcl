@@ -1,3 +1,18 @@
+################################################################################################
+# Copyright (c) 2006-2010 Trevor Williams                                                      #
+#                                                                                              #
+# This program is free software; you can redistribute it and/or modify                         #
+# it under the terms of the GNU General Public License as published by the Free Software       #
+# Foundation; either version 2 of the License, or (at your option) any later version.          #
+#                                                                                              #
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;    #
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    #
+# See the GNU General Public License for more details.                                         #
+#                                                                                              #
+# You should have received a copy of the GNU General Public License along with this program;   #
+# if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. #
+################################################################################################
+
 # This proc will take in a file, the list of uncovered lines and the
 # the corresponding uncovered lines will be highlighted in the window
 
@@ -92,28 +107,31 @@ proc process_line_cov {} {
 
     # Get the filename of the currently selected functional unit and read it in
     set file_name [tcl_func_get_filename $curr_block]
-    load_verilog $file_name 1
 
-    # Get start and end line numbers of this functional unit
-    set line_pos   [tcl_func_get_funit_start_and_end $curr_block]
-    set start_line [lindex $line_pos 0]
-    set end_line   [lindex $line_pos 1]
+    if {[load_verilog $file_name 1]} {
 
-    # Get line summary information and display this now
-    tcl_func_get_line_summary $curr_block
+      # Get start and end line numbers of this functional unit
+      set line_pos   [tcl_func_get_funit_start_and_end $curr_block]
+      set start_line [lindex $line_pos 0]
+      set end_line   [lindex $line_pos 1]
 
-    # If we have some uncovered values, enable the "next" pointer and menu item
-    if {$line_summary_total != $line_summary_hit} {
-      .bot.right.h.pn.next configure -state normal
-      .menubar.view entryconfigure 0 -state normal
-    } else {
-      .bot.right.h.pn.next configure -state disabled
-      .menubar.view entryconfigure 0 -state disabled
+      # Get line summary information and display this now
+      tcl_func_get_line_summary $curr_block
+
+      # If we have some uncovered values, enable the "next" pointer and menu item
+      if {$line_summary_total != $line_summary_hit} {
+        .bot.right.h.pn.next configure -state normal
+        .menubar.view entryconfigure 0 -state normal
+      } else {
+        .bot.right.h.pn.next configure -state disabled
+        .menubar.view entryconfigure 0 -state disabled
+      }
+      .bot.right.h.pn.prev configure -state disabled
+      .menubar.view entryconfigure 1 -state disabled
+
+      calc_and_display_line_cov
+
     }
-    .bot.right.h.pn.prev configure -state disabled
-    .menubar.view entryconfigure 1 -state disabled
-
-    calc_and_display_line_cov
 
   }
 
@@ -306,25 +324,28 @@ proc process_toggle_cov {} {
 
     # Get the file name of the currently selected functional unit and read it in
     set file_name [tcl_func_get_filename $curr_block]
-    load_verilog $file_name 1
 
-    # Get start and end line numbers of this functional unit
-    set line_pos   [tcl_func_get_funit_start_and_end $curr_block]
-    set start_line [lindex $line_pos 0]
-    set end_line   [lindex $line_pos 1]
+    if {[load_verilog $file_name 1]} {
 
-    # Get line summary information and display this now
-    tcl_func_get_toggle_summary $curr_block
+      # Get start and end line numbers of this functional unit
+      set line_pos   [tcl_func_get_funit_start_and_end $curr_block]
+      set start_line [lindex $line_pos 0]
+      set end_line   [lindex $line_pos 1]
 
-    # If we have some uncovered values, enable the "next" pointer
-    if {$toggle_summary_total != $toggle_summary_hit} {
-      .bot.right.h.pn.next configure -state normal
-    } else {
-      .bot.right.h.pn.next configure -state disabled
+      # Get line summary information and display this now
+      tcl_func_get_toggle_summary $curr_block
+
+      # If we have some uncovered values, enable the "next" pointer
+      if {$toggle_summary_total != $toggle_summary_hit} {
+        .bot.right.h.pn.next configure -state normal
+      } else {
+        .bot.right.h.pn.next configure -state disabled
+      }
+      .bot.right.h.pn.prev configure -state disabled
+
+      calc_and_display_toggle_cov
+
     }
-    .bot.right.h.pn.prev configure -state disabled
-
-    calc_and_display_toggle_cov
 
   }
 
@@ -469,25 +490,28 @@ proc process_memory_cov {} {
 
     # Get the file name of the currently selected functional unit and read it in
     set file_name [tcl_func_get_filename $curr_block]
-    load_verilog $file_name 1
 
-    # Get start and end line numbers of this functional unit
-    set line_pos   [tcl_func_get_funit_start_and_end $curr_block]
-    set start_line [lindex $line_pos 0]
-    set end_line   [lindex $line_pos 1]
+    if {[load_verilog $file_name 1]} {
 
-    # Get line summary information and display this now
-    tcl_func_get_memory_summary $curr_block
+      # Get start and end line numbers of this functional unit
+      set line_pos   [tcl_func_get_funit_start_and_end $curr_block]
+      set start_line [lindex $line_pos 0]
+      set end_line   [lindex $line_pos 1]
 
-    # If we have some uncovered values, enable the "next" pointer
-    if {$memory_summary_total != $memory_summary_hit} {
-      .bot.right.h.pn.next configure -state normal
-    } else {
-      .bot.right.h.pn.next configure -state disabled
+      # Get line summary information and display this now
+      tcl_func_get_memory_summary $curr_block
+
+      # If we have some uncovered values, enable the "next" pointer
+      if {$memory_summary_total != $memory_summary_hit} {
+        .bot.right.h.pn.next configure -state normal
+      } else {
+        .bot.right.h.pn.next configure -state disabled
+      }
+      .bot.right.h.pn.prev configure -state disabled
+
+      calc_and_display_memory_cov
+
     }
-    .bot.right.h.pn.prev configure -state disabled
-
-    calc_and_display_memory_cov
 
   }
 
@@ -632,25 +656,28 @@ proc process_comb_cov {} {
 
     # Get the filename of the currently selected functional unit and read it in
     set file_name [tcl_func_get_filename $curr_block]
-    load_verilog $file_name 1
 
-    # Get start and end line numbers of this functional unit
-    set line_pos   [tcl_func_get_funit_start_and_end $curr_block]
-    set start_line [lindex $line_pos 0]
-    set end_line   [lindex $line_pos 1]
+    if {[load_verilog $file_name 1]} {
 
-    # Get line summary information and display this now
-    tcl_func_get_comb_summary $curr_block
+      # Get start and end line numbers of this functional unit
+      set line_pos   [tcl_func_get_funit_start_and_end $curr_block]
+      set start_line [lindex $line_pos 0]
+      set end_line   [lindex $line_pos 1]
 
-    # If we have found uncovered combinations in this module, enable the next button
-    if {$comb_summary_total != $comb_summary_hit} {
-      .bot.right.h.pn.next configure -state normal
-    } else {
-      .bot.right.h.pn.next configure -state disabled
+      # Get line summary information and display this now
+      tcl_func_get_comb_summary $curr_block
+
+      # If we have found uncovered combinations in this module, enable the next button
+      if {$comb_summary_total != $comb_summary_hit} {
+        .bot.right.h.pn.next configure -state normal
+      } else {
+        .bot.right.h.pn.next configure -state disabled
+      }
+      .bot.right.h.pn.prev configure -state disabled
+
+      calc_and_display_comb_cov
+
     }
-    .bot.right.h.pn.prev configure -state disabled
-
-    calc_and_display_comb_cov
 
   }
 
@@ -816,28 +843,31 @@ proc process_fsm_cov {} {
 
     # Get the filename of the currently selected functional unit and read it in
     set file_name [tcl_func_get_filename $curr_block]
-    load_verilog $file_name 1
 
-    # Get start and end line numbers of this functional unit
-    set line_pos   [tcl_func_get_funit_start_and_end $curr_block]
-    set start_line [lindex $line_pos 0]
-    set end_line   [lindex $line_pos 1]
+    if {[load_verilog $file_name 1]} {
 
-    # Get line summary information and display this now
-    tcl_func_get_fsm_summary $curr_block
+      # Get start and end line numbers of this functional unit
+      set line_pos   [tcl_func_get_funit_start_and_end $curr_block]
+      set start_line [lindex $line_pos 0]
+      set end_line   [lindex $line_pos 1]
 
-    # If we have some uncovered values, enable the "next" pointer and menu item
-    if {$fsm_summary_total != $fsm_summary_hit} {
-      .bot.right.h.pn.next configure -state normal
-      .menubar.view entryconfigure 0 -state normal
-    } else {
-      .bot.right.h.pn.next configure -state disabled
-      .menubar.view entryconfigure 0 -state disabled
+      # Get line summary information and display this now
+      tcl_func_get_fsm_summary $curr_block
+
+      # If we have some uncovered values, enable the "next" pointer and menu item
+      if {$fsm_summary_total != $fsm_summary_hit} {
+        .bot.right.h.pn.next configure -state normal
+        .menubar.view entryconfigure 0 -state normal
+      } else {
+        .bot.right.h.pn.next configure -state disabled
+        .menubar.view entryconfigure 0 -state disabled
+      }
+      .bot.right.h.pn.prev configure -state disabled
+      .menubar.view entryconfigure 1 -state disabled
+
+      calc_and_display_fsm_cov
+
     }
-    .bot.right.h.pn.prev configure -state disabled
-    .menubar.view entryconfigure 1 -state disabled
-
-    calc_and_display_fsm_cov
 
   }
 
@@ -979,28 +1009,31 @@ proc process_assert_cov {} {
 
     # Get the filename of the currently selected functional unit and read it in
     set file_name [tcl_func_get_filename $curr_block]
-    load_verilog $file_name 1
 
-    # Get start and end line numbers of this functional unit
-    set line_pos   [tcl_func_get_funit_start_and_end $curr_block]
-    set start_line [lindex $line_pos 0]
-    set end_line   [lindex $line_pos 1]
+    if {[load_verilog $file_name 1]} {
 
-    # Get assertion summary information and display this now
-    tcl_func_get_assert_summary $curr_block
+      # Get start and end line numbers of this functional unit
+      set line_pos   [tcl_func_get_funit_start_and_end $curr_block]
+      set start_line [lindex $line_pos 0]
+      set end_line   [lindex $line_pos 1]
 
-    # If we have some uncovered values, enable the "next" pointer and menu item
-    if {$assert_summary_total != $assert_summary_hit} {
-      .bot.right.h.pn.next configure -state normal
-      .menubar.view entryconfigure 0 -state normal
-    } else {
-      .bot.right.h.pn.next configure -state disabled
-      .menubar.view entryconfigure 0 -state disabled
+      # Get assertion summary information and display this now
+      tcl_func_get_assert_summary $curr_block
+
+      # If we have some uncovered values, enable the "next" pointer and menu item
+      if {$assert_summary_total != $assert_summary_hit} {
+        .bot.right.h.pn.next configure -state normal
+        .menubar.view entryconfigure 0 -state normal
+      } else {
+        .bot.right.h.pn.next configure -state disabled
+        .menubar.view entryconfigure 0 -state disabled
+      }
+      .bot.right.h.pn.prev configure -state disabled
+      .menubar.view entryconfigure 1 -state disabled
+
+      calc_and_display_assert_cov
+
     }
-    .bot.right.h.pn.prev configure -state disabled
-    .menubar.view entryconfigure 1 -state disabled
-
-    calc_and_display_assert_cov
 
   }
 

@@ -1,5 +1,5 @@
 ################################################################################################
-# Copyright (c) 2006-2009 Trevor Williams                                                      #
+# Copyright (c) 2006-2010 Trevor Williams                                                      #
 #                                                                                              #
 # This program is free software; you can redistribute it and/or modify                         #
 # it under the terms of the GNU General Public License as published by the Free Software       #
@@ -12,6 +12,23 @@
 # You should have received a copy of the GNU General Public License along with this program;   #
 # if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. #
 ################################################################################################
+
+proc ttk_optionMenu {w v args} {
+
+  global $v
+
+  ttk::menubutton $w -textvariable $v
+  $w configure -menu [menu $w.m -tearoff 0]
+
+  foreach value $args {
+    $w.m add radiobutton -variable $v -label $value -value $value
+  }
+
+  set $v [lindex $args 0]
+
+  return $w
+
+}
 
 # Include the necessary auxiliary files 
 source [file join $HOME scripts menu_create.tcl]
@@ -47,6 +64,8 @@ set main_start_search_index 1.0
 set curr_uncov_index        ""
 set prev_uncov_index        ""
 set next_uncov_index        ""
+set input_cdd               ""
+
 array set tablelistopts {
   selectbackground   RoyalBlue1
   selectforeground   white
@@ -77,43 +96,43 @@ proc main_view {} {
   menu_create
 
   # Create the information frame
-  frame .covbox -width 710 -height 25 -relief raised -borderwidth 1
+  ttk::frame .covbox -width 710 -height 25 -relief raised -borderwidth 1
   cov_create .covbox
 
   # Create the bottom frame
-  panedwindow .bot -width 1000 -height 500 -sashrelief raised -sashwidth 4
+  ttk::panedwindow .bot -width 1000 -height 500 -orient horizontal
 
   # Create frames for pane handle
-  frame .bot.left  -relief raised -borderwidth 1
-  frame .bot.right -relief raised -borderwidth 1
+  ttk::frame .bot.left  -relief raised -borderwidth 1
+  ttk::frame .bot.right -relief raised -borderwidth 1
 
   ###############################
   # POPULATE RIGHT BOTTOM FRAME #
   ###############################
 
   # Create the textbox header frame
-  frame .bot.right.h
-  label .bot.right.h.tl -text "Cur   Line #       Verilog Source" -anchor w
-  frame .bot.right.h.pn
-  button .bot.right.h.pn.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -state disabled -relief flat -command {
+  ttk::frame .bot.right.h
+  ttk::label .bot.right.h.tl -text "Cur   Line #       Verilog Source" -anchor w
+  ttk::frame .bot.right.h.pn
+  ttk::button .bot.right.h.pn.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -state disabled -command {
     goto_uncov $prev_uncov_index
   }
   set_balloon .bot.right.h.pn.prev "Click to view the previous uncovered item"
-  button .bot.right.h.pn.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -state disabled -relief flat -command {
+  ttk::button .bot.right.h.pn.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -state disabled -command {
     goto_uncov $next_uncov_index
   }
   set_balloon .bot.right.h.pn.next "Click to view the next uncovered item"
   frame .bot.right.h.search -borderwidth 1 -relief ridge -bg white
-  label .bot.right.h.search.find -image [image create photo -file [file join $HOME scripts find.gif]] -bg white -state disabled -relief flat -borderwidth 0
+  label .bot.right.h.search.find -image [image create photo -file [file join $HOME scripts find.gif]] -background white -state disabled -relief flat
   bind .bot.right.h.search.find <ButtonPress-1> {
     perform_search .bot.right.txt .bot.right.h.search.e .info main_start_search_index
   }
   set_balloon .bot.right.h.search.find "Click to find the next occurrence of the search string"
-  entry .bot.right.h.search.e -width 15 -bg white -state disabled -relief flat -insertborderwidth 0 -highlightthickness 0 -disabledbackground white
+  entry .bot.right.h.search.e -width 15 -state disabled -relief flat -bg white
   bind .bot.right.h.search.e <Return> {
     perform_search .bot.right.txt .bot.right.h.search.e .info main_start_search_index
   }
-  label .bot.right.h.search.clear -image [image create photo -file [file join $HOME scripts clear.gif]] -bg white -state disabled -relief flat -borderwidth 0
+  label .bot.right.h.search.clear -image [image create photo -file [file join $HOME scripts clear.gif]] -background white -state disabled -relief flat
   bind .bot.right.h.search.clear <ButtonPress-1> {
     .bot.right.txt tag delete search_found
     .bot.right.h.search.e delete 0 end
@@ -136,9 +155,9 @@ proc main_view {} {
   pack .bot.right.h.search -side right
 
   # Create the text widget to display the modules/instances
-  text      .bot.right.txt -yscrollcommand ".bot.right.vb set" -xscrollcommand ".bot.right.hb set" -wrap none -state disabled
-  scrollbar .bot.right.vb -command ".bot.right.txt yview"
-  scrollbar .bot.right.hb -orient horizontal -command ".bot.right.txt xview"
+  text           .bot.right.txt -yscrollcommand ".bot.right.vb set" -xscrollcommand ".bot.right.hb set" -wrap none -state disabled
+  ttk::scrollbar .bot.right.vb -command ".bot.right.txt yview"
+  ttk::scrollbar .bot.right.hb -orient horizontal -command ".bot.right.txt xview"
 
   # Pack the right paned window
   grid rowconfigure    .bot.right 1 -weight 1
@@ -166,17 +185,17 @@ proc main_view {} {
   .bot.left.tl columnconfigure 7 -hide true
 
   # Create vertical scrollbar frame and pack it
-  frame      .bot.left.sbf
-  ttk::label .bot.left.sbf.ml -relief flat -style TablelistHeader.TLabel -image [image create bitmap -data "#define stuff_width 16\n#define stuff_height 16\nstatic unsigned char stuff_bits[] = {\n0x00, 0x00, 0x00, 0x00, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x00, 0x00, 0x00, 0x00};"]
+  ttk::frame  .bot.left.sbf
+  ttk::label  .bot.left.sbf.ml -relief flat -style TablelistHeader.TLabel -image [image create bitmap -data "#define stuff_width 16\n#define stuff_height 16\nstatic unsigned char stuff_bits[] = {\n0x00, 0x00, 0x00, 0x00, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x00, 0x00, 0x00, 0x00};"]
   set_balloon .bot.left.sbf.ml "Controls the column hide/show state"
 
-  scrollbar  .bot.left.sbf.vb -command {.bot.left.tl yview}
-  ttk::label .bot.left.sbf.l
+  ttk::scrollbar .bot.left.sbf.vb -command {.bot.left.tl yview}
+  ttk::label     .bot.left.sbf.l
   pack .bot.left.sbf.ml -side top    -fill x
   pack .bot.left.sbf.vb -side top    -fill y -expand 1
   pack .bot.left.sbf.l  -side bottom -fill x
 
-  scrollbar .bot.left.hb -orient horizontal -command {.bot.left.tl xview}
+  ttk::scrollbar .bot.left.hb -orient horizontal -command {.bot.left.tl xview}
 
   grid rowconfigure    .bot.left 0 -weight 1
   grid columnconfigure .bot.left 0 -weight 1
@@ -196,14 +215,14 @@ proc main_view {} {
 
   # Pack the bottom window
   update
-  .bot add .bot.left -minsize [expr [winfo reqheight .bot.left] + 100]
+  .bot add .bot.left
   if {$mod_inst_tl_width != ""} {
     .bot.left configure -width $mod_inst_tl_width
   }
   .bot add .bot.right
 
   # Create bottom information bar
-  label .info -anchor w -relief raised -borderwidth 1
+  ttk::label .info -anchor w -relief raised
 
   # Pack the widgets
   pack .bot  -fill both -expand yes
@@ -235,7 +254,7 @@ proc main_view {} {
     check_to_save_and_close_cdd exiting
     save_gui_elements . %W
   }
-  
+ 
 }
 
 proc populate_listbox {} {
@@ -705,6 +724,9 @@ read_coveredrc
 
 # Display main window
 main_view
+
+# Set the theme to the clam theme
+ttk::style theme use $ttk_style
 
 # If an input CDD(s) was specified, load them now
 if {$input_cdd ne ""} {

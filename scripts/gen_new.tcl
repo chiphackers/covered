@@ -1,3 +1,18 @@
+################################################################################################
+# Copyright (c) 2006-2010 Trevor Williams                                                      #
+#                                                                                              #
+# This program is free software; you can redistribute it and/or modify                         #
+# it under the terms of the GNU General Public License as published by the Free Software       #
+# Foundation; either version 2 of the License, or (at your option) any later version.          #
+#                                                                                              #
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;    #
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    #
+# See the GNU General Public License for more details.                                         #
+#                                                                                              #
+# You should have received a copy of the GNU General Public License along with this program;   #
+# if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. #
+################################################################################################
+
 set dump_filetypes {
   {{VCD Dumpfiles} {.vcd}}
   {{LXT2 Dumpfiles} {.lxt2}}
@@ -632,19 +647,19 @@ proc create_new_cdd_source {w} {
   global cddgen_sel cddgen_fname
 
   # Create the upper widget frame for this pane
-  frame $w
+  ttk::frame $w
 
   # Create upper widgets
-  frame $w.f
-  frame $w.f.fu
-  frame $w.f.fc
-  frame $w.f.fl
-  radiobutton $w.f.fc.rb_opts -anchor w -text "Create CDD by interactively selecting options" -variable cddgen_sel -value "options" \
+  ttk::frame $w.f
+  ttk::frame $w.f.fu
+  ttk::frame $w.f.fc
+  ttk::frame $w.f.fl
+  ttk::radiobutton $w.f.fc.rb_opts -text "Create CDD by interactively selecting options" -variable cddgen_sel -value "options" \
      -command "handle_new_cdd_source $w"
-  radiobutton $w.f.fc.rb_file -anchor w -text "Create CDD by using option file" -variable cddgen_sel -value "file" \
+  ttk::radiobutton $w.f.fc.rb_file -text "Create CDD by using option file" -variable cddgen_sel -value "file" \
      -command "handle_new_cdd_source $w"
-  entry  $w.f.fc.e -state disabled -textvariable cddgen_fname -validate all -vcmd "handle_new_cdd_source $w %P 1"
-  button $w.f.fc.b -text "Browse..." -state disabled -command {
+  ttk::entry  $w.f.fc.e -state disabled -textvariable cddgen_fname -validate all -validatecommand "handle_new_cdd_source $w %P 1"
+  ttk::button $w.f.fc.b -text "Browse..." -state disabled -command {
     set fname [tk_getOpenFile -title "Select a Score Command Option File" -parent .newwin]
     if {$fname ne ""} {
       set cddgen_fname $fname
@@ -661,16 +676,16 @@ proc create_new_cdd_source {w} {
   pack $w.f.fl -fill both -expand 1
 
   # Create button frame
-  frame $w.bf
+  ttk::frame $w.bf
   help_button $w.bf.help chapter.gui.new section.gui.new.select
-  button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
-  button $w.bf.next   -width 10 -text "Next" -command "
+  ttk::button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
+  ttk::button $w.bf.next   -width 10 -text "Next" -command "
     setup_cdd_generate_options $w
     goto_next_pane $w
   "
-  pack $w.bf.help   -side right -pady 3
-  pack $w.bf.cancel -side right -padx 3 -pady 3
-  pack $w.bf.next   -side right -padx 3 -pady 3
+  pack $w.bf.help   -side right -padx 4 -pady 4
+  pack $w.bf.cancel -side right -padx 4 -pady 4
+  pack $w.bf.next   -side right -padx 4 -pady 4
 
   # Pack top-level frames
   pack $w.f  -fill both -expand yes
@@ -713,32 +728,32 @@ proc create_new_cdd_name {w} {
   global cdd_filename
 
   # Create top-level frame
-  frame  $w
+  ttk::frame  $w
 
   # Create top frames
-  frame  $w.fu
-  frame  $w.fl
-  frame  $w.cdd
-  label  $w.cdd.l -text "CDD name:"
-  entry  $w.cdd.e -textvariable cdd_filename -validate all
-  button $w.cdd.b -text "Browse" -width 10 -command "create_new_cdd_name_browse $w"
+  ttk::frame  $w.fu
+  ttk::frame  $w.fl
+  ttk::frame  $w.cdd
+  ttk::label  $w.cdd.l -text "CDD name:"
+  ttk::entry  $w.cdd.e -textvariable cdd_filename -validate all
+  ttk::button $w.cdd.b -text "Browse" -width 10 -command "create_new_cdd_name_browse $w"
     
   pack $w.cdd.l -side left  -padx 3 -pady 3 -fill y
   pack $w.cdd.e -side left  -padx 3 -pady 3 -fill x -expand 1
   pack $w.cdd.b -side right -padx 3 -pady 3 -fill y
 
   # Create button bar
-  frame  $w.bf
+  ttk::frame  $w.bf
   help_button $w.bf.help chapter.gui.new section.gui.new.name
-  button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
-  button $w.bf.next   -width 10 -text "Next"   -command "goto_next_pane $w" -state disabled
-  button $w.bf.prev   -width 10 -text "Back"   -command "goto_prev_pane $w"
-  pack $w.bf.help   -side right -pady 3
-  pack $w.bf.cancel -side right -padx 3 -pady 3
-  pack $w.bf.next   -side right -padx 3 -pady 3
-  pack $w.bf.prev   -side left  -padx 3 -pady 3
+  ttk::button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
+  ttk::button $w.bf.next   -width 10 -text "Next"   -command "goto_next_pane $w" -state disabled
+  ttk::button $w.bf.prev   -width 10 -text "Back"   -command "goto_prev_pane $w"
+  pack $w.bf.help   -side right -padx 4 -pady 4
+  pack $w.bf.cancel -side right -padx 4 -pady 4
+  pack $w.bf.next   -side right -padx 4 -pady 4
+  pack $w.bf.prev   -side left  -padx 4 -pady 4
 
-  $w.cdd.e configure -vcmd "create_new_cdd_name_update_next $w"
+  $w.cdd.e configure -validatecommand "create_new_cdd_name_update_next $w"
 
   # Pack frames
   pack $w.fu  -fill both -expand 1
@@ -846,28 +861,28 @@ proc create_new_cdd_dump {w} {
   global simulator
 
   # Add dumpfile widgets
-  frame         $w
-  frame         $w.fu
-  frame         $w.fl
-  frame         $w.dump
-  radiobutton   $w.dump.rn -text "Parse Design Only" -variable dump_vpi_none -value "none" -anchor w -command "handle_new_cdd_dump_states $w"
-  radiobutton   $w.dump.rd -text "Dumpfile:"         -variable dump_vpi_none -value "dump" -anchor w -command "handle_new_cdd_dump_states $w"
-  entry         $w.dump.ed -textvariable dump_file -state disabled -validate all -vcmd "handle_new_cdd_dump_states $w"
-  button        $w.dump.bd -text "Browse" -width 10 -state disabled -command {
+  ttk::frame         $w
+  ttk::frame         $w.fu
+  ttk::frame         $w.fl
+  ttk::frame         $w.dump
+  ttk::radiobutton   $w.dump.rn -text "Parse Design Only" -variable dump_vpi_none -value "none" -command "handle_new_cdd_dump_states $w"
+  ttk::radiobutton   $w.dump.rd -text "Dumpfile:"         -variable dump_vpi_none -value "dump" -command "handle_new_cdd_dump_states $w"
+  ttk::entry         $w.dump.ed -textvariable dump_file -state disabled -validate all -validatecommand "handle_new_cdd_dump_states $w"
+  ttk::button        $w.dump.bd -text "Browse" -width 10 -state disabled -command {
     set dump_file [tk_getOpenFile -title "Select VCD/LXT Dumpfile" -filetypes $dump_filetypes]
   }
-  radiobutton   $w.dump.rv -text "VPI Module:" -variable dump_vpi_none -value "vpi" -anchor w -command "handle_new_cdd_dump_states $w"
-  entry         $w.dump.ev -textvariable vpi_file -state disabled -validate all -vcmd "handle_new_cdd_dump_states $w"
-  tk_optionMenu $w.dump.mv simulator {Icarus Verilog} {Cver} {VCS}
-  radiobutton   $w.dump.rp -text "Dumpvars Module:" -variable dump_vpi_none -value "dumpvars" -anchor w -command "handle_new_cdd_dump_states $w"
-  entry         $w.dump.ep -textvariable dumpvars_file -state disabled -validate all -vcmd "handle_new_cdd_dump_states $w"
-  frame         $w.dump.ts
-  checkbutton   $w.dump.ts.cb -text "Set Top Module Timescale:" -anchor w -variable top_ts -state disabled -command "handle_new_cdd_dump_top_timescale $w"
-  tk_optionMenu $w.dump.ts.n1 top_ts_num1   {1} {10} {100}
-  tk_optionMenu $w.dump.ts.s1 top_ts_scale1 {s} {ms} {us} {ns} {ps} {fs}
-  label         $w.dump.ts.l  -text "/" -state disabled
-  tk_optionMenu $w.dump.ts.n2 top_ts_num2   {1} {10} {100}
-  tk_optionMenu $w.dump.ts.s2 top_ts_scale2 {s} {ms} {us} {ns} {ps} {fs}
+  ttk::radiobutton   $w.dump.rv -text "VPI Module:" -variable dump_vpi_none -value "vpi" -command "handle_new_cdd_dump_states $w"
+    ttk::entry         $w.dump.ev -textvariable vpi_file -state disabled -validate all -validatecommand "handle_new_cdd_dump_states $w"
+  ttk_optionMenu $w.dump.mv simulator {Icarus Verilog} {Cver} {VCS}
+  ttk::radiobutton   $w.dump.rp -text "Dumpvars Module:" -variable dump_vpi_none -value "dumpvars" -command "handle_new_cdd_dump_states $w"
+  ttk::entry         $w.dump.ep -textvariable dumpvars_file -state disabled -validate all -validatecommand "handle_new_cdd_dump_states $w"
+  ttk::frame         $w.dump.ts
+  ttk::checkbutton   $w.dump.ts.cb -text "Set Top Module Timescale:" -variable top_ts -state disabled -command "handle_new_cdd_dump_top_timescale $w"
+  ttk_optionMenu $w.dump.ts.n1 top_ts_num1   {1} {10} {100}
+  ttk_optionMenu $w.dump.ts.s1 top_ts_scale1 {s} {ms} {us} {ns} {ps} {fs}
+  ttk::label         $w.dump.ts.l  -text "/" -state disabled
+  ttk_optionMenu $w.dump.ts.n2 top_ts_num2   {1} {10} {100}
+  ttk_optionMenu $w.dump.ts.s2 top_ts_scale2 {s} {ms} {us} {ns} {ps} {fs}
   pack $w.dump.ts.cb -side left -padx 3 -pady 3
   pack $w.dump.ts.n1 -side left -padx 3 -pady 3
   pack $w.dump.ts.s1 -side left -padx 3 -pady 3
@@ -897,15 +912,15 @@ proc create_new_cdd_dump {w} {
   grid $w.dump.ts -row 4 -column 0 -sticky news -padx 3 -pady 3 -columnspan 3
 
   # Create button bar
-  frame  $w.bf
+  ttk::frame  $w.bf
   help_button $w.bf.help chapter.gui.new section.gui.new.type
-  button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
-  button $w.bf.next   -width 10 -text "Next"   -command "goto_next_pane $w" -state disabled
-  button $w.bf.prev   -width 10 -text "Back"   -command "goto_prev_pane $w"
-  pack $w.bf.help   -side right -pady 3
-  pack $w.bf.cancel -side right -padx 3 -pady 3
-  pack $w.bf.next   -side right -padx 3 -pady 3
-  pack $w.bf.prev   -side left  -padx 3 -pady 3
+  ttk::button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
+  ttk::button $w.bf.next   -width 10 -text "Next"   -command "goto_next_pane $w" -state disabled
+  ttk::button $w.bf.prev   -width 10 -text "Back"   -command "goto_prev_pane $w"
+  pack $w.bf.help   -side right -padx 4 -pady 4
+  pack $w.bf.cancel -side right -padx 4 -pady 4
+  pack $w.bf.next   -side right -padx 4 -pady 4
+  pack $w.bf.prev   -side left  -padx 4 -pady 4
 
   # Pack frames
   pack $w.fu   -fill both -expand 1
@@ -964,34 +979,34 @@ proc create_new_cdd_parse {w} {
   global exclude_always exclude_assign exclude_initial exclude_final exclude_pragma exclude_pragma_name
 
   # Create top-most frame
-  frame $w
-  labelframe $w.parse -text "General Options"
+  ttk::frame $w
+  ttk::labelframe $w.parse -text "General Options"
 
   # Add toplevel design name widgets
-  label $w.parse.top_l -text "Toplevel module name:"
-  entry $w.parse.top_e -textvariable toplevel_name -validate all
+  ttk::label $w.parse.top_l -text "Toplevel module name:"
+  ttk::entry $w.parse.top_e -textvariable toplevel_name -validate all
   
   # Add root pathname widgets
-  label $w.parse.inst_l -text "Root pathname:"
-  entry $w.parse.inst_e -textvariable inst_name
+  ttk::label $w.parse.inst_l -text "Root pathname:"
+  ttk::entry $w.parse.inst_e -textvariable inst_name
   
   # Add delay specification
-  label         $w.parse.delay_l -text "Delay Type:"
-  tk_optionMenu $w.parse.delay_m delay_type None Min Typ Max
+  ttk::label         $w.parse.delay_l -text "Delay Type:"
+  ttk_optionMenu $w.parse.delay_m delay_type None Min Typ Max
   
   # Add race condition option
-  label         $w.parse.race_l  -text "Race Condition Action:"
-  tk_optionMenu $w.parse.race_m race_cond None Silent Warning Error Ignore
-  checkbutton   $w.parse.race_cb -text "Use embedded race condition pragmas" -variable race_cond_pragma
-  entry         $w.parse.race_e  -state disabled -textvariable race_cond_pragma_name
+  ttk::label         $w.parse.race_l  -text "Race Condition Action:"
+  ttk_optionMenu $w.parse.race_m race_cond None Silent Warning Error Ignore
+  ttk::checkbutton   $w.parse.race_cb -text "Use embedded race condition pragmas" -variable race_cond_pragma
+  ttk::entry         $w.parse.race_e  -state disabled -textvariable race_cond_pragma_name
   $w.parse.race_cb configure -command "create_new_cdd_parse_race_pragma_name_cmd $w"
   
   # Add generation options
-  label         $w.parse.gen_l -text "Default Verilog Generation:"
-  tk_optionMenu $w.parse.gen_m design_generation {Verilog 1995} {Verilog 2001} {System Verilog}
+  ttk::label         $w.parse.gen_l -text "Default Verilog Generation:"
+  ttk_optionMenu $w.parse.gen_m design_generation {Verilog 1995} {Verilog 2001} {System Verilog}
 
   # Add assertion options
-  checkbutton $w.parse.assert_ovl -text "Include OVL Assertions" -variable assert_ovl -anchor w
+  ttk::checkbutton $w.parse.assert_ovl -text "Include OVL Assertions" -variable assert_ovl
   
   # Create a grid for the above widgets
   grid columnconfigure $w.parse 3 -weight 1
@@ -1010,13 +1025,13 @@ proc create_new_cdd_parse {w} {
   grid $w.parse.assert_ovl -row 5 -column 0 -padx 3 -pady 3 -sticky news -columnspan 4
 
   # Add exclusion options
-  labelframe  $w.exclude -text "Exclude Options"
-  checkbutton $w.exclude.ea -anchor w -text "Exclude Always Blocks"  -variable exclude_always
-  checkbutton $w.exclude.ec -anchor w -text "Exclude Assign Blocks"  -variable exclude_assign
-  checkbutton $w.exclude.ei -anchor w -text "Exclude Initial Blocks" -variable exclude_initial
-  checkbutton $w.exclude.ef -anchor w -text "Exclude Final Blocks"   -variable exclude_final
-  checkbutton $w.exclude.epc -text "Exclude Within Pragma:" -variable exclude_pragma
-  entry       $w.exclude.epe -state disabled -textvariable exclude_pragma_name
+  ttk::labelframe  $w.exclude     -text "Exclude Options"
+  ttk::checkbutton $w.exclude.ea  -text "Exclude Always Blocks"  -variable exclude_always
+  ttk::checkbutton $w.exclude.ec  -text "Exclude Assign Blocks"  -variable exclude_assign
+  ttk::checkbutton $w.exclude.ei  -text "Exclude Initial Blocks" -variable exclude_initial
+  ttk::checkbutton $w.exclude.ef  -text "Exclude Final Blocks"   -variable exclude_final
+  ttk::checkbutton $w.exclude.epc -text "Exclude Within Pragma:" -variable exclude_pragma
+  ttk::entry       $w.exclude.epe -state disabled -textvariable exclude_pragma_name
   $w.exclude.epc configure -command "create_new_cdd_parse_exclude_pragma_cmd $w"
   
   grid $w.exclude.ea  -row 0 -column 0 -sticky news -padx 3 -pady 3
@@ -1027,17 +1042,17 @@ proc create_new_cdd_parse {w} {
   grid $w.exclude.epe -row 2 -column 1 -sticky news -padx 3 -pady 3
 
   # Create button bar
-  frame  $w.bf
+  ttk::frame  $w.bf
   help_button $w.bf.help chapter.gui.new section.gui.new.options1
-  button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
-  button $w.bf.next   -width 10 -text "Next"   -command "goto_next_pane $w" -state disabled
-  button $w.bf.prev   -width 10 -text "Back"   -command "goto_prev_pane $w"
-  pack $w.bf.help   -side right -pady 3
-  pack $w.bf.cancel -side right -padx 3 -pady 3
-  pack $w.bf.next   -side right -padx 3 -pady 3
-  pack $w.bf.prev   -side left  -padx 3 -pady 3
+  ttk::button $w.bf.cancel -width 10 -text "Cancel" -command "destroy [winfo toplevel $w]"
+  ttk::button $w.bf.next   -width 10 -text "Next"   -command "goto_next_pane $w" -state disabled
+  ttk::button $w.bf.prev   -width 10 -text "Back"   -command "goto_prev_pane $w"
+  pack $w.bf.help   -side right -padx 4 -pady 4
+  pack $w.bf.cancel -side right -padx 4 -pady 4
+  pack $w.bf.next   -side right -padx 4 -pady 4
+  pack $w.bf.prev   -side left  -padx 4 -pady 4
 
-  $w.parse.top_e configure -vcmd "handle_new_cdd_parse_top_name_cmd $w"
+  $w.parse.top_e configure -validatecommand "handle_new_cdd_parse_top_name_cmd $w"
 
   # Pack frames
   pack $w.parse   -fill x -pady 10
@@ -1306,22 +1321,22 @@ proc create_new_cdd_parse2 {w} {
 
   global tablelistopts dump_vpi_none
 
-  frame $w
-  frame $w.opts
+  ttk::frame $w
+  ttk::frame $w.opts
 
   # Create and pack the listbox frame
-  frame     $w.opts.lbf
+  ttk::frame           $w.opts.lbf
   tablelist::tablelist $w.opts.lbf.lb -exportselection 0 -movablerows 1 -selectmode single -columns {0 "Type" 0 "Argument"} \
     -labelcommand tablelist::sortByColumn -xscrollcommand "$w.opts.lbf.hb set" -yscrollcommand "$w.opts.lbf.vf.vb set" -stretch all
   foreach {key value} [array get tablelistopts] {
     $w.opts.lbf.lb configure -$key $value
   }
-  frame     $w.opts.lbf.vf
-  label     $w.opts.lbf.vf.l
-  scrollbar $w.opts.lbf.vf.vb -command "$w.opts.lbf.lb yview" -takefocus 0
+  ttk::frame     $w.opts.lbf.vf
+  ttk::label     $w.opts.lbf.vf.l
+  ttk::scrollbar $w.opts.lbf.vf.vb -command "$w.opts.lbf.lb yview" -takefocus 0
   pack      $w.opts.lbf.vf.l  -fill x
   pack      $w.opts.lbf.vf.vb -fill y -expand 1
-  scrollbar $w.opts.lbf.hb -orient horizontal -command "$w.opts.lbf.lb xview" -takefocus 0
+  ttk::scrollbar $w.opts.lbf.hb -orient horizontal -command "$w.opts.lbf.lb xview" -takefocus 0
 
   grid rowconfigure    $w.opts.lbf 0 -weight 1
   grid columnconfigure $w.opts.lbf 0 -weight 1
@@ -1330,8 +1345,8 @@ proc create_new_cdd_parse2 {w} {
   grid $w.opts.lbf.hb -row 1 -column 0 -sticky ew
 
   # Create and pack the button frame
-  frame       $w.opts.bf
-  menubutton  $w.opts.bf.ins_mb -text "Insert" -relief raised -highlightthickness 1 -takefocus 1
+  ttk::frame       $w.opts.bf
+  ttk::menubutton  $w.opts.bf.ins_mb -text "Insert" -takefocus 1
   set m [menu $w.opts.bf.ins_mb.m -tearoff false -takefocus 1]
   $w.opts.bf.ins_mb configure -menu $m
   bind $w.opts.bf.ins_mb <Return> "
@@ -1355,8 +1370,8 @@ proc create_new_cdd_parse2 {w} {
   $m add separator
   $m add command -label "Command File..."         -command "handle_new_cdd_parse2_cmd_file $w"
 
-  button $w.opts.bf.edit   -text "Edit..." -width 10 -state disabled -command "handle_new_cdd_parse2_edit $w"
-  button $w.opts.bf.delete -text "Delete"  -width 10 -state disabled -command "$w.opts.lbf.lb delete [$w.opts.lbf.lb curselection]"
+  ttk::button $w.opts.bf.edit   -text "Edit..." -width 10 -state disabled -command "handle_new_cdd_parse2_edit $w"
+  ttk::button $w.opts.bf.delete -text "Delete"  -width 10 -state disabled -command "$w.opts.lbf.lb delete [$w.opts.lbf.lb curselection]"
   bind $w.opts.bf.edit <Return> {%W invoke}
   bind $w.opts.bf.delete <Return> {%W invoke}
   bind $w.opts.lbf.lb <<ListboxSelect>> "handle_new_cdd_parse2_lb $w"
@@ -1369,8 +1384,8 @@ proc create_new_cdd_parse2 {w} {
   pack $w.opts.bf  -side right -fill y
 
   # Create command file save button
-  frame $w.save
-  button $w.save.b -text "Save Options to File..." -command {
+  ttk::frame $w.save
+  ttk::button $w.save.b -text "Save Options to File..." -command {
     set cddgen_sname [tk_getSaveFile -title "Save Score Options to File..." -initialfile $cddgen_sname -parent .newwin]
     if {$cddgen_sname ne ""} {
       if {[catch {set fp [open $cddgen_sname "w"]}]} {
@@ -1385,15 +1400,15 @@ proc create_new_cdd_parse2 {w} {
   pack $w.save.b -pady 4
 
   # Create button bar
-  frame  $w.bf
+  ttk::frame  $w.bf
   help_button $w.bf.help chapter.gui.new section.gui.new.options2
-  button $w.bf.cancel -width 10 -text "Cancel"   -command "destroy [winfo toplevel $w]"
-  button $w.bf.gen    -width 10 -text "Generate" -command "generate_new_cdd $w"
-  button $w.bf.prev   -width 10 -text "Back"     -command "goto_prev_pane $w" 
-  pack $w.bf.help   -side right -pady 3
-  pack $w.bf.cancel -side right -padx 3 -pady 3
-  pack $w.bf.gen    -side right -padx 3 -pady 3
-  pack $w.bf.prev   -side left  -padx 3 -pady 3
+  ttk::button $w.bf.cancel -width 10 -text "Cancel"   -command "destroy [winfo toplevel $w]"
+  ttk::button $w.bf.gen    -width 10 -text "Generate" -command "generate_new_cdd $w"
+  ttk::button $w.bf.prev   -width 10 -text "Back"     -command "goto_prev_pane $w" 
+  pack $w.bf.help   -side right -padx 4 -pady 4
+  pack $w.bf.cancel -side right -padx 4 -pady 4
+  pack $w.bf.gen    -side right -padx 4 -pady 4
+  pack $w.bf.prev   -side left  -padx 4 -pady 4
 
   # Pack frames
   pack $w.opts -fill both -expand 1
@@ -1421,13 +1436,13 @@ proc create_new_cdd_output {w} {
   global cddgen_auto_open
 
   # Create top-most frame
-  frame $w
+  ttk::frame $w
 
   # Create output textbox and associated scrollbars
-  frame     $w.f
-  text      $w.f.t -state disabled -xscrollcommand "$w.f.hb set" -yscrollcommand "$w.f.vb set" -wrap none
-  scrollbar $w.f.vb -command "$w.f.t yview" -takefocus 0
-  scrollbar $w.f.hb -orient horizontal -command "$w.f.t.xview" -takefocus 0
+  ttk::frame     $w.f
+  text           $w.f.t -state disabled -xscrollcommand "$w.f.hb set" -yscrollcommand "$w.f.vb set" -wrap none
+  ttk::scrollbar $w.f.vb -command "$w.f.t yview" -takefocus 0
+  ttk::scrollbar $w.f.hb -orient horizontal -command "$w.f.t.xview" -takefocus 0
   grid rowconfigure    $w.f 0 -weight 1
   grid columnconfigure $w.f 0 -weight 1
   grid $w.f.t  -row 0 -column 0 -sticky news
@@ -1435,15 +1450,15 @@ proc create_new_cdd_output {w} {
   grid $w.f.hb -row 1 -column 0 -sticky ew
 
   # Create open checkbutton
-  frame       $w.fo
-  checkbutton $w.fo.cb -text "Open/Merge the newly create CDD" -state disabled -variable cddgen_auto_open
+  ttk::frame       $w.fo
+  ttk::checkbutton $w.fo.cb -text "Open/Merge the newly create CDD" -state disabled -variable cddgen_auto_open
   pack $w.fo.cb -pady 3
 
   # Create button bar
-  frame  $w.bf
+  ttk::frame  $w.bf
   help_button $w.bf.help chapter.gui.new section.gui.new.output
-  button $w.bf.finish -width 10 -text "Finish" -command "create_new_cdd_finish $w"
-  button $w.bf.prev   -width 10 -text "Back"   -command "goto_prev_pane $w"
+  ttk::button $w.bf.finish -width 10 -text "Finish" -command "create_new_cdd_finish $w"
+  ttk::button $w.bf.prev   -width 10 -text "Back"   -command "goto_prev_pane $w"
   pack   $w.bf.help   -side right -padx 4 -pady 4
   pack   $w.bf.finish -side right -padx 4 -pady 4
   pack   $w.bf.prev   -side left  -padx 4 -pady 4
@@ -1499,18 +1514,18 @@ proc get_module_generation {modname gen} {
   wm title .mgenwin "Specify generation for module"
 
   # Add selection widgets
-  frame .mgenwin.f -relief raised
-  label .mgenwin.f.l -text "Module name:"
-  entry .mgenwin.f.e -textvariable mod_gen_modname -validate all
-  tk_optionMenu .mgenwin.f.m modgen "Verilog 1995" "Verilog 2001" "System Verilog"
+  ttk::frame .mgenwin.f -relief raised
+  ttk::label .mgenwin.f.l -text "Module name:"
+  ttk::entry .mgenwin.f.e -textvariable mod_gen_modname -validate all
+  ttk_optionMenu .mgenwin.f.m modgen "Verilog 1995" "Verilog 2001" "System Verilog"
   pack .mgenwin.f.l -side left  -padx 8 -pady 4 -fill x
   pack .mgenwin.f.e -side left  -padx 8 -pady 4 -fill x -expand 1
   pack .mgenwin.f.m -side right -padx 8 -pady 4 -fill x
 
   # Add button frame widgets
-  frame  .mgenwin.bf -relief raised
+  ttk::frame  .mgenwin.bf -relief raised
   help_button .mgenwin.bf.help chapter.gui.new section.gui.new.options2.modgen
-  button .mgenwin.bf.ok -text "OK" -width 10 -state disabled -command {
+  ttk::button .mgenwin.bf.ok -text "OK" -width 10 -state disabled -command {
     if {$modgen eq "Verilog 1995"} {
       set mod_gen_retval "$mod_gen_modname=1"
     } elseif {$modgen eq "Verilog 2001"} {
@@ -1521,17 +1536,17 @@ proc get_module_generation {modname gen} {
     destroy .mgenwin
   }
   bind .mgenwin.bf.ok <Return> {%W invoke}
-  button .mgenwin.bf.cancel -text "Cancel" -width 10 -command {
+  ttk::button .mgenwin.bf.cancel -text "Cancel" -width 10 -command {
     set mod_gen_retval ""
     destroy .mgenwin
   }
   bind .mgenwin.bf.cancel <Return> {%W invoke}
-  pack .mgenwin.bf.help   -side right -pady 3
-  pack .mgenwin.bf.cancel -side right -padx 3 -pady 3
-  pack .mgenwin.bf.ok     -side right -padx 3 -pady 3
+  pack .mgenwin.bf.help   -side right -padx 4 -pady 4
+  pack .mgenwin.bf.cancel -side right -padx 4 -pady 4
+  pack .mgenwin.bf.ok     -side right -padx 4 -pady 4
 
   # Add functionality for entry
-  .mgenwin.f.e configure -vcmd {
+  .mgenwin.f.e configure -validatecommand {
     if {$mod_gen_modname ne ""} {
       .mgenwin.bf.ok configure -state normal
     } else {
@@ -1567,31 +1582,31 @@ proc get_module_exclusion {modname} {
   wm title .mexclwin "Specify module to exclude"
 
   # Add selection widgets
-  frame .mexclwin.f -relief raised
-  label .mexclwin.f.l -text "Module name:"
-  entry .mexclwin.f.e -textvariable mod_excl_modname -validate all
+  ttk::frame .mexclwin.f -relief raised
+  ttk::label .mexclwin.f.l -text "Module name:"
+  ttk::entry .mexclwin.f.e -textvariable mod_excl_modname -validate all
   pack .mexclwin.f.l -side left -padx 8 -pady 4 -fill x
   pack .mexclwin.f.e -side left -padx 8 -pady 4 -fill x -expand 1
 
   # Add button frame widgets
-  frame .mexclwin.bf -relief raised
+  ttk::frame .mexclwin.bf -relief raised
   help_button .mexclwin.bf.help chapter.gui.new section.gui.new.options2.modexcl
-  button .mexclwin.bf.ok -text "OK" -width 10 -state disabled -command {
+  ttk::button .mexclwin.bf.ok -text "OK" -width 10 -state disabled -command {
     set mod_excl_retval "$mod_excl_modname"
     destroy .mexclwin
   }
   bind .mexclwin.bf.ok <Return> {%W invoke}
-  button .mexclwin.bf.cancel -text "Cancel" -width 10 -command {
+  ttk::button .mexclwin.bf.cancel -text "Cancel" -width 10 -command {
     set mod_excl_retval ""
     destroy .mexclwin
   }
   bind .mexclwin.bf.cancel <Return> {%W invoke}
-  pack .mexclwin.bf.help   -side right -pady 3
-  pack .mexclwin.bf.cancel -side right -padx 3 -pady 3
-  pack .mexclwin.bf.ok     -side right -padx 3 -pady 3
+  pack .mexclwin.bf.help   -side right -padx 4 -pady 4
+  pack .mexclwin.bf.cancel -side right -padx 4 -pady 4
+  pack .mexclwin.bf.ok     -side right -padx 4 -pady 4
 
   # Provide functionality for the entry
-  .mexclwin.f.e configure -vcmd {
+  .mexclwin.f.e configure -validatecommand {
     if {$mod_excl_modname ne ""} {
       .mexclwin.bf.ok configure -state normal
     } else {
@@ -1628,16 +1643,16 @@ proc get_library_extensions {extensions} {
   wm title .lextwin "Specify library extensions"
 
   # Add selection widgets
-  frame     .lextwin.f
-  frame     .lextwin.f.ef
-  entry     .lextwin.f.ef.e -validate all -textvariable lib_ext_name
-  button    .lextwin.f.ef.b -text "Update" -width 10 -state disabled
+  ttk::frame     .lextwin.f
+  ttk::frame     .lextwin.f.ef
+  ttk::entry     .lextwin.f.ef.e -validate all -textvariable lib_ext_name
+  ttk::button    .lextwin.f.ef.b -text "Update" -width 10 -state disabled
   pack .lextwin.f.ef.e -side left  -fill x -expand 1 -padx 3 -pady 3
   pack .lextwin.f.ef.b -side right -padx 3 -pady 3
-  frame     .lextwin.f.lf
+  ttk::frame     .lextwin.f.lf
   listbox   .lextwin.f.lf.lb -xscrollcommand {.lextwin.f.lf.hb set} -yscrollcommand {.lextwin.f.lf.vb set} -exportselection 0 -selectmode single
-  scrollbar .lextwin.f.lf.hb -orient horizontal -command {.lextwin.f.lf.lb xset} -takefocus 0
-  scrollbar .lextwin.f.lf.vb -command {.lextwin.f.lf.lb yset} -takefocus 0
+  ttk::scrollbar .lextwin.f.lf.hb -orient horizontal -command {.lextwin.f.lf.lb xset} -takefocus 0
+  ttk::scrollbar .lextwin.f.lf.vb -command {.lextwin.f.lf.lb yset} -takefocus 0
   grid rowconfigure    .lextwin.f.lf 0 -weight 1
   grid columnconfigure .lextwin.f.lf 0 -weight 1
   grid .lextwin.f.lf.lb -row 0 -column 0 -sticky news -padx 3 -pady 3
@@ -1675,7 +1690,7 @@ proc get_library_extensions {extensions} {
       .lextwin.f.ef.e  icursor end
     }
   }
-  .lextwin.f.ef.e configure -vcmd {
+  .lextwin.f.ef.e configure -validatecommand {
     # See if the current name exists in the listbox
     if {[llength %P] == 0} {
       set curr_val "<None>"
@@ -1713,9 +1728,9 @@ proc get_library_extensions {extensions} {
   bind .lextwin.f.ef.e <Return> {.lextwin.f.ef.b invoke}
 
   # Add button frame and buttons
-  frame  .lextwin.bf
+  ttk::frame  .lextwin.bf
   help_button .lextwin.bf.help chapter.gui.new section.gui.new.options2.libext
-  button .lextwin.bf.ok -text "OK" -width 10 -command {
+  ttk::button .lextwin.bf.ok -text "OK" -width 10 -command {
     set lib_ext_retval "+"
     for {set i 1} {$i < [.lextwin.f.lf.lb size]} {incr i} {
       if {[.lextwin.f.lf.lb get $i] eq "<None>"} {
@@ -1726,13 +1741,13 @@ proc get_library_extensions {extensions} {
     }
     destroy .lextwin
   }
-  button .lextwin.bf.cancel -text "Cancel" -width 10 -command {
+  ttk::button .lextwin.bf.cancel -text "Cancel" -width 10 -command {
     set lib_ext_retval ""
     destroy .lextwin
   }
-  pack .lextwin.bf.help   -side right -pady 3
-  pack .lextwin.bf.cancel -side right -padx 3 -pady 3
-  pack .lextwin.bf.ok     -side right -padx 3 -pady 3
+  pack .lextwin.bf.help   -side right -padx 4 -pady 4
+  pack .lextwin.bf.cancel -side right -padx 4 -pady 4
+  pack .lextwin.bf.ok     -side right -padx 4 -pady 4
 
   # Pack the window
   pack .lextwin.f  -fill both -expand 1
@@ -1782,11 +1797,12 @@ proc get_define {defname value} {
   wm title .defwin "Specify a command-line define value"
 
   # Add selection widgets
-  frame .defwin.f
-  label .defwin.f.l -text "Define name:"
-  entry .defwin.f.e -textvariable define_name -validate all
-  entry .defwin.f.v -state disabled -textvariable define_value -validate all
-  button .defwin.f.b -text "=" -width 1 -relief raised -command {
+  ttk::frame .defwin.f
+  ttk::label .defwin.f.l -text "Define name:"
+  ttk::entry .defwin.f.e -textvariable define_name -validate all
+  ttk::entry .defwin.f.v -state disabled -textvariable define_value -validate all
+  ttk::label .defwin.f.b -text "=" -width 1 -relief raised
+  bind .defwin.f.b <Button-1> {
     if {[.defwin.f.b cget -relief] eq "raised"} {
       .defwin.f.v configure -state normal
       .defwin.f.b configure -relief flat
@@ -1816,9 +1832,9 @@ proc get_define {defname value} {
   grid .defwin.f.v -row 0 -column 3 -sticky news -pady 4 -padx 8
 
   # Add button frame and widgets
-  frame .defwin.bf
+  ttk::frame .defwin.bf
   help_button .defwin.bf.help chapter.gui.new section.gui.new.options2.define
-  button .defwin.bf.ok -text "OK" -width 10 -state disabled -command {
+  ttk::button .defwin.bf.ok -text "OK" -width 10 -state disabled -command {
     if {[.defwin.f.b cget -relief] eq "raised"} {
       set def_retval "$define_name"
     } else {
@@ -1827,18 +1843,18 @@ proc get_define {defname value} {
     destroy .defwin
   }
   bind .defwin.bf.ok <Return> {%W invoke}
-  button .defwin.bf.cancel -text "Cancel" -width 10 -pady 4 -padx 8 -command {
+  ttk::button .defwin.bf.cancel -text "Cancel" -width 10 -command {
     set def_retval ""
     destroy .defwin
   }
   bind .defwin.bf.cancel <Return> {%W invoke}
-  pack .defwin.bf.help   -side right -pady 3
-  pack .defwin.bf.cancel -side right -padx 3 -pady 3
-  pack .defwin.bf.ok     -side right -padx 3 -pady 3
+  pack .defwin.bf.help   -side right -padx 4 -pady 4
+  pack .defwin.bf.cancel -side right -padx 4 -pady 4
+  pack .defwin.bf.ok     -side right -padx 4 -pady 4
 
   # Provide functionality for entries
-  .defwin.f.e configure -vcmd { return [define_update_state] }
-  .defwin.f.v configure -vcmd { return [define_update_state] }
+  .defwin.f.e configure -validatecommand { return [define_update_state] }
+  .defwin.f.v configure -validatecommand { return [define_update_state] }
 
   # Pack the frames
   pack .defwin.f  -fill x
@@ -1888,11 +1904,12 @@ proc get_plusarg {plusname value} {
   wm title .pluswin "Specify a command-line runtime plusarg value"
 
   # Add selection widgets
-  frame .pluswin.f
-  label .pluswin.f.l -text "+"
-  entry .pluswin.f.e -textvariable plusarg_name -validate all
-  entry .pluswin.f.v -state disabled -textvariable plusarg_value -validate all
-  button .pluswin.f.b -text "=" -width 1 -relief raised -command {
+  ttk::frame .pluswin.f
+  ttk::label .pluswin.f.l -text "+"
+  ttk::entry .pluswin.f.e -textvariable plusarg_name -validate all
+  ttk::entry .pluswin.f.v -state disabled -textvariable plusarg_value -validate all
+  ttk::label .pluswin.f.b -text "=" -width 1
+  bind .pluswin.f.b <Button-1> {
     if {[.pluswin.f.b cget -relief] eq "raised"} {
       .pluswin.f.v configure -state normal
       .pluswin.f.b configure -relief flat
@@ -1922,9 +1939,9 @@ proc get_plusarg {plusname value} {
   grid .pluswin.f.v -row 0 -column 3 -sticky news -pady 4 -padx 8
 
   # Add button frame and widgets
-  frame .pluswin.bf
+  ttk::frame .pluswin.bf
   help_button .pluswin.bf.help chapter.gui.new section.gui.new.options2.plusarg
-  button .pluswin.bf.ok -text "OK" -width 10 -state disabled -command {
+  ttk::button .pluswin.bf.ok -text "OK" -width 10 -state disabled -command {
     if {[.pluswin.f.b cget -relief] eq "raised"} {
       set plus_retval "+$plusarg_name"
     } else {
@@ -1933,18 +1950,18 @@ proc get_plusarg {plusname value} {
     destroy .pluswin
   }
   bind .pluswin.bf.ok <Return> {%W invoke}
-  button .pluswin.bf.cancel -text "Cancel" -width 10 -pady 4 -padx 8 -command {
+  ttk::button .pluswin.bf.cancel -text "Cancel" -width 10 -command {
     set def_retval ""
     destroy .pluswin
   }
   bind .pluswin.bf.cancel <Return> {%W invoke}
-  pack .pluswin.bf.help   -side right -pady 3
-  pack .pluswin.bf.cancel -side right -padx 3 -pady 3
-  pack .pluswin.bf.ok     -side right -padx 3 -pady 3
+  pack .pluswin.bf.help   -side right -padx 4 -pady 4
+  pack .pluswin.bf.cancel -side right -padx 4 -pady 4
+  pack .pluswin.bf.ok     -side right -padx 4 -pady 4
 
   # Provide functionality for entries
-  .pluswin.f.e configure -vcmd { return [plusarg_update_state] }
-  .pluswin.f.v configure -vcmd { return [plusarg_update_state] }
+  .pluswin.f.e configure -validatecommand { return [plusarg_update_state] }
+  .pluswin.f.v configure -validatecommand { return [plusarg_update_state] }
 
   # Pack the frames
   pack .pluswin.f  -fill x
@@ -1992,11 +2009,11 @@ proc get_parameter_override {parmname value} {
   wm title .parmwin "Specify a command-line parameter override"
 
   # Add selection widgets
-  frame .parmwin.f -relief raised
-  label .parmwin.f.l1 -text "Parameter scope:"
-  entry .parmwin.f.e  -textvariable param_name -validate all
-  label .parmwin.f.l2 -text "="
-  entry .parmwin.f.v  -textvariable param_value -validate all
+  ttk::frame .parmwin.f -relief raised
+  ttk::label .parmwin.f.l1 -text "Parameter scope:"
+  ttk::entry .parmwin.f.e  -textvariable param_name -validate all
+  ttk::label .parmwin.f.l2 -text "="
+  ttk::entry .parmwin.f.v  -textvariable param_value -validate all
 
   # Pack the input widgets
   pack .parmwin.f.l1 -padx 8 -pady 4 -side left -fill x
@@ -2005,25 +2022,25 @@ proc get_parameter_override {parmname value} {
   pack .parmwin.f.v  -padx 8 -pady 4 -side left -fill x -expand 1
 
   # Add button frame and widgets
-  frame .parmwin.bf -relief raised
+  ttk::frame .parmwin.bf -relief raised
   help_button .parmwin.bf.help chapter.gui.new section.gui.new.options2.param
-  button .parmwin.bf.ok -text "OK" -width 10 -state disabled -command {
+  ttk::button .parmwin.bf.ok -text "OK" -width 10 -state disabled -command {
     set param_retval "$param_name=$param_value"
     destroy .parmwin
   }
   bind .parmwin.bf.ok <Return> {%W invoke}
-  button .parmwin.bf.cancel -text "Cancel" -width 10 -command {
+  ttk::button .parmwin.bf.cancel -text "Cancel" -width 10 -command {
     set param_retval ""
     destroy .parmwin
   }
   bind .parmwin.bf.cancel <Return> {%W invoke}
-  pack .parmwin.bf.help   -side right -pady 3
-  pack .parmwin.bf.cancel -side right -padx 3 -pady 3
-  pack .parmwin.bf.ok     -side right -padx 3 -pady 3
+  pack .parmwin.bf.help   -side right -padx 4 -pady 4
+  pack .parmwin.bf.cancel -side right -padx 4 -pady 4
+  pack .parmwin.bf.ok     -side right -padx 4 -pady 4
 
   # Provide entry functionality
-  .parmwin.f.e configure -vcmd { return [parameter_update_state] }
-  .parmwin.f.v configure -vcmd { return [parameter_update_state] }
+  .parmwin.f.e configure -validatecommand { return [parameter_update_state] }
+  .parmwin.f.v configure -validatecommand { return [parameter_update_state] }
 
   # Pack the frames
   pack .parmwin.f  -fill x
@@ -2073,17 +2090,17 @@ proc get_fsm {modname input output} {
   wm title .fsmdwin "Specify an FSM input/output state"
 
   # Add input widgets
-  frame .fsmdwin.f -relief raised
-  label .fsmdwin.f.l -text "Module name:"
-  entry .fsmdwin.f.e -textvariable fsmd_modname -validate all
-  label .fsmdwin.f.lo -text "Output Expression:"
-  button .fsmdwin.f.b -text "Input == Output" -command {
+  ttk::frame .fsmdwin.f -relief raised
+  ttk::label .fsmdwin.f.l -text "Module name:"
+  ttk::entry .fsmdwin.f.e -textvariable fsmd_modname -validate all
+  ttk::label .fsmdwin.f.lo -text "Output Expression:"
+  ttk::button .fsmdwin.f.b -text "Input == Output" -command {
     set fsmd_input $fsmd_output
   }
   bind .fsmdwin.f.b <Return> {%W invoke}
-  entry .fsmdwin.f.eo -textvariable fsmd_output -validate all
-  label .fsmdwin.f.li -text "Input Expression:"
-  entry .fsmdwin.f.ei -textvariable fsmd_input
+  ttk::entry .fsmdwin.f.eo -textvariable fsmd_output -validate all
+  ttk::label .fsmdwin.f.li -text "Input Expression:"
+  ttk::entry .fsmdwin.f.ei -textvariable fsmd_input
 
   grid columnconfigure .fsmdwin.f 1 -weight 1
   grid columnconfigure .fsmdwin.f 3 -weight 1
@@ -2096,25 +2113,25 @@ proc get_fsm {modname input output} {
   grid .fsmdwin.f.ei -row 1 -column 3 -sticky news -padx 8 -pady 4
 
   # Add button frame and widgets
-  frame .fsmdwin.bf -relief raised
+  ttk::frame .fsmdwin.bf -relief raised
   help_button .fsmdwin.bf.help chapter.gui.new section.gui.new.options2.fsm
-  button .fsmdwin.bf.ok -text "OK" -width 10 -state disabled -command {
+  ttk::button .fsmdwin.bf.ok -text "OK" -width 10 -state disabled -command {
     set fsmd_retval "$fsmd_modname=$fsmd_input,$fsmd_output"
     destroy .fsmdwin
   }
   bind .fsmdwin.bf.ok <Return> {%W invoke}
-  button .fsmdwin.bf.cancel -text "Cancel" -width 10 -command {
+  ttk::button .fsmdwin.bf.cancel -text "Cancel" -width 10 -command {
     set fsmd_retval ""
     destroy .fsmdwin
   }
   bind .fsmdwin.bf.cancel <Return> {%W invoke}
-  pack .fsmdwin.bf.help   -side right -pady 3
-  pack .fsmdwin.bf.cancel -side right -padx 3 -pady 3
-  pack .fsmdwin.bf.ok     -side right -padx 3 -pady 3
+  pack .fsmdwin.bf.help   -side right -padx 4 -pady 4
+  pack .fsmdwin.bf.cancel -side right -padx 4 -pady 4
+  pack .fsmdwin.bf.ok     -side right -padx 4 -pady 4
 
   # Provide functionality for entries
-  .fsmdwin.f.e  configure -vcmd { return [fsmd_update_state] }
-  .fsmdwin.f.eo configure -vcmd { return [fsmd_update_state] }
+  .fsmdwin.f.e  configure -validatecommand { return [fsmd_update_state] }
+  .fsmdwin.f.eo configure -validatecommand { return [fsmd_update_state] }
 
   # Pack frames
   pack .fsmdwin.f  -fill x

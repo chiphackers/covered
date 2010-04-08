@@ -1,3 +1,18 @@
+################################################################################################
+# Copyright (c) 2006-2010 Trevor Williams                                                      #
+#                                                                                              #
+# This program is free software; you can redistribute it and/or modify                         #
+# it under the terms of the GNU General Public License as published by the Free Software       #
+# Foundation; either version 2 of the License, or (at your option) any later version.          #
+#                                                                                              #
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;    #
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    #
+# See the GNU General Public License for more details.                                         #
+#                                                                                              #
+# You should have received a copy of the GNU General Public License along with this program;   #
+# if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. #
+################################################################################################
+
 set curr_assert_ptr  ""
 set assert_geometry  ""
 set assert_gui_saved 0
@@ -61,36 +76,36 @@ proc create_assert_window {inst} {
     toplevel .assertwin
     wm title .assertwin "Assertion Coverage - Verbose"
 
-    frame .assertwin.f -relief raised -borderwidth 1
+    ttk::frame .assertwin.f -relief raised -borderwidth 1
 
     # Add toggle information
-    label .assertwin.f.ld -anchor w -text "Coverage point description"
-    label .assertwin.f.lc -anchor w -text "# of hits"
+    ttk::label .assertwin.f.ld -anchor w -text "Coverage point description"
+    ttk::label .assertwin.f.lc -anchor w -text "# of hits"
     text  .assertwin.f.td -height 5 -width 40 -borderwidth 0 -xscrollcommand ".assertwin.f.hb set" \
           -yscrollcommand assert_yset -wrap none -spacing1 2 -spacing3 3
     text  .assertwin.f.tc -height 5 -width 10 -borderwidth 0 -yscrollcommand assert_yset -wrap none -spacing1 2 -spacing3 3
-    scrollbar .assertwin.f.hb -orient horizontal -command ".assertwin.f.td xview"
-    scrollbar .assertwin.f.vb -command assert_yview
-    button .assertwin.f.b -text "Show Code" -command {
+    ttk::scrollbar .assertwin.f.hb -orient horizontal -command ".assertwin.f.td xview"
+    ttk::scrollbar .assertwin.f.vb -command assert_yview
+    ttk::button .assertwin.f.b -text "Show Code" -command {
       display_assertion_module [lindex $assert_cov_mod 0] [lindex $assert_cov_mod 1]
     }
 
     # Create bottom information bar
-    label .assertwin.f.info -anchor w
+    ttk::label .assertwin.f.info -anchor w
 
     # Create bottom button bar
-    frame .assertwin.bf -relief raised -borderwidth 1
-    button .assertwin.bf.close -text "Close" -width 10 -command {
+    ttk::frame .assertwin.bf -relief raised -borderwidth 1
+    ttk::button .assertwin.bf.close -text "Close" -width 10 -command {
       rm_pointer curr_assert_ptr
       destroy .assertwin
       destroy .amodwin
     }
     help_button .assertwin.bf.help chapter.gui.assert
-    button .assertwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -relief flat -command {
+    ttk::button .assertwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -command {
       display_assert $prev_assert_index
     }
     set_balloon .assertwin.bf.prev "Click to view the previous uncovered assertion in this window"
-    button .assertwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -relief flat -command {
+    ttk::button .assertwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -command {
       display_assert $next_assert_index
     }
     set_balloon .assertwin.bf.next "Click to view the next uncovered assertion in this window"
@@ -312,11 +327,11 @@ proc display_assertion_module {name filename} {
     wm title .amodwin "Assertion Module - $name ($assert_filename)"
 
     # Create text viewer windows
-    frame .amodwin.f -relief raised -borderwidth 1
+    ttk::frame .amodwin.f -relief raised -borderwidth 1
     text .amodwin.f.t -height 30 -width 80 -xscrollcommand ".amodwin.f.hb set" -yscrollcommand ".amodwin.f.vb set" -state disabled
-    scrollbar .amodwin.f.hb -orient horizontal -command ".amodwin.f.t xview"
-    scrollbar .amodwin.f.vb -command ".amodwin.f.t yview"
-    label .amodwin.f.info -anchor w
+    ttk::scrollbar .amodwin.f.hb -orient horizontal -command ".amodwin.f.t xview"
+    ttk::scrollbar .amodwin.f.vb -command ".amodwin.f.t yview"
+    ttk::label .amodwin.f.info -anchor w
 
     # Layout the text viewer windows
     grid rowconfigure    .amodwin.f 0 -weight 1
@@ -327,13 +342,13 @@ proc display_assertion_module {name filename} {
     grid .amodwin.f.info -row 2 -column 0 -columnspan 2 -sticky we
 
     # Create the button bar
-    frame .amodwin.bf -relief raised -borderwidth 1
-    button .amodwin.bf.back -text "Back" -width 10 -command {
+    ttk::frame  .amodwin.bf -relief raised -borderwidth 1
+    ttk::button .amodwin.bf.back -text "Back" -width 10 -command {
       set fname [lindex $open_files 1]
       set open_files [lreplace $open_files 0 1]
       populate_assertion_text $fname
     } -state disabled
-    button .amodwin.bf.close -text "Close" -width 10 -command {
+    ttk::button .amodwin.bf.close -text "Close" -width 10 -command {
       destroy .amodwin
     }
     help_button .amodwin.bf.help chapter.gui.assert.source

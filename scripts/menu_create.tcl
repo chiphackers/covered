@@ -1,4 +1,17 @@
-#!/usr/bin/env wish
+################################################################################################
+# Copyright (c) 2006-2010 Trevor Williams                                                      #
+#                                                                                              #
+# This program is free software; you can redistribute it and/or modify                         #
+# it under the terms of the GNU General Public License as published by the Free Software       #
+# Foundation; either version 2 of the License, or (at your option) any later version.          #
+#                                                                                              #
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;    #
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    #
+# See the GNU General Public License for more details.                                         #
+#                                                                                              #
+# You should have received a copy of the GNU General Public License along with this program;   #
+# if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. #
+################################################################################################
 
 set cdd_name           ""
 set uncov_type         1
@@ -76,7 +89,7 @@ proc menu_create {} {
   # FILE - entry 0
   $tfm add command -label "Open/Merge CDDs..." -accelerator "Ctrl-o" -underline 0 -command {
     # Get a list of files to open
-    set fnames [tk_getOpenFile -multiple 1 -filetypes $file_types]
+    set fnames [tk_getOpenFile -multiple 1 -filetypes $file_types -parent .]
     if {$fnames ne ""} {
       open_files $fnames
     }
@@ -89,7 +102,7 @@ proc menu_create {} {
   $tfm add separator
   # FILE - entry 3
   $tfm add command -label "Save CDD..." -accelerator "Ctrl-s" -state disabled -underline 0 -command {
-    set save_name [tk_getSaveFile -filetypes $file_types -initialfile [file tail $cdd_name] -title "Save CDD As"]
+    set save_name [tk_getSaveFile -filetypes $file_types -initialfile [file tail $cdd_name] -title "Save CDD As" -parent .]
     if {$save_name != ""} {
       if {[file extension $save_name] != ".cdd"} {
         set save_name "$save_name.cdd"

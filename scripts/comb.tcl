@@ -1,3 +1,18 @@
+################################################################################################
+# Copyright (c) 2006-2010 Trevor Williams                                                      #
+#                                                                                              #
+# This program is free software; you can redistribute it and/or modify                         #
+# it under the terms of the GNU General Public License as published by the Free Software       #
+# Foundation; either version 2 of the License, or (at your option) any later version.          #
+#                                                                                              #
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;    #
+# without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    #
+# See the GNU General Public License for more details.                                         #
+#                                                                                              #
+# You should have received a copy of the GNU General Public License along with this program;   #
+# if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. #
+################################################################################################
+
 set comb_ul_inc_ip     0
 set comb_ul_exc_ip     0
 set comb_curr_uline_id 0
@@ -563,19 +578,19 @@ proc create_comb_window {expr_id sline} {
     wm title .combwin "Combinational Logic Coverage - Verbose"
 
     # Create all frames for the window
-    panedwindow .combwin.pw -bg grey -width 700 -height 350 -sashrelief raised -sashwidth 4 -orient vertical
-    frame .combwin.pw.top -relief raised -borderwidth 1
-    frame .combwin.pw.bot -relief raised -borderwidth 1
+    ttk::panedwindow .combwin.pw -width 700 -height 350 -orient vertical
+    ttk::frame .combwin.pw.top -relief raised -borderwidth 1
+    ttk::frame .combwin.pw.bot -relief raised -borderwidth 1
 
     # Add expression information
-    label .combwin.pw.top.l -anchor w -text "Expression:"
+    ttk::label .combwin.pw.top.l -anchor w -text "Expression:"
     text  .combwin.pw.top.t -height 10 -width 100 -xscrollcommand ".combwin.pw.top.hb set" -yscrollcommand ".combwin.pw.top.vb set" -wrap none
-    scrollbar .combwin.pw.top.hb -orient horizontal -command ".combwin.pw.top.t xview"
-    scrollbar .combwin.pw.top.vb -orient vertical   -command ".combwin.pw.top.t yview"
+    ttk::scrollbar .combwin.pw.top.hb -orient horizontal -command ".combwin.pw.top.t xview"
+    ttk::scrollbar .combwin.pw.top.vb -orient vertical   -command ".combwin.pw.top.t yview"
 
     # Add expression coverage information
-    label .combwin.pw.bot.l -anchor w -text "Coverage Information:  ('*' represents a case that was not hit)"
-    checkbutton .combwin.pw.bot.e -anchor e -text "Excluded" -state disabled -variable comb_curr_excluded -command {
+    ttk::label .combwin.pw.bot.l -anchor w -text "Coverage Information:  ('*' represents a case that was not hit)"
+    ttk::checkbutton .combwin.pw.bot.e -text "Excluded" -state disabled -variable comb_curr_excluded -command {
       set comb_curr_reason ""
       if {$exclude_reasons_enabled == 1 && $comb_curr_excluded == 1} {
         set comb_curr_reason [get_exclude_reason .combwin]
@@ -596,24 +611,24 @@ proc create_comb_window {expr_id sline} {
     set_exclude_reason_balloon .combwin.pw.bot.e {$comb_curr_excluded} {$comb_curr_reason}
     set_balloon .combwin.pw.bot.e "If set, excludes the expression/subexpression displayed in the lower panel from coverage consideration"
     text  .combwin.pw.bot.t -height 10 -width 100 -xscrollcommand ".combwin.pw.bot.hb set" -yscrollcommand ".combwin.pw.bot.vb set" -wrap none -state disabled
-    scrollbar .combwin.pw.bot.hb -orient horizontal -command ".combwin.pw.bot.t xview"
-    scrollbar .combwin.pw.bot.vb -orient vertical   -command ".combwin.pw.bot.t yview"
+    ttk::scrollbar .combwin.pw.bot.hb -orient horizontal -command ".combwin.pw.bot.t xview"
+    ttk::scrollbar .combwin.pw.bot.vb -orient vertical   -command ".combwin.pw.bot.t yview"
 
     # Create information bar
-    label .combwin.info -anchor w -relief raised -borderwidth 1 -width 100
+    ttk::label .combwin.info -anchor w -relief raised -width 100
 
     # Create button frame with close/help buttons at the very bottom of the window
-    frame .combwin.bf -relief raised -borderwidth 1
-    button .combwin.bf.close -text "Close" -width 10 -command {
+    ttk::frame .combwin.bf -relief raised -borderwidth 1
+    ttk::button .combwin.bf.close -text "Close" -width 10 -command {
       rm_pointer curr_comb_ptr
       destroy .combwin
     }
     help_button .combwin.bf.help chapter.gui.logic ""
-    button .combwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -relief flat -command {
+    ttk::button .combwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -command {
       display_comb $prev_comb_index
     }
     set_balloon .combwin.bf.prev "Click to view the previous uncovered expression tree in this window"
-    button .combwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -relief flat -command {
+    ttk::button .combwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -command {
       display_comb $next_comb_index
     }
     set_balloon .combwin.bf.next "Click to view the next uncovered expression tree in this window"
@@ -621,8 +636,8 @@ proc create_comb_window {expr_id sline} {
     # Pack the button widgets into button frame
     pack .combwin.bf.prev  -side left
     pack .combwin.bf.next  -side left
-    pack .combwin.bf.help  -side right -pady 4
-    pack .combwin.bf.close -side right -padx 8 -pady 4
+    pack .combwin.bf.help  -side right -padx 4 -pady 4
+    pack .combwin.bf.close -side right -padx 4 -pady 4
 
     # Pack the widgets into the top frame
     grid rowconfigure    .combwin.pw.top 1 -weight 1
@@ -642,10 +657,8 @@ proc create_comb_window {expr_id sline} {
     grid .combwin.pw.bot.hb -row 2 -column 0 -columnspan 2 -sticky ew
 
     # Pack the top and bottom frame of the panedwindow
-    .combwin.pw add .combwin.pw.top
+    .combwin.pw add .combwin.pw.top -weight 1
     .combwin.pw add .combwin.pw.bot
-    .combwin.pw paneconfigure .combwin.pw.top -stretch always
-    .combwin.pw paneconfigure .combwin.pw.bot -stretch never
 
     # Pack the frame, informational bar, and button frame into the window
     pack .combwin.pw   -fill both -expand yes
