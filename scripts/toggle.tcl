@@ -85,7 +85,7 @@ proc create_toggle_window {signal} {
       process_toggle_cov
       .bot.right.txt xview moveto [lindex $text_x 0]
       .bot.right.txt yview moveto [lindex $text_y 0]
-      populate_listbox
+      populate_treeview
       enable_cdd_save
       set_pointer curr_toggle_ptr $curr_toggle_ptr
     }
@@ -99,11 +99,13 @@ proc create_toggle_window {signal} {
       destroy .togwin
     }
     help_button .togwin.bf.help chapter.gui.toggle ""
-    ttk::button .togwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -command {
+    ttk::label .togwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]]
+    bind .togwin.bf.prev <Button-1> {
       display_toggle $prev_toggle_index
     }
     set_balloon .togwin.bf.prev "Click to view the previous uncovered signal in this window"
-    ttk::button .togwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -command {
+    ttk::label .togwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]]
+    bind .togwin.bf.next <Button-1> {
       display_toggle $next_toggle_index
     }
     set_balloon .togwin.bf.next "Click to view the next uncovered signal in this window"

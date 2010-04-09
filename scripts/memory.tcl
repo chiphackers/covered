@@ -91,7 +91,7 @@ proc create_memory_window {signal} {
       create_memory_window $mem_name
       .bot.right.txt xview moveto [lindex $text_x 0]
       .bot.right.txt yview moveto [lindex $text_y 0]
-      populate_listbox
+      populate_treeview
       enable_cdd_save
       set_pointer curr_memory_ptr $curr_memory_ptr
     }
@@ -143,11 +143,13 @@ proc create_memory_window {signal} {
       destroy .memwin
     }
     help_button .memwin.bf.help chapter.gui.memory ""
-    ttk::button .memwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -command {
+    ttk::label .memwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]]
+    bind .memwin.bf.prev <Button-1> {
       display_memory $prev_memory_index
     }
     set_balloon .memwin.bf.prev "Click to view the previous uncovered memory in this window"
-    ttk::button .memwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -command {
+    ttk::label .memwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]]
+    bind .memwin.bf.next <Button-1> {
       display_memory $next_memory_index
     }
     set_balloon .memwin.bf.next "Click to view the next uncovered memory in this window"

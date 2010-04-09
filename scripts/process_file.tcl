@@ -259,7 +259,7 @@ proc display_line_cov {} {
           process_line_cov
           .bot.right.txt xview moveto [lindex $text_x 0]
           .bot.right.txt yview moveto [lindex $text_y 0]
-          populate_listbox
+          populate_treeview
           enable_cdd_save
         }
         .bot.right.txt tag bind uncov_button <ButtonPress-3> {

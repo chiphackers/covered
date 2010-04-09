@@ -52,7 +52,7 @@ proc cov_change_metric args {
     set text_y [.bot.right.txt yview]
     if {$last_cov_rb != $cov_rb} {
       set last_cov_rb $cov_rb
-      populate_listbox
+      populate_treeview
       if {$cov_rb == "Line"} {
         process_line_cov
       } elseif {$cov_rb == "Toggle"} {
@@ -96,7 +96,7 @@ proc cov_change_type args {
 
     set last_mod_inst_type $mod_inst_type
 
-    populate_listbox
+    populate_treeview
     clear_all_windows
 
   }

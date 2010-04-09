@@ -22,7 +22,11 @@ set main_geometry           ""
 set show_wizard             true
 set save_gui_on_exit        false
 set show_tooltips           true
-set ttk_style               "clam"
+if {[tk windowingsystem] eq "aqua"} {
+  set ttk_style             "aqua"
+} else {
+  set ttk_style             "clam"
+}
 set saved_gui               0
 set uncov_fgColor           blue
 set uncov_bgColor           yellow
@@ -175,10 +179,6 @@ proc read_coveredrc {} {
             set mod_inst_type $value
           } elseif {$field == "ModuleInstanceTableListWidth"} {
             set mod_inst_tl_width $value
-          } elseif {$field == "ModuleInstanceTableListColumns"} {
-            set mod_inst_tl_columns [split $value :]
-          } elseif {$field == "ModuleInstanceTableListInitHidden"} {
-            set mod_inst_tl_init_hidden [split $value :]
           }
         }
 
@@ -380,10 +380,6 @@ proc write_coveredrc {exiting} {
 
     if {$save_gui_on_exit == true && $exiting == 1} {
 
-      for {set i 0} {$i < 7} {incr i} {
-        lappend tl_init_hidden [.bot.left.tl columncget $i -hide]
-      }
-
       puts $rc "MainWindowGeometry                = [winfo geometry .]"
       puts $rc "ToggleWindowGeometry              = $toggle_geometry"
       puts $rc "MemoryWindowGeometry              = $memory_geometry"
@@ -392,8 +388,6 @@ proc write_coveredrc {exiting} {
       puts $rc "AssertWindowGeometry              = $assert_geometry"
       puts $rc "ModuleInstanceType                = $mod_inst_type"
       puts $rc "ModuleInstanceTableListWidth      = [winfo width .bot.left]"
-      puts $rc "ModuleInstanceTableListColumns    = [join [.bot.left.tl cget -columns] :]"
-      puts $rc "ModuleInstanceTableListInitHidden = [join $tl_init_hidden :]"
 
     }
 
@@ -761,8 +755,8 @@ proc apply_preferences {} {
     .bot.right.txt xview moveto [lindex $text_x 0]
     .bot.right.txt yview moveto [lindex $text_y 0]
 
-    # Update the listbox
-    populate_listbox
+    # Update the treeview
+    populate_treeview
 
   }
 
@@ -894,7 +888,7 @@ proc create_general_pref {} {
   # Create ttk style frame
   ttk::frame     .prefwin.pf.f.tf
   ttk::label     .prefwin.pf.f.tf.l -text "Select a GUI theme:"
-  ttk_optionMenu .prefwin.pf.f.tf.om tmp_ttk_style alt clam classic default
+  eval ttk_optionMenu .prefwin.pf.f.tf.om tmp_ttk_style [ttk::style theme names]
 
   pack .prefwin.pf.f.tf.l  -side left -padx 4
   pack .prefwin.pf.f.tf.om -side left -padx 4

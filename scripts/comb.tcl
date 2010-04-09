@@ -604,7 +604,7 @@ proc create_comb_window {expr_id sline} {
       display_comb_info  ;# Redisplay the expression
       .bot.right.txt xview moveto [lindex $text_x 0]
       .bot.right.txt yview moveto [lindex $text_y 0]
-      populate_listbox
+      populate_treeview
       enable_cdd_save
       set_pointer curr_comb_ptr $curr_comb_ptr
     }
@@ -624,11 +624,13 @@ proc create_comb_window {expr_id sline} {
       destroy .combwin
     }
     help_button .combwin.bf.help chapter.gui.logic ""
-    ttk::button .combwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -command {
+    ttk::label .combwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]]
+    bind .combwin.bf.prev <Button-1> {
       display_comb $prev_comb_index
     }
     set_balloon .combwin.bf.prev "Click to view the previous uncovered expression tree in this window"
-    ttk::button .combwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -command {
+    ttk::label .combwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]]
+    bind .combwin.bf.next <Button-1> {
       display_comb $next_comb_index
     }
     set_balloon .combwin.bf.next "Click to view the next uncovered expression tree in this window"

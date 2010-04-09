@@ -112,7 +112,7 @@ proc fsm_tablelist_selected {} {
       process_fsm_cov
       .bot.right.txt xview moveto [lindex $text_x 0]
       .bot.right.txt yview moveto [lindex $text_y 0]
-      populate_listbox
+      populate_treeview
       enable_cdd_save
       set_pointer curr_fsm_ptr $curr_fsm_ptr 
     }
@@ -178,11 +178,13 @@ proc create_fsm_window {expr_id} {
 
     # Create the button frame
     frame .fsmwin.bf -relief raised -borderwidth 1
-    ttk::button .fsmwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -state disabled -command {
+    ttk::label .fsmwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -state disabled
+    bind .fsmwin.bf.prev <Button-1> {
       display_fsm $prev_fsm_index
     }
     set_balloon .fsmwin.bf.prev "Click to view the previous uncovered FSM in this window"
-    ttk::button .fsmwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -state disabled -command {
+    ttk::label .fsmwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -state disabled
+    bind .fsmwin.bf.next <Button-1> {
       display_fsm $next_fsm_index
     }
     set_balloon .fsmwin.bf.prev "Click to view the next uncovered FSM in this window"

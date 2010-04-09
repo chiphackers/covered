@@ -119,7 +119,7 @@ proc menu_create {} {
     set cdd_name ""
     set curr_block 0
     clear_cdd_filelist
-    populate_listbox
+    populate_treeview
     clear_all_windows
     .menubar.file entryconfigure 1 -state disabled
     .menubar.file entryconfigure 3 -state disabled
@@ -342,7 +342,7 @@ proc open_files {fnames} {
 
       after 100 {
         tcl_func_open_cdd $fname
-        populate_listbox
+        populate_treeview
       }
 
     } else {
@@ -350,7 +350,7 @@ proc open_files {fnames} {
       after 100 {
         tcl_func_merge_cdd $fname $exclude_resolution
         .menubar.file entryconfigure 3 -state normal
-        populate_listbox
+        populate_treeview
       }
 
     }

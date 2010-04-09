@@ -101,11 +101,13 @@ proc create_assert_window {inst} {
       destroy .amodwin
     }
     help_button .assertwin.bf.help chapter.gui.assert
-    ttk::button .assertwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -command {
+    ttk::label .assertwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]]
+    bind .assertwin.bf.prev <Button-1> {
       display_assert $prev_assert_index
     }
     set_balloon .assertwin.bf.prev "Click to view the previous uncovered assertion in this window"
-    ttk::button .assertwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -command {
+    ttk::label .assertwin.bf.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]]
+    bind .assertwin.bf.next <Button-1> {
       display_assert $next_assert_index
     }
     set_balloon .assertwin.bf.next "Click to view the next uncovered assertion in this window"
@@ -229,7 +231,7 @@ proc create_assert_window {inst} {
     process_assert_cov
     .bot.right.txt xview moveto [lindex $text_x 0]
     .bot.right.txt yview moveto [lindex $text_y 0]
-    populate_listbox
+    populate_treeview
     enable_cdd_save
     set_pointer curr_assert_ptr $curr_assert_ptr
     create_assert_window $curr_assert_inst

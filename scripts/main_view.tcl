@@ -95,10 +95,6 @@ proc main_view {} {
   # Create the frame for menubar creation
   menu_create
 
-  # Create the information frame
-  ttk::frame .covbox -width 710 -height 25 -relief raised -borderwidth 1
-  cov_create .covbox
-
   # Create the bottom frame
   ttk::panedwindow .bot -width 1000 -height 500 -orient horizontal
 
@@ -114,11 +110,13 @@ proc main_view {} {
   ttk::frame .bot.right.h
   ttk::label .bot.right.h.tl -text "Cur   Line #       Verilog Source" -anchor w
   ttk::frame .bot.right.h.pn
-  ttk::button .bot.right.h.pn.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -state disabled -command {
+  ttk::label .bot.right.h.pn.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -state disabled
+  bind .bot.right.h.pn.prev <Button-1> {
     goto_uncov $prev_uncov_index
   }
   set_balloon .bot.right.h.pn.prev "Click to view the previous uncovered item"
-  ttk::button .bot.right.h.pn.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -state disabled -command {
+  ttk::label .bot.right.h.pn.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -state disabled
+  bind .bot.right.h.pn.next <Button-1> {
     goto_uncov $next_uncov_index
   }
   set_balloon .bot.right.h.pn.next "Click to view the next uncovered item"
@@ -171,47 +169,24 @@ proc main_view {} {
   # POPULATE LEFT BOTTOM FRAME #
   ##############################
 
-  # Create Tablelist and associated scrollbars
-  tablelist::tablelist .bot.left.tl \
-    -columns $mod_inst_tl_columns \
-    -labelcommand tablelist::sortByColumn -xscrollcommand {.bot.left.hb set} -yscrollcommand {.bot.left.sbf.vb set} -stretch all -movablecolumns 1
-  .bot.left.tl columnconfigure 0 -hide [lindex $mod_inst_tl_init_hidden 0]
-  .bot.left.tl columnconfigure 1 -hide [lindex $mod_inst_tl_init_hidden 1]
-  .bot.left.tl columnconfigure 2 -hide [lindex $mod_inst_tl_init_hidden 2] -sortmode integer -stretchable false
-  .bot.left.tl columnconfigure 3 -hide [lindex $mod_inst_tl_init_hidden 3] -sortmode integer -stretchable false
-  .bot.left.tl columnconfigure 4 -hide [lindex $mod_inst_tl_init_hidden 4] -sortmode integer -stretchable false
-  .bot.left.tl columnconfigure 5 -hide [lindex $mod_inst_tl_init_hidden 5] -sortmode integer -stretchable false
-  .bot.left.tl columnconfigure 6 -hide [lindex $mod_inst_tl_init_hidden 6] -sortmode integer -stretchable false
-  .bot.left.tl columnconfigure 7 -hide true
+  # Create module/instance menubutton
+  ttk_optionMenu .bot.left.mi mod_inst_type Module Instance
+  set_balloon .bot.left.mi "Selects the coverage accumulated by module or instance"
 
-  # Create vertical scrollbar frame and pack it
-  ttk::frame  .bot.left.sbf
-  ttk::label  .bot.left.sbf.ml -relief flat -style TablelistHeader.TLabel -image [image create bitmap -data "#define stuff_width 16\n#define stuff_height 16\nstatic unsigned char stuff_bits[] = {\n0x00, 0x00, 0x00, 0x00, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x84, 0x10, 0x00, 0x00, 0x00, 0x00};"]
-  set_balloon .bot.left.sbf.ml "Controls the column hide/show state"
+  # Create hierarchical window
+  ttk::treeview  .bot.left.tree -selectmode browse -xscrollcommand {.bot.left.hb set} -yscrollcommand {.bot.left.vb set}
+  ttk::scrollbar .bot.left.vb                    -command {.bot.left.tree yview}
+  ttk::scrollbar .bot.left.hb   -orient horizontal -command {.bot.left.tree xview}
 
-  ttk::scrollbar .bot.left.sbf.vb -command {.bot.left.tl yview}
-  ttk::label     .bot.left.sbf.l
-  pack .bot.left.sbf.ml -side top    -fill x
-  pack .bot.left.sbf.vb -side top    -fill y -expand 1
-  pack .bot.left.sbf.l  -side bottom -fill x
-
-  ttk::scrollbar .bot.left.hb -orient horizontal -command {.bot.left.tl xview}
-
-  grid rowconfigure    .bot.left 0 -weight 1
+  grid rowconfigure    .bot.left 1 -weight 1
   grid columnconfigure .bot.left 0 -weight 1
-  grid .bot.left.tl  -row 0 -column 0 -sticky news
-  grid .bot.left.sbf -row 0 -column 1 -sticky ns -rowspan 2
-  grid .bot.left.hb  -row 1 -column 0 -sticky ew
+  grid .bot.left.mi   -row 0 -column 0 -sticky ew
+  grid .bot.left.tree -row 1 -column 0 -sticky news
+  grid .bot.left.vb   -row 1 -column 1 -sticky ns
+  grid .bot.left.hb   -row 2 -column 0 -sticky ew
 
   # Bind the listbox selection event
-  bind .bot.left.tl <<ListboxSelect>> populate_text
-
-  # Create and bind the listbox label to a popup menu
-  menu .lbm -tearoff false
-  manage_tl_popup
-  bind .bot.left.sbf.ml <ButtonPress-1> {.lbm post %X %Y}
-  bind .lbm <Leave> {.lbm unpost}
-  bind .bot.left.tl <<TablelistColumnMoved>> {manage_tl_popup}
+  bind .bot.left.tree <<TreeviewSelect>> populate_text
 
   # Pack the bottom window
   update
@@ -257,27 +232,22 @@ proc main_view {} {
  
 }
 
-proc populate_listbox {} {
+proc populate_treeview {} {
 
   global mod_inst_type last_mod_inst_type cdd_name block_list
   global uncov_fgColor uncov_bgColor
   global lb_fgColor lb_bgColor
   global summary_list
 
-  # Make sure that the tablelist columns are setup appropriately
-  manage_tl_popup
-
   # Get the currently loaded indices, if any
   if {$last_mod_inst_type == $mod_inst_type} {
-    set curr_indices  [.bot.left.tl getcolumn 7]
-    set curr_selected [.bot.left.tl curselection]
+    set curr_selected [.bot.left.tree selection]
   } else {
-    set curr_indices  {}
     set curr_selected ""
   }
 
   # Remove contents currently in listboxes
-  .bot.left.tl delete 0 end
+  .bot.left.tree delete {}
 
   if {$cdd_name != ""} {
 
@@ -287,30 +257,34 @@ proc populate_listbox {} {
       # Get the list of functional units
       set block_list [tcl_func_get_funit_list]
 
+      foreach block $block_list {
+        .bot.left.tree insert {} end -text [tcl_func_get_funit_name $block]
+      }
+
     } else {
 
       # Get the list of functional unit instances
       set block_list [tcl_func_get_instance_list]
 
+      # TBD - This needs to be fixed
+      foreach block $block_list {
+        .bot.left.tree insert {} end -text [tcl_funcs_get_inst_scope $block]
+      }
+
     }
 
     # Calculate the summary_list array
-    calculate_summary
+    # calculate_summary
 
-    for {set i 0} {$i < [llength $summary_list]} {incr i} {
-      if {[llength $curr_indices] > 0} {
-        set index [lindex $curr_indices $i]
-      } else {
-        set index $i
-      }
-      set funit [sort_tl_columns [lindex $summary_list $index]]
-      .bot.left.tl insert end [list [lindex $funit 0] [lindex $funit 1] [lindex $funit 2] [lindex $funit 3] [lindex $funit 4] [lindex $funit 5] [lindex $funit 6] $index]
-      .bot.left.tl rowconfigure end -background [lindex $funit 8] -selectbackground [lindex $funit 7]
-    }
+#    for {set i 0} {$i < [llength $summary_list]} {incr i} {
+#      set funit [lindex $summary_list $curr_selected]
+#      .bot.left.tl insert end [list [lindex $funit 0] [lindex $funit 1] [lindex $funit 2] [lindex $funit 3] [lindex $funit 4] [lindex $funit 5] [lindex $funit 6] $index]
+#      .bot.left.tl rowconfigure end -background [lindex $funit 8] -selectbackground [lindex $funit 7]
+#    }
 
     # Re-activate the currently selected item
     if {$curr_selected != ""} {
-      .bot.left.tl selection set $curr_selected
+      .bot.left.tree selection set $curr_selected
     }
 
     # Set the last module/instance type variable to the current
@@ -328,47 +302,38 @@ proc populate_text {} {
   global start_search_index
   global curr_toggle_ptr
 
-  # Get the index of the current selection
-  set index [lindex [.bot.left.tl get [.bot.left.tl curselection]] 7]
+  if {$last_mod_inst_type != $mod_inst_type} {
 
-  # Update the text, if necessary
-  if {$index != ""} {
+    set curr_block      [lindex $block_list $index]
+    set curr_toggle_ptr ""
 
-    if {$last_lb_index != $index || $last_mod_inst_type != $mod_inst_type} {
-
-      set last_lb_index   $index
-      set curr_block      [lindex $block_list $index]
-      set curr_toggle_ptr ""
-
-      if {$cov_rb == "Line"} {
-        process_line_cov
-      } elseif {$cov_rb == "Toggle"} {
-        process_toggle_cov
-      } elseif {$cov_rb == "Memory"} {
-        process_memory_cov
-      } elseif {$cov_rb == "Logic"} {
-        process_comb_cov
-      } elseif {$cov_rb == "FSM"} {
-        process_fsm_cov
-      } elseif {$cov_rb == "Assert"} {
-        process_assert_cov
-      } else {
-        # ERROR
-      }
-
-      # Reset starting search index
-      set start_search_index 1.0
-      set curr_uncov_index   ""
-
-      # Run initial goto_uncov to initialize previous and next pointers
-      goto_uncov $curr_uncov_index
-
-      # Enable widgets
-      .bot.right.h.search.e     configure -state normal -bg white
-      .bot.right.h.search.find  configure -state normal
-      .bot.right.h.search.clear configure -state normal
-
+    if {$cov_rb == "Line"} {
+      process_line_cov
+    } elseif {$cov_rb == "Toggle"} {
+      process_toggle_cov
+    } elseif {$cov_rb == "Memory"} {
+      process_memory_cov
+    } elseif {$cov_rb == "Logic"} {
+      process_comb_cov
+    } elseif {$cov_rb == "FSM"} {
+      process_fsm_cov
+    } elseif {$cov_rb == "Assert"} {
+      process_assert_cov
+    } else {
+      # ERROR
     }
+
+    # Reset starting search index
+    set start_search_index 1.0
+    set curr_uncov_index   ""
+
+    # Run initial goto_uncov to initialize previous and next pointers
+    goto_uncov $curr_uncov_index
+
+    # Enable widgets
+    .bot.right.h.search.e     configure -state normal -bg white
+    .bot.right.h.search.find  configure -state normal
+    .bot.right.h.search.clear configure -state normal
 
   }
 
@@ -646,77 +611,6 @@ proc goto_prev_pane {w} {
   $parent paneconfigure $w -hide true
   $parent paneconfigure [lindex $panes [expr [lsearch $panes $w] - 1]] -hide false
   
-}
-
-proc manage_tl_popup {} {
-
-  global tableColName tableColHide mod_inst_type
-
-  # Calculate starting index
-  if {$mod_inst_type == "Module"} {
-    set no_display_cols {{Instance Name} Index}
-  } else {
-    set no_display_cols {Index}
-  }
-
-  # Delete all menu entries
-  .lbm delete 0 end
-
-  set num 0
-
-  foreach {width name align} [.bot.left.tl cget -columns] {
-
-    if {[lsearch $no_display_cols $name] == -1} {
-      .lbm add checkbutton -label $name -variable tableColHide($num) -command {
-        foreach col [array names tableColHide] {
-          .bot.left.tl columnconfigure $col -hide [expr ! $tableColHide($col)]
-        }
-      }
-    }
-
-    # Handle the instance name column show/hide status
-    if {$name eq "Instance Name"} {
-      if {$mod_inst_type eq "Module"} {
-        .bot.left.tl columnconfigure $num -hide true
-      } else {
-        .bot.left.tl columnconfigure $num -hide false
-      }
-    }
-
-    set tableColName($num) $name
-    set tableColHide($num) [expr ! [.bot.left.tl columncget $num -hide]]
-    incr num
-
-  }
-
-}
-
-proc sort_tl_columns {info} {
-
-  global tableColName
-
-  foreach col [lsort -integer [array names tableColName]] {
-    set name $tableColName($col)
-    if {$name eq "Instance Name"} {
-      lappend new_info [lindex $info 0]
-    } elseif {$name eq "Module Name"} {
-      lappend new_info [lindex $info 1]
-    } elseif {$name eq "Hit"} {
-      lappend new_info [lindex $info 2]
-    } elseif {$name eq "Miss"} {
-      lappend new_info [lindex $info 3]
-    } elseif {$name eq "Excluded"} {
-      lappend new_info [lindex $info 4]
-    } elseif {$name eq "Total"} {
-      lappend new_info [lindex $info 5]
-    } elseif {$name eq "Hit %"} {
-      lappend new_info [lindex $info 6]
-    }
-  }
-  lappend new_info [lindex $info 7] [lindex $info 8]
-
-  return $new_info
-
 }
 
 # Read configuration file
