@@ -155,6 +155,32 @@ proc clear_summary {} {
 
 }
 
+proc summary_calc_percent {hit total} {
+
+  if {$total <= 0} {
+    set percent 100
+  } else {
+    set percent [expr round((($hit * 1.0) / $total) * 100)]
+  }
+
+  return $percent
+
+}
+
+proc summary_calc_color {percent low_limit} {
+
+  if {$percent < $low_limit} {
+    set bcolor "#ff7088"
+  } elseif {$percent < 100} {
+    set bcolor "#ffff80"
+  } else {
+    set bcolor "#90ee90"
+  }
+
+  return $bcolor
+
+}
+
 proc calculate_summary {} {
 
   global mod_inst_type block_list cov_rb
@@ -167,94 +193,58 @@ proc calculate_summary {} {
   global summary_list summary_sort
 
   ;# Clear the list
-  set summary_list ""
+  array unset summary_list
 
   foreach block $block_list {
 
     ;# Get summary information for the current type
-    if {$cov_rb == "Line"} {
-      tcl_func_get_line_summary $block
-      set hit       $line_summary_hit
-      set excluded  $line_summary_excluded
-      set total     $line_summary_total
-      set low_limit $line_low_limit
-    } elseif {$cov_rb == "Toggle"} {
-      tcl_func_get_toggle_summary $block
-      set hit       $toggle_summary_hit
-      set excluded  $toggle_summary_excluded
-      set total     $toggle_summary_total
-      set low_limit $toggle_low_limit
-    } elseif {$cov_rb == "Memory"} {
-      tcl_func_get_memory_summary $block
-      set hit       $memory_summary_hit
-      set excluded  $memory_summary_excluded
-      set total     $memory_summary_total
-      set low_limit $memory_low_limit
-    } elseif {$cov_rb == "Logic"} {
-      tcl_func_get_comb_summary $block
-      set hit       $comb_summary_hit
-      set excluded  $comb_summary_excluded
-      set total     $comb_summary_total
-      set low_limit $comb_low_limit
-    } elseif {$cov_rb == "FSM"} {
-      tcl_func_get_fsm_summary $block
-      set hit       $fsm_summary_hit
-      set excluded  $fsm_summary_excluded
-      set total     $fsm_summary_total
-      set low_limit $fsm_low_limit
-    } elseif {$cov_rb == "Assert"} {
-      tcl_func_get_assert_summary $block
-      set hit       $assert_summary_hit
-      set excluded  $assert_summary_excluded
-      set total     $assert_summary_total
-      set low_limit $assert_low_limit
-    } else {
-      ;# ERROR
-    }
+    tcl_func_get_line_summary $block
+    set summary_list($block,line_hit)        $line_summary_hit
+    set summary_list($block,line_excluded)   $line_summary_excluded
+    set summary_list($block,line_total)      $line_summary_total
+    set summary_list($block,line_percent)    [summary_calc_percent $line_summary_hit $line_summary_total]
+    set summary_list($block,line_color)      [summary_calc_color   $summary_list($block,line_percent) $line_low_limit]
 
-    ;# Calculate miss value
-    set miss [expr $total - $hit]
+    tcl_func_get_toggle_summary $block
+    set summary_list($block,toggle_hit)      $toggle_summary_hit
+    set summary_list($block,toggle_excluded) $toggle_summary_excluded
+    set summary_list($block,toggle_total)    $toggle_summary_total
+    set summary_list($block,toggle_percent)  [summary_calc_percent $toggle_summary_hit $toggle_summary_total]
+    set summary_list($block,toggle_color)    [summary_calc_color   $summary_list($block,toggle_percent) $toggle_low_limit]
 
-    ;# Calculate hit percent
-    if {$total <= 0} {
-      set percent 100
-    } else {
-      set percent [expr round((($hit * 1.0) / $total) * 100)]
-    }
+    tcl_func_get_memory_summary $block
+    set summary_list($block,memory_hit)      $memory_summary_hit
+    set summary_list($block,memory_excluded) $memory_summary_excluded
+    set summary_list($block,memory_total)    $memory_summary_total
+    set summary_list($block,memory_percent)  [summary_calc_percent $toggle_summary_hit $toggle_summary_total]
+    set summary_list($block,memory_color)    [summary_calc_color   $summary_list($block,memory_percent) $memory_low_limit]
 
-    ;# Calculate color
-    if {$percent < $low_limit} {
-      set bcolor "#c00000"
-      set lcolor "#ff7088"
-    } elseif {$percent < 100} {
-      set bcolor "#e9e500"
-      set lcolor "#ffff80"
-    } else {
-      set bcolor "#006400"
-      set lcolor "#90ee90"
-    }
+    tcl_func_get_comb_summary $block
+    set summary_list($block,comb_hit)        $comb_summary_hit
+    set summary_list($block,comb_excluded)   $comb_summary_excluded
+    set summary_list($block,comb_total)      $comb_summary_total
+    set summary_list($block,comb_percent)    [summary_calc_percent $comb_summary_hit $comb_summary_total]
+    set summary_list($block,comb_color)      [summary_calc_color   $summary_list($block,comb_percent) $comb_low_limit]
 
-    # If the total was less than 0, make sure that we set miss, total and percent values to ?
-    if {$total < 0} {
-      set miss    " ? "
-      set total   " ? "
-      set percent " ? "
-    }
+    tcl_func_get_fsm_summary $block
+    set summary_list($block,fsm_hit)         $fsm_summary_hit
+    set summary_list($block,fsm_excluded)    $fsm_summary_excluded
+    set summary_list($block,fsm_total)       $fsm_summary_total
+    set summary_list($block,fsm_percent)     [summary_calc_percent $fsm_summary_hit $fsm_summary_total]
+    set summary_list($block,fsm_color)       [summary_calc_color   $summary_list($block,fsm_percent) $fsm_low_limit]
 
-    ;# Add this functional unit to the list to sort
-    if {$mod_inst_type == "Module"} {
-      lappend summary_list [list "" [tcl_func_get_funit_name $block] $hit $miss $excluded $total $percent $bcolor $lcolor]
-    } else {
-      lappend summary_list [list [tcl_func_get_inst_scope $block] [tcl_func_get_funit_name $block] $hit $miss $excluded $total $percent $bcolor $lcolor]
-    }
+    tcl_func_get_assert_summary $block
+    set summary_list($block,assert_hit)      $assert_summary_hit
+    set summary_list($block,assert_excluded) $assert_summary_excluded
+    set summary_list($block,assert_total)    $assert_summary_total
+    set summary_list($block,assert_percent)  [summary_calc_percent $assert_summary_hit $assert_summary_total]
+    set summary_list($block,assert_color)    [summary_calc_color   $summary_list($block,assert_percent) $assert_low_limit]
 
-  }
+    set summary_list($block,total_hit)       [expr $line_summary_hit   + $toggle_summary_hit   + $memory_summary_hit   + $comb_summary_hit   + $fsm_summary_hit   + $assert_summary_hit]
+    set summary_list($block,total_total)     [expr $line_summary_total + $toggle_summary_total + $memory_summary_total + $comb_summary_total + $fsm_summary_total + $assert_summary_total]
+    set summary_list($block,total_percent)   [summary_calc_percent $summary_list($block,total_hit) $summary_list($block,total_total)]
+    set summary_list($block,total_color)     [summary_calc_color   $summary_list($block,total_percent) 100]
 
-  ;# Sort the summary information based on the percent value
-  if {$summary_sort == "dec"} {
-    set summary_list [lsort -integer -index 2 -decreasing $summary_list]
-  } elseif {$summary_sort == "inc"} {
-    set summary_list [lsort -integer -index 2 -increasing $summary_list]
   }
 
 }

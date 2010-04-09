@@ -51,14 +51,16 @@ source [file join $HOME scripts gen_rank.tcl]
 source [file join $HOME scripts viewer.tcl]
 source [file join $HOME scripts balloon.tcl]
 source [file join $HOME scripts exclude.tcl]
-source [file join $HOME scripts windowlist.tcl]
+if {[tk windowingsystem] eq "aqua"} {
+  source [file join $HOME scripts windowlist.tcl]
+}
 
 # The Tablelist package is used for displaying instance/module hit/miss/total/percent hit information
 package require Tablelist
 #package require tile
 #package require tablelist_tile 4.8
 
-set last_lb_index           ""
+set last_block              ""
 set lwidth                  -1 
 set lwidth_h1               -1
 set main_start_search_index 1.0
@@ -86,6 +88,7 @@ proc main_view {} {
   global HOME main_start_search_index
   global main_geometry
   global mod_inst_tl_columns mod_inst_tl_init_hidden mod_inst_tl_width
+  global mod_inst_type
 
   # Start off 
 
@@ -106,6 +109,9 @@ proc main_view {} {
   ###############################
   # POPULATE RIGHT BOTTOM FRAME #
   ###############################
+
+  # Create table windows
+  trace add variable cov_rb write cov_change_metric
 
   # Create the textbox header frame
   ttk::frame .bot.right.h
@@ -172,11 +178,12 @@ proc main_view {} {
 
   # Create module/instance menubutton
   ttk_optionMenu .bot.left.mi mod_inst_type Module Instance
+  trace add variable mod_inst_type write cov_change_type
   set_balloon .bot.left.mi "Selects the coverage accumulated by module or instance"
 
   # Create hierarchical window
-  ttk::treeview  .bot.left.tree -selectmode browse -xscrollcommand {.bot.left.hb set} -yscrollcommand {.bot.left.vb set}
-  ttk::scrollbar .bot.left.vb                    -command {.bot.left.tree yview}
+  ttk::treeview  .bot.left.tree -selectmode browse -show tree -xscrollcommand {.bot.left.hb set} -yscrollcommand {.bot.left.vb set} -columns {Summary}
+  ttk::scrollbar .bot.left.vb                      -command {.bot.left.tree yview}
   ttk::scrollbar .bot.left.hb   -orient horizontal -command {.bot.left.tree xview}
 
   grid rowconfigure    .bot.left 1 -weight 1
@@ -240,15 +247,8 @@ proc populate_treeview {} {
   global lb_fgColor lb_bgColor
   global summary_list
 
-  # Get the currently loaded indices, if any
-  if {$last_mod_inst_type == $mod_inst_type} {
-    set curr_selected [.bot.left.tree selection]
-  } else {
-    set curr_selected ""
-  }
-
   # Remove contents currently in listboxes
-  .bot.left.tree delete {}
+  .bot.left.tree delete [.bot.left.tree children {}]
 
   if {$cdd_name != ""} {
 
@@ -258,8 +258,13 @@ proc populate_treeview {} {
       # Get the list of functional units
       set block_list [tcl_func_get_funit_list]
 
+      # Calculate the summary_list array
+      calculate_summary
+
       foreach block $block_list {
-        .bot.left.tree insert {} end -text [tcl_func_get_funit_name $block]
+        set value "($summary_list($block,total_hit) / $summary_list($block,total_total)) $summary_list($block,total_percent)%"
+        .bot.left.tree insert {} end -id $block -text [tcl_func_get_funit_name $block] -values [list $value] -tag tag[lindex $block 0]
+        .bot.left.tree tag configure tag[lindex $block 0] -background $summary_list($block,total_color)
       }
 
     } else {
@@ -267,29 +272,25 @@ proc populate_treeview {} {
       # Get the list of functional unit instances
       set block_list [tcl_func_get_instance_list]
 
-      # TBD - This needs to be fixed
+      # Calculate the summary_list array
+      calculate_summary
+
+      set inst_block() {}
       foreach block $block_list {
-        .bot.left.tree insert {} end -text [tcl_funcs_get_inst_scope $block]
+        set inst_name [tcl_func_get_inst_scope $block]
+        set mod_name  [tcl_func_get_funit_name $block]
+        set inst_block($inst_name) $block
+        set parent    $inst_block([join [lrange [split $inst_name .] 0 end-1] .])
+        set child     [lindex [split $inst_name .] end]
+        set value     "($summary_list($block,total_hit) / $summary_list($block,total_total)) $summary_list($block,total_percent)%"
+        .bot.left.tree insert $parent end -id $block -text "$child ($mod_name)" -values [list $value] -tag tag[lindex $block 0]
+        .bot.left.tree tag configure tag[lindex $block 0] -background $summary_list($block,total_color)
       }
 
     }
 
-    # Calculate the summary_list array
-    # calculate_summary
-
-#    for {set i 0} {$i < [llength $summary_list]} {incr i} {
-#      set funit [lindex $summary_list $curr_selected]
-#      .bot.left.tl insert end [list [lindex $funit 0] [lindex $funit 1] [lindex $funit 2] [lindex $funit 3] [lindex $funit 4] [lindex $funit 5] [lindex $funit 6] $index]
-#      .bot.left.tl rowconfigure end -background [lindex $funit 8] -selectbackground [lindex $funit 7]
-#    }
-
-    # Re-activate the currently selected item
-    if {$curr_selected != ""} {
-      .bot.left.tree selection set $curr_selected
-    }
-
     # Set the last module/instance type variable to the current
-    set last_mod_inst_type $mod_inst_type;
+    set last_mod_inst_type $mod_inst_type
 
   }
 
@@ -299,42 +300,48 @@ proc populate_text {} {
 
   global cov_rb block_list curr_block
   global mod_inst_type last_mod_inst_type
-  global last_lb_index
+  global last_block
   global start_search_index
   global curr_toggle_ptr
 
-  if {$last_mod_inst_type != $mod_inst_type} {
+  set curr_block [lindex [.bot.left.tree selection] 0]
 
-    set curr_block      [lindex $block_list $index]
-    set curr_toggle_ptr ""
+  if {$curr_block != ""} {
 
-    if {$cov_rb == "Line"} {
-      process_line_cov
-    } elseif {$cov_rb == "Toggle"} {
-      process_toggle_cov
-    } elseif {$cov_rb == "Memory"} {
-      process_memory_cov
-    } elseif {$cov_rb == "Logic"} {
-      process_comb_cov
-    } elseif {$cov_rb == "FSM"} {
-      process_fsm_cov
-    } elseif {$cov_rb == "Assert"} {
-      process_assert_cov
-    } else {
-      # ERROR
+    if {$last_block != $curr_block || $last_mod_inst_type != $mod_inst_type} {
+
+      set last_block      $curr_block
+      set curr_toggle_ptr ""
+
+      if {$cov_rb == "Line"} {
+        process_line_cov
+      } elseif {$cov_rb == "Toggle"} {
+        process_toggle_cov
+      } elseif {$cov_rb == "Memory"} {
+        process_memory_cov
+      } elseif {$cov_rb == "Logic"} {
+        process_comb_cov
+      } elseif {$cov_rb == "FSM"} {
+        process_fsm_cov
+      } elseif {$cov_rb == "Assert"} {
+        process_assert_cov
+      } else {
+        # ERROR
+      }
+
+      # Reset starting search index
+      set start_search_index 1.0
+      set curr_uncov_index   ""
+
+      # Run initial goto_uncov to initialize previous and next pointers
+      goto_uncov $curr_uncov_index
+
+      # Enable widgets
+      .bot.right.h.search.e     configure -state normal -bg white
+      .bot.right.h.search.find  configure -state normal
+      .bot.right.h.search.clear configure -state normal
+
     }
-
-    # Reset starting search index
-    set start_search_index 1.0
-    set curr_uncov_index   ""
-
-    # Run initial goto_uncov to initialize previous and next pointers
-    goto_uncov $curr_uncov_index
-
-    # Enable widgets
-    .bot.right.h.search.e     configure -state normal -bg white
-    .bot.right.h.search.find  configure -state normal
-    .bot.right.h.search.clear configure -state normal
 
   }
 
@@ -342,15 +349,15 @@ proc populate_text {} {
 
 proc clear_text {} {
 
-  global last_lb_index
+  global last_block
 
   # Clear the textbox
   .bot.right.txt configure -state normal
   .bot.right.txt delete 1.0 end
   .bot.right.txt configure -state disabled
 
-  # Reset the last_lb_index
-  set last_lb_index ""
+  # Reset the last_block
+  set last_block ""
 
 }
 
