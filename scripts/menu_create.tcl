@@ -270,6 +270,11 @@ proc menu_create {} {
     }
   }
 
+  # If we are running on Mac OS X, add the window menu with the windowlist package
+  if {[tk windowingsystem] eq "aqua"} {
+    windowlist::windowMenu $mb
+  }
+    
   # Configure the help option
   set thm [menu $mb.help -tearoff false]
   $mb add cascade -label "Help" -menu $thm
@@ -301,7 +306,7 @@ proc menu_create {} {
   if {$BROWSER != ""} {
     $thm entryconfigure 0 -state normal
   }
-    
+
   # Do key bindings for the Top Level Menus
   do_keybind .menubar
 

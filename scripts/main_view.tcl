@@ -51,6 +51,7 @@ source [file join $HOME scripts gen_rank.tcl]
 source [file join $HOME scripts viewer.tcl]
 source [file join $HOME scripts balloon.tcl]
 source [file join $HOME scripts exclude.tcl]
+source [file join $HOME scripts windowlist.tcl]
 
 # The Tablelist package is used for displaying instance/module hit/miss/total/percent hit information
 package require Tablelist
