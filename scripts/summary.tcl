@@ -216,7 +216,7 @@ proc calculate_summary {} {
     set summary_list($block,memory_hit)      $memory_summary_hit
     set summary_list($block,memory_excluded) $memory_summary_excluded
     set summary_list($block,memory_total)    $memory_summary_total
-    set summary_list($block,memory_percent)  [summary_calc_percent $toggle_summary_hit $toggle_summary_total]
+    set summary_list($block,memory_percent)  [summary_calc_percent $memory_summary_hit $memory_summary_total]
     set summary_list($block,memory_color)    [summary_calc_color   $summary_list($block,memory_percent) $memory_low_limit]
 
     tcl_func_get_comb_summary $block

@@ -337,7 +337,7 @@ proc populate_treeview {} {
 
 proc populate_text {} {
 
-  global cov_rb block_list curr_block
+  global cov_rb block_list curr_block summary_list
   global mod_inst_type last_mod_inst_type
   global last_block
   global start_search_index
@@ -355,6 +355,14 @@ proc populate_text {} {
       # Reset starting search index
       set start_search_index 1.0
       set curr_uncov_index   ""
+
+      # Set the summary information in the Tabs
+      .bot.right.nb tab 0 -text "Line ($summary_list($curr_block,line_hit)/$summary_list($curr_block,line_total)) $summary_list($curr_block,line_percent)%"
+      .bot.right.nb tab 1 -text "Toggle ($summary_list($curr_block,toggle_hit)/$summary_list($curr_block,toggle_total)) $summary_list($curr_block,toggle_percent)%"
+      .bot.right.nb tab 2 -text "Memory ($summary_list($curr_block,memory_hit)/$summary_list($curr_block,memory_total)) $summary_list($curr_block,memory_percent)%"
+      .bot.right.nb tab 3 -text "Logic ($summary_list($curr_block,comb_hit)/$summary_list($curr_block,comb_total)) $summary_list($curr_block,comb_percent)%"
+      .bot.right.nb tab 4 -text "FSM ($summary_list($curr_block,fsm_hit)/$summary_list($curr_block,fsm_total)) $summary_list($curr_block,fsm_percent)%"
+      .bot.right.nb tab 5 -text "Assert ($summary_list($curr_block,assert_hit)/$summary_list($curr_block,assert_total)) $summary_list($curr_block,assert_percent)%"
 
       if {$cov_rb == "Line"} {
         process_line_cov
