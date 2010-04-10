@@ -525,27 +525,27 @@ proc display_comb {curr_index} {
   global uncovered_combs start_line
 
   # Calculate expression ID and line number
-  set all_ranges [.bot.right.nb.comb.txt tag ranges uncov_button]
-  set my_range   [.bot.right.nb.comb.txt tag prevrange uncov_button "$curr_index + 1 chars"]
+  set all_ranges [.bot.right.nb.logic.txt tag ranges uncov_button]
+  set my_range   [.bot.right.nb.logic.txt tag prevrange uncov_button "$curr_index + 1 chars"]
   set index      [expr [lsearch -exact $all_ranges [lindex $my_range 0]] / 2]
   set expr_id    [lindex [lindex $uncovered_combs $index] 2]
   set sline      [expr [lindex [split [lindex $my_range 0] "."] 0] + $start_line - 1]
 
   # Get range of current signal
-  set curr_range [.bot.right.nb.comb.txt tag prevrange uncov_button "$curr_index + 1 chars"]
+  set curr_range [.bot.right.nb.logic.txt tag prevrange uncov_button "$curr_index + 1 chars"]
 
   # Calculate the current signal string
-  set curr_signal [string trim [lindex [split [.bot.right.nb.comb.txt get [lindex $curr_range 0] [lindex $curr_range 1]] "\["] 0]]
+  set curr_signal [string trim [lindex [split [.bot.right.nb.logic.txt get [lindex $curr_range 0] [lindex $curr_range 1]] "\["] 0]]
 
   # Make sure that the selected signal is visible in the text box and is shown as selected
-  set_pointer curr_comb_ptr [lindex [split [lindex $my_range 0] .] 0]
-  goto_uncov [lindex $my_range 0]
+  set_pointer curr_comb_ptr [lindex [split [lindex $my_range 0] .] 0] comb
+  goto_uncov [lindex $my_range 0] comb
 
   # Get range of previous signal
-  set prev_comb_index [lindex [.bot.right.nb.comb.txt tag prevrange uncov_button [lindex $curr_index 0]] 0]
+  set prev_comb_index [lindex [.bot.right.nb.logic.txt tag prevrange uncov_button [lindex $curr_index 0]] 0]
 
   # Get range of next signal
-  set next_comb_index [lindex [.bot.right.nb.comb.txt tag nextrange uncov_button [lindex $curr_range 1]] 0]
+  set next_comb_index [lindex [.bot.right.nb.logic.txt tag nextrange uncov_button [lindex $curr_range 1]] 0]
 
   # Now create the toggle window
   create_comb_window $expr_id $sline
@@ -598,15 +598,15 @@ proc create_comb_window {expr_id sline} {
       tcl_func_set_comb_exclude $curr_block $comb_curr_exp_id $comb_curr_uline_id $comb_curr_excluded $comb_curr_reason
       set comb_exp_excludes [lreplace $comb_exp_excludes $comb_curr_uline_id $comb_curr_uline_id $comb_curr_excluded]
       set comb_exp_reasons  [lreplace $comb_exp_reasons  $comb_curr_uline_id $comb_curr_uline_id $comb_curr_reason]
-      set text_x [.bot.right.nb.comb.txt xview]
-      set text_y [.bot.right.nb.comb.txt yview]
+      set text_x [.bot.right.nb.logic.txt xview]
+      set text_y [.bot.right.nb.logic.txt yview]
       process_comb_cov
       display_comb_info  ;# Redisplay the expression
-      .bot.right.nb.comb.txt xview moveto [lindex $text_x 0]
-      .bot.right.nb.comb.txt yview moveto [lindex $text_y 0]
+      .bot.right.nb.logic.txt xview moveto [lindex $text_x 0]
+      .bot.right.nb.logic.txt yview moveto [lindex $text_y 0]
       populate_treeview
       enable_cdd_save
-      set_pointer curr_comb_ptr $curr_comb_ptr
+      set_pointer curr_comb_ptr $curr_comb_ptr comb
     }
     set_exclude_reason_balloon .combwin.pw.bot.e {$comb_curr_excluded} {$comb_curr_reason}
     set_balloon .combwin.pw.bot.e "If set, excludes the expression/subexpression displayed in the lower panel from coverage consideration"
@@ -620,7 +620,7 @@ proc create_comb_window {expr_id sline} {
     # Create button frame with close/help buttons at the very bottom of the window
     ttk::frame .combwin.bf -relief raised -borderwidth 1
     ttk::button .combwin.bf.close -text "Close" -width 10 -command {
-      rm_pointer curr_comb_ptr
+      rm_pointer curr_comb_ptr comb
       destroy .combwin
     }
     help_button .combwin.bf.help chapter.gui.logic ""
@@ -746,7 +746,7 @@ proc update_comb {} {
     } else {
 
       # Restore curr_pointer if it has been set
-      set_pointer curr_comb_ptr $curr_comb_ptr
+      set_pointer curr_comb_ptr $curr_comb_ptr comb
 
       # Restore previous/next button enables
       if {$prev_comb_index != ""} {

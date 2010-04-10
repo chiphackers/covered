@@ -117,9 +117,10 @@ proc main_view {} {
   ttk::notebook .bot.right.nb
   bind .bot.right.nb <<NotebookTabChanged>> {
     set cov_rb [lindex [split [.bot.right.nb tab current -text] " "] 0]
+    cov_change_metric
   }
 
-  foreach metric [list line toggle memory comb fsm assert] {
+  foreach metric [list line toggle memory logic fsm assert] {
 
     .bot.right.nb add [ttk::frame .bot.right.nb.$metric] -text [string totitle $metric] -underline 0
 
@@ -129,12 +130,36 @@ proc main_view {} {
     ttk::frame .bot.right.nb.$metric.h.pn
     ttk::label .bot.right.nb.$metric.h.pn.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -state disabled
     bind .bot.right.nb.$metric.h.pn.prev <Button-1> {
-      goto_uncov $prev_uncov_index
+      if {$cov_rb == "Line"} {
+        goto_uncov $prev_uncov_index line
+      } elseif {$cov_rb == "Toggle"} {
+        goto_uncov $prev_uncov_index toggle
+      } elseif {$cov_rb == "Memory"} {
+        goto_uncov $prev_uncov_index memory
+      } elseif {$cov_rb == "Logic"} {
+        goto_uncov $prev_uncov_index logic
+      } elseif {$cov_rb == "FSM"} {
+        goto_uncov $prev_uncov_index fsm
+      } elseif {$cov_rb == "Assert"} {
+        goto_uncov $prev_uncov_index assert
+      }
     }
     set_balloon .bot.right.nb.$metric.h.pn.prev "Click to view the previous uncovered item"
     ttk::label .bot.right.nb.$metric.h.pn.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -state disabled
     bind .bot.right.nb.$metric.h.pn.next <Button-1> {
-      goto_uncov $next_uncov_index
+      if {$cov_rb == "Line"} {
+        goto_uncov $next_uncov_index line
+      } elseif {$cov_rb == "Toggle"} {
+        goto_uncov $next_uncov_index toggle
+      } elseif {$cov_rb == "Memory"} {
+        goto_uncov $next_uncov_index memory
+      } elseif {$cov_rb == "Logic"} {
+        goto_uncov $next_uncov_index logic
+      } elseif {$cov_rb == "FSM"} {
+        goto_uncov $next_uncov_index fsm
+      } elseif {$cov_rb == "Assert"} {
+        goto_uncov $next_uncov_index assert
+      }
     }
     set_balloon .bot.right.nb.$metric.h.pn.next "Click to view the next uncovered item"
     frame .bot.right.nb.$metric.h.search -borderwidth 1 -relief ridge -bg white
@@ -327,33 +352,48 @@ proc populate_text {} {
       set last_block      $curr_block
       set curr_toggle_ptr ""
 
-      if {$cov_rb == "Line"} {
-        process_line_cov
-      } elseif {$cov_rb == "Toggle"} {
-        process_toggle_cov
-      } elseif {$cov_rb == "Memory"} {
-        process_memory_cov
-      } elseif {$cov_rb == "Logic"} {
-        process_comb_cov
-      } elseif {$cov_rb == "FSM"} {
-        process_fsm_cov
-      } elseif {$cov_rb == "Assert"} {
-        process_assert_cov
-      } else {
-        # ERROR
-      }
-
       # Reset starting search index
       set start_search_index 1.0
       set curr_uncov_index   ""
 
-      # Run initial goto_uncov to initialize previous and next pointers
-      goto_uncov $curr_uncov_index
+      if {$cov_rb == "Line"} {
+        process_line_cov
+        goto_uncov $curr_uncov_index line
+        .bot.right.nb.line.h.search.e     configure -state normal -bg white
+        .bot.right.nb.line.h.search.find  configure -state normal
+        .bot.right.nb.line.h.search.clear configure -state normal
+      } elseif {$cov_rb == "Toggle"} {
+        process_toggle_cov
+        goto_uncov $curr_uncov_index toggle
+        .bot.right.nb.toggle.h.search.e     configure -state normal -bg white
+        .bot.right.nb.toggle.h.search.find  configure -state normal
+        .bot.right.nb.toggle.h.search.clear configure -state normal
+      } elseif {$cov_rb == "Memory"} {
+        process_memory_cov
+        goto_uncov $curr_uncov_index memory
+        .bot.right.nb.memory.h.search.e     configure -state normal -bg white
+        .bot.right.nb.memory.h.search.find  configure -state normal
+        .bot.right.nb.memory.h.search.clear configure -state normal
+      } elseif {$cov_rb == "Logic"} {
+        process_comb_cov
+        goto_uncov $curr_uncov_index logic
+        .bot.right.nb.logic.h.search.e     configure -state normal -bg white
+        .bot.right.nb.logic.h.search.find  configure -state normal
+        .bot.right.nb.logic.h.search.clear configure -state normal
+      } elseif {$cov_rb == "FSM"} {
+        process_fsm_cov
+        goto_uncov $curr_uncov_index fsm
+        .bot.right.nb.fsm.h.search.e     configure -state normal -bg white
+        .bot.right.nb.fsm.h.search.find  configure -state normal
+        .bot.right.nb.fsm.h.search.clear configure -state normal
+      } elseif {$cov_rb == "Assert"} {
+        process_assert_cov
+        goto_uncov $curr_uncov_index assert
+        .bot.right.nb.assert.h.search.e     configure -state normal -bg white
+        .bot.right.nb.assert.h.search.find  configure -state normal
+        .bot.right.nb.assert.h.search.clear configure -state normal
+      }
 
-      # Enable widgets
-      .bot.right.h.search.e     configure -state normal -bg white
-      .bot.right.h.search.find  configure -state normal
-      .bot.right.h.search.clear configure -state normal
 
     }
 
@@ -366,7 +406,7 @@ proc clear_text {} {
   global last_block
 
   # Clear the textboxes
-  foreach metric [list line toggle memory comb fsm assert] {
+  foreach metric [list line toggle memory logic fsm assert] {
     .bot.right.nb.$metric.txt configure -state normal
     .bot.right.nb.$metric.txt delete 1.0 end
     .bot.right.nb.$metric.txt configure -state disabled
@@ -432,7 +472,7 @@ proc rm_pointer {curr_ptr metric} {
   upvar $curr_ptr ptr
 
   # Allow the textbox to be changed
-  .bot.right.txt configure -state normal
+  .bot.right.nb.$metric.txt configure -state normal
 
   # Delete old cursor, if it is displayed
   if {$ptr != ""} {
@@ -456,7 +496,7 @@ proc set_pointer {curr_ptr line metric} {
   upvar $curr_ptr ptr
 
   # Remove old pointer
-  rm_pointer ptr
+  rm_pointer ptr $metric
 
   # Allow the textbox to be changed
   .bot.right.nb.metric.txt configure -state normal

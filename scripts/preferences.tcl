@@ -721,25 +721,43 @@ proc apply_preferences {} {
   # Update the display if necessary
   if {$changed == 1} {
 
-    # Redisplay with new settings
-    set text_x [.bot.right.txt xview]
-    set text_y [.bot.right.txt yview]
-
     # Redisplay the information in the main file viewer
     if {$cov_rb == "Line"} {
+      set text_x [.bot.right.nb.line.txt xview]
+      set text_y [.bot.right.nb.line.txt yview]
       display_line_cov
+      .bot.right.nb.line.txt xview moveto [lindex $text_x 0]
+      .bot.right.nb.line.txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Toggle"} {
+      set text_x [.bot.right.nb.toggle.txt xview]
+      set text_y [.bot.right.nb.toggle.txt yview]
       display_toggle_cov
+      .bot.right.nb.toggle.txt xview moveto [lindex $text_x 0]
+      .bot.right.nb.toggle.txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Memory"} {
+      set text_x [.bot.right.nb.memory.txt xview]
+      set text_y [.bot.right.nb.memory.txt yview]
       display_memory_cov
+      .bot.right.nb.memory.txt xview moveto [lindex $text_x 0]
+      .bot.right.nb.memory.txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Logic"} {
+      set text_x [.bot.right.nb.logic.txt xview]
+      set text_y [.bot.right.nb.logic.txt yview]
       display_comb_cov
+      .bot.right.nb.logic.txt xview moveto [lindex $text_x 0]
+      .bot.right.nb.logic.txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "FSM"} {
+      set text_x [.bot.right.nb.fsm.txt xview]
+      set text_y [.bot.right.nb.fsm.txt yview]
       display_fsm_cov
+      .bot.right.nb.fsm.txt xview moveto [lindex $text_x 0]
+      .bot.right.nb.fsm.txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Assert"} {
+      set text_x [.bot.right.nb.assert.txt xview]
+      set text_y [.bot.right.nb.assert.txt yview]
       display_assert_cov
-    } else {
-      # Error
+      .bot.right.nb.assert.txt xview moveto [lindex $text_x 0]
+      .bot.right.nb.assert.txt yview moveto [lindex $text_y 0]
     }
 
     # Redisplay the combinational logic window, if it exists
@@ -751,9 +769,6 @@ proc apply_preferences {} {
     if {[winfo exists .fsmwin] != 0} {
       display_fsm_table
     }
-
-    .bot.right.txt xview moveto [lindex $text_x 0]
-    .bot.right.txt yview moveto [lindex $text_y 0]
 
     # Update the treeview
     populate_treeview

@@ -503,11 +503,11 @@ proc process_memory_cov {} {
 
       # If we have some uncovered values, enable the "next" pointer
       if {$memory_summary_total != $memory_summary_hit} {
-        .bot.right.h.pn.next configure -state normal
+        .bot.right.nb.memory.h.pn.next configure -state normal
       } else {
-        .bot.right.h.pn.next configure -state disabled
+        .bot.right.nb.memory.h.pn.next configure -state disabled
       }
-      .bot.right.h.pn.prev configure -state disabled
+      .bot.right.nb.memory.h.pn.prev configure -state disabled
 
       calc_and_display_memory_cov
 
@@ -669,11 +669,11 @@ proc process_comb_cov {} {
 
       # If we have found uncovered combinations in this module, enable the next button
       if {$comb_summary_total != $comb_summary_hit} {
-        .bot.right.h.pn.next configure -state normal
+        .bot.right.nb.logic.h.pn.next configure -state normal
       } else {
-        .bot.right.h.pn.next configure -state disabled
+        .bot.right.nb.logic.h.pn.next configure -state disabled
       }
-      .bot.right.h.pn.prev configure -state disabled
+      .bot.right.nb.logic.h.pn.prev configure -state disabled
 
       calc_and_display_comb_cov
 
@@ -721,10 +721,10 @@ proc display_comb_cov {} {
     .info configure -text "Filename: $file_name"
 
     # Allow us to write to the text box
-    .bot.right.nb.comb.txt configure -state normal
+    .bot.right.nb.logic.txt configure -state normal
 
     # Clear the text-box before any insertion is being made
-    .bot.right.nb.comb.txt delete 1.0 end
+    .bot.right.nb.logic.txt delete 1.0 end
 
     set contents [split $fileContent($file_name) \n]
     set linecount 1
@@ -735,24 +735,24 @@ proc display_comb_cov {} {
       foreach phrase $contents {
         if [expr [expr $start_line <= $linecount] && [expr $end_line >= $linecount]] {
           set line [format {%3s  %7u  %s} "   " $linecount [append phrase "\n"]]
-          .bot.right.nb.comb.txt insert end $line
+          .bot.right.nb.logic.txt insert end $line
         }
         incr linecount
       }
 
       # Perform syntax highlighting
-      verilog_highlight .bot.right.nb.comb.txt
+      verilog_highlight .bot.right.nb.logic.txt
 
       # Create race condition tags
       create_race_tags comb
 
       # Finally, set combinational logic information
       if {[expr $uncov_type == 1] && [expr [llength $uncovered_combs] > 0]} {
-        set cmd_enter   ".bot.right.nb.comb.txt tag add uncov_enter"
-        set cmd_button  ".bot.right.nb.comb.txt tag add uncov_button"
-        set cmd_leave   ".bot.right.nb.comb.txt tag add uncov_leave"
-        set cmd_ucov_hl ".bot.right.nb.comb.txt tag add uncov_highlight"
-        set cmd_excl_hl ".bot.right.nb.comb.txt tag add excl_highlight"
+        set cmd_enter   ".bot.right.nb.logic.txt tag add uncov_enter"
+        set cmd_button  ".bot.right.nb.logic.txt tag add uncov_button"
+        set cmd_leave   ".bot.right.nb.logic.txt tag add uncov_leave"
+        set cmd_ucov_hl ".bot.right.nb.logic.txt tag add uncov_highlight"
+        set cmd_excl_hl ".bot.right.nb.logic.txt tag add excl_highlight"
         foreach entry $uncovered_combs {
           if {[lindex $entry 3] == 0} {
             set cmd_ucov_hl [concat $cmd_ucov_hl [lindex $entry 0] [lindex $entry 1]]
@@ -766,7 +766,7 @@ proc display_comb_cov {} {
             set cmd_button [concat $cmd_button [lindex $entry 0] "$sline.end"]
             set cmd_leave  [concat $cmd_leave  [lindex $entry 0] "$sline.end"]
             for {set i [expr $sline + 1]} {$i <= $eline} {incr i} {
-              set line       [.bot.right.nb.comb.txt get "$i.7" end]
+              set line       [.bot.right.nb.logic.txt get "$i.7" end]
               set line_diff  [expr [expr [string length $line] - [string length [string trimleft $line]]] + 7]
               if {$i == $eline} {
                 set cmd_enter  [concat $cmd_enter  "$i.$line_diff" [lindex $entry 1]]
@@ -789,41 +789,41 @@ proc display_comb_cov {} {
         eval $cmd_leave
         if {[llength $cmd_ucov_hl] > 4} {
           eval $cmd_ucov_hl
-          .bot.right.nb.comb.txt tag configure uncov_highlight -foreground $uncov_fgColor -background $uncov_bgColor
+          .bot.right.nb.logic.txt tag configure uncov_highlight -foreground $uncov_fgColor -background $uncov_bgColor
         }
         if {[llength $cmd_excl_hl] > 4} {
           eval $cmd_excl_hl
-          .bot.right.nb.comb.txt tag configure excl_highlight -foreground $cov_fgColor   -background $cov_bgColor
+          .bot.right.nb.logic.txt tag configure excl_highlight -foreground $cov_fgColor   -background $cov_bgColor
         }
-        .bot.right.nb.comb.txt tag configure uncov_button -underline true
-        .bot.right.nb.comb.txt tag bind uncov_enter <Enter> {
-          set curr_cursor [.bot.right.nb.comb.txt cget -cursor]
+        .bot.right.nb.logic.txt tag configure uncov_button -underline true
+        .bot.right.nb.logic.txt tag bind uncov_enter <Enter> {
+          set curr_cursor [.bot.right.nb.logic.txt cget -cursor]
           set curr_info   [.info cget -text]
-          .bot.right.nb.comb.txt configure -cursor hand2
+          .bot.right.nb.logic.txt configure -cursor hand2
           .info configure -text "Click left button for detailed combinational logic coverage information" 
         }
-        .bot.right.nb.comb.txt tag bind uncov_leave <Leave> {
-          .bot.right.nb.comb.txt configure -cursor $curr_cursor
+        .bot.right.nb.logic.txt tag bind uncov_leave <Leave> {
+          .bot.right.nb.logic.txt configure -cursor $curr_cursor
           .info configure -text $curr_info
         }
-        .bot.right.nb.comb.txt tag bind uncov_button <ButtonPress-1> {
+        .bot.right.nb.logic.txt tag bind uncov_button <ButtonPress-1> {
           display_comb current
         }
       }
 
       if {[expr $cov_type == 1] && [expr [llength $covered_combs] > 0]} {
-        set cmd_cov ".bot.right.nb.comb.txt tag add cov_highlight"
+        set cmd_cov ".bot.right.nb.logic.txt tag add cov_highlight"
         foreach entry $covered_combs {
           set cmd_cov [concat $cmd_cov [lindex $entry 0] [lindex $entry 1]]
         }
         eval $cmd_cov
-        .bot.right.nb.comb.txt tag configure cov_highlight -foreground $cov_fgColor -background $cov_bgColor
+        .bot.right.nb.logic.txt tag configure cov_highlight -foreground $cov_fgColor -background $cov_bgColor
       }
 
     }
 
     # Now cause the text box to be read-only again
-    .bot.right.nb.comb.txt configure -state disabled
+    .bot.right.nb.logic.txt configure -state disabled
 
   }
 
@@ -856,13 +856,13 @@ proc process_fsm_cov {} {
 
       # If we have some uncovered values, enable the "next" pointer and menu item
       if {$fsm_summary_total != $fsm_summary_hit} {
-        .bot.right.h.pn.next configure -state normal
+        .bot.right.nb.fsm.h.pn.next configure -state normal
         .menubar.view entryconfigure 0 -state normal
       } else {
-        .bot.right.h.pn.next configure -state disabled
+        .bot.right.nb.fsm.h.pn.next configure -state disabled
         .menubar.view entryconfigure 0 -state disabled
       }
-      .bot.right.h.pn.prev configure -state disabled
+      .bot.right.nb.fsm.h.pn.prev configure -state disabled
       .menubar.view entryconfigure 1 -state disabled
 
       calc_and_display_fsm_cov
@@ -1022,13 +1022,13 @@ proc process_assert_cov {} {
 
       # If we have some uncovered values, enable the "next" pointer and menu item
       if {$assert_summary_total != $assert_summary_hit} {
-        .bot.right.h.pn.next configure -state normal
+        .bot.right.nb.assert.h.pn.next configure -state normal
         .menubar.view entryconfigure 0 -state normal
       } else {
-        .bot.right.h.pn.next configure -state disabled
+        .bot.right.nb.assert.h.pn.next configure -state disabled
         .menubar.view entryconfigure 0 -state disabled
       }
-      .bot.right.h.pn.prev configure -state disabled
+      .bot.right.nb.assert.h.pn.prev configure -state disabled
       .menubar.view entryconfigure 1 -state disabled
 
       calc_and_display_assert_cov

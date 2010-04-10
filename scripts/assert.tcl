@@ -44,8 +44,8 @@ proc display_assert {curr_index} {
   set curr_assert_inst [string trim [lindex [split [.bot.right.nb.assert.txt get [lindex $curr_range 0] [lindex $curr_range 1]] "\["] 0]]
 
   # Make sure that the selected instance is visible in the text box and is shown as selected
-  set_pointer curr_assert_ptr [lindex [split [lindex $curr_range 0] .] 0]
-  goto_uncov [lindex $curr_range 0]
+  set_pointer curr_assert_ptr [lindex [split [lindex $curr_range 0] .] 0] assert
+  goto_uncov [lindex $curr_range 0] assert
 
   # Get range of previous instance
   set prev_assert_index [lindex [.bot.right.nb.assert.txt tag prevrange uncov_button [lindex $curr_range 0]] 0]
@@ -96,7 +96,7 @@ proc create_assert_window {inst} {
     # Create bottom button bar
     ttk::frame .assertwin.bf -relief raised -borderwidth 1
     ttk::button .assertwin.bf.close -text "Close" -width 10 -command {
-      rm_pointer curr_assert_ptr
+      rm_pointer curr_assert_ptr assert
       destroy .assertwin
       destroy .amodwin
     }
@@ -233,7 +233,7 @@ proc create_assert_window {inst} {
     .bot.right.nb.assert.txt yview moveto [lindex $text_y 0]
     populate_treeview
     enable_cdd_save
-    set_pointer curr_assert_ptr $curr_assert_ptr
+    set_pointer curr_assert_ptr $curr_assert_ptr assert
     create_assert_window $curr_assert_inst
   }
   .assertwin.f.tc tag bind tc_uncov_uline <ButtonPress-3> {
@@ -283,7 +283,7 @@ proc update_assert {} {
     } else {
 
       # Restore the pointer if it is set
-      set_pointer curr_assert_ptr $curr_assert_ptr
+      set_pointer curr_assert_ptr $curr_assert_ptr assert
 
       # Restore the previous/next button enables
       if {$prev_assert_index != ""} {

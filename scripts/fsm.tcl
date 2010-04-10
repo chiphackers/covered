@@ -107,14 +107,14 @@ proc fsm_tablelist_selected {} {
       tcl_func_set_fsm_exclude $curr_block $curr_fsm_expr_id [lindex $arc 0] [lindex $arc 1] $fsm_excluded $fsm_reason
       display_fsm_table
       fsm_arc_show_tooltip .fsmwin.pw.t.tl [lindex $selected_cell 0] [lindex $selected_cell 1]
-      set text_x [.bot.right.txt xview]
-      set text_y [.bot.right.txt yview]
+      set text_x [.bot.right.nb.fsm.txt xview]
+      set text_y [.bot.right.nb.fsm.txt yview]
       process_fsm_cov
-      .bot.right.txt xview moveto [lindex $text_x 0]
-      .bot.right.txt yview moveto [lindex $text_y 0]
+      .bot.right.nb.fsm.txt xview moveto [lindex $text_x 0]
+      .bot.right.nb.fsm.txt yview moveto [lindex $text_y 0]
       populate_treeview
       enable_cdd_save
-      set_pointer curr_fsm_ptr $curr_fsm_ptr 
+      set_pointer curr_fsm_ptr $curr_fsm_ptr fsm
     }
   }
 
@@ -373,23 +373,23 @@ proc display_fsm {curr_index} {
   global uncovered_fsms start_line
 
   # Calculate expression ID
-  set all_ranges [.bot.right.txt tag ranges uncov_button]
-  set my_range   [.bot.right.txt tag prevrange uncov_button "$curr_index + 1 chars"]
+  set all_ranges [.bot.right.nb.fsm.txt tag ranges uncov_button]
+  set my_range   [.bot.right.nb.fsm.txt tag prevrange uncov_button "$curr_index + 1 chars"]
   set index [expr [lsearch -exact $all_ranges [lindex $my_range 0]] / 2]
   set expr_id [lindex [lindex $uncovered_fsms $index] 2]
 
   # Get range of current signal
-  set curr_range [.bot.right.txt tag prevrange uncov_button "$curr_index + 1 chars"]
+  set curr_range [.bot.right.nb.fsm.txt tag prevrange uncov_button "$curr_index + 1 chars"]
 
   # Make sure that the selected signal is visible in the text box and is shown as selected
-  set_pointer curr_fsm_ptr [lindex [split [lindex $my_range 0] .] 0]
-  goto_uncov [lindex $my_range 0]
+  set_pointer curr_fsm_ptr [lindex [split [lindex $my_range 0] .] 0] fsm
+  goto_uncov [lindex $my_range 0] fsm
 
   # Get range of previous signal
-  set prev_fsm_index [lindex [.bot.right.txt tag prevrange uncov_button [lindex $curr_index 0]] 0]
+  set prev_fsm_index [lindex [.bot.right.nb.fsm.txt tag prevrange uncov_button [lindex $curr_index 0]] 0]
 
   # Get range of next signal
-  set next_fsm_index [lindex [.bot.right.txt tag nextrange uncov_button [lindex $curr_range 1]] 0]
+  set next_fsm_index [lindex [.bot.right.nb.fsm.txt tag nextrange uncov_button [lindex $curr_range 1]] 0]
 
   # Now create the FSM window
   create_fsm_window $expr_id
@@ -414,7 +414,7 @@ proc update_fsm {} {
     } else {
 
       # Restore curr_pointer if it has been set
-      set_pointer curr_fsm_ptr $curr_fsm_ptr
+      set_pointer curr_fsm_ptr $curr_fsm_ptr fsm
 
       # Restore previous/next button enables
       if {$prev_fsm_index != ""} {

@@ -24,23 +24,23 @@ proc display_memory {curr_index} {
   global prev_memory_index next_memory_index curr_memory_ptr curr_mem_index
 
   # Get range of current signal
-  set curr_range [.bot.right.txt tag prevrange uncov_button "$curr_index + 1 chars"]
+  set curr_range [.bot.right.nb.memory.txt tag prevrange uncov_button "$curr_index + 1 chars"]
 
   # Calculate the current signal string
-  set curr_signal [string trim [lindex [split [.bot.right.txt get [lindex $curr_range 0] [lindex $curr_range 1]] "\["] 0]]
+  set curr_signal [string trim [lindex [split [.bot.right.nb.memory.txt get [lindex $curr_range 0] [lindex $curr_range 1]] "\["] 0]]
 
   # Clear global memory index
   set curr_mem_index ""
 
   # Make sure that the selected signal is visible in the text box and is shown as selected
-  set_pointer curr_memory_ptr [lindex [split [lindex $curr_range 0] .] 0]
-  goto_uncov [lindex $curr_range 0]
+  set_pointer curr_memory_ptr [lindex [split [lindex $curr_range 0] .] 0] memory
+  goto_uncov [lindex $curr_range 0] memory
 
   # Get range of previous signal
-  set prev_memory_index [lindex [.bot.right.txt tag prevrange uncov_button [lindex $curr_index 0]] 0]
+  set prev_memory_index [lindex [.bot.right.nb.memory.txt tag prevrange uncov_button [lindex $curr_index 0]] 0]
 
   # Get range of next signal
-  set next_memory_index [lindex [.bot.right.txt tag nextrange uncov_button [lindex $curr_range 1]] 0]
+  set next_memory_index [lindex [.bot.right.nb.memory.txt tag nextrange uncov_button [lindex $curr_range 1]] 0]
 
   # Now create the memory window
   create_memory_window $curr_signal
@@ -85,15 +85,15 @@ proc create_memory_window {signal} {
         set memory_reason [get_exclude_reason .memwin]
       }
       tcl_func_set_memory_exclude $curr_block $mem_name $memory_excluded $memory_reason
-      set text_x [.bot.right.txt xview]
-      set text_y [.bot.right.txt yview]
+      set text_x [.bot.right.nb.memory.txt xview]
+      set text_y [.bot.right.nb.memory.txt yview]
       process_memory_cov
       create_memory_window $mem_name
-      .bot.right.txt xview moveto [lindex $text_x 0]
-      .bot.right.txt yview moveto [lindex $text_y 0]
+      .bot.right.nb.memory.txt xview moveto [lindex $text_x 0]
+      .bot.right.nb.memory.txt yview moveto [lindex $text_y 0]
       populate_treeview
       enable_cdd_save
-      set_pointer curr_memory_ptr $curr_memory_ptr
+      set_pointer curr_memory_ptr $curr_memory_ptr memory
     }
     set_exclude_reason_balloon .memwin.f.fae.excl {$memory_excluded} {$memory_reason}
     set_balloon .memwin.f.fae.excl "If set, excludes this entire memory from coverage consideration"
@@ -139,7 +139,7 @@ proc create_memory_window {signal} {
     # Create bottom button bar
     ttk::frame .memwin.bf -relief raised -borderwidth 1
     ttk::button .memwin.bf.close -text "Close" -width 10 -command {
-      rm_pointer curr_memory_ptr
+      rm_pointer curr_memory_ptr memory
       destroy .memwin
     }
     help_button .memwin.bf.help chapter.gui.memory ""
@@ -418,7 +418,7 @@ proc update_memory {} {
     } else {
 
       # Restore the pointer if it is set
-      set_pointer curr_memory_ptr $curr_memory_ptr
+      set_pointer curr_memory_ptr $curr_memory_ptr memory
 
       # Restore the previous/next button enables
       if {$prev_memory_index != ""} {

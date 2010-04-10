@@ -29,8 +29,8 @@ proc display_toggle {curr_index} {
   set curr_signal [string trim [lindex [split [.bot.right.nb.toggle.txt get [lindex $curr_range 0] [lindex $curr_range 1]] "\["] 0]]
 
   # Make sure that the selected signal is visible in the text box and is shown as selected
-  set_pointer curr_toggle_ptr [lindex [split [lindex $curr_range 0] .] 0]
-  goto_uncov [lindex $curr_range 0]
+  set_pointer curr_toggle_ptr [lindex [split [lindex $curr_range 0] .] 0] toggle
+  goto_uncov [lindex $curr_range 0] toggle
 
   # Get range of previous signal
   set prev_toggle_index [lindex [.bot.right.nb.toggle.txt tag prevrange uncov_button [lindex $curr_index 0]] 0]
@@ -87,7 +87,7 @@ proc create_toggle_window {signal} {
       .bot.right.nb.toggle.txt yview moveto [lindex $text_y 0]
       populate_treeview
       enable_cdd_save
-      set_pointer curr_toggle_ptr $curr_toggle_ptr
+      set_pointer curr_toggle_ptr $curr_toggle_ptr toggle
     }
     set_exclude_reason_balloon .togwin.f.excl {$toggle_excluded} {$toggle_reason}
     set_balloon .togwin.f.excl "If set, excludes this signal from toggle coverage consideration"
@@ -95,7 +95,7 @@ proc create_toggle_window {signal} {
     # Create bottom button bar
     ttk::frame .togwin.bf -relief raised -borderwidth 1
     ttk::button .togwin.bf.close -text "Close" -width 10 -command {
-      rm_pointer curr_toggle_ptr
+      rm_pointer curr_toggle_ptr toggle
       destroy .togwin
     }
     help_button .togwin.bf.help chapter.gui.toggle ""
@@ -228,7 +228,7 @@ proc update_toggle {} {
     } else {
 
       # Restore the pointer if it is set
-      set_pointer curr_toggle_ptr $curr_toggle_ptr
+      set_pointer curr_toggle_ptr $curr_toggle_ptr toggle
 
       # Restore the previous/next button enables
       if {$prev_toggle_index != ""} {

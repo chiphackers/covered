@@ -171,67 +171,125 @@ proc menu_create {} {
   $report add radiobutton -label "Assert" -variable cov_rb -value "Assert" -underline 0
   $report add separator
   $report add checkbutton -label "Show Uncovered" -variable uncov_type -onvalue 1 -offvalue 0 -underline 5 -command {
-    set text_x [.bot.right.txt xview]
-    set text_y [.bot.right.txt yview]
     if {$cov_rb == "Line"} {
+      set text_x [.bot.right.nb.line.txt xview]
+      set text_y [.bot.right.nb.line.txt yview]
       display_line_cov
+      .bot.right.nb.line.txt xview moveto [lindex $text_x 0]
+      .bot.right.nb.line.txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Toggle"} {
+      set text_x [.bot.right.nb.toggle.txt xview]
+      set text_y [.bot.right.nb.toggle.txt yview]
       display_toggle_cov
+      .bot.right.nb.toggle.txt xview moveto [lindex $text_x 0]
+      .bot.right.nb.toggle.txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Memory"} {
+      set text_x [.bot.right.nb.memory.txt xview]
+      set text_y [.bot.right.nb.memory.txt yview]
       display_memory_cov
+      .bot.right.nb.memory.txt xview moveto [lindex $text_x 0]
+      .bot.right.nb.memory.txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Logic"} {
+      set text_x [.bot.right.nb.logic.txt xview]
+      set text_y [.bot.right.nb.logic.txt yview]
       display_comb_cov
+      .bot.right.nb.logic.txt xview moveto [lindex $text_x 0]
+      .bot.right.nb.logic.txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "FSM"} {
+      set text_x [.bot.right.nb.fsm.txt xview]
+      set text_y [.bot.right.nb.fsm.txt yview]
       display_fsm_cov
+      .bot.right.nb.fsm.txt xview moveto [lindex $text_x 0]
+      .bot.right.nb.fsm.txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Assert"} {
+      set text_x [.bot.right.nb.assert.txt xview]
+      set text_y [.bot.right.nb.assert.txt yview]
       display_assert_cov
+      .bot.right.nb.assert.txt xview moveto [lindex $text_x 0]
+      .bot.right.nb.assert.txt yview moveto [lindex $text_y 0]
     } else {
       # Error
     }
-    .bot.right.txt xview moveto [lindex $text_x 0]
-    .bot.right.txt yview moveto [lindex $text_y 0]
   }
   $report add checkbutton -label "Show Covered" -variable cov_type -onvalue 1 -offvalue 0 -underline 5 -command {
-    set text_x [.bot.right.txt xview]
-    set text_y [.bot.right.txt yview]
     if {$cov_rb == "Line"} {
+      set text_x [.bot.right.nb.line.txt xview]
+      set text_y [.bot.right.nb.line.txt yview]
       display_line_cov
+      .bot.right.nb.line.txt xview moveto [lindex $text_x 0]
+      .bot.right.nb.line.txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Toggle"} {
+      set text_x [.bot.right.nb.toggle.txt xview]
+      set text_y [.bot.right.nb.toggle.txt yview]
       display_toggle_cov
+      .bot.right.nb.toggle.txt xview moveto [lindex $text_x 0]
+      .bot.right.nb.toggle.txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Memory"} {
+      set text_x [.bot.right.nb.memory.txt xview]
+      set text_y [.bot.right.nb.memory.txt yview]
       display_memory_cov
+      .bot.right.nb.memory.txt xview moveto [lindex $text_x 0]
+      .bot.right.nb.memory.txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Logic"} {
+      set text_x [.bot.right.nb.logic.txt xview]
+      set text_y [.bot.right.nb.logic.txt yview]
       display_comb_cov
+      .bot.right.nb.logic.txt xview moveto [lindex $text_x 0]
+      .bot.right.nb.logic.txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "FSM"} {
+      set text_x [.bot.right.nb.fsm.txt xview]
+      set text_y [.bot.right.nb.fsm.txt yview]
       display_fsm_cov
+      .bot.right.nb.fsm.txt xview moveto [lindex $text_x 0]
+      .bot.right.nb.fsm.txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Assert"} {
+      set text_x [.bot.right.nb.assert.txt xview]
+      set text_y [.bot.right.nb.assert.txt yview]
       display_assert_cov
+      .bot.right.nb.assert.txt xview moveto [lindex $text_x 0]
+      .bot.right.nb.assert.txt yview moveto [lindex $text_y 0]
     } else {
       # Error
     }
-    .bot.right.txt xview moveto [lindex $text_x 0]
-    .bot.right.txt yview moveto [lindex $text_y 0]
   }
   $report add checkbutton -label "Show Race Conditions" -variable race_type -onvalue 1 -offvalue 0 -underline 5 -command {
-    set text_x [.bot.right.txt xview]
-    set text_y [.bot.right.txt yview]
     if {$cov_rb == "Line"} {
+      set text_x [.bot.right.nb.line.txt xview]
+      set text_y [.bot.right.nb.line.txt yview]
       display_line_cov
+      .bot.right.nb.line.txt xview moveto [lindex $text_x 0]
+      .bot.right.nb.line.txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Toggle"} {
+      set text_x [.bot.right.nb.toggle.txt xview]
+      set text_y [.bot.right.nb.toggle.txt yview]
       display_toggle_cov
+      .bot.right.nb.toggle.txt xview moveto [lindex $text_x 0]
+      .bot.right.nb.toggle.txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Memory"} {
+      set text_x [.bot.right.nb.memory.txt xview]
+      set text_y [.bot.right.nb.memory.txt yview]
       display_memory_cov
+      .bot.right.nb.memory.txt xview moveto [lindex $text_x 0]
+      .bot.right.nb.memory.txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Logic"} {
+      set text_x [.bot.right.nb.logic.txt xview]
+      set text_y [.bot.right.nb.logic.txt yview]
       display_comb_cov
+      .bot.right.nb.logic.txt xview moveto [lindex $text_x 0]
+      .bot.right.nb.logic.txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "FSM"} {
+      set text_x [.bot.right.nb.fsm.txt xview]
+      set text_y [.bot.right.nb.fsm.txt yview]
       display_fsm_cov
+      .bot.right.nb.fsm.txt xview moveto [lindex $text_x 0]
+      .bot.right.nb.fsm.txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Assert"} {
+      set text_x [.bot.right.nb.assert.txt xview]
+      set text_y [.bot.right.nb.assert.txt yview]
       display_assert_cov
-    } else {
-      # Error
+      .bot.right.nb.assert.txt xview moveto [lindex $text_x 0]
+      .bot.right.nb.assert.txt yview moveto [lindex $text_y 0]
     }
-    .bot.right.txt xview moveto [lindex $text_x 0]
-    .bot.right.txt yview moveto [lindex $text_y 0]
   }
   set mod_inst_type  "Module"
 
@@ -240,19 +298,43 @@ proc menu_create {} {
   $mb add cascade -label "View" -menu $m
 
   $m add command -label "Next Uncovered" -state disabled -accelerator "Ctrl-n" -underline 0 -command {
-    goto_uncov $next_uncov_index
+    if {$cov_rb == "Line"} {
+      goto_uncov $next_uncov_index line
+    } elseif {$cov_rb == "Toggle"} {
+      goto_uncov $next_uncov_index toggle
+    } elseif {$cov_rb == "Memory"} {
+      goto_uncov $next_uncov_index memory
+    } elseif {$cov_rb == "Logic"} {
+      goto_uncov $next_uncov_index comb
+    } elseif {$cov_rb == "FSM"} {
+      goto_uncov $next_uncov_index fsm
+    } elseif {$cov_rb == "Assert"} {
+      goto_uncov $next_uncov_index assert
+    }
   }
   $m add command -label "Previous Uncovered" -state disabled -accelerator "Ctrl-p" -underline 0 -command {
-    goto_uncov $prev_uncov_index
+    if {$cov_rb == "Line"} {
+      goto_uncov $prev_uncov_index line
+    } elseif {$cov_rb == "Toggle"} {
+      goto_uncov $prev_uncov_index toggle
+    } elseif {$cov_rb == "Memory"} {
+      goto_uncov $prev_uncov_index memory
+    } elseif {$cov_rb == "Logic"} {
+      goto_uncov $prev_uncov_index comb
+    } elseif {$cov_rb == "FSM"} {
+      goto_uncov $prev_uncov_index fsm
+    } elseif {$cov_rb == "Assert"} {
+      goto_uncov $prev_uncov_index assert
+    }
   }
   $m add command -label "Show Current Selection" -state disabled -accelerator "Ctrl-c" -underline 5 -command {
     if {$cov_rb == "Toggle"} {
       if {$curr_toggle_ptr != ""} {
-        .bot.right.txt see $curr_toggle_ptr.0
+        .bot.right.nb.toggle.txt see $curr_toggle_ptr.0
       }
     } elseif {$cov_rb == "Logic"} {
       if {$curr_comb_ptr != ""} {
-        .bot.right.txt see $curr_comb_ptr.0
+        .bot.right.nb.logic.txt see $curr_comb_ptr.0
       }
     }
   }
@@ -320,9 +402,19 @@ proc open_files {fnames} {
   global exclude_resolution
 
   # Get all cursor values from various widgets (so we can properly restore them after the open)
-  set win_cursor [. cget -cursor]
-  set txt_cursor [.bot.right.txt cget -cursor]
-  set e_cursor   [.bot.right.h.search.e cget -cursor]
+  set win_cursor   [. cget -cursor]
+  set txt_l_cursor [.bot.right.nb.line.txt          cget -cursor]
+  set txt_t_cursor [.bot.right.nb.toggle.txt        cget -cursor]
+  set txt_m_cursor [.bot.right.nb.memory.txt        cget -cursor]
+  set txt_c_cursor [.bot.right.nb.logic.txt         cget -cursor]
+  set txt_f_cursor [.bot.right.nb.fsm.txt           cget -cursor]
+  set txt_a_cursor [.bot.right.nb.assert.txt        cget -cursor]
+  set e_l_cursor   [.bot.right.nb.line.h.search.e   cget -cursor]
+  set e_t_cursor   [.bot.right.nb.toggle.h.search.e cget -cursor]
+  set e_m_cursor   [.bot.right.nb.memory.h.search.e cget -cursor]
+  set e_c_cursor   [.bot.right.nb.logic.h.search.e  cget -cursor]
+  set e_f_cursor   [.bot.right.nb.fsm.h.search.e    cget -cursor]
+  set e_a_cursor   [.bot.right.nb.assert.h.search.e cget -cursor]
 
   foreach fname $fnames {
 
@@ -339,9 +431,19 @@ proc open_files {fnames} {
     }
 
     # Set all widget cursors to the watch
-    .                     configure -cursor watch
-    .bot.right.txt        configure -cursor watch
-    .bot.right.h.search.e configure -cursor watch
+    .                               configure -cursor watch
+    .bot.right.nb.line.txt          configure -cursor watch
+    .bot.right.nb.toggle.txt        configure -cursor watch
+    .bot.right.nb.memory.txt        configure -cursor watch
+    .bot.right.nb.logic.txt         configure -cursor watch
+    .bot.right.nb.fsm.txt           configure -cursor watch
+    .bot.right.nb.assert.txt        configure -cursor watch
+    .bot.right.nb.line.h.search.e   configure -cursor watch
+    .bot.right.nb.toggle.h.search.e configure -cursor watch
+    .bot.right.nb.memory.h.search.e configure -cursor watch
+    .bot.right.nb.logic.h.search.e  configure -cursor watch
+    .bot.right.nb.fsm.h.search.e    configure -cursor watch
+    .bot.right.nb.assert.h.search.e configure -cursor watch
 
     if {$open_type == "open"} {
 
@@ -370,9 +472,19 @@ proc open_files {fnames} {
   .info configure -text "Select a module/instance at left for coverage details"
 
   # Reset the cursors
-  .                     configure -cursor $win_cursor
-  .bot.right.txt        configure -cursor $txt_cursor
-  .bot.right.h.search.e configure -cursor $e_cursor
+  .                               configure -cursor $win_cursor
+  .bot.right.nb.line.txt          configure -cursor $txt_l_cursor
+  .bot.right.nb.toggle.txt        configure -cursor $txt_t_cursor
+  .bot.right.nb.memory.txt        configure -cursor $txt_m_cursor
+  .bot.right.nb.logic.txt         configure -cursor $txt_c_cursor
+  .bot.right.nb.fsm.txt           configure -cursor $txt_f_cursor
+  .bot.right.nb.assert.txt        configure -cursor $txt_a_cursor
+  .bot.right.nb.line.h.search.e   configure -cursor $e_l_cursor
+  .bot.right.nb.toggle.h.search.e configure -cursor $e_t_cursor
+  .bot.right.nb.memory.h.search.e configure -cursor $e_m_cursor
+  .bot.right.nb.logic.h.search.e  configure -cursor $e_c_cursor
+  .bot.right.nb.fsm.h.search.e    configure -cursor $e_f_cursor
+  .bot.right.nb.assert.h.search.e configure -cursor $e_a_cursor
 
   # Change some of the GUI elements
   if {$cdd_name ne ""} {

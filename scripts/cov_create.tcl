@@ -43,16 +43,13 @@ proc cov_create {f} {
 
 }
 
-proc cov_change_metric args {
+proc cov_change_metric {args} {
 
   global cdd_name cov_rb last_cov_rb
 
   if {$cdd_name != ""} {
-    set text_x [.bot.right.txt xview]
-    set text_y [.bot.right.txt yview]
     if {$last_cov_rb != $cov_rb} {
       set last_cov_rb $cov_rb
-      populate_treeview
       if {$cov_rb == "Line"} {
         process_line_cov
       } elseif {$cov_rb == "Toggle"} {
@@ -66,7 +63,6 @@ proc cov_change_metric args {
       } elseif {$cov_rb == "Assert"} {
         process_assert_cov
       }
-      update_all_windows
     } else {
       if {$cov_rb == "Line"} {
         display_line_cov 
@@ -82,8 +78,6 @@ proc cov_change_metric args {
         display_assert_cov
       }
     }
-    .bot.right.txt xview moveto [lindex $text_x 0]
-    .bot.right.txt yview moveto [lindex $text_y 0]
   }
 
 }
