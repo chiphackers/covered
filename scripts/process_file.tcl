@@ -65,32 +65,32 @@ proc get_race_reason_from_start_line {start_line} {
 
 }
 
-proc create_race_tags {} {
+proc create_race_tags {metric} {
 
   global race_type race_info
   global race_fgColor race_bgColor
 
   # Set race condition information
   if {[expr $race_type == 1] && [expr [llength $race_info] > 0]} {
-    set cmd_enter ".bot.right.txt tag add race_enter"
-    set cmd_leave ".bot.right.txt tag add race_leave"
+    set cmd_enter ".bot.right.nb.$metric.txt tag add race_enter"
+    set cmd_leave ".bot.right.nb.$metric.txt tag add race_leave"
     foreach entry $race_info {
       set cmd_enter [concat $cmd_enter [lindex $entry 0]]
       set cmd_leave [concat $cmd_leave [lindex $entry 0]]
     }
     eval $cmd_enter
     eval $cmd_leave
-    .bot.right.txt tag configure race_enter -foreground $race_fgColor -background $race_bgColor
-    .bot.right.txt tag bind race_enter <Enter> {
+    .bot.right.nb.$metric.txt tag configure race_enter -foreground $race_fgColor -background $race_bgColor
+    .bot.right.nb.$metric.txt tag bind race_enter <Enter> {
       set curr_info   [.info cget -text]
-      set curr_cursor [.bot.right.txt cget -cursor]
-      .bot.right.txt configure -cursor question_arrow
-      set reason [get_race_reason_from_start_line [lindex [.bot.right.txt tag prevrange race_enter {current + 1 chars}] 0]]
+      set curr_cursor [%W cget -cursor]
+      %W configure -cursor question_arrow
+      set reason [get_race_reason_from_start_line [lindex [%W tag prevrange race_enter {current + 1 chars}] 0]]
       .info configure -text "Race condition reason: $reason"
     }
-    .bot.right.txt tag bind race_leave <Leave> {
-      .bot.right.txt configure -cursor $curr_cursor
-      .info          configure -text   $curr_info
+    .bot.right.nb.$metric.txt tag bind race_leave <Leave> {
+      %W    configure -cursor $curr_cursor
+      .info configure -text   $curr_info
     }
   }
 
@@ -120,13 +120,13 @@ proc process_line_cov {} {
 
       # If we have some uncovered values, enable the "next" pointer and menu item
       if {$line_summary_total != $line_summary_hit} {
-        .bot.right.h.pn.next configure -state normal
+        .bot.right.nb.line.h.pn.next configure -state normal
         .menubar.view entryconfigure 0 -state normal
       } else {
-        .bot.right.h.pn.next configure -state disabled
+        .bot.right.nb.line.h.pn.next configure -state disabled
         .menubar.view entryconfigure 0 -state disabled
       }
-      .bot.right.h.pn.prev configure -state disabled
+      .bot.right.nb.line.h.pn.prev configure -state disabled
       .menubar.view entryconfigure 1 -state disabled
 
       calc_and_display_line_cov
@@ -175,14 +175,14 @@ proc display_line_cov {} {
       .info configure -text "Filename: $file_name"
     }
 
-    .bot.right.txt tag configure uncov_colorMap -foreground $uncov_fgColor -background $uncov_bgColor
-    .bot.right.txt tag configure cov_colorMap   -foreground $cov_fgColor   -background $cov_bgColor
+    .bot.right.nb.line.txt tag configure uncov_colorMap -foreground $uncov_fgColor -background $uncov_bgColor
+    .bot.right.nb.line.txt tag configure cov_colorMap   -foreground $cov_fgColor   -background $cov_bgColor
 
     # Allow us to write to the text box
-    .bot.right.txt configure -state normal
+    .bot.right.nb.line.txt configure -state normal
 
     # Clear the text-box before any insertion is being made
-    .bot.right.txt delete 1.0 end
+    .bot.right.nb.line.txt delete 1.0 end
 
     set contents [split $fileContent($file_name) \n]
     set linecount 1
@@ -197,31 +197,31 @@ proc display_line_cov {} {
           if {[expr $uncov_type == 1] && [expr $uncov_index != -1]} {
             if {[lindex [lindex $uncovered_lines $uncov_index] 1] == 0} {
               set line [string replace $line 1 1 "I"]
-              .bot.right.txt insert end $line uncov_colorMap
+              .bot.right.nb.line.txt insert end $line uncov_colorMap
             } else {
               set line [string replace $line 1 1 "E"]
-              .bot.right.txt insert end $line cov_colorMap
+              .bot.right.nb.line.txt insert end $line cov_colorMap
             }
           } elseif {[expr $cov_type == 1] && [expr [lsearch -index 0 $covered_lines $linecount] != -1]} {
-            .bot.right.txt insert end $line cov_colorMap
+            .bot.right.nb.line.txt insert end $line cov_colorMap
           } else {
-            .bot.right.txt insert end $line
+            .bot.right.nb.line.txt insert end $line
           }
         }
         incr linecount
       }
 
       # Perform syntax highlighting
-      verilog_highlight .bot.right.txt
+      verilog_highlight .bot.right.nb.line.txt
 
       # Create race condition tags
-      create_race_tags
+      create_race_tags line
 
       # Finally, set line information
       if {[expr $uncov_type == 1] && [expr [llength $uncovered_lines] > 0]} {
-        set cmd_enter  ".bot.right.txt tag add uncov_enter"
-        set cmd_button ".bot.right.txt tag add uncov_button"
-        set cmd_leave  ".bot.right.txt tag add uncov_leave"
+        set cmd_enter  ".bot.right.nb.line.txt tag add uncov_enter"
+        set cmd_button ".bot.right.nb.line.txt tag add uncov_button"
+        set cmd_leave  ".bot.right.nb.line.txt tag add uncov_leave"
         foreach entry $uncovered_lines {
           set tb_line [expr ([lindex $entry 0] - $start_line) + 1]
           set cmd_enter  [concat $cmd_enter  "$tb_line.1 $tb_line.2"]
@@ -231,20 +231,20 @@ proc display_line_cov {} {
         eval $cmd_enter
         eval $cmd_button
         eval $cmd_leave
-        .bot.right.txt tag configure uncov_button -underline true
-        .bot.right.txt tag bind uncov_enter <Enter> {
-          set curr_cursor [.bot.right.txt cget -cursor]
+        .bot.right.nb.line.txt tag configure uncov_button -underline true
+        .bot.right.nb.line.txt tag bind uncov_enter <Enter> {
+          set curr_cursor [.bot.right.nb.line.txt cget -cursor]
           set curr_info   [.info cget -text]
-          .bot.right.txt configure -cursor hand2
+          .bot.right.nb.line.txt configure -cursor hand2
           .info configure -text "Click left button to exclude/include line"
         }
-        .bot.right.txt tag bind uncov_leave <Leave> {
-          .bot.right.txt configure -cursor $curr_cursor
+        .bot.right.nb.line.txt tag bind uncov_leave <Leave> {
+          .bot.right.nb.line.txt configure -cursor $curr_cursor
           .info configure -text $curr_info
         }
-        .bot.right.txt tag bind uncov_button <ButtonPress-1> {
-          set selected_line [expr [lindex [split [.bot.right.txt index current] .] 0] + ($start_line - 1)]
-          if {[.bot.right.txt get current] == "E"} {
+        .bot.right.nb.line.txt tag bind uncov_button <ButtonPress-1> {
+          set selected_line [expr [lindex [split [.bot.right.nb.line.txt index current] .] 0] + ($start_line - 1)]
+          if {[.bot.right.nb.line.txt get current] == "E"} {
             set excl_value 0
           } else {
             set excl_value 1
@@ -254,47 +254,47 @@ proc display_line_cov {} {
             set line_reason [get_exclude_reason .]
           }
           tcl_func_set_line_exclude $curr_block $selected_line $excl_value $line_reason
-          set text_x [.bot.right.txt xview]
-          set text_y [.bot.right.txt yview]
+          set text_x [.bot.right.nb.line.txt xview]
+          set text_y [.bot.right.nb.line.txt yview]
           process_line_cov
-          .bot.right.txt xview moveto [lindex $text_x 0]
-          .bot.right.txt yview moveto [lindex $text_y 0]
+          .bot.right.nb.line.txt xview moveto [lindex $text_x 0]
+          .bot.right.nb.line.txt yview moveto [lindex $text_y 0]
           populate_treeview
           enable_cdd_save
         }
-        .bot.right.txt tag bind uncov_button <ButtonPress-3> {
-          set selected_line [expr [lindex [split [.bot.right.txt index current] .] 0] + ($start_line - 1)]
+        .bot.right.nb.line.txt tag bind uncov_button <ButtonPress-3> {
+          set selected_line [expr [lindex [split [.bot.right.nb.line.txt index current] .] 0] + ($start_line - 1)]
           set entry [lsearch -index 0 -inline $uncovered_lines $selected_line]
           if {$entry != ""} {
             set line_excluded [lindex $entry 1]
             set line_reason   [lindex $entry 2]
             if {$line_excluded == 1 && $line_reason != ""} {
-              balloon::show .bot.right.txt "Exclude Reason: $line_reason" $cov_bgColor $cov_fgColor
+              balloon::show .bot.right.nb.line.txt "Exclude Reason: $line_reason" $cov_bgColor $cov_fgColor
             }
           } else {
             set entry [lsearch -index 0 -inline $covered_lines $selected_line]
             set line_excluded [lindex $entry 1]
             set line_reason   [lindex $entry 2]
             if {$line_excluded == 1 && $line_reason != ""} {
-              balloon::show .bot.right.txt "Exclude Reason: $line_reason" $cov_bgColor $cov_fgColor
+              balloon::show .bot.right.nb.line.txt "Exclude Reason: $line_reason" $cov_bgColor $cov_fgColor
             }
           }
         }
-        .bot.right.txt tag bind uncov_button <ButtonRelease-3> {
-          set selected_line [expr [lindex [split [.bot.right.txt index current] .] 0] + ($start_line - 1)]
+        .bot.right.nb.line.txt tag bind uncov_button <ButtonRelease-3> {
+          set selected_line [expr [lindex [split [.bot.right.nb.line.txt index current] .] 0] + ($start_line - 1)]
           set entry [lsearch -index 0 -inline $uncovered_lines $selected_line]
           if {$entry != ""} {
             set line_excluded [lindex $entry 1]
             set line_reason   [lindex $entry 2]
             if {$line_excluded == 1 && $line_reason != ""} {
-              balloon::hide .bot.right.txt
+              balloon::hide .bot.right.nb.line.txt
             }
           } else {
             set entry [lsearch -index 0 -inline $covered_lines $selected_line]
             set line_excluded [lindex $entry 1]
             set line_reason   [lindex $entry 2]
             if {$line_excluded == 1 && $line_reason != ""} {
-              balloon::hide .bot.right.txt
+              balloon::hide .bot.right.nb.line.txt
             }
           }
         }
@@ -304,7 +304,7 @@ proc display_line_cov {} {
     }
 
     # Now cause the text box to be read-only again
-    .bot.right.txt configure -state disabled
+    .bot.right.nb.line.txt configure -state disabled
 
   }
 
@@ -337,11 +337,11 @@ proc process_toggle_cov {} {
 
       # If we have some uncovered values, enable the "next" pointer
       if {$toggle_summary_total != $toggle_summary_hit} {
-        .bot.right.h.pn.next configure -state normal
+        .bot.right.nb.toggle.h.pn.next configure -state normal
       } else {
-        .bot.right.h.pn.next configure -state disabled
+        .bot.right.nb.toggle.h.pn.next configure -state disabled
       }
-      .bot.right.h.pn.prev configure -state disabled
+      .bot.right.nb.toggle.h.pn.prev configure -state disabled
 
       calc_and_display_toggle_cov
 
@@ -390,10 +390,10 @@ proc display_toggle_cov {} {
     .info configure -text "Filename: $file_name"
 
     # Allow us to write to the text box
-    .bot.right.txt configure -state normal
+    .bot.right.nb.toggle.txt configure -state normal
 
     # Clear the text-box before any insertion is being made
-    .bot.right.txt delete 1.0 end
+    .bot.right.nb.toggle.txt delete 1.0 end
 
     set contents [split $fileContent($file_name) \n]
     set linecount 1
@@ -404,24 +404,24 @@ proc display_toggle_cov {} {
       foreach phrase $contents {
         if [expr [expr $start_line <= $linecount] && [expr $end_line >= $linecount]] {
           set line [format {%3s  %7u  %s} "   " $linecount [append phrase "\n"]]
-          .bot.right.txt insert end $line
+          .bot.right.nb.toggle.txt insert end $line
         }
         incr linecount
       }
 
       # Perform syntax highlighting
-      verilog_highlight .bot.right.txt
+      verilog_highlight .bot.right.nb.toggle.txt
 
       # Create race condition tags
-      create_race_tags
+      create_race_tags toggle
 
       # Finally, set toggle information
       if {[expr $uncov_type == 1] && [expr [llength $uncovered_toggles] > 0]} {
-        set cmd_enter      ".bot.right.txt tag add uncov_enter"
-        set cmd_button     ".bot.right.txt tag add uncov_button"
-        set cmd_leave      ".bot.right.txt tag add uncov_leave"
-        set cmd_ucov_uline ".bot.right.txt tag add uncov_uline"
-        set cmd_excl_uline ".bot.right.txt tag add excl_uline"
+        set cmd_enter      ".bot.right.nb.toggle.txt tag add uncov_enter"
+        set cmd_button     ".bot.right.nb.toggle.txt tag add uncov_button"
+        set cmd_leave      ".bot.right.nb.toggle.txt tag add uncov_leave"
+        set cmd_ucov_uline ".bot.right.nb.toggle.txt tag add uncov_uline"
+        set cmd_excl_uline ".bot.right.nb.toggle.txt tag add excl_uline"
         foreach entry $uncovered_toggles {
           set cmd_enter  [concat $cmd_enter  [lindex $entry 0]]
           set cmd_button [concat $cmd_button [lindex $entry 0]]
@@ -437,40 +437,40 @@ proc display_toggle_cov {} {
         eval $cmd_leave
         if {[llength $cmd_ucov_uline] > 4} {
           eval $cmd_ucov_uline
-          .bot.right.txt tag configure uncov_uline -underline true -foreground $uncov_fgColor -background $uncov_bgColor
+          .bot.right.nb.toggle.txt tag configure uncov_uline -underline true -foreground $uncov_fgColor -background $uncov_bgColor
         }
         if {[llength $cmd_excl_uline] > 4} {
           eval $cmd_excl_uline
-          .bot.right.txt tag configure excl_uline  -underline true -foreground $cov_fgColor   -background $cov_bgColor
+          .bot.right.nb.toggle.txt tag configure excl_uline  -underline true -foreground $cov_fgColor   -background $cov_bgColor
         }
-        .bot.right.txt tag bind uncov_enter <Enter> {
-          set curr_cursor [.bot.right.txt cget -cursor]
+        .bot.right.nb.toggle.txt tag bind uncov_enter <Enter> {
+          set curr_cursor [.bot.right.nb.toggle.txt cget -cursor]
           set curr_info   [.info cget -text]
-          .bot.right.txt configure -cursor hand2
+          .bot.right.nb.toggle.txt configure -cursor hand2
           .info configure -text "Click left button for detailed toggle coverage information"
         }
-        .bot.right.txt tag bind uncov_leave <Leave> {
-          .bot.right.txt configure -cursor $curr_cursor
+        .bot.right.nb.toggle.txt tag bind uncov_leave <Leave> {
+          .bot.right.nb.toggle.txt configure -cursor $curr_cursor
           .info configure -text $curr_info
         }
-        .bot.right.txt tag bind uncov_button <ButtonPress-1> {
+        .bot.right.nb.toggle.txt tag bind uncov_button <ButtonPress-1> {
           display_toggle current
         }
       } 
 
       if {[expr $cov_type == 1] && [expr [llength $covered_toggles] > 0]} {
-        set cmd_cov ".bot.right.txt tag add cov_highlight"
+        set cmd_cov ".bot.right.nb.toggle.txt tag add cov_highlight"
         foreach entry $covered_toggles {
           set cmd_cov [concat $cmd_cov [lindex $entry 0]]
         }
         eval $cmd_cov
-        .bot.right.txt tag configure cov_highlight -foreground $cov_fgColor -background $cov_bgColor
+        .bot.right.nb.toggle.txt tag configure cov_highlight -foreground $cov_fgColor -background $cov_bgColor
       }
 
     }
 
     # Now cause the text box to be read-only again
-    .bot.right.txt configure -state disabled
+    .bot.right.nb.toggle.txt configure -state disabled
 
   }
 
@@ -556,10 +556,10 @@ proc display_memory_cov {} {
     .info configure -text "Filename: $file_name"
 
     # Allow us to write to the text box
-    .bot.right.txt configure -state normal
+    .bot.right.nb.memory.txt configure -state normal
 
     # Clear the text-box before any insertion is being made
-    .bot.right.txt delete 1.0 end
+    .bot.right.nb.memory.txt delete 1.0 end
 
     set contents [split $fileContent($file_name) \n]
     set linecount 1
@@ -570,24 +570,24 @@ proc display_memory_cov {} {
       foreach phrase $contents {
         if [expr [expr $start_line <= $linecount] && [expr $end_line >= $linecount]] {
           set line [format {%3s  %7u  %s} "   " $linecount [append phrase "\n"]]
-          .bot.right.txt insert end $line
+          .bot.right.nb.memory.txt insert end $line
         }
         incr linecount
       }
 
       # Perform syntax highlighting
-      verilog_highlight .bot.right.txt
+      verilog_highlight .bot.right.nb.memory.txt
 
       # Create race condition tags
-      create_race_tags
+      create_race_tags memory
 
       # Finally, set memory information
       if {[expr $uncov_type == 1] && [expr [llength $uncovered_memories] > 0]} {
-        set cmd_enter      ".bot.right.txt tag add uncov_enter"
-        set cmd_button     ".bot.right.txt tag add uncov_button"
-        set cmd_leave      ".bot.right.txt tag add uncov_leave"
-        set cmd_ucov_uline ".bot.right.txt tag add uncov_uline"
-        set cmd_excl_uline ".bot.right.txt tag add excl_uline"
+        set cmd_enter      ".bot.right.nb.memory.txt tag add uncov_enter"
+        set cmd_button     ".bot.right.nb.memory.txt tag add uncov_button"
+        set cmd_leave      ".bot.right.nb.memory.txt tag add uncov_leave"
+        set cmd_ucov_uline ".bot.right.nb.memory.txt tag add uncov_uline"
+        set cmd_excl_uline ".bot.right.nb.memory.txt tag add excl_uline"
         foreach entry $uncovered_memories {
           set cmd_enter  [concat $cmd_enter  [lindex $entry 0] [lindex $entry 1]]
           set cmd_button [concat $cmd_button [lindex $entry 0] [lindex $entry 1]]
@@ -603,40 +603,40 @@ proc display_memory_cov {} {
         eval $cmd_leave
         if {[llength $cmd_ucov_uline] > 4} {
           eval $cmd_ucov_uline
-          .bot.right.txt tag configure uncov_uline -underline true -foreground $uncov_fgColor -background $uncov_bgColor
+          .bot.right.nb.memory.txt tag configure uncov_uline -underline true -foreground $uncov_fgColor -background $uncov_bgColor
         }
         if {[llength $cmd_excl_uline] > 4} {
           eval $cmd_excl_uline
-          .bot.right.txt tag configure excl_uline  -underline true -foreground $cov_fgColor   -background $cov_bgColor
+          .bot.right.nb.memory.txt tag configure excl_uline  -underline true -foreground $cov_fgColor   -background $cov_bgColor
         }
-        .bot.right.txt tag bind uncov_enter <Enter> {
-          set curr_cursor [.bot.right.txt cget -cursor]
+        .bot.right.nb.memory.txt tag bind uncov_enter <Enter> {
+          set curr_cursor [.bot.right.nb.memory.txt cget -cursor]
           set curr_info   [.info cget -text]
-          .bot.right.txt configure -cursor hand2
+          .bot.right.nb.memory.txt configure -cursor hand2
           .info configure -text "Click left button for detailed memory coverage information"
         }
-        .bot.right.txt tag bind uncov_leave <Leave> {
-          .bot.right.txt configure -cursor $curr_cursor
+        .bot.right.nb.memory.txt tag bind uncov_leave <Leave> {
+          .bot.right.nb.memory.txt configure -cursor $curr_cursor
           .info configure -text $curr_info
         }
-        .bot.right.txt tag bind uncov_button <ButtonPress-1> {
+        .bot.right.nb.memory.txt tag bind uncov_button <ButtonPress-1> {
           display_memory current
         }
       } 
 
       if {[expr $cov_type == 1] && [expr [llength $covered_memories] > 0]} {
-        set cmd_cov ".bot.right.txt tag add cov_highlight"
+        set cmd_cov ".bot.right.nb.memory.txt tag add cov_highlight"
         foreach entry $covered_memories {
           set cmd_cov [concat $cmd_cov [lindex $entry 0] [lindex $entry 1]]
         }
         eval $cmd_cov
-        .bot.right.txt tag configure cov_highlight -foreground $cov_fgColor -background $cov_bgColor
+        .bot.right.nb.memory.txt tag configure cov_highlight -foreground $cov_fgColor -background $cov_bgColor
       }
 
     }
 
     # Now cause the text box to be read-only again
-    .bot.right.txt configure -state disabled
+    .bot.right.nb.memory.txt configure -state disabled
 
   }
 
@@ -721,10 +721,10 @@ proc display_comb_cov {} {
     .info configure -text "Filename: $file_name"
 
     # Allow us to write to the text box
-    .bot.right.txt configure -state normal
+    .bot.right.nb.comb.txt configure -state normal
 
     # Clear the text-box before any insertion is being made
-    .bot.right.txt delete 1.0 end
+    .bot.right.nb.comb.txt delete 1.0 end
 
     set contents [split $fileContent($file_name) \n]
     set linecount 1
@@ -735,24 +735,24 @@ proc display_comb_cov {} {
       foreach phrase $contents {
         if [expr [expr $start_line <= $linecount] && [expr $end_line >= $linecount]] {
           set line [format {%3s  %7u  %s} "   " $linecount [append phrase "\n"]]
-          .bot.right.txt insert end $line
+          .bot.right.nb.comb.txt insert end $line
         }
         incr linecount
       }
 
       # Perform syntax highlighting
-      verilog_highlight .bot.right.txt
+      verilog_highlight .bot.right.nb.comb.txt
 
       # Create race condition tags
-      create_race_tags
+      create_race_tags comb
 
       # Finally, set combinational logic information
       if {[expr $uncov_type == 1] && [expr [llength $uncovered_combs] > 0]} {
-        set cmd_enter   ".bot.right.txt tag add uncov_enter"
-        set cmd_button  ".bot.right.txt tag add uncov_button"
-        set cmd_leave   ".bot.right.txt tag add uncov_leave"
-        set cmd_ucov_hl ".bot.right.txt tag add uncov_highlight"
-        set cmd_excl_hl ".bot.right.txt tag add excl_highlight"
+        set cmd_enter   ".bot.right.nb.comb.txt tag add uncov_enter"
+        set cmd_button  ".bot.right.nb.comb.txt tag add uncov_button"
+        set cmd_leave   ".bot.right.nb.comb.txt tag add uncov_leave"
+        set cmd_ucov_hl ".bot.right.nb.comb.txt tag add uncov_highlight"
+        set cmd_excl_hl ".bot.right.nb.comb.txt tag add excl_highlight"
         foreach entry $uncovered_combs {
           if {[lindex $entry 3] == 0} {
             set cmd_ucov_hl [concat $cmd_ucov_hl [lindex $entry 0] [lindex $entry 1]]
@@ -766,7 +766,7 @@ proc display_comb_cov {} {
             set cmd_button [concat $cmd_button [lindex $entry 0] "$sline.end"]
             set cmd_leave  [concat $cmd_leave  [lindex $entry 0] "$sline.end"]
             for {set i [expr $sline + 1]} {$i <= $eline} {incr i} {
-              set line       [.bot.right.txt get "$i.7" end]
+              set line       [.bot.right.nb.comb.txt get "$i.7" end]
               set line_diff  [expr [expr [string length $line] - [string length [string trimleft $line]]] + 7]
               if {$i == $eline} {
                 set cmd_enter  [concat $cmd_enter  "$i.$line_diff" [lindex $entry 1]]
@@ -789,41 +789,41 @@ proc display_comb_cov {} {
         eval $cmd_leave
         if {[llength $cmd_ucov_hl] > 4} {
           eval $cmd_ucov_hl
-          .bot.right.txt tag configure uncov_highlight -foreground $uncov_fgColor -background $uncov_bgColor
+          .bot.right.nb.comb.txt tag configure uncov_highlight -foreground $uncov_fgColor -background $uncov_bgColor
         }
         if {[llength $cmd_excl_hl] > 4} {
           eval $cmd_excl_hl
-          .bot.right.txt tag configure excl_highlight -foreground $cov_fgColor   -background $cov_bgColor
+          .bot.right.nb.comb.txt tag configure excl_highlight -foreground $cov_fgColor   -background $cov_bgColor
         }
-        .bot.right.txt tag configure uncov_button -underline true
-        .bot.right.txt tag bind uncov_enter <Enter> {
-          set curr_cursor [.bot.right.txt cget -cursor]
+        .bot.right.nb.comb.txt tag configure uncov_button -underline true
+        .bot.right.nb.comb.txt tag bind uncov_enter <Enter> {
+          set curr_cursor [.bot.right.nb.comb.txt cget -cursor]
           set curr_info   [.info cget -text]
-          .bot.right.txt configure -cursor hand2
+          .bot.right.nb.comb.txt configure -cursor hand2
           .info configure -text "Click left button for detailed combinational logic coverage information" 
         }
-        .bot.right.txt tag bind uncov_leave <Leave> {
-          .bot.right.txt configure -cursor $curr_cursor
+        .bot.right.nb.comb.txt tag bind uncov_leave <Leave> {
+          .bot.right.nb.comb.txt configure -cursor $curr_cursor
           .info configure -text $curr_info
         }
-        .bot.right.txt tag bind uncov_button <ButtonPress-1> {
+        .bot.right.nb.comb.txt tag bind uncov_button <ButtonPress-1> {
           display_comb current
         }
       }
 
       if {[expr $cov_type == 1] && [expr [llength $covered_combs] > 0]} {
-        set cmd_cov ".bot.right.txt tag add cov_highlight"
+        set cmd_cov ".bot.right.nb.comb.txt tag add cov_highlight"
         foreach entry $covered_combs {
           set cmd_cov [concat $cmd_cov [lindex $entry 0] [lindex $entry 1]]
         }
         eval $cmd_cov
-        .bot.right.txt tag configure cov_highlight -foreground $cov_fgColor -background $cov_bgColor
+        .bot.right.nb.comb.txt tag configure cov_highlight -foreground $cov_fgColor -background $cov_bgColor
       }
 
     }
 
     # Now cause the text box to be read-only again
-    .bot.right.txt configure -state disabled
+    .bot.right.nb.comb.txt configure -state disabled
 
   }
 
@@ -910,10 +910,10 @@ proc display_fsm_cov {} {
     }
 
     # Allow us to write to the text box
-    .bot.right.txt configure -state normal
+    .bot.right.nb.fsm.txt configure -state normal
 
     # Clear the text-box before any insertion is being made
-    .bot.right.txt delete 1.0 end
+    .bot.right.nb.fsm.txt delete 1.0 end
 
     set contents [split $fileContent($file_name) \n]
     set linecount 1
@@ -924,24 +924,24 @@ proc display_fsm_cov {} {
       foreach phrase $contents {
         if [expr [expr $start_line <= $linecount] && [expr $end_line >= $linecount]] {
           set line [format {%3s  %7u  %s} "   " $linecount [append phrase "\n"]]
-          .bot.right.txt insert end $line
+          .bot.right.nb.fsm.txt insert end $line
         }
         incr linecount
       }
 
       # Perform syntax highlighting
-      verilog_highlight .bot.right.txt
+      verilog_highlight .bot.right.nb.fsm.txt
 
       # Create race condition tags
-      create_race_tags
+      create_race_tags fsm
 
       # Finally, set FSM information
       if {[expr $uncov_type == 1] && [expr [llength $uncovered_fsms] > 0]} {
-        set cmd_enter   ".bot.right.txt tag add uncov_enter"
-        set cmd_button  ".bot.right.txt tag add uncov_button"
-        set cmd_leave   ".bot.right.txt tag add uncov_leave"
-        set cmd_ucov_hl ".bot.right.txt tag add uncov_highlight"
-        set cmd_excl_hl ".bot.right.txt tag add excl_highlight"
+        set cmd_enter   ".bot.right.nb.fsm.txt tag add uncov_enter"
+        set cmd_button  ".bot.right.nb.fsm.txt tag add uncov_button"
+        set cmd_leave   ".bot.right.nb.fsm.txt tag add uncov_leave"
+        set cmd_ucov_hl ".bot.right.nb.fsm.txt tag add uncov_highlight"
+        set cmd_excl_hl ".bot.right.nb.fsm.txt tag add excl_highlight"
         foreach entry $uncovered_fsms {
           set cmd_enter  [concat $cmd_enter  [lindex $entry 0] [lindex $entry 1]]
           set cmd_button [concat $cmd_button [lindex $entry 0] [lindex $entry 1]]
@@ -957,41 +957,41 @@ proc display_fsm_cov {} {
         eval $cmd_leave
         if {[llength $cmd_ucov_hl] > 4} {
           eval $cmd_ucov_hl
-          .bot.right.txt tag configure uncov_highlight -foreground $uncov_fgColor -background $uncov_bgColor
+          .bot.right.nb.fsm.txt tag configure uncov_highlight -foreground $uncov_fgColor -background $uncov_bgColor
         }
         if {[llength $cmd_excl_hl] > 4} {
           eval $cmd_excl_hl
-          .bot.right.txt tag configure excl_highlight  -foreground $cov_fgColor   -background $cov_bgColor
+          .bot.right.nb.fsm.txt tag configure excl_highlight  -foreground $cov_fgColor   -background $cov_bgColor
         }
-        .bot.right.txt tag configure uncov_button -underline true
-        .bot.right.txt tag bind uncov_enter <Enter> {
-          set curr_cursor [.bot.right.txt cget -cursor]
+        .bot.right.nb.fsm.txt tag configure uncov_button -underline true
+        .bot.right.nb.fsm.txt tag bind uncov_enter <Enter> {
+          set curr_cursor [.bot.right.nb.fsm.txt cget -cursor]
           set curr_info   [.info cget -text]
-          .bot.right.txt configure -cursor hand2
+          .bot.right.nb.fsm.txt configure -cursor hand2
           .info configure -text "Click left button for detailed FSM coverage information"
         }
-        .bot.right.txt tag bind uncov_leave <Leave> {
-          .bot.right.txt configure -cursor $curr_cursor
+        .bot.right.nb.fsm.txt tag bind uncov_leave <Leave> {
+          .bot.right.nb.fsm.txt configure -cursor $curr_cursor
           .info configure -text $curr_info
         }
-        .bot.right.txt tag bind uncov_button <ButtonPress-1> {
+        .bot.right.nb.fsm.txt tag bind uncov_button <ButtonPress-1> {
           display_fsm current
         }
       }
 
       if {[expr $cov_type == 1] && [expr [llength $covered_fsms] > 0]} {
-        set cmd_cov ".bot.right.txt tag add cov_highlight"
+        set cmd_cov ".bot.right.nb.fsm.txt tag add cov_highlight"
         foreach entry $covered_fsms {
           set cmd_cov [concat $cmd_cov [lindex $entry 0] [lindex $entry 1]]
         }
         eval $cmd_cov
-        .bot.right.txt tag configure cov_highlight -foreground $cov_fgColor -background $cov_bgColor
+        .bot.right.nb.fsm.txt tag configure cov_highlight -foreground $cov_fgColor -background $cov_bgColor
       }
 
     }
 
     # Now cause the text box to be read-only again
-    .bot.right.txt configure -state disabled
+    .bot.right.nb.fsm.txt configure -state disabled
 
   }
 
@@ -1075,10 +1075,10 @@ proc display_assert_cov {} {
     }
 
     # Allow us to write to the text box
-    .bot.right.txt configure -state normal
+    .bot.right.nb.assert.txt configure -state normal
 
     # Clear the text-box before any insertion is being made
-    .bot.right.txt delete 1.0 end
+    .bot.right.nb.assert.txt delete 1.0 end
 
     set contents [split $fileContent($file_name) \n]
     set linecount 1
@@ -1089,29 +1089,29 @@ proc display_assert_cov {} {
       foreach phrase $contents {
         if [expr [expr $start_line <= $linecount] && [expr $end_line >= $linecount]] {
           set line [format {%3s  %7u  %s} "   " $linecount [append phrase "\n"]]
-          .bot.right.txt insert end $line
+          .bot.right.nb.assert.txt insert end $line
         }
         incr linecount
       }
 
       # Perform syntax highlighting
-      verilog_highlight .bot.right.txt
+      verilog_highlight .bot.right.nb.assert.txt
 
       # Create race condition tags
-      create_race_tags
+      create_race_tags assert
 
       # Finally, set assertion information
       if {[expr $uncov_type == 1] && [expr [llength $uncovered_asserts] > 0]} {
-        set cmd_enter    ".bot.right.txt tag add uncov_enter"
-        set cmd_button   ".bot.right.txt tag add uncov_button"
-        set cmd_leave    ".bot.right.txt tag add uncov_leave"
-        set cmd_uncov_hl ".bot.right.txt tag add uncov_highlight"
-        set cmd_excl_hl  ".bot.right.txt tag add excl_highlight"
+        set cmd_enter    ".bot.right.nb.assert.txt tag add uncov_enter"
+        set cmd_button   ".bot.right.nb.assert.txt tag add uncov_button"
+        set cmd_leave    ".bot.right.nb.assert.txt tag add uncov_leave"
+        set cmd_uncov_hl ".bot.right.nb.assert.txt tag add uncov_highlight"
+        set cmd_excl_hl  ".bot.right.nb.assert.txt tag add excl_highlight"
         foreach entry $uncovered_asserts {
           set match_str ""
           append match_str {[^a-zA-Z0-9_]} [lindex $entry 0] {[^a-zA-Z0-9_]}
-          set start_index [.bot.right.txt index "[.bot.right.txt search -count matching_chars -regexp $match_str 1.0] + 1 chars"]
-          set end_index   [.bot.right.txt index "$start_index + [expr $matching_chars - 2] chars"]
+          set start_index [.bot.right.nb.assert.txt index "[.bot.right.nb.assert.txt search -count matching_chars -regexp $match_str 1.0] + 1 chars"]
+          set end_index   [.bot.right.nb.assert.txt index "$start_index + [expr $matching_chars - 2] chars"]
           set cmd_enter  [concat $cmd_enter  $start_index $end_index]
           set cmd_button [concat $cmd_button $start_index $end_index]
           set cmd_leave  [concat $cmd_leave  $start_index $end_index]
@@ -1126,45 +1126,45 @@ proc display_assert_cov {} {
         eval $cmd_leave
         if {[llength $cmd_uncov_hl] > 4} {
           eval $cmd_uncov_hl
-          .bot.right.txt tag configure uncov_highlight -foreground $uncov_fgColor -background $uncov_bgColor
+          .bot.right.nb.assert.txt tag configure uncov_highlight -foreground $uncov_fgColor -background $uncov_bgColor
         }
         if {[llength $cmd_excl_hl] > 4} {
           eval $cmd_excl_hl
-          .bot.right.txt tag configure excl_highlight -foreground $cov_fgColor -background $cov_bgColor
+          .bot.right.nb.assert.txt tag configure excl_highlight -foreground $cov_fgColor -background $cov_bgColor
         }
-        .bot.right.txt tag configure uncov_button -underline true
-        .bot.right.txt tag bind uncov_enter <Enter> {
-          set curr_cursor [.bot.right.txt cget -cursor]
+        .bot.right.nb.assert.txt tag configure uncov_button -underline true
+        .bot.right.nb.assert.txt tag bind uncov_enter <Enter> {
+          set curr_cursor [.bot.right.nb.assert.txt cget -cursor]
           set curr_info   [.info cget -text]
-          .bot.right.txt configure -cursor hand2
+          .bot.right.nb.assert.txt configure -cursor hand2
           .info configure -text "Click left button for detailed assertion coverage information"
         }
-        .bot.right.txt tag bind uncov_leave <Leave> {
-          .bot.right.txt configure -cursor $curr_cursor
+        .bot.right.nb.assert.txt tag bind uncov_leave <Leave> {
+          .bot.right.nb.assert.txt configure -cursor $curr_cursor
           .info configure -text $curr_info
         }
-        .bot.right.txt tag bind uncov_button <ButtonPress-1> {
+        .bot.right.nb.assert.txt tag bind uncov_button <ButtonPress-1> {
           display_assert current
         }
       }
 
       if {[expr $cov_type == 1] && [expr [llength $covered_asserts] > 0]} {
-        set cmd_cov ".bot.right.txt tag add cov_highlight"
+        set cmd_cov ".bot.right.nb.assert.txt tag add cov_highlight"
         foreach entry $covered_asserts {
           set match_str ""
           append match_str {[^a-zA-Z0-9_]} [lindex $entry 0] {[^a-zA-Z0-9_]}
-          set start_index [.bot.right.txt index "[.bot.right.txt search -count matching_chars -regexp $match_str 1.0] + 1 chars"]
-          set end_index   [.bot.right.txt index "$start_index + [expr $matching_chars - 2] chars"]
+          set start_index [.bot.right.nb.assert.txt index "[.bot.right.nb.assert.txt search -count matching_chars -regexp $match_str 1.0] + 1 chars"]
+          set end_index   [.bot.right.nb.assert.txt index "$start_index + [expr $matching_chars - 2] chars"]
           set cmd_cov [concat $cmd_cov $start_index $end_index]
         }
         eval $cmd_cov
-        .bot.right.txt tag configure cov_highlight -foreground $cov_fgColor -background $cov_bgColor
+        .bot.right.nb.assert.txt tag configure cov_highlight -foreground $cov_fgColor -background $cov_bgColor
       }
 
     }
 
     # Now cause the text box to be read-only again
-    .bot.right.txt configure -state disabled
+    .bot.right.nb.assert.txt configure -state disabled
 
   }
 

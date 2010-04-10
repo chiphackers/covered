@@ -113,64 +113,78 @@ proc main_view {} {
   # Create table windows
   trace add variable cov_rb write cov_change_metric
 
-  # Create the textbox header frame
-  ttk::frame .bot.right.h
-  ttk::label .bot.right.h.tl -text "Cur   Line #       Verilog Source" -anchor w
-  ttk::frame .bot.right.h.pn
-  ttk::label .bot.right.h.pn.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -state disabled
-  bind .bot.right.h.pn.prev <Button-1> {
-    goto_uncov $prev_uncov_index
+  # Create notebook
+  ttk::notebook .bot.right.nb
+  bind .bot.right.nb <<NotebookTabChanged>> {
+    set cov_rb [lindex [split [.bot.right.nb tab current -text] " "] 0]
   }
-  set_balloon .bot.right.h.pn.prev "Click to view the previous uncovered item"
-  ttk::label .bot.right.h.pn.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -state disabled
-  bind .bot.right.h.pn.next <Button-1> {
-    goto_uncov $next_uncov_index
+
+  foreach metric [list line toggle memory comb fsm assert] {
+
+    .bot.right.nb add [ttk::frame .bot.right.nb.$metric] -text [string totitle $metric] -underline 0
+
+    # Create the textbox header frame
+    ttk::frame .bot.right.nb.$metric.h
+    ttk::label .bot.right.nb.$metric.h.tl -text "Cur   Line #       Verilog Source" -anchor w
+    ttk::frame .bot.right.nb.$metric.h.pn
+    ttk::label .bot.right.nb.$metric.h.pn.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -state disabled
+    bind .bot.right.nb.$metric.h.pn.prev <Button-1> {
+      goto_uncov $prev_uncov_index
+    }
+    set_balloon .bot.right.nb.$metric.h.pn.prev "Click to view the previous uncovered item"
+    ttk::label .bot.right.nb.$metric.h.pn.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -state disabled
+    bind .bot.right.nb.$metric.h.pn.next <Button-1> {
+      goto_uncov $next_uncov_index
+    }
+    set_balloon .bot.right.nb.$metric.h.pn.next "Click to view the next uncovered item"
+    frame .bot.right.nb.$metric.h.search -borderwidth 1 -relief ridge -bg white
+    label .bot.right.nb.$metric.h.search.find -image [image create photo -file [file join $HOME scripts find.gif]] -background white -state disabled -relief flat
+    bind .bot.right.nb.$metric.h.search.find <ButtonPress-1> {
+      perform_search .bot.right.nb.$metric.txt .bot.right.nb.$metric.h.search.e .info main_start_search_index
+    }
+    set_balloon .bot.right.nb.$metric.h.search.find "Click to find the next occurrence of the search string"
+    entry .bot.right.nb.$metric.h.search.e -width 15 -state disabled -relief flat -bg white
+    bind .bot.right.nb.$metric.h.search.e <Return> {
+      perform_search .bot.right.nb.$metric.txt .bot.right.nb.$metric.h.search.e .info main_start_search_index
+    }
+    label .bot.right.nb.$metric.h.search.clear -image [image create photo -file [file join $HOME scripts clear.gif]] -background white -state disabled -relief flat
+    bind .bot.right.nb.$metric.h.search.clear <ButtonPress-1> {
+      .bot.right.nb.$metric.txt tag delete search_found
+      .bot.right.nb.$metric.h.search.e delete 0 end
+      set main_start_search_index 1.0
+    }
+    set_balloon .bot.right.nb.$metric.h.search.clear "Click to clear the search string"
+
+    # Pack the previous/next frame
+    pack .bot.right.nb.$metric.h.pn.prev -side left
+    pack .bot.right.nb.$metric.h.pn.next -side left
+
+    # Pack the search frame
+    pack .bot.right.nb.$metric.h.search.find  -side left
+    pack .bot.right.nb.$metric.h.search.e     -side left -padx 3
+    pack .bot.right.nb.$metric.h.search.clear -side left
+
+    # Pack the textbox header frame
+    pack .bot.right.nb.$metric.h.tl     -side left
+    pack .bot.right.nb.$metric.h.pn     -side left -expand yes
+    pack .bot.right.nb.$metric.h.search -side right
+
+    # Create the text widget to display the modules/instances
+    text           .bot.right.nb.$metric.txt -yscrollcommand ".bot.right.nb.$metric.vb set" -xscrollcommand ".bot.right.nb.$metric.hb set" -wrap none -state disabled
+    ttk::scrollbar .bot.right.nb.$metric.vb -command ".bot.right.nb.$metric.txt yview"
+    ttk::scrollbar .bot.right.nb.$metric.hb -orient horizontal -command ".bot.right.nb.$metric.txt xview"
+
+    # Pack the right paned window
+    grid rowconfigure    .bot.right.nb.$metric 1 -weight 1
+    grid columnconfigure .bot.right.nb.$metric 0 -weight 1
+    grid .bot.right.nb.$metric.h   -row 0 -column 0 -columnspan 2 -sticky nsew
+    grid .bot.right.nb.$metric.txt -row 1 -column 0 -sticky nsew
+    grid .bot.right.nb.$metric.vb  -row 1 -column 1 -sticky ns
+    grid .bot.right.nb.$metric.hb  -row 2 -column 0 -sticky ew
+
+    pack .bot.right.nb -fill both -expand yes
+
   }
-  set_balloon .bot.right.h.pn.next "Click to view the next uncovered item"
-  frame .bot.right.h.search -borderwidth 1 -relief ridge -bg white
-  label .bot.right.h.search.find -image [image create photo -file [file join $HOME scripts find.gif]] -background white -state disabled -relief flat
-  bind .bot.right.h.search.find <ButtonPress-1> {
-    perform_search .bot.right.txt .bot.right.h.search.e .info main_start_search_index
-  }
-  set_balloon .bot.right.h.search.find "Click to find the next occurrence of the search string"
-  entry .bot.right.h.search.e -width 15 -state disabled -relief flat -bg white
-  bind .bot.right.h.search.e <Return> {
-    perform_search .bot.right.txt .bot.right.h.search.e .info main_start_search_index
-  }
-  label .bot.right.h.search.clear -image [image create photo -file [file join $HOME scripts clear.gif]] -background white -state disabled -relief flat
-  bind .bot.right.h.search.clear <ButtonPress-1> {
-    .bot.right.txt tag delete search_found
-    .bot.right.h.search.e delete 0 end
-    set main_start_search_index 1.0
-  }
-  set_balloon .bot.right.h.search.clear "Click to clear the search string"
-
-  # Pack the previous/next frame
-  pack .bot.right.h.pn.prev -side left
-  pack .bot.right.h.pn.next -side left
-
-  # Pack the search frame
-  pack .bot.right.h.search.find  -side left
-  pack .bot.right.h.search.e     -side left -padx 3
-  pack .bot.right.h.search.clear -side left
-
-  # Pack the textbox header frame
-  pack .bot.right.h.tl     -side left
-  pack .bot.right.h.pn     -side left -expand yes
-  pack .bot.right.h.search -side right
-
-  # Create the text widget to display the modules/instances
-  text           .bot.right.txt -yscrollcommand ".bot.right.vb set" -xscrollcommand ".bot.right.hb set" -wrap none -state disabled
-  ttk::scrollbar .bot.right.vb -command ".bot.right.txt yview"
-  ttk::scrollbar .bot.right.hb -orient horizontal -command ".bot.right.txt xview"
-
-  # Pack the right paned window
-  grid rowconfigure    .bot.right 1 -weight 1
-  grid columnconfigure .bot.right 0 -weight 1
-  grid .bot.right.h   -row 0 -column 0 -columnspan 2 -sticky nsew
-  grid .bot.right.txt -row 1 -column 0 -sticky nsew
-  grid .bot.right.vb  -row 1 -column 1 -sticky ns
-  grid .bot.right.hb  -row 2 -column 0 -sticky ew
 
   ##############################
   # POPULATE LEFT BOTTOM FRAME #
@@ -351,10 +365,12 @@ proc clear_text {} {
 
   global last_block
 
-  # Clear the textbox
-  .bot.right.txt configure -state normal
-  .bot.right.txt delete 1.0 end
-  .bot.right.txt configure -state disabled
+  # Clear the textboxes
+  foreach metric [list line toggle memory comb fsm assert] {
+    .bot.right.nb.$metric.txt configure -state normal
+    .bot.right.nb.$metric.txt delete 1.0 end
+    .bot.right.nb.$metric.txt configure -state disabled
+  }
 
   # Reset the last_block
   set last_block ""
@@ -411,7 +427,7 @@ proc perform_search {tbox ebox ibox index} {
 
 }
 
-proc rm_pointer {curr_ptr} {
+proc rm_pointer {curr_ptr metric} {
 
   upvar $curr_ptr ptr
 
@@ -420,12 +436,12 @@ proc rm_pointer {curr_ptr} {
 
   # Delete old cursor, if it is displayed
   if {$ptr != ""} {
-    .bot.right.txt delete $ptr.0 $ptr.3
-    .bot.right.txt insert $ptr.0 "   "
+    .bot.right.nb.$metric.txt delete $ptr.0 $ptr.3
+    .bot.right.nb.$metric.txt insert $ptr.0 "   "
   }
 
   # Disable textbox
-  .bot.right.txt configure -state disabled
+  .bot.right.nb.$metric.txt configure -state disabled
 
   # Disable "Show current selection" menu item
   .menubar.view entryconfigure 2 -state disabled
@@ -435,7 +451,7 @@ proc rm_pointer {curr_ptr} {
 
 }
 
-proc set_pointer {curr_ptr line} {
+proc set_pointer {curr_ptr line metric} {
 
   upvar $curr_ptr ptr
 
@@ -443,17 +459,17 @@ proc set_pointer {curr_ptr line} {
   rm_pointer ptr
 
   # Allow the textbox to be changed
-  .bot.right.txt configure -state normal
+  .bot.right.nb.metric.txt configure -state normal
 
   # Display new pointer
-  .bot.right.txt delete $line.0 $line.3
-  .bot.right.txt insert $line.0 "-->"
+  .bot.right.nb.metric.txt delete $line.0 $line.3
+  .bot.right.nb.metric.txt insert $line.0 "-->"
 
   # Set the textbox to not be changed
-  .bot.right.txt configure -state disabled
+  .bot.right.nb.metric.txt configure -state disabled
 
   # Make sure that we can see the current toggle pointer in the textbox
-  .bot.right.txt see $line.0
+  .bot.right.nb.metric.txt see $line.0
 
   # Enable the "Show current selection" menu option
   .menubar.view entryconfigure 2 -state normal
@@ -463,7 +479,7 @@ proc set_pointer {curr_ptr line} {
 
 }
 
-proc goto_uncov {curr_index} {
+proc goto_uncov {curr_index metric} {
 
   global prev_uncov_index next_uncov_index curr_uncov_index
   global cov_rb
@@ -477,33 +493,33 @@ proc goto_uncov {curr_index} {
 
   # Display the given index, if it has been specified
   if {$curr_index != ""} {
-    .bot.right.txt see $curr_index
+    .bot.right.nb.$metric.txt see $curr_index
     set curr_uncov_index $curr_index
   } else {
     set curr_uncov_index 1.0
   }
 
   # Get previous uncovered index
-  set prev_uncov_index [lindex [.bot.right.txt tag prevrange $tag_name $curr_uncov_index] 0]
+  set prev_uncov_index [lindex [.bot.right.nb.$metric.txt tag prevrange $tag_name $curr_uncov_index] 0]
 
   # Disable/enable previous button
   if {$prev_uncov_index != ""} {
-    .bot.right.h.pn.prev configure -state normal
+    .bot.right.nb.$metric.h.pn.prev configure -state normal
     .menubar.view entryconfigure 1 -state normal
   } else {
-    .bot.right.h.pn.prev configure -state disabled
+    .bot.right.nb.$metric.h.pn.prev configure -state disabled
     .menubar.view entryconfigure 1 -state disabled
   }
 
   # Get next uncovered index
-  set next_uncov_index [lindex [.bot.right.txt tag nextrange $tag_name "$curr_uncov_index + 1 chars"] 0]
+  set next_uncov_index [lindex [.bot.right.nb.$metric.txt tag nextrange $tag_name "$curr_uncov_index + 1 chars"] 0]
 
   # Disable/enable next button
   if {$next_uncov_index != ""} {
-    .bot.right.h.pn.next configure -state normal
+    .bot.right.nb.$metric.h.pn.next configure -state normal
     .menubar.view entryconfigure 0 -state normal
   } else {
-    .bot.right.h.pn.next configure -state disabled
+    .bot.right.nb.$metric.h.pn.next configure -state disabled
     .menubar.view entryconfigure 0 -state disabled
   }
 

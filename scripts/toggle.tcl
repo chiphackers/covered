@@ -23,20 +23,20 @@ proc display_toggle {curr_index} {
   global prev_toggle_index next_toggle_index curr_toggle_ptr
 
   # Get range of current signal
-  set curr_range [.bot.right.txt tag prevrange uncov_button "$curr_index + 1 chars"]
+  set curr_range [.bot.right.nb.toggle.txt tag prevrange uncov_button "$curr_index + 1 chars"]
 
   # Calculate the current signal string
-  set curr_signal [string trim [lindex [split [.bot.right.txt get [lindex $curr_range 0] [lindex $curr_range 1]] "\["] 0]]
+  set curr_signal [string trim [lindex [split [.bot.right.nb.toggle.txt get [lindex $curr_range 0] [lindex $curr_range 1]] "\["] 0]]
 
   # Make sure that the selected signal is visible in the text box and is shown as selected
   set_pointer curr_toggle_ptr [lindex [split [lindex $curr_range 0] .] 0]
   goto_uncov [lindex $curr_range 0]
 
   # Get range of previous signal
-  set prev_toggle_index [lindex [.bot.right.txt tag prevrange uncov_button [lindex $curr_index 0]] 0]
+  set prev_toggle_index [lindex [.bot.right.nb.toggle.txt tag prevrange uncov_button [lindex $curr_index 0]] 0]
 
   # Get range of next signal
-  set next_toggle_index [lindex [.bot.right.txt tag nextrange uncov_button [lindex $curr_range 1]] 0]
+  set next_toggle_index [lindex [.bot.right.nb.toggle.txt tag nextrange uncov_button [lindex $curr_range 1]] 0]
 
   # Now create the toggle window
   create_toggle_window $curr_signal
@@ -80,11 +80,11 @@ proc create_toggle_window {signal} {
         set toggle_reason [get_exclude_reason .togwin]
       }
       tcl_func_set_toggle_exclude $curr_block $sig_name $toggle_excluded $toggle_reason
-      set text_x [.bot.right.txt xview]
-      set text_y [.bot.right.txt yview]
+      set text_x [.bot.right.nb.toggle.txt xview]
+      set text_y [.bot.right.nb.toggle.txt yview]
       process_toggle_cov
-      .bot.right.txt xview moveto [lindex $text_x 0]
-      .bot.right.txt yview moveto [lindex $text_y 0]
+      .bot.right.nb.toggle.txt xview moveto [lindex $text_x 0]
+      .bot.right.nb.toggle.txt yview moveto [lindex $text_y 0]
       populate_treeview
       enable_cdd_save
       set_pointer curr_toggle_ptr $curr_toggle_ptr
