@@ -164,11 +164,11 @@ ExclusionReasonConflictResolution = all
 
 # THE FOLLOWING LINES ARE FOR STORING GUI STATE INFORMATION -- DO NOT MODIFY LINES BELOW THIS COMMENT!
 
-MainWindowGeometry                = 1000x548+45+193
+MainWindowGeometry                = 1439x639+45+194
 ToggleWindowGeometry              = 366x125+427+365
 MemoryWindowGeometry              = 
 CombWindowGeometry                = 804x408+10+73
 FsmWindowGeometry                 = 
 AssertWindowGeometry              = 
 ModuleInstanceType                = Module
-ModuleInstanceTableListWidth      = 220
+ModuleInstanceTableListWidth      = 1283

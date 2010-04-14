@@ -221,19 +221,44 @@ proc main_view {} {
   set_balloon .bot.left.mi "Selects the coverage accumulated by module or instance"
 
   # Create hierarchical window
-  ttk::treeview  .bot.left.tree -selectmode browse -show tree -xscrollcommand {.bot.left.hb set} -yscrollcommand {.bot.left.vb set} -columns {Summary}
+  ttk::treeview  .bot.left.tree -selectmode browse -xscrollcommand {.bot.left.hb set} -yscrollcommand {.bot.left.vb set} \
+                                -columns {Total Line Toggle Memory Logic FSM Assert}
+  .bot.left.tree heading #0     -text "Name"
+  .bot.left.tree heading Total  -text "Total Score"
+  .bot.left.tree heading Line   -text "Line Score"
+  .bot.left.tree heading Toggle -text "Toggle Score"
+  .bot.left.tree heading Memory -text "Memory Score"
+  .bot.left.tree heading Logic  -text "Logic Score"
+  .bot.left.tree heading FSM    -text "FSM Score"
+  .bot.left.tree heading Assert -text "Assert Score"
   ttk::scrollbar .bot.left.vb                      -command {.bot.left.tree yview}
   ttk::scrollbar .bot.left.hb   -orient horizontal -command {.bot.left.tree xview}
 
+#  bind .bot.left.tree <<TreeviewInplaceEdit>> {
+#    treelabel %W 
+#    if {[%W children [lindex %d 1]]==""} {
+#      switch [lindex %d 0] {
+#        {#0} { xtreeview::_inplaceEntry %W {*}%d }
+#        {bool} { xtreeview::_inplaceCheckbutton %W {*}%d true false}
+#        {int} { xtreeview::_inplaceSpinbox %W {*}%d 0 100 1 }
+#        {list} { xtreeview::_inplaceList %W {*}%d {"Letter A" "Letter B" "Letter C" "Letter D"} }
+#      }
+#    } elseif {[lindex %d 0]=="list"} {
+#      xtreeview::_inplaceEntryButton %W {*}%d {
+#        set %%v "tree: %W, column,item=%d"
+#      }
+#    }
+#  }
+
   grid rowconfigure    .bot.left 1 -weight 1
-  grid columnconfigure .bot.left 0 -weight 1
+  grid columnconfigure .bot.left 1 -weight 1
   grid .bot.left.mi   -row 0 -column 0 -sticky ew
-  grid .bot.left.tree -row 1 -column 0 -sticky news
-  grid .bot.left.vb   -row 1 -column 1 -sticky ns
-  grid .bot.left.hb   -row 2 -column 0 -sticky ew
+  grid .bot.left.tree -row 1 -column 0 -sticky news -columnspan 2
+  grid .bot.left.vb   -row 1 -column 2 -sticky ns
+  grid .bot.left.hb   -row 2 -column 0 -sticky ew   -columnspan 2
 
   # Bind the listbox selection event
-  bind .bot.left.tree <<TreeviewSelect>> populate_text
+  bind .bot.left.tree <Button-1> {populate_text %x %y}
 
   # Pack the bottom window
   update
@@ -301,9 +326,17 @@ proc populate_treeview {} {
       calculate_summary
 
       foreach block $block_list {
-        set value "($summary_list($block,total_hit) / $summary_list($block,total_total)) $summary_list($block,total_percent)%"
-        .bot.left.tree insert {} end -id $block -text [tcl_func_get_funit_name $block] -values [list $value] -tag tag[lindex $block 0]
-        .bot.left.tree tag configure tag[lindex $block 0] -background $summary_list($block,total_color)
+        set total  $summary_list($block,total_percent)
+        set line   $summary_list($block,line_percent)
+        set toggle $summary_list($block,toggle_percent)
+        set memory $summary_list($block,memory_percent)
+        set logic  $summary_list($block,comb_percent)
+        set fsm    $summary_list($block,fsm_percent)
+        set assert $summary_list($block,assert_percent)
+        .bot.left.tree insert {} end -id $block -text [tcl_func_get_funit_name $block] -values [list $total $line $toggle $memory $logic $fsm $assert]
+        foreach col [.bot.left.tree cget -columns] {
+          treelabel .bot.left.tree $block $col
+        }
       }
 
     } else {
@@ -321,9 +354,17 @@ proc populate_treeview {} {
         set inst_block($inst_name) $block
         set parent    $inst_block([join [lrange [split $inst_name .] 0 end-1] .])
         set child     [lindex [split $inst_name .] end]
-        set value     "($summary_list($block,total_hit) / $summary_list($block,total_total)) $summary_list($block,total_percent)%"
-        .bot.left.tree insert $parent end -id $block -text "$child ($mod_name)" -values [list $value] -tag tag[lindex $block 0]
-        .bot.left.tree tag configure tag[lindex $block 0] -background $summary_list($block,total_color)
+        set total     $summary_list($block,total_percent)
+        set line      $summary_list($block,line_percent)
+        set toggle    $summary_list($block,toggle_percent)
+        set memory    $summary_list($block,memory_percent)
+        set logic     $summary_list($block,comb_percent)
+        set fsm       $summary_list($block,fsm_percent)
+        set assert    $summary_list($block,assert_percent)
+        .bot.left.tree insert $parent end -id $block -text "$child ($mod_name)" -values [list $total $line $toggle $memory $logic $fsm $assert]
+        foreach col [.bot.left.tree cget -columns] {
+          treelabel .bot.left.tree $block $col
+        }
       }
 
     }
@@ -335,7 +376,54 @@ proc populate_treeview {} {
 
 }
 
-proc populate_text {} {
+proc treelabel {tv block col} {
+
+  global summary_list
+
+  set f [ttk::frame $tv.[lindex $block 0]$col]
+
+  switch $col {
+    Line    { set type "line"   }
+    Toggle  { set type "toggle" }
+    Memory  { set type "memory" }
+    Logic   { set type "comb"   }
+    FSM     { set type "fsm"    }
+    Assert  { set type "assert" }
+  }
+
+  ttk::label $f.summary -text "($summary_list($block,"$type"_hit) / $summary_list($block,"$type"_total))" -background $summary_list($block,"$type"_color)
+  ttk::label $f.percent -text "$summary_list($block,"$type"_percent)%" -background $summary_list($block,"$type"_color)
+
+  pack $f.percent -side right
+  pack $f.summary -side right -fill x
+
+  return $f
+
+}
+
+# update inplace edit widgets positions
+proc update_treelabels {w} {
+
+  set item [list 0 0]
+
+  foreach col [$w cget -columns] {
+
+    set wnd $w.$col
+
+    if {[winfo exists $wnd]} {
+      set bbox [$w bbox $item $col]
+      if {$bbox==""} {
+        place forget $wnd
+      } else {
+        place $wnd -x [lindex $bbox 0] -y [lindex $bbox 1] -width [lindex $bbox 2] -height [lindex $bbox 3]
+      }
+    }
+
+  }
+
+}
+
+proc populate_text {X Y} {
 
   global cov_rb block_list curr_block summary_list
   global mod_inst_type last_mod_inst_type
@@ -343,7 +431,9 @@ proc populate_text {} {
   global start_search_index
   global curr_toggle_ptr
 
-  set curr_block [lindex [.bot.left.tree selection] 0]
+  # Get the item that was selected
+  set curr_block [.bot.left.tree identify row    $X $Y]
+  set cov_rb     [.bot.left.tree column [.bot.left.tree identify column $X $Y] -id]
 
   if {$curr_block != ""} {
 
@@ -507,17 +597,17 @@ proc set_pointer {curr_ptr line metric} {
   rm_pointer ptr $metric
 
   # Allow the textbox to be changed
-  .bot.right.nb.metric.txt configure -state normal
+  .bot.right.nb.$metric.txt configure -state normal
 
   # Display new pointer
-  .bot.right.nb.metric.txt delete $line.0 $line.3
-  .bot.right.nb.metric.txt insert $line.0 "-->"
+  .bot.right.nb.$metric.txt delete $line.0 $line.3
+  .bot.right.nb.$metric.txt insert $line.0 "-->"
 
   # Set the textbox to not be changed
-  .bot.right.nb.metric.txt configure -state disabled
+  .bot.right.nb.$metric.txt configure -state disabled
 
   # Make sure that we can see the current toggle pointer in the textbox
-  .bot.right.nb.metric.txt see $line.0
+  .bot.right.nb.$metric.txt see $line.0
 
   # Enable the "Show current selection" menu option
   .menubar.view entryconfigure 2 -state normal
