@@ -237,7 +237,6 @@ proc main_view {} {
 
   bind .bot.left.tree <B1-Motion> {+if {$ttk::treeview::State(pressMode)=="resize"} { update_treelabels %W }}
   bind .bot.left.tree <Configure> "+after idle update_treelabels %W"
-  bind .bot.left.tree <Button-1>  {populate_text %x %y}
 
   grid rowconfigure    .bot.left 1 -weight 1
   grid columnconfigure .bot.left 1 -weight 1
@@ -374,7 +373,7 @@ proc treelabel {tv block col} {
 
   global summary_list
 
-  set f [ttk::frame $tv.[lindex $block 0]$col]
+  set f [ttk::frame $tv.[lindex $block 0]$col -padding 2]
 
   switch $col {
     Total   { set type "total"  }
@@ -394,10 +393,13 @@ proc treelabel {tv block col} {
   ttk::label $f.percent -text [format "%3d%%" $summary_list($block,$type\_percent)] -background $summary_list($block,$type\_color) -width 4 -anchor e
 
   # Set the pixel width of the frame
-  $f configure -width [expr [winfo width $f.summary] + [winfo width $f.percent]]
+  set font [::ttk::style lookup [$f.summary cget -style] -font]
+  $f configure -width [expr [font measure $font [$f.summary cget -text]] + [font measure $font [$f.percent cget -text]]]
 
   pack $f.percent -side right
   pack $f.summary -side right -fill x
+
+  bind $f <Button-1> "set cov_rb $col; set curr_block $block; $f configure -relief sunken populate_text"
 
   return $f
 
@@ -424,17 +426,13 @@ proc update_treelabels {w} {
 
 }
 
-proc populate_text {X Y} {
+proc populate_text {} {
 
   global cov_rb block_list curr_block summary_list
   global mod_inst_type last_mod_inst_type
   global last_block
   global start_search_index
   global curr_toggle_ptr
-
-  # Get the item that was selected
-  set curr_block [.bot.left.tree identify row    $X $Y]
-  set cov_rb     [.bot.left.tree column [.bot.left.tree identify column $X $Y] -id]
 
   if {$curr_block != ""} {
 
