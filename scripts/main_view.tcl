@@ -68,6 +68,7 @@ set curr_uncov_index        ""
 set prev_uncov_index        ""
 set next_uncov_index        ""
 set input_cdd               ""
+set block_list              [list]
 
 array set tablelistopts {
   selectbackground   RoyalBlue1
@@ -231,24 +232,12 @@ proc main_view {} {
   .bot.left.tree heading Logic  -text "Logic Score"
   .bot.left.tree heading FSM    -text "FSM Score"
   .bot.left.tree heading Assert -text "Assert Score"
-  ttk::scrollbar .bot.left.vb                      -command {.bot.left.tree yview}
-  ttk::scrollbar .bot.left.hb   -orient horizontal -command {.bot.left.tree xview}
+  ttk::scrollbar .bot.left.vb                      -command {after idle update_treelabels .bot.left.tree; .bot.left.tree yview}
+  ttk::scrollbar .bot.left.hb   -orient horizontal -command {after idle update_treelabels .bot.left.tree; .bot.left.tree xview}
 
-#  bind .bot.left.tree <<TreeviewInplaceEdit>> {
-#    treelabel %W 
-#    if {[%W children [lindex %d 1]]==""} {
-#      switch [lindex %d 0] {
-#        {#0} { xtreeview::_inplaceEntry %W {*}%d }
-#        {bool} { xtreeview::_inplaceCheckbutton %W {*}%d true false}
-#        {int} { xtreeview::_inplaceSpinbox %W {*}%d 0 100 1 }
-#        {list} { xtreeview::_inplaceList %W {*}%d {"Letter A" "Letter B" "Letter C" "Letter D"} }
-#      }
-#    } elseif {[lindex %d 0]=="list"} {
-#      xtreeview::_inplaceEntryButton %W {*}%d {
-#        set %%v "tree: %W, column,item=%d"
-#      }
-#    }
-#  }
+  bind .bot.left.tree <B1-Motion> {+if {$ttk::treeview::State(pressMode)=="resize"} { update_treelabels %W }}
+  bind .bot.left.tree <Configure> "+after idle update_treelabels %W"
+  bind .bot.left.tree <Button-1>  {populate_text %x %y}
 
   grid rowconfigure    .bot.left 1 -weight 1
   grid columnconfigure .bot.left 1 -weight 1
@@ -256,9 +245,6 @@ proc main_view {} {
   grid .bot.left.tree -row 1 -column 0 -sticky news -columnspan 2
   grid .bot.left.vb   -row 1 -column 2 -sticky ns
   grid .bot.left.hb   -row 2 -column 0 -sticky ew   -columnspan 2
-
-  # Bind the listbox selection event
-  bind .bot.left.tree <Button-1> {populate_text %x %y}
 
   # Pack the bottom window
   update
@@ -369,6 +355,14 @@ proc populate_treeview {} {
 
     }
 
+    # Update the headers
+    foreach col [.bot.left.tree cget -columns] {
+      .bot.left.tree column $col -minwidth [.bot.left.tree.0Total cget -width] -width [.bot.left.tree.0Total cget -width]
+    }
+
+    # Update the treelabels
+    update_treelabels .bot.left.tree
+
     # Set the last module/instance type variable to the current
     set last_mod_inst_type $mod_inst_type
 
@@ -383,6 +377,7 @@ proc treelabel {tv block col} {
   set f [ttk::frame $tv.[lindex $block 0]$col]
 
   switch $col {
+    Total   { set type "total"  }
     Line    { set type "line"   }
     Toggle  { set type "toggle" }
     Memory  { set type "memory" }
@@ -391,8 +386,15 @@ proc treelabel {tv block col} {
     Assert  { set type "assert" }
   }
 
-  ttk::label $f.summary -text "($summary_list($block,"$type"_hit) / $summary_list($block,"$type"_total))" -background $summary_list($block,"$type"_color)
-  ttk::label $f.percent -text "$summary_list($block,"$type"_percent)%" -background $summary_list($block,"$type"_color)
+  # Create the format string
+  set fstr "(%$summary_list(max_len)d / %$summary_list(max_len)d)"
+
+  ttk::label $f.summary -text [format $fstr $summary_list($block,$type\_hit) $summary_list($block,$type\_total)] \
+                        -background $summary_list($block,$type\_color) -width [expr ($summary_list(max_len) * 2) + 5] -anchor e
+  ttk::label $f.percent -text [format "%3d%%" $summary_list($block,$type\_percent)] -background $summary_list($block,$type\_color) -width 4 -anchor e
+
+  # Set the pixel width of the frame
+  $f configure -width [expr [winfo width $f.summary] + [winfo width $f.percent]]
 
   pack $f.percent -side right
   pack $f.summary -side right -fill x
@@ -404,21 +406,20 @@ proc treelabel {tv block col} {
 # update inplace edit widgets positions
 proc update_treelabels {w} {
 
-  set item [list 0 0]
+  global block_list
 
-  foreach col [$w cget -columns] {
-
-    set wnd $w.$col
-
-    if {[winfo exists $wnd]} {
-      set bbox [$w bbox $item $col]
-      if {$bbox==""} {
-        place forget $wnd
-      } else {
-        place $wnd -x [lindex $bbox 0] -y [lindex $bbox 1] -width [lindex $bbox 2] -height [lindex $bbox 3]
+  foreach block $block_list {
+    foreach col [$w cget -columns] {
+      set wnd $w.[lindex $block 0]$col
+      if {[winfo exists $wnd]} {
+        set bbox [$w bbox $block $col]
+        if {$bbox==""} {
+          place forget $wnd
+        } else {
+          place $wnd -x [lindex $bbox 0] -y [lindex $bbox 1] -width [lindex $bbox 2] -height [lindex $bbox 3]
+        }
       }
     }
-
   }
 
 }
