@@ -399,7 +399,8 @@ proc treelabel {tv block col} {
   pack $f.percent -side right
   pack $f.summary -side right -fill x
 
-  bind $f <Button-1> "set cov_rb $col; set curr_block $block; $f configure -relief sunken populate_text"
+  bind $f.percent <Button-1> "set cov_rb $col; set curr_block [list $block]; $f configure -relief sunken; populate_text"
+  bind $f.summary <Button-1> "set cov_rb $col; set curr_block [list $block]; $f configure -relief sunken; populate_text"
 
   return $f
 
