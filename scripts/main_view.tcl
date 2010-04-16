@@ -70,6 +70,13 @@ set next_uncov_index        ""
 set input_cdd               ""
 set block_list              [list]
 
+set bm_right [image create bitmap -data "#define bm_right_width 15\n#define bm_right_height 15\nstatic unsigned char bm_right_bits[] = {\n0x80, 0x00,
+0x80, 0x01, 0x80, 0x03, 0x80, 0x07, 0xff, 0x0f, 0xff, 0x1f, 0xff, 0x3f, 0xff, 0x7f, 0xff, 0x3f, 0xff, 0x1f, 0xff, 0x0f, 0x80, 0x07, 0x80, 0x03, 0x80,
+0x01, 0x80, 0x00};"]
+set bm_left  [image create bitmap -data "#define bm_left_width 15\n#define bm_left_height 15\nstatic unsigned char bm_left_bits[] = {\n0x80, 0x00,
+0xc0, 0x00, 0xe0, 0x00, 0xf0, 0x00, 0xf8, 0x7f, 0xfc, 0x7f, 0xfe, 0x7f, 0xff, 0x7f, 0xfe, 0x7f, 0xfc, 0x7f, 0xf8, 0x7f, 0xf0, 0x00, 0xe0, 0x00, 0xc0,
+0x00, 0x80, 0x00};"]
+
 array set tablelistopts {
   selectbackground   RoyalBlue1
   selectforeground   white
@@ -89,7 +96,7 @@ proc main_view {} {
   global HOME main_start_search_index
   global main_geometry
   global mod_inst_tl_columns mod_inst_tl_init_hidden mod_inst_tl_width
-  global mod_inst_type
+  global mod_inst_type bm_right bm_left
 
   # Start off 
 
@@ -216,10 +223,30 @@ proc main_view {} {
   # POPULATE LEFT BOTTOM FRAME #
   ##############################
 
+  ttk::frame .bot.left.f
+
   # Create module/instance menubutton
-  ttk_optionMenu .bot.left.mi mod_inst_type Module Instance
+  ttk_optionMenu .bot.left.f.mi mod_inst_type Module Instance
   trace add variable mod_inst_type write cov_change_type
-  set_balloon .bot.left.mi "Selects the coverage accumulated by module or instance"
+  set_balloon .bot.left.f.mi "Selects the coverage accumulated by module or instance"
+
+  # Create summary panel switcher button
+  ttk::button .bot.left.f.ps -image $bm_left -command {
+    if {[.bot.left.f.ps cget -image] == $bm_left} {
+      .bot.left.f.ps configure -image $bm_right
+      set previous_sashpos [.bot sashpos 0]
+      .bot.left.tree configure -displaycolumns [list $cov_rb]
+      .bot sashpos 0 [expr [.bot.left.tree column #0 -width] + [.bot.left.tree column $cov_rb -width]]
+    } else {
+      .bot.left.f.ps configure -image $bm_left
+      .bot sashpos 0 $previous_sashpos
+      .bot.left.tree configure -displaycolumns #all
+    }
+  }
+  set_balloon .bot.left.f.ps "View/Hide the module/instance summary table"
+
+  pack .bot.left.f.mi -side left
+  pack .bot.left.f.ps -side right
 
   # Create hierarchical window
   ttk::treeview  .bot.left.tree -selectmode browse -xscrollcommand {.bot.left.hb set} -yscrollcommand {.bot.left.vb set} \
@@ -239,11 +266,11 @@ proc main_view {} {
   bind .bot.left.tree <Configure> "+after idle update_treelabels %W"
 
   grid rowconfigure    .bot.left 1 -weight 1
-  grid columnconfigure .bot.left 1 -weight 1
-  grid .bot.left.mi   -row 0 -column 0 -sticky ew
-  grid .bot.left.tree -row 1 -column 0 -sticky news -columnspan 2
-  grid .bot.left.vb   -row 1 -column 2 -sticky ns
-  grid .bot.left.hb   -row 2 -column 0 -sticky ew   -columnspan 2
+  grid columnconfigure .bot.left 0 -weight 1
+  grid .bot.left.f    -row 0 -column 0 -sticky ew   -columnspan 2
+  grid .bot.left.tree -row 1 -column 0 -sticky news
+  grid .bot.left.vb   -row 1 -column 1 -sticky ns
+  grid .bot.left.hb   -row 2 -column 0 -sticky ew
 
   # Pack the bottom window
   update
@@ -356,7 +383,7 @@ proc populate_treeview {} {
 
     # Update the headers
     foreach col [.bot.left.tree cget -columns] {
-      .bot.left.tree column $col -minwidth [.bot.left.tree.0Total cget -width] -width [.bot.left.tree.0Total cget -width]
+      .bot.left.tree column $col -minwidth [.bot.left.tree.0Total cget -width] -width [.bot.left.tree.0Total cget -width] -stretch 0
     }
 
     # Update the treelabels
@@ -369,11 +396,38 @@ proc populate_treeview {} {
 
 }
 
+proc treelabel_selected {w col block} {
+
+  global cov_rb curr_block bm_right previous_sashpos
+
+  # Update the global variables
+  set cov_rb     $col
+  set curr_block $block
+
+  # Update the treeview
+  update_treelabels $w
+
+  # Update the list of displayed columns to include the name and selected metric
+  $w configure -displaycolumns [list $col]
+
+  # Slide the panedwindow sash to hug the last columnconfigure
+  set previous_sashpos [.bot sashpos 0]
+  .bot sashpos 0 [expr [$w column #0 -width] + [$w column $col -width]] 
+
+  # Change the button direction
+  .bot.left.f.ps configure -image $bm_right
+
+  # Populate the textbox with source
+  populate_text
+
+}
+
+# Creates and binds a single label for a cell in the treeview table
 proc treelabel {tv block col} {
 
   global summary_list
 
-  set f [ttk::frame $tv.[lindex $block 0]$col -padding 2]
+  set f [frame $tv.[lindex $block 0]$col -background white -padx 2 -pady 2]
 
   switch $col {
     Total   { set type "total"  }
@@ -390,17 +444,19 @@ proc treelabel {tv block col} {
 
   ttk::label $f.summary -text [format $fstr $summary_list($block,$type\_hit) $summary_list($block,$type\_total)] \
                         -background $summary_list($block,$type\_color) -width [expr ($summary_list(max_len) * 2) + 5] -anchor e
-  ttk::label $f.percent -text [format "%3d%%" $summary_list($block,$type\_percent)] -background $summary_list($block,$type\_color) -width 4 -anchor e
+  ttk::label $f.percent -text [format "%3d%%" $summary_list($block,$type\_percent)] \
+                        -background $summary_list($block,$type\_color) -width 4 -anchor e
 
   # Set the pixel width of the frame
   set font [::ttk::style lookup [$f.summary cget -style] -font]
-  $f configure -width [expr [font measure $font [$f.summary cget -text]] + [font measure $font [$f.percent cget -text]]]
+  $f configure -width [font measure $font [string repeat "@" [expr ($summary_list(max_len) * 2) + 5]]]
 
   pack $f.percent -side right
   pack $f.summary -side right -fill x
 
-  bind $f.percent <Button-1> "set cov_rb $col; set curr_block [list $block]; $f configure -relief sunken; populate_text"
-  bind $f.summary <Button-1> "set cov_rb $col; set curr_block [list $block]; $f configure -relief sunken; populate_text"
+  # Create bindings
+  bind $f.percent <Button-1> "treelabel_selected $tv $col [list $block]"
+  bind $f.summary <Button-1> "treelabel_selected $tv $col [list $block]"
 
   return $f
 
@@ -409,7 +465,7 @@ proc treelabel {tv block col} {
 # update inplace edit widgets positions
 proc update_treelabels {w} {
 
-  global block_list
+  global block_list curr_block cov_rb
 
   foreach block $block_list {
     foreach col [$w cget -columns] {
@@ -420,6 +476,11 @@ proc update_treelabels {w} {
           place forget $wnd
         } else {
           place $wnd -x [lindex $bbox 0] -y [lindex $bbox 1] -width [lindex $bbox 2] -height [lindex $bbox 3]
+        }
+        if {$curr_block == $block && $cov_rb == $col} {
+          $wnd configure -background black
+        } else {
+          $wnd configure -background white
         }
       }
     }
