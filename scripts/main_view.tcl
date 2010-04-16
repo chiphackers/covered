@@ -95,8 +95,8 @@ proc main_view {} {
   global race_msgs prev_uncov_index next_uncov_index
   global HOME main_start_search_index
   global main_geometry
-  global mod_inst_tl_columns mod_inst_tl_init_hidden mod_inst_tl_width
-  global mod_inst_type bm_right bm_left
+  global preferences
+  global bm_right bm_left
 
   # Start off 
 
@@ -226,8 +226,8 @@ proc main_view {} {
   ttk::frame .bot.left.f
 
   # Create module/instance menubutton
-  ttk_optionMenu .bot.left.f.mi mod_inst_type Module Instance
-  trace add variable mod_inst_type write cov_change_type
+  ttk_optionMenu .bot.left.f.mi preferences(mod_inst_type) Module Instance
+  trace add variable preferences(mod_inst_type) write cov_change_type
   set_balloon .bot.left.f.mi "Selects the coverage accumulated by module or instance"
 
   # Create summary panel switcher button
@@ -236,11 +236,15 @@ proc main_view {} {
       .bot.left.f.ps configure -image $bm_right
       .bot.left.tree configure -displaycolumns [list $cov_rb]
       .bot.left.tree see $curr_block
-      .bot sashpos 0 [expr [.bot.left.tree column #0 -width] + [.bot.left.tree column $cov_rb -width] + [winfo width .bot.left.vb]]
+      sashpos_move .bot 0 [expr [.bot.left.tree column #0 -width] + [.bot.left.tree column $cov_rb -width] + [winfo width .bot.left.vb]]
+      .bot pane 0 -weight 0
+      .bot pane 1 -weight 1
     } else {
       .bot.left.f.ps configure -image $bm_left
-      .bot sashpos 0 [.bot cget -width]
+      sashpos_move .bot 0 [.bot cget -width]
       .bot.left.tree configure -displaycolumns #all
+      .bot pane 0 -weight 1
+      .bot pane 1 -weight 0
     }
   }
   set_balloon .bot.left.f.ps "View/Hide the module/instance summary table"
@@ -259,11 +263,20 @@ proc main_view {} {
   .bot.left.tree heading Logic  -text "Logic Score"
   .bot.left.tree heading FSM    -text "FSM Score"
   .bot.left.tree heading Assert -text "Assert Score"
+
+  set col_font  [::ttk::style lookup [.bot.left.tree cget -style] -font]
+  set col_width [font measure $col_font "@@@@@@@@@@@@"]
+  foreach col [.bot.left.tree cget -columns] {
+    .bot.left.tree column $col -width $col_width
+  }
+
   ttk::scrollbar .bot.left.vb                      -command {after idle update_treelabels .bot.left.tree; .bot.left.tree yview}
   ttk::scrollbar .bot.left.hb   -orient horizontal -command {after idle update_treelabels .bot.left.tree; .bot.left.tree xview}
 
-  bind .bot.left.tree <B1-Motion> {+if {$ttk::treeview::State(pressMode)=="resize"} { update_treelabels %W }}
-  bind .bot.left.tree <Configure> "+after idle update_treelabels %W"
+  bind .bot.left.tree <B1-Motion>       {+if {$ttk::treeview::State(pressMode)=="resize"} { update_treelabels %W }}
+  bind .bot.left.tree <Configure>       "+after idle update_treelabels %W"
+  bind .bot.left.tree <<TreeviewOpen>>  "+after idle update_treelabels %W"
+  bind .bot.left.tree <<TreeviewClose>> "+after idle update_treelabels %W"
 
   grid rowconfigure    .bot.left 1 -weight 1
   grid columnconfigure .bot.left 0 -weight 1
@@ -273,12 +286,14 @@ proc main_view {} {
   grid .bot.left.hb   -row 2 -column 0 -sticky ew
 
   # Pack the bottom window
-  update
-  .bot add .bot.left
-  if {$mod_inst_tl_width != ""} {
-    .bot.left configure -width $mod_inst_tl_width
+  after idle {
+    .bot add .bot.left -weight 1
+    if {$preferences(mod_inst_tl_width) != ""} {
+      .bot.left configure -width $preferences(mod_inst_tl_width)
+    }
+    .bot add .bot.right -weight 0
+    .bot sashpos 0 [.bot cget -width]
   }
-  .bot add .bot.right
 
   # Create bottom information bar
   ttk::label .info -anchor w -relief raised
@@ -309,16 +324,13 @@ proc main_view {} {
     save_gui_elements . .
     destroy .
   }
-  bind . <Destroy> {
-    check_to_save_and_close_cdd exiting
-    save_gui_elements . %W
-  }
  
 }
 
 proc populate_treeview {} {
 
-  global mod_inst_type last_mod_inst_type cdd_name block_list
+  global preferences
+  global last_mod_inst_type cdd_name block_list
   global uncov_fgColor uncov_bgColor
   global lb_fgColor lb_bgColor
   global summary_list
@@ -326,10 +338,17 @@ proc populate_treeview {} {
   # Remove contents currently in listboxes
   .bot.left.tree delete [.bot.left.tree children {}]
 
+  # Delete the treelabels
+  foreach block $block_list {
+    foreach col [.bot.left.tree cget -columns] {
+      destroy .bot.left.tree.[lindex $block 0]$col
+    }
+  }
+
   if {$cdd_name != ""} {
 
     # If we are in module mode, list modules (otherwise, list instances)
-    if {$mod_inst_type == "Module"} {
+    if {$preferences(mod_inst_type) == "Module"} {
 
       # Get the list of functional units
       set block_list [tcl_func_get_funit_list]
@@ -387,11 +406,53 @@ proc populate_treeview {} {
     }
 
     # Update the treelabels
-    update_treelabels .bot.left.tree
+    after idle update_treelabels .bot.left.tree
 
     # Set the last module/instance type variable to the current
-    set last_mod_inst_type $mod_inst_type
+    set last_mod_inst_type $preferences(mod_inst_type)
 
+  }
+
+}
+
+proc animate_sashpos_move {pw sash curr goal} {
+
+  # If we still need to move the sash, do so
+  if {$curr != $goal} {
+
+    # Calculate the new position
+    if {$curr < $goal} {   ;# Move to the right
+      if {[expr $curr + 1] == $goal} {
+        set newpos $goal
+      } else {
+        set newpos [expr $curr + (($goal - $curr) / 2)]
+      }
+    } else {               ;# Move to the left
+      if {[expr $goal + 1] == $curr} {
+        set newpos $goal
+      } else {
+        set newpos [expr $goal + (($curr - $goal) / 2)]
+      }
+    }
+
+    # Move the sash
+    $pw sashpos $sash $newpos
+
+    # Move after 50 milliseconds
+    after 50 animate_sashpos_move $pw $sash $newpos $goal
+
+  }
+
+}
+
+proc sashpos_move {pw sash goal} {
+
+  global preferences
+
+  if {$preferences(enable_animations)} {
+    animate_sashpos_move [$pw sashpos $sash] $goal
+  } else {
+    $pw sashpos $sash $goal
   }
 
 }
@@ -412,9 +473,10 @@ proc treelabel_selected {w col block} {
 
   # Slide the panedwindow sash to hug the last columnconfigure
   if {[.bot.left.f.ps cget -image] != $bm_right} {
-    .bot sashpos 0 [expr [$w column #0 -width] + [$w column $col -width] + [winfo width .bot.left.vb]]
-  } else {
+    sashpos_move .bot 0 [expr [$w column #0 -width] + [$w column $col -width] + [winfo width .bot.left.vb]]
     .bot.left.f.ps configure -state normal
+    .bot pane 0 -weight 0
+    .bot pane 1 -weight 1
   }
 
   # Change the button direction
@@ -458,8 +520,10 @@ proc treelabel {tv block col} {
   pack $f.summary -side right -fill x
 
   # Create bindings
-  bind $f.percent <Button-1> "treelabel_selected $tv $col [list $block]"
-  bind $f.summary <Button-1> "treelabel_selected $tv $col [list $block]"
+  if {$col ne "Total"} {
+    bind $f.percent <Button-1> "treelabel_selected $tv $col [list $block]"
+    bind $f.summary <Button-1> "treelabel_selected $tv $col [list $block]"
+  }
 
   return $f
 
@@ -493,15 +557,15 @@ proc update_treelabels {w} {
 
 proc populate_text {} {
 
-  global cov_rb block_list curr_block summary_list
-  global mod_inst_type last_mod_inst_type
+  global cov_rb block_list curr_block summary_list preferences
+  global last_mod_inst_type
   global last_block
   global start_search_index
   global curr_toggle_ptr
 
   if {$curr_block != ""} {
 
-    if {$last_block != $curr_block || $last_mod_inst_type != $mod_inst_type} {
+    if {$last_block != $curr_block || $last_mod_inst_type != $preferences(mod_inst_type)} {
 
       set last_block      $curr_block
       set curr_toggle_ptr ""

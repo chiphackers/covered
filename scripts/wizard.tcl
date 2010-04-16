@@ -15,7 +15,7 @@
 
 proc create_wizard {} {
 
-  global show_wizard HOME
+  global preferences HOME
 
   # Now create the window and set the grab to this window
   if {[winfo exists .wizwin] == 0} {
@@ -48,7 +48,7 @@ proc create_wizard {} {
     }
 
     # Checkbutton to disable this window
-    ttk::checkbutton .wizwin.f.show -text "Display this window at startup of Covered" -variable show_wizard -onvalue true -offvalue false -command {
+    ttk::checkbutton .wizwin.f.show -text "Display this window at startup of Covered" -variable preferences(show_wizard) -onvalue true -offvalue false -command {
       write_coveredrc 0
     }
 

@@ -158,8 +158,7 @@ proc calc_and_display_line_cov {} {
 proc display_line_cov {} {
 
   global fileContent
-  global uncov_fgColor uncov_bgColor
-  global cov_fgColor cov_bgColor
+  global preferences
   global uncovered_lines covered_lines
   global uncov_type cov_type
   global start_line end_line
@@ -175,8 +174,8 @@ proc display_line_cov {} {
       .info configure -text "Filename: $file_name"
     }
 
-    .bot.right.nb.line.txt tag configure uncov_colorMap -foreground $uncov_fgColor -background $uncov_bgColor
-    .bot.right.nb.line.txt tag configure cov_colorMap   -foreground $cov_fgColor   -background $cov_bgColor
+    .bot.right.nb.line.txt tag configure uncov_colorMap -foreground $preferences(uncov_fgColor) -background $preferences(uncov_bgColor)
+    .bot.right.nb.line.txt tag configure cov_colorMap   -foreground $preferences(cov_fgColor)   -background $preferences(cov_bgColor)
 
     # Allow us to write to the text box
     .bot.right.nb.line.txt configure -state normal
@@ -372,13 +371,12 @@ proc calc_and_display_toggle_cov {} {
 proc display_toggle_cov {} {
 
   global fileContent
-  global uncov_fgColor uncov_bgColor
-  global cov_fgColor cov_bgColor
+  global preferences
   global uncovered_toggles covered_toggles
   global uncov_type cov_type
   global start_line end_line
   global toggle_summary_total toggle_summary_hit
-  global mod_inst_type
+  global preferences
   global toggle01_verbose toggle10_verbose toggle_width
   global curr_block
 
@@ -437,11 +435,11 @@ proc display_toggle_cov {} {
         eval $cmd_leave
         if {[llength $cmd_ucov_uline] > 4} {
           eval $cmd_ucov_uline
-          .bot.right.nb.toggle.txt tag configure uncov_uline -underline true -foreground $uncov_fgColor -background $uncov_bgColor
+          .bot.right.nb.toggle.txt tag configure uncov_uline -underline true -foreground $preferences(uncov_fgColor) -background $preferences(uncov_bgColor)
         }
         if {[llength $cmd_excl_uline] > 4} {
           eval $cmd_excl_uline
-          .bot.right.nb.toggle.txt tag configure excl_uline  -underline true -foreground $cov_fgColor   -background $cov_bgColor
+          .bot.right.nb.toggle.txt tag configure excl_uline  -underline true -foreground $preferences(cov_fgColor)   -background $preferences(cov_bgColor)
         }
         .bot.right.nb.toggle.txt tag bind uncov_enter <Enter> {
           set curr_cursor [.bot.right.nb.toggle.txt cget -cursor]
@@ -538,13 +536,12 @@ proc calc_and_display_memory_cov {} {
 proc display_memory_cov {} {
 
   global fileContent
-  global uncov_fgColor uncov_bgColor
-  global cov_fgColor cov_bgColor
+  global preferences
   global uncovered_memories covered_memories
   global uncov_type cov_type
   global start_line end_line
   global memory_summary_total memory_summary_hit
-  global mod_inst_type
+  global preferences
   global memory01_verbose memory10_verbose memory_width
   global curr_block
 
@@ -603,11 +600,11 @@ proc display_memory_cov {} {
         eval $cmd_leave
         if {[llength $cmd_ucov_uline] > 4} {
           eval $cmd_ucov_uline
-          .bot.right.nb.memory.txt tag configure uncov_uline -underline true -foreground $uncov_fgColor -background $uncov_bgColor
+          .bot.right.nb.memory.txt tag configure uncov_uline -underline true -foreground $preferences(uncov_fgColor) -background $preferences(uncov_bgColor)
         }
         if {[llength $cmd_excl_uline] > 4} {
           eval $cmd_excl_uline
-          .bot.right.nb.memory.txt tag configure excl_uline  -underline true -foreground $cov_fgColor   -background $cov_bgColor
+          .bot.right.nb.memory.txt tag configure excl_uline  -underline true -foreground $preferences(cov_fgColor)   -background $preferences(cov_bgColor)
         }
         .bot.right.nb.memory.txt tag bind uncov_enter <Enter> {
           set curr_cursor [.bot.right.nb.memory.txt cget -cursor]
@@ -704,13 +701,12 @@ proc calc_and_display_comb_cov {} {
 proc display_comb_cov {} {
  
   global fileContent
-  global uncov_fgColor uncov_bgColor
-  global cov_fgColor cov_bgColor
+  global preferences
   global uncovered_combs covered_combs race_lines
   global uncov_type cov_type
   global start_line end_line
   global comb_summary_total comb_summary_hit
-  global mod_inst_type
+  global preferences
   global curr_block
 
   if {$curr_block != 0} {
@@ -789,11 +785,11 @@ proc display_comb_cov {} {
         eval $cmd_leave
         if {[llength $cmd_ucov_hl] > 4} {
           eval $cmd_ucov_hl
-          .bot.right.nb.logic.txt tag configure uncov_highlight -foreground $uncov_fgColor -background $uncov_bgColor
+          .bot.right.nb.logic.txt tag configure uncov_highlight -foreground $preferences(uncov_fgColor) -background $preferences(uncov_bgColor)
         }
         if {[llength $cmd_excl_hl] > 4} {
           eval $cmd_excl_hl
-          .bot.right.nb.logic.txt tag configure excl_highlight -foreground $cov_fgColor   -background $cov_bgColor
+          .bot.right.nb.logic.txt tag configure excl_highlight  -foreground $preferences(cov_fgColor)   -background $preferences(cov_bgColor)
         }
         .bot.right.nb.logic.txt tag configure uncov_button -underline true
         .bot.right.nb.logic.txt tag bind uncov_enter <Enter> {
@@ -893,8 +889,7 @@ proc calc_and_display_fsm_cov {} {
 
 proc display_fsm_cov {} {
 
-  global uncov_fgColor uncov_bgColor
-  global cov_fgColor cov_bgColor
+  global preferences
   global curr_block fileContent
   global fsm_summary_hit fsm_summary_total uncov_type cov_type
   global covered_fsms uncovered_fsms
@@ -957,11 +952,11 @@ proc display_fsm_cov {} {
         eval $cmd_leave
         if {[llength $cmd_ucov_hl] > 4} {
           eval $cmd_ucov_hl
-          .bot.right.nb.fsm.txt tag configure uncov_highlight -foreground $uncov_fgColor -background $uncov_bgColor
+          .bot.right.nb.fsm.txt tag configure uncov_highlight -foreground $preferences(uncov_fgColor) -background $preferences(uncov_bgColor)
         }
         if {[llength $cmd_excl_hl] > 4} {
           eval $cmd_excl_hl
-          .bot.right.nb.fsm.txt tag configure excl_highlight  -foreground $cov_fgColor   -background $cov_bgColor
+          .bot.right.nb.fsm.txt tag configure excl_highlight  -foreground $preferences(cov_fgColor)   -background $preferences(cov_bgColor)
         }
         .bot.right.nb.fsm.txt tag configure uncov_button -underline true
         .bot.right.nb.fsm.txt tag bind uncov_enter <Enter> {
@@ -1058,8 +1053,7 @@ proc calc_and_display_assert_cov {} {
 
 proc display_assert_cov {} {
 
-  global uncov_fgColor uncov_bgColor
-  global cov_fgColor cov_bgColor
+  global preferences
   global curr_block fileContent
   global assert_summary_hit assert_summary_total uncov_type cov_type
   global covered_asserts uncovered_asserts
@@ -1126,11 +1120,11 @@ proc display_assert_cov {} {
         eval $cmd_leave
         if {[llength $cmd_uncov_hl] > 4} {
           eval $cmd_uncov_hl
-          .bot.right.nb.assert.txt tag configure uncov_highlight -foreground $uncov_fgColor -background $uncov_bgColor
+          .bot.right.nb.assert.txt tag configure uncov_highlight -foreground $preferences(uncov_fgColor) -background $preferences(uncov_bgColor)
         }
         if {[llength $cmd_excl_hl] > 4} {
           eval $cmd_excl_hl
-          .bot.right.nb.assert.txt tag configure excl_highlight -foreground $cov_fgColor -background $cov_bgColor
+          .bot.right.nb.assert.txt tag configure excl_highlight  -foreground $preferences(cov_fgColor)   -background $preferences(cov_bgColor)
         }
         .bot.right.nb.assert.txt tag configure uncov_button -underline true
         .bot.right.nb.assert.txt tag bind uncov_enter <Enter> {

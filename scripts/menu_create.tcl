@@ -17,7 +17,6 @@ set cdd_name           ""
 set uncov_type         1
 set cov_type           0
 set race_type          0
-set mod_inst_type      "Module"
 set last_mod_inst_type ""
 
 set file_types {
@@ -158,10 +157,10 @@ proc menu_create {} {
   set report [menu $mb.report -tearoff false]
   $mb add cascade -label "Report" -menu $report
 
-  global mod_inst_type cov_uncov_type cov_rb
+  global preferences cov_uncov_type cov_rb
 
-  $report add radiobutton -label "Module-based"   -variable mod_inst_type -value "Module" -underline 0
-  $report add radiobutton -label "Instance-based" -variable mod_inst_type -value "Instance" -underline 0
+  $report add radiobutton -label "Module-based"   -variable preferences(mod_inst_type) -value "Module" -underline 0
+  $report add radiobutton -label "Instance-based" -variable preferences(mod_inst_type) -value "Instance" -underline 0
   $report add separator
   $report add radiobutton -label "Line"   -variable cov_rb -value "Line"   -underline 0
   $report add radiobutton -label "Toggle" -variable cov_rb -value "Toggle" -underline 0
@@ -291,7 +290,7 @@ proc menu_create {} {
       .bot.right.nb.assert.txt yview moveto [lindex $text_y 0]
     }
   }
-  set mod_inst_type  "Module"
+  set preferences(mod_inst_type) "Module"
 
   # Configure the color options
   set m [menu $mb.view -tearoff false]

@@ -17,45 +17,49 @@
 # Manages the preferences window #
 ##################################
 
-# Global variables (eventually we will want to get/save these to a configuration file!)
-set main_geometry           ""
-set show_wizard             true
-set save_gui_on_exit        false
-set show_tooltips           true
-if {[tk windowingsystem] eq "aqua"} {
-  set ttk_style             "aqua"
-} else {
-  set ttk_style             "clam"
+# Preference variables
+array set preferences {
+  main_geometry           ""
+  show_wizard             true
+  save_gui_on_exit        false
+  show_tooltips           true
+  ttk_style               "clam"
+  enable_animations       true
+  saved_gui               0
+  uncov_fgColor           blue
+  uncov_bgColor           yellow
+  cov_fgColor             black
+  cov_bgColor             white
+  race_fgColor            white
+  race_bgColor            blue
+  line_low_limit          90
+  toggle_low_limit        90
+  memory_low_limit        90
+  comb_low_limit          90
+  fsm_low_limit           90
+  assert_low_limit        90
+  vlog_hl_mode            on
+  vlog_hl_ppkeyword_color ForestGreen
+  vlog_hl_keyword_color   purple
+  vlog_hl_comment_color   blue
+  vlog_hl_value_color     red
+  vlog_hl_string_color    red
+  vlog_hl_symbol_color    coral
+  mod_inst_tl_width       ""
+  mod_inst_tl_columns     {0 {Instance Name} 0 {Module Name} 0 {Hit} right 0 {Miss} right 0 {Excluded} right 0 {Total} right 0 {Hit %} right 0 {Index}}
+  mod_inst_tl_init_hidden {1 0 0 0 0 0 0}
+  rc_file_to_write        ""
+  hl_mode                 0
+  last_pref_index         -1
+  exclude_reasons_enabled 1
+  exclude_reasons         {}
+  exclude_resolution      "first"
 }
-set saved_gui               0
-set uncov_fgColor           blue
-set uncov_bgColor           yellow
-set cov_fgColor             black
-set cov_bgColor             white
-set race_fgColor            white
-set race_bgColor            blue
-set line_low_limit          90
-set toggle_low_limit        90
-set memory_low_limit        90
-set comb_low_limit          90
-set fsm_low_limit           90
-set assert_low_limit        90
-set vlog_hl_mode            on
-set vlog_hl_ppkeyword_color ForestGreen
-set vlog_hl_keyword_color   purple
-set vlog_hl_comment_color   blue
-set vlog_hl_value_color     red
-set vlog_hl_string_color    red
-set vlog_hl_symbol_color    coral
-set mod_inst_tl_width       ""
-set mod_inst_tl_columns     {0 {Instance Name} 0 {Module Name} 0 {Hit} right 0 {Miss} right 0 {Excluded} right 0 {Total} right 0 {Hit %} right 0 {Index}}
-set mod_inst_tl_init_hidden {1 0 0 0 0 0 0}
-set rc_file_to_write        ""
-set hl_mode                 0
-set last_pref_index         -1
-set exclude_reasons_enabled 1
-set exclude_reasons         {}
-set exclude_resolution      "first"
+
+# If we are on Mac OS X, set the default style to aqua
+if {[tk windowingsystem] eq "aqua"} {
+  set $preferences(ttk_style) "aqua"
+}
 
 # Create a list from 100 to 0
 for {set i 100} {$i >= 0} {incr i -1} {
@@ -64,18 +68,8 @@ for {set i 100} {$i >= 0} {incr i -1} {
 
 proc read_coveredrc {} {
 
-  global show_wizard save_gui_on_exit show_tooltips ttk_style
-  global uncov_fgColor uncov_bgColor
-  global cov_fgColor   cov_bgColor
-  global race_fgColor  race_bgColor
-  global line_low_limit toggle_low_limit memory_low_limit comb_low_limit fsm_low_limit assert_low_limit
-  global vlog_hl_mode vlog_hl_ppkeyword_color vlog_hl_keyword_color
-  global vlog_hl_comment_color vlog_hl_string_color vlog_hl_value_color
-  global vlog_hl_symbol_color
+  global preferences
   global HOME USER_HOME rc_file_to_write
-  global main_geometry toggle_geometry memory_geometry comb_geometry fsm_geometry assert_geometry
-  global mod_inst_tl_columns mod_inst_type mod_inst_tl_init_hidden mod_inst_tl_width
-  global exclude_reasons_enabled exclude_reasons exclude_resolution
 
   # Find the correct configuration file to read and eventually write
   if {[file exists ".coveredrc"] == 1} {
@@ -109,76 +103,78 @@ proc read_coveredrc {} {
         set value      [string trim [lindex $line_elems 1]]
 
         if {$field == "ShowWizardOnStartup"} {
-          set show_wizard $value
+          set preferences(show_wizard) $value
         } elseif {$field == "SaveGuiOnExit"} {
-          set save_gui_on_exit $value
+          set preferences(save_gui_on_exit) $value
         } elseif {$field == "ShowTooltips"} {
-          set show_tooltips $value
+          set preferences(show_tooltips) $value
         } elseif {$field == "TtkStyle"} {
-          set ttk_style $value
+          set preferences(ttk_style) $value
+        } elseif {$field == "EnableAnimations"} {
+          set preferences(enable_animations) $value
         } elseif {$field == "UncoveredForegroundColor"} {
-          set uncov_fgColor $value
+          set preferences(uncov_fgColor) $value
         } elseif {$field == "UncoveredBackgroundColor"} {
-          set uncov_bgColor $value
+          set preferences(uncov_bgColor) $value
         } elseif {$field == "CoveredForegroundColor"} {
-          set cov_fgColor $value
+          set preferences(cov_fgColor) $value
         } elseif {$field == "CoveredBackgroundColor"} {
-          set cov_bgColor $value
+          set preferences(cov_bgColor) $value
         } elseif {$field == "RaceConditionForegroundColor"} {
-          set race_fgColor $value
+          set preferences(race_fgColor) $value
         } elseif {$field == "RaceConditionBackgroundColor"} {
-          set race_bgColor $value
+          set preferences(race_bgColor) $value
         } elseif {$field == "AcceptableLinePercentage"} {
-          set line_low_limit $value
+          set preferences(line_low_limit) $value
         } elseif {$field == "AcceptableTogglePercentage"} {
-          set toggle_low_limit $value
+          set preferences(toggle_low_limit) $value
         } elseif {$field == "AcceptableMemoryPercentage"} {
-          set memory_low_limit $value
+          set preferences(memory_low_limit) $value
         } elseif {$field == "AcceptableCombinationalLogicPercentage"} {
-          set comb_low_limit $value
+          set preferences(comb_low_limit) $value
         } elseif {$field == "AcceptableFsmPercentage"} {
-          set fsm_low_limit $value
+          set preferences(fsm_low_limit) $value
         } elseif {$field == "AcceptableAssertionPercentage"} {
-          set assert_low_limit $value
+          set preferences(assert_low_limit) $value
         } elseif {$field == "HighlightingMode"} {
-          set vlog_hl_mode $value
+          set preferences(vlog_hl_mode) $value
         } elseif {$field == "HighlightPreprocessorKeywordColor"} {
-          set vlog_hl_ppkeyword_color $value
+          set preferences(vlog_hl_ppkeyword_color) $value
         } elseif {$field == "HighlightKeywordColor"} {
-          set vlog_hl_keyword_color $value
+          set preferences(vlog_hl_keyword_color) $value
         } elseif {$field == "HighlightCommentColor"} {
-          set vlog_hl_comment_color $value
+          set preferences(vlog_hl_comment_color) $value
         } elseif {$field == "HighlightValueColor"} {
-          set vlog_hl_value_color $value
+          set preferences(vlog_hl_value_color) $value
         } elseif {$field == "HighlightStringColor"} {
-          set vlog_hl_string_color $value
+          set preferences(vlog_hl_string_color) $value
         } elseif {$field == "HighlightSymbolColor"} {
-          set vlog_hl_symbol_color $value
+          set preferences(vlog_hl_symbol_color) $value
         } elseif {$field == "EnableExclusionReasons"} {
-          set exclude_reasons_enabled $value
+          set preferences(exclude_reasons_enabled) $value
         } elseif {$field == "ExclusionReasons"} {
-          set exclude_reasons [split $value :]
+          set preferences(exclude_reasons) [split $value :]
         } elseif {$field == "ExclusionReasonConflictResolution"} {
-          set exclude_resolution $value
+          set preferences(exclude_resolution) $value
 
         # The following are GUI state-saved information -- only use this information if SaveGuiOnExit was set to true
-        } elseif {$save_gui_on_exit == "true"} {
+        } elseif {$preferences(save_gui_on_exit) == "true"} {
           if {$field == "MainWindowGeometry"} {
-            set main_geometry $value
+            set preferences(main_geometry) $value
           } elseif {$field == "ToggleWindowGeometry"} {
-            set toggle_geometry $value
+            set preferences(toggle_geometry) $value
           } elseif {$field == "MemoryWindowGeometry"} {
-            set memory_geometry $value
+            set preferences(memory_geometry) $value
           } elseif {$field == "CombWindowGeometry"} {
-            set comb_geometry $value
+            set preferences(comb_geometry) $value
           } elseif {$field == "FsmWindowGeometry"} {
-            set fsm_geometry $value
+            set preferences(fsm_geometry) $value
           } elseif {$field == "AssertWindowGeometry"} {
-            set assert_geometry $value
+            set preferences(assert_geometry) $value
           } elseif {$field == "ModuleInstanceType"} {
-            set mod_inst_type $value
+            set preferences(mod_inst_type) $value
           } elseif {$field == "ModuleInstanceTableListWidth"} {
-            set mod_inst_tl_width $value
+            set preferences(mod_inst_tl_width) $value
           }
         }
 
@@ -194,18 +190,8 @@ proc read_coveredrc {} {
 
 proc write_coveredrc {exiting} {
 
-  global show_wizard save_gui_on_exit show_tooltips ttk_style
-  global uncov_fgColor uncov_bgColor
-  global cov_fgColor   cov_bgColor
-  global race_fgColor  race_bgColor
-  global line_low_limit toggle_low_limit memory_low_limit comb_low_limit fsm_low_limit assert_low_limit
-  global vlog_hl_mode vlog_hl_ppkeyword_color vlog_hl_keyword_color
-  global vlog_hl_comment_color vlog_hl_string_color vlog_hl_value_color
-  global vlog_hl_symbol_color
+  global preferences
   global rc_file_to_write
-  global mod_inst_tl_columns mod_inst_type tableColHide
-  global main_geometry toggle_geometry memory_geometry comb_geometry fsm_geometry assert_geometry
-  global exclude_reasons_enabled exclude_reasons exclude_resolution
 
   if {$rc_file_to_write != ""} {
 
@@ -220,150 +206,156 @@ proc write_coveredrc {exiting} {
     puts $rc "# If set to true, causes the wizard window to be displayed on GUI startup."
     puts $rc "# If set to false, the wizard window is suppressed.\n"
 
-    puts $rc "ShowWizardOnStartup = $show_wizard\n"
+    puts $rc "ShowWizardOnStartup = $preferences(show_wizard)\n"
 
     puts $rc "# If set to true, causes various GUI elements to be saved when exiting the application"
     puts $rc "# which will be used when the application is restarted at a later time.  Set to false"
     puts $rc "# to cause the Covered GUI to use the default values.\n"
 
-    puts $rc "SaveGuiOnExit = $save_gui_on_exit\n"
+    puts $rc "SaveGuiOnExit = $preferences(save_gui_on_exit)\n"
 
     puts $rc "# If set to true, causes tooltips to be used for many widgets within the GUI.  If set"
     puts $rc "# to false, causes all tooltip support to be disabled."
 
-    puts $rc "ShowTooltips = $show_tooltips\n"
+    puts $rc "ShowTooltips = $preferences(show_tooltips)\n"
 
     puts $rc "# Specifies the ttk style type to use for the GUI.\n"
 
-    puts $rc "TtkStyle = $ttk_style\n"
+    puts $rc "TtkStyle = $preferences(ttk_style)\n"
+
+    puts $rc "# Is set to true, enables a few of Covered's GUI animations.  If these animations"
+    puts $rc "# don't work well or get in the way of your work, simply set this preference option"
+    puts $rc "# to value of false.\n"
+
+    puts $rc "EnableAnimations = $preferences(enable_animations)\n"
 
     puts $rc "# Sets the foreground color for all source code that is found"
     puts $rc "# to be uncovered during simulation.  The value can be any legal color"
     puts $rc "# value accepted by Tcl.\n"
 
-    puts $rc "UncoveredForegroundColor = $uncov_fgColor\n"
+    puts $rc "UncoveredForegroundColor = $preferences(uncov_fgColor)\n"
 
     puts $rc "# Sets the background color for all source code that is found"
     puts $rc "# to be uncovered during simulation.  The value can be any legal color"
     puts $rc "# value accepted by Tcl.\n"
 
-    puts $rc "UncoveredBackgroundColor = $uncov_bgColor\n"
+    puts $rc "UncoveredBackgroundColor = $preferences(uncov_bgColor)\n"
 
     puts $rc "# Sets the foreground color for all source code that is found"
     puts $rc "# to be covered during simulation.  The value can be any legal color value"
     puts $rc "# accepted by Tcl.\n"
 
-    puts $rc "CoveredForegroundColor = $cov_fgColor\n"
+    puts $rc "CoveredForegroundColor = $preferences(cov_fgColor)\n"
 
     puts $rc "# Sets the background color for all source code that is found"
     puts $rc "# to be covered during simulation.  The value can be any legal color value."
     puts $rc "# accepted by Tcl.\n"
 
-    puts $rc "CoveredBackgroundColor = $cov_bgColor\n"
+    puts $rc "CoveredBackgroundColor = $preferences(cov_bgColor)\n"
 
     puts $rc "# Sets the foreground color for all source code that has been detected as"
     puts $rc "# containing a race condition situation.  This code is not analyzed by Covered."
     puts $rc "# The value can be any legal color value accepted by Tcl.\n"
 
-    puts $rc "RaceConditionForegroundColor = $race_fgColor\n"
+    puts $rc "RaceConditionForegroundColor = $preferences(race_fgColor)\n"
 
     puts $rc "# Sets the background color for all source code that has been detected as"
     puts $rc "# containing a race condition situation.  This code is not analyzed by Covered."
     puts $rc "# The value can be any legal color value accepted by Tcl.\n"
 
-    puts $rc "RaceConditionBackgroundColor = $race_bgColor\n"
+    puts $rc "RaceConditionBackgroundColor = $preferences(race_bgColor)\n"
 
     puts $rc "# Causes the summary color for a module/instance that has achieved a line"
     puts $rc "# coverage percentage greater than or equal to this value (but not 100%) to be"
     puts $rc "# colored \"yellow\", indicating that the line coverage can possibly be deemed"
     puts $rc "# \"good enough\".  This value must be in the range of 0 - 100.\n"
 
-    puts $rc "AcceptableLinePercentage = $line_low_limit\n"
+    puts $rc "AcceptableLinePercentage = $preferences(line_low_limit)\n"
 
     puts $rc "# Causes the summary color for a module/instance that has achieved a toggle"
     puts $rc "# coverage percentage greater than or equal to this value (but not 100%) to be"
     puts $rc "# colored \"yellow\", indicating that the toggle coverage can possibly be deemed"
     puts $rc "# \"good enough\".  This value must be in the range of 0 - 100.\n"
 
-    puts $rc "AcceptableTogglePercentage = $toggle_low_limit\n"
+    puts $rc "AcceptableTogglePercentage = $preferences(toggle_low_limit)\n"
 
     puts $rc "# Causes the summary color for a module/instance that has achieved a memory"
     puts $rc "# coverage percentage greater than or equal to this value (but not 100%) to be"
     puts $rc "# colored \"yellow\", indicating that the memory coverage can possibly be deemed"
     puts $rc "# \"good enough\".  This value must be in the range of 0 - 100.\n"
 
-    puts $rc "AcceptableMemoryPercentage = $memory_low_limit\n"
+    puts $rc "AcceptableMemoryPercentage = $preferences(memory_low_limit)\n"
 
     puts $rc "# Causes the summary color for a module/instance that has achieved a combinational"
     puts $rc "# logic coverage percentage greater than or equal to this value (but not 100%) to be"
     puts $rc "# colored \"yellow\", indicating that the combinational logic coverage can possibly be"
     puts $rc "# deemed \"good enough\".  This value must be in the range of 0 - 100.\n"
 
-    puts $rc "AcceptableCombinationalLogicPercentage = $comb_low_limit\n"
+    puts $rc "AcceptableCombinationalLogicPercentage = $preferences(comb_low_limit)\n"
 
     puts $rc "# Causes the summary color for a module/instance that has achieved an FSM state/arc"
     puts $rc "# coverage percentage greater than or equal to this value (but not 100%) to be"
     puts $rc "# colored \"yellow\", indicating that the FSM coverage can possibly be deemed"
     puts $rc "# \"good enough\".  This value must be in the range of 0 - 100.\n"
 
-    puts $rc "AcceptableFsmPercentage = $fsm_low_limit\n"
+    puts $rc "AcceptableFsmPercentage = $preferences(fsm_low_limit)\n"
 
     puts $rc "# Causes the summary color for a module/instance that has achieved an assertion"
     puts $rc "# coverage percentage greater than or equal to this value (but not 100%) to be"
     puts $rc "# colored \"yellow\", indicating that the assertion coverage can possibly be deemed"
     puts $rc "# \"good enough\".  This value must be in the range of 0 - 100.\n"
 
-    puts $rc "AcceptableAssertionPercentage = $assert_low_limit\n"
+    puts $rc "AcceptableAssertionPercentage = $preferences(assert_low_limit)\n"
 
     puts $rc "# Causes syntax highlighting to be turned on or off.  This value should either be"
     puts $rc "# 'on' or 'off'.\n"
 
-    puts $rc "HighlightingMode = $vlog_hl_mode\n"
+    puts $rc "HighlightingMode = $preferences(vlog_hl_mode)\n"
 
     puts $rc "# When the syntax highlighting mode is on, causes the preprocessor directive keywords"
     puts $rc "# to be highlighted with the specified color.  The value may be any color value that"
     puts $rc "# is acceptable to Tk.\n"
 
-    puts $rc "HighlightPreprocessorKeywordColor = $vlog_hl_ppkeyword_color\n"
+    puts $rc "HighlightPreprocessorKeywordColor = $preferences(vlog_hl_ppkeyword_color)\n"
 
     puts $rc "# When the syntax highlighting mode is on, causes the Verilog keywords to be highlighted"
     puts $rc "# with the specified color.  The value may be any color value that is acceptable to Tk.\n"
 
-    puts $rc "HighlightKeywordColor = $vlog_hl_keyword_color\n"
+    puts $rc "HighlightKeywordColor = $preferences(vlog_hl_keyword_color)\n"
 
     puts $rc "# When the syntax highlighting mode is on, causes any single or multi-line comments to"
     puts $rc "# be highlighted with the specified color.  The value may be any color value that is"
     puts $rc "# acceptable to Tk.\n"
 
-    puts $rc "HighlightCommentColor = $vlog_hl_comment_color\n"
+    puts $rc "HighlightCommentColor = $preferences(vlog_hl_comment_color)\n"
 
     puts $rc "# When the syntax highlighting mode is on, causes any defined, binary, octal, decimal or"
     puts $rc "# hexidecimal value to be highlighted with the specified color.  The value may be any"
     puts $rc "# color value that is acceptable to Tk.\n"
 
-    puts $rc "HighlightValueColor = $vlog_hl_value_color\n"
+    puts $rc "HighlightValueColor = $preferences(vlog_hl_value_color)\n"
 
     puts $rc "# When the syntax highlighting mode is on, causes any quoted string to be highlighted with"
     puts $rc "# the specified color.  The value may be any color value that is acceptable to Tk.\n"
 
-    puts $rc "HighlightStringColor = $vlog_hl_string_color\n"
+    puts $rc "HighlightStringColor = $preferences(vlog_hl_string_color)\n"
 
     puts $rc "# When the syntax highlighting mode is on, causes any Verilog symbol to be highlighted with"
     puts $rc "# the specified color.  The value may be any color value that is acceptable to Tk.\n"
 
-    puts $rc "HighlightSymbolColor = $vlog_hl_symbol_color\n"
+    puts $rc "HighlightSymbolColor = $preferences(vlog_hl_symbol_color)\n"
 
     puts $rc "# If this value is set to true, a popup dialog box will be created whenever the user excludes a coverage"
     puts $rc "# point, allowing for the creation of a reason for the exclusion.  If this value is set to false, no popup"
     puts $rc "# box will be displayed when a coverage point is marked for exclusion.  The exclusion reason information"
     puts $rc "# is saved to the CDD (if specified from the GUI).\n"
 
-    puts $rc "EnableExclusionReasons = $exclude_reasons_enabled\n"
+    puts $rc "EnableExclusionReasons = $preferences(exclude_reasons_enabled)\n"
 
     puts $rc "# This string specifies default reasons for exclusion.  These reasons may be used wherever"
     puts $rc "# a coverage point is excluded (or the user may specify a unique reason).\n"
 
-    puts $rc "ExclusionReasons = [join $exclude_reasons :]\n"
+    puts $rc "ExclusionReasons = [join $preferences(exclude_reasons) :]\n"
 
     puts $rc "# This value specifies how to handle exclusion reason conflicts that arise when two or more CDD files"
     puts $rc "# are merged that contain mismatching exclusion reasons for identical coverage points.  The valid"
@@ -374,19 +366,19 @@ proc write_coveredrc {exiting} {
     puts $rc "#   new   - Use the newest exclusion reason specified"
     puts $rc "#   old   - Use the oldest exclusion reason specified\n"
 
-    puts $rc "ExclusionReasonConflictResolution = $exclude_resolution\n"
+    puts $rc "ExclusionReasonConflictResolution = $preferences(exclude_resolution)\n"
 
     puts $rc "# THE FOLLOWING LINES ARE FOR STORING GUI STATE INFORMATION -- DO NOT MODIFY LINES BELOW THIS COMMENT!\n"
 
     if {$save_gui_on_exit == true && $exiting == 1} {
 
       puts $rc "MainWindowGeometry                = [winfo geometry .]"
-      puts $rc "ToggleWindowGeometry              = $toggle_geometry"
-      puts $rc "MemoryWindowGeometry              = $memory_geometry"
-      puts $rc "CombWindowGeometry                = $comb_geometry"
-      puts $rc "FsmWindowGeometry                 = $fsm_geometry"
-      puts $rc "AssertWindowGeometry              = $assert_geometry"
-      puts $rc "ModuleInstanceType                = $mod_inst_type"
+      puts $rc "ToggleWindowGeometry              = $preferences(toggle_geometry)"
+      puts $rc "MemoryWindowGeometry              = $preferences(memory_geometry)"
+      puts $rc "CombWindowGeometry                = $preferences(comb_geometry)"
+      puts $rc "FsmWindowGeometry                 = $preferences(fsm_geometry)"
+      puts $rc "AssertWindowGeometry              = $preferences(assert_geometry)"
+      puts $rc "ModuleInstanceType                = $preferences(mod_inst_type)"
       puts $rc "ModuleInstanceTableListWidth      = [winfo width .bot.left]"
 
     }
@@ -400,6 +392,7 @@ proc write_coveredrc {exiting} {
 
 proc create_preferences {start_index} {
 
+  global preferences tmp_preferences
   global show_wizard      tmp_show_wizard
   global save_gui_on_exit tmp_save_gui_on_exit
   global show_tooltips    tmp_show_tooltips
@@ -429,32 +422,7 @@ proc create_preferences {start_index} {
   if {[winfo exists .prefwin] == 0} {
 
     # Initialize all temporary preference values
-    set tmp_show_wizard             $show_wizard
-    set tmp_save_gui_on_exit        $save_gui_on_exit
-    set tmp_show_tooltips           $show_tooltips
-    set tmp_ttk_style               $ttk_style
-    set tmp_cov_fgColor             $cov_fgColor
-    set tmp_cov_bgColor             $cov_bgColor
-    set tmp_uncov_fgColor           $uncov_fgColor
-    set tmp_uncov_bgColor           $uncov_bgColor
-    set tmp_race_fgColor            $race_fgColor
-    set tmp_race_bgColor            $race_bgColor
-    set tmp_line_low_limit          $line_low_limit
-    set tmp_toggle_low_limit        $toggle_low_limit
-    set tmp_memory_low_limit        $memory_low_limit
-    set tmp_comb_low_limit          $comb_low_limit
-    set tmp_fsm_low_limit           $fsm_low_limit
-    set tmp_assert_low_limit        $assert_low_limit
-    set tmp_vlog_hl_mode            $vlog_hl_mode
-    set tmp_vlog_hl_ppkeyword_color $vlog_hl_ppkeyword_color
-    set tmp_vlog_hl_keyword_color   $vlog_hl_keyword_color
-    set tmp_vlog_hl_comment_color   $vlog_hl_comment_color
-    set tmp_vlog_hl_value_color     $vlog_hl_value_color
-    set tmp_vlog_hl_string_color    $vlog_hl_string_color
-    set tmp_vlog_hl_symbol_color    $vlog_hl_symbol_color
-    set tmp_exclude_reasons_enabled $exclude_reasons_enabled
-    set tmp_exclude_reasons         $exclude_reasons
-    set tmp_exclude_resolution      $exclude_resolution
+    array set tmp_preferences [array get preferences]
 
     # Specify that there was no last index selected
     set last_pref_index -1

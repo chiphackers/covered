@@ -183,7 +183,7 @@ proc summary_calc_color {percent low_limit} {
 
 proc calculate_summary {} {
 
-  global mod_inst_type block_list cov_rb
+  global block_list cov_rb
   global line_summary_hit line_summary_excluded line_summary_total line_low_limit
   global toggle_summary_hit toggle_summary_excluded toggle_summary_total toggle_low_limit
   global memory_summary_hit memory_summary_excluded memory_summary_total memory_low_limit
