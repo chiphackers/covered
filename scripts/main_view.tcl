@@ -231,15 +231,15 @@ proc main_view {} {
   set_balloon .bot.left.f.mi "Selects the coverage accumulated by module or instance"
 
   # Create summary panel switcher button
-  ttk::button .bot.left.f.ps -image $bm_left -command {
+  ttk::button .bot.left.f.ps -image $bm_left -state disabled -command {
     if {[.bot.left.f.ps cget -image] == $bm_left} {
       .bot.left.f.ps configure -image $bm_right
-      set previous_sashpos [.bot sashpos 0]
       .bot.left.tree configure -displaycolumns [list $cov_rb]
-      .bot sashpos 0 [expr [.bot.left.tree column #0 -width] + [.bot.left.tree column $cov_rb -width]]
+      .bot.left.tree see $curr_block
+      .bot sashpos 0 [expr [.bot.left.tree column #0 -width] + [.bot.left.tree column $cov_rb -width] + [winfo width .bot.left.vb]]
     } else {
       .bot.left.f.ps configure -image $bm_left
-      .bot sashpos 0 $previous_sashpos
+      .bot sashpos 0 [.bot cget -width]
       .bot.left.tree configure -displaycolumns #all
     }
   }
@@ -398,7 +398,7 @@ proc populate_treeview {} {
 
 proc treelabel_selected {w col block} {
 
-  global cov_rb curr_block bm_right previous_sashpos
+  global cov_rb curr_block bm_right
 
   # Update the global variables
   set cov_rb     $col
@@ -411,8 +411,11 @@ proc treelabel_selected {w col block} {
   $w configure -displaycolumns [list $col]
 
   # Slide the panedwindow sash to hug the last columnconfigure
-  set previous_sashpos [.bot sashpos 0]
-  .bot sashpos 0 [expr [$w column #0 -width] + [$w column $col -width]] 
+  if {[.bot.left.f.ps cget -image] != $bm_right} {
+    .bot sashpos 0 [expr [$w column #0 -width] + [$w column $col -width] + [winfo width .bot.left.vb]]
+  } else {
+    .bot.left.f.ps configure -state normal
+  }
 
   # Change the button direction
   .bot.left.f.ps configure -image $bm_right
