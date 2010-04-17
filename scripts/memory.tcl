@@ -53,8 +53,7 @@ proc create_memory_window {signal} {
   global mem_name prev_memory_index next_memory_index
   global curr_block
   global curr_memory_ptr curr_mem_index
-  global uncov_fgColor uncov_bgColor
-  global cov_fgColor cov_bgColor
+  global preferences
   global HOME
   global memory_geometry memory_gui_saved
 
@@ -81,7 +80,7 @@ proc create_memory_window {signal} {
     # Create exclude checkbutton
     ttk::checkbutton .memwin.f.fae.excl -text "Excluded" -variable memory_excluded -command {
       set memory_reason "" 
-      if {$exclude_reasons_enabled == 1 && $memory_excluded == 1} {
+      if {$preferences(exclude_reasons_enabled) == 1 && $memory_excluded == 1} {
         set memory_reason [get_exclude_reason .memwin]
       }
       tcl_func_set_memory_exclude $curr_block $mem_name $memory_excluded $memory_reason
@@ -263,8 +262,8 @@ proc create_memory_window {signal} {
   }
 
   # Configure tags
-  .memwin.f.fae.t tag configure mem_ubutton -background $uncov_bgColor -foreground $uncov_fgColor
-  .memwin.f.fae.t tag configure mem_cbutton -background $cov_bgColor   -foreground $cov_fgColor
+  .memwin.f.fae.t tag configure mem_ubutton -background $preferences(uncov_bgColor) -foreground $preferences(uncov_fgColor)
+  .memwin.f.fae.t tag configure mem_cbutton -background $preferences(cov_bgColor)   -foreground $preferences(cov_fgColor)
 
   # Bind tags
   .memwin.f.fae.t tag bind mem_enter <Enter> {
@@ -278,7 +277,7 @@ proc create_memory_window {signal} {
     set mem_curr_range [.memwin.f.fae.t tag prevrange mem_enter "current + 1 chars"]
     .memwin.f.fae.t tag delete mem_select
     .memwin.f.fae.t tag add mem_select [lindex $mem_curr_range 0] [lindex $mem_curr_range 1]
-    .memwin.f.fae.t tag configure mem_select -background $uncov_fgColor -foreground $uncov_bgColor
+    .memwin.f.fae.t tag configure mem_select -background $preferences(uncov_fgColor) -foreground $preferences(uncov_bgColor)
     set curr_mem_index [expr [lsearch [.memwin.f.fae.t tag ranges mem_enter] [lindex $mem_curr_range 0]] / 2]
     populate_memory_entry_frame $curr_mem_index
   }
@@ -286,7 +285,7 @@ proc create_memory_window {signal} {
     set mem_curr_range [.memwin.f.fae.t tag prevrange mem_enter "current + 1 chars"]
     .memwin.f.fae.t tag delete mem_select
     .memwin.f.fae.t tag add mem_select [lindex $mem_curr_range 0] [lindex $mem_curr_range 1]
-    .memwin.f.fae.t tag configure mem_select -background $cov_fgColor -foreground $cov_bgColor
+    .memwin.f.fae.t tag configure mem_select -background $preferences(cov_fgColor) -foreground $preferences(cov_bgColor)
     set curr_mem_index [expr [lsearch [.memwin.f.fae.t tag ranges mem_enter] [lindex $mem_curr_range 0]] / 2]
     populate_memory_entry_frame $curr_mem_index
   }
@@ -311,8 +310,7 @@ proc populate_memory_entry_frame {sel_mem_index} {
 
   global memory_array memory_pdim memory_udim memory_pdim mem_name
   global memory_msb memory_lsb mem_curr_entry memory_excluded
-  global uncov_bgColor uncov_fgColor
-  global cov_bgColor cov_fgColor
+  global preferences
   global memory_pdim_array
 
   # Get memory entry that corresponds to the given memory index
@@ -357,22 +355,22 @@ proc populate_memory_entry_frame {sel_mem_index} {
   if {[lindex $entry 2] == 0} {
     .memwin.f.ft.l_wv configure -text "No"
     if {$memory_excluded == 0} {
-      .memwin.f.ft.l_wv configure -background $uncov_bgColor -foreground $uncov_fgColor
+      .memwin.f.ft.l_wv configure -background $preferences(uncov_bgColor) -foreground $preferences(uncov_fgColor)
     } else {
-      .memwin.f.ft.l_wv configure -background $cov_bgColor -foreground $uncov_fgColor
+      .memwin.f.ft.l_wv configure -background $preferences(cov_bgColor)   -foreground $preferences(uncov_fgColor)
     }
   } else {
-    .memwin.f.ft.l_wv configure -text "Yes" -background $cov_bgColor   -foreground $cov_fgColor
+    .memwin.f.ft.l_wv configure -text "Yes" -background $preferences(cov_bgColor) -foreground $preferences(cov_fgColor)
   }
   if {[lindex $entry 3] == 0} {
     .memwin.f.ft.l_rv configure -text "No"
     if {$memory_excluded == 0} {
-      .memwin.f.ft.l_rv configure -background $uncov_bgColor -foreground $uncov_fgColor
+      .memwin.f.ft.l_rv configure -background $preferences(uncov_bgColor) -foreground $preferences(uncov_fgColor)
     } else {
-      .memwin.f.ft.l_rv configure -background $cov_bgColor   -foreground $cov_fgColor
+      .memwin.f.ft.l_rv configure -background $preferences(cov_bgColor)   -foreground $preferences(cov_fgColor)
     }
   } else {
-    .memwin.f.ft.l_rv configure -text "Yes" -background $cov_bgColor   -foreground $cov_fgColor
+    .memwin.f.ft.l_rv configure -text "Yes" -background $preferences(cov_bgColor) -foreground $preferences(cov_fgColor)
   }
 
   # Create leave bindings for textboxes

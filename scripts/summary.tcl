@@ -14,13 +14,7 @@
 ################################################################################################
 
 ;# Global variables
-set line_low_limit   90
-set toggle_low_limit 90
-set memory_low_limit 90
-set comb_low_limit   90
-set fsm_low_limit    90
-set assert_low_limit 90
-set summary_sort     "none"
+set summary_sort "none"
 
 proc summary_yset {args} {
 
@@ -184,12 +178,13 @@ proc summary_calc_color {percent low_limit} {
 proc calculate_summary {} {
 
   global block_list cov_rb
-  global line_summary_hit line_summary_excluded line_summary_total line_low_limit
-  global toggle_summary_hit toggle_summary_excluded toggle_summary_total toggle_low_limit
-  global memory_summary_hit memory_summary_excluded memory_summary_total memory_low_limit
-  global comb_summary_hit comb_summary_excluded comb_summary_total comb_low_limit
-  global fsm_summary_hit fsm_summary_excluded fsm_summary_total fsm_low_limit
-  global assert_summary_hit assert_summary_excluded assert_summary_total assert_low_limit
+  global preferences
+  global line_summary_hit line_summary_excluded line_summary_total
+  global toggle_summary_hit toggle_summary_excluded toggle_summary_total
+  global memory_summary_hit memory_summary_excluded memory_summary_total
+  global comb_summary_hit comb_summary_excluded comb_summary_total
+  global fsm_summary_hit fsm_summary_excluded fsm_summary_total
+  global assert_summary_hit assert_summary_excluded assert_summary_total
   global summary_list summary_sort
 
   set max_slen 0
@@ -205,7 +200,7 @@ proc calculate_summary {} {
     set summary_list($block,line_excluded)   $line_summary_excluded
     set summary_list($block,line_total)      $line_summary_total
     set summary_list($block,line_percent)    [summary_calc_percent $line_summary_hit $line_summary_total]
-    set summary_list($block,line_color)      [summary_calc_color   $summary_list($block,line_percent) $line_low_limit]
+    set summary_list($block,line_color)      [summary_calc_color   $summary_list($block,line_percent) $preferences(line_low_limit)]
 
     if {[set slen [string length "$line_summary_total"]] > $max_slen} {
       set max_slen $slen
@@ -216,7 +211,7 @@ proc calculate_summary {} {
     set summary_list($block,toggle_excluded) $toggle_summary_excluded
     set summary_list($block,toggle_total)    $toggle_summary_total
     set summary_list($block,toggle_percent)  [summary_calc_percent $toggle_summary_hit $toggle_summary_total]
-    set summary_list($block,toggle_color)    [summary_calc_color   $summary_list($block,toggle_percent) $toggle_low_limit]
+    set summary_list($block,toggle_color)    [summary_calc_color   $summary_list($block,toggle_percent) $preferences(toggle_low_limit)]
 
     if {[set slen [string length "$toggle_summary_total"]] > $max_slen} {
       set max_slen $slen
@@ -227,7 +222,7 @@ proc calculate_summary {} {
     set summary_list($block,memory_excluded) $memory_summary_excluded
     set summary_list($block,memory_total)    $memory_summary_total
     set summary_list($block,memory_percent)  [summary_calc_percent $memory_summary_hit $memory_summary_total]
-    set summary_list($block,memory_color)    [summary_calc_color   $summary_list($block,memory_percent) $memory_low_limit]
+    set summary_list($block,memory_color)    [summary_calc_color   $summary_list($block,memory_percent) $preferences(memory_low_limit)]
 
     if {[set slen [string length "$memory_summary_total"]] > $max_slen} {
       set max_slen $slen
@@ -238,7 +233,7 @@ proc calculate_summary {} {
     set summary_list($block,comb_excluded)   $comb_summary_excluded
     set summary_list($block,comb_total)      $comb_summary_total
     set summary_list($block,comb_percent)    [summary_calc_percent $comb_summary_hit $comb_summary_total]
-    set summary_list($block,comb_color)      [summary_calc_color   $summary_list($block,comb_percent) $comb_low_limit]
+    set summary_list($block,comb_color)      [summary_calc_color   $summary_list($block,comb_percent) $preferences(comb_low_limit)]
 
     if {[set slen [string length "$memory_summary_total"]] > $max_slen} {
       set max_slen $slen
@@ -249,7 +244,7 @@ proc calculate_summary {} {
     set summary_list($block,fsm_excluded)    $fsm_summary_excluded
     set summary_list($block,fsm_total)       $fsm_summary_total
     set summary_list($block,fsm_percent)     [summary_calc_percent $fsm_summary_hit $fsm_summary_total]
-    set summary_list($block,fsm_color)       [summary_calc_color   $summary_list($block,fsm_percent) $fsm_low_limit]
+    set summary_list($block,fsm_color)       [summary_calc_color   $summary_list($block,fsm_percent) $preferences(fsm_low_limit)]
 
     if {[set slen [string length "$fsm_summary_total"]] > $max_slen} {
       set max_slen $slen
@@ -260,7 +255,7 @@ proc calculate_summary {} {
     set summary_list($block,assert_excluded) $assert_summary_excluded
     set summary_list($block,assert_total)    $assert_summary_total
     set summary_list($block,assert_percent)  [summary_calc_percent $assert_summary_hit $assert_summary_total]
-    set summary_list($block,assert_color)    [summary_calc_color   $summary_list($block,assert_percent) $assert_low_limit]
+    set summary_list($block,assert_color)    [summary_calc_color   $summary_list($block,assert_percent) $preferences(assert_low_limit)]
 
     if {[set slen [string length "$assert_summary_total"]] > $max_slen} {
       set max_slen $slen

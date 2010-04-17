@@ -398,7 +398,7 @@ proc open_files {fnames} {
 
   global file_types cdd_name fname open_type
   global win_cursor txt_cursor e_cursor
-  global exclude_resolution
+  global preferences
 
   # Get all cursor values from various widgets (so we can properly restore them after the open)
   set win_cursor   [. cget -cursor]
@@ -454,7 +454,7 @@ proc open_files {fnames} {
     } else {
 
       after 100 {
-        tcl_func_merge_cdd $fname $exclude_resolution
+        tcl_func_merge_cdd $fname $preferences(exclude_resolution)
         .menubar.file entryconfigure 3 -state normal
         populate_treeview
       }

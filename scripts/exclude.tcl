@@ -19,7 +19,7 @@ set more_up_img [image create bitmap -data "#define up_width 22\n#define up_heig
 proc get_exclude_reason {w} {
 
   global more_dn_img more_up_img
-  global exclude_reasons exclude_reason
+  global preferences exclude_reason
   global tablelistopts
 
   # Clear the exclusion reason string
@@ -107,7 +107,7 @@ proc get_exclude_reason {w} {
   pack .exclwin.pw -fill both -expand yes
 
   # Populate the hidden listbox
-  foreach reason $exclude_reasons {
+  foreach reason $preferences(exclude_reasons) {
     .exclwin.pw.bot.l.tl insert end $reason
   }
 
@@ -128,10 +128,10 @@ proc get_exclude_reason {w} {
 
 proc show_exclude_reason_balloon {w excluded reason} {
 
-  global cov_bgColor cov_fgColor
+  global preferences
 
   if {$excluded == 1 && $reason != ""} {
-    balloon::show $w "Exclude Reason: $reason" $cov_bgColor $cov_fgColor
+    balloon::show $w "Exclude Reason: $reason" $preferences(cov_bgColor) $preferences(cov_fgColor)
   }
 
 }

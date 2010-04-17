@@ -48,7 +48,7 @@ proc create_toggle_window {signal} {
   global sig_name prev_toggle_index next_toggle_index toggle_excluded toggle_reason
   global toggle_msb toggle_lsb
   global curr_block
-  global curr_toggle_ptr HOME
+  global curr_toggle_ptr HOME preferences
   global toggle_geometry toggle_gui_saved
 
   set sig_name $signal
@@ -76,7 +76,7 @@ proc create_toggle_window {signal} {
     # Create exclude checkbutton
     ttk::checkbutton .togwin.f.excl -text "Exclude" -variable toggle_excluded -command {
       set toggle_reason ""
-      if {$exclude_reasons_enabled == 1 && $toggle_excluded == 1} {
+      if {$preferences(exclude_reasons_enabled) == 1 && $toggle_excluded == 1} {
         set toggle_reason [get_exclude_reason .togwin]
       }
       tcl_func_set_toggle_exclude $curr_block $sig_name $toggle_excluded $toggle_reason

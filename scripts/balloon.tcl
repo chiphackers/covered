@@ -8,7 +8,7 @@ namespace eval balloon {
 }
 
 bind . <Enter> {
-  if {$show_tooltips == true} {
+  if {$preferences(show_tooltips)} {
     if {$balloon::family != ""} {
       if {[lsearch -exact $balloon::family %W] == -1} {
         set balloon::family {}
@@ -20,9 +20,9 @@ bind . <Enter> {
 
 proc balloon_show {w help} {
 
-  global show_tooltips
+  global preferences
 
-  if {$show_tooltips == true} {
+  if {$preferences(show_tooltips)} {
     set balloon::after_id [after $balloon::delay [list balloon::show $w $help]]
     set balloon::delay $balloon::short_delay
     set balloon::family [balloon::getwfamily $w]
@@ -33,9 +33,9 @@ proc balloon_show {w help} {
 
 proc balloon_destroy {w} {
 
-  global show_tooltips
+  global preferences
 
-  if {$show_tooltips == true} {
+  if {$preferences(show_tooltips)} {
     balloon::hide $w
   }
 

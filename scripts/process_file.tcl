@@ -68,7 +68,7 @@ proc get_race_reason_from_start_line {start_line} {
 proc create_race_tags {metric} {
 
   global race_type race_info
-  global race_fgColor race_bgColor
+  global preferences
 
   # Set race condition information
   if {[expr $race_type == 1] && [expr [llength $race_info] > 0]} {
@@ -80,7 +80,7 @@ proc create_race_tags {metric} {
     }
     eval $cmd_enter
     eval $cmd_leave
-    .bot.right.nb.$metric.txt tag configure race_enter -foreground $race_fgColor -background $race_bgColor
+    .bot.right.nb.$metric.txt tag configure race_enter -foreground $preferences(race_fgColor) -background $preferences(race_bgColor)
     .bot.right.nb.$metric.txt tag bind race_enter <Enter> {
       set curr_info   [.info cget -text]
       set curr_cursor [%W cget -cursor]
@@ -249,7 +249,7 @@ proc display_line_cov {} {
             set excl_value 1
           }
           set line_reason ""
-          if {$exclude_reasons_enabled == 1 && $excl_value == 1} {
+          if {$preferences(exclude_reasons_enabled) == 1 && $excl_value == 1} {
             set line_reason [get_exclude_reason .]
           }
           tcl_func_set_line_exclude $curr_block $selected_line $excl_value $line_reason
@@ -268,14 +268,14 @@ proc display_line_cov {} {
             set line_excluded [lindex $entry 1]
             set line_reason   [lindex $entry 2]
             if {$line_excluded == 1 && $line_reason != ""} {
-              balloon::show .bot.right.nb.line.txt "Exclude Reason: $line_reason" $cov_bgColor $cov_fgColor
+              balloon::show .bot.right.nb.line.txt "Exclude Reason: $line_reason" $preferences(cov_bgColor) $preferences(cov_fgColor)
             }
           } else {
             set entry [lsearch -index 0 -inline $covered_lines $selected_line]
             set line_excluded [lindex $entry 1]
             set line_reason   [lindex $entry 2]
             if {$line_excluded == 1 && $line_reason != ""} {
-              balloon::show .bot.right.nb.line.txt "Exclude Reason: $line_reason" $cov_bgColor $cov_fgColor
+              balloon::show .bot.right.nb.line.txt "Exclude Reason: $line_reason" $preferences(cov_bgColor) $preferences(cov_fgColor)
             }
           }
         }
@@ -462,7 +462,7 @@ proc display_toggle_cov {} {
           set cmd_cov [concat $cmd_cov [lindex $entry 0]]
         }
         eval $cmd_cov
-        .bot.right.nb.toggle.txt tag configure cov_highlight -foreground $cov_fgColor -background $cov_bgColor
+        .bot.right.nb.toggle.txt tag configure cov_highlight -foreground $preferences(cov_fgColor) -background $preferences(cov_bgColor)
       }
 
     }
@@ -627,7 +627,7 @@ proc display_memory_cov {} {
           set cmd_cov [concat $cmd_cov [lindex $entry 0] [lindex $entry 1]]
         }
         eval $cmd_cov
-        .bot.right.nb.memory.txt tag configure cov_highlight -foreground $cov_fgColor -background $cov_bgColor
+        .bot.right.nb.memory.txt tag configure cov_highlight -foreground $preferences(cov_fgColor) -background $preferences(cov_bgColor)
       }
 
     }
@@ -813,7 +813,7 @@ proc display_comb_cov {} {
           set cmd_cov [concat $cmd_cov [lindex $entry 0] [lindex $entry 1]]
         }
         eval $cmd_cov
-        .bot.right.nb.logic.txt tag configure cov_highlight -foreground $cov_fgColor -background $cov_bgColor
+        .bot.right.nb.logic.txt tag configure cov_highlight -foreground $preferences(cov_fgColor) -background $preferences(cov_bgColor)
       }
 
     }
@@ -980,7 +980,7 @@ proc display_fsm_cov {} {
           set cmd_cov [concat $cmd_cov [lindex $entry 0] [lindex $entry 1]]
         }
         eval $cmd_cov
-        .bot.right.nb.fsm.txt tag configure cov_highlight -foreground $cov_fgColor -background $cov_bgColor
+        .bot.right.nb.fsm.txt tag configure cov_highlight -foreground $preferences(cov_fgColor) -background $preferences(cov_bgColor)
       }
 
     }
@@ -1152,7 +1152,7 @@ proc display_assert_cov {} {
           set cmd_cov [concat $cmd_cov $start_index $end_index]
         }
         eval $cmd_cov
-        .bot.right.nb.assert.txt tag configure cov_highlight -foreground $cov_fgColor -background $cov_bgColor
+        .bot.right.nb.assert.txt tag configure cov_highlight -foreground $preferences(cov_fgColor) -background $preferences(cov_bgColor)
       }
 
     }

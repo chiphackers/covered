@@ -94,7 +94,6 @@ proc main_view {} {
 
   global race_msgs prev_uncov_index next_uncov_index
   global HOME main_start_search_index
-  global main_geometry
   global preferences
   global bm_right bm_left
 
@@ -306,8 +305,8 @@ proc main_view {} {
   wm title . "Covered - Verilog Code Coverage Tool"
 
   # If window position variables have been set, use them
-  if {$main_geometry != ""} {
-    wm geometry . $main_geometry
+  if {$preferences(main_geometry) != ""} {
+    wm geometry . $preferences(main_geometry)
   }
 
   # Set focus on the new window
@@ -331,7 +330,6 @@ proc populate_treeview {} {
 
   global preferences
   global last_mod_inst_type cdd_name block_list
-  global uncov_fgColor uncov_bgColor
   global lb_fgColor lb_bgColor
   global summary_list
 
@@ -910,7 +908,7 @@ read_coveredrc
 main_view
 
 # Set the theme to the clam theme
-ttk::style theme use $ttk_style
+ttk::style theme use $preferences(ttk_style)
 
 # If an input CDD(s) was specified, load them now
 if {$input_cdd ne ""} {
@@ -920,7 +918,7 @@ if {$input_cdd ne ""} {
 } else {
 
   # Display the wizard, if the configuration option is set
-  if {$show_wizard} {
+  if {$preferences(show_wizard)} {
     create_wizard
   }
 

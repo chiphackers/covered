@@ -63,8 +63,7 @@ proc create_assert_window {inst} {
   global prev_assert_index next_assert_index
   global curr_block
   global curr_assert_ptr assert_cov_points assert_cov_mod
-  global uncov_bgColor uncov_fgColor
-  global cov_bgColor cov_fgColor
+  global preferences
   global HOME assert_geometry assert_gui_saved
 
   # Now create the window and set the grab to this window
@@ -180,10 +179,10 @@ proc create_assert_window {inst} {
   .assertwin.f.tc tag delete tc_uncov_colorMap tc_cov_colorMap tc_excl_colorMap
 
   # Create covered/uncovered/underline tags
-  .assertwin.f.td tag configure td_uncov_colorMap -foreground $uncov_fgColor -background $uncov_bgColor
-  .assertwin.f.td tag configure td_cov_colorMap   -foreground $cov_fgColor   -background $cov_bgColor
-  .assertwin.f.tc tag configure tc_uncov_colorMap -foreground $uncov_fgColor -background $uncov_bgColor
-  .assertwin.f.tc tag configure tc_cov_colorMap   -foreground $cov_fgColor   -background $cov_bgColor
+  .assertwin.f.td tag configure td_uncov_colorMap -foreground $preferences(uncov_fgColor) -background $preferences(uncov_bgColor)
+  .assertwin.f.td tag configure td_cov_colorMap   -foreground $preferences(cov_fgColor)   -background $preferences(cov_bgColor)
+  .assertwin.f.tc tag configure tc_uncov_colorMap -foreground $preferences(uncov_fgColor) -background $preferences(uncov_bgColor)
+  .assertwin.f.tc tag configure tc_cov_colorMap   -foreground $preferences(cov_fgColor)   -background $preferences(cov_bgColor)
   .assertwin.f.tc tag configure tc_uncov_uline    -underline true
 
   # Write assertion coverage point information in text boxes
@@ -222,7 +221,7 @@ proc create_assert_window {inst} {
       set curr_excl 0
     }
     set assert_reason ""
-    if {$exclude_reasons_enabled == 1 && $curr_excl == 1} {
+    if {$preferences(exclude_reasons_enabled) == 1 && $curr_excl == 1} {
       set assert_reason [get_exclude_reason .assertwin]
     }
     tcl_func_set_assert_exclude $curr_block $curr_assert_inst $curr_exp $curr_excl $assert_reason
@@ -241,7 +240,7 @@ proc create_assert_window {inst} {
     set assert_excluded [lindex [lindex $assert_cov_points $curr_index] 3]
     set assert_reason   [lindex [lindex $assert_cov_points $curr_index] 4]
     if {$assert_excluded == 1 && $assert_reason != ""} {
-      balloon::show .assertwin.f.tc "Exclude Reason: $assert_reason" $cov_bgColor $cov_fgColor
+      balloon::show .assertwin.f.tc "Exclude Reason: $assert_reason" $preferences(cov_bgColor) $preferences(cov_fgColor)
     }
   }
   .assertwin.f.tc tag bind tc_uncov_uline <ButtonRelease-3> {

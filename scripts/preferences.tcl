@@ -25,7 +25,6 @@ array set preferences {
   show_tooltips           true
   ttk_style               "clam"
   enable_animations       true
-  saved_gui               0
   uncov_fgColor           blue
   uncov_bgColor           yellow
   cov_fgColor             black
@@ -45,16 +44,18 @@ array set preferences {
   vlog_hl_value_color     red
   vlog_hl_string_color    red
   vlog_hl_symbol_color    coral
+  mod_inst_type           "Module"
   mod_inst_tl_width       ""
-  mod_inst_tl_columns     {0 {Instance Name} 0 {Module Name} 0 {Hit} right 0 {Miss} right 0 {Excluded} right 0 {Total} right 0 {Hit %} right 0 {Index}}
-  mod_inst_tl_init_hidden {1 0 0 0 0 0 0}
-  rc_file_to_write        ""
-  hl_mode                 0
-  last_pref_index         -1
   exclude_reasons_enabled 1
   exclude_reasons         {}
   exclude_resolution      "first"
 }
+
+# Other global variables
+set saved_gui             0
+set rc_file_to_write      ""
+set hl_mode               0
+set last_pref_index       -1
 
 # If we are on Mac OS X, set the default style to aqua
 if {[tk windowingsystem] eq "aqua"} {
@@ -370,7 +371,7 @@ proc write_coveredrc {exiting} {
 
     puts $rc "# THE FOLLOWING LINES ARE FOR STORING GUI STATE INFORMATION -- DO NOT MODIFY LINES BELOW THIS COMMENT!\n"
 
-    if {$save_gui_on_exit == true && $exiting == 1} {
+    if {$preferences(save_gui_on_exit) == true && $exiting == 1} {
 
       puts $rc "MainWindowGeometry                = [winfo geometry .]"
       puts $rc "ToggleWindowGeometry              = $preferences(toggle_geometry)"
@@ -393,30 +394,7 @@ proc write_coveredrc {exiting} {
 proc create_preferences {start_index} {
 
   global preferences tmp_preferences
-  global show_wizard      tmp_show_wizard
-  global save_gui_on_exit tmp_save_gui_on_exit
-  global show_tooltips    tmp_show_tooltips
-  global ttk_style        tmp_ttk_style
-  global cov_fgColor   cov_bgColor   tmp_cov_fgColor   tmp_cov_bgColor
-  global uncov_fgColor uncov_bgColor tmp_uncov_fgColor tmp_uncov_bgColor
-  global race_fgColor  race_bgColor  tmp_race_fgColor  tmp_race_bgColor
-  global line_low_limit          tmp_line_low_limit
-  global toggle_low_limit        tmp_toggle_low_limit
-  global memory_low_limit        tmp_memory_low_limit
-  global comb_low_limit          tmp_comb_low_limit
-  global fsm_low_limit           tmp_fsm_low_limit
-  global assert_low_limit        tmp_assert_low_limit
-  global vlog_hl_mode            tmp_vlog_hl_mode
-  global vlog_hl_ppkeyword_color tmp_vlog_hl_ppkeyword_color
-  global vlog_hl_keyword_color   tmp_vlog_hl_keyword_color
-  global vlog_hl_comment_color   tmp_vlog_hl_comment_color
-  global vlog_hl_value_color     tmp_vlog_hl_value_color
-  global vlog_hl_string_color    tmp_vlog_hl_string_color
-  global vlog_hl_symbol_color    tmp_vlog_hl_symbol_color
   global hl_mode last_pref_index
-  global exclude_reasons_enabled tmp_exclude_reasons_enabled
-  global exclude_reasons         tmp_exclude_reasons
-  global exclude_resolution      tmp_exclude_resolution
 
   # Now create the window and set the grab to this window
   if {[winfo exists .prefwin] == 0} {
@@ -546,33 +524,8 @@ proc synchronize_syntax_widgets {hl_mode} {
 # A value of 0 is returned if no changes were found; otherwise, a value of 1 is returned.
 proc apply_preferences {} {
 
-  global show_wizard      tmp_show_wizard
-  global save_gui_on_exit tmp_save_gui_on_exit
-  global show_tooltips    tmp_show_tooltips
-  global ttk_style        tmp_ttk_style
-  global cov_fgColor      tmp_cov_fgColor
-  global cov_bgColor      tmp_cov_bgColor
-  global uncov_fgColor    tmp_uncov_fgColor
-  global uncov_bgColor    tmp_uncov_bgColor
-  global race_fgColor     tmp_race_fgColor
-  global race_bgColor     tmp_race_bgColor
-  global line_low_limit   tmp_line_low_limit
-  global toggle_low_limit tmp_toggle_low_limit
-  global memory_low_limit tmp_memory_low_limit
-  global comb_low_limit   tmp_comb_low_limit
-  global fsm_low_limit    tmp_fsm_low_limit
-  global assert_low_limit tmp_assert_low_limit
+  global preferences tmp_preferences
   global cov_rb
-  global vlog_hl_mode            tmp_vlog_hl_mode
-  global vlog_hl_ppkeyword_color tmp_vlog_hl_ppkeyword_color
-  global vlog_hl_keyword_color   tmp_vlog_hl_keyword_color
-  global vlog_hl_comment_color   tmp_vlog_hl_comment_color
-  global vlog_hl_value_color     tmp_vlog_hl_value_color
-  global vlog_hl_string_color    tmp_vlog_hl_string_color
-  global vlog_hl_symbol_color    tmp_vlog_hl_symbol_color
-  global exclude_reasons_enabled tmp_exclude_reasons_enabled
-  global exclude_reasons         tmp_exclude_reasons
-  global exclude_resolution      tmp_exclude_resolution
 
   # Save spinner values to temporary storage items
   save_spinners [.prefwin.lbf.lb curselection]
@@ -580,110 +533,14 @@ proc apply_preferences {} {
   set changed 0
 
   # Check for changes and update global preference variables accordingly
-  if {$show_wizard != $tmp_show_wizard} {
-    set show_wizard $tmp_show_wizard
-    set changed 1
-  }
-  if {$save_gui_on_exit != $tmp_save_gui_on_exit} {
-    set save_gui_on_exit $tmp_save_gui_on_exit
-    set changed 1
-  }
-  if {$show_tooltips != $tmp_show_tooltips} {
-    set show_tooltips $tmp_show_tooltips
-    set changed 1
-  }
-  if {$ttk_style != $tmp_ttk_style} {
-    set ttk_style $tmp_ttk_style
-    ttk::style theme use $ttk_style
-    set changed 1
-  }
-  if {$cov_fgColor != $tmp_cov_fgColor} {
-    set cov_fgColor $tmp_cov_fgColor
-    set changed 1
-  }
-  if {$cov_bgColor != $tmp_cov_bgColor} {
-    set cov_bgColor $tmp_cov_bgColor
-    set changed 1
-  }
-  if {$uncov_fgColor != $tmp_uncov_fgColor} {
-    set uncov_fgColor $tmp_uncov_fgColor
-    set changed 1
-  }
-  if {$uncov_bgColor != $tmp_uncov_bgColor} {
-    set uncov_bgColor $tmp_uncov_bgColor
-    set changed 1
-  }
-  if {$race_fgColor != $tmp_race_fgColor} {
-    set race_fgColor $tmp_race_fgColor
-    set changed 1
-  }
-  if {$race_bgColor != $tmp_race_bgColor} {
-    set race_bgColor $tmp_race_bgColor
-    set changed 1
-  }
-  if {$line_low_limit != $tmp_line_low_limit} {
-    set line_low_limit $tmp_line_low_limit
-    set changed 1
-  }
-  if {$toggle_low_limit != $tmp_toggle_low_limit} {
-    set toggle_low_limit $tmp_toggle_low_limit
-    set changed 1
-  }
-  if {$memory_low_limit != $tmp_memory_low_limit} {
-    set memory_low_limit $tmp_memory_low_limit
-    set changed 1
-  }
-  if {$comb_low_limit != $tmp_comb_low_limit} {
-    set comb_low_limit $tmp_comb_low_limit
-    set changed 1
-  }
-  if {$fsm_low_limit != $tmp_fsm_low_limit} {
-    set fsm_low_limit $tmp_fsm_low_limit
-    set changed 1
-  }
-  if {$assert_low_limit != $tmp_assert_low_limit} {
-    set assert_low_limit $tmp_assert_low_limit
-    set changed 1
-  }
-  if {$vlog_hl_mode != $tmp_vlog_hl_mode} {
-    set vlog_hl_mode $tmp_vlog_hl_mode
-    set changed 1
-  }
-  if {$vlog_hl_ppkeyword_color != $tmp_vlog_hl_ppkeyword_color} {
-    set vlog_hl_ppkeyword_color $tmp_vlog_hl_ppkeyword_color
-    set changed 1
-  }
-  if {$vlog_hl_keyword_color != $tmp_vlog_hl_keyword_color} {
-    set vlog_hl_keyword_color $tmp_vlog_hl_keyword_color
-    set changed 1
-  }
-  if {$vlog_hl_comment_color != $tmp_vlog_hl_comment_color} {
-    set vlog_hl_comment_color $tmp_vlog_hl_comment_color
-    set changed 1
-  }
-  if {$vlog_hl_value_color != $tmp_vlog_hl_value_color} {
-    set vlog_hl_value_color $tmp_vlog_hl_value_color
-    set changed 1
-  }
-  if {$vlog_hl_string_color != $tmp_vlog_hl_string_color} {
-    set vlog_hl_string_color $tmp_vlog_hl_string_color
-    set changed 1
-  }
-  if {$vlog_hl_symbol_color != $tmp_vlog_hl_symbol_color} {
-    set vlog_hl_symbol_color $tmp_vlog_hl_symbol_color
-    set changed 1
-  }
-  if {$exclude_reasons_enabled != $tmp_exclude_reasons_enabled} {
-    set exclude_reasons_enabled $tmp_exclude_reasons_enabled
-    set changed 1
-  }
-  if {$exclude_reasons != $tmp_exclude_reasons} {
-    set exclude_reasons $tmp_exclude_reasons
-    set changed 1
-  }
-  if {$exclude_resolution != $tmp_exclude_resolution} {
-    set exclude_resolution $tmp_exclude_resolution
-    set changed 1
+  foreach pref [array names preferences] {   
+    if {$preferences($pref) != $tmp_preferences($pref)} {
+      set preferences($pref) $tmp_preferences($pref)
+      set changed 1
+      if {$pref eq "ttk_style"} {
+        ttk::style theme use $ttk_style
+      }
+    }
   }
 
   # Update the display if necessary
@@ -854,24 +711,28 @@ proc populate_pref {} {
 
 proc create_general_pref {} {
 
-  global tmp_show_wizard tmp_save_gui_on_exit tmp_show_tooltips tmp_ttk_style
+  global tmp_preferences
 
   # Create main frame
   ttk::labelframe .prefwin.pf.f -labelanchor nw -text "General Options"
 
   # Create "Show Wizard" checkbutton
-  ttk::checkbutton .prefwin.pf.f.wiz -text "Show wizard window on startup" -variable tmp_show_wizard -onvalue true -offvalue false
+  ttk::checkbutton .prefwin.pf.f.wiz -text "Show wizard window on startup" -variable tmp_preferences(show_wizard) -onvalue true -offvalue false
 
   # Create checkbutton for saving GUI elements to configuration file upon exit
-  ttk::checkbutton .prefwin.pf.f.save_gui_on_exit -text "Save state of GUI when exiting the application" -variable tmp_save_gui_on_exit -onvalue true -offvalue false
+  ttk::checkbutton .prefwin.pf.f.save_gui_on_exit -text "Save state of GUI when exiting the application" \
+                                                  -variable tmp_preferences(save_gui_on_exit) -onvalue true -offvalue false
 
-  # Create checkbutton for displayint tooltips
-  ttk::checkbutton .prefwin.pf.f.show_tooltips -text "Show tooltips" -variable tmp_show_tooltips -onvalue true -offvalue false
+  # Create checkbutton for displaying tooltips
+  ttk::checkbutton .prefwin.pf.f.show_tooltips -text "Show tooltips" -variable tmp_preferences(show_tooltips) -onvalue true -offvalue false
+
+  # Create checkbutton for enabling animations
+  ttk::checkbutton .prefwin.pf.f.enable_anims -text "Enable GUI animations" -variable tmp_preferences(enable_animations) -onvalue true -offvalue false
 
   # Create ttk style frame
   ttk::frame     .prefwin.pf.f.tf
   ttk::label     .prefwin.pf.f.tf.l -text "Select a GUI theme:"
-  eval ttk_optionMenu .prefwin.pf.f.tf.om tmp_ttk_style [ttk::style theme names]
+  eval ttk_optionMenu .prefwin.pf.f.tf.om tmp_preferences(ttk_style) [ttk::style theme names]
 
   pack .prefwin.pf.f.tf.l  -side left -padx 4
   pack .prefwin.pf.f.tf.om -side left -padx 4
@@ -880,7 +741,8 @@ proc create_general_pref {} {
   grid .prefwin.pf.f.wiz              -row 0 -column 0 -sticky news -padx 4
   grid .prefwin.pf.f.save_gui_on_exit -row 1 -column 0 -sticky news -padx 4
   grid .prefwin.pf.f.show_tooltips    -row 2 -column 0 -sticky news -padx 4
-  grid .prefwin.pf.f.tf               -row 3 -column 0 -sticky news -padx 4
+  grid .prefwin.pf.f.enable_anims     -row 3 -column 0 -sticky news -padx 4
+  grid .prefwin.pf.f.tf               -row 4 -column 0 -sticky news -padx 4
 
   # Pack the frame
   pack .prefwin.pf.f -fill both
@@ -889,45 +751,43 @@ proc create_general_pref {} {
 
 proc create_color_pref {} {
 
-  global cov_fgColor   cov_bgColor   tmp_cov_fgColor   tmp_cov_bgColor
-  global uncov_fgColor uncov_bgColor tmp_uncov_fgColor tmp_uncov_bgColor
-  global race_fgColor  race_bgColor  tmp_race_fgColor  tmp_race_bgColor
+  global tmp_preferences
 
   # Create main frame
   ttk::labelframe .prefwin.pf.f -labelanchor nw -text "Set Highlight Color (F=Change Foreground, B=Change Background)"
 
   # Uncovered selectors
   ttk::button .prefwin.pf.f.ufb -text "F" -command {
-    set tmp_uncov_fgColor \
-        [pref_set_label_color .prefwin.pf.f.ul fg $tmp_uncov_fgColor "Choose Uncovered Foreground"]
+    set tmp_preferences(uncov_fgColor) \
+        [pref_set_label_color .prefwin.pf.f.ul fg $tmp_preferences(uncov_fgColor) "Choose Uncovered Foreground"]
   }
   ttk::button .prefwin.pf.f.ubb -text "B" -command {
-    set tmp_uncov_bgColor \
-        [pref_set_label_color .prefwin.pf.f.ul bg $tmp_uncov_bgColor "Choose Uncovered Background"]
+    set tmp_preferences(uncov_bgColor) \
+        [pref_set_label_color .prefwin.pf.f.ul bg $tmp_preferences(uncov_bgColor) "Choose Uncovered Background"]
   }
-  ttk::label .prefwin.pf.f.ul -background $tmp_uncov_bgColor -foreground $tmp_uncov_fgColor -text "Uncovered Sample"
+  ttk::label .prefwin.pf.f.ul -background $tmp_preferences(uncov_bgColor) -foreground $tmp_preferences(uncov_fgColor) -text "Uncovered Sample"
 
   # Covered selectors
   ttk::button .prefwin.pf.f.cfb -text "F" -command {
-    set tmp_cov_fgColor \
-        [pref_set_label_color .prefwin.pf.f.cl fg $tmp_cov_fgColor "Choose Covered Foreground"]
+    set tmp_preferences(cov_fgColor) \
+        [pref_set_label_color .prefwin.pf.f.cl fg $tmp_preferences(cov_fgColor) "Choose Covered Foreground"]
   }
   ttk::button .prefwin.pf.f.cbb -text "B" -command {
-    set tmp_cov_bgColor \
-        [pref_set_label_color .prefwin.pf.f.cl bg $tmp_cov_bgColor "Choose Covered Background"]
+    set tmp_preferences(cov_bgColor) \
+        [pref_set_label_color .prefwin.pf.f.cl bg $tmp_preferences(cov_bgColor) "Choose Covered Background"]
   }
-  ttk::label .prefwin.pf.f.cl -background $tmp_cov_bgColor -foreground $tmp_cov_fgColor -text "Covered Sample"
+  ttk::label .prefwin.pf.f.cl -background $tmp_preferences(cov_bgColor) -foreground $tmp_preferences(cov_fgColor) -text "Covered Sample"
 
   # Race selectors
   ttk::button .prefwin.pf.f.rfb -text "F" -command {
-    set tmp_race_fgColor \
-        [pref_set_label_color .prefwin.pf.f.rl fg $tmp_race_fgColor "Choose Race Condition Foreground"]
+    set tmp_preferences(race_fgColor) \
+        [pref_set_label_color .prefwin.pf.f.rl fg $tmp_preferences(race_fgColor) "Choose Race Condition Foreground"]
   }
   ttk::button .prefwin.pf.f.rbb -text "B" -command {
-    set tmp_race_bgColor \
-        [pref_set_label_color .prefwin.pf.f.rl bg $tmp_race_bgColor "Choose Race Condition Background"]
+    set tmp_preferences(race_bgColor) \
+        [pref_set_label_color .prefwin.pf.f.rl bg $tmp_preferences(race_bgColor) "Choose Race Condition Background"]
   }
-  ttk::label .prefwin.pf.f.rl -background $tmp_race_bgColor -foreground $tmp_race_fgColor -text "Race Condition Sample"
+  ttk::label .prefwin.pf.f.rl -background $tmp_preferences(race_bgColor) -foreground $tmp_preferences(race_fgColor) -text "Race Condition Sample"
 
   # Pack the color widgets into the color frame
   grid columnconfigure .prefwin.pf.f 3 -weight 1
@@ -948,28 +808,28 @@ proc create_color_pref {} {
 
 proc create_cov_goal_pref {} {
 
-  global tmp_line_low_limit tmp_toggle_low_limit tmp_memory_low_limit tmp_comb_low_limit tmp_fsm_low_limit tmp_assert_low_limit
+  global tmp_preferences
 
   # Create widgets
   ttk::labelframe .prefwin.pf.f -labelanchor nw -text "Set Acceptable Coverage Goals"
 
   ttk::label .prefwin.pf.f.ll -anchor e -text "Line Coverage %:"
-  percent_spinner .prefwin.pf.f.ls $tmp_line_low_limit
+  percent_spinner .prefwin.pf.f.ls $tmp_preferences(line_low_limit)
 
   ttk::label .prefwin.pf.f.tl -anchor e -text "Toggle Coverage %:"
-  percent_spinner .prefwin.pf.f.ts $tmp_toggle_low_limit
+  percent_spinner .prefwin.pf.f.ts $tmp_preferences(toggle_low_limit)
 
   ttk::label .prefwin.pf.f.ml -anchor e -text "Memory Coverage %:"
-  percent_spinner .prefwin.pf.f.ms $tmp_memory_low_limit
+  percent_spinner .prefwin.pf.f.ms $tmp_preferences(memory_low_limit)
 
   ttk::label .prefwin.pf.f.cl -anchor e -text "Combinational Logic Coverage %:"
-  percent_spinner .prefwin.pf.f.cs $tmp_comb_low_limit
+  percent_spinner .prefwin.pf.f.cs $tmp_preferences(comb_low_limit)
 
   ttk::label .prefwin.pf.f.fl -anchor e -text "FSM State/Arc Coverage %:"
-  percent_spinner .prefwin.pf.f.fs $tmp_fsm_low_limit
+  percent_spinner .prefwin.pf.f.fs $tmp_preferences(fsm_low_limit)
 
   ttk::label .prefwin.pf.f.al -anchor e -text "Assertion Coverage %:"
-  percent_spinner .prefwin.pf.f.as $tmp_assert_low_limit
+  percent_spinner .prefwin.pf.f.as $tmp_preferences(assert_low_limit)
 
   # Pack widgets into grid
   grid columnconfigure .prefwin.pf.f 2 -weight 1
@@ -993,57 +853,51 @@ proc create_cov_goal_pref {} {
 
 proc create_syntax_pref {} {
 
-  global vlog_hl_mode            tmp_vlog_hl_mode
-  global vlog_hl_ppkeyword_color tmp_vlog_hl_ppkeyword_color
-  global vlog_hl_keyword_color   tmp_vlog_hl_keyword_color
-  global vlog_hl_comment_color   tmp_vlog_hl_comment_color
-  global vlog_hl_value_color     tmp_vlog_hl_value_color
-  global vlog_hl_string_color    tmp_vlog_hl_string_color
-  global vlog_hl_symbol_color    tmp_vlog_hl_symbol_color
+  global tmp_preferences
   global hl_mode
 
   # Create widgets
   ttk::labelframe .prefwin.pf.f -labelanchor nw -text "Set Syntax Highlighting Options"
 
-  ttk::checkbutton .prefwin.pf.f.mcb -variable tmp_vlog_hl_mode -onvalue on -offvalue off \
+  ttk::checkbutton .prefwin.pf.f.mcb -variable tmp_preferences(vlog_hl_mode) -onvalue on -offvalue off \
                                   -text "Turn on syntax highlighting mode" -command {
-    synchronize_syntax_widgets $tmp_vlog_hl_mode
+    synchronize_syntax_widgets $tmp_preferences(vlog_hl_mode)
   }
 
-  ttk::label .prefwin.pf.f.ppcl -background $vlog_hl_ppkeyword_color -anchor e -text "Preprocessor keyword highlight color:"
+  ttk::label .prefwin.pf.f.ppcl -background $preferences(vlog_hl_ppkeyword_color) -anchor e -text "Preprocessor keyword highlight color:"
   ttk::button .prefwin.pf.f.ppcb -text "Change" -command {
     set tmp_vlog_hl_ppkeyword_color \
-        [pref_set_label_color .prefwin.pf.f.ppcl bg $tmp_vlog_hl_ppkeyword_color "Choose Preprocessor Keyword Highlight Color"]
+        [pref_set_label_color .prefwin.pf.f.ppcl bg $tmp_preferences(vlog_hl_ppkeyword_color) "Choose Preprocessor Keyword Highlight Color"]
   }
 
-  ttk::label .prefwin.pf.f.pcl -background $vlog_hl_keyword_color -anchor e -text "Keyword highlight color:"
+  ttk::label .prefwin.pf.f.pcl -background $preferences(vlog_hl_keyword_color) -anchor e -text "Keyword highlight color:"
   ttk::button .prefwin.pf.f.pcb -text "Change" -command {
     set tmp_vlog_hl_keyword_color \
-        [pref_set_label_color .prefwin.pf.f.pcl bg $tmp_vlog_hl_keyword_color "Choose Keyword Highlight Color"]
+        [pref_set_label_color .prefwin.pf.f.pcl bg $tmp_preferences(vlog_hl_keyword_color) "Choose Keyword Highlight Color"]
   }
 
-  ttk::label .prefwin.pf.f.ccl -background $vlog_hl_comment_color -anchor e -text "Comment highlight color:"
+  ttk::label .prefwin.pf.f.ccl -background $preferences(vlog_hl_comment_color) -anchor e -text "Comment highlight color:"
   ttk::button .prefwin.pf.f.ccb -text "Change" -command {
     set tmp_vlog_hl_comment_color \
-        [pref_set_label_color .prefwin.pf.f.ccl bg $tmp_vlog_hl_comment_color "Choose Comment Highlight Color"]
+        [pref_set_label_color .prefwin.pf.f.ccl bg $tmp_preferences(vlog_hl_comment_color) "Choose Comment Highlight Color"]
   }
 
-  ttk::label .prefwin.pf.f.vcl -background $vlog_hl_value_color -anchor e -text "Value highlight color:"
+  ttk::label .prefwin.pf.f.vcl -background $preferences(vlog_hl_value_color) -anchor e -text "Value highlight color:"
   ttk::button .prefwin.pf.f.vcb -text "Change" -command {
     set tmp_vlog_hl_value_color \
-        [pref_set_label_color .prefwin.pf.f.vcl bg $tmp_vlog_hl_value_color "Choose Value Highlight Color"]
+        [pref_set_label_color .prefwin.pf.f.vcl bg $tmp_preferences(vlog_hl_value_color) "Choose Value Highlight Color"]
   }
 
-  ttk::label .prefwin.pf.f.stcl -background $vlog_hl_string_color -anchor e -text "String highlight color:"
+  ttk::label .prefwin.pf.f.stcl -background $preferences(vlog_hl_string_color) -anchor e -text "String highlight color:"
   ttk::button .prefwin.pf.f.stcb -text "Change" -command {
     set tmp_vlog_hl_string_color \
-        [pref_set_label_color .prefwin.pf.f.stcl bg $tmp_vlog_hl_string_color "Choose String Highlight Color"]
+        [pref_set_label_color .prefwin.pf.f.stcl bg $tmp_preferences(vlog_hl_string_color) "Choose String Highlight Color"]
   }
 
-  ttk::label .prefwin.pf.f.sycl -background $vlog_hl_symbol_color -anchor e -text "Symbol highlight color:"
+  ttk::label .prefwin.pf.f.sycl -background $preferences(vlog_hl_symbol_color) -anchor e -text "Symbol highlight color:"
   ttk::button .prefwin.pf.f.sycb -text "Change" -command {
     set tmp_vlog_hl_symbol_color \
-        [pref_set_label_color .prefwin.pf.f.sycl bg $tmp_vlog_hl_symbol_color "Choose Symbol Highlight Color"]
+        [pref_set_label_color .prefwin.pf.f.sycl bg $tmp_preferences(vlog_hl_symbol_color) "Choose Symbol Highlight Color"]
   }
 
   grid columnconfigure .prefwin.pf.f 2 -weight 1
@@ -1063,29 +917,30 @@ proc create_syntax_pref {} {
 
   pack .prefwin.pf.f -fill both
 
-  synchronize_syntax_widgets $tmp_vlog_hl_mode
+  synchronize_syntax_widgets $tmp_preferences(vlog_hl_mode)
 
 }
 
 proc store_exclude_reasons {} {
 
-  global tmp_exclude_reasons
+  global tmp_preferences
 
-  set tmp_exclude_reasons [.prefwin.pf.f.elf.lf.tl get 0 end]
+  set tmp_preferences(exclude_reasons) [.prefwin.pf.f.elf.lf.tl get 0 end]
 
 }
 
 proc create_exclusion_pref {} {
 
   global HOME tablelistopts
-  global tmp_exclude_reasons_enabled tmp_exclude_reasons
+  global tmp_preferences
 
   # Create widgets
   ttk::frame .prefwin.pf.f
 
   # Create checkbutton for turning exclusion reason support on/off
   ttk::labelframe  .prefwin.pf.f.ecf    -text "Exclusion Options"
-  ttk::checkbutton .prefwin.pf.f.ecf.cb -text "Enable exclusion reason support when items are excluded" -variable tmp_exclude_reasons_enabled
+  ttk::checkbutton .prefwin.pf.f.ecf.cb -text "Enable exclusion reason support when items are excluded" \
+                                        -variable tmp_preferences(exclude_reasons_enabled)
   pack .prefwin.pf.f.ecf.cb -fill x -padx 3 -pady 3
 
   # Create labelframe for creating general reasons for exclusion
@@ -1165,7 +1020,7 @@ proc create_exclusion_pref {} {
   pack .prefwin.pf.f -fill both
 
   # Insert the values into the tablelist
-  foreach exclude_reason $tmp_exclude_reasons {
+  foreach exclude_reason $tmp_preferences(exclude_reasons) {
     .prefwin.pf.f.elf.lf.tl insert end $exclude_reason
   }
 
@@ -1173,18 +1028,18 @@ proc create_exclusion_pref {} {
 
 proc create_merging_pref {} {
 
-  global tmp_exclude_resolution
+  global tmp_preferences
 
   # Create widgets
   ttk::frame .prefwin.pf.f
 
   # Create the exclusion reason conflict resolution frame
   ttk::labelframe .prefwin.pf.f.ecr -text "Exclusion Reason Conflict Resolution"
-  ttk::radiobutton .prefwin.pf.f.ecr.first -text "Use the first reason"  -variable tmp_exclude_resolution -value first
-  ttk::radiobutton .prefwin.pf.f.ecr.last  -text "Use the last reason"   -variable tmp_exclude_resolution -value last
-  ttk::radiobutton .prefwin.pf.f.ecr.new   -text "Use the newest reason" -variable tmp_exclude_resolution -value new
-  ttk::radiobutton .prefwin.pf.f.ecr.old   -text "Use the oldest reason" -variable tmp_exclude_resolution -value old
-  ttk::radiobutton .prefwin.pf.f.ecr.all   -text "Merge all reasons"     -variable tmp_exclude_resolution -value all
+  ttk::radiobutton .prefwin.pf.f.ecr.first -text "Use the first reason"  -variable tmp_preferences(exclude_resolution) -value first
+  ttk::radiobutton .prefwin.pf.f.ecr.last  -text "Use the last reason"   -variable tmp_preferences(exclude_resolution) -value last
+  ttk::radiobutton .prefwin.pf.f.ecr.new   -text "Use the newest reason" -variable tmp_preferences(exclude_resolution) -value new
+  ttk::radiobutton .prefwin.pf.f.ecr.old   -text "Use the oldest reason" -variable tmp_preferences(exclude_resolution) -value old
+  ttk::radiobutton .prefwin.pf.f.ecr.all   -text "Merge all reasons"     -variable tmp_preferences(exclude_resolution) -value all
 
   pack .prefwin.pf.f.ecr.first -anchor w -padx 3 -pady 3
   pack .prefwin.pf.f.ecr.last  -anchor w -padx 3 -pady 3
@@ -1204,24 +1059,24 @@ proc create_merging_pref {} {
 # values of each spinner box.
 proc save_spinners {index} {
 
-  global tmp_line_low_limit tmp_toggle_low_limit tmp_memory_low_limit tmp_comb_low_limit tmp_fsm_low_limit tmp_assert_low_limit
+  global tmp_preferences
 
   if {$index == 2} {
 
     if {[info tclversion] >= 8.4} {
-      set tmp_line_low_limit   [.prefwin.pf.f.ls get]
-      set tmp_toggle_low_limit [.prefwin.pf.f.ts get]
-      set tmp_memory_low_limit [.prefwin.pf.f.ms get]
-      set tmp_comb_low_limit   [.prefwin.pf.f.cs get]
-      set tmp_fsm_low_limit    [.prefwin.pf.f.fs get]
-      set tmp_assert_low_limit [.prefwin.pf.f.as get]
+      set tmp_preferences(line_low_limit)   [.prefwin.pf.f.ls get]
+      set tmp_preferences(toggle_low_limit) [.prefwin.pf.f.ts get]
+      set tmp_preferences(memory_low_limit) [.prefwin.pf.f.ms get]
+      set tmp_preferences(comb_low_limit)   [.prefwin.pf.f.cs get]
+      set tmp_preferences(fsm_low_limit)    [.prefwin.pf.f.fs get]
+      set tmp_preferences(assert_low_limit) [.prefwin.pf.f.as get]
     } else {
-      set tmp_line_low_limit   [expr 100 - [.prefwin.pf.f.ls.l nearest 0]]
-      set tmp_toggle_low_limit [expr 100 - [.prefwin.pf.f.ts.l nearest 0]]
-      set tmp_memory_low_limit [expr 100 - [.prefwin.pf.f.ms.l nearest 0]]
-      set tmp_comb_low_limit   [expr 100 - [.prefwin.pf.f.cs.l nearest 0]]
-      set tmp_fsm_low_limit    [expr 100 - [.prefwin.pf.f.fs.l nearest 0]]
-      set tmp_assert_low_limit [expr 100 - [.prefwin.pf.f.as.l nearest 0]]
+      set tmp_preferences(line_low_limit)   [expr 100 - [.prefwin.pf.f.ls.l nearest 0]]
+      set tmp_preferences(toggle_low_limit) [expr 100 - [.prefwin.pf.f.ts.l nearest 0]]
+      set tmp_preferences(memory_low_limit) [expr 100 - [.prefwin.pf.f.ms.l nearest 0]]
+      set tmp_preferences(comb_low_limit)   [expr 100 - [.prefwin.pf.f.cs.l nearest 0]]
+      set tmp_preferences(fsm_low_limit)    [expr 100 - [.prefwin.pf.f.fs.l nearest 0]]
+      set tmp_preferences(assert_low_limit) [expr 100 - [.prefwin.pf.f.as.l nearest 0]]
     }
 
   }
@@ -1274,9 +1129,9 @@ proc validInteger {win event X oldX min max} {
 
 proc save_gui_elements {top this} {
 
-  global save_gui_on_exit saved_gui
+  global preferences saved_gui
 
-  if {[winfo toplevel $this] == $top && $save_gui_on_exit == true && $saved_gui == 0} {
+  if {[winfo toplevel $this] == $top && $preferences(save_gui_on_exit) == true && $saved_gui == 0} {
 
     set saved_gui 1
 

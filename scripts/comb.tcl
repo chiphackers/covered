@@ -95,8 +95,7 @@ proc display_comb_info {} {
   global comb_uline_indices comb_uline_exc_indices comb_first_uline
   global comb_gen_ulines comb_curr_uline_id
   global comb_curr_cursor comb_curr_info
-  global uncov_fgColor uncov_bgColor
-  global cov_fgColor cov_bgColor
+  global preferences
 
   set curr_uline 0
 
@@ -147,7 +146,7 @@ proc display_comb_info {} {
     eval ".combwin.pw.top.t tag add comb_bp1 $comb_uline_indices"
     eval ".combwin.pw.top.t tag add comb_bp3 $comb_uline_indices"
     eval ".combwin.pw.top.t tag add comb_inc_hl $comb_uline_indices"
-    .combwin.pw.top.t tag configure comb_inc_hl -foreground $uncov_fgColor -background $uncov_bgColor
+    .combwin.pw.top.t tag configure comb_inc_hl -foreground $preferences(uncov_fgColor) -background $preferences(uncov_bgColor)
     .combwin.pw.top.t tag bind comb_enter <Enter> {
       set comb_curr_cursor [.combwin.pw.top.t cget -cursor]
       .combwin.pw.top.t configure -cursor hand2
@@ -184,7 +183,7 @@ proc display_comb_info {} {
   # Add excluded expression tags and bindings
   if {[llength $comb_uline_exc_indices] > 0} {
     eval ".combwin.pw.top.t tag add comb_exc_hl $comb_uline_exc_indices"
-    .combwin.pw.top.t tag configure comb_exc_hl -foreground $cov_fgColor -background $cov_bgColor
+    .combwin.pw.top.t tag configure comb_exc_hl -foreground $preferences(cov_fgColor) -background $preferences(cov_bgColor)
   }
 
 }
@@ -564,6 +563,7 @@ proc create_comb_window {expr_id sline} {
   global curr_comb_ptr comb_curr_excluded comb_curr_reason
   global comb_exp_excludes comb_exp_reasons HOME
   global comb_geometry comb_gui_saved
+  global preferences
 
   # Clear the comb_curr_excluded global variable
   set comb_curr_excluded 0
@@ -592,7 +592,7 @@ proc create_comb_window {expr_id sline} {
     ttk::label .combwin.pw.bot.l -anchor w -text "Coverage Information:  ('*' represents a case that was not hit)"
     ttk::checkbutton .combwin.pw.bot.e -text "Excluded" -state disabled -variable comb_curr_excluded -command {
       set comb_curr_reason ""
-      if {$exclude_reasons_enabled == 1 && $comb_curr_excluded == 1} {
+      if {$preferences(exclude_reasons_enabled) == 1 && $comb_curr_excluded == 1} {
         set comb_curr_reason [get_exclude_reason .combwin]
       }
       tcl_func_set_comb_exclude $curr_block $comb_curr_exp_id $comb_curr_uline_id $comb_curr_excluded $comb_curr_reason

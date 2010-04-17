@@ -13,15 +13,6 @@
 # if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. #
 ################################################################################################
 
-# Highlight color values (this will need to be configurable via the preferences window
-set vlog_hl_mode            on
-set vlog_hl_ppkeyword_color ForestGreen
-set vlog_hl_keyword_color   purple
-set vlog_hl_comment_color   blue
-set vlog_hl_value_color     red
-set vlog_hl_string_color    red
-set vlog_hl_symbol_color    coral
-
 # Performs substitution using a user-specified command
 proc regsub-eval {re string cmd} {
   
@@ -103,8 +94,7 @@ proc load_verilog {fname pp} {
 # - inform = pathname to information window
 # - cmd    = Name of command to call when an indices is selected by the user -- must take one argument: the name of the selected file
 proc handle_verilog_includes {tb inform cmd} {
-  
-  global cov_fgColor
+ 
   global curr_cursor curr_info curr_cmd curr_inform
 
   # Iterate through all found `include directives, creating a tag that will underline all of these
@@ -432,29 +422,27 @@ proc verilog_highlight_symbols {tb color} {
 # Main function to highlight all Verilog syntax for the given textbox
 proc verilog_highlight {tb} {
   
-  global vlog_hl_mode
-  global vlog_hl_keyword_color vlog_hl_comment_color vlog_hl_ppkeyword_color
-  global vlog_hl_value_color   vlog_hl_string_color  vlog_hl_symbol_color
+  global preferences
 
-  if {$vlog_hl_mode == "on"} {
+  if {$preferences(vlog_hl_mode) == "on"} {
 
     # Highlight all keywords
-    verilog_highlight_keywords $tb $vlog_hl_keyword_color
+    verilog_highlight_keywords $tb $preferences(vlog_hl_keyword_color)
 
     # Highlight all values
-    verilog_highlight_values $tb $vlog_hl_value_color
+    verilog_highlight_values $tb $preferences(vlog_hl_value_color)
 
     # Highlight all preprocessor keywords
-    verilog_highlight_ppkeywords $tb $vlog_hl_ppkeyword_color
+    verilog_highlight_ppkeywords $tb $preferences(vlog_hl_ppkeyword_color)
 
     # Highlight all symbols
-    verilog_highlight_symbols $tb $vlog_hl_symbol_color
+    verilog_highlight_symbols $tb $preferences(vlog_hl_symbol_color)
 
     # Highlight all string
-    verilog_highlight_strings $tb $vlog_hl_string_color
+    verilog_highlight_strings $tb $preferences(vlog_hl_string_color)
 
     # Highlight all comments
-    verilog_highlight_comments $tb $vlog_hl_comment_color
+    verilog_highlight_comments $tb $preferences(vlog_hl_comment_color)
 
   } else {
 
