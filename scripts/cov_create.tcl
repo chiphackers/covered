@@ -13,15 +13,16 @@
 # if not, write to the Free Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. #
 ################################################################################################
 
-set cov_rb      Line
-set last_cov_rb Line
+set mod_inst_type "Module"
+set cov_rb        Line
+set last_cov_rb   Line
 
 proc cov_create {f} {
 
   global cov_rb file_name start_line end_line last_cov_rb preferences
 
   # Create option menus
-  ttk_optionMenu $f.mod_inst preferences(mod_inst_type) Module Instance
+  ttk_optionMenu $f.mod_inst mod_inst_type Module Instance
   set_balloon $f.mod_inst "Selects the coverage accumulated by module or instance"
 
   ttk_optionMenu $f.metrics cov_rb Line Toggle Memory Logic FSM Assert
@@ -30,8 +31,8 @@ proc cov_create {f} {
   $f.mod_inst configure -width 8
   $f.metrics  configure -width 8
 
-  trace add variable cov_rb                     write cov_change_metric
-  trace add variable preferences(mod_inst_type) write cov_change_type
+  trace add variable cov_rb        write cov_change_metric
+  trace add variable mod_inst_type write cov_change_type
 
   # Pack radiobuttons
   pack $f.metrics  -side left  -fill x
@@ -83,11 +84,11 @@ proc cov_change_metric {args} {
 
 proc cov_change_type args {
 
-  global preferences last_mod_inst_type
+  global preferences last_mod_inst_type mod_inst_type
 
-  if {$preferences(mod_inst_type) != $last_mod_inst_type} {
+  if {$mod_inst_type != $last_mod_inst_type} {
 
-    set last_mod_inst_type $preferences(mod_inst_type)
+    set last_mod_inst_type $mod_inst_type
 
     populate_treeview
     clear_all_windows

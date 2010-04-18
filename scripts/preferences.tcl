@@ -44,8 +44,6 @@ array set preferences {
   vlog_hl_value_color     red
   vlog_hl_string_color    red
   vlog_hl_symbol_color    coral
-  mod_inst_type           "Module"
-  mod_inst_tl_width       ""
   exclude_reasons_enabled 1
   exclude_reasons         {}
   exclude_resolution      "first"
@@ -172,10 +170,6 @@ proc read_coveredrc {} {
             set preferences(fsm_geometry) $value
           } elseif {$field == "AssertWindowGeometry"} {
             set preferences(assert_geometry) $value
-          } elseif {$field == "ModuleInstanceType"} {
-            set preferences(mod_inst_type) $value
-          } elseif {$field == "ModuleInstanceTableListWidth"} {
-            set preferences(mod_inst_tl_width) $value
           }
         }
 
@@ -379,8 +373,6 @@ proc write_coveredrc {exiting} {
       puts $rc "CombWindowGeometry                = $preferences(comb_geometry)"
       puts $rc "FsmWindowGeometry                 = $preferences(fsm_geometry)"
       puts $rc "AssertWindowGeometry              = $preferences(assert_geometry)"
-      puts $rc "ModuleInstanceType                = $preferences(mod_inst_type)"
-      puts $rc "ModuleInstanceTableListWidth      = [winfo width .bot.left]"
 
     }
 
@@ -538,7 +530,7 @@ proc apply_preferences {} {
       set preferences($pref) $tmp_preferences($pref)
       set changed 1
       if {$pref eq "ttk_style"} {
-        ttk::style theme use $ttk_style
+        ttk::style theme use $preferences(ttk_style)
       }
     }
   }
@@ -709,9 +701,17 @@ proc populate_pref {} {
 
 }
 
+proc update_ttk_style {args} {
+
+  global tmp_preferences ttk_style
+
+  set tmp_preferences(ttk_style) $ttk_style
+
+}
+
 proc create_general_pref {} {
 
-  global tmp_preferences
+  global tmp_preferences ttk_style
 
   # Create main frame
   ttk::labelframe .prefwin.pf.f -labelanchor nw -text "General Options"
@@ -732,7 +732,8 @@ proc create_general_pref {} {
   # Create ttk style frame
   ttk::frame     .prefwin.pf.f.tf
   ttk::label     .prefwin.pf.f.tf.l -text "Select a GUI theme:"
-  eval ttk_optionMenu .prefwin.pf.f.tf.om tmp_preferences(ttk_style) [ttk::style theme names]
+  eval ttk_optionMenu .prefwin.pf.f.tf.om ttk_style [ttk::style theme names]
+  trace add variable ttk_style write update_ttk_style
 
   pack .prefwin.pf.f.tf.l  -side left -padx 4
   pack .prefwin.pf.f.tf.om -side left -padx 4

@@ -30,7 +30,7 @@ proc ttk_optionMenu {w v args} {
 
 }
 
-# Include the necessary auxiliary files 
+# Include the necessary auxiliary files
 source [file join $HOME scripts menu_create.tcl]
 source [file join $HOME scripts cov_create.tcl]
 source [file join $HOME scripts process_file.tcl]
@@ -77,6 +77,29 @@ set bm_left  [image create bitmap -data "#define bm_left_width 15\n#define bm_le
 0xc0, 0x00, 0xe0, 0x00, 0xf0, 0x00, 0xf8, 0x7f, 0xfc, 0x7f, 0xfe, 0x7f, 0xff, 0x7f, 0xfe, 0x7f, 0xfc, 0x7f, 0xf8, 0x7f, 0xf0, 0x00, 0xe0, 0x00, 0xc0,
 0x00, 0x80, 0x00};"]
 
+# images indicating sort order 
+image create bitmap treeview_arrow(0) -data {
+  #define arrowUp_width 7
+  #define arrowUp_height 4
+  static char arrowUp_bits[] = {
+    0x08, 0x1c, 0x3e, 0x7f
+  };
+}
+image create bitmap treeview_arrow(1) -data {
+  #define arrowDown_width 7
+  #define arrowDown_height 4
+  static char arrowDown_bits[] = {
+    0x7f, 0x3e, 0x1c, 0x08
+  };
+}
+image create bitmap treeview_arrowBlank -data {
+  #define arrowBlank_width 7
+  #define arrowBlank_height 4
+  static char arrowBlank_bits[] = {
+    0x00, 0x00, 0x00, 0x00
+  };
+}
+
 array set tablelistopts {
   selectbackground   RoyalBlue1
   selectforeground   white
@@ -94,7 +117,7 @@ proc main_view {} {
 
   global race_msgs prev_uncov_index next_uncov_index
   global HOME main_start_search_index
-  global preferences
+  global preferences mod_inst_type
   global bm_right bm_left
 
   # Start off 
@@ -225,8 +248,8 @@ proc main_view {} {
   ttk::frame .bot.left.f
 
   # Create module/instance menubutton
-  ttk_optionMenu .bot.left.f.mi preferences(mod_inst_type) Module Instance
-  trace add variable preferences(mod_inst_type) write cov_change_type
+  ttk_optionMenu .bot.left.f.mi mod_inst_type Module Instance
+  trace add variable mod_inst_type write cov_change_type
   set_balloon .bot.left.f.mi "Selects the coverage accumulated by module or instance"
 
   # Create summary panel switcher button
@@ -254,14 +277,14 @@ proc main_view {} {
   # Create hierarchical window
   ttk::treeview  .bot.left.tree -selectmode browse -xscrollcommand {.bot.left.hb set} -yscrollcommand {.bot.left.vb set} \
                                 -columns {Total Line Toggle Memory Logic FSM Assert}
-  .bot.left.tree heading #0     -text "Name"
-  .bot.left.tree heading Total  -text "Total Score"
-  .bot.left.tree heading Line   -text "Line Score"
-  .bot.left.tree heading Toggle -text "Toggle Score"
-  .bot.left.tree heading Memory -text "Memory Score"
-  .bot.left.tree heading Logic  -text "Logic Score"
-  .bot.left.tree heading FSM    -text "FSM Score"
-  .bot.left.tree heading Assert -text "Assert Score"
+  .bot.left.tree heading #0     -text "Name"         -command "sort_treeview .bot.left.tree #0 0"
+  .bot.left.tree heading Total  -text "Total Score"  -command "sort_treeview .bot.left.tree Total 0"
+  .bot.left.tree heading Line   -text "Line Score"   -command "sort_treeview .bot.left.tree Line 0"
+  .bot.left.tree heading Toggle -text "Toggle Score" -command "sort_treeview .bot.left.tree Toggle 0"
+  .bot.left.tree heading Memory -text "Memory Score" -command "sort_treeview .bot.left.tree Memory 0"
+  .bot.left.tree heading Logic  -text "Logic Score"  -command "sort_treeview .bot.left.tree Logic 0"
+  .bot.left.tree heading FSM    -text "FSM Score"    -command "sort_treeview .bot.left.tree FSM 0"
+  .bot.left.tree heading Assert -text "Assert Score" -command "sort_treeview .bot.left.tree Assert 0"
 
   set col_font  [::ttk::style lookup [.bot.left.tree cget -style] -font]
   set col_width [font measure $col_font "@@@@@@@@@@@@"]
@@ -286,10 +309,7 @@ proc main_view {} {
 
   # Pack the bottom window
   after idle {
-    .bot add .bot.left -weight 1
-    if {$preferences(mod_inst_tl_width) != ""} {
-      .bot.left configure -width $preferences(mod_inst_tl_width)
-    }
+    .bot add .bot.left  -weight 1
     .bot add .bot.right -weight 0
     .bot sashpos 0 [.bot cget -width]
   }
@@ -329,7 +349,7 @@ proc main_view {} {
 proc populate_treeview {} {
 
   global preferences
-  global last_mod_inst_type cdd_name block_list
+  global last_mod_inst_type mod_inst_type cdd_name block_list
   global lb_fgColor lb_bgColor
   global summary_list
 
@@ -346,7 +366,7 @@ proc populate_treeview {} {
   if {$cdd_name != ""} {
 
     # If we are in module mode, list modules (otherwise, list instances)
-    if {$preferences(mod_inst_type) == "Module"} {
+    if {$mod_inst_type == "Module"} {
 
       # Get the list of functional units
       set block_list [tcl_func_get_funit_list]
@@ -407,37 +427,29 @@ proc populate_treeview {} {
     after idle update_treelabels .bot.left.tree
 
     # Set the last module/instance type variable to the current
-    set last_mod_inst_type $preferences(mod_inst_type)
+    set last_mod_inst_type $mod_inst_type
 
   }
 
 }
 
-proc animate_sashpos_move {pw sash curr goal} {
+proc animate_sashpos_move {pw sash diff mv_right goal} {
 
   # If we still need to move the sash, do so
-  if {$curr != $goal} {
+  if {$diff > 0} {
 
     # Calculate the new position
-    if {$curr < $goal} {   ;# Move to the right
-      if {[expr $curr + 1] == $goal} {
-        set newpos $goal
-      } else {
-        set newpos [expr $curr + (($goal - $curr) / 2)]
-      }
-    } else {               ;# Move to the left
-      if {[expr $goal + 1] == $curr} {
-        set newpos $goal
-      } else {
-        set newpos [expr $goal + (($curr - $goal) / 2)]
-      }
-    }
+    set newdiff [expr $diff >> 1]
 
     # Move the sash
-    $pw sashpos $sash $newpos
+    if {$mv_right} {
+      $pw sashpos $sash [expr $goal - $newdiff]
+    } else {
+      $pw sashpos $sash [expr $goal + $newdiff]
+    }
 
-    # Move after 50 milliseconds
-    after 50 animate_sashpos_move $pw $sash $newpos $goal
+    # Move after 30 milliseconds
+    after 30 animate_sashpos_move $pw $sash $newdiff $mv_right $goal
 
   }
 
@@ -448,7 +460,12 @@ proc sashpos_move {pw sash goal} {
   global preferences
 
   if {$preferences(enable_animations)} {
-    animate_sashpos_move [$pw sashpos $sash] $goal
+    set sashpos [$pw sashpos $sash]
+    if {$sashpos < $goal} {
+      animate_sashpos_move $pw $sash [expr $goal - $sashpos] 1 $goal
+    } else {
+      animate_sashpos_move $pw $sash [expr $sashpos - $goal] 0 $goal
+    }
   } else {
     $pw sashpos $sash $goal
   }
@@ -468,6 +485,9 @@ proc treelabel_selected {w col block} {
 
   # Update the list of displayed columns to include the name and selected metric
   $w configure -displaycolumns [list $col]
+
+  # We do this to avoid getting an error from the ttk::treeview class
+  set ttk::treeview::State(activeHeading) {}
 
   # Slide the panedwindow sash to hug the last columnconfigure
   if {[.bot.left.f.ps cget -image] != $bm_right} {
@@ -553,17 +573,69 @@ proc update_treelabels {w} {
 
 }
 
+# Hierarchical sorting procedure
+proc sort_treeview {tree col direction {isroot 1} {root {}} } {
+
+  if {$isroot} {
+    if {$col!="#0"} {
+      set col [$tree column $col -id]
+    }
+    set selection [$tree selection]
+    $tree selection remove $selection
+    set focus [$tree focus]
+    $tree focus {}
+  }
+
+  # Build something we can sort
+  set data {}
+  if {$col=="#0"} {
+    foreach row [$tree children $root] {
+      lappend data [list [$tree item $row -text] $row]
+    }
+  } else {
+    foreach row [$tree children $root] {
+      lappend data [list [$tree set $row $col] $row]
+    }
+  }  
+  if {$data!=""} {
+    set dir [expr {$direction ? "-decreasing" : "-increasing"}]
+    set r -1
+    # Now reshuffle the rows into the sorted order
+    foreach info [lsort -dictionary -index 0 $dir $data] {
+      $tree move [lindex $info 1] $root [incr r]
+      if {[$tree item [lindex $info 1] -open]} {
+        sort_treeview $tree $col $direction 0 [lindex $info 1]
+      }  
+    }
+  }  
+  if {$isroot} {
+    # Switch the heading so that it will sort in the opposite direction
+    variable curfocus
+    #catch {
+    #  eval [lindex [after info $curfocus($tree,sorticon)] 0]
+    #  after cancel $curfocus($tree,sorticon)
+    #}
+    $tree heading $col -command [list sort_treeview $tree $col [expr {1-$direction}]] -image ::treeview_arrow($direction)
+    $tree selection set $selection
+    $tree focus $focus
+  }
+
+  # Update the treelabels
+  update_treelabels $tree
+  
+}
+
 proc populate_text {} {
 
-  global cov_rb block_list curr_block summary_list preferences
-  global last_mod_inst_type
+  global cov_rb block_list curr_block summary_list
+  global last_mod_inst_type mod_inst_type
   global last_block
   global start_search_index
   global curr_toggle_ptr
 
   if {$curr_block != ""} {
 
-    if {$last_block != $curr_block || $last_mod_inst_type != $preferences(mod_inst_type)} {
+    if {$last_block != $curr_block || $last_mod_inst_type != $mod_inst_type} {
 
       set last_block      $curr_block
       set curr_toggle_ptr ""

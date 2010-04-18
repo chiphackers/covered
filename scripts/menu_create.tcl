@@ -72,7 +72,7 @@ proc enable_cdd_save {} {
 proc menu_create {} {
 
   global start_line end_line
-  global cdd_name
+  global cdd_name mod_inst_type
   global BROWSER
   global prev_uncov_index next_uncov_index
 
@@ -159,8 +159,8 @@ proc menu_create {} {
 
   global preferences cov_uncov_type cov_rb
 
-  $report add radiobutton -label "Module-based"   -variable preferences(mod_inst_type) -value "Module" -underline 0
-  $report add radiobutton -label "Instance-based" -variable preferences(mod_inst_type) -value "Instance" -underline 0
+  $report add radiobutton -label "Module-based"   -variable mod_inst_type -value "Module" -underline 0
+  $report add radiobutton -label "Instance-based" -variable mod_inst_type -value "Instance" -underline 0
   $report add separator
   $report add radiobutton -label "Line"   -variable cov_rb -value "Line"   -underline 0
   $report add radiobutton -label "Toggle" -variable cov_rb -value "Toggle" -underline 0
@@ -290,7 +290,7 @@ proc menu_create {} {
       .bot.right.nb.assert.txt yview moveto [lindex $text_y 0]
     }
   }
-  set preferences(mod_inst_type) "Module"
+  set mod_inst_type "Module"
 
   # Configure the color options
   set m [menu $mb.view -tearoff false]
