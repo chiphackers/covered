@@ -445,7 +445,7 @@ proc display_toggle_cov {} {
                                                             -background $preferences(cov_bgColor)
         }
         $metric_src(toggle).txt tag bind uncov_enter <Enter> {
-          set curr_cursor [.bot.right.nb.toggle.txt cget -cursor]
+          set curr_cursor [$metric_src(toggle).txt cget -cursor]
           set curr_info   [.info cget -text]
           $metric_src(toggle).txt configure -cursor hand2
           .info configure -text "Click left button for detailed toggle coverage information"

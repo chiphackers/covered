@@ -213,8 +213,7 @@ proc main_view {} {
   }
   set_balloon .bot.right.nb.src.h.pn.next "Click to view the next uncovered item"
   frame .bot.right.nb.src.h.search -borderwidth 1 -relief ridge -bg white
-  label .bot.right.nb.src.h.search.find -image [image create photo -file [file join $HOME scripts find.gif]] -background white -state disabled
--relief flat
+  label .bot.right.nb.src.h.search.find -image [image create photo -file [file join $HOME scripts find.gif]] -background white -state disabled -relief flat
   bind .bot.right.nb.src.h.search.find <ButtonPress-1> {
     perform_search .bot.right.nb.src.txt .bot.right.nb.src.h.search.e .info main_start_search_index
   }
@@ -223,8 +222,7 @@ proc main_view {} {
   bind .bot.right.nb.src.h.search.e <Return> {
     perform_search .bot.right.nb.src.txt .bot.right.nb.src.h.search.e .info main_start_search_index
   }
-  label .bot.right.nb.src.h.search.clear -image [image create photo -file [file join $HOME scripts clear.gif]] -background white -state disabled
--relief flat
+  label .bot.right.nb.src.h.search.clear -image [image create photo -file [file join $HOME scripts clear.gif]] -background white -state disabled -relief flat
   bind .bot.right.nb.src.h.search.clear <ButtonPress-1> {
     .bot.right.nb.src.txt tag delete search_found
     .bot.right.nb.src.h.search.e delete 0 end
@@ -247,10 +245,10 @@ proc main_view {} {
   pack .bot.right.nb.src.h.search -side right
 
   # Create the text widget to display the modules/instances
-  text           .bot.right.nb.src.txt -yscrollcommand ".bot.right.nb.$metric.vb set" -xscrollcommand ".bot.right.nb.$metric.hb set" \
+  text           .bot.right.nb.src.txt -yscrollcommand ".bot.right.nb.src.vb set" -xscrollcommand ".bot.right.nb.src.hb set" \
                                        -wrap none -state disabled
-  ttk::scrollbar .bot.right.nb.src.vb -command ".bot.right.nb.$metric.txt yview"
-  ttk::scrollbar .bot.right.nb.src.hb -orient horizontal -command ".bot.right.nb.$metric.txt xview"
+  ttk::scrollbar .bot.right.nb.src.vb -command ".bot.right.nb.src.txt yview"
+  ttk::scrollbar .bot.right.nb.src.hb -orient horizontal -command ".bot.right.nb.src.txt xview"
 
   # Pack the right paned window
   grid rowconfigure    .bot.right.nb.src 1 -weight 1
@@ -261,7 +259,7 @@ proc main_view {} {
   grid .bot.right.nb.src.hb  -row 2 -column 0 -sticky ew
 
   # Create Detail tab
-  .bot.right.nb add  [ttk::frame .bot.right.nb.dtl] -text "Detail" -underline 0
+  .bot.right.nb add [ttk::frame .bot.right.nb.dtl] -text "Detail" -underline 0
   .bot.right.nb hide 1
 
   pack .bot.right.nb -fill both -expand yes
