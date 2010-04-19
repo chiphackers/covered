@@ -35,23 +35,23 @@ proc assert_yview {args} {
 
 proc display_assert {curr_index} {
 
-  global prev_assert_index next_assert_index curr_assert_ptr curr_assert_inst
+  global prev_assert_index next_assert_index curr_assert_ptr curr_assert_inst metric_src
 
   # Get range of current instance
-  set curr_range [.bot.right.nb.assert.txt tag prevrange uncov_button "$curr_index + 1 chars"]
+  set curr_range [$metric_src(assert).txt tag prevrange uncov_button "$curr_index + 1 chars"]
 
   # Calculate the current instance string
-  set curr_assert_inst [string trim [lindex [split [.bot.right.nb.assert.txt get [lindex $curr_range 0] [lindex $curr_range 1]] "\["] 0]]
+  set curr_assert_inst [string trim [lindex [split [$metric_src(assert).txt get [lindex $curr_range 0] [lindex $curr_range 1]] "\["] 0]]
 
   # Make sure that the selected instance is visible in the text box and is shown as selected
   set_pointer curr_assert_ptr [lindex [split [lindex $curr_range 0] .] 0] assert
   goto_uncov [lindex $curr_range 0] assert
 
   # Get range of previous instance
-  set prev_assert_index [lindex [.bot.right.nb.assert.txt tag prevrange uncov_button [lindex $curr_range 0]] 0]
+  set prev_assert_index [lindex [$metric_src(assert).txt tag prevrange uncov_button [lindex $curr_range 0]] 0]
 
   # Get range of next instance
-  set next_assert_index [lindex [.bot.right.nb.assert.txt tag nextrange uncov_button [lindex $curr_range 1]] 0]
+  set next_assert_index [lindex [$metric_src(assert).txt tag nextrange uncov_button [lindex $curr_range 1]] 0]
 
   # Now create the assertion window
   create_assert_window $curr_assert_inst
@@ -61,7 +61,7 @@ proc display_assert {curr_index} {
 proc create_assert_window {inst} {
 
   global prev_assert_index next_assert_index
-  global curr_block
+  global curr_block metric_src
   global curr_assert_ptr assert_cov_points assert_cov_mod
   global preferences
   global HOME assert_geometry assert_gui_saved
@@ -225,11 +225,11 @@ proc create_assert_window {inst} {
       set assert_reason [get_exclude_reason .assertwin]
     }
     tcl_func_set_assert_exclude $curr_block $curr_assert_inst $curr_exp $curr_excl $assert_reason
-    set text_x [.bot.right.nb.assert.txt xview]
-    set text_y [.bot.right.nb.assert.txt yview]
+    set text_x [$metric_src(assert).txt xview]
+    set text_y [$metric_src(assert).txt yview]
     process_assert_cov
-    .bot.right.nb.assert.txt xview moveto [lindex $text_x 0]
-    .bot.right.nb.assert.txt yview moveto [lindex $text_y 0]
+    $metric_src(assert).txt xview moveto [lindex $text_x 0]
+    $metric_src(assert).txt yview moveto [lindex $text_y 0]
     populate_treeview
     enable_cdd_save
     set_pointer curr_assert_ptr $curr_assert_ptr assert

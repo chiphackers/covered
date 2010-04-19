@@ -119,6 +119,7 @@ proc main_view {} {
   global HOME main_start_search_index
   global preferences mod_inst_type
   global bm_right bm_left
+  global metric_src metric_dtl
 
   # Start off 
 
@@ -149,97 +150,121 @@ proc main_view {} {
     set cov_rb [lindex [split [.bot.right.nb tab current -text] " "] 0]
     cov_change_metric
   }
-
-  foreach metric [list line toggle memory logic fsm assert] {
-
-    .bot.right.nb add [ttk::frame .bot.right.nb.$metric] -text [string totitle $metric] -underline 0
-
-    # Create the textbox header frame
-    ttk::frame .bot.right.nb.$metric.h
-    ttk::label .bot.right.nb.$metric.h.tl -text "Cur   Line #       Verilog Source" -anchor w
-    ttk::frame .bot.right.nb.$metric.h.pn
-    ttk::label .bot.right.nb.$metric.h.pn.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -state disabled
-    bind .bot.right.nb.$metric.h.pn.prev <Button-1> {
-      if {$cov_rb == "Line"} {
-        goto_uncov $prev_uncov_index line
-      } elseif {$cov_rb == "Toggle"} {
-        goto_uncov $prev_uncov_index toggle
-      } elseif {$cov_rb == "Memory"} {
-        goto_uncov $prev_uncov_index memory
-      } elseif {$cov_rb == "Logic"} {
-        goto_uncov $prev_uncov_index logic
-      } elseif {$cov_rb == "FSM"} {
-        goto_uncov $prev_uncov_index fsm
-      } elseif {$cov_rb == "Assert"} {
-        goto_uncov $prev_uncov_index assert
-      }
-    }
-    set_balloon .bot.right.nb.$metric.h.pn.prev "Click to view the previous uncovered item"
-    ttk::label .bot.right.nb.$metric.h.pn.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -state disabled
-    bind .bot.right.nb.$metric.h.pn.next <Button-1> {
-      if {$cov_rb == "Line"} {
-        goto_uncov $next_uncov_index line
-      } elseif {$cov_rb == "Toggle"} {
-        goto_uncov $next_uncov_index toggle
-      } elseif {$cov_rb == "Memory"} {
-        goto_uncov $next_uncov_index memory
-      } elseif {$cov_rb == "Logic"} {
-        goto_uncov $next_uncov_index logic
-      } elseif {$cov_rb == "FSM"} {
-        goto_uncov $next_uncov_index fsm
-      } elseif {$cov_rb == "Assert"} {
-        goto_uncov $next_uncov_index assert
-      }
-    }
-    set_balloon .bot.right.nb.$metric.h.pn.next "Click to view the next uncovered item"
-    frame .bot.right.nb.$metric.h.search -borderwidth 1 -relief ridge -bg white
-    label .bot.right.nb.$metric.h.search.find -image [image create photo -file [file join $HOME scripts find.gif]] -background white -state disabled -relief flat
-    bind .bot.right.nb.$metric.h.search.find <ButtonPress-1> {
-      perform_search .bot.right.nb.$metric.txt .bot.right.nb.$metric.h.search.e .info main_start_search_index
-    }
-    set_balloon .bot.right.nb.$metric.h.search.find "Click to find the next occurrence of the search string"
-    entry .bot.right.nb.$metric.h.search.e -width 15 -state disabled -relief flat -bg white
-    bind .bot.right.nb.$metric.h.search.e <Return> {
-      perform_search .bot.right.nb.$metric.txt .bot.right.nb.$metric.h.search.e .info main_start_search_index
-    }
-    label .bot.right.nb.$metric.h.search.clear -image [image create photo -file [file join $HOME scripts clear.gif]] -background white -state disabled -relief flat
-    bind .bot.right.nb.$metric.h.search.clear <ButtonPress-1> {
-      .bot.right.nb.$metric.txt tag delete search_found
-      .bot.right.nb.$metric.h.search.e delete 0 end
-      set main_start_search_index 1.0
-    }
-    set_balloon .bot.right.nb.$metric.h.search.clear "Click to clear the search string"
-
-    # Pack the previous/next frame
-    pack .bot.right.nb.$metric.h.pn.prev -side left
-    pack .bot.right.nb.$metric.h.pn.next -side left
-
-    # Pack the search frame
-    pack .bot.right.nb.$metric.h.search.find  -side left
-    pack .bot.right.nb.$metric.h.search.e     -side left -padx 3
-    pack .bot.right.nb.$metric.h.search.clear -side left
-
-    # Pack the textbox header frame
-    pack .bot.right.nb.$metric.h.tl     -side left
-    pack .bot.right.nb.$metric.h.pn     -side left -expand yes
-    pack .bot.right.nb.$metric.h.search -side right
-
-    # Create the text widget to display the modules/instances
-    text           .bot.right.nb.$metric.txt -yscrollcommand ".bot.right.nb.$metric.vb set" -xscrollcommand ".bot.right.nb.$metric.hb set" -wrap none -state disabled
-    ttk::scrollbar .bot.right.nb.$metric.vb -command ".bot.right.nb.$metric.txt yview"
-    ttk::scrollbar .bot.right.nb.$metric.hb -orient horizontal -command ".bot.right.nb.$metric.txt xview"
-
-    # Pack the right paned window
-    grid rowconfigure    .bot.right.nb.$metric 1 -weight 1
-    grid columnconfigure .bot.right.nb.$metric 0 -weight 1
-    grid .bot.right.nb.$metric.h   -row 0 -column 0 -columnspan 2 -sticky nsew
-    grid .bot.right.nb.$metric.txt -row 1 -column 0 -sticky nsew
-    grid .bot.right.nb.$metric.vb  -row 1 -column 1 -sticky ns
-    grid .bot.right.nb.$metric.hb  -row 2 -column 0 -sticky ew
-
-    pack .bot.right.nb -fill both -expand yes
-
+  
+  # Create global lookup for the source tab
+  array set metric_src {
+    line   .bot.right.nb.src
+    toggle .bot.right.nb.src
+    memory .bot.right.nb.src
+    comb   .bot.right.nb.src
+    fsm    .bot.right.nb.src
+    assert .bot.right.nb.src
   }
+
+  # Create global lookup for the detail tab
+  array set metric_dtl {
+    line   .bot.right.nb.dtl
+    toggle .bot.right.nb.dtl
+    memory .bot.right.nb.dtl
+    comb   .bot.right.nb.dtl
+    fsm    .bot.right.nb.dtl
+    assert .bot.right.nb.dtl
+  }
+
+  # Create Source browser tab
+  .bot.right.nb add [ttk::frame .bot.right.nb.src] -text "Source" -underline 0
+
+  # Create the textbox header frame
+  ttk::frame .bot.right.nb.src.h
+  ttk::label .bot.right.nb.src.h.tl -text "Cur   Line #       Verilog Source" -anchor w
+  ttk::frame .bot.right.nb.src.h.pn
+  ttk::label .bot.right.nb.src.h.pn.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -state disabled
+  bind .bot.right.nb.src.h.pn.prev <Button-1> {
+    if {$cov_rb == "Line"} {
+      goto_uncov $prev_uncov_index line
+    } elseif {$cov_rb == "Toggle"} {
+      goto_uncov $prev_uncov_index toggle
+    } elseif {$cov_rb == "Memory"} {
+      goto_uncov $prev_uncov_index memory
+    } elseif {$cov_rb == "Logic"} {
+      goto_uncov $prev_uncov_index logic
+    } elseif {$cov_rb == "FSM"} {
+      goto_uncov $prev_uncov_index fsm
+    } elseif {$cov_rb == "Assert"} {
+      goto_uncov $prev_uncov_index assert
+    }
+  }
+  set_balloon .bot.right.nb.src.h.pn.prev "Click to view the previous uncovered item"
+  ttk::label .bot.right.nb.src.h.pn.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -state disabled
+  bind .bot.right.nb.src.h.pn.next <Button-1> {
+    if {$cov_rb == "Line"} {
+      goto_uncov $next_uncov_index line
+    } elseif {$cov_rb == "Toggle"} {
+      goto_uncov $next_uncov_index toggle
+    } elseif {$cov_rb == "Memory"} {
+      goto_uncov $next_uncov_index memory
+    } elseif {$cov_rb == "Logic"} {
+      goto_uncov $next_uncov_index logic
+    } elseif {$cov_rb == "FSM"} {
+      goto_uncov $next_uncov_index fsm
+    } elseif {$cov_rb == "Assert"} {
+      goto_uncov $next_uncov_index assert
+    }
+  }
+  set_balloon .bot.right.nb.src.h.pn.next "Click to view the next uncovered item"
+  frame .bot.right.nb.src.h.search -borderwidth 1 -relief ridge -bg white
+  label .bot.right.nb.src.h.search.find -image [image create photo -file [file join $HOME scripts find.gif]] -background white -state disabled
+-relief flat
+  bind .bot.right.nb.src.h.search.find <ButtonPress-1> {
+    perform_search .bot.right.nb.src.txt .bot.right.nb.src.h.search.e .info main_start_search_index
+  }
+  set_balloon .bot.right.nb.src.h.search.find "Click to find the next occurrence of the search string"
+  entry .bot.right.nb.src.h.search.e -width 15 -state disabled -relief flat -bg white
+  bind .bot.right.nb.src.h.search.e <Return> {
+    perform_search .bot.right.nb.src.txt .bot.right.nb.src.h.search.e .info main_start_search_index
+  }
+  label .bot.right.nb.src.h.search.clear -image [image create photo -file [file join $HOME scripts clear.gif]] -background white -state disabled
+-relief flat
+  bind .bot.right.nb.src.h.search.clear <ButtonPress-1> {
+    .bot.right.nb.src.txt tag delete search_found
+    .bot.right.nb.src.h.search.e delete 0 end
+    set main_start_search_index 1.0
+  }
+  set_balloon .bot.right.nb.src.h.search.clear "Click to clear the search string"
+
+  # Pack the previous/next frame
+  pack .bot.right.nb.src.h.pn.prev -side left
+  pack .bot.right.nb.src.h.pn.next -side left
+
+  # Pack the search frame
+  pack .bot.right.nb.src.h.search.find  -side left
+  pack .bot.right.nb.src.h.search.e     -side left -padx 3
+  pack .bot.right.nb.src.h.search.clear -side left
+
+  # Pack the textbox header frame
+  pack .bot.right.nb.src.h.tl     -side left
+  pack .bot.right.nb.src.h.pn     -side left -expand yes
+  pack .bot.right.nb.src.h.search -side right
+
+  # Create the text widget to display the modules/instances
+  text           .bot.right.nb.src.txt -yscrollcommand ".bot.right.nb.$metric.vb set" -xscrollcommand ".bot.right.nb.$metric.hb set" \
+                                       -wrap none -state disabled
+  ttk::scrollbar .bot.right.nb.src.vb -command ".bot.right.nb.$metric.txt yview"
+  ttk::scrollbar .bot.right.nb.src.hb -orient horizontal -command ".bot.right.nb.$metric.txt xview"
+
+  # Pack the right paned window
+  grid rowconfigure    .bot.right.nb.src 1 -weight 1
+  grid columnconfigure .bot.right.nb.src 0 -weight 1
+  grid .bot.right.nb.src.h   -row 0 -column 0 -columnspan 2 -sticky nsew
+  grid .bot.right.nb.src.txt -row 1 -column 0 -sticky nsew
+  grid .bot.right.nb.src.vb  -row 1 -column 1 -sticky ns
+  grid .bot.right.nb.src.hb  -row 2 -column 0 -sticky ew
+
+  # Create Detail tab
+  .bot.right.nb add  [ttk::frame .bot.right.nb.dtl] -text "Detail" -underline 0
+  .bot.right.nb hide 1
+
+  pack .bot.right.nb -fill both -expand yes
 
   ##############################
   # POPULATE LEFT BOTTOM FRAME #
@@ -258,12 +283,12 @@ proc main_view {} {
       .bot.left.f.ps configure -image $bm_right
       .bot.left.tree configure -displaycolumns [list $cov_rb]
       .bot.left.tree see $curr_block
-      sashpos_move .bot 0 [expr [.bot.left.tree column #0 -width] + [.bot.left.tree column $cov_rb -width] + [winfo width .bot.left.vb]]
+      sashpos_move .bot 0 [expr 200 + [.bot.left.tree column $cov_rb -width] + [winfo width .bot.left.vb]]
       .bot pane 0 -weight 0
       .bot pane 1 -weight 1
     } else {
       .bot.left.f.ps configure -image $bm_left
-      sashpos_move .bot 0 [.bot cget -width]
+      sashpos_move .bot 0 [winfo width .]
       .bot.left.tree configure -displaycolumns #all
       .bot pane 0 -weight 1
       .bot pane 1 -weight 0
@@ -289,8 +314,9 @@ proc main_view {} {
   set col_font  [::ttk::style lookup [.bot.left.tree cget -style] -font]
   set col_width [font measure $col_font "@@@@@@@@@@@@"]
   foreach col [.bot.left.tree cget -columns] {
-    .bot.left.tree column $col -width $col_width
+    .bot.left.tree column $col -width $col_width -stretch 0
   }
+  .bot.left.tree column #0 -stretch 1 -minwidth 200
 
   ttk::scrollbar .bot.left.vb                      -command {after idle update_treelabels .bot.left.tree; .bot.left.tree yview}
   ttk::scrollbar .bot.left.hb   -orient horizontal -command {after idle update_treelabels .bot.left.tree; .bot.left.tree xview}
@@ -311,7 +337,7 @@ proc main_view {} {
   after idle {
     .bot add .bot.left  -weight 1
     .bot add .bot.right -weight 0
-    .bot sashpos 0 [.bot cget -width]
+    .bot sashpos 0 [winfo width .]
   }
 
   # Create bottom information bar
@@ -491,7 +517,8 @@ proc treelabel_selected {w col block} {
 
   # Slide the panedwindow sash to hug the last columnconfigure
   if {[.bot.left.f.ps cget -image] != $bm_right} {
-    sashpos_move .bot 0 [expr [$w column #0 -width] + [$w column $col -width] + [winfo width .bot.left.vb]]
+    # Need to figure out the desired width of the #0 column
+    sashpos_move .bot 0 [expr 200 + [$w column $col -width] + [winfo width .bot.left.vb]]
     .bot.left.f.ps configure -state normal
     .bot pane 0 -weight 0
     .bot pane 1 -weight 1
@@ -610,7 +637,7 @@ proc sort_treeview {tree col direction {isroot 1} {root {}} } {
   }  
   if {$isroot} {
     # Switch the heading so that it will sort in the opposite direction
-    variable curfocus
+    #variable curfocus
     #catch {
     #  eval [lindex [after info $curfocus($tree,sorticon)] 0]
     #  after cancel $curfocus($tree,sorticon)
@@ -629,7 +656,7 @@ proc populate_text {} {
 
   global cov_rb block_list curr_block summary_list
   global last_mod_inst_type mod_inst_type
-  global last_block
+  global last_block metric_src
   global start_search_index
   global curr_toggle_ptr
 
@@ -644,52 +671,43 @@ proc populate_text {} {
       set start_search_index 1.0
       set curr_uncov_index   ""
 
-      # Set the summary information in the Tabs
-      .bot.right.nb tab 0 -text "Line ($summary_list($curr_block,line_hit)/$summary_list($curr_block,line_total)) $summary_list($curr_block,line_percent)%"
-      .bot.right.nb tab 1 -text "Toggle ($summary_list($curr_block,toggle_hit)/$summary_list($curr_block,toggle_total)) $summary_list($curr_block,toggle_percent)%"
-      .bot.right.nb tab 2 -text "Memory ($summary_list($curr_block,memory_hit)/$summary_list($curr_block,memory_total)) $summary_list($curr_block,memory_percent)%"
-      .bot.right.nb tab 3 -text "Logic ($summary_list($curr_block,comb_hit)/$summary_list($curr_block,comb_total)) $summary_list($curr_block,comb_percent)%"
-      .bot.right.nb tab 4 -text "FSM ($summary_list($curr_block,fsm_hit)/$summary_list($curr_block,fsm_total)) $summary_list($curr_block,fsm_percent)%"
-      .bot.right.nb tab 5 -text "Assert ($summary_list($curr_block,assert_hit)/$summary_list($curr_block,assert_total)) $summary_list($curr_block,assert_percent)%"
-
       if {$cov_rb == "Line"} {
         process_line_cov
         goto_uncov $curr_uncov_index line
-        .bot.right.nb.line.h.search.e     configure -state normal -bg white
-        .bot.right.nb.line.h.search.find  configure -state normal
-        .bot.right.nb.line.h.search.clear configure -state normal
+        $metric_src(line).h.search.e     configure -state normal -bg white
+        $metric_src(line).h.search.find  configure -state normal
+        $metric_src(line).h.search.clear configure -state normal
       } elseif {$cov_rb == "Toggle"} {
         process_toggle_cov
         goto_uncov $curr_uncov_index toggle
-        .bot.right.nb.toggle.h.search.e     configure -state normal -bg white
-        .bot.right.nb.toggle.h.search.find  configure -state normal
-        .bot.right.nb.toggle.h.search.clear configure -state normal
+        $metric_src(toggle).h.search.e     configure -state normal -bg white
+        $metric_src(toggle).h.search.find  configure -state normal
+        $metric_src(toggle).h.search.clear configure -state normal
       } elseif {$cov_rb == "Memory"} {
         process_memory_cov
         goto_uncov $curr_uncov_index memory
-        .bot.right.nb.memory.h.search.e     configure -state normal -bg white
-        .bot.right.nb.memory.h.search.find  configure -state normal
-        .bot.right.nb.memory.h.search.clear configure -state normal
+        $metric_src(memory).h.search.e     configure -state normal -bg white
+        $metric_src(memory).h.search.find  configure -state normal
+        $metric_src(memory).h.search.clear configure -state normal
       } elseif {$cov_rb == "Logic"} {
         process_comb_cov
         goto_uncov $curr_uncov_index logic
-        .bot.right.nb.logic.h.search.e     configure -state normal -bg white
-        .bot.right.nb.logic.h.search.find  configure -state normal
-        .bot.right.nb.logic.h.search.clear configure -state normal
+        $metric_src(comb).h.search.e     configure -state normal -bg white
+        $metric_src(comb).h.search.find  configure -state normal
+        $metric_src(comb).h.search.clear configure -state normal
       } elseif {$cov_rb == "FSM"} {
         process_fsm_cov
         goto_uncov $curr_uncov_index fsm
-        .bot.right.nb.fsm.h.search.e     configure -state normal -bg white
-        .bot.right.nb.fsm.h.search.find  configure -state normal
-        .bot.right.nb.fsm.h.search.clear configure -state normal
+        $metric_src(fsm).h.search.e     configure -state normal -bg white
+        $metric_src(fsm).h.search.find  configure -state normal
+        $metric_src(fsm).h.search.clear configure -state normal
       } elseif {$cov_rb == "Assert"} {
         process_assert_cov
         goto_uncov $curr_uncov_index assert
-        .bot.right.nb.assert.h.search.e     configure -state normal -bg white
-        .bot.right.nb.assert.h.search.find  configure -state normal
-        .bot.right.nb.assert.h.search.clear configure -state normal
+        $metric_src(assert).h.search.e     configure -state normal -bg white
+        $metric_src(assert).h.search.find  configure -state normal
+        $metric_src(assert).h.search.clear configure -state normal
       }
-
 
     }
 
@@ -699,13 +717,13 @@ proc populate_text {} {
 
 proc clear_text {} {
 
-  global last_block
+  global last_block metric_src
 
   # Clear the textboxes
-  foreach metric [list line toggle memory logic fsm assert] {
-    .bot.right.nb.$metric.txt configure -state normal
-    .bot.right.nb.$metric.txt delete 1.0 end
-    .bot.right.nb.$metric.txt configure -state disabled
+  foreach metric [list line toggle memory comb fsm assert] {
+    $metric_src($metric).txt configure -state normal
+    $metric_src($metric).txt delete 1.0 end
+    $metric_src($metric).txt configure -state disabled
   }
 
   # Reset the last_block
@@ -765,19 +783,20 @@ proc perform_search {tbox ebox ibox index} {
 
 proc rm_pointer {curr_ptr metric} {
 
-  upvar $curr_ptr ptr
+  global metric_src
+  upvar  $curr_ptr ptr
 
   # Allow the textbox to be changed
-  .bot.right.nb.$metric.txt configure -state normal
+  $metric_src($metric).txt configure -state normal
 
   # Delete old cursor, if it is displayed
   if {$ptr != ""} {
-    .bot.right.nb.$metric.txt delete $ptr.0 $ptr.3
-    .bot.right.nb.$metric.txt insert $ptr.0 "   "
+    $metric_src($metric).txt delete $ptr.0 $ptr.3
+    $metric_src($metric).txt insert $ptr.0 "   "
   }
 
   # Disable textbox
-  .bot.right.nb.$metric.txt configure -state disabled
+  $metric_src($metric).txt configure -state disabled
 
   # Disable "Show current selection" menu item
   .menubar.view entryconfigure 2 -state disabled
@@ -789,23 +808,24 @@ proc rm_pointer {curr_ptr metric} {
 
 proc set_pointer {curr_ptr line metric} {
 
-  upvar $curr_ptr ptr
+  global metric_src
+  upvar  $curr_ptr ptr
 
   # Remove old pointer
   rm_pointer ptr $metric
 
   # Allow the textbox to be changed
-  .bot.right.nb.$metric.txt configure -state normal
+  $metric_src($metric).txt configure -state normal
 
   # Display new pointer
-  .bot.right.nb.$metric.txt delete $line.0 $line.3
-  .bot.right.nb.$metric.txt insert $line.0 "-->"
+  $metric_src($metric).txt delete $line.0 $line.3
+  $metric_src($metric).txt insert $line.0 "-->"
 
   # Set the textbox to not be changed
-  .bot.right.nb.$metric.txt configure -state disabled
+  $metric_src($metric).txt configure -state disabled
 
   # Make sure that we can see the current toggle pointer in the textbox
-  .bot.right.nb.$metric.txt see $line.0
+  $metric_src($metric).txt see $line.0
 
   # Enable the "Show current selection" menu option
   .menubar.view entryconfigure 2 -state normal
@@ -818,7 +838,7 @@ proc set_pointer {curr_ptr line metric} {
 proc goto_uncov {curr_index metric} {
 
   global prev_uncov_index next_uncov_index curr_uncov_index
-  global cov_rb
+  global cov_rb metric_src
 
   # Calculate the name of the tag to use
   if {$cov_rb == "Line"} {
@@ -829,33 +849,33 @@ proc goto_uncov {curr_index metric} {
 
   # Display the given index, if it has been specified
   if {$curr_index != ""} {
-    .bot.right.nb.$metric.txt see $curr_index
+    $metric_src($metric).txt see $curr_index
     set curr_uncov_index $curr_index
   } else {
     set curr_uncov_index 1.0
   }
 
   # Get previous uncovered index
-  set prev_uncov_index [lindex [.bot.right.nb.$metric.txt tag prevrange $tag_name $curr_uncov_index] 0]
+  set prev_uncov_index [lindex [$metric_src($metric).txt tag prevrange $tag_name $curr_uncov_index] 0]
 
   # Disable/enable previous button
   if {$prev_uncov_index != ""} {
-    .bot.right.nb.$metric.h.pn.prev configure -state normal
+    $metric_src($metric).h.pn.prev configure -state normal
     .menubar.view entryconfigure 1 -state normal
   } else {
-    .bot.right.nb.$metric.h.pn.prev configure -state disabled
+    $metric_src($metric).h.pn.prev configure -state disabled
     .menubar.view entryconfigure 1 -state disabled
   }
 
   # Get next uncovered index
-  set next_uncov_index [lindex [.bot.right.nb.$metric.txt tag nextrange $tag_name "$curr_uncov_index + 1 chars"] 0]
+  set next_uncov_index [lindex [$metric_src($metric).txt tag nextrange $tag_name "$curr_uncov_index + 1 chars"] 0]
 
   # Disable/enable next button
   if {$next_uncov_index != ""} {
-    .bot.right.nb.$metric.h.pn.next configure -state normal
+    $metric_src($metric).h.pn.next configure -state normal
     .menubar.view entryconfigure 0 -state normal
   } else {
-    .bot.right.nb.$metric.h.pn.next configure -state disabled
+    $metric_src($metric).h.pn.next configure -state disabled
     .menubar.view entryconfigure 0 -state disabled
   }
 

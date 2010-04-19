@@ -517,7 +517,7 @@ proc synchronize_syntax_widgets {hl_mode} {
 proc apply_preferences {} {
 
   global preferences tmp_preferences
-  global cov_rb
+  global cov_rb metric_src
 
   # Save spinner values to temporary storage items
   save_spinners [.prefwin.lbf.lb curselection]
@@ -540,41 +540,41 @@ proc apply_preferences {} {
 
     # Redisplay the information in the main file viewer
     if {$cov_rb == "Line"} {
-      set text_x [.bot.right.nb.line.txt xview]
-      set text_y [.bot.right.nb.line.txt yview]
+      set text_x [$metric_src(line).txt xview]
+      set text_y [$metric_src(line).txt yview]
       display_line_cov
-      .bot.right.nb.line.txt xview moveto [lindex $text_x 0]
-      .bot.right.nb.line.txt yview moveto [lindex $text_y 0]
+      $metric_src(line).txt xview moveto [lindex $text_x 0]
+      $metric_src(line).txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Toggle"} {
-      set text_x [.bot.right.nb.toggle.txt xview]
-      set text_y [.bot.right.nb.toggle.txt yview]
+      set text_x [$metric_src(toggle).txt xview]
+      set text_y [$metric_src(toggle).txt yview]
       display_toggle_cov
-      .bot.right.nb.toggle.txt xview moveto [lindex $text_x 0]
-      .bot.right.nb.toggle.txt yview moveto [lindex $text_y 0]
+      $metric_src(toggle).txt xview moveto [lindex $text_x 0]
+      $metric_src(toggle).txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Memory"} {
-      set text_x [.bot.right.nb.memory.txt xview]
-      set text_y [.bot.right.nb.memory.txt yview]
+      set text_x [$metric_src(memory).txt xview]
+      set text_y [$metric_src(memory).txt yview]
       display_memory_cov
-      .bot.right.nb.memory.txt xview moveto [lindex $text_x 0]
-      .bot.right.nb.memory.txt yview moveto [lindex $text_y 0]
+      $metric_src(memory).txt xview moveto [lindex $text_x 0]
+      $metric_src(memory).txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Logic"} {
-      set text_x [.bot.right.nb.logic.txt xview]
-      set text_y [.bot.right.nb.logic.txt yview]
+      set text_x [$metric_src(comb).txt xview]
+      set text_y [$metric_src(comb).txt yview]
       display_comb_cov
-      .bot.right.nb.logic.txt xview moveto [lindex $text_x 0]
-      .bot.right.nb.logic.txt yview moveto [lindex $text_y 0]
+      $metric_src(comb).txt xview moveto [lindex $text_x 0]
+      $metric_src(comb).txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "FSM"} {
-      set text_x [.bot.right.nb.fsm.txt xview]
-      set text_y [.bot.right.nb.fsm.txt yview]
+      set text_x [$metric_src(fsm).txt xview]
+      set text_y [$metric_src(fsm).txt yview]
       display_fsm_cov
-      .bot.right.nb.fsm.txt xview moveto [lindex $text_x 0]
-      .bot.right.nb.fsm.txt yview moveto [lindex $text_y 0]
+      $metric_src(fsm).txt xview moveto [lindex $text_x 0]
+      $metric_src(fsm).txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Assert"} {
-      set text_x [.bot.right.nb.assert.txt xview]
-      set text_y [.bot.right.nb.assert.txt yview]
+      set text_x [$metric_src(assert).txt xview]
+      set text_y [$metric_src(assert).txt yview]
       display_assert_cov
-      .bot.right.nb.assert.txt xview moveto [lindex $text_x 0]
-      .bot.right.nb.assert.txt yview moveto [lindex $text_y 0]
+      $metric_src(assert).txt xview moveto [lindex $text_x 0]
+      $metric_src(assert).txt yview moveto [lindex $text_y 0]
     }
 
     # Redisplay the combinational logic window, if it exists

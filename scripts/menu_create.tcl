@@ -73,7 +73,7 @@ proc menu_create {} {
 
   global start_line end_line
   global cdd_name mod_inst_type
-  global BROWSER
+  global BROWSER metric_src
   global prev_uncov_index next_uncov_index
 
   # Create the menubar frame
@@ -171,123 +171,121 @@ proc menu_create {} {
   $report add separator
   $report add checkbutton -label "Show Uncovered" -variable uncov_type -onvalue 1 -offvalue 0 -underline 5 -command {
     if {$cov_rb == "Line"} {
-      set text_x [.bot.right.nb.line.txt xview]
-      set text_y [.bot.right.nb.line.txt yview]
+      set text_x [$metric_src(line).txt xview]
+      set text_y [$metric_src(line).txt yview]
       display_line_cov
-      .bot.right.nb.line.txt xview moveto [lindex $text_x 0]
-      .bot.right.nb.line.txt yview moveto [lindex $text_y 0]
+      $metric_src(line).txt xview moveto [lindex $text_x 0]
+      $metric_src(line).txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Toggle"} {
-      set text_x [.bot.right.nb.toggle.txt xview]
-      set text_y [.bot.right.nb.toggle.txt yview]
+      set text_x [$metric_src(toggle).txt xview]
+      set text_y [$metric_src(toggle).txt yview]
       display_toggle_cov
-      .bot.right.nb.toggle.txt xview moveto [lindex $text_x 0]
-      .bot.right.nb.toggle.txt yview moveto [lindex $text_y 0]
+      $metric_src(toggle).txt xview moveto [lindex $text_x 0]
+      $metric_src(toggle).txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Memory"} {
-      set text_x [.bot.right.nb.memory.txt xview]
-      set text_y [.bot.right.nb.memory.txt yview]
+      set text_x [$metric_src(memory).txt xview]
+      set text_y [$metric_src(memory).txt yview]
       display_memory_cov
-      .bot.right.nb.memory.txt xview moveto [lindex $text_x 0]
-      .bot.right.nb.memory.txt yview moveto [lindex $text_y 0]
+      $metric_src(memory).txt xview moveto [lindex $text_x 0]
+      $metric_src(memory).txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Logic"} {
-      set text_x [.bot.right.nb.logic.txt xview]
-      set text_y [.bot.right.nb.logic.txt yview]
+      set text_x [$metric_src(comb).txt xview]
+      set text_y [$metric_src(comb).txt yview]
       display_comb_cov
-      .bot.right.nb.logic.txt xview moveto [lindex $text_x 0]
-      .bot.right.nb.logic.txt yview moveto [lindex $text_y 0]
+      $metric_src(comb).txt xview moveto [lindex $text_x 0]
+      $metric_src(comb).txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "FSM"} {
-      set text_x [.bot.right.nb.fsm.txt xview]
-      set text_y [.bot.right.nb.fsm.txt yview]
+      set text_x [$metric_src(fsm).txt xview]
+      set text_y [$metric_src(fsm).txt yview]
       display_fsm_cov
-      .bot.right.nb.fsm.txt xview moveto [lindex $text_x 0]
-      .bot.right.nb.fsm.txt yview moveto [lindex $text_y 0]
+      $metric_src(fsm).txt xview moveto [lindex $text_x 0]
+      $metric_src(fsm).txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Assert"} {
-      set text_x [.bot.right.nb.assert.txt xview]
-      set text_y [.bot.right.nb.assert.txt yview]
+      set text_x [$metric_src(assert).txt xview]
+      set text_y [$metric_src(assert).txt yview]
       display_assert_cov
-      .bot.right.nb.assert.txt xview moveto [lindex $text_x 0]
-      .bot.right.nb.assert.txt yview moveto [lindex $text_y 0]
+      $metric_src(assert).txt xview moveto [lindex $text_x 0]
+      $metric_src(assert).txt yview moveto [lindex $text_y 0]
     } else {
       # Error
     }
   }
   $report add checkbutton -label "Show Covered" -variable cov_type -onvalue 1 -offvalue 0 -underline 5 -command {
     if {$cov_rb == "Line"} {
-      set text_x [.bot.right.nb.line.txt xview]
-      set text_y [.bot.right.nb.line.txt yview]
+      set text_x [$metric_src(line).txt xview]
+      set text_y [$metric_src(line).txt yview]
       display_line_cov
-      .bot.right.nb.line.txt xview moveto [lindex $text_x 0]
-      .bot.right.nb.line.txt yview moveto [lindex $text_y 0]
+      $metric_src(line).txt xview moveto [lindex $text_x 0]
+      $metric_src(line).txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Toggle"} {
-      set text_x [.bot.right.nb.toggle.txt xview]
-      set text_y [.bot.right.nb.toggle.txt yview]
+      set text_x [$metric_src(toggle).txt xview]
+      set text_y [$metric_src(toggle).txt yview]
       display_toggle_cov
-      .bot.right.nb.toggle.txt xview moveto [lindex $text_x 0]
-      .bot.right.nb.toggle.txt yview moveto [lindex $text_y 0]
+      $metric_src(toggle).txt xview moveto [lindex $text_x 0]
+      $metric_src(toggle).txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Memory"} {
-      set text_x [.bot.right.nb.memory.txt xview]
-      set text_y [.bot.right.nb.memory.txt yview]
+      set text_x [$metric_src(memory).txt xview]
+      set text_y [$metric_src(memory).txt yview]
       display_memory_cov
-      .bot.right.nb.memory.txt xview moveto [lindex $text_x 0]
-      .bot.right.nb.memory.txt yview moveto [lindex $text_y 0]
+      $metric_src(memory).txt xview moveto [lindex $text_x 0]
+      $metric_src(memory).txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Logic"} {
-      set text_x [.bot.right.nb.logic.txt xview]
-      set text_y [.bot.right.nb.logic.txt yview]
+      set text_x [$metric_src(comb).txt xview]
+      set text_y [$metric_src(comb).txt yview]
       display_comb_cov
-      .bot.right.nb.logic.txt xview moveto [lindex $text_x 0]
-      .bot.right.nb.logic.txt yview moveto [lindex $text_y 0]
+      $metric_src(comb).txt xview moveto [lindex $text_x 0]
+      $metric_src(comb).txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "FSM"} {
-      set text_x [.bot.right.nb.fsm.txt xview]
-      set text_y [.bot.right.nb.fsm.txt yview]
+      set text_x [$metric_src(fsm).txt xview]
+      set text_y [$metric_src(fsm).txt yview]
       display_fsm_cov
-      .bot.right.nb.fsm.txt xview moveto [lindex $text_x 0]
-      .bot.right.nb.fsm.txt yview moveto [lindex $text_y 0]
+      $metric_src(fsm).txt xview moveto [lindex $text_x 0]
+      $metric_src(fsm).txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Assert"} {
-      set text_x [.bot.right.nb.assert.txt xview]
-      set text_y [.bot.right.nb.assert.txt yview]
+      set text_x [$metric_src(assert).txt xview]
+      set text_y [$metric_src(assert).txt yview]
       display_assert_cov
-      .bot.right.nb.assert.txt xview moveto [lindex $text_x 0]
-      .bot.right.nb.assert.txt yview moveto [lindex $text_y 0]
-    } else {
-      # Error
+      $metric_src(assert).txt xview moveto [lindex $text_x 0]
+      $metric_src(assert).txt yview moveto [lindex $text_y 0]
     }
   }
   $report add checkbutton -label "Show Race Conditions" -variable race_type -onvalue 1 -offvalue 0 -underline 5 -command {
     if {$cov_rb == "Line"} {
-      set text_x [.bot.right.nb.line.txt xview]
-      set text_y [.bot.right.nb.line.txt yview]
+      set text_x [$metric_src(line).txt xview]
+      set text_y [$metric_src(line).txt yview]
       display_line_cov
-      .bot.right.nb.line.txt xview moveto [lindex $text_x 0]
-      .bot.right.nb.line.txt yview moveto [lindex $text_y 0]
+      $metric_src(line).txt xview moveto [lindex $text_x 0]
+      $metric_src(line).txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Toggle"} {
-      set text_x [.bot.right.nb.toggle.txt xview]
-      set text_y [.bot.right.nb.toggle.txt yview]
+      set text_x [$metric_src(toggle).txt xview]
+      set text_y [$metric_src(toggle).txt yview]
       display_toggle_cov
-      .bot.right.nb.toggle.txt xview moveto [lindex $text_x 0]
-      .bot.right.nb.toggle.txt yview moveto [lindex $text_y 0]
+      $metric_src(toggle).txt xview moveto [lindex $text_x 0]
+      $metric_src(toggle).txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Memory"} {
-      set text_x [.bot.right.nb.memory.txt xview]
-      set text_y [.bot.right.nb.memory.txt yview]
+      set text_x [$metric_src(memory).txt xview]
+      set text_y [$metric_src(memory).txt yview]
       display_memory_cov
-      .bot.right.nb.memory.txt xview moveto [lindex $text_x 0]
-      .bot.right.nb.memory.txt yview moveto [lindex $text_y 0]
+      $metric_src(memory).txt xview moveto [lindex $text_x 0]
+      $metric_src(memory).txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Logic"} {
-      set text_x [.bot.right.nb.logic.txt xview]
-      set text_y [.bot.right.nb.logic.txt yview]
+      set text_x [$metric_src(comb).txt xview]
+      set text_y [$metric_src(comb).txt yview]
       display_comb_cov
-      .bot.right.nb.logic.txt xview moveto [lindex $text_x 0]
-      .bot.right.nb.logic.txt yview moveto [lindex $text_y 0]
+      $metric_src(comb).txt xview moveto [lindex $text_x 0]
+      $metric_src(comb).txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "FSM"} {
-      set text_x [.bot.right.nb.fsm.txt xview]
-      set text_y [.bot.right.nb.fsm.txt yview]
+      set text_x [$metric_src(fsm).txt xview]
+      set text_y [$metric_src(fsm).txt yview]
       display_fsm_cov
-      .bot.right.nb.fsm.txt xview moveto [lindex $text_x 0]
-      .bot.right.nb.fsm.txt yview moveto [lindex $text_y 0]
+      $metric_src(fsm).txt xview moveto [lindex $text_x 0]
+      $metric_src(fsm).txt yview moveto [lindex $text_y 0]
     } elseif {$cov_rb == "Assert"} {
-      set text_x [.bot.right.nb.assert.txt xview]
-      set text_y [.bot.right.nb.assert.txt yview]
+      set text_x [$metric_src(assert).txt xview]
+      set text_y [$metric_src(assert).txt yview]
       display_assert_cov
-      .bot.right.nb.assert.txt xview moveto [lindex $text_x 0]
-      .bot.right.nb.assert.txt yview moveto [lindex $text_y 0]
+      $metric_src(assert).txt xview moveto [lindex $text_x 0]
+      $metric_src(assert).txt yview moveto [lindex $text_y 0]
     }
   }
   set mod_inst_type "Module"
@@ -329,11 +327,11 @@ proc menu_create {} {
   $m add command -label "Show Current Selection" -state disabled -accelerator "Ctrl-c" -underline 5 -command {
     if {$cov_rb == "Toggle"} {
       if {$curr_toggle_ptr != ""} {
-        .bot.right.nb.toggle.txt see $curr_toggle_ptr.0
+        $metric_src(toggle).txt see $curr_toggle_ptr.0
       }
     } elseif {$cov_rb == "Logic"} {
       if {$curr_comb_ptr != ""} {
-        .bot.right.nb.logic.txt see $curr_comb_ptr.0
+        $metric_src(comb).txt see $curr_comb_ptr.0
       }
     }
   }
@@ -398,22 +396,22 @@ proc open_files {fnames} {
 
   global file_types cdd_name fname open_type
   global win_cursor txt_cursor e_cursor
-  global preferences
+  global preferences metric_src
 
   # Get all cursor values from various widgets (so we can properly restore them after the open)
   set win_cursor   [. cget -cursor]
-  set txt_l_cursor [.bot.right.nb.line.txt          cget -cursor]
-  set txt_t_cursor [.bot.right.nb.toggle.txt        cget -cursor]
-  set txt_m_cursor [.bot.right.nb.memory.txt        cget -cursor]
-  set txt_c_cursor [.bot.right.nb.logic.txt         cget -cursor]
-  set txt_f_cursor [.bot.right.nb.fsm.txt           cget -cursor]
-  set txt_a_cursor [.bot.right.nb.assert.txt        cget -cursor]
-  set e_l_cursor   [.bot.right.nb.line.h.search.e   cget -cursor]
-  set e_t_cursor   [.bot.right.nb.toggle.h.search.e cget -cursor]
-  set e_m_cursor   [.bot.right.nb.memory.h.search.e cget -cursor]
-  set e_c_cursor   [.bot.right.nb.logic.h.search.e  cget -cursor]
-  set e_f_cursor   [.bot.right.nb.fsm.h.search.e    cget -cursor]
-  set e_a_cursor   [.bot.right.nb.assert.h.search.e cget -cursor]
+  set txt_l_cursor [$metric_src(line).txt          cget -cursor]
+  set txt_t_cursor [$metric_src(toggle).txt        cget -cursor]
+  set txt_m_cursor [$metric_src(memory).txt        cget -cursor]
+  set txt_c_cursor [$metric_src(comb).txt          cget -cursor]
+  set txt_f_cursor [$metric_src(fsm).txt           cget -cursor]
+  set txt_a_cursor [$metric_src(assert).txt        cget -cursor]
+  set e_l_cursor   [$metric_src(line).h.search.e   cget -cursor]
+  set e_t_cursor   [$metric_src(toggle).h.search.e cget -cursor]
+  set e_m_cursor   [$metric_src(memory).h.search.e cget -cursor]
+  set e_c_cursor   [$metric_src(comb).h.search.e   cget -cursor]
+  set e_f_cursor   [$metric_src(fsm).h.search.e    cget -cursor]
+  set e_a_cursor   [$metric_src(assert).h.search.e cget -cursor]
 
   foreach fname $fnames {
 
@@ -430,19 +428,19 @@ proc open_files {fnames} {
     }
 
     # Set all widget cursors to the watch
-    .                               configure -cursor watch
-    .bot.right.nb.line.txt          configure -cursor watch
-    .bot.right.nb.toggle.txt        configure -cursor watch
-    .bot.right.nb.memory.txt        configure -cursor watch
-    .bot.right.nb.logic.txt         configure -cursor watch
-    .bot.right.nb.fsm.txt           configure -cursor watch
-    .bot.right.nb.assert.txt        configure -cursor watch
-    .bot.right.nb.line.h.search.e   configure -cursor watch
-    .bot.right.nb.toggle.h.search.e configure -cursor watch
-    .bot.right.nb.memory.h.search.e configure -cursor watch
-    .bot.right.nb.logic.h.search.e  configure -cursor watch
-    .bot.right.nb.fsm.h.search.e    configure -cursor watch
-    .bot.right.nb.assert.h.search.e configure -cursor watch
+    .                              configure -cursor watch
+    $metric_src(line).txt          configure -cursor watch
+    $metric_src(toggle).txt        configure -cursor watch
+    $metric_src(memory).txt        configure -cursor watch
+    $metric_src(comb).txt          configure -cursor watch
+    $metric_src(fsm).txt           configure -cursor watch
+    $metric_src(assert).txt        configure -cursor watch
+    $metric_src(line).h.search.e   configure -cursor watch
+    $metric_src(toggle).h.search.e configure -cursor watch
+    $metric_src(memory).h.search.e configure -cursor watch
+    $metric_src(comb).h.search.e   configure -cursor watch
+    $metric_src(fsm).h.search.e    configure -cursor watch
+    $metric_src(assert).h.search.e configure -cursor watch
 
     if {$open_type == "open"} {
 
@@ -471,19 +469,19 @@ proc open_files {fnames} {
   .info configure -text "Select a module/instance at left for coverage details"
 
   # Reset the cursors
-  .                               configure -cursor $win_cursor
-  .bot.right.nb.line.txt          configure -cursor $txt_l_cursor
-  .bot.right.nb.toggle.txt        configure -cursor $txt_t_cursor
-  .bot.right.nb.memory.txt        configure -cursor $txt_m_cursor
-  .bot.right.nb.logic.txt         configure -cursor $txt_c_cursor
-  .bot.right.nb.fsm.txt           configure -cursor $txt_f_cursor
-  .bot.right.nb.assert.txt        configure -cursor $txt_a_cursor
-  .bot.right.nb.line.h.search.e   configure -cursor $e_l_cursor
-  .bot.right.nb.toggle.h.search.e configure -cursor $e_t_cursor
-  .bot.right.nb.memory.h.search.e configure -cursor $e_m_cursor
-  .bot.right.nb.logic.h.search.e  configure -cursor $e_c_cursor
-  .bot.right.nb.fsm.h.search.e    configure -cursor $e_f_cursor
-  .bot.right.nb.assert.h.search.e configure -cursor $e_a_cursor
+  .                              configure -cursor $win_cursor
+  $metric_src(line).txt          configure -cursor $txt_l_cursor
+  $metric_src(toggle).txt        configure -cursor $txt_t_cursor
+  $metric_src(memory).txt        configure -cursor $txt_m_cursor
+  $metric_src(comb).txt          configure -cursor $txt_c_cursor
+  $metric_src(fsm).txt           configure -cursor $txt_f_cursor
+  $metric_src(assert).txt        configure -cursor $txt_a_cursor
+  $metric_src(line).h.search.e   configure -cursor $e_l_cursor
+  $metric_src(toggle).h.search.e configure -cursor $e_t_cursor
+  $metric_src(memory).h.search.e configure -cursor $e_m_cursor
+  $metric_src(comb).h.search.e   configure -cursor $e_c_cursor
+  $metric_src(fsm).h.search.e    configure -cursor $e_f_cursor
+  $metric_src(assert).h.search.e configure -cursor $e_a_cursor
 
   # Change some of the GUI elements
   if {$cdd_name ne ""} {

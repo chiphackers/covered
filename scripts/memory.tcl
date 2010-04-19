@@ -21,13 +21,13 @@ set memory_gui_saved 0
 
 proc display_memory {curr_index} {
 
-  global prev_memory_index next_memory_index curr_memory_ptr curr_mem_index
+  global prev_memory_index next_memory_index curr_memory_ptr curr_mem_index metric_src
 
   # Get range of current signal
-  set curr_range [.bot.right.nb.memory.txt tag prevrange uncov_button "$curr_index + 1 chars"]
+  set curr_range [$metric_src(memory).txt tag prevrange uncov_button "$curr_index + 1 chars"]
 
   # Calculate the current signal string
-  set curr_signal [string trim [lindex [split [.bot.right.nb.memory.txt get [lindex $curr_range 0] [lindex $curr_range 1]] "\["] 0]]
+  set curr_signal [string trim [lindex [split [$metric_src(memory).txt get [lindex $curr_range 0] [lindex $curr_range 1]] "\["] 0]]
 
   # Clear global memory index
   set curr_mem_index ""
@@ -37,10 +37,10 @@ proc display_memory {curr_index} {
   goto_uncov [lindex $curr_range 0] memory
 
   # Get range of previous signal
-  set prev_memory_index [lindex [.bot.right.nb.memory.txt tag prevrange uncov_button [lindex $curr_index 0]] 0]
+  set prev_memory_index [lindex [$metric_src(memory).txt tag prevrange uncov_button [lindex $curr_index 0]] 0]
 
   # Get range of next signal
-  set next_memory_index [lindex [.bot.right.nb.memory.txt tag nextrange uncov_button [lindex $curr_range 1]] 0]
+  set next_memory_index [lindex [$metric_src(memory).txt tag nextrange uncov_button [lindex $curr_range 1]] 0]
 
   # Now create the memory window
   create_memory_window $curr_signal
@@ -51,7 +51,7 @@ proc create_memory_window {signal} {
 
   global memory_udim memory_pdim memory_pdim_array memory_array memory_excluded memory_reason
   global mem_name prev_memory_index next_memory_index
-  global curr_block
+  global curr_block metric_src
   global curr_memory_ptr curr_mem_index
   global preferences
   global HOME
@@ -84,12 +84,12 @@ proc create_memory_window {signal} {
         set memory_reason [get_exclude_reason .memwin]
       }
       tcl_func_set_memory_exclude $curr_block $mem_name $memory_excluded $memory_reason
-      set text_x [.bot.right.nb.memory.txt xview]
-      set text_y [.bot.right.nb.memory.txt yview]
+      set text_x [$metric_src(memory).txt xview]
+      set text_y [$metric_src(memory).txt yview]
       process_memory_cov
       create_memory_window $mem_name
-      .bot.right.nb.memory.txt xview moveto [lindex $text_x 0]
-      .bot.right.nb.memory.txt yview moveto [lindex $text_y 0]
+      $metric_src(memory).txt xview moveto [lindex $text_x 0]
+      $metric_src(memory).txt yview moveto [lindex $text_y 0]
       populate_treeview
       enable_cdd_save
       set_pointer curr_memory_ptr $curr_memory_ptr memory
