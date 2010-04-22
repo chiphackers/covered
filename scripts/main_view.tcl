@@ -689,7 +689,7 @@ proc populate_text {} {
         $metric_src(memory).h.search.clear configure -state normal
       } elseif {$cov_rb == "Logic"} {
         process_comb_cov
-        goto_uncov $curr_uncov_index logic
+        goto_uncov $curr_uncov_index comb
         $metric_src(comb).h.search.e     configure -state normal -bg white
         $metric_src(comb).h.search.find  configure -state normal
         $metric_src(comb).h.search.clear configure -state normal

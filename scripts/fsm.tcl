@@ -179,7 +179,7 @@ proc create_fsm_window {expr_id} {
     grid .fsmwin.pw.t.hb -row 2 -column 0 -sticky ew
 
     # Create the button frame
-    frame .fsmwin.bf -relief raised -borderwidth 1
+    ttk::frame .fsmwin.bf -relief raised -borderwidth 1
     ttk::label .fsmwin.bf.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -state disabled
     bind .fsmwin.bf.prev <Button-1> {
       display_fsm $prev_fsm_index
