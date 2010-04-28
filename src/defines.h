@@ -57,7 +57,7 @@
 /*!
  This contains the header information specified when executing this tool.
 */
-#define COVERED_HEADER     "\nCovered %s -- Verilog Code Coverage Utility\nWritten by Trevor Williams  (phase1geo@gmail.com)\nCopyright 2006-2009\nFreely distributable under the GPL license\n", COVERED_VERSION
+#define COVERED_HEADER     "\nCovered %s -- Verilog Code Coverage Utility\nWritten by Trevor Williams  (phase1geo@gmail.com)\nCopyright 2006-2010\nFreely distributable under the GPL license\n", COVERED_VERSION
 
 /*!
  Default database filename if not specified on command-line.

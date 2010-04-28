@@ -23,6 +23,12 @@ ShowTooltips = true
 
 TtkStyle = clam
 
+# Is set to true, enables a few of Covered's GUI animations.  If these animations
+# don't work well or get in the way of your work, simply set this preference option
+# to value of false.
+
+EnableAnimations = true
+
 # Sets the foreground color for all source code that is found
 # to be uncovered during simulation.  The value can be any legal color
 # value accepted by Tcl.
@@ -164,11 +170,9 @@ ExclusionReasonConflictResolution = all
 
 # THE FOLLOWING LINES ARE FOR STORING GUI STATE INFORMATION -- DO NOT MODIFY LINES BELOW THIS COMMENT!
 
-MainWindowGeometry                = 1439x639+45+194
+MainWindowGeometry                = 1350x639+1+248
 ToggleWindowGeometry              = 366x125+427+365
 MemoryWindowGeometry              = 
 CombWindowGeometry                = 804x408+10+73
 FsmWindowGeometry                 = 
 AssertWindowGeometry              = 
-ModuleInstanceType                = Module
-ModuleInstanceTableListWidth      = 1283
