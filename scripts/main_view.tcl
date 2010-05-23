@@ -144,42 +144,39 @@ proc main_view {} {
   # Create table windows
   trace add variable cov_rb write cov_change_metric
 
-  # Create notebook
-  ttk::notebook .bot.right.nb
-  bind .bot.right.nb <<NotebookTabChanged>> {
-    set cov_rb [lindex [split [.bot.right.nb tab current -text] " "] 0]
-    cov_change_metric
-  }
+  # Create panedwindow
+  ttk::panedwindow .bot.right.pw -orient vertical
   
   # Create global lookup for the source tab
   array set metric_src {
-    line   .bot.right.nb.src
-    toggle .bot.right.nb.src
-    memory .bot.right.nb.src
-    comb   .bot.right.nb.src
-    fsm    .bot.right.nb.src
-    assert .bot.right.nb.src
+    line   .bot.right.pw.src
+    toggle .bot.right.pw.src
+    memory .bot.right.pw.src
+    comb   .bot.right.pw.src
+    fsm    .bot.right.pw.src
+    assert .bot.right.pw.src
   }
 
   # Create global lookup for the detail tab
   array set metric_dtl {
-    line   .bot.right.nb.dtl
-    toggle .bot.right.nb.dtl
-    memory .bot.right.nb.dtl
-    comb   .bot.right.nb.dtl
-    fsm    .bot.right.nb.dtl
-    assert .bot.right.nb.dtl
+    line   .bot.right.pw.dtl
+    toggle .bot.right.pw.dtl
+    memory .bot.right.pw.dtl
+    comb   .bot.right.pw.dtl
+    fsm    .bot.right.pw.dtl
+    assert .bot.right.pw.dtl
   }
 
-  # Create Source browser tab
-  .bot.right.nb add [ttk::frame .bot.right.nb.src] -text "Source" -underline 0
+  # Create source frame and detailed frame
+  .bot.right.pw add [ttk::frame .bot.right.pw.src]
+  .bot.right.pw add [ttk::frame .bot.right.pw.dtl]
 
   # Create the textbox header frame
-  ttk::frame .bot.right.nb.src.h
-  ttk::label .bot.right.nb.src.h.tl -text "Cur   Line #       Verilog Source" -anchor w
-  ttk::frame .bot.right.nb.src.h.pn
-  ttk::label .bot.right.nb.src.h.pn.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -state disabled
-  bind .bot.right.nb.src.h.pn.prev <Button-1> {
+  ttk::frame .bot.right.pw.src.h
+  ttk::label .bot.right.pw.src.h.tl -text "Cur   Line #       Verilog Source" -anchor w
+  ttk::frame .bot.right.pw.src.h.pn
+  ttk::label .bot.right.pw.src.h.pn.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -state disabled
+  bind .bot.right.pw.src.h.pn.prev <Button-1> {
     if {$cov_rb == "Line"} {
       goto_uncov $prev_uncov_index line
     } elseif {$cov_rb == "Toggle"} {
@@ -194,9 +191,9 @@ proc main_view {} {
       goto_uncov $prev_uncov_index assert
     }
   }
-  set_balloon .bot.right.nb.src.h.pn.prev "Click to view the previous uncovered item"
-  ttk::label .bot.right.nb.src.h.pn.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -state disabled
-  bind .bot.right.nb.src.h.pn.next <Button-1> {
+  set_balloon .bot.right.pw.src.h.pn.prev "Click to view the previous uncovered item"
+  ttk::label .bot.right.pw.src.h.pn.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -state disabled
+  bind .bot.right.pw.src.h.pn.next <Button-1> {
     if {$cov_rb == "Line"} {
       goto_uncov $next_uncov_index line
     } elseif {$cov_rb == "Toggle"} {
@@ -211,58 +208,54 @@ proc main_view {} {
       goto_uncov $next_uncov_index assert
     }
   }
-  set_balloon .bot.right.nb.src.h.pn.next "Click to view the next uncovered item"
-  frame .bot.right.nb.src.h.search -borderwidth 1 -relief ridge -bg white
-  label .bot.right.nb.src.h.search.find -image [image create photo -file [file join $HOME scripts find.gif]] -background white -state disabled -relief flat
-  bind .bot.right.nb.src.h.search.find <ButtonPress-1> {
-    perform_search .bot.right.nb.src.txt .bot.right.nb.src.h.search.e .info main_start_search_index
+  set_balloon .bot.right.pw.src.h.pn.next "Click to view the next uncovered item"
+  frame .bot.right.pw.src.h.search -borderwidth 1 -relief ridge -bg white
+  label .bot.right.pw.src.h.search.find -image [image create photo -file [file join $HOME scripts find.gif]] -background white -state disabled -relief flat
+  bind .bot.right.pw.src.h.search.find <ButtonPress-1> {
+    perform_search .bot.right.pw.src.txt .bot.right.pw.src.h.search.e .info main_start_search_index
   }
-  set_balloon .bot.right.nb.src.h.search.find "Click to find the next occurrence of the search string"
-  entry .bot.right.nb.src.h.search.e -width 15 -state disabled -relief flat -bg white
-  bind .bot.right.nb.src.h.search.e <Return> {
-    perform_search .bot.right.nb.src.txt .bot.right.nb.src.h.search.e .info main_start_search_index
+  set_balloon .bot.right.pw.src.h.search.find "Click to find the next occurrence of the search string"
+  entry .bot.right.pw.src.h.search.e -width 15 -state disabled -relief flat -bg white
+  bind .bot.right.pw.src.h.search.e <Return> {
+    perform_search .bot.right.pw.src.txt .bot.right.pw.src.h.search.e .info main_start_search_index
   }
-  label .bot.right.nb.src.h.search.clear -image [image create photo -file [file join $HOME scripts clear.gif]] -background white -state disabled -relief flat
-  bind .bot.right.nb.src.h.search.clear <ButtonPress-1> {
-    .bot.right.nb.src.txt tag delete search_found
-    .bot.right.nb.src.h.search.e delete 0 end
+  label .bot.right.pw.src.h.search.clear -image [image create photo -file [file join $HOME scripts clear.gif]] -background white -state disabled -relief flat
+  bind .bot.right.pw.src.h.search.clear <ButtonPress-1> {
+    .bot.right.pw.src.txt tag delete search_found
+    .bot.right.pw.src.h.search.e delete 0 end
     set main_start_search_index 1.0
   }
-  set_balloon .bot.right.nb.src.h.search.clear "Click to clear the search string"
+  set_balloon .bot.right.pw.src.h.search.clear "Click to clear the search string"
 
   # Pack the previous/next frame
-  pack .bot.right.nb.src.h.pn.prev -side left
-  pack .bot.right.nb.src.h.pn.next -side left
+  pack .bot.right.pw.src.h.pn.prev -side left
+  pack .bot.right.pw.src.h.pn.next -side left
 
   # Pack the search frame
-  pack .bot.right.nb.src.h.search.find  -side left
-  pack .bot.right.nb.src.h.search.e     -side left -padx 3
-  pack .bot.right.nb.src.h.search.clear -side left
+  pack .bot.right.pw.src.h.search.find  -side left
+  pack .bot.right.pw.src.h.search.e     -side left -padx 3
+  pack .bot.right.pw.src.h.search.clear -side left
 
   # Pack the textbox header frame
-  pack .bot.right.nb.src.h.tl     -side left
-  pack .bot.right.nb.src.h.pn     -side left -expand yes
-  pack .bot.right.nb.src.h.search -side right
+  pack .bot.right.pw.src.h.tl     -side left
+  pack .bot.right.pw.src.h.pn     -side left -expand yes
+  pack .bot.right.pw.src.h.search -side right
 
   # Create the text widget to display the modules/instances
-  text           .bot.right.nb.src.txt -yscrollcommand ".bot.right.nb.src.vb set" -xscrollcommand ".bot.right.nb.src.hb set" \
+  text           .bot.right.pw.src.txt -yscrollcommand ".bot.right.pw.src.vb set" -xscrollcommand ".bot.right.pw.src.hb set" \
                                        -wrap none -state disabled
-  ttk::scrollbar .bot.right.nb.src.vb -command ".bot.right.nb.src.txt yview"
-  ttk::scrollbar .bot.right.nb.src.hb -orient horizontal -command ".bot.right.nb.src.txt xview"
+  ttk::scrollbar .bot.right.pw.src.vb -command ".bot.right.pw.src.txt yview"
+  ttk::scrollbar .bot.right.pw.src.hb -orient horizontal -command ".bot.right.pw.src.txt xview"
 
   # Pack the right paned window
-  grid rowconfigure    .bot.right.nb.src 1 -weight 1
-  grid columnconfigure .bot.right.nb.src 0 -weight 1
-  grid .bot.right.nb.src.h   -row 0 -column 0 -columnspan 2 -sticky nsew
-  grid .bot.right.nb.src.txt -row 1 -column 0 -sticky nsew
-  grid .bot.right.nb.src.vb  -row 1 -column 1 -sticky ns
-  grid .bot.right.nb.src.hb  -row 2 -column 0 -sticky ew
+  grid rowconfigure    .bot.right.pw.src 1 -weight 1
+  grid columnconfigure .bot.right.pw.src 0 -weight 1
+  grid .bot.right.pw.src.h   -row 0 -column 0 -columnspan 2 -sticky nsew
+  grid .bot.right.pw.src.txt -row 1 -column 0 -sticky nsew
+  grid .bot.right.pw.src.vb  -row 1 -column 1 -sticky ns
+  grid .bot.right.pw.src.hb  -row 2 -column 0 -sticky ew
 
-  # Create Detail tab
-  .bot.right.nb add [ttk::frame .bot.right.nb.dtl] -text "Detail" -underline 0
-  .bot.right.nb hide 1
-
-  pack .bot.right.nb -fill both -expand yes
+  pack .bot.right.pw -fill both -expand yes
 
   ##############################
   # POPULATE LEFT BOTTOM FRAME #
