@@ -31,6 +31,7 @@
 #include "info.h"
 #include "link.h"
 #include "lxt.h"
+#include "fst.h"
 #include "parse.h"
 #include "parser_misc.h"
 #include "race.h"
