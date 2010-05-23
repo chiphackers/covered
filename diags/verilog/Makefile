@@ -45,9 +45,15 @@ CFG_CMD       = lxt
 DUMP_FMT      = -lxt2
 CHK_CODE      = 5
 else
+ifdef FST
+CFG_CMD       = fst
+DUMP_FMT      = -fst
+CHK_CODE      = 5
+else
 CFG_CMD       = vcd
 DUMP_FMT      = -vcd
 CHK_CODE      = 0
+endif
 endif
 endif
 ifdef INLINE

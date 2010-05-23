@@ -13,9 +13,11 @@ covered_SOURCES = arc.c \
                   enumerate.c \
                   exclude.c \
 		  expr.c \
+                  fastlz.c \
 		  fsm.c \
                   fsm_arg.c \
 		  fsm_var.c \
+                  fst.c \
                   func_iter.c \
 		  func_unit.c \
                   genprof.c \

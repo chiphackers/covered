@@ -126,6 +126,8 @@ sub initialize {
         $SIMULATOR = "VERIWELL";
       } elsif( $varname eq "LXT" ) {
         $DUMPTYPE = "LXT";
+      } elsif( $varname eq "FST" ) {
+        $DUMPTYPE = "FST";
       } elsif( $varname eq "VPI" ) {
         $USE_VPI  = 1;
         $DUMPTYPE = "VPI";
@@ -175,15 +177,32 @@ sub runScoreCommand {
 
   my( $score_args ) = $_[0];
 
-  # If the -vcd option was used but the user specified the LXT dumpfile format should be used,
+  # If the -vcd option was used but the user specified the LXT or FST dumpfile format should be used,
   # perform the substitution.
-  if( ($score_args =~ /^(.*)\s+-vcd\s+(\w+)\s+(.*)$/) && ($dumptype eq "LXT") ) {
-    $score_args = "$1 -lxt $2 $3";
+  if( ($score_args =~ /^(.*)\s+-vcd\s+(\w+)\s+(.*)$/) && (($dumptype eq "LXT") || ($dumptype eq "FST")) ) {
+    if( $dumptype eq "LXT" ) {
+      $score_args = "$1 -lxt $2 $3";
+    } else {
+      $score_args = "$1 -fst $2 $3";
+    }
 
-  # Otherwise, if the -lxt option was used by the user specified the VCD dumpfile format should be used,
+  # Otherwise, if the -lxt option was used by the user specified the VCD or FST dumpfile format should be used,
   # perform the substitution
-  } elsif( ($score_args =~ /^(.*)\s+-lxt\s+(\w+)\s+(.*)$/) && ($dumptype eq "VCD") ) {
-    $score_args = "$1 -vcd $2 $3";
+  } elsif( ($score_args =~ /^(.*)\s+-lxt\s+(\w+)\s+(.*)$/) && (($dumptype eq "VCD") || ($dumptype eq "FST")) ) {
+    if( $dumptype eq "VCD" ) {
+      $score_args = "$1 -vcd $2 $3";
+    } else {
+      $score_args = "$1 -fst $2 $3";
+    }
+
+  # Otherwise, if the -fst option was used by the user specified the VCD or LXT dumpfile format should be used,
+  # perform the substitution
+  } elsif( ($score_args =~ /^(.*)\s+-fst\s+(\w+)\s+(.*)$/) && (($dumptype eq "VCD") || ($dumptype eq "LXT")) ) {
+    if( $dumptype eq "VCD" ) {
+      $score_args = "$1 -vcd $2 $3";
+    } else {
+      $score_args = "$1 -lxt $2 $3";
+    }
   }
 
   # Create score command

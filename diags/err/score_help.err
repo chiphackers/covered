@@ -1,10 +1,10 @@
 
-Usage:  covered score (-h | -t <top-level_module_name> [-vcd <dumpfile> | -lxt <dumpfile>] [<options>])
+Usage:  covered score (-h | -t <top-level_module_name> [-vcd <dumpfile> | -lxt <dumpfile> | -fst <dumpfile>] [<options>])
 
    Dumpfile formats:
-      Both the VCD and LXT style dumpfiles are supported by Covered.
+      The VCD, LXT and FST style dumpfiles are supported by Covered.
 
-      If either the -vcd or -lxt option is specified, the design is scored using this dumpfile
+      If either the -vcd, -lxt or -fst option is specified, the design is scored using this dumpfile
       for coverage gathering.  If neither option is specified, Covered will only create an
       initial CDD file from the design and will not attempt to score the design.  An error message
       will be displayed if both options are present on the command-line.

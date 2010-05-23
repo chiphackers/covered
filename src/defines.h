@@ -143,6 +143,9 @@
 /*! LXT dumpfile was specified */
 #define DUMP_FMT_LXT       2
 
+/*! FST dumpfile was specified */
+#define DUMP_FMT_FST       3
+
 /*! @} */
 
 /*!

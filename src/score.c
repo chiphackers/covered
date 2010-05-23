@@ -184,12 +184,12 @@ extern void define_macro( const char* name, const char* value );
 static void score_usage() {
 
   printf( "\n" );
-  printf( "Usage:  covered score (-h | -t <top-level_module_name> [-vcd <dumpfile> | -lxt <dumpfile>] [<options>])\n" );
+  printf( "Usage:  covered score (-h | -t <top-level_module_name> [-vcd <dumpfile> | -lxt <dumpfile> | -fst <dumpfile>] [<options>])\n" );
   printf( "\n" );
   printf( "   Dumpfile formats:\n" );
-  printf( "      Both the VCD and LXT style dumpfiles are supported by Covered.\n" );
+  printf( "      The VCD, LXT and FST style dumpfiles are supported by Covered.\n" );
   printf( "\n" );
-  printf( "      If either the -vcd or -lxt option is specified, the design is scored using this dumpfile\n" );
+  printf( "      If either the -vcd, -lxt or -fst option is specified, the design is scored using this dumpfile\n" );
   printf( "      for coverage gathering.  If neither option is specified, Covered will only create an\n" );
   printf( "      initial CDD file from the design and will not attempt to score the design.  An error message\n" );
   printf( "      will be displayed if both options are present on the command-line.\n" );
@@ -849,6 +849,12 @@ static bool score_parse_args(
             /*@-unreachable@*/
             break;
             /*@=unreachable@*/
+          case DUMP_FMT_FST :
+            print_output( "Both the -vcd and -fst options were specified on the command-line", FATAL, __FILE__, __LINE__ );
+            Throw 0;
+            /*@-unreachable@*/
+            break;
+            /*@=unreachable@*/
           default :
             assert( 0 );
             break;
@@ -882,6 +888,55 @@ static bool score_parse_args(
             /*@=unreachable@*/
           case DUMP_FMT_LXT :
             print_output( "Only one -lxt option is allowed on the score command-line", FATAL, __FILE__, __LINE__ );
+            Throw 0;
+            /*@-unreachable@*/
+            break;
+            /*@=unreachable@*/
+          case DUMP_FMT_FST :
+            print_output( "Both the -fst and -lxt options were specified on the command-line", FATAL, __FILE__, __LINE__ );
+            Throw 0;
+            /*@-unreachable@*/
+            break;
+            /*@=unreachable@*/
+          default :
+            assert( 0 );
+            break;
+        }
+      } else {
+        Throw 0;
+      }
+
+    } else if( strncmp( "-fst", argv[i], 4 ) == 0 ) {
+ 
+      if( check_option_value( argc, argv, i ) ) {
+        i++;
+        switch( dump_mode ) {
+          case DUMP_FMT_NONE :
+            if( file_exists( argv[i] ) ) {
+              dump_file = strdup_safe( argv[i] );
+              dump_mode = DUMP_FMT_FST;
+              score_add_args( argv[i-1], argv[i] );
+            } else {       
+              unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "FST dumpfile not found \"%s\"", argv[i] );
+              assert( rv < USER_MSG_LENGTH );
+              print_output( user_msg, FATAL, __FILE__, __LINE__ );
+              Throw 0;
+            }
+            break;
+          case DUMP_FMT_VCD :
+            print_output( "Both the -vcd and -fst options were specified on the command-line", FATAL, __FILE__, __LINE__ );
+            Throw 0;
+            /*@-unreachable@*/
+            break;
+            /*@=unreachable@*/
+          case DUMP_FMT_LXT :
+            print_output( "Both the -lxt and -fst options were specified on the command-line", FATAL, __FILE__, __LINE__ );
+            Throw 0;
+            /*@-unreachable@*/
+            break;
+            /*@=unreachable@*/
+          case DUMP_FMT_FST :
+            print_output( "Only one -fst option is allowed on the score command-line", FATAL, __FILE__, __LINE__ );
             Throw 0;
             /*@-unreachable@*/
             break;
@@ -1319,6 +1374,7 @@ void command_score(
         switch( dump_mode ) {
           case DUMP_FMT_VCD :  rv = snprintf( user_msg, USER_MSG_LENGTH, "Scoring VCD dumpfile %s...", dump_file );  break;
           case DUMP_FMT_LXT :  rv = snprintf( user_msg, USER_MSG_LENGTH, "Scoring LXT dumpfile %s...", dump_file );  break;
+          case DUMP_FMT_FST :  rv = snprintf( user_msg, USER_MSG_LENGTH, "Scoring FST dumpfile %s...", dump_file );  break;
         }
         assert( rv < USER_MSG_LENGTH );
         print_output( user_msg, NORMAL, __FILE__, __LINE__ );

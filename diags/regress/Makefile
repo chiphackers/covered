@@ -532,6 +532,11 @@ EXCLUDE      += add1              always7           always7.1         always11.2
                 wait1             wait1.1
 endif
 
+# List of diagnostics that should not be run if we are using FST dumpfiles
+ifdef FST
+EXCLUDE      +=
+endif
+
 # List of diagnostics that should not be run if we are using VPI
 ifdef VPI
 EXCLUDE      += err5.2            err5.3            err5.4            score_err1.14     score_err1.16
@@ -725,6 +730,18 @@ all-lxt-inline-full:
 	$(MAKE) iverilog LXT=1 INLINE=1
 	$(MAKE) veriwell LXT=1 INLINE=1
 
+all-fst-quick:
+	$(MAKE) iverilog FST=1
+
+all-fst-inline-quick:
+	$(MAKE) iverilog FST=1 INLINE=1
+
+all-fst-full:
+	$(MAKE) iverilog FST=1
+
+all-fst-inline-full:
+	$(MAKE) iverilog FST=1 INLINE=1
+
 all-vpi-quick:
 	$(MAKE) iverilog VPI=1 LEAVE=1
 	$(MAKE) cver VPI=1 LEAVE=1
@@ -748,9 +765,11 @@ all-vpi-inline-full:
 all-iv:
 	$(MAKE) iverilog
 	$(MAKE) iverilog LXT=1
+	$(MAKE) iverilog FST=1
 	$(MAKE) iverilog VPI=1
 	$(MAKE) iverilog INLINE=1
 	$(MAKE) iverilog INLINE=1 LXT=1
+	$(MAKE) iverilog INLINE=1 FST=1
 	$(MAKE) iverilog INLINE=1 VPI=1
 
 all-cver:
@@ -778,6 +797,8 @@ all-quick:
 	$(MAKE) all-vcd-inline-quick
 	$(MAKE) all-lxt-quick
 	$(MAKE) all-lxt-inline-quick
+	$(MAKE) all-fst-quick
+	$(MAKE) all-fst-inline-quick
 	$(MAKE) all-vpi-quick
 	$(MAKE) all-vpi-inline-quick
 
@@ -786,6 +807,8 @@ all all-full:
 	$(MAKE) all-vcd-inline-full
 	$(MAKE) all-lxt-full
 	$(MAKE) all-lxt-inline-full
+	$(MAKE) all-fst-full
+	$(MAKE) all-fst-inline-full
 	$(MAKE) all-vpi-full
 	$(MAKE) all-vpi-inline-full
 
