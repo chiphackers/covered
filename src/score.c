@@ -754,6 +754,49 @@ static bool score_parse_args(
         Throw 0;
       }
       
+    } else if( strncmp( "-fst", argv[i], 4 ) == 0 ) {
+
+      if( check_option_value( argc, argv, i ) ) {
+        i++;
+        switch( dump_mode ) {
+          case DUMP_FMT_NONE :
+            if( file_exists( argv[i] ) ) {
+              dump_file = strdup_safe( argv[i] );
+              dump_mode = DUMP_FMT_FST;
+              score_add_args( argv[i-1], argv[i] );
+            } else {     
+              unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "FST dumpfile not found \"%s\"", argv[i] );
+              assert( rv < USER_MSG_LENGTH );
+              print_output( user_msg, FATAL, __FILE__, __LINE__ );
+              Throw 0;
+            }
+            break;
+          case DUMP_FMT_VCD :
+            print_output( "Both the -vcd and -fst options were specified on the command-line", FATAL, __FILE__, __LINE__ );
+            Throw 0;
+            /*@-unreachable@*/
+            break;
+            /*@=unreachable@*/
+          case DUMP_FMT_LXT :
+            print_output( "Both the -lxt and -fst options were specified on the command-line", FATAL, __FILE__, __LINE__ );
+            Throw 0;
+            /*@-unreachable@*/
+            break;
+            /*@=unreachable@*/
+          case DUMP_FMT_FST :
+            print_output( "Only one -fst option is allowed on the score command-line", FATAL, __FILE__, __LINE__ );
+            Throw 0;
+            /*@-unreachable@*/
+            break;
+            /*@=unreachable@*/
+          default :
+            assert( 0 );
+            break;
+        }
+      } else {
+        Throw 0;
+      }
+
     } else if( strncmp( "-f", argv[i], 2 ) == 0 ) {
 
       if( check_option_value( argc, argv, i ) ) {
@@ -761,6 +804,7 @@ static bool score_parse_args(
         int    arg_num  = 0;
         i++;
         Try {
+          printf( "argv[%d]: %s\n", i, argv[i] );
           read_command_file( argv[i], &arg_list, &arg_num );
           help_found = score_parse_args( arg_num, -1, (const char**)arg_list );
         } Catch_anonymous {
@@ -894,49 +938,6 @@ static bool score_parse_args(
             /*@=unreachable@*/
           case DUMP_FMT_FST :
             print_output( "Both the -fst and -lxt options were specified on the command-line", FATAL, __FILE__, __LINE__ );
-            Throw 0;
-            /*@-unreachable@*/
-            break;
-            /*@=unreachable@*/
-          default :
-            assert( 0 );
-            break;
-        }
-      } else {
-        Throw 0;
-      }
-
-    } else if( strncmp( "-fst", argv[i], 4 ) == 0 ) {
- 
-      if( check_option_value( argc, argv, i ) ) {
-        i++;
-        switch( dump_mode ) {
-          case DUMP_FMT_NONE :
-            if( file_exists( argv[i] ) ) {
-              dump_file = strdup_safe( argv[i] );
-              dump_mode = DUMP_FMT_FST;
-              score_add_args( argv[i-1], argv[i] );
-            } else {       
-              unsigned int rv = snprintf( user_msg, USER_MSG_LENGTH, "FST dumpfile not found \"%s\"", argv[i] );
-              assert( rv < USER_MSG_LENGTH );
-              print_output( user_msg, FATAL, __FILE__, __LINE__ );
-              Throw 0;
-            }
-            break;
-          case DUMP_FMT_VCD :
-            print_output( "Both the -vcd and -fst options were specified on the command-line", FATAL, __FILE__, __LINE__ );
-            Throw 0;
-            /*@-unreachable@*/
-            break;
-            /*@=unreachable@*/
-          case DUMP_FMT_LXT :
-            print_output( "Both the -lxt and -fst options were specified on the command-line", FATAL, __FILE__, __LINE__ );
-            Throw 0;
-            /*@-unreachable@*/
-            break;
-            /*@=unreachable@*/
-          case DUMP_FMT_FST :
-            print_output( "Only one -fst option is allowed on the score command-line", FATAL, __FILE__, __LINE__ );
             Throw 0;
             /*@-unreachable@*/
             break;
