@@ -39,8 +39,6 @@ extern char       user_msg[USER_MSG_LENGTH];
 extern symtable*  vcd_symtab;
 extern int        vcd_symtab_size;
 extern symtable** timestep_tab;
-extern char**     curr_inst_scope;
-extern int        curr_inst_scope_size;
 
 
 /*! Specifies the last timestamp simulated */
@@ -259,11 +257,6 @@ void fst_parse(
     /* Create initial symbol table */
     vcd_symtab = symtable_create();
 
-    /* Allocate memory for instance scope */
-    curr_inst_scope      = (char**)malloc_safe( sizeof( char* ) );
-    curr_inst_scope[0]   = (char*)malloc_safe( 4096 );
-    curr_inst_scope_size = 1;
-
     /* Handle the dumpfile definitions */
     fst_reader_process_hier( xc );
 
@@ -287,11 +280,6 @@ void fst_parse(
     }
         
     /* Deallocate memory */
-    assert( curr_inst_scope_size == 1 );
-    free_safe( curr_inst_scope[0], 4096 );
-    free_safe( curr_inst_scope, sizeof( char* ) );
-    curr_inst_scope      = NULL;
-    curr_inst_scope_size = 0;
     symtable_dealloc( vcd_symtab );
     free_safe( timestep_tab, (sizeof( symtable* ) * vcd_symtab_size) );
 
