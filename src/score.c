@@ -804,7 +804,6 @@ static bool score_parse_args(
         int    arg_num  = 0;
         i++;
         Try {
-          printf( "argv[%d]: %s\n", i, argv[i] );
           read_command_file( argv[i], &arg_list, &arg_num );
           help_found = score_parse_args( arg_num, -1, (const char**)arg_list );
         } Catch_anonymous {

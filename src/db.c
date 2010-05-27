@@ -3383,6 +3383,8 @@ void db_assign_symbol(
 
       vsignal*   sig;
       func_unit* found_funit;
+      char       tmp_scope[4096];
+      tmp_scope[0] = '\0';
 
       /*
        If we found an internal Covered signal in a CDD that is not expecting inlined data, the user specified a bad CDD file.

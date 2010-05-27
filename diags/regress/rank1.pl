@@ -38,6 +38,9 @@ sub run {
   } elsif( $DUMPTYPE eq "LXT" ) {
     &convertCfg( "lxt", 0, 0, "${bname}.cfg" );
     $fmt = "-lxt2";
+  } elsif( $DUMPTYPE eq "FST" ) {
+    &convertCfg( "fst", 0, 0, "${bname}.cfg" );
+    $fmt = "-fst";
   } else {
     die "Illegal DUMPTYPE value (${DUMPTYPE})\n";
   }

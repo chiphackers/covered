@@ -534,7 +534,7 @@ endif
 
 # List of diagnostics that should not be run if we are using FST dumpfiles
 ifdef FST
-EXCLUDE      +=
+EXCLUDE      += always7           generate11.3      trigger1
 endif
 
 # List of diagnostics that should not be run if we are using VPI

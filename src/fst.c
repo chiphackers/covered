@@ -60,10 +60,12 @@ static void fst_reader_process_hier(
 
   struct fstReaderContext *xc = (struct fstReaderContext *)ctx;
   char str[FST_ID_NAM_SIZ+1];
+  char str2[FST_ID_NAM_SIZ+1];
   char *pnt;
   int ch, scopetype;
   int vartype, vardir;
   uint32_t len, alias;
+  uint32_t msb, lsb;
   uint32_t maxvalpos=0;
   int num_signal_dyn = 65536;
 
@@ -136,9 +138,11 @@ static void fst_reader_process_hier(
         while( (ch = fgetc( xc->fh )) ) {
           *(pnt++) = ch;
         } /* varname */
-        *pnt = 0;
+        *pnt  = 0;
         len   = fstReaderVarint32(xc->fh);
         alias = fstReaderVarint32(xc->fh);
+        msb   = len - 1;
+        lsb   = 0;
 
         if( !alias ) {
           if( xc->maxhandle == num_signal_dyn ) {
@@ -156,21 +160,43 @@ static void fst_reader_process_hier(
 
           if((vartype == FST_VT_VCD_REAL) || (vartype == FST_VT_VCD_REAL_PARAMETER) || (vartype == FST_VT_VCD_REALTIME)) {
             len = 64;
+            msb = 63;
+            lsb = 0;
             xc->signal_typs[xc->maxhandle] = FST_VT_VCD_REAL;
+          } else {
+            if( sscanf( str, "%s \[%d:%d]", str2, &msb, &lsb ) != 3 ) {
+              if( sscanf( str, "%s \[%d]", str2, &lsb ) == 2 ) {
+                msb = lsb;
+                strcpy( str, str2 );
+              }
+            } else {
+              strcpy( str, str2 );
+            }
           }
           {
             uint32_t modlen = (vartype != FST_VT_VCD_PORT) ? len : ((len - 2) / 3);
-            db_assign_symbol( str, fstVcdID( xc->maxhandle + 1 ), (modlen - 1), 0 );
+            db_assign_symbol( str, fstVcdID( xc->maxhandle + 1 ), msb, lsb );
           }
           xc->maxhandle++;
         } else {
           if((vartype == FST_VT_VCD_REAL) || (vartype == FST_VT_VCD_REAL_PARAMETER) || (vartype == FST_VT_VCD_REALTIME)) {
             len = 64;
+            msb = 63;
+            lsb = 0;
             xc->signal_typs[xc->maxhandle] = FST_VT_VCD_REAL;
+          } else {
+            if( sscanf( str, "%s \[%d:%d]", str2, &msb, &lsb ) != 3 ) {
+              if( sscanf( str, "%s \[%d]", str2, &lsb ) == 2 ) {
+                msb = lsb;
+                strcpy( str, str2 );
+              }
+            } else {
+              strcpy( str, str2 );
+            }
           }
           {
             uint32_t modlen = (vartype != FST_VT_VCD_PORT) ? len : ((len - 2) / 3);
-            db_assign_symbol( str, fstVcdID( alias ), (modlen - 1), 0 );
+            db_assign_symbol( str, fstVcdID( alias ), msb, lsb );
           }
           xc->num_alias++;
         }
