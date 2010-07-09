@@ -283,26 +283,35 @@ void fst_parse(
     /* Create initial symbol table */
     vcd_symtab = symtable_create();
 
-    /* Handle the dumpfile definitions */
-    fst_reader_process_hier( xc );
+    Try {
 
-    /* Check to see that at least one instance was found */
-    db_check_dumpfile_scopes(); 
+      /* Handle the dumpfile definitions */
+      fst_reader_process_hier( xc );
+
+      /* Check to see that at least one instance was found */
+      db_check_dumpfile_scopes(); 
           
-    /* Create timestep symbol table array */
-    if( vcd_symtab_size > 0 ) {
-      timestep_tab = malloc_safe_nolimit( sizeof( symtable*) * vcd_symtab_size );
-    }
+      /* Create timestep symbol table array */
+      if( vcd_symtab_size > 0 ) {
+        timestep_tab = malloc_safe_nolimit( sizeof( symtable*) * vcd_symtab_size );
+      }
         
-    /* Not sure what this does but it seems to be a requirement of the FST reader */
-    fstReaderSetFacProcessMaskAll( xc );
+      /* Not sure what this does but it seems to be a requirement of the FST reader */
+      fstReaderSetFacProcessMaskAll( xc );
 
-    /* Perform simulation */
-    fstReaderIterBlocks( xc, fst_callback, NULL, NULL );
+      /* Perform simulation */
+      fstReaderIterBlocks( xc, fst_callback, NULL, NULL );
 
-    /* Perform last simulation if necessary */
-    if( vcd_prevtime_valid ) {
-      (void)db_do_timestep( vcd_prevtime, FALSE );
+      /* Perform last simulation if necessary */
+      if( vcd_prevtime_valid ) {
+        (void)db_do_timestep( vcd_prevtime, FALSE );
+      }
+
+    } Catch_anonymous {
+      symtable_dealloc( vcd_symtab );
+      free_safe( timestep_tab, (sizeof( symtable* ) * vcd_symtab_size) );
+      fstReaderClose( xc );
+      Throw 0;
     }
         
     /* Deallocate memory */

@@ -534,7 +534,14 @@ endif
 
 # List of diagnostics that should not be run if we are using FST dumpfiles
 ifdef FST
-EXCLUDE      += always7           generate11.3      trigger1
+EXCLUDE      += always7           generate2.1       generate5.1       generate11.3      hier4 \
+                localparam1       localparam1.1     localparam1.2     localparam1.3     localparam2 \
+                localparam3       mem2              mem6.3            merge5            merge6 \
+                merge6.1          merge7            merge7.1          merge7.2          merge7.3 \
+                merge7.4          merge7.5          merge7.6          merge7.7          merge7.8 \
+                named_block2      param9            param9.1          param9.2          param14 \
+                param16           score_err1.14     score_err1.15     score_err1.16     signed4.2 \
+                trigger1
 endif
 
 # List of diagnostics that should not be run if we are using VPI

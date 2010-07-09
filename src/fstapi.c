@@ -31,7 +31,7 @@
 #define FST_DOUBLE_ENDTEST 		(2.7182818284590452354)
 #define FST_HDR_SIM_VERSION_SIZE 	(128)
 #define FST_HDR_DATE_SIZE 		(128)
-#define FST_GZIO_LEN			(32768)
+#define FST_GZIO_LEN			(512)
 
 
 #if defined(__i386__) || defined(__x86_64__) || defined(_AIX)
