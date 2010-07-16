@@ -291,16 +291,17 @@ proc main_view {} {
   pack .bot.left.f.ps -side right
 
   # Create hierarchical window
-  ttk::treeview  .bot.left.tree -selectmode browse -xscrollcommand {.bot.left.hb set} -yscrollcommand {.bot.left.vb set} \
-                                -columns {Total Line Toggle Memory Logic FSM Assert}
-  .bot.left.tree heading #0     -text "Name"         -command "sort_treeview .bot.left.tree #0 0"
-  .bot.left.tree heading Total  -text "Total Score"  -command "sort_treeview .bot.left.tree Total 0"
-  .bot.left.tree heading Line   -text "Line Score"   -command "sort_treeview .bot.left.tree Line 0"
-  .bot.left.tree heading Toggle -text "Toggle Score" -command "sort_treeview .bot.left.tree Toggle 0"
-  .bot.left.tree heading Memory -text "Memory Score" -command "sort_treeview .bot.left.tree Memory 0"
-  .bot.left.tree heading Logic  -text "Logic Score"  -command "sort_treeview .bot.left.tree Logic 0"
-  .bot.left.tree heading FSM    -text "FSM Score"    -command "sort_treeview .bot.left.tree FSM 0"
-  .bot.left.tree heading Assert -text "Assert Score" -command "sort_treeview .bot.left.tree Assert 0"
+  tablelist::tablelist .bot.left.tree \
+    -columns {0 {Name} 0 {Total Score} 0 {Line Score} 0 {Toggle Score} 0 {Memory Score} 0 {Logic Score} 0 {FSM Score} 0 {Assert Score}} \
+    -xscrollcommand {.bot.left.hb set} -yscrollcommand {.bot.left.vb set} -selectmode browse -treecolumn 0 -background white
+  .bot.left.tree columnconfigure 0 -name Name  -editable 0
+  .bot.left.tree columnconfigure 1 -name Total -editable 0
+  .bot.left.tree columnconfigure 2 -name Line   -text "Line Score"   -command "sort_treeview .bot.left.tree Line 0"
+  .bot.left.tree columnconfigure 3 -name Toggle -text "Toggle Score" -command "sort_treeview .bot.left.tree Toggle 0"
+  .bot.left.tree columnconfigure 4 -name Memory -text "Memory Score" -command "sort_treeview .bot.left.tree Memory 0"
+  .bot.left.tree columnconfigure 5 -name Logic  -text "Logic Score"  -command "sort_treeview .bot.left.tree Logic 0"
+  .bot.left.tree columnconfigure 6 -name FSM    -text "FSM Score"    -command "sort_treeview .bot.left.tree FSM 0"
+  .bot.left.tree columnconfigure 7 -name Assert -text "Assert Score" -command "sort_treeview .bot.left.tree Assert 0"
 
   set col_font  [::ttk::style lookup [.bot.left.tree cget -style] -font]
   set col_width [font measure $col_font "@@@@@@@@@@@@"]
