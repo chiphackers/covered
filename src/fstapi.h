@@ -146,6 +146,7 @@ fstHandle fstWriterCreateVar(void *ctx, enum fstVarType vt, enum fstVarDir vd,
 void fstWriterSetPackType(void *ctx, int typ); 		/* type = 0 (libz), 1 (fastlz) */
 void fstWriterSetRepackOnClose(void *ctx, int enable); 	/* type = 0 (none), 1 (libz) */
 void fstWriterSetDumpSizeLimit(void *ctx, uint64_t numbytes);
+int fstWriterGetDumpSizeLimitReached(void *ctx);
 
 void *fstWriterCreate(const char *nam, int use_compressed_hier);
 void fstWriterClose(void *ctx);
@@ -167,8 +168,8 @@ void fstWriterFlushContext(void *ctx);
 void *fstReaderOpen(const char *nam);
 void fstReaderClose(void *ctx);
 
-void fstReaderProcessHier(void *ctx, FILE *vcdhandle);
-void fstReaderIterateHierRewind(void *ctx);
+int fstReaderProcessHier(void *ctx, FILE *vcdhandle);
+int fstReaderIterateHierRewind(void *ctx);
 struct fstHier *fstReaderIterateHier(void *ctx);
 
 void fstReaderResetScope(void *ctx);
