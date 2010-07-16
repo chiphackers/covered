@@ -57,8 +57,6 @@ if {[tk windowingsystem] eq "aqua"} {
 
 # The Tablelist package is used for displaying instance/module hit/miss/total/percent hit information
 package require Tablelist
-#package require tile
-#package require tablelist_tile 4.8
 
 set last_block              ""
 set lwidth                  -1 
@@ -69,6 +67,7 @@ set prev_uncov_index        ""
 set next_uncov_index        ""
 set input_cdd               ""
 set block_list              [list]
+set metrics                 [list Line Toggle Memory Logic FSM Assert]
 
 set bm_right [image create bitmap -data "#define bm_right_width 15\n#define bm_right_height 15\nstatic unsigned char bm_right_bits[] = {\n0x80, 0x00,
 0x80, 0x01, 0x80, 0x03, 0x80, 0x07, 0xff, 0x0f, 0xff, 0x1f, 0xff, 0x3f, 0xff, 0x7f, 0xff, 0x3f, 0xff, 0x1f, 0xff, 0x0f, 0x80, 0x07, 0x80, 0x03, 0x80,
@@ -76,29 +75,6 @@ set bm_right [image create bitmap -data "#define bm_right_width 15\n#define bm_r
 set bm_left  [image create bitmap -data "#define bm_left_width 15\n#define bm_left_height 15\nstatic unsigned char bm_left_bits[] = {\n0x80, 0x00,
 0xc0, 0x00, 0xe0, 0x00, 0xf0, 0x00, 0xf8, 0x7f, 0xfc, 0x7f, 0xfe, 0x7f, 0xff, 0x7f, 0xfe, 0x7f, 0xfc, 0x7f, 0xf8, 0x7f, 0xf0, 0x00, 0xe0, 0x00, 0xc0,
 0x00, 0x80, 0x00};"]
-
-# images indicating sort order 
-image create bitmap treeview_arrow(0) -data {
-  #define arrowUp_width 7
-  #define arrowUp_height 4
-  static char arrowUp_bits[] = {
-    0x08, 0x1c, 0x3e, 0x7f
-  };
-}
-image create bitmap treeview_arrow(1) -data {
-  #define arrowDown_width 7
-  #define arrowDown_height 4
-  static char arrowDown_bits[] = {
-    0x7f, 0x3e, 0x1c, 0x08
-  };
-}
-image create bitmap treeview_arrowBlank -data {
-  #define arrowBlank_width 7
-  #define arrowBlank_height 4
-  static char arrowBlank_bits[] = {
-    0x00, 0x00, 0x00, 0x00
-  };
-}
 
 array set tablelistopts {
   selectbackground   RoyalBlue1
@@ -168,8 +144,8 @@ proc main_view {} {
   }
 
   # Create source frame and detailed frame
-  .bot.right.pw add [ttk::frame .bot.right.pw.src]
-  .bot.right.pw add [ttk::frame .bot.right.pw.dtl]
+  .bot.right.pw add [ttk::frame .bot.right.pw.src] -weight 1
+  .bot.right.pw add [ttk::frame .bot.right.pw.dtl] -weight 0
 
   # Create the textbox header frame
   ttk::frame .bot.right.pw.src.h
@@ -272,15 +248,18 @@ proc main_view {} {
   ttk::button .bot.left.f.ps -image $bm_left -state disabled -command {
     if {[.bot.left.f.ps cget -image] == $bm_left} {
       .bot.left.f.ps configure -image $bm_right
-      .bot.left.tree configure -displaycolumns [list $cov_rb]
-      .bot.left.tree see $curr_block
-      sashpos_move .bot 0 [expr 200 + [.bot.left.tree column $cov_rb -width] + [winfo width .bot.left.vb]]
+      foreach metric [concat Total $metrics] {
+        .bot.left.tree columnconfigure $metric -hide [expr {$cov_rb} ne {$metric}]
+      }
+      minimize_summary_pane
       .bot pane 0 -weight 0
       .bot pane 1 -weight 1
     } else {
       .bot.left.f.ps configure -image $bm_left
       sashpos_move .bot 0 [winfo width .]
-      .bot.left.tree configure -displaycolumns #all
+      foreach metric [concat Total $metrics] {
+        .bot.left.tree columnconfigure $metric -hide false
+      }
       .bot pane 0 -weight 1
       .bot pane 1 -weight 0
     }
@@ -294,29 +273,20 @@ proc main_view {} {
   tablelist::tablelist .bot.left.tree \
     -columns {0 {Name} 0 {Total Score} 0 {Line Score} 0 {Toggle Score} 0 {Memory Score} 0 {Logic Score} 0 {FSM Score} 0 {Assert Score}} \
     -xscrollcommand {.bot.left.hb set} -yscrollcommand {.bot.left.vb set} -selectmode browse -treecolumn 0 -background white
-  .bot.left.tree columnconfigure 0 -name Name  -editable 0
-  .bot.left.tree columnconfigure 1 -name Total -editable 0
-  .bot.left.tree columnconfigure 2 -name Line   -text "Line Score"   -command "sort_treeview .bot.left.tree Line 0"
-  .bot.left.tree columnconfigure 3 -name Toggle -text "Toggle Score" -command "sort_treeview .bot.left.tree Toggle 0"
-  .bot.left.tree columnconfigure 4 -name Memory -text "Memory Score" -command "sort_treeview .bot.left.tree Memory 0"
-  .bot.left.tree columnconfigure 5 -name Logic  -text "Logic Score"  -command "sort_treeview .bot.left.tree Logic 0"
-  .bot.left.tree columnconfigure 6 -name FSM    -text "FSM Score"    -command "sort_treeview .bot.left.tree FSM 0"
-  .bot.left.tree columnconfigure 7 -name Assert -text "Assert Score" -command "sort_treeview .bot.left.tree Assert 0"
 
-  set col_font  [::ttk::style lookup [.bot.left.tree cget -style] -font]
-  set col_width [font measure $col_font "@@@@@@@@@@@@"]
-  foreach col [.bot.left.tree cget -columns] {
-    .bot.left.tree column $col -width $col_width -stretch 0
-  }
-  .bot.left.tree column #0 -stretch 1 -minwidth 200
+  .bot.left.tree columnconfigure 0 -name Name             -editable 0 -stretchable 1
+  .bot.left.tree columnconfigure 1 -name Total  -width 12 -editable 0 -stretchable 0 -align center
+  .bot.left.tree columnconfigure 2 -name Line   -width 12 -editable 0 -stretchable 0 -align center
+  .bot.left.tree columnconfigure 3 -name Toggle -width 12 -editable 0 -stretchable 0 -align center
+  .bot.left.tree columnconfigure 4 -name Memory -width 12 -editable 0 -stretchable 0 -align center
+  .bot.left.tree columnconfigure 5 -name Logic  -width 12 -editable 0 -stretchable 0 -align center
+  .bot.left.tree columnconfigure 6 -name FSM    -width 12 -editable 0 -stretchable 0 -align center
+  .bot.left.tree columnconfigure 7 -name Assert -width 12 -editable 0 -stretchable 0 -align center
 
-  ttk::scrollbar .bot.left.vb                      -command {after idle update_treelabels .bot.left.tree; .bot.left.tree yview}
-  ttk::scrollbar .bot.left.hb   -orient horizontal -command {after idle update_treelabels .bot.left.tree; .bot.left.tree xview}
+  bind [.bot.left.tree bodytag] <Button-1> "tree_cell_selected .bot.left.tree %W %x %y"
 
-  bind .bot.left.tree <B1-Motion>       {+if {$ttk::treeview::State(pressMode)=="resize"} { update_treelabels %W }}
-  bind .bot.left.tree <Configure>       "+after idle update_treelabels %W"
-  bind .bot.left.tree <<TreeviewOpen>>  "+after idle update_treelabels %W"
-  bind .bot.left.tree <<TreeviewClose>> "+after idle update_treelabels %W"
+  ttk::scrollbar .bot.left.vb                    -command {.bot.left.tree yview}
+  ttk::scrollbar .bot.left.hb -orient horizontal -command {.bot.left.tree xview}
 
   grid rowconfigure    .bot.left 1 -weight 1
   grid columnconfigure .bot.left 0 -weight 1
@@ -326,11 +296,8 @@ proc main_view {} {
   grid .bot.left.hb   -row 2 -column 0 -sticky ew
 
   # Pack the bottom window
-  after idle {
-    .bot add .bot.left  -weight 1
-    .bot add .bot.right -weight 0
-    .bot sashpos 0 [winfo width .]
-  }
+  .bot add .bot.left  -weight 1
+  .bot add .bot.right -weight 0
 
   # Create bottom information bar
   ttk::label .info -anchor w -relief raised
@@ -338,6 +305,12 @@ proc main_view {} {
   # Pack the widgets
   pack .bot  -fill both -expand yes
   pack .info -fill both
+
+  # Update the sash position after the GUI has been packed
+  after 500 {
+    .bot sashpos 0 [winfo width .]
+    .bot.right.pw sashpos 0 [winfo height .bot.right]
+  }
 
   # Set the window icon
   wm title . "Covered - Verilog Code Coverage Tool"
@@ -372,14 +345,10 @@ proc populate_treeview {} {
   global summary_list
 
   # Remove contents currently in listboxes
-  .bot.left.tree delete [.bot.left.tree children {}]
+  .bot.left.tree delete 0 end
 
-  # Delete the treelabels
-  foreach block $block_list {
-    foreach col [.bot.left.tree cget -columns] {
-      destroy .bot.left.tree.[lindex $block 0]$col
-    }
-  }
+  # Set the darkening percentage
+  set percent_dark 75
 
   if {$cdd_name != ""} {
 
@@ -400,10 +369,15 @@ proc populate_treeview {} {
         set logic  $summary_list($block,comb_percent)
         set fsm    $summary_list($block,fsm_percent)
         set assert $summary_list($block,assert_percent)
-        .bot.left.tree insert {} end -id $block -text [tcl_func_get_funit_name $block] -values [list $total $line $toggle $memory $logic $fsm $assert]
-        foreach col [.bot.left.tree cget -columns] {
-          treelabel .bot.left.tree $block $col
-        }
+        .bot.left.tree insert end [list [tcl_func_get_funit_name $block] "$total %" "$line %" "$toggle %" "$memory %" "$logic %" "$fsm %" "$assert %"]
+        .bot.left.tree cellconfigure end,Total  -background $summary_list($block,total_color)  -selectbackground [::tk::Darken $summary_list($block,total_color)  $percent_dark]
+        .bot.left.tree cellconfigure end,Line   -background $summary_list($block,line_color)   -selectbackground [::tk::Darken $summary_list($block,line_color)   $percent_dark]
+        .bot.left.tree cellconfigure end,Toggle -background $summary_list($block,toggle_color) -selectbackground [::tk::Darken $summary_list($block,toggle_color) $percent_dark]
+        .bot.left.tree cellconfigure end,Memory -background $summary_list($block,memory_color) -selectbackground [::tk::Darken $summary_list($block,memory_color) $percent_dark]
+        .bot.left.tree cellconfigure end,Logic  -background $summary_list($block,comb_color)   -selectbackground [::tk::Darken $summary_list($block,comb_color)   $percent_dark]
+        .bot.left.tree cellconfigure end,FSM    -background $summary_list($block,fsm_color)    -selectbackground [::tk::Darken $summary_list($block,fsm_color)    $percent_dark]
+        .bot.left.tree cellconfigure end,Assert -background $summary_list($block,assert_color) -selectbackground [::tk::Darken $summary_list($block,assert_color) $percent_dark]
+        .bot.left.tree rowattrib end block $block
       }
 
     } else {
@@ -414,12 +388,11 @@ proc populate_treeview {} {
       # Calculate the summary_list array
       calculate_summary
 
-      set inst_block() {}
+      set instkeys() root
       foreach block $block_list {
         set inst_name [tcl_func_get_inst_scope $block]
         set mod_name  [tcl_func_get_funit_name $block]
-        set inst_block($inst_name) $block
-        set parent    $inst_block([join [lrange [split $inst_name .] 0 end-1] .])
+        set parent    $instkeys([join [lrange [split $inst_name .] 0 end-1] .])
         set child     [lindex [split $inst_name .] end]
         set total     $summary_list($block,total_percent)
         set line      $summary_list($block,line_percent)
@@ -428,21 +401,21 @@ proc populate_treeview {} {
         set logic     $summary_list($block,comb_percent)
         set fsm       $summary_list($block,fsm_percent)
         set assert    $summary_list($block,assert_percent)
-        .bot.left.tree insert $parent end -id $block -text "$child ($mod_name)" -values [list $total $line $toggle $memory $logic $fsm $assert]
-        foreach col [.bot.left.tree cget -columns] {
-          treelabel .bot.left.tree $block $col
-        }
+        set instkeys($inst_name) [.bot.left.tree insertchild $parent end [list "$child ($mod_name)" "$total %" "$line %" "$toggle %" "$memory %" "$logic %" "$fsm %" "$assert %"]]
+        .bot.left.tree cellconfigure end,Total  -background $summary_list($block,total_color)  -selectbackground [::tk::Darken $summary_list($block,total_color)  $percent_dark]
+        .bot.left.tree cellconfigure end,Line   -background $summary_list($block,line_color)   -selectbackground [::tk::Darken $summary_list($block,line_color)   $percent_dark]
+        .bot.left.tree cellconfigure end,Toggle -background $summary_list($block,toggle_color) -selectbackground [::tk::Darken $summary_list($block,toggle_color) $percent_dark]
+        .bot.left.tree cellconfigure end,Memory -background $summary_list($block,memory_color) -selectbackground [::tk::Darken $summary_list($block,memory_color) $percent_dark]
+        .bot.left.tree cellconfigure end,Logic  -background $summary_list($block,comb_color)   -selectbackground [::tk::Darken $summary_list($block,comb_color)   $percent_dark]
+        .bot.left.tree cellconfigure end,FSM    -background $summary_list($block,fsm_color)    -selectbackground [::tk::Darken $summary_list($block,fsm_color)    $percent_dark]
+        .bot.left.tree cellconfigure end,Assert -background $summary_list($block,assert_color) -selectbackground [::tk::Darken $summary_list($block,assert_color) $percent_dark]
+        .bot.left.tree rowattrib end block $block
       }
 
-    }
+      # Collapse the tree view
+      .bot.left.tree collapseall
 
-    # Update the headers
-    foreach col [.bot.left.tree cget -columns] {
-      .bot.left.tree column $col -minwidth [.bot.left.tree.0Total cget -width] -width [.bot.left.tree.0Total cget -width] -stretch 0
     }
-
-    # Update the treelabels
-    after idle update_treelabels .bot.left.tree
 
     # Set the last module/instance type variable to the current
     set last_mod_inst_type $mod_inst_type
@@ -490,158 +463,58 @@ proc sashpos_move {pw sash goal} {
 
 }
 
-proc treelabel_selected {w col block} {
+proc minimize_summary_pane {} {
 
-  global cov_rb curr_block bm_right
+  # Make the Name column as small as possible
+  .bot.left.tree columnconfigure Name -width 0
 
-  # Update the global variables
-  set cov_rb     $col
-  set curr_block $block
-
-  # Update the treeview
-  update_treelabels $w
-
-  # Update the list of displayed columns to include the name and selected metric
-  $w configure -displaycolumns [list $col]
-
-  # We do this to avoid getting an error from the ttk::treeview class
-  set ttk::treeview::State(activeHeading) {}
-
-  # Slide the panedwindow sash to hug the last columnconfigure
-  if {[.bot.left.f.ps cget -image] != $bm_right} {
-    # Need to figure out the desired width of the #0 column
-    sashpos_move .bot 0 [expr 200 + [$w column $col -width] + [winfo width .bot.left.vb]]
-    .bot.left.f.ps configure -state normal
-    .bot pane 0 -weight 0
-    .bot pane 1 -weight 1
-  }
-
-  # Change the button direction
-  .bot.left.f.ps configure -image $bm_right
-
-  # Populate the textbox with source
-  populate_text
-
-}
-
-# Creates and binds a single label for a cell in the treeview table
-proc treelabel {tv block col} {
-
-  global summary_list
-
-  set f [frame $tv.[lindex $block 0]$col -background white -padx 2 -pady 2]
-
-  switch $col {
-    Total   { set type "total"  }
-    Line    { set type "line"   }
-    Toggle  { set type "toggle" }
-    Memory  { set type "memory" }
-    Logic   { set type "comb"   }
-    FSM     { set type "fsm"    }
-    Assert  { set type "assert" }
-  }
-
-  # Create the format string
-  set fstr "(%$summary_list(max_len)d / %$summary_list(max_len)d)"
-
-  ttk::label $f.summary -text [format $fstr $summary_list($block,$type\_hit) $summary_list($block,$type\_total)] \
-                        -background $summary_list($block,$type\_color) -width [expr ($summary_list(max_len) * 2) + 5] -anchor e
-  ttk::label $f.percent -text [format "%3d%%" $summary_list($block,$type\_percent)] \
-                        -background $summary_list($block,$type\_color) -width 4 -anchor e
-
-  # Set the pixel width of the frame
-  set font [::ttk::style lookup [$f.summary cget -style] -font]
-  $f configure -width [font measure $font [string repeat "@" [expr ($summary_list(max_len) * 2) + 5]]]
-
-  pack $f.percent -side right
-  pack $f.summary -side right -fill x
-
-  # Create bindings
-  if {$col ne "Total"} {
-    bind $f.percent <Button-1> "treelabel_selected $tv $col [list $block]"
-    bind $f.summary <Button-1> "treelabel_selected $tv $col [list $block]"
-  }
-
-  return $f
-
-}
-
-# update inplace edit widgets positions
-proc update_treelabels {w} {
-
-  global block_list curr_block cov_rb
-
-  foreach block $block_list {
-    foreach col [$w cget -columns] {
-      set wnd $w.[lindex $block 0]$col
-      if {[winfo exists $wnd]} {
-        set bbox [$w bbox $block $col]
-        if {$bbox==""} {
-          place forget $wnd
-        } else {
-          place $wnd -x [lindex $bbox 0] -y [lindex $bbox 1] -width [lindex $bbox 2] -height [lindex $bbox 3]
-        }
-        if {$curr_block == $block && $cov_rb == $col} {
-          $wnd configure -background black
-        } else {
-          $wnd configure -background white
-        }
-      }
+  after idle {
+    set name_width [.bot.left.tree columnwidth Name]
+    if {$name_width < 200} {
+      set name_width 200
     }
+    sashpos_move .bot 0 [expr $name_width + [.bot.left.tree columnwidth $cov_rb] + [winfo width .bot.left.vb]]
   }
 
 }
 
-# Hierarchical sorting procedure
-proc sort_treeview {tree col direction {isroot 1} {root {}} } {
+proc tree_cell_selected {tbl w x y} {
 
-  if {$isroot} {
-    if {$col!="#0"} {
-      set col [$tree column $col -id]
+  global cov_rb curr_block metrics bm_right
+
+  foreach {tablelist::W tablelist::x tablelist::y} [tablelist::convEventFields $w $x $y] {}
+
+  set row [$tbl containing       $tablelist::y]
+  set col [$tbl containingcolumn $tablelist::x]
+
+  # We only do something if one of the metrics was selected
+  if {$col >= 2} {
+
+    # Update the global variables
+    set cov_rb     [$tbl columncget $col -name]
+    set curr_block [$tbl rowattrib $row block]
+
+    # Update the list of displayed columns to include the name and selected metric
+    foreach metric [concat Total $metrics] {
+      $tbl columnconfigure $metric -hide [expr {$cov_rb} ne {$metric}]
     }
-    set selection [$tree selection]
-    $tree selection remove $selection
-    set focus [$tree focus]
-    $tree focus {}
+
+    # Slide the panedwindow sash to hug the last columnconfigure
+    if {[.bot.left.f.ps cget -image] != $bm_right} {
+      minimize_summary_pane
+      .bot pane 0 -weight 0
+      .bot pane 1 -weight 1
+      .bot.left.f.ps configure -state normal
+    }
+
+    # Change the button direction
+    .bot.left.f.ps configure -image $bm_right
+
+    # Populate the textbox with source
+    populate_text
+
   }
 
-  # Build something we can sort
-  set data {}
-  if {$col=="#0"} {
-    foreach row [$tree children $root] {
-      lappend data [list [$tree item $row -text] $row]
-    }
-  } else {
-    foreach row [$tree children $root] {
-      lappend data [list [$tree set $row $col] $row]
-    }
-  }  
-  if {$data!=""} {
-    set dir [expr {$direction ? "-decreasing" : "-increasing"}]
-    set r -1
-    # Now reshuffle the rows into the sorted order
-    foreach info [lsort -dictionary -index 0 $dir $data] {
-      $tree move [lindex $info 1] $root [incr r]
-      if {[$tree item [lindex $info 1] -open]} {
-        sort_treeview $tree $col $direction 0 [lindex $info 1]
-      }  
-    }
-  }  
-  if {$isroot} {
-    # Switch the heading so that it will sort in the opposite direction
-    #variable curfocus
-    #catch {
-    #  eval [lindex [after info $curfocus($tree,sorticon)] 0]
-    #  after cancel $curfocus($tree,sorticon)
-    #}
-    $tree heading $col -command [list sort_treeview $tree $col [expr {1-$direction}]] -image ::treeview_arrow($direction)
-    $tree selection set $selection
-    $tree focus $focus
-  }
-
-  # Update the treelabels
-  update_treelabels $tree
-  
 }
 
 proc populate_text {} {
