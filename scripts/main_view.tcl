@@ -151,7 +151,7 @@ proc main_view {} {
   ttk::frame .bot.right.pw.src.h
   ttk::label .bot.right.pw.src.h.tl -text "Cur   Line #       Verilog Source" -anchor w
   ttk::frame .bot.right.pw.src.h.pn
-  ttk::label .bot.right.pw.src.h.pn.prev -image [image create photo -file [file join $HOME scripts left_arrow.gif]] -state disabled
+  ttk::label .bot.right.pw.src.h.pn.prev -image $bm_left -state disabled
   bind .bot.right.pw.src.h.pn.prev <Button-1> {
     if {$cov_rb == "Line"} {
       goto_uncov $prev_uncov_index line
@@ -168,7 +168,7 @@ proc main_view {} {
     }
   }
   set_balloon .bot.right.pw.src.h.pn.prev "Click to view the previous uncovered item"
-  ttk::label .bot.right.pw.src.h.pn.next -image [image create photo -file [file join $HOME scripts right_arrow.gif]] -state disabled
+  ttk::label .bot.right.pw.src.h.pn.next -image $bm_right -state disabled
   bind .bot.right.pw.src.h.pn.next <Button-1> {
     if {$cov_rb == "Line"} {
       goto_uncov $next_uncov_index line
@@ -272,7 +272,8 @@ proc main_view {} {
   # Create hierarchical window
   tablelist::tablelist .bot.left.tree \
     -columns {0 {Name} 0 {Total Score} 0 {Line Score} 0 {Toggle Score} 0 {Memory Score} 0 {Logic Score} 0 {FSM Score} 0 {Assert Score}} \
-    -xscrollcommand {.bot.left.hb set} -yscrollcommand {.bot.left.vb set} -selectmode browse -treecolumn 0 -background white
+    -xscrollcommand {.bot.left.hb set} -yscrollcommand {.bot.left.vb set} -selectmode browse -treecolumn 0 -background white \
+    -showseparators 1
 
   .bot.left.tree columnconfigure 0 -name Name             -editable 0 -stretchable 1
   .bot.left.tree columnconfigure 1 -name Total  -width 12 -editable 0 -stretchable 0 -align center

@@ -43,6 +43,49 @@ proc display_toggle {curr_index} {
 
 }
 
+proc create_toggle_frame {w} {
+
+  # Add toggle information
+  ttk::label     $w.l_01 -anchor w -text "Toggle 0->1"
+  ttk::label     $w.l_10 -anchor w -text "Toggle 1->0"
+  text           $w.t -height 2 -width 40 -xscrollcommand "$w.hb set" -wrap none -spacing1 2 -spacing3 3
+  ttk::scrollbar $w.hb -orient horizontal -command "$w.t xview"
+
+  # Create bottom information bar
+  ttk::label $w.info -anchor e
+
+  # Create exclude checkbutton
+  ttk::checkbutton $w.excl -text "Exclude" -variable toggle_excluded -command {
+    set toggle_reason ""
+    if {$preferences(exclude_reasons_enabled) == 1 && $toggle_excluded == 1} {
+      set toggle_reason [get_exclude_reason .togwin]
+    }
+    tcl_func_set_toggle_exclude $curr_block $sig_name $toggle_excluded $toggle_reason
+    set text_x [$metric_src(toggle).txt xview]
+    set text_y [$metric_src(toggle).txt yview]
+    process_toggle_cov
+    $metric_src(toggle).txt xview moveto [lindex $text_x 0]
+    $metric_src(toggle).txt yview moveto [lindex $text_y 0]
+    populate_treeview
+    enable_cdd_save
+    set_pointer curr_toggle_ptr $curr_toggle_ptr toggle
+  }
+  set_exclude_reason_balloon $w.excl {$toggle_excluded} {$toggle_reason}
+  set_balloon $w.excl "If set, excludes this signal from toggle coverage consideration"
+
+  # Pack the widgets into the bottom frame
+  grid rowconfigure    $w 3 -weight 1
+  grid columnconfigure $w 0 -weight 1
+  grid columnconfigure $w 1 -weight 0
+  grid $w.t    -row 0 -rowspan 2 -column 0 -sticky new
+  grid $w.l_01 -row 0 -column 1 -sticky new
+  grid $w.l_10 -row 1 -column 1 -sticky new
+  grid $w.hb   -row 2 -column 0 -sticky new
+  grid $w.info -row 3 -column 0 -sticky new
+  grid $w.excl -row 3 -column 1 -sticky new
+
+}
+
 proc create_toggle_window {signal} {
 
   global sig_name prev_toggle_index next_toggle_index toggle_excluded toggle_reason
@@ -65,32 +108,7 @@ proc create_toggle_window {signal} {
     ttk::frame .togwin.f -relief raised -borderwidth 1
 
     # Add toggle information
-    ttk::label     .togwin.f.l_01 -anchor w -text "Toggle 0->1"
-    ttk::label     .togwin.f.l_10 -anchor w -text "Toggle 1->0"
-    text           .togwin.f.t -height 2 -width 40 -xscrollcommand ".togwin.f.hb set" -wrap none -spacing1 2 -spacing3 3
-    ttk::scrollbar .togwin.f.hb -orient horizontal -command ".togwin.f.t xview"
-
-    # Create bottom information bar
-    ttk::label .togwin.f.info -anchor e
-
-    # Create exclude checkbutton
-    ttk::checkbutton .togwin.f.excl -text "Exclude" -variable toggle_excluded -command {
-      set toggle_reason ""
-      if {$preferences(exclude_reasons_enabled) == 1 && $toggle_excluded == 1} {
-        set toggle_reason [get_exclude_reason .togwin]
-      }
-      tcl_func_set_toggle_exclude $curr_block $sig_name $toggle_excluded $toggle_reason
-      set text_x [$metric_src(toggle).txt xview]
-      set text_y [$metric_src(toggle).txt yview]
-      process_toggle_cov
-      $metric_src(toggle).txt xview moveto [lindex $text_x 0]
-      $metric_src(toggle).txt yview moveto [lindex $text_y 0]
-      populate_treeview
-      enable_cdd_save
-      set_pointer curr_toggle_ptr $curr_toggle_ptr toggle
-    }
-    set_exclude_reason_balloon .togwin.f.excl {$toggle_excluded} {$toggle_reason}
-    set_balloon .togwin.f.excl "If set, excludes this signal from toggle coverage consideration"
+    create_toggle_frame .togwin.f
 
     # Create bottom button bar
     ttk::frame .togwin.bf -relief raised -borderwidth 1
@@ -115,17 +133,6 @@ proc create_toggle_window {signal} {
     pack .togwin.bf.next  -side left
     pack .togwin.bf.help  -side right -padx 4 -pady 4
     pack .togwin.bf.close -side right -padx 4 -pady 4
-
-    # Pack the widgets into the bottom frame
-    grid rowconfigure    .togwin.f 3 -weight 1
-    grid columnconfigure .togwin.f 0 -weight 1
-    grid columnconfigure .togwin.f 1 -weight 0
-    grid .togwin.f.t    -row 0 -rowspan 2 -column 0 -sticky new
-    grid .togwin.f.l_01 -row 0 -column 1 -sticky new
-    grid .togwin.f.l_10 -row 1 -column 1 -sticky new
-    grid .togwin.f.hb   -row 2 -column 0 -sticky new
-    grid .togwin.f.info -row 3 -column 0 -sticky new
-    grid .togwin.f.excl -row 3 -column 1 -sticky new
 
     pack .togwin.f  -fill both -expand yes
     pack .togwin.bf -fill x
