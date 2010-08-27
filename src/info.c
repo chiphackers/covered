@@ -208,7 +208,7 @@ void info_db_write(
     unsigned int i    = 0;
     while( strl != NULL ) {
       if( strl->suppl < 2 ) {
-        if( (strcmp( strl->str, merged_file ) != 0) && (strl->suppl == 1) ) {
+        if( ((merged_file == NULL) || (strcmp( strl->str, merged_file ) != 0)) && (strl->suppl == 1) ) {
           fprintf( file, "%d %s %s\n", DB_TYPE_MERGED_CDD, strl->str, db_list[curr_db]->leading_hierarchies[i++] );
         } else {
           i++;
@@ -222,7 +222,7 @@ void info_db_write(
     assert( (db_list[curr_db]->leading_hier_num - 1) == merge_in_num );
     while( strl != NULL ) {
       if( strl->suppl < 2 ) {
-        if( (strcmp( strl->str, merged_file ) != 0) && (strl->suppl == 1) ) {
+        if( ((merged_file == NULL) || (strcmp( strl->str, merged_file ) != 0)) && (strl->suppl == 1) ) {
           fprintf( file, "%d %s %s\n", DB_TYPE_MERGED_CDD, strl->str, db_list[curr_db]->leading_hierarchies[i++] );
         } else {
           i++;

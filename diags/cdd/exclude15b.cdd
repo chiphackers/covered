@@ -1,0 +1,18 @@
+5 18 1fd81 3 4 ffffffff *
+8 /Users/trevorw/projects/covered/diags/verilog 2 -t (main) 2 -vcd (exclude15b.vcd) 2 -y (lib) 2 -o (exclude15b.cdd) 2 -v (exclude15b.v) 2 -D (DUMP)
+3 0 $root "$root" 0 NA 0 0 1 
+3 0 main "main" 0 exclude15b.v 8 26 1 
+1 a 1 10 70005 1 0 0 0 1 17 0 1 0 0 0 0
+1 b 2 10 70008 1 0 0 0 1 17 0 1 0 0 0 0
+1 z 3 11 60005 1 0 0 0 1 17 1 1 0 0 0 0
+3 0 dut_and "main.d" 0 lib/dut_and.v 1 9 1 
+2 1 7 7 7 f000f 1 1 1008 0 0 1 1 c
+2 2 7 7 7 b000b 1 1 1004 0 0 1 1 b
+2 3 7 7 7 b000f 1 8 1084 1 2 1 18 0 1 1 0 0 0
+2 4 7 7 7 70007 0 1 1410 0 0 1 1 a
+2 5 7 7 7 7000f 2 35 6 3 4
+1 a 4 3 20008 1 0 0 0 1 17 1 1 0 0 0 0
+1 b 5 4 8 1 0 0 0 1 17 1 1 0 0 0 0
+1 c 6 5 8 1 0 0 0 1 17 1 1 0 0 0 0
+4 5 f 5 5 5
+3 1 main.u$0 "main.u$0" 0 exclude15b.v 15 24 1 

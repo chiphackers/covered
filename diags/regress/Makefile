@@ -78,8 +78,8 @@ DIAGS1        = add1              aedge1            aedge1.1          afunc1    
                 exclude9.8        exclude9.9        exclude10         exclude10.1       exclude10.2 \
                 exclude10.3       exclude10.3.1     exclude10.3.2     exclude10.3.3     exclude10.4 \
                 exclude10.5       exclude11         exclude12         exclude12.1       exclude12.2 \
-                exclude12.3       exclude12.4       exclude12.5       exclude12.6 \
-                exclude13         exclude14         expand1           expand2           expand3 \
+                exclude12.3       exclude12.4       exclude12.5       exclude12.6       exclude13 \
+                exclude14         exclude15         expand1           expand2           expand3 \
                 expand4           expand4.1         expand4.2         expand4.3         expand4.4 \
                 expand6           expand6.1         expand6.2         expand6.3         exponent1 \
                 final1            fdisplay1         finish1           fmonitor1 \
