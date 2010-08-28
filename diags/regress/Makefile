@@ -577,7 +577,8 @@ DIAGS1       += assign4           example2          example2.1        example2.3
 EXCLUDE      += bug2794588        case4.1           case5             casex2            casez3 \
                 example1          exclude5.1        exclude5.3        inline3           mem5 \
                 merge6.1          param10.1         param10.5         sbit_sel3.2       signed4.1 \
-                static_func4
+                static_func4 \
+generate5    generate5.2    generate5.3    generate8.9
 ifdef VPI
 EXCLUDE      += fork2             generate4         generate4.1       generate8
 endif

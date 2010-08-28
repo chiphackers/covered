@@ -1457,6 +1457,7 @@ generate_item
       func_unit* funit = db_get_tfn_by_position( @1.first_line, @1.first_column );
       assert( funit != NULL );
       generator_push_funit( funit );
+      generator_create_tmp_regs();
     }
     generate_item_list_opt K_end
     {
@@ -1481,6 +1482,7 @@ generate_item
       func_unit* funit = db_get_tfn_by_position( @1.first_line, @1.first_column );
       assert( funit != NULL );
       generator_push_funit( funit );
+      generator_create_tmp_regs();
     }
     generate_item_list_opt K_end
     {
@@ -1494,11 +1496,13 @@ generate_item
       func_unit* funit = db_get_tfn_by_position( @11.first_line, @11.first_column );
       assert( funit != NULL );
       generator_push_funit( funit );
+      generator_create_tmp_regs();
     }
     generate_item_list_opt K_end
     {
       func_unit* funit = db_get_tfn_by_position( @11.first_line, @11.first_column );
       assert( funit != NULL );
+      generator_pop_funit();
       $$ = generator_build( 17, strdup_safe( "for(" ), $3, strdup_safe( ";" ), $5, strdup_safe( ";" ), $7, strdup_safe( ")" ), "\n", strdup_safe( "begin : " ), $11, "\n",
                             generator_inst_id_reg( funit ), "\n", generator_tmp_regs(), $13, strdup_safe( "end" ), "\n" );
     }
@@ -3858,7 +3862,6 @@ inc_for_depth
     {
       func_unit* funit = db_get_tfn_by_position( @$.first_line, (@$.first_column - 3) );
       assert( funit != NULL );
-      printf( "In inc_for_depth, first_line: %d, first_column: %d, funit->name: %s\n", @$.first_line, (@$.first_column - 3), funit->name );
       generator_push_funit( funit );
     }
   ;

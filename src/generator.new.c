@@ -3289,9 +3289,10 @@ char* generator_fsm_covs() { PROFILE(GENERATOR_FSM_COVS);
 
     for( i=0; i<curr_funit->fsm_size; i++ ) {
 
-      fsm* table = curr_funit->fsms[i];
-      char idxstr[30];
-      char numstr[30];
+      fsm*  table    = curr_funit->fsms[i];
+      char  idxstr[30];
+      char  numstr[30];
+      char* tcov_str = cov_str;
 
       /* Get the string value of the index */
       rv = snprintf( idxstr, 30, "%d", (i + 1) );
@@ -3331,6 +3332,7 @@ char* generator_fsm_covs() { PROFILE(GENERATOR_FSM_COVS);
             slen    = 6 + strlen( numstr ) + 14 + strlen( idxstr ) + 4 + strlen( fexp ) + 1 + strlen( texp ) + 3;
             cov_str = (char*)malloc_safe( slen );
             rv      = snprintf( cov_str, slen, "wire [%d:0] \\covered$F%u = {%s,%s};", ((from_number + to_number) - 1), (i + 1), fexp, texp );
+            printf( "cov_str: %p, %s\n", cov_str, cov_str );
           } else {
             rv      = snprintf( numstr, 30, "%d", from_number );  assert( rv < 30 );
             slen    = 7 + strlen( numstr ) + 2 + strlen( (tsize != NULL) ? tsize : "1" ) + 18 + strlen( idxstr ) + 4 + strlen( fexp ) + 1 + strlen( texp ) + 3;
@@ -3356,6 +3358,9 @@ char* generator_fsm_covs() { PROFILE(GENERATOR_FSM_COVS);
         free_safe( texp,  (strlen( texp )  + 1) );
 
       }
+
+      /* Concatenate strings */
+      cov_str = generator_build( 2, tcov_str, cov_str );
 
     }
 
