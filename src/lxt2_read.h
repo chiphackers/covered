@@ -47,10 +47,14 @@ typedef long off_t;
 #include <zlib.h>
 #endif
 
+#ifdef __clang__
+#define _LXT2_RD_INLINE
+#else
 #ifdef __GNUC__
-#define _LXT2_RD_INLINE inline
+#define _LXT2_RD_INLINE __attribute__ ((gnu_inline)) inline
 #else
 #define _LXT2_RD_INLINE
+#endif
 #endif
 
 #define LXT2_RDLOAD "LXTLOAD | "
