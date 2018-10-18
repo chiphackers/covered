@@ -1,0 +1,51 @@
+#compiled object files
+*.o
+*.output
+*.a
+*.vpi
+src/covered
+
+#configure generated files
+/Makefile
+/src/Makefile
+/lib/vpi/Makefile
+/lib/run/Makefile
+/scripts/Makefile
+/doc/Makefile
+/doc/docbook/Makefile
+config.h
+
+#make generated files
+*keywords_*.c
+lexer.c
+gen_lexer.c
+parser.c
+gen_parser.c
+parser.h
+gen_parser.h
+pplexer.c
+static_lexer.c
+static_parser.c
+static_parser.h
+vcd_keywords.c
+
+#dev files
+cscope.out
+tags
+TAGS
+ctags
+CTAGS
+distdir
+dist
+dist-all
+distcheck
+
+#deps
+.deps
+
+#other
+stamp-h1
+*.cache
+*.log
+*.status
+*.lineno
